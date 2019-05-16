@@ -1,0 +1,127 @@
+@CHARSET "UTF-8";
+
+#body {
+	font: 12px "Lucida Grande",Helvetica,Arial,sans-serif;
+}
+
+#mel_mobiles_list_listbox
+{
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 180px;
+}
+
+#mel_statistics_mobile_box
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 192px;
+}
+
+#mel_statistics_mobile_frame
+{
+  border-radius: 4px;
+}
+
+#mel_statistics_mobile_frame
+{
+  width: 100%;
+  table-layout: fixed; 
+}
+
+#mel_statistics_mobile_frame tbody td
+{
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#mel_statistics_mobile_frame tbody tr.disabled td
+{
+  color: #87A3AA;
+}
+
+
+#mel_statistics_mobile_frame tbody tr.filtermoveup td
+{
+  border-top: 2px dotted #555;
+  padding-top: 5px;
+}
+
+#mel_statistics_mobile_frame tbody tr.filtermovedown td
+{
+  border-bottom: 2px dotted #555;
+  padding-bottom: 4px;
+}
+
+#mobile_actions {
+	font-size: 12px;
+}
+
+#mobile_actions > div {
+	margin-bottom: 5px;
+}
+
+#mobile_actions a {
+	color: #3B6EBF;
+	text-decoration: none;
+}
+
+#mobile_actions a:hover {
+	text-decoration: underline;
+}
+
+.m2_stats_device_table {
+	margin-top: 0px;
+	width: 100%;
+	background-color: #FFF;
+	border: 1px solid #000;
+	border-spacing: 0px;
+	empty-cells: show;
+	margin-bottom: 30px;
+	font-size: 12px;
+}
+
+.m2_stats_device_table thead td {
+    background-color: #005D76;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+    font-weight: bold;
+    color: #FFF;
+    height: 20px;    
+}
+
+.m2_stats_device_table td {
+    border-left: 1px solid #CBCBCB;
+    font-size: inherit;
+	margin: 0px;
+	overflow: visible;
+	padding: 6px 12px;
+	border-width: 0px 0px 1px;
+	border-bottom: 1px solid #CBCBCB;
+	background-color: #FAFAFA;
+	text-align: center;
+}
+
+.m2_stats_device_table tbody td.mel_moncompte\.resync  {
+	background-image: url("images/1411751212_refresh.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.m2_stats_device_table tbody td.mel_moncompte\.remove  {
+	background-image: url("images/1411751862_error.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.m2_stats_device_table tbody td.mel_moncompte\.resync:HOVER,
+.m2_stats_device_table tbody td.mel_moncompte\.remove:HOVER {
+	cursor: pointer;
+}
+

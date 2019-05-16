@@ -1,0 +1,53 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+</head>
+<body class="iframe floatingbuttons">
+	<h1 class="boxtitle">
+		<roundcube:label name="mel_moncompte.photo" />
+	</h1>
+	<div id="preferences-details" class="boxcontent">
+		<form name="valide" action="#" method="post" class="propform">
+			<roundcube:if condition="env:moncompte_photo_ok === true" />
+				<fieldset>
+					<div>
+						<table>
+						<tr>
+							<td rowspan="2">
+								<img src="<roundcube:var name="env:moncompte_photo_value" />" height="100">
+								<p />
+							</td>
+							<td>
+								<input type="hidden" value="1" name="hidden_photo"/>
+								<input type="checkbox" value= "1" name="photo_intra" id="photo_intra" <roundcube:var name="env:moncompte_photo_intra" /> />
+								<label for="photo_intra"><roundcube:label name="mel_moncompte.photo_intra" /></label>
+							</td>
+						</tr>
+						<tr>
+							<td style="<roundcube:var name="env:moncompte_photo_aff_ader" />">
+								<input type="checkbox" value= "1" name="photo_ader" id="photo_ader" <roundcube:var name="env:moncompte_photo_ader" /> />
+								<label for="photo_ader"><roundcube:label name="mel_moncompte.photo_ader" /></label>
+							</td>
+						</tr>
+						</table>
+					</div>
+					<div>
+						<input type="submit" class="button mainaction" name="save" value="<roundcube:label name="save" />" />
+					</div>
+				</fieldset>
+			<roundcube:else />
+				<table cellspacing="0" width="100%" class="striped">
+					<tr>
+						<td align="center">
+							<fieldset style="background-color:lightyellow"><roundcube:label name="mel_moncompte.photo_none" /><p></fieldset>
+						</td>
+					</tr>
+				</table>
+			<roundcube:endif />
+		</form>
+	</div>
+</body>
+</html>

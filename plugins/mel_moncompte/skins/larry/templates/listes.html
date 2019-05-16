@@ -1,0 +1,50 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+</head>
+<body class="iframe floatingbuttons">
+	<h1 class="boxtitle">
+		<roundcube:label name="mel_moncompte.gestionlists" />
+	</h1>
+	<div id="preferences-details" class="boxcontent propform">
+		<roundcube:object name="moncompte_balp_list" />	
+		<fieldset>
+			<legend><roundcube:label name="mel_moncompte.listes_titre" /></legend>
+			<roundcube:object name="liste_listes" id="liste_listes" size="6" style="width:650px" />
+		</fieldset>
+		<fieldset>
+			<legend id="legende_list_membres"><roundcube:label name="mel_moncompte.listes_membres" /></legend>
+			<table>
+				<tr>
+					<td>
+						<select style="width:450px" SIZE="16" name="LboxMembers" id="idLboxMembers">
+						</select>
+						<div id="members_count"></div>
+					</td>
+					<td>
+						<div class="listes_buttons">
+							<div><input type="BUTTON" id="listes_ajouter" class="anaisweb_amande_button search_anaisweb_membre" value="<roundcube:label name="mel_moncompte.listes_ajouter" />" /></div>
+							<div><input type="BUTTON" id="listes_saisir" value="<roundcube:label name="mel_moncompte.listes_saisir" />" /></div>
+							<div><input type="BUTTON" id="listes_retirer" value="<roundcube:label name="mel_moncompte.listes_retirer" />" /></div>
+							<div><input type="BUTTON" id="listes_purger" value="<roundcube:label name="mel_moncompte.listes_purger" />" /></div>
+							<div><input type="BUTTON" id="listes_exporter" value="<roundcube:label name="mel_moncompte.listes_exporter" />" /></div>
+							<div><input type="BUTTON" id="listes_importer" value="<roundcube:label name="mel_moncompte.listes_importer" />" /></div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		<div id="upload-dialog" class="propform popupdialog" title="<roundcube:label name='mel_moncompte.listes_upload' />">
+			<roundcube:object name="listes_upload_csv" id="upload-form" size="30" buttons="no" />
+			<div class="formbuttons">
+				<roundcube:button command="upload-listes-csv" type="input" class="button mainaction" label="upload" />
+				<roundcube:button name="close" type="input" class="button" label="cancel" onclick="UI.show_uploadform()" />
+			</div>
+		</div>
+		<roundcube:include file="/includes/footer.html" />
+	</div>
+</body>
+</html>

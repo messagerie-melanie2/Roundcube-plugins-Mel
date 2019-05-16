@@ -1,0 +1,17 @@
+<?php
+// if true ALL users must have 2-steps active
+$rcmail_config['force_enrollment_users'] = false;
+
+// if this is preprod, double auth is always enable
+$rcmail_config['is_preprod'] = false;
+
+// Adresse du webservice dynalogin
+$rcmail_config['dynalogin_websvc'] = "https://mydynalogin/service.wsdl";
+
+// Set SSL stream context for web service
+$rcmail_config['dynalogin_websvc_ssl'] = stream_context_create(array(
+    'ssl' => array(
+        // set some SSL/TLS specific options
+        'verify_peer' => true,
+    )
+));

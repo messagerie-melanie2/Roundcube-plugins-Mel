@@ -1,0 +1,18 @@
+<?php
+
+// Nom du fichier où doivent être écrite les logs
+$rcmail_config['log_file'] = 'roundcube_mel.log';
+
+
+// Configuration du niveau de log souhaité pour le plugin mel_logs
+// Possibilité : TRACE, DEBUG, INFO, ERROR, WARN
+// Format : 
+//     - DEBUG|INFO|ERROR|WARN
+//     - TRACE|DEBUG|INFO|ERROR|WARN
+//     - INFO|ERROR|WARN
+// TRACE : Utilisé pour le developpement pour ajouter des traces dans le code
+// DEBUG : Utilisé pour le debugage, permet de lister les appels et les hooks
+// INFO : Utilisé en production, affiche les informations importantes
+// ERROR : Affiche les erreurs d'execution du code qui empeche le bon déroulement du code
+// WARN : Affiche des warning sur des erreurs qui n'empeche pas le bon déroulement du code
+$rcmail_config['mel_logs_level'] = 'TRACE|DEBUG|INFO|ERROR|WARN';

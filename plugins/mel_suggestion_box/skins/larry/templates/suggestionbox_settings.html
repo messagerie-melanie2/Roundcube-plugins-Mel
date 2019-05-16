@@ -1,0 +1,43 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/suggestion_box.css" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+	<roundcube:include file="/includes/settingstabs.html" />
+	<div id="settings-right">
+		<div id="mel_suggestion_box_option_box" class="uibox contentbox" style="width:100%; height:100%">
+			<h1 class="boxtitle"><roundcube:label name="mel_suggestion_box.suggestionbox" /></h1>
+			<div class="suggestion-box">
+				<div id="preferences-details" class="boxcontent">
+					<form name="form" method="post" action="#" class="propform" id="suggestion_box_form">
+						<fieldset><legend><roundcube:label name="mel_suggestion_box.suggestionboxtext"></legend>
+							<textarea name="suggestion" id="suggestion-text" class="text" rows="10" cols="80"></textarea>
+						</fieldset>
+					</form>
+				</div>
+				<div class="footerleft formbuttons">
+					<roundcube:button command="send-suggestion-message" type="input" class="button mainaction" label="send" />
+				</div>
+			</div>
+			<div class="sent_message"></div>
+		  	<roundcube:object name="message" id="message" class="statusbar" />
+		</div>
+	</div>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+ new rcube_splitter({ id:'melsplitter', p1:'#settings-sections', p2:'#settings-right',
+	orientation:'v', relative:true, start:180, min:42, size:12 }).init();
+</script>
+
+</body>
+</html>

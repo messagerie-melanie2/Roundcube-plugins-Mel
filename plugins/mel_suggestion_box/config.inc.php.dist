@@ -1,0 +1,10 @@
+<?php
+// Subject of the suggestion message
+$rcmail_config['suggestion_subject'] = '[Suggestion box] Mél';
+
+// Subject of the suggestion message (If _courrielleur)
+$rcmail_config['suggestion_subject_courrielleur'] = '[Suggestion box] Courrielleur';
+
+// Suggestion destinataires
+$rcmail_config['suggestion_dest'] = 'suggestion@example.co;';
+

@@ -1,0 +1,51 @@
+#settings-sections #settingstabpluginmel_suggestion_box.tablink.selected a {
+    background-position: 6px -694px;
+}
+
+
+div.sent_message {
+	display: none;
+}
+
+textarea#suggestion-text {
+	height:auto;
+	max-width:800px;
+	color:#2e3436;
+	font-weight:400;
+	font-size:15px;
+	font-family:'Ubuntu', Helvetica, Arial, sans-serif;
+	width:100%;
+	background:#fff;
+	border-radius:3px;
+	line-height:2em;
+	box-shadow:0px 0px 5px 1px rgba(0,0,0,0.1);
+	padding:15px;
+	-webkit-transition: height 2s ease;
+	-moz-transition: height 2s ease;
+	-ms-transition: height 2s ease;
+	-o-transition: height 2s ease;
+	transition: height 2s ease;
+}
+
+div.sent_message {
+	margin: 20px;
+	padding: 6px 30px 6px 25px;
+	font-weight: bold;
+	background: url(images/messages.png?v=3a4f.1461) 0 5px no-repeat;
+	cursor: default;
+}
+
+div.sent_message.warning {
+	color: #960;
+	background-position: 0 -86px;
+}
+
+div.sent_message.error {
+	color: #cf2734;
+	background-position: 0 -55px;
+}
+
+div.sent_message.success {
+	color: #093;
+	background-position: 0 -25px;
+}

@@ -48,7 +48,7 @@ class mel_acl extends rcube_plugin
         $this->rc = rcmail::get_instance();
 
         // Register hooks
-        $this->add_hook('acl_form_melanie2', array($this, 'folder_form'));
+        $this->add_hook('acl_form_mel', array($this, 'folder_form'));
         // Plugin actions
         $this->register_action('plugin.acl', array($this, 'acl_actions'));
         $this->register_action('plugin.acl-autocomplete', array($this, 'acl_autocomplete'));
@@ -925,10 +925,10 @@ class mel_acl extends rcube_plugin
      */
     private function set_user_properties() {
         // Chargement de l'account passé en Get
-        $this->get_account = melanie2::get_account();
+        $this->get_account = mel::get_account();
         if (!empty($this->get_account)) {
             // Récupère la liste des bal gestionnaire de l'utilisateur
-            $list_balp = melanie2::get_user_balp_gestionnaire($this->rc->get_user_name());
+            $list_balp = mel::get_user_balp_gestionnaire($this->rc->get_user_name());
             $is_gestionnaire = false;
             // Récupération du username depuis l'url
             $this->user_name = urldecode($this->get_account);

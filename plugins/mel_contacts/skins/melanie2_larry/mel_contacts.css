@@ -1,0 +1,44 @@
+
+#directorylist li.addressbook.readonly,
+#directorylist li.addressbook.shared,
+#directorylist li.addressbook.other {
+	background-image: url(folder_icons.png);
+	background-position: right -1000px;
+	background-repeat: no-repeat;
+}
+
+#directorylist li.addressbook.readonly {
+	background-position: 98% -18px;
+}
+
+#directorylist li.addressbook.other {
+	background-position: 98% -49px;
+}
+
+#directorylist li.addressbook.other.readonly {
+	background-position: 98% -74px;
+}
+
+#directorylist li.addressbook.shared {
+	background-position: 98% -100px;
+}
+
+#directorylist li.addressbook.shared.readonly {
+	background-position: 98% -127px;
+}
+
+#directorylist li.addressbook.readonly a,
+#directorylist li.addressbook.shared a,
+#directorylist li.addressbook.other a {
+	padding-right: 24px;
+}
+
+#directorylist li.addressbook.other.readonly a,
+#directorylist li.addressbook.shared.readonly a {
+	padding-right: 36px;
+}
+
+#directorylist li.addressbook.selected > a {
+	background-color: transparent;
+}
+

@@ -1,0 +1,41 @@
+<?php
+// Taille maximum pour les pièces jointes, en octets
+$rcmail_config['max_attachments_size'] = 7489828;
+
+// Configuration par l'utilisateur de la taille limite des pièces jointes pour la gestion par Mélanissimo
+$rcmail_config['max_attachments_size_user_list'] = array(
+		"10 Ko"   => "10240",
+		"100 Ko"  => "102400",
+		"500 Ko"  => "512000",
+		"1 Mo"    => "1048576",
+		"2 Mo"    => "2097152",
+		"5 Mo"    => "5242880",
+    	"7 Mo"    => "7489828",
+);
+
+// Taille maximum des pièces jointes gérées par Melanissimo
+$rcmail_config['max_melanissimo_size'] = 4294967296;
+
+// Version du service Web Melanissimo
+$rcmail_config['version_service_melanissimo'] = '1.0';
+
+// URL d'accès au service Melanissimo
+$rcmail_config['url_service_melanissimo'] = 'https://melanissimo.url/service';
+
+// User agent
+$rcmail_config['curl_user_agent'] = 'Roundcube Mél/1.4 Service Web Melanissimo';
+
+// Http Proxy
+$rcmail_config['curl_http_proxy'] = null;
+
+// SSL Verifier Peer
+$rcmail_config['curl_ssl_verifierpeer'] = 1;
+
+// SSL Verifier Host
+$rcmail_config['curl_ssl_verifierhost'] = 2;
+
+// SSL CA File
+$rcmail_config['curl_cainfo'] = '/etc/certs/mycert.pem';
+
+// Activer le service sur Internet
+$rcmail_config['enable_internet_service'] = false;

@@ -1,0 +1,9 @@
+﻿<?php
+// URL for Pégase (sondage)
+$rcmail_config['sondage_url'] = 'https://pegase.url';
+
+// External URL for Pégase
+$rcmail_config['sondage_external_url'] = 'https://pegase.internet.url';
+
+// Direct URL to create poll page
+$rcmail_config['sondage_create_sondage_url'] = 'https://pegase.url/?_p=edit&_a=new';

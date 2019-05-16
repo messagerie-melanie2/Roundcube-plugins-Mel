@@ -1,0 +1,34 @@
+﻿<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+	<div data-role="page" class="jqm-sondage">
+	
+		<div data-role="header" data-position="fixed" data-theme="a" class="jqm-mail-header" data-tap-toggle="false">
+			<div data-role="controlgroup" data-type="horizontal" class="jqm-mail-leftpanel-link ui-mini ui-btn-left">
+			</div>
+			<h1><roundcube:object name="pagetitle" /></h1>
+			<div data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
+				<a href="#" onclick="toggleFullScreen();" id="togglefullscreenbutton" class="ui-link ui-btn ui-icon-arrow-u-r ui-btn-icon-notext">Fullscreen</a>
+				<a href="#apps-right-panel" class="jqm-apps-rightpanel-link ui-link ui-btn ui-icon-grid ui-btn-icon-notext" data-rel="open">Apps</a>
+			</div>
+		</div>
+		
+		<roundcube:include file="/includes/rightpanel.html" />
+		
+		<div role="main" class="ui-content jqm-content">
+			<div id="mainscreen" class="box mel_sondage-box">
+				<div class="iframebox">
+			    	<roundcube:object name="mel_sondage_frame" id="mel_sondage_frame" />
+			  	</div>
+			  	<div id="wait_box"><div id="img_wait_box"></div></div>
+			</div>
+		</div>
+	</div>
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

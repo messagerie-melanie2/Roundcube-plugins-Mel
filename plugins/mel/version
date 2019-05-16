@@ -1,0 +1,466 @@
+RoundCube - Version 1.4.4
+RoundCube - Build 20171220102452
+RoundCube - Liste des changements
+
+RoundCube - 1.4.4 (Pas encore publiée) [ Afficher les bogues ]
+======================================
+- 0004779: [Général] Utilisation de l'ORM v0.4 (thomas.payen) - résolu.
+- 0004754: [Etiquettes] Choix de la couleur avec plusieurs etiquettes (thomas.payen) - résolu.
+- 0004764: [Général] Petits écrans, améliorer l'affichage (thomas.payen) - résolu.
+
+[3 bogues]
+
+RoundCube - 1.4.3.2 (Publiée 07/12/2017) [ Afficher les bogues ]
+========================================
+- 0004638: [Mon compte] Nouveau type de liste à prendre en compte (laurent.beroujon) - fermé.
+
+[1 bogue]
+
+RoundCube - 1.4.3.1 (Publiée 09/11/2017) [ Afficher les bogues ]
+========================================
+- 0004726: [Général] Passer en Roundcube 1.2.7 (thomas.payen) - résolu.
+
+[1 bogue]
+
+RoundCube - 1.4.3 (Publiée 06/11/2017) [ Afficher les bogues ]
+======================================
+- 0004701: [Général] Passer en Roundcube 1.2.6 (thomas.payen) - résolu.
+- 0004255: [Agenda] Corriger des erreurs dans les logs (thomas.payen) - résolu.
+- 0003676: [Agenda] Problème d'index dans la base de données de restauration (thomas.payen) - résolu.
+- 0004558: [Mail] Régles Sieve Horde non reprises par RC, Une erreur est survenue ! (thomas.payen) - résolu.
+- 0004702: [Agenda] Bloquer l'utilisation de la table itipinvitation (thomas.payen) - résolu.
+
+[5 bogues]
+
+RoundCube - 1.4.2 (Pas encore publiée) [ Afficher les bogues ]
+======================================
+- 0004653: [Roundpad] Le "propriétaire" est obligatoire en modif, mais pas en création (thomas.payen) - résolu.
+- 0004562: [Agenda] Doublon sur la première occurrence d'un évènement réccurrent (thomas.payen) - résolu.
+- 0004573: [Agenda] Suppression de ttes les occurrences pour les participants alors qu'une seule était supprimée (thomas.payen) - résolu.
+- 0004561: [Etiquettes] Recréer les 5 étiquettes par défaut si elles n'existent pas (thomas.payen) - résolu.
+- 0004563: [Mail] La modification de la description d'un rdv n'est pas visible dans le mail de notification via roundcube (thomas.payen) - résolu.
+- 0004570: [Mes ressources] partage de l'agenda, sélection de l'agent impossible avec les flèches du clavier (thomas.payen) - résolu.
+- 0004662: [Mes ressources] Flèches "Haut -Bas" du clavier inopérentes pour la sélection dans la liste déroulante (thomas.payen) - résolu.
+- 0004601: [Mail] Mauvaise encodage des messages d'alerte pour les mass mails (thomas.payen) - résolu.
+- 0004543: [Général] Script de déploiement sur Github (thomas.payen) - résolu.
+- 0004569: [Général] Ajouter l'extension csv_export pour l'export des contacts en CSV (thomas.payen) - fermé.
+- 0004548: [Skin mobile] Ne pas mettre le lien supprimer les pièces jointes en mobile (thomas.payen) - fermé.
+- 0004547: [Général] Passage en Roundcube 1.2.5 (thomas.payen) - fermé.
+- 0004539: [Messagerie instantanée] Intégrer Ariane à Melanie2Web (thomas.payen) - fermé.
+
+[13 bogues]
+
+RoundCube - 1.4.1.1 (Publiée 09/08/2017) [ Afficher les bogues ]
+========================================
+- 0004654: [Général] Le changement de mdp sans BALI ne fonctionne pas (thomas.payen) - résolu.
+- 0004651: [Carnet d'adresses] L'import ne fonctionne pas correctement pour les groupes (thomas.payen) - résolu.
+- 0004650: [Mon compte] Problème de lecture des informations après l'enregistrement (thomas.payen) - résolu.
+- 0004646: [Général] Modifier les appels aux service Web pour la gestion des certificats (thomas.payen) - résolu.
+- 0004625: [Aide] Modifier le libellé du ministère (thomas.payen) - résolu.
+- 0004592: [Général] Changment de ministère - Changement de bandeau (thomas.payen) - résolu.
+
+[6 bogues]
+
+RoundCube - 1.4.1 (Publiée 29/05/2017) [ Afficher les bogues ]
+======================================
+- 0004571: [Général] HOTFIX (thomas.payen) - résolu.
+- 0004492: [Général] Passage en Roundcube 1.2.4 (thomas.payen) - résolu.
+- 0004453: [Agenda] Import sans uid (thomas.payen) - résolu.
+- 0004480: [Mon compte] autorisation GCU aux BAL mais si pas de compte bureautique (laurent.beroujon) - résolu.
+- 0004483: [Double auth] La double authentification n'est pas loguée (thomas.payen) - fermé.
+- 0004441: [Agenda] Le téléchargement des pièces jointes ne fonctionne pas pour une réunion (thomas.payen) - fermé.
+- 0004513: [Carnet d'adresses] Changer le type d'adresse ne supprime l'ancienne (thomas.payen) - fermé.
+- 0003848: [Agenda] Présentation d'un événement avec des participants (thomas.payen) - fermé.
+- 0004540: [Agenda] Afficher l'url de l'agenda CalDAV (thomas.payen) - fermé.
+- 0003640: [Agenda] Dans le event show, le statut des participants serait mieux en début de ligne (thomas.payen) - fermé.
+- 0004466: [Agenda] Ajouter un bouton pour rafraichir l'agenda (thomas.payen) - fermé.
+
+[11 bogues]
+
+RoundCube - 1.4.0.2 (Publiée 23/03/2017) [ Afficher les bogues ]
+========================================
+- 0004500: [Général] La dernière mise a jour a entraîné des effets de bord dans les règles Sieve (thomas.payen) - résolu.
+
+[1 bogue]
+
+RoundCube - 1.4.0.1 (Publiée 23/03/2017) [ Afficher les bogues ]
+========================================
+- 0004498: [Etiquettes] Le gestion des étiquettes d'une balp choisie dans la liste depuis une bali semble ne pas marcher (thomas.payen) - résolu.
+- 0004501: [Général] Ré activation des filtres HORDE (thomas.payen) - résolu.
+
+[2 bogues]
+
+RoundCube - 1.4 (Publiée 09/03/2017) [ Afficher les bogues ]
+====================================
+- 0004276: [Mail] Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser (thomas.payen) - résolu.
+- 0004208: [Carnet d'adresses] La recherche avec caractères spéciaux échoue (thomas.payen) - résolu.
+- 0003664: [Général] Mettre en place des raccourcis clavier (thomas.payen) - résolu.
+- 0004420: [Etiquettes] Toujours lister les étiquettes de la BALI (thomas.payen) - résolu.
+- 0004387: [Général] Avertir les adm Amédée lors des blocages de comptes (thomas.payen) - résolu.
+- 0004397: [Roundpad] Améliorer les messages d'erreur (thomas.payen) - résolu.
+- 0004559: [Agenda] La restauration de l'agenda avec Mélanie2web donne un fichier vide (thomas.payen) - fermé.
+- 0004369: [Général] Passage en Roundcube 1.2.3 (thomas.payen) - fermé.
+- 0004388: [Double auth] Ne pas faire de blocage sur envois massifs depuis Internet si l'auth s'est faite avec la double auth (thomas.payen) - fermé.
+- 0004131: [Mail] Le changement de l'adresse mail d'émission ne change pas la BAL sélectionnée (thomas.payen) - fermé.
+- 0004398: [Roundpad] Ajouter un tooltip sur l'url (thomas.payen) - fermé.
+- 0004401: [Roundpad] Ajouter un bouton supprimer le dossier et renommer le dossier dans la toolbar (thomas.payen) - fermé.
+- 0004400: [Roundpad] Bloquer la possibilité de créer deux Pad avec un nom identique (thomas.payen) - fermé.
+- 0004399: [Roundpad] Ajouter un message lorsque le fichier ne peut pas être enregistré (thomas.payen) - fermé.
+- 0004396: [Carnet d'adresses] Utiliser le code pays pour l'adresse d'un contact (thomas.payen) - fermé.
+- 0004352: [Agenda] Permettre la création d'un sondage Pégase, directement depuis la fenêtre de l'événement (thomas.payen) - fermé.
+- 0004361: [Mes applications] Mettre à jour l'url de melanissimo (thomas.payen) - fermé.
+- 0004409: [Roundpad] Ajouter un bouton d'aide (thomas.payen) - fermé.
+- 0004383: [Agenda] Perte du rappel sur un événement (thomas.payen) - fermé.
+- 0004416: [Mes ressources] Positionner le droit Lecture devrait automatiquement sélectionner Afficher (thomas.payen) - fermé.
+- 0004235: [Agenda] Coquille dans l'affichage d'un RDV (thomas.payen) - fermé.
+- 0004435: [Etiquettes] Gestion des couleurs des étiquettes compatible avec le courrielleur (thomas.payen) - fermé.
+- 0004425: [Etiquettes] Limiter l'édition des étiquettes aux boites dont on est gestionnaires (thomas.payen) - fermé.
+- 0004421: [Etiquettes] Dans la gestion des étiquettes ajouter la possible de changer de boite (thomas.payen) - fermé.
+
+[24 bogues]
+
+RoundCube - 1.3.5 (Publiée 12/09/2016) [ Afficher les bogues ]
+======================================
+- 0004358: [Général] Vérifier que lors des erreurs de cht de mot de passe par wsAmande l'explication est bien remontée à l'utilisateur (thomas.payen) - résolu.
+- 0004346: [Carnet d'adresses] La restauration des contacts ne fonctionne plus (thomas.payen) - résolu.
+- 0004328: [Général] L'url de login n'est pas conservé (thomas.payen) - résolu.
+- 0004155: [Mail] Gestion des étiquettes avec le Courrielleur (thomas.payen) - résolu.
+- 0004229: [Mail] Une étiquette avec caractères accentués créé dans le courrielleur s'affiche mal dans Roundcube (thomas.payen) - résolu.
+- 0004241: [Général] Passage en Roundcube 1.2 (thomas.payen) - résolu.
+- 0004310: [Mail] Participant en double lorsque sa participation est mise à jour depuis le mail de réponse (thomas.payen) - résolu.
+- 0004214: [Service web Mélanissimo] Paramétrisation seuil déclenchement envoi via Mélanissimo (thomas.payen) - résolu.
+- 0004236: [Carnet d'adresses] RC permet de créer des groupes de même nom (thomas.payen) - résolu.
+- 0004314: [Carnet d'adresses] Export des contacs comportement aléatoire (thomas.payen) - résolu.
+- 0004261: [Mes ressources] Trier les boites dans l'ordre alphabetique (thomas.payen) - résolu.
+- 0004213: [Agenda] Traduction manquante (thomas.payen) - résolu.
+- 0004211: [Agenda] Nouvelle liste déroulante dans le rappel d'un événement (thomas.payen) - résolu.
+- 0003871: [Mon compte] Correction dans le texte. (laurent.beroujon) - résolu.
+
+[14 bogues]
+
+RoundCube - 1.3.4 (Publiée 08/08/2016) [ Afficher les bogues ]
+======================================
+- 0004378: [ownCloud] Limite d'upload à remonter à 10Mo (thomas.payen) - résolu.
+- 0004252: [Agenda] Problème dans les modifications d'occurrence avec le courrielleur (thomas.payen) - résolu.
+- 0004308: [Mon compte] Gestionnaire d'absence, prise en compte de la saisie 'jj/mm/aaaa' (laurent.beroujon) - résolu.
+- 0004306: [ownCloud] Le filtre pour l'affichage du drive n'est pas bon (thomas.payen) - résolu.
+- 0004300: [Mail] Problème lors de la modification des headers pour le butineur (thomas.payen) - résolu.
+- 0004284: [Agenda] Problème d'utilisateur pour les attributs (thomas.payen) - résolu.
+- 0004285: [Agenda] Modifier une occurrence déjà modifié supprime l'événement maitre (thomas.payen) - résolu.
+- 0004281: [Agenda] La suppression d'une occurrence modifié supprime l'événement maitre (thomas.payen) - résolu.
+- 0004375: [Mon compte] La fenêtre de changement de mot de passe n'affiche pas tout le texte (thomas.payen) - fermé.
+
+[9 bogues]
+
+RoundCube - 1.3.3 (Publiée 22/05/2016) [ Afficher les bogues ]
+======================================
+- 0004263: [ownCloud] [plugin owncloud] Authentification automatique et affichage du fichier (thomas.payen) - résolu.
+- 0004253: [Carnet d'adresses] Les contacts ne sont pas listés à l'écriture du message (thomas.payen) - résolu.
+- 0004248: [Agenda] Problème de couleur dans les catégories (thomas.payen) - résolu.
+- 0004247: [Carnet d'adresses] Problème d'affichage des contacts sans nom (thomas.payen) - résolu.
+- 0004244: [Mail] Le plugin markasjunk n'est plus actif (thomas.payen) - résolu.
+- 0004243: [Carnet d'adresses] Problème dans l'auto complétion quand les utilisateurs ont le même nom de famille (thomas.payen) - résolu.
+- 0003896: [Agenda] Partage public et protégé de l'agenda (thomas.payen) - résolu.
+- 0004206: [Service web Mélanissimo] Version de RoundCube dans user-agent (thomas.payen) - résolu.
+- 0004209: [Carnet d'adresses] Affichage d'un résultat d'une recherche contenant un '-' (thomas.payen) - résolu.
+- 0004223: [Général] Passer sur Roundcube 1.1.5 (thomas.payen) - résolu.
+- 0004207: [Mail] Roundcube n'utilise pas le postfix local (thomas.payen) - résolu.
+- 0004215: [Agenda] Modification vue Ordre du jour (thomas.payen) - résolu.
+- 0004012: [Général] Permettre de bloquer la connexion d'une ou plusieurs IP (thomas.payen) - résolu.
+- 0004198: [Mail] Possibilité de supprimer un mail avec la touche backspace (thomas.payen) - résolu.
+- 0004195: [Agenda] Lors de l'import de l'ics "Jours fériés" la catégorie n'est pas prise en compte (thomas.payen) - résolu.
+
+[15 bogues]
+
+RoundCube - 1.3.2 (Publiée 01/03/2016) [ Afficher les bogues ]
+======================================
+- 0004197: [Général] Faire un script pour automatiser la génération de l'archive (thomas.payen) - résolu.
+- 0004185: [Carnet d'adresses] Problème de tri des contacts qui peut potentiellement afficher des doublons (thomas.payen) - résolu.
+- 0004115: [Agenda] Remplacement de l'icône Jappix dans la barre d'outils (thomas.payen) - résolu.
+- 0004189: [Général] Remaniement : changement de bandeau (thomas.payen) - résolu.
+- 0004154: [Agenda] L'affichage de l'url de l'agenda affiche l'adresse IP du serveur (thomas.payen) - résolu.
+
+[5 bogues]
+
+RoundCube - 1.3.1 (Publiée 22/02/2016) [ Afficher les bogues ]
+======================================
+- 0004150: [Agenda] l'importation de l'URL de son agenda ne permet pas de l'ouvrir depuis une autre application (thomas.payen) - résolu.
+- 0004163: [Service web Mélanissimo] Désactiver le service Mélanissimo sur Internet (thomas.payen) - résolu.
+- 0004170: [Paramètres] impossible de créer un filtre sur une bal partagé (thomas.payen) - résolu.
+- 0004164: [Service web Mélanissimo] Ajouter des logs à l'envoi Mélanissimo pour les statistiques (thomas.payen) - résolu.
+- 0003996: [Mes ressources] La sauvegarde de l'agenda ne fonctionne pas depuis "Mon compte dans le Courrielleur" (thomas.payen) - résolu.
+- 0004158: [Agenda] Problème d'enregistrement des pièces jointes dans les événements (thomas.payen) - résolu.
+- 0003334: [Mail] Gestion des adresses mail multiple pour les identités (thomas.payen) - résolu.
+- 0003895: [Taches] Menu "Gérer les listes de tâches" manquant (thomas.payen) - résolu.
+- 0003602: [Général] Problème de traduction (thomas.payen) - résolu.
+- 0004041: [Général] Passer les plugins kolab en 3.2.9 (thomas.payen) - résolu.
+- 0004140: [Mes ressources] Droits de partage horde/rc différents (thomas.payen) - résolu.
+- 0004153: [Mes applications] Supprimer le bouton Horde (thomas.payen) - résolu.
+
+[12 bogues]
+
+RoundCube - 1.3 (Publiée 15/02/2016) [ Afficher les bogues ]
+====================================
+- 0004143: [Service web Mélanissimo] Utilisation du web service Melanissimo (thomas.payen) - fermé.
+
+[1 bogue]
+
+RoundCube - 1.2.7 (Publiée 18/01/2016) [ Afficher les bogues ]
+======================================
+- 0004156: [Agenda] Problème dans la lecture d'un agenda (thomas.payen) - résolu.
+- 0003524: [Mail] Permettre la suppression des PJ d'un message (thomas.payen) - résolu.
+- 0004142: [Mail] Affichage 3 colonnes (thomas.payen) - résolu.
+- 0004137: [Général] Roundcube 1.1.4 (thomas.payen) - fermé.
+- 0004122: [Agenda] Faute d'orthographe (thomas.payen) - fermé.
+
+[5 bogues]
+
+RoundCube - 1.2.6 (Publiée 21/12/2015) [ Afficher les bogues ]
+======================================
+- 0003433: [Général] Version mobile (thomas.payen) - résolu.
+- 0004124: [Agenda] URL publique de freebusy (thomas.payen) - résolu.
+- 0004125: [Mes ressources] Impossible de partager une liste de tâches (thomas.payen) - résolu.
+- 0004123: [Messagerie instantanée] Modifier l'url BOSH de l'instance jappix (thomas.payen) - résolu.
+- 0004088: [Skin mobile] Modification du libellé (thomas.payen) - résolu.
+- 0003954: [Général] Créer une page de changement de mot de passe (thomas.payen) - fermé.
+- 0004116: [Agenda] Gestion du statut annulé pour un événement (elisabeth.houot) - fermé.
+- 0004111: [Mon compte] champ "Bureau" dans Infos perso (laurent.beroujon) - fermé.
+- 0004117: [Agenda] Problème d'affichage des disponibilités avec les récurrents (thomas.payen) - fermé.
+
+[9 bogues]
+
+RoundCube - 1.2.5 (Publiée 22/10/2015) [ Afficher les bogues ]
+======================================
+- 0004084: [Mail] Récupération des mails - Ajouter un pop-up (laurent.beroujon) - résolu.
+- 0004093: [Mes ressources] Problème de partage à une liste (thomas.payen) - résolu.
+- 0004101: [Mes ressources] Partage à une adresse mail ne devrait pas être accepté (thomas.payen) - résolu.
+- 0004092: [Agenda] Problème de timezone à la réunion (thomas.payen) - résolu.
+- 0004075: [Mes ressources] Bloquer la possibilité de tout déselectionner les coches 'Abonné' (thomas.payen) - résolu.
+- 0004078: [Agenda] Erreur lors de l'affichage des freebusy pour un agenda où l'utilisateur n'a pas les droits (thomas.payen) - résolu.
+- 0004076: [Agenda] tri de la liste des agendas (thomas.payen) - résolu.
+
+[7 bogues]
+
+RoundCube - 1.2.4 (Publiée 24/09/2015) [ Afficher les bogues ]
+======================================
+- 0004073: [Mes ressources] Problème de partage à un groupe (thomas.payen) - résolu.
+- 0004074: [Messagerie instantanée] Modifier l'url Messagerie Instantanée pour les DDCSPP (thomas.payen) - résolu.
+- 0004056: [Mail] Activer le téléchargement multiple de message (thomas.payen) - résolu.
+- 0004057: [Mail] Activer la mise en cache des index imap (thomas.payen) - résolu.
+- 0004042: [Général] Passage de Roundcube en 1.1.3 (thomas.payen) - résolu.
+- 0003992: [Mon compte] Combinsaison "pas de date" et "non activation" mal pris en compte (thomas.payen) - résolu.
+- 0004033: [Agenda] Accepter une invitation ICS en GMT décale de 2h (thomas.payen) - résolu.
+
+[7 bogues]
+
+RoundCube - 1.2.3 (Publiée 08/07/2015) [ Afficher les bogues ]
+======================================
+- 0003533: [Agenda] Le partage d'un agenda à une liste agents n'indique pas de quelle liste agent il s'agit (thomas.payen) - résolu.
+- 0003977: [Mon compte] L'export des membres d'une liste ne marche pas depuis "Mon compte dans le Courrielleur" (thomas.payen) - résolu.
+- 0003988: [Intégration Pégase] Refresh du carnet d'adresses dans l'affichage de Pégase (thomas.payen) - résolu.
+- 0004003: [Mes ressources] Exécution d'une restauration non demandée (laurent.beroujon) - résolu.
+- 0004007: [Carnet d'adresses] La modification du libellé des carnets d'adresses les dupliquent (thomas.payen) - résolu.
+- 0004029: [Mail] Problème de connexion aux regles sieves depuis une boite partagée (thomas.payen) - résolu.
+- 0004025: [Mail] Le scroll infini ne fonctionne sur les dossiers d'une boite qu'après rafraichissement (thomas.payen) - résolu.
+- 0004045: [Mail] Plugin de recherche avancée dans les messages (thomas.payen) - résolu.
+- 0004049: [Général] Impossible d'afficher AnaisWeb dans le Courrielleur (thomas.payen) - résolu.
+- 0004037: [Général] Améliorer l'affichage des boites partagées (thomas.payen) - résolu.
+- 0004038: [Agenda] Problème d'icone de participation pour les invitées (thomas.payen) - résolu.
+- 0004039: [Carnet d'adresses] Problème de partage de carnets d'adresses (thomas.payen) - résolu.
+- 0004028: [Général] Après 7 échecs de connexion le compte est bloqué 10min depuis la première tentative (thomas.payen) - résolu.
+- 0003987: [Paramètres] La gestion des BALP ne conserve pas le paramètre _courrielleur=1 (thomas.payen) - résolu.
+- 0003953: [Général] Page d'index des pages d'aide Melanie2 (thomas.payen) - résolu.
+
+[15 bogues]
+
+RoundCube - 1.2.2 (Publiée 01/07/2015) [ Afficher les bogues ]
+======================================
+- 0003982: [Mes ressources] Le gestionnaire d'une balf ne peut pas supprimer un autre gestionnaire (thomas.payen) - résolu.
+- 0003958: [Général] Amélioration de la skin mobile (thomas.payen) - résolu.
+- 0003969: [Agenda] l'aperçu impression agenda n'affiche pas les rdv si la couleur de l'agenda est foncée avec police blanche (thomas.payen) - résolu.
+
+[3 bogues]
+
+RoundCube - 1.2.1 (Publiée 12/06/2015) [ Afficher les bogues ]
+======================================
+- 0003976: [Mon compte] Problème dans le gestionnaire d'absence, les dates ne sont pas affichés (thomas.payen) - résolu.
+- 0003972: [Mon compte] Rajout ou suppression de membres dans certaines listes pas pris en compte au niveau de l'affichage (thomas.payen) - résolu.
+- 0003909: [Agenda] le message reste vide quand on le crée depuis un événement (thomas.payen) - résolu.
+- 0003951: [Mes ressources] Ajouter le message explicatif sur la restauration des messages (thomas.payen) - résolu.
+- 0003952: [Mes ressources] Ajouter le message explicatif pour la restauration de l'agenda (thomas.payen) - résolu.
+- 0003810: [Mon compte] rendre le message de confirmation de changement de mot de passe plus explicite (thomas.payen) - résolu.
+- 0003956: [Carnet d'adresses] les groupes créés dans le carnet d'adresses ne sont pas alimentés (thomas.payen) - résolu.
+- 0003899: [Mes ressources] Récupération des courriels : la procédure n'est pas indiquée et le Courrier entrant est remplacé par INBOX (laurent.beroujon) - résolu.
+- 0003846: [Agenda] Le champ 'commentaire' de l'onglet Participants n'est pas pris en compte (thomas.payen) - résolu.
+- 0003961: [Intégration Pégase] Task Pégase: Rafraichissement du carnet d'adresse (thomas.payen) - résolu.
+- 0003281: [Mail] Rendre possible le "Rediriger" (thomas.payen) - résolu.
+- 0003618: [Mail] Le fichier de règles Sieve peut avoir un nom pourri (thomas.payen) - résolu.
+- 0003927: [Agenda] Affichage de l'identifiant des carnets d'adresses (thomas.payen) - résolu.
+- 0003950: [Général] Ajouter l'information de provenance de la connexion sur la page de login (thomas.payen) - résolu.
+- 0003622: [Carnet d'adresses] Permettre la recherche LDAP par numéro de téléphone (thomas.payen) - résolu.
+- 0003758: [Mail] Pas de correspondance systématique des étiquettes entre le courrielleur et RC (thomas.payen) - résolu.
+- 0003603: [Général] Fermer les pop-up au moment de l'enregistrer (thomas.payen) - résolu.
+- 0003870: [Mon compte] Le popup de changement de mot de passe s'affiche dans la fenêtre de prévisualisation de message (thomas.payen) - résolu.
+- 0003838: [Mail] Problème pour le compte du nombre de contact sur les groupes (thomas.payen) - résolu.
+- 0003839: [Mail] Le nombre de membres par groupe n'est pas toujours bon (thomas.payen) - résolu.
+- 0003860: [Mes ressources] Dans liste des ressources de type "Boites aux lettres", il faut tronquer les "émis par" (thomas.payen) - résolu.
+- 0003861: [Général] Page de stat (thomas.payen) - résolu.
+- 0003908: [Mes ressources] Partage des ressources - Zone identifiant (thomas.payen) - résolu.
+- 0003939: [Carnet d'adresses] Partage d'un carnet d'adresses : il est possible de saisir l'uid d'une bali dans "Partager à un groupe" (thomas.payen) - résolu.
+- 0003934: [Paramètres] Mauvaise présentation des dossiers (thomas.payen) - résolu.
+- 0003949: [Paramètres] Dans les paramètres ne pas masquer les boites partagées auquel on n'est pas abonné (thomas.payen) - résolu.
+- 0003946: [Général] Passage à Roundcube 1.1.2 (thomas.payen) - résolu.
+- 0003840: [Mes ressources] Permettre de choisir une BALP dans la liste Agendas, Contacts ou Tâches (thomas.payen) - résolu.
+- 0003925: [Général] mineqMelRoutage multivalué (thomas.payen) - résolu.
+- 0003913: [Mes ressources] Création automatique des objets dans Mes ressources (thomas.payen) - résolu.
+- 0003935: [Général] La vision des dossiers d'une bal n'est pas la même dans Courriel et Paramètres/Dossiers (thomas.payen) - fermé.
+
+[31 bogues]
+
+RoundCube - 1.2 (Publiée 01/06/2015) [ Afficher les bogues ]
+====================================
+- 0003862: [Taches] les libellés dates/heures début/fin ne sont pas optimum (thomas.payen) - résolu.
+- 0003658: [Carnet d'adresses] Restauration des carnets d'adresses (laurent.beroujon) - résolu.
+- 0003867: [Mail] Message quand la corbeille est pleine (thomas.payen) - résolu.
+- 0003868: [Carnet d'adresses] Champ Courriel un peu court... (thomas.payen) - résolu.
+- 0003731: [Agenda] Invitation avec participants : faute d'orthographe (thomas.payen) - résolu.
+- 0003644: [Mon compte] Création des objets depuis le menu Mes ressources (thomas.payen) - résolu.
+- 0003859: [Mail] Le terme Indésirables devrait être utilisé a la place de Pourriels (thomas.payen) - résolu.
+- 0003879: [Mail] Problème d'upload de fichier pour l'écriture d'un mail (thomas.payen) - résolu.
+- 0003193: [Général] Mécanisme pour permettre l'authentification transparente depuis le Courrielleur (thomas.payen) - résolu.
+- 0003873: [Général] Problème d'authentification depuis le Courrielleur (thomas.payen) - résolu.
+- 0003645: [Mes statistiques] Ajouter le statut de synchronisation des dossiers avec le mobile (julien.delamarre.i) - résolu.
+- 0003854: [Agenda] Fautes d'orthographe à corriger dans la fenêtre de modification d'un évt récurrent (thomas.payen) - fermé.
+
+[12 bogues]
+
+RoundCube - 1.1 (Publiée 24/04/2015) [ Afficher les bogues ]
+====================================
+- 0003611: [Messagerie instantanée] Permettre l'échange de fichiers (julien.delamarre.i) - résolu.
+- 0003826: [Général] Baser la skin melanie2_larry sur un extend de la skin larry (thomas.payen) - résolu.
+- 0003621: [Mail] Les règles Sieve de réponse imposent de lister les adresses SMTP du destinataire (thomas.payen) - résolu.
+- 0003806: [Général] Mettre en place le téléchargement des pièces jointes depuis le Courrielleur (thomas.payen) - résolu.
+- 0003688: [Mon compte] Le statut du wipe n'est pas correctement affiché (thomas.payen) - fermé.
+- 0003643: [Général] Améliorer l'affichage des ACLs (thomas.payen) - fermé.
+- 0003736: [Agenda] Enregistrer les heures de fin de récurrence en UTC (thomas.payen) - fermé.
+- 0003662: [Mail] La création d'un groupe de regle sur une balp fait le groupe sur la bali (thomas.payen) - fermé.
+- 0003687: [Agenda] Le choix de durée pour l'export ICS ne fonctionne pas (thomas.payen) - fermé.
+- 0003729: [Agenda] La date de fin de récurrence n'est pas bonne quand on modifie une occurrence et les suivantes (thomas.payen) - fermé.
+- 0003681: [Carnet d'adresses] Bloquer la suppression du carnet d'adresses principal (thomas.payen) - fermé.
+- 0003647: [Agenda] Décalage -1h après acceptation d'une invitation depuis un téléphone (thomas.payen) - fermé.
+- 0003711: [Mail] Faille sécurité XSS sur le corps du mail (thomas.payen) - fermé.
+- 0003712: [Général] Modifier la façon de logguer les traces qui peuvent amener des problèmes de mémoire (thomas.payen) - fermé.
+- 0003778: [Mail] anomalies création de nouvelles étiquettes dans RC et dans le Courrielleur (thomas.payen) - fermé.
+- 0003690: [Agenda] Impossible de passer à "pour toujours" la fin d'un evt récurrent si celui-ci était paramétré avec un nombre d'occurrences (thomas.payen) - fermé.
+- 0003732: [Agenda] Problème lors d'invitations récurrentes (thomas.payen) - fermé.
+- 0003691: [Agenda] Impossible de supprimer la première occurrence d'un évènement récurrent (thomas.payen) - fermé.
+ - 0003674: [Agenda] Impossible de supprimer la première occurrence d'un évènement récurrent (thomas.payen) - fermé.
+- 0003655: [Agenda] Ajouter les boutons accepter/refuser/provisoire dans l'évènement en tant que participant (thomas.payen) - fermé.
+- 0003678: [Agenda] Créer un évènement privé dans un calendrier partagé (thomas.payen) - fermé.
+- 0003651: [Agenda] La récurrence est décalée à la date de début de l'exception lorsqu'un participant modifie son statut (thomas.payen) - fermé.
+- 0003822: [Agenda] Modifcation d'un évt récurrent efface les précédents (thomas.payen) - fermé.
+- 0003649: [Agenda] Le titre de l'invitation est modifié lorsqu'un participant répond (thomas.payen) - fermé.
+- 0003776: [Agenda] Lors de la création d'un rdv, masquer le champ URL (thomas.payen) - fermé.
+- 0003770: [Agenda] libellés, boutons et fautes d'orthographe à corrigier (thomas.payen) - fermé.
+- 0003652: [Agenda] Echec de l'envoi du mail de notification lors de la suppression d'un rdv récurrent par un participant (thomas.payen) - fermé.
+- 0003702: [Mail] Utiliser mineqMelmailEmissionPR pour determiner l'adresse d'emission (thomas.payen) - fermé.
+- 0003745: [Général] le pictogramme d'accès à la légende de l'annuaire n'est pas accessible (thomas.payen) - fermé.
+- 0003757: [Mail] Les étiquettes positionnées dans le courrielleur ne sont pas modifiables dans RC (thomas.payen) - fermé.
+- 0003779: [Mail] problème d'accès aux étiquettes lors de l'utilisation de l'ascenseur du bouton étiquettes (thomas.payen) - fermé.
+- 0003617: [Mail] La reprise des regles Sieve Ingo ne permet pas les changements (thomas.payen) - fermé.
+- 0003663: [Mail] Sur un transfert remplacer le Fwd par Tr (thomas.payen) - fermé.
+- 0003699: [Général] nommage des boutons (thomas.payen) - fermé.
+- 0003733: [Agenda] Ajout de participants : chevauchement de boutons (thomas.payen) - fermé.
+- 0003843: [Agenda] Les rappels ne sont pas sauvegardés (thomas.payen) - fermé.
+- 0003653: [Agenda] Faute dans l'objet du mail envoyé par RC pour une invitation (thomas.payen) - fermé.
+
+[37 bogues]
+
+RoundCube - 1.0 (Publiée 11/02/2014) [ Afficher les bogues ]
+====================================
+- 0003550: [Paramètres] Cocher synchro mobile doit nettoyer les objets sur lesquels on n'a pas les droits (thomas.payen) - résolu.
+- 0003453: [Mail] Mise en place de la protection contre les émission massives (thomas.payen) - résolu.
+- 0003191: [Général] Gestion du load balancing roundcube en actif/actif (thomas.payen) - résolu.
+- 0003178: [Mon compte] Ne pas autoriser la connexion d'un compte Samba à M2Web (thomas.payen) - fermé.
+- 0003309: [Agenda] Gestion des récurrences et exceptions dans l'agenda - fermé.
+- 0003592: [Mes statistiques] La ré initialisation d'un conteneur spécifique resynchronise toutes les données du compte (thomas.payen) - fermé.
+- 0003577: [Taches] Une tache terminée depuis mobile apparait accomplie à 1% dans RC (thomas.payen) - fermé.
+- 0003380: [Mail] Gestion complète des étiquettes IMAP (thomas.payen) - fermé.
+- 0003590: [Agenda] L'import des agendas ne fonctionne pas - fermé.
+- 0003584: [Agenda] Les récurrences avec une date de fin se terminent à J+1 sur mobile (thomas.payen) - fermé.
+- 0003175: [Mon compte] Pouvoir choisir les conteneurs à synchroniser (thomas.payen) - fermé.
+- 0003320: [Mail] Gestion des dossiers souscrit/non souscrit (thomas.payen) - fermé.
+- 0003541: [Mail] Sortir la recherche de la session (thomas.payen) - fermé.
+- 0003381: [Mon compte] Gestion des boites partagées dans mon compte (thomas.payen) - fermé.
+- 0003264: [Agenda] Absence catégorie (thomas.payen) - fermé.
+- 0003188: [Taches] Driver melanie2 pour la gestion des tâches et listes de tâches (thomas.payen) - fermé.
+- 0003353: [Mail] BALP accessible sur Internet sans autorisation (thomas.payen) - fermé.
+- 0003196: [Général] Gestion des logs pour Roundcube (thomas.payen) - fermé.
+- 0003156: [Général] Module mélanie2_acl pour la gestion des droits (thomas.payen) - fermé.
+- 0003421: [Mon compte] Pouvoir gérer les bal dont on est gestionnaire (thomas.payen) - fermé.
+- 0003197: [Mail] Gestion des règles Sieve des balp (thomas.payen) - fermé.
+- 0003445: [Général] Permettre d'enregistrer le login à la connexion (thomas.payen) - fermé.
+- 0003337: [Général] Permettre d'afficher/masquer une ressource directement depuis la liste (thomas.payen) - fermé.
+- 0003336: [Mail] Ajouter l'information de provenance dans les headers du mail (thomas.payen) - fermé.
+- 0003332: [Mail] Permettre de personnaliser le nom des identitées (thomas.payen) - fermé.
+- 0003313: [Agenda] Ne plus utiliser l'url pour la gestion des freebusy (thomas.payen) - fermé.
+- 0003295: [Mail] Problème lors de l'affichage des pièces jointes (thomas.payen) - fermé.
+- 0003189: [Mon compte] Lister les boites mail dont on est gestionnaire et permettre de les partager (thomas.payen) - fermé.
+- 0003487: [Agenda] A la première connexion l'agenda n'est pas détecté par pacome (thomas.payen) - fermé.
+- 0003227: [Général] Création d'un utilisateur à la première connexion (thomas.payen) - fermé.
+- 0003286: [Carnet d'adresses] La recherche avancée ne fonctionne pas dans Roundcube (thomas.payen) - fermé.
+- 0003228: [Mail] Problème de stockage d'identité pour les noms long (thomas.payen) - fermé.
+- 0003186: [Mail] Sélectionner automatiquement la bonne identité lors de la rédaction d'un mail (thomas.payen) - fermé.
+- 0003160: [Agenda] Driver melanie2 pour la gestion des agendas et évènements (thomas.payen) - fermé.
+ - 0003190: [Agenda] Ajouter le support des pièces jointes dans les évènements (thomas.payen) - fermé.
+- 0003159: [Général] Module melanie2 pour la gestion M2 et l'affichage des boites partagées (thomas.payen) - fermé.
+- 0003158: [Messagerie instantanée] Module melanie2_jappix pour l'accès à la messagerie instantanée (thomas.payen) - fermé.
+- 0003157: [Carnet d'adresses] Module melanie2_contacts pour la gestion des contacts (thomas.payen) - fermé.
+- 0003240: [Général] Intégration du Doodle-like dans Roundcube (thomas.payen) - fermé.
+- 0003391: [Mon compte] Onglet mot de passe (laurent.beroujon) - fermé.
+- 0003392: [Mon compte] Onglet infos personnelles (laurent.beroujon) - fermé.
+- 0003393: [Mon compte] Onglet acces internet (laurent.beroujon) - fermé.
+- 0003394: [Mon compte] Onglet gestionnaire d'absence (laurent.beroujon) - fermé.
+- 0003398: [Mon compte] Onglet publication photo (laurent.beroujon) - fermé.
+- 0003491: [Général] Migration version 1.0.3 Roundcube (thomas.payen) - fermé.
+- 0003161: [Mon compte] Module melanie2_moncompte pour la gestion de Mon compte (thomas.payen) - fermé.
+- 0003496: [Carnet d'adresses] Impossible de remplacer l'intégralité d'un carnet d'adresses avec un import (thomas.payen) - fermé.
+- 0003344: [Mail] Les numéro de pages sont liés entre les boites (thomas.payen) - fermé.
+- 0003287: [Agenda] La recherche ne fonctionne pas avec des accents (thomas.payen) - fermé.
+- 0003187: [Mail] Erreur lorsque l'on charge la page de roundcube après être allé sur une boite partagée (thomas.payen) - fermé.
+- 0003498: [Carnet d'adresses] Problème d'update de la liste lors de la suppression de contacts (thomas.payen) - fermé.
+- 0003439: [Mail] Les adresses mail en .i2 ne sont pas acceptées (thomas.payen) - fermé.
+- 0003395: [Mon compte] Onglet gestion de listes (laurent.beroujon) - fermé.
+- 0003469: [Général] Bandeau pour Interface de connexion (thomas.payen) - fermé.
+- 0003256: [Général] Blocage temporaire en cas d'echec successifs d'authentification (thomas.payen) - fermé.
+- 0003420: [Général] Empêcher les comptes 'local.xxx' de se connecter (thomas.payen) - fermé.
+- 0003489: [Général] Installation de rcube-01 (thomas.payen) - fermé.
+- 0003503: [Carnet d'adresses] Impossible d'envoyer un mail à un contact n'ayant pas d'adresse mail "domicile" (thomas.payen) - fermé.
+- 0003508: [Général] L'autocomplétion LDAP n'est pas efficace (thomas.payen) - fermé.
+- 0003396: [Mon compte] Onglet stats synchro (thomas.payen) - fermé.
+- 0003520: [Général] Activer le dictionnaire local pour la correction d'orthographe (thomas.payen) - fermé.
+- 0003518: [Mail] Mail : Aligner certains aspects visuels sur le Courrielleur (thomas.payen) - fermé.
+- 0003486: [Général] Ajouter les liens vers AnaisWeb dans Roundcube (thomas.payen) - fermé.
+- 0003535: [Agenda] Mettre un filtre pour les agendas (thomas.payen) - fermé.
+- 0003570: [Mon compte] Problème dans la suppression d'un membre d'une liste (thomas.payen) - fermé.
+- 0003586: [Agenda] Problème avec les évènements récurrents + nombre d'occurrences (thomas.payen) - fermé.
+- 0003601: [Général] Ajouter le nom de l'application dans le titre de la page de login (thomas.payen) - fermé.
+- 0003585: [Agenda] Le statut "Annulé" d'un évènement est mappé en "Occupé" dans RC (thomas.payen) - fermé.
+- 0003597: [Agenda] Impossible de supprimer une catégorie (thomas.payen) - fermé.
+- 0003567: [Agenda] Problème lorsque l'on move un evenement journée entière (thomas.payen) - fermé.
+- 0003598: [Agenda] Le mode Catégorie en contour, calendrier en contenu se comporte bizarrement (thomas.payen) - fermé.
+- 0003282: [Agenda] Le titre de l'évenement est toujours écrit en blanc quelque soit la couleur du calendrier (thomas.payen) - fermé.
+- 0003545: [Mon compte] Dans la gestion des listes, les boutons sont mal affichés: ils empiètent sur la liste déroulante (thomas.payen) - fermé.
+- 0003255: [Général] Détecter le besoin de changer le mot de passe (thomas.payen) - fermé.
+- 0003609: [Agenda] Le bandeau privé n'est pas retiré une fois qu'on ouvre un évènement privé (thomas.payen) - fermé.
+- 0003607: [Agenda] Permettre de remplacer tous les évènements lors d'un import (thomas.payen) - fermé.
+- 0003612: [Agenda] Suppression d'une occurrence et des suivantes impossible (thomas.payen) - fermé.
+- 0003610: [Agenda] Impossible de modifier la date de fin d'un evt récurrent si celui-ci était paramétré avec un nombre d'occurrences (thomas.payen) - fermé.
+- 0003599: [Mon compte] Mes statistiques : pas de changement de mot de passe à la réinitialisation (thomas.payen) - fermé.
+- 0003631: [Agenda] Le droit afficher n'est pas correctement géré (thomas.payen) - fermé.
+- 0003633: [Agenda] L'export n'exporte pas les récurrences (thomas.payen) - fermé.
+- 0003634: [Agenda] Ajouter un bouton enregistrer comme nouveau (thomas.payen) - fermé.
+- 0003440: [Mail] Erreur après avoir déplacé un message depuis un dossier (balp) (thomas.payen) - fermé.
+- 0003616: [Mail] Encodage des noms de dossiers dans les règles Sieve (thomas.payen) - fermé.
+
+[84 bogues]

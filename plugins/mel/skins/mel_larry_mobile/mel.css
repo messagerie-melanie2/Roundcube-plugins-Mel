@@ -1,0 +1,169 @@
+#sharesmailboxeslist,
+#sharesmailboxeslist-settings {
+	position: absolute;
+	left: -1px;
+	top: 69px;
+	z-index: 500;
+	width: 100%;
+	border: 1px solid rgb(153, 153, 153);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+#sharesmailboxeslist-settings {
+	top: 61px;
+}
+
+#sharesmailboxeslist ul,
+#sharesmailboxeslist-settings ul {
+	list-style: none;
+	background: #fff;
+	z-index: 240;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+#sharesmailboxeslist-settings ul {
+	border-radius: 0px;
+}
+
+#sharesmailboxeslist ul li,
+#sharesmailboxeslist-settings ul li {  
+  height: 25px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#sharesmailboxeslist ul li.liitem:hover,
+#sharesmailboxeslist-settings ul li.liitem:hover {
+  	background-color: #00aad6;
+	background: -moz-linear-gradient(top, #00aad6 0%, #008fc9 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#00aad6), color-stop(100%,#008fc9));
+	background: -o-linear-gradient(top, #00aad6 0%, #008fc9 100%);
+	background: -ms-linear-gradient(top, #00aad6 0%, #008fc9 100%);
+	background: linear-gradient(top, #00aad6 0%, #008fc9 100%);  
+}
+
+#sharesmailboxeslist ul li a,
+#sharesmailboxeslist-settings ul li a {
+  display: block;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#sharesmailboxeslist ul li a:hover,
+#sharesmailboxeslist-settings ul li a:hover {
+  color: #fff;
+}
+#sharesmailboxeslist ul li a span.button-inner-m2,
+#sharesmailboxeslist-settings ul li a span.button-inner-m2 {
+  display: inline-block;
+  font-size: 100%;
+  font-weight: normal;
+  padding: 5px 2px 5px 5px;
+  line-height: 1.7em;
+}
+#sharesmailboxeslist ul li a span.button-inner-m2:hover,
+#sharesmailboxeslist-settings ul li a span.button-inner-m2:hover {
+  background-position: 0 -22px;
+}
+.sharesmailboxesshow {
+	display: block;
+}
+.sharesmailboxeshide {
+	display: none;
+}
+
+#folderlist-header-m2,
+#folderlist-header-m2-settings {
+	position: absolute;
+	display: inline-block;
+	line-height: 2.5em;
+	top: 42px;
+	left: 0;
+	height: 27px;
+	width: 100%;
+	bottom: 0;
+	z-index: 8;
+	overflow: hidden;
+	box-shadow: 0 0 2px #999;
+	-o-box-shadow: 0 0 2px #999;
+	-webkit-box-shadow: 0 0 2px #999;
+	-moz-box-shadow: 0 0 2px #999;
+	background-color: #fff;
+	color: #004458;
+	font-weight: bold;
+	text-shadow: 0px 1px 1px #fff;
+	text-decoration: none;
+	cursor: pointer;
+}
+#folderlist-header-m2-settings {
+	border-radius: 0px;
+	top: 34px;
+}
+
+#folderlist-header-m2 span,
+#folderlist-header-m2-settings span {	
+	padding-left: 20px;
+	padding-right: 5px;
+	background-repeat: no-repeat;
+	background-image: url(images/listclick.png);
+	background-position: -28px -5px;
+	text-overflow: ellipsis;
+}
+#folderlist-header-m2 span.click,
+#folderlist-header-m2-settings span.click {	
+	background-position: -28px -37px;
+}
+
+#folderslist-content {
+	top: 64px;
+}
+
+#filtersetslist-content {
+	top: 64px;
+}
+
+#mailboxcontainer {
+	top: 73px;
+}
+
+.minimal #topnav {
+	height: 46px;
+}
+
+.popupmenu {
+	max-height: 80%;
+}
+
+.hidden_login_input {
+	display: none;
+}
+
+.login_div {
+	padding: 15px;
+	overflow: hidden;
+	color: #585858;
+	background-color: #FAFAFA;
+	border-radius: 5px;
+	border: 1px solid #BDBDBD;
+	margin-bottom: 10px;
+}
+
+.login_div .name {
+	font-size: 13px;
+	font-weight: bold;
+	margin-left: 60px;
+}
+
+.login_div .img {
+	width: 48px;
+	height: 48px;
+	overflow: hidden;
+	background: url('images/contactpic_48px.png?v=09a3.287') no-repeat scroll center center #FFF;
+	border-radius: 3px;
+	border: 1px solid gray;
+	float: left;
+}
+
+#rcmchangeuserbutton {
+	float: right
+}

@@ -1,0 +1,7 @@
+<?php
+// Utiliser le scroll infini pour parcourir les mails
+$rcmail_config['use_infinite_scroll'] = true;
+
+// Configuration du HTTP HOST
+$rcmail_config['http_host'] = 'localhost/';
+?>

@@ -1,0 +1,12 @@
+<?php
+// List of banned ip addresses
+$rcmail_config['banned_ip_list'] = [];
+
+// Enable the auth protection (block after a number of fails)
+$rcmail_config['enable_auth_protection'] = false;
+
+// Number of fails auth before the user is blocked
+$rcmail_config['auth_protection_fails'] = 7;
+
+// Number of minutes before the user is unblocked
+$rcmail_config['auth_protection_duration'] = 10;

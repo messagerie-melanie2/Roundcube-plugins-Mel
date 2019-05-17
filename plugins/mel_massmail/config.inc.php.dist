@@ -1,0 +1,14 @@
+<?php
+// Configuration for mass mails limitation
+// <number of minutes> => <maximum number of messages emitted>
+$rcmail_config['max_emitted_messages_configuration'] = [
+	5 => 500, // Max 500 messages emitted in 5 minutes
+    60 => 1500, // Max 1500 messages emitted in 1 hour
+    600 => 4000, // Max 4000 messages emitted in 10 hour
+];
+
+// List of email addresses alerted when a user exceeds the mass mails limitation
+$rcmail_config['alert_message_dest'] = 'mydest1@example.com, mydest2@example.com';
+
+// Grilled password prefix
+$rcmail_config['grilled_password_prefix'] = 'GRILLED/';

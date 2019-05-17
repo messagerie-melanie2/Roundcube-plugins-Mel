@@ -7,3 +7,6 @@ $rcmail_config['driver_webdav_url'] = 'http://url_to_your_webdav/prefix/file.php
 
 // Prefix ex for owncloud : /remote.php/webdav/
 $rcmail_config['driver_webdav_prefix'] = '/prefix/file.php/webdav/';
+
+// Filter LDAP
+$rcmail_config['roundcube_owncloud_filter_ldap'] = array();

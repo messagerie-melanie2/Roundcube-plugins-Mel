@@ -1,0 +1,435 @@
+/* Taskbar button */
+#taskbar a.button-files span.button-inner {
+  background: url(images/buttons.png) 0 0 no-repeat;
+  height: 22px;
+}
+
+#taskbar a.button-files:hover span.button-inner,
+#taskbar a.button-files.button-selected span.button-inner {
+  background: url(images/buttons.png) 0 -26px no-repeat;
+  height: 22px;
+}
+
+/* Attachment toolbar button */
+.toolbar a.button.saveas {
+  background: url(images/buttons.png) center -277px no-repeat;
+}
+
+/* Files main interface */
+#filestoolbar {
+  position: absolute;
+  height: 40px;
+  left: 0;
+  top: -6px;
+  z-index: 10;
+}
+
+#filestoolbar a.button {
+  background-image: url(images/buttons.png);
+}
+
+#filestoolbar a.button.upload {
+  background-position: center -52px;
+}
+
+#filestoolbar a.button.get {
+  background-position: center -93px;
+}
+
+#filestoolbar a.button.open {
+  background-position: center -131px;
+}
+
+#filestoolbar a.button.delete {
+  background-image: url(../../../../skins/larry/images/buttons.png);
+}
+
+#filestoolbar a.button.edit {
+  background-position: center -173px;
+}
+
+#filestoolbar a.button.save {
+  background-position: center -213px;
+}
+
+#filestoolbar a.button.print {
+  background-image: url(../../../../skins/larry/images/buttons.png);
+  background-position: center -810px;
+  background-repeat: no-repeat;
+}
+
+#filestoolbar form {
+  display: inline;
+}
+
+#quicksearchbar #filesearchmenulink {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+}
+
+#folderlistbox,
+#fileinfobox {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 220px;
+  bottom: 0;
+}
+
+#filelistcontainer,
+#filecontent {
+  position: absolute;
+  top: 42px;
+  left: 232px;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+}
+
+#filelistbox {
+  overflow: auto;
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+}
+
+#filecontent {
+  overflow: hidden;
+}
+
+#filecontent iframe {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+}
+
+#files-folder-list ul li span.name {
+  background: url(../../../../skins/larry/images/listicons.png) 6px 3px no-repeat;
+  padding: 6px 8px 6px 32px;
+  line-height: 25px;
+  color: #376572;
+}
+
+#files-folder-list ul li.mailbox.collection span.name {
+  background: url(images/folders.png) 5px 0 no-repeat;
+}
+#files-folder-list ul li.mailbox.collection.audio span.name {
+  background-position: 5px -95px;
+}
+#files-folder-list ul li.mailbox.collection.video span.name {
+  background-position: 5px -143px;
+}
+#files-folder-list ul li.mailbox.collection.document span.name {
+  background-position: 5px 0;
+}
+#files-folder-list ul li.mailbox.collection.image span.name {
+  background-position: 5px -48px;
+}
+#files-folder-list ul li.mailbox.collection.audio.selected span.name {
+  background-position: 5px -119px;
+}
+#files-folder-list ul li.mailbox.collection.video.selected span.name {
+  background-position: 5px -167px;
+}
+#files-folder-list ul li.mailbox.collection.document.selected span.name {
+  background-position: 5px -24px;
+}
+#files-folder-list ul li.mailbox.collection.image.selected span.name {
+  background-position: 5px -72px;
+}
+
+#files-folder-list ul li span.branch {
+  display: inline-block;
+}
+
+#files-folder-list ul li:first-child {
+  border-radius: 4px 4px 0 0;
+  border-top: 0;
+}
+
+#files-folder-list ul li.virtual span {
+  color: #aaa;
+}
+
+.filelist thead tr th {
+  padding: 0;
+}
+
+.filelist tbody tr td {
+  padding: 2px 7px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.filelist tr > .size {
+  width: 80px;
+  text-align: right;
+}
+
+.filelist thead tr > .size {
+  text-align: left;
+}
+
+.filelist tr > .mtime {
+  width: 125px;
+}
+
+.filelist tr > .options {
+  width: 32px;
+  cursor: pointer;
+}
+
+.filelist thead tr th.filename,
+.filelist tbody tr td.filename {
+  width: 99%;
+  white-space: nowrap;
+}
+
+.filelist thead tr th.sortedASC a,
+.filelist thead tr th.sortedDESC a {
+  color: #004458;
+  text-decoration: underline;
+  background-image: url(../../../../skins/larry/images/listicons.png);
+  background-position: right -912px;
+  background-repeat: no-repeat;
+}
+
+.filelist thead tr th.sortedASC a {
+  background-position: right -944px;
+}
+
+.filelist img {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.filelist tr > .options a.listmenu,
+.filelist tr > .flag span.flagged,
+.filelist tr > .flag span.unflagged,
+.filelist tr > .flag span.unflagged:hover {
+  display: inline-block;
+  vertical-align: middle;
+  height: 18px;
+  width: 20px;
+  padding: 0;
+  background: url(../../../../skins/larry/images/listicons.png) -100px 0 no-repeat;
+}
+
+.filelist thead tr th.options {
+  padding: 0;
+  border-left: none;
+}
+
+.filelist thead tr th.options .listmenu {
+  background-position: 3px -970px;
+  cursor: pointer;
+  width: 24px;
+  height: 20px;
+  padding: 4px 4px 5px;
+  text-indent: -5000px;
+}
+
+.filelist thead tr th.options .listmenu:focus {
+  outline: none;
+  background-color: rgba(73,180,210,0.7);
+}
+
+.filelist thead tr th:first-child {
+  border-radius: 4px 0 0 0;
+}
+
+.filelist tbody tr td.options:hover span {
+  width: 26px;
+  height: 18px;
+  background: url(../../../../skins/larry/images/buttons.png) -5px -417px no-repeat;
+  display: block;
+}
+
+.filelist td.filename {
+  padding: 0 4px;
+}
+
+.filelist tbody td.filename span {
+  background: url(images/unknown.png) 0 0 no-repeat;
+  padding: 1px 0 3px 20px;
+  height: 16px;
+}
+
+/*
+.filelist tbody td.filename span input {
+  padding: 0 2px;
+  height: 18px;
+}
+*/
+
+#fileinfobox table {
+  table-layout: fixed;
+}
+
+#fileinfobox table td.label {
+  width: 60px;
+  font-weight: bold;
+  padding-right: 0;
+}
+
+#fileinfobox table td.data {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#fileinfobox table td.data.filename {
+  font-weight: bold;
+}
+
+#fileinfobox table tr:first-child td {
+  border-top: 0;
+}
+
+#filelistcontainer.droptarget.hover,
+#filelistcontainer.droptarget.active {
+	border-color: #019bc6;
+	box-shadow: 0 0 3px 2px rgba(71,135,177, 0.5);
+	-webkit-box-shadow: 0 0 3px 2px rgba(71,135,177, 0.5);
+}
+
+#filelistcontainer.droptarget.hover {
+	background-color: #d9ecf4;
+	box-shadow: 0 0 5px 2px rgba(71,135,177, 0.9);
+	-webkit-box-shadow: 0 0 5px 2px rgba(71,135,177, 0.9);
+}
+
+#filelistcontainer.droptarget.hover #filelist tbody td {
+	background-color: #d9ecf4;
+}
+
+
+/* plugin dialogs */
+
+#files-dialog,
+#files-compose-dialog,
+#files-file-edit-dialog,
+#files-folder-mount-dialog,
+#files-folder-auth-dialog,
+#files-folder-create-dialog,
+#files-folder-edit-dialog {
+  display: none;
+}
+
+#files-compose-dialog #folderlistbox {
+  right: auto;
+  width: 190px;
+  top: 45px;
+  bottom: 5px;
+  box-shadow: none;
+}
+
+#files-dialog #folderlistbox {
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+  width: auto;
+  box-shadow: none;
+}
+
+#files-dialog.saveas #folderlistbox {
+  top: 50px;
+}
+
+#files-compose-dialog #filelistcontainer {
+  position: absolute;
+  top: 45px;
+  bottom: 5px;
+  left: 200px;
+  right: 0;
+  box-shadow: none;
+}
+
+#files-compose-dialog #searchmenulink {
+  width: 15px;
+}
+
+#files-compose-dialog .searchbox input {
+  background-color: white;
+}
+
+#files-compose-dialog #quicksearchbar {
+  top: 10px;
+  right: 5px;
+}
+
+#files-compose-dialog #searchreset {
+  cursor: pointer;
+}
+
+a.filesaveall {
+  display: inline-block;
+  margin-top: .5em;
+  padding: 3px 5px 4px 5px;
+}
+
+#file-save-as {
+  height: 25px;
+  white-space: nowrap;
+}
+
+#file-save-as input {
+  width: 200px;
+}
+
+ul.toolbarmenu li span.saveas {
+  background: url(images/buttons.png) -5px -253px no-repeat;
+}
+
+table.propform td.source.selected {
+  background-color: #c7e3ef;
+}
+
+table.propform td.source div {
+  display: inline-block;
+  padding-left: 3px;
+  vertical-align: middle;
+}
+
+table.propform td.source .name {
+  font-weight: bold;
+}
+
+table.propform td.source .description {
+  font-size: 9px;
+  color: #666;
+}
+
+table.propform td.source img {
+  vertical-align: middle;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  margin: 3px;
+  background-image: -moz-linear-gradient(center top, #888, #333);
+  background-image: -webkit-linear-gradient(top, #888, #333);
+  background-image: -ms-linear-gradient(top, #888, #333);
+}
+
+table.propform td.source table.propform td {
+  border-bottom: 0;
+  padding: 2px 10px;
+  background-color: inherit;
+}
+
+.auth-options {
+  margin-top: 5px;
+}
+
+.auth-options .description {
+  color: #666;
+  display: block;
+  margin: 3px 0 0 25px;
+}
+
+.auth-options input,
+.auth-options label {
+  vertical-align: middle;
+}

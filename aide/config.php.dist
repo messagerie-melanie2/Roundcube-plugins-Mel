@@ -1,0 +1,34 @@
+<?php
+/**
+ * Fichier de configuration pour la partie page d'aide Mél
+ *
+ * Permet de lister les menus disponibles avec les urls et le style css associé
+ */
+
+$config = [];
+
+/**
+ * Configuration des pages d'aide
+ */
+$config['pages'] = [
+        'Example 1'        => [
+                'class' => 'example1',
+                'url' => 'http://example1.com/index.html',
+        ],
+        'Example 2'              => [
+                'class' => 'example2',
+                'url' => 'http://example2.com/index.html',
+        ],
+];
+
+$config['details'] = [
+        'Page 1' => [
+                'Sub page 1' => 'http://example1.com/subpage1.html',
+                'Sub page 2' => 'http://example1.com/subpage2.html',
+                'Sub page 3' => 'http://example1.com/subpage3.html',
+        ],
+        'Page 2' => [
+                'Sub page 1' => 'http://example2.com/subpage1.html',
+                'Sub page 2' => 'http://example2.com/subpage2.html',
+        ],
+];

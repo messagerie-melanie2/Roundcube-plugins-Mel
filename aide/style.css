@@ -1,0 +1,100 @@
+@CHARSET "UTF-8";
+html {
+  height: 100%;
+}
+body {
+  background-color: #F3F3F3; /* New design */
+  color: #464545;
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  font-family: "Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
+}
+a {
+  color: #00b7ff;
+}
+h1 {
+  color: #406540;
+  font: 'LeagueGothicRegular' bold;
+  font-size: 24px;
+}
+h2 {
+  font-size: 20px;
+  font-weight: bold;
+}
+h3 {
+  font-size: 16px;
+  font-weight: bold;
+}
+#prevcontent {
+  padding: 20px 40px 40px 40px;
+}
+#content {
+  background-color: #fff;
+  padding: 10px 10px;
+  box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+  min-width: 800px;
+  min-height: 400px;
+}
+#help-url-list {
+  border-bottom: 1px solid #E6E6E6;
+  margin: 40px;
+}
+#help-url-list ul li {
+	display: inline-block;
+	list-style: outside none none;
+	margin: 1.5em 0.5em 0px;
+	min-width: 0px;
+	max-width: 33%;
+	vertical-align: top;
+	width: 300px;
+}
+#help-url-list ul li > a {
+  transition: box-shadow 218ms ease 0s;
+	display: block;
+	padding: 1em;
+	text-align: center;
+	text-decoration: none;
+	color: #000;
+	background-color: #fff;
+	width: 250px;
+	height: 200px;
+}
+#help-url-list ul li > a:hover {
+  box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+}
+#help-url-list ul li a span.name {
+	font-size: 16px;
+	position: relative;
+	top: 15px;
+}
+#help-url-list ul li a span.image {
+	display: inline-block;
+  width: 200px;
+  height: 160px;
+  background-color: gray;
+  border: 1px solid #BDBDBD;
+}
+#copyright {
+  color: #808080;
+  font-size: 65%;
+  margin-left: 35px;
+  margin-top: 10px;
+}
+#help-details {
+	display: table;
+	padding: 0 40px ;
+	font-size: 95%;
+	width: 100%;
+}
+#help-details .details {
+	display: table-cell;
+	width: 25%;
+	padding: 10px;
+}
+#help-details .details .name {
+  font-weight: bold;
+}
+#help-details .details .list ul {
+  padding-left: 20px;
+}

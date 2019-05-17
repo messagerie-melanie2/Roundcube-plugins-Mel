@@ -1,0 +1,83 @@
+/**
+ * Roundcube webmail Melanie2_Larry styles for the Settings section
+ *
+ * Copyright (c) 2015, PNE Annuaire et Messagerie/MEDDE
+ * Extend Larry FLINT skin
+ *
+ * The contents are subject to the Creative Commons Attribution-ShareAlike
+ * License. It is allowed to copy, distribute, transmit and to adapt the work
+ * by keeping credits to the original autors in the README file.
+ * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
+ */
+
+body.iframe {
+    background: #fff !important;
+}
+
+.contentbox .boxtitle, 
+body.iframe .boxtitle {
+    background: #fafafa !important;
+    border-bottom: none;
+}
+
+#mainscreen.offset {
+    top: 118px;
+}
+
+#settings-sections,
+#settings-right {
+	border-top: 1px solid #d0d0d0;
+}
+
+#preferences-frame {
+    border-radius: 0;
+}
+
+#pluginbody, 
+#settings-right {
+    left: 201px;
+}
+
+#sections-table tbody td, 
+#sections-table .listitem span, 
+#settings-sections .listitem a, 
+#settings-sections .tablink a {
+    background-image: none !important;
+}
+
+#sections-table tbody td, 
+#sections-table .listitem span, 
+#settings-sections .listitem a, 
+#settings-sections .tablink a {
+    padding-left: 20px;
+}
+
+table.propform tr, 
+table.quota-info tr {
+    background-color: #fff;
+}
+
+#settings-tabs #settingstabresponses {
+	display: none;
+}
+
+#settings-sections div.disconnect {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 36px;
+}
+
+#settings-sections div.disconnect a {
+	display: block;
+	height: 36px;
+	line-height: 36px;
+	width: 100%;
+	text-align: center;
+	border-top: solid 1px #979797;
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: normal;
+	color: #f63267;
+}

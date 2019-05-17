@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2014, roundcube.net
+# This file is distributed under the same license as the Roundcube Webmail Help package.
+# 
+# Translators:
+# Ettore Atalan <atalanttore@googlemail.com>, 2014
+# Mads <mads@batmads.com>, 2016
+# Max Hellwig <max.hellwig@translating-energy.de>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Kolab Documentation\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-26 23:28+0100\n"
+"PO-Revision-Date: 2017-09-23 20:32+0000\n"
+"Last-Translator: Max Hellwig <max.hellwig@translating-energy.de>\n"
+"Language-Team: German (http://www.transifex.com/kolab/kolab-documentation/language/de/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../en_US/_plugins/calendar/sharing.rst:11
+msgid "Sharing Calendars"
+msgstr "Kalender teilen"
+
+#: ../../en_US/_plugins/calendar/sharing.rst:13
+msgid ""
+"For collaboration, sharing calendars is an important feature. In the "
+":ref:`overview <calendar-lists>`, we have already learned how calendars "
+"others share with you appear in the calendars list. The following now "
+"explains how to make personal calendars accessible to fellow users."
+msgstr "Kalender zu teilen ist ein wichtiger Teil der Zusammenarbeit. In der :ref:`Übersicht <calendar-lists>` haben wir schon gelernt, wie Kalender, die von anderen mit Ihnen teilen, in der Kalenderliste aussehen. Im Folgenden wird jetzt erklärt wie man persönliche Kalender für andere Benutzer zugänglich macht."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:19
+msgid "Share a Calendar with others"
+msgstr "Einen Kalender mit Anderen teilen"
+
+#: ../../en_US/_plugins/calendar/sharing.rst:21
+msgid ""
+"Sharing is controlled through the :ref:`Calendar Settings Dialog <calendar-"
+"edit-properties>`. Double-click a calendar in the list on the left and then "
+"select the *Sharing* tab at the top of the dialog box:"
+msgstr "Das Teilen wird über den :ref:`Kalendereinstellungen-Dialog <calendar-edit-properties>` gesteuert. Doppelklicken Sie einen Kalenders in der Liste links und wählen dann den *Teilen*-Reiter im oberen Teil des Dialogfensters aus:"
+
+#: ../../en_US/_plugins/calendar/sharing.rst:27
+msgid ""
+"The table displays who already has permission to see and modify the selected"
+" calendar. In order to share the calendar with a new user do"
+msgstr "Die Tabelle zeigt an, wer schon Erlaubnis hat, den ausgewählten Kalender zu sehen und verändern. Um den Kalender mit einem neuen Benutzer zu teilen,"
+
+#: ../../en_US/_plugins/calendar/sharing.rst:30
+msgid "Click the *Add entry* button (+) in the table footer"
+msgstr "klicken Sie auf die *Eintrag hinzufügen*-Schaltfläche (+) in der Fußzeile der Tabelle."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:31
+msgid ""
+"Enter the username or choose one from the autocompletion menu that appears "
+"when you start typing. Instead of a specific user, permissons can be granted"
+" for all users or guests."
+msgstr "Geben Sie den Benutzername ein oder wählen Sie einen aus dem Autovervollständigungs-Menü aus, das erscheint, wenn Sie zu tippen beginnen. Statt einem bestimmten Benutzer können Erlaubnisse auch allen Benutzern oder Gästen gewährt werden."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:33
+msgid "Select the access rights you want to grant for the user"
+msgstr "Wählen Sie die Zugangsberechtigungen, die Sie dem Benutzer gewähren wollen."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:34
+msgid "Click *Save* to add the permission"
+msgstr "Klicken Sie auf *Speichern*, um die Erlaubnis hinzuzufügen."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:36
+msgid ""
+"Double-click an entry to edit the permissions for a particular user or "
+"group."
+msgstr "Doppelklicken Sie einen Eintrag, um Erlaubnisse für einen bestimmten Benutzer oder eine bestimmte Gruppe zu bearbeiten."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:38
+msgid ""
+"For removing existing permissions, select the according entry in the list "
+"and then choose *Delete* from the menu behind the gear icon in the footer of"
+" the list."
+msgstr "Um bestehende Freigaben zu entfernen, wählen Sie den entsprechenden Eintrag in der Liste aus und wählen dann *Löschen* aus dem Menü hinter dem Zahnradicon in der Fußzeile der Liste aus."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:43
+msgid "Subscribe to Shared Calendars"
+msgstr "Geteilte Kalender abonnieren"
+
+#: ../../en_US/_plugins/calendar/sharing.rst:45
+msgid ""
+"Calendars shared by others are not showing up right away in the list within "
+"the calendar view. Switch to :ref:`Settings > Folders <settings-folders>` to"
+" see all resources you can access. There's a shortcut to this: click *Manage"
+" folders* in the options menu behind the gear icon located the footer of the"
+" calendars list."
+msgstr "Von anderen geteilte Kalender tauchen nicht sofort in der Liste innerhalb der Kalenderansicht auf. Wechseln Sie zu :ref:`Einstellungen > Ordner <settings-folders>`, um alle Hilfsmittel zu sehen, auf die Sie zugreifen können. Es gibt auch einen kürzeren Weg dorthin: Klicken Sie auf *Ordner verwalten* im Optionsmenü hinter dem Zahnradicon in der Fußzeile der Kalenderliste."
+
+#: ../../en_US/_plugins/calendar/sharing.rst:50
+msgid ""
+"In order to make a shared calendar appear in the calendars list, locate it "
+"in the folder manager and check the *Subscribed* mark in the list. Only "
+"subscribed calendars are visible in the calendar view."
+msgstr "Um einen geteilten Kalender in der Kalenderliste erscheinen zu lassen, suchen Sie ihn in der Ordnerverwaltung und versehen Sie das *Abonniert*-Kästchen in der Liste mit einem Häkchen. Nur abonnierte Kalender sind in der Kalenderansicht sichtbar."

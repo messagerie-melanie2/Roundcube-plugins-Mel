@@ -1,0 +1,7 @@
+{
+    "require": {
+        "sabre/dav": "~2.0.9",
+        "league/flysystem": "^1.0",
+        "league/flysystem-webdav": "^1.0"
+    }
+}

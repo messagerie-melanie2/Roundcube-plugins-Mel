@@ -1,0 +1,28 @@
+<?php
+// List for supported files type
+// Currently we support 'etherpad', 'ethercalc' and 'other' type of files 
+$rcmail_config['supported_file_types'] = array('etherpad', 'ethercalc');
+
+// Define the storage driver for links 
+// 'roundcube' storage data in user prefs
+$rcmail_config['roundpad_driver'] = 'roundcube';
+
+// Etherpad URL
+// Base URL when you create a file of type etherpad
+// nb: your have to put full url just before the pad name (probably finish by /p/)
+$rcmail_config['etherpad_url'] = '';
+
+// Ethercalc URL
+// Base URL when you create a file of type ethercalc
+// nb: your have to put full url just before the calc name
+$rcmail_config['ethercalc_url'] = '';
+
+// Associative file URL
+// Used to associate an url to a type of file
+// ex : array('https://framacalc.org' => 'ethercalc')
+$rcmail_config['associative_files_url'] = array();
+
+// Enable the detection of url click in mail or calendar
+// When an etherpad/ethercalc url is open, it's open the roundpad plugin
+// URL detection is based on 'associative_files_url' property
+$rcmail_config['roundpad_intercept_click'] = false;

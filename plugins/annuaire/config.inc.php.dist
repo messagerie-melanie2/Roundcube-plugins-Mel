@@ -1,0 +1,7 @@
+<?php
+// Source of annuaire
+$config['annuaire_source'] = 'source';
+
+// Base DB for LDAP Annuaire
+$config['annuaire_base_dn'] = 'dc=example,dc=com';
+

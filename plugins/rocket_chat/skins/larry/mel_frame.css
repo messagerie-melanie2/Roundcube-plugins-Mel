@@ -1,0 +1,26 @@
+﻿.minimal #mainscreen {
+    top: 52px;
+}
+
+#mainscreen {
+    position: absolute;
+    top: 71px;
+    left: 0px;
+    right: 2px;
+    bottom: 2px;
+}
+
+#mainscreen .iframebox_courrielleur {
+    position: relative;
+    top: 25px;
+    left: 25px;
+    right: 25px;
+    bottom: 25px;
+    background-color: #fff;
+    padding: 20px;
+}
+
+#mainscreen .iframebox_courrielleur div {
+	font-size: 14px;
+}
+

@@ -1,0 +1,16 @@
+﻿.minimal #mainscreen {
+    top: 52px;
+}
+
+#mainscreen {
+    position: absolute;
+    top: 71px;
+    left: 0px;
+    right: 2px;
+    bottom: 2px;
+}
+
+.iframebox {
+    top: 50px !important;
+    border-top: 1px solid #d0d0d0;
+}

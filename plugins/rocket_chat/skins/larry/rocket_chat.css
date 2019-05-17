@@ -1,0 +1,21 @@
+﻿#taskbar a.button-rocket_chat span.button-inner
+{
+  background: url(images/chat_button_white.png) 5px 1px no-repeat;
+  height: 18px;
+}
+
+#taskbar a.button-rocket_chat:hover span.button-inner,                                                                                                                      
+#taskbar a.button-rocket_chat.button-selected span.button-inner
+{
+  background: url(images/chat_button_blue.png) 5px 1px no-repeat;
+  height: 18px;
+}
+
+#page-switch .join-button, #page-switch .more-button {
+	margin-right: 20px;
+}
+
+#rocket_chat_frame {
+	width: 100%;
+	height: 100%;
+}

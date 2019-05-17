@@ -1,0 +1,36 @@
+<?php
+// Url of Rocket.Chat instance
+$rcmail_config['rocket_chat_url'] = 'https://rocket.chat/';
+
+// Url of Rocket.Chat API instance
+$rcmail_config['rocket_chat_url_api'] = 'http://rocket.chat.direct.url:3000/api/v1/';
+
+// Username of a rocket chat admin user for users and channels creations
+$rcmail_config['rocket_chat_admin_username'] = 'admin';
+
+// Password of the admin user
+$rcmail_config['rocket_chat_admin_password'] = 'password';
+
+// User agent
+$rcmail_config['curl_user_agent'] = 'Roundcube/Rocket Chat Plugin';
+
+// SSL Verifier Peer
+$rcmail_config['curl_ssl_verifierpeer'] = true;
+
+// Use MongoDB for LDAP users
+$rcmail_config['rocket_chat_use_mongodb'] = true;
+
+// MongoDB connexion URI
+$rcmail_config['rocket_chat_mongodb_uri'] = 'mongodb://roundcube:password@mongodb.url:27017/rocketchat';
+
+// LDAP idAttribute
+$rcmail_config['rocket_chat_idAttribute'] = 'uid';
+
+// Cross-Domain configuration
+$rcmail_config['rocket_chat_domain'] = 'rocket.chat';
+
+// Limit rocket chat usage to a users list (see below)
+$rcmail_config['rocket_chat_limited_use'] = false;
+
+// List of users for Rocket.Chat
+$rcmail_config['rocket_chat_users'] = [];

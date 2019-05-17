@@ -1,0 +1,9 @@
+﻿
+#page-switch .join-button, #page-switch .more-button {
+	margin-right: 20px;
+}
+
+#rocket_chat_frame {
+	width: 100%;
+	height: 100%;
+}

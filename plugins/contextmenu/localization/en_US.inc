@@ -1,0 +1,9 @@
+<?php
+/* Author: Philip Weir */
+
+$labels = array();
+$labels['collapseall'] = 'Collapse all folders';
+$labels['expandall'] = 'Expand all folders';
+$labels['assigngroup'] = 'Assign selected contacts to group...';
+
+$messages = array();

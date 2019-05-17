@@ -1,75 +1,73 @@
-Roundcube Mél Plugins and Skins
+Roundcube Mél Plugins et Skins
 ===============================
-
-[French version][french]
 
 INTRODUCTION
 ------------
-This repository contains a list of plugins skins that are necessary for Mél Webmail. 
-Some plugins are made specificaly for Mél Webmail, others are developped by the Mél team or by the community and modify (or not) by the Mél team
-This README gives the list of plugins and an explanation for each one. 
+Ce dépot contient une liste de plugins et de skins nécessaires au fonctionnement du webmail Mél.
+Certains de ces plugins sont spécifiquement développés pour le webmail Mél, d'autres ont été développés par l'équipe Mél ou par la communauté et modifié (ou non) par l'équipe Mél.
+Ce README donne la liste des plugins et skins ainsi que leurs descriptions.
 
 
 MÉL
 ---
-Please refer to [Roundcube Mél][roundcube-mel]
+Merci de consulter [Roundcube Mél][roundcube-mel]
 
 
 VERSION
 -------
-The actual version of Mél Webmail and plugins is 1.4.7  
+La version actuelle du webmail Mél et de ses plugins est 1.4.7
 
 
 INSTALLATION
 ------------
-For installing a plugin or a skin, you just have to paste it in the proper folder (plugins or skins). 
-Please be careful to check if the plugin or skin has dependances (please read the README). 
-Then you need to edit the config.inc.php file of your Roundcube installation and add the plugin name in the 'plugins' list.
+Pour installer un plugin ou une skin, il faut copier son dossier dans le répertoire plugins ou skins de Roundcube.
+Merci de bien faire attention si le plugin a des dépendance ou non (consulter le README du plugin).
+Vous pouvez ensuite éditer le fichier config.inc.php de votre Roundcube pour ajouter le nom du plugin dans le champ 'plugins'.
 
 
-PLUGINS AND SKINS LIST
-----------------------
+LISTE DES PLUGINS ET SKINS
+--------------------------
 
-#### Specifics Mél plugins
- - [mel][mel] : Core plugin for Mél Webmail (User creation, read identities from ldap, shared mailboxes support, ...)
- - [mel_acl][mel_acl] : ACL for mailboxes, calendars, contacts and tasks
- - [mel_contacts][mel_contacts] : Read contacts from database
- - [mel_courrielleur][mel_courrielleur] : Show parts of Mél interface in a Courrielleur (Webapp)
- - [mel_doubleauth][mel_doubleauth] : Support for double authentication (needs a Dynalogin server and web service)
- - [mel_labels_sync][mel_labels_sync] : Support for Thubderbird labels, sync between shared mailboxes
- - [mel_larry][mel_larry] : Plugin for the Mél skin
- - [mel_ldap_auth][mel_ldap_auth] : LDAP authentication for Mél
- - [mel_logs][mel_logs] : Logs in a dedicated file
- - [mel_massmail][mel_massmail] : Protection against mass emails emitted from the webmail
- - [mel_melanissimo][mel_melanissimo] : Support for Melanissimo web service (sending large attachments, needs Melanissimo)
- - [mel_mobile][mel_mobile] : Plugin for the Mél mobile skin
- - [mel_moncompte][mel_moncompte] : Add interfaces for the user to manage his data (personal information, absence manager, ...)
- - [mel_nextcloud][mel_nextcloud] : nextCloud app integration with authentication
- - [mel_shortcuts][mel_shortcuts] : Add keyboard shortcuts (similar to Thunderbird)
- - [mel_sondage][mel_sondage] : Pégase (poll) app integration with authentication
- - [mel_suggestion_box][mel_suggestion_box] : Add a suggestion box in settings
+#### Plugins spécifiquement développés pour Mél
+ - [mel][mel] : Plugin principal du webmail Mél (Création des utilisateurs, lecture des identités depuis l'annuaire, support des boites partagées, ...)
+ - [mel_acl][mel_acl] : Gestion des partages pour les boites email, calendriers, contacts et tâches
+ - [mel_contacts][mel_contacts] : Récupération des contacts depuis la base de données Mél
+ - [mel_courrielleur][mel_courrielleur] : Permet d'afficher des parties de Mél dans un Courrielleur (via des web apps)
+ - [mel_doubleauth][mel_doubleauth] : Ajoute le support de la double authentification (nécessite un serveur Dynalogin et son web service)
+ - [mel_labels_sync][mel_labels_sync] : Ajouter le support des étiquettes Thunderbird, permet une synchronisation pour les boites partagées
+ - [mel_larry][mel_larry] : Plugin pour la skin Mél
+ - [mel_ldap_auth][mel_ldap_auth] : Authentification LDAP pour Mél
+ - [mel_logs][mel_logs] : Centralise les logs dans un fichier dédié
+ - [mel_massmail][mel_massmail] : Protection contrer les envoies massifs de messages depuis le webmail Mél
+ - [mel_melanissimo][mel_melanissimo] : Ajoute le support du service web Mélanissimo (envoi de gros fichiers, nécessite un serveur Melanissimo)
+ - [mel_mobile][mel_mobile] : Plugin pour la skin mobile Mél
+ - [mel_moncompte][mel_moncompte] : Ajoute des pages pour gérer les données de l'utilisateur (informations personnelles, gestionnaire d'absence, CGU, ...)
+ - [mel_nextcloud][mel_nextcloud] : Intégration de nextCloud avec authentification
+ - [mel_shortcuts][mel_shortcuts] : Ajoute des raccourcis claviers similaires à Thunderbird
+ - [mel_sondage][mel_sondage] : Intégration de Pégase (sondage) avec authentification
+ - [mel_suggestion_box][mel_suggestion_box] : Ajoute une boite à idées dans les paramètres
 
-#### Mél plugins created by the team
- - [annuaire][annuaire] : Display the LDAP directory in Contacts app (and compose, moncompte, ...)
- - [jquery_mobile][jquery_mobile] : Add support for jQuery mobile lib (usefull for mobile skin)
- - [right_panel][right_panel] : Add a right panel that show next events, last messages (im, e-mail), favorites contacts
- - [rocket_chat][rocket_chat] : Rocket.Chat app intégration with authentication and web socket support
- - [roundpad][roundpad] : App to manage Etherpad and Ethercalc links
- - [roundrive][roundrive] : Webdav intégration
+#### Plugins développés par l'équipe Mél
+ - [annuaire][annuaire] : Affiche l'annuaire LDAP dans le menu Contacts (et nouveau message, mon compte, ...)
+ - [jquery_mobile][jquery_mobile] : Ajoute la librairie jQuery mobile nécessaire pour la skin mobile
+ - [right_panel][right_panel] : Ajoute un panneau de droite qui affiche les prochains événements de l'utilisateur, ses derniers messages (instantanés et mails) et ses contacts favoris
+ - [rocket_chat][rocket_chat] : Intégration de Rocket.Chat avec authentification et support de web socket
+ - [roundpad][roundpad] : Application permettant de gérer des liens Etherpad ou Ethercalc
+ - [roundrive][roundrive] : Intégration webdav pour se connecter à nextCloud (gestion des pièces jointes dans les messages)
 
-#### Plugin created by the community and modified by the team
- - [calendar][calendar] : a calendar
- - [libcalendaring][libcalendaring] : library for calendar and tasklist plugins
- - [tasklist][tasklist] : a tasklist
+#### Plugin développés par la communauté et modifié par l'équipe Mél
+ - [calendar][calendar] : Affichage et gestion des calendriers de l'utilisateur
+ - [libcalendaring][libcalendaring] : Librairie pour les plugins calendar et tasklist
+ - [tasklist][tasklist] : Affichage et gestion des listes de tâches de l'utilisateur
 
-#### Plugin created by the community and unchanged
- - [bounce][bounce] : Bounce (redirect) a message
- - [contextmenu][contextmenu] : Contextual menu for Mail and Contacts
- - [pdfviewer][pdfviewer] : PDF attachment reader
+#### Plugin développé par la communauté
+ - [bounce][bounce] : Redirection d'un message
+ - [contextmenu][contextmenu] : Menu contextuel dans les Mails et Contacts
+ - [pdfviewer][pdfviewer] : Lecteur PDF
  
 #### Mél skins
- - [mel_larry][mel_larry_skin] : Mél skin
- - [mel_larry_mobile][mel_larry_mobile_skin] : mobile Mél skin
+ - [mel_larry][mel_larry_skin] : Skin Mél
+ - [mel_larry_mobile][mel_larry_mobile_skin] : Skin Mél mobile
 
 
 LICENSE
@@ -102,21 +100,20 @@ For more details about licensing and the exceptions for skins and plugins
 see [roundcube.net/license][license]
 
 
-CONTRIBUTION TO ROUNDCUBE
--------------------------
-Want to help make Roundcube the best webmail solution ever?
-Roundcube is open source software. Our developers and contributors all
-are volunteers and we're always looking for new additions and resources.
-For more information visit [roundcube.net/contribute][contrib]
+CONTRIBUER A ROUNDCUBE
+----------------------
+Vous souhaitez contribuer à améliorer le webmail Roundcube ?
+Ce client est un logiciel open source. Les développeurs et contributeurs
+sont tous volontaires et recherchent toujours de nouvelles contributions.
+Pour plus d'information, voir [roundcube.net/contribute][contrib]
 
 
-CONTACT
--------
-For bug reports or feature requests please refer to the tracking system
-of Roundcube Mél project at [Github][githubissues]
+CONTACTER L'EQUIPE MÉL
+----------------------
+Pour rapporter des bugs ou des demandes de fonctionnalités pour le webmail Mél, 
+merci d'utiliser le système de suivi accessible à [Github][githubissues]
 
 
-[french]:				README_fr.md
 [gpl]:          		http://www.gnu.org/licenses/
 [license]:      		http://roundcube.net/license
 [contrib]:      		http://roundcube.net/contribute

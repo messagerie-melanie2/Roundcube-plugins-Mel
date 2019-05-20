@@ -11,9 +11,9 @@ require_once ('lib/all_addressbook.php');
 class mel_contacts extends rcube_plugin {
   public $task = 'mail|settings|addressbook|calendar|ariane|sondage';
 
-  // Melanie2
+  // Mél
   /**
-   * Utilisateur Melanie2
+   * Utilisateur Mél
    *
    * @var LibMelanie\Api\Melanie2\User
    */
@@ -49,7 +49,7 @@ class mel_contacts extends rcube_plugin {
   public function init() {
     $this->rc = rcube::get_instance();
 
-    // Instancie l'utilisateur Melanie2
+    // Instancie l'utilisateur Mél
     $this->user = new Melanie2\User();
     $this->user->uid = $this->rc->user->get_username();
 

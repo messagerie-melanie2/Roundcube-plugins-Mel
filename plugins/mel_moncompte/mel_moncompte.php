@@ -1,7 +1,9 @@
 <?php
 /**
- * Plugin Melanie2 Moncompte
+ * Plugin Mél Moncompte
+ * 
  * plugin mel_moncompte pour roundcube
+ * 
  * Permet de gérer ses informations de compte Mélanie2
  * D'afficher et partager ses ressources Mélanie2 (boites mail, agendas, contacts, tâches)
  * D'afficher les statistiques de synchronisation
@@ -17,7 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// Chargement de la librairie Melanie2
+// Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 
 // Chargement des classes externes

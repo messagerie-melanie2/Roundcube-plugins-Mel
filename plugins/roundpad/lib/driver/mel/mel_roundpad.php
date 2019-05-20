@@ -18,10 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// Chargement de la librairie Melanie2
+// Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 
-class melanie2_roundpad extends roundpad_driver
+class mel_roundpad extends roundpad_driver
 {
   /**
    * Scope

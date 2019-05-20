@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Melanie2 Courrielleur
+ * Plugin Mél Courrielleur
 *
 * Skin courrielleur pour la task settings
 *

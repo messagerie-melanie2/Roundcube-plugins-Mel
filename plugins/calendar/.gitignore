@@ -1,8 +1,0 @@
-*.swp
-*.bak
-*.old
-*~
-skins/*
-!skins/default
-!skins/larry
-!skins/mce_larry

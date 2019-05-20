@@ -238,7 +238,7 @@ if (window.rcmail) {
 			$('body').addClass('right_panel_minified');
 		}
 		// Gestion des classes iframe
-		if ($('#mainscreen').hasClass('rocket_chat-box') || $('#mainscreen').hasClass('melanie2_sondage-box') || $('#mainscreen').hasClass('melanie2_owncloud-box')) {
+		if ($('#mainscreen').hasClass('rocket_chat-box') || $('#mainscreen').hasClass('mel_sondage-box') || $('#mainscreen').hasClass('melanie2_owncloud-box')) {
 			$('#right_panel').addClass('iframecss');
 		}
 		rcmail.right_panel_today_date();

@@ -23,7 +23,7 @@ class bounce extends rcube_plugin
 
     if ($rcmail->task == 'mail' && ($rcmail->action == '' || $rcmail->action == 'show')) {
       if ($rcmail->config->get('ismobile', false)) {
-        $skin_path = 'skins/melanie2_larry_mobile';
+        $skin_path = 'skins/mel_larry_mobile';
       }
       else {
         $skin_path = $this->local_skin_path();
@@ -211,7 +211,7 @@ class bounce extends rcube_plugin
     $rcmail->output->add_gui_object('bounceform', 'bounceform');
 
     if ($rcmail->config->get('ismobile', false)) {
-      $this->include_stylesheet('skins/melanie2_larry_mobile/bounce.css');
+      $this->include_stylesheet('skins/mel_larry_mobile/bounce.css');
     }
     else {
       $this->include_stylesheet($this->local_skin_path() . '/bounce.css');

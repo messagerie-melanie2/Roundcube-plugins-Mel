@@ -220,4 +220,12 @@ class mel_ldap_auth extends rcube_plugin {
     }
     return $args;
   }
+  
+  /**
+   * Défini si on est dans une instance interne ou extene de l'application
+   * Permet la selection de la bonne url
+   */
+  private function is_internal() {
+    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
+  }
 }

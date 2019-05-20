@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Melanie2 Larry
+ * Plugin Mel Larry
  *
- * Apply plugins css for melanie2_larry skin
+ * Apply plugins css for mel_larry skin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2
@@ -101,7 +101,7 @@ class mel_larry extends rcube_plugin
     $skin = $rc->config->get('skin');
     // Add localization
     $this->add_texts('localization/', true);
-    // Check if the user use melanie2_larry skin
+    // Check if the user use mel_larry skin
     if ($skin == self::SKIN_NAME && !$rc->output->get_env('mobile')) {
       // App css
       $this->include_stylesheet(self::CSS_FOLDER.self::APP_CSS);

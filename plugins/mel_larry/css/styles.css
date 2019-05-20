@@ -436,9 +436,9 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/agenda.png?v=e784.5000) center 15px no-repeat;
 }
 
-#taskbar a.button-melanie2_sondage span.button-inner,
-#taskbar a.button-melanie2_sondage:hover span.button-inner,
-#taskbar a.button-selected.button-melanie2_sondage span.button-inner {
+#taskbar a.button-mel_sondage span.button-inner,
+#taskbar a.button-mel_sondage:hover span.button-inner,
+#taskbar a.button-selected.button-mel_sondage span.button-inner {
 	background: url(../images/taskbar/sondage.png?v=e784.5000) center 15px no-repeat;
 }
 
@@ -448,9 +448,9 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/discussion.png?v=e784.5000) center 15px no-repeat;
 }
 
-#taskbar a.button-melanie2_owncloud span.button-inner,
-#taskbar a.button-melanie2_owncloud:hover span.button-inner,
-#taskbar a.button-selected.button-melanie2_owncloud span.button-inner {
+#taskbar a.button-mel_owncloud span.button-inner,
+#taskbar a.button-mel_owncloud:hover span.button-inner,
+#taskbar a.button-selected.button-mel_owncloud span.button-inner {
 	background: url(../images/taskbar/stockage.png?v=e784.5000) center 15px no-repeat;
 }
 
@@ -553,9 +553,9 @@ body.extwin #taskbar {
 
 #sectionslist .boxtitle,
 #identitieslist .boxtitle,
-#melanie2_moncompte_options_listbox .boxtitle,
-#melanie2_resources_elements_listbox .boxtitle,
-#melanie2_mobiles_list_listbox .boxtitle,
+#mel_moncompte_options_listbox .boxtitle,
+#mel_resources_elements_listbox .boxtitle,
+#mel_mobiles_list_listbox .boxtitle,
 #filtersetslistbox .boxtitle,
 #addresslist .boxtitle {
     background: #fff;
@@ -618,23 +618,23 @@ body.extwin #taskbar {
 }
 
 #sectionslist.listbox,
-#melanie2_moncompte_options_listbox.listbox,
-#melanie2_resources_elements_listbox.listbox,
-#melanie2_mobiles_list_listbox.listbox,
+#mel_moncompte_options_listbox.listbox,
+#mel_resources_elements_listbox.listbox,
+#mel_mobiles_list_listbox.listbox,
 #filtersetslistbox.listbox,
 #identitieslist.listbox,
 #addresslist.listbox,
 #sectionslist.listbox .boxfooter,
-#melanie2_moncompte_options_listbox.listbox .boxfooter,
-#melanie2_resources_elements_listbox.listbox .boxfooter,
-#melanie2_mobiles_list_listbox.listbox .boxfooter,
+#mel_moncompte_options_listbox.listbox .boxfooter,
+#mel_resources_elements_listbox.listbox .boxfooter,
+#mel_mobiles_list_listbox.listbox .boxfooter,
 #filtersetslistbox.listbox .boxfooter,
 #identitieslist.listbox .boxfooter,
 #addresslist.listbox .boxfooter,
 #sectionslist.listbox .boxfooter .listbutton,
-#melanie2_moncompte_options_listbox.listbox .boxfooter .listbutton,
-#melanie2_resources_elements_listbox.listbox .boxfooter .listbutton,
-#melanie2_mobiles_list_listbox.listbox .boxfooter .listbutton,
+#mel_moncompte_options_listbox.listbox .boxfooter .listbutton,
+#mel_resources_elements_listbox.listbox .boxfooter .listbutton,
+#mel_mobiles_list_listbox.listbox .boxfooter .listbutton,
 #filtersetslistbox.listbox .boxfooter .listbutton,
 #identitieslist.listbox .boxfooter .listbutton,
 #addresslist.listbox .boxfooter .listbutton {
@@ -686,8 +686,8 @@ ul.treelist.iconized ul li a {
 }
 
 #sectionslist.listbox table.listing,
-#melanie2_moncompte_options_listbox.listbox table.listing,
-#melanie2_resources_elements_listbox.listbox table.listing,
+#mel_moncompte_options_listbox.listbox table.listing,
+#mel_resources_elements_listbox.listbox table.listing,
 #filtersetslistbox.listbox table.listing,
 #filterslistbox.listbox table.listing,
 #identitieslist.listbox table.listing,
@@ -699,7 +699,7 @@ ul.treelist.iconized ul li a {
 	padding-top: 5px;
 }
 
-#melanie2_mobiles_list_listbox.listbox table.listing {
+#mel_mobiles_list_listbox.listbox table.listing {
 	background-color: #fff;
 	margin-left: 0;
 	width: 100%;
@@ -711,9 +711,9 @@ ul.treelist.iconized ul li a {
 }
 
 #sectionslist.listbox table.listing tbody tr td.section,
-#melanie2_moncompte_options_listbox.listbox table.listing tbody tr td.name,
-#melanie2_resources_elements_listbox.listbox table.listing tbody tr td.name,
-#melanie2_mobiles_list_listbox.listbox table.listing tbody tr td.name,
+#mel_moncompte_options_listbox.listbox table.listing tbody tr td.name,
+#mel_resources_elements_listbox.listbox table.listing tbody tr td.name,
+#mel_mobiles_list_listbox.listbox table.listing tbody tr td.name,
 #filtersetslistbox.listbox table.listing tbody tr td.name,
 #filterslistbox.listbox table.listing tbody tr td.name,
 #identitieslist.listbox table.listing tbody tr td.name,
@@ -727,7 +727,7 @@ ul.treelist.iconized ul li a {
 	color: #2d2d2d;
 }
 
-#melanie2_mobiles_list_listbox.listbox table.listing tbody tr td {
+#mel_mobiles_list_listbox.listbox table.listing tbody tr td {
 	padding: 1px 5px;
 	border-bottom: 1px solid #d0d0d0
 }
@@ -737,9 +737,9 @@ ul.treelist.iconized ul li a {
 }
 
 #sectionslist.listbox table.listing tbody tr.selected td.section,
-#melanie2_moncompte_options_listbox.listbox table.listing tbody tr.selected td.name,
-#melanie2_resources_elements_listbox.listbox table.listing tbody tr.selected td.name,
-#melanie2_mobiles_list_listbox.listbox table.listing tbody tr.selected td.name,
+#mel_moncompte_options_listbox.listbox table.listing tbody tr.selected td.name,
+#mel_resources_elements_listbox.listbox table.listing tbody tr.selected td.name,
+#mel_mobiles_list_listbox.listbox table.listing tbody tr.selected td.name,
 #filtersetslistbox.listbox table.listing tbody tr.selected td.name,
 #filterslistbox.listbox table.listing tbody tr.selected td.name,
 #identitieslist.listbox table.listing tbody tr.selected td.name,
@@ -753,7 +753,7 @@ ul.treelist.iconized ul li a {
 	background-color: #fafafa;
 }
 
-#melanie2_resources_elements_listbox.listbox table.listing tbody tr.selected td.subscribed {
+#mel_resources_elements_listbox.listbox table.listing tbody tr.selected td.subscribed {
 	background-color: #e0e0e0;
 }
 

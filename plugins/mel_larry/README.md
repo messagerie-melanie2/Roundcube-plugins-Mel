@@ -1,20 +1,20 @@
-Roundcube Webmail plugin "Melanie2 Larry"
-=======================================
+Roundcube Webmail plugin "Mél Larry"
+====================================
 
-Melanie2 Larry plugin by PNE Annuaire/Messagerie MEDDE
+Mél Larry plugin by PNE Annuaire/Messagerie MEDDE
 
 
 PRESENTATION
 ------------
 
-Load the css for the Melanie2 Larry skin
+Load the css for the Mél Larry skin
 
 
 INSTALL
 -------
 
-Rename the folder to "melanie2_larry" and move it in plugins/ folder
-You also need the melanie2_larry skin
+Rename the folder to "mel_larry" and move it in plugins/ folder
+You also need the mel_larry skin
 
 
 LICENSE

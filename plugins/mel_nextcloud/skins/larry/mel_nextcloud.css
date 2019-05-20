@@ -1,11 +1,11 @@
-﻿#taskbar a.button-melanie2_nextcloud span.button-inner
+﻿#taskbar a.button-mel_nextcloud span.button-inner
 {
   background: url(images/nextcloud_button_white.png) 3px 0px no-repeat;
   height: 18px;
 }
 
-#taskbar a.button-melanie2_nextcloud:hover span.button-inner,                                                                                                                      
-#taskbar a.button-melanie2_nextcloud.button-selected span.button-inner
+#taskbar a.button-mel_nextcloud:hover span.button-inner,                                                                                                                      
+#taskbar a.button-mel_nextcloud.button-selected span.button-inner
 {
   background: url(images/nextcloud_button_blue.png) 3px 0px no-repeat;
   height: 18px;

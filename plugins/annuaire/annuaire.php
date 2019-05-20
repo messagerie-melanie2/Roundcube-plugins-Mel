@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// Chargement de la librairie Melanie2
+// Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 
 use LibMelanie\Ldap\Ldap;
@@ -111,7 +111,7 @@ class annuaire extends rcube_plugin
               ),
           ));
         }
-        else if ($this->rc->task == 'settings' && $this->rc->action == 'plugin.melanie2_moncompte') {
+        else if ($this->rc->task == 'settings' && $this->rc->action == 'plugin.mel_moncompte') {
           $fid = rcube_utils::get_input_value('_fid', rcube_utils::INPUT_GPC);
           if ($fid == 'rcmgestionlists') {
             // Chargement de la conf

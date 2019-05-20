@@ -152,7 +152,7 @@ window.rcmail
 		        	$('#annuaire-list li.added').removeClass('added');
 			    });
 			}
-			else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.melanie2_moncompte') {
+			else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.mel_moncompte') {
 				$('#listes_ajouter').click(function(e) {
 					var dn_list = $('#liste_listes option:selected').val();
 					if (dn_list) {
@@ -162,7 +162,7 @@ window.rcmail
 			        	}
 					}
 					else {
-					    alert(rcmail.gettext('melanie2_moncompte.listes_noselect'));
+					    alert(rcmail.gettext('mel_moncompte.listes_noselect'));
 					}
 			    }).css('cursor', 'pointer');
 				$('#list-contacts .close').click(function(e){
@@ -220,12 +220,12 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 	    
 	    $('#rcmrow' + node.id).addClass('added');
 	}
-	else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.melanie2_moncompte') {
+	else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.mel_moncompte') {
 		if ($('#idLboxMembers').length && node.email) {
 			if (isValidEmail(node.email)) {
 				var dn_list = $('#liste_listes option:selected').val();
 			    var lock = rcmail.display_message(rcmail
-			        .gettext('melanie2_moncompte.wait'), 'loading');
+			        .gettext('mel_moncompte.wait'), 'loading');
 				var res = rcmail.http_post('plugin.listes_add_externe', {
 				  _dn_list : dn_list,
 				  _new_smtp : node.email,
@@ -234,7 +234,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 				$('#rcmrow' + node.id).addClass('added');
 			}
 			else {
-			    alert(rcmail.gettext('melanie2_moncompte.listes_addr_nok')
+			    alert(rcmail.gettext('mel_moncompte.listes_addr_nok')
 			    		.replace('%%newSMTP%%', node.email));
 			}
 		}

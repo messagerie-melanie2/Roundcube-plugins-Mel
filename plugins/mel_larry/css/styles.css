@@ -887,7 +887,7 @@ table.records-table {
 
 .records-table tr.selected td,
 .records-table tr.thread.expanded.selected td {
-	background: #dee9f6 !important;
+	background-color: #dee9f6 !important;
 	color: #333 !important;
 	border-left: none;
 }

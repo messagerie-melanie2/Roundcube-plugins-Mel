@@ -62,13 +62,14 @@ class mel_nextcloud extends rcube_plugin {
 
     // ajout de la tache
     $this->register_task('stockage');
+    $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
     $this->add_button(array(
             'command' => 'stockage',
             'class' => 'button-mel_nextcloud',
             'classsel' => 'button-mel_nextcloud button-selected',
             'innerclass' => 'button-inner',
             'label' => 'mel_nextcloud.task'
-    ), 'taskbar');
+    ), $taskbar);
 
     // Si tache = stockage, on charge l'onglet
     if ($rcmail->task == 'stockage') {

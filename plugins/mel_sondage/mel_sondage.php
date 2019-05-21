@@ -56,13 +56,14 @@ class mel_sondage extends rcube_plugin
                 'label'	=> 'mel_sondage.task',
             ), 'taskbar_mobile');
         } else {
+            $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
             $this->add_button(array(
                 'command' => 'sondage',
                 'class'	=> 'button-mel_sondage',
                 'classsel' => 'button-mel_sondage button-selected',
                 'innerclass' => 'button-inner',
                 'label'	=> 'mel_sondage.task',
-            ), 'taskbar');
+            ), $taskbar);
         }
 
         // Si tache = sondage, on charge l'onglet

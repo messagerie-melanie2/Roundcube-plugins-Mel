@@ -635,10 +635,9 @@ td span.adr:hover .rcmaddcontact {
 	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
 	border: none;
 	border: none;
-	width: 18px;
-	height: 21px;
-	margin-left: -18px;
-	border-radius: 0;
+	width: 28px;
+	margin-left: 4px;
+	border-radius: 4px;
 }
 
 .toolbar a.button.extwin {

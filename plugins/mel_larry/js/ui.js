@@ -565,11 +565,11 @@ function rcube_mail_ui()
   function adjust_compose_editfields(elem)
   {
     if (elem.nodeName == 'TEXTAREA') {
-      var $elem = $(elem), line_height = 14,  // hard-coded because some browsers only provide the outer height in elem.clientHeight
+      var $elem = $(elem), line_height = 20,  // hard-coded because some browsers only provide the outer height in elem.clientHeight
         content_height = elem.scrollHeight,
         rows = elem.value.length > 80 && content_height > line_height*1.5 ? 2 : 1;
       $elem.css('height', (line_height*rows) + 'px');
-      layout_composeview();
+	  layout_composeview();
     }
   }
 
@@ -600,6 +600,9 @@ function rcube_mail_ui()
     var abooks = $('#directorylist');
     if (abooks.length)
       $('#compose-contacts .scroller').css('top', abooks.position().top + abooks.outerHeight());
+    
+    // PAMELA
+    $('#composeview-bottom').css({ top: ($('#composeheaders').height() + 5) + 'px' });
   }
 
 
@@ -1143,9 +1146,6 @@ function rcube_mail_ui()
     layout_composeview();
     $('input,textarea', row).focus();
     
-    // PAMELA
-    $('#composeview-bottom').css({ top: ($('#composeheaders').height() + 5) + 'px' });
-
     return false;
   }
 
@@ -1162,9 +1162,6 @@ function rcube_mail_ui()
     $('#compose-' + which).hide();
     $('#' + which + '-link').show();
     layout_composeview();
-    
-    // PAMELA
-    $('#composeview-bottom').css({ top: ($('#composeheaders').height() + 5) + 'px' });
     
     return false;
   }

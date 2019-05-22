@@ -267,7 +267,7 @@ class mel_driver extends calendar_driver {
         $calendar = array('id' => $this->_to_RC_id($cal->id),
             'name' => $cal->name,
             'listname' => $cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name,
-            'editname' => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mce_larry') : ($cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name),
+            'editname' => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_larry') : ($cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name),
             'color' => $color,
             'showalarms' => $alarm ? 1 : 0,
             'default' => $default_calendar->id == $cal->id,

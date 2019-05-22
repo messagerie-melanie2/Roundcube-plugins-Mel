@@ -175,7 +175,7 @@ class mel_contacts extends rcube_plugin {
         // register this address source
         $source = array(
             'id' => $id, 
-            'name' => $abook->id == $this->user->uid ? $this->rc->gettext('personaladdressbook', 'mce_larry') : ($abook->owner == $this->user->uid ? $abook->name : "(" . $abook->owner . ") " . $abook->name), 
+            'name' => $abook->id == $this->user->uid ? $this->rc->gettext('personaladdressbook', 'mel_larry') : ($abook->owner == $this->user->uid ? $abook->name : "(" . $abook->owner . ") " . $abook->name), 
             'realname' => $abook->name, 
             'readonly' => ! $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
             'writeable' => $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
@@ -199,7 +199,7 @@ class mel_contacts extends rcube_plugin {
       // Générer la source All
       $all_source = [ 'all' => [
               'id' => 'all',
-              'name' => $this->rc->gettext('allcontacts', 'mce_larry'),
+              'name' => $this->rc->gettext('allcontacts', 'mel_larry'),
               'readonly' => true,
               'writeable' => false,
               'groups' => false,

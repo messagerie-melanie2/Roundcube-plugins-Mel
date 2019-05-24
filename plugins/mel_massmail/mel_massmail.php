@@ -15,7 +15,7 @@
  */
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
-class mel_ldap_auth extends rcube_plugin {
+class mel_massmail extends rcube_plugin {
   /**
    *
    * @var string

@@ -1,0 +1,10 @@
+{
+    "name": "messagerie-melanie2/calendar_feeds",
+    "description": "Calendar feeds for Roundcube",
+    "license": "GPL-3.0+",
+    "require": {
+        "php": ">=5.3.7",
+        "sabre/vobject": "3.5.1"
+    },
+    "minimum-stability": "stable"
+}

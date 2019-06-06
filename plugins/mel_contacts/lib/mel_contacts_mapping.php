@@ -171,7 +171,12 @@ class mel_contacts_mapping {
       // Name
       if (! isset($contact['name'])) {
         if ($_contact->type == Melanie2\Contact::TYPE_LIST) {
-          $contact['name'] = isset($contact['surname']) ? $contact['surname'] : $contact['firstname'];
+          if ($_contact->uid == 'favorites') {
+            $contact['name'] = rcmail::get_instance()->gettext('favorites', 'mel_contacts');
+          }
+          else {
+            $contact['name'] = isset($contact['surname']) ? $contact['surname'] : $contact['firstname'];
+          }
         }
         else {
           $contact['name'] = $contact['firstname'] . (isset($contact['surname']) ? ' ' . $contact['surname'] : '');

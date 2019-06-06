@@ -100,7 +100,9 @@ class mel_mobile extends rcube_plugin {
     $this->add_button(array('task' => 'switch_skin','data-ajax' => 'false', 'command' => 'switch_desktop','class' => 'button-switch_desktop ui-link ui-btn ui-corner-all ui-icon-desktop ui-btn-icon-left','innerclass' => 'button-inner','label' => 'mel_mobile.desktop'), 'taskbar_mobile');
     // Add the switch to mobile skin button
     if ($this->rc->config->get('skin') == 'mel_larry') {
-      $this->api->add_content(html::span('tablink', $this->rc->output->button(array('task' => 'switch_skin','command' => 'switch_mobile','class' => 'about-link','classsel' => 'about-link button-selected','innerclass' => 'button-inner','label' => 'mel_mobile.mobile'))), 'tabs');
+      if ($this->rc->task == 'settings' && $this->rc->output->type == 'html') {
+        $this->api->add_content(html::span('tablink', $this->rc->output->button(array('task' => 'switch_skin','command' => 'switch_mobile','class' => 'about-link','classsel' => 'about-link button-selected','innerclass' => 'button-inner','label' => 'mel_mobile.mobile'))), 'tabs');
+      }
     }
     else {
       $this->add_button(array('task' => 'switch_skin','command' => 'switch_mobile','class' => 'about-link','classsel' => 'about-link button-selected','innerclass' => 'button-inner','label' => 'mel_mobile.mobile'), 'topline-left');

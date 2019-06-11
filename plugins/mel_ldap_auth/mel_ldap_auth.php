@@ -58,10 +58,10 @@ class mel_ldap_auth extends rcube_plugin {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::authenticate()");
     // MANTIS 3193: Mécanisme pour permettre l'authentification transparente depuis le Courrielleur
-    if (!isset($args['user']) || empty($args['user'])) {
+    if (!isset($args['user']) || strlen($args['user']) === 0) {
       $args['user'] = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
     }
-    if (!isset($args['pass']) || empty($args['pass'])) {
+    if (!isset($args['pass']) || strlen($args['pass']) === 0) {
       $args['pass'] = rcube_utils::get_input_value('_pass', rcube_utils::INPUT_GPC, true, $this->rc->config->get('password_charset', 'ISO-8859-1'));
     }
 
@@ -84,7 +84,7 @@ class mel_ldap_auth extends rcube_plugin {
       $args['cookiecheck'] = false;
     }
 
-    if (empty($user) || empty($pass)) {
+    if (strlen($user) === 0 || strlen($pass) === 0) {
       // Suppression du cookie
       unset($_COOKIE['roundcube_login']);
       setcookie('roundcube_login', null, -1);

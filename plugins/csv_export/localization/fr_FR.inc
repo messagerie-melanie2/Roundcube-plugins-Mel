@@ -75,7 +75,9 @@ $labels["Assistant"] = "Assistant";
 $labels["Assistant's Phone"] = "Téléphone assistant";
 $labels["Spouse"] = "Epouse";
 
+// PAMELA - Categories
 $labels["Categories"] = "Catégories";
+$labels["Groups"] = "Groupes";
 $labels["Notes"] = "Notes";
 
 $labels["Home Web Page"] = "Page web domicile";

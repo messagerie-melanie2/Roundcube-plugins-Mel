@@ -19,6 +19,8 @@ $labels['typettytdd'] = 'TTY/TDD';
 $labels['typecallback'] = 'Rappel';
 $labels['settings'] = 'Paramètres';
 
+$labels['categories'] = 'Catégories';
+
 $labels['bookcreate'] = 'Créer un carnet d\'adresse';
 $labels['bookedit'] = 'Modifier le carnet d\'adresse';
 $labels['bookdelete'] = 'Supprimer le carnet d\'adresse';

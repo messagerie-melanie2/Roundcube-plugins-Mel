@@ -68,6 +68,7 @@ class mel_addressbook extends rcube_addressbook
             'nickname'     => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'limit' => 1, 'label' => $this->rc->gettext('nickname'), 'category' => 'main'),
             'jobtitle'     => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'limit' => 1, 'label' => $this->rc->gettext('jobtitle'), 'category' => 'main'),
             'organization' => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'limit' => 1, 'label' => $this->rc->gettext('organization'), 'category' => 'main'),
+            'category'   => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'limit' => 1, 'label' => $this->rc->gettext('categories', 'mel_contacts'), 'category' => 'personal'),
             'phone'        => array('type' => 'text', 'size' => 40, 'maxlength' => 20, 'label' => $this->rc->gettext('phone'), 'subtypes' => array('home','work','mobile','fax','pager'), 'category' => 'main', 'limit' => 5),
             'address'      => array('type' => 'composite', 'label' => $this->rc->gettext('address'), 'subtypes' => array('home','work'), 'childs' => array(
                 'street'     => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'label' => $this->rc->gettext('street'), 'category' => 'main'),

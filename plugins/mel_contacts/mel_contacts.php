@@ -67,7 +67,7 @@ class mel_contacts extends rcube_plugin {
 
     if ($this->rc->task == 'addressbook') {
       $this->add_texts('localization');
-      // $this->add_hook('contact_form', array($this, 'contact_form'));
+      $this->add_hook('contact_form', array($this, 'contact_form'));
 
       // Plugin actions
       $this->register_action('plugin.book', array($this,'book_actions'));
@@ -417,6 +417,20 @@ class mel_contacts extends rcube_plugin {
     mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::contacts_acl() : " . $this->rc->user->get_username());
     $this->rc->output->add_handler('folderacl', array(new M2contactsgroup($this->rc->user->get_username()), 'acl_form'));
     $this->rc->output->send('mel_contacts.kolabacl');
+  }
+  
+  /**
+   * Hooks for contact form to add category field
+   * 
+   * @param array $args
+   * @return array
+   */
+  public function contact_form($args) {
+    $args['head_fields']['category'] = ['category'];
+    if (isset($args['form']['head'])) {
+      $args['form']['head']['content']['category'] = array('type' => 'text');
+    }
+    return $args;
   }
 
   /**

@@ -95,7 +95,9 @@ class vcard2csv
 //                         'phone:assistant'   => $this->plugin->gettext("Assistant's Phone"),
 //                         'spouse'            => $this->plugin->gettext("Spouse"),
                         
-                        'groups'            => $this->plugin->gettext("Categories"),
+                        'groups'            => $this->plugin->gettext("Groups"),
+                        // PAMELA - Categories
+                        'category'          => $this->plugin->gettext("Categories"),
                         'notes'             => $this->plugin->gettext("Notes"),
                         
                         'website:homepage'  => $this->plugin->gettext("Home Web Page"),

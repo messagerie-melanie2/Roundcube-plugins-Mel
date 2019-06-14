@@ -25,7 +25,7 @@
  */
 
 $labels = array();
-$labels['mobile'] = 'Vue mobile';
+$labels['mobile'] = 'Passer en vue mobile';
 $labels['desktop'] = 'Vue bureau';
 $labels['pull_to_refresh'] = 'Tirer pour rafraîchir';
 $labels['release_to_refresh'] = 'Lacher pour rafraîchir';

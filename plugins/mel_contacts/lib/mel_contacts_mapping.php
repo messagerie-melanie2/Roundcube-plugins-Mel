@@ -22,7 +22,7 @@ use LibMelanie\Api\Melanie2;
 class mel_contacts_mapping {
   public static $mapping_contact_cols = array("name" => "name","firstname" => "firstname","surname" => "lastname","email" => "email","email:work" => "email1","email:other" => "email2",
             /*"email:internet" => "email3",*/
-            "ID" => "id","middlename" => "middlenames","prefix" => "nameprefix","suffix" => "namesuffix","nickname" => "alias","organization" => "company","jobtitle" => "role","birthday" => "birthday","phone:mobile" => "cellphone","phone:home" => "homephone","phone:work" => "workphone","phone:fax" => "fax","phone:pager" => "pager","website:homepage" => "url","website:freebusy" => "freebusyurl","cuid" => "uid","notes" => "notes");
+            "ID" => "id","category" => "category","middlename" => "middlenames","prefix" => "nameprefix","suffix" => "namesuffix","nickname" => "alias","organization" => "company","jobtitle" => "role","birthday" => "birthday","phone:mobile" => "cellphone","phone:home" => "homephone","phone:work" => "workphone","phone:fax" => "fax","phone:pager" => "pager","website:homepage" => "url","website:freebusy" => "freebusyurl","cuid" => "uid","notes" => "notes");
   
   private static $_countries_list;
   /**
@@ -171,7 +171,12 @@ class mel_contacts_mapping {
       // Name
       if (! isset($contact['name'])) {
         if ($_contact->type == Melanie2\Contact::TYPE_LIST) {
-          $contact['name'] = isset($contact['surname']) ? $contact['surname'] : $contact['firstname'];
+          if ($_contact->uid == 'favorites') {
+            $contact['name'] = rcmail::get_instance()->gettext('favorites', 'mel_contacts');
+          }
+          else {
+            $contact['name'] = isset($contact['surname']) ? $contact['surname'] : $contact['firstname'];
+          }
         }
         else {
           $contact['name'] = $contact['firstname'] . (isset($contact['surname']) ? ' ' . $contact['surname'] : '');

@@ -38,6 +38,10 @@ body.iframe .boxtitle {
     left: 201px;
 }
 
+#pluginbody {
+	overflow-y: auto; 
+}
+
 #sections-table tbody td, 
 #sections-table .listitem span, 
 #settings-sections .listitem a, 

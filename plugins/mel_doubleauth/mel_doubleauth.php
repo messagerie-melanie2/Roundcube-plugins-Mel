@@ -433,6 +433,11 @@ class mel_doubleauth extends rcube_plugin {
         $user = $this->rc->user;
         
         $arr_prefs = $user->get_prefs();
+        $pref_name = 'mel_doubleauth';
+        
+        if (!isset($arr_prefs[$pref_name])) {
+          $pref_name = 'melanie2_doubleauth';
+        }
         
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
@@ -445,10 +450,10 @@ class mel_doubleauth extends rcube_plugin {
         catch(Exception $e){
             mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__get2FAconfig : Erreur web service : ".$e->getMessage());
         }
-        $arr_prefs['mel_doubleauth']['activate'] = $response;
-        $arr_prefs['mel_doubleauth']['secret'] = ($response) ? '*************' : '';
+        $arr_prefs[$pref_name]['activate'] = $response;
+        $arr_prefs[$pref_name]['secret'] = ($response) ? '*************' : '';
         
-        return $arr_prefs['mel_doubleauth'];
+        return $arr_prefs[$pref_name];
     }
     
     // we can set array to NULL to remove

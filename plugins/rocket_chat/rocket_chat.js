@@ -28,7 +28,6 @@ if (window.rcmail) {
 	      rocket_chat_url = rcmail.env.rocket_chat_url;
 	    }
 		}
-		alert(rocket_chat_url);
 		if (navigator.appName == "Microsoft Internet Explorer"){
 			window.document.getElementById('rocket_chat_frame').src = rocket_chat_url;
 			window.document.getElementById('rocket_chat_frame').contentWindow.location.reload(true);

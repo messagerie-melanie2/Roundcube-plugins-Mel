@@ -2,3 +2,6 @@
 /.project
 /.settings/
 **/config.inc.php
+aide/config.php
+aide/custom.css
+aide/images/

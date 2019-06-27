@@ -19,10 +19,16 @@ if (window.rcmail) {
 			}, 50);
 		};
 		// Récupération de l'url rocket
-		var rocket_chat_url = sessionStorage.getItem('rocket_chat_url');
-		if (!rocket_chat_url) {
-			rocket_chat_url = rcmail.env.rocket_chat_url;
+		if (rcmail.env.rocket_chat_gotourl) {
+		  var rocket_chat_url = rcmail.env.rocket_chat_gotourl;
 		}
+		else {
+		  var rocket_chat_url = sessionStorage.getItem('rocket_chat_url');
+	    if (!rocket_chat_url) {
+	      rocket_chat_url = rcmail.env.rocket_chat_url;
+	    }
+		}
+		alert(rocket_chat_url);
 		if (navigator.appName == "Microsoft Internet Explorer"){
 			window.document.getElementById('rocket_chat_frame').src = rocket_chat_url;
 			window.document.getElementById('rocket_chat_frame').contentWindow.location.reload(true);

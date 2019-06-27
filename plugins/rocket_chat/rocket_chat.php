@@ -67,19 +67,19 @@ class rocket_chat extends rcube_plugin {
           }
         }
         
-        // Si tache = ariane, on charge l'onglet
-        if ($this->rc->task == 'ariane' && isset($_GET['_courrielleur'])) {
-          // Ajout du css
-          $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
-          // Disable refresh
-          $this->rc->output->set_env('refresh_interval', 0);
-          $this->register_action('index', array(
-              $this,
-              'action_courrielleur'
-          ));
-        }
-        else if ($this->rc->task == 'ariane') {
-            
+//         // Si tache = ariane, on charge l'onglet
+//         if ($this->rc->task == 'ariane' && isset($_GET['_courrielleur'])) {
+//           // Ajout du css
+//           $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
+//           // Disable refresh
+//           $this->rc->output->set_env('refresh_interval', 0);
+//           $this->register_action('index', array(
+//               $this,
+//               'action_courrielleur'
+//           ));
+//         }
+//         else 
+        if ($this->rc->task == 'ariane') {
             // Ajout du css
             $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
             $this->register_action('index', array(
@@ -98,6 +98,10 @@ class rocket_chat extends rcube_plugin {
               $this->rc->output->set_env('rocket_chat_auth_token', $authToken);
               $this->rc->output->set_env('rocket_chat_user_id', $userId);
               $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
+              if (isset($_GET['_params'])) {
+                $params = rcube_utils::get_input_value('_params', rcube_utils::INPUT_GET);
+                $this->rc->output->set_env('rocket_chat_gotourl', $this->rc->config->get('rocket_chat_url') . $params);
+              }
               $this->rc->output->set_env('rocket_chat_channel', rcube_utils::get_input_value('_channel', rcube_utils::INPUT_GET));
               
               // Configuration du domaine
@@ -110,7 +114,7 @@ class rocket_chat extends rcube_plugin {
               // Appel le script de création du chat
               $this->include_script('rocket_chat.js');
             }
-            catch (Exception $ex) {
+            catch (\Exception $ex) {
               $__error_title = $this->gettext('rocket_error_title');
               $__error_text = $ex->getMessage();
               $__back = $this->gettext('back');
@@ -131,6 +135,13 @@ EOF;
         else {
           // Appel le script de création du chat
           $this->include_script('rocket_chat_storage_event.js');
+          // Appel le script de gestion des link
+          $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
+          $this->include_script('rocket_chat_link.js');
+          $this->rc->output->set_env('rocket_chat_params_url', $this->rc->url(array(
+              "_task" => "ariane",
+              "_params" => "%%other_params%%"
+          )));
         }
     }
     

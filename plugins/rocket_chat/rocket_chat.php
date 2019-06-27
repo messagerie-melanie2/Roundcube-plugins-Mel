@@ -67,19 +67,18 @@ class rocket_chat extends rcube_plugin {
           }
         }
         
-//         // Si tache = ariane, on charge l'onglet
-//         if ($this->rc->task == 'ariane' && isset($_GET['_courrielleur'])) {
-//           // Ajout du css
-//           $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
-//           // Disable refresh
-//           $this->rc->output->set_env('refresh_interval', 0);
-//           $this->register_action('index', array(
-//               $this,
-//               'action_courrielleur'
-//           ));
-//         }
-//         else 
-        if ($this->rc->task == 'ariane') {
+        // Si tache = ariane, on charge l'onglet
+        if ($this->rc->task == 'ariane' && isset($_GET['_courrielleur'])) {
+          // Ajout du css
+          $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
+          // Disable refresh
+          $this->rc->output->set_env('refresh_interval', 0);
+          $this->register_action('index', array(
+              $this,
+              'action_courrielleur'
+          ));
+        }
+        else if ($this->rc->task == 'ariane') {
             // Ajout du css
             $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
             $this->register_action('index', array(

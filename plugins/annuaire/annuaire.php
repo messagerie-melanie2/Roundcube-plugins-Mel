@@ -457,7 +457,7 @@ class annuaire extends rcube_plugin
                         case 'mineqMelDP':
                             $name = $info['cn'][0];
                             $email = $info['mailpr'][0];
-                            $title = $name;
+                            $title = '[' . $info['mineqtypeentree'][0] . '] '. $name;
                             $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
                             switch ($info['mineqtypeentree'][0]) {
                               case 'BALI':

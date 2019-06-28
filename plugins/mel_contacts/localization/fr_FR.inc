@@ -20,6 +20,7 @@ $labels['typecallback'] = 'Rappel';
 $labels['settings'] = 'Paramètres';
 
 $labels['categories'] = 'Catégories';
+$labels['members'] = 'Membres';
 
 $labels['bookcreate'] = 'Créer un carnet d\'adresse';
 $labels['bookedit'] = 'Modifier le carnet d\'adresse';

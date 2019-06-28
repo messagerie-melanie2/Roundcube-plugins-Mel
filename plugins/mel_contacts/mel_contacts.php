@@ -420,15 +420,26 @@ class mel_contacts extends rcube_plugin {
   }
   
   /**
-   * Hooks for contact form to add category field
+   * Hooks for contact form to add category and type field
    * 
    * @param array $args
    * @return array
    */
   public function contact_form($args) {
     $args['head_fields']['category'] = ['category'];
+    $args['head_fields']['type'] = ['type'];
     if (isset($args['form']['head'])) {
       $args['form']['head']['content']['category'] = array('type' => 'text');
+      $args['form']['head']['content']['type'] = array('type' => 'text');
+    }
+    else {
+      // Add members list
+      $args['form']['members'] = [
+          'name'    => $this->gettext('members'),
+          'content' => [
+              'members' => array('type' => 'text', 'label' => false),
+          ],
+      ];
     }
     return $args;
   }

@@ -11,6 +11,7 @@ require_once 'config.php';
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="custom.css" />
 <link rel="icon" type="image/png" href="images/favicon_help.png" />
 <title>Aide Mél</title>
 </head>

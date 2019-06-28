@@ -66,7 +66,7 @@ $(document).on("click", '#right_panel #right_panel_minifier', function(e) {
 		rcmail.right_panel_storage_set('minified', true);
 	}
 	// Reset HTML
-	$('#right_panel').html('<span id="right_panel_minifier">Min-Max</span><div id="right_panel_presence"></div><div id="right_panel_date"><span class="day"></span><span class="date"></span></div><div id="right_panel_events"></div><div id="right_panel_contacts"></div>')
+	$('#right_panel').html('<span id="right_panel_minifier">Min-Max</span><div id="right_panel_presence" title="' + rcmail.get_label('right_panel.right_panel_presence_title') + '"></div><div id="right_panel_date"><span class="day"></span><span class="date"></span></div><div id="right_panel_events"></div><div id="right_panel_contacts"></div>')
 	rcmail.right_panel_today_date();
 	// Récupération des événéments
 	rcmail.right_panel_user_presence();
@@ -230,7 +230,7 @@ if (window.rcmail) {
 	rcmail.addEventListener('init', function(evt) {
 		// Ajouter le right panel au body
 		$('body').append('<div id="right_panel"></div>');
-		$('#right_panel').html('<span id="right_panel_minifier">→</span><div id="right_panel_presence"></div><div id="right_panel_date"><span class="day"></span><span class="date"></span><span class="min"></span></div><div id="right_panel_events"></div><div id="right_panel_contacts"></div>')
+		$('#right_panel').html('<span id="right_panel_minifier">→</span><div id="right_panel_presence" title="' + rcmail.get_label('right_panel.right_panel_presence_title') + '"></div><div id="right_panel_date"><span class="day"></span><span class="date"></span><span class="min"></span></div><div id="right_panel_events"></div><div id="right_panel_contacts"></div>')
 		// Gestion du minified
 		var minified = rcmail.right_panel_storage_get('minified');
 		if (minified && minified === 'true' || $(window).width() <= 1100) {
@@ -600,7 +600,7 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 		});
 		var today = new Date();
 		if ($('#right_panel').hasClass('minified')) {
-			$('#right_panel_events').append('<div class="pagination"><span class="today">' + this.get_label('right_panel.today') + '</span></div>');
+			$('#right_panel_events').append('<div class="pagination"><span class="today" title="' + this.get_label('right_panel.today_title') + '">' + this.get_label('right_panel.today') + '</span></div>');
 			$('#right_panel_events').append('<div class="events_list"></div>');
 			var count_events_today = 0, count_events = 0;
 			// Gestion des alarmes
@@ -673,7 +673,7 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 		}
 		else {
 			$('#right_panel_events').append('<div class="events_title"><span class="text" title="' + this.get_label("right_panel.event_title") + '">' + this.get_label("right_panel.next_events") + '</span><span class="new_event" title="' + this.get_label("right_panel.new_event_title") + '">' + this.get_label("right_panel.new_event") + '</span></div>');
-			$('#right_panel_events').append('<div class="pagination"><span class="previous">' + this.get_label('right_panel.previous') + '</span><span class="today">' + this.get_label('right_panel.today') + '</span><span class="next">' + this.get_label('right_panel.next') + '</span></div>');
+			$('#right_panel_events').append('<div class="pagination"><span class="previous" title="' + this.get_label('right_panel.previous_title') + '">' + this.get_label('right_panel.previous') + '</span><span class="today" title="' + this.get_label('right_panel.today_title') + '">' + this.get_label('right_panel.today') + '</span><span class="next" title="' + this.get_label('right_panel.next_title') + '">' + this.get_label('right_panel.next') + '</span></div>');
 			$('#right_panel_events').append('<div class="events_list"></div>');
 			// Gestion des alarmes
 			if (window.alarmsList.length) {
@@ -804,10 +804,10 @@ rcube_webmail.prototype.right_panel_get_contacts = function(force = false) {
 	else {
 		var contacts_menu = this.right_panel_storage_get('contacts_menu');
 		if (contacts_menu && contacts_menu == 'favorites_button') {
-			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button disabled"></span><span class="favorites_button"></span></div>');
+			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button disabled" title="' + this.get_label("right_panel.recents_button_title") + '"></span><span class="favorites_button" title="' + this.get_label("right_panel.favorites_button_title") + '"></span></div>');
 		}
 		else {
-			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button"></span><span class="favorites_button disabled"></span></div>');
+			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button" title="' + this.get_label("right_panel.recents_button_title") + '"></span><span class="favorites_button disabled" title="' + this.get_label("right_panel.favorites_button_title") + '"></span></div>');
 		}
 		
 		$('#right_panel_contacts').append('<div class="contacts_recents"></div>');

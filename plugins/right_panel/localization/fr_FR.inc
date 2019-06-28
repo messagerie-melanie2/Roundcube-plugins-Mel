@@ -18,14 +18,18 @@
 
 $labels = array();
 
+$labels['right_panel_presence_title'] = 'Gérer votre présence de discussion ou se déconnecter';
 $labels['next_events'] = 'Évènements à venir';
 $labels['today'] = 'Aujourd\'hui';
+$labels['today_title'] = 'Revenir aux premiers événements d\'aujourd\'hui';
 $labels['today_min'] = 'auj.';
 $labels['tomorrow'] = 'Demain';
 $labels['yesterday'] = 'Hier';
 $labels['yesterday_min'] = 'hier';
 $labels['previous'] = 'Précédent';
 $labels['next'] = 'Suivant';
+$labels['previous_title'] = 'Afficher les événements précédents';
+$labels['next_title'] = 'Afficher les événements suivants';
 $labels['event_title'] = 'Cliquez-ici pour ouvrir votre calendrier';
 $labels['no_event'] = 'Aucun évènement à venir';
 $labels['no_event_title'] = 'Pas d\'évènement à venir';
@@ -42,6 +46,8 @@ $labels['date'] = '%%day%% à %%hour%%';
 $labels['you'] = 'Vous';
 $labels['contacts_count_title'] = 'Nouveaux Messages';
 $labels['contacts_favorites_title'] = 'Contacts Favoris';
+$labels['favorites_button_title'] = 'Afficher la liste de vos contacts favoris';
+$labels['recents_button_title'] = 'Afficher la liste de vos derniers messages (courriels et discussions)';
 $labels['dismiss'] = 'Terminé';
 $labels['later'] = 'Plus tard';
 

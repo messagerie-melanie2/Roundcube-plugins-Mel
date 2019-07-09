@@ -895,6 +895,10 @@ class mel extends rcube_plugin {
           $_SESSION['mbox'] = 'INBOX';
         }
       }
+      // Utiliser les proxy imap ?
+      if ($this->rc->config->get('use_imap_proxy', false)) {
+        $args['host'] = $this->rc->config->get('imap_proxy', null);
+      }
     }
     return $args;
   }

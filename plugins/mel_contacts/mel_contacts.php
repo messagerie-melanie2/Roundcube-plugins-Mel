@@ -440,6 +440,10 @@ class mel_contacts extends rcube_plugin {
               'members' => array('type' => 'text', 'label' => false),
           ],
       ];
+      // Add room number
+      if (isset($args['form']['contact'])) {
+        $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $this->gettext('room'));
+      }
     }
     return $args;
   }

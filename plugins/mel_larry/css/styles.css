@@ -317,20 +317,20 @@ body.extwin #topnav {
 #topnav .topright {
 	float: none;
 	position: absolute;
-	left: 20%;
+	left: 16%;
 	top: 0;
 	right: 0;
 }
 
 @media screen and (max-width: 1440px) {
   #topnav .topright {
-	left: 10%;
+	left: 8%;
   }
 }
 
-@media screen and (max-width: 1240px) {
+@media screen and (max-width: 1340px) {
   #topnav .topright {
-	left: 65px;
+	left: 40px;
   }	
 }
 
@@ -361,9 +361,21 @@ body.extwin #taskbar {
 	margin-left: 22px;
 }
 
-@media screen and (max-width: 1140px) {
+@media screen and (max-width: 1440px) {
+  #topnav .topright {
+	margin-left: 16px;
+  }
+}
+
+@media screen and (max-width: 1240px) {
   #taskbar a {
 	margin-left: 10px;
+  }	
+}
+
+@media screen and (max-width: 1140px) {
+  #taskbar a {
+	margin-left: 5px;
   }	
 }
 

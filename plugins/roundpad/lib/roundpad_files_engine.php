@@ -97,7 +97,7 @@ class roundpad_files_engine
                 'classsel'   => 'button-pads button-selected',
                 'innerclass' => 'button-inner',
                 'label'      => 'roundpad.files',
-                ), 'taskbar');
+                ), 'taskbar_mel');
         }
 
         $this->plugin->include_stylesheet($this->plugin->local_skin_path().'/style.css');

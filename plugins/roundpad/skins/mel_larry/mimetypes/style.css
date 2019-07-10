@@ -1,0 +1,11 @@
+#filelist tbody td.filename.ethercalc span {
+  background: url(spreadsheet.png) 0 0 no-repeat;
+}
+
+#filelist tbody td.filename.etherpad span {
+  background: url(text.png) 0 0 no-repeat;
+}
+
+#filelist tbody td.filename.other span {
+  background: url(application_x_mswinurl.png) 0 0 no-repeat;
+}

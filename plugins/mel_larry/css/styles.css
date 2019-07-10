@@ -1284,6 +1284,13 @@ table.propform td {
     min-width: auto;
 }
 
+#messageheader #countcontrols a.button.bounce,
+#messageheader #formatcontrols  a.button.bounce,
+.toolbar a.button.bounce {
+    background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat #fff;
+    min-width: auto;
+}
+
 .toolbar a.button.back {
     background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat #fff;
 }
@@ -1303,33 +1310,19 @@ table.propform td {
 
 @media screen and (max-width: 1440px) {
   .toolbar .spacer {
-  	margin-left: 38px;
+  	margin-left: 28px;
   }
 
   .toolbar .spacer.medium {
-  	margin-left: 100px;
+  	margin-left: 38px;
   }
 
   .toolbar .spacer.large {
-  	margin-left: 140px;
+  	margin-left: 58px;
   }
 }
 
 @media screen and (max-width: 1240px) {
-  .toolbar .spacer {
-    margin-left: 24px;
-  }
-
-  .toolbar .spacer.medium {
-    margin-left: 60px;
-  }
-
-  .toolbar .spacer.large {
-    margin-left: 80px;
-  }
-}
-
-@media screen and (max-width: 1140px) {
   .toolbar .spacer {
     margin-left: 14px;
   }
@@ -1340,6 +1333,20 @@ table.propform td {
 
   .toolbar .spacer.large {
     margin-left: 34px;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .toolbar .spacer {
+    margin-left: 4px;
+  }
+
+  .toolbar .spacer.medium {
+    margin-left: 6px;
+  }
+
+  .toolbar .spacer.large {
+    margin-left: 8px;
   }
 }
 

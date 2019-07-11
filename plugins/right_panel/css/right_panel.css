@@ -65,19 +65,21 @@ body.right_panel_minified #mainscreen {
 }
 
 #right_panel_presence {
-	width: 186px;
+	width: 166px;
   	height: 46px;
   	margin: 8px 0px 10px 0px;
   	border-radius: 3px;
   	z-index: 100;
   	cursor: pointer;
   	border: 1px solid #686870;
-  	background: url("../images/arrow_down.png") no-repeat 165px center;
+  	background: url("../images/arrow_down.png") no-repeat 170px center;
   	background-color: #353d47;
+  	padding-right: 20px;
+  	overflow: hidden;
 }
 
 #right_panel_presence[aria-expanded="true"] {
-	background: url("../images/arrow_up.png") no-repeat 165px center;
+	background: url("../images/arrow_up.png") no-repeat 170px center;
 }
 
 #right_panel.minified #right_panel_presence {

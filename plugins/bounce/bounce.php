@@ -183,13 +183,6 @@ class bounce extends rcube_plugin
     $table->add('title', html::label('_to', rcube_utils::rep_specialchars_output($rcmail->gettext('to'), 'html', 'strict')));
     $table->add('editfield', html::tag('textarea', array('spellcheck' =>'false', 'id' => '_to', 'name' => '_to', 'cols' => '50', 'rows'=> '2', 'tabindex' => '2', 'class' => 'editfield', 'onclick' => 'select_field(this)')));
 
-
-//    $table->add(null,null);
-//     $table->add(formlinks,
-//                 html::a(array('href'=>'#cc', 'onclick'=>'return rcmail_ui.show_header_form(\'cc\')', 'id'=>'cc-link'), Q(rcube_label('addcc'))).
-//                 '<span class="separator">|</span>'.
-//                 html::a(array('href'=>'#bcc', 'onclick'=>'return rcmail_ui.show_header_form(\'bcc\')', 'id'=>'bcc-link'), Q(rcube_label('addbcc'))));
-
     $target_url = $_SERVER['REQUEST_URI'];
 
     $rcmail->output->add_footer(html::div($attrib,
@@ -201,7 +194,7 @@ class bounce extends rcube_plugin
           html::div('buttons',
             $button->show($rcmail->gettext('close'), array('class' => 'button', 'onclick' => "$('#$attrib[id]').hide()")) . ' ' .
               $button->show(rcube_utils::rep_specialchars_output($this->gettext('bounce'), 'html', 'strict'), array('class' => 'button mainaction',
-              'onclick' => JS_OBJECT_NAME . ".command('plugin.bounce.send', this.bounceform)"))
+                  'onclick' => rcmail_output::JS_OBJECT_NAME . ".command('plugin.bounce.send', this.bounceform)"))
           )
         )
       )
@@ -234,7 +227,7 @@ class bounce extends rcube_plugin
     $mailto = trim(preg_replace($regexp, $replace, $mailto));
 
     $result = array();
-    $items = rcube_explode_quoted_string(',', $mailto);
+    $items = rcube_utils::explode_quoted_string(',', $mailto);
 
     foreach($items as $item) {
       $item = trim($item);

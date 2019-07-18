@@ -649,12 +649,12 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 					}
 					var title = event.title;
 					if (count_events == 0) {
-						$('#right_panel_events .events_list').append('<div class="event item" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span></div>');
+						$('#right_panel_events .events_list').append('<div class="event item ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span></div>');
 						$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 						count_events++;
 					}
 					else if (count_events == 1) {
-						$('#right_panel_events .events_list').append('<div class="event item" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span><span class="count_event_today"></span></div>');
+						$('#right_panel_events .events_list').append('<div class="event item ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span><span class="count_event_today"></span></div>');
 						$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 						count_events++;
 					}
@@ -733,7 +733,7 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 				if (event.location) {
 					title += " (" + event.location + ")";
 				}
-				$('#right_panel_events .events_list').append('<div class="item event" id="' + event._id + '" title="' + title + '"><span class="date">' + date + '</span><span class="table"><span class="row"><span class="start cell">' + start + '</span><span class="title cell"><span class="innerTitle">' + event.title + '</span></span></span><span class="row"><span class="end cell">' + end + '</span><span class="location cell">' + event.location + '</span></span></span></div>');
+				$('#right_panel_events .events_list').append('<div class="item event ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="date">' + date + '</span><span class="table"><span class="row"><span class="start cell">' + start + '</span><span class="title cell"><span class="innerTitle">' + event.title + '</span></span></span><span class="row"><span class="end cell">' + end + '</span><span class="location cell">' + event.location + '</span></span></span></div>');
 				$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 			}
 		}

@@ -366,6 +366,18 @@ body.right_panel_minified #mainscreen {
 	max-width: 124px;
 }
 
+#right_panel_events .events_list .event.FREE .title {
+	font-style: italic;
+}
+
+#right_panel_events .events_list .event.CANCELLED .title {
+	text-decoration: line-through;
+}
+
+#right_panel_events .events_list .event.TENTATIVE {
+	opacity: .7;
+}
+
 #right_panel.minified #right_panel_events .events_list .event .title {
 	display: block;
 	border: none;

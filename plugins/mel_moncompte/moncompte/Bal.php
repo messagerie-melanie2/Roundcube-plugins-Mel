@@ -50,7 +50,7 @@ class Bal {
 	*/
 
 
-	function Bal($plugin)
+	function __construct($plugin)
 	{
 
 

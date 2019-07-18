@@ -1481,6 +1481,10 @@ ul.listing.folderlist li {
 	background-color: #f2f2f2;
 }
 
+ul.listing.folderlist li.droptarget {
+	background-color: #dee9f6;
+}
+
 ul.listing.folderlist li.selected > a,
 ul.listing.folderlist li.selected > a:focus {
 	color: #000 !important;

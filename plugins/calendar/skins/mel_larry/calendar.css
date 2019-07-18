@@ -283,22 +283,21 @@ pre {
 #calendars .treelist div span.actions {
 	display: inline-block;
 	position: absolute;
-	top: 2px;
-	right: 22px;
+	top: 4px;
+	right: 4px;
 	padding: 2px 0px 0px 4px;
 /*	min-width: 40px; */
 	height: 19px;
 	text-align: right;
 	z-index: 4;
-	display: none;
 }
 
 #calendars .treelist div:hover span.actions {
-	top: 1px;
-	right: 21px;
-	border: 1px solid #c6c6c6;
+	top: 3px;
+	right: 3px;
+	border: solid 1px #d5d5d5;
 	border-radius: 4px;
-	background: #f7f7f7;
+	background: #fff;
 }
 
 #calendars .treelist li a.subscribed {
@@ -357,7 +356,7 @@ pre {
 }
 
 #calendars .treelist div.focusview a.quickview {
-	background-position: -16px -128px;
+	background-position: 0 -148px;
 }
 
 #calendars .treelist div a.remove:focus,

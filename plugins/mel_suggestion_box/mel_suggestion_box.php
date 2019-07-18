@@ -65,8 +65,8 @@ class mel_suggestion_box extends rcube_plugin
    * Methode d'envoie du message de suggestion
    */
   public function suggestion_box_send() {
-    $body = rcube_utils::get_input_value('_suggestion', RCUBE_INPUT_POST);
-    $unlock = rcube_utils::get_input_value('_unlock', RCUBE_INPUT_POST);
+    $body = rcube_utils::get_input_value('_suggestion', rcube_utils::INPUT_POST);
+    $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_POST);
     if (isset($_GET['_courrielleur'])) {
       $subject = $this->rc->config->get('suggestion_subject_courrielleur');
     }

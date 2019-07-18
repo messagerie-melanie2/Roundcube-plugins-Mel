@@ -1,0 +1,14 @@
+<?php
+/**
+ * Configuration file for freebusy public url
+ */
+$config = array();
+
+// If there no end argument, configure the number of freebusy days
+$config['nb_days'] = 90;
+
+// Filename for the freebusy url, use %uid for username
+$config['fb_filename'] = "fb_%uid.vfb";
+
+// Filename for the ics url, use %calendar for the calendar name
+$config['ics_filename'] = "calendar_%calendar.ics";

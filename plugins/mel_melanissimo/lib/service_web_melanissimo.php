@@ -542,7 +542,8 @@ class ServiceWebMelanissimo {
             CURLOPT_USERAGENT => $this->rc->config->get('curl_user_agent', ''), // name of client
             CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
             CURLOPT_TIMEOUT => 1200, // time-out on response
-            CURLOPT_SSL_VERIFYPEER => $this->rc->config->get('curl_ssl_verifierpeer', 0),
+            //CURLOPT_SSL_VERIFYPEER => $this->rc->config->get('curl_ssl_verifierpeer', 0),
+            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => $this->rc->config->get('curl_ssl_verifierhost', 0),
             CURLOPT_CUSTOMREQUEST => "PUT",
             CURLOPT_UPLOAD => 1,

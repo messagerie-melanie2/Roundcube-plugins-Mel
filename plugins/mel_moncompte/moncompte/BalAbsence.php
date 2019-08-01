@@ -24,7 +24,7 @@ class BalAbsence {
   /*
    * Initialiser l'objet
    */
-  function BalAbsence() {
+  function __construct() {
     // Instancier les objets Infos Gestionnaire Absence
     $this->_infoMelanie = new InfoAbsence();
     $this->_infoInternet = new InfoAbsence();

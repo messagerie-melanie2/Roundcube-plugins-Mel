@@ -70,7 +70,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 	else if (rcmail.env.task == 'tasks') {
 		$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in_tasks'));
 	}
-	else if (rcmail.env.task == 'settings') {
+	else if (rcmail.env.task == 'settings' && !rcmail.env.courrielleur) {
 		var disconnect = $('<div>');
 		disconnect.attr('class', 'disconnect');
 		var disconnect_link = $('<a>');

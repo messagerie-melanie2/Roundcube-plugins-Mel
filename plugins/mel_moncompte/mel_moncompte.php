@@ -173,8 +173,14 @@ class mel_moncompte extends rcube_plugin {
       $this->register_action('plugin.mel_resources_agendas', array($this,'resources_agendas_init'));
       $this->register_action('plugin.mel_resources_contacts', array($this,'resources_contacts_init'));
       $this->register_action('plugin.mel_resources_tasks', array($this,'resources_tasks_init'));
+      
+      $this->register_action('plugin.melanie2_resources_bal', array($this,'resources_bal_init'));
+      $this->register_action('plugin.melanie2_resources_agendas', array($this,'resources_agendas_init'));
+      $this->register_action('plugin.melanie2_resources_contacts', array($this,'resources_contacts_init'));
+      $this->register_action('plugin.melanie2_resources_tasks', array($this,'resources_tasks_init'));
 
       $this->register_action('plugin.mel_moncompte', array(new Moncompte($this),'init'));
+      $this->register_action('plugin.melanie2_moncompte', array(new Moncompte($this),'init'));
 
       $this->register_action('plugin.mel_statistics_mobile', array(new Mobile_Stats($this),'init'));
       $this->register_action('plugin.statistics.zpush_command', array(new Mobile_Stats($this),"zpush_command"));

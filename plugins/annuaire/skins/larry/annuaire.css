@@ -215,3 +215,52 @@
     border-radius: 4px;
 	box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
 }
+
+#listview-float-right {
+	display: none;
+	position: absolute;
+	top: 34px;
+	right: 0;
+	width: 386px;
+	bottom: 4px;
+  	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  	border: solid 1px #979797;
+  	background-color: #fff;
+  	z-index: 1000;
+}
+
+#listview-float-right #list-contacts .boxtitle2 {
+	text-align: center;
+}
+
+#listview-float-right #list-contacts .close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	text-indent: -9999px;
+	background: url(../../../mel_larry/images/envoyer/fermer.png?v=e784.5000) center center no-repeat;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+#listview-float-right #list-contacts .listsearchbox {
+	display: block;
+	padding: 6px 10px;
+}
+
+#listview-float-right #list-contacts .listsearchbox input {
+	height: 32px;
+	padding-left: 30px;
+	background: #fff;
+}
+
+#listview-float-right #list-contacts .listsearchbox #searchmenulink {
+	top: 7px;
+}
+
+#listview-float-right #list-contacts .scroller {
+	background: #fff;
+	bottom: 0px;
+    top: 77px;
+}

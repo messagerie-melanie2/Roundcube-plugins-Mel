@@ -266,7 +266,12 @@ class mel_moncompte extends rcube_plugin {
     }
     else {
       // register UI objects
-      $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2mailbox($this->rc->user->get_username()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+      $this->rc->output->add_handlers(
+          array(
+              'mel_resources_elements_list' => array(new M2mailbox($this->rc->user->get_username()), 'resources_elements_list'),
+              'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
+          )
+      );
       $this->rc->output->set_env("resources_action", "bal");
       $this->rc->output->include_script('list.js');
       $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -348,7 +353,13 @@ class mel_moncompte extends rcube_plugin {
       }
       else {
         // register UI objects
-        $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2calendar($this->get_user_bal()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+        $this->rc->output->add_handlers(
+            array(
+                'mel_resources_elements_list' => array(new M2calendar($this->get_user_bal()),'resources_elements_list'),
+                'mel_resources_type_frame'    => array($this,'mel_resources_type_frame'),
+                'searchform'                  => array($this->rc->output, 'search_form')
+            )
+        );
         $this->rc->output->set_env("resources_action", "agendas");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -433,7 +444,13 @@ class mel_moncompte extends rcube_plugin {
       }
       else {
         // register UI objects
-        $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2contacts($this->get_user_bal()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+        $this->rc->output->add_handlers(
+            array(
+                'mel_resources_elements_list' => array(new M2contacts($this->get_user_bal()), 'resources_elements_list'),
+                'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
+                'searchform'                  => array($this->rc->output, 'search_form')
+            )
+        );
         $this->rc->output->set_env("resources_action", "contacts");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -516,7 +533,14 @@ class mel_moncompte extends rcube_plugin {
       }
       else {
         // register UI objects
-        $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2tasks($this->get_user_bal()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+        $this->rc->output->add_handlers(
+            array(
+                'mel_resources_elements_list'   => array(new M2tasks($this->get_user_bal()), 'resources_elements_list'),
+                'mel_resources_type_frame'      => array($this, 'mel_resources_type_frame'),
+                'searchform'                    => array($this->rc->output, 'search_form')
+                
+            )
+        );
         $this->rc->output->set_env("resources_action", "tasks");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));

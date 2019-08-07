@@ -627,19 +627,6 @@ td span.adr:hover .rcmaddcontact {
 	min-width: auto;
 }
 
-#showcontacts_to,
-#showcontacts_cc,
-#showcontacts_bcc,
-#showcontacts_replyto,
-#showcontacts_followupto {
-	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
-	border: none;
-	border: none;
-	width: 28px;
-	margin-left: 4px;
-	border-radius: 4px;
-}
-
 .toolbar a.button.extwin {
 	position: absolute;
 	top: 0;

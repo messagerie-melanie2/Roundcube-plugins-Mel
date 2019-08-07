@@ -1803,3 +1803,21 @@ ul.treelist li.selected > div.collapsed {
 .ui-autocomplete-input {
 	background: url(../images/calendar/mini-chevron.png?v=e784.5000) right 5px center no-repeat #fff;
 }
+
+/** Contacts **/
+a.button.showcontacts {
+	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
+	border: none;
+	border: none;
+	width: 28px;
+	margin-left: 4px;
+	border-radius: 4px;
+}
+
+#aclform a.button.showcontacts {
+	position: relative;
+	top: -4px;
+	left: -2px;
+}
+
+

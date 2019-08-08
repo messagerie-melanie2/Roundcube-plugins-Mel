@@ -72,6 +72,17 @@ class mel_moncompte extends rcube_plugin {
    * @var string
    */
   private $user_objet_share;
+  /**
+   * Mapping for old actions used by Courrielleur
+   * @var array
+   */
+  private $old_actions_mapping = [
+      'plugin.melanie2_moncompte'           => 'plugin.mel_moncompte',
+      'plugin.melanie2_resources_bal'       => 'plugin.mel_resources_bal',
+      'plugin.melanie2_resources_agendas'   => 'plugin.mel_resources_agendas',
+      'plugin.melanie2_resources_contacts'  => 'plugin.mel_resources_contacts',
+      'plugin.melanie2_resources_tasks'     => 'plugin.mel_resources_tasks',
+  ];
 
   /**
    * Initialisation du plugin
@@ -98,6 +109,10 @@ class mel_moncompte extends rcube_plugin {
   private function init_ui() {
     if ($this->ui_initialized) {
       return;
+    }
+    // Redirect old actions to new one
+    if (isset($this->old_actions_mapping[$this->rc->action])) {
+      $this->rc->output->redirect(['action' => $this->old_actions_mapping[$this->rc->action]]);
     }
     // Chargement de la conf
     $this->load_config();

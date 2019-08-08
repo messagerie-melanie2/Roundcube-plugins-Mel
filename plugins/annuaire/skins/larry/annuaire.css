@@ -264,3 +264,7 @@
 	bottom: 0px;
     top: 77px;
 }
+
+#listview-float-right #list-contacts .scroller.nosearch {
+    top: 32px;
+}

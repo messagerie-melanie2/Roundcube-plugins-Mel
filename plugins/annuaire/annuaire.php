@@ -130,7 +130,7 @@ class annuaire extends rcube_plugin
                     )
                 ));
             }
-        } else if ($this->rc->task == 'settings' && ($this->rc->action == 'plugin.mel_resources_agendas')) {
+        } else if ($this->rc->task == 'settings' && ($this->rc->action == 'plugin.mel_resources_agendas' || $this->rc->action == 'plugin.mel_resources_contacts' || $this->rc->action == 'plugin.mel_resources_tasks')) {
             // Chargement de la conf
             $this->load_config();
 

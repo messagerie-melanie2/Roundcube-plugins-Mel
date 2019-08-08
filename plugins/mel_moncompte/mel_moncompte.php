@@ -357,7 +357,6 @@ class mel_moncompte extends rcube_plugin {
             array(
                 'mel_resources_elements_list' => array(new M2calendar($this->get_user_bal()),'resources_elements_list'),
                 'mel_resources_type_frame'    => array($this,'mel_resources_type_frame'),
-                'searchform'                  => array($this->rc->output, 'search_form')
             )
         );
         $this->rc->output->set_env("resources_action", "agendas");
@@ -448,7 +447,6 @@ class mel_moncompte extends rcube_plugin {
             array(
                 'mel_resources_elements_list' => array(new M2contacts($this->get_user_bal()), 'resources_elements_list'),
                 'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
-                'searchform'                  => array($this->rc->output, 'search_form')
             )
         );
         $this->rc->output->set_env("resources_action", "contacts");
@@ -537,7 +535,6 @@ class mel_moncompte extends rcube_plugin {
             array(
                 'mel_resources_elements_list'   => array(new M2tasks($this->get_user_bal()), 'resources_elements_list'),
                 'mel_resources_type_frame'      => array($this, 'mel_resources_type_frame'),
-                'searchform'                    => array($this->rc->output, 'search_form')
                 
             )
         );

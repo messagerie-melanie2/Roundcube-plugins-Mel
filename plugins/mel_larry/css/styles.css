@@ -1197,6 +1197,28 @@ table.propform td {
     background-color: #fff;
 }
 
+#messageheader #countcontrols a.button {
+	width: 22px;
+	height: 18px;
+	margin-right: 0px;
+	text-align: right;
+}
+
+#messageheader.previewheader #countcontrols a.button {
+	width: 38px;
+	height: 30px;
+	margin-right: 6px;
+	text-align: center;
+}
+
+.pagenav a.nextpage span.inner {
+    background-position: -31px -225px;
+}
+
+.pagenav a.prevpage span.inner {
+    background-position: -10px -225px;
+}
+
 #messageheader #countcontrols a.button:hover,
 #messageheader #formatcontrols  a.button:hover,
 #addressbooktoolbar a.button:hover,

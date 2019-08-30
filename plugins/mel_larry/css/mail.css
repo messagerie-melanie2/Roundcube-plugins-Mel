@@ -246,18 +246,26 @@ html.mozilla #mailboxlist > li:first-child {
     border-radius: 2px;
 }
 
-#messageheader #countcontrols.pagenav {
-	display: none;
+#messageheader .pagenav .countdisplay {
+    font-size: 10px;
 }
 
 #messageheader #countcontrols, 
 #messageheader #formatcontrols {
-	top: auto;
 	right: 36px;
 	bottom: 10px;
 	text-align: right;
 	white-space: nowrap;
 	position: absolute;
+}
+
+#messageheader #countcontrols {
+	top: 2px;
+}
+
+#messageheader.previewheader #countcontrols, 
+#messageheader #formatcontrols {
+	top: auto;
 }
 
 #messageheader #countcontrols a.button.extwin, 

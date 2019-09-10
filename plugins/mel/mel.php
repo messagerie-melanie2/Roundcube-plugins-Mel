@@ -241,8 +241,10 @@ class mel extends rcube_plugin {
     // Use infinite scroll ?
     $this->rc->output->set_env('use_infinite_scroll', $this->rc->config->get('use_infinite_scroll', true));
     
-    // Keep login
-    $this->rc->output->set_env('keep_login', isset($_SESSION['_keeplogin']) ? $_SESSION['_keeplogin'] : false);
+    if (!$this->rc->config->get('hide_keep_login_button', false)) {
+        // Keep login
+        $this->rc->output->set_env('keep_login', isset($_SESSION['_keeplogin']) ? $_SESSION['_keeplogin'] : false);
+    }
 
     // ajouter les boites partagées
     if ($this->api->output->type == 'html') {
@@ -1331,18 +1333,20 @@ class mel extends rcube_plugin {
               'autocapitalize' => 'off',
               'autocomplete' => 'off'
       ));
-      $checkbox_keeplogin = new html_checkbox(array(
+      if (!$this->rc->config->get('hide_keep_login_button', false)) {
+          $checkbox_keeplogin = new html_checkbox(array(
               'name' => '_keeplogin',
               'id' => 'rcmloginkeep',
               'value' => 'keeplogin',
               'title' => $this->gettext('computer_private_title')
-      ));
+          ));
+      }
 
       $keeplogin = "";
       $class_tr = "";
       $login_div = "";
       // Si le cookie est présent on modifie l'interface
-      if (isset($_COOKIE['roundcube_login'])) {
+      if (isset($_COOKIE['roundcube_login']) && !$this->rc->config->get('hide_keep_login_button', false)) {
         $login = explode('###', $_COOKIE['roundcube_login']);
         if ($username == "") {
           $username = $login[0];
@@ -1366,11 +1370,21 @@ class mel extends rcube_plugin {
                 'href' => '#'
         ), $this->gettext('change_user')));
       }
-      else if (isset($_POST['_keeplogin'])) {
+      else if (isset($_POST['_keeplogin']) && !$this->rc->config->get('hide_keep_login_button', false)) {
         $keeplogin = "keeplogin";
       }
       
       if ($this->rc->output->get_env('ismobile')) {
+        if ($this->rc->config->get('hide_keep_login_button', false)) {
+            $keeplogin_html = '';
+        }
+        else {
+            $keeplogin_html = html::div(array(
+                'class' => $class_tr
+            ), $checkbox_keeplogin->show($keeplogin) . html::label(array(
+                'for' => 'rcmloginkeep'
+            ), $this->gettext('device_private')));
+        }
         $args['content'] = $input_task->show() . $input_action->show() . $input_timezone->show() . $input_url->show() . $login_div . html::div(array(
                 'id' => 'formlogintable'
         ), html::div(array(
@@ -1381,11 +1395,7 @@ class mel extends rcube_plugin {
                 'class' => $class_tr
         ), $input_login->show($username)) . html::div(null, html::label(array(
                 'for' => 'rcmloginpwd'
-        ), $this->rc->gettext('password'))) . html::div(null, $input_password->show()) . html::div(array(
-                'class' => $class_tr
-        ), $checkbox_keeplogin->show($keeplogin) . html::label(array(
-                'for' => 'rcmloginkeep'
-        ), $this->gettext('device_private')))) . html::p(array(
+        ), $this->rc->gettext('password'))) . html::div(null, $input_password->show()) . $keeplogin_html) . html::p(array(
                 'class' => 'formbuttons'
         ), html::tag('input', array(
                 'id' => 'rcmloginsubmit',
@@ -1421,14 +1431,16 @@ class mel extends rcube_plugin {
         $table->add_row(array(
                 'class' => $class_tr
         ));
-        $table->add(array(
+        if (!$this->rc->config->get('hide_keep_login_button', false)) {
+            $table->add(array(
                 'class' => 'input'
-        ), $checkbox_keeplogin->show($keeplogin));
-        $table->add(array(
-            'class' => 'title'
-        ), html::label(array(
-            'for' => 'rcmloginkeep'
-        ), $this->gettext('computer_private')));
+            ), $checkbox_keeplogin->show($keeplogin));
+            $table->add(array(
+                'class' => 'title'
+            ), html::label(array(
+                'for' => 'rcmloginkeep'
+            ), $this->gettext('computer_private')));
+        }
 
         $args['content'] = $input_task->show() . $input_action->show() . $input_timezone->show() . $input_url->show() . $login_div . $table->show() . html::p(array(
                 'class' => 'formbuttons'

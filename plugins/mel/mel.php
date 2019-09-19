@@ -1458,7 +1458,7 @@ class mel extends rcube_plugin {
                 'type' => 'submit',
                 'value' => $this->rc->gettext('login')
         )));
-        if ($this->is_internal()) {
+        if ($this->rc->config->get('show_no_bal_message', true) && $this->is_internal()) {
           $args['content'] .= html::div(array(), html::a(array(
                   "href" => "./changepassword/index.php"
           ), $this->gettext('no bal')));

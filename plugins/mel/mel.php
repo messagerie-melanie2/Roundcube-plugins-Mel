@@ -20,9 +20,11 @@
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 
+use LibMelanie\Ldap\Ldap as Ldap;
+
 class mel extends rcube_plugin {
 
-  static $VERSION = "Mélanie2";
+  static $VERSION = "Mél";
 
   /**
    *
@@ -314,7 +316,7 @@ class mel extends rcube_plugin {
               "class" => "mailbox box liitem liborder" . ($current_mailbox ? ' current' : '')
           ), html::tag('a', array(
               "href" => $href,
-              "title" => $infos['mineqmelmailemission'][0]), // TODO: Ouvrir dans un nouvel onglet ?
+              "title" => Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission')), // TODO: Ouvrir dans un nouvel onglet ?
               html::tag('span', array(
                   "class" => "button-inner-m2"
               ), $infos['cn'][0]) .
@@ -336,7 +338,7 @@ class mel extends rcube_plugin {
               "class" => "mailbox box liitem liborder$selected"
           ), html::tag('a', array(
               "href" => $href,
-              "title" => $infos['mineqmelmailemission'][0]), // TODO: Ouvrir dans un nouvel onglet ?
+              "title" => Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission')), // TODO: Ouvrir dans un nouvel onglet ?
               html::tag('span', array(
                   "class" => "button-inner-m2"
               ), $infos['cn'][0])
@@ -363,6 +365,8 @@ class mel extends rcube_plugin {
               $suid = explode('.-.', $uid);
               $suid = $suid[1];
               $infos = self::get_user_infos($suid);
+              // Schéma annuaire spécifique MTES
+              // TODO: Prévoir protentiellement un traitement pour la MCE
               if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
                 // MANTIS 3925: mineqMelRoutage multivalué
                 foreach ($infos['mineqmelroutage'] as $melroutage) {
@@ -376,7 +380,7 @@ class mel extends rcube_plugin {
                 $cn = $infos['cn'][0];
               }
               // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-              if (! $this->is_internal() && (! isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || ! isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
+              if (! $this->is_internal() && (! isset($infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')]) || $infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')][0] != 1 || ! isset($infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')]) || $infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')][0] != 1)) {
                 continue;
               }
             }
@@ -393,7 +397,7 @@ class mel extends rcube_plugin {
                   "class" => "mailbox box liitem" . ($i != count($balp) ? " liborder" : "") . ($current_mailbox ? ' current' : '')
               ), html::tag('a', array(
                   "href" => $href,
-                  "title" => $b['mineqmelmailemission'][0]),
+                  "title" => Ldap::GetMapValue($b, 'user_mel_emission', 'mineqmelmailemission')),
                   html::tag('span', array(
                       "class" => "button-inner-m2"
                   ), $cn) .
@@ -419,7 +423,7 @@ class mel extends rcube_plugin {
                   "class" => "mailbox box liitem" . ($i != count($balp) ? " liborder" : "")
               ), html::tag('a', array(
                   "href" => $href,
-                  "title" => $b['mineqmelmailemission'][0]), 
+                  "title" => Ldap::GetMapValue($b, 'user_mel_emission', 'mineqmelmailemission')), 
                   html::tag('span', array(
                     "class" => "button-inner-m2"
                   ), $cn)
@@ -549,14 +553,14 @@ class mel extends rcube_plugin {
 
     foreach ($identities as $id) {
       foreach ($mailboxes as $mailbox) {
-        if (isset($mailbox['mineqmelmailemissionpr']) && count($mailbox['mineqmelmailemissionpr']) > 0) {
-          $mail = $mailbox['mineqmelmailemissionpr'][0];
+        if (isset($mailbox[Ldap::GetMap('user_mel_emission_principal', 'mineqmelmailemissionpr')]) && count($mailbox[Ldap::GetMap('user_mel_emission_principal', 'mineqmelmailemissionpr')]) > 0) {
+            $mail = Ldap::GetMapValue($mailbox, 'user_mel_emission_principal', 'mineqmelmailemissionpr');
         }
-        else if (isset($mailbox['mineqmelmailemission']) && count($mailbox['mineqmelmailemission']) > 0) {
-          $mail = $mailbox['mineqmelmailemission'][0];
+        else if (isset($mailbox[Ldap::GetMap('user_mel_emission', 'mineqmelmailemission')]) && count($mailbox[Ldap::GetMap('user_mel_emission', 'mineqmelmailemission')]) > 0) {
+            $mail = Ldap::GetMapValue($mailbox, 'user_mel_emission', 'mineqmelmailemission');
         }
-        else if (isset($mailbox['mail']) && count($mailbox['mail']) > 0) {
-          $mail = $mailbox['mail'][0];
+        else if (isset($mailbox[Ldap::GetMap('user_mel_reception', 'mail')]) && count($mailbox[Ldap::GetMap('user_mel_reception', 'mail')]) > 0) {
+            $mail = Ldap::GetMapValue($mailbox, 'user_mel_reception', 'mail');
         }
         else {
           continue;
@@ -567,6 +571,8 @@ class mel extends rcube_plugin {
             $suid = explode('.-.', $uid);
             $suid = $suid[1];
             $infos = self::get_user_infos($suid);
+            // Schéma annuaire spécifique MTES
+            // TODO: Prévoir protentiellement un traitement pour la MCE
             if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
               // MANTIS 3925: mineqMelRoutage multivalué
               foreach ($infos['mineqmelroutage'] as $melroutage) {
@@ -579,6 +585,8 @@ class mel extends rcube_plugin {
             }
           }
           else {
+            // Schéma annuaire spécifique MTES
+            // TODO: Prévoir protentiellement un traitement pour la MCE
             // MANTIS 3925: mineqMelRoutage multivalué
             foreach ($mailbox['mineqmelroutage'] as $melroutage) {
               if (strpos($melroutage, '%') !== false) {
@@ -681,7 +689,7 @@ class mel extends rcube_plugin {
       }
     }
     $args['user_name'] = $infos['cn'][0];
-    $args['user_email'] = $infos['mineqmelmailemission'][0];
+    $args['user_email'] = Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission');
     if (mel_logs::is(mel_logs::INFO))
       mel_logs::get_instance()->log(mel_logs::INFO, "[user_create] Création de l'utilisateur '" . $args['user_name'] . "@" . $args['host'] . "' dans la base de données Roundcube");
       // Vérifier que si l'on doit créer les conteneurs
@@ -1686,8 +1694,8 @@ class mel extends rcube_plugin {
     unset($infos['count']);
     foreach ($infos as $i) {
       // MANTIS 3702: Utiliser mineqMelmailEmissionPR pour determiner l'adresse d'emission
-      if (isset($i['mineqmelmailemissionpr'])) {
-        $mails = $i['mineqmelmailemissionpr'];
+      if (Ldap::issetMap($i, 'user_mel_emission', 'mineqmelmailemission')) {
+        $mails = Ldap::GetMapValues($infos, 'user_mel_emission', 'mineqmelmailemission');
         // MANTIS 3334: Gestion des adresses mail multiple pour les identités
         if ($i['mineqmelmailemission']['count'] > $mails['count']) {
           unset($mails['count']);

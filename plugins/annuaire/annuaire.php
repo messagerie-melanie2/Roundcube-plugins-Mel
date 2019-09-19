@@ -21,7 +21,8 @@
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 
-use LibMelanie\Ldap\Ldap;
+use LibMelanie\Ldap\Ldap as Ldap;
+
 
 class annuaire extends rcube_plugin
 {

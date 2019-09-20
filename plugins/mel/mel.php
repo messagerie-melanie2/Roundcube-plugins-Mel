@@ -688,7 +688,8 @@ class mel extends rcube_plugin {
         }
       }
     }
-    $args['user_name'] = $infos['cn'][0];
+    // Default user name
+    $args['user_name'] = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
     $args['user_email'] = Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission');
     if (mel_logs::is(mel_logs::INFO))
       mel_logs::get_instance()->log(mel_logs::INFO, "[user_create] Création de l'utilisateur '" . $args['user_name'] . "@" . $args['host'] . "' dans la base de données Roundcube");
@@ -700,8 +701,9 @@ class mel extends rcube_plugin {
     $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
     $calendar->id = $args['user'];
     if (! $calendar->load()) {
+      $default_calendar_name = $this->rc->config->get('default_calendar_name', null);
       // Le calendrier ne se charge pas, il faut le créer
-      $calendar->name = $args['user_name'];
+      $calendar->name = isset($default_calendar_name) ? $default_calendar_name : $args['user_name'];
       $calendar->owner = $args['user'];
       // Création de l'agenda
       if ($calendar->save()) {
@@ -724,8 +726,9 @@ class mel extends rcube_plugin {
     $addressbook = new LibMelanie\Api\Melanie2\Addressbook($user);
     $addressbook->id = $args['user'];
     if (! $addressbook->load()) {
+      $default_addressbook_name = $this->rc->config->get('default_addressbook_name', null);
       // Le carnet ne se charge pas, il faut le créer
-      $addressbook->name = $args['user_name'];
+      $addressbook->name = isset($default_addressbook_name) ? $default_addressbook_name : $args['user_name'];
       $addressbook->owner = $args['user'];
       // Création du carnet d'adresses
       if ($addressbook->save()) {
@@ -741,8 +744,9 @@ class mel extends rcube_plugin {
     $taskslist = new LibMelanie\Api\Melanie2\Taskslist($user);
     $taskslist->id = $args['user'];
     if (! $taskslist->load()) {
+      $default_taskslist_name = $this->rc->config->get('default_taskslist_name', null);
       // la liste de tâches ne se charge pas, il faut la créer
-      $taskslist->name = $args['user_name'];
+      $taskslist->name = isset($default_taskslist_name) ? $default_taskslist_name : $args['user_name'];
       $taskslist->owner = $args['user'];
       // Création de la liste de tâches
       if ($taskslist->save()) {

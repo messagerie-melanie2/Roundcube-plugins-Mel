@@ -23,6 +23,8 @@ $labels['mel'] = 'Mél';
 $labels['types'] = 'Types';
 $labels['elements'] = 'Liste des ressources';
 
+$labels['logout'] = 'Se déconnecter';
+
 
 // Resources
 $labels['resources'] = 'Mes ressources';

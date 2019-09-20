@@ -76,7 +76,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 		var disconnect_link = $('<a>');
 		disconnect_link.attr('href', './?_task=logout');
 		disconnect_link.attr('onclick', 'return rcmail.command(\'switch-task\',\'logout\',this,event)');
-		disconnect_link.text(rcmail.get_label('right_panel.logout'))
+		disconnect_link.text(rcmail.get_label('mel.logout'))
 		disconnect.append(disconnect_link);
 		$('#settings-sections').append(disconnect);
 	}

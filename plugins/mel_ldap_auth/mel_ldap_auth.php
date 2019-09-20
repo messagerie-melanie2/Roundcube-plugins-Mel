@@ -93,8 +93,6 @@ class mel_ldap_auth extends rcube_plugin {
       return $args;
     }
 
-    $args['valid'] = true;
-
     if ($this->rc->config->get('enable_auth_protection', false)) {
       // Controle du nb de connexions en echecs
       // =====================================

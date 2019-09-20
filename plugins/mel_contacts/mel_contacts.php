@@ -144,10 +144,14 @@ class mel_contacts extends rcube_plugin {
       $hidden_contacts = $this->rc->config->get('hidden_contacts', array());
       // attempt to create a default calendar for this user
       if (! $this->has_principal) {
-        $infos = \mel::get_user_infos($this->user->uid);
+        $default_addressbook_name = $this->rc->config->get('default_addressbook_name', null);
+        if (!isset($default_addressbook_name)) {
+          $infos = \mel::get_user_infos($this->user->uid);
+          $default_addressbook_name = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
+        }
         $addressbook = new Melanie2\Addressbook($this->user);
         $addressbook->id = $this->user->uid;
-        $addressbook->name = $infos['cn'][0];
+        $addressbook->name = $default_addressbook_name;
         $addressbook->owner = $this->user->uid;
         $ret = $addressbook->save();
         if (! is_null($ret)) {

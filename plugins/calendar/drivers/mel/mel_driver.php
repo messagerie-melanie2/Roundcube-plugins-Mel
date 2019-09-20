@@ -182,8 +182,12 @@ class mel_driver extends calendar_driver {
 
       // attempt to create a default calendar for this user
       if (! $this->has_principal) {
-        $infos = mel::get_user_infos($this->user->uid);
-        if ($this->create_calendar(array('id' => $this->user->uid,'name' => $infos['cn'][0],'color' => $this->_random_color()))) {
+        $default_calendar_name = $this->rc->config->get('default_calendar_name', null);
+        if (!isset($default_calendar_name)) {
+          $infos = mel::get_user_infos($this->user->uid);
+          $default_calendar_name = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
+        }
+        if ($this->create_calendar(array('id' => $this->user->uid, 'name' => $default_calendar_name, 'color' => $this->_random_color()))) {
           // Création du default calendar
           $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;

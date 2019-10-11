@@ -1828,7 +1828,7 @@ class mel_driver extends calendar_driver {
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;
         $deleted_exceptions[] = new DateTime($_exception->recurrenceId);
-        $recurrence['EXCEPTIONS'][] = $e;
+        $recurrence['EXCEPTIONS'][$e['id']] = $e;
       }
     }
     // Ajoute les dates deleted

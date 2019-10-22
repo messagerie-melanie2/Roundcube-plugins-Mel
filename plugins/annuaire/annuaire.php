@@ -18,15 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// Chargement de la librairie ORM
-@include_once 'includes/libm2.php';
-
-use LibMelanie\Ldap\Ldap as Ldap;
-
+require_once 'lib/drivers/driver_annuaire.php';
 
 class annuaire extends rcube_plugin
 {
-
     /**
      *
      * @var string
@@ -156,21 +151,11 @@ class annuaire extends rcube_plugin
      */
     function annuaire_actions()
     {
-        // Recuperation du service
-        if (! isset($_SESSION['annuaire_user_service'])) {
-            $_SESSION['annuaire_user_service'] = $this->get_user_service($this->rc->user->get_username());
-        }
-        // Get serveur
-        $this->server = LibMelanie\Config\Ldap::$SEARCH_LDAP;
-
-        $this->base_dn = rcube_utils::get_input_value('_base', rcube_utils::INPUT_GPC);
-        $this->source = rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC);
+        driver_annuaire::get_instance()->setBaseDn(rcube_utils::get_input_value('_base', rcube_utils::INPUT_GPC));
+        driver_annuaire::get_instance()->setSource(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
         $find = rcube_utils::get_input_value('_find', rcube_utils::INPUT_GPC);
         $search = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GPC);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
-
-        // Get instance LDAP from ORM
-        $this->ldap = Ldap::GetInstance($this->server);
 
         // load localization
         $this->add_texts('localization/', true);
@@ -179,10 +164,10 @@ class annuaire extends rcube_plugin
         $this->load_config();
 
         // Set the filter
-        $this->get_filter_from_search($search);
+        driver_annuaire::get_instance()->get_filter_from_search($search);
 
-        if ($this->rc->task == 'addressbook' && ! isset($this->base_dn) && ! isset($search) && ! isset($find)) {
-            $this->base_dn = $this->rc->config->get('annuaire_base_dn', null);
+        if ($this->rc->task == 'addressbook' && !driver_annuaire::get_instance()->issetBaseDn() && ! isset($search) && ! isset($find)) {
+            driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
             $source = $this->rc->config->get('annuaire_source', null);
 
             $this->include_script('annuaire.js');
@@ -227,29 +212,31 @@ class annuaire extends rcube_plugin
             $this->rc->output->set_pagetitle($this->gettext('annuaire'));
             $this->rc->output->set_env('source', $source);
             $this->rc->output->send('annuaire.annuaire');
-        } else if (isset($this->base_dn) || isset($this->source) || isset($search) || isset($find)) {
-            if ($this->source == $this->rc->config->get('annuaire_source', null)) {
-                if (isset($this->base_dn)) {
-                    $this->base_dn = rcube_ldap::dn_decode($this->base_dn);
+        } else if (driver_annuaire::get_instance()->issetBaseDn() || driver_annuaire::get_instance()->issetSource() || isset($search) || isset($find)) {
+            if (driver_annuaire::get_instance()->getSource() == $this->rc->config->get('annuaire_source', null)) {
+                if (driver_annuaire::get_instance()->issetBaseDn()) {
+                    $base_dn = driver_annuaire::get_instance()->getBaseDn();
+                    $base_dn = rcube_ldap::dn_decode($base_dn);
+                    driver_annuaire::get_instance()->setBaseDn($base_dn);
                 } else {
-                    $this->base_dn = $this->rc->config->get('annuaire_base_dn', null);
+                    driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
                 }
 
                 if (isset($find)) {
                     $find = rcube_ldap::dn_decode($find);
                     // Get recursive elements list
-                    $elements = $this->get_recurse_elements($find);
+                    $elements = driver_annuaire::get_instance()->get_recurse_elements($find);
                 } else {
                     // Get elements
-                    $elements = $this->get_elements(isset($search) && ! empty($search) && strlen($search) >= 3);
+                    $elements = driver_annuaire::get_instance()->get_elements(isset($search) && ! empty($search) && strlen($search) >= 3);
                 }
 
-                $id = rcube_ldap::dn_encode($this->base_dn) . '-' . $this->source;
+                $id = rcube_ldap::dn_encode(driver_annuaire::get_instance()->getBaseDn()) . '-' . driver_annuaire::get_instance()->getSource();
             } else {
                 $search_mode = (int) $this->rc->config->get('addressbook_search_mode');
                 $elements = [];
 
-                $contacts = $this->rc->get_address_book($this->source);
+                $contacts = $this->rc->get_address_book(driver_annuaire::get_instance()->getSource());
 
                 // Lister les groupes
                 if ($contacts->groups) {
@@ -265,7 +252,7 @@ class annuaire extends rcube_plugin
                                 $row_id = 'G' . $group['ID'] . '-' . $i;
                                 $email_format = format_email_recipient($email, $name);
 
-                                $html = $this->get_html([
+                                $html = driver_annuaire::get_instance()->get_html([
                                     'name' => $name,
                                     'description' => $email,
                                     'class' => $classname,
@@ -289,7 +276,7 @@ class annuaire extends rcube_plugin
                             $classname = 'list';
 
                             if (! empty($name)) {
-                                $html = $this->get_html([
+                                $html = driver_annuaire::get_instance()->get_html([
                                     'name' => $name,
                                     'description' => intval($result->count),
                                     'class' => $classname,
@@ -336,7 +323,7 @@ class annuaire extends rcube_plugin
                         $email_format = format_email_recipient($email, $name);
                         $classname = $row['_type'] == 'group' ? 'list' : 'person';
 
-                        $html = $this->get_html([
+                        $html = driver_annuaire::get_instance()->get_html([
                             'name' => $name,
                             'description' => $email,
                             'class' => $classname,
@@ -354,7 +341,7 @@ class annuaire extends rcube_plugin
                         );
                     }
                 }
-                $id = $this->source;
+                $id = driver_annuaire::get_instance()->getSource();
             }
             // send output
             header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
@@ -363,13 +350,13 @@ class annuaire extends rcube_plugin
                 echo json_encode([
                     'action' => 'plugin.annuaire',
                     'elements' => $elements,
-                    'source' => $this->source,
+                    'source' => driver_annuaire::get_instance()->getSource(),
                     'unlock' => $unlock
                 ]);
             } else if (isset($find)) {
                 echo json_encode([
                     'action' => 'plugin.annuaire',
-                    'find' => rcube_ldap::dn_encode($find) . '-' . $this->source,
+                    'find' => rcube_ldap::dn_encode($find) . '-' . driver_annuaire::get_instance()->getSource(),
                     'elements' => $elements,
                     'unlock' => $unlock
                 ]);
@@ -413,7 +400,7 @@ class annuaire extends rcube_plugin
                         'addressbook'
                     ];
                 }
-                $html = $this->get_html([
+                $html = driver_annuaire::get_instance()->get_html([
                     'id' => $id,
                     'name' => $source['name'],
                     'description' => '',
@@ -450,373 +437,6 @@ class annuaire extends rcube_plugin
     }
 
     /**
-     * Set the filter from the search and the config
-     *
-     * @param string $search
-     *            The string to search
-     */
-    private function get_filter_from_search($search = null)
-    {
-        if (! isset($search) || empty($search) || strlen($search) < 3) {
-            $this->filter = $this->rc->config->get('annuaire_default_filter', 'objectclass=*');
-        } else {
-            if (is_numeric($search)) {
-                $searchField = 'telephonenumber';
-                $this->filter = "$searchField=*$search";
-            } else {
-                $searchField = $this->rc->config->get('annuaire_search_field', 'cn');
-                $this->filter = "$searchField=$search*";
-            }
-        }
-    }
-
-    /**
-     * Get recursive elements from $this->base_dn to $find
-     *
-     * @param string $find
-     *            DN to find
-     * @return array
-     */
-    private function get_recurse_elements($find)
-    {
-        $_elements = $this->get_elements();
-
-        // Parcours les elements pour trouver le bon
-        foreach ($_elements as $key => $_element) {
-            if ($find === $_element['dn']) {
-                return $_elements;
-            } else if (in_array('folder', $_element['classes']) && strpos($find, $_element['dn']) !== false) {
-                $this->base_dn = $_element['dn'];
-                $_elements[$key]['children'] = $this->get_recurse_elements($find);
-                $_elements[$key]['collapsed'] = false;
-                break;
-            }
-        }
-        return $_elements;
-    }
-
-    /**
-     * Get elements to an array based on base_dn and filter
-     *
-     * @return array
-     */
-    private function get_elements($search = false)
-    {
-        $folders = [];
-        $lists = [];
-        $persons = [];
-        $applications = [];
-        $services = [];
-        $functions = [];
-        $units = [];
-        $resources = [];
-        $this->ldap->anonymous();
-        $attributes = [
-            'objectclass',
-            'ou',
-            'cn',
-            'description',
-            'mineqportee',
-            'mineqtypeentree',
-            'mineqordreaffichage',
-            'mineqpublicationphotointranet',
-            'mailpr',
-            'uid'
-        ];
-        if ($search) {
-            $sr = $this->ldap->search($this->base_dn, $this->filter, $attributes, 0, 100);
-        } else {
-            $sr = $this->ldap->ldap_list($this->base_dn, $this->filter, $attributes);
-        }
-
-        if ($sr !== false) {
-            $infos = $this->ldap->get_entries($sr);
-
-            unset($infos['count']);
-            foreach ($infos as $info) {
-                if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '00')) {
-                    continue;
-                } else if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '20')) {
-                    if (strpos($info['dn'], $_SESSION['annuaire_user_service']) === false) {
-                        continue;
-                    }
-                }
-                $name = '';
-                $description = '';
-                $class = '';
-                $order = '';
-                $title = '';
-                $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source;
-                foreach ($info['objectclass'] as $k => $v) {
-                    switch ($v) {
-                        case 'mineqMelListe':
-                        case 'mineqMelListeAbonnement':
-                            $name = $info['cn'][0];
-                            $email = $info['mailpr'][0];
-                            $title = $name;
-                            $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-                            $class = 'list';
-                            $html = $this->get_html([
-                                'name' => $name,
-                                'description' => $description,
-                                'class' => $class,
-                                'title' => $title,
-                                'gototree' => $search
-                            ]);
-                            $lists[] = array(
-                                'id' => $id,
-                                'dn' => $info['dn'],
-                                'email' => $email,
-                                'mail' => format_email_recipient($email, $name),
-                                'classes' => [
-                                    $class,
-                                    'object'
-                                ],
-                                'order' => $order,
-                                'html' => $html
-                            );
-                            break;
-                        case 'organizationalUnit':
-                            $name = $info['cn'][0];
-                            if (empty($name)) {
-                                $name = $info['description'][0];
-                            }
-                            $title = $name;
-                            if (strpos($name, ' (')) {
-                                $name = explode(' (', trim($name), 2);
-                                $description = substr($name[1], 0, strlen($name[1]) - 1);
-                                $name = $name[0];
-                            }
-                            $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-                            $class = 'folder';
-                            $html = $this->get_html([
-                                'name' => $name,
-                                'description' => $description,
-                                'class' => $class,
-                                'title' => $title,
-                                'gototree' => $search
-                            ]);
-                            $folders[] = array(
-                                'id' => $id,
-                                'dn' => $info['dn'],
-                                'email' => $email,
-                                'classes' => [
-                                    $class
-                                ],
-                                'order' => $order,
-                                'collapsed' => true,
-                                'html' => $html,
-                                'children' => [
-                                    [
-                                        'id' => $id . '-child',
-                                        'classes' => [
-                                            'child'
-                                        ],
-                                        'html' => '<span></span>'
-                                    ]
-                                ]
-                            );
-                            break;
-                        case 'mineqMelBoite':
-                        case 'mineqMelDP':
-                            $name = $info['cn'][0];
-                            $email = $info['mailpr'][0];
-                            $uid = $info['uid'][0];
-                            $title = '[' . $info['mineqtypeentree'][0] . '] ' . $name;
-                            $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-                            switch ($info['mineqtypeentree'][0]) {
-                                case 'BALI':
-                                default:
-                                    if (isset($info['mineqpublicationphotointranet'][0]) && $info['mineqpublicationphotointranet'][0]) {
-                                        $class = 'person';
-                                        $classes = [
-                                            $class,
-                                            'object'
-                                        ];
-                                    } else {
-                                        $class = 'person nophoto';
-                                        $classes = [
-                                            'person',
-                                            'nophoto',
-                                            'object'
-                                        ];
-                                    }
-                                    $html = $this->get_html([
-                                        'name'          => $name,
-                                        'description'   => $description,
-                                        'class'         => $class,
-                                        'title'         => $title,
-                                        'gototree'      => $search
-                                    ]);
-                                    $persons[] = array(
-                                        'id'        => $id,
-                                        'uid'       => $uid,
-                                        'dn'        => $info['dn'],
-                                        'email'     => $email,
-                                        'mail'      => format_email_recipient($email, $name),
-                                        'classes'   => $classes,
-                                        'order'     => $order,
-                                        'html'      => $html
-                                    );
-                                    break;
-                                case 'BALA':
-                                    $class = 'application';
-                                    $html = $this->get_html([
-                                        'name'          => $name,
-                                        'description'   => $description,
-                                        'class'         => $class,
-                                        'title'         => $title,
-                                        'gototree'      => $search
-                                    ]);
-                                    $applications[] = array(
-                                        'id'        => $id,
-                                        'uid'       => $uid,
-                                        'dn'        => $info['dn'],
-                                        'email'     => $email,
-                                        'mail'      => format_email_recipient($email, $name),
-                                        'classes'   => [
-                                            $class,
-                                            'object'
-                                        ],
-                                        'order'     => $order,
-                                        'html'      => $html
-                                    );
-                                    break;
-                                case 'BALS':
-                                    $class = 'service';
-                                    $html = $this->get_html([
-                                        'name'          => $name,
-                                        'description'   => $description,
-                                        'class'         => $class,
-                                        'title'         => $title,
-                                        'gototree'      => $search
-                                    ]);
-                                    $services[] = array(
-                                        'id'        => $id,
-                                        'uid'       => $uid,
-                                        'dn'        => $info['dn'],
-                                        'email'     => $email,
-                                        'mail'      => format_email_recipient($email, $name),
-                                        'classes'   => [
-                                            $class,
-                                            'object'
-                                        ],
-                                        'order'     => $order,
-                                        'html'      => $html
-                                    );
-                                    break;
-                                case 'BALF':
-                                    $class = 'function';
-                                    $html = $this->get_html([
-                                        'name'          => $name,
-                                        'description'   => $description,
-                                        'class'         => $class,
-                                        'title'         => $title,
-                                        'gototree'      => $search
-                                    ]);
-                                    $functions[] = array(
-                                        'id'        => $id,
-                                        'uid'       => $uid,
-                                        'dn'        => $info['dn'],
-                                        'email'     => $email,
-                                        'mail'      => format_email_recipient($email, $name),
-                                        'classes'   => [
-                                            $class,
-                                            'object'
-                                        ],
-                                        'order'     => $order,
-                                        'html'      => $html
-                                    );
-                                    break;
-                                case 'BALU':
-                                    $class = 'unit';
-                                    $html = $this->get_html([
-                                        'name'          => $name,
-                                        'description'   => $description,
-                                        'class'         => $class,
-                                        'title'         => $title,
-                                        'gototree'      => $search
-                                    ]);
-                                    $units[] = array(
-                                        'id'        => $id,
-                                        'uid'       => $uid,
-                                        'dn'        => $info['dn'],
-                                        'email'     => $email,
-                                        'mail'      => format_email_recipient($email, $name),
-                                        'classes'   => [
-                                            $class,
-                                            'object'
-                                        ],
-                                        'order'     => $order,
-                                        'html'      => $html
-                                    );
-                                    break;
-                                case 'BALR':
-                                    $class = 'resource';
-                                    $html = $this->get_html([
-                                        'name'          => $name,
-                                        'description'   => $description,
-                                        'class'         => $class,
-                                        'title'         => $title,
-                                        'gototree'      => $search
-                                    ]);
-                                    $resources[] = array(
-                                        'id'        => $id,
-                                        'uid'       => $uid,
-                                        'dn'        => $info['dn'],
-                                        'email'     => $email,
-                                        'mail'      => format_email_recipient($email, $name),
-                                        'classes'   => [
-                                            $class,
-                                            'object'
-                                        ],
-                                        'order'     => $order,
-                                        'html'      => $html
-                                    );
-                                    break;
-                            }
-
-                            break;
-                    }
-                }
-            }
-        }
-        // Sort folders by name
-        usort($folders, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort lists by name
-        usort($lists, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort persons by name
-        usort($persons, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort applications by name
-        usort($applications, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort services by name
-        usort($services, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort functions by name
-        usort($functions, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort units by name
-        usort($units, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        // Sort resources by name
-        usort($resources, function ($a, $b) {
-            return strtolower($a['order']) > strtolower($b['order']);
-        });
-        return array_merge($folders, $persons, $services, $functions, $units, $resources, $applications, $lists);
-    }
-
-    /**
      * Affiche initial la liste de l'annuaire
      *
      * @param array $attrib
@@ -825,11 +445,11 @@ class annuaire extends rcube_plugin
     public function annuaire_list($attrib)
     {
         // add id to message list table if not specified
-        if (! strlen($attrib['id']))
+        if (!strlen($attrib['id']))
             $attrib['id'] = 'annuaire-list';
 
         if ($this->rc->task == 'addressbook') {
-            $results = $this->get_elements();
+            $results = driver_annuaire::get_instance()->get_elements();
             $this->rc->output->set_env('annuaire_list', $results);
         }
 
@@ -860,69 +480,5 @@ class annuaire extends rcube_plugin
         $this->rc->output->set_env('blankpage', $attrib['src'] ? $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
 
         return $this->rc->output->frame($attrib);
-    }
-
-    /**
-     * **** PRIVATE ***
-     */
-    /**
-     * Retourne le contenu html d'un objet
-     *
-     * @param array $object
-     * @return string
-     */
-    private function get_html($object)
-    {
-        $content = html::span([
-            'id' => 'l:' . $object['id'],
-            'class' => 'name',
-            'title' => $object['title']
-        ], $object['name']);
-        $content .= html::span([
-            'class' => 'description'
-        ], $object['description']);
-        if ($object['gototree']) {
-            $content .= html::div([
-                'class' => 'gototree button',
-                'title' => $this->gettext('gototree'),
-                'onclick' => rcmail_output::JS_OBJECT_NAME . '.annuaire_gototree(this, event); return false'
-            ], '&nbsp;');
-        }
-        return $content;
-    }
-
-    /**
-     * Récupère
-     *
-     * @param string $uid
-     *            Uid de l'utilisateur
-     */
-    private function get_user_service($uid)
-    {
-        // Récupération du DN en fonction de l'UID
-        $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
-        $base_dn = $user_infos['dn'];
-        $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
-        $service = null;
-        // Initialisation du filtre LDAP
-        $base_filter = "(mineqTypeEntree=NSER)";
-        // Récupération de l'instance depuis l'ORM
-        $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-        if ($ldap->anonymous()) {
-            do {
-                $tmp = explode(',', $base_dn, 2);
-                $filter = "(&(" . $tmp[0] . ")$base_filter)";
-                $base_dn = $tmp[1];
-                // Search LDAP
-                $result = $ldap->ldap_list($base_dn, $filter, [
-                    'cn'
-                ]);
-            } while ((! isset($result) || $ldap->count_entries($result) === 0) && strpos($base_dn, 'ou=') === 0);
-            if (isset($result) && $ldap->count_entries($result) == 1) {
-                $infos = $ldap->get_entries($result);
-                $service = $infos[0]['dn'];
-            }
-        }
-        return $service;
     }
 }

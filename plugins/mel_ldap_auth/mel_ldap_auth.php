@@ -131,7 +131,7 @@ class mel_ldap_auth extends rcube_plugin {
       if (LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $pass)) {
         $auth_ok = true;
         // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-        if (!$this->is_internal() && (!isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || !isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
+        if (!mel::is_internal() && (!isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || !isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
           $args['error'] = 491;
           $args['abort'] = true;
           // Suppression du cookie
@@ -217,13 +217,5 @@ class mel_ldap_auth extends rcube_plugin {
       }
     }
     return $args;
-  }
-  
-  /**
-   * Défini si on est dans une instance interne ou extene de l'application
-   * Permet la selection de la bonne url
-   */
-  private function is_internal() {
-    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
   }
 }

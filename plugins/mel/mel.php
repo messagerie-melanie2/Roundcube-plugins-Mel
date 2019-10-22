@@ -380,7 +380,7 @@ class mel extends rcube_plugin {
                 $cn = $infos['cn'][0];
               }
               // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-              if (! $this->is_internal() && (! isset($infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')]) || $infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')][0] != 1 || ! isset($infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')]) || $infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')][0] != 1)) {
+              if (!mel::is_internal() && (!isset($infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')]) || $infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')][0] != 1 || ! isset($infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')]) || $infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')][0] != 1)) {
                 continue;
               }
             }
@@ -1462,7 +1462,7 @@ class mel extends rcube_plugin {
                 'type' => 'submit',
                 'value' => $this->rc->gettext('login')
         )));
-        if ($this->rc->config->get('show_no_bal_message', true) && $this->is_internal()) {
+        if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
           $args['content'] .= html::div(array(), html::a(array(
                   "href" => "./changepassword/index.php"
           ), $this->gettext('no bal')));
@@ -1812,8 +1812,8 @@ class mel extends rcube_plugin {
    * Défini si on est dans une instance interne ou extene de l'application
    * Permet la selection de la bonne url
    */
-  private function is_internal() {
-    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
+  public static function is_internal() {
+    return rcmail::get_instance()->config->get('is_internal', false);
   }
   /**
    * Retourne l'adresse ip

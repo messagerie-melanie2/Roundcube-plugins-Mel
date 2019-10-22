@@ -485,7 +485,7 @@ class mel_mobile extends rcube_plugin {
 
           }
           // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-          if (! $this->is_internal() && (! isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || ! isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
+          if (!mel::is_internal() && (! isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || ! isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
             continue;
           }
         }
@@ -609,14 +609,6 @@ class mel_mobile extends rcube_plugin {
       $this->user_bal = $this->user_objet_share;
     }
   }
-  /**
-   * Défini si on est dans une instance interne ou extene de l'application
-   * Permet la selection de la bonne url
-   */
-  private function is_internal() {
-    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
-  }
-
   /**
    * **** COMMANDS *****
    */

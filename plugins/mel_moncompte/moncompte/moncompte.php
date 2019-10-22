@@ -174,7 +174,7 @@ class Moncompte {
 					}
 
 					// Compte bureautique et acces intranet ?
-					if (($this->myBal->getBureautique()) && $this->is_internal()) {
+					if (($this->myBal->getBureautique()) && mel::is_internal()) {
 						$this->rc->output->set_env('moncompte_inter_autorise', true);
 					} else {
 						$this->rc->output->set_env('moncompte_inter_autorise', false);
@@ -364,8 +364,8 @@ class Moncompte {
 	 */
 	public function valideCGUinter($attrib) {
 
-		//		if (($this->myBal->getBureautique()) && $this->is_internal()) {
-		if ($this->is_internal()) {
+		//		if (($this->myBal->getBureautique()) && mel::is_internal()) {
+		if (mel::is_internal()) {
 			$tab = new html_table();
 
 	// CGU pour DDI
@@ -962,11 +962,6 @@ class Moncompte {
 
 
 	/****** PRIVATE ****/
-
-	private function is_internal() {
-		return (!isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
-	}
-
 	/**
 	 * Méthode appelé pour le changement de mot de passe
 	 */

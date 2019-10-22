@@ -114,7 +114,7 @@ class mel_nextcloud extends rcube_plugin {
    */
   function logout_after($args) {
     $rcmail = rcmail::get_instance();
-    if ($this->is_internal()) {
+    if (mel::is_internal()) {
       $nextcloud_url = $rcmail->config->get('nextcloud_url');
     }
     else {
@@ -148,7 +148,7 @@ class mel_nextcloud extends rcube_plugin {
    */
   private function login_nextcloud() {
     $rcmail = rcmail::get_instance();
-    if ($this->is_internal()) {
+    if (mel::is_internal()) {
       $nextcloud_url = $rcmail->config->get('nextcloud_url');
     }
     else {
@@ -225,12 +225,5 @@ class mel_nextcloud extends rcube_plugin {
     }
 
     return $iv;
-  }
-  /**
-   * Défini si on est dans une instance interne ou extene de l'application
-   * Permet la selection de la bonne url
-   */
-  private function is_internal() {
-    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
   }
 }

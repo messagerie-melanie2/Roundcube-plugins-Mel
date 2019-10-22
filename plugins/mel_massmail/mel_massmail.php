@@ -59,7 +59,7 @@ class mel_massmail extends rcube_plugin {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::message_sent(" . var_export($args, true) . ")");
     // MANTIS 0004388: Ne pas faire de blocage sur envois massifs depuis Internet si l'auth s'est faite avec la double auth
-    if ($this->is_internal() || isset($_SESSION['mel_doubleauth_2FA_login'])) {
+    if (mel::is_internal() || isset($_SESSION['mel_doubleauth_2FA_login'])) {
       return $args;
     }
     // Configuration des intervals d'envois maximum autorisé
@@ -184,14 +184,6 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
       }
     }
     return $args;
-  }
-  
-  /**
-   * Défini si on est dans une instance interne ou externe de l'application
-   * Permet la selection de la bonne url
-   */
-  private function is_internal() {
-    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
   }
   
   /**

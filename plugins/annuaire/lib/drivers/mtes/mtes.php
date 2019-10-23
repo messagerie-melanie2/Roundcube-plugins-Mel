@@ -2,7 +2,7 @@
 /**
  * Plugin Annuaire
  *
- * Driver par defaut pour le plugin Annuaire
+ * Driver MTES pour le plugin Annuaire
  *
  * Permet d'afficher l'annuaire de Mél dans l'interface des contacts
  *
@@ -17,8 +17,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-class mtes_driver extends default_driver {
+class mtes_driver_annuaire extends default_driver_annuaire {
   /**
    * Liste des attributs nécessaire pour les objets
    *

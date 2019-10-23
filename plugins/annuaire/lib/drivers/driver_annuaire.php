@@ -17,7 +17,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-require_once 'default_driver/default_driver.php';
+require_once __DIR__ . '/default/default.php';
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
 
@@ -27,7 +27,7 @@ class driver_annuaire {
   /**
    * Singleton
    *
-   * @var Driver
+   * @var driver_annuaire
    */
   private static $driver;
   /**
@@ -69,12 +69,13 @@ class driver_annuaire {
   /**
    * Return the singleton instance
    *
-   * @return Driver
+   * @return driver_annuaire
    */
   public static function get_instance() {
     if (!isset(self::$driver)) {
-      $drivername = strtolower(rcmail::get_instance()->config->get('annuaire_driver', 'default_driver'));
+      $drivername = strtolower(rcmail::get_instance()->config->get('annuaire_driver', 'default_driver_annuaire'));
       require_once $drivername . '/' . $drivername . '.php';
+      $drivername = $drivername . "_driver_annuaire";
       self::$driver = new $drivername();
     }
     return self::$driver;

@@ -1995,7 +1995,7 @@ class mel_driver extends calendar_driver {
       $_attachment->path = $event->uid . '/' . $this->calendars[$event->calendar]->owner;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
-      $_attachment->data = file_get_contents($attachment['path']);
+      $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
       $ret = $_attachment->save();
       return ! is_null($ret);
     }

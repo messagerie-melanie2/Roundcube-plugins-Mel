@@ -19,6 +19,7 @@
  */
 // Chargement de la librairie ORM
 @include_once 'includes/libm2.php';
+require_once 'lib/drivers/driver_mel.php';
 
 use LibMelanie\Ldap\Ldap as Ldap;
 
@@ -269,15 +270,7 @@ class mel extends rcube_plugin {
       $_SESSION['page'] = 1;
 
       if (isset($list_tasks[$this->rc->task]) && in_array($this->rc->action, $list_tasks[$this->rc->task])) {
-        $username = $this->get_username();
-        if (strpos($username, '.-.') !== false) {
-          $susername = explode('.-.', $username);
-          $username = $susername[0];
-          if (isset($susername[1])) {
-            $sbalp = explode('@', $susername[1]);
-            $balpname = $sbalp[0];
-          }
-        }
+        list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->get_username());
         // Récupération de la liste des balp de l'utilisateur
         if ($this->rc->task == 'settings' && ($this->rc->action == 'plugin.managesieve' || $this->rc->action == 'plugin.mel_resources_agendas' || $this->rc->action == 'plugin.mel_resources_contacts' || $this->rc->action == 'plugin.mel_resources_tasks')) {
           // Pour les règles sieve, on n'affiche que les boites gestionnaires
@@ -295,7 +288,7 @@ class mel extends rcube_plugin {
                   "id" => "folderlist-header-m2-settings"
           ), html::tag('span', array(
                   "title" => $this->gettext('mailboxchangetext')
-          ), $infos['cn'][0])), 'folderlistheader-settings');
+          ), driver_mel::get_instance()->getFullname($infos))), 'folderlistheader-settings');
         }
         $content = "";
         if ($this->rc->task == 'mail') {
@@ -319,7 +312,7 @@ class mel extends rcube_plugin {
               "title" => Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission')), // TODO: Ouvrir dans un nouvel onglet ?
               html::tag('span', array(
                   "class" => "button-inner-m2"
-              ), $infos['cn'][0]) .
+              ), driver_mel::get_instance()->getFullname($infos)) .
               html::div(['class' => 'treetoggle ' . $treetoggle], ' ') .
               html::tag('span', ['class' => 'unreadcount'], '')
             )
@@ -341,7 +334,7 @@ class mel extends rcube_plugin {
               "title" => Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission')), // TODO: Ouvrir dans un nouvel onglet ?
               html::tag('span', array(
                   "class" => "button-inner-m2"
-              ), $infos['cn'][0])
+              ), driver_mel::get_instance()->getFullname($infos))
             )
           );
         }
@@ -356,33 +349,25 @@ class mel extends rcube_plugin {
             if ($b['dn'] == "") {
               continue;
             }
-            if ($this->rc->task == 'mail' && isset($hidden_mailboxes[$b['uid'][0]])) {
+            if ($this->rc->task == 'mail' && isset($hidden_mailboxes[driver_mel::get_instance()->getUsername($b)])) {
               continue;
             }
-            $uid = $b['uid'][0];
-            $cn = $b['cn'][0];
-            if (strpos($uid, '.-.') !== false) {
-              $suid = explode('.-.', $uid);
-              $suid = $suid[1];
-              $infos = self::get_user_infos($suid);
-              // Schéma annuaire spécifique MTES
-              // TODO: Prévoir protentiellement un traitement pour la MCE
-              if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
-                // MANTIS 3925: mineqMelRoutage multivalué
-                foreach ($infos['mineqmelroutage'] as $melroutage) {
-                  if (strpos($melroutage, '%') !== false) {
-                    $tmp = explode('@', $melroutage);
-                    $uid = urlencode($uid . "@" . $tmp[1]);
-                    break;
-                  }
-                }
-                $mbox = $suid;
-                $cn = $infos['cn'][0];
-              }
+            $uid = driver_mel::get_instance()->getUsername($b);
+            $cn = driver_mel::get_instance()->getFullname($b);
+            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($uid);
+            if (isset($balpname)) {
+              $infos = self::get_user_infos($balpname);
               // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-              if (!mel::is_internal() && (!isset($infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')]) || $infos[Ldap::GetMap('user_mel_accesinterneta', 'mineqmelaccesinterneta')][0] != 1 || ! isset($infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')]) || $infos[Ldap::GetMap('user_mel_accesinternetu', 'mineqmelaccesinternetu')][0] != 1)) {
+              if (!isset($infos) || !mel::is_internal() && !driver_mel::get_instance()->isInternetAccessEnable($infos)) {
                 continue;
               }
+              // Récupération de la configuration de la boite pour l'affichage
+              $hostname = driver_mel::get_instance()->getRoutage($infos);
+              if (isset($hostname)) {
+                $uid = urlencode($uid . "@" . $hostname);
+              }
+              $mbox = $balpname;
+              $cn = driver_mel::get_instance()->getFullname($infos);
             }
             if ($this->rc->task == 'mail') {
               $current_mailbox = !empty($this->get_account) && urlencode($this->get_account) == $uid;
@@ -566,35 +551,19 @@ class mel extends rcube_plugin {
           continue;
         }
         if (strcasecmp($mail, $id['email']) === 0) {
-          $uid = $mailbox['uid'][0];
-          if (strpos($uid, '.-.') !== false) {
-            $suid = explode('.-.', $uid);
-            $suid = $suid[1];
-            $infos = self::get_user_infos($suid);
-            // Schéma annuaire spécifique MTES
-            // TODO: Prévoir protentiellement un traitement pour la MCE
-            if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
-              // MANTIS 3925: mineqMelRoutage multivalué
-              foreach ($infos['mineqmelroutage'] as $melroutage) {
-                if (strpos($melroutage, '%') !== false) {
-                  $tmp = explode('@', $melroutage);
-                  $uid = urlencode($uid . "@" . $tmp[1]);
-                  break;
-                }
-              }
+          $uid = driver_mel::get_instance()->getUsername($mailbox);
+          list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($uid);
+          if (isset($balpname)) {
+            $infos = self::get_user_infos($balpname);
+            if (isset($infos)) {
+              $hostname = driver_mel::get_instance()->getRoutage($infos);
             }
           }
           else {
-            // Schéma annuaire spécifique MTES
-            // TODO: Prévoir protentiellement un traitement pour la MCE
-            // MANTIS 3925: mineqMelRoutage multivalué
-            foreach ($mailbox['mineqmelroutage'] as $melroutage) {
-              if (strpos($melroutage, '%') !== false) {
-                $tmp = explode('@', $melroutage);
-                $uid = urlencode($uid . "@" . $tmp[1]);
-                break;
-              }
-            }
+            $hostname = driver_mel::get_instance()->getRoutage($mailbox);
+          }
+          if (isset($hostname)) {
+            $uid = urlencode($uid . "@" . $hostname);
           }
           $result[$id['identity_id']] = $uid;
         }
@@ -678,18 +647,14 @@ class mel extends rcube_plugin {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::user_create()");
     $infos = self::get_user_infos($args['user']);
-    if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
-      // MANTIS 3925: mineqMelRoutage multivalué
-      foreach ($infos['mineqmelroutage'] as $melroutage) {
-        if (strpos($melroutage, '%') !== false) {
-          $tmp = explode('@', $melroutage);
-          $args['host'] = $tmp[1];
-          break;
-        }
+    if (isset($infos)) {
+      $hostname = driver_mel::get_instance()->getRoutage($infos);
+      if (isset($hostname)) {
+        $args['host'] = $hostname;
       }
     }
     // Default user name
-    $args['user_name'] = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
+    $args['user_name'] = driver_mel::get_instance()->getFullname($infos);
     $args['user_email'] = Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission');
     if (mel_logs::is(mel_logs::INFO))
       mel_logs::get_instance()->log(mel_logs::INFO, "[user_create] Création de l'utilisateur '" . $args['user_name'] . "@" . $args['host'] . "' dans la base de données Roundcube");
@@ -807,8 +772,8 @@ class mel extends rcube_plugin {
     if (! empty($_SESSION['m2_from_identity'])) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::smtp_connect()");
-      $infos = LibMelanie\Ldap\LDAPMelanie::GetInformationsFromMail($_SESSION['m2_from_identity']);
-      $args['smtp_user'] = $infos['uid'][0];
+      $infos = Ldap::GetUserInfosFromEmail($_SESSION['m2_from_identity']);
+      $args['smtp_user'] = driver_mel::get_instance()->getUsername($infos);
     }
     return $args;
   }
@@ -832,8 +797,7 @@ class mel extends rcube_plugin {
         break;
       }
     }
-    // Positionner le HEADER pour indiquer l'origine du message (internet, intranet)
-    $headers['Received'] = 'from butineur (par ' . $_SERVER["HTTP_X_MINEQPROVENANCE"] . ' [' . $_SERVER["HTTP_X_FORWARDED_FOR"] . ']) by ' . $_SERVER["HTTP_X_FORWARDED_SERVER"] . ' [' . $_SERVER["SERVER_ADDR"] . ']';
+    $headers = driver_mel::get_instance()->setHeadersMessageBeforeSend($headers);
     $args['message']->headers($headers, true);
     return $args;
   }
@@ -931,27 +895,27 @@ class mel extends rcube_plugin {
     if (! empty($this->get_account)) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::render_mailboxlist()");
-      $username = $this->get_username();
-      if (strpos($username, '.-.') !== false) {
+      if (driver_mel::get_instance()->isBalp($this->get_username())) {
         // On est sur une balp
-        $balp_label = 'Boite partag&AOk-e';
-        $balp_name = $this->get_user_bal();
-        $list = $args['list'];
-        foreach ($list as $key => $value) {
-          if ($key == 'INBOX') {
-            $list[$key]['id'] = $balp_label . $this->rc->get_storage()->delimiter . $balp_name;
-            $list[$key]['name'] = 'INBOX';
-            $list[$key]['class'] = 'INBOX';
-          }
-          else if ($key == $balp_label) {
-            if (isset($value['folders'][$balp_name])) {
-              $folders = $value['folders'][$balp_name]['folders'];
-              $list = array_merge($list, $value['folders'][$balp_name]['folders']);
+        $balp_label = driver_mel::get_instance()->getBalpLabel();
+        if (isset($balp_label)) {
+          $balp_name = $this->get_user_bal();
+          $list = $args['list'];
+          foreach ($list as $key => $value) {
+            if ($key == 'INBOX') {
+              $list[$key]['id'] = $balp_label . $this->rc->get_storage()->delimiter . $balp_name;
+              $list[$key]['name'] = 'INBOX';
+              $list[$key]['class'] = 'INBOX';
+            }
+            else if ($key == $balp_label) {
+              if (isset($value['folders'][$balp_name])) {
+                $list = array_merge($list, $value['folders'][$balp_name]['folders']);
+                unset($list[$key]);
+              }
+            }
+            elseif ($key != 'Corbeille') {
               unset($list[$key]);
             }
-          }
-          elseif ($key != 'Corbeille') {
-            unset($list[$key]);
           }
         }
         $args['list'] = $list;
@@ -971,16 +935,17 @@ class mel extends rcube_plugin {
     if (! empty($this->get_account)) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::set_folder_name()");
-      $username = $this->get_username();
-      if (($args['folder'] == 'INBOX') && strpos($username, '.-.') !== false) {
+      if (($args['folder'] == 'INBOX') && driver_mel::get_instance()->isBalp($this->get_username())) {
         // On est sur une balp
-        $balp_label = 'Boite partag&AOk-e';
-        $balp_name = $this->get_user_bal();
-        $args['folder'] = $balp_label . $this->rc->get_storage()->delimiter . strtolower($balp_name);
-        // Change le mailbox d'environnement
-        $mbox = $this->rc->output->get_env('mailbox');
-        if ($mbox == 'INBOX') {
-          $this->rc->output->set_env('mailbox', $args['folder']);
+        $balp_label = driver_mel::get_instance()->getBalpLabel();
+        if (isset($balp_label)) {
+          $balp_name = $this->get_user_bal();
+          $args['folder'] = $balp_label . $this->rc->get_storage()->delimiter . strtolower($balp_name);
+          // Change le mailbox d'environnement
+          $mbox = $this->rc->output->get_env('mailbox');
+          if ($mbox == 'INBOX') {
+            $this->rc->output->set_env('mailbox', $args['folder']);
+          }
         }
       }
     }
@@ -1535,10 +1500,8 @@ class mel extends rcube_plugin {
     $balp_emission = array();
     if (is_array($cache['users_balp'][$username])) {
       foreach ($cache['users_balp'][$username] as $balp) {
-        if (isset($balp['mineqmelpartages'])) {
-          if (in_array("$username:G", $balp['mineqmelpartages']) || in_array("$username:C", $balp['mineqmelpartages'])) {
-            $balp_emission[] = $balp;
-          }
+        if (driver_mel::get_instance()->isUsernameHasEmission($username, $balp)) {
+          $balp_emission[] = $balp;
         }
       }
     }
@@ -1565,12 +1528,8 @@ class mel extends rcube_plugin {
       $balp_gestionnaire = array();
       if (is_array($cache['users_balp'][$username])) {
         foreach ($cache['users_balp'][$username] as $balp) {
-          if (isset($balp['mineqmelpartages']) && in_array("$username:G", $balp['mineqmelpartages'])) {
-            $uid = array_pop(explode('.-.', $balp['uid'][0]));
-            $info = self::get_user_infos($uid);
-            if (isset($info['mineqtypeentree']) && $info['mineqtypeentree'][0] != 'BALI' && $info['mineqtypeentree'][0] != 'BALA') {
-              $balp_gestionnaire[] = $balp;
-            }
+          if (driver_mel::get_instance()->isUsernameHasGestionnaire($username, $balp)) {
+            $balp_gestionnaire[] = $balp;
           }
         }
       }
@@ -1662,15 +1621,15 @@ class mel extends rcube_plugin {
    * Définition des propriétées de l'utilisateur
    */
   private function set_user_properties() {
-    if (! empty($this->get_account)) {
+    if (!empty($this->get_account)) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);
       $this->user_objet_share = $inf[0];
       $this->user_host = $inf[1];
-      if (strpos($this->user_objet_share, '.-.') !== false) {
-        $inf = explode('.-.', $this->user_objet_share);
-        $this->user_bal = $inf[1];
+      list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
+      if (isset($balpname)) {
+        $this->user_bal = $balpname;
       }
       else {
         $this->user_bal = $this->user_objet_share;
@@ -1738,11 +1697,11 @@ class mel extends rcube_plugin {
     unset($mails['count']);
     foreach ($mails as $email) {
       $identity = array();
-      $cn = $infos['cn'][0];
+      $cn = driver_mel::get_instance()->getFullname($infos);
       $identity['name'] = $cn;
-      $identity['realname'] = $infos['cn'][0];
+      $identity['realname'] = $cn;
       $identity['email'] = $email;
-      $identity['uid'] = $infos['uid'][0];
+      $identity['uid'] = driver_mel::get_instance()->getUsername($infos);
       $identity['standard'] = '1';
       $identities[strtolower($email)] = $identity;
     }
@@ -1772,12 +1731,18 @@ class mel extends rcube_plugin {
    */
   private function set_defaults_folders() {
     global $CONFIG;
+    $balp_label = driver_mel::get_instance()->getBalpLabel();
+    
+    $draft_mbox = driver_mel::get_instance()->getMboxDraft();
+    $sent_mbox = driver_mel::get_instance()->getMboxSent();
+    $junk_mbox = driver_mel::get_instance()->getMboxJunk();
+    $trash_mbox = driver_mel::get_instance()->getMboxTrash();
+    
     /* PAMELA - Gestion des boites partagées */
-    if (! empty($this->get_account) && strpos($this->get_share_objet(), '.-.') !== false) {
-      $draft_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/Brouillons";
-      $sent_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/&AMk-l&AOk-ments envoy&AOk-s";
-      $junk_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/Ind&AOk-sirables";
-      $trash_mbox = "Corbeille";
+    if (isset($balp_label) && !empty($this->get_account) && driver_mel::get_instance()->isBalp($this->get_share_objet())) {
+      $draft_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/$draft_mbox";
+      $sent_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/$sent_mbox";
+      $junk_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/$trash_mbox";
 
       $CONFIG['drafts_mbox'] = $draft_mbox;
       $CONFIG['sent_mbox'] = $sent_mbox;
@@ -1791,21 +1756,31 @@ class mel extends rcube_plugin {
       ));
     }
     else {
-      $draft_mbox = "Brouillons";
-      $sent_mbox = "&AMk-l&AOk-ments envoy&AOk-s";
-      $junk_mbox = "Ind&AOk-sirables";
-      $trash_mbox = "Corbeille";
-
-      $CONFIG['drafts_mbox'] = $draft_mbox;
-      $CONFIG['sent_mbox'] = $sent_mbox;
-      $CONFIG['junk_mbox'] = $junk_mbox;
-      $CONFIG['trash_mbox'] = $trash_mbox;
-      $this->rc->config->set('default_folders', array(
-              $draft_mbox,
-              $sent_mbox,
-              $junk_mbox,
-              $trash_mbox
-      ));
+      $change = false;
+      if (isset($draft_mbox)) {
+        $CONFIG['drafts_mbox'] = $draft_mbox;
+        $change = true;
+      }
+      if (isset($sent_mbox)) {
+        $CONFIG['sent_mbox'] = $sent_mbox;
+        $change = true;
+      }
+      if (isset($junk_mbox)) {
+        $CONFIG['junk_mbox'] = $junk_mbox;
+        $change = true;
+      }
+      if (isset($trash_mbox)) {
+        $CONFIG['trash_mbox'] = $trash_mbox;
+        $change = true;
+      }
+      if ($change) {
+        $this->rc->config->set('default_folders', array(
+            $draft_mbox,
+            $sent_mbox,
+            $junk_mbox,
+            $trash_mbox
+        ));
+      }
     }
   }
   /**

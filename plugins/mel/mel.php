@@ -366,12 +366,11 @@ class mel extends rcube_plugin {
               if (isset($hostname)) {
                 $uid = urlencode($uid . "@" . $hostname);
               }
-              $mbox = $balpname;
               $cn = driver_mel::get_instance()->getFullname($infos);
             }
             if ($this->rc->task == 'mail') {
               $current_mailbox = !empty($this->get_account) && urlencode($this->get_account) == $uid;
-              $href = $current_mailbox ? "#" : "?_task=mail&_mbox=Boite+partag%26AOk-e%2F" . $mbox . "&_account=" . $uid;
+              $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode(driver_mel::get_instance()->getMboxFromBalp($balpname)) . "&_account=" . $uid;
               // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
               if (isset($_GET['_courrielleur']) && !$current_mailbox) {
                 $href .= "&_courrielleur=1";
@@ -862,14 +861,15 @@ class mel extends rcube_plugin {
     if ($args['driver'] == 'imap') {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::storage_connect()");
-        /* PAMELA - Gestion des boites partagées */
-      if (! empty($this->get_account)) {
+      /* PAMELA - Gestion des boites partagées */
+      if (!empty($this->get_account)) {
         $args['user'] = $this->get_share_objet();
         $args['host'] = $this->get_host();
       }
       else {
         // MANTIS 3187: Erreur lorsque l'on charge la page de roundcube après être allé sur une boite partagée
-        if (strpos($_SESSION['mbox'], "Boite partag&AOk-e/") === 0) {
+        $balp_label = driver_mel::get_instance()->getBalpLabel();
+        if (isset($balp_label) && strpos($_SESSION['mbox'], $balp_label) === 0) {
           $_SESSION['mbox'] = 'INBOX';
         }
       }
@@ -1651,19 +1651,21 @@ class mel extends rcube_plugin {
   private function m2_list_identities() {
     // Récupération du username depuis la session
     $username = $this->rc->user->get_username();
+    // Récupérer le champ mel_emission pour le ldap
+    $mel_emission_field = Ldap::GetMap('user_mel_emission', 'mineqmelmailemission');
     // Récupération des informations des boites en émissions
     $infos = self::get_user_balp_emission($username);
     $identities = array();
     unset($infos['count']);
     foreach ($infos as $i) {
       // MANTIS 3702: Utiliser mineqMelmailEmissionPR pour determiner l'adresse d'emission
-      if (Ldap::issetMap($i, 'user_mel_emission', 'mineqmelmailemission')) {
-        $mails = Ldap::GetMapValues($infos, 'user_mel_emission', 'mineqmelmailemission');
+      if (Ldap::issetMap($i, 'user_mel_emission_principal', 'mineqmelmailemissionpr')) {
+        $mails = Ldap::GetMapValues($i, 'user_mel_emission_principal', 'mineqmelmailemissionpr');
         // MANTIS 3334: Gestion des adresses mail multiple pour les identités
-        if ($i['mineqmelmailemission']['count'] > $mails['count']) {
+        if ($i[$mel_emission_field]['count'] > $mails['count']) {
           unset($mails['count']);
-          unset($i['mineqmelmailemission']['count']);
-          $mails = array_merge($mails, $i['mineqmelmailemission']);
+          unset($i[$mel_emission_field]['count']);
+          $mails = array_merge($mails, $i[$mel_emission_field]);
         }
       }
       else {
@@ -1672,27 +1674,27 @@ class mel extends rcube_plugin {
       unset($mails['count']);
       foreach ($mails as $email) {
         $identity = array();
-        $identity['name'] = $this->m2_identity_shortname($i['cn'][0]);
-        $identity['realname'] = $i['cn'][0];
+        $identity['name'] = $this->m2_identity_shortname(driver_mel::get_instance()->getFullname($i));
+        $identity['realname'] = driver_mel::get_instance()->getFullname($i);
         $identity['email'] = $email;
-        $identity['uid'] = $i['uid'][0];
+        $identity['uid'] = driver_mel::get_instance()->getUsername($i);
         $identities[strtolower($email)] = $identity;
       }
     }
     // Récupération des informations des boites personnelles
     $infos = LibMelanie\Ldap\LDAPMelanie::GetInformations($username);
     // MANTIS 3702: Utiliser mineqMelmailEmissionPR pour determiner l'adresse d'emission
-    if (isset($infos['mineqmelmailemissionpr'])) {
-      $mails = $infos['mineqmelmailemissionpr'];
+    if (Ldap::issetMap($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr')) {
+      $mails = Ldap::GetMapValues($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr');
       // MANTIS 3334: Gestion des adresses mail multiple pour les identités
-      if ($infos['mineqmelmailemission']['count'] > $mails['count']) {
+      if ($infos[$mel_emission_field]['count'] > $mails['count']) {
         unset($mails['count']);
-        unset($infos['mineqmelmailemission']['count']);
-        $mails = array_merge($mails, $infos['mineqmelmailemission']);
+        unset($infos[$mel_emission_field]['count']);
+        $mails = array_merge($mails, $infos[$mel_emission_field]);
       }
     }
     else {
-      $mails = $infos['mineqmelmailemission'];
+      $mails = $infos[$mel_emission_field];
     }
     unset($mails['count']);
     foreach ($mails as $email) {
@@ -1740,9 +1742,10 @@ class mel extends rcube_plugin {
     
     /* PAMELA - Gestion des boites partagées */
     if (isset($balp_label) && !empty($this->get_account) && driver_mel::get_instance()->isBalp($this->get_share_objet())) {
-      $draft_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/$draft_mbox";
-      $sent_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/$sent_mbox";
-      $junk_mbox = "Boite partag&AOk-e/" . $this->get_user_bal() . "/$trash_mbox";
+      $delimiter = $this->rc->get_storage()->delimiter;
+      $draft_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $draft_mbox;
+      $sent_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $sent_mbox;
+      $junk_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $junk_mbox;
 
       $CONFIG['drafts_mbox'] = $draft_mbox;
       $CONFIG['sent_mbox'] = $sent_mbox;

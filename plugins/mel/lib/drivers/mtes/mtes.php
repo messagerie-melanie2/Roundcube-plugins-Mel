@@ -25,42 +25,42 @@ class mtes_driver_mel extends driver_mel {
    * 
    * @var string
    */
-  const BAL_SEPARATOR = '.-.';
+  protected $BAL_SEPARATOR = '.-.';
   
   /**
    * Label utilisé dans les boites partagées pour l'arborescence des dossiers
    * 
    * @var string
    */
-  const BALP_LABEL = 'Boite partag&AOk-e';
+  protected $BALP_LABEL = 'Boite partag&AOk-e';
   
   /**
    * Dossier pour les brouillons
    * 
    * @var string
    */
-  const MBOX_DRAFT = "Brouillons";
+  protected $MBOX_DRAFT = "Brouillons";
   
   /**
    * Dossier pour les éléments envoyés
    *  
    * @var string
    */
-  const MBOX_SENT = "&AMk-l&AOk-ments envoy&AOk-s";
+  protected $MBOX_SENT = "&AMk-l&AOk-ments envoy&AOk-s";
   
   /**
    * Dossier pour les indésirables
    * 
    * @var string
    */
-  const MBOX_JUNK = "Ind&AOk-sirables";
+  protected $MBOX_JUNK = "Ind&AOk-sirables";
   
   /**
    * Dossier pour la corbeille
    * 
    * @var string
    */
-  const MBOX_TRASH = "Corbeille";
+  protected $MBOX_TRASH = "Corbeille";
   
   /**
    * Retourne si le username est une boite partagée ou non
@@ -69,7 +69,7 @@ class mtes_driver_mel extends driver_mel {
    * @return boolean
    */
   public function isBalp($username) {
-    return strpos($username, self::BAL_SEPARATOR) !== false;
+    return strpos($username, $this->BAL_SEPARATOR) !== false;
   }
   
   /**
@@ -82,8 +82,8 @@ class mtes_driver_mel extends driver_mel {
    */
   public function getBalpnameFromUsername($username) {
     $balpname = null;
-    if (strpos($username, self::BAL_SEPARATOR) !== false) {
-      $susername = explode(self::BAL_SEPARATOR, $username);
+    if (strpos($username, $this->BAL_SEPARATOR) !== false) {
+      $susername = explode($this->BAL_SEPARATOR, $username);
       $username = $susername[0];
       if (isset($susername[1])) {
         if (strpos($susername[1], '@') !== false) {
@@ -100,6 +100,23 @@ class mtes_driver_mel extends driver_mel {
   }
   
   /**
+   * Retourne le MBOX par defaut pour une boite partagée donnée
+   * Peut être INBOX ou autre chose si besoin
+   * 
+   * @param string $balpname
+   * @return string $mbox par defaut
+   */
+  public function getMboxFromBalp($balpname) {
+    if (isset($balpname)) {
+      $delimiter = rcmail::get_instance()->get_storage()->delimiter;
+      return $this->BALP_LABEL . $delimiter . $balpname;
+    }
+    else {
+      return 'INBOX';
+    }
+  }
+  
+  /**
    * Est-ce que le username a des droits gestionnaire sur l'objet LDAP
    *
    * @param string $username
@@ -108,7 +125,7 @@ class mtes_driver_mel extends driver_mel {
    */
   public function isUsernameHasGestionnaire($username, $infos) {
     if (isset($infos['mineqmelpartages']) && in_array("$username:G", $infos['mineqmelpartages'])) {
-      $uid = array_pop(explode(self::BAL_SEPARATOR, $this->getUsername($infos)));
+      $uid = array_pop(explode($this->BAL_SEPARATOR, $this->getUsername($infos)));
       $info = mel::get_user_infos($uid);
       if (isset($info['mineqtypeentree']) && $info['mineqtypeentree'][0] != 'BALI' && $info['mineqtypeentree'][0] != 'BALA') {
         return true;

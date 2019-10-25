@@ -24,42 +24,42 @@ abstract class driver_mel {
    *
    * @var string
    */
-  const BAL_SEPARATOR = null;
+  protected $BAL_SEPARATOR = null;
   
   /**
    * Label utilisé dans les boites partagées pour l'arborescence des dossiers
    *
    * @var string
    */
-  const BALP_LABEL = null;
+  protected $BALP_LABEL = null;
   
   /**
    * Dossier pour les brouillons
    *
    * @var string
    */
-  const MBOX_DRAFT = null;
+  protected $MBOX_DRAFT = null;
   
   /**
    * Dossier pour les éléments envoyés
    *
    * @var string
    */
-  const MBOX_SENT = null;
+  protected $MBOX_SENT = null;
   
   /**
    * Dossier pour les indésirables
    *
    * @var string
    */
-  const MBOX_JUNK = null;
+  protected $MBOX_JUNK = null;
   
   /**
    * Dossier pour la corbeille
    *
    * @var string
    */
-  const MBOX_TRASH = null;
+  protected $MBOX_TRASH = null;
   
   /**
    * Singleton
@@ -75,8 +75,9 @@ abstract class driver_mel {
    */
   public static function get_instance() {
     if (!isset(self::$driver)) {
-      $drivername = strtolower(rcmail::get_instance()->config->get('mel_driver', 'mce_driver_mel'));
+      $drivername = strtolower(rcmail::get_instance()->config->get('mel_driver', 'mce'));
       require_once $drivername . '/' . $drivername . '.php';
+      $drivername = $drivername . '_driver_mel';
       self::$driver = new $drivername();
     }
     return self::$driver;
@@ -99,6 +100,15 @@ abstract class driver_mel {
    * @return list($username, $balpname) $username traité, $balpname si objet de partage ou null sinon
    */
   abstract public function getBalpnameFromUsername($username);
+  
+  /**
+   * Retourne le MBOX par defaut pour une boite partagée donnée
+   * Peut être INBOX ou autre chose si besoin
+   *
+   * @param string $balpname
+   * @return string $mbox par defaut
+   */
+  abstract public function getMboxFromBalp($balpname);
   
   /**
    * Est-ce que le username a des droits gestionnaire sur l'objet LDAP
@@ -166,7 +176,7 @@ abstract class driver_mel {
    * @return string Le label ou null si pas nécessaire
    */
   public function getBalpLabel() {
-    return self::BALP_LABEL;
+    return $this->BALP_LABEL;
   }
   
   /**
@@ -176,7 +186,7 @@ abstract class driver_mel {
    * @return string
    */
   public function getMboxDraft() {
-    return self::MBOX_DRAFT;
+    return $this->MBOX_DRAFT;
   }
   
   /**
@@ -186,7 +196,7 @@ abstract class driver_mel {
    * @return string
    */
   public function getMboxSent() {
-    return self::MBOX_SENT;
+    return $this->MBOX_SENT;
   }
   
   /**
@@ -196,7 +206,7 @@ abstract class driver_mel {
    * @return string
    */
   public function getMboxJunk() {
-    return self::MBOX_JUNK;
+    return $this->MBOX_JUNK;
   }
   
   /**
@@ -206,6 +216,6 @@ abstract class driver_mel {
    * @return string
    */
   public function getMboxTrash() {
-    return self::MBOX_TRASH;
+    return $this->MBOX_TRASH;
   }
 }

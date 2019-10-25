@@ -18,14 +18,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 class mce_driver_mel extends driver_mel {
   /**
    * Configuration du séparateur pour les boites partagées
    *
    * @var string
    */
-  const BAL_SEPARATOR = '+';
+  protected $BAL_SEPARATOR = '+';
   
   /**
    * Retourne si le username est une boite partagée ou non
@@ -34,7 +33,7 @@ class mce_driver_mel extends driver_mel {
    * @return boolean
    */
   public function isBalp($username) {
-    return strpos($username, self::BAL_SEPARATOR) !== false;
+    return strpos($username, $this->BAL_SEPARATOR) !== false;
   }
   
   /**
@@ -47,8 +46,8 @@ class mce_driver_mel extends driver_mel {
    */
   public function getBalpnameFromUsername($username) {
     $balpname = null;
-    if (strpos($username, self::BAL_SEPARATOR) !== false) {
-      $susername = explode(self::BAL_SEPARATOR, $username);
+    if (strpos($username, $this->BAL_SEPARATOR) !== false) {
+      $susername = explode($this->BAL_SEPARATOR, $username);
       $username = $susername[0];
       if (isset($susername[1])) {
         $sbalp = explode('@', $susername[1]);
@@ -60,6 +59,17 @@ class mce_driver_mel extends driver_mel {
   }
   
   /**
+   * Retourne le MBOX par defaut pour une boite partagée donnée
+   * Peut être INBOX ou autre chose si besoin
+   *
+   * @param string $balpname
+   * @return string $mbox par defaut
+   */
+  public function getMboxFromBalp($balpname) {
+    return 'INBOX';
+  }
+  
+  /**
    * Est-ce que le username a des droits gestionnaire sur l'objet LDAP
    *
    * @param string $username
@@ -67,7 +77,7 @@ class mce_driver_mel extends driver_mel {
    * @return boolean
    */
   public function isUsernameHasGestionnaire($username, $infos) {
-    if (isset($infos['partages']) && in_array("$username:G", $infos['partages'])) {
+    if (isset($infos['mcedelegation']) && in_array("$username:", $infos['mcedelegation'])) {
         return true;
     }
     return false;
@@ -81,10 +91,8 @@ class mce_driver_mel extends driver_mel {
    * @return boolean
    */
   public function isUsernameHasEmission($username, $infos) {
-    if (isset($infos['partages'])) {
-      if (in_array("$username:G", $infos['partages']) || in_array("$username:C", $infos['partages'])) {
-        return true;
-      }
+    if (isset($infos['mcedelegation']) && in_array("$username:", $infos['mcedelegation'])) {
+      return true;
     }
     return false;
   }
@@ -129,7 +137,7 @@ class mce_driver_mel extends driver_mel {
    * @return string fullname
    */
   public function getFullname($infos) {
-    return $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0] ?: $infos['mail'][0];
+    return $infos[rcmail::get_instance()->config->get('default_object_name_ldap_field', 'cn')][0] ?: $infos['mail'][0];
   }
   
   /**

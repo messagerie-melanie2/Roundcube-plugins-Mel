@@ -127,26 +127,20 @@ class mel_ldap_auth extends rcube_plugin {
       // Récupération des données de l'utilisateur depuis le cache
       $infos = mel::get_user_infos($user);
       // MANTIS 0004868: Permetttre la connexion M2web avec l'adresse mail comme identifiant
-      $args['user'] = $infos['uid'][0];
+      $args['user'] = driver_mel::get_instance()->getUsername($infos);
       if (LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $pass)) {
         $auth_ok = true;
         // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-        if (!mel::is_internal() && (!isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || !isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
+        if (!mel::is_internal() && !driver_mel::get_instance()->isInternetAccessEnable($infos)) {
           $args['error'] = 491;
           $args['abort'] = true;
           // Suppression du cookie
           unset($_COOKIE['roundcube_login']);
           setcookie('roundcube_login', null, -1);
         } else {
-          if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
-            // MANTIS 3925: mineqMelRoutage multivalué
-            foreach ($infos['mineqmelroutage'] as $melroutage) {
-              if (strpos($melroutage, '%') !== false) {
-                $tmp = explode('@', $melroutage);
-                $args['host'] = "ssl://" . $tmp[1];
-                break;
-              }
-            }
+          $hostname = driver_mel::get_instance()->getRoutage($infos);
+          if (isset($hostname)) {
+            $args['host'] = "ssl://" . $hostname;
             // Gestion du keep login
             if (isset($_POST['_keeplogin'])) {
               // Création du cookie avec le login / cn
@@ -196,7 +190,7 @@ class mel_ldap_auth extends rcube_plugin {
         $infos = mel::get_user_infos($user);
         if (mel_logs::is(mel_logs::INFO))
           mel_logs::get_instance()->log(mel_logs::INFO, "Blocage du compte <$user>");
-        mail($infos['mineqmelmailemission'][0], "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
+        mail(LibMelanie\Ldap\Ldap::GetMapValue($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr'), "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
 
         // Exécuter la fin de la connexion pour permettre de personnaliser le message d'erreur
         $this->rc->output->show_message($this->gettext('error_block'), 'warning');

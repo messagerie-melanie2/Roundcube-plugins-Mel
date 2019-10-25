@@ -430,10 +430,9 @@ class mel_mobile extends rcube_plugin {
     // Récupération de la liste des balp de l'utilisateur
     $balp = mel::get_user_balp($username);
     // Récupération des informations sur l'utilisateur courant
-    $infos = mel::get_user_infos(isset($balpname) ? $balpname : $username);
+    $infos = mel::get_user_infos($username);
 
     $content = [];
-    $selected = "";
     // Si on est sur une balp, charge les données de l'utilisateur
     $infos = mel::get_user_infos($username);
     if ($this->rc->task == 'mail') {
@@ -449,8 +448,6 @@ class mel_mobile extends rcube_plugin {
       $content[] = html::tag('li', ['data-theme' => 'h'], html::tag('a', ['href' => $href, 'data-ajax' => 'false'], $infos['cn'][0]));
     }
     
-    $selected = $href;
-
     // Récupération des préférences de l'utilisateur
     $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
     $i = 0;
@@ -462,35 +459,26 @@ class mel_mobile extends rcube_plugin {
         if ($b['dn'] == "") {
           continue;
         }
-        if (isset($hidden_mailboxes[$b['uid'][0]])) {
+        if (isset($hidden_mailboxes[driver_mel::get_instance()->getUsername($b)])) {
           continue;
         }
-        $uid = $b['uid'][0];
-        $cn = $b['cn'][0];
-        if (strpos($uid, '.-.') !== false) {
-          $suid = explode('.-.', $uid);
-          $suid = $suid[1];
-          $infos = LibMelanie\Ldap\LDAPMelanie::GetInformations($suid);
-          if (isset($infos) && isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
-            // MANTIS 3925: mineqMelRoutage multivalué
-            foreach ($infos['mineqmelroutage'] as $melroutage) {
-              if (strpos($melroutage, '%') !== false) {
-                $tmp = explode('@', $melroutage);
-                $uid = urlencode($uid . "@" . $tmp[1]);
-                break;
-              }
-            }
-            $mbox = $suid;
-            $cn = $infos['cn'][0];
-
-          }
+        $uid = driver_mel::get_instance()->getUsername($b);
+        $cn = driver_mel::get_instance()->getFullname($b);
+        list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($uid);
+        if (isset($balpname)) {
+          $infos = LibMelanie\Ldap\LDAPMelanie::GetInformations($balpname);
           // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-          if (!mel::is_internal() && (! isset($infos['mineqmelaccesinterneta']) || $infos['mineqmelaccesinterneta'][0] != 1 || ! isset($infos['mineqmelaccesinternetu']) || $infos['mineqmelaccesinternetu'][0] != 1)) {
+          if (!isset($infos) || !mel::is_internal() && !driver_mel::get_instance()->isInternetAccessEnable($infos)) {
             continue;
           }
+          $hostname = driver_mel::get_instance()->getRoutage($infos);
+          if (isset($hostname)) {
+            $uid = urlencode($uid . "@" . $hostname);
+          }
+          $cn = driver_mel::get_instance()->getFullname($infos);
         }
         if ($this->rc->task == 'mail') {
-          $href = "?_task=mail&_account=" . $uid . "&_mbox=Boite+partag%26AOk-e%2F" . $mbox;
+          $href = "?_task=mail&_account=" . $uid . "&_mbox=" . urlencode(driver_mel::get_instance()->getMboxFromBalp($balpname));
         }
         else {
           $href = "?_task=" . $this->rc->task . "&_account=" . $uid . "&_action=" . $this->rc->action;
@@ -587,15 +575,15 @@ class mel_mobile extends rcube_plugin {
    * Définition des propriétées de l'utilisateur
    */
   private function set_user_properties() {
-    if (! empty($this->get_account)) {
+    if (!empty($this->get_account)) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);
       $this->user_objet_share = $inf[0];
       $this->user_host = $inf[1];
-      if (strpos($this->user_objet_share, '.-.') !== false) {
-        $inf = explode('.-.', $this->user_objet_share);
-        $this->user_bal = $inf[1];
+      list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
+      if (isset($balpname)) {
+        $this->user_bal = $balpname;
       }
       else {
         $this->user_bal = $this->user_objet_share;

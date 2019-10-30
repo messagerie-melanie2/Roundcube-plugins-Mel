@@ -442,10 +442,10 @@ class mel_mobile extends rcube_plugin {
       $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
     }
     if (empty($this->get_account) || urlencode($this->get_account) == $infos['uid'][0]) {
-      $content[] = html::tag('li', ['class' => 'selected', 'aria-selected' => 'true', 'data-icon' => 'arrow-d'], html::tag('a', ['href' => '#'], $infos['cn'][0]));
+      $content[] = html::tag('li', ['class' => 'selected', 'aria-selected' => 'true', 'data-icon' => 'arrow-d'], html::tag('a', ['href' => '#'], driver_mel::get_instance()->getFullname($infos)));
     }
     else {
-      $content[] = html::tag('li', ['data-theme' => 'h'], html::tag('a', ['href' => $href, 'data-ajax' => 'false'], $infos['cn'][0]));
+      $content[] = html::tag('li', ['data-theme' => 'h'], html::tag('a', ['href' => $href, 'data-ajax' => 'false'], driver_mel::get_instance()->getFullname($infos)));
     }
     
     // Récupération des préférences de l'utilisateur

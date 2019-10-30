@@ -187,13 +187,23 @@ class mtes_driver_mel extends driver_mel {
   }
   
   /**
+   * Retourne si le username est bien présent dans les infos
+   * 
+   * @param array $infos Entry LDAP
+   * @return boolean
+   */
+  public function issetUsername($infos) {
+    return isset($infos['uid']);
+  }
+  
+  /**
    * Retourne le username a partir de l'objet LDAP
    * 
    * @param array $infos Entry LDAP
    * @return string username
    */
   public function getUsername($infos) {
-    return $infos['uid'][0];
+    return isset($infos['uid']) ? $infos['uid'][0] : null;
   }
   
   /**
@@ -203,7 +213,7 @@ class mtes_driver_mel extends driver_mel {
    * @return string fullname
    */
   public function getFullname($infos) {
-    return $infos['cn'][0] ?: $infos['mailpr'][0];
+    return isset($infos['cn']) ? ($infos['cn'][0] ?: isset($infos['mailpr']) ? $infos['mailpr'][0] : null) : null;
   }
   
   /**

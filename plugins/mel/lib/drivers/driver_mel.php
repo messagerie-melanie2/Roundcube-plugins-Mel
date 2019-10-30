@@ -146,6 +146,14 @@ abstract class driver_mel {
   abstract public function getRoutage($infos);
   
   /**
+   * Retourne si le username est bien présent dans les infos
+   *
+   * @param array $infos Entry LDAP
+   * @return boolean
+   */
+  abstract public function issetUsername($infos);
+  
+  /**
    * Retourne le username a partir de l'objet LDAP
    *
    * @param array $infos Entry LDAP

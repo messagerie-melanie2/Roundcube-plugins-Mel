@@ -121,13 +121,23 @@ class mce_driver_mel extends driver_mel {
   }
   
   /**
+   * Retourne si le username est bien présent dans les infos
+   *
+   * @param array $infos Entry LDAP
+   * @return boolean
+   */
+  public function issetUsername($infos) {
+    return isset($infos['uid']);
+  }
+  
+  /**
    * Retourne le username a partir de l'objet LDAP
    *
    * @param array $infos Entry LDAP
    * @return string username
    */
   public function getUsername($infos) {
-    return $infos['uid'][0];
+    return isset($infos['uid']) ? $infos['uid'][0] : null;
   }
   
   /**

@@ -80,7 +80,7 @@ class valideInfos {
 	 * @param unknown $type
 	 * @return string
 	 */
-	function format_tel($numero, $type) {
+	static function format_tel($numero, $type) {
 	
 		$numero = str_replace(array(' ','+','-','.'),'',$numero);
 		$l = strlen($numero);

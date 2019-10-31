@@ -173,7 +173,7 @@ class mel_ldap_auth extends rcube_plugin {
         }
       }
     }
-    if (!$auth_ok && $this->rc->config->get('enable_auth_protection', false)) {
+    if (!$auth_ok && $this->rc->config->get('enable_auth_protection', false) && (!isset($_GET['_courrielleur']) || !mel::is_internal())) {
       $CptEchec_count++;
 
       // Ne refaire la requête que si c'est nécessaire

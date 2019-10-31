@@ -539,7 +539,7 @@ class Moncompte {
 				$filter = $res[0];
 				$ldap_attrs = array('mineqmelmembres', 'objectclass');
 
-				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->ldap_list($base_dn, $filter, $ldap_attrs);
+				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->list($base_dn, $filter, $ldap_attrs);
 				$liste = Ldap::GetInstance(Config::$MASTER_LDAP)->get_entries($ldap_res);
 				$liste_members = $liste[0]['mineqmelmembres'];
 				unset($liste_members['count']);
@@ -573,7 +573,7 @@ class Moncompte {
 				$filter = $res[0];
 				$ldap_attrs = array('mineqmelmembres', 'memberuid', 'objectclass');
 
-				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->ldap_list($base_dn, $filter, $ldap_attrs);
+				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->list($base_dn, $filter, $ldap_attrs);
 				$liste = Ldap::GetInstance(Config::$MASTER_LDAP)->get_entries($ldap_res);
 				
 				if(!in_array('labeledURIObject', $liste[0]['objectclass'])) {
@@ -632,7 +632,7 @@ class Moncompte {
 				$filter = $res[0];
 				$ldap_attrs = array('mineqmelmembres', 'memberuid', 'objectclass');
 
-				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->ldap_list($base_dn, $filter, $ldap_attrs);
+				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->list($base_dn, $filter, $ldap_attrs);
 				$liste = Ldap::GetInstance(Config::$MASTER_LDAP)->get_entries($ldap_res);
 				$liste_members = $liste[0]['mineqmelmembres'];
 				$liste_uid = $liste[0]['memberuid'];
@@ -710,7 +710,7 @@ class Moncompte {
 				$filter = $res[0];
 				$ldap_attrs = array('mineqmelmembres', 'cn');
 
-				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->ldap_list($base_dn, $filter, $ldap_attrs);
+				$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->list($base_dn, $filter, $ldap_attrs);
 				$liste = Ldap::GetInstance(Config::$MASTER_LDAP)->get_entries($ldap_res);
 				$members = $liste[0]['mineqmelmembres'];
 				unset($members['count']);
@@ -751,7 +751,7 @@ class Moncompte {
 			if (Ldap::GetInstance(Config::$AUTH_LDAP)->authenticate($userDN, self::get_current_user_password())) {
 				$filter = '(&(' . $filter . ')(owner='. $userDN. '))';
 				$ldap_attrs = array ('dn');
-				$ldap_res = Ldap::GetInstance(Config::$AUTH_LDAP)->ldap_list($base_dn, $filter, $ldap_attrs);
+				$ldap_res = Ldap::GetInstance(Config::$AUTH_LDAP)->list($base_dn, $filter, $ldap_attrs);
 
 				$liste_listes = Ldap::GetInstance(Config::$AUTH_LDAP)->get_entries($ldap_res);
 				unset($liste_listes['count']);
@@ -845,7 +845,7 @@ class Moncompte {
 					$filter = $res[0];
 					$ldap_attrs = array('mineqmelmembres', 'memberuid');
 
-					$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->ldap_list($base_dn, $filter, $ldap_attrs);
+					$ldap_res = Ldap::GetInstance(Config::$MASTER_LDAP)->list($base_dn, $filter, $ldap_attrs);
 					$liste = Ldap::GetInstance(Config::$MASTER_LDAP)->get_entries($ldap_res);
 					$liste_members = $liste[0]['mineqmelmembres'];
 					$liste_uid = $liste[0]['memberuid'];

@@ -203,7 +203,7 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
     if ($ldap->anonymous()) {
       do {
         // Search LDAP
-        $result = $ldap->ldap_list($base_dn, $filter, ['mail', 'mailpr']);
+        $result = $ldap->list($base_dn, $filter, ['mail', 'mailpr']);
         // Form DN
         $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
       } while ((!isset($result) || $ldap->count_entries($result) === 0) && $base_dn != 'dc=equipement,dc=gouv,dc=fr');

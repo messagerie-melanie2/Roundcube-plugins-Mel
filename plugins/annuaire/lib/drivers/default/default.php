@@ -88,7 +88,7 @@ class default_driver_annuaire extends driver_annuaire {
     if ($search) {
       $sr = $this->ldap->search($this->base_dn, $this->filter, $this->attributes, 0, 100);
     } else {
-      $sr = $this->ldap->ldap_list($this->base_dn, $this->filter, $this->attributes);
+      $sr = $this->ldap->list_alias($this->base_dn, $this->filter, $this->attributes);
     }
     
     if ($sr !== false) {

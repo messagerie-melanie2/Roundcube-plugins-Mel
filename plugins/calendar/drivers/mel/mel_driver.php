@@ -1745,11 +1745,11 @@ class mel_driver extends calendar_driver {
         // Alarm
         if (isset($event->alarm) && $event->alarm != 0) {
           if ($event->alarm > 0) {
-            $_event['alarms'] = "-" . $event->alarm . "M:DISPLAY";
-            $_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-" . $event->alarm . "M"]];
+            $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
+            $_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
           }
           else {
-            $_event['alarms'] = "+" . str_replace('-', '', strval($event->alarm)) . "M:DISPLAY";
+            $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
           }
         }
 

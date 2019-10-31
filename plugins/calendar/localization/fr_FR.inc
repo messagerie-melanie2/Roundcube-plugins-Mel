@@ -116,6 +116,7 @@ $labels['importrange'] = 'Événements depuis';
 $labels['onemonthback'] = '1 mois auparavant';
 $labels['nmonthsback'] = '$nr mois précédents';
 $labels['showurl'] = 'Afficher l\'URL du calendrier';
+$labels['showurldescription'] = 'L\'adresse suivante permet d\'afficher en lecture seule votre calendrier depuis une autre application. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. Cette adresse nécessite une authentification (compte Mél).';
 // PAMELA
 $labels['freebusyurldescription'] = 'L\'adresse suivante permet d\'afficher les disponibilités de l\'agenda depuis une autre application. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. Cette adresse ne nécessite pas d\'authentification.';
 $labels['calendarfeedurldescription'] = "Cochez cette case pour partager votre agenda via une adresse unique sans authentification. Vous pouvez copier/coller celle-ci dans n'importe quel agenda électronique gérant le format iCal.";

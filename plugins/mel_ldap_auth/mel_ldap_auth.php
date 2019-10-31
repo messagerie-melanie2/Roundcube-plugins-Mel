@@ -166,6 +166,11 @@ class mel_ldap_auth extends rcube_plugin {
         // Suppression du cookie
         unset($_COOKIE['roundcube_login']);
         setcookie('roundcube_login', null, -1);
+        
+        // 0004988: En mode courrielleur, temporiser les échecs d'authentification
+        if (isset($_GET['_courrielleur'])) {
+          sleep(10);
+        }
       }
     }
     if (!$auth_ok && $this->rc->config->get('enable_auth_protection', false)) {

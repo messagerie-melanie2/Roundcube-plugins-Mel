@@ -430,6 +430,10 @@ body.extwin #taskbar {
     right: 13px;
 }
 
+#taskbar a.button-discussion {
+	display: none;
+}
+
 #taskbar a.button-mail span.button-inner,
 #taskbar a.button-mail:hover span.button-inner,
 #taskbar a.button-selected.button-mail span.button-inner {
@@ -454,9 +458,9 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/sondage.png?v=e784.5000) center 15px no-repeat;
 }
 
-#taskbar a.button-rocket_chat span.button-inner,
-#taskbar a.button-rocket_chat:hover span.button-inner,
-#taskbar a.button-selected.button-rocket_chat span.button-inner {
+#taskbar a.button-discussion span.button-inner,
+#taskbar a.button-discussion:hover span.button-inner,
+#taskbar a.button-selected.button-discussion span.button-inner {
 	background: url(../images/taskbar/discussion.png?v=e784.5000) center 15px no-repeat;
 }
 
@@ -1250,6 +1254,7 @@ table.propform td {
     background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat #fff;
 }
 
+.toolbar a.button.refreshcalendar,
 .toolbar a.button.checkmail {
     background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat #fff;
 }

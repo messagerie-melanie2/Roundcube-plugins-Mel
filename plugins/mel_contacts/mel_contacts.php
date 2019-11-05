@@ -58,6 +58,7 @@ class mel_contacts extends rcube_plugin {
         || $this->rc->task == 'settings' 
         || $this->rc->task == 'calendar'
         || $this->rc->task == 'ariane'
+        || $this->rc->task == 'discussion'
         || $this->rc->task == 'sondage') {
       // register hooks
       $this->add_hook('addressbooks_list', array($this,'address_sources'));

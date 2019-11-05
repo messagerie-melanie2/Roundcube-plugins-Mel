@@ -521,11 +521,6 @@ pre {
 	background: url(images/calendar/imprimer.png?v=e784.5000) center center no-repeat #fff;
 }
 
-/** PAMELA - MANTIS 0004466: Ajouter un bouton pour rafraichir l'agenda **/
-#calendartoolbar a.button.refreshcalendar {
-	background: url(../../../../skins/larry/images/buttons.png?v=32cf.15571) center -1176px no-repeat;
-}
-
 body.calendarmain #quicksearchbar {
 	z-index: 20;
 }
@@ -2010,7 +2005,7 @@ a.dropdown-link:after {
 
 .calendarmain #calendar .fc-header-left {
 	padding-top: 3px;
-	padding-left: 50px;
+	padding-left: 70px;
 }
 
 .calendarmain #calendar .fc-header-left .fc-button:first-child {

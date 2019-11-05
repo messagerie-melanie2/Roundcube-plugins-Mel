@@ -44,13 +44,14 @@ class rocket_chat extends rcube_plugin {
         
         // ajout de la tache
         $this->register_task('ariane');
+        $this->register_task('discussion');
         
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
           // Ajoute le bouton en fonction de la skin
           if ($this->rc->config->get('ismobile', false)) {
             $this->add_button(array(
-                'command' => 'ariane',
+                'command' => 'discussion',
                 'class' => 'button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
                 'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
                 'innerclass' => 'button-inner',
@@ -58,7 +59,7 @@ class rocket_chat extends rcube_plugin {
             ), 'taskbar_mobile');
           } else {
             $this->add_button(array(
-                'command' => 'ariane',
+                'command' => 'discussion',
                 'class' => 'button-rocket_chat',
                 'classsel' => 'button-rocket_chat button-selected',
                 'innerclass' => 'button-inner',
@@ -68,7 +69,7 @@ class rocket_chat extends rcube_plugin {
         }
         
         // Si tache = ariane, on charge l'onglet
-        if ($this->rc->task == 'ariane' && isset($_GET['_courrielleur'])) {
+        if (($this->rc->task == 'ariane' || $this->rc->task == 'discussion') && isset($_GET['_courrielleur'])) {
           // Ajout du css
           $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
           // Disable refresh
@@ -78,7 +79,7 @@ class rocket_chat extends rcube_plugin {
               'action_courrielleur'
           ));
         }
-        else if ($this->rc->task == 'ariane') {
+        else if ($this->rc->task == 'ariane' || $this->rc->task == 'discussion') {
             // Ajout du css
             $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
             $this->register_action('index', array(
@@ -138,7 +139,7 @@ EOF;
           $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
           $this->include_script('rocket_chat_link.js');
           $this->rc->output->set_env('rocket_chat_params_url', $this->rc->url(array(
-              "_task" => "ariane",
+              "_task" => "discussion",
               "_params" => "%%other_params%%"
           )));
         }

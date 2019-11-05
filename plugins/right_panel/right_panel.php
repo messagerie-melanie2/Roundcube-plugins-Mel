@@ -67,30 +67,33 @@ class right_panel extends rcube_plugin
         $this->include_script('js/jquery.mCustomScrollbar.concat.min.js');
         $this->include_script('../../program/js/treelist.js');
         
-        // Ariane Web Socket
-        if (!isset($_SESSION['rocket_chat_auth_token'])) {
+        $rocket_chat = $this->rc->plugins->get_plugin('rocket_chat');
+        if (isset($rocket_chat) && is_object($rocket_chat)) {
+          // Ariane Web Socket
+          if (!isset($_SESSION['rocket_chat_auth_token'])) {
+            try {
+              $rocket_chat->login();
+            }
+            catch (Exception $ex) {}
+          }
+          // Récupérer le user status Ariane
+          // Charge la lib MongoDB si nécessaire
           try {
-            $this->rc->plugins->get_plugin('rocket_chat')->login();
+            require_once __DIR__ . '/../rocket_chat/lib/rocketchatmongodb.php';
+            $mongoClient = new RocketChatMongoDB($this->rc);
+            $infos = $mongoClient->searchUserByUsername($this->rc->get_user_name());
+            $this->rc->output->set_env('ariane_user_status', $infos['status']);
+            $this->rc->output->set_env('ariane_url', $this->rc->config->get('rocket_chat_url'));
+            $this->rc->output->set_env('ariane_photo_url', $this->rc->config->get('rocket_chat_url') . 'avatar/');
+            $this->rc->output->set_env('web_socket_ariane_url', str_replace('https', 'wss', $this->rc->config->get('rocket_chat_url')) . 'websocket');
+            $this->rc->output->set_env('ariane_auth_token', $_SESSION['rocket_chat_auth_token']);
+            $this->rc->output->set_env('ariane_user_id', $this->rc->config->get('rocket_chat_user_id', null));
+            $this->rc->output->set_env('username', $this->rc->get_user_name());
+            $this->rc->output->set_env('user_fullname', $infos['fname']);
+            $this->rc->output->set_env('user_email', $infos['email']);
           }
           catch (Exception $ex) {}
         }
-        // Récupérer le user status Ariane
-        // Charge la lib MongoDB si nécessaire
-        try {
-          require_once __DIR__ . '/../rocket_chat/lib/rocketchatmongodb.php';
-          $mongoClient = new RocketChatMongoDB($this->rc);
-          $infos = $mongoClient->searchUserByUsername($this->rc->get_user_name());
-          $this->rc->output->set_env('ariane_user_status', $infos['status']);
-          $this->rc->output->set_env('ariane_url', $this->rc->config->get('rocket_chat_url'));
-          $this->rc->output->set_env('ariane_photo_url', $this->rc->config->get('rocket_chat_url') . 'avatar/');
-          $this->rc->output->set_env('web_socket_ariane_url', str_replace('https', 'wss', $this->rc->config->get('rocket_chat_url')) . 'websocket');
-          $this->rc->output->set_env('ariane_auth_token', $_SESSION['rocket_chat_auth_token']);
-          $this->rc->output->set_env('ariane_user_id', $this->rc->config->get('rocket_chat_user_id', null));
-          $this->rc->output->set_env('username', $this->rc->get_user_name());
-          $this->rc->output->set_env('user_fullname', $infos['fname']);
-          $this->rc->output->set_env('user_email', $infos['email']);
-        }
-        catch (Exception $ex) {}
         if (!isset($infos['fname'])) {
           $identity = $this->rc->user->get_identity();
           $this->rc->output->set_env('username', $this->rc->get_user_name());

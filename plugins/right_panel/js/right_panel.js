@@ -404,25 +404,27 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 	$('#right_panel #right_panel_presence').removeClass('busy');
 	$('#right_panel #right_panel_presence').addClass(rcmail.env['ariane_user_status']);
 	
-	if ($('#right_panel').hasClass('minified')) {
-		$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status'] + '_min') + '</span>');
-		$('#useroptions').addClass('minified');
-		$('#useroptions ul#useroptionsmenu .presence').remove();
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence offline"><a class="active" href="#" onclick="rcmail.change_im_status(\'offline\')">' + rcmail.get_label('right_panel.offline_min') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence away"><a class="active" href="#" onclick="rcmail.change_im_status(\'away\')">' + rcmail.get_label('right_panel.away_min') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy_min') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online_min') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout_min'));
-	}
-	else {
-		$('#useroptions ul#useroptionsmenu .presence').remove();
-		$('#useroptions').removeClass('minified');
-		$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status']) + '</span>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence offline"><a class="active" href="#" onclick="rcmail.change_im_status(\'offline\')">' + rcmail.get_label('right_panel.offline') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence away"><a class="active" href="#" onclick="rcmail.change_im_status(\'away\')">' + rcmail.get_label('right_panel.away') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online') + '</a></li>');
-		$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout'));
+	if (rcmail.env.web_socket_ariane_url) {
+		if ($('#right_panel').hasClass('minified')) {
+			$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status'] + '_min') + '</span>');
+			$('#useroptions').addClass('minified');
+			$('#useroptions ul#useroptionsmenu .presence').remove();
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence offline"><a class="active" href="#" onclick="rcmail.change_im_status(\'offline\')">' + rcmail.get_label('right_panel.offline_min') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence away"><a class="active" href="#" onclick="rcmail.change_im_status(\'away\')">' + rcmail.get_label('right_panel.away_min') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy_min') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online_min') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout_min'));
+		}
+		else {
+			$('#useroptions ul#useroptionsmenu .presence').remove();
+			$('#useroptions').removeClass('minified');
+			$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status']) + '</span>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence offline"><a class="active" href="#" onclick="rcmail.change_im_status(\'offline\')">' + rcmail.get_label('right_panel.offline') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence away"><a class="active" href="#" onclick="rcmail.change_im_status(\'away\')">' + rcmail.get_label('right_panel.away') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout'));
+		}
 	}
 };
 
@@ -1109,6 +1111,9 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 
 // Web socket Ariane
 rcube_webmail.prototype.right_panel_ariane_web_socket = function() {
+	if (!rcmail.env.web_socket_ariane_url) {
+		return;
+	}
 	if (!window.webSocketAriane) {
 		// Initialisation de la socket Ariane
 		window.webSocketAriane = new WebSocket(rcmail.env.web_socket_ariane_url);

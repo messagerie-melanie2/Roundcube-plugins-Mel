@@ -380,7 +380,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
         $filter = "(&(" . $tmp[0] . ")$base_filter)";
         $base_dn = $tmp[1];
         // Search LDAP
-        $result = $ldap->list($base_dn, $filter, [
+        $result = $ldap->ldap_list($base_dn, $filter, [
             'cn'
         ]);
       } while ((! isset($result) || $ldap->count_entries($result) === 0) && strpos($base_dn, 'ou=') === 0);

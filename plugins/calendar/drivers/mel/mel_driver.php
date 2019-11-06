@@ -1666,8 +1666,8 @@ class mel_driver extends calendar_driver {
     if ($event->all_day) {
       $_event['allday'] = 1;
       // Passer les journées entières à 12h - 13h pour régler les problèmes
-      $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . ' 00:00:00', new DateTimeZone($event->timezone));
-      $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . ' 01:00:00', new DateTimeZone($event->timezone));
+      $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . '00:00:00', new DateTimeZone('GMT'));
+      $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . '00:00:00', new DateTimeZone('GMT'));
       // Supprimer un jour pour le décalage
       $_event['end']->sub(new DateInterval("P1D"));
     }
@@ -2201,14 +2201,13 @@ class mel_driver extends calendar_driver {
       if (isset($infos) && is_array($infos['uid']) && count($infos['uid']) > 0) {
         // map vcalendar fbtypes to internal values
         $fbtypemap = array('free' => calendar::FREEBUSY_FREE,'tentative' => calendar::FREEBUSY_TENTATIVE,'outofoffice' => calendar::FREEBUSY_OOF,'busy' => calendar::FREEBUSY_BUSY);
-        // Si l'utilisateur appartient au ministère, on génère ses freebusy
-        $uid = $infos['uid'][0];
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
         $events = $this->load_events($start, $end, null, $infos['uid'][0], 1, null, true);
         $result = array();
         foreach ($events as $event) {
           if ($event['allday']) {
             $from = strtotime($event['start']->format(self::SHORT_DB_DATE_FORMAT));
+            $event['end']->add(new DateInterval("P1D"));
             $to = strtotime($event['end']->format(self::SHORT_DB_DATE_FORMAT));
           }
           else {

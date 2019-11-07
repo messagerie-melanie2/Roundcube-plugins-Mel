@@ -213,7 +213,7 @@ class mtes_driver_mel extends driver_mel {
    * @return string fullname
    */
   public function getFullname($infos) {
-    return isset($infos['cn']) ? ($infos['cn'][0] ?: isset($infos['mailpr']) ? $infos['mailpr'][0] : null) : null;
+    return isset($infos['cn']) ? $infos['cn'][0] : (isset($infos['mailpr']) ? $infos['mailpr'][0] : null);
   }
   
   /**

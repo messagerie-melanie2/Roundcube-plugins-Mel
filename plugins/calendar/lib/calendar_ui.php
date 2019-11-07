@@ -172,21 +172,27 @@ class calendar_ui
       $class = 'cat-' . asciiwords(strtolower($class), true);
       $css  .= ".$class { color: #$color }\n";
       if ($mode > 0) {
-        if ($mode == 2) {
+        if ($mode === 2) {
           $css .= ".fc-event-$class .fc-event-bg {";
           $css .= " opacity: 0.9;";
           $css .= " filter: alpha(opacity=90);";
-          
+          $css .= " background-color: #$color;";
+          $css .= "}\n";
+          $css .= ".fc-event-$class .fc-event-inner {";
+          $css .= " background-color: #$color;";
         }
         else {
           $css .= ".fc-event-$class.fc-event-skin, ";
           $css .= ".fc-event-$class .fc-event-skin, ";
           $css .= ".fc-event-$class .fc-event-inner {";
+          if ($mode === 3) {
+            // PAMELA - N'afficher que les border pour les catégories
+            $css .= " border-right: 5px solid #$color;";
+          }
+          else {
+            $css .= " background-color: #" . $color . ";";
+          }
         }
-        $css .= " background-color: #" . $color . ";";
-        if ($mode % 2)
-          // PAMELA - N'afficher que les border pour les catégories
-          $css .= " border: 1px solid #$color;";
         $css .= "}\n";
       }
     }
@@ -212,19 +218,27 @@ class calendar_ui
 
     if ($mode != 1) {
       // PAMELA - Probleme de couleur des events all day en mode 3
-//       if ($mode == 3) {
-//         $css .= ".fc-event-$class .fc-event-bg {";
-//         $css .= " opacity: 0.9;";
-//         $css .= " filter: alpha(opacity=90);";
-//       }
-//       else {
-        $css .= ".fc-event-$class, ";
-        $css .= ".fc-event-$class .fc-event-inner {";
-//       }
-      if (!$prop['printmode'])
+      if ($mode === 3) {
+        $css .= ".fc-event-$class .fc-event-bg {";
+        $css .= " opacity: 0.9;";
+        $css .= " filter: alpha(opacity=90);";
         $css .= " background-color: #$color;";
-      if ($mode % 2 == 0)
-      $css .= " border-color: #$color;";
+        $css .= "}\n";
+        $css .= ".fc-event-$class .fc-event-inner {";
+        $css .= " background-color: #$color;";
+      }
+      else {
+        $css .= ".fc-event-$class.fc-event-skin, ";
+        $css .= ".fc-event-$class .fc-event-skin, ";
+        $css .= ".fc-event-$class .fc-event-inner {";
+        // 0005352: Affichage de "Couleurs des événements"
+        if ($mode === 2) {
+          $css .= " border: 1px solid #$color;";
+        }
+        else {
+          $css .= " background-color: #$color;";
+        }
+      }
       $css .= "}\n";
     }
 

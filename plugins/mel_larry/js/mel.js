@@ -70,13 +70,13 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 	else if (rcmail.env.task == 'tasks') {
 		$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in_tasks'));
 	}
-	else if (rcmail.env.task == 'settings') {
+	else if (rcmail.env.task == 'settings' && !rcmail.env.courrielleur) {
 		var disconnect = $('<div>');
 		disconnect.attr('class', 'disconnect');
 		var disconnect_link = $('<a>');
 		disconnect_link.attr('href', './?_task=logout');
 		disconnect_link.attr('onclick', 'return rcmail.command(\'switch-task\',\'logout\',this,event)');
-		disconnect_link.text(rcmail.get_label('right_panel.logout'))
+		disconnect_link.text(rcmail.get_label('mel.logout'))
 		disconnect.append(disconnect_link);
 		$('#settings-sections').append(disconnect);
 	}

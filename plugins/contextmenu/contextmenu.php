@@ -33,6 +33,11 @@ class contextmenu extends rcube_plugin
 	function init()
 	{
 		$rcmail = rcube::get_instance();
+		
+		// MANTIS 0005152: Désactiver le plugin contextmenu en vue mobile
+		if ($rcmail->config->get('ismobile', false)) {
+		  return;
+		}
 
 		if ($rcmail->output->type == 'html') {
 			$this->include_script('contextmenu.js');

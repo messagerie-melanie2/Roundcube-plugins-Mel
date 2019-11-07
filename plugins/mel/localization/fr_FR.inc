@@ -23,6 +23,8 @@ $labels['mel'] = 'Mél';
 $labels['types'] = 'Types';
 $labels['elements'] = 'Liste des ressources';
 
+$labels['logout'] = 'Se déconnecter';
+
 
 // Resources
 $labels['resources'] = 'Mes ressources';
@@ -91,8 +93,8 @@ $labels['change_user'] = 'Changer d\'utilisateur';
 
 $labels['login from'] = "Connexion depuis : ";
 $labels['login_productioninformation'] = "Plateforme de communication réservée aux agents des ministères";
-$labels['login_footerbox'] = "Connexion depuis : ";
-$labels['login_footerbox_info'] = ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"]);
+$labels['login_footerbox'] = isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) ? "Connexion depuis : " : " ";
+$labels['login_footerbox_info'] = isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) ? ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"]) : " ";
 $labels['login_warning'] = "Respectez les principes de l'étiquette en vigueur sur l'internet, à savoir un ensemble de règles de savoir-vivre concernant l'emploi de l'internet";
 $labels['login_footer1'] = "© Ministère de la Transition écologique et solidaire,
 © Ministère de la Cohésion des territoires et des Relations avec les collectivités territoriales,

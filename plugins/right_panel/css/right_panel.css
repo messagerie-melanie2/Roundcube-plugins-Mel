@@ -96,6 +96,9 @@ body.right_panel_minified #mainscreen {
 	position: relative;
 	top: -35px;
 	left: 35px;
+	padding-right: 35px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #right_panel.minified #right_panel_presence .fullname {

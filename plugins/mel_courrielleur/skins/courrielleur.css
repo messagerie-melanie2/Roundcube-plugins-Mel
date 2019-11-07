@@ -4,8 +4,7 @@
 	display: none;
 }
 
-.mel_owncloud-box,
-.rocket_chat-box {
+.mel_owncloud-box, .rocket_chat-box {
 	top: 0px !important;
 	bottom: 0px !important;
 	left: 0px !important;
@@ -13,7 +12,7 @@
 }
 
 #mainscreen {
-	top: 20px !important;
+	top: 0px !important;
 }
 
 #settingstabpreferences {
@@ -21,15 +20,15 @@
 }
 
 #settingstabfolders {
-  display: none;
+	display: none;
 }
 
 #settingstabidentities {
-  display: none;
+	display: none;
 }
 
 #settingstabresponses {
-  display: none;
+	display: none;
 }
 
 #mel_resources_elements_listbox .boxtitle span {
@@ -37,5 +36,5 @@
 }
 
 #mel_resources_elements_listbox td.subscribed {
-  display: none;
+	display: none;
 }

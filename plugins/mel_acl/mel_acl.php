@@ -935,11 +935,12 @@ class mel_acl extends rcube_plugin
             $inf = explode('@', $this->user_name);
             $this->user_objet_share = $inf[0];
             $this->user_host = $inf[1];
-            if (strpos($this->user_objet_share, '.-.') !== false) {
-                $inf = explode('.-.', $this->user_objet_share);
-                $this->user_bal = $inf[1];
-            } else {
-                $this->user_bal = $this->user_objet_share;
+            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
+            if (isset($balpname)) {
+              $this->user_bal = $balpname;
+            }
+            else {
+              $this->user_bal = $this->user_objet_share;
             }
             // Parcour les bal pour vérifier qu'il est bien gestionnaire
             foreach($list_balp as $balp) {

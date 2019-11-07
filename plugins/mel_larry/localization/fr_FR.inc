@@ -20,6 +20,8 @@ $labels = array();
 
 $labels['control'] = "Affichage des messages";
 
+$labels['discussion'] = "Discussion";
+
 $labels['search_in'] = 'Rechercher dans';
 $labels['search_in_all_folders'] = 'Rechercher dans tous les dossiers';
 $labels['search_in_all_contacts'] = 'Rechercher dans tous les contacts';

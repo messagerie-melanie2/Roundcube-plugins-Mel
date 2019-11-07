@@ -3,6 +3,10 @@
 	margin-right: 20px;
 }
 
+#taskbar a.button-discussion {
+	display: inline !important;
+}
+
 #rocket_chat_frame {
 	width: 100%;
 	height: 100%;

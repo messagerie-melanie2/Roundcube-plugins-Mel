@@ -508,7 +508,7 @@ class utils
     {
       $ip = self::_get_address_ip();
       $procid = getmypid();
-      $mineqprovenance = $_SERVER["HTTP_X_MINEQPROVENANCE"];
+      $mineqprovenance = $_SERVER["HTTP_X_MINEQPROVENANCE"] ?: 'Intranet';
       $courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
       $date = date('d-M-Y H:i:s O');
       $message = "[$date]: <calendar> [INFO] $ip ($mineqprovenance) PROC[$procid]$courrielleur - $message\r\n";

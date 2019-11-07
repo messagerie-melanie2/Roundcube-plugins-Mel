@@ -72,6 +72,17 @@ class mel_moncompte extends rcube_plugin {
    * @var string
    */
   private $user_objet_share;
+  /**
+   * Mapping for old actions used by Courrielleur
+   * @var array
+   */
+  private $old_actions_mapping = [
+      'plugin.melanie2_moncompte'           => 'plugin.mel_moncompte',
+      'plugin.melanie2_resources_bal'       => 'plugin.mel_resources_bal',
+      'plugin.melanie2_resources_agendas'   => 'plugin.mel_resources_agendas',
+      'plugin.melanie2_resources_contacts'  => 'plugin.mel_resources_contacts',
+      'plugin.melanie2_resources_tasks'     => 'plugin.mel_resources_tasks',
+  ];
 
   /**
    * Initialisation du plugin
@@ -98,6 +109,10 @@ class mel_moncompte extends rcube_plugin {
   private function init_ui() {
     if ($this->ui_initialized) {
       return;
+    }
+    // Redirect old actions to new one
+    if (isset($this->old_actions_mapping[$this->rc->action])) {
+      $this->rc->output->redirect(['action' => $this->old_actions_mapping[$this->rc->action]]);
     }
     // Chargement de la conf
     $this->load_config();
@@ -173,8 +188,14 @@ class mel_moncompte extends rcube_plugin {
       $this->register_action('plugin.mel_resources_agendas', array($this,'resources_agendas_init'));
       $this->register_action('plugin.mel_resources_contacts', array($this,'resources_contacts_init'));
       $this->register_action('plugin.mel_resources_tasks', array($this,'resources_tasks_init'));
+      
+      $this->register_action('plugin.melanie2_resources_bal', array($this,'resources_bal_init'));
+      $this->register_action('plugin.melanie2_resources_agendas', array($this,'resources_agendas_init'));
+      $this->register_action('plugin.melanie2_resources_contacts', array($this,'resources_contacts_init'));
+      $this->register_action('plugin.melanie2_resources_tasks', array($this,'resources_tasks_init'));
 
       $this->register_action('plugin.mel_moncompte', array(new Moncompte($this),'init'));
+      $this->register_action('plugin.melanie2_moncompte', array(new Moncompte($this),'init'));
 
       $this->register_action('plugin.mel_statistics_mobile', array(new Mobile_Stats($this),'init'));
       $this->register_action('plugin.statistics.zpush_command', array(new Mobile_Stats($this),"zpush_command"));
@@ -260,7 +281,12 @@ class mel_moncompte extends rcube_plugin {
     }
     else {
       // register UI objects
-      $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2mailbox($this->rc->user->get_username()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+      $this->rc->output->add_handlers(
+          array(
+              'mel_resources_elements_list' => array(new M2mailbox($this->rc->user->get_username()), 'resources_elements_list'),
+              'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
+          )
+      );
       $this->rc->output->set_env("resources_action", "bal");
       $this->rc->output->include_script('list.js');
       $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -342,7 +368,12 @@ class mel_moncompte extends rcube_plugin {
       }
       else {
         // register UI objects
-        $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2calendar($this->get_user_bal()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+        $this->rc->output->add_handlers(
+            array(
+                'mel_resources_elements_list' => array(new M2calendar($this->get_user_bal()),'resources_elements_list'),
+                'mel_resources_type_frame'    => array($this,'mel_resources_type_frame'),
+            )
+        );
         $this->rc->output->set_env("resources_action", "agendas");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -427,7 +458,12 @@ class mel_moncompte extends rcube_plugin {
       }
       else {
         // register UI objects
-        $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2contacts($this->get_user_bal()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+        $this->rc->output->add_handlers(
+            array(
+                'mel_resources_elements_list' => array(new M2contacts($this->get_user_bal()), 'resources_elements_list'),
+                'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
+            )
+        );
         $this->rc->output->set_env("resources_action", "contacts");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -510,7 +546,13 @@ class mel_moncompte extends rcube_plugin {
       }
       else {
         // register UI objects
-        $this->rc->output->add_handlers(array('mel_resources_elements_list' => array(new M2tasks($this->get_user_bal()),'resources_elements_list'),'mel_resources_type_frame' => array($this,'mel_resources_type_frame')));
+        $this->rc->output->add_handlers(
+            array(
+                'mel_resources_elements_list'   => array(new M2tasks($this->get_user_bal()), 'resources_elements_list'),
+                'mel_resources_type_frame'      => array($this, 'mel_resources_type_frame'),
+                
+            )
+        );
         $this->rc->output->set_env("resources_action", "tasks");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));

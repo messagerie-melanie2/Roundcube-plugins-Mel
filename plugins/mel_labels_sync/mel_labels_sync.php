@@ -656,22 +656,17 @@ class mel_labels_sync extends rcube_plugin {
 
     $infos = mel::get_user_infos($this->rc->user->get_username());
     $html_select->add('---');
-    $html_select->add($infos['cn'][0], $infos['uid'][0]);
+    $html_select->add(driver_mel::get_instance()->getFullname($infos), driver_mel::get_instance()->getUsername($infos));
 
     // Parcours la liste des boites et ajoute les options
     if (is_array($balp_list)) {
       foreach ($balp_list as $balp) {
-        if (! isset($balp['uid']))
-          continue;
-        if (strpos($balp['uid'][0], '.-.')) {
-          $name = explode('.-.', $balp['uid'][0]);
-          $name = $name[1];
+        if (driver_mel::get_instance()->issetUsername($balp)) {
+          list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername(driver_mel::get_instance()->getUsername($balp));
+          $name = $balpname ?: $username;
+          $infos = mel::get_user_infos($name);
+          $html_select->add(driver_mel::get_instance()->getFullname($infos), $name);
         }
-        else {
-          $name = $balp['uid'][0];
-        }
-        $infos = mel::get_user_infos($name);
-        $html_select->add($infos['cn'][0], $name);
       }
     }
     return $html_select->show($this->_get_current_user_name());
@@ -703,14 +698,9 @@ class mel_labels_sync extends rcube_plugin {
       // Parcours la liste des boites et ajoute les options
       if (is_array($balp_list)) {
         foreach ($balp_list as $_bal) {
-          if (isset($_bal['uid'])) {
-            if (strpos($_bal['uid'][0], '.-.')) {
-              $name = explode('.-.', $_bal['uid'][0]);
-              $name = $name[1];
-            }
-            else {
-              $name = $_bal['uid'][0];
-            }
+          if (driver_mel::get_instance()->issetUsername($_bal)) {
+            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername(driver_mel::get_instance()->getUsername($_bal));
+            $name = $balpname ?: $username;
             if ($name == $balp) {
               return true;
             }

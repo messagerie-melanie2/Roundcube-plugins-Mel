@@ -182,8 +182,12 @@ class mel_driver extends calendar_driver {
 
       // attempt to create a default calendar for this user
       if (! $this->has_principal) {
-        $infos = mel::get_user_infos($this->user->uid);
-        if ($this->create_calendar(array('id' => $this->user->uid,'name' => $infos['cn'][0],'color' => $this->_random_color()))) {
+        $default_calendar_name = $this->rc->config->get('default_calendar_name', null);
+        if (!isset($default_calendar_name)) {
+          $infos = mel::get_user_infos($this->user->uid);
+          $default_calendar_name = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
+        }
+        if ($this->create_calendar(array('id' => $this->user->uid, 'name' => $default_calendar_name, 'color' => $this->_random_color()))) {
           // Création du default calendar
           $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
@@ -1662,8 +1666,8 @@ class mel_driver extends calendar_driver {
     if ($event->all_day) {
       $_event['allday'] = 1;
       // Passer les journées entières à 12h - 13h pour régler les problèmes
-      $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . ' 00:00:00', new DateTimeZone($event->timezone));
-      $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . ' 01:00:00', new DateTimeZone($event->timezone));
+      $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . '00:00:00', new DateTimeZone('GMT'));
+      $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . '00:00:00', new DateTimeZone('GMT'));
       // Supprimer un jour pour le décalage
       $_event['end']->sub(new DateInterval("P1D"));
     }
@@ -1741,11 +1745,11 @@ class mel_driver extends calendar_driver {
         // Alarm
         if (isset($event->alarm) && $event->alarm != 0) {
           if ($event->alarm > 0) {
-            $_event['alarms'] = "-" . $event->alarm . "M:DISPLAY";
-            $_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-" . $event->alarm . "M"]];
+            $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
+            $_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
           }
           else {
-            $_event['alarms'] = "+" . str_replace('-', '', strval($event->alarm)) . "M:DISPLAY";
+            $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
           }
         }
 
@@ -1824,7 +1828,7 @@ class mel_driver extends calendar_driver {
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;
         $deleted_exceptions[] = new DateTime($_exception->recurrenceId);
-        $recurrence['EXCEPTIONS'][] = $e;
+        $recurrence['EXCEPTIONS'][$e['id']] = $e;
       }
     }
     // Ajoute les dates deleted
@@ -1991,7 +1995,7 @@ class mel_driver extends calendar_driver {
       $_attachment->path = $event->uid . '/' . $this->calendars[$event->calendar]->owner;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
-      $_attachment->data = file_get_contents($attachment['path']);
+      $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
       $ret = $_attachment->save();
       return ! is_null($ret);
     }
@@ -2197,14 +2201,13 @@ class mel_driver extends calendar_driver {
       if (isset($infos) && is_array($infos['uid']) && count($infos['uid']) > 0) {
         // map vcalendar fbtypes to internal values
         $fbtypemap = array('free' => calendar::FREEBUSY_FREE,'tentative' => calendar::FREEBUSY_TENTATIVE,'outofoffice' => calendar::FREEBUSY_OOF,'busy' => calendar::FREEBUSY_BUSY);
-        // Si l'utilisateur appartient au ministère, on génère ses freebusy
-        $uid = $infos['uid'][0];
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
         $events = $this->load_events($start, $end, null, $infos['uid'][0], 1, null, true);
         $result = array();
         foreach ($events as $event) {
           if ($event['allday']) {
             $from = strtotime($event['start']->format(self::SHORT_DB_DATE_FORMAT));
+            $event['end']->add(new DateInterval("P1D"));
             $to = strtotime($event['end']->format(self::SHORT_DB_DATE_FORMAT));
           }
           else {

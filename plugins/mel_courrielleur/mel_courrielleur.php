@@ -24,7 +24,7 @@ class mel_courrielleur extends rcube_plugin
      *
      * @var string
      */
-    public $task = 'settings|jappix|owncloud|ariane';
+    public $task = 'login|settings|jappix|owncloud|ariane|discussion';
     /**
      * (non-PHPdoc)
      * @see rcube_plugin::init()
@@ -36,6 +36,21 @@ class mel_courrielleur extends rcube_plugin
             $this->include_stylesheet('skins/courrielleur.css');
             // Variable d'env courrielleur
             rcmail::get_instance()->output->set_env('courrielleur', true);
+            
+            // Définition des hooks
+            $this->add_hook('authenticate', array(
+                $this,
+                'authenticate'
+            ));
         }
+    }
+    
+    /**
+     * authenticate hook for courrielleur
+     * Add valid request
+     */
+    public function authenticate($args) {
+        $args['valid'] = true;
+        return $args;
     }
 }

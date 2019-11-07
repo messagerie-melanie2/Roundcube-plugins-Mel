@@ -191,18 +191,18 @@ pre {
 }
 
 #calendarslist li label {
-	display: block;
+	display: inline;
 }
 
 #calendarslist li span.calname {
 	display: block;
 	position: absolute;
 	top: 12px;
-	left: 26px;
+	left: 82px;
 	right: 2px;
 	cursor: default;
 	padding-bottom: 2px;
-	padding-right: 30px;
+	padding-right: 2px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -215,9 +215,9 @@ pre {
 	display: inline-block;
 	padding: 0;
 	border-radius: 7px;
-	margin-right: 6px;
-	width: 8px;
-	height: 8px;
+	margin-left: 5px;
+	width: 10px;
+	height: 10px;
 	font-size: 0.8em;
 	border: 1px solid rgba(0, 0, 0, 0.5);
 	-webkit-box-shadow: inset 0px 0 1px 1px rgba(0, 0, 0, 0.3);

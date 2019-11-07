@@ -4,4 +4,16 @@ $rcmail_config['use_infinite_scroll'] = true;
 
 // Configuration du HTTP HOST
 $rcmail_config['http_host'] = 'localhost/';
+
+// Default calendar name when created (string or null)
+$config['default_calendar_name'] = null;
+
+// Default addressbook name when created (string or null)
+$config['default_addressbook_name'] = null;
+
+// Default addressbook name when created (string or null)
+$config['default_taskslist_name'] = null;
+
+// LDAP field used to generate the default object name when default_<object>_name property is null
+$config['default_object_name_ldap_field'] = 'cn';
 ?>

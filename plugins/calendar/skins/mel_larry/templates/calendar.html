@@ -15,7 +15,9 @@
 	<div id="calendarsidebar">
 		<h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
 		<div id="calendartoolbar" class="toolbar" role="toolbar" aria-labelledby="aria-label-toolbar">
-			<roundcube:button command="addevent" type="link" class="button addevent disabled" classAct="button addevent" classSel="button addevent pressed" label="calendar.new_event" title="calendar.new_event" />			
+			<roundcube:button command="addevent" type="link" class="button addevent disabled" classAct="button addevent" classSel="button addevent pressed" label="calendar.new_event" title="calendar.new_event" />
+			<!-- PAMELA - MANTIS 0004466: Ajouter un bouton pour rafraichir l'agenda -->
+			<roundcube:button command="refreshcalendar" type="link" class="button refreshcalendar disabled" classAct="button refreshcalendar" classSel="button refreshcalendar pressed" label="refresh" title="refresh" />			
 			<roundcube:button command="events-import" type="link" class="button import disabled" classAct="button import" classSel="button import pressed" label="import" title="calendar.importevents" />
 			<roundcube:button command="export" type="link" class="button export disabled" classAct="button export" classSel="button export pressed" label="calendar.export" title="calendar.exporttitle" />
 			<roundcube:button command="print" type="link" class="button print disabled" classAct="button print" classSel="button print pressed" label="calendar.print" title="calendar.printtitle" />

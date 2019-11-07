@@ -578,9 +578,7 @@ class mel_doubleauth extends rcube_plugin {
      * Permet la selection de la bonne url
      */
     private function is_internal() {
-        return ((!isset($_SERVER["HTTP_X_MINEQPROVENANCE"])
-            || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0)
-            && !$this->rc->config->get('is_preprod'));
+      return mel::is_internal() && !$this->rc->config->get('is_preprod');
     }
     
     /**

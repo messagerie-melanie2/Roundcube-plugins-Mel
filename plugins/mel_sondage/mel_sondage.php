@@ -100,7 +100,7 @@ class mel_sondage extends rcube_plugin
      */
     function logout_after($args) {
     	$rcmail = rcmail::get_instance();
-    	if ($this->is_internal()) {
+    	if (mel::is_internal()) {
     	    $sondage_url = $rcmail->config->get('sondage_url');
     	} else {
     	    $sondage_url = $rcmail->config->get('sondage_external_url');
@@ -141,7 +141,7 @@ class mel_sondage extends rcube_plugin
      */
     private function login_sondage() {
     	$rcmail = rcmail::get_instance();
-    	if ($this->is_internal()) {
+    	if (mel::is_internal()) {
     	    $sondage_url = $rcmail->config->get('sondage_url');
     	} else {
     	    $sondage_url = $rcmail->config->get('sondage_external_url');
@@ -162,12 +162,5 @@ class mel_sondage extends rcube_plugin
     	}
     	// Appel le script de connexion du sondage
     	$this->include_script('sondage.js');
-    }
-    /**
-     * Défini si on est dans une instance interne ou extene de l'application
-     * Permet la selection de la bonne url
-     */
-    private function is_internal() {
-        return (!isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
     }
 }

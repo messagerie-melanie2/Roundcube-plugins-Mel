@@ -246,18 +246,26 @@ html.mozilla #mailboxlist > li:first-child {
     border-radius: 2px;
 }
 
-#messageheader #countcontrols.pagenav {
-	display: none;
+#messageheader .pagenav .countdisplay {
+    font-size: 10px;
 }
 
 #messageheader #countcontrols, 
 #messageheader #formatcontrols {
-	top: auto;
 	right: 36px;
 	bottom: 10px;
 	text-align: right;
 	white-space: nowrap;
 	position: absolute;
+}
+
+#messageheader #countcontrols {
+	top: 2px;
+}
+
+#messageheader.previewheader #countcontrols, 
+#messageheader #formatcontrols {
+	top: auto;
 }
 
 #messageheader #countcontrols a.button.extwin, 
@@ -625,19 +633,6 @@ td span.adr:hover .rcmaddcontact {
 .toolbar a.button.spellcheck {
 	background: url(../images/envoyer/orthographe.png?v=e784.5000) center center no-repeat #fff;
 	min-width: auto;
-}
-
-#showcontacts_to,
-#showcontacts_cc,
-#showcontacts_bcc,
-#showcontacts_replyto,
-#showcontacts_followupto {
-	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
-	border: none;
-	border: none;
-	width: 28px;
-	margin-left: 4px;
-	border-radius: 4px;
 }
 
 .toolbar a.button.extwin {

@@ -175,7 +175,7 @@ class mel_melanissimo extends rcube_plugin {
     // Défini si le service Melanissimo doit être utilisé en fonction de la valeur configuré
     $max_melanissimo_size = $this->rc->config->get('max_melanissimo_size', 1000000000);
     $over_size_melanissimo = $max_melanissimo_size < $size;
-    $use_melanissimo = $this->rc->config->get('max_attachments_size', 5000000) < $size && ! $over_size_melanissimo && ($this->is_internal() || $this->rc->config->get('enable_internet_service', true));
+    $use_melanissimo = $this->rc->config->get('max_attachments_size', 5000000) < $size && ! $over_size_melanissimo && (mel::is_internal() || $this->rc->config->get('enable_internet_service', true));
     $melanissimo_up = $use_melanissimo && $this->ws->curlTestMelanissimo($COMPOSE_ID, $size);
 
     // Retourne le résultat au javascript
@@ -434,13 +434,5 @@ class mel_melanissimo extends rcube_plugin {
     $rcmail->session->remove('compose_data_' . $id);
 
     $_SESSION['last_compose_session'] = $id;
-  }
-
-  /**
-   * Défini si on est dans une instance interne ou extene de l'application
-   * Permet la selection de la bonne url
-   */
-  private function is_internal() {
-    return (! isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
   }
 }

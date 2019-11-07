@@ -138,10 +138,10 @@ class mel_logs extends rcube_plugin
 	        $ip = $this->_get_address_ip();
 	        $procid = getmypid();
 	        $username = rcmail::get_instance()->get_user_name();
-	        $mineqprovenance = $_SERVER["HTTP_X_MINEQPROVENANCE"];
+	        $provenance = rcmail::get_instance()->config->get('provenance');
 	        $courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
 	        $doubleauth = isset($_SESSION['mel_doubleauth_2FA_login']) ? " [doubleauth]" : "";
-	        rcmail::get_instance()->write_log($this->log_file, "[$level] $ip ($mineqprovenance)$doubleauth PROC[$procid]$courrielleur $username - $message");
+	        rcmail::get_instance()->write_log($this->log_file, "[$level] $ip ($provenance)$doubleauth PROC[$procid]$courrielleur $username - $message");
 	    }
 	}
 

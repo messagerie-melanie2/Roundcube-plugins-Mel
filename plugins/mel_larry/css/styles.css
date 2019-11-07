@@ -430,6 +430,10 @@ body.extwin #taskbar {
     right: 13px;
 }
 
+#taskbar a.button-discussion {
+	display: none;
+}
+
 #taskbar a.button-mail span.button-inner,
 #taskbar a.button-mail:hover span.button-inner,
 #taskbar a.button-selected.button-mail span.button-inner {
@@ -454,9 +458,9 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/sondage.png?v=e784.5000) center 15px no-repeat;
 }
 
-#taskbar a.button-rocket_chat span.button-inner,
-#taskbar a.button-rocket_chat:hover span.button-inner,
-#taskbar a.button-selected.button-rocket_chat span.button-inner {
+#taskbar a.button-discussion span.button-inner,
+#taskbar a.button-discussion:hover span.button-inner,
+#taskbar a.button-selected.button-discussion span.button-inner {
 	background: url(../images/taskbar/discussion.png?v=e784.5000) center 15px no-repeat;
 }
 
@@ -1197,6 +1201,28 @@ table.propform td {
     background-color: #fff;
 }
 
+#messageheader #countcontrols a.button {
+	width: 22px;
+	height: 18px;
+	margin-right: 0px;
+	text-align: right;
+}
+
+#messageheader.previewheader #countcontrols a.button {
+	width: 38px;
+	height: 30px;
+	margin-right: 6px;
+	text-align: center;
+}
+
+.pagenav a.nextpage span.inner {
+    background-position: -31px -225px;
+}
+
+.pagenav a.prevpage span.inner {
+    background-position: -10px -225px;
+}
+
 #messageheader #countcontrols a.button:hover,
 #messageheader #formatcontrols  a.button:hover,
 #addressbooktoolbar a.button:hover,
@@ -1228,6 +1254,7 @@ table.propform td {
     background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat #fff;
 }
 
+.toolbar a.button.refreshcalendar,
 .toolbar a.button.checkmail {
     background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat #fff;
 }
@@ -1803,3 +1830,21 @@ ul.treelist li.selected > div.collapsed {
 .ui-autocomplete-input {
 	background: url(../images/calendar/mini-chevron.png?v=e784.5000) right 5px center no-repeat #fff;
 }
+
+/** Contacts **/
+a.button.showcontacts {
+	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
+	border: none;
+	border: none;
+	width: 28px;
+	margin-left: 4px;
+	border-radius: 4px;
+}
+
+#aclform a.button.showcontacts {
+	position: relative;
+	top: -7px;
+	left: -2px;
+}
+
+

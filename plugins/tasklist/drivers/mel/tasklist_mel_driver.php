@@ -112,10 +112,14 @@ class tasklist_mel_driver extends tasklist_driver {
 
     // attempt to create a default list for this user
     if (empty($this->lists)) {
-      $infos = mel::get_user_infos($this->user->uid);
+      $default_taskslist_name = $this->rc->config->get('default_taskslist_name', null);
+      if (!isset($default_taskslist_name)) {
+        $infos = mel::get_user_infos($this->user->uid);
+        $default_taskslist_name = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
+      }
       if ($this->create_list(array(
           'id' => $this->user->uid,
-          'name' => $infos['cn'][0],
+          'name' => $default_taskslist_name,
           'color' => $this->_random_color()
       )))
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);

@@ -73,7 +73,7 @@ class driver_annuaire {
    */
   public static function get_instance() {
     if (!isset(self::$driver)) {
-      $drivername = strtolower(rcmail::get_instance()->config->get('annuaire_driver', 'default_driver_annuaire'));
+      $drivername = strtolower(rcmail::get_instance()->config->get('annuaire_driver', 'default'));
       require_once $drivername . '/' . $drivername . '.php';
       $drivername = $drivername . "_driver_annuaire";
       self::$driver = new $drivername();

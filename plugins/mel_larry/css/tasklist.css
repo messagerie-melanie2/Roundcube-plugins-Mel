@@ -305,7 +305,6 @@ div.form-section {
 	overflow: visible;
 	margin-top: 10px;
 	width: 229px;
-	height: 430px;
 	padding: 15px 0;
 }
 #taskcreatepopup:after, 
@@ -381,9 +380,7 @@ div.form-section {
 }
 
 #taskcreatepopup .form-section.submit {
-	position: absolute;
-	top: auto;
-	bottom: 5px;
+	margin: 15px auto 5px;
 }
 
 #taskcreatepopup .form-section.submit input.mainaction {

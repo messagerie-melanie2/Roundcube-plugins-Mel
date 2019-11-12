@@ -4,8 +4,8 @@
  * 
  * plugin mel_moncompte pour roundcube
  * 
- * Permet de gérer ses informations de compte Mélanie2
- * D'afficher et partager ses ressources Mélanie2 (boites mail, agendas, contacts, tâches)
+ * Permet de gérer ses informations de compte Mél
+ * D'afficher et partager ses ressources Mél (boites mail, agendas, contacts, tâches)
  * D'afficher les statistiques de synchronisation
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2
@@ -307,7 +307,7 @@ class mel_moncompte extends rcube_plugin {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
         $id = str_replace('_-P-_', '.', $id);
-        // Instancie les objets Mélanie2
+        // Instancie les objets Mél
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
@@ -397,7 +397,7 @@ class mel_moncompte extends rcube_plugin {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
         $id = str_replace('_-P-_', '.', $id);
-        // Instancie les objets Mélanie2
+        // Instancie les objets Mél
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $addressbook = new LibMelanie\Api\Melanie2\Addressbook($user);
@@ -488,7 +488,7 @@ class mel_moncompte extends rcube_plugin {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
         $id = str_replace('_-P-_', '.', $id);
-        // Instancie les objets Mélanie2
+        // Instancie les objets Mél
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $taskslist = new LibMelanie\Api\Melanie2\Taskslist($user);
@@ -696,7 +696,7 @@ class mel_moncompte extends rcube_plugin {
       $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
       if (isset($mbox) && isset($type)) {
-        // Instancie les objets Mélanie2
+        // Instancie les objets Mél
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
@@ -760,7 +760,7 @@ class mel_moncompte extends rcube_plugin {
       $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
       if (isset($mbox) && isset($type)) {
-        // Instancie les objets Mélanie2
+        // Instancie les objets Mél
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
@@ -836,7 +836,7 @@ class mel_moncompte extends rcube_plugin {
       $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
 
       if (isset($mbox) && isset($type)) {
-        // Instancie les objets Mélanie2
+        // Instancie les objets Mél
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);

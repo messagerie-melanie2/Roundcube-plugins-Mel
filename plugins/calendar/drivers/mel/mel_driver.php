@@ -706,7 +706,7 @@ class mel_driver extends calendar_driver {
       }
       if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
         $_exception = new LibMelanie\Api\Melanie2\Exception($_event, $this->user, $this->calendars[$event['calendar']]);
-        // Converti les données de l'évènement en exception Mélanie2
+        // Converti les données de l'évènement en exception Mél
         $exceptions = $_event->exceptions;
         // Positionnement de la recurrenceId et de l'uid
         $id = $event['id'];
@@ -741,7 +741,7 @@ class mel_driver extends calendar_driver {
           $enddate = clone ($event['start']);
         }
         if ($enddate->getTimestamp() == strtotime($_event->start)) {
-            // Converti les données de l'évènement en évènement Mélanie2
+            // Converti les données de l'évènement en évènement Mél
             $_event = $this->_write_postprocess($_event, $event, false);
         }
         else {
@@ -752,7 +752,7 @@ class mel_driver extends calendar_driver {
             $_event->save();
             // Création de la nouvelle
             $_event = new LibMelanie\Api\Melanie2\Event($this->user, $this->calendars[$event['calendar']]);
-            // Converti les données de l'évènement en évènement Mélanie2
+            // Converti les données de l'évènement en évènement Mél
             $_event = $this->_write_postprocess($_event, $event, true);
             $_event->uid = $event['uid'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@future';
         }
@@ -761,7 +761,7 @@ class mel_driver extends calendar_driver {
         $event['uid'] = $_event->uid;
         // Création de la nouvelle
         $_event = new LibMelanie\Api\Melanie2\Event($this->user, $this->calendars[$event['calendar']]);
-        // Converti les données de l'évènement en évènement Mélanie2
+        // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, true);
         $_event->uid = $event['uid'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@new';
       }
@@ -774,7 +774,7 @@ class mel_driver extends calendar_driver {
             $event['end'] = $old['end'];
           }
         }
-        // Converti les données de l'évènement en évènement Mélanie2
+        // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, $new);
       }
 
@@ -900,7 +900,7 @@ class mel_driver extends calendar_driver {
         }
         if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
           $_exception = new LibMelanie\Api\Melanie2\Exception($_event, $this->user, $this->calendars[$event['calendar']]);
-          // Converti les données de l'évènement en exception Mélanie2
+          // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
           if (! is_array($exceptions))
             $exceptions = array();
@@ -948,7 +948,7 @@ class mel_driver extends calendar_driver {
           $_event->save();
           // Création de la nouvelle
           $_event = new LibMelanie\Api\Melanie2\Event($this->user, $this->calendars[$event['calendar']]);
-          // Converti les données de l'évènement en évènement Mélanie2
+          // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
         }
@@ -957,7 +957,7 @@ class mel_driver extends calendar_driver {
           $e['uid'] = $e['id'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@rc_new';
           // Création de la nouvelle
           $_event = new LibMelanie\Api\Melanie2\Event($this->user, $this->calendars[$event['calendar']]);
-          // Converti les données de l'évènement en évènement Mélanie2
+          // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
         }
@@ -966,7 +966,7 @@ class mel_driver extends calendar_driver {
             $e = $this->_read_postprocess($_event);
             $event['allday'] = $e['allday'];
           }
-          // Converti les données de l'évènement en évènement Mélanie2
+          // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $event, false, true);
         }
         if ($_event->save() !== null) {
@@ -1204,7 +1204,7 @@ class mel_driver extends calendar_driver {
       elseif ($event['_savemode'] == 'current') {
         if ($_event->load()) {
           $_exception = new LibMelanie\Api\Melanie2\Exception($_event, $this->user, $this->calendars[$event['calendar']]);
-          // Converti les données de l'évènement en exception Mélanie2
+          // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
           // Positionnement de la recurrenceId et de l'uid
           $id = $event['id'];

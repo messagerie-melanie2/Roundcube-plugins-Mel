@@ -28,7 +28,7 @@ $labels['logout'] = 'Se déconnecter';
 
 // Resources
 $labels['resources'] = 'Mes ressources';
-$labels['manageresources'] = 'Gérez vos ressources Mélanie2';
+$labels['manageresources'] = 'Gérez vos ressources Mél';
 
 $labels['menumanageresources'] = 'Gérer les ressources';
 $labels['menumanageresources_calendars'] = 'Gérer les agendas';
@@ -38,25 +38,25 @@ $labels['menumanageresources_taskslists'] = 'Gérer les listes de tâches';
 $labels['resourcesettings'] = 'Configurez la ressource';
 
 $labels['resourcesbal'] = 'Boites aux lettres';
-$labels['manageresourcesbal'] = 'Gérez vos boites aux lettres Mélanie2 (affichage, partages, restaurations)';
+$labels['manageresourcesbal'] = 'Gérez vos boites aux lettres Mél (affichage, partages, restaurations)';
 $labels['resourcesagendas'] = 'Agendas';
-$labels['manageresourcesagendas'] = 'Gérez vos agendas Mélanie2 (affichage, synchronisation, partages, restaurations)';
+$labels['manageresourcesagendas'] = 'Gérez vos agendas Mél (affichage, synchronisation, partages, restaurations)';
 $labels['resourcescontacts'] = 'Contacts';
-$labels['manageresourcescontacts'] = 'Gérez vos carnets d\'adresses Mélanie2 (affichage, synchronisation, partages, restaurations)';
+$labels['manageresourcescontacts'] = 'Gérez vos carnets d\'adresses Mél (affichage, synchronisation, partages, restaurations)';
 $labels['resourcestaches'] = 'Tâches';
-$labels['manageresourcestaches'] = 'Gérez vos listes de tâches Mélanie2 (affichage, synchronisation, partages, restaurations)';
+$labels['manageresourcestaches'] = 'Gérez vos listes de tâches Mél (affichage, synchronisation, partages, restaurations)';
 
 $labels['options'] = 'Options';
 
 // Mon compte
 $labels['moncompte'] = 'Mon Compte';
-$labels['managemoncompte'] = 'Gérer votre compte Mélanie2';
+$labels['managemoncompte'] = 'Gérer votre compte Mél';
 
 // Mes statistiques
 $labels['statistics'] = 'Mes statistiques';
-$labels['managestatistics'] = 'Affichez vos statistiques Mélanie2';
+$labels['managestatistics'] = 'Affichez vos statistiques Mél';
 $labels['statisticsmobile'] = 'Mobiles';
-$labels['managestatisticsmobile'] = 'Affichez les statistiques des synchronisations mobiles Mélanie2';
+$labels['managestatisticsmobile'] = 'Affichez les statistiques des synchronisations mobiles Mél';
 
 $labels['mymailbox'] = 'Ma boite';
 $labels['mailboxchangetext'] = 'Cliquez ici pour sélectionner la boite aux lettres à afficher';

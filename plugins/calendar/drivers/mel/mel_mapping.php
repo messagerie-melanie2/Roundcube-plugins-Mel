@@ -25,7 +25,7 @@
 
 /**
  * Classe de mapping vers Mél (vers la librairie ORM M2)
- * Permet le mapping des données calendar de roundcube vers l'ORM Mélanie2
+ * Permet le mapping des données calendar de roundcube vers l'ORM Mél
  * Les méthodes sont statiques et publiques
  * Format de nom de méthode <rc ou m2>_to_<m2 ou rc>_<champ a mapper>
  * Format de nom de paramètre $<champ a mapper>_<m2 ou rc>
@@ -41,7 +41,7 @@ class mel_mapping {
   const DEFAULT_VALUE = '_default';
 
   /**
-   * Mapping du status RoundCube vers Mélanie2
+   * Mapping du status RoundCube vers Mél
    *
    * @param string $status_rc
    * @return string
@@ -64,7 +64,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du status Mélanie2 vers RoundCube
+   * Mapping du status Mél vers RoundCube
    *
    * @param string $status_m2
    * @return string
@@ -87,7 +87,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du free_busy RoundCube vers Mélanie2
+   * Mapping du free_busy RoundCube vers Mél
    *
    * @param string $free_busy_rc
    * @return string
@@ -111,7 +111,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du free busy Mélanie2 vers RoundCube
+   * Mapping du free busy Mél vers RoundCube
    *
    * @param string $free_busy_m2
    * @return string
@@ -136,7 +136,7 @@ class mel_mapping {
 
   /**
    * Mapping de la classe (public, private, .
-   * ..) RoundCube vers Mélanie2
+   * ..) RoundCube vers Mél
    *
    * @param string $class_rc
    * @return string
@@ -159,7 +159,7 @@ class mel_mapping {
 
   /**
    * Mapping de la classe (public, private, .
-   * ..) Mélanie2 vers RoundCube
+   * ..) Mél vers RoundCube
    *
    * @param string $class_m2
    * @return string
@@ -181,7 +181,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du role d'un participant RoundCube vers Mélanie2
+   * Mapping du role d'un participant RoundCube vers Mél
    *
    * @param string $attendee_role_rc
    * @return string
@@ -204,7 +204,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du role d'un participant Mélanie2 vers RoundCube
+   * Mapping du role d'un participant Mél vers RoundCube
    *
    * @param string $attendee_role_m2
    * @return string
@@ -227,7 +227,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du status d'un participant RoundCube vers Mélanie2
+   * Mapping du status d'un participant RoundCube vers Mél
    *
    * @param string $attendee_status_rc
    * @return string
@@ -251,7 +251,7 @@ class mel_mapping {
   }
 
   /**
-   * Mapping du status d'un participant Mélanie2 vers RoundCube
+   * Mapping du status d'un participant Mél vers RoundCube
    *
    * @param string $attendee_status_m2
    * @return string
@@ -452,7 +452,7 @@ class mel_mapping {
    * @return LibMelanie\Api\Melanie2\Event $event Melanie 2 Event
    */
   public static function RRule20_to_m2($rdata, LibMelanie\Api\Melanie2\Event $event) {
-    // Définition de la recurrence Mélanie2
+    // Définition de la recurrence Mél
     $recurrence = new LibMelanie\Api\Melanie2\Recurrence($event);
 
     if (isset($rdata[LibMelanie\Lib\ICS::FREQ])) {

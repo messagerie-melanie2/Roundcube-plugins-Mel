@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Melanie2
+ * Plugin Mel mon compte
  *
  * plugin mel pour roundcube
  *

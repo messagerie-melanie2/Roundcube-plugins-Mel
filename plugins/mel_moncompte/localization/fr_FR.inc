@@ -26,7 +26,7 @@ $labels['elements taskslists'] = 'Liste des listes de tâches';
 
 // Resources
 $labels['resources'] = 'Mes ressources';
-$labels['manageresources'] = 'Gérez vos ressources Mélanie2';
+$labels['manageresources'] = 'Gérez vos ressources Mél';
 
 $labels['menumanageresources'] = 'Gérer les ressources';
 $labels['menumanageresources calendars'] = 'Gérer les agendas';
@@ -36,10 +36,10 @@ $labels['menumanageresources taskslists'] = 'Gérer les listes de tâches';
 $labels['resourcesettings'] = 'Configurez la ressource';
 
 $labels['resourcesbal'] = 'Boites aux lettres';
-$labels['manageresourcesbal'] = 'Gérez vos boites aux lettres Mélanie2 (affichage, partages, restaurations)';
+$labels['manageresourcesbal'] = 'Gérez vos boites aux lettres Mél (affichage, partages, restaurations)';
 $labels['restore_bal'] = "Récupération des courriels";
 $labels['imap_select'] = "Récupérer les courriels effacés depuis %%NB_HEURES%% heure(s) (maximum 168 heures) du dossier ";
-$labels['restore_bal_expl'] = "MélanieWeb vous offre la possibilité de <b>récupérer un ou plusieurs messages supprimés ou perdus</b> à la suite d'un incident survenu au cours des 7 derniers jours.
+$labels['restore_bal_expl'] = "Mél vous offre la possibilité de <b>récupérer un ou plusieurs messages supprimés ou perdus</b> à la suite d'un incident survenu au cours des 7 derniers jours.
 <br>
 <br><b>La procédure</b> est la suivante :
 <br>
@@ -61,7 +61,7 @@ $labels['INBOX'] = "Courrier entrant";
 $labels['restore_bal_succes'] = 'Votre demande de récupération a bien été prise en compte et sera exécutée dans les plus brefs délais.';
 $labels['restore_bal_error'] = 'Echec de votre demande de récupération.';
 $labels['resourcesagendas'] = 'Agendas';
-$labels['manageresourcesagendas'] = 'Gérez vos agendas Mélanie2 (affichage, synchronisation, partages, restaurations)';
+$labels['manageresourcesagendas'] = 'Gérez vos agendas Mél (affichage, synchronisation, partages, restaurations)';
 $labels['restore_cal'] = 'Restauration de l\'agenda';
 $labels['restore_cal_expl'] = "Cette fonctionnalité permet de récupérer les données d'agendas à j-1 et j-2 (Hier et Avant hier) sous forme de fichier au format ics, il suffit ensuite d'importer ce fichier avec l'outil 'Importer/Exporter' du module 'Agenda'";
 $labels['radio_cal_all_label'] = 'Tous les événements';
@@ -73,9 +73,9 @@ $labels['cal_bdd_label'] = 'Date de la sauvegarde';
 $labels['cal_j-1'] = 'Hier';
 $labels['cal_j-2'] = 'Avant hier';
 $labels['resourcescontacts'] = 'Contacts';
-$labels['manageresourcescontacts'] = 'Gérez vos carnets d\'adresses Mélanie2 (affichage, synchronisation, partages, restaurations)';
+$labels['manageresourcescontacts'] = 'Gérez vos carnets d\'adresses Mél (affichage, synchronisation, partages, restaurations)';
 $labels['resourcestaches'] = 'Tâches';
-$labels['manageresourcestaches'] = 'Gérez vos listes de tâches Mélanie2 (affichage, synchronisation, partages, restaurations)';
+$labels['manageresourcestaches'] = 'Gérez vos listes de tâches Mél (affichage, synchronisation, partages, restaurations)';
 $labels['restore_contacts'] = 'Restauration du carnet d\'adresses';
 $labels['restore_contacts_expl'] = "Cette fonctionnalité permet de récupérer les données de contacts à j-1 et j-2 (Hier et Avant hier) sous forme de fichier au format vcf, il suffit ensuite d'importer ce fichier avec l'outil 'Importer/Exporter' du module 'Carnet d'adresses";
 
@@ -131,15 +131,15 @@ $labels['restore_mail'] = 'Récupérer';
 
 // Mon compte
 $labels['moncompte'] = 'Mon Compte';
-$labels['managemoncompte'] = 'Gérer votre compte Mélanie2';
+$labels['managemoncompte'] = 'Gérer votre compte Mél';
 $labels['button_restore'] = 'Restaurer';
 $labels['clic_here'] = 'Cliquer ici';
 
 // Mes statistiques
 $labels['statistics'] = 'Mes statistiques';
-$labels['managestatistics'] = 'Affichez vos statistiques Mélanie2';
+$labels['managestatistics'] = 'Affichez vos statistiques Mél';
 $labels['statisticsmobile'] = 'Mobiles';
-$labels['managestatisticsmobile'] = 'Affichez les statistiques des synchronisations mobiles Mélanie2';
+$labels['managestatisticsmobile'] = 'Affichez les statistiques des synchronisations mobiles Mél';
 
 $labels['mymailbox'] = 'Ma boite';
 $labels['mailboxchangetext'] = 'Cliquez ici pour sélectionner la boite mail à afficher';
@@ -212,9 +212,9 @@ $labels['info_err_tel'] = "Mauvais format du numéro de ";
 
 
 //Acces internet
-$labels['inter_acces_title'] = "Accès à Mélanie2Web depuis Internet";
-$labels['inter_acces_label'] = "Activer l'accès par Internet à Mélanie2 (actif si coché)";
-$labels['inter_acces_deny'] = "Vous n'êtes pas autorisé à accéder à Mélanie 2 depuis l'extérieur du ministère.";
+$labels['inter_acces_title'] = "Accès à Mél web depuis Internet";
+$labels['inter_acces_label'] = "Activer l'accès par Internet à Mél (actif si coché)";
+$labels['inter_acces_deny'] = "Vous n'êtes pas autorisé à accéder à Mél depuis l'extérieur du ministère.";
 $labels['inter_acces_ok'] = "L'accès par internet est activé.";
 $labels['inter_acces_nok'] = "L'accès par internet est désactivé.";
 
@@ -258,7 +258,7 @@ $labels['inter_CGUmob_legend'] = "Conditions Générales d'Utilisation de la syn
 $labels['inter_CGUmob_profil_change'] = "Vous avez maintenant le profil <b>%%getProfilMob%%</b> , vous devez revalider les conditions générales d'utilisation";
 $labels['inter_CGUmob_accept'] = "En cochant cette case, je reconnais avoir téléchargé la charte pour le service de mobilité et pris connaissance des conditions générales d'utilisation et les accepter sans réserve. (<b>Profil: %%getProfilMob%%</b>).";
 $labels['inter_CGUmob_ok'] = "Les conditions générales d'utilisation de la synchronisation pour les mobiles ont été validées le %%getTSMob%% pour le profil <b>%%getProfilMobU%%</b>.";
-$labels['inter_CGUmob_no'] = "Vous n'êtes pas autorisé &agrave; synchroniser vos périphériques avec la future solution de synchronisation de Mélanie 2. Si vous souhaitez l'utiliser, contactez votre cellule informatique.";
+$labels['inter_CGUmob_no'] = "Vous n'êtes pas autorisé &agrave; synchroniser vos périphériques avec la future solution de synchronisation de Mél. Si vous souhaitez l'utiliser, contactez votre cellule informatique.";
 $labels['inter_CGUmob_success'] = "Les CGU ont été acceptées.";
 $labels['inter_CGUmob_error'] = "L'opération a échoué : ";
 $labels['inter_CGUmob_fake'] = "Echec, cocher la case pour accepter les CGU.";
@@ -314,7 +314,7 @@ $labels['listes_addr_del_all'] = "Confirmez-vous la suppression de toutes les ad
 $labels['listes_upload'] = "Envoyer le fichier .csv";
 $labels['listes_addr_error'] = "Adresse(s) invalide(s) : \n";
 $labels['listes_import_success'] = "L'import s'est correctement effectué";
-$labels['listes_nolist'] = "Vous ne gérez aucune liste serveur (visible par le service) depuis cette boite à lettres. <p>La création de ces listes est assurée par les opérateurs Mélanie.<p>";
+$labels['listes_nolist'] = "Vous ne gérez aucune liste serveur (visible par le service) depuis cette boite à lettres. <p>La création de ces listes est assurée par les opérateurs Mél.<p>";
 
 // Statistiques mobiles
 $labels['mobile'] = 'Statistiques mobiles';

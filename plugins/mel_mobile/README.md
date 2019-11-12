@@ -14,7 +14,7 @@ Its needs the mel_larry_mobile skin and the jquery_mobile plugin
 Version
 -------
 
-Mobile Melanie2 Skin 0.4.7
+Mobile Mél Skin 0.4.7
 
 
 Author

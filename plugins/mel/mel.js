@@ -209,7 +209,7 @@ if (window.rcmail) {
 		    }
 		  }
 		  else if (rcmail.env.task == 'calendar') {
-		    // PAMELA - Masquer les champs non utilisés dans Mélanie2
+		    // PAMELA - Masquer les champs non utilisés dans Mél
 		    $('#edit-url').parent().hide();
 		    $('#edit-priority').parent().hide();
 		    $('#edit-free-busy').parent().hide();

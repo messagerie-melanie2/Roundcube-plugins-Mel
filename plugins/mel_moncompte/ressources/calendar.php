@@ -19,19 +19,19 @@
  */
 
 /**
- * Classes de gestion de partage des ressources d'agendas Mélanie2 dans Roundcube
+ * Classes de gestion de partage des ressources d'agendas Mél dans Roundcube
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
 class M2calendar {
   /**
    *
-   * @var LibMelanie\Api\Melanie2\User Utilisateur mélanie2
+   * @var LibMelanie\Api\Melanie2\User Utilisateur Mél
    */
   protected $user;
   /**
    *
-   * @var LibMelanie\Api\Melanie2\Calendar Calendrier mélanie2
+   * @var LibMelanie\Api\Melanie2\Calendar Calendrier Mél
    */
   protected $calendar;
   /**
@@ -460,7 +460,7 @@ class M2calendar {
 }
 
 /**
- * Classes de gestion des ressources d'agendas Mélanie2 dans Roundcube
+ * Classes de gestion des ressources d'agendas Mél dans Roundcube
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */

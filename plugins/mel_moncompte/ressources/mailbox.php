@@ -19,14 +19,14 @@
  */
 
 /**
- * Classes de gestion de partage des ressources de boites aux lettres Mélanie2 dans Roundcube
+ * Classes de gestion de partage des ressources de boites aux lettres Mél dans Roundcube
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
 class M2mailbox {
   /**
    *
-   * @var LibMelanie\Api\Melanie2\User Utilisateur mélanie2
+   * @var LibMelanie\Api\Melanie2\User Utilisateur Mél
    */
   protected $user;
   /**

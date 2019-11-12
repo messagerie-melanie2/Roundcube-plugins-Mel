@@ -2,7 +2,7 @@
 /**
  * Plugin Mél Labels Sync
  *
- * Classe de driver pour les accès vers la base Mélanie2
+ * Classe de driver pour les accès vers la base Mél
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2
@@ -22,7 +22,7 @@
 @include_once 'includes/libm2.php';
 
 /**
- * Classe de gestion du driver vers Mélanie2, pour la récupération, modification des étiquettes
+ * Classe de gestion du driver vers Mél, pour la récupération, modification des étiquettes
  *
  */
 class Driver {
@@ -222,7 +222,7 @@ class Driver {
   }
 
   /**
-   * Méthode de conversion des étiquettes Roundcube vers Mélanie2
+   * Méthode de conversion des étiquettes Roundcube vers Mél
    * @param array $rc_labels
    * @return string
    */
@@ -236,7 +236,7 @@ class Driver {
     return json_encode($_m2_labels);
   }
   /**
-   * Méthode de conversion des étiquettes Mélanie2 vers Roundcube
+   * Méthode de conversion des étiquettes Mél vers Roundcube
    * @param array $m2_labels
    * @return Label[]
    */

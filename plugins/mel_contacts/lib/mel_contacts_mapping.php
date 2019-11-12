@@ -12,7 +12,7 @@ use LibMelanie\Api\Melanie2;
 
 /**
  * Classe de mapping vers Melanie2 (vers la librairie ORM M2)
- * Permet le mapping des données contacts de roundcube vers l'ORM Mélanie2
+ * Permet le mapping des données contacts de roundcube vers l'ORM Mél
  * Les méthodes sont statiques et publiques
  * Format de nom de méthode <rc ou m2>_to_<m2 ou rc>_<champ a mapper>
  * Format de nom de paramètre $<champ a mapper>_<m2 ou rc>

@@ -189,7 +189,7 @@ class mel extends rcube_plugin {
     // Chargement de l'ui
     $this->init_ui();
 
-    // Configurer les LOG de la librairie Mélanie2
+    // Configurer les LOG de la librairie Mél
     $debug_log = function ($message) {
       $message = "[LibM2] $message";
       if (mel_logs::is(mel_logs::DEBUG))
@@ -516,7 +516,7 @@ class mel extends rcube_plugin {
   }
 
   /**
-   * Association entre les identités Roundcube et les bal Mélanie2
+   * Association entre les identités Roundcube et les bal Mél
    * Retourne le résultat en env
    */
   private function assoc_identity_bal() {

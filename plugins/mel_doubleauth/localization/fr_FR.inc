@@ -14,15 +14,15 @@ $labels['two_step_verification_form'] = 'La double authentification est activée
 $labels['secret'] = 'Secret';
 $labels['qr_code'] = "Scanner l`image ci-dessous";
 // $labels['msg_infor'] = 'Vous pouvez ajouter un <i>secret</i> généré avec <a href="https://code.google.com/p/google-authenticator/" target="_blank">google-authenticator</a> et l\'utiliser';
-$labels['msg_infor'] = '<p>La double authentification renforce la sécurité de votre compte Mélanie2 en exigeant,
-pour toute connexion à Mélanie2Web depuis Internet, la saisie d’un code à usage unique généré par votre téléphone mobile en plus de
+$labels['msg_infor'] = '<p>La double authentification renforce la sécurité de votre compte Mél en exigeant,
+pour toute connexion à Mél web depuis Internet, la saisie d’un code à usage unique généré par votre téléphone mobile en plus de
 votre mot de passe.</p>
 <p>Pour activer la double authentification, vous devez disposer au préalable sur votre téléphone de l'."'".'application FreeOTP Authenticator,
 disponible sur <a target="_blank" href="https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp&hl=fr">Android</a> et
 <a target="_blank" href="https://itunes.apple.com/fr/app/freeotp-authenticator/id872559395?mt=8">iOS</a>, ou d’une autre application compatible.</p>';
 
 $labels['info_activer'] = '<p>
-<b>Attention</b> : si vous cliquez sur &laquo; Activer &raquo;, il ne sera plus possible de vous connecter à Mélanie2Web depuis Internet sans la saisie d’un code à usage unique.
+<b>Attention</b> : si vous cliquez sur &laquo; Activer &raquo;, il ne sera plus possible de vous connecter à Mél web depuis Internet sans la saisie d’un code à usage unique.
 </p>';
 
 $labels['info_desactiver'] = '<p>

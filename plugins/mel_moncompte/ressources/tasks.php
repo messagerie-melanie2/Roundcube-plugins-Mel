@@ -19,19 +19,19 @@
  */
 
 /**
- * Classes de gestion de partage des ressources de contacts Mélanie2 dans Roundcube
+ * Classes de gestion de partage des ressources de contacts Mél dans Roundcube
  *
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
  */
 class M2tasks {
   /**
    *
-   * @var LibMelanie\Api\Melanie2\User Utilisateur mélanie2
+   * @var LibMelanie\Api\Melanie2\User Utilisateur Mél
    */
   protected $user;
   /**
    *
-   * @var LibMelanie\Api\Melanie2\Taskslist Liste de tâches mélanie2
+   * @var LibMelanie\Api\Melanie2\Taskslist Liste de tâches Mél
    */
   protected $taskslist;
   /**

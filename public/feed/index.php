@@ -55,7 +55,7 @@ else {
   exit();
 }
 
-// Génération de l'utilisateur Melanie2
+// Génération de l'utilisateur Mél
 if (isset($_user)) {
   $usermelanie = new LibMelanie\Api\Melanie2\User();
   $usermelanie->uid = $_user;
@@ -85,7 +85,7 @@ if (!isset($keyhash)) {
   exit;
 }
 
-// Génération du Calendar melanie2
+// Génération du Calendar Mél
 $calendar = new LibMelanie\Api\Melanie2\Calendar(new LibMelanie\Api\Melanie2\User());
 $calendar->id = $calendar_name;
 

@@ -71,11 +71,11 @@ else {
 // Pas de start, on prend la date du jour moins deux ans
 $start = time() - (365 * 2 * 24 * 60 * 60);
 
-// Génération du User melanie2
+// Génération du User Mél
 $user = new LibMelanie\Api\Melanie2\User();
 $user->uid = $username;
 
-// Génération du Calendar melanie2
+// Génération du Calendar Mél
 $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
 $calendar->id = $calendar_name;
 

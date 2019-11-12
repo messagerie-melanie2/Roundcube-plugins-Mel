@@ -187,7 +187,7 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
   }
   
   /**
-   * Rechercher les opérateurs Mélanie2 d'un utilisateur
+   * Rechercher les opérateurs Mél d'un utilisateur
    * Voir Mantis #4387 (https://mantis.pneam.cp2i.e2.rie.gouv.fr/mantis/view.php?id=4387)
    * @param string $uid Uid de l'utilisateur
    */

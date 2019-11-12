@@ -499,9 +499,9 @@ class utils
     
     /**
      * Appel la methode de log de roundcube
-     * Log dans un fichier melanie2
+     * Log dans un fichier Mél
      * 
-     * @param string $level voir melanie2_log::
+     * @param string $level voir mel_log::
      * @param string $message
      */
     public static function log($message)
@@ -512,7 +512,7 @@ class utils
       $courrielleur = isset($_GET['_courrielleur']) ? " {Courrielleur}" : " {Web}";
       $date = date('d-M-Y H:i:s O');
       $message = "[$date]: <calendar> [INFO] $ip ($mineqprovenance) PROC[$procid]$courrielleur - $message\r\n";
-      error_log($message, 3, '/var/log/roundcube/roundcube_melanie2.log');
+      error_log($message, 3, '/var/log/roundcube/roundcube_mel.log');
     }
     
     /******** PRIVATE **********/

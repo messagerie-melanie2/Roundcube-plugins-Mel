@@ -82,15 +82,15 @@ if (!isset($uid) && !isset($calendar_name)) {
 }
 
 if (isset($uid)) {
-  // Génération du User melanie2
+  // Génération du User Mél
   $user = new LibMelanie\Api\Melanie2\User();
   $user->uid = $uid;
-  // Génération du Calendar melanie2
+  // Génération du Calendar Mél
   $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
   $calendar->id = $uid;
 }
 else if (isset($calendar_name)) {
-  // Génération du Calendar melanie2
+  // Génération du Calendar Mél
   $calendar = new LibMelanie\Api\Melanie2\Calendar(new LibMelanie\Api\Melanie2\User());
   $calendar->id = $calendar_name;
 }

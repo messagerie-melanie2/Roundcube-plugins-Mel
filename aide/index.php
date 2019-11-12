@@ -1,6 +1,6 @@
 <?php
 /**
- * Fichier d'index contenant la liste des pages d'aide pour Mélanie2
+ * Fichier d'index contenant la liste des pages d'aide pour Mél
  */
 
 // Inclus la config

@@ -159,4 +159,16 @@ class mce_driver_mel extends driver_mel {
   public function setHeadersMessageBeforeSend($headers) {
     return $headers;
   }
+  
+  /**
+   * Est-ce que le mot de passe de l'utilisateur doit changer
+   * Si c'est le cas la page de changement de mot de passe sera affichée après le login
+   * Le titre de la page est en entrée/sortie
+   *
+   * @param string $title Titre de la fenetre de changement de mot de passe
+   * @return boolean Le mot de passe doit changer
+   */
+  public function isPasswordNeedsToChange(&$title) {
+    return false;
+  }
 }

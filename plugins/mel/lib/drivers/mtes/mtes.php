@@ -193,7 +193,7 @@ class mtes_driver_mel extends driver_mel {
    * @return boolean
    */
   public function issetUsername($infos) {
-    return isset($infos['uid']);
+    return isset($infos['uid']) && isset($infos['uid'][0]);
   }
   
   /**
@@ -227,5 +227,30 @@ class mtes_driver_mel extends driver_mel {
     $headers['Received'] = 'from butineur (par ' . $_SERVER["HTTP_X_MINEQPROVENANCE"] . ' [' . $_SERVER["HTTP_X_FORWARDED_FOR"] . ']) by ' . $_SERVER["HTTP_X_FORWARDED_SERVER"] . ' [' . $_SERVER["SERVER_ADDR"] . ']';
     
     return $headers;
+  }
+  
+  /**
+   * Est-ce que le mot de passe de l'utilisateur doit changer
+   * Si c'est le cas la page de changement de mot de passe sera affichée après le login
+   * Le titre de la page est en entrée/sortie
+   * 
+   * @param string $title Titre de la fenetre de changement de mot de passe
+   * @return boolean Le mot de passe doit changer
+   */
+  public function isPasswordNeedsToChange(&$title) {
+    $needs_to_change = false;
+    if (!isset($_SESSION['plugin.show_password_change']) 
+        && !$_SESSION['plugin.show_password_change']) {
+      // Récupération des informations sur l'utilisateur courant
+      $infos = LibMelanie\Ldap\Ldap::GetUserInfos(rcmail::get_instance()->get_user_name(), null, array(
+          'mineqpassworddoitchanger'
+      ), LibMelanie\Config\Ldap::$AUTH_LDAP);
+      if (!empty($infos['mineqpassworddoitchanger'][0])) {
+        $title = $infos['mineqpassworddoitchanger'][0];
+        $needs_to_change = true;
+        $_SESSION['plugin.show_password_change'] = true;
+      }
+    }
+    return $needs_to_change;
   }
 }

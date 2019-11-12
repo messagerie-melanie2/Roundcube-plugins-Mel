@@ -178,6 +178,16 @@ abstract class driver_mel {
   abstract public function setHeadersMessageBeforeSend($headers);
   
   /**
+   * Est-ce que le mot de passe de l'utilisateur doit changer
+   * Si c'est le cas la page de changement de mot de passe sera affichée après le login
+   * Le titre de la page est en entrée/sortie
+   *
+   * @param string $title Titre de la fenetre de changement de mot de passe
+   * @return boolean Le mot de passe doit changer
+   */
+  abstract public function isPasswordNeedsToChange(&$title);
+  
+  /**
    * Retourne le label des balp dans l'arborescence de fichiers IMAP
    * Permet de redéfinir l'affichage des dossiers pour l'utilisateur
    *

@@ -2198,11 +2198,11 @@ class mel_driver extends calendar_driver {
     try {
       // Récupération de l'utilisateur depuis le serveur LDAP
       $infos = LibMelanie\Ldap\LDAPMelanie::GetInformationsFromMail($email);
-      if (isset($infos) && is_array($infos['uid']) && count($infos['uid']) > 0) {
+      if (driver_mel::get_instance()->issetUsername($infos)) {
         // map vcalendar fbtypes to internal values
         $fbtypemap = array('free' => calendar::FREEBUSY_FREE,'tentative' => calendar::FREEBUSY_TENTATIVE,'outofoffice' => calendar::FREEBUSY_OOF,'busy' => calendar::FREEBUSY_BUSY);
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
-        $events = $this->load_events($start, $end, null, $infos['uid'][0], 1, null, true);
+        $events = $this->load_events($start, $end, null, driver_mel::get_instance()->getUsername($infos), 1, null, true);
         $result = array();
         foreach ($events as $event) {
           if ($event['allday']) {

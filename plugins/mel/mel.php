@@ -482,19 +482,11 @@ class mel extends rcube_plugin {
         $this->api->add_content(html::div(null, $this->gettext('login_footer')) . html::br() . html::div(null, $this->gettext('login from') . ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"])), 'loginfooter');
       }
       // Gestion du mot de passe trop ancien
-      if ($this->rc->task == 'mail' && !$this->rc->output->get_env('ismobile') && ! isset($_SESSION['plugin.show_password_change']) && ! $_SESSION['plugin.show_password_change']) {
-        // Authentification sur le serveur de recherche (pour avoir accès a plus d'attributs)
-        // LibMelanie\Ldap\Ldap::Authentification($this->rc->get_user_name(), $this->rc->get_user_password());
-        // Récupération des informations sur l'utilisateur courant
-        $infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name(), null, array(
-                'mineqpassworddoitchanger'
-        ), LibMelanie\Config\Ldap::$AUTH_LDAP);
-        LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $this->rc->get_user_password());
-        if (! empty($infos['mineqpassworddoitchanger'][0])) {
-          $this->rc->output->set_env('passwordchange_title', $infos['mineqpassworddoitchanger'][0]);
-          $this->rc->output->set_env('plugin.show_password_change', true);
-          $_SESSION['plugin.show_password_change'] = true;
-        }
+      if ($this->rc->task == 'mail' 
+          && !$this->rc->output->get_env('ismobile') 
+          && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title = '')) {
+        $this->rc->output->set_env('passwordchange_title', $passwordchange_title);
+        $this->rc->output->set_env('plugin.show_password_change', true);
       }
     }
     // Modification de l'affichage des dossiers imap

@@ -33,7 +33,8 @@ class mtes_driver_annuaire extends default_driver_annuaire {
       'mineqordreaffichage',
       'mineqpublicationphotointranet',
       'mailpr',
-      'uid'
+      'uid',
+      'seealso'
   ];
 
   /**
@@ -86,7 +87,15 @@ class mtes_driver_annuaire extends default_driver_annuaire {
       $class = '';
       $order = '';
       $title = '';
-      $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source;
+      // Vérifier si l'entrée est un alias
+      if (!$search
+          && isset($info['seealso'])
+          && $key = array_search($this->base_dn, $info['seealso']) !== false) {
+        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source . '-alias' . $key;
+      }
+      else {
+        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source;
+      }
       foreach ($info['objectclass'] as $k => $v) {
         switch ($v) {
           case 'mineqMelListe' :

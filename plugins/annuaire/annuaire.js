@@ -217,6 +217,7 @@ rcube_webmail.prototype.annuaire_gototree = function(obj, event) {
 
 // Node select
 rcube_webmail.prototype.annuaire_node_select = function(node) {
+	node.id = node.id.split('-alias')[0];
 	if (rcmail.env.task == 'addressbook') {
 		this.load_contact(node.id, 'show');
 	}

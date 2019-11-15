@@ -4,7 +4,7 @@
 }
 
 #taskbar a.button-discussion {
-	display: inline !important;
+	display: inline-block !important;
 }
 
 #rocket_chat_frame {

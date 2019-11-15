@@ -217,11 +217,11 @@ rcube_webmail.prototype.annuaire_gototree = function(obj, event) {
 
 // Node select
 rcube_webmail.prototype.annuaire_node_select = function(node) {
-	node.id = node.id.split('-alias')[0];
+	var node_id = node.id.split('-alias')[0];
 	if (rcmail.env.task == 'addressbook') {
-		this.load_contact(node.id, 'show');
+		this.load_contact(node_id, 'show');
 	}
-	else if (rcmail.env.task == 'mail' && !$('#rcmrow' + node.id).hasClass('added')) {
+	else if (rcmail.env.task == 'mail' && !$('#rcmrow' + node_id).hasClass('added')) {
 		// find last focused field name
 	    if (!window.field) {
 	    	window.field = $(this.env.focused_field).filter(':visible');
@@ -236,10 +236,10 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 	    else if (node.name) {
 	    	recipients.push(node.name);
 	    	
-	    	var gid = node.id.substr(1);
+	    	var gid = node_id.substr(1);
             this.group2expand[gid] = { name: node.name, input:input.get(0) };
             
-            this.http_request('group-expand', {_source: $('#rcmrow' + node.id).parent().parent().attr('id').replace(/rcmrow/, ''), _gid: gid}, false);
+            this.http_request('group-expand', {_source: $('#rcmrow' + node_id).parent().parent().attr('id').replace(/rcmrow/, ''), _gid: gid}, false);
 	    }
 	    
 	    if (recipients.length && input.length) {
@@ -249,7 +249,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 	        input.val(oldval + recipients.join(delim + ' ') + delim + ' ').change();
 	    }
 	    
-	    $('#rcmrow' + node.id).addClass('added');
+	    $('#rcmrow' + node_id).addClass('added');
 	}
 	else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.mel_moncompte') {
 		if ($('#idLboxMembers').length && node.email) {
@@ -262,7 +262,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 				  _new_smtp : node.email,
 				  _current_username : $('#rcmmoncomptebalplist option:selected').val()
 			    }, lock);
-				$('#rcmrow' + node.id).addClass('added');
+				$('#rcmrow' + node_id).addClass('added');
 			}
 			else {
 			    alert(rcmail.gettext('mel_moncompte.listes_addr_nok')
@@ -274,7 +274,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 		var val = $('#input_hidden_isgroup').val() == "false" ? node.uid : node.dn;
 		$('#acluser').val(val);
 		$('#annuaire-list li.added').removeClass('added');
-		$('#rcmrow' + node.id).addClass('added');
+		$('#rcmrow' + node_id).addClass('added');
 		setTimeout(() => {
 			$('#listview-float-right').hide();
 		}, 1000);

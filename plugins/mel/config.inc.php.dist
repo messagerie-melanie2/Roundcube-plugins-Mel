@@ -1,9 +1,15 @@
 <?php
-// Utiliser le scroll infini pour parcourir les mails
+// Use infinite scroll instead of page navigation for emails
 $rcmail_config['use_infinite_scroll'] = true;
 
 // Configuration du HTTP HOST
 $rcmail_config['http_host'] = 'localhost/';
+
+// Use an IMAP Proxy or a single IMAP server
+$rcmail_config['use_imap_proxy'] = false;
+
+// Hostname of the IMAP Proxy
+$rcmail_config['imap_proxy'] = 'imap.proxy.com';
 
 // Default calendar name when created (string or null)
 $config['default_calendar_name'] = null;
@@ -16,4 +22,12 @@ $config['default_taskslist_name'] = null;
 
 // LDAP field used to generate the default object name when default_<object>_name property is null
 $config['default_object_name_ldap_field'] = 'cn';
-?>
+
+// Hide keep login button
+$rcmail_config['hide_keep_login_button'] = true;
+
+// Is this connexion come from intranet or internet
+$rcmail_config['is_internal'] = true;
+
+// Driver name configuration (mce, mtes, ...)
+$rcmail_config['mel_driver'] = 'mce';

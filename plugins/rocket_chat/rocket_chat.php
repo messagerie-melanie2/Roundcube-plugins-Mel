@@ -43,8 +43,12 @@ class rocket_chat extends rcube_plugin {
         $this->include_stylesheet($this->local_skin_path() . '/rocket_chat.css');
         
         // ajout de la tache
-        $this->register_task('ariane');
-        $this->register_task('discussion');
+        if ($this->rc->task == 'ariane') {
+          $this->register_task('ariane');
+        }
+        else {
+          $this->register_task('discussion');
+        }
         
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
@@ -83,8 +87,8 @@ class rocket_chat extends rcube_plugin {
             // Ajout du css
             $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
             $this->register_action('index', array(
-                            $this,
-                            'action'
+                $this,
+                'action'
             ));
             $this->rc->output->set_env('refresh_interval', 0);
             

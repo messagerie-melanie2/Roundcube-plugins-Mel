@@ -60,7 +60,7 @@ require_once 'config.php';
         ?>
       </div>
     </div>
-    <div id="copyright">MTES-MCT PNE annuaire et messagerie</div>
+    <div id="copyright"><?= $config['copyright'] ?></div>
   </div>
 </body>
 </html>

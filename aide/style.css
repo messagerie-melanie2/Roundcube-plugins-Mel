@@ -3,7 +3,7 @@ html {
   height: 100%;
 }
 body {
-  background-color: #F3F3F3; /* New design */
+  background-color: #eaeaea; /* New design */
   color: #464545;
   padding: 0px;
   margin: 0px;
@@ -11,10 +11,12 @@ body {
   font-family: "Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
 }
 a {
-  color: #00b7ff;
+  color: #4a65e2;
 }
 h1 {
-  color: #406540;
+  background: url("images/help.png") no-repeat left center;
+  padding-left: 35px;
+  color: #505050;
   font: 'LeagueGothicRegular' bold;
   font-size: 24px;
 }

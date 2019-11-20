@@ -197,15 +197,24 @@ function files_api()
       for (n=0; n<items_len-1; n++) {
         tmp = items.slice(0,n+1);
         f = tmp.join(this.env.directory_separator);
-        if (!folders[f])
-          folders[f] = {name: tmp.pop(), depth: n, id: 'f'+num++, virtual: 1};
+//        if (!folders[f])
+//          folders[f] = {name: tmp.pop(), depth: n, id: 'f'+num++, virtual: 1};
       }
 
-      folders[folder] = {name: items.pop(), depth: items_len-1, id: 'f'+num++};
+      folders[folder] = {name: items.pop(), depth: items_len-1, id: this.folder_make_id(folder), parent: items.join(this.env.directory_separator)};
     }
 
     return folders;
   };
+  
+  this.folder_make_id = function (folder) {
+    return folder.replace(/[^a-z0-9]/g, function(s) {
+	  var c = s.charCodeAt(0);
+	  if (c == 32) return '-';
+	  if (c >= 65 && c <= 90) return '_' + s.toLowerCase();
+	  return '__' + ('000' + c.toString(16)).slice(-4);
+	});
+  }
 
   // folder structure presentation (structure icons)
   this.folder_list_tree = function(folders)

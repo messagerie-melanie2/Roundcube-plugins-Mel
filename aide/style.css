@@ -67,6 +67,7 @@ h3 {
 	font-size: 16px;
 	position: relative;
 	top: 15px;
+	white-space: nowrap;
 }
 #help-url-list ul li a span.image {
 	display: inline-block;

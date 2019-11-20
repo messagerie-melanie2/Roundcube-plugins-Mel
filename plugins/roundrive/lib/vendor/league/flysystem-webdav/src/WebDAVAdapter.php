@@ -107,7 +107,12 @@ class WebDAVAdapter extends AbstractAdapter
     public function write($path, $contents, Config $config)
     {
         $location = $this->applyPathPrefix($path);
-        $this->client->request('PUT', $location, $contents);
+        $response = $this->client->request('PUT', $location, $contents);
+
+        if ($response['statusCode'] >= 400) {
+            return false;
+        }
+
         $result = compact('path', 'contents');
 
         if ($config->get('visibility')) {
@@ -193,7 +198,7 @@ class WebDAVAdapter extends AbstractAdapter
     public function listContents($directory = '', $recursive = false)
     {
         $location = $this->applyPathPrefix($directory);
-        $response = $this->client->propFind($location, [
+        $response = $this->client->propFind($location . '/', [
             '{DAV:}displayname',
             '{DAV:}getcontentlength',
             '{DAV:}getcontenttype',

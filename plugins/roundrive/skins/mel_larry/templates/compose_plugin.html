@@ -1,0 +1,32 @@
+<div id="files-compose-dialog" class="uidialog" role="dialog" aria-labelledby="aria-label-fileselect" aria-hidden="true">
+    <h2 id="aria-label-fileselect" class="voice"><roundcube:label name="roundrive.arialabelfileselectdialog" /></h2>
+    <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
+        <h3 id="aria-label-searchform" class="voice"><roundcube:label name="roundrive.arialabelsearchform" /></h3>
+        <label for="quicksearchbox" class="voice"><roundcube:label name="arialabelquicksearchbox" /></label>
+        <roundcube:button name="filesearchmenulink" id="filesearchmenulink" class="iconbutton searchoptions" onclick="return UI.toggle_popup('filesearchmenu', event)" title="searchmod"  label="options" aria-haspopup="true" aria-expanded="false" aria-owns="filesearchmenu-menu" />
+        <roundcube:object name="file-search-form" id="filesearchbox" />
+        <roundcube:button command="files-search-reset" id="searchreset" class="iconbutton reset" title="resetsearch" content=" " />
+    </div>
+
+    <div id="folderlistbox" class="uibox listbox" role="navigation" aria-labelledby="aria-label-folderlist">
+        <h3 id="aria-label-folderlist" class="voice"><roundcube:label name="roundrive.arialabelfolderlist" /></h3>
+        <div id="files-folder-list" class="scroller"></div>
+    </div>
+
+    <div id="filelistcontainer" class="boxlistcontent uibox">
+        <h3 id="aria-label-filelist" class="voice"><roundcube:label name="arialabelfilelist" /></h3>
+        <roundcube:object name="filelist" id="filelist" class="records-table filelist sortheader fixedheader" aria-labelledby="aria-label-filelist" />
+    </div>
+</div>
+
+<div id="filesearchmenu" class="popupmenu" style="z-index: 2000" data-editable="true" aria-hidden="true">
+    <h4 id="aria-label-searchmenu" class="voice"><roundcube:label name="searchmod" /></h4>
+    <ul id="filesearchmenu-menu" class="toolbarmenu" role="menu" aria-labelledby="aria-label-searchmenu">
+        <li role="menuitem"><label><input type="checkbox" name="all_folders" value="1" id="search_all_folders" /> <span><roundcube:label name="roundrive.allfolders" /></span></label></li>
+    </ul>
+</div>
+
+<div id="files-folder-auth-dialog" role="dialog" aria-labelledby="aria-label-folderauthform" aria-hidden="true">
+    <h3 id="aria-label-folderauthform" class="voice"><roundcube:label name="roundrive.arialabelfolderauthform" /></h3>
+    <roundcube:object name="folder-auth-options">
+</div>

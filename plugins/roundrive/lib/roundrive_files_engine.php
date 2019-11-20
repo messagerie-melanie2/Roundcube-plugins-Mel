@@ -135,7 +135,7 @@ class roundrive_files_engine
                 'classsel'   => 'button-files button-selected',
                 'innerclass' => 'button-inner',
                 'label'      => 'roundrive.files',
-                ), 'taskbar');
+                ), 'taskbar_mel');
         }
 
         $this->plugin->include_stylesheet($this->plugin->local_skin_path().'/style.css');
@@ -968,13 +968,22 @@ class roundrive_files_engine
       );
       try {
         $folders = array();
-        $fsdirs = $this->filesystem->listContents('/', true);
-
-        $folders[] = $this->plugin->gettext('files');
-        foreach ($fsdirs as $fsdir) {
-          if ($fsdir['type'] == 'dir') {
-            $folders[] = $this->plugin->gettext('files').'/'.urldecode($fsdir['path']);
+        $folder = rcube_utils::get_input_value('folder', rcube_utils::INPUT_GET);
+        if (isset($folder)) {
+          $folder = str_replace($this->plugin->gettext('files'), '/', $folder);
+          $folder = $this->encoderawpath($folder);
+          $fsdirs = $this->filesystem->listContents($folder, false);
+          
+          foreach ($fsdirs as $fsdir) {
+            if ($fsdir['type'] == 'dir') {
+              $folders[] = $this->plugin->gettext('files').'/'.urldecode($fsdir['path']);
+            }
           }
+          
+          $result['parent'] = rcube_utils::get_input_value('folder', rcube_utils::INPUT_GET);
+        }
+        else {
+          $folders[] = $this->plugin->gettext('files');
         }
         $result['result'] = $folders;
       }
@@ -1002,7 +1011,7 @@ class roundrive_files_engine
         $files = array();
         $fsfiles = $this->filesystem->listContents($folder, false);
         foreach ($fsfiles as $fsfile) {
-          if ($fsfile['type'] != 'dir') {
+          //if ($fsfile['type'] != 'dir') {
             if (!empty($search)) {
               $search = is_array($search) && isset($search['name']) ? strtolower($search['name']) : strtolower($search);
               $name = strtolower(urldecode($fsfile['basename']));
@@ -1012,15 +1021,18 @@ class roundrive_files_engine
             }
             $key = urlencode($this->plugin->gettext('files'). '/'. urldecode($fsfile['path']));
             $data = array(
-                    'name' => urldecode($fsfile['basename']),
-                    'type' => $fsfile['mimetype'],
-                    'size' => $fsfile['size'],
-                    'mtime' => $fsfile['timestamp'],
+                    'name'    => urldecode($fsfile['basename']),
+                    'type'    => $fsfile['mimetype'],
+                    'size'    => $fsfile['size'],
+                    'mtime'   => $fsfile['timestamp'],
+                    'isdir'   => $fsfile['type'] == 'dir',
+                    'path'    => $this->plugin->gettext('files') . '/'. urldecode($fsfile['path']),
             );
             $files[$key] = $data;
-          }
+          //}
         }
         $result['result'] = $files;
+        $result['parent'] = rcube_utils::get_input_value('folder', rcube_utils::INPUT_GET);
       }
       catch (Exception $e) {
         $result['status'] = 'NOK';

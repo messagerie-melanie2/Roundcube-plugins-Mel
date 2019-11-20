@@ -1137,10 +1137,10 @@ function roundrive_ui()
   };
 
   // folders list request
-  this.folder_list = function()
+  this.folder_list = function(folder)
   {
     this.req = this.set_busy(true, 'loading');
-    this.request('folder_list', {}, 'folder_list_response');
+    this.request('folder_list', {folder: folder}, 'folder_list_response');
   };
 
   // folder list response handler
@@ -1148,45 +1148,60 @@ function roundrive_ui()
   {
     if (!this.response(response))
       return;
-
+    
     var first, elem = $('#files-folder-list'),
-      list = $('<ul class="listing"></ul>'),
+      parent_id = response.parent && this.env.folders ? this.env.folders[response.parent].id : '',
+      is_new_list = $('#files-folder-list ul#folders' + parent_id).length ? false : true;
+      list = is_new_list ? $('<ul id="folders' + parent_id + '" class="treelist listing iconized" role="tree"></ul>') : $('#files-folder-list ul#folders' + parent_id),
       collections = !rcmail.env.action.match(/^(preview|show)$/) ? ['audio', 'video', 'image', 'document'] : [];
 
     // try parent window if the list element does not exist
     // i.e. called from dialog in parent window
     if (!elem.length && window.parent && parent.rcmail) {
       elem = $('#files-folder-list', window.parent.document.body);
+      list = $('#files-folder-list ul#folders' + parent_id, window.parent.document.body);
     }
-
-    elem.html('').append(list);
-
-    this.env.folders = this.folder_list_parse(response.result && response.result.list ? response.result.list : response.result);
-
-    $.each(this.env.folders, function(i, f) {
+    
+    if (is_new_list) {
+      elem.html('').append(list);
+    }
+    else {
+      list.html('');
+    }
+    
+    if (!this.env.folders) {
+    	this.env.folders = [];
+    }
+    var folders = this.folder_list_parse(response.result && response.result.list ? response.result.list : response.result);
+    this.env.folders = Object.assign(this.env.folders, folders);
+    
+    $.each(folders, function(i, f) {
       list.append(file_api.folder_list_row(i, f));
       if (!first)
         first = i;
     });
 
     // add virtual collections
-    $.each(collections, function(i, n) {
-      var row = $('<li class="mailbox collection ' + n + '"></li>');
-
-      row.attr({id: 'folder-collection-' + n, tabindex: 0})
-        .append($('<span class="name"></span>').text(rcmail.gettext('roundrive.collection_' + n)))
-        .click(function() { file_api.folder_select(n, true); });
-
-      list.append(row);
-    });
+//    $.each(collections, function(i, n) {
+//      var row = $('<li class="mailbox collection ' + n + '"></li>');
+//
+//      row.attr({id: 'folder-collection-' + n, tabindex: 0})
+//        .append($('<span class="name"></span>').text(rcmail.gettext('roundrive.collection_' + n)))
+//        .click(function() { file_api.folder_select(n, true); });
+//
+//      list.append(row);
+//    });
 
     // select first folder?
-    if (this.env.folder)
-      this.folder_select(this.env.folder);
-    else if (this.env.collection)
-      this.folder_select(this.env.collection, true);
-    else if (first)
-      this.folder_select(first);
+//    if (this.env.folder)
+//      this.folder_select(this.env.folder);
+//    else if (this.env.collection)
+//      this.folder_select(this.env.collection, true);
+//    else if (first)
+//      this.folder_select(first);
+    if (!this.env.folder && first) {
+    	this.folder_select(first);
+    }
 
     // add tree icons
     this.folder_list_tree(this.env.folders);
@@ -1226,9 +1241,62 @@ function roundrive_ui()
       this.env.folder = folder;
       this.env.collection = null;
       rcmail.command('files-list', {folder: folder});
+      //this.folder_list(folder);
     }
 
     this.quota();
+  };
+  
+  this.folder_toggle = function(folder)
+  {
+  	var folder_id = this.env.folders[folder].id;
+  	if ($('#files-folder-list ul li#' + folder_id + ' > div.treetoggle').hasClass('collapsed')) {
+  		this.folder_expand(folder);
+  	}
+  	else {
+  		this.folder_collapse(folder);
+  	}
+  };
+  
+  this.folder_expand = function(folder) 
+  {
+    if (rcmail.busy)
+    	return;
+    
+    var folder_id = this.env.folders[folder].id
+	    	list = $('#files-folder-list ul#folders' + folder_id);
+	
+    // try parent window if the list element does not exist
+    // i.e. called from dialog in parent window
+    if (!list.length && window.parent && parent.rcmail) {
+      list = $('#files-folder-list ul#folders' + folder_id, window.parent.document.body);
+    }
+    
+    $('#files-folder-list ul li#' + folder_id + ' > div.treetoggle').removeClass('collapsed').addClass('expanded');
+    if (list.find('> li').length == 0) {
+    	this.folder_list(folder);
+    }
+  };
+  
+  this.folder_collapse = function(folder)
+  {
+    if (rcmail.busy)
+	  return;
+		
+	    
+    var folder_id = this.env.folders[folder].id
+	    list = $('#files-folder-list ul#folders' + folder_id);
+	
+    // try parent window if the list element does not exist
+    // i.e. called from dialog in parent window
+    if (!list.length && window.parent && parent.rcmail) {
+      list = $('#files-folder-list ul#folders' + folder_id, window.parent.document.body);
+    }
+    
+    $('#files-folder-list ul li#' + folder_id + ' > div.treetoggle').addClass('collapsed').removeClass('expanded');
+    list.html('');
+    
+    return false;
   };
 
   this.folder_unselect = function()
@@ -1242,30 +1310,35 @@ function roundrive_ui()
 
   this.folder_list_row = function(i, folder)
   {
-    var row = $('<li class="mailbox"><span class="branch"></span></li>');
+    var row = $('<li class="mailbox" role="treeitem"><span class="branch"></span></li>');
 
     row.attr('id', folder.id).data('folder', i)
-      .append($('<span class="name"></span>').text(folder.name));
+      .append($('<span class="name"></span>').text(folder.name))
+      .append($('<div class="treetoggle collapsed">&nbsp;</div>'))
+      .append($('<ul class="treelist listing iconized"></ul>').attr('id', 'folders' + folder.id));
 
     if (folder.depth) {
       $('span.branch', row).width(15 * folder.depth);
       row.addClass('child');
     }
 
-    if (folder.virtual)
-      row.addClass('virtual');
-    else
-      row.attr('tabindex', 0)
-        .keypress(function(e) { if (e.which == 13 || e.which == 32) file_api.folder_select(i); })
-        .click(function() { file_api.folder_select(i); })
-        .mouseenter(function() {
-          if (rcmail.file_list && rcmail.file_list.drag_active && !$(this).hasClass('selected'))
-            $(this).addClass('droptarget');
-        })
-        .mouseleave(function() {
-          if (rcmail.file_list && rcmail.file_list.drag_active)
-            $(this).removeClass('droptarget');
-        });
+    if (folder.virtual) {
+    	row.addClass('virtual');
+    }
+    else {
+    	row.find('> div.treetoggle').click(function(e) { e.stopPropagation(); file_api.folder_toggle(i); })
+    	row.attr('tabindex', 0)
+	      .keypress(function(e) { if (e.which == 13 || e.which == 32) file_api.folder_select(i); })
+	      .click(function() { file_api.folder_select(i); })
+	      .mouseenter(function() {
+	        if (rcmail.file_list && rcmail.file_list.drag_active && !$(this).hasClass('selected'))
+	          $(this).addClass('droptarget');
+	      })
+	      .mouseleave(function() {
+	        if (rcmail.file_list && rcmail.file_list.drag_active)
+	          $(this).removeClass('droptarget');
+	      });
+    }
 
     return row;
   };
@@ -1431,15 +1504,17 @@ function roundrive_ui()
 
     if (!this.response(response))
       return;
-
+    
     var i = 0, list = [], table = $('#filelist');
 
     $.each(response.result, function(key, data) {
-      var row = file_api.file_list_row(key, data, ++i);
-      rcmail.file_list.insert_row(row);
-      data.row = row;
-      data.filename = key;
-      list.push(data);
+    	if (!data.isdir) {
+    		var row = file_api.file_list_row(key, data, ++i);
+        rcmail.file_list.insert_row(row);
+        data.row = row;
+        data.filename = key;
+        list.push(data);
+    	}
     });
 
     this.env.file_list = list;

@@ -3,7 +3,7 @@
 }
 
 #taskbar a.button-help {
-    right: 347px !important;
+    right: 310px !important;
 }
 
 
@@ -12,7 +12,7 @@ body.right_panel_minified #taskbar a.button-settings {
 }
 
 body.right_panel_minified #taskbar a.button-help {
-    right: 215px !important;
+    right: 180px !important;
 }
 
 #searchmenu {

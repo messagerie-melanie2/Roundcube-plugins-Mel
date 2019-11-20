@@ -317,20 +317,20 @@ body.extwin #topnav {
 #topnav .topright {
 	float: none;
 	position: absolute;
-	left: 16%;
+	left: 13%;
 	top: 0;
 	right: 0;
 }
 
 @media screen and (max-width: 1440px) {
   #topnav .topright {
-	left: 8%;
+	left: 6%;
   }
 }
 
 @media screen and (max-width: 1340px) {
   #topnav .topright {
-	left: 40px;
+	left: 50px;
   }	
 }
 
@@ -367,17 +367,6 @@ body.extwin #taskbar {
   }
 }
 
-@media screen and (max-width: 1240px) {
-  #taskbar a {
-	margin-left: 10px;
-  }	
-}
-
-@media screen and (max-width: 1140px) {
-  #taskbar a {
-	margin-left: 5px;
-  }	
-}
 
 #taskbar a:hover,
 #taskbar a:focus {
@@ -418,6 +407,56 @@ body.extwin #taskbar {
 .minimal #taskbar .tooltip {
     display: none;
     margin-top: 10px;
+}
+
+@media screen and (max-width: 1280px) {
+  #taskbar a {
+    min-width: 70px;
+  }
+}
+
+@media screen and (max-width: 1080px) {
+	#taskbar a {
+	  	min-width: 60px;
+	}
+	#taskbar a span.button-inner {
+		text-indent: -9999px;
+		padding: 43px 15px 4px;
+		background-position: center 20px;
+	}
+ 	#taskbar .tooltip {
+		position: absolute;
+		top: -500px;
+		margin-top: 30px;
+		display: inline-block;
+		padding: 2px 8px 3px 8px;
+		background: #444;
+		color: #eee;
+		font-weight: bold;
+		white-space: nowrap;
+		box-shadow: 0 1px 4px 0 #333;
+		z-index: 200;
+		white-space: nowrap;
+	}
+	
+	#taskbar .tooltip:after {
+		content: "";
+		position: absolute;
+		top: -4px;
+		right: 15px;
+		border-style: solid;
+		border-width: 0 4px 4px;
+		border-color: #444 transparent;
+		/* reduce the damage in FF3.0 */
+		display: block;
+		width: 0;
+		z-index: 251;
+	}
+	
+	#taskbar a:hover .tooltip {
+		display: block;
+		top: 39px;
+	}
 }
 
 #taskbar a.button-help {

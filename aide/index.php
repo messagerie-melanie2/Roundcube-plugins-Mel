@@ -111,7 +111,7 @@ if (isset($config['search'])) {
         clearTimeout(handle);
       }
     	handle = setTimeout(function() {
-      	var values = object.value.toLowerCase().split(' ');
+      	var values = object.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ');
         for (const word in _index) {
           for (const value of values) {
             if (value.length > 3) {

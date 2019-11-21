@@ -13,18 +13,18 @@ require_once 'config.php';
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="custom.css" />
 <link rel="icon" type="image/png" href="images/favicon_help.png" />
-<title>Aide Mél</title>
+<title><?= $config['title'] ?></title>
 </head>
 <body>
   <div id="prevcontent">
-    <h1>Aide Mél</h1>
+    <h1><?= $config['title'] ?></h1>
     <div id="content">
     	<?php 
         if (isset($config['search'])) {
       ?>
       <div id="help-search">
-      	<span class="help-search-label">Recherche rapide dans la documentation (bêta) : </span>
-      	<span class="help-search-input"><input type="text" placeholder="Saisissez des mots clés" onkeyup="search(event, this);"></span>
+      	<span class="help-search-label"><?= $config['search label'] ?></span>
+      	<span class="help-search-input"><input type="text" placeholder="<?= $config['search placeholder'] ?>" onkeyup="search(event, this);"></span>
       </div>
       <div id="help-search-results"></div>
       <?php 
@@ -35,7 +35,7 @@ require_once 'config.php';
         <?php
           foreach($config['pages'] as $name => $page) {
             ?>
-              <li class="<?= $page['class'] ?>">
+              <li title="<?= $page['title'] ?>" class="<?= $page['class'] ?>">
                 <a href="<?= $page['url'] ?>">
                   <span class="image"></span>
                   <span class="name"><?= $name ?></span>
@@ -57,9 +57,9 @@ require_once 'config.php';
                 <div class="list">
                   <ul>
                     <?php
-                    foreach($list as $list_name => $list_url) {
+                    foreach($list as $object_name => $object) {
                     ?>
-                      <li><a href="<?= $list_url ?>"><?= $list_name ?></a></li>
+                      <li title="<?= $object['title'] ?>"><a href="<?= $object['url'] ?>"><?= $object_name ?></a></li>
                     <?php
                     }
                     ?>
@@ -97,8 +97,14 @@ if (isset($config['search'])) {
   var _search = <?= json_encode($config['search']) ?>;
   var _index = <?= json_encode($index) ?>;
   var handle;
-  
+
   function search(event, object) {
+    if (event.keyCode == 27) {
+      object.value = "";
+      document.getElementById("help-search-results").innerHTML = "";
+      document.getElementById("help-search-results").style = "display: none;";
+      return;
+    }
     var results = {};
     if (object.value.length > 3) {
       if (handle) {
@@ -144,7 +150,7 @@ if (isset($config['search'])) {
             description.textContent = _search[r.key].description;
             var numbers = document.createElement('span');
             numbers.className = "numbers";
-            numbers.textContent = "(" + r.value + " résultat(s))";
+            numbers.textContent = r.value === 1 ? "(1 <?= $config['search result label'] ?>)" : "(" + r.value + " <?= $config['search results label'] ?>)";
             var url = document.createElement('a');
             url.href = _search[r.key].url;
             url.target = "_blank";
@@ -159,7 +165,7 @@ if (isset($config['search'])) {
         }
         else {
           document.getElementById("help-search-results").style = "display: block; text-align: center;";
-          document.getElementById("help-search-results").textContent = "Pas de résultat, essayez de saisir plus de mots clés.";
+          document.getElementById("help-search-results").textContent = "<?= $config['search no result'] ?>";
         }
     	}, 300);
     }

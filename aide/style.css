@@ -101,3 +101,51 @@ h3 {
 #help-details .details .list ul {
   padding-left: 20px;
 }
+#help-search {
+	text-align: center;
+	margin: 20px;
+}
+#help-search .help-search-label {
+  color: #505050;
+  font-size: 14px;
+}
+#help-search .help-search-input input {
+  width: 350px;
+}
+#help-search-results {
+	display: none;
+	margin: 20px;
+}
+#help-search-results {
+	display: none;
+	margin: 20px;
+}
+#help-search-results .result {
+	margin: 0 80px;
+	padding: 30px;
+	border-bottom: 1px solid #E6E6E6;
+}
+#help-search-results .result:hover {
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+}
+#help-search-results .result a {
+	text-decoration: none;
+}
+
+#help-search-results .title {
+	font-size: 18px;
+	font-weight: bold;
+	color: #4a65e2;
+}
+
+#help-search-results .numbers {
+	padding-left: 10px;
+	font-size: 14px;
+}
+
+#help-search-results .description {
+	display: block;
+	padding-top: 10px;
+	color: #505050;
+	font-size: 14px;
+}

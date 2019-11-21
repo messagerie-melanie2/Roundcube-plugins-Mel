@@ -8,6 +8,7 @@ body {
   padding: 0px;
   margin: 0px;
   height: 100%;
+  overflow-x: hidden;
   font-family: "Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
 }
 a {

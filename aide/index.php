@@ -36,7 +36,7 @@ require_once 'config.php';
           foreach($config['pages'] as $name => $page) {
             ?>
               <li title="<?= $page['title'] ?>" class="<?= $page['class'] ?>">
-                <a href="<?= $page['url'] ?>">
+                <a target="_blank" href="<?= $page['url'] ?>">
                   <span class="image"></span>
                   <span class="name"><?= $name ?></span>
                 </a>
@@ -59,7 +59,7 @@ require_once 'config.php';
                     <?php
                     foreach($list as $object_name => $object) {
                     ?>
-                      <li title="<?= $object['title'] ?>"><a href="<?= $object['url'] ?>"><?= $object_name ?></a></li>
+                      <li title="<?= $object['title'] ?>"><a target="_blank" href="<?= $object['url'] ?>"><?= $object_name ?></a></li>
                     <?php
                     }
                     ?>

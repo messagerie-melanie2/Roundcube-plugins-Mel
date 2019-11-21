@@ -122,7 +122,6 @@ h3 {
 }
 #help-search-results .result {
 	margin: 0 80px;
-	padding: 30px;
 	border-bottom: 1px solid #E6E6E6;
 }
 #help-search-results .result:hover {
@@ -130,6 +129,8 @@ h3 {
 }
 #help-search-results .result a {
 	text-decoration: none;
+	padding: 30px;
+	display: block;
 }
 
 #help-search-results .title {

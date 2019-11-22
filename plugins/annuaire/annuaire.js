@@ -25,7 +25,7 @@
 var field = null;
 
 // On click gototree element list
-$(document).on("submit", '#quicksearchbar form', function(e) {
+$(document).on("submit", '#mainscreen.annuaire #quicksearchbar form', function(e) {
 	e.preventDefault();
 	rcmail.http_get('addressbook/plugin.annuaire', {
 		_source : rcmail.env.source,

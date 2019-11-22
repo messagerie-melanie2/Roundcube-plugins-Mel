@@ -757,6 +757,9 @@ class roundrive_files_engine
      */
     protected function action_save_file()
     {
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "[roundrive] roundrive_files_engine::action_attach_file()");
+        
         $source = rcube_utils::get_input_value('source', rcube_utils::INPUT_POST);
         $uid    = rcube_utils::get_input_value('uid', rcube_utils::INPUT_POST);
         $dest   = rcube_utils::get_input_value('dest', rcube_utils::INPUT_POST);
@@ -837,6 +840,9 @@ class roundrive_files_engine
      */
     protected function action_attach_file()
     {
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "[roundrive] roundrive_files_engine::action_attach_file()");
+        
         $files      = rcube_utils::get_input_value('files', rcube_utils::INPUT_POST);
         $uploadid   = rcube_utils::get_input_value('uploadid', rcube_utils::INPUT_POST);
         $COMPOSE_ID = rcube_utils::get_input_value('id', rcube_utils::INPUT_POST);
@@ -968,6 +974,9 @@ class roundrive_files_engine
      * Handler for "folders list" function
      */
     protected function action_folder_list() {
+      if (mel_logs::is(mel_logs::DEBUG))
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[roundrive] roundrive_files_engine::action_folder_list()");
+      
       $result = array(
               'status' => 'OK',
               'result' => array(),
@@ -981,6 +990,9 @@ class roundrive_files_engine
           $folder = $this->encoderawpath($folder);
           $fsdirs = $this->filesystem->listContents($folder, false);
           
+          if (mel_logs::is(mel_logs::TRACE))
+            mel_logs::get_instance()->log(mel_logs::TRACE, "[roundrive] roundrive_files_engine::action_folder_list() fsdirs = " . var_export($fsdirs, true));
+          
           foreach ($fsdirs as $fsdir) {
             if ($fsdir['type'] == 'dir') {
               $folders[] = $this->plugin->gettext('files').'/'.urldecode($fsdir['path']);
@@ -993,6 +1005,9 @@ class roundrive_files_engine
           $folders[] = $this->plugin->gettext('files');
         }
         $result['result'] = $folders;
+        
+        if (mel_logs::is(mel_logs::TRACE))
+          mel_logs::get_instance()->log(mel_logs::TRACE, "[roundrive] roundrive_files_engine::action_folder_list() result = " . var_export($result, true));
       }
       catch (Exception $e) {
         $result['status'] = 'NOK';
@@ -1006,6 +1021,9 @@ class roundrive_files_engine
      * Handler for "file list" function
      */
     protected function action_file_list() {
+      if (mel_logs::is(mel_logs::DEBUG))
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[roundrive] roundrive_files_engine::action_file_list()");
+      
       $result = array(
               'status' => 'OK',
               'result' => array(),
@@ -1040,6 +1058,9 @@ class roundrive_files_engine
         }
         $result['result'] = $files;
         $result['parent'] = rcube_utils::get_input_value('folder', rcube_utils::INPUT_GET);
+        
+        if (mel_logs::is(mel_logs::TRACE))
+          mel_logs::get_instance()->log(mel_logs::TRACE, "[roundrive] roundrive_files_engine::action_file_list() result = " . var_export($result, true));
       }
       catch (Exception $e) {
         $result['status'] = 'NOK';

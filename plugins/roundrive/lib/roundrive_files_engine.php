@@ -912,6 +912,15 @@ class roundrive_files_engine
                 // store new attachment in session
                 unset($attachment['data'], $attachment['status'], $attachment['abort']);
                 $COMPOSE['attachments'][$id] = $attachment;
+                
+                $link_content = sprintf('%s <span class="attachment-size"> (%s)</span>',
+                    rcube::Q($attachment['name']), $this->rc->show_bytes($attachment['size']));
+                
+                $content = html::a(array(
+                    'href' => "#load",
+                    'onclick' => sprintf("return %s.command('load-attachment','rcmfile%s', this, event)", rcmail_output::JS_OBJECT_NAME, $id),
+                    'class' => 'filename',
+                ), $link_content);
 
                 if (($icon = $COMPOSE['deleteicon']) && is_file($icon)) {
                     $button = html::img(array(
@@ -923,14 +932,12 @@ class roundrive_files_engine
                     $button = rcube::Q($this->rc->gettext('delete'));
                 }
 
-                $content = html::a(array(
+                $content .= html::a(array(
                     'href' => "#delete",
-                    'onclick' => sprintf("return %s.command('remove-attachment','rcmfile%s', this)", rcmail_output::JS_OBJECT_NAME, $id),
+                    'onclick' => sprintf("return %s.command('remove-attachment','rcmfile%s', this, event)", rcmail_output::JS_OBJECT_NAME, $id),
                     'title' => $this->rc->gettext('delete'),
                     'class' => 'delete',
                 ), $button);
-
-                $content .= rcube::Q($attachment['name']);
 
                 $this->rc->output->command('add2attachment_list', "rcmfile$id", array(
                     'html'      => $content,

@@ -34,7 +34,7 @@
 }
 
 #filestoolbar a.button.edit {
-	
+  display: none;
 }
 
 #filestoolbar a.button.save {
@@ -62,6 +62,7 @@
   left: 0;
   width: 220px;
   bottom: 0;
+  border-top: 1px solid #d0d0d0;
 }
 
 #filelistcontainer,
@@ -72,6 +73,7 @@
   right: 0;
   bottom: 0;
   overflow: auto;
+  border-top: 1px solid #d0d0d0;
 }
 
 #filelistbox {
@@ -133,23 +135,8 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
   display: inline-block;
 }
 
-#files-folder-list ul li:first-child {
-  border-radius: 4px 4px 0 0;
-  border-top: 0;
-}
-
 #files-folder-list ul li.virtual span {
   color: #aaa;
-}
-
-.filelist thead tr th {
-  padding: 0;
-}
-
-.filelist tbody tr td {
-  padding: 2px 7px;
-  height: 18px;
-  line-height: 18px;
 }
 
 .filelist tr > .size {
@@ -168,25 +155,6 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 .filelist tr > .options {
   width: 32px;
   cursor: pointer;
-}
-
-.filelist thead tr th.filename,
-.filelist tbody tr td.filename {
-  width: 99%;
-  white-space: nowrap;
-}
-
-.filelist thead tr th.sortedASC a,
-.filelist thead tr th.sortedDESC a {
-  color: #004458;
-  text-decoration: underline;
-  background-image: url(../../../../skins/larry/images/listicons.png);
-  background-position: right -912px;
-  background-repeat: no-repeat;
-}
-
-.filelist thead tr th.sortedASC a {
-  background-position: right -944px;
 }
 
 .filelist img {
@@ -212,7 +180,7 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 }
 
 .filelist thead tr th.options .listmenu {
-  background-position: 3px -970px;
+  background: url(images/barreTri-01.png?v=e784.5000) center center no-repeat;
   cursor: pointer;
   width: 24px;
   height: 20px;
@@ -225,19 +193,11 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
   background-color: rgba(73,180,210,0.7);
 }
 
-.filelist thead tr th:first-child {
-  border-radius: 4px 0 0 0;
-}
-
 .filelist tbody tr td.options:hover span {
   width: 26px;
   height: 18px;
   background: url(../../../../skins/larry/images/buttons.png) -5px -417px no-repeat;
   display: block;
-}
-
-.filelist td.filename {
-  padding: 0 4px;
 }
 
 .filelist tbody td.filename span {
@@ -309,14 +269,14 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 #files-compose-dialog #folderlistbox {
   right: auto;
   width: 190px;
-  top: 45px;
-  bottom: 5px;
+  top: 50px;
+  bottom: 0;
   box-shadow: none;
 }
 
 #files-dialog #folderlistbox {
   top: 5px;
-  bottom: 5px;
+  bottom: 0;
   left: 0;
   right: 0;
   width: auto;
@@ -329,9 +289,9 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 
 #files-compose-dialog #filelistcontainer {
   position: absolute;
-  top: 45px;
-  bottom: 5px;
-  left: 200px;
+  top: 50px;
+  bottom: 0;
+  left: 191px;
   right: 0;
   box-shadow: none;
 }
@@ -351,6 +311,8 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
 
 #files-compose-dialog #searchreset {
   cursor: pointer;
+  top: 8px;
+  right: 4px;
 }
 
 a.filesaveall {
@@ -394,7 +356,6 @@ table.propform td.source .description {
 table.propform td.source img {
   vertical-align: middle;
   background-color: #e0e0e0;
-  border-radius: 3px;
   margin: 3px;
   background-image: -moz-linear-gradient(center top, #888, #333);
   background-image: -webkit-linear-gradient(top, #888, #333);

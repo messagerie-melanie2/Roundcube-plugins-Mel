@@ -80,6 +80,8 @@ class roundpad_files_engine
             include_once 'files_roundpad/other_roundpad.php';
 
             $this->driver = roundpad_driver::get_driver();
+            
+            $this->plugin->include_stylesheet($this->plugin->local_skin_path().'/roundpad.css');
         }
 
         if ($this->rc->config->get('roundpad_intercept_click', false)

@@ -34,6 +34,7 @@ require_once 'config.php';
         <ul>
         <?php
           foreach($config['pages'] as $name => $page) {
+            if ($page['show']) {
             ?>
               <li title="<?= $page['title'] ?>" class="<?= $page['class'] ?>">
                 <a target="_blank" href="<?= $page['url'] ?>">
@@ -42,6 +43,7 @@ require_once 'config.php';
                 </a>
               </li>
             <?php
+            }
           }
         ?>
         </ul>
@@ -49,6 +51,7 @@ require_once 'config.php';
       <div id="help-details">
           <?php
           foreach($config['details'] as $name => $list) {
+            if ($list['show']) {
             ?>
               <div class="details">
                 <span class="name">
@@ -58,15 +61,18 @@ require_once 'config.php';
                   <ul>
                     <?php
                     foreach($list as $object_name => $object) {
+                      if ($object['show'] && $object_name != 'show') {
                     ?>
-                      <li title="<?= $object['title'] ?>"><a target="_blank" href="<?= $object['url'] ?>"><?= $object_name ?></a></li>
+                      	<li title="<?= $object['title'] ?>"><a target="_blank" href="<?= $object['url'] ?>"><?= $object_name ?></a></li>
                     <?php
+                      }
                     }
                     ?>
                   </ul>
                 </div>
               </div>
             <?php
+            }
           }
         ?>
       </div>
@@ -82,15 +88,20 @@ if (isset($config['search'])) {
 	<?php 
 	$index = [];
 	foreach ($config['search'] as $k => $s) {
-	  foreach ($s['keywords'] as $word) {
-	    if (isset($index[$word])) {
-	      if (!in_array($k, $index[$word])) {
-	        $index[$word][] = $k;
+	  if ($s['show']) {
+	    foreach ($s['keywords'] as $word) {
+	      if (isset($index[$word])) {
+	        if (!in_array($k, $index[$word])) {
+	          $index[$word][] = $k;
+	        }
+	      }
+	      else {
+	        $index[$word] = [$k];
 	      }
 	    }
-	    else {
-	      $index[$word] = [$k];
-	    }
+	  }
+	  else {
+	    unset($config['search'][$k]);
 	  }
 	}
 	?>

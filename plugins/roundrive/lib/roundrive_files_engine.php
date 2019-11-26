@@ -63,13 +63,15 @@ class roundrive_files_engine
         $this->timeout = $this->rc->config->get('session_lifetime') * 60;
 
         $settings = array(
-                'baseUri' => $this->rc->config->get('driver_webdav_url'),
+                'baseUri' => str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_url')),
                 'userName' => $this->rc->user->get_username(),
                 'password' => $this->rc->get_user_password(),
+                'authType' => $this->rc->config->get('driver_webdav_auth', 'basic') == 'basic' ? Client::AUTH_BASIC : Client::AUTH_DIGEST,
+                'encoding' => Client::ENCODING_ALL,
         );
 
         $client = new Client($settings);
-        $adapter = new WebDAVAdapter($client, $this->rc->config->get('driver_webdav_prefix'));
+        $adapter = new WebDAVAdapter($client, str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_prefix')));
         $this->filesystem = new Filesystem($adapter);
     }
 
@@ -1082,6 +1084,10 @@ class roundrive_files_engine
         $folder = str_replace($this->plugin->gettext('files'), '/', urldecode(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST)));
         $folder = $this->encoderawpath($folder);
         $this->filesystem->createDir($folder);
+        // Get the parent
+        $parent = explode('/', urldecode(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST)));
+        array_pop($parent);
+        $result['parent'] = implode('/', $parent);
       }
       catch (Exception $e) {
         $result['status'] = 'NOK';
@@ -1144,8 +1150,12 @@ class roundrive_files_engine
             continue;
           }
           $encodedpath .= '/'.rawurlencode($t);
-          //$encodedpath .= '/'.urlencode($t);
-          //$encodedpath .= '/'.str_replace(' ', '%20', $t);
+          // NextCloud retourne les caractères encodés en minuscule
+          $encodedpath = preg_replace_callback('/%[0-9A-F]{2}/', function(array $matches)
+          {
+            return strtolower($matches[0]);
+          },
+          $encodedpath);
         }
       }
       return $encodedpath;

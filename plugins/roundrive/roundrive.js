@@ -192,7 +192,7 @@ function roundrive_directory_selector_dialog(id)
   $('#foldercreatelink').attr('tabindex', 0);
 
   buttons[rcmail.gettext('roundrive.save')] = function () {
-    var lock = rcmail.set_busy(true, 'saving'),
+    var lock = rcmail.set_busy(true, 'roundrive.saving'),
       request = {
         act: 'save-file',
         source: rcmail.env.mailbox,
@@ -1022,7 +1022,7 @@ rcube_webmail.prototype.files_save = function()
     if (!file_api.file_uploader_support())
       return;
 
-    file_api.req = file_api.set_busy(true, 'saving');
+    file_api.req = file_api.set_busy(true, 'roundrive.saving');
 //    this.file_editor.disable();
     this.file_editor.getContentCallback(function(content, filename) {
       file_api.file_uploader([content], {
@@ -1172,7 +1172,7 @@ function roundrive_ui()
     }
     
     if (!this.env.folders) {
-    	this.env.folders = [];
+    	this.env.folders = {};
     }
     var folders = this.folder_list_parse(response.result && response.result.list ? response.result.list : response.result);
     this.env.folders = Object.assign(this.env.folders, folders);
@@ -1267,7 +1267,7 @@ function roundrive_ui()
   this.folder_collapse = function(folder, elem)
   {
     if (rcmail.busy)
-	  return;
+    	return;
 		
 	    
     var folder_id = this.env.folders[folder].id
@@ -1339,7 +1339,7 @@ function roundrive_ui()
     this.display_message('roundrive.foldercreatenotice', 'confirmation');
 
     // refresh folders list
-    this.folder_list();
+    this.folder_list(response.parent);
   };
 
   // folder rename request
@@ -2172,7 +2172,7 @@ function roundrive_ui()
     // because we currently can edit only text files
     // and we do not expect them to be very big, we save
     // file in a very simple way, no upload progress, etc.
-    this.req = this.set_busy(true, 'saving');
+    this.req = this.set_busy(true, 'roundrive.saving');
     this.request('file_update', {file: file, content: content, info: 1}, 'file_save_response');
   };
 

@@ -62,6 +62,7 @@ $labels['collection_image'] = 'Images';
 $labels['collection_document'] = 'Documents';
 $labels['uploading'] = 'Téléversement de(s) fichier(s)...';
 $labels['attaching'] = 'Attachement de fichier(s)...';
+$labels['saving'] = 'Enregistrement de fichier(s)...';
 $labels['foldercreating'] = 'Création d\'un répertoire...';
 $labels['folderupdating'] = 'Mise à jour d\'un répertoire...';
 $labels['folderdeleting'] = 'Suppression d\'un répertoire...';

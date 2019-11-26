@@ -4,9 +4,18 @@
 var UI = new rcube_mail_ui();
 </script>
 
+<roundcube:if condition="!config:support_url" />
+	<style>
+		#taskbar a.button-help {
+			display: none;
+		}
+	</style>
+<roundcube:endif />	
+
+
 <div id="header">
-<roundcube:if condition="!env:extwin &amp;&amp; !env:framed" />
 <div id="topnav">
+<roundcube:if condition="!env:extwin &amp;&amp; !env:framed" />
 	<h2 id="aria-label-tasknav" class="voice"><roundcube:label name="arialabeltasknav" /></h2>
 	<div id="useroptions" class="popupmenu" aria-hidden="true" data-align="left">
 		<h3 id="aria-label-useroptions" class="voice"><roundcube:label name="arialabeluseroptions" /></h3>
@@ -22,21 +31,16 @@ var UI = new rcube_mail_ui();
 		<roundcube:container name="taskbar_mel" id="taskbar" />
 		<roundcube:button command="tasks" label="tasklist.navtitle" class="button-tasklist" classSel="button-tasklist button-selected" innerClass="button-inner" />
 		<roundcube:button command="settings" label="settings" class="button-settings" classSel="button-settings button-selected" innerClass="button-inner" />
-		<roundcube:if condition="config:support_url" />
-			<a class="button-help" target="_blank" role="button" href="<roundcube:var name='config:support_url' />">
-				<span class="button-inner"><roundcube:label name='mel_larry.help' /></span>
-			</a>
-		<roundcube:endif />		
+		<a class="button-help" target="_blank" role="button" href="<roundcube:var name='config:support_url' />">
+			<span class="button-inner"><roundcube:label name='mel_larry.help' /></span>
+		</a>
+			
 	</div>
 	<roundcube:object name="logo" src="/images/taskbar-logo.png" id="toplogo" alt="Logo" onclick="if(window.rcmail)rcmail.command('switch-task','mail')" />
-</div>
-<roundcube:else />
-<div id="topnav">
-	<roundcube:if condition="env:extwin" />
-		<roundcube:button name="close" type="link" label="close" class="closelink" onclick="self.close()" />
-	<roundcube:endif />
-</div>
 <roundcube:endif />
-
+<roundcube:if condition="env:extwin" />
+	<roundcube:button name="close" type="link" label="close" class="closelink" onclick="self.close()" />
+<roundcube:endif />
+</div>
 <br style="clear:both" />
 </div>

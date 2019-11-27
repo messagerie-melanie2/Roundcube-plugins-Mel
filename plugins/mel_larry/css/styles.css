@@ -412,12 +412,17 @@ body.extwin #taskbar {
 @media screen and (max-width: 1280px) {
   #taskbar a {
     min-width: 70px;
+    margin-left: 20px;
   }
 }
 
 @media screen and (max-width: 1080px) {
+	#topnav .topright {
+ 	   margin-left: 50px;
+	}
 	#taskbar a {
 	  	min-width: 60px;
+	  	margin-left: 15px;
 	}
 	#taskbar a span.button-inner {
 		text-indent: -9999px;
@@ -456,6 +461,14 @@ body.extwin #taskbar {
 	#taskbar a:hover .tooltip {
 		display: block;
 		top: 39px;
+	}
+	
+	body.right_panel_minified #taskbar a.button-help {
+    	right: 140px !important;
+	}
+	
+	body.right_panel_minified #taskbar a.button-settings {
+    	right: 85px !important;
 	}
 }
 
@@ -998,6 +1011,16 @@ table.records-table {
 	z-index: 100;
 }
 
+@media screen and (max-width: 1080px) {
+	#quicksearchbar {
+    	width: 182px;
+	}
+	
+	#quicksearchbar input, .searchbox input {
+    	width: 140px;
+	}
+}
+
 .listsearchbox {
 	background: #f2f2f2;
 }
@@ -1527,6 +1550,7 @@ ul.toolbarmenu li span.icon,
 #rcmKSearchpane ul li i.icon {
 	background: none;
 	opacity: 1;
+	padding: 4px 4px 1px 4px;
 }
 
 #rcmKSearchpane {

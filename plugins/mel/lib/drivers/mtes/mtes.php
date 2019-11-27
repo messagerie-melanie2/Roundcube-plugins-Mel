@@ -230,6 +230,37 @@ class mtes_driver_mel extends driver_mel {
   }
   
   /**
+   * Est-ce que l'utilisateur courant a le droit d'accéder au stockage
+   * 
+   * @return boolean true si le stockage doit être affiché, false sinon
+   */
+  public function userHasAccessToStockage() {
+    // Gestion du filtre LDAP
+    $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
+    $hasAccess = true;
+    if (isset($filter_ldap) && count($filter_ldap) > 0) {
+      $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos(rcmail::get_instance()->get_user_name());
+      
+      foreach ($filter_ldap as $key => $value) {
+        if (!isset($user_infos[$key]) 
+            || is_array($user_infos[$key]) && ! in_array($value, $user_infos[$key]) 
+            || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
+          $hasAccess = false;
+        }
+      }
+    }
+    
+    // Si on est sur Internet, vérifier que l'utilisateur a la double auth
+    if ($hasAccess 
+        && !mel::is_internal() 
+        && !mel_doubleauth::is_double_auth_enable()) {
+      $hasAccess = false;
+    }
+    
+    return $hasAccess;
+  }
+  
+  /**
    * Est-ce que le mot de passe de l'utilisateur doit changer
    * Si c'est le cas la page de changement de mot de passe sera affichée après le login
    * Le titre de la page est en entrée/sortie

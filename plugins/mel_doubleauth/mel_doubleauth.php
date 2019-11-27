@@ -409,6 +409,16 @@ class mel_doubleauth extends rcube_plugin {
         exit;
     }
     
+    //------------- static methods
+    /**
+     * Return if the double auth is enable for this session for the user
+     * 
+     * @return boolean
+     */
+    public static function is_double_auth_enable() {
+      return isset($_SESSION['mel_doubleauth_2FA_login']);
+    }
+    
     
     //------------- private methods
     

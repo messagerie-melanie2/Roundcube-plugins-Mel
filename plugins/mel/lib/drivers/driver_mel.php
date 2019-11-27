@@ -178,6 +178,13 @@ abstract class driver_mel {
   abstract public function setHeadersMessageBeforeSend($headers);
   
   /**
+   * Est-ce que l'utilisateur courant a le droit d'accéder au stockage
+   *
+   * @return boolean true si le stockage doit être affiché, false sinon
+   */
+  abstract public function userHasAccessToStockage();
+  
+  /**
    * Est-ce que le mot de passe de l'utilisateur doit changer
    * Si c'est le cas la page de changement de mot de passe sera affichée après le login
    * Le titre de la page est en entrée/sortie

@@ -39,15 +39,22 @@ class mel_nextcloud extends rcube_plugin {
     // Chargement de la conf
     $this->load_config();
     $this->add_texts('localization/', false);
-
-    // Gestion du filtre LDAP
-    $filter_ldap = $rcmail->config->get('roundcube_nextcloud_filter_ldap', array());
-    if (isset($filter_ldap) && count($filter_ldap) > 0) {
-      $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($rcmail->get_user_name());
-
-      foreach ($filter_ldap as $key => $value) {
-        if (!isset($user_infos[$key]) || is_array($user_infos[$key]) && ! in_array($value, $user_infos[$key]) || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
-          return;
+    
+    if (class_exists('driver_mel')) {
+      if (!driver_mel::get_instance()->userHasAccessToStockage()) {
+        return;
+      }
+    }
+    else {
+      // Gestion du filtre LDAP
+      $filter_ldap = $rcmail->config->get('roundcube_nextcloud_filter_ldap', array());
+      if (isset($filter_ldap) && count($filter_ldap) > 0) {
+        $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($rcmail->get_user_name());
+        
+        foreach ($filter_ldap as $key => $value) {
+          if (!isset($user_infos[$key]) || is_array($user_infos[$key]) && ! in_array($value, $user_infos[$key]) || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
+            return;
+          }
         }
       }
     }
@@ -62,14 +69,25 @@ class mel_nextcloud extends rcube_plugin {
 
     // ajout de la tache
     $this->register_task('stockage');
-    $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
-    $this->add_button(array(
-            'command' => 'stockage',
-            'class' => 'button-mel_nextcloud',
-            'classsel' => 'button-mel_nextcloud button-selected',
-            'innerclass' => 'button-inner',
-            'label' => 'mel_nextcloud.task'
-    ), $taskbar);
+    // Ajoute le bouton en fonction de la skin
+    if ($rcmail->config->get('ismobile', false)) {
+      $this->add_button(array(
+          'command' => 'stockage',
+          'class'	=> 'button-mel_nextcloud ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'classsel' => 'button-mel_nextcloud button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'innerclass' => 'button-inner',
+          'label'	=> 'mel_nextcloud.task',
+      ), 'taskbar_mobile');
+    } else {
+      $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+      $this->add_button(array(
+          'command' => 'stockage',
+          'class' => 'button-mel_nextcloud',
+          'classsel' => 'button-mel_nextcloud button-selected',
+          'innerclass' => 'button-inner',
+          'label' => 'mel_nextcloud.task'
+      ), $taskbar);
+    }
 
     // Si tache = stockage, on charge l'onglet
     if ($rcmail->task == 'stockage') {

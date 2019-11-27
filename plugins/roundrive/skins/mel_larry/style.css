@@ -5,7 +5,7 @@
 
 /* Attachment toolbar button */
 .toolbar a.button.saveas {
-  background: url(images/buttons.png) center -277px no-repeat;
+  background: url(images/buttons.png) center -277px no-repeat #fff;
 }
 
 /* Files main interface */
@@ -30,6 +30,7 @@
 }
 
 #filestoolbar a.button.delete {
+  display: none;
   background: url(images/supprimer.png?v=e784.5000) center center no-repeat #fff;
 }
 
@@ -336,10 +337,6 @@ a.filesaveall {
 
 #file-save-as input {
   width: 200px;
-}
-
-ul.toolbarmenu li span.saveas {
-  background: url(images/buttons.png) -5px -253px no-repeat;
 }
 
 table.propform td.source.selected {

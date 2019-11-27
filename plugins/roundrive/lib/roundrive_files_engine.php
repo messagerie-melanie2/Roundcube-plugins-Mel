@@ -119,7 +119,7 @@ class roundrive_files_engine
                 }
             }
 
-            $this->plugin->add_label('save', 'cancel', 'saveto',
+            $this->plugin->add_label('save', 'cancel', 'saveto', 'saving',
                 'saveall', 'fromcloud', 'attachsel', 'selectfiles', 'attaching',
                 'collection_audio', 'collection_video', 'collection_image', 'collection_document',
                 'folderauthtitle', 'authenticating'
@@ -616,7 +616,7 @@ class roundrive_files_engine
             return $frame;
         }
 
-        $href = $this->rc->url(array('task' => 'roundrive', 'action' => 'file_api')) . '&method=file_get&file='. urlencode($this->file_data['filename']);
+        $href = $this->rc->url(array('task' => 'roundrive', 'action' => 'file_api')) . '&method=file_get&_framed=1&file='. urlencode($this->file_data['filename']);
 
         $this->rc->output->add_gui_object('preview_frame', $attrib['id']);
 
@@ -719,7 +719,7 @@ class roundrive_files_engine
     protected function action_open()
     {
         $file = str_replace($this->plugin->gettext('files'), '/', urldecode(rcube_utils::get_input_value('file', rcube_utils::INPUT_GET)));
-
+        $file = $this->encoderawpath($file);
         try {
           $fsfile = $this->filesystem->get($file);
           $metadata = $fsfile->getMetadata();
@@ -1085,9 +1085,7 @@ class roundrive_files_engine
         $folder = $this->encoderawpath($folder);
         $this->filesystem->createDir($folder);
         // Get the parent
-        $parent = explode('/', urldecode(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST)));
-        array_pop($parent);
-        $result['parent'] = implode('/', $parent);
+        $result['parent'] = $this->get_folder_parent(urldecode(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST)));
       }
       catch (Exception $e) {
         $result['status'] = 'NOK';
@@ -1103,9 +1101,16 @@ class roundrive_files_engine
     protected function action_file_get() {
       try {
         $file = str_replace($this->plugin->gettext('files'), '/', rcube_utils::get_input_value('file', rcube_utils::INPUT_GET));
+        $file = $this->encoderawpath($file);
         $metadata = $this->filesystem->getMetadata($file);
         header('Content-Type: ' . $metadata['mimetype']);
-        header('Content-disposition: attachment; filename=' . $this->get_filename_from_path(urldecode($metadata['path'])));
+        if (!empty($_REQUEST['_framed'])) {
+          header('Content-disposition: inline; filename=' . $this->get_filename_from_path(urldecode($metadata['path'])));
+        }
+        else {
+          header('Content-disposition: attachment; filename=' . $this->get_filename_from_path(urldecode($metadata['path'])));
+        }
+        
         header('Content-Length: ' . $metadata['size']);
         echo $this->filesystem->read($file);
       }
@@ -1134,6 +1139,17 @@ class roundrive_files_engine
         $filename = end($tmp);
       }
       return $filename;
+    }
+    
+    /**
+     * Récupère le folder parent
+     * @param string $path
+     * @return string
+     */
+    protected function get_folder_parent($path) {
+      $parent = explode('/', $path);
+      array_pop($parent);
+      return is_array($parent) ? implode('/', $parent) : '/';
     }
 
     /**

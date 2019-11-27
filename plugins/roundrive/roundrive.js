@@ -225,10 +225,10 @@ function roundrive_directory_selector_dialog(id)
     title: rcmail.gettext('roundrive.' + label),
     buttons: buttons,
     button_classes: ['mainaction'],
-    minWidth: 250,
-    minHeight: 300,
-    height: 350,
-    width: 300
+    minWidth: 330,
+    minHeight: 380,
+    height: 400,
+    width: 350
   }, fn);
 
   // "enable" folder creation when dialog is displayed in parent window
@@ -735,7 +735,7 @@ roundrive_list_select = function(list)
         setTimeout(function() { win.focus(); }, 10);
     }
 */
-  rcmail.enable_command('files-open', rcmail.env.viewer);
+  rcmail.enable_command('files-open', true);
 };
 
 roundrive_list_keypress = function(list)
@@ -997,10 +997,16 @@ rcube_webmail.prototype.files_get = function()
 
 rcube_webmail.prototype.files_open = function()
 {
-  var files = roundrive_selected();
-
-  if (files.length == 1)
-    file_api.file_open(files[0], rcmail.env.viewer);
+	var files = roundrive_selected();
+	
+	if (files.length == 1) {
+		if (rcmail.env.viewer) {
+			file_api.file_open(files[0], rcmail.env.viewer);
+		}
+		else {
+			file_api.file_get(files[0], {'force-download': true});
+		}
+	}
 };
 
 // enable file editor

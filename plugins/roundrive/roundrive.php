@@ -45,18 +45,25 @@ class roundrive extends rcube_plugin
         // Chargement de la conf
         $this->load_config();
 
-        // Gestion du filtre LDAP
-        $filter_ldap = $this->rc->config->get('roundcube_owncloud_filter_ldap', array());
-        if (isset($filter_ldap) && count($filter_ldap) > 0) {
-          $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
-
-          foreach ($filter_ldap as $key => $value) {
-            if (is_array($user_infos[$key]) && !in_array($value, $user_infos[$key]) || is_string($user_infos[$key]) &&  $user_infos[$key] != $value) {
-              return;
+        if (class_exists('driver_mel')) {
+          if (!driver_mel::get_instance()->userHasAccessToStockage()) {
+            return;
+          }
+        }
+        else {
+          // Gestion du filtre LDAP
+          $filter_ldap = $this->rc->config->get('roundcube_nextcloud_filter_ldap', array());
+          if (isset($filter_ldap) && count($filter_ldap) > 0) {
+            $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+            
+            foreach ($filter_ldap as $key => $value) {
+              if (is_array($user_infos[$key]) && !in_array($value, $user_infos[$key]) || is_string($user_infos[$key]) &&  $user_infos[$key] != $value) {
+                return;
+              }
             }
           }
         }
-
+        
         // Register hooks
         $this->add_hook('refresh', array($this, 'refresh'));
 

@@ -26,15 +26,15 @@
  */
 $labels['files'] = 'Mes fichiers';
 $labels['filepreview'] = 'Fichier d\'aperçu';
-$labels['saveall'] = 'Enregistrer tout dans le drive...';
-$labels['saveto'] = 'Enregistrer dans le drive...';
+$labels['saveall'] = 'Enregistrer tout dans le stockage...';
+$labels['saveto'] = 'Enregistrer dans le stockage...';
 $labels['saveas'] = 'Enregistrer sous:';
 $labels['create'] = 'Créer';
 $labels['save'] = 'Enregistrer';
 $labels['cancel'] = 'Annuler';
-$labels['fromcloud'] = 'Depuis le drive...';
+$labels['fromcloud'] = 'Depuis le stockage...';
 $labels['selectfiles'] = 'Sélectionnez le(s) fichier(s) à attacher..';
-$labels['attachsel'] = 'Attachement sélectionné';
+$labels['attachsel'] = 'Pièce jointe sélectionnée';
 $labels['foldercreate'] = 'Nouveau répertoire';
 $labels['folderdelete'] = 'Supprimer le répertoire';
 $labels['folderinside'] = 'Ajouter à l\'intérieur';

@@ -1129,6 +1129,7 @@ table.propform td {
 	position: relative;
 	top: 0em;
 	color: #000;
+	width: 470px;
 }
 
 #login-form .box-left {
@@ -1152,7 +1153,7 @@ table.propform td {
 }
 
 #login-form .box-left .footerbox {
-	left: 84px;
+	left: 116px;
 }
 
 #login-form .box-left .productname {

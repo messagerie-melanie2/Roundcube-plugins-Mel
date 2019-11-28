@@ -797,7 +797,7 @@ ul.treelist.iconized ul li a {
 
 #mel_mobiles_list_listbox.listbox table.listing tbody tr td {
 	padding: 1px 5px;
-	border-bottom: 1px solid #d0d0d0
+	border-bottom: 1px solid #d0d0d0;
 }
 
 #addresslist.listbox table.listing tbody tr td.action {

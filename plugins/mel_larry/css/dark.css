@@ -1,0 +1,288 @@
+body,
+body.iframe {
+	background-color: #151515;
+	color: #CCCCCC;
+}
+
+input[type="text"],
+input[type="password"],
+textarea,
+.formfield-select--container,
+input.button,
+.formbuttons input.button:focus, 
+.formbuttons input.button:hover,
+.formbuttons input.button,
+a.button,
+.buttongroup {
+  	border-color: #2A2A2A;
+}
+
+#composeview-bottom .formbuttons.floating, 
+body.iframe .footerleft.floating {
+	border-color: #2F2F2F;
+}
+
+#topnav {
+	background-color: #06090c;
+	border-color: #2F2F2F;
+}
+
+#taskbar a:hover,
+#taskbar a:focus {
+	color: #fff;
+	background-color: #000;
+}
+
+#taskbar a.button-selected {
+	color: #fff;
+	background-color: #616161;
+}
+
+#taskbar a span.button-inner {
+	color: #fff;
+}
+
+#mainscreencontent {
+    border-color: #2F2F2F;
+    background-color: #131313;
+}
+
+#mailview-right.uibox {
+	background-color: #151515;
+}
+
+.listbox {
+	border-color: #2F2F2F;
+}
+
+.uibox .boxtitle,
+.uibox .boxtitle2,
+.uibox .listing thead th,
+.uibox .listing thead td {
+	background-color: #0D0D0D;
+	color: #fff;
+}
+
+#sectionslist .boxtitle,
+#identitieslist .boxtitle,
+#mel_moncompte_options_listbox .boxtitle,
+#mel_resources_elements_listbox .boxtitle,
+#mel_mobiles_list_listbox .boxtitle,
+#filtersetslistbox .boxtitle,
+#addresslist .boxtitle {
+    background-color: #000;
+}
+
+#filterslistbox .boxtitle {
+	background-color: #050505;
+}
+
+.listbox .listitem a,
+.listbox .listitem span,
+.listbox .tablink a,
+.listing tbody td,
+.listing li a {
+	color: #fff;
+}
+
+.listbox {
+	background-color: #0D0D0D;
+}
+
+#sectionslist.listbox,
+#mel_moncompte_options_listbox.listbox,
+#mel_resources_elements_listbox.listbox,
+#mel_mobiles_list_listbox.listbox,
+#filtersetslistbox.listbox,
+#identitieslist.listbox,
+#addresslist.listbox,
+#sectionslist.listbox .boxfooter,
+#mel_moncompte_options_listbox.listbox .boxfooter,
+#mel_resources_elements_listbox.listbox .boxfooter,
+#mel_mobiles_list_listbox.listbox .boxfooter,
+#filtersetslistbox.listbox .boxfooter,
+#identitieslist.listbox .boxfooter,
+#addresslist.listbox .boxfooter,
+#sectionslist.listbox .boxfooter .listbutton,
+#mel_moncompte_options_listbox.listbox .boxfooter .listbutton,
+#mel_resources_elements_listbox.listbox .boxfooter .listbutton,
+#mel_mobiles_list_listbox.listbox .boxfooter .listbutton,
+#filtersetslistbox.listbox .boxfooter .listbutton,
+#identitieslist.listbox .boxfooter .listbutton,
+#addresslist.listbox .boxfooter .listbutton {
+	background-color: #000;
+}
+
+#filterslistbox.listbox,
+#filterslistbox.listbox .boxfooter,
+#filterslistbox.listbox .boxfooter .listbutton {
+	background-color: #050505;
+}
+
+.listbox .listitem.selected,
+.listbox .tablink.selected,
+.listbox .listitem.selected > a,
+.listbox .tablink.selected > a,
+.listing tbody tr.selected td,
+.listing li.selected,
+.listing li.selected > a {
+	color: #fff;
+	background: #000;
+}
+
+ul.listing li,
+.listbox table.listing {
+	background-color: #0D0D0D;
+}
+
+#sectionslist.listbox table.listing,
+#mel_moncompte_options_listbox.listbox table.listing,
+#mel_resources_elements_listbox.listbox table.listing,
+#filtersetslistbox.listbox table.listing,
+#filterslistbox.listbox table.listing,
+#identitieslist.listbox table.listing,
+#addresslist.listbox table.listing {
+	background-color: #000;
+}
+
+#mel_mobiles_list_listbox.listbox table.listing {
+	background-color: #000;
+}
+
+#filterslistbox.listbox table.listing {
+	background-color: #050505;
+}
+
+#sectionslist.listbox table.listing tbody tr td.section,
+#mel_moncompte_options_listbox.listbox table.listing tbody tr td.name,
+#mel_resources_elements_listbox.listbox table.listing tbody tr td.name,
+#mel_mobiles_list_listbox.listbox table.listing tbody tr td.name,
+#filtersetslistbox.listbox table.listing tbody tr td.name,
+#filterslistbox.listbox table.listing tbody tr td.name,
+#identitieslist.listbox table.listing tbody tr td.name,
+#addresslist.listbox table.listing tbody tr td.name {
+	color: #D2D2D2;
+}
+
+#mel_mobiles_list_listbox.listbox table.listing tbody tr td {
+	border-color: #2F2F2F;
+}
+
+#sectionslist.listbox table.listing tbody tr.selected td.section,
+#mel_moncompte_options_listbox.listbox table.listing tbody tr.selected td.name,
+#mel_resources_elements_listbox.listbox table.listing tbody tr.selected td.name,
+#mel_mobiles_list_listbox.listbox table.listing tbody tr.selected td.name,
+#filtersetslistbox.listbox table.listing tbody tr.selected td.name,
+#filterslistbox.listbox table.listing tbody tr.selected td.name,
+#identitieslist.listbox table.listing tbody tr.selected td.name,
+#addresslist.listbox table.listing tbody tr.selected td.name {
+	background-color: #211609;
+	color: #fff;
+}
+
+#filterslistbox.listbox table.listing tbody tr.selected td.name {
+	background-color: #050505;
+}
+
+#mel_resources_elements_listbox.listbox table.listing tbody tr.selected td.subscribed {
+	background-color: #1F1F1F;
+}
+
+ul.treelist li a:focus,
+ul.listing .listitem a:focus,
+ul.listing .listitem span:focus,
+ul.listing.focus .listitem.focused span,
+ul#mailboxlist.treelist li a:focus {
+	color: #fff !important;
+	background: #000;
+}
+
+.listbox .boxfooter {
+	background: #0D0D0D;
+}
+
+.uibox .boxfooter {
+	border-color: #2F2F2F;
+}
+
+.boxfooter .listbutton {
+	background: #0D0D0D;
+}
+
+.boxfooter a.listbutton:focus {
+	color: #fff;
+	background: #0D0D0D;
+}
+
+.records-table thead th,
+.records-table thead td {
+	color: #4C4C4C;
+	background-color: #000;
+	border-color: #2F2F2F;
+}
+
+.records-table thead th a,
+.records-table thead td a,
+.records-table thead th span,
+.records-table thead td span {
+	color: #BEBEBE;
+	text-shadow: none;
+}
+
+.records-table thead th a:focus,
+.records-table thead td a:focus {
+	color: #BEBEBE;
+}
+
+.records-table tr.selected td a, 
+.records-table tr.selected td span {
+    color: #CCCCCC !important;
+}
+
+.records-table tr.selected td,
+.records-table tr.thread.expanded.selected td {
+	background-color: #211609 !important;
+	color: #CCCCCC !important;
+}
+
+.records-table.focus tr.selected td {
+    background-color: #211609 !important;
+}
+
+.records-table tbody td {
+	background-color: #000;
+}
+
+.messagelist tr td {
+    border-bottom-color: #343434;
+}
+
+.messagelist tbody td a {
+    color: #CCCCCC;
+}
+
+#mailview-right #messageheader, 
+#messageheader, 
+#messageheader.previewheader {
+    background-color: #151515;
+}
+
+#folderlist-content, 
+ul.listing.folderlist li {
+    background-color: #0D0D0D;
+}
+
+.folderlist li.mailbox a, 
+.folderlist li.mailbox a:focus {
+	color: #fff;
+}
+
+.folderlist li.mailbox.inbox.selected > a, 
+.folderlist li.mailbox.inbox > a:focus {
+	background-color: #000;
+}
+
+ul.listing.folderlist li.selected > a, 
+ul.listing.folderlist li.selected > a:focus {
+    color: #fff !important;
+}

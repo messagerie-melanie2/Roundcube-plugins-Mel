@@ -99,7 +99,7 @@ $labels['login_warning'] = "Respectez les principes de l'étiquette en vigueur s
 $labels['login_footer1'] = "© Ministère de la Transition écologique et solidaire,
 © Ministère de la Cohésion des territoires et des Relations avec les collectivités territoriales,
 © Ministère de l'Agriculture et de l'Alimentation";
-$labels['login_footer2'] = "SG/SPSSI/PSI2 - Sous-direction du schéma directeur et de la Politique des Systèmes d'Information - Bureau des Infrastructures";
+$labels['login_footer2'] = "SNUM - Service du numérique";
 
 $labels['agenda_filter'] = 'Filtrer les agendas';
 

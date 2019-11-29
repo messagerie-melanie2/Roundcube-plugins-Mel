@@ -22,15 +22,117 @@
  * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
  */
 
+:root {
+	--global-text-color: #000;
+	--global-bg-color: #fff;
+	--global-action-color: #f50059;
+	--global-border-color: #d0d0d0;
+	  	
+	--main-text-color: var(--global-text-color);
+  	--main-bg-color: #eaeaea;
+  	--main-border-color: var(--global-border-color);
+  	
+  	--top-text-color: var(--global-text-color);
+  	--top-bg-color: var(--global-bg-color);
+  	--top-border-color: var(--main-border-color);
+  	
+  	--topitem-selected-text-color: var(--global-text-color);
+  	--topitem-selected-bg-color: #dee9f6;
+  	--topitem-selected-border-color: var(--global-action-color);
+  	
+  	--content-text-color: var(--global-text-color);
+  	--content-bg-color: #ececec;
+  	--content-border-color: var(--global-border-color);
+  	
+  	--listbox-text-color: var(--global-text-color);
+  	--listbox-bg-color: #f2f2f2;
+  	--listbox-border-color: var(--global-border-color);
+  	
+  	--sublistbox-text-color: #2d2d2d;
+  	--sublistbox-bg-color: #fff;
+  	--sublistbox-border-color: var(--global-border-color);
+  	
+  	--subsublistbox-text-color: var(--global-text-color);
+  	--subsublistbox-bg-color: #fafafa;
+  	--subsublistbox-border-color: var(--global-border-color);
+  	
+  	--listitem-text-color: var(--global-text-color);
+  	--listitem-bg-color: #1e1e1e;
+  	
+  	--sublistitem-text-color: var(--global-text-color);
+  	--sublistitem-bg-color: #1e1e1e;
+  	
+  	--subsublistitem-text-color: var(--global-text-color);
+  	--subsublistitem-bg-color: #1e1e1e;
+  	
+  	--listitem-selected-text-color: var(--global-text-color);
+  	--listitem-selected-bg-color: var(--global-bg-color);
+  	
+  	--sublistitem-selected-text-color: var(--global-text-color);
+  	--sublistitem-selected-bg-color: #dee9f6;
+  	
+  	--subsublistitem-selected-text-color: var(--global-text-color);
+  	--subsublistitem-selected-bg-color: #fafafa;
+  	
+  	--box-text-color: var(--global-text-color);
+  	--box-bg-color: #f2f2f2;
+  	
+  	--boxtitle-text-color: var(--global-text-color);
+  	--boxtitle-bg-color: #f2f2f2;
+  	
+  	--boxtitle-iframe-text-color: var(--global-text-color);
+  	--boxtitle-iframe-bg-color: var(--global-bg-color);
+  	
+  	--subboxtitle-text-color: var(--global-text-color);
+  	--subboxtitle-bg-color: #fff;
+  	
+  	--subsubboxtitle-text-color: var(--global-text-color);
+  	--subsubboxtitle-bg-color: #fafafa;
+  	
+  	--boxfooter-text-color: var(--global-text-color);
+  	--boxfooter-bg-color: #f2f2f2;
+  	--boxfooter-border-color: var(--main-border-color);
+  	--boxfooter-count-text-color: #656565;
+  	
+  	--table-head-text-color: #414141;
+  	--table-head-bg-color: var(--global-bg-color);
+  	--table-head-border-color: var(--main-border-color);
+  	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
+  	
+  	--table-body-text-color: #333;
+  	--table-body-bg-color: var(--global-bg-color);
+  	--table-body-border-color: #cbcbcb;
+  	
+  	--table-item-selected-text-color: #333;
+  	--table-item-selected-bg-color: #dee9f6;
+  	
+  	--buttons-text-color: var(--global-text-color);
+  	--buttons-bg-color: var(--global-bg-color);
+  	--buttons-border-color: #d5d5d5;
+  	
+  	--inputs-text-color: #333;
+  	--inputs-placeholder-color: #a3a3a3;
+  	--inputs-bg-color: var(--global-bg-color);
+  	--inputs-border-color: #d5d5d5;
+  	
+  	--inputs-mainaction-text-color: #fff;
+  	--inputs-mainaction-bg-color: var(--global-action-color);
+  	
+  	--message-text-color: #fff;
+  	--message-bg-color: #242d38;
+  	--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
 body {
 	font-size: 12px;
 	font-family: "Open Sans","Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
 	background: none;
-	background-color: #eaeaea; /* New design */
 }
 
+body,
 body.iframe {
     background: #eaeaea;
+    background: var(--main-bg-color);
 }
 
 #pluginbody, 
@@ -56,6 +158,7 @@ input[type="password"],
 textarea {
   	border-radius: 4px;
   	border: solid 1px #d5d5d5;
+  	border-color: var(--inputs-border-color);
 	box-shadow: none;
 	-webkit-box-shadow: none;
 }
@@ -69,7 +172,9 @@ textarea {
 	display: inline-block;
 	
 	background-color: #fff;
+	background-color: var(--inputs-bg-color);
 	border: solid 1px #d5d5d5;
+	border-color: var(--inputs-border-color);
 	border-radius: 4px;
 	margin: 0;
 	
@@ -101,11 +206,11 @@ textarea {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	background: #fff;
+	background-color: var(--inputs-bg-color);
 	/* 
 		On empêche le texte d'aller
 		jusqu'au bout s'il est trop long
 	*/
-
 }
 
 .formfield-select--container::after { 
@@ -118,7 +223,8 @@ textarea {
 	display: block; 
 	width: 0; height: 0;
 	border-color: transparent;
-	border-top-color: #d5d5d5; 
+	border-top-color: #d5d5d5;
+	border-top-color: var(--inputs-border-color);
 	border-width: 6px;
 	border-style: solid;
 	pointer-events: none;
@@ -130,6 +236,7 @@ textarea:placeholder {
 	font-size: 12px;
 	font-weight: 600;
 	color: #a3a3a3;
+	color: var(--inputs-placeholder-color);
 }
 
 input[type="text"],
@@ -150,15 +257,21 @@ input[type="password"] {
 	border-radius: 0px;
 	border: none;
 	color: #fff;
+	color: var(--message-text-color);
 	width: auto;
 	box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+	box-shadow: var(--message-box-shadow);
 	background: #242d38;
+	background-color: var(--message-bg-color);
+	
 }
 
 #messagestack div.confirmation,
 #messagestack div.uploading,
 #messagestack div.loading {
 	color: #fff;
+	color: var(--message-text-color);
+	
 }
 
 /*** buttons ***/
@@ -167,7 +280,9 @@ input.button {
 	height: 32px;
 	border-radius: 4px;
 	border: solid 1px #d5d5d5;
+	border-color: var(--inputs-border-color);
 	background-color: #fff;
+	background-color: var(--inputs-bg-color);
 }
 
 .formbuttons input.button:focus, 
@@ -175,9 +290,12 @@ input.button {
 .formbuttons input.button {
 	border-radius: 4px;
 	border: solid 1px #d5d5d5;
+	border-color: var(--inputs-border-color);
 	background: #fff;
+	background-color: var(--inputs-bg-color);
 	font-size: 13px;
 	color: #323232;
+	color: var(--inputs-text-color);
 	padding: 7px 23px;
 }
 
@@ -186,14 +304,17 @@ input.button.mainaction:hover,
 input.button.mainaction, 
 input.button.mainaction {
 	color: #fff;
+	color: var(--inputs-mainaction-text-color);
 	border: none;
 	background: #f50059;
+	background-color: var(--inputs-mainaction-bg-color);
 	font-weight: bold;
 }
 
 #composeview-bottom .formbuttons.floating, 
 body.iframe .footerleft.floating {
 	border-top: 1px solid #d0d0d0;
+	border-color: var(--main-border-color);
 }
 
 #composeview-bottom .formbuttons.floating::before, 
@@ -208,7 +329,9 @@ a.button,
 	border-radius: 5px;
 	background: none;
 	background-color: #fff;
+	background-color: var(--buttons-bg-color);
 	border: solid 1px #d5d5d5;
+	border-color: var(--buttons-border-color);
 	height: 28px;
 	width: 34px;
 	text-indent: -9999px;
@@ -230,6 +353,8 @@ a.button,
 
 #message.statusbar {
 	background: #fff;
+	background-color: var(--global-bg-color);
+	
 }
 
 #messagestack div {
@@ -247,8 +372,11 @@ a.button,
 	position: inherit;
 	height: 65px;
 	background: #fff;
+	background-color: var(--top-bg-color);
 	border-bottom: 1px solid #d0d0d0;
+	border-color: var(--top-border-color);
 	margin-bottom: 0;
+	
 }
 
 .minimal #topnav {
@@ -265,48 +393,6 @@ a.button,
 
 body.extwin #topnav {
 	height: 26px;
-}
-
-#topnav .topleft {
-	float: none;
-	position: absolute;
-	left: 13px;
-	top: 17px;
-	width: 400px;
-	z-index: 100;
-	white-space: nowrap;
-}
-
-#topnav .topleft .user {
-	min-height: 28px;	
-	background: #e0e0e0;
-	border-radius: 5px;
-	padding: 7px 0;
-	cursor: pointer;
-	z-index: 100;
-}
-
-#topnav .topleft .user:hover {
-	box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-	-webkit-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-	outline: 0;
-}
-
-#topnav .topleft .user .userstatus {
-	padding: 7px 18px;
-	border-right: 1px solid #d0d0d0;
-	display: none;
-}
-
-#topnav .topleft .user .username {
-	display: inline-block;
-	padding: 0 18px;
-	font-weight: 600;
-	max-width: 280px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	line-height: 24px;
-	vertical-align: middle;
 }
 
 #useroptions {
@@ -337,6 +423,7 @@ body.extwin #topnav {
 #topline a, 
 #topnav a {
     color: #333;
+    color: var(--top-text-color);
     text-decoration: underline;
 }
 
@@ -367,18 +454,22 @@ body.extwin #taskbar {
   }
 }
 
-
 #taskbar a:hover,
 #taskbar a:focus {
 	color: #000;
+	color: var(--top-text-color);
 	background: #fff;
+	background-color: var(--top-bg-color);
 	text-shadow: none;
 }
 
 #taskbar a.button-selected {
 	color: #000;
+	color: var(--topitem-selected-text-color);
 	background-color: #dee9f6;
+	background-color: var(--topitem-selected-bg-color);
 	border-bottom: 2px solid #f50059;
+	border-color: var(--topitem-selected-border-color);
 	text-shadow: none;
 }
 
@@ -388,6 +479,7 @@ body.extwin #taskbar {
 
 #taskbar a span.button-inner {
 	color: #000;
+	color: var(--top-text-color);
 	text-shadow: none;
 	background: none;
 	font-size: 100%;
@@ -564,7 +656,10 @@ body.extwin #taskbar {
 #mainscreencontent {
     top: 50px;
     border-top: 1px solid #d0d0d0;
+    border-color: var(--content-border-color);
     background-color: #ececec;
+    background-color: var(--content-bg-color);
+    
 }
 
 .extwin #mainscreencontent {
@@ -575,16 +670,19 @@ body.extwin #taskbar {
 	border: none;
 	border-radius: 0;
 	background: #f2f2f2;
+	background-color: var(--box-bg-color);
 	box-shadow: none;
     -webkit-box-shadow: none;
 }
 
 #mailview-right.uibox {
 	background: #eaeaea;
+	background-color: var(--main-bg-color);
 }
 
 .listbox {
 	border-right: 1px solid #d0d0d0;
+	border-color: var(--listbox-border-color);
 }
 
 .listbox .scroller {
@@ -612,11 +710,14 @@ body.extwin #taskbar {
 .uibox .listing thead th,
 .uibox .listing thead td {
 	background: #f2f2f2;
+	background-color: var(--boxtitle-bg-color);
 	color: #000;
+	color: var(--boxtitle-text-color);
 	border-radius: 0;
 	text-shadow: none;
 	font-size: 10px;
 	padding: 7px 20px 6px;
+	
 }
 
 #sectionslist .boxtitle,
@@ -627,10 +728,14 @@ body.extwin #taskbar {
 #filtersetslistbox .boxtitle,
 #addresslist .boxtitle {
     background: #fff;
+    background-color: var(--subboxtitle-text-color);
+    
 }
 
 #filterslistbox .boxtitle {
 	background: #fafafa;
+	background-color: var(--subsubboxtitle-text-color);
+	
 }
 
 #filter-frame {
@@ -651,6 +756,7 @@ body.extwin #taskbar {
 .listing tbody td,
 .listing li a {
 	color: #000;
+	color: var(--listbox-text-color);
 	text-shadow: none;
 }
 
@@ -683,6 +789,8 @@ body.extwin #taskbar {
 
 .listbox {
 	background-color: #f2f2f2;
+	background-color: var(--listbox-bg-color);
+	
 }
 
 #sectionslist.listbox,
@@ -707,12 +815,16 @@ body.extwin #taskbar {
 #identitieslist.listbox .boxfooter .listbutton,
 #addresslist.listbox .boxfooter .listbutton {
 	background-color: #fff;
+	background-color: var(--sublistbox-bg-color);
+	
 }
 
 #filterslistbox.listbox,
 #filterslistbox.listbox .boxfooter,
 #filterslistbox.listbox .boxfooter .listbutton {
 	background-color: #fafafa;
+	background-color: var(--subsublistbox-bg-color);
+	
 }
 
 .listbox .listitem.selected,
@@ -723,9 +835,11 @@ body.extwin #taskbar {
 .listing li.selected,
 .listing li.selected > a {
 	color: #000;
+	color: var(--listitem-selected-text-color);
 	background: #fff;
+	background-color: var(--listitem-selected-bg-color);
 	text-shadow: none;
-	font-weight: bold;
+	font-weight: bold;	
 }
 
 .listing.iconized tbody tr td:first-child, 
@@ -735,6 +849,8 @@ body.extwin #taskbar {
 
 ul.listing li {
 	background-color: #f2f2f2;
+	background-color: var(--listbox-bg-color);
+	
 }
 
 ul.listing li ul {
@@ -751,6 +867,8 @@ ul.treelist.iconized ul li a {
 
 .listbox table.listing {
 	background-color: #f2f2f2;
+	background-color: var(--listbox-bg-color);
+	
 }
 
 #sectionslist.listbox table.listing,
@@ -759,8 +877,10 @@ ul.treelist.iconized ul li a {
 #filtersetslistbox.listbox table.listing,
 #filterslistbox.listbox table.listing,
 #identitieslist.listbox table.listing,
-#addresslist.listbox table.listing {
+#addresslist.listbox table.listing,
+#mel_mobiles_list_listbox.listbox table.listing {
 	background-color: #fff;
+	background-color: var(--sublistbox-bg-color);
 	margin-left: 0;
 	width: 100%;
 	table-layout: fixed;
@@ -768,14 +888,13 @@ ul.treelist.iconized ul li a {
 }
 
 #mel_mobiles_list_listbox.listbox table.listing {
-	background-color: #fff;
-	margin-left: 0;
-	width: 100%;
-	padding-top: 5px;
+	table-layout: auto;
 }
 
 #filterslistbox.listbox table.listing {
 	background-color: #fafafa;
+	background-color: var(--subsublistbox-bg-color);
+	
 }
 
 #sectionslist.listbox table.listing tbody tr td.section,
@@ -793,11 +912,13 @@ ul.treelist.iconized ul li a {
 	text-overflow: ellipsis;
 	background-image: none;
 	color: #2d2d2d;
+	color: var(--sublistbox-text-color);
 }
 
 #mel_mobiles_list_listbox.listbox table.listing tbody tr td {
 	padding: 1px 5px;
 	border-bottom: 1px solid #d0d0d0;
+	border-color: var(--main-border-color);
 }
 
 #addresslist.listbox table.listing tbody tr td.action {
@@ -811,32 +932,31 @@ ul.treelist.iconized ul li a {
 #filtersetslistbox.listbox table.listing tbody tr.selected td.name,
 #filterslistbox.listbox table.listing tbody tr.selected td.name,
 #identitieslist.listbox table.listing tbody tr.selected td.name,
-#addresslist.listbox table.listing tbody tr.selected td.name {
+#addresslist.listbox table.listing tbody tr.selected td.name,
+#mel_resources_elements_listbox.listbox table.listing tbody tr.selected td.subscribed {
 	background-color: #dee9f6;
+	background-color: var(--sublistitem-selected-bg-color);
 	color: #000;
+	color: var(--sublistitem-selected-text-color);
 	font-weight: 700;
 }
 
 #filterslistbox.listbox table.listing tbody tr.selected td.name {
 	background-color: #fafafa;
-}
-
-#mel_resources_elements_listbox.listbox table.listing tbody tr.selected td.subscribed {
-	background-color: #e0e0e0;
+	background-color: var(--subsublistitem-selected-bg-color);
+	color: #000;
+	color: var(--subsublistitem-selected-text-color);
 }
 
 ul.treelist li a:focus,
 ul.listing .listitem a:focus,
 ul.listing .listitem span:focus,
-ul.listing.focus .listitem.focused span {
-	color: #000 !important;
-	background: #fff;
-	text-shadow: none;
-}
-
+ul.listing.focus .listitem.focused span,
 ul#mailboxlist.treelist li a:focus {
 	color: #000 !important;
-	background-color: #fff;
+	color: var(--listitem-selected-text-color) !important;
+	background: #fff;
+	background-color: var(--listitem-selected-bg-color);
 	text-shadow: none;
 }
 
@@ -847,6 +967,7 @@ ul#mailboxlist.treelist li a:focus {
 .listbox .boxfooter {
 	border-top: none;
 	background: #f2f2f2;
+	background-color: var(--boxfooter-bg-color);
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	height: 33px;
@@ -855,11 +976,13 @@ ul#mailboxlist.treelist li a:focus {
 .uibox .boxfooter {
 	border-radius: 0;
 	border-top: 1px solid #d0d0d0;
+	border-color: var(--boxfooter-border-color);
 }
 
 .boxfooter .listbutton {
 	border-right: none;
 	background: #f2f2f2;
+	background-color: var(--boxfooter-bg-color);
 	width: 32px;
 	position: absolute;
 }
@@ -878,7 +1001,9 @@ ul#mailboxlist.treelist li a:focus {
 
 .boxfooter a.listbutton:focus {
 	color: #000;
+	color: var(--boxfooter-text-color);
 	background: #f2f2f2;
+	background-color: var(--boxfooter-bg-color);
 	text-shadow: none;
 }
 
@@ -908,10 +1033,6 @@ ul#mailboxlist.treelist li a:focus {
 	background-position: center -343px;
 }
 
-.boxfooter .countdisplay {
-	color: rgb(55, 101, 114);
-}
-
 /*** Records table ***/
 
 table.records-table {
@@ -920,11 +1041,11 @@ table.records-table {
 
 .records-table thead th,
 .records-table thead td {
-	color: #b3b3b3;
 	font-size: 12px;
 	font-weight: normal;
 	background: #fff;
 	border-bottom: solid 1px #d0d0d0;
+	border-color: var(--table-head-border-color);
 	padding: 10px 7px;
 }
 
@@ -933,14 +1054,18 @@ table.records-table {
 .records-table thead th span,
 .records-table thead td span {
 	color: #414141;
+	color: var(--table-head-text-color);
 	text-shadow: 0px 1px 1px rgb(255, 255, 255);
+	text-shadow: var(--table-head-text-shadow);
 }
 
 .records-table thead th a:focus,
 .records-table thead td a:focus {
 	color: #414141;
+	color: var(--table-head-text-color);
 	background-color: rgb(246, 246, 246);
 	text-shadow: 0px 1px 1px rgb(255, 255, 255);
+	text-shadow: var(--table-head-text-shadow);
 }
 
 .records-table tbody td {
@@ -951,17 +1076,21 @@ table.records-table {
 .records-table tr.selected td a, 
 .records-table tr.selected td span {
     color: #333 !important;
+    color: var(--table-item-selected-text-color) !important;
 }
 
 .records-table tr.selected td,
 .records-table tr.thread.expanded.selected td {
 	background-color: #dee9f6 !important;
+	background-color: var(--table-item-selected-bg-color) !important;
 	color: #333 !important;
+	color: var(--table-item-selected-text-color) !important;
 	border-left: none;
 }
 
 .records-table.focus tr.selected td {
     background-color: #dee9f6 !important;
+    background-color: var(--table-item-selected-bg-color) !important;
 }
 
 .records-table.focus tbody tr.focused > td:first-child,
@@ -989,25 +1118,20 @@ table.records-table {
     z-index: 110;
 }
 
-#quicksearchbar #quicksearchboxlabel {
-	position: relative;
-	z-index: 110;
-	top: 10px;
-	left: 15px;
-	color: #919090;
-}
-
 #quicksearchbar input, 
 .searchbox input {
     width: 221px;
     padding: 3px 7px 3px 38px;
     background: #fff;
+    background-color: var(--inputs-bg-color);
     border: solid 1px #d5d5d5;
+    border-color: var(--inputs-border-color);
     height: 24px;
     border-radius: 5px;
     font-weight: 500;
 	font-size: 11px;
 	color: #333;
+	color: var(--inputs-text-color);
 	z-index: 100;
 }
 
@@ -1023,12 +1147,12 @@ table.records-table {
 
 .listsearchbox {
 	background: #f2f2f2;
+	background-color: var(--listbox-bg-color);
 }
 
 .listsearchbox input {
 	width: 100%;
 	padding: 3px 38px 3px 8px;
-	background: #fafafa;
 }
 
 
@@ -1050,7 +1174,9 @@ iframe {
 .contentbox .boxtitle,
 body.iframe .boxtitle {
 	color: #000;
+	color: var(--boxtitle-iframe-text-color);
 	background: #fff;
+	background-color: var(--boxtitle-iframe-bg-color);
 }
 
 
@@ -1216,6 +1342,7 @@ table.propform td {
 	background: #fff;
 	font-size: 10px;
 	color: #000;
+	color: var();
 	padding: 11px 5px;
 }
 
@@ -1234,6 +1361,7 @@ table.propform td {
 
 .boxfooter .countdisplay {
     color: #656565;
+    color: var(--boxfooter-count-text-color);
     font-size: 10px;
 	font-weight: 600;
 }
@@ -1314,38 +1442,38 @@ table.propform td {
 }
 
 .toolbar a.button.move {
-    background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar a.button.refreshcalendar,
 .toolbar a.button.checkmail {
-    background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar a.button.junk {
-    background: url(../images/mail/pourriel.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/pourriel.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar a.button.delete {
-    background: url(../images/mail/supprimer.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/supprimer.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar a.button.print {
-    background: url(../images/mail/imprimer.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/imprimer.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar a.button.filterlink {
-    background: url(../images/mail/filtrer.png) center center no-repeat #fff;
+    background: url(../images/mail/filtrer.png) center center no-repeat var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button.calendarlink,
 #messageheader #formatcontrols  a.button.calendarlink,
 .toolbar a.button.calendarlink {
-    background: url(../images/mail/evenement.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/evenement.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar a.button.thunderbird {
-    background: url(../images/mail/etiquettes.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/etiquettes.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 #markmessagemenulink,
@@ -1357,32 +1485,32 @@ table.propform td {
 #messageheader #countcontrols a.button.reply,
 #messageheader #formatcontrols  a.button.reply,
 .toolbar a.button.reply {
-    background: url(../images/mail/repondre.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/repondre.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button.replyall,
 #messageheader #formatcontrols  a.button.replyall,
 .toolbar a.button.reply-all {
-    background: url(../images/mail/repondre_tous.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/repondre_tous.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
     min-width: auto;
 }
 
 #messageheader #countcontrols a.button.forward,
 #messageheader #formatcontrols  a.button.forward,
 .toolbar a.button.forward {
-    background: url(../images/mail/tranferer.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/tranferer.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
     min-width: auto;
 }
 
 #messageheader #countcontrols a.button.bounce,
 #messageheader #formatcontrols  a.button.bounce,
 .toolbar a.button.bounce {
-    background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
     min-width: auto;
 }
 
 .toolbar a.button.back {
-    background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
 }
 
 .toolbar .spacer {

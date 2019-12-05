@@ -12,6 +12,7 @@
  
 body.iframe {
     background: #fff !important;
+    background: var(--main-content-bg-color) !important;
     margin: 10px 0 10px;
 }
 
@@ -32,10 +33,12 @@ form#contact-details #contactpic {
 
 div#contact-details .contactfieldgroup {
 	background: #fff;
+	background: var(--main-content-bg-color);
 }
 
 form#contact-details .contactfieldgroup {
 	background: #e8e8e8;
+	background-color: var(--contact-field-bg-color);
 }
 
 div#contact-details .contactfieldgroup legend,
@@ -45,6 +48,7 @@ form#contact-details .contactfieldgroup legend {
 
 div#contact-details .contactfieldgroup .row {
     background-color: #e8e8e8;
+    background-color: var(--contact-field-bg-color);
     border-radius: 4px;
     padding: 12px;
     margin: .8em 0;
@@ -60,11 +64,13 @@ div#contact-details .contactfieldcontent.composite {
 }
 
 div#contact-details .contactcontrollerphone .row {
-	background: url(../images/contacts_icons.png?v=e784.5000) right center no-repeat #e8e8e8;	
+	background: url(../images/contacts_icons.png?v=e784.5000) right center no-repeat #e8e8e8;
+	background-color: var(--contact-field-bg-color);
 }
 
 div#contact-details .contactcontrolleremail .row {
 	background: url(../images/02mail.png?v=e784.5000) right center no-repeat #e8e8e8;
+	background-color: var(--contact-field-bg-color);
 }
 
 #directorylist li.legend {
@@ -73,6 +79,7 @@ div#contact-details .contactcontrolleremail .row {
     font-size: 10px;
     font-weight: 600;
     border-top: 1px solid #d0d0d0;
+    border-color: var(--main-border-color);
 }
 
 #directorylist li.addressbook.selected > a,
@@ -136,6 +143,7 @@ div#contact-details .contactcontrolleremail .row {
 
 #contacts-box {
     background-color: #fff;
+    background: var(--main-content-bg-color);
 }
 
 #contacts-table tr.legend td {
@@ -144,6 +152,7 @@ div#contact-details .contactcontrolleremail .row {
 	color: #0d0d0d;
 	padding: 7px 10px;
 	border-top: 1px solid #d0d0d0;
+	border-color: var(--main-border-color);
 	margin-top: 6px;
 }
 
@@ -159,6 +168,7 @@ div#contact-details .contactcontrolleremail .row {
 #addressbooktoolbar.toolbar a.button.add {
     background-position: center 0;
     background: url(../images/contact/nouveau.png?v=e784.5000) 10px center no-repeat #f50059;
+    background-color: var(--inputs-mainaction-bg-color);
     border: solid 1px rgba(0, 0, 0, 0.2);
     text-indent: 0;
     color: #fff;
@@ -172,19 +182,23 @@ div#contact-details .contactcontrolleremail .row {
 
 #addressbooktoolbar.toolbar a.button.import {
     background: url(../images/contact/importer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #addressbooktoolbar.toolbar a.button.export {
     background: url(../images/contact/exporter.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
     min-width: auto;
 }
 
 #addressbooktoolbar.toolbar a.button.print {
     background: url(../images/contact/imprimer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #addressbooktoolbar.toolbar a.button.delete {
     background: url(../images/contact/supprimer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #sourcename {
@@ -193,4 +207,8 @@ div#contact-details .contactcontrolleremail .row {
 
 #headerbuttons {
     top: 13px;
+}
+
+.contactfieldgroup .contactfieldlabel {
+    color: var(--contact-field-text-color);
 }

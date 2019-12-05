@@ -124,8 +124,8 @@ class mel_larry extends rcube_plugin
       if (isset(self::$tasks_js_map[$rc->task])) {
         $this->include_script(self::JS_FOLDER.self::$tasks_js_map[$rc->task]);
       }
-      // App css
-      $this->include_stylesheet(self::CSS_FOLDER.'dark.css');
+      // Dark app css
+      //$this->include_stylesheet(self::CSS_FOLDER.'dark.css');
     }
     $this->ui_initialized = true;
   }

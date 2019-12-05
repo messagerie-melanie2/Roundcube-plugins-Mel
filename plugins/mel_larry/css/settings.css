@@ -12,11 +12,13 @@
 
 body.iframe {
     background: #fff !important;
+    background: var(--main-content-bg-color) !important;
 }
 
 .contentbox .boxtitle, 
 body.iframe .boxtitle {
     background: #fafafa !important;
+    background-color: var(--subsubboxtitle-bg-color);
     border-bottom: none;
 }
 
@@ -27,6 +29,7 @@ body.iframe .boxtitle {
 #settings-sections,
 #settings-right {
 	border-top: 1px solid #d0d0d0;
+	border-color: var(--content-border-color);
 }
 
 #preferences-frame {
@@ -59,6 +62,7 @@ body.iframe .boxtitle {
 table.propform tr, 
 table.quota-info tr {
     background-color: #fff;
+    background-color: var(--table-body-bg-color);
 }
 
 #settings-tabs #settingstabresponses {
@@ -80,8 +84,10 @@ table.quota-info tr {
 	width: 100%;
 	text-align: center;
 	border-top: solid 1px #979797;
+	border-color: var(--settings-disconnect-border-color);
 	text-decoration: none;
 	font-size: 12px;
 	font-weight: normal;
 	color: #f63267;
+	color: var(--settings-disconnect-text-color);
 }

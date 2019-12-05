@@ -27,21 +27,33 @@
 	--global-bg-color: #fff;
 	--global-action-color: #f50059;
 	--global-border-color: #d0d0d0;
+	--global-selected-bg-color: #dee9f6;
 	  	
 	--main-text-color: var(--global-text-color);
   	--main-bg-color: #eaeaea;
   	--main-border-color: var(--global-border-color);
+	--main-sepratator-color: #e4e4e4;
+
+	--login-form-text-color: #2e3436;
+	--login-a-text-color: var(--global-text-color);
+	--login-title-text-color: var(--global-text-color);
+	--login-form-bg-color: rgba(0,0,0,0.05);
+	--login-form-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+	--login-left-bg-color: var(--global-bg-color);
+	--login-footer-text-color: var(--global-text-color);
+	--login-footer-bg-color: var(--global-bg-color);	
   	
-  	--top-text-color: var(--global-text-color);
+  	--top-text-color: #000;
   	--top-bg-color: var(--global-bg-color);
   	--top-border-color: var(--main-border-color);
   	
   	--topitem-selected-text-color: var(--global-text-color);
-  	--topitem-selected-bg-color: #dee9f6;
+  	--topitem-selected-bg-color: var(--global-selected-bg-color);
   	--topitem-selected-border-color: var(--global-action-color);
   	
   	--content-text-color: var(--global-text-color);
   	--content-bg-color: #ececec;
+	--main-content-bg-color: #fff;
   	--content-border-color: var(--global-border-color);
   	
   	--listbox-text-color: var(--global-text-color);
@@ -49,7 +61,7 @@
   	--listbox-border-color: var(--global-border-color);
   	
   	--sublistbox-text-color: #2d2d2d;
-  	--sublistbox-bg-color: #fff;
+  	--sublistbox-bg-color: var(--global-bg-color);
   	--sublistbox-border-color: var(--global-border-color);
   	
   	--subsublistbox-text-color: var(--global-text-color);
@@ -57,19 +69,21 @@
   	--subsublistbox-border-color: var(--global-border-color);
   	
   	--listitem-text-color: var(--global-text-color);
-  	--listitem-bg-color: #1e1e1e;
+  	--listitem-bg-color: #f2f2f2;
+	--listitem-focus-bg-color: #0d0d0d;
+	--listitem-droptarget-bg-color: var(--global-selected-bg-color);
   	
   	--sublistitem-text-color: var(--global-text-color);
-  	--sublistitem-bg-color: #1e1e1e;
+  	--sublistitem-bg-color: var(--global-bg-color);
   	
   	--subsublistitem-text-color: var(--global-text-color);
-  	--subsublistitem-bg-color: #1e1e1e;
+  	--subsublistitem-bg-color: #fafafa;
   	
   	--listitem-selected-text-color: var(--global-text-color);
   	--listitem-selected-bg-color: var(--global-bg-color);
   	
   	--sublistitem-selected-text-color: var(--global-text-color);
-  	--sublistitem-selected-bg-color: #dee9f6;
+  	--sublistitem-selected-bg-color: var(--global-selected-bg-color);
   	
   	--subsublistitem-selected-text-color: var(--global-text-color);
   	--subsublistitem-selected-bg-color: #fafafa;
@@ -101,26 +115,198 @@
   	
   	--table-body-text-color: #333;
   	--table-body-bg-color: var(--global-bg-color);
+	--table-extanded-body-bg-color: #e0e0e0;
   	--table-body-border-color: #cbcbcb;
   	
   	--table-item-selected-text-color: #333;
-  	--table-item-selected-bg-color: #dee9f6;
+  	--table-item-selected-bg-color: var(--global-selected-bg-color);
   	
   	--buttons-text-color: var(--global-text-color);
   	--buttons-bg-color: var(--global-bg-color);
   	--buttons-border-color: #d5d5d5;
+	--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+	--buttons-focus-bg-color: #e0e0e0;
+	--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
   	
   	--inputs-text-color: #333;
   	--inputs-placeholder-color: #a3a3a3;
   	--inputs-bg-color: var(--global-bg-color);
   	--inputs-border-color: #d5d5d5;
+	--inputs-decorated-text-color: #5e5e5e;
+	--inputs-decorated-bg-color: #c0c0c0;
+	--inputs-box-shadow: 0 1px 1px 0 #ccc;
   	
   	--inputs-mainaction-text-color: #fff;
   	--inputs-mainaction-bg-color: var(--global-action-color);
+	--inputs-mainaction-border-color: rgba(0, 0, 0, 0.2);
+	
+	--popup-text-color: #2A2A2A;
+	--popup-bg-color: var(--global-bg-color);
+	--popup-box-sahdow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+	--popup-selected-text-color: #fff;
+	--popup-selected-bg-color: var(--global-action-color);
   	
   	--message-text-color: #fff;
   	--message-bg-color: #242d38;
   	--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+  	
+  	--contact-field-bg-color: #e8e8e8;
+  	--contact-field-text-color: #666;
+  	
+  	--settings-disconnect-border-color: #979797;
+  	--settings-disconnect-text-color: #f63267;
+  	
+  	--jquery-date-picker-header-text-color: #5a5959;
+  	--jquery-date-picker-text-color: #464646;
+  	--jquery-tabs-bg-color: var(--global-bg-color);
+  	--jquery-tabs-text-color: #4f5863;
+  	--jquery-tabs-border-color: #dcdce0;
+  	--jquery-tabs-active-bg-color: #f4f4f4;
+  	--jquery-buttons-text-color: #323232;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--global-text-color: #fff;
+		--global-bg-color: #1e1e1e;
+		--global-action-color: #f50059;
+		--global-border-color: #2F2F2F;
+		--global-selected-bg-color: #323232;
+		  	
+		--main-text-color: #CCCCCC;
+	 	--main-bg-color: #121212;
+	 	--main-border-color: var(--global-border-color);
+	 	--main-sepratator-color: #1e1e1e;
+		
+		--login-form-text-color: var(--main-text-color);
+		--login-a-text-color: var(--global-text-color);
+		--login-title-text-color: var(--global-text-color);
+		--login-form-bg-color: rgba(0,0,0,0.4);
+		--login-form-box-shadow: 0 2px 5px 0 rgba(255, 255, 255, 0.1);
+		--login-left-bg-color: var(--global-bg-color);
+		--login-footer-text-color: var(--global-text-color);
+		--login-footer-bg-color: var(--global-bg-color);	
+	 	
+	 	--top-text-color: var(--global-text-color);
+	 	--top-bg-color: var(--global-bg-color);
+	 	--top-border-color: var(--main-border-color);
+	 	
+	 	--topitem-selected-text-color: var(--global-text-color);
+	 	--topitem-selected-bg-color: var(--global-selected-bg-color);
+	 	--topitem-selected-border-color: var(--global-action-color);
+	 	
+	 	--content-text-color: var(--global-text-color);
+	 	--content-bg-color: #131313;
+	 	--main-content-bg-color: #1e1e1e;
+	 	--content-border-color: var(--global-border-color);
+	 	
+	 	--listbox-text-color: var(--global-text-color);
+	 	--listbox-bg-color: #222222;
+	 	--listbox-border-color: var(--global-border-color);
+	 	
+	 	--sublistbox-text-color: #CCCCCC;
+	 	--sublistbox-bg-color: var(--global-bg-color);
+	 	--sublistbox-border-color: var(--global-border-color);
+	 	
+	 	--subsublistbox-text-color: var(--global-text-color);
+	 	--subsublistbox-bg-color: #1d1d1d;
+	 	--subsublistbox-border-color: var(--global-border-color);
+	 	
+	 	--listitem-text-color: var(--global-text-color);
+	 	--listitem-bg-color: #222222;
+		--listitem-focus-bg-color: var(--global-text-color);
+		--listitem-droptarget-bg-color: var(--global-selected-bg-color);
+	 	
+	 	--sublistitem-text-color: var(--global-text-color);
+	 	--sublistitem-bg-color: var(--global-bg-color);
+	 	
+	 	--subsublistitem-text-color: var(--global-text-color);
+	 	--subsublistitem-bg-color: #1d1d1d;
+	 	
+	 	--listitem-selected-text-color: var(--global-text-color);
+	 	--listitem-selected-bg-color: #121212;
+	 	
+	 	--sublistitem-selected-text-color: var(--global-text-color);
+	 	--sublistitem-selected-bg-color: var(--global-selected-bg-color);
+	 	
+	 	--subsublistitem-selected-text-color: var(--global-text-color);
+	 	--subsublistitem-selected-bg-color: #1d1d1d;
+	 	
+	 	--box-text-color: var(--global-text-color);
+	 	--box-bg-color: #1d1d1d;
+	 	
+	 	--boxtitle-text-color: var(--global-text-color);
+	 	--boxtitle-bg-color: #222222;
+	 	
+	 	--boxtitle-iframe-text-color: var(--global-text-color);
+	 	--boxtitle-iframe-bg-color: var(--global-bg-color);
+	 	
+	 	--subboxtitle-text-color: #CCCCCC;
+	 	--subboxtitle-bg-color: var(--global-bg-color);
+	 	
+	 	--subsubboxtitle-text-color: var(--global-text-color);
+	 	--subsubboxtitle-bg-color: #1d1d1d;
+	 	
+	 	--boxfooter-text-color: var(--global-text-color);
+	 	--boxfooter-bg-color: #222222;
+	 	--boxfooter-border-color: var(--main-border-color);
+	 	--boxfooter-count-text-color: #CCC;
+	 	
+	 	--table-head-text-color: #BEBEBE;
+	 	--table-head-bg-color: #1d1d1d;
+	 	--table-head-border-color: var(--main-border-color);
+	 	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
+	 	
+	 	--table-body-text-color: #D2D2D2;
+	 	--table-body-bg-color: #1d1d1d;
+	 	--table-body-border-color: var(--main-border-color);
+	 	
+	 	--table-item-selected-text-color: var(--global-text-color);
+	 	--table-item-selected-bg-color: var(--global-selected-bg-color);
+	 	
+	 	--buttons-text-color: var(--global-text-color);
+	 	--buttons-bg-color: #373737;
+	 	--buttons-border-color: #2A2A2A;
+		--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+		--buttons-focus-bg-color: #e0e0e0;
+		--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+	 	
+	 	--inputs-text-color: var(--global-text-color);
+	 	--inputs-placeholder-color: var(--global-text-color);
+	 	--inputs-bg-color: #333333;
+	 	--inputs-border-color: #2A2A2A;
+		--inputs-decorated-text-color: #5e5e5e;
+		--inputs-decorated-bg-color: #c0c0c0;
+		--inputs-box-shadow: none;
+	 	
+	 	--inputs-mainaction-text-color: #fff;
+	 	--inputs-mainaction-bg-color: var(--global-action-color);
+		--inputs-mainaction-border-color: rgba(0, 0, 0, 0.2);
+		
+		--popup-text-color: var(--global-text-color);
+		--popup-bg-color: #222222;
+		--popup-box-sahdow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+		--popup-selected-text-color: #fff;
+		--popup-selected-bg-color: var(--global-action-color);
+	 	
+	 	--message-text-color: #fff;
+	 	--message-bg-color: #242d38;
+	 	--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+	 	
+	 	--contact-field-bg-color: #373737;
+	 	--contact-field-text-color: var(--global-text-color);
+	 	
+	 	--settings-disconnect-border-color: #979797;
+	 	--settings-disconnect-text-color: #f63267;
+	 	
+	 	--jquery-date-picker-header-text-color: #d0d0d0;
+	  	--jquery-date-picker-text-color: #d5d5d5;
+	  	--jquery-tabs-bg-color: var(--global-bg-color);
+	  	--jquery-tabs-text-color: #eeeeec;
+	  	--jquery-tabs-border-color: #4f5863;
+	  	--jquery-tabs-active-bg-color: #1e1e1e;
+	  	--jquery-buttons-text-color: var(--global-text-color);
+	}
 }
 
 body {
@@ -131,6 +317,7 @@ body {
 
 body,
 body.iframe {
+	color: var(--main-text-color);
     background: #eaeaea;
     background: var(--main-bg-color);
 }
@@ -153,6 +340,16 @@ div.background-image {
 	background-size: cover;
 }
 
+@media (prefers-color-scheme: dark) {
+	div.background-image {
+		background: url(../images/background_dark.png?v=e784.5000) no-repeat center center fixed;
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+	}
+}
+
 input[type="text"],
 input[type="password"],
 textarea {
@@ -161,6 +358,8 @@ textarea {
   	border-color: var(--inputs-border-color);
 	box-shadow: none;
 	-webkit-box-shadow: none;
+	background-color: #fff;
+	background-color: var(--inputs-bg-color);
 }
 
 .formfield-select {
@@ -297,6 +496,8 @@ input.button {
 	color: #323232;
 	color: var(--inputs-text-color);
 	padding: 7px 23px;
+	box-shadow: 0 1px 1px 0 #ccc;
+	box-shadow: var(--inputs-box-shadow);
 }
 
 input.button.mainaction:focus, 
@@ -332,6 +533,7 @@ a.button,
 	background-color: var(--buttons-bg-color);
 	border: solid 1px #d5d5d5;
 	border-color: var(--buttons-border-color);
+	color: var(--buttons-text-color);
 	height: 28px;
 	width: 34px;
 	text-indent: -9999px;
@@ -422,7 +624,7 @@ body.extwin #topnav {
 
 #topline a, 
 #topnav a {
-    color: #333;
+    color: #000;
     color: var(--top-text-color);
     text-decoration: underline;
 }
@@ -535,7 +737,6 @@ body.extwin #taskbar {
 		z-index: 200;
 		white-space: nowrap;
 	}
-	
 	#taskbar .tooltip:after {
 		content: "";
 		position: absolute;
@@ -549,16 +750,13 @@ body.extwin #taskbar {
 		width: 0;
 		z-index: 251;
 	}
-	
 	#taskbar a:hover .tooltip {
 		display: block;
 		top: 39px;
 	}
-	
 	body.right_panel_minified #taskbar a.button-help {
     	right: 140px !important;
 	}
-	
 	body.right_panel_minified #taskbar a.button-settings {
     	right: 85px !important;
 	}
@@ -728,13 +926,13 @@ body.extwin #taskbar {
 #filtersetslistbox .boxtitle,
 #addresslist .boxtitle {
     background: #fff;
-    background-color: var(--subboxtitle-text-color);
+    background-color: var(--subboxtitle-bg-color);
     
 }
 
 #filterslistbox .boxtitle {
 	background: #fafafa;
-	background-color: var(--subsubboxtitle-text-color);
+	background-color: var(--subsubboxtitle-bg-color);
 	
 }
 
@@ -1044,6 +1242,7 @@ table.records-table {
 	font-size: 12px;
 	font-weight: normal;
 	background: #fff;
+	background-color: var(--table-head-bg-color);
 	border-bottom: solid 1px #d0d0d0;
 	border-color: var(--table-head-border-color);
 	padding: 10px 7px;
@@ -1071,6 +1270,7 @@ table.records-table {
 .records-table tbody td {
 	border-left: none;
 	padding: 10px 7px;
+	background-color: var(--table-body-bg-color);
 }
 
 .records-table tr.selected td a, 
@@ -1197,11 +1397,13 @@ table.propform td {
 
 #login-form a {
     color: #2e3436;
+    color: var(--login-a-text-color);
     text-decoration: underline;
 }
 
 #login-form .box-right a {
     color: #000;
+    color: var(--login-a-text-color);
     font-size: 9px;
     text-decoration: none;
     font-weight: bold;
@@ -1216,9 +1418,11 @@ table.propform td {
 	height: 427px;
 	background: none;
 	background-color: rgba(0,0,0,0.05);
+	background-color: var(--login-form-bg-color);
 	border: none;
 	border-radius: 0;
 	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+	box-shadow: var(--login-form-box-shadow);
 	margin: 0 0px;
 	padding: 0;
 	overflow: hidden;
@@ -1236,6 +1440,7 @@ table.propform td {
 	z-index: 9999;
 	vertical-align: middle;
 	color: #fff;
+	color: var(--message-text-color);
 	font-weight: bold;
 	font-size: 35px;
 	padding-top: 15ex;
@@ -1255,11 +1460,13 @@ table.propform td {
 	position: relative;
 	top: 0em;
 	color: #000;
+	color: var(--login-title-text-color);
 	width: 470px;
 }
 
 #login-form .box-left {
 	background-color: #fff;
+	background-color: var(--login-left-bg-color);
 	width: 224px;
 	min-width: 224px;
 	overflow: hidden;
@@ -1317,9 +1524,11 @@ table.propform td {
   	height: 32px;
   	border-radius: 4px;
   	background-color: #f50059;
+  	background-color: var(--inputs-mainaction-bg-color);
   	font-size: 12px;
 	font-weight: bold;
 	color: #fff;
+	color: var(--inputs-mainaction-text-color);
 }
 
 #login-form input[type="text"], 
@@ -1330,6 +1539,7 @@ table.propform td {
 
 #login-form td.title {
 	color: #000;
+	color: var(--login-title-text-color);
 	text-shadow: none;
 	font-weight: bold;
 }
@@ -1340,9 +1550,10 @@ table.propform td {
 	width: 100%;
 	height: 28px;
 	background: #fff;
+	background-color: var(--login-footer-bg-color);
 	font-size: 10px;
 	color: #000;
-	color: var();
+	color: var(--login-footer-text-color);
 	padding: 11px 5px;
 }
 
@@ -1385,11 +1596,13 @@ table.propform td {
     box-shadow: none;
     -webkit-box-shadow: none;
     border: solid 1px #d5d5d5;
+    border-color: var(--buttons-border-color);
     border-radius: 6px;
     text-indent: -9999px;
     z-index: 100;
     margin-right: 6px;
     background-color: #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button {
@@ -1419,7 +1632,9 @@ table.propform td {
 #addressbooktoolbar a.button:hover,
 .toolbar a.button:hover {
     box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+    box-shadow: var(--buttons-box-shadow);
 	-webkit-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+	-webkit-box-shadow: var(--buttons-box-shadow);
 	outline: 0;
 }
 
@@ -1431,9 +1646,12 @@ table.propform td {
 
 .toolbar a.button.compose {
     background: url(../images/mail/nouveau.png?v=e784.5000) 10px center no-repeat #f50059;
+    background-color: var(--inputs-mainaction-bg-color);
     border: solid 1px rgba(0, 0, 0, 0.2);
+    border-color: var(--inputs-mainaction-border-color);
     text-indent: 0;
     color: #fff;
+    color: var(--inputs-mainaction-text-color);
     font-weight: bold;
     font-size: 13px;
     width: 92px;
@@ -1442,38 +1660,46 @@ table.propform td {
 }
 
 .toolbar a.button.move {
-    background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.refreshcalendar,
 .toolbar a.button.checkmail {
-    background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.junk {
-    background: url(../images/mail/pourriel.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/pourriel.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.delete {
-    background: url(../images/mail/supprimer.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/supprimer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.print {
-    background: url(../images/mail/imprimer.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/imprimer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.filterlink {
-    background: url(../images/mail/filtrer.png) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/filtrer.png) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button.calendarlink,
 #messageheader #formatcontrols  a.button.calendarlink,
 .toolbar a.button.calendarlink {
-    background: url(../images/mail/evenement.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/evenement.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.thunderbird {
-    background: url(../images/mail/etiquettes.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/etiquettes.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #markmessagemenulink,
@@ -1485,32 +1711,37 @@ table.propform td {
 #messageheader #countcontrols a.button.reply,
 #messageheader #formatcontrols  a.button.reply,
 .toolbar a.button.reply {
-    background: url(../images/mail/repondre.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/repondre.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button.replyall,
 #messageheader #formatcontrols  a.button.replyall,
 .toolbar a.button.reply-all {
-    background: url(../images/mail/repondre_tous.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/repondre_tous.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
     min-width: auto;
 }
 
 #messageheader #countcontrols a.button.forward,
 #messageheader #formatcontrols  a.button.forward,
 .toolbar a.button.forward {
-    background: url(../images/mail/tranferer.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/tranferer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
     min-width: auto;
 }
 
 #messageheader #countcontrols a.button.bounce,
 #messageheader #formatcontrols  a.button.bounce,
 .toolbar a.button.bounce {
-    background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
     min-width: auto;
 }
 
 .toolbar a.button.back {
-    background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat var(--buttons-bg-color);
+    background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
 }
 
 .toolbar .spacer {
@@ -1530,11 +1761,9 @@ table.propform td {
   .toolbar .spacer {
   	margin-left: 28px;
   }
-
   .toolbar .spacer.medium {
   	margin-left: 38px;
   }
-
   .toolbar .spacer.large {
   	margin-left: 58px;
   }
@@ -1544,11 +1773,9 @@ table.propform td {
   .toolbar .spacer {
     margin-left: 14px;
   }
-
   .toolbar .spacer.medium {
     margin-left: 24px;
   }
-
   .toolbar .spacer.large {
     margin-left: 34px;
   }
@@ -1558,11 +1785,9 @@ table.propform td {
   .toolbar .spacer {
     margin-left: 4px;
   }
-
   .toolbar .spacer.medium {
     margin-left: 6px;
   }
-
   .toolbar .spacer.large {
     margin-left: 8px;
   }
@@ -1572,9 +1797,10 @@ table.propform td {
 .toolbar a.button:focus {
 	text-shadow: none;
 	background-color: #e0e0e0;
+	background-color: var(--buttons-focus-bg-color);
 	border-radius: 5px;
 	box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-	-webkit-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+	-webkit-box-shadow: var(--buttons-focus-box-shadow);
 	opacity: 0.7;
 }
 
@@ -1588,7 +1814,9 @@ a.menuselector .handle {
 
 select.decorated option {
 	color: #5e5e5e;
+	color: var(--inputs-decorated-text-color);
 	background: #c0c0c0;
+	background-color: var(--inputs-decorated-bg-color);
 	text-shadow: none;
 	border: none;
 }
@@ -1598,9 +1826,12 @@ select.decorated option {
 .popupmenu,
 #rcmKSearchpane {
 	background: #fff;
+	background-color: var(--popup-bg-color);
 	border-radius: 5px;
 	box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+	box-shadow: var(--popup-box-sahdow);
 	-webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: var(--popup-box-sahdow);
 	padding: 5px;
 	z-index: 90;
 }
@@ -1630,12 +1861,14 @@ a.iconbutton.searchoptions {
 ul.toolbarmenu li,
 #rcmKSearchpane ul li {
 	color: #2A2A2A;
+	color: var(--popup-text-color);
 	border: 0;	
 }
 
 .googie_list td span,
 ul.toolbarmenu li a {
 	color: #2A2A2A;
+	color: var(--popup-text-color);
 	text-shadow: none;
 	opacity: .2;
 }
@@ -1644,6 +1877,7 @@ ul.toolbarmenu li a {
 ul.toolbarmenu li a.active {
 	opacity: 99;
 	color: #2A2A2A;
+	color: var(--popup-text-color);
 }
 
 #pagejump-selector ul li.selected, 
@@ -1654,8 +1888,10 @@ select.decorated option[selected="selected"],
 ul.toolbarmenu li a.active:focus, 
 ul.toolbarmenu li a.active:hover {
 	color: #fff;
+	color: var(--popup-selected-text-color);
 	background: none;
 	background-color: #f50059;
+	background-color: var(--popup-selected-bg-color);
 	cursor: pointer;
 	font-weight: 700;
 }
@@ -1668,11 +1904,13 @@ select.decorated option[selected='selected'] {
 
 ul.toolbarmenu li label {
 	color: #2A2A2A;
+	color: var(--popup-text-color);
 	text-shadow: none;
 }
 
 ul.toolbarmenu li a.icon {
 	color: #2A2A2A;
+	color: var(--popup-text-color);
 }
 
 ul.toolbarmenu li span.icon,
@@ -1698,16 +1936,20 @@ ul.toolbarmenu li span.icon,
 #folderlist-content,
 ul.listing.folderlist li {
 	background-color: #f2f2f2;
+	background-color: var(--listitem-bg-color);
 }
 
 ul.listing.folderlist li.droptarget {
 	background-color: #dee9f6;
+	background-color: var(--listitem-droptarget-bg-color);
 }
 
 ul.listing.folderlist li.selected > a,
 ul.listing.folderlist li.selected > a:focus {
 	color: #000 !important;
-	background-color: #ffffff;
+	color: var(--subsublistitem-text-color) !important;
+	background-color: #fff;
+	background-color: var(--listitem-selected-bg-color);
 	font-weight: 700;
 }
 
@@ -1755,6 +1997,7 @@ ul.treelist li.selected > div.collapsed {
 	background: none;
 	padding: 8px 0 8px 46px;
 	color: #0d0d0d;
+	color: var(--listitem-focus-bg-color);
 }
 
 #mailboxlist li.mailbox a,
@@ -1766,6 +2009,7 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox > a:focus {
     background: none;
     color: #000;
+    color: var(--listitem-selected-text-color);
 }
 
 .folderlist li.mailbox ul li a,
@@ -1815,6 +2059,7 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox.inbox.selected > a, 
 .folderlist li.mailbox.inbox > a:focus {
     background: url(../images/mail/dossiers/reception_selectionne.png?v=e784.5000) 17px 3px no-repeat #fff;
+    background-color: var(--listitem-selected-bg-color);
 }
 
 #mailboxlist.folderlist li.mailbox.inbox.selected > a, 
@@ -1833,6 +2078,7 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox.drafts.selected > a, 
 .folderlist li.mailbox.drafts > a:focus {
     background: url(../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+    background-color: var(--listitem-selected-bg-color);
 }
 
 #mailboxlist.folderlist li.mailbox.drafts.selected > a, 
@@ -1851,6 +2097,7 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox.sent.selected > a, 
 .folderlist li.mailbox.sent > a:focus {
     background: url(../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+    background-color: var(--listitem-selected-bg-color);
 }
 
 #mailboxlist.folderlist li.mailbox.sent.selected > a, 
@@ -1869,6 +2116,7 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox.junk.selected > a, 
 .folderlist li.mailbox.junk > a:focus {
     background: url(../images/mail/dossiers/indesirables_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+    background-color: var(--listitem-selected-bg-color);
 }
 
 #mailboxlist.folderlist li.mailbox.junk.selected > a, 
@@ -1887,6 +2135,7 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox.trash.selected > a, 
 .folderlist li.mailbox.trash > a:focus {
     background: url(../images/mail/dossiers/supprimes_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+    background-color: var(--listitem-selected-bg-color);
 }
 
 #mailboxlist.folderlist li.mailbox.trash.selected > a, 
@@ -1895,13 +2144,15 @@ ul.treelist li.selected > div.collapsed {
 }
 
 .ui-dialog .propform .ui-tabs-panel {
-    background: #FFF;
+    background: #fff;
+    background-color: var(--popup-bg-color);
     margin-top: 0.8em;
 }
 
 /**** Attachments ***/
 .attachmentslist li a {
 	color: #f50059;
+	color: var(--global-action-color);
 	font-weight: normal;
 }
 
@@ -2017,15 +2268,18 @@ ul.treelist li.selected > div.collapsed {
 /**** Date picker ****/
 .hasDatepicker {
 	background: url(../images/calendar/calendar-chose.png?v=e784.5000) right 5px center no-repeat #fff;
+	background-color: var(--inputs-bg-color);
 }
 
 .ui-autocomplete-input {
 	background: url(../images/calendar/mini-chevron.png?v=e784.5000) right 5px center no-repeat #fff;
+	background-color: var(--inputs-bg-color);
 }
 
 /** Contacts **/
 a.button.showcontacts {
 	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
+	background-color: var(--buttons-bg-color);
 	border: none;
 	border: none;
 	width: 28px;

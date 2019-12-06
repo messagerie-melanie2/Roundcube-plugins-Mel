@@ -22,293 +22,6 @@
  * See http://creativecommons.org/licenses/by-sa/3.0/ for details.
  */
 
-:root {
-	--global-text-color: #000;
-	--global-bg-color: #fff;
-	--global-action-color: #f50059;
-	--global-border-color: #d0d0d0;
-	--global-selected-bg-color: #dee9f6;
-	  	
-	--main-text-color: var(--global-text-color);
-  	--main-bg-color: #eaeaea;
-  	--main-border-color: var(--global-border-color);
-	--main-sepratator-color: #e4e4e4;
-
-	--login-form-text-color: #2e3436;
-	--login-a-text-color: var(--global-text-color);
-	--login-title-text-color: var(--global-text-color);
-	--login-form-bg-color: rgba(0,0,0,0.05);
-	--login-form-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
-	--login-left-bg-color: var(--global-bg-color);
-	--login-footer-text-color: var(--global-text-color);
-	--login-footer-bg-color: var(--global-bg-color);	
-  	
-  	--top-text-color: #000;
-  	--top-bg-color: var(--global-bg-color);
-  	--top-border-color: var(--main-border-color);
-  	
-  	--topitem-selected-text-color: var(--global-text-color);
-  	--topitem-selected-bg-color: var(--global-selected-bg-color);
-  	--topitem-selected-border-color: var(--global-action-color);
-  	
-  	--content-text-color: var(--global-text-color);
-  	--content-bg-color: #ececec;
-	--main-content-bg-color: #fff;
-  	--content-border-color: var(--global-border-color);
-  	
-  	--listbox-text-color: var(--global-text-color);
-  	--listbox-bg-color: #f2f2f2;
-  	--listbox-border-color: var(--global-border-color);
-  	
-  	--sublistbox-text-color: #2d2d2d;
-  	--sublistbox-bg-color: var(--global-bg-color);
-  	--sublistbox-border-color: var(--global-border-color);
-  	
-  	--subsublistbox-text-color: var(--global-text-color);
-  	--subsublistbox-bg-color: #fafafa;
-  	--subsublistbox-border-color: var(--global-border-color);
-  	
-  	--listitem-text-color: var(--global-text-color);
-  	--listitem-bg-color: #f2f2f2;
-	--listitem-focus-bg-color: #0d0d0d;
-	--listitem-droptarget-bg-color: var(--global-selected-bg-color);
-  	
-  	--sublistitem-text-color: var(--global-text-color);
-  	--sublistitem-bg-color: var(--global-bg-color);
-  	
-  	--subsublistitem-text-color: var(--global-text-color);
-  	--subsublistitem-bg-color: #fafafa;
-  	
-  	--listitem-selected-text-color: var(--global-text-color);
-  	--listitem-selected-bg-color: var(--global-bg-color);
-  	
-  	--sublistitem-selected-text-color: var(--global-text-color);
-  	--sublistitem-selected-bg-color: var(--global-selected-bg-color);
-  	
-  	--subsublistitem-selected-text-color: var(--global-text-color);
-  	--subsublistitem-selected-bg-color: #fafafa;
-  	
-  	--box-text-color: var(--global-text-color);
-  	--box-bg-color: #f2f2f2;
-  	
-  	--boxtitle-text-color: var(--global-text-color);
-  	--boxtitle-bg-color: #f2f2f2;
-  	
-  	--boxtitle-iframe-text-color: var(--global-text-color);
-  	--boxtitle-iframe-bg-color: var(--global-bg-color);
-  	
-  	--subboxtitle-text-color: var(--global-text-color);
-  	--subboxtitle-bg-color: #fff;
-  	
-  	--subsubboxtitle-text-color: var(--global-text-color);
-  	--subsubboxtitle-bg-color: #fafafa;
-  	
-  	--boxfooter-text-color: var(--global-text-color);
-  	--boxfooter-bg-color: #f2f2f2;
-  	--boxfooter-border-color: var(--main-border-color);
-  	--boxfooter-count-text-color: #656565;
-  	
-  	--table-head-text-color: #414141;
-  	--table-head-bg-color: var(--global-bg-color);
-  	--table-head-border-color: var(--main-border-color);
-  	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
-  	
-  	--table-body-text-color: #333;
-  	--table-body-bg-color: var(--global-bg-color);
-	--table-extanded-body-bg-color: #e0e0e0;
-  	--table-body-border-color: #cbcbcb;
-  	
-  	--table-item-selected-text-color: #333;
-  	--table-item-selected-bg-color: var(--global-selected-bg-color);
-  	
-  	--buttons-text-color: var(--global-text-color);
-  	--buttons-bg-color: var(--global-bg-color);
-  	--buttons-border-color: #d5d5d5;
-	--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-	--buttons-focus-bg-color: #e0e0e0;
-	--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-  	
-  	--inputs-text-color: #333;
-  	--inputs-placeholder-color: #a3a3a3;
-  	--inputs-bg-color: var(--global-bg-color);
-  	--inputs-border-color: #d5d5d5;
-	--inputs-decorated-text-color: #5e5e5e;
-	--inputs-decorated-bg-color: #c0c0c0;
-	--inputs-box-shadow: 0 1px 1px 0 #ccc;
-  	
-  	--inputs-mainaction-text-color: #fff;
-  	--inputs-mainaction-bg-color: var(--global-action-color);
-	--inputs-mainaction-border-color: rgba(0, 0, 0, 0.2);
-	
-	--popup-text-color: #2A2A2A;
-	--popup-bg-color: var(--global-bg-color);
-	--popup-box-sahdow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
-	--popup-selected-text-color: #fff;
-	--popup-selected-bg-color: var(--global-action-color);
-  	
-  	--message-text-color: #fff;
-  	--message-bg-color: #242d38;
-  	--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
-  	
-  	--contact-field-bg-color: #e8e8e8;
-  	--contact-field-text-color: #666;
-  	
-  	--settings-disconnect-border-color: #979797;
-  	--settings-disconnect-text-color: #f63267;
-  	
-  	--jquery-date-picker-header-text-color: #5a5959;
-  	--jquery-date-picker-text-color: #464646;
-  	--jquery-tabs-bg-color: var(--global-bg-color);
-  	--jquery-tabs-text-color: #4f5863;
-  	--jquery-tabs-border-color: #dcdce0;
-  	--jquery-tabs-active-bg-color: #f4f4f4;
-  	--jquery-buttons-text-color: #323232;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--global-text-color: #fff;
-		--global-bg-color: #1e1e1e;
-		--global-action-color: #f50059;
-		--global-border-color: #2F2F2F;
-		--global-selected-bg-color: #323232;
-		  	
-		--main-text-color: #CCCCCC;
-	 	--main-bg-color: #121212;
-	 	--main-border-color: var(--global-border-color);
-	 	--main-sepratator-color: #1e1e1e;
-		
-		--login-form-text-color: var(--main-text-color);
-		--login-a-text-color: var(--global-text-color);
-		--login-title-text-color: var(--global-text-color);
-		--login-form-bg-color: rgba(0,0,0,0.4);
-		--login-form-box-shadow: 0 2px 5px 0 rgba(255, 255, 255, 0.1);
-		--login-left-bg-color: var(--global-bg-color);
-		--login-footer-text-color: var(--global-text-color);
-		--login-footer-bg-color: var(--global-bg-color);	
-	 	
-	 	--top-text-color: var(--global-text-color);
-	 	--top-bg-color: var(--global-bg-color);
-	 	--top-border-color: var(--main-border-color);
-	 	
-	 	--topitem-selected-text-color: var(--global-text-color);
-	 	--topitem-selected-bg-color: var(--global-selected-bg-color);
-	 	--topitem-selected-border-color: var(--global-action-color);
-	 	
-	 	--content-text-color: var(--global-text-color);
-	 	--content-bg-color: #131313;
-	 	--main-content-bg-color: #1e1e1e;
-	 	--content-border-color: var(--global-border-color);
-	 	
-	 	--listbox-text-color: var(--global-text-color);
-	 	--listbox-bg-color: #222222;
-	 	--listbox-border-color: var(--global-border-color);
-	 	
-	 	--sublistbox-text-color: #CCCCCC;
-	 	--sublistbox-bg-color: var(--global-bg-color);
-	 	--sublistbox-border-color: var(--global-border-color);
-	 	
-	 	--subsublistbox-text-color: var(--global-text-color);
-	 	--subsublistbox-bg-color: #1d1d1d;
-	 	--subsublistbox-border-color: var(--global-border-color);
-	 	
-	 	--listitem-text-color: var(--global-text-color);
-	 	--listitem-bg-color: #222222;
-		--listitem-focus-bg-color: var(--global-text-color);
-		--listitem-droptarget-bg-color: var(--global-selected-bg-color);
-	 	
-	 	--sublistitem-text-color: var(--global-text-color);
-	 	--sublistitem-bg-color: var(--global-bg-color);
-	 	
-	 	--subsublistitem-text-color: var(--global-text-color);
-	 	--subsublistitem-bg-color: #1d1d1d;
-	 	
-	 	--listitem-selected-text-color: var(--global-text-color);
-	 	--listitem-selected-bg-color: #121212;
-	 	
-	 	--sublistitem-selected-text-color: var(--global-text-color);
-	 	--sublistitem-selected-bg-color: var(--global-selected-bg-color);
-	 	
-	 	--subsublistitem-selected-text-color: var(--global-text-color);
-	 	--subsublistitem-selected-bg-color: #1d1d1d;
-	 	
-	 	--box-text-color: var(--global-text-color);
-	 	--box-bg-color: #1d1d1d;
-	 	
-	 	--boxtitle-text-color: var(--global-text-color);
-	 	--boxtitle-bg-color: #222222;
-	 	
-	 	--boxtitle-iframe-text-color: var(--global-text-color);
-	 	--boxtitle-iframe-bg-color: var(--global-bg-color);
-	 	
-	 	--subboxtitle-text-color: #CCCCCC;
-	 	--subboxtitle-bg-color: var(--global-bg-color);
-	 	
-	 	--subsubboxtitle-text-color: var(--global-text-color);
-	 	--subsubboxtitle-bg-color: #1d1d1d;
-	 	
-	 	--boxfooter-text-color: var(--global-text-color);
-	 	--boxfooter-bg-color: #222222;
-	 	--boxfooter-border-color: var(--main-border-color);
-	 	--boxfooter-count-text-color: #CCC;
-	 	
-	 	--table-head-text-color: #BEBEBE;
-	 	--table-head-bg-color: #1d1d1d;
-	 	--table-head-border-color: var(--main-border-color);
-	 	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
-	 	
-	 	--table-body-text-color: #D2D2D2;
-	 	--table-body-bg-color: #1d1d1d;
-	 	--table-body-border-color: var(--main-border-color);
-	 	
-	 	--table-item-selected-text-color: var(--global-text-color);
-	 	--table-item-selected-bg-color: var(--global-selected-bg-color);
-	 	
-	 	--buttons-text-color: var(--global-text-color);
-	 	--buttons-bg-color: #373737;
-	 	--buttons-border-color: #2A2A2A;
-		--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-		--buttons-focus-bg-color: #e0e0e0;
-		--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
-	 	
-	 	--inputs-text-color: var(--global-text-color);
-	 	--inputs-placeholder-color: var(--global-text-color);
-	 	--inputs-bg-color: #333333;
-	 	--inputs-border-color: #2A2A2A;
-		--inputs-decorated-text-color: #5e5e5e;
-		--inputs-decorated-bg-color: #c0c0c0;
-		--inputs-box-shadow: none;
-	 	
-	 	--inputs-mainaction-text-color: #fff;
-	 	--inputs-mainaction-bg-color: var(--global-action-color);
-		--inputs-mainaction-border-color: rgba(0, 0, 0, 0.2);
-		
-		--popup-text-color: var(--global-text-color);
-		--popup-bg-color: #222222;
-		--popup-box-sahdow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
-		--popup-selected-text-color: #fff;
-		--popup-selected-bg-color: var(--global-action-color);
-	 	
-	 	--message-text-color: #fff;
-	 	--message-bg-color: #242d38;
-	 	--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
-	 	
-	 	--contact-field-bg-color: #373737;
-	 	--contact-field-text-color: var(--global-text-color);
-	 	
-	 	--settings-disconnect-border-color: #979797;
-	 	--settings-disconnect-text-color: #f63267;
-	 	
-	 	--jquery-date-picker-header-text-color: #d0d0d0;
-	  	--jquery-date-picker-text-color: #d5d5d5;
-	  	--jquery-tabs-bg-color: var(--global-bg-color);
-	  	--jquery-tabs-text-color: #eeeeec;
-	  	--jquery-tabs-border-color: #4f5863;
-	  	--jquery-tabs-active-bg-color: #1e1e1e;
-	  	--jquery-buttons-text-color: var(--global-text-color);
-	}
-}
-
 body {
 	font-size: 12px;
 	font-family: "Open Sans","Lucida Grande",Verdana,Arial,Helvetica,sans-serif;
@@ -360,6 +73,7 @@ textarea {
 	-webkit-box-shadow: none;
 	background-color: #fff;
 	background-color: var(--inputs-bg-color);
+	color: var(--inputs-text-color);
 }
 
 .formfield-select {
@@ -406,6 +120,7 @@ textarea {
 	text-overflow: ellipsis;
 	background: #fff;
 	background-color: var(--inputs-bg-color);
+	color: var(--inputs-text-color);
 	/* 
 		On empêche le texte d'aller
 		jusqu'au bout s'il est trop long
@@ -498,6 +213,7 @@ input.button {
 	padding: 7px 23px;
 	box-shadow: 0 1px 1px 0 #ccc;
 	box-shadow: var(--inputs-box-shadow);
+	cursor: pointer;
 }
 
 input.button.mainaction:focus, 
@@ -516,6 +232,7 @@ input.button.mainaction {
 body.iframe .footerleft.floating {
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
+	background-color: var(--boxfooter-bg-color);
 }
 
 #composeview-bottom .formbuttons.floating::before, 
@@ -1246,6 +963,7 @@ table.records-table {
 	border-bottom: solid 1px #d0d0d0;
 	border-color: var(--table-head-border-color);
 	padding: 10px 7px;
+	color: var(--table-head-text-color);
 }
 
 .records-table thead th a,
@@ -1271,6 +989,7 @@ table.records-table {
 	border-left: none;
 	padding: 10px 7px;
 	background-color: var(--table-body-bg-color);
+	border-color: var(--jquery-ui-border-color);
 }
 
 .records-table tr.selected td a, 
@@ -1383,6 +1102,15 @@ body.iframe .boxtitle {
 ul.proplist li,
 table.propform td {
 	background: none;
+	border-color: var(--main-content-bg-color);
+}
+
+table.propform td.title {
+	color: var(--table-body-text-color);
+}
+
+.propform fieldset fieldset legend {
+    color: var(--labels-text-color);
 }
 
 /*** Login form ***/

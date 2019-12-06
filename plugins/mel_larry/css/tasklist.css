@@ -18,9 +18,10 @@
 
 #taskstoolbar a.button.newtask {
     background: url(../images/taches/nouveau.png?v=e784.5000) 10px center no-repeat #f50059;
+    background-color: var(--inputs-mainaction-bg-color);
     border: solid 1px rgba(0, 0, 0, 0.2);
     text-indent: 0;
-    color: #fff;
+    color: var(--inputs-mainaction-text-color);
     font-weight: bold;
     font-size: 13px;
     width: 92px;
@@ -43,7 +44,9 @@
 #quickaddbox input.button {
 	display: none;
 	background: #f50059;
+	background-color: var(--inputs-mainaction-bg-color);
 	color: #fff;
+	color: var(--inputs-mainaction-text-color);
 	font-weight: bold;
 	border: none;
   	font-size: 13px;
@@ -64,10 +67,13 @@
     height: 24px;
   	border-radius: 6px;
 	border: solid 1px #d5d5d5;
+	border-color: var(--inputs-border-color);
 	background-color: #fff;
+	background-color: var(--inputs-bg-color);
 	font-weight: normal;
 	font-size: 12px;
 	color: #a3a3a3;
+	color: var(--inputs-placeholder-color);
 }
 
 #taskselector {
@@ -80,7 +86,9 @@
 #taskselector ul {
 	border-radius: 4px;
   	border: solid 1px #d5d5d5;
+  	border-color: var(--inputs-border-color);
   	background-color: #eaeaea;
+  	background-color: var(--main-bg-color);
   	height: 30px;
   	padding: 0;
   	margin: 0;
@@ -95,19 +103,23 @@
 
 #taskselector li a {
     color: #464646;
+    color: var(--input-selector-text-color);
     padding: 0 15px;
     border: none;
 }
 
 #taskselector li.inactive a {
     color: #464646;
+    color: var(--input-selector-text-color);
 	opacity: 0.5;
 }
 
 #taskselector ul li.selected a {
     color: #464646;
+    color: var(--input-selector-text-color);
     font-weight: bold;
     background: #fff;
+    background-color: var(--input-selector-selected-bg-color);
     border-radius: 10px;
     text-shadow: none;
     border-radius: 4px;
@@ -127,16 +139,19 @@
  
 #sidebar {
     background: #f2f2f2;
+    background-color: var(--listbox-bg-color);
 }
 
  #mainview-right {
     left: 241px;
     background: #eaeaea;
+    background-color: var(--main-bg-color);
 }
 
 #tasklistsbox {
     top: 0;
     background: #f2f2f2;
+    background-color: var(--listbox-bg-color);
 }
 
 #tasklistsbox .treelist li input {
@@ -174,10 +189,13 @@
 	overflow: visible;
 	padding: 4px 10em 4px 5px;
 	background: url(../images/taches/radio-inactive.png?v=e784.5000) 5px center no-repeat #fff;
+	background-color: var(--table-body-bg-color);
+	border-color: var(--table-body-bg-color);
 }
 
 .taskhead.complete {
 	background: url(../images/taches/radio-active.png?v=e784.5000) 5px center no-repeat #fff;
+	background-color: var(--table-body-bg-color);
 }
 
 .taskhead .progressbar,
@@ -219,16 +237,19 @@
 .taskhead .title {
     font-size: 13px;
     color: #656565;
+    color: var(--task-title-text-color);
 }
 
 .taskhead.complete .title {
     text-decoration: none;
     color: #000;
+    color: var(--task-complete-title-text-color);
     opacity: 0.5;
 }
 
 .taskhead .date {
 	color: #505050;
+	color: var(--labels-date-text-color);
     opacity: 0.5;
 }
 
@@ -244,6 +265,7 @@
 
 .taskhead.nodate:hover .date {
     color: #505050;
+    color: var(--labels-date-text-color);
     opacity: 0.7;
 }
 
@@ -254,6 +276,7 @@
 
 #tasklistsbox .treelist li span.listname {
 	color: #000;
+	color: var(--listitem-text-color);
 	padding: 0px 2px 2px 4px;
 }
 
@@ -322,12 +345,14 @@ div.form-section {
 #taskcreatepopup:after {
 	border-color: rgba(255, 255, 255, 0);
 	border-bottom-color: #fff;
+	border-bottom-color: var(--popup-bg-color);
 	border-width: 5px;
 	margin-left: -5px;
 }
 #taskcreatepopup:before {
 	border-color: rgba(255, 255, 255, 0);
 	border-bottom-color: #fff;
+	border-bottom-color: var(--popup-bg-color);
 	border-width: 6px;
 	margin-left: -6px;
 }
@@ -354,11 +379,13 @@ div.form-section {
 	font-size: 12px;
 	border-radius: 4px;
 	border: solid 1px #d5d5d5;
+	border-color: var(--inputs-border-color);
 }
 
 #taskcreatepopup #taskcreate-alarms {
 	height: 40px;
 	border-bottom: 1px solid #f2f2f2;
+	border-color: var(--listbox-bg-color);
 }
 
 #taskcreatepopup #taskcreate-date {
@@ -368,6 +395,7 @@ div.form-section {
 #taskcreatepopup #taskcreate-time {
 	border-radius: 3px;
 	border: solid 1px #d5d5d5;
+	border-color: var(--inputs-border-color);
 }
 
 #taskcreatepopup #taskcreate-datepicker .ui-datepicker {
@@ -376,7 +404,7 @@ div.form-section {
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	box-shadow: none;
-	background: #fff;
+	background-color: var(--popup-bg-color);
 }
 
 #taskcreatepopup .form-section.submit {
@@ -385,9 +413,12 @@ div.form-section {
 
 #taskcreatepopup .form-section.submit input.mainaction {
 	background: #f50059;
+	background-color: var(--inputs-mainaction-bg-color);
 	border: solid 1px rgba(0, 0, 0, 0.2);
+	border-color: var(--inputs-mainaction-border-color);
 	text-indent: 0;
 	color: #fff;
+	color: var(--inputs-mainaction-text-color);
 	font-weight: bold;
 	font-size: 13px;
 	width: 211px;

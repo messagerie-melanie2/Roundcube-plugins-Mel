@@ -12,6 +12,7 @@
 .ui-widget-header {
   background: none;
   color: #666;
+  color: var(--labels-text-color);
 }
 
 .ui-menu {
@@ -104,6 +105,20 @@
   background: transparent; 
 }
 
+.ui-state-default, 
+.ui-widget-content .ui-state-default, 
+.ui-widget-header .ui-state-default, 
+.ui-button, 
+html .ui-button.ui-state-disabled:hover, 
+html .ui-button.ui-state-disabled:active {
+    color: var(--jquery-date-picker-text-color);
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button {
+	background-color: var(--buttons-bg-color);
+	border-color: var(--buttons-border-color);
+}
+
 .ui-tabs .ui-tabs-nav li {
 	background: #fff;
 	background-color: var(--jquery-tabs-bg-color);
@@ -188,4 +203,11 @@
 
 .ui-widget-content {
     color: var(--inputs-text-color);
+    background-color: var(--main-content-bg-color);
+    border: none;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+	border-color: var(--jquery-ui-border-color);
+	
 }

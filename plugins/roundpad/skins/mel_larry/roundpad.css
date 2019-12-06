@@ -15,9 +15,12 @@
 
 #filestoolbar a.button.newpad {
   background: url(images/nouveau_document_blanc.png) no-repeat 8px center #f50059;
+  background-color: var(--inputs-mainaction-bg-color);
   border: solid 1px rgba(0,0,0,.2);
+  border-color: var(--inputs-mainaction-border-color);
   text-indent: 0;
   color: #fff;
+  color: var(--inputs-mainaction-text-color);
   font-weight: 700;
   font-size: 13px;
   width: 92px;
@@ -27,14 +30,17 @@
 
 #filestoolbar a.button.newfolder {
   background: url(images/nouveau_dossier.png?v=e784.5000) no-repeat center center #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.open {
   background: url(images/ouvrir.png?v=e784.5000) no-repeat center center #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.delete {
   background: url(images/supprimer.png?v=e784.5000) no-repeat center center #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.edit {
@@ -43,14 +49,17 @@
 
 #filestoolbar a.button.deletefolder {
   background: url(images/supprimer_dossier.png?v=e784.5000) no-repeat center center #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.editfolder {
   background: url(images/editer_dossier.png?v=e784.5000) no-repeat center center #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.help {
   background: url(images/aide.png?v=e784.5000) no-repeat center center #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar form {
@@ -76,6 +85,7 @@
   width: 220px;
   bottom: 0;
   border-top: 1px solid #d0d0d0;
+  border-color: var(--main-border-color);
 }
 
 #filelistcontainer,
@@ -87,6 +97,7 @@
   bottom: 0;
   overflow: auto;
   border-top: 1px solid #d0d0d0;
+  border-color: var(--main-border-color);
 }
 
 #filelistbox {
@@ -150,6 +161,7 @@
   padding-top: 8px;
   padding-bottom: 8px;
   border-bottom-color: #cbcbcb;
+  border-bottom-color: var(--table-body-border-color);
 }
 
 .filelist tr > .size {

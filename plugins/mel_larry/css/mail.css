@@ -90,6 +90,10 @@ html.mozilla #mailboxlist > li:first-child {
   background-color: var(--table-extanded-body-bg-color);
 }
 
+.messagelist tr.thread.expanded:not(.selected) td {
+    background-color: var(--table-extanded-body-bg-color);
+}
+
 .messagelist tr.unread {
   font-weight: bold;
 /*  background-color: #fff; */
@@ -174,6 +178,12 @@ html.mozilla #mailboxlist > li:first-child {
 
 .messagelist tr td div.expanded {
     background: url(../images/accordeonMail-01-r.png?v=e784.5000) center center no-repeat;
+}
+
+div.message-part blockquote {
+	background-color: var(--mail-blockquote-bg-color);
+	color: var(--mail-blockquote-text-color);
+	border-color: var(--mail-blockquote-border-color);
 }
 
 #mailboxcontainer, 
@@ -512,6 +522,13 @@ td span.adr:hover .rcmaddcontact {
     top: 77px;
 }
 
+#composeoptions {
+    border-color: var(--mail-compose-options-border-color);
+}
+
+.composeoption {
+    color: var(--labels-text-color);
+}
 
 #compose-attachments {
 	display: none;

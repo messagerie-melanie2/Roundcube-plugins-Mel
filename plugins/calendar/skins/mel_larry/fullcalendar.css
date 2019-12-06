@@ -118,6 +118,7 @@ html .fc,
 .fc-widget-header,    /* <th>, usually */
 .fc-widget-content {  /* <td>, usually */
 	border: 1px solid #ddd;
+	border-color: var(--calendar-ui-border-color);
 	}
 	
 .fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
@@ -622,6 +623,7 @@ table.fc-border-separate {
 .fc-view-list,
 .fc-view-table {
 	border: 1px solid #ccc;
+	border-color: var(--calendar-table-border-color);
 	width: auto;
 }
 

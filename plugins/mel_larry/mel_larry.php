@@ -35,6 +35,11 @@ class mel_larry extends rcube_plugin
    */
   const CSS_FOLDER = 'css/';
   /**
+   * Themes colors css file for Roundcube
+   * @var string
+   */
+  const THEMES_CSS = 'themes.css';
+  /**
    * Global css file for Roundcube
    * @var string
    */
@@ -103,6 +108,8 @@ class mel_larry extends rcube_plugin
     $this->add_texts('localization/', true);
     // Check if the user use mel_larry skin
     if ($skin == self::SKIN_NAME && !$rc->output->get_env('mobile')) {
+      // Themes css
+      $this->include_stylesheet(self::CSS_FOLDER.self::THEMES_CSS);
       // App css
       $this->include_stylesheet(self::CSS_FOLDER.self::APP_CSS);
       // For each plugin, add the associated css file
@@ -124,8 +131,6 @@ class mel_larry extends rcube_plugin
       if (isset(self::$tasks_js_map[$rc->task])) {
         $this->include_script(self::JS_FOLDER.self::$tasks_js_map[$rc->task]);
       }
-      // Dark app css
-      //$this->include_stylesheet(self::CSS_FOLDER.'dark.css');
     }
     $this->ui_initialized = true;
   }

@@ -89,7 +89,9 @@ div#contact-details .contactcontrolleremail .row {
 }
 
 #directorylist li.addressbook.selected > a[rel=amande],
-#directorylist li.addressbook > a[rel=amande] {
+#directorylist li.addressbook > a[rel=amande],
+#directorylist li.addressbook.selected > a[rel=annuaire],
+#directorylist li.addressbook > a[rel=annuaire] {
     background: url(../images/contact/annuaire.png?v=e784.5000) 25px center no-repeat;
     padding: 10px 8px 10px 50px;
 }

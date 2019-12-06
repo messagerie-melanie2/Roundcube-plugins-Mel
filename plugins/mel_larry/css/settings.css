@@ -18,7 +18,7 @@ body.iframe {
 .contentbox .boxtitle, 
 body.iframe .boxtitle {
     background: #fafafa !important;
-    background-color: var(--subsubboxtitle-bg-color);
+    background-color: var(--subsubboxtitle-bg-color) !important;
     border-bottom: none;
 }
 

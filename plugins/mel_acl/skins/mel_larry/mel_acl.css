@@ -2,7 +2,9 @@
 {
   overflow-x: auto;
   border: 1px solid #d0d0d0;
+  border-color: var(--main-border-color);
   background-color: #fff;
+  background-color: var(--main-content-bg-color);
   height: 272px;
   box-shadow: none;
 }
@@ -11,7 +13,8 @@
 {
   position: relative;
   height: 240px;
-  background-color: white;
+  background-color: #fff;
+  background-color: var(--main-content-bg-color);
 }
 
 #acllist-footer

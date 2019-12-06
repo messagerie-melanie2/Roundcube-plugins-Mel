@@ -6,6 +6,7 @@
 /* Attachment toolbar button */
 .toolbar a.button.saveas {
   background: url(images/buttons.png) center -277px no-repeat #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 /* Files main interface */
@@ -19,10 +20,12 @@
 
 #filestoolbar a.button.upload {
   background: url(images/importer.png?v=e784.5000) center center no-repeat #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.get {
   background: url(images/partager.png?v=e784.5000) center center no-repeat #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.open {
@@ -32,6 +35,7 @@
 #filestoolbar a.button.delete {
   display: none;
   background: url(images/supprimer.png?v=e784.5000) center center no-repeat #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.edit {
@@ -40,10 +44,12 @@
 
 #filestoolbar a.button.save {
   background: url(images/sauvegarder.png?v=e784.5000) center center no-repeat #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar a.button.print {
   background: url(images/imprimer.png?v=e784.5000) center center no-repeat #fff;
+  background-color: var(--buttons-bg-color);
 }
 
 #filestoolbar form {
@@ -64,6 +70,7 @@
   width: 220px;
   bottom: 0;
   border-top: 1px solid #d0d0d0;
+  border-color: var(--main-border-color);
 }
 
 #filelistcontainer,
@@ -75,6 +82,7 @@
   bottom: 0;
   overflow: auto;
   border-top: 1px solid #d0d0d0;
+  border-color: var(--main-border-color);
 }
 
 #filelistbox {
@@ -134,6 +142,7 @@ ul.treelist.iconized ul ul ul ul ul ul li div.treetoggle {
   padding: 6px 8px 6px 38px;
   line-height: 28px;
   color: #0d0d0d;
+  color: var(--listitem-focus-bg-color);
 }
 
 #files-folder-list ul li span.branch {

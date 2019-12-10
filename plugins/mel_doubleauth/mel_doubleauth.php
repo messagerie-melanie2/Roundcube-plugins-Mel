@@ -451,7 +451,9 @@ class mel_doubleauth extends rcube_plugin {
         
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS 
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl')
         ));
         try{
@@ -476,7 +478,9 @@ class mel_doubleauth extends rcube_plugin {
             // Connexion au serveur de webservice
             try{
                 $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-                    "cache_wsdl" => WSDL_CACHE_NONE,
+                    // MANTIS
+                    //"cache_wsdl" => WSDL_CACHE_NONE,
+                    "cache_wsdl" => WSDL_CACHE_BOTH,
                     "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
                     "login" => $this->rc->user->get_username(),
                     "password" => $this->rc->get_user_password()
@@ -515,7 +519,9 @@ class mel_doubleauth extends rcube_plugin {
     {
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl')
         ));
         return $client->validateOTP($this->rc->user->get_username(), $code);
@@ -526,7 +532,9 @@ class mel_doubleauth extends rcube_plugin {
     {
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()
@@ -539,7 +547,9 @@ class mel_doubleauth extends rcube_plugin {
     {
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()
@@ -552,7 +562,9 @@ class mel_doubleauth extends rcube_plugin {
     {
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl')
         ));
         return $client->validateCookie($username,$code,$date_validitee,$application);
@@ -562,7 +574,9 @@ class mel_doubleauth extends rcube_plugin {
     private function __addCookie($username, $code, $expiration,$application){
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()
@@ -575,7 +589,9 @@ class mel_doubleauth extends rcube_plugin {
     {
         // Connexion au serveur de webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
-            "cache_wsdl" => WSDL_CACHE_NONE,
+            // MANTIS
+            //"cache_wsdl" => WSDL_CACHE_NONE,
+            "cache_wsdl" => WSDL_CACHE_BOTH,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()

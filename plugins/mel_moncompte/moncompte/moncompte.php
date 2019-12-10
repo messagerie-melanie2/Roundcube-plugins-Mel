@@ -595,7 +595,9 @@ class Moncompte {
 							$member_infos = Ldap::GetUserInfosFromEmail($new_smtp);
 							if (isset($member_infos)) {
 								$member_uid = $member_infos['uid'][0];
-								$liste_uid[] = $member_uid;
+								if (!in_array($member_uid, $liste_uid)) {
+								  $liste_uid[] = $member_uid;
+								}
 							}
 							$liste_members[] = strtolower($new_smtp);
 							if (!Ldap::GetInstance(Config::$MASTER_LDAP)->modify($dn_list, array('mineqmelmembres' => $liste_members, 'memberuid' => $liste_uid))) {

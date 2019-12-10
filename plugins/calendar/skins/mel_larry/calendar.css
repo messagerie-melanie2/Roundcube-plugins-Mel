@@ -731,7 +731,8 @@ a.miniColors-trigger {
 }
 
 .event-attendees span.attendee a.mailtolink {
-	color: #222222;
+	color: #222;
+	color: var(--calendar-eventdialog-text-color);
 	text-decoration: none;
 	white-space: nowrap;
 	outline: none;

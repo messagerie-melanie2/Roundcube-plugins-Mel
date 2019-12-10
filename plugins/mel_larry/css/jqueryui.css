@@ -192,6 +192,18 @@ html .ui-button.ui-state-disabled:active {
 	padding: 7px 23px;
 }
 
+.ui-state-hover, 
+.ui-widget-content .ui-state-hover, 
+.ui-widget-header .ui-state-hover, 
+.ui-state-focus, 
+.ui-widget-content .ui-state-focus, 
+.ui-widget-header .ui-state-focus, 
+.ui-button:hover, 
+.ui-button:focus {
+	background-color: var(--jquery-buttons-focus-bg-color);
+	color: var(--jquery-buttons-focus-text-color);
+}
+
 .ui-button.mainaction {
     color: #fff;
     border: none;

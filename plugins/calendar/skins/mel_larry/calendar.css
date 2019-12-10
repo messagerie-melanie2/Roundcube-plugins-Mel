@@ -665,6 +665,7 @@ a.miniColors-trigger {
 #edit-attachments ul li {
 	display: block;
 	color: #333;
+	color: var(--inputs-text-color);
 	font-weight: bold;
 	padding: 4px 4px 3px 30px;
 	text-decoration: none;
@@ -992,6 +993,7 @@ a.miniColors-trigger {
 #event-partstat .changersvp {
 	cursor: pointer;
 	color: #333;
+	color: var(--inputs-text-color);
 	text-decoration: none;
 }
 
@@ -1297,6 +1299,7 @@ td.topalign {
 
 #event-rsvp .itip-reply-controls label {
 	color: #333;
+	color: var(--inputs-text-color);
 }
 
 #event-rsvp .itip-reply-controls textarea {
@@ -1643,6 +1646,7 @@ td.topalign {
 	padding: 5px 2px 6px 2px;
 	text-align: center;
 	color: #004658;
+	color: var(--calendar-schedule-text-color);
 }
 
 #schedule-freebusy-times tr.times td.allday {
@@ -1723,6 +1727,7 @@ a.dropdown-link:after {
 	top: 2px;
 	margin: 0 1em;
 	color: #333;
+	color: var(--inputs-text-color);
 }
 
 #calendarsidebar .ui-datepicker-calendar {
@@ -2218,6 +2223,7 @@ a.dropdown-link:after {
 #quickview-calendar .fc-view-table tr.fc-invitation-declined td,
 #quickview-calendar .fc-view-table tr.fc-invitation-needs-action td {
 	color: #333;
+	color: var(--inputs-text-color);
 }
 
 .calendarmain .fc-event:focus {
@@ -2439,7 +2445,9 @@ div.calendar-invitebox {
 	margin: 5px 8px;
 	padding: 3px 6px 6px 34px;
 	border: 1px solid #ffdf0e;
+	border-color: var(--calendar-invitebox-border-color);
 	background: url(images/calendar.png?v=e784.5000) 6px 5px no-repeat #fef893;
+	background-color: var(--calendar-invitebox-bg-color);
 }
 
 div.calendar-invitebox td.ititle {
@@ -2453,6 +2461,7 @@ div.calendar-invitebox td {
 
 div.calendar-invitebox td.label {
 	color: #666;
+	color: var(--labels-text-color);
 	padding-right: 1em;
 }
 
@@ -2555,6 +2564,7 @@ div.calendar-invitebox .calendar-agenda-preview h3.preview-title {
 	margin: 0 0 0.5em 0;
 	font-size: 12px;
 	color: #333;
+	color: var(--inputs-text-color);
 }
 
 div.calendar-invitebox .calendar-agenda-preview .event-row {
@@ -2567,6 +2577,7 @@ div.calendar-invitebox .calendar-agenda-preview .event-row {
 
 div.calendar-invitebox .calendar-agenda-preview .event-row.current {
 	color: #333;
+	color: var(--inputs-text-color);
 	font-weight: bold;
 }
 

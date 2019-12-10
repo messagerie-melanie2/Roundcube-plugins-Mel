@@ -111,6 +111,8 @@
 	--inputs-decorated-text-color: #5e5e5e;
 	--inputs-decorated-bg-color: #c0c0c0;
 	--inputs-box-shadow: 0 1px 1px 0 #ccc;
+	
+	--inputs-button-text-color: #525252;
   	
   	--inputs-mainaction-text-color: #fff;
   	--inputs-mainaction-bg-color: var(--global-action-color);
@@ -150,6 +152,9 @@
   	--calendar-fc-event-border-color: #bbd3da;
   	--calendar-table-border-color: #ccc;
   	--calendar-buttons-text-shadow: 0px 1px 1px #EEE;
+  	--calendar-invitebox-bg-color: #fef893;
+  	--calendar-invitebox-border-color: #ffdf0e;
+  	--calendar-schedule-text-color: #004658;
   	
   	--settings-disconnect-border-color: #979797;
   	--settings-disconnect-text-color: #f63267;
@@ -182,6 +187,8 @@
   	--jquery-tabs-border-color: #dcdce0;
   	--jquery-tabs-active-bg-color: #f4f4f4;
   	--jquery-buttons-text-color: #323232;
+  	--jquery-buttons-focus-text-color: #2b2b2b;
+  	--jquery-buttons-focus-bg-color: #ededed;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -298,6 +305,8 @@
 		--inputs-decorated-text-color: #ccc;
 		--inputs-decorated-bg-color: #121212;
 		--inputs-box-shadow: none;
+		
+		--inputs-button-text-color: #fff;
 	 	
 	 	--inputs-mainaction-text-color: #fff;
 	 	--inputs-mainaction-bg-color: var(--global-action-color);
@@ -337,6 +346,9 @@
   		--calendar-fc-event-border-color: #2A2A2A;
   		--calendar-table-border-color: #2A2A2A;
   		--calendar-buttons-text-shadow: none;
+  		--calendar-invitebox-bg-color: #241E00;
+  		--calendar-invitebox-border-color: #785800;
+  		--calendar-schedule-text-color: #C4F3FF;
 	 	
 	 	--settings-disconnect-border-color: #747474;
 	 	--settings-disconnect-text-color: #f63267;
@@ -369,5 +381,7 @@
 	  	--jquery-tabs-border-color: #4f5863;
 	  	--jquery-tabs-active-bg-color: #1e1e1e;
 	  	--jquery-buttons-text-color: var(--global-text-color);
+	  	--jquery-buttons-focus-text-color: var(--global-text-color);
+	  	--jquery-buttons-focus-bg-color: #373737;
 	}
 }

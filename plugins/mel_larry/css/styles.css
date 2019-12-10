@@ -197,6 +197,7 @@ input.button {
 	border-color: var(--inputs-border-color);
 	background-color: #fff;
 	background-color: var(--inputs-bg-color);
+	color: var(--inputs-button-text-color);
 }
 
 .formbuttons input.button:focus, 

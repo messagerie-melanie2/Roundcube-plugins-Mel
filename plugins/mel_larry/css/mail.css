@@ -418,6 +418,11 @@ td.header-title,
     font-weight: normal;
 }
 
+.headers-table td.header a, 
+.ui-dialog-content.popup span.adr a {
+    color: var(--labels-text-color);
+}
+
 td.header-title {
 	width: 2px;
 }
@@ -573,6 +578,7 @@ td span.adr:hover .rcmaddcontact {
 
 #compose-attachments .hint {
 	padding: 4px 5px 0px 5px;
+	color: var(--labels-text-color);
 }
 
 #compose-attachments .attachmentslist {

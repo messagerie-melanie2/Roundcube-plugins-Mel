@@ -454,12 +454,13 @@ class mel_doubleauth extends rcube_plugin {
             // MANTIS 
             //"cache_wsdl" => WSDL_CACHE_NONE,
             "cache_wsdl" => WSDL_CACHE_BOTH,
+            "connection_timeout" => 5,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl')
         ));
-        try{
+        try {
             $response = $client->isActivated($this->rc->user->get_username());
         }
-        catch(Exception $e){
+        catch(Exception $e) {
             mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__get2FAconfig : Erreur web service : ".$e->getMessage());
         }
         $arr_prefs[$pref_name]['activate'] = $response;
@@ -476,11 +477,12 @@ class mel_doubleauth extends rcube_plugin {
         $arr_prefs = $user->get_prefs();
         if($data["activate"] === false ) {
             // Connexion au serveur de webservice
-            try{
+            try {
                 $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
                     // MANTIS
                     //"cache_wsdl" => WSDL_CACHE_NONE,
                     "cache_wsdl" => WSDL_CACHE_BOTH,
+                    "connection_timeout" => 5,
                     "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
                     "login" => $this->rc->user->get_username(),
                     "password" => $this->rc->get_user_password()
@@ -488,7 +490,7 @@ class mel_doubleauth extends rcube_plugin {
                 $response = $client->removeUser($this->rc->user->get_username());
                 $arr_prefs['mel_doubleauth'] = null;
             }
-            catch(Exception $e){
+            catch(Exception $e) {
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_doubleauth::__get2FAconfig : Erreur web service : ".$e->getMessage());
             }
         } else {
@@ -522,6 +524,7 @@ class mel_doubleauth extends rcube_plugin {
             // MANTIS
             //"cache_wsdl" => WSDL_CACHE_NONE,
             "cache_wsdl" => WSDL_CACHE_BOTH,
+            "connection_timeout" => 5,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl')
         ));
         return $client->validateOTP($this->rc->user->get_username(), $code);
@@ -535,6 +538,7 @@ class mel_doubleauth extends rcube_plugin {
             // MANTIS
             //"cache_wsdl" => WSDL_CACHE_NONE,
             "cache_wsdl" => WSDL_CACHE_BOTH,
+            "connection_timeout" => 5,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()
@@ -565,6 +569,7 @@ class mel_doubleauth extends rcube_plugin {
             // MANTIS
             //"cache_wsdl" => WSDL_CACHE_NONE,
             "cache_wsdl" => WSDL_CACHE_BOTH,
+            "connection_timeout" => 5,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl')
         ));
         return $client->validateCookie($username,$code,$date_validitee,$application);
@@ -577,6 +582,7 @@ class mel_doubleauth extends rcube_plugin {
             // MANTIS
             //"cache_wsdl" => WSDL_CACHE_NONE,
             "cache_wsdl" => WSDL_CACHE_BOTH,
+            "connection_timeout" => 5,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()
@@ -592,6 +598,7 @@ class mel_doubleauth extends rcube_plugin {
             // MANTIS
             //"cache_wsdl" => WSDL_CACHE_NONE,
             "cache_wsdl" => WSDL_CACHE_BOTH,
+            "connection_timeout" => 5,
             "stream_context" => $this->rc->config->get('dynalogin_websvc_ssl'),
             "login" => $this->rc->user->get_username(),
             "password" => $this->rc->get_user_password()

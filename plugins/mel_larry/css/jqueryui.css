@@ -101,6 +101,11 @@
   border: 0 !important; 
 }
 
+.ui-state-disabled, .ui-widget-content .ui-state-disabled,
+.ui-widget-header .ui-state-disabled {
+    background: none;
+}
+
 .ui-datepicker td a.ui-state-default { 
   background: transparent; 
 }

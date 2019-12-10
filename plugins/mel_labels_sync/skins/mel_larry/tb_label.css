@@ -78,8 +78,9 @@
 }
 
 .texte_explic {
-    border-style: solid;
-    border-width: 1px;
     padding: 3px;
+    border: 1px solid #FFFFE0;
+	border-color: var(--settings-warn-border-color);
     background-color: #FFFFE0;
+    background-color:var(--settings-warn-bg-color);
 }

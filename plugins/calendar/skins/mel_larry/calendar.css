@@ -172,7 +172,7 @@ pre {
 
 #calendars {
 	position: absolute;
-	top: 250px;
+	top: 260px;
 	left: 0;
 	bottom: 0;
 	right: 0;
@@ -330,6 +330,12 @@ pre {
 	overflow: hidden;
 	text-indent: -5000px;
 	cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+	#calendars .treelist li a.subscribed {
+		background: url(images/calendars-dark.png?v=e784.5000) -100px 0 no-repeat;
+	}
 }
 
 #calendars .treelist div:hover a.subscribed,
@@ -545,6 +551,20 @@ pre {
 #calendartoolbar a.button.print {
 	background: url(images/calendar/imprimer.png?v=e784.5000) center center no-repeat #fff;
 	background-color: var(--buttons-bg-color);
+}
+
+@media (prefers-color-scheme: dark) {
+	#calendartoolbar a.button.export {
+		background-image: url(images/calendar/exporter-dark.png?v=e784.5000);
+	}
+	
+	#calendartoolbar a.button.import {
+		background-image: url(images/calendar/importer-dark.png?v=e784.5000);
+	}
+	
+	#calendartoolbar a.button.print {
+		background-image: url(images/calendar/imprimer-dark.png?v=e784.5000);
+	}
 }
 
 body.calendarmain #quicksearchbar {
@@ -2044,7 +2064,7 @@ a.dropdown-link:after {
 	text-shadow: var(--calendar-buttons-text-shadow);
 	border: 0;
 	background: #eaeaea;
-	background-color: var(--main-bg-color);
+	background-color: var(--input-selector-bg-color);
 	box-shadow: none;
 	-o-box-shadow: none;
 	-webkit-box-shadow: none;
@@ -2056,8 +2076,12 @@ a.dropdown-link:after {
 }
 
 .calendarmain #calendar .fc-header-left {
-	padding-top: 3px;
-	padding-left: 70px;
+    background-color: var(--input-selector-bg-color);
+    left: 70px;
+    position: absolute;
+    border-radius: 4px;
+    width: 279px;
+    top: 2px;
 }
 
 .calendarmain #calendar .fc-header-left .fc-button:first-child {
@@ -2071,10 +2095,10 @@ a.dropdown-link:after {
 .calendarmain #calendar .fc-header-left .fc-button:focus,
 .calendarmain #calendar .fc-header-left .fc-button.fc-state-active {
 	color: #464646;
-	color: var(--jquery-date-picker-text-color);
+	color: var(--input-selector-text-color);
 	text-shadow: none;
 	background-color: #fff;
-	background-color: var(--buttons-bg-color);
+	background-color: var(--input-selector-selected-bg-color);
 	font-weight: 600;
 	border-radius: 4px;
   	box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);

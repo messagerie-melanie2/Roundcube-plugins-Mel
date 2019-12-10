@@ -64,13 +64,23 @@ div#contact-details .contactfieldcontent.composite {
 }
 
 div#contact-details .contactcontrollerphone .row {
-	background: url(../images/contacts_icons.png?v=e784.5000) right center no-repeat #e8e8e8;
+	background: url(../images/contact/phone.png?v=e784.5000) right center no-repeat #e8e8e8;
 	background-color: var(--contact-field-bg-color);
 }
 
 div#contact-details .contactcontrolleremail .row {
-	background: url(../images/02mail.png?v=e784.5000) right center no-repeat #e8e8e8;
+	background: url(../images/contact/mail.png?v=e784.5000) right center no-repeat #e8e8e8;
 	background-color: var(--contact-field-bg-color);
+}
+
+@media (prefers-color-scheme: dark) {
+	div#contact-details .contactcontrollerphone .row {
+		background-image: url(../images/contact/phone-dark.png?v=e784.5000);
+	}
+	
+	div#contact-details .contactcontrolleremail .row {
+		background-image: url(../images/contact/mail-dark.png?v=e784.5000);
+	}
 }
 
 #directorylist li.legend {
@@ -100,6 +110,18 @@ div#contact-details .contactcontrolleremail .row {
 #directorylist li.contactgroup a {
     background: url(../images/contact/groupe.png?v=e784.5000) 35px center no-repeat !important;
     padding: 10px 8px 10px 60px;
+}
+
+@media (prefers-color-scheme: dark) {
+	#directorylist li.addressbook.selected > a,
+	#directorylist li.addressbook > a {
+	    background-image: url(../images/contact/carnet-dark.png?v=e784.5000);
+	}
+	
+	#directorylist li.contactgroup.selected a,
+	#directorylist li.contactgroup a {
+	    background: url(../images/contact/groupe-dark.png?v=e784.5000) 35px center no-repeat !important;
+	}
 }
 
 #directorylist li.addressbook div.collapsed, 
@@ -152,6 +174,7 @@ div#contact-details .contactcontrolleremail .row {
 	font-size: 10px;
 	font-weight: bold;
 	color: #0d0d0d;
+	color: var(--listitem-focus-bg-color);
 	padding: 7px 10px;
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
@@ -201,6 +224,24 @@ div#contact-details .contactcontrolleremail .row {
 #addressbooktoolbar.toolbar a.button.delete {
     background: url(../images/contact/supprimer.png?v=e784.5000) center center no-repeat #fff;
     background-color: var(--buttons-bg-color);
+}
+
+@media (prefers-color-scheme: dark) {
+	#addressbooktoolbar.toolbar a.button.import {
+	    background-image: url(../images/contact/importer-dark.png?v=e784.5000);
+	}
+	
+	#addressbooktoolbar.toolbar a.button.export {
+	    background-image: url(../images/contact/exporter-dark.png?v=e784.5000);
+	}
+	
+	#addressbooktoolbar.toolbar a.button.print {
+	    background-image: url(../images/contact/imprimer-dark.png?v=e784.5000);
+	}
+	
+	#addressbooktoolbar.toolbar a.button.delete {
+	    background-image: url(../images/contact/supprimer-dark.png?v=e784.5000);
+	}
 }
 
 #sourcename {

@@ -88,7 +88,7 @@
   	border: solid 1px #d5d5d5;
   	border-color: var(--inputs-border-color);
   	background-color: #eaeaea;
-  	background-color: var(--main-bg-color);
+  	background-color: var(--input-selector-bg-color);
   	height: 30px;
   	padding: 0;
   	margin: 0;
@@ -142,7 +142,7 @@
     background-color: var(--listbox-bg-color);
 }
 
- #mainview-right {
+#mainview-right {
     left: 241px;
     background: #eaeaea;
     background-color: var(--main-bg-color);

@@ -17,7 +17,9 @@
 #sharesmailboxeslist-settings ul {
 	list-style: none;
 	background: #c0c0c0;
+	background-color: var(--inputs-decorated-bg-color);
 	color: #5e5e5e;
+	color: var(--inputs-decorated-text-color);
 	z-index: 90;
 	padding: 7px 0 0 0;
 	margin: 0;
@@ -42,6 +44,7 @@
 #sharesmailboxeslist-settings ul li a {
   display: block;
   color: #333;
+  color: var(--table-body-text-color);
 }
 #sharesmailboxeslist-settings ul li a span.button-inner-m2 {
   display: inline-block;
@@ -83,15 +86,18 @@
 	z-index: 8;
 	overflow: hidden;
 	color: #333;
+	color: var(--table-body-text-color);
 	font-weight: bold;
 	text-decoration: none;
 	cursor: pointer;
 	background-color: #f2f2f2;
+	background-color: var(--settings-mel-folderlist-header-bg-color);
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 #folderlist-header-m2-settings {
 	border-bottom: 1px solid #d0d0d0;
+	border-color: var(--listbox-border-color);
 }
 #folderlist-header-m2.click,
 #folderlist-header-m2-settings.click {	
@@ -115,6 +121,12 @@
 	right: 0px;
 	position: absolute;
 	overflow: hidden;
+}
+@media (prefers-color-scheme: dark) {
+	#folderlist-header-m2 span,
+	#folderlist-header-m2-settings span {	
+		background-image: url(images/listclick-dark.png?v=e784.5000);
+	}
 }
 #folderlist-header-m2 span.click,
 #folderlist-header-m2-settings span.click {	

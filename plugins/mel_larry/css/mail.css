@@ -124,7 +124,21 @@ html.mozilla #mailboxlist > li:first-child {
 }
 
 .messagelist thead tr th.attachment span.attachment {
-  background-position: 0px -996px !important;
+  	background: url(../images/attachement.png?v=e784.5000) center center no-repeat;
+}
+
+.messagelist tbody tr .attachment span.attachment {
+   background: url(../images/attachement.png?v=e784.5000) center center no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+	.messagelist thead tr th.attachment span.attachment {
+	  	background: url(../images/attachement-dark.png?v=e784.5000) center center no-repeat;
+	}
+	
+	.messagelist tbody tr .attachment span.attachment {
+	   background: url(../images/attachement-dark.png?v=e784.5000) center center no-repeat;
+	}
 }
 
 .messagelist tbody tr td.flag span.flagged {
@@ -138,7 +152,7 @@ html.mozilla #mailboxlist > li:first-child {
 .messagelist tr:hover td.status span.msgicon {
   height: 30px;
   width: 26px;
-  background: url(../images/nonLu-01.png?v=e784.5000) center center no-repeat !important;
+  background: url(../images/non-lu.png?v=e784.5000) center center no-repeat;
   opacity: .5;
 }
 
@@ -148,7 +162,7 @@ html.mozilla #mailboxlist > li:first-child {
 
 .messagelist tr td.status span.unread,
 .messagelist tr td.status span.unread:hover {
-  background: url(../images/nonLu-01.png?v=e784.5000) center center no-repeat !important;
+  background: url(../images/non-lu.png?v=e784.5000) center center no-repeat !important;
   height: 30px;
   width: 26px;
 }
@@ -158,11 +172,26 @@ html.mozilla #mailboxlist > li:first-child {
 }
 
 .messagelist thead tr th.status span.status {
-  background: url(../images/nonLu-01.png?v=e784.5000) 10px center no-repeat !important;  
+  background: url(../images/non-lu.png?v=e784.5000) 10px center no-repeat;  
+}
+
+@media (prefers-color-scheme: dark) {
+	.messagelist tr:hover td.status span.msgicon {
+	  background: url(../images/non-lu-dark.png?v=e784.5000) center center no-repeat;
+	}
+	
+	.messagelist tr td.status span.unread,
+	.messagelist tr td.status span.unread:hover {
+	  background: url(../images/non-lu-dark.png?v=e784.5000) center center no-repeat !important;
+	}
+	
+	.messagelist thead tr th.status span.status {
+	  background: url(../images/non-lu-dark.png?v=e784.5000) 10px center no-repeat;  
+	}
 }
 
 .messagelist tr th.threads .listmenu {
-    background: url(../images/barreTri-01.png?v=e784.5000) center center no-repeat !important;  
+    background: url(../images/barreTri-01.png?v=e784.5000) center center no-repeat;  
 }
 
 .messagelist tr.flagged th, 
@@ -480,6 +509,7 @@ td span.adr:hover .rcmaddcontact {
 	bottom: 0;
   	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
   	border: solid 1px #979797;
+  	border-color: var(--settings-disconnect-border-color);
   	background-color: #fff;
   	background-color: var(--main-content-bg-color);
   	z-index: 1000;
@@ -712,6 +742,36 @@ td span.adr:hover .rcmaddcontact {
 	right: 30px;
 	background: url(../images/envoyer/nouvelle_fenetre.png?v=e784.5000) center center no-repeat #fff;
 	background-color: var(--buttons-bg-color);
+}
+
+@media (prefers-color-scheme: dark) {
+	.toolbar a.button.close {
+		background-image: url(../images/envoyer/retour-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.savedraft {
+		background-image: url(../images/envoyer/brouillon-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.attach {
+		background-image: url(../images/envoyer/piece_jointe-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.morefields {
+		background-image: url(../images/envoyer/options-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.formattext {
+		background-image: url(../images/envoyer/format-texte-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.spellcheck {
+		background-image: url(../images/envoyer/orthographe-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.extwin {
+		background-image: url(../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000);
+	}
 }
 
 

@@ -17,6 +17,7 @@ span.listitem_mel a {
 .listitem_mel a {
 	display: block;
 	color: #000;
+	color: var(--listitem-text-color);
 	text-decoration: none;
 	cursor: default;
 	padding: 6px 8px 2px 8px;
@@ -27,12 +28,14 @@ span.listitem_mel a {
 
 .listitem_mel.selected {
 	background: #fff;
+	background-color: var(--listitem-selected-bg-color);
 	text-shadow: none;
 	font-weight: normal;
 }
 
 .listitem_mel.selected a {
 	color: #000;
+	color: var(--listitem-selected-text-color);
 	font-weight: bold;
 }
 
@@ -51,15 +54,21 @@ table.propformm2 td {
 
 div.restore_bal_expl {
   margin-top: 10px;
-  padding: 5px;
+  padding: 10px 15px;
+  border: 1px solid #FFFFE0;
+  border-color: var(--settings-warn-border-color);
   background-color: #FFFFE0;
+  background-color: var(--settings-warn-bg-color);
 }
 
 div.restore_cal_expl,
 div.restore_contacts_expl {
   margin-top: 10px;
-  padding: 5px;
+  padding: 5px 10px;
+  border: 1px solid #E6E6FA;
+  border-color: var(--settings-mel-restaure-border-color);
   background-color: #E6E6FA;
+  background-color: var(--settings-mel-restaure-bg-color);
 }
 
 #mel_resources_elements_listbox a.add {

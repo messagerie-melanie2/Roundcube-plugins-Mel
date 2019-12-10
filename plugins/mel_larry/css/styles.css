@@ -936,12 +936,24 @@ ul#mailboxlist.treelist li a:focus {
     background-repeat: no-repeat;
 }
 
+@media (prefers-color-scheme: dark) {
+	.boxfooter .listbutton .inner {
+	    background-image: url(../images/icons-dark.png?v=e784.5000);
+	}
+}
+
 .boxfooter .listbutton.groupactions .inner {
     background-position: center -190px;
 }
 
 .boxfooter .listbutton.add .inner {
 	background: url(../images/plus-01.png?v=e784.5000) center center no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+	.boxfooter .listbutton.add .inner {
+		background-image: url(../images/plus-01-dark.png?v=e784.5000);
+	}
 }
 
 .boxfooter .listbutton.delete .inner {
@@ -1414,7 +1426,7 @@ table.propform td.title {
 }
 
 .toolbar a.button.filterlink {
-    background: url(../images/mail/filtrer.png) center center no-repeat #fff;
+    background: url(../images/mail/filtrer.png?v=e784.5000) center center no-repeat #fff;
     background-color: var(--buttons-bg-color);
 }
 
@@ -1454,7 +1466,7 @@ table.propform td.title {
 #messageheader #countcontrols a.button.forward,
 #messageheader #formatcontrols  a.button.forward,
 .toolbar a.button.forward {
-    background: url(../images/mail/tranferer.png?v=e784.5000) center center no-repeat #fff;
+    background: url(../images/mail/transferer.png?v=e784.5000) center center no-repeat #fff;
     background-color: var(--buttons-bg-color);
     min-width: auto;
 }
@@ -1470,6 +1482,71 @@ table.propform td.title {
 .toolbar a.button.back {
     background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat #fff;
     background-color: var(--buttons-bg-color);
+}
+
+@media (prefers-color-scheme: dark) {
+	.toolbar a.button.move {
+	    background-image: url(../images/mail/archiver-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.refreshcalendar,
+	.toolbar a.button.checkmail {
+	    background-image: url(../images/mail/actualiser-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.junk {
+	    background-image: url(../images/mail/pourriel-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.delete {
+	    background-image: url(../images/mail/supprimer-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.print {
+	    background-image: url(../images/mail/imprimer-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.filterlink {
+	    background-image: url(../images/mail/filtrer-dark.png?v=e784.5000);
+	}
+	
+	#messageheader #countcontrols a.button.calendarlink,
+	#messageheader #formatcontrols  a.button.calendarlink,
+	.toolbar a.button.calendarlink {
+	    background-image: url(../images/mail/evenement-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.thunderbird {
+	    background-image: url(../images/mail/etiquettes-dark.png?v=e784.5000);
+	}
+	
+	#messageheader #countcontrols a.button.reply,
+	#messageheader #formatcontrols  a.button.reply,
+	.toolbar a.button.reply {
+	    background-image: url(../images/mail/repondre-dark.png?v=e784.5000);
+	}
+	
+	#messageheader #countcontrols a.button.replyall,
+	#messageheader #formatcontrols  a.button.replyall,
+	.toolbar a.button.reply-all {
+	    background-image: url(../images/mail/repondre_tous-dark.png?v=e784.5000);
+	}
+	
+	#messageheader #countcontrols a.button.forward,
+	#messageheader #formatcontrols  a.button.forward,
+	.toolbar a.button.forward {
+	    background-image: url(../images/mail/transferer-dark.png?v=e784.5000);
+	}
+	
+	#messageheader #countcontrols a.button.bounce,
+	#messageheader #formatcontrols  a.button.bounce,
+	.toolbar a.button.bounce {
+	    background-image: url(../images/mail/rediriger-dark.png?v=e784.5000);
+	}
+	
+	.toolbar a.button.back {
+	    background-image: url(../images/mail/retour-dark.png?v=e784.5000);
+	}
 }
 
 .toolbar .spacer {
@@ -1579,6 +1656,16 @@ a.iconbutton.searchoptions {
 	width: 35px;
 	height: 19px;
     background: url(../images/tools/rechercher_menu.png?v=e784.5000) center center no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+	a.iconbutton.searchicon {
+	    background-image: url(../images/tools/rechercher-dark.png?v=e784.5000);
+	} 
+	
+	a.iconbutton.searchoptions {
+	    background-image: url(../images/tools/rechercher_menu-dark.png?v=e784.5000);
+	}
 }
 
 .popupmenu.dropdown {
@@ -1871,6 +1958,58 @@ ul.treelist li.selected > div.collapsed {
     background-position: 27px 3px;
 }
 
+@media (prefers-color-scheme: dark) {
+	.folderlist li.mailbox.box > a {
+	    background-image: url(../images/mail/dossiers/reception-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.inbox > a {
+	    background-image: url(../images/mail/dossiers/reception-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.inbox.selected > a, 
+	.folderlist li.mailbox.inbox > a:focus {
+	    background-image: url(../images/mail/dossiers/reception_selectionne-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.drafts > a {
+		background-image: url(../images/mail/dossiers/brouillons-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.drafts.selected > a, 
+	.folderlist li.mailbox.drafts > a:focus {
+	    background-image: url(../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.sent > a {
+	    background-image: url(../images/mail/dossiers/envoyes-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.sent.selected > a, 
+	.folderlist li.mailbox.sent > a:focus {
+	    background-image: url(../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.junk > a {
+	    background-image: url(../images/mail/dossiers/indesirables-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.junk.selected > a, 
+	.folderlist li.mailbox.junk > a:focus {
+	    background-image: url(../images/mail/dossiers/indesirables_selectionne-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.trash > a {
+	    background-image: url(../images/mail/dossiers/supprimes-dark.png?v=e784.5000);
+	}
+	
+	.folderlist li.mailbox.trash.selected > a, 
+	.folderlist li.mailbox.trash > a:focus {
+	    background-image: url(../images/mail/dossiers/supprimes_selectionne-dark.png?v=e784.5000);
+	}
+
+}
+
 .ui-dialog .propform .ui-tabs-panel {
     background: #fff;
     background-color: var(--popup-bg-color);
@@ -2013,6 +2152,12 @@ a.button.showcontacts {
 	width: 28px;
 	margin-left: 4px;
 	border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+	a.button.showcontacts {
+		background-image: url(../images/envoyer/contact-dark.png?v=e784.5000);
+	}
 }
 
 #aclform a.button.showcontacts {

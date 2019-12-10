@@ -198,7 +198,7 @@ class mel_ldap_auth extends rcube_plugin {
         mail(LibMelanie\Ldap\Ldap::GetMapValue($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr'), "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
 
         // Exécuter la fin de la connexion pour permettre de personnaliser le message d'erreur
-        $this->rc->output->show_message($this->gettext('error_block'), 'warning');
+        $this->rc->output->show_message($this->rc->gettext('error_block', 'mel'), 'warning');
 
         // log failed login
         $this->rc->log_login($user, true, $args['error']);

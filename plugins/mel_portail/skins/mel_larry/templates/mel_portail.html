@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+
+<main id="mainscreen" class="box mel_portail-box">
+	<!-- toolbar -->
+	<h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
+	<div id="portailtoolbar" class="toolbar fullwidth" role="toolbar" aria-labelledby="aria-label-toolbar">
+		<roundcube:button command="portail_close_url" type="link" class="button back" classAct="button back" classSel="button back pressed" label="back" />
+	</div>
+	<roundcube:object id="portailview" name="portail_items_list" />
+	<div id="mainscreencontent">
+		<div class="iframebox">
+	    	<roundcube:object name="mel_portail_frame" id="mel_portail_frame" />
+	  	</div>
+	</div>
+	
+</main>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

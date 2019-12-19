@@ -29,6 +29,16 @@ class mel_portail extends rcube_plugin
    * @var  rcmail The one and only instance
    */
   public $rc;
+  /**
+   * Array of templates
+   * @var array
+   */
+  private $templates;
+  /**
+   * Array of items
+   * @var array
+   */
+  private $items;
   
   /**
    * (non-PHPdoc)
@@ -68,36 +78,30 @@ class mel_portail extends rcube_plugin
     if (!$attrib['id']) {
       $attrib['id'] = 'portailview';
     }
-      
+    
     $content = "";
     $scripts_js = [];
     $scripts_css = [];
     $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
-    $items = $this->rc->config->get('portail_items_list', []);
-    $templates = $this->rc->config->get('portail_templates_list', []);
-    foreach ($items as $id => $item) {
-      if (!isset($templates[$item['type']])) {
-        unset($items[$id]);
+    
+    $this->templates = $this->rc->config->get('portail_templates_list', []);
+    $this->items = $this->getCardsConfiguration($user_infos['dn']);
+    
+    // Tri des items
+    uasort($this->items, [$this, 'sortItems']);
+    
+    foreach ($this->items as $id => $item) {
+      if (!isset($this->templates[$item['type']])) {
+        unset($this->items[$id]);
         continue;
       }
-      $template = $templates[$item['type']];
+      $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        if (is_string($item['dn']) && strpos($user_infos['dn'], $item['dn']) === false) {
-          unset($items[$id]);
+        $res = $this->filter_dn($user_infos['dn'], $item['dn']);
+        if ($res !== true) {
+          unset($this->items[$id]);
           continue;
-        }
-        else if (is_array($item['dn'])) {
-          $found = false;
-          foreach ($item['dn'] as $dn) {
-            if (strpos($user_infos['dn'], $dn) !== false) {
-              $found = true;
-            }
-          }
-          if (!$found) {
-            unset($items[$id]);
-            continue;
-          }
         }
       }
       // Ajoute le php ?
@@ -106,7 +110,7 @@ class mel_portail extends rcube_plugin
         $classname = ucfirst($item['type']);
         $object = new $classname($id);
         if (!$object->show()) {
-          unset($items[$id]);
+          unset($this->items[$id]);
           continue;
         }
         $object->init();
@@ -134,10 +138,140 @@ class mel_portail extends rcube_plugin
       }
     }
     
-    $this->rc->output->set_env("portail_items", $items);
+    $this->rc->output->set_env("portail_items", $this->items);
     // Ajout le javascript
     $this->include_script('mel_portail.js');
     return html::tag('section', $attrib, $content);
+  }
+  
+  /**
+   * Tri des items en fonction de l'order ou de l'order du template
+   * 
+   * @param array $a
+   * @param array $b
+   * 
+   * @return number
+   */
+  private function sortItems($a, $b) {
+    if (!isset($a['order']) && isset($this->templates[$a['type']])) {
+      $a['order'] = $this->templates[$a['type']]['order'];
+    }
+    if (!isset($b['order']) && isset($this->templates[$b['type']])) {
+      $b['order'] = $this->templates[$b['type']]['order'];
+    }
+    return strnatcmp($a['order'], $b['order']);
+  }
+  
+  /**
+   * Va lire la configuration des cards dans l'arborescence configuré
+   * Par défault récupère la conf dans les fichiers config.json de chaque dossier
+   * 
+   * @param string $user_dn
+   * @param string $config_file
+   * @return array
+   */
+  private function getCardsConfiguration($user_dn, $config_file = '/config.json') {
+    $configuration_path = $this->rc->config->get('portail_configuration_path', null);
+    $configuration = [];
+    if (isset($configuration_path)) {
+      $configuration_base = $this->rc->config->get('portail_base_configuration_dn', null);
+      $user_folders = explode(',', str_replace($configuration_base, '', $user_dn));
+      for ($i = count($user_folders) - 1; $i >= 0; $i--) {
+        $user_folder = explode('=', $user_folders[$i], 2);
+        $configuration_path = $configuration_path . '/' . $user_folder[1];
+        if (is_dir($configuration_path)) {
+          $config_file = '/' . $user_folder[1] . '.json';
+          $file = $configuration_path . $config_file;
+          if (file_exists($file)) {
+            $json = file_get_contents($file);
+            if (strlen($json)) {
+              $data = json_decode($json, true);
+              if (!is_null($data)) {
+                $configuration = array_merge($configuration, $data);
+              }
+            }
+          }
+        }
+        else {
+          // Le dir n'existe pas on sort de la boucle
+          break;
+        }
+      }
+    }
+    return $configuration;
+  }
+  
+  /**
+   * 
+   * 
+   * @param string $user_dn
+   * @param string|array $item_dn
+   * @return boolean true si le dn match, false sinon
+   */
+  private function filter_dn($user_dn, $item_dn) {
+    if (is_array($item_dn)) {
+      $res = false;
+      $res_neg = null;
+      $res_eq = null;
+      // C'est un tableau, appel récursif
+      foreach ($item_dn as $dn) {
+        $_res = $this->filter_dn($user_dn, $dn);
+        if (strpos($dn, '=') === 0) {
+          if (is_null($res_eq)) {
+            $res_eq = $_res;
+          }
+          else {
+            $res_eq = $res_eq || $_res;
+          }
+        }
+        else if (strpos($dn, '!') === 0) {
+          if (is_null($res_neg)) {
+            $res_neg = $_res;
+          }
+          else {
+            $res_neg = $res_neg && $_res;
+          }
+        }
+        else {
+          $res = $res || $_res;
+        }
+      }
+      // Validation des resultats
+      if (!is_null($res_eq)) {
+        if (!is_null($res_neg) && $res_neg === false) {
+          $res = $res_neg;
+        }
+        else {
+          $res = $res_eq;
+        }
+      }
+      else if (!is_null($res_neg)) {
+        $res = $res_neg;
+      }
+    }
+    else {
+      if (strpos($item_dn, '!') === 0) {
+        // DN doit être différent
+        $_item_dn = substr($item_dn, 1, strlen($item_dn) - 1);
+        $res = strpos($user_dn, $_item_dn) === false;
+      }
+      else if (strpos($item_dn, '=') === 0) {
+        // DN exactement égal
+        $_item_dn = substr($item_dn, 1, strlen($item_dn) - 1);
+        if (strpos($_item_dn, 'ou') === 0) {
+          $_user_dn = explode(',', $user_dn, 2);
+          $res = $_user_dn[1] == $_item_dn;
+        }
+        else {
+          $res = $user_dn == $_item_dn;
+        }
+      }
+      else {
+        // DN contient
+        $res = strpos($user_dn, $item_dn) !== false;
+      }
+    }
+    return $res;
   }
   
   /**
@@ -170,9 +304,9 @@ class mel_portail extends rcube_plugin
       $header = html::tag('header', [],
           $flip .
           html::a(['href' => $item['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $item['onclick'] ?: null],
-              html::img(['class' => 'icon', 'style' => $logo_style, 'alt' => $item['name'] . ' logo', 'src' => isset($item['logo']) ? $item['logo'] : '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png']) .
-              html::tag('h1', 'title', $item['name']) .
-              html::tag('p', 'description', $item['description'])
+                html::img(['class' => 'icon', 'style' => $logo_style, 'alt' => $item['name'] . ' logo', 'src' => isset($item['logo']) ? $item['logo'] : '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png']) .
+                html::tag('h1', 'title', $item['name']) .
+                ($item['type'] == 'communication' ? "" : html::tag('p', 'description', $item['description']))
               )
           );
     }
@@ -187,7 +321,12 @@ class mel_portail extends rcube_plugin
     // Gestion des boutons
     $buttons = "";
     $buttons_back = "";
-    if (isset($item['buttons'])) {
+    if ($item['type'] == 'communication') {
+      $buttons = html::a(['href' => $item['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $item['onclick'] ?: null],
+        html::tag('span', 'description', $item['description'])
+      );
+    }
+    else if (isset($item['buttons'])) {
       $buttons_list = "";
       $buttons_back_list = "";
       foreach ($item['buttons'] as $text => $button) {
@@ -224,12 +363,12 @@ class mel_portail extends rcube_plugin
     // Générer le contenu html
     if ($item['flip']) {
       // Front + back
-      $content = html::tag('article', ['class' => 'front', 'title' => $item['title'] ?: null], $header . $buttons) .
+      $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
                   html::tag('article', 'back', html::tag('header', [], $flip) . $buttons_back);
     }
     else {
       // Front
-      $content = html::tag('article', ['class' => 'front', 'title' => $item['title'] ?: null], $header . $buttons) .
+      $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
                   html::tag('article', 'back blank', '');
     }
     

@@ -262,6 +262,21 @@ if (window.rcmail) {
 		portail.refresh();
 		portail.randomlyFlipCard();
 	});
+	
+	// Rcmail init
+	rcmail.addEventListener('init', function(evt) {
+		if (rcmail.env.task == 'settings') {
+			var tab = $('<span>').attr('id', 'settingstabpluginmel_resources_portail')
+		      .addClass('listitem_mel mel'), button = $('<a>')
+		      .attr('href', rcmail.env.comm_path
+		          + '&_action=plugin.mel_resources_portail')
+		      .attr('title', rcmail
+		          .gettext('mel_portail.manageresourcesportail')).html(rcmail
+		          .gettext('mel_portail.resourcesportail')).appendTo(tab);
+		  // add tab
+		  rcmail.add_element(tab, 'tabs');
+		}
+	});
 }
 
 // Open an url in the portail

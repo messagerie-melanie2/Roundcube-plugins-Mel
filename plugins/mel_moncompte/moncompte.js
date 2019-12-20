@@ -2,6 +2,7 @@
 $(document).on({
   click : function(e) {
     // Toggle les items de la liste
+  	$('#settingstabpluginmel_resources_portail').toggle();
     $('#settingstabpluginmel_resources_bal').toggle();
     $('#settingstabpluginmel_resources_agendas').toggle();
     $('#settingstabpluginmel_resources_contacts').toggle();
@@ -206,6 +207,21 @@ if (window.rcmail) {
 	        // add tab
 	        rcmail.add_element(tab, 'tabs');
     	}
+    	
+    	// Ajout des ressources Mes applications du portail
+    	if (rcmail.env.enable_mesressources_portail) {
+    		tab = $('<span>')
+	            .attr('id', 'settingstabpluginmel_resources_portail')
+	            .addClass('listitem_mel mel'), button = $('<a>')
+	            .attr('href', rcmail.env.comm_path
+	                + '&_action=plugin.mel_resources_portail')
+	            .attr('title', rcmail
+	                .gettext('mel_portail.manageresourcesportail'))
+	            .html(rcmail.gettext('mel_portail.resourcesportail'))
+	            .appendTo(tab);
+	        // add tab
+	        rcmail.add_element(tab, 'tabs');
+    	}
         
     	// Ajout des ressources mails
     	if (rcmail.env.enable_mesressources_mail) {
@@ -265,7 +281,7 @@ if (window.rcmail) {
 	        // add tab
 	        rcmail.add_element(tab, 'tabs');
     	}
-        
+    	
 
         var p = rcmail;
 
@@ -285,6 +301,7 @@ if (window.rcmail) {
         if (rcmail.env.action
             && rcmail.env.action.indexOf('plugin.mel_resources') != -1
             && rcmail.env.enable_mesressources) {
+        	$('#settingstabpluginmel_resources_portail').show();
           $('#settingstabpluginmel_resources_bal').show();
           $('#settingstabpluginmel_resources_agendas').show();
           $('#settingstabpluginmel_resources_contacts').show();
@@ -387,6 +404,7 @@ if (window.rcmail) {
           });
         }
         else {
+        	$('#settingstabpluginmel_resources_portail').hide();
           $('#settingstabpluginmel_resources_bal').hide();
           $('#settingstabpluginmel_resources_agendas').hide();
           $('#settingstabpluginmel_resources_contacts').hide();

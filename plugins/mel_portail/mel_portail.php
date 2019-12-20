@@ -48,13 +48,12 @@ class mel_portail extends rcube_plugin
   {
     $this->rc = rcmail::get_instance();
     
-    $this->add_texts('localization/', true);
-    
-    // ajout de la tache
-    $this->register_task('portail');
     
     // Si tache = portail, on charge l'onglet
     if ($this->rc->task == 'portail') {
+      $this->add_texts('localization/', true);
+      // ajout de la tache
+      $this->register_task('portail');
       // Chargement de la conf
       $this->load_config();
       // Ajout de l'interface
@@ -66,6 +65,150 @@ class mel_portail extends rcube_plugin
       // Add handler
       $this->rc->output->add_handler('portail_items_list', array($this, 'items_list'));
     }
+    else if ($this->rc->task == 'settings') {
+      $this->add_texts('localization/', true);
+      // Chargement de la conf
+      $this->load_config();
+      // Ajout de l'interface
+      include_once 'imodule.php';
+      // Activation du menu dans Mon compte
+      $this->rc->output->set_env('enable_mesressources_portail', true);
+      // register actions
+      $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
+      // Ajout le javascript
+      //$this->include_script('settings.js');
+    }
+  }
+  
+  function action()
+  {
+    // register UI objects
+    $this->rc->output->add_handlers(array(
+        'mel_portail_frame'    => array($this, 'portail_frame'),
+    ));
+    
+    // Chargement du template d'affichage
+    $this->rc->output->set_pagetitle($this->gettext('title'));
+    $this->rc->output->send('mel_portail.mel_portail');
+  }
+  
+  /**
+   * Initialisation du menu ressources pour les Applications du portail
+   * 
+   * Affichage du template et gestion de la sélection
+   */
+  public function resources_init() {
+    $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
+    if (isset($id)) {
+      $id = str_replace('_-P-_', '.', $id);
+      
+      $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+      
+      $this->items = $this->getCardsConfiguration($user_infos['dn']);
+      
+      if (isset($this->items[$id])) {
+        $item = $this->items[$id];
+        $this->rc->output->set_env("resource_id", $id);
+        $this->rc->output->set_env("resource_name", $item['name']);
+        $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
+        $this->rc->output->set_env("resource_url", $item['url']);
+      }
+      
+      $this->rc->output->send('mel_portail.resource_portail');
+    }
+    else {
+      // register UI objects
+      $this->rc->output->add_handlers(
+          array(
+              'mel_resources_elements_list' => array($this, 'resources_elements_list'),
+              'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
+          )
+      );
+      $this->rc->output->set_env("resources_action", "portail");
+      $this->rc->output->include_script('list.js');
+      $this->rc->output->set_pagetitle($this->gettext('mel_moncompte.resources'));
+      $this->rc->output->send('mel_portail.resources_elements');
+    }
+  }
+  
+  /**
+   * Affiche la liste des éléments
+   *
+   * @param array $attrib
+   * @return string
+   */
+  public function resources_elements_list($attrib) {
+    // add id to message list table if not specified
+    if (! strlen($attrib['id']))
+      $attrib['id'] = 'rcmresourceselementslist';
+    
+    // Récupération des préférences de l'utilisateur
+    $hidden_applications = $this->rc->config->get('hidden_applications', array());
+      
+    // Objet HTML
+    $table = new html_table();
+    $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'application')"));
+    
+    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+    
+    $this->templates = $this->rc->config->get('portail_templates_list', []);
+    $this->items = $this->getCardsConfiguration($user_infos['dn']);
+    
+    // Tri des items
+    uasort($this->items, [$this, 'sortItems']);
+    
+    foreach ($this->items as $id => $item) {
+      if (!isset($this->templates[$item['type']])) {
+        unset($this->items[$id]);
+        continue;
+      }
+      $template = $this->templates[$item['type']];
+      // Check if the item match the dn
+      if (isset($item['dn'])) {
+        $res = $this->filter_dn($user_infos['dn'], $item['dn']);
+        if ($res !== true) {
+          unset($this->items[$id]);
+          continue;
+        }
+      }
+      // Ajoute le php ?
+      if (isset($template['php'])) {
+        include_once 'modules/' . $item['type'] . '/' . $template['php'];
+        $classname = ucfirst($item['type']);
+        $object = new $classname($id);
+        if (!$object->show()) {
+          unset($this->items[$id]);
+          continue;
+        }
+      }
+      
+      $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id), 'class' => 'portail', 'foldername' => str_replace(".", "_-P-_", $id)));
+      $table->add('name', $item['name']);
+      $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_applications[$id]) ? $id : ''), array('value' => $id)));
+    }
+    // set client env
+    $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);
+    
+    return $table->show($attrib);
+  }
+  
+  /**
+   * Initialisation de la frame pour les ressources
+   *
+   * @param array $attrib
+   * @return string
+   */
+  public function mel_resources_type_frame($attrib) {
+    if (! $attrib['id']) {
+      $attrib['id'] = 'rcmsharemeltypeframe';
+    }
+    
+    $attrib['name'] = $attrib['id'];
+    
+    $this->rc->output->set_env('contentframe', $attrib['name']);
+    $this->rc->output->set_env('blankpage', $attrib['src'] ? $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
+    
+    return $this->rc->output->frame($attrib);
   }
   
   /**
@@ -78,6 +221,9 @@ class mel_portail extends rcube_plugin
     if (!$attrib['id']) {
       $attrib['id'] = 'portailview';
     }
+    
+    // Récupération des préférences de l'utilisateur
+    $hidden_applications = $this->rc->config->get('hidden_applications', array());
     
     $content = "";
     $scripts_js = [];
@@ -92,6 +238,10 @@ class mel_portail extends rcube_plugin
     
     foreach ($this->items as $id => $item) {
       if (!isset($this->templates[$item['type']])) {
+        unset($this->items[$id]);
+        continue;
+      }
+      if (isset($hidden_applications[$id])) {
         unset($this->items[$id]);
         continue;
       }
@@ -375,17 +525,6 @@ class mel_portail extends rcube_plugin
     return html::tag('article', $attrib, $content);
   }
   
-  function action()
-  {
-    // register UI objects
-    $this->rc->output->add_handlers(array(
-        'mel_portail_frame'    => array($this, 'portail_frame'),
-    ));
-    
-    // Chargement du template d'affichage
-    $this->rc->output->set_pagetitle($this->gettext('title'));
-    $this->rc->output->send('mel_portail.mel_portail');
-  }
   /**
    * Gestion de la frame
    * @param array $attrib

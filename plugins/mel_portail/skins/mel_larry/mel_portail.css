@@ -3,6 +3,10 @@
 	display: none;
 }
 
+#mainscreen {
+	overflow-y: auto; 
+}
+
 #portailtoolbar {
 	position: absolute;
     top: 8px;
@@ -30,11 +34,6 @@
 }
 
 #portailview {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	left: 0;
 	padding: 2em;
     display: flex;
 	margin: 0 auto;
@@ -42,7 +41,6 @@
 	align-items: center;
 	flex-wrap: wrap;
 	overflow: hidden;
-	overflow-y: auto;
 }
 
 #portailview:after {
@@ -98,7 +96,6 @@
     -moz-backface-visibility: hidden;
     -o-backface-visibility: hidden;
     backface-visibility: hidden;
-    overflow: hidden;
 }
 
 #portailview .item.wait > article {
@@ -126,6 +123,7 @@
 }
 
 #portailview .item.flipped .front header,
+#portailview .item.flipped .front .description,
 #portailview .item.flipped .front .news,
 #portailview .item.flipped .front .buttons,
 #portailview .item.flipped .front .links {
@@ -144,7 +142,6 @@
 	background: url(images/flip-icon-dark.png?v=e784.5000) left bottom no-repeat #fff;
 	background-color: var(--table-body-bg-color);
 	border-radius: 4px;
-    overflow: hidden;
     display: none;
     cursor: pointer;
     z-index: 10;
@@ -170,17 +167,16 @@
 
 #portailview .item .flip > button {
     position: absolute;
-    top: -58px;
-	right: -36px;
-	width: 70px;
-	height: 70px;
+    top: -17px;
+	right: -10px;
+	width: 27px;
+	height: 42px;
     border-color: transparent;
     cursor: pointer;
     text-indent: -9999px;
     background: #eaeaea;
 	background: var(--main-bg-color);
-    border: 1px solid #d0d0d0;
-	border-color: var(--content-border-color);
+    border: none;
     
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
@@ -279,6 +275,9 @@
 	list-style: none;
 	padding: 0;
 	margin: 0;
+}
+
+#portailview .item .back ul.news {
 	height: 100%;
 }
 
@@ -328,6 +327,11 @@
 #portailview .item ul.news li > a h1 {
 	margin: 3px 0;
 	font-size: 11px;
+}
+
+#portailview .item .front ul.news li > a h1 {
+	max-height: 7em;
+	overflow: hidden;
 }
 
 #portailview .item .back ul.news li > a p,

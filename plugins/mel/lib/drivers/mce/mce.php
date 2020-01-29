@@ -115,7 +115,17 @@ class mce_driver_mel extends driver_mel {
    * @return string $hostname de routage, null si pas de routage trouvé
    */
   public function getRoutage($infos) {
-    $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
+    $hostname = rcmail::get_instance()->config->get('default_host');
+    if (!isset($hostname) 
+        || is_array($hostname)) {
+      $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
+    }
+    else {
+      $a_host = parse_url($hostname);
+      if (isset($a_host['host'])) {
+        $hostname = $a_host['host'];
+      }
+    }
     
     return $hostname;
   }

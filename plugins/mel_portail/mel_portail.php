@@ -111,7 +111,24 @@ class mel_portail extends rcube_plugin
         $this->rc->output->set_env("resource_id", $id);
         $this->rc->output->set_env("resource_name", $item['name']);
         $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
-        $this->rc->output->set_env("resource_url", $item['url']);
+        if (isset($item['description'])) {
+          $this->rc->output->set_env("resource_description", $item['description']);
+        }
+        if (isset($item['url'])) {
+          $this->rc->output->set_env("resource_url", $item['url']);
+        }
+        if (isset($item['flip'])) {
+          $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
+        }
+        if (isset($item['feedUrl'])) {
+          $this->rc->output->set_env("resource_feedurl", $item['feedUrl']);
+        }
+        if (isset($item['html'])) {
+          $this->rc->output->set_env("resource_front_html", $item['html']);
+        }
+        if (isset($item['html_back'])) {
+          $this->rc->output->set_env("resource_back_html", $item['html_back']);
+        }
       }
       
       $this->rc->output->send('mel_portail.resource_portail');
@@ -512,14 +529,29 @@ class mel_portail extends rcube_plugin
     }
     // Générer le contenu html
     if ($item['flip']) {
-      // Front + back
-      $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
-                  html::tag('article', 'back', html::tag('header', [], $flip) . $buttons_back);
+      if ($item['type'] == 'html') {
+        // Front + back
+        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $item['html']) .
+          html::tag('article', 'back', $item['html_back']);
+      }
+      else {
+        // Front + back
+        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
+          html::tag('article', 'back', html::tag('header', [], $flip) . $buttons_back);
+      }
+      
     }
     else {
-      // Front
-      $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
-                  html::tag('article', 'back blank', '');
+      if ($item['type'] == 'html') {
+        // Front
+        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $item['html']) .
+          html::tag('article', 'back blank', '');
+      }
+      else {
+        // Front
+        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
+          html::tag('article', 'back blank', '');
+      }
     }
     
     return html::tag('article', $attrib, $content);

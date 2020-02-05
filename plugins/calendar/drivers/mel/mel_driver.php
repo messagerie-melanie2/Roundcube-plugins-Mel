@@ -1536,7 +1536,7 @@ class mel_driver extends calendar_driver {
       $_events = array();
 
       foreach ($events as $_e) {
-        if (! $freebusy && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY)) {
+        if (! $freebusy && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
           continue;
         }
         if ($_e->recurrence->type === LibMelanie\Api\Melanie2\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {

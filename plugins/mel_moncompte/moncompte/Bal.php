@@ -320,13 +320,18 @@ class Bal {
 			} else { $this->_contenuphoto = ''; }
 		}
         
-		//mineqLiensImport pour Agriculture, affichages differents
+		// mineqLiensImport pour Agriculture, affichages differents
 		if (isset($_ldapEntree[0][Ldap::GetInstance(Config::$SEARCH_LDAP)->getMapping('user_liens_import')]['0'])) {
 		    foreach($_ldapEntree[0][Ldap::GetInstance(Config::$SEARCH_LDAP)->getMapping('user_liens_import')] as $i => $val) {
 		        if (strpos($_ldapEntree[0][Ldap::GetInstance(Config::$SEARCH_LDAP)->getMapping('user_liens_import')][$i], 'AGRI.Lien:') !== false) {
 		            $this->_agri_import = 1;
-		            $recup_dn = explode(': ', $_ldapEntree[0][Ldap::GetInstance(Config::$SEARCH_LDAP)->getMapping('user_liens_import')][$i]);
-		            $this->rc->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.national.agri/agricoll-liniddm/entry/edit/agentpassword/' . $recup_dn[1]);
+					$recup_dn = explode(': ', $_ldapEntree[0][Ldap::GetInstance(Config::$SEARCH_LDAP)->getMapping('user_liens_import')][$i]);
+					if (mel::is_internal()) {
+						$this->rc->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.national.agri/agricoll-liniddm/entry/edit/agentpassword/' . $recup_dn[1]);
+					}
+					else {
+						$this->rc->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.agriculture.gouv.fr/agricoll-liniddm/entry/edit/agentpassword/' . $recup_dn[1]);
+					}
 		            break;
 		        } else {
 		            $this->_agri_import = 0;

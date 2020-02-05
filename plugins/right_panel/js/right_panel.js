@@ -271,7 +271,7 @@ if (window.rcmail) {
 		rcmail.addEventListener('plugin.display_alarms', function (alarms) {
 			// Sort alarms by alarm start
 			alarms.sort(function(x, y) {
-				return x.start > y.start;
+				return new Date(x.start) - new Date(y.start);
 			});
 			window.alarmsList = alarms;
 			rcmail.right_panel_storage_set('alarmsList', window.alarmsList, true);
@@ -598,7 +598,7 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 	if (events) {
 		// Sort events by event start
 		events.sort(function(x, y) {
-			return x.start > y.start;
+			return new Date(x.start) - new Date(y.start);
 		});
 		var today = new Date();
 		if ($('#right_panel').hasClass('minified')) {

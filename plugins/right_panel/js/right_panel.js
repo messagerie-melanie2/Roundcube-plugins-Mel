@@ -148,7 +148,7 @@ $(document).on("click", '#right_panel_contacts .contacts_count .email', function
 });
 $(document).on("click", '#right_panel_contacts .contacts_count .im', function(e) {
 	var url = rcmail.env.comm_path;
-	url = url.replace(/\_task=[a-z0-9_-]+/, '_task=ariane');
+	url = url.replace(/\_task=[a-z0-9_-]+/, '_task=discussion');
 	window.open(url, '_blank');
 });
 
@@ -487,7 +487,7 @@ rcube_webmail.prototype.right_panel_show_message = function(id) {
 
 // Open Rocket Chat URL
 rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new_window = false) {
-	if (rcmail.task == 'ariane') {
+	if (rcmail.task == 'discussion' || rcmail.task == 'ariane') {
 		window.document.getElementById('rocket_chat_frame').contentWindow.postMessage({
 			externalCommand: 'go',
 			path: channel
@@ -495,7 +495,7 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 	}
 	else {
 		var url = rcmail.env.comm_path;
-		url = url.replace(/\_task=.*/, '_task=ariane');
+		url = url.replace(/\_task=.*/, '_task=discussion');
 		url = url + '&_channel=' + channel;
 		if (new_window) {			
 			if ($('#rocketchatframe').length) {

@@ -1098,7 +1098,7 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 				var day = rcmail.get_label('right_panel.yesterday_min');
 			}
 			else {
-				var day = date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear();
+				var day = ("0" + date.getDate()).slice(-2) + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
 			}
 			var date = rcmail.get_label('right_panel.date').replace(/%%day%%/, day).replace(/%%hour%%/, hour);
 			// ID

@@ -312,7 +312,7 @@ div.message-part blockquote {
 #messageheader #countcontrols, 
 #messageheader #formatcontrols {
 	right: 36px;
-	bottom: 10px;
+	bottom: 0;
 	text-align: right;
 	white-space: nowrap;
 	position: absolute;
@@ -442,7 +442,7 @@ td.header-title {
 	position: absolute;
 	top: 77px;
 	left: 110px;
-	right: 175px;
+	right: 235px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }

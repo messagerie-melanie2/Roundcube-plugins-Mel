@@ -165,9 +165,12 @@
 	padding: 6px 15px;
 	overflow: hidden;
 	color: #000;
+	color:  var(--global-text-color);
 	border-radius: 4px;
 	background-color: #fff;
+	background-color: var(--global-bg-color);
 	border: solid 1px #979797;
+	border-color: var(--settings-disconnect-border-color);
 	margin-bottom: 10px;
 	width: 447px;
 }

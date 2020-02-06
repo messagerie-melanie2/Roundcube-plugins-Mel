@@ -46,7 +46,7 @@ $(document).ready(function() {
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Supprime le onclick des boutons pour intercepter le click
-    $("#messagetoolbar a.send").prop('onclick', null);       
+    $("#messagetoolbar a.send").prop('onclick', null);
   });
 
   rcmail.addEventListener('responseafterplugin.test_melanissimo', function(
@@ -131,6 +131,9 @@ if (window.rcmail) {
  * Envoi du message via le service Melanissimo (appel Ajax)
  */
 function send_melanissimo_message() {
+  // MANTIS 0005303: Problème de délai dépassé dans la requête
+  rcmail.env.request_timeout = 1500;
+  
   rcmail.http_post('plugin.send_melanissimo', {
     _id : rcmail.env.compose_id,
     _nb_days: $("#use_melanissimo_dialog .dialog_select select option:selected").val(),

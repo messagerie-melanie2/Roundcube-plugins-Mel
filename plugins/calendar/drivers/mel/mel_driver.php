@@ -684,6 +684,23 @@ class mel_driver extends calendar_driver {
       else {
         return false;
       }
+      // MANTIS 0005564: Un évt avec participants, modifié par un participant comme nouvel évt garde l'organisateur initial
+      if ($event['copy'] && !empty($event['attendees'])) {
+        $identity = $this->rc->user->get_identity();
+        foreach ($event['attendees'] as $k => $att) {
+          if (strtolower($att['role']) == 'organizer') {
+            $event['attendees'][$k]['name'] = $identity['name'];
+            $event['attendees'][$k]['email'] = $identity['email'];
+          }
+          else if (strtolower($att['email']) == strtolower($identity['email'])) {
+            // Ne pas garder l'organisateur s'il est dans la liste des participants
+            unset($event['attendees'][$k]);
+          }
+          else {
+            $event['attendees'][$k]['status'] = 'NEEDS-ACTION';
+          }
+        }
+      }
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if ($_event->load()) {
         $loaded = true;

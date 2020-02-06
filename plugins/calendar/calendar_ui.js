@@ -961,7 +961,8 @@ function rcube_calendar_ui(settings)
               attendees: event_attendees,
               links: me.selected_event.links,
               deleted_attachments: rcmail.env.deleted_attachments,
-              attachments: []
+              attachments: [],
+              copy: 1
             };
 
             // uploaded attachments list

@@ -1721,8 +1721,8 @@ class mel_driver extends calendar_driver {
     if ($event->all_day) {
       $_event['allday'] = 1;
       // Passer les journées entières à 12h - 13h pour régler les problèmes
-      $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . '00:00:00', new DateTimeZone('GMT'));
-      $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . '00:00:00', new DateTimeZone('GMT'));
+      $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . '13:00:00', new DateTimeZone('GMT'));
+      $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . '14:00:00', new DateTimeZone('GMT'));
       // Supprimer un jour pour le décalage
       $_event['end']->sub(new DateInterval("P1D"));
     }

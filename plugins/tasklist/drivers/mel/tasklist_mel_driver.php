@@ -640,6 +640,9 @@ class tasklist_mel_driver extends tasklist_driver {
    */
   public function pending_alarms($time, $lists = null) {
     $interval = $this->rc->config->get('refresh_interval', 60);
+    if ($interval === 0) {
+      $interval = 60;
+    }
     $time -= $time % 60;
     
     $slot = $time;

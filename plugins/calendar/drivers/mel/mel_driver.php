@@ -1859,7 +1859,6 @@ class mel_driver extends calendar_driver {
    * @see calendar_driver::pending_alarms()
    */
   public function pending_alarms($time, $calendars = null) {
-    return;
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::pending_alarms()");
 
@@ -1877,43 +1876,36 @@ class mel_driver extends calendar_driver {
           $calendars_id[] = $calendar->id;
         }
       }
+      if (empty($calendars_id)) {
+        $calendars_id = [$this->rc->user->get_username()];
+      }
       $_event = new LibMelanie\Api\Melanie2\Event($this->user);
       $_event->calendar = $calendars_id;
       $_event->alarm = 0;
-      // Durée dans le passé maximum pour l'affichage des alarmes (2 semaines)
-      $time_min = $time - 60 * 60 * 24 * 14;
+      // Durée dans le passé maximum pour l'affichage des alarmes (5 jours)
+      $time_min = $time - 60 * 60 * 24 * 5;
       // Durée dans le futur maximum, basé sur la configuration du refresh
       $time_max = $time;
       // Clause Where
       $filter = "#calendar# AND #alarm# AND ((#start# - interval '1 minute' * k1.event_alarm) > '" . date('Y-m-d H:i:s', $time_min) . "') AND ((#start# - interval '1 minute' * k1.event_alarm) < '" . date('Y-m-d H:i:s', $time_max) . "')";
       // Operateur
-      $operators = array('alarm' => LibMelanie\Config\MappingMelanie::diff,'calendar' => LibMelanie\Config\MappingMelanie::in);
-      $fields = array('uid','title','calendar','start','end','location','alarm');
+      $operators = array('alarm' => LibMelanie\Config\MappingMelanie::diff, 'calendar' => LibMelanie\Config\MappingMelanie::in);
+      $fields = array('uid','title','calendar','start','end','location','alarm','owner');
       $_events = $_event->getList($fields, $filter, $operators);
       $events = array();
       foreach ($_events as $_event) {
-        $eventproperty = new LibMelanie\Api\Melanie2\EventProperty($this->user, $_event);
-        $eventproperty->key = array("X-MOZ-SNOOZE-TIME","X-MOZ-LASTACK");
-        $snoozetime = null;
-        $lastack = null;
-        $properties = $eventproperty->getList();
-        // Récupération de la liste des attributs
-        foreach ($properties as $property) {
-          $this->attributes[$property->key] = $property;
-          if ($property->key == "X-MOZ-SNOOZE-TIME") {
-            $snoozetime = strtotime($property->value);
-          }
-          elseif ($property->key == "X-MOZ-LASTACK") {
-            $lastack = strtotime($property->value);
-          }
-        }
-        if (isset($lastack)) {
-          if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
+        $_event->setCalendarMelanie($this->calendars[$_event->calendar]);
+        $snoozetime = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
+        if (isset($snoozetime)) {
+          $snoozetime = strtotime($snoozetime);
+          if ($snoozetime > time()) {
             continue;
           }
         }
-        if (isset($snoozetime)) {
-          if ($snoozetime > $time) {
+        $lastack = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+        if (isset($lastack)) {
+          $lastack = strtotime($lastack);
+          if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
             continue;
           }
         }
@@ -1956,24 +1948,24 @@ class mel_driver extends calendar_driver {
       }
       // Parcourir les agendas pour se limité à ceux qui affiche les alarmes
       $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
+      if (empty($alarm_calendars)) {
+        $alarm_calendars[$this->rc->user->get_username()] = 1;
+      }
       foreach ($calendars as $key => $calendar) {
         if (isset($alarm_calendars[$calendar->id])) {
           $event = new LibMelanie\Api\Melanie2\Event($this->user, $calendar);
           $event->uid = $event_id;
           if ($event->load()) {
-            $eventproperty = new LibMelanie\Api\Melanie2\EventProperty($this->user, $event);
-            if ($snooze != 0) {
-              $eventproperty->key = 'X-MOZ-SNOOZE-TIME';
-              $time = time() + $snooze;
-              $eventproperty->value = gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z';
-              $eventproperty->save();
+            if ($snooze != 0) {              
+              $time = time() + $snooze * 60;
+              $event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME, gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z');
             }
             else {
-              $eventproperty->key = 'X-MOZ-LASTACK';
               $time = time();
-              $eventproperty->value = gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z';
-              $eventproperty->save();
+              $event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK, gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z');
             }
+            $event->modified = time();
+            $event->save();
           }
         }
       }

@@ -24,7 +24,7 @@
 // Store current_timestamp
 var current_timestamp;
 // Configure number of milliseconds before next refresh
-var NEXT_REFRESH = 300000;
+const NEXT_REFRESH = 300000;
 // Current page for events
 var current_event_page = 0;
 var events_element_by_page = 2;
@@ -48,6 +48,7 @@ var lastUpdateFavoritesList = 0;
 
 // On click right panel minifier
 $(document).on("click", '#right_panel #right_panel_minifier', function(e) {
+	rcmail.right_panel_enable_notification();
 	if ($('#right_panel').hasClass('minified')) {
 		$('#right_panel').removeClass('minified');
 		$('body').removeClass('right_panel_minified');
@@ -98,8 +99,9 @@ $(document).on("click", '#right_panel_events .events_list .event', function(e) {
 	}	
 });
 $(document).on("click", '#right_panel_events .events_list .alarm .title', function(e) {
+	rcmail.right_panel_enable_notification();
 	if ($('#right_panel').hasClass('minified')) {
-		var id = $(this).parent().attr('id');
+		const id = $(this).parent().attr('id');
 		rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:0 } });
 		for (var i = 0; i < window.alarmsList.length; i++) {
 			if (window.alarmsList[i].id == id) {
@@ -118,7 +120,8 @@ $(document).on("click", '#right_panel_events .events_list .alarm .title', functi
 	
 });
 $(document).on("click", '#right_panel_events .events_list .alarm .later', function(e) {
-	var id = $(this).parent().parent().attr('id');
+	rcmail.right_panel_enable_notification();
+	const id = $(this).parent().parent().attr('id');
 	rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:10 } });
 	for (var i = 0; i < window.alarmsList.length; i++) {
 		if (window.alarmsList[i].id == id) {
@@ -130,7 +133,8 @@ $(document).on("click", '#right_panel_events .events_list .alarm .later', functi
 	}
 });
 $(document).on("click", '#right_panel_events .events_list .alarm .dismiss', function(e) {
-	var id = $(this).parent().parent().attr('id');
+	rcmail.right_panel_enable_notification();
+	const id = $(this).parent().parent().attr('id');
 	rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:0 } });
 	for (var i = 0; i < window.alarmsList.length; i++) {
 		if (window.alarmsList[i].id == id) {
@@ -158,6 +162,7 @@ $(document).on("click", '#right_panel_events .new_event', function(e) {
 
 // Pagination event click
 $(document).on("click", '#right_panel_events .pagination .today', function(e) {
+	rcmail.right_panel_enable_notification();
 	if ($('#right_panel').hasClass('minified')) {
 		var url = rcmail.env.comm_path;
 		url = url.replace(/\_task=[a-z0-9_-]+/, '_task=calendar');
@@ -199,9 +204,9 @@ $(document).on("click", '#right_panel_contacts .contacts_menu .favorites_button'
 	}
 });
 $(document).on("click", '#right_panel_contacts .contacts_favorites .contact', function(e) {
-	var cid = $(this).find('.cid').text();
+	const cid = $(this).find('.cid').text();
 	if (cid) {
-		var url = rcmail.url('addressbook/show', {
+		const url = rcmail.url('addressbook/show', {
 			_framed: 1,
 			_source: rcmail.env['username'].replace('.','_-P-_'),
 			_cid: cid
@@ -210,8 +215,8 @@ $(document).on("click", '#right_panel_contacts .contacts_favorites .contact', fu
 	}
 });
 $(document).on("click", '#right_panel_contacts .contacts_recents .contact', function(e) {
-	var id = $(this).attr('id');
-	var contact = window.messagesList[id];
+	const id = $(this).attr('id');
+	const contact = window.messagesList[id];
 	if (contact) {
 		if (contact.type == 'im') {
 			rcmail.right_panel_open_rocket_chat_url(contact.im);
@@ -222,6 +227,7 @@ $(document).on("click", '#right_panel_contacts .contacts_recents .contact', func
 	}
 });
 $(document).on("click", '#right_panel_presence', function(event) {
+	rcmail.right_panel_enable_notification();
 	document.getElementById('useroptions').style.width = this.offsetWidth + 'px'; 
 	return UI.toggle_popup('useroptions', {target: this, pointerType: 'mouse', pageX: event.pageX, pageY: event.pageY, clientX: event.clientX, clientY: event.clientY});
 });
@@ -232,7 +238,7 @@ if (window.rcmail) {
 		$('body').append('<div id="right_panel"></div>');
 		$('#right_panel').html('<span id="right_panel_minifier">→</span><div id="right_panel_presence" title="' + rcmail.get_label('right_panel.right_panel_presence_title') + '"></div><div id="right_panel_date"><span class="day"></span><span class="date"></span><span class="min"></span></div><div id="right_panel_events"></div><div id="right_panel_contacts"></div>')
 		// Gestion du minified
-		var minified = rcmail.right_panel_storage_get('minified');
+		const minified = rcmail.right_panel_storage_get('minified');
 		if (minified && minified === 'true' || $(window).width() <= 1100) {
 			$('#right_panel').addClass('minified');
 			$('body').addClass('right_panel_minified');
@@ -260,7 +266,7 @@ if (window.rcmail) {
 		// Ouvrir l'événement en attente
 		if (rcmail.env.task == 'calendar') {
 			setTimeout(function() {
-				var event = rcmail.right_panel_storage_get('event', false, true);
+				const event = rcmail.right_panel_storage_get('event', false, true);
 				if (event) {
 					window.cal.event_show_dialog(JSON.parse(event));
 				}
@@ -269,6 +275,34 @@ if (window.rcmail) {
 		}
 		// Use display alarms from libcalendaring
 		rcmail.addEventListener('plugin.display_alarms', function (alarms) {
+			function checkTime(i) {
+				if (i < 10) {
+					i = "0" + i;
+				}
+				return i;
+			}
+			const today = new Date();
+			// Comparer les alarmes
+			for (const alarm of alarms) {
+				const index = window.alarmsList.findIndex(item => item.id == alarm.id);
+				if (index === -1 ) {
+					const type = alarm.id.split(':')[0];
+					const start_date = new Date(alarm.start);
+					if (today.getDate() == start_date.getDate() && today.getMonth() == start_date.getMonth()) {
+						var date = rcmail.get_label("right_panel.today");
+					}
+					else {
+						var date = rcmail.get_label("right_panel.day_" + start_date.getDay()) + " " + start_date.getDate() + " " + rcmail.get_label("right_panel.month_" + start_date.getMonth());
+					}
+					if (!alarm.allDay) {
+						const time = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
+						date = rcmail.get_label('right_panel.date').replace(/%%day%%/, date).replace(/%%hour%%/, time);
+					}
+					const title = date;
+					const url = '/plugins/right_panel/images/' + type + '.png';
+					rcmail.right_panel_show_notification(title, alarm.title, url)
+				}
+			}
 			// Sort alarms by alarm start
 			alarms.sort(function(x, y) {
 				return new Date(x.start) - new Date(y.start);
@@ -367,13 +401,44 @@ if (window.rcmail) {
 
 // Read cookie value
 function getCookieValue(a) {
-    var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+    let b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
     return b ? b.pop() : '';
 }
 
+// Enable notification on desktop
+rcube_webmail.prototype.right_panel_enable_notification = function() {
+	// Si le navigateur ne supporte pas les notifications
+	if (!("Notification" in window)) {
+		return;
+	}
+	// Sinon, nous avons besoin de la permission de l'utilisateur
+	// Note : Chrome n'implémente pas la propriété statique permission
+	// Donc, nous devons vérifier s'il n'y a pas 'denied' à la place de 'default'
+	else if (Notification.permission !== "granted" && Notification.permission !== 'denied') {
+		Notification.requestPermission(function (permission) {
+			// Quelque soit la réponse de l'utilisateur, nous nous assurons de stocker cette information
+			if(!('permission' in Notification)) {
+				Notification.permission = permission;
+			}
+		});
+	}
+};
+
+// Show notification on desktop
+rcube_webmail.prototype.right_panel_show_notification = function(title, body, icon) {
+	// Si le navigateur ne supporte pas les notifications
+	if (!("Notification" in window)) {
+		return;
+	}
+	// Est-ce que l'utilisateur est OK pour recevoir des notifications
+	else if (Notification.permission === "granted") {
+		var notification = new Notification(title, {body: body, icon: icon});
+	}
+};
+
 // Set today date
 rcube_webmail.prototype.right_panel_today_date = function() {
-  var date = new Date();
+  const date = new Date();
   window.current_timestamp = Math.round(date.getTime()/1000)
   if ($('#right_panel').hasClass('minified')) {
 	  $('#right_panel_date .day').text(this.get_label("right_panel.day_" + date.getDay()));
@@ -430,11 +495,12 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 
 // Get value from cache
 rcube_webmail.prototype.right_panel_storage_get = function(name, fromJson = false, local = false, defaultValue = null) {
+	let value = null;
 	if (this.env.keep_login) {
-		var value = window.localStorage.getItem('right_panel.' + name);
+		value = window.localStorage.getItem('right_panel.' + name);
 	}
 	else {
-		var value = window.sessionStorage.getItem('right_panel.' + name);
+		value = window.sessionStorage.getItem('right_panel.' + name);
 	}
 	
 	if (value == null) {
@@ -476,7 +542,7 @@ rcube_webmail.prototype.right_panel_show_message = function(id) {
 	if (!id)
 		return;
 
-	var win, target = window,
+	let target = window,
 	  url = this.params_from_uid(id, {_caps: this.browser_capabilities()});
 	
 	url = this.url('mail/show', url);
@@ -574,7 +640,7 @@ rcube_webmail.prototype.right_panel_get_events = function() {
 		        end: end_timestamp,
 		    }),
 	}).done(function(json) {
-		var events = JSON.parse(json);
+		let events = JSON.parse(json);
 		if (events) {
 			window.eventsList = events;
 			rcmail.right_panel_storage_set('eventsList', window.eventsList, true);
@@ -593,35 +659,36 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 	  return i;
 	}
 
-	var events = window.eventsList;
+	let events = window.eventsList;
 	$('#right_panel_events').html('');
 	if (events) {
 		// Sort events by event start
 		events.sort(function(x, y) {
 			return new Date(x.start) - new Date(y.start);
 		});
-		var today = new Date();
+		const today = new Date();
 		if ($('#right_panel').hasClass('minified')) {
 			$('#right_panel_events').append('<div class="pagination"><span class="today" title="' + this.get_label('right_panel.today_title') + '">' + this.get_label('right_panel.today') + '</span></div>');
 			$('#right_panel_events').append('<div class="events_list"></div>');
-			var count_events_today = 0, count_events = 0;
+			let count_events_today = 0, count_events = 0;
 			// Gestion des alarmes
 			if (window.alarmsList.length) {
-				for (var i = 0; i < window.alarmsList.length; i++) {
-					var alarm = window.alarmsList[i];
-					var start_date = new Date(alarm.start);
+				for (let i = 0; i < window.alarmsList.length; i++) {
+					const alarm = window.alarmsList[i];
+					const start_date = new Date(alarm.start);
+					let date;
 					if (today.getDate() == start_date.getDate() && today.getMonth() == start_date.getMonth()) {
-						var date = rcmail.get_label("right_panel.today_min");
+						date = rcmail.get_label("right_panel.today_min");
 					}
 					else {
-						var date = rcmail.get_label("right_panel.day_min_" + start_date.getDay()) + " " + start_date.getDate() + " " + this.get_label("right_panel.month_min_" + start_date.getMonth());
+						date = rcmail.get_label("right_panel.day_min_" + start_date.getDay()) + " " + start_date.getDate() + " " + this.get_label("right_panel.month_min_" + start_date.getMonth());
 					}
 					if (!alarm.allDay) {
-						var time = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
+						const time = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
 						date = rcmail.get_label('right_panel.date').replace(/%%day%%/, date).replace(/%%hour%%/, time);
 					}
-					var title = alarm.title;
-					var type = alarm.id.split(':')[0];
+					const title = alarm.title;
+					const type = alarm.id.split(':')[0];
 					$('#right_panel_events .events_list').append('<div class="item alarm" id="' + alarm.id + '" title="' + title + '"><span class="type">' + rcmail.get_label("right_panel." + type) + '</span><span class="date">' + date + '</span><span class="title">' + title + '</span></div>');
 					$('#right_panel_events .events_list .event[id="' + alarm.id + '"]').data('event', event);
 					count_events++;
@@ -630,10 +697,10 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 					}
 				}
 			}
-			for (var i = 0; i < events.length; i++) {
-				var event = events[i];
-				var start_date = new Date(event.start);
-				var end_date = new Date(event.end);
+			for (let i = 0; i < events.length; i++) {
+				const event = events[i];
+				const start_date = new Date(event.start);
+				const end_date = new Date(event.end);
 				if (event.allDay) {
 					end_date.setDate(end_date.getDate() + 1);
 				}
@@ -641,15 +708,17 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 					continue;
 				}
 				if (today.getDate() == start_date.getDate() && today.getMonth() == start_date.getMonth()) {
+					let start;
+					let end;
 					if (event.allDay) {
-						var start = '00:00';
-						var end = '00:00';
+						start = '00:00';
+						end = '00:00';
 					}
 					else {
-						var start = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
-						var end = checkTime(end_date.getHours()) + ':' + checkTime(end_date.getMinutes());
+						start = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
+						end = checkTime(end_date.getHours()) + ':' + checkTime(end_date.getMinutes());
 					}
-					var title = event.title;
+					const title = event.title;
 					if (count_events == 0) {
 						$('#right_panel_events .events_list').append('<div class="event item ' + event.status + '" id="' + event._id + '" title="' + title + '"><span class="title">' + event.title + '</span><span class="start">' + start + '</span><span class="date_separator"></span><span class="end">' + end + '</span></div>');
 						$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
@@ -679,59 +748,62 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 			$('#right_panel_events').append('<div class="events_list"></div>');
 			// Gestion des alarmes
 			if (window.alarmsList.length) {
-				for (var i = 0; i < window.alarmsList.length; i++) {
-					var alarm = window.alarmsList[i];
-					var start_date = new Date(alarm.start);
+				for (let i = 0; i < window.alarmsList.length; i++) {
+					const alarm = window.alarmsList[i];
+					const start_date = new Date(alarm.start);
+					let date;
 					if (today.getDate() == start_date.getDate() && today.getMonth() == start_date.getMonth()) {
-						var date = rcmail.get_label("right_panel.today_min");
+						date = rcmail.get_label("right_panel.today_min");
 					}
 					else {
-						var date = rcmail.get_label("right_panel.day_min_" + start_date.getDay()) + " " + start_date.getDate() + " " + this.get_label("right_panel.month_min_" + start_date.getMonth());
+						date = rcmail.get_label("right_panel.day_min_" + start_date.getDay()) + " " + start_date.getDate() + " " + this.get_label("right_panel.month_min_" + start_date.getMonth());
 					}
 					if (!alarm.allDay) {
-						var time = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
+						const time = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
 						date = rcmail.get_label('right_panel.date').replace(/%%day%%/, date).replace(/%%hour%%/, time);
 					}
-					var title = alarm.title;
+					let title = alarm.title;
 					if (alarm.location) {
 						title += " (" + alarm.location + ")";
 					}
-					var type = alarm.id.split(':')[0];
+					const type = alarm.id.split(':')[0];
 					$('#right_panel_events .events_list').append('<div class="item alarm" id="' + alarm.id + '" title="' + title + '"><span class="date">' + date + '</span><span class="type">' + rcmail.get_label("right_panel." + type) + '</span><span class="title">' + title + '</span><div class="alarm_buttons"><span class="later">' + rcmail.get_label("right_panel.later") + '</span><span class="dismiss">' + rcmail.get_label("right_panel.dismiss") + '</span></div></div>');
 					$('#right_panel_events .events_list .event[id="' + alarm.id + '"]').data('event', event);
 				}
 			}
-			var end_timestamp = Date.now() + (5 * 24 * 60 * 60 * 1000); // Add 5 days
-			var tomorrow = new Date();
+			const end_timestamp = Date.now() + (5 * 24 * 60 * 60 * 1000); // Add 5 days
+			let tomorrow = new Date();
 			tomorrow.setDate(today.getDate() + 1);
-			for (var i = 0; i < events.length; i++) {
-				var event = events[i];
-				var start_date = new Date(event.start);
-				var end_date = new Date(event.end);
+			for (let i = 0; i < events.length; i++) {
+				const event = events[i];
+				const start_date = new Date(event.start);
+				const end_date = new Date(event.end);
 				if (event.allDay) {
 					end_date.setDate(end_date.getDate() + 1);
 				}
 				if (end_date.getTime() < Date.now() || start_date.getTime() > end_timestamp) {
 					continue;
 				}
+				let date;
 				if (today.getDate() == start_date.getDate() && today.getMonth() == start_date.getMonth()) {
-					var date = rcmail.get_label("right_panel.today");
+					date = rcmail.get_label("right_panel.today");
 				}
 				else if (tomorrow.getDate() == start_date.getDate() && tomorrow.getMonth() == start_date.getMonth()) {
-					var date = rcmail.get_label("right_panel.tomorrow");
+					date = rcmail.get_label("right_panel.tomorrow");
 				}
 				else {
-					var date = rcmail.get_label("right_panel.day_" + start_date.getDay()) + " " + start_date.getDate() + " " + this.get_label("right_panel.month_" + start_date.getMonth());
+					date = rcmail.get_label("right_panel.day_" + start_date.getDay()) + " " + start_date.getDate() + " " + this.get_label("right_panel.month_" + start_date.getMonth());
 				}
+				let start;
+				let end = '';
 				if (event.allDay) {
-					var start = rcmail.get_label("right_panel.allday_min");
-					var end = '';
+					start = rcmail.get_label("right_panel.allday_min");
 				}
 				else {
-					var start = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
-					var end = checkTime(end_date.getHours()) + ':' + checkTime(end_date.getMinutes());
+					start = checkTime(start_date.getHours()) + ':' + checkTime(start_date.getMinutes());
+					end = checkTime(end_date.getHours()) + ':' + checkTime(end_date.getMinutes());
 				}
-				var title = event.title;
+				let title = event.title;
 				if (event.location) {
 					title += " (" + event.location + ")";
 				}
@@ -755,18 +827,16 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 
 // Set pagination for events
 rcube_webmail.prototype.right_panel_events_pagination = function() {
-	if ($('#right_panel_events .events_list .item').length <= window.events_element_by_page) {
-		var max_page = 0;
-	}
-	else {
-		var max_page = Math.floor($('#right_panel_events .events_list .item').length / window.events_element_by_page) - 1;
+	let max_page = 0;
+	if ($('#right_panel_events .events_list .item').length > window.events_element_by_page) {
+		max_page = Math.floor($('#right_panel_events .events_list .item').length / window.events_element_by_page) - 1;
 	}
 	// Gérer la suppression depuis la dernière page
 	if (window.current_event_page > max_page) {
 		window.current_event_page = max_page; 
 	}
-	var first_element = window.current_event_page * window.events_element_by_page;
-	var last_element = (window.current_event_page + 1) * window.events_element_by_page - 1;
+	const first_element = window.current_event_page * window.events_element_by_page;
+	const last_element = (window.current_event_page + 1) * window.events_element_by_page - 1;
 	$('#right_panel_events .events_list .item').each(function (index) {
 		if (index < first_element
 				|| index > last_element) {
@@ -804,7 +874,7 @@ rcube_webmail.prototype.right_panel_get_contacts = function(force = false) {
 		this.right_panel_get_contacts_list_minified(force);
 	}
 	else {
-		var contacts_menu = this.right_panel_storage_get('contacts_menu');
+		const contacts_menu = this.right_panel_storage_get('contacts_menu');
 		if (contacts_menu && contacts_menu == 'favorites_button') {
 			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button disabled" title="' + this.get_label("right_panel.recents_button_title") + '"></span><span class="favorites_button" title="' + this.get_label("right_panel.favorites_button_title") + '"></span></div>');
 		}
@@ -862,15 +932,15 @@ rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = fals
 				if (!window.messagesList) {
 					window.messagesList = [];
 				}
-				var hasChanged = false;
-				for (var i = 0; i < contacts.length; i++) {
-					var contact = contacts[i];
+				let hasChanged = false;
+				for (let i = 0; i < contacts.length; i++) {
+					const contact = contacts[i];
 					// Ne pas s'afficher soit même
 					if (rcmail.env['user_email'].toLowerCase() == contact.email.toLowerCase()) {
 						continue;
 					}
 					// Contact name
-					var name = '';
+					let name;
 					if (contact.surname || contact.firstname) {
 						name = contact.firstname + ' ' + contact.surname;
 					}
@@ -878,9 +948,9 @@ rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = fals
 						name = contact.name.split(' - ')[0];
 					}
 					// ID
-					var id = contact.muid
+					const id = contact.muid
 					// Search for the contact in contacts list
-					var found = false, key = null;
+					let found = false, key = null;
 					for (var j = 0; j < window.messagesList.length; j++) {
 						if (window.messagesList[j] && window.messagesList[j].id == id) {
 							found = true;
@@ -996,7 +1066,7 @@ rcube_webmail.prototype.right_panel_get_contacts_favorites = function(force = fa
 		if (window.favoritesList.length && !$('#right_panel_contacts .contacts_favorites .contact').length) {
 			this.right_panel_refresh_favorites_contacts();
 		}
-		var res = this.http_get('addressbook/plugin.list_contacts_favorites');	
+		this.http_get('addressbook/plugin.list_contacts_favorites');	
 	}
 	else {
 		this.right_panel_refresh_favorites_contacts();
@@ -1010,10 +1080,10 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 	if (!window.favoritesList) {
 		window.favoritesList = [];
 	}
-	for (var i = 0; i < window.favoritesList.length; i++) {
-		var contact = window.favoritesList[i];
+	for (let i = 0; i < window.favoritesList.length; i++) {
+		const contact = window.favoritesList[i];
 		// Contact name
-		var name = '';
+		let name;
 		if (contact.surname || contact.firstname) {
 			name = contact.firstname + ' ' + contact.surname;
 		}
@@ -1021,33 +1091,34 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 			name = contact.name.split(' - ')[0];
 		}
 		// Contact email
-		var email = '<span class="email"></span>';
+		let email = '<span class="email"></span>';
 		if (contact.email) {
 			email = '<span class="email"><a href="mailto:' + contact.email + '" onclick="event.preventDefault(); event.stopPropagation(); return rcmail.command(\'compose\',\'' + contact.email + '\',this);"></a></span>';
 		}
 		// Contact im
-		var im = '<span class="im"></span>';
+		let im = '<span class="im"></span>';
 		if (contact.username) {
 			im = '<span class="im"><a href="#" onclick="event.preventDefault(); event.stopPropagation(); return rcmail.right_panel_open_rocket_chat_url(\'/direct/' + contact.username + '\');"></a></span>';
 		}
 		// Contact status
-		var status = '<span class="status offline">none</span>';
+		let status = '<span class="status offline">none</span>';
 		if (contact.status) {
 			status = '<span class="status ' + contact.status + '">' + contact.status + '</span>';
 		}
 		// ID
-		var id = contact.cuid
+		let id = contact.cuid
 		if (contact.username) {
 			id = contact.username;
 		}
 		// Photo url
+		let photo_url = null;
 		if (contact.photo_url) {
-			var photo_url = contact.photo_url;	
+			photo_url = contact.photo_url;	
 		}
 		else {
-			var photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_')});	
+			photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_')});	
 		}								
-		var photo = '<img src="' + photo_url + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">';
+		const photo = '<img src="' + photo_url + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">';
 		$('#right_panel_contacts .contacts_favorites .contacts_list').append('<div class="contact ' + id + '" title="' + contact.name + '"><span class="cid">' + contact.ID + '</span><span class="photo">' + photo + '</span><span class="name">' + name + '</span>' + status + im + email + '</div>');
 	}
 	$("#right_panel_contacts .contacts_favorites .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 20});
@@ -1063,47 +1134,48 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 	window.messagesList.sort(function(a, b) {
 		return b.timestamp - a.timestamp;
 	});
-	var today = new Date();
-	var yesterday = new Date();
+	const today = new Date();
+	let yesterday = new Date();
 	yesterday.setDate(today.getDate() - 1);
 	
 	// Limiter à 20 l'affichage
 	window.messagesList.splice(20, window.messagesList.length - 20);
 
-	for (var i = 0; i < window.messagesList.length; i++) {
-		var contact = window.messagesList[i];
+	for (let i = 0; i < window.messagesList.length; i++) {
+		const contact = window.messagesList[i];
 		if (contact.subject) {
 			// Mail unread
-			var classMunread = '';
+			let classMunread = '';
 			if (contact.munread) {
 				classMunread = ' munread';
 			}
 			// Date
-			var date = new Date();
+			let date = new Date();
 			date.setTime(contact.timestamp * 1000);
 			
-			var hours = date.getHours();
+			let hours = date.getHours();
 			hours = ("0" + hours).slice(-2);
-			var minutes = date.getMinutes();
+			let minutes = date.getMinutes();
 			minutes = ("0" + minutes).slice(-2);
-			var hour = hours + ':' + minutes;
+			let hour = hours + ':' + minutes;
+			let day;
 			if (date.getDate() == today.getDate() 
 					&& date.getMonth() == today.getMonth()
 					&& date.getFullYear() == today.getFullYear()) {
-				var day = rcmail.get_label('right_panel.today_min');
+				day = rcmail.get_label('right_panel.today_min');
 			}
 			else if (date.getDate() == yesterday.getDate() 
 					&& date.getMonth() == yesterday.getMonth()
 					&& date.getFullYear() == yesterday.getFullYear()) {
-				var day = rcmail.get_label('right_panel.yesterday_min');
+				day = rcmail.get_label('right_panel.yesterday_min');
 			}
 			else {
-				var day = ("0" + date.getDate()).slice(-2) + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+				day = ("0" + date.getDate()).slice(-2) + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
 			}
-			var date = rcmail.get_label('right_panel.date').replace(/%%day%%/, day).replace(/%%hour%%/, hour);
+			const date_text = rcmail.get_label('right_panel.date').replace(/%%day%%/, day).replace(/%%hour%%/, hour);
 			// ID
-			var id = contact.id
-			$('#right_panel_contacts .contacts_recents .contacts_list').append('<div class="contact ' + contact.id + classMunread + '" id="' + i + '" title="' + contact.name + '"><span class="date">' + date + '</span><span class="title">' + rcmail.get_label('right_panel.' + contact.type) + '</span><span class="name">' + contact.name + '</span><span class="subject">' + contact.subject + '</span><span class="text">' + contact.text + '</span></div>');		
+			const id = contact.id
+			$('#right_panel_contacts .contacts_recents .contacts_list').append('<div class="contact ' + contact.id + classMunread + '" id="' + i + '" title="' + contact.name + '"><span class="date">' + date_text + '</span><span class="title">' + rcmail.get_label('right_panel.' + contact.type) + '</span><span class="name">' + contact.name + '</span><span class="subject">' + contact.subject + '</span><span class="text">' + contact.text + '</span></div>');		
 		}
 	}
 	$("#right_panel_contacts .contacts_recents .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 20});
@@ -1119,15 +1191,16 @@ rcube_webmail.prototype.right_panel_ariane_web_socket = function() {
 		window.webSocketAriane = new WebSocket(rcmail.env.web_socket_ariane_url);
 		// Web socket open
 		window.webSocketAriane.onopen = function (event) {
+			let params;
 			if (!window.webSocketArianeConnected) {
-				var params = {
+				params = {
 					"msg": "connect",
 					"version": "1",
 					"support": ["1", "pre2", "pre1"]
 				}			
 			}
 			else {
-				var params = {
+				params = {
 				    "msg": "method",
 				    "method": "subscriptions/get",
 				    "id": "method_subscriptions_get",
@@ -1139,7 +1212,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket = function() {
 		// Web socket on message
 		window.webSocketAriane.onmessage = function (event) {
 			//alert(event.data);
-			var data = JSON.parse(event.data);
+			const data = JSON.parse(event.data);
 			rcmail.right_panel_ariane_web_socket_results(data);
 		};
 		// Web socket on notification

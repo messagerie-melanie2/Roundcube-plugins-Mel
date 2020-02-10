@@ -92,7 +92,7 @@ $(document).on("click", '#right_panel_events .events_list .event', function(e) {
 		}
 		else {
 			rcmail.right_panel_storage_set('event', $(this).data('event'), true, true);
-			var url = rcmail.env.comm_path;
+			let url = rcmail.env.comm_path;
 			url = url.replace(/\_task=[a-z0-9_-]+/, '_task=calendar');
 			window.open(url, '_blank');
 		}
@@ -100,10 +100,10 @@ $(document).on("click", '#right_panel_events .events_list .event', function(e) {
 });
 $(document).on("click", '#right_panel_events .events_list .alarm .title', function(e) {
 	rcmail.right_panel_enable_notification();
+	const id = $(this).parent().attr('id');
 	if ($('#right_panel').hasClass('minified')) {
-		const id = $(this).parent().attr('id');
 		rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:0 } });
-		for (var i = 0; i < window.alarmsList.length; i++) {
+		for (let i = 0; i < window.alarmsList.length; i++) {
 			if (window.alarmsList[i].id == id) {
 				window.alarmsList.splice(i, 1);
 				rcmail.right_panel_storage_set('alarmsList', window.alarmsList, true);
@@ -112,8 +112,19 @@ $(document).on("click", '#right_panel_events .events_list .alarm .title', functi
 			}
 		}
 	}
+	else if (id.indexOf('cal') === 0) {
+		if (rcmail.env.task == 'calendar') {
+			window.cal.event_show_dialog($(this).data('event'), e);
+		}
+		else {
+			rcmail.right_panel_storage_set('event', $(this).data('event'), true, true);
+			let url = rcmail.env.comm_path;
+			url = url.replace(/\_task=[a-z0-9_-]+/, '_task=calendar');
+			window.open(url, '_blank');
+		}	
+	}
 	else if (rcmail.env.task != 'tasks') {
-		var url = rcmail.env.comm_path;
+		let url = rcmail.env.comm_path;
 		url = url.replace(/\_task=[a-z0-9_-]+/, '_task=tasks');
 		window.open(url, '_blank');
 	}

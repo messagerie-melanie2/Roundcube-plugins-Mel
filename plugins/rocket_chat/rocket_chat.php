@@ -25,6 +25,11 @@ class rocket_chat extends rcube_plugin {
      */
     public $rc;
     /**
+     * Durée d'expiration d'un token rocket chat en secondes
+     * Valeur par défaut : 48h
+     */
+    const TOKEN_EXPIRE_DURATION = 172800;
+    /**
      * (non-PHPdoc)
      * 
      * @see rcube_plugin::init()
@@ -282,7 +287,14 @@ EOF;
      * @return NULL|string
      */
     private function getAuthToken() {
-      return isset($_SESSION['rocket_chat_auth_token']) ? $_SESSION['rocket_chat_auth_token'] : null;
+      $token = isset($_SESSION['rocket_chat_auth_token']) ? $_SESSION['rocket_chat_auth_token'] : null;
+      if (isset($_SESSION['rocket_chat_auth_token_expire_date']) 
+          && $_SESSION['rocket_chat_auth_token_expire_date'] < time()) {
+        unset($_SESSION['rocket_chat_auth_token_expire_date']);
+        unset($_SESSION['rocket_chat_auth_token']);
+        $token = null;
+      }
+      return $token;
     }
     /**
      * Positionne l'auth token en session
@@ -291,6 +303,8 @@ EOF;
      */
     private function setAuthToken($authToken) {
       $_SESSION['rocket_chat_auth_token'] = $authToken;
+      $duration = $this->rc->config->get('rocket_chat_token_duration', self::TOKEN_EXPIRE_DURATION);
+      $_SESSION['rocket_chat_auth_token_expire_date'] = time() + $duration;
     }
     /**
      * Retourne le user id en session

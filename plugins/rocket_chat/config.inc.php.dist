@@ -34,3 +34,6 @@ $rcmail_config['rocket_chat_limited_use'] = false;
 
 // List of users for Rocket.Chat
 $rcmail_config['rocket_chat_users'] = [];
+
+// Expire token duration configurer in rocket.chat in seconds (48h)
+$rcmail_config['rocket_chat_token_duration'] = 172800;

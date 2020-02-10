@@ -141,23 +141,11 @@ html.mozilla #mailboxlist > li:first-child {
 	}
 }
 
-.messagelist tbody tr td.flag span.flagged {
-  background-position: center -80px !important;
-}
-
-.messagelist thead tr th.flag span.flagged {
-  background-position: center -80px !important;
-}
-
 .messagelist tr:hover td.status span.msgicon {
   height: 30px;
   width: 26px;
   background: url(../images/non-lu.png?v=e784.5000) center center no-repeat;
   opacity: .5;
-}
-
-.messagelist tr:hover td.flag span.unflagged {
-  background-position: center -96px !important;
 }
 
 .messagelist tr td.status span.unread,
@@ -189,6 +177,23 @@ html.mozilla #mailboxlist > li:first-child {
 	  background: url(../images/non-lu-dark.png?v=e784.5000) 10px center no-repeat;  
 	}
 }
+
+.messagelist thead tr th.flag span.flagged,
+.messagelist tbody tr td.flag span.flagged {
+	background: url(../images/suivi.png?v=e784.5000) center center no-repeat; 
+}
+
+@media (prefers-color-scheme: dark) {
+	.messagelist thead tr th.flag span.flagged,
+	.messagelist tbody tr td.flag span.flagged {
+		background: url(../images/suivi-dark.png?v=e784.5000) center center no-repeat; 
+	}	
+}
+
+.messagelist tr:hover td.flag span.unflagged {
+    background: url(../images/suivi-hover.png?v=e784.5000) center center no-repeat; 
+}
+
 
 .messagelist tr th.threads .listmenu {
     background: url(../images/barreTri-01.png?v=e784.5000) center center no-repeat;  

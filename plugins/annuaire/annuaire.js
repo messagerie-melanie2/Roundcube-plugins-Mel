@@ -180,7 +180,7 @@ window.rcmail
 		        	$('#annuaire-list li.added').removeClass('added');
 			    });
 			}
-			else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
+			else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_bal' || rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
 				$(document).on("click", '.showcontacts',
 						function(e) {
 							$('#list-contacts input#contactsearchbox').removeAttr('disabled').removeClass('ui-state-disabled');
@@ -270,7 +270,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 			}
 		}
 	}
-	else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
+	else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_bal' || rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
 		var val = $('#input_hidden_isgroup').val() == "false" ? node.uid : node.dn;
 		$('#acluser').val(val);
 		$('#annuaire-list li.added').removeClass('added');

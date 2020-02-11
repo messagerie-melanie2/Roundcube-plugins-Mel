@@ -284,20 +284,23 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 // Node expand
 rcube_webmail.prototype.annuaire_folder_expand = function(node) {
 	if ($('#rcmrow' + node.id + ' > ul > li.child').length) {
+		let params = {};
 		if ($('#rcmrow' + node.id).hasClass('addressbook')) {
-			var dn = null;
-			var source = node.id;
+			params['_source'] = node.id;
 		}
 		else {
-			var split = node.id.split('-');
-			var source = split.pop();
-			var dn = split[0];
+			let node_id = node.id;
+			if (node_id.indexOf('-alias') !== -1) {
+				let split_alias = node_id.split('-alias');
+				params['_alias'] = 'alias' + split_alias.pop();
+				node_id = split_alias[0];
+			}
+			let split = node_id.split('-');
+			params['_source'] = split.pop();
+			params['_base'] = split[0];
 		}
 		
-		this.http_get('addressbook/plugin.annuaire', {
-			_base : dn,
-			_source : source
-		}, this.display_message(this.get_label('loading'), 'loading'));
+		this.http_get('addressbook/plugin.annuaire', params, this.display_message(this.get_label('loading'), 'loading'));
 	}
 };
 

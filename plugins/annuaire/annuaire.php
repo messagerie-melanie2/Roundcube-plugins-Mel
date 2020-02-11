@@ -153,6 +153,7 @@ class annuaire extends rcube_plugin
     {
         driver_annuaire::get_instance()->setBaseDn(rcube_utils::get_input_value('_base', rcube_utils::INPUT_GPC));
         driver_annuaire::get_instance()->setSource(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
+        driver_annuaire::get_instance()->setAlias(rcube_utils::get_input_value('_alias', rcube_utils::INPUT_GPC));
         $find = rcube_utils::get_input_value('_find', rcube_utils::INPUT_GPC);
         $search = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GPC);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
@@ -232,6 +233,9 @@ class annuaire extends rcube_plugin
                 }
 
                 $id = rcube_ldap::dn_encode(driver_annuaire::get_instance()->getBaseDn()) . '-' . driver_annuaire::get_instance()->getSource();
+                if (driver_annuaire::get_instance()->issetAlias()) {
+                    $id .= '-' . driver_annuaire::get_instance()->getAlias();
+                }
             } else {
                 $search_mode = (int) $this->rc->config->get('addressbook_search_mode');
                 $elements = [];

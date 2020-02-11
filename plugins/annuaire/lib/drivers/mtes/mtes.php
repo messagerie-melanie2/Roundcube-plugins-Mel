@@ -94,7 +94,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
         $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source . '-alias' . $key;
       }
       else {
-        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source;
+        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source; 
+      }
+      if (isset($this->alias)) {
+        $id .= '-' . $this->alias;
       }
       foreach ($info['objectclass'] as $k => $v) {
         switch ($v) {

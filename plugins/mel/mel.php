@@ -1738,45 +1738,21 @@ class mel extends rcube_plugin {
       $draft_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $draft_mbox;
       $sent_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $sent_mbox;
       $junk_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $junk_mbox;
-
-      $CONFIG['drafts_mbox'] = $draft_mbox;
-      $CONFIG['sent_mbox'] = $sent_mbox;
-      $CONFIG['junk_mbox'] = $junk_mbox;
-      $CONFIG['trash_mbox'] = $trash_mbox;
-      $this->rc->config->set('default_folders', array(
-              $draft_mbox,
-              $sent_mbox,
-              $junk_mbox,
-              $trash_mbox
-      ));
     }
-    else {
-      $change = false;
-      if (isset($draft_mbox)) {
-        $CONFIG['drafts_mbox'] = $draft_mbox;
-        $change = true;
-      }
-      if (isset($sent_mbox)) {
-        $CONFIG['sent_mbox'] = $sent_mbox;
-        $change = true;
-      }
-      if (isset($junk_mbox)) {
-        $CONFIG['junk_mbox'] = $junk_mbox;
-        $change = true;
-      }
-      if (isset($trash_mbox)) {
-        $CONFIG['trash_mbox'] = $trash_mbox;
-        $change = true;
-      }
-      if ($change) {
-        $this->rc->config->set('default_folders', array(
+    $CONFIG['drafts_mbox'] = $draft_mbox;
+    $this->rc->config->set('drafts_mbox', $draft_mbox);
+    $CONFIG['sent_mbox'] = $sent_mbox;
+    $this->rc->config->set('sent_mbox', $sent_mbox);
+    $CONFIG['junk_mbox'] = $junk_mbox;
+    $this->rc->config->set('junk_mbox', $junk_mbox);
+    $CONFIG['trash_mbox'] = $trash_mbox;
+    $this->rc->config->set('trash_mbox', $trash_mbox);
+    $this->rc->config->set('default_folders', array(
             $draft_mbox,
             $sent_mbox,
             $junk_mbox,
             $trash_mbox
-        ));
-      }
-    }
+    ));
   }
   /**
    * Défini si on est dans une instance interne ou extene de l'application

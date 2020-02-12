@@ -184,7 +184,7 @@ window.rcmail
 				$(document).on("click", '.showcontacts',
 						function(e) {
 							$('#list-contacts input#contactsearchbox').removeAttr('disabled').removeClass('ui-state-disabled');
-							window.annuaireSelector = $('#input_hidden_isgroup').val() == "false" ? 'person' : 'list';
+							window.annuaireSelector = $('#input_hidden_isgroup').val() == "false" ? 'person' : 'group';
 							$('#listview-float-right').show();
 				        	if ($('#annuaire-list li').length == 0) {
 				        		rcmail.http_get('mail/plugin.annuaire', {_source: rcmail.env.annuaire_source}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));

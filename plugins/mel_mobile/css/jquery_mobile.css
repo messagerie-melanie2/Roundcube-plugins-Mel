@@ -37,9 +37,11 @@ body.ui-mobile-viewport, div.ui-mobile-viewport {
     min-height: 50px !important;
 }
 
-.ui-front {
+/* 0005520: La fermeture (inopinée) de Melweb en cours d"écriture d"un message
+  -> Problème de z-index du pop-up
+  .ui-front {
     z-index: 1000 !important;
-}
+} */
 
 #calendarslist .ui-checkbox {
   margin: 5px 225px;

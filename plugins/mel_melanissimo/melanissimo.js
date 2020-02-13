@@ -25,12 +25,23 @@ var total_size = 0;
 
 $(document).ready(function() {
   // binds to click event of your input send button
-  $("#messagetoolbar a.send").bind('click', function(event) {
-    var lock = rcmail.display_message(rcmail.gettext('loading'), 'loading');
-    rcmail.http_post('plugin.test_melanissimo', {
-      _id : rcmail.env.compose_id
-    }, lock);
-  });
+  if (rcmail.env.ismobile) {
+    $(".jqm-compose a.send").bind('click', function(event) {
+      var lock = rcmail.display_message(rcmail.gettext('loading'), 'loading');
+      rcmail.http_post('plugin.test_melanissimo', {
+        _id : rcmail.env.compose_id
+      }, lock);
+    });
+  }
+  else {
+    $("#messagetoolbar a.send").bind('click', function(event) {
+      var lock = rcmail.display_message(rcmail.gettext('loading'), 'loading');
+      rcmail.http_post('plugin.test_melanissimo', {
+        _id : rcmail.env.compose_id
+      }, lock);
+    });
+  }
+  
   
   // binds to onchange event of your input field
   $('#uploadformFrm input[type=\'file\']').bind('change', function() {
@@ -46,7 +57,13 @@ $(document).ready(function() {
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Supprime le onclick des boutons pour intercepter le click
-    $("#messagetoolbar a.send").prop('onclick', null);
+    if (rcmail.env.ismobile) {
+      $(".jqm-compose a.send").prop('onclick', null);
+    }
+    else {
+      $("#messagetoolbar a.send").prop('onclick', null);
+    }
+    
   });
 
   rcmail.addEventListener('responseafterplugin.test_melanissimo', function(

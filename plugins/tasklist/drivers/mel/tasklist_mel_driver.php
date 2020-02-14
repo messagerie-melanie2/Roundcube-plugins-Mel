@@ -677,7 +677,9 @@ class tasklist_mel_driver extends tasklist_driver {
         'mask' => tasklist::FILTER_MASK_UNCOMPLETE,
         'alarm' => 1,
     ];
-    $_tasks = $this->list_tasks($query, $lists);
+    if (!empty($lists)) {
+      $_tasks = $this->list_tasks($query, $lists);
+    }
     $tasks = [];
     
     if (is_array($_tasks)) {

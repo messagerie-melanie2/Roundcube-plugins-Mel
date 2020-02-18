@@ -84,6 +84,14 @@ abstract class driver_mel {
   }
   
   /**
+   * Retourne l'objet User associé à l'utilisateur courant
+   * Permet de retourner l'instance User en fonction du driver
+   *
+   * @return \LibMelanie\Api\Mce\User
+   */
+  abstract public function getCurrentUser();
+
+  /**
    * Retourne si le username est une boite partagée ou non
    *
    * @param string $username

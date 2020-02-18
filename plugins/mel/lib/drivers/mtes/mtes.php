@@ -61,6 +61,19 @@ class mtes_driver_mel extends driver_mel {
    * @var string
    */
   protected $MBOX_TRASH = "Corbeille";
+
+  /**
+   * Retourne l'objet User associé à l'utilisateur courant
+   * Permet de retourner l'instance User en fonction du driver
+   *
+   * @return \LibMelanie\Api\Mel\User
+   */
+  public function getCurrentUser() {
+    $user = new \LibMelanie\Api\Mel\User();
+    $user->uid = rcmail::get_instance()->user->get_username();
+    $user->load();
+    return $user;
+  }
   
   /**
    * Retourne si le username est une boite partagée ou non

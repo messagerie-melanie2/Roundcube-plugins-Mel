@@ -58,7 +58,7 @@ class mel_driver extends calendar_driver {
   /**
    * Tableau de calendrier Mél
    *
-   * @var LibMelanie\Api\Melanie2\Calendar []
+   * @var LibMelanie\Api\Melanie2\Calendar[]
    */
   private $calendars;
   private $has_principal = false;
@@ -1027,7 +1027,7 @@ class mel_driver extends calendar_driver {
    * @param boolean $new
    * @return LibMelanie\Api\Melanie2\Event $_event
    */
-  private function _write_postprocess(LibMelanie\Api\Melanie2\Event $_event, $event, $new, $move = false) {
+  private function _write_postprocess($_event, $event, $new, $move = false) {
     // Gestion des données de l'évènement
     if ($new) {
       $_event->created = time();
@@ -1660,7 +1660,7 @@ class mel_driver extends calendar_driver {
    *
    * @param LibMelanie\Api\Melanie2\Event $event
    */
-  private function _read_postprocess(LibMelanie\Api\Melanie2\Event $event, $freebusy = false, $isexception = false) {
+  private function _read_postprocess($event, $freebusy = false, $isexception = false) {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess()");
     $_event = array();
@@ -1990,7 +1990,7 @@ class mel_driver extends calendar_driver {
    */
   private function add_attachment($attachment, LibMelanie\Api\Melanie2\Event $event) {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::add_attachment($event_id)");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::add_attachment()");
     try {
       $organizer = $event->organizer;
       // Ne pas ajouter de pièce jointe si on n'est pas organisateur (et que l'organisateur est au ministère
@@ -2026,7 +2026,7 @@ class mel_driver extends calendar_driver {
    */
   private function remove_attachment($attachment_id) {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_attachment($attachment_id, $event_id)");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_attachment($attachment_id)");
     try {
       $attachment = new LibMelanie\Api\Melanie2\Attachment();
       $attachment->isfolder = false;

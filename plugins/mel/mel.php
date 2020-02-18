@@ -74,6 +74,14 @@ class mel extends rcube_plugin {
    * @var string
    */
   private $user_objet_share;
+
+  /**
+   * User MCE courant
+   * 
+   * @var \LibMelanie\Api\Mce\User;
+   */
+  private static $current_user;
+
   /**
    * Clé pour la mise en cache
    *
@@ -513,6 +521,18 @@ class mel extends rcube_plugin {
       $_account = trim(rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
     }
     return $_account;
+  }
+
+  /**
+   * Retourne l'objet User de l'utilisateur de manière statique
+   * 
+   * @return \LibMelanie\Api\Mce\User
+   */
+  public static function get_current_user() {
+    if (!isset(self::$current_user)) {
+      self::$current_user = driver_mel::get_instance()->getCurrentUser();
+    }
+    return self::$current_user;
   }
 
   /**

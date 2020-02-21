@@ -146,16 +146,16 @@ $labels['mailboxchangetext'] = 'Cliquez ici pour sélectionner la boite mail à 
 $labels['boitespart'] = 'Boites partagées';
 $labels['gestionabs'] = 'Gestionnaire d\'absence';
 $labels['gestionlists'] = 'Gestionnaire de listes';
-$labels['modifmdp'] = 'Modification de mot de passe';
-$labels['accesinternet'] = 'Accès Internet et Synchronisations';
+$labels['modifmdp'] = 'Mot de passe';
+$labels['accesinternet'] = 'Accès depuis Internet';
 $labels['infoperso'] = 'Informations personnelles';
 $labels['photo'] = 'Publication photographie';
 $labels['absence'] = "Gestionnaire d'absence";
 
 $labels['userlbl'] = 'Compte utilisateur';
-$labels['oldpasswordlbl'] = 'Ancien mot de passe';
+$labels['oldpasswordlbl'] = 'Mot de passe actuel';
 $labels['newpasswordlbl'] = 'Nouveau mot de passe';
-$labels['newpasswordconfirmlbl'] = 'Confirmer nouveau mot de passe';
+$labels['newpasswordconfirmlbl'] = 'Nouveau mot de passe (confirmation)';
 
 // Mot de passe
 $labels['changepassword_confirm'] = 'Votre mot de passe a bien été changé, vous devez redémarrer votre session Windows pour continuer à accéder aux fichiers réseau et aux applications Cerbérisées';
@@ -163,10 +163,11 @@ $labels['changepassword_convention_error'] = 'Le nouveau mot de passe ne respect
 $labels['changepassword_modification_error'] = 'Echec de la modification du mot de passe. ';
 $labels['changepassword_appel_error'] = 'Echec de la modification du mot de passe. ';
 $labels['error_password_confirm'] = 'Mots de passe différents';
-$labels['changepassword_infos'] = "Cette fenêtre permet le changement du mot de passe d'authentification réseau et d'accès aux applications du Ministère. Vous devez redémarrer votre session Windows afin de conserver votre accès aux partages réseau et aux applications Cerbérisées";
-$labels['changepassword_explic'] = 'Le nouveau mot de passe doit être différent de tous les anciens mots de passe et être différent du dernier (au moins 3 caractères). Il ne doit pas contenir le nom ou le prénom de l’utilisateur.
-Il doit avoir une longueur d\'au moins 8 caractères, avec au moins un caractère de chaque type : majuscule, minuscule, chiffre, caractère spécial (!"#$%&\'()*+,-./:<=>?@[^]_{|}~). Les accents (â à â é è ê …) ne sont pas autorisés.
-Si vous synchronisez un téléphone avec Mél, pensez à mettre à jour le nouveau mot de passe sur les comptes du téléphone.';
+$labels['changepassword_infos'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél et aux applications Cerbère. Une fois ce changement effectué, pensez à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
+$labels['changepassword_infos_bureautique'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél, aux applications Cerbère et à votre poste de travail. Une fois ce changement effectué, fermez votre session Windows et reconnectez-vous avec votre nouveau mot de passe pour retrouver votre accès aux partages réseaux. Pensez également à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
+$labels['changepassword_explic'] = "Votre nouveau mot de passe doit contenir au moins 8 caractères, dont au moins une majuscule, une miniscule, un chiffre et un caractère spécial. Les caractères accentués ne sont pas autorisés.
+
+Vous ne pouvez pas réutiliser un mot de passe que vous avez déjà utilisé sur Mél, et votre nouveau mot de passe doit être suffisamment différent de votre mot de passe actuel (au moins 3 caractères doivent être modifiés).";
 
 //$labels['changepassword_explic_agri'] = 'Pour les agents dépendant du Ministère de l\'Agriculture et de l\'Alimentation, le changement de mot de passe se fait à partir de l\'annuaire Agricoll au lien suivant : ';
 $labels['changepassword_explic_agri_0'] = "Pour les agents dépendant du Ministère de l'Agriculture et de l'Alimentation, le changement de mot de passe s'effectue comme suit :"; 
@@ -182,16 +183,17 @@ $labels['users_shares'] = 'Partager à un utilisateur';
 $labels['groups_shares'] = 'Partager à un groupe';
 
 //Infos perso
-$labels['data_deny'] = "Vous ne pouvez pas modifier les informations de cette boite à lettres. Consultez votre gestionnaire Amédée.";
-$labels['info_title'] = "Informations spécifiques à mon compte";
+$labels['data_deny'] = "Vous ne pouvez pas modifier les informations de cette boite à lettres. Consultez votre service informatique.";
+$labels['info_texte'] = "Vous pouvez vérifier ici les informations relatives à votre compte.
+Certaines d'entre elles peuvent être modifiées manuellement, les autres sont gérées par votre service informatique.";
+$labels['info_title'] = "Informations spécifiques au compte";
 $labels['info_matricule'] = "Matricule :";
 $labels['info_inter_auto'] = "Accès internet autorisé :";
 $labels['info_admin'] = "Attachement administratif :";
 $labels['info_inter_active'] = "Accès internet activé :";
 $labels['info_nomade'] = "Accès nomade :";
 $labels['info_burotic'] = "Compte bureautique activé :";
-$labels['info_texte'] = "En cas d'erreur, d'omission ou modifications souhaitées, contacter votre gestionnaire Amédée";
-$labels['info_anais'] = "Informations publiées dans Anaïs";
+$labels['info_anais'] = "Informations publiées dans l'annuaire";
 $labels['info_adresse'] = "Adresse :";
 $labels['info_cp'] = "Code postal :";
 $labels['info_ville'] = "Ville :";
@@ -204,7 +206,6 @@ $labels['info_desc'] = "Description :";
 $labels['info_hiera'] = "Fonction hiérarchique :";
 $labels['info_metier'] = "Fonction métiers";
 $labels['info_mission'] = "Missions :";
-$labels['info_mess_gestamedee'] = "En cas d'erreur, d'omission ou modifications souhaitées, contacter votre gestionnaire Amédée.";
 $labels['info_err_postal'] = "Mauvais format du code postal";
 $labels['info_modif_ok'] = "Les données personnelles ont été modifiées.";
 $labels['info_modif_nok'] = "Echec de la modification des données personnelles : ";

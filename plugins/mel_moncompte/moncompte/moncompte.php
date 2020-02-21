@@ -73,7 +73,15 @@ class Moncompte {
     					if (isset($_POST['_changepassword_username'])) {
     						include_once 'validePassword.php';
     						validePassword::changePassword();
-    					}
+						}
+						// Compte bureautique
+						if ($this->myBal->getBureautique() == '1') {
+							$this->rc->output->set_env('moncompte_data_bureautique', 'oui');
+						}
+						else {
+							$this->rc->output->set_env('moncompte_data_bureautique', 'non');
+						}
+
     					$this->rc->output->set_env('moncompte_pwd_user', Moncompte::get_current_user_name());
     					$this->rc->output->set_pagetitle($this->plugin->gettext('moncompte'));
     					$this->rc->output->send('mel_moncompte.changepassword');
@@ -138,6 +146,7 @@ class Moncompte {
 					break;
 
 				case 'rcmaccesinternet':
+				case 'rcminternet':
 
 					if (isset($_POST['hidden_aiu'])) {
 						include_once 'valideAcces.php';
@@ -186,7 +195,7 @@ class Moncompte {
 					)
 					);
 
-					$this->rc->output->send('mel_moncompte.accesinternet');
+					$this->rc->output->send('mel_moncompte.internet');
 					break;
 
 				case 'rcmphoto':
@@ -307,29 +316,33 @@ class Moncompte {
 		
 		$result = array();
 		
-		// Ajout du menu Accet Internet
-		if ($this->rc->config->get('enable_moncompte_cgu', true)) {
-		    $result[] = array('id' => 'rcmaccesinternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
-		}
-		// Ajout du menu Gestionnaire d'absence
-		if ($this->rc->config->get('enable_moncompte_abs', true)) {
-		    $result[] = array('id' => 'rcmgestionabs', 'name' => $this->plugin->gettext('gestionabs'), 'class' => '');
-		}
-		// Ajout du menu gestion des Listes
-		if ($this->rc->config->get('enable_moncompte_lists', true)) {
-		    $result[] = array('id' => 'rcmgestionlists', 'name' => $this->plugin->gettext('gestionlists'), 'class' => '');
-		}
 		// Ajout du menu informations personnelles
 		if ($this->rc->config->get('enable_moncompte_infos', true)) {
 		    $result[] = array('id' => 'rcminfoperso', 'name' => $this->plugin->gettext('infoperso'), 'class' => '');
 		}
 		// Ajout du menu modification du mot de passe
 		if ($this->rc->config->get('enable_moncompte_mdp', true)) {
-		    $result[] = array('id' => 'rcmmodifmdp', 'name' => $this->plugin->gettext('modifmdp'), 'class' => '');
+			$result[] = array('id' => 'rcmmodifmdp', 'name' => $this->plugin->gettext('modifmdp'), 'class' => '');
+		}
+		// Ajout du menu Accet Internet
+		if ($this->rc->config->get('enable_moncompte_cgu', true)) {
+		    //$result[] = array('id' => 'rcmaccesinternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
+		}		
+		// Ajout du menu gestion des Listes
+		if ($this->rc->config->get('enable_moncompte_lists', true)) {
+		    $result[] = array('id' => 'rcmgestionlists', 'name' => $this->plugin->gettext('gestionlists'), 'class' => '');
+		}
+		// Ajout du menu Accet Internet
+		if ($this->rc->config->get('enable_moncompte_cgu', true)) {
+		    $result[] = array('id' => 'rcminternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
+		}
+		// Ajout du menu Gestionnaire d'absence
+		if ($this->rc->config->get('enable_moncompte_abs', true)) {
+		    $result[] = array('id' => 'rcmgestionabs', 'name' => $this->plugin->gettext('gestionabs'), 'class' => '');
 		}
 		// Ajout du menu gestion de la photo
 		if ($this->rc->config->get('enable_moncompte_photo', true)) {
-		    $result[] = array('id' => 'rcmphoto', 'name' => $this->plugin->gettext('photo'), 'class' => '');
+		    //$result[] = array('id' => 'rcmphoto', 'name' => $this->plugin->gettext('photo'), 'class' => '');
 		}
 
 		// create XHTML table

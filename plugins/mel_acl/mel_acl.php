@@ -566,15 +566,17 @@ class mel_acl extends rcube_plugin
         foreach ($users as $user) {
             $user = trim($user);
 
-            if (!empty($this->specials) && in_array($user, $this->specials)) {
-                $username = $this->gettext($user);
-            }
-            else if (!empty($user)) {
-                if (!strpos($user, '@') && ($realm = $this->get_realm())) {
-                    $user .= '@' . rcube_idn_to_ascii(preg_replace('/^@/', '', $realm));
-                }
-                $username = $user;
-            }
+            // if (!empty($this->specials) && in_array($user, $this->specials)) {
+            //     $username = $this->gettext($user);
+            // }
+            // else if (!empty($user)) {
+            //     if (!strpos($user, '@') && ($realm = $this->get_realm())) {
+            //         $user .= '@' . rcube_idn_to_ascii(preg_replace('/^@/', '', $realm));
+            //     }
+            //     $username = $user;
+            // }
+
+            $username = $user;
 
             if (!$acl || !$user || !strlen($mbox)) {
                 continue;

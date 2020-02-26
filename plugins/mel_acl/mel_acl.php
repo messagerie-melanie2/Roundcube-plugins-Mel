@@ -31,7 +31,6 @@ class mel_acl extends rcube_plugin
     private $supported = null;
     private $mbox;
     private $ldap;
-    private $specials = array();
     private $type;
 
     /**
@@ -380,7 +379,7 @@ class mel_acl extends rcube_plugin
 
         $fields['user'] = $textfield->show();
 
-        $this->rc->output->set_env('acl_specials', $this->specials);
+        $this->rc->output->set_env('acl_specials', []);
 
         // Create list with radio buttons
         if (count($fields) > 1) {
@@ -430,22 +429,8 @@ class mel_acl extends rcube_plugin
             $acl = array();
         }
 
-        // Keep special entries (anyone/anonymous) on top of the list
-        if (!empty($this->specials) && !empty($acl)) {
-            foreach ($this->specials as $key) {
-                if (isset($acl[$key])) {
-                    $acl_special[$key] = $acl[$key];
-                    unset($acl[$key]);
-                }
-            }
-        }
-
         // Sort the list by username
         uksort($acl, 'strnatcasecmp');
-
-        if (!empty($acl_special)) {
-            $acl = array_merge($acl_special, $acl);
-        }
 
         // Get supported rights and build column names
         $supported = $this->rights_supported();
@@ -494,10 +479,6 @@ class mel_acl extends rcube_plugin
             // filter out virtual rights (c or d) the server may return
             $userrights = array_intersect($rights, $supported);
             $userid = rcube_utils::html_identifier($user);
-
-            if (!empty($this->specials) && in_array($user, $this->specials)) {
-                $user = $this->gettext($user);
-            }
 
             $table->add_row(array('id' => 'rcmrow'.$userid));
             $table->add(array('class' => 'user', 'title' => $user), rcube::Q($user));
@@ -564,26 +545,11 @@ class mel_acl extends rcube_plugin
         $js_table_objects = $this->rc->output->get_env('acl_objects');
 
         foreach ($users as $user) {
-            $user = trim($user);
-
-            // if (!empty($this->specials) && in_array($user, $this->specials)) {
-            //     $username = $this->gettext($user);
-            // }
-            // else if (!empty($user)) {
-            //     if (!strpos($user, '@') && ($realm = $this->get_realm())) {
-            //         $user .= '@' . rcube_idn_to_ascii(preg_replace('/^@/', '', $realm));
-            //     }
-            //     $username = $user;
-            // }
-
-            $username = $user;
+            $username = trim($user);
 
             if (!$acl || !$user || !strlen($mbox)) {
                 continue;
             }
-
-//             $user     = $this->mod_login($user);
-//             $username = $this->mod_login($username);
 
             // PAMELA
             if ($user != $session_username && $username != $session_username) {
@@ -749,42 +715,6 @@ class mel_acl extends rcube_plugin
         } else {
             return array('l','r','w');
         }
-    }
-
-    /**
-     * Username realm detection.
-     *
-     * @return string Username realm (domain)
-     */
-    private function get_realm()
-    {
-        // When user enters a username without domain part, realm
-        // allows to add it to the username (and display correct username in the table)
-
-        if (isset($_SESSION['acl_username_realm'])) {
-            return $_SESSION['acl_username_realm'];
-        }
-
-        // find realm in username of logged user (?)
-        list($name, $domain) = explode('@', $_SESSION['username']);
-
-        // Use (always existent) ACL entry on the INBOX for the user to determine
-        // whether or not the user ID in ACL entries need to be qualified and how
-        // they would need to be qualified.
-        if (empty($domain)) {
-            $acl = $this->rc->storage->get_acl('INBOX');
-            if (is_array($acl)) {
-                $regexp = '/^' . preg_quote($_SESSION['username'], '/') . '@(.*)$/';
-                foreach (array_keys($acl) as $name) {
-                    if (preg_match($regexp, $name, $matches)) {
-                        $domain = $matches[1];
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $_SESSION['acl_username_realm'] = $domain;
     }
 
     /**

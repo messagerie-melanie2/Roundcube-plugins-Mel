@@ -54,7 +54,6 @@ window.rcmail && window.files_api && rcmail.addEventListener('init', function() 
 
       rcmail.file_list.init();
       roundpad_list_coltypes();
-      roundpad_drag_drop_init($(rcmail.gui_objects.filelist).parents('.droptarget'));
     }
 
     // "one file only" commands
@@ -728,37 +727,6 @@ roundpad_frame_load = function(frame)
       rcmail.enable_command('files-print', true);
   }
   catch(e) {};
-};
-
-// activate html5 file drop feature (if browser supports it)
-roundpad_drag_drop_init = function(container)
-{
-  if (!window.FormData && !(window.XMLHttpRequest && XMLHttpRequest.prototype && XMLHttpRequest.prototype.sendAsBinary)) {
-    return;
-  }
-
-  if (!container.length)
-    return;
-
-  $(document.body).bind('dragover dragleave drop', function(e) {
-    if (!file_api.env.folder)
-      return;
-
-    e.preventDefault();
-    container[e.type == 'dragover' ? 'addClass' : 'removeClass']('active');
-  });
-
-  container.bind('dragover dragleave', function(e) {
-    return roundpad_drag_hover(e);
-  })
-  container.children('div').bind('dragover dragleave', function(e) {
-    return roundpad_drag_hover(e);
-  })
-  container.get(0).addEventListener('drop', function(e) {
-      // abort event and reset UI
-      roundpad_drag_hover(e);
-      return file_api.file_drop(e);
-    }, false);
 };
 
 // handler for drag/drop on element

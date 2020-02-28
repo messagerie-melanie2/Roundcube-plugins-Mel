@@ -189,17 +189,21 @@ class mtes_driver_mel extends driver_mel {
    */
   public function getRoutage($infos) {
     $hostname = null;
-    if (isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
-      // MANTIS 3925: mineqMelRoutage multivalué
-      foreach ($infos['mineqmelroutage'] as $melroutage) {
-        if (strpos($melroutage, '%') !== false) {
-          $tmp = explode('@', $melroutage);
-          $hostname = $tmp[1];
-          break;
+    if (is_array($infos)) {
+      if (isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
+        // MANTIS 3925: mineqMelRoutage multivalué
+        foreach ($infos['mineqmelroutage'] as $melroutage) {
+          if (strpos($melroutage, '%') !== false) {
+            $tmp = explode('@', $melroutage);
+            $hostname = $tmp[1];
+            break;
+          }
         }
       }
     }
-    
+    else {
+      $hostname = $infos->server_host;
+    }
     return $hostname;
   }
   

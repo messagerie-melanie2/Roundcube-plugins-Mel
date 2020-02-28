@@ -135,7 +135,12 @@ class mce_driver_mel extends driver_mel {
     $hostname = rcmail::get_instance()->config->get('default_host');
     if (!isset($hostname) 
         || is_array($hostname)) {
-      $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
+      if (is_array($infos)) {
+        $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
+      }
+      else {
+        $hostname = $infos->server_host;
+      }
     }
     else {
       $a_host = parse_url($hostname);

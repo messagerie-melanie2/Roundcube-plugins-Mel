@@ -125,26 +125,26 @@ class mel_ldap_auth extends rcube_plugin {
       $args['error'] = 11;
     } else {
       // Récupération des données de l'utilisateur depuis le cache
-      $infos = mel::get_user_infos($user);
+      $_user_mce = driver_mel::get_instance()->getCurrentUser($args['user']);
       // MANTIS 0004868: Permetttre la connexion M2web avec l'adresse mail comme identifiant
-      $args['user'] = driver_mel::get_instance()->getUsername($infos);
-      if (LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$AUTH_LDAP)->authenticate($infos['dn'], $pass)) {
+      $args['user'] = $_user_mce->uid;
+      if ($_user_mce->authentification($pass)) {
         $auth_ok = true;
         // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-        if (!mel::is_internal() && !driver_mel::get_instance()->isInternetAccessEnable($infos)) {
+        if (!mel::is_internal() && !$_user_mce->internet_access_enable) {
           $args['error'] = 491;
           $args['abort'] = true;
           // Suppression du cookie
           unset($_COOKIE['roundcube_login']);
           setcookie('roundcube_login', null, -1);
         } else {
-          $hostname = driver_mel::get_instance()->getRoutage($infos);
+          $hostname = driver_mel::get_instance()->getRoutage($_user_mce);
           if (isset($hostname)) {
             $args['host'] = "ssl://" . $hostname;
             // Gestion du keep login
             if (isset($_POST['_keeplogin'])) {
               // Création du cookie avec le login / cn
-              setcookie('roundcube_login', $user . "###" . $infos['cn'][0], self::$expire_cookie + time());
+              setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
               $_SESSION['_keeplogin'] = true;
             } else {
               // Suppression du cookie
@@ -216,5 +216,23 @@ class mel_ldap_auth extends rcube_plugin {
       }
     }
     return $args;
+  }
+  /**
+   * Retourne l'adresse ip
+   * @return string
+   * @private
+   */
+  private function _get_address_ip() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+      $ip = $_SERVER['HTTP_CLIENT_IP'];
+      $ip = "[".$_SERVER['REMOTE_ADDR']."]/[$ip]";
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+      $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+      $ip = "[".$_SERVER['REMOTE_ADDR']."]/[$ip]";
+    } else {
+      $ip = $_SERVER['REMOTE_ADDR'];
+      $ip = "[$ip]/[".$_SERVER['REMOTE_ADDR']."]";
+    }
+    return $ip;
   }
 }

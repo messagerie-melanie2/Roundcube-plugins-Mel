@@ -644,8 +644,6 @@ class mel_labels_sync extends rcube_plugin {
     if (! $attrib['id'])
       $attrib['id'] = 'rcmlabelsbalplist';
 
-    // Récupération de la liste des balp de l'utilisateur
-    $balp_list = mel::get_user_balp_gestionnaire($this->rc->user->get_username());
     // Ajoute le javascript
     // MANTIS 0004498: Le gestion des étiquettes d'une balp choisie dans la liste depuis une bali semble ne pas marcher
     $attrib['onchange'] = "self.location = rcmail.url('settings/edit-prefs', {_section: 'labels', _framed: 1, _current_username: this.value});";
@@ -654,19 +652,15 @@ class mel_labels_sync extends rcube_plugin {
     // Génération du select html
     $html_select = new html_select($attrib);
 
-    $infos = mel::get_user_infos($this->rc->user->get_username());
+    $user = driver_mel::gi()->getUser();
+    $_objects = $user->getObjectsSharedGestionnaire();
     $html_select->add('---');
-    $html_select->add(driver_mel::get_instance()->getFullname($infos), driver_mel::get_instance()->getUsername($infos));
+    $html_select->add($user->fullname, $user->uid);
 
     // Parcours la liste des boites et ajoute les options
-    if (is_array($balp_list)) {
-      foreach ($balp_list as $balp) {
-        if (driver_mel::get_instance()->issetUsername($balp)) {
-          list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername(driver_mel::get_instance()->getUsername($balp));
-          $name = $balpname ?: $username;
-          $infos = mel::get_user_infos($name);
-          $html_select->add(driver_mel::get_instance()->getFullname($infos), $name);
-        }
+    if (is_array($_objects)) {
+      foreach ($_objects as $_object) {
+        $html_select->add($_object->mailbox->fullname, $_object->mailbox->uid);
       }
     }
     return $html_select->show($this->_get_current_user_name());

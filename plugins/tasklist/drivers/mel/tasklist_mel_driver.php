@@ -112,21 +112,13 @@ class tasklist_mel_driver extends tasklist_driver {
 
     // attempt to create a default list for this user
     if (empty($this->lists)) {
-      $default_taskslist_name = $this->rc->config->get('default_taskslist_name', null);
-      if (!isset($default_taskslist_name)) {
-        $infos = mel::get_user_infos($this->user->uid);
-        $default_taskslist_name = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
-      }
-      if ($this->create_list(array(
-          'id' => $this->user->uid,
-          'name' => $default_taskslist_name,
+      $this->create_list(
+        array(
+          'name' => $this->rc->config->get('default_taskslist_name', null),
           'color' => $this->_random_color()
-      )))
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
-      $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
-      $pref->name = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_DEFAULT_NAME;
-      $pref->value = $this->user->uid;
-      $pref->save();
+        ),
+        true
+      );
       $this->_read_lists(true);
     }
     $default_tasklist = $this->user->getDefaultTaskslist();
@@ -194,26 +186,31 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Create a new list assigned to the current user
    *
-   * @param
-   *          array Hash array with list properties
-   *          name: List name
-   *          color: The color of the list
-   *          showalarms: True if alarms are enabled
+   * @param array Hash array with list properties
+   *    name: List name
+   *    color: The color of the list
+   *    showalarms: True if alarms are enabled
+   * @param boolean $defaultTaskslist Creation de la tasklist par defaut ?
    * @return mixed ID of the new list on success, False on error
    */
-  public function create_list(&$prop) {
+  public function create_list(&$prop, $defaultTaskslist = false) {
     if ($this->rc->task != 'tasks') {
       return;
     }
     mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::create_list()");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::create_list() : " . var_export($prop, true));
 
-    $tasklist = new LibMelanie\Api\Melanie2\Taskslist($this->user);
-    $tasklist->name = $prop['name'];
-    $tasklist->id = isset($prop['id']) ? $prop['id'] : md5($prop['name'] . time() . $this->user->uid);
-    $tasklist->owner = $this->user->uid;
-    $saved = $tasklist->save();
-    if (!is_null($saved)) {
+    if ($defaultTaskslist) {
+      $saved = $this->user->createDefaultTaskslist($prop['name']);
+    } 
+    else {
+      $tasklist = new LibMelanie\Api\Melanie2\Taskslist($this->user);
+      $tasklist->name = $prop['name'];
+      $tasklist->id = isset($prop['id']) ? $prop['id'] : md5($prop['name'] . time() . $this->user->uid);
+      $tasklist->owner = $this->user->uid;
+      $saved = $tasklist->save();
+    }
+    if ($saved) {
       // Récupération des préférences de l'utilisateur
       $active_tasklists = $this->rc->config->get('active_tasklists', array());
       $alarm_tasklists = $this->rc->config->get('alarm_tasklists', array());
@@ -221,14 +218,13 @@ class tasklist_mel_driver extends tasklist_driver {
       $active_tasklists[$tasklist->id] = 1;
       // Showalarm ?
       if ($prop['showalarms'] == 1) {
-        $alarm_tasklists[$calendar->id] = 1;
+        $alarm_tasklists[$tasklist->id] = 1;
       }
       $this->rc->user->save_prefs(array(
           'active_tasklists' => $active_tasklists,
           'alarm_tasklists' => $alarm_tasklists
       ));
-
-      // Return the calendar id
+      // Return the tasklist id
       return $tasklist->id;
     } else {
       return false;

@@ -90,8 +90,7 @@ class mel_driver extends calendar_driver {
 
     // User Mél
     if (! empty($this->rc->user->ID)) {
-      $this->user = new LibMelanie\Api\Melanie2\User();
-      $this->user->uid = $this->rc->user->get_username();
+      $this->user = driver_mel::gi()->getUser();
     }
     // Charge les données seulement si on est dans la tâche calendrier
     if ($this->rc->task == 'calendar') {
@@ -125,7 +124,6 @@ class mel_driver extends calendar_driver {
       }
       else {
         $this->calendars = $this->user->getSharedCalendars();
-        // $this->calendars = $this->user->getUserCalendars();
         foreach ($this->calendars as $calendar) {
           if (! $this->has_principal && $calendar->id == $this->user->uid) {
             $this->has_principal = true;
@@ -171,7 +169,7 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars($calid);
       }
       // Récupération des préférences de l'utilisateur
@@ -181,42 +179,19 @@ class mel_driver extends calendar_driver {
       $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
 
       // attempt to create a default calendar for this user
-      if (! $this->has_principal) {
+      if (!$this->has_principal) {
         $default_calendar_name = $this->rc->config->get('default_calendar_name', null);
         if (!isset($default_calendar_name)) {
-          $infos = mel::get_user_infos($this->user->uid);
-          $default_calendar_name = $infos[$this->rc->config->get('default_object_name_ldap_field', 'cn')][0];
+          $default_calendar_name = $this->user->fullname;
         }
-        if ($this->create_calendar(array('id' => $this->user->uid, 'name' => $default_calendar_name, 'color' => $this->_random_color()))) {
-          // Création du default calendar
-          $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
-          $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-          $pref->name = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_DEFAULT_NAME;
-          $pref->value = $this->user->uid;
-          $pref->save();
-          unset($pref);
-          // Création du display_cals (utile pour que pacome fonctionne)
-          $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
-          $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-          $pref->name = 'display_cals';
-          $pref->value = 'a:0:{}';
-          $pref->save();
-          unset($this->calendars);
-          $this->_read_calendars();
-        }
+        $this->create_calendar(
+          array('id' => $this->user->uid, 'name' => $default_calendar_name, 'color' => $this->_random_color()), 
+          true);
       }
-      try {
-        $default_calendar = $this->user->getDefaultCalendar();
-      }
-      catch (Exception $ex) {
-        // Si la récupération du calendrier par défaut échoue
-        // Certainement le cas de la restauration (horde_prefs non présente)
-        $default_calendar = $this->user->uid;
-      }
+      $default_calendar = $this->user->getDefaultCalendar();
       $owner_calendars = array();
       $other_calendars = array();
       $shared_calendars = array();
-      $save_color = false;
       foreach ($this->calendars as $id => $cal) {
         if (isset($hidden_calendars[$cal->id])
             && ! ($filter & self::FILTER_ALL)
@@ -231,7 +206,6 @@ class mel_driver extends calendar_driver {
         else {
           $color = $this->_random_color();
           $color_calendars[$cal->id] = $color;
-          $save_color = true;
         }
         // Gestion des calendriers actifs
         if (isset($active_calendars) && is_array($active_calendars)) {
@@ -382,9 +356,10 @@ class mel_driver extends calendar_driver {
    * @param array Hash array with calendar properties
    * name: Calendar name
    * color: The color of the calendar
+   * @param boolean $defaultCalendar Calendrier par défaut ?
    * @return mixed ID of the calendar on success, False on error
    */
-  public function create_calendar($prop) {
+  public function create_calendar($prop, $defaultCalendar = false) {
     // Charge les données seulement si on est dans la tâche calendrier
     if ($this->rc->task != 'calendar') {
       return;
@@ -395,11 +370,17 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::create_calendar() : " . var_export($prop, true));
 
     try {
-      $calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
-      $calendar->name = $prop['name'];
-      $calendar->id = isset($prop['id']) ? $this->_to_M2_id($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
-      $calendar->owner = $this->user->uid;
-      if ($calendar->save()) {
+      if ($defaultCalendar) {
+        $ret = $this->user->createDefaultCalendar($prop['name']);
+      }
+      else {
+        $calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
+        $calendar->name = $prop['name'];
+        $calendar->id = isset($prop['id']) ? $this->_to_M2_id($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
+        $calendar->owner = $this->user->uid;
+        $ret = $calendar->save();
+      }
+      if ($ret) {
         // Récupération des préférences de l'utilisateur
         $active_calendars = $this->rc->config->get('active_calendars', array());
         $color_calendars = $this->rc->config->get('color_calendars', array());

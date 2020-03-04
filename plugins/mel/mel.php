@@ -76,13 +76,6 @@ class mel extends rcube_plugin {
   private $user_objet_share;
 
   /**
-   * User MCE courant
-   * 
-   * @var \LibMelanie\Api\Mce\User;
-   */
-  private static $current_user;
-
-  /**
    * Clé pour la mise en cache
    *
    * @var string
@@ -186,7 +179,7 @@ class mel extends rcube_plugin {
         $this,
         'get_unread_count'
     ));
-    
+
     // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
     if ($this->rc->task == 'mail') {
       $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
@@ -260,35 +253,35 @@ class mel extends rcube_plugin {
     // ajouter les boites partagées
     if ($this->api->output->type == 'html') {
       // Tableau pour la conf du chargement des boites partagées
-      $list_tasks = array(
-              'mail' => array(
-                      '',
-                      'show'
-              ),
-              'settings' => array(
-                      'plugin.managesieve',
-                      'folders',
-                      'plugin.mel_resources_agendas',
-                      'plugin.mel_resources_contacts',
-                      'plugin.mel_resources_tasks'
-              )
-      );
+      // task => [action => needs_gestionnaire ?]
+      $list_tasks = [
+              'mail' => [
+                      '' => false,
+                      'show' => false
+              ],
+              'settings' => [
+                      'plugin.managesieve' => true,
+                      'folders' => false,
+                      'plugin.mel_resources_agendas' => true,
+                      'plugin.mel_resources_contacts' => true,
+                      'plugin.mel_resources_tasks' => true,
+              ],
+      ];
 
       // Définition des valeurs par défaut en session
       $_SESSION['page'] = 1;
 
-      if (isset($list_tasks[$this->rc->task]) && in_array($this->rc->action, $list_tasks[$this->rc->task])) {
+      if (isset($list_tasks[$this->rc->task]) && isset($list_tasks[$this->rc->task][$this->rc->action])) {
         list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->get_username());
+        $user = driver_mel::gi()->getUser($username);
         // Récupération de la liste des balp de l'utilisateur
-        if ($this->rc->task == 'settings' && ($this->rc->action == 'plugin.managesieve' || $this->rc->action == 'plugin.mel_resources_agendas' || $this->rc->action == 'plugin.mel_resources_contacts' || $this->rc->action == 'plugin.mel_resources_tasks')) {
-          // Pour les règles sieve, on n'affiche que les boites gestionnaires
-          $balp = self::get_user_balp_gestionnaire($username);
+        if ($list_tasks[$this->rc->task][$this->rc->action]) {
+          // Boites gestionnaires ?
+          $_objectsShare = $user->getObjectsSharedGestionnaire();
         }
         else {
-          $balp = self::get_user_balp($username);
+          $_objectsShare = $user->getObjectsShared();
         }
-        // Récupération des informations sur l'utilisateur courant
-        $infos = self::get_user_infos(isset($balpname) ? $balpname : $username);
         // Affichage du nom de l'utilisateur et du menu déroulant de balp
         if ($this->rc->task == 'settings') {
           $this->api->add_content(html::tag('div', array(
@@ -296,7 +289,7 @@ class mel extends rcube_plugin {
                   "id" => "folderlist-header-m2-settings"
           ), html::tag('span', array(
                   "title" => $this->gettext('mailboxchangetext')
-          ), driver_mel::get_instance()->getFullname($infos))), 'folderlistheader-settings');
+          ), driver_mel::gi()->getUser($balpname ?: $username)->fullname)), 'folderlistheader-settings');
         }
         $content = "";
         if ($this->rc->task == 'mail') {
@@ -304,7 +297,6 @@ class mel extends rcube_plugin {
           $content_last = "";
           $last = false;
           
-          $infos = self::get_user_infos($username);
           $current_mailbox = empty($this->get_account) || urlencode($this->get_account) == $username;
           $href = $current_mailbox ? "#" : "?_task=mail&_mbox=INBOX";
           // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
@@ -317,10 +309,10 @@ class mel extends rcube_plugin {
               "class" => "mailbox box liitem liborder" . ($current_mailbox ? ' current' : '')
           ), html::tag('a', array(
               "href" => $href,
-              "title" => Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission')), // TODO: Ouvrir dans un nouvel onglet ?
+              "title" => $user->email_send), // TODO: Ouvrir dans un nouvel onglet ?
               html::tag('span', array(
                   "class" => "button-inner-m2"
-              ), driver_mel::get_instance()->getFullname($infos)) .
+              ), $user->fullname) .
               html::div(['class' => 'treetoggle ' . $treetoggle], ' ') .
               html::tag('span', ['class' => 'unreadcount'], '')
             )
@@ -329,56 +321,55 @@ class mel extends rcube_plugin {
           $last = $current_mailbox;
         }
         else if (!empty($this->get_account) && urlencode($this->get_account) != $username) {
-          $infos = self::get_user_infos($username);
           $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
           // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
           if (isset($_GET['_courrielleur'])) {
             $href .= "&_courrielleur=1";
           }
           $content .= html::tag('li', array(
-              "class" => "mailbox box liitem liborder$selected"
+              "class" => "mailbox box liitem liborder"
           ), html::tag('a', array(
               "href" => $href,
-              "title" => Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission')), // TODO: Ouvrir dans un nouvel onglet ?
+              "title" => $user->email_send), // TODO: Ouvrir dans un nouvel onglet ?
               html::tag('span', array(
                   "class" => "button-inner-m2"
-              ), driver_mel::get_instance()->getFullname($infos))
+              ), $user->fullname)
             )
           );
         }
         // Récupération des préférences de l'utilisateur
         $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
         $i = 0;
-        if (count($balp) >= 1) {
+        if (count($_objectsShare) >= 1) {
           // trier la liste
-          sort($balp);
-          foreach ($balp as $b) {
+          //sort($balp);
+          usort($_objectsShare, function($a, $b) {
+            return strcmp($a->fullname, $b->fullname);
+          });
+          foreach ($_objectsShare as $_object) {
             $i ++;
-            if ($b['dn'] == "") {
+            if ($this->rc->task == 'mail' 
+                && isset($hidden_mailboxes[$_object->uid])) {
               continue;
             }
-            if ($this->rc->task == 'mail' && isset($hidden_mailboxes[driver_mel::get_instance()->getUsername($b)])) {
-              continue;
-            }
-            $uid = driver_mel::get_instance()->getUsername($b);
-            $cn = driver_mel::get_instance()->getFullname($b);
-            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($uid);
-            if (isset($balpname)) {
-              $infos = self::get_user_infos($balpname);
+            $uid = $_object->uid;
+            $cn = $_object->fullname;
+            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($_object->uid);
+            if (isset($_object->mailbox)) {
               // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-              if (!isset($infos) || !mel::is_internal() && !driver_mel::get_instance()->isInternetAccessEnable($infos)) {
+              if (!mel::is_internal() && !$_object->mailbox->internet_access_enable) {
                 continue;
               }
               // Récupération de la configuration de la boite pour l'affichage
-              $hostname = driver_mel::get_instance()->getRoutage($infos);
+              $hostname = driver_mel::get_instance()->getRoutage($_object->mailbox);
               if (isset($hostname)) {
                 $uid = urlencode($uid . "@" . $hostname);
               }
-              $cn = driver_mel::get_instance()->getFullname($infos);
+              $cn = $_object->mailbox->fullname;
             }
             if ($this->rc->task == 'mail') {
               $current_mailbox = !empty($this->get_account) && urlencode($this->get_account) == $uid;
-              $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode(driver_mel::get_instance()->getMboxFromBalp($balpname)) . "&_account=" . $uid;
+              $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode(driver_mel::get_instance()->getMboxFromBalp($_object->mailbox->uid)) . "&_account=" . $uid;
               // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
               if (isset($_GET['_courrielleur']) && !$current_mailbox) {
                 $href .= "&_courrielleur=1";
@@ -386,10 +377,10 @@ class mel extends rcube_plugin {
               $treetoggle = $current_mailbox ? 'expanded' : 'collapsed';
               $content = html::tag('li', array(
                   "id" => rcube_utils::html_identifier($uid, true),
-                  "class" => "mailbox box liitem" . ($i != count($balp) ? " liborder" : "") . ($current_mailbox ? ' current' : '')
+                  "class" => "mailbox box liitem" . ($i != count($_objectsShare) ? " liborder" : "") . ($current_mailbox ? ' current' : '')
               ), html::tag('a', array(
                   "href" => $href,
-                  "title" => Ldap::GetMapValue($b, 'user_mel_emission', 'mineqmelmailemission')),
+                  "title" => $_object->email_send),
                   html::tag('span', array(
                       "class" => "button-inner-m2"
                   ), $cn) .
@@ -412,10 +403,10 @@ class mel extends rcube_plugin {
                 $href .= "&_courrielleur=1";
               }
               $content .= html::tag('li', array(
-                  "class" => "mailbox box liitem" . ($i != count($balp) ? " liborder" : "")
+                  "class" => "mailbox box liitem" . ($i != count($_objectsShare) ? " liborder" : "")
               ), html::tag('a', array(
                   "href" => $href,
-                  "title" => Ldap::GetMapValue($b, 'user_mel_emission', 'mineqmelmailemission')), 
+                  "title" => $_object->email_send), 
                   html::tag('span', array(
                     "class" => "button-inner-m2"
                   ), $cn)
@@ -524,51 +515,31 @@ class mel extends rcube_plugin {
   }
 
   /**
-   * Retourne l'objet User de l'utilisateur de manière statique
-   * 
-   * @return \LibMelanie\Api\Mce\User
-   */
-  public static function get_current_user() {
-    if (!isset(self::$current_user)) {
-      self::$current_user = driver_mel::get_instance()->getCurrentUser();
-    }
-    return self::$current_user;
-  }
-
-  /**
-   * Association entre les identités Roundcube et les bal Mél
+   * Association entre les identités Roundcube et les bal MCE
    * Retourne le résultat en env
    */
   private function assoc_identity_bal() {
     $result = array();
     $identities = $this->rc->user->list_identities();
-    // Récupération du username depuis la session
-    $username = $this->rc->user->get_username();
-
-    $mailboxes = array_merge(array(self::get_user_infos($username)), self::get_user_balp_emission($username));
+    // Lister les boites auxquelles l'utilisateur a accés
+    $mailboxes = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsSharedEmission());
 
     foreach ($identities as $id) {
       foreach ($mailboxes as $mailbox) {
-        if (isset($mailbox[Ldap::GetMap('user_mel_emission_principal', 'mineqmelmailemissionpr')]) && count($mailbox[Ldap::GetMap('user_mel_emission_principal', 'mineqmelmailemissionpr')]) > 0) {
-            $mail = Ldap::GetMapValue($mailbox, 'user_mel_emission_principal', 'mineqmelmailemissionpr');
+        if (isset($mailbox->email_send) && !empty($mailbox->email_send)) {
+          $mail = $mailbox->email_send;
         }
-        else if (isset($mailbox[Ldap::GetMap('user_mel_emission', 'mineqmelmailemission')]) && count($mailbox[Ldap::GetMap('user_mel_emission', 'mineqmelmailemission')]) > 0) {
-            $mail = Ldap::GetMapValue($mailbox, 'user_mel_emission', 'mineqmelmailemission');
-        }
-        else if (isset($mailbox[Ldap::GetMap('user_mel_reception', 'mail')]) && count($mailbox[Ldap::GetMap('user_mel_reception', 'mail')]) > 0) {
-            $mail = Ldap::GetMapValue($mailbox, 'user_mel_reception', 'mail');
+        else if (isset($mailbox->email_send_list) && !empty($mailbox->email_send_list)) {
+          $mail = $mailbox->email_send_list[0];
         }
         else {
           continue;
         }
-        if (strcasecmp($mail, $id['email']) === 0) {
-          $uid = driver_mel::get_instance()->getUsername($mailbox);
-          list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($uid);
-          if (isset($balpname)) {
-            $infos = self::get_user_infos($balpname);
-            if (isset($infos)) {
-              $hostname = driver_mel::get_instance()->getRoutage($infos);
-            }
+        
+        if (strcasecmp(strtolower($mail), strtolower($id['email'])) === 0) {
+          $uid = $mailbox->uid;
+          if ($mailbox instanceof \LibMelanie\Api\Mce\ObjectShare) {
+            $hostname = driver_mel::get_instance()->getRoutage($mailbox->mailbox);
           }
           else {
             $hostname = driver_mel::get_instance()->getRoutage($mailbox);
@@ -657,82 +628,33 @@ class mel extends rcube_plugin {
   public function user_create($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::user_create()");
-    $infos = self::get_user_infos($args['user']);
-    if (isset($infos)) {
-      $hostname = driver_mel::get_instance()->getRoutage($infos);
-      if (isset($hostname)) {
-        $args['host'] = $hostname;
-      }
+    $user = driver_mel::gi()->getUser($args['user']);
+    // Récupération du hostname
+    $hostname = driver_mel::get_instance()->getRoutage($user);
+    if (isset($hostname)) {
+      $args['host'] = $hostname;
     }
+
     // Default user name
-    $args['user_name'] = driver_mel::get_instance()->getFullname($infos);
-    $args['user_email'] = Ldap::GetMapValue($infos, 'user_mel_emission', 'mineqmelmailemission');
+    $args['user_name'] = $user->fullname;
+    $args['user_email'] = $user->email_send;
     if (mel_logs::is(mel_logs::INFO))
       mel_logs::get_instance()->log(mel_logs::INFO, "[user_create] Création de l'utilisateur '" . $args['user_name'] . "@" . $args['host'] . "' dans la base de données Roundcube");
-      // Vérifier que si l'on doit créer les conteneurs
-      // MANTIS 0003682: Créer les carnets d'adresses, calendriers et lists de tâches par défaut à la création
-    $user = new LibMelanie\Api\Melanie2\User();
-    $user->uid = $args['user'];
+
     // Test du calendrier
-    $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
-    $calendar->id = $args['user'];
-    if (! $calendar->load()) {
-      $default_calendar_name = $this->rc->config->get('default_calendar_name', null);
-      // Le calendrier ne se charge pas, il faut le créer
-      $calendar->name = isset($default_calendar_name) ? $default_calendar_name : $args['user_name'];
-      $calendar->owner = $args['user'];
-      // Création de l'agenda
-      if ($calendar->save()) {
-        // Création du default calendar
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
-        $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-        $pref->name = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_DEFAULT_NAME;
-        $pref->value = $args['user'];
-        $pref->save();
-        unset($pref);
-        // Création du display_cals (utile pour que pacome fonctionne)
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
-        $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-        $pref->name = 'display_cals';
-        $pref->value = 'a:0:{}';
-        $pref->save();
-      }
+    $calendar = $user->getDefaultCalendar();
+    if (!isset($calendar)) {
+      $user->createDefaultCalendar($this->rc->config->get('default_calendar_name', null));
     }
     // Test du carnet d'adresses
-    $addressbook = new LibMelanie\Api\Melanie2\Addressbook($user);
-    $addressbook->id = $args['user'];
-    if (! $addressbook->load()) {
-      $default_addressbook_name = $this->rc->config->get('default_addressbook_name', null);
-      // Le carnet ne se charge pas, il faut le créer
-      $addressbook->name = isset($default_addressbook_name) ? $default_addressbook_name : $args['user_name'];
-      $addressbook->owner = $args['user'];
-      // Création du carnet d'adresses
-      if ($addressbook->save()) {
-        // Création du default addressbook
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
-        $pref->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
-        $pref->name = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_DEFAULT_NAME;
-        $pref->value = $args['user'];
-        $pref->save();
-      }
+    $addressbook = $user->getDefaultAddressbook();
+    if (!isset($addressbook)) {
+      $user->createDefaultAddressbook($this->rc->config->get('default_addressbook_name', null));
     }
     // Test de la liste de tâches
-    $taskslist = new LibMelanie\Api\Melanie2\Taskslist($user);
-    $taskslist->id = $args['user'];
-    if (! $taskslist->load()) {
-      $default_taskslist_name = $this->rc->config->get('default_taskslist_name', null);
-      // la liste de tâches ne se charge pas, il faut la créer
-      $taskslist->name = isset($default_taskslist_name) ? $default_taskslist_name : $args['user_name'];
-      $taskslist->owner = $args['user'];
-      // Création de la liste de tâches
-      if ($taskslist->save()) {
-        // Création du default taskslist
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
-        $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
-        $pref->name = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_DEFAULT_NAME;
-        $pref->value = $args['user'];
-        $pref->save();
-      }
+    $taskslist = $user->getDefaultTaskslist();
+    if (!isset($taskslist)) {
+      $user->createDefaultTaskslist($this->rc->config->get('default_taskslist_name', null));
     }
     return $args;
   }
@@ -783,8 +705,8 @@ class mel extends rcube_plugin {
     if (! empty($_SESSION['m2_from_identity'])) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::smtp_connect()");
-      $infos = Ldap::GetUserInfosFromEmail($_SESSION['m2_from_identity']);
-      $args['smtp_user'] = driver_mel::get_instance()->getUsername($infos);
+      $user = driver_mel::gi()->getUser($_SESSION['m2_from_identity']);
+      $args['smtp_user'] = $user->uid;
     }
     return $args;
   }
@@ -1661,62 +1583,51 @@ class mel extends rcube_plugin {
    * @return array
    */
   private function m2_list_identities() {
-    // Récupération du username depuis la session
-    $username = $this->rc->user->get_username();
-    // Récupérer le champ mel_emission pour le ldap
-    $mel_emission_field = Ldap::GetMap('user_mel_emission', 'mineqmelmailemission');
-    // Récupération des informations des boites en émissions
-    $infos = self::get_user_balp_emission($username);
-    $identities = array();
-    unset($infos['count']);
-    foreach ($infos as $i) {
-      // MANTIS 3702: Utiliser mineqMelmailEmissionPR pour determiner l'adresse d'emission
-      if (Ldap::issetMap($i, 'user_mel_emission_principal', 'mineqmelmailemissionpr')) {
-        $mails = Ldap::GetMapValues($i, 'user_mel_emission_principal', 'mineqmelmailemissionpr');
-        // MANTIS 3334: Gestion des adresses mail multiple pour les identités
-        if ($i[$mel_emission_field]['count'] > $mails['count']) {
-          unset($mails['count']);
-          unset($i[$mel_emission_field]['count']);
-          $mails = array_merge($mails, $i[$mel_emission_field]);
+    $user = driver_mel::gi()->getUser();
+    $_objects = $user->getObjectsSharedEmission();
+    $identities = [];
+    foreach ($_objects as $_object) {
+      // Si on a un mail principal
+      if (isset($_object->email_send) && !empty($_object->email_send)) {
+        $mails = [$_object->email_send];
+        // Si on a une liste de mail en plus du principal
+        if (isset($_object->email_send_list) && count($_object->email_send_list) > 1) {
+          array_merge($mails, $_object->email_send_list);
         }
       }
-      else {
-        $mails = $i['mineqmelmailemission'];
+      // Sinon on utilise la liste
+      else if (isset($_object->email_send_list) && !empty($_object->email_send_list)) {
+        $mails = $_object->email_send_list;
       }
-      unset($mails['count']);
       foreach ($mails as $email) {
-        $identity = array();
-        $identity['name'] = $this->m2_identity_shortname(driver_mel::get_instance()->getFullname($i));
-        $identity['realname'] = driver_mel::get_instance()->getFullname($i);
+        $identity = [];
+        $identity['name'] = $this->m2_identity_shortname($_object->fullname);
+        $identity['realname'] = $_object->fullname;
         $identity['email'] = $email;
-        $identity['uid'] = driver_mel::get_instance()->getUsername($i);
+        $identity['uid'] = $_object->uid;
         $identities[strtolower($email)] = $identity;
       }
+      
     }
-    // Récupération des informations des boites personnelles
-    $infos = LibMelanie\Ldap\LDAPMelanie::GetInformations($username);
-    // MANTIS 3702: Utiliser mineqMelmailEmissionPR pour determiner l'adresse d'emission
-    if (Ldap::issetMap($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr')) {
-      $mails = Ldap::GetMapValues($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr');
-      // MANTIS 3334: Gestion des adresses mail multiple pour les identités
-      if ($infos[$mel_emission_field]['count'] > $mails['count']) {
-        unset($mails['count']);
-        unset($infos[$mel_emission_field]['count']);
-        $mails = array_merge($mails, $infos[$mel_emission_field]);
+    // Récuperation des information de l'utilisateur
+    // Si on a un mail principal
+    if (isset($user->email_send) && !empty($user->email_send)) {
+      $mails = [$user->email_send];
+      // Si on a une liste de mail en plus du principal
+      if (isset($user->email_send_list) && count($user->email_send_list) > 1) {
+        array_merge($mails, $user->email_send_list);
       }
     }
-    else {
-      $mails = $infos[$mel_emission_field];
+    // Sinon on utilise la liste
+    else if (isset($user->email_send_list) && !empty($user->email_send_list)) {
+      $mails = $user->email_send_list;
     }
-    unset($mails['count']);
     foreach ($mails as $email) {
-      $identity = array();
-      $cn = driver_mel::get_instance()->getFullname($infos);
-      $identity['name'] = $cn;
-      $identity['realname'] = $cn;
+      $identity = [];
+      $identity['name'] = $user->fullname;
+      $identity['realname'] = $user->fullname;
       $identity['email'] = $email;
-      $identity['uid'] = driver_mel::get_instance()->getUsername($infos);
-      $identity['standard'] = '1';
+      $identity['uid'] = $user->uid;
       $identities[strtolower($email)] = $identity;
     }
     // retourne la liste des identities

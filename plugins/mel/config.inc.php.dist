@@ -12,16 +12,16 @@ $rcmail_config['use_imap_proxy'] = false;
 $rcmail_config['imap_proxy'] = 'imap.proxy.com';
 
 // Default calendar name when created (string or null)
+// Support values from current user : %%fullname%%, %%name%%, %%email%%, %%uid%%
 $config['default_calendar_name'] = null;
 
 // Default addressbook name when created (string or null)
+// Support values from current user : %%fullname%%, %%name%%, %%email%%, %%uid%%
 $config['default_addressbook_name'] = null;
 
 // Default addressbook name when created (string or null)
+// Support values from current user : %%fullname%%, %%name%%, %%email%%, %%uid%%
 $config['default_taskslist_name'] = null;
-
-// LDAP field used to generate the default object name when default_<object>_name property is null
-$config['default_object_name_ldap_field'] = 'cn';
 
 // Hide keep login button
 $rcmail_config['hide_keep_login_button'] = true;

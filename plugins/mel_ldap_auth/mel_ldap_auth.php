@@ -125,7 +125,7 @@ class mel_ldap_auth extends rcube_plugin {
       $args['error'] = 11;
     } else {
       // Récupération des données de l'utilisateur depuis le cache
-      $_user_mce = driver_mel::get_instance()->getCurrentUser($args['user']);
+      $_user_mce = driver_mel::gi()->getUser($args['user']);
       // MANTIS 0004868: Permetttre la connexion M2web avec l'adresse mail comme identifiant
       $args['user'] = $_user_mce->uid;
       if ($_user_mce->authentification($pass)) {
@@ -138,7 +138,7 @@ class mel_ldap_auth extends rcube_plugin {
           unset($_COOKIE['roundcube_login']);
           setcookie('roundcube_login', null, -1);
         } else {
-          $hostname = driver_mel::get_instance()->getRoutage($_user_mce);
+          $hostname = driver_mel::gi()->getRoutage($_user_mce);
           if (isset($hostname)) {
             $args['host'] = "ssl://" . $hostname;
             // Gestion du keep login
@@ -192,10 +192,9 @@ class mel_ldap_auth extends rcube_plugin {
       }
 
       if ($args['error'] == 11) {
-        $infos = mel::get_user_infos($user);
         if (mel_logs::is(mel_logs::INFO))
           mel_logs::get_instance()->log(mel_logs::INFO, "Blocage du compte <$user>");
-        mail(LibMelanie\Ldap\Ldap::GetMapValue($infos, 'user_mel_emission_principal', 'mineqmelmailemissionpr'), "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
+        mail(driver_mel::gi()->getUser($user)->email_send, "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
 
         // Exécuter la fin de la connexion pour permettre de personnaliser le message d'erreur
         $this->rc->output->show_message($this->rc->gettext('error_block', 'mel'), 'warning');
@@ -204,9 +203,9 @@ class mel_ldap_auth extends rcube_plugin {
         $this->rc->log_login($user, true, $args['error']);
 
         $this->rc->plugins->exec_hook('login_failed', array(
-            'code' => $error_code,
-            'host' => $auth['host'],
-            'user' => $auth['user']
+            'code' => $args['error'],
+            'host' => $args['host'],
+            'user' => $args['user']
         ));
 
         $this->rc->kill_session();

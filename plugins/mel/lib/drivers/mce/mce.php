@@ -34,13 +34,19 @@ class mce_driver_mel extends driver_mel {
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function getCurrentUser($username = null) {
-    if (!isset(self::$current_user)) {
-      self::$current_user = new \LibMelanie\Api\Mce\User();
-      self::$current_user->uid = isset($username) ? $username : rcmail::get_instance()->user->get_username();
-      self::$current_user->load();
+  public function getUser($username = null) {
+    if (!isset($username)) {
+      $username = rcmail::get_instance()->user->get_username();
     }
-    return self::$current_user;
+    if (!isset(self::$_users)) {
+      self::$_users = [];
+    }
+    if (!isset(self::$_users[$username])) {
+      self::$_users[$username] = new \LibMelanie\Api\Mce\User();
+      self::$_users[$username]->uid = $username;
+      self::$_users[$username]->load();
+    }
+    return self::$_users[$username];
   }
   
   /**

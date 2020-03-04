@@ -69,11 +69,11 @@ abstract class driver_mel {
   private static $driver;
 
   /**
-   * Singleton for the current user
+   * Singleton for the users
    * 
-   * @var \LibMelanie\Api\Mce\User
+   * @var \LibMelanie\Api\Mce\User[]
    */
-  protected static $current_user;
+  protected static $_users;
   
   /**
    * Return the singleton instance
@@ -89,6 +89,15 @@ abstract class driver_mel {
     }
     return self::$driver;
   }
+
+  /**
+   * get_instance short
+   *
+   * @return driver_mel
+   */
+  public static function gi() {
+    return self::get_instance();
+  }
   
   /**
    * Retourne l'objet User associé à l'utilisateur courant
@@ -98,7 +107,7 @@ abstract class driver_mel {
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  abstract public function getCurrentUser($username = null);
+  abstract public function getUser($username = null);
 
   /**
    * Retourne si le username est une boite partagée ou non

@@ -44,7 +44,9 @@ class mce_driver_mel extends driver_mel {
     if (!isset(self::$_users[$username])) {
       self::$_users[$username] = new \LibMelanie\Api\Mce\User();
       self::$_users[$username]->uid = $username;
-      self::$_users[$username]->load();
+      if (!self::$_users[$username]->load()) {
+        self::$_users[$username] = null;
+      }
     }
     return self::$_users[$username];
   }

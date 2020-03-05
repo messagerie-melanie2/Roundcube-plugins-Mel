@@ -254,17 +254,40 @@ class mel_moncompte extends rcube_plugin {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = str_replace('_-P-_', '.', $id);
-      if (strpos($id, '.-.') !== false) {
-        $susername = explode('.-.', $id);
-        $id = $susername[1];
+      // Récupère l'utilisateur
+      $user = driver_mel::gi()->getUser($id);
+      if ($user->is_objectshare) {
+        // Si on est dans un objet de partage
+        // Ce n'est pas normal donc on recupère le user associé
+        $user = driver_mel::gi()->getUser($user->objectshare->user_uid);
       }
-      // Récupération des informations sur l'utilisateur courant
-      $infos = mel::get_user_infos($id);
-      $acl = $this->rc->get_user_name() == $id || in_array($this->rc->get_user_name() . ':G', $infos['mineqmelpartages']) ? $this->gettext('gestionnaire') : (in_array($this->rc->get_user_name() . ':E', $infos['mineqmelpartages']) ? $this->gettext('write') : (in_array($this->rc->get_user_name() . ':C', $infos['mineqmelpartages']) ? $this->gettext('send') : $this->gettext('read_only')));
-      $shared = $this->rc->get_user_name() == $id || (in_array($this->rc->get_user_name() . ':G', $infos['mineqmelpartages']) && isset($infos['mineqtypeentree']) && $infos['mineqtypeentree'][0] != 'BALI' && $infos['mineqtypeentree'][0] != 'BALA');
+      // Utilisateur courant
+      $curUser = $this->rc->get_user_name();
+      $shared = false;
+      if ($curUser == $id || $user->shares[$curUser] == LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN) {
+        // Si on est gestionnaire
+        $acl = $this->gettext('gestionnaire');
+        // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
+        $shared = $curUser == $id || ($user->type != LibMelanie\Api\Mce\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Mce\Users\Type::APPLICATIVE);
+      }
+      else {
+        // Si pas gestionnaire on cherche le bon droit a afficher
+        switch ($user->shares[$curUser]) {
+          case LibMelanie\Api\Mce\Users\Share::TYPE_SEND:
+            $acl = $this->gettext('send');
+            break;
+          case LibMelanie\Api\Mce\Users\Share::TYPE_WRITE:
+            $acl = $this->gettext('write');
+            break;
+          default:
+          case LibMelanie\Api\Mce\Users\Share::TYPE_READ:
+            $acl = $this->gettext('read_only');
+            break;
+        }
+      }
       $this->rc->output->set_env("resource_id", $id);
-      $this->rc->output->set_env("resource_name", $infos['cn'][0]);
-      $this->rc->output->set_env("resource_shared", ! $shared);
+      $this->rc->output->set_env("resource_name", $user->fullname);
+      $this->rc->output->set_env("resource_shared", !$shared);
       $this->rc->output->set_env("resource_acl", $acl);
       if ($shared) {
         $this->rc->output->add_handler('usersaclframe', array(new M2mailbox($this->rc->user->get_username()),'acl_frame'));
@@ -274,7 +297,6 @@ class mel_moncompte extends rcube_plugin {
         if (isset($_POST['nbheures'])) {
           M2mailbox::unexpunge();
         }
-
       }
 
       $this->rc->output->send('mel_moncompte.m2_resource_mailbox');
@@ -308,8 +330,7 @@ class mel_moncompte extends rcube_plugin {
       if (isset($id)) {
         $id = str_replace('_-P-_', '.', $id);
         // Instancie les objets Mél
-        $user = new LibMelanie\Api\Melanie2\User();
-        $user->uid = $this->get_user_bal();
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
         $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
         $calendar->id = $id;
         if ($calendar->load()) {
@@ -398,8 +419,7 @@ class mel_moncompte extends rcube_plugin {
       if (isset($id)) {
         $id = str_replace('_-P-_', '.', $id);
         // Instancie les objets Mél
-        $user = new LibMelanie\Api\Melanie2\User();
-        $user->uid = $this->get_user_bal();
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
         $addressbook = new LibMelanie\Api\Melanie2\Addressbook($user);
         $addressbook->id = $id;
         if ($addressbook->load()) {
@@ -489,8 +509,7 @@ class mel_moncompte extends rcube_plugin {
       if (isset($id)) {
         $id = str_replace('_-P-_', '.', $id);
         // Instancie les objets Mél
-        $user = new LibMelanie\Api\Melanie2\User();
-        $user->uid = $this->get_user_bal();
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
         $taskslist = new LibMelanie\Api\Melanie2\Taskslist($user);
         $taskslist->id = $id;
         if ($taskslist->load()) {
@@ -697,8 +716,7 @@ class mel_moncompte extends rcube_plugin {
 
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
-        $user = new LibMelanie\Api\Melanie2\User();
-        $user->uid = $this->get_user_bal();
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
         $pref->name = 'synchro_mobile';
         if ($type == 'calendar')
@@ -761,8 +779,7 @@ class mel_moncompte extends rcube_plugin {
 
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
-        $user = new LibMelanie\Api\Melanie2\User();
-        $user->uid = $this->get_user_bal();
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
         $pref->name = 'synchro_mobile';
         if ($type == 'calendar')
@@ -837,8 +854,7 @@ class mel_moncompte extends rcube_plugin {
 
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
-        $user = new LibMelanie\Api\Melanie2\User();
-        $user->uid = $this->get_user_bal();
+        $user = driver_mel::gi()->getUser($this->get_user_bal());
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
         if ($type == 'calendar') {
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;

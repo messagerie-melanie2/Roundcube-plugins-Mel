@@ -905,33 +905,24 @@ class Moncompte {
 	 * @return string HTML
 	 */
 	public function moncompte_balp_list($attrib) {
-		if (!$attrib['id'])
+		if (!$attrib['id']) {
 			$attrib['id'] = 'rcmmoncomptebalplist';
-
-		// Récupération de la liste des balp de l'utilisateur
-		$balp_list = mel::get_user_balp_gestionnaire($this->rc->get_user_name());
+		}
+		// Récupération de l'utilisateur
+		$user = driver_mel::gi()->getUser();
 		// AJoute le javascript
 		// TODO: a faire en jquery
 		//		$attrib['onchange'] = "self.location = self.location + '&_current_username=' + this.value;";
 		// Génération du select html
 		$html_select = new html_select($attrib);
+		$html_select->add($user->fullname, $user->uid);
 
-		$infos = mel::get_user_infos($this->rc->get_user_name());
-		$html_select->add($infos['cn'][0], $infos['uid'][0]);
-
+		// Récupération de la liste des objets auquels l'utilisateur a accès en gestionnaire
+		$_objects = $user->getObjectsSharedGestionnaire();
 		// Parcour la liste des boites et ajoute les options
-		if (is_array($balp_list)) {
-			foreach($balp_list as $balp) {
-				if (!isset($balp['uid']))
-					continue;
-				if (strpos($balp['uid'][0], '.-.')) {
-					$name = explode('.-.', $balp['uid'][0]);
-					$name = $name[1];
-				} else {
-					$name = $balp['uid'][0];
-				}
-				$infos = mel::get_user_infos($name);
-				$html_select->add($infos['cn'][0], $name);
+		if (is_array($_objects)) {
+			foreach ($_objects as $_object) {
+				$html_select->add($_object->mailbox->fullname, $_object->mailbox->uid);
 			}
 		}
 		return $html_select->show(Moncompte::get_current_user_name());
@@ -963,28 +954,15 @@ class Moncompte {
 	  // MANTIS 0005002: [MAA] Modification de mdp pour les BALF
 	  $password = rcmail::get_instance()->get_user_password();
 	  if (isset($user_infos['mineqliensimport'])
-	      && isset($user_infos['mineqliensimport'][0])
-	      && strpos($user_infos['mineqliensimport'][0], 'AGRI.Lien: uid=') === 0
-	      && rcmail::get_instance()->get_user_name() != self::get_current_user_name()) {
-      $liensImport = str_replace('AGRI.Lien: uid=', '', $user_infos['mineqliensimport'][0]);
-      $liensImport = explode(',', $liensImport, 2);
-      $password = '{"uid":"' . $liensImport[0] . '","password":"' . $password . '"}';
-      mel_logs::get_instance()->log(mel_logs::INFO, "[Moncompte] moncompte::get_current_user_password() user : " . self::get_current_user_name() . " password : " . '{"uid":"' . $liensImport[0] . '","password":"password"}');
-    }
-    
-    return $password;
+			&& isset($user_infos['mineqliensimport'][0])
+			&& strpos($user_infos['mineqliensimport'][0], 'AGRI.Lien: uid=') === 0
+			&& rcmail::get_instance()->get_user_name() != self::get_current_user_name()) {
+		$liensImport = str_replace('AGRI.Lien: uid=', '', $user_infos['mineqliensimport'][0]);
+		$liensImport = explode(',', $liensImport, 2);
+		$password = '{"uid":"' . $liensImport[0] . '","password":"' . $password . '"}';
+		mel_logs::get_instance()->log(mel_logs::INFO, "[Moncompte] moncompte::get_current_user_password() user : " . self::get_current_user_name() . " password : " . '{"uid":"' . $liensImport[0] . '","password":"password"}');
+		}
+		
+		return $password;
 	}
-
-
-	/****** PRIVATE ****/
-	/**
-	 * Méthode appelé pour le changement de mot de passe
-	 */
-	// 	private function change_password() {
-	// 		$this->rc->output->show_message('mel_moncompte.changepassword_confirm', 'confirmation');
-	// 	}
-
-	// 	private function change_infoperso() {
-	// 		$this->rc->output->show_message('mel_moncompte.changepassword_confirm', 'confirmation');
-	// 	}
 }

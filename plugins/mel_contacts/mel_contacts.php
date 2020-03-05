@@ -15,7 +15,7 @@ class mel_contacts extends rcube_plugin {
   /**
    * Utilisateur Mél
    *
-   * @var LibMelanie\Api\Melanie2\User
+   * @var LibMelanie\Api\Mce\User
    */
   private $user;
   /**
@@ -50,8 +50,7 @@ class mel_contacts extends rcube_plugin {
     $this->rc = rcube::get_instance();
 
     // Instancie l'utilisateur Mél
-    $this->user = new Melanie2\User();
-    $this->user->uid = $this->rc->user->get_username();
+    $this->user = driver_mel::gi()->getUser();
 
     if ($this->rc->task == 'addressbook' 
         || $this->rc->task == 'mail' 

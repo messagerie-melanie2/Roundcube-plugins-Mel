@@ -26,7 +26,7 @@
 class M2contacts {
   /**
    *
-   * @var LibMelanie\Api\Melanie2\User Utilisateur Mél
+   * @var LibMelanie\Api\Mce\User Utilisateur Mél
    */
   protected $user;
   /**
@@ -59,29 +59,35 @@ class M2contacts {
   public function __construct($user = null, $mbox = null) {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
-    // User Melanie2
-    $this->user = new LibMelanie\Api\Melanie2\User();
-    if (! empty($user)) {
+    if (isset($user) && !empty($user)) {
       $user = str_replace('_-P-_', '.', $user);
-      if (strpos($user, '.-.') !== false) {
-        $susername = explode('.-.', $user);
-        $user = $susername[1];
+      $this->user = driver_mel::gi()->getUser($user);
+      if (isset($this->user) && $this->user->is_objectshare) {
+        $this->user = $this->user->objectshare->mailbox;
       }
-      $this->user->uid = $user;
     }
     try {
-      // Addressbook Melanie2
+      // Addressbook Mce
       if (isset($mbox)) {
         $mbox = str_replace('_-P-_', '.', $mbox);
-        if (strpos($mbox, '.-.') !== false) {
-          $susername = explode('.-.', $mbox);
-          $mbox = $susername[1];
+        if (!isset($this->user)) {
+          $this->user = driver_mel::gi()->getUser($mbox);
+          if (isset($this->user)) {
+            if ($this->user->is_objectshare) {
+              $this->user = $this->user->objectshare->mailbox;
+            }
+            $mbox = $this->user->uid;
+          }
+          else {
+            $this->user = driver_mel::gi()->getUser();
+          }
         }
         $this->mbox = $mbox;
         $this->addressbook = new LibMelanie\Api\Melanie2\Addressbook($this->user);
         $this->addressbook->id = $mbox;
-        if (! $this->addressbook->load())
+        if (! $this->addressbook->load()) {
           $this->addressbook = null;
+        }
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

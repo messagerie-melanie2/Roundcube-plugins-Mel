@@ -26,7 +26,7 @@
 class M2mailbox {
   /**
    *
-   * @var LibMelanie\Api\Melanie2\User Utilisateur Mél
+   * @var LibMelanie\Api\Mce\User Utilisateur Mél
    */
   protected $user;
   /**
@@ -49,10 +49,9 @@ class M2mailbox {
   public function __construct($user = null, $mbox = null) {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
-    // User Melanie2
-    $this->user = new LibMelanie\Api\Melanie2\User();
-    if (! empty($user)) {
-      $this->user->uid = $user;
+
+    if (!empty($user)) {
+      $this->user = driver_mel::gi()->getUser($user);
     }
     // Boite mail Melanie2
     if (isset($mbox)) {

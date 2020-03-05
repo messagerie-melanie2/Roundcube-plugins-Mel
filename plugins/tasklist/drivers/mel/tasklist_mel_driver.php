@@ -29,7 +29,7 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Tableau de listes de taches Mél
    *
-   * @var LibMelanie\Api\Melanie2\Taskslist []
+   * @var LibMelanie\Api\Melanie2\Taskslist[]
    */
   private $lists;
   private $folders = array();
@@ -39,7 +39,7 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Utilisateur Mél
    *
-   * @var LibMelanie\Api\Melanie2\User
+   * @var LibMelanie\Api\Mce\User
    */
   private $user;
 
@@ -49,12 +49,8 @@ class tasklist_mel_driver extends tasklist_driver {
   public function __construct($plugin) {
     $this->rc = $plugin->rc;
     $this->plugin = $plugin;
-
     // User Mél
-    if (!empty($this->rc->user->ID)) {
-      $this->user = new LibMelanie\Api\Melanie2\User();
-      $this->user->uid = $this->rc->user->get_username();
-    }
+    $this->user = driver_mel::gi()->getUser();
 
     $this->_read_lists();
   }
@@ -158,7 +154,7 @@ class tasklist_mel_driver extends tasklist_driver {
           'parentfolder' => null,
           'default' => $default_tasklist->id == $list->id,
           'children' => false, // TODO: determine if that folder indeed has child folders
-          'class_name' => trim(($list->owner == $this->user->uid ? 'personnal' : 'other') . ' ' . ($default_calendar->id == $list->id ? 'default' : ''))
+          'class_name' => trim(($list->owner == $this->user->uid ? 'personnal' : 'other') . ' ' . ($default_tasklist->id == $list->id ? 'default' : ''))
       );
       // Ajout la liste de taches dans la liste correspondante
       if ($list->owner != $this->user->uid) {
@@ -175,7 +171,6 @@ class tasklist_mel_driver extends tasklist_driver {
     asort($shared_tasklists);
 
     $this->rc->user->save_prefs(array(
-        'color_tasklists' => $color_tasklists,
         'active_tasklists' => $active_tasklists,
         'alarm_tasklists' => $alarm_tasklists
     ));
@@ -1035,7 +1030,7 @@ class tasklist_mel_driver extends tasklist_driver {
    * @return string HTML content of the form
    */
   public function tasklist_edit_form($action, $list, $formfields) {
-    mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::tasklist_edit_form() : " . var_export($fieldprop, true));
+    mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::tasklist_edit_form()");
     return parent::tasklist_edit_form($action, $list, $formfields);
   }
 

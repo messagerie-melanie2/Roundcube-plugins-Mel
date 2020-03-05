@@ -18,7 +18,7 @@ class mel_addressbook extends rcube_addressbook
      */
     private $addressbook;
     /**
-     * @var LibMelanie\Api\Melanie2\User
+     * @var LibMelanie\Api\Mce\User
      */
     private $user;
     /**
@@ -45,7 +45,7 @@ class mel_addressbook extends rcube_addressbook
     /**
      * Constructeur de la classe
      * @param rcube $rc
-     * @param LibMelanie\Api\Melanie2\User $user
+     * @param LibMelanie\Api\Mce\User $user
      * @param LibMelanie\Api\Melanie2\Addressbook $addressbook
      */
     function __construct($rc, $user, $addressbook) {
@@ -153,6 +153,7 @@ class mel_addressbook extends rcube_addressbook
             }
 
             $this->result = new rcube_result_set();
+            $cache = \mel::InitM2Cache();
             if (!isset($this->ctag)) {
                 if (isset($cache['contacts'])
                         && isset($cache['contacts'][$this->addressbook->id])
@@ -167,7 +168,6 @@ class mel_addressbook extends rcube_addressbook
                     }
                 }
             }
-            $cache = \mel::InitM2Cache();
             // Chargement des contacts depuis le cache
             if (self::ENABLE_CACHE
                     && isset($cache['contacts'])

@@ -26,7 +26,7 @@
 class M2tasks {
   /**
    *
-   * @var LibMelanie\Api\Melanie2\User Utilisateur Mél
+   * @var LibMelanie\Api\Mce\User Utilisateur Mél
    */
   protected $user;
   /**
@@ -59,23 +59,28 @@ class M2tasks {
   public function __construct($user = null, $mbox = null) {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
-    // User Melanie2
-    $this->user = new LibMelanie\Api\Melanie2\User();
-    if (! empty($user)) {
+    if (isset($user) && !empty($user)) {
       $user = str_replace('_-P-_', '.', $user);
-      if (strpos($user, '.-.') !== false) {
-        $susername = explode('.-.', $user);
-        $user = $susername[1];
+      $this->user = driver_mel::gi()->getUser($user);
+      if (isset($this->user) && $this->user->is_objectshare) {
+        $this->user = $this->user->objectshare->mailbox;
       }
-      $this->user->uid = $user;
     }
     try {
-      // Carnet d'adresses Melanie2
+      // Carnet d'adresses Mce
       if (isset($mbox)) {
         $mbox = str_replace('_-P-_', '.', $mbox);
-        if (strpos($mbox, '.-.') !== false) {
-          $susername = explode('.-.', $mbox);
-          $mbox = $susername[1];
+        if (!isset($this->user)) {
+          $this->user = driver_mel::gi()->getUser($mbox);
+          if (isset($this->user)) {
+            if ($this->user->is_objectshare) {
+              $this->user = $this->user->objectshare->mailbox;
+            }
+            $mbox = $this->user->uid;
+          }
+          else {
+            $this->user = driver_mel::gi()->getUser();
+          }
         }
         $this->mbox = $mbox;
         $this->taskslist = new LibMelanie\Api\Melanie2\Taskslist($this->user);

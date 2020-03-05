@@ -68,7 +68,7 @@ class mel_driver extends calendar_driver {
   /**
    * Utilisateur Mél
    *
-   * @var LibMelanie\Api\Melanie2\User
+   * @var LibMelanie\Api\Mce\User
    */
   private $user;
   /**
@@ -1301,9 +1301,9 @@ class mel_driver extends calendar_driver {
 
     try {
       // get event from the address books birthday calendar
-      if ($cal == self::BIRTHDAY_CALENDAR_ID) {
-        return $this->get_birthday_event($id);
-      }
+      // if ($cal == self::BIRTHDAY_CALENDAR_ID) {
+      //   return $this->get_birthday_event($id);
+      // }
 
       // MANTIS 3915: L'envoi d'une invitation depuis une BALP ne fonctionne pas
       $_identity = $event['_identity'] ?  : null;
@@ -1818,7 +1818,7 @@ class mel_driver extends calendar_driver {
       else {
         // Génération de l'exception pour Roundcube
         // Ce tableau est ensuite dépilé pour être intégré a la liste des évènements
-        $e = $this->_read_postprocess($_exception, $freebusy, true);
+        $e = $this->_read_postprocess($_exception, null, true);
         $e['id'] = $_exception->realuid;
         $e['recurrence_id'] = $_exception->uid;
         //$e['recurrence'] = $recurrence;
@@ -2283,9 +2283,7 @@ class mel_driver extends calendar_driver {
     $calendar = $this->_to_M2_id($calendar);
 
     // Définition de l'utilisateur
-    $user = new LibMelanie\Api\Melanie2\User();
-    $user->uid = $this->rc->get_user_name();
-
+    $user = driver_mel::gi()->getUser();
     // On récupère la clé avec la valeur des paramètres utilisateurs
     $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
     $pref->name = "calendarskeyhash";

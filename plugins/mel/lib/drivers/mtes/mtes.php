@@ -66,11 +66,12 @@ class mtes_driver_mel extends driver_mel {
    * Retourne l'objet User associé à l'utilisateur courant
    * Permet de retourner l'instance User en fonction du driver
    * 
-   * @param string $username [Optionnel]
+   * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
+   * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function getUser($username = null) {
+  public function getUser($username = null, $load = true) {
     if (!isset($username)) {
       $username = rcmail::get_instance()->user->get_username();
     }
@@ -80,7 +81,7 @@ class mtes_driver_mel extends driver_mel {
     if (!isset(self::$_users[$username])) {
       self::$_users[$username] = new \LibMelanie\Api\Mel\User();
       self::$_users[$username]->uid = $username;
-      if (!self::$_users[$username]->load()) {
+      if ($load && !self::$_users[$username]->load()) {
         self::$_users[$username] = null;
       }
     }

@@ -865,7 +865,7 @@ class mel_acl extends rcube_plugin
             // Récupération du username depuis l'url
             $this->user_name = urldecode($this->get_account);
             $inf = explode('@', $this->user_name);
-            $this->user_objet_share = $inf[0];
+            $this->user_objet_share = urldecode($inf[0]);
             $this->user_host = $inf[1];
             list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
             if (isset($balpname)) {

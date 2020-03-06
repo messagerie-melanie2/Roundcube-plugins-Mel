@@ -948,7 +948,7 @@ class mel_moncompte extends rcube_plugin {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);
-      $this->user_objet_share = $inf[0];
+      $this->user_objet_share = urldecode($inf[0]);
       $this->user_host = $inf[1];
       if (strpos($this->user_objet_share, '.-.') !== false) {
         $inf = explode('.-.', $this->user_objet_share);

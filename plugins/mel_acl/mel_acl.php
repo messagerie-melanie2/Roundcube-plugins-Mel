@@ -817,9 +817,9 @@ class mel_acl extends rcube_plugin
      * @return string
      */
     private function get_username() {
-        if (!isset($this->user_name))
+        if (!isset($this->user_name)) {
             $this->set_user_properties();
-
+        }
         return $this->user_name;
     }
     /**
@@ -827,9 +827,9 @@ class mel_acl extends rcube_plugin
      * @return string
      */
     private function get_user_bal() {
-        if (!isset($this->user_bal))
+        if (!isset($this->user_bal)) {
             $this->set_user_properties();
-
+        }
         return $this->user_bal;
     }
     /**
@@ -837,9 +837,9 @@ class mel_acl extends rcube_plugin
      * @return string
      */
     private function get_share_objet() {
-        if (!isset($this->user_objet_share))
+        if (!isset($this->user_objet_share)) {
             $this->set_user_properties();
-
+        }
         return $this->user_objet_share;
     }
     /**
@@ -847,9 +847,9 @@ class mel_acl extends rcube_plugin
      * @return string
      */
     private function get_host() {
-        if (!isset($this->user_host))
+        if (!isset($this->user_host)) {
             $this->set_user_properties();
-
+        }
         return $this->user_host;
     }
     /**
@@ -859,32 +859,26 @@ class mel_acl extends rcube_plugin
         // Chargement de l'account passé en Get
         $this->get_account = mel::get_account();
         if (!empty($this->get_account)) {
-            // Récupère la liste des bal gestionnaire de l'utilisateur
-            $list_balp = mel::get_user_balp_gestionnaire($this->rc->get_user_name());
-            $is_gestionnaire = false;
             // Récupération du username depuis l'url
             $this->user_name = urldecode($this->get_account);
-            $inf = explode('@', $this->user_name);
+            // Split sur @ pour les comptes de boites partagées <username>@<hostname>
+            $inf = explode('@', $this->user_name, 2);
+            // Récupération du host
+            $this->user_host = $inf[1] ?: null;
+            // Le username est encodé pour éviter les problèmes avec @
             $this->user_objet_share = urldecode($inf[0]);
-            $this->user_host = $inf[1];
-            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
-            if (isset($balpname)) {
-              $this->user_bal = $balpname;
+            $user = driver_mel::gi()->getUser($this->user_objet_share, false);
+            if ($user->is_objectshare) {
+                $this->user_bal = $user->objectshare->mailbox_uid;
             }
             else {
-              $this->user_bal = $this->user_objet_share;
+                $this->user_bal = $this->user_objet_share;
             }
-            // Parcour les bal pour vérifier qu'il est bien gestionnaire
-            foreach($list_balp as $balp) {
-                $uid = $balp['uid'][0];
-                if ($this->user_objet_share == $uid) {
-                    // La bal est bien en gestionnaire
-                    $is_gestionnaire = true;
-                    break;
-                }
-            }
-            // Si pas de bal gestionnaire on remet les infos de l'utilisateur
-            if (!$is_gestionnaire) {
+            // est-ce qu'il a les droits gestionnaire
+            $bal = driver_mel::gi()->getUser($this->user_bal);
+            if ($this->user_bal != $this->rc->get_user_name()
+                && (!isset($bal->shares[$this->rc->get_user_name()]) 
+                    || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
                 // Récupération du username depuis la session
                 $this->user_name = $this->rc->get_user_name();
                 $this->user_objet_share = $this->rc->user->get_username('local');

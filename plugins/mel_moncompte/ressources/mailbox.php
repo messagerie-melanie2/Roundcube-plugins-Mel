@@ -232,26 +232,19 @@ class M2mailbox {
     // Objet HTML
     $table = new html_table();
     $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'mailboxe')"));
-    // Récupération de la bal de l'utilisateur
-    $infos = mel::get_user_infos($this->user->uid);
-    // Récupération de la liste des balp de l'utilisateur
-    $balp = mel::get_user_balp($this->user->uid);
-    if (! isset($balp)) {
-      $balp = array();
-    }
-    else {
+    $_objects = $this->user->getObjectsShared();
+    if (isset($_objects) && is_array($_objects)) {
       // trier la liste
-      uasort($balp, function($a, $b) {
-        return strtolower($a['cn'][0]) > strtolower($b['cn'][0]);
+      uasort($_objects, function($a, $b) {
+        return strcmp(strtolower($a->fullname), strtolower($b->fullname));
       });
     }
-    $balp = array_merge(array($infos), $balp);
-    foreach ($balp as $b) {
-      if ($b['dn'] == "") {
-        continue;
-      }
-      $id = $b['uid'][0];
-      $name = $this->m2_mailbox_shortname($b['cn'][0]);
+    else {
+      $_objects = [];
+    }
+    foreach (array_merge([$this->user], $_objects) as $_object) {
+      $id = $_object->uid;
+      $name = $this->m2_mailbox_shortname($_object->fullname);
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);

@@ -57,7 +57,7 @@ class mel_moncompte extends rcube_plugin {
    * Username complet bal@host
    *
    * @var string
-   */
+    */
   private $user_name;
   /**
    * Host de l'utilisateur
@@ -255,24 +255,27 @@ class mel_moncompte extends rcube_plugin {
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
       // Récupère l'utilisateur
-      $user = driver_mel::gi()->getUser($id);
+      $user = driver_mel::gi()->getUser($id, false);
       if ($user->is_objectshare) {
         // Si on est dans un objet de partage
         // Ce n'est pas normal donc on recupère le user associé
-        $user = driver_mel::gi()->getUser($user->objectshare->user_uid);
+        $user = driver_mel::gi()->getUser($user->objectshare->mailbox_uid);
+      }
+      else {
+        $user->load();
       }
       // Utilisateur courant
       $curUser = $this->rc->get_user_name();
       $shared = false;
-      if ($curUser == $id || $user->shares[$curUser] == LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN) {
+      if ($curUser == $user->uid || $user->shares[$curUser]->type == LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN) {
         // Si on est gestionnaire
         $acl = $this->gettext('gestionnaire');
         // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
-        $shared = $curUser == $id || ($user->type != LibMelanie\Api\Mce\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Mce\Users\Type::APPLICATIVE);
+        $shared = $curUser == $user->uid || ($user->type != LibMelanie\Api\Mce\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Mce\Users\Type::APPLICATIVE);
       }
       else {
         // Si pas gestionnaire on cherche le bon droit a afficher
-        switch ($user->shares[$curUser]) {
+        switch ($user->shares[$curUser]->type) {
           case LibMelanie\Api\Mce\Users\Share::TYPE_SEND:
             $acl = $this->gettext('send');
             break;
@@ -287,6 +290,7 @@ class mel_moncompte extends rcube_plugin {
       }
       $this->rc->output->set_env("resource_id", $id);
       $this->rc->output->set_env("resource_name", $user->fullname);
+      $this->rc->output->set_env("resource_type", $user->type);
       $this->rc->output->set_env("resource_shared", !$shared);
       $this->rc->output->set_env("resource_acl", $acl);
       if ($shared) {
@@ -503,7 +507,6 @@ class mel_moncompte extends rcube_plugin {
    * Affichage du template et gestion de la sélection
    */
   public function resources_tasks_init() {
-
     try {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
@@ -897,9 +900,9 @@ class mel_moncompte extends rcube_plugin {
    * @return string
    */
   private function get_username() {
-    if (! isset($this->user_name))
+    if (!isset($this->user_name)) {
       $this->set_user_properties();
-
+    }
     return $this->user_name;
   }
   /**
@@ -908,9 +911,9 @@ class mel_moncompte extends rcube_plugin {
    * @return string
    */
   private function get_user_bal() {
-    if (! isset($this->user_bal))
+    if (!isset($this->user_bal)) {
       $this->set_user_properties();
-
+    }
     return $this->user_bal;
   }
   /**
@@ -919,9 +922,9 @@ class mel_moncompte extends rcube_plugin {
    * @return string
    */
   private function get_share_objet() {
-    if (! isset($this->user_objet_share))
+    if (!isset($this->user_objet_share)) {
       $this->set_user_properties();
-
+    }
     return $this->user_objet_share;
   }
   /**
@@ -930,9 +933,9 @@ class mel_moncompte extends rcube_plugin {
    * @return string
    */
   private function get_host() {
-    if (! isset($this->user_host))
+    if (!isset($this->user_host)) {
       $this->set_user_properties();
-
+    }
     return $this->user_host;
   }
   /**
@@ -941,33 +944,27 @@ class mel_moncompte extends rcube_plugin {
   private function set_user_properties() {
     // Chargement de l'account passé en Get
     $this->get_account = mel::get_account();
-    if (! empty($this->get_account)) {
-      // Récupère la liste des bal gestionnaire de l'utilisateur
-      $list_balp = mel::get_user_balp_gestionnaire($this->rc->get_user_name());
-      $is_gestionnaire = false;
+    if (!empty($this->get_account)) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
-      $inf = explode('@', $this->user_name);
+      // Split sur @ pour les comptes de boites partagées <username>@<hostname>
+      $inf = explode('@', $this->user_name, 2);
+      // Récupération du host
+      $this->user_host = $inf[1] ?: null;
+      // Le username est encodé pour éviter les problèmes avec @
       $this->user_objet_share = urldecode($inf[0]);
-      $this->user_host = $inf[1];
-      if (strpos($this->user_objet_share, '.-.') !== false) {
-        $inf = explode('.-.', $this->user_objet_share);
-        $this->user_bal = $inf[1];
+      $user = driver_mel::gi()->getUser($this->user_objet_share, false);
+      if ($user->is_objectshare) {
+        $this->user_bal = $user->objectshare->mailbox_uid;
       }
       else {
         $this->user_bal = $this->user_objet_share;
       }
-      // Parcour les bal pour vérifier qu'il est bien gestionnaire
-      foreach ($list_balp as $balp) {
-        $uid = $balp['uid'][0];
-        if ($this->user_objet_share == $uid) {
-          // La bal est bien en gestionnaire
-          $is_gestionnaire = true;
-          break;
-        }
-      }
-      // Si pas de bal gestionnaire on remet les infos de l'utilisateur
-      if (! $is_gestionnaire) {
+      // est-ce qu'il a les droits gestionnaire
+      $bal = driver_mel::gi()->getUser($this->user_bal);
+      if ($this->user_bal != $this->rc->get_user_name()
+          && (!isset($bal->shares[$this->rc->get_user_name()]) 
+            || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
         // Récupération du username depuis la session
         $this->user_name = $this->rc->get_user_name();
         $this->user_objet_share = $this->rc->user->get_username('local');

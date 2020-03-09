@@ -533,9 +533,9 @@ class mel_mobile extends rcube_plugin {
    * @return string
    */
   private function get_username() {
-    if (! isset($this->user_name))
+    if (!isset($this->user_name)) {
       $this->set_user_properties();
-
+    }
     return $this->user_name;
   }
   /**
@@ -544,9 +544,9 @@ class mel_mobile extends rcube_plugin {
    * @return string
    */
   private function get_user_bal() {
-    if (! isset($this->user_bal))
+    if (!isset($this->user_bal)) {
       $this->set_user_properties();
-
+    }
     return $this->user_bal;
   }
   /**
@@ -555,9 +555,9 @@ class mel_mobile extends rcube_plugin {
    * @return string
    */
   private function get_share_objet() {
-    if (! isset($this->user_objet_share))
+    if (!isset($this->user_objet_share)) {
       $this->set_user_properties();
-
+    }
     return $this->user_objet_share;
   }
   /**
@@ -566,9 +566,9 @@ class mel_mobile extends rcube_plugin {
    * @return string
    */
   private function get_host() {
-    if (! isset($this->user_host))
+    if (!isset($this->user_host)) {
       $this->set_user_properties();
-
+    }
     return $this->user_host;
   }
   /**
@@ -580,10 +580,10 @@ class mel_mobile extends rcube_plugin {
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);
       $this->user_objet_share = urldecode($inf[0]);
-      $this->user_host = $inf[1];
-      list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
-      if (isset($balpname)) {
-        $this->user_bal = $balpname;
+      $this->user_host = $inf[1] ?: null;
+      $user = driver_mel::gi()->getUser($this->user_objet_share, false);
+      if ($user->is_objectshare) {
+        $this->user_bal = $user->objectshare->mailbox_uid;
       }
       else {
         $this->user_bal = $this->user_objet_share;

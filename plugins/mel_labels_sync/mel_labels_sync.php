@@ -679,27 +679,18 @@ class mel_labels_sync extends rcube_plugin {
   }
   /**
    * Retourne si l'utilisateur courant est gestionnaire de la liste
-   * @param string $balp
+   * @param string $balpName
    * @return boolean
    */
-  private function _is_gestionnaire($balp) {
-    if ($this->rc->user->get_username() == $balp) {
+  private function _is_gestionnaire($balpName) {
+    if ($this->rc->user->get_username() == $balpName) {
       return true;
     }
     else {
-      // Récupération de la liste des balp de l'utilisateur
-      $balp_list = mel::get_user_balp_gestionnaire($this->rc->user->get_username());
-      // Parcours la liste des boites et ajoute les options
-      if (is_array($balp_list)) {
-        foreach ($balp_list as $_bal) {
-          if (driver_mel::get_instance()->issetUsername($_bal)) {
-            list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername(driver_mel::get_instance()->getUsername($_bal));
-            $name = $balpname ?: $username;
-            if ($name == $balp) {
-              return true;
-            }
-          }
-        }
+      $bal = driver_mel::gi()->getUser($balpName);
+      if (isset($bal->shares[$this->rc->user->get_username()]) 
+          && $bal->shares[$this->rc->user->get_username()]->type == \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN) {
+        return true;
       }
     }
     return false;

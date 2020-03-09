@@ -1427,58 +1427,6 @@ class mel extends rcube_plugin {
     return $cache['users_balp'][$username];
   }
   /**
-   * Récupère la liste des balp avec des droits d'emission de l'utilisateur depuis le cache
-   *
-   * @param string $username
-   * @return array Liste des balp de l'utilisateur
-   */
-  public static function get_user_balp_emission($username) {
-    $cache = self::InitM2Cache();
-    if (! isset($cache['users_balp'][$username])) {
-      $cache = self::set_user_balp($username);
-    }
-    $balp_emission = array();
-    if (is_array($cache['users_balp'][$username])) {
-      foreach ($cache['users_balp'][$username] as $balp) {
-        if (driver_mel::get_instance()->isUsernameHasEmission($username, $balp)) {
-          $balp_emission[] = $balp;
-        }
-      }
-    }
-    return $balp_emission;
-  }
-  /**
-   * Récupère la liste des balp avec des droits gestionnaire de l'utilisateur depuis le cache
-   *
-   * @param string $username
-   * @return array Liste des balp de l'utilisateur
-   */
-  public static function get_user_balp_gestionnaire($username) {
-    $cache = self::InitM2Cache();
-    if (! isset($cache['users_balp'][$username])) {
-      $cache = self::set_user_balp($username);
-    }
-    if (! isset($cache['users_balp_gestionnaire'])) {
-      $cache['users_balp_gestionnaire'] = array();
-    }
-    if (isset($cache['users_balp_gestionnaire'][$username])) {
-      $balp_gestionnaire = $cache['users_balp_gestionnaire'][$username];
-    }
-    else {
-      $balp_gestionnaire = array();
-      if (is_array($cache['users_balp'][$username])) {
-        foreach ($cache['users_balp'][$username] as $balp) {
-          if (driver_mel::get_instance()->isUsernameHasGestionnaire($username, $balp)) {
-            $balp_gestionnaire[] = $balp;
-          }
-        }
-      }
-      $cache['users_balp_gestionnaire'][$username] = $balp_gestionnaire;
-      self::SetM2Cache($cache);
-    }
-    return $balp_gestionnaire;
-  }
-  /**
    * Génére le cache session en fonction des données LDAP
    *
    * @param string $username
@@ -1496,7 +1444,7 @@ class mel extends rcube_plugin {
    * Initialisation du cache M2
    */
   public static function InitM2Cache() {
-    if (! isset($_SESSION[self::CACHE_KEY])) {
+    if (!isset($_SESSION[self::CACHE_KEY])) {
       $_SESSION[self::CACHE_KEY] = array();
     }
     return $_SESSION[self::CACHE_KEY];
@@ -1516,9 +1464,9 @@ class mel extends rcube_plugin {
    * @return string
    */
   public function get_username() {
-    if (! isset($this->user_name))
+    if (!isset($this->user_name)) {
       $this->set_user_properties();
-
+    }
     return $this->user_name;
   }
   /**
@@ -1527,9 +1475,9 @@ class mel extends rcube_plugin {
    * @return string
    */
   public function get_user_bal() {
-    if (! isset($this->user_bal))
+    if (!isset($this->user_bal)) {
       $this->set_user_properties();
-
+    }
     return $this->user_bal;
   }
   /**
@@ -1538,9 +1486,9 @@ class mel extends rcube_plugin {
    * @return string
    */
   public function get_share_objet() {
-    if (! isset($this->user_objet_share))
+    if (!isset($this->user_objet_share)) {
       $this->set_user_properties();
-
+    }
     return $this->user_objet_share;
   }
   /**
@@ -1549,9 +1497,9 @@ class mel extends rcube_plugin {
    * @return string
    */
   public function get_host() {
-    if (! isset($this->user_host))
+    if (!isset($this->user_host)) {
       $this->set_user_properties();
-
+    }
     return $this->user_host;
   }
   /**
@@ -1566,10 +1514,10 @@ class mel extends rcube_plugin {
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);
       $this->user_objet_share = urldecode($inf[0]);
-      $this->user_host = $inf[1];
-      list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($this->user_objet_share);
-      if (isset($balpname)) {
-        $this->user_bal = $balpname;
+      $this->user_host = $inf[1] ?: null;
+      $user = driver_mel::gi()->getUser($this->user_objet_share, false);
+      if ($user->is_objectshare) {
+        $this->user_bal = $user->objectshare->mailbox_uid;
       }
       else {
         $this->user_bal = $this->user_objet_share;

@@ -60,7 +60,7 @@ class M2contacts {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     if (isset($user) && !empty($user)) {
-      $user = str_replace('_-P-_', '.', $user);
+      $user = driver_mel::gi()->rcToMceId($user);
       $this->user = driver_mel::gi()->getUser($user);
       if (isset($this->user) && $this->user->is_objectshare) {
         $this->user = $this->user->objectshare->mailbox;
@@ -69,7 +69,7 @@ class M2contacts {
     try {
       // Addressbook Mce
       if (isset($mbox)) {
-        $mbox = str_replace('_-P-_', '.', $mbox);
+        $mbox = driver_mel::gi()->rcToMceId($mbox);
         if (!isset($this->user)) {
           $this->user = driver_mel::gi()->getUser($mbox);
           if (isset($this->user)) {
@@ -316,7 +316,7 @@ class M2contacts {
       $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'contact')"));
       // Carnet d'adresses principal
       foreach ($addressbook_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'contact','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'contact','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
@@ -324,7 +324,7 @@ class M2contacts {
       // Carnets d'adresses de l'utilisateurs
       asort($addressbooks_owner);
       foreach ($addressbooks_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'contact personnal','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'contact personnal','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
@@ -332,7 +332,7 @@ class M2contacts {
       // Carnets d'adresses partagés
       asort($addressbooks_shared);
       foreach ($addressbooks_shared as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'contact','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'contact','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
@@ -405,7 +405,7 @@ class M2contacts {
 
     $html = '';
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $id = str_replace('_-P-_', '.', $id);
+    $id = driver_mel::gi()->rcToMceId($id);
     $hidden = new html_hiddenfield(array('name' => 'contacts','id' => 'event-export-contacts','value' => $id));
     $html .= $hidden->show();
 

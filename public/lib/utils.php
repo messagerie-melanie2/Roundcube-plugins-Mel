@@ -485,7 +485,7 @@ class utils
      * @return string
      */
     public static function to_M2_id($id) {
-      return str_replace('_-P-_', '.', $id);
+        return str_replace(['_-P-_', '_-A-_', '_-C-_'], ['.', '@', '%'], $id);
     }
 
     /**

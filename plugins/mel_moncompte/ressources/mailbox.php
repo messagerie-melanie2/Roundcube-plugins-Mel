@@ -55,7 +55,7 @@ class M2mailbox {
     }
     // Boite mail Melanie2
     if (isset($mbox)) {
-      $mbox = str_replace('_-P-_', '.', $mbox);
+      $mbox = driver_mel::gi()->rcToMceId($mbox);
       $this->mbox = $mbox;
     }
   }
@@ -252,7 +252,7 @@ class M2mailbox {
       }
       $id = $b['uid'][0];
       $name = $this->m2_mailbox_shortname($b['cn'][0]);
-      $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'mailbox','foldername' => str_replace(".", "_-P-_", $id)));
+      $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);
       $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_mailboxes[$id]) ? $id : ''), array('value' => $id)));
@@ -330,7 +330,7 @@ class M2mailbox {
   public function restore_bal($attrib) {
 
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $id = str_replace("_-P-_", ".", $id);
+    $id = driver_mel::gi()->rcToMceId($id);
 
     if (strpos($id, '.-.') !== false) {
       $tmp = explode('.-.', $id, 2);
@@ -405,7 +405,7 @@ class M2mailbox {
       $nbheures = intval($nbheures);
 
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-      $id = str_replace("_-P-_", ".", $id);
+      $id = driver_mel::gi()->rcToMceId($id);
 
       if (strpos($id, '.-.') !== false) {
         $tmp = explode('.-.', $id, 2);

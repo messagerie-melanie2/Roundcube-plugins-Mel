@@ -111,8 +111,8 @@ class mel_contacts extends rcube_plugin {
       }
       if (empty($this->rc->action)) {
         $default_addressbook_object = $this->user->getDefaultAddressbook();
-        if (isset($default_addressbook_object) && $this->_to_RC_id($default_addressbook_object->id) != $this->rc->config->get('default_addressbook')) {
-          $this->rc->user->save_prefs(array('default_addressbook' => $this->_to_RC_id($default_addressbook_object->id)));
+        if (isset($default_addressbook_object) && driver_mel::gi()->mceToRcId($default_addressbook_object->id) != $this->rc->config->get('default_addressbook')) {
+          $this->rc->user->save_prefs(array('default_addressbook' => driver_mel::gi()->mceToRcId($default_addressbook_object->id)));
         }
       }
     }
@@ -157,7 +157,7 @@ class mel_contacts extends rcube_plugin {
       }
 
       foreach ($this->addressbooks as $abook) {
-        $id = $this->_to_RC_id($abook->id);
+        $id = driver_mel::gi()->mceToRcId($abook->id);
         if (isset($hidden_contacts[$abook->id])
             && (count($hidden_contacts) < count($this->addressbooks)
                 || $this->user->uid != $abook->id))
@@ -253,7 +253,7 @@ class mel_contacts extends rcube_plugin {
       }
       // Il remplace les . par _ dans la recherche
       // TODO: il faut peut être anticiper ça avant
-      $p['id'] = $this->_to_M2_id($p['id']);
+      $p['id'] = driver_mel::gi()->rcToMceId($p['id']);
       // Gestion du All
       if ($p['id'] == 'all') {
         $p['instance'] = new all_addressbook($this->rc);
@@ -436,22 +436,5 @@ class mel_contacts extends rcube_plugin {
       }
     }
     return $args;
-  }
-
-  /**
-   * Converti l'id en identifiant utilisable par RC
-   * @param string $id
-   * @return string
-   */
-  private function _to_RC_id($id) {
-    return str_replace('.', '_-P-_', $id);
-  }
-  /**
-   * Converti l'id en identifiant utilisable par M2
-   * @param string $id
-   * @return string
-   */
-  private function _to_M2_id($id) {
-    return str_replace('_-P-_', '.', $id);
   }
 }

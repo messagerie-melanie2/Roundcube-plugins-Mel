@@ -60,7 +60,7 @@ class M2tasks {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     if (isset($user) && !empty($user)) {
-      $user = str_replace('_-P-_', '.', $user);
+      $user = driver_mel::gi()->rcToMceId($user);
       $this->user = driver_mel::gi()->getUser($user);
       if (isset($this->user) && $this->user->is_objectshare) {
         $this->user = $this->user->objectshare->mailbox;
@@ -69,7 +69,7 @@ class M2tasks {
     try {
       // Carnet d'adresses Mce
       if (isset($mbox)) {
-        $mbox = str_replace('_-P-_', '.', $mbox);
+        $mbox = driver_mel::gi()->rcToMceId($mbox);
         if (!isset($this->user)) {
           $this->user = driver_mel::gi()->getUser($mbox);
           if (isset($this->user)) {
@@ -317,7 +317,7 @@ class M2tasks {
       $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'task')"));
       // Liste de tâches principal
       foreach ($taskslist_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'task','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'task','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));
@@ -325,7 +325,7 @@ class M2tasks {
       // Listes de tâches de l'utilisateurs
       asort($taskslists_owner);
       foreach ($taskslists_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'task personnal','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'task personnal','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));
@@ -333,7 +333,7 @@ class M2tasks {
       // Listes de tâches partagés
       asort($taskslists_shared);
       foreach ($taskslists_shared as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'task','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'task','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));

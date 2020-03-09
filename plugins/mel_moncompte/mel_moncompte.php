@@ -253,7 +253,7 @@ class mel_moncompte extends rcube_plugin {
   public function resources_bal_init() {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
-      $id = str_replace('_-P-_', '.', $id);
+      $id = driver_mel::gi()->rcToMceId($id);
       // Récupère l'utilisateur
       $user = driver_mel::gi()->getUser($id);
       if ($user->is_objectshare) {
@@ -328,7 +328,7 @@ class mel_moncompte extends rcube_plugin {
     try {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
-        $id = str_replace('_-P-_', '.', $id);
+        $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
         $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
@@ -417,7 +417,7 @@ class mel_moncompte extends rcube_plugin {
     try {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
-        $id = str_replace('_-P-_', '.', $id);
+        $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
         $addressbook = new LibMelanie\Api\Melanie2\Addressbook($user);
@@ -507,7 +507,7 @@ class mel_moncompte extends rcube_plugin {
     try {
       $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
       if (isset($id)) {
-        $id = str_replace('_-P-_', '.', $id);
+        $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
         $taskslist = new LibMelanie\Api\Melanie2\Taskslist($user);

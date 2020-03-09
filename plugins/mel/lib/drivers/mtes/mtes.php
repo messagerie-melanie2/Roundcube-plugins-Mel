@@ -327,4 +327,18 @@ class mtes_driver_mel extends driver_mel {
     }
     return $needs_to_change;
   }
+
+  /**
+   * Méthode appelée à chaque action sur le backend effectuée dans le code
+   * Va permettre de compléter les actions avec de nouvelles interractions avec le bakcend
+   * En faisant par exemple des écritures LDAP, des appels a des scripts ou du queuing
+   * 
+   * @param string $actionName Nom de l'action
+   * @param array $data Liste des données associées à l'action
+   * 
+   * @return boolean true si tout est OK, false si erreur
+   */
+  public function triggerAction($actionName, $data) {
+    return true;
+  }
 }

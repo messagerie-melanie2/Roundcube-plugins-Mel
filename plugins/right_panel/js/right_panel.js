@@ -219,7 +219,7 @@ $(document).on("click", '#right_panel_contacts .contacts_favorites .contact', fu
 	if (cid) {
 		const url = rcmail.url('addressbook/show', {
 			_framed: 1,
-			_source: rcmail.env['username'].replace('.','_-P-_'),
+			_source: rcmail.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_'),
 			_cid: cid
 		});
 		rcmail.open_window(url, true, true);
@@ -646,7 +646,7 @@ rcube_webmail.prototype.right_panel_get_events = function() {
 	$.ajax({
 		  method: "GET",
 		  url: this.url('calendar/load_events', {
-		        source: this.env['username'].replace('.','_-P-_'),
+		        source: this.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_'),
 		        start: window.current_timestamp,
 		        end: end_timestamp,
 		    }),
@@ -1127,7 +1127,7 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 			photo_url = contact.photo_url;	
 		}
 		else {
-			photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_')});	
+			photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_')});	
 		}								
 		const photo = '<img src="' + photo_url + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">';
 		$('#right_panel_contacts .contacts_favorites .contacts_list').append('<div class="contact ' + id + '" title="' + contact.name + '"><span class="cid">' + contact.ID + '</span><span class="photo">' + photo + '</span><span class="name">' + name + '</span>' + status + im + email + '</div>');

@@ -359,7 +359,7 @@ class mel extends rcube_plugin {
                 && isset($hidden_mailboxes[$_object->uid])) {
               continue;
             }
-            $uid = $_object->uid;
+            $uid = urlencode($_object->uid);
             $cn = $_object->fullname;
             if (isset($_object->mailbox)) {
               // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
@@ -369,7 +369,7 @@ class mel extends rcube_plugin {
               // Récupération de la configuration de la boite pour l'affichage
               $hostname = driver_mel::get_instance()->getRoutage($_object->mailbox);
               if (isset($hostname)) {
-                $uid = urlencode(urlencode($uid) . "@" . $hostname);
+                $uid = urlencode($uid . "@" . $hostname);
               }
               $cn = $_object->mailbox->fullname;
             }

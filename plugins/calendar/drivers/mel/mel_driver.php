@@ -115,7 +115,7 @@ class mel_driver extends calendar_driver {
       if (isset($calid)) {
         // Charger un calendrier unique
         $calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
-        $calid = $this->_to_M2_id($calid);
+        $calid = driver_mel::gi()->rcToMceId($calid);
         $calendar->id = $calid;
         if ($calendar->load() && $calendar->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
           $this->calendars = array();
@@ -242,7 +242,7 @@ class mel_driver extends calendar_driver {
           $rights = 'l';
         }
         // formatte le calendrier pour le driver
-        $calendar = array('id' => $this->_to_RC_id($cal->id),
+        $calendar = array('id' => driver_mel::gi()->mceToRcId($cal->id),
             'name' => $cal->name,
             'listname' => $cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name,
             'editname' => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_larry') : ($cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name),
@@ -267,15 +267,15 @@ class mel_driver extends calendar_driver {
         ;
         // Ajout le calendrier dans la liste correspondante
         if ($calendar['owner'] != $this->user->uid) {
-          $id = $this->_to_RC_id($id);
+          $id = driver_mel::gi()->mceToRcId($id);
           $shared_calendars[$id] = $calendar;
         }
         elseif ($this->user->uid == $cal->id) {
-          $id = $this->_to_RC_id($id);
+          $id = driver_mel::gi()->mceToRcId($id);
           $owner_calendars[$id] = $calendar;
         }
         else {
-          $id = $this->_to_RC_id($id);
+          $id = driver_mel::gi()->mceToRcId($id);
           $other_calendars[$id] = $calendar;
         }
       }
@@ -376,7 +376,7 @@ class mel_driver extends calendar_driver {
       else {
         $calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
         $calendar->name = $prop['name'];
-        $calendar->id = isset($prop['id']) ? $this->_to_M2_id($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
+        $calendar->id = isset($prop['id']) ? driver_mel::gi()->rcToMceId($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
         $calendar->owner = $this->user->uid;
         $ret = $calendar->save();
       }
@@ -441,7 +441,7 @@ class mel_driver extends calendar_driver {
         $this->_read_calendars();
       }
       if (isset($prop['id'])) {
-        $id = $this->_to_M2_id($prop['id']);
+        $id = driver_mel::gi()->rcToMceId($prop['id']);
         if (isset($this->calendars[$id])) {
           $cal = $this->calendars[$id];
           if (isset($prop['name']) && $cal->owner != $cal->id && $cal->owner == $this->user->uid && $prop['name'] != "" && $prop['name'] != $cal->name) {
@@ -492,7 +492,7 @@ class mel_driver extends calendar_driver {
     if ($this->rc->task != 'calendar') {
       return;
     }
-    $id = $this->_to_M2_id($prop['id']);
+    $id = driver_mel::gi()->rcToMceId($prop['id']);
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::subscribe_calendar($id)");
     if (mel_logs::is(mel_logs::TRACE))
@@ -518,7 +518,7 @@ class mel_driver extends calendar_driver {
     if ($this->rc->task != 'calendar') {
       return false;
     }
-    $id = $this->_to_M2_id($prop['id']);
+    $id = driver_mel::gi()->rcToMceId($prop['id']);
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_calendar($id)");
     if (mel_logs::is(mel_logs::TRACE))
@@ -566,7 +566,7 @@ class mel_driver extends calendar_driver {
     if ($this->rc->task != 'calendar') {
       return false;
     }
-    $id = $this->_to_M2_id($prop['id']);
+    $id = driver_mel::gi()->rcToMceId($prop['id']);
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::delete_all_events($id)");
     if (mel_logs::is(mel_logs::TRACE))
@@ -632,7 +632,7 @@ class mel_driver extends calendar_driver {
       if (! isset($this->calendars)) {
         $this->_read_calendars();
       }
-      $event['calendar'] = $this->_to_M2_id($event['calendar']);
+      $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
 
       if (! $this->validate($event) || empty($this->calendars) || ! isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
         return false;
@@ -853,7 +853,7 @@ class mel_driver extends calendar_driver {
         $this->_read_calendars();
       }
 
-      $event['calendar'] = $this->_to_M2_id($event['calendar']);
+      $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
 
       if (! $this->validate($event) || empty($this->calendars) || ! isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
         return false;
@@ -1155,7 +1155,7 @@ class mel_driver extends calendar_driver {
         $this->_read_calendars();
       }
 
-      $event['calendar'] = $this->_to_M2_id($event['calendar']);
+      $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
 
       if (empty($this->calendars) || ! isset($event['calendar']) || ! isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
         return false;
@@ -1316,7 +1316,7 @@ class mel_driver extends calendar_driver {
       }
 
       if (isset($event['calendar'])) {
-        $event['calendar'] = $this->_to_M2_id($event['calendar']);
+        $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
       }
 
       if (! isset($event['calendar'])) {
@@ -1458,7 +1458,7 @@ class mel_driver extends calendar_driver {
       }
       else {
         foreach ($calendars as $key => $value) {
-          $calendars[$key] = $this->_to_M2_id($value);
+          $calendars[$key] = driver_mel::gi()->rcToMceId($value);
         }
       }
 
@@ -1680,7 +1680,7 @@ class mel_driver extends calendar_driver {
     }
     $_event['created'] = new DateTime(date('Y-m-d H:i:s', $event->created));
     $_event['changed'] = new DateTime(date('Y-m-d H:i:s', $event->modified));
-    $_event['calendar'] = $this->_to_RC_id($event->calendar);
+    $_event['calendar'] = driver_mel::gi()->mceToRcId($event->calendar);
 
     if ($freebusy) {
       // Status
@@ -2280,7 +2280,7 @@ class mel_driver extends calendar_driver {
    */
   public function get_calendar_public_key($calendar) {
     $result = null;
-    $calendar = $this->_to_M2_id($calendar);
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
 
     // Définition de l'utilisateur
     $user = driver_mel::gi()->getUser();
@@ -2305,7 +2305,7 @@ class mel_driver extends calendar_driver {
    * @param string $key
    */
   public function add_calendar_public_key($calendar, $key) {
-    $calendar = $this->_to_M2_id($calendar);
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
 
     // On compare la clé avec la valeur des paramètres utilisateurs
     $pref = new LibMelanie\Api\Melanie2\UserPrefs();
@@ -2333,7 +2333,7 @@ class mel_driver extends calendar_driver {
    * @param string $calendar
    */
   public function delete_calendar_public_key($calendar) {
-    $calendar = $this->_to_M2_id($calendar);
+    $calendar = driver_mel::gi()->rcToMceId($calendar);
 
     // On compare la clé avec la valeur des paramètres utilisateurs
     $pref = new LibMelanie\Api\Melanie2\UserPrefs();
@@ -2612,7 +2612,7 @@ class mel_driver extends calendar_driver {
       if (! isset($this->calendars)) {
         $this->_read_calendars();
       }
-      $calendar['id'] = $this->_to_M2_id($calendar['id']);
+      $calendar['id'] = driver_mel::gi()->rcToMceId($calendar['id']);
 
       if ($calendar['id'] && ($cal = $this->calendars[$calendar['id']])) {
         $folder = $cal->name; // UTF7
@@ -2772,24 +2772,6 @@ class mel_driver extends calendar_driver {
   	return false;
   }
 
-  /**
-   * Converti l'id en identifiant utilisable par RC
-   *
-   * @param string $id
-   * @return string
-   */
-  private function _to_RC_id($id) {
-    return str_replace('.', '_-P-_', $id);
-  }
-  /**
-   * Converti l'id en identifiant utilisable par M2
-   *
-   * @param string $id
-   * @return string
-   */
-  private function _to_M2_id($id) {
-    return str_replace('_-P-_', '.', $id);
-  }
   /**
    * Replacing specials characters to a specific encoding type
    *

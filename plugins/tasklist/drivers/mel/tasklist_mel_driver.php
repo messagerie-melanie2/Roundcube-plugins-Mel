@@ -142,7 +142,7 @@ class tasklist_mel_driver extends tasklist_driver {
       }
 
       $tasklist = array(
-          'id' => $this->_to_RC_id($list->id),
+          'id' => driver_mel::gi()->mceToRcId($list->id),
           'name' => $list->name,
           'listname' => $list->id == $this->user->uid ? $this->rc->gettext('personaltasks', 'mel_larry') : ($list->owner == $this->user->uid ? $list->name : "[" . $list->owner . "] " . $list->name),
           'editname' => $list->name,
@@ -158,11 +158,11 @@ class tasklist_mel_driver extends tasklist_driver {
       );
       // Ajout la liste de taches dans la liste correspondante
       if ($list->owner != $this->user->uid) {
-        $shared_tasklists[$this->_to_RC_id($id)] = $tasklist;
+        $shared_tasklists[driver_mel::gi()->mceToRcId($id)] = $tasklist;
       } elseif ($this->user->uid == $list->id) {
-        $owner_tasklists[$this->_to_RC_id($id)] = $tasklist;
+        $owner_tasklists[driver_mel::gi()->mceToRcId($id)] = $tasklist;
       } else {
-        $other_tasklists[$this->_to_RC_id($id)] = $tasklist;
+        $other_tasklists[driver_mel::gi()->mceToRcId($id)] = $tasklist;
       }
     }
     // Tri des tableaux
@@ -243,8 +243,8 @@ class tasklist_mel_driver extends tasklist_driver {
     }
     mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::edit_list()");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::edit_list() : " . var_export($prop, true));
-    if (isset($prop['id']) && isset($this->lists[$this->_to_M2_id($prop['id'])])) {
-      $id = $this->_to_M2_id($prop['id']);
+    if (isset($prop['id']) && isset($this->lists[driver_mel::gi()->rcToMceId($prop['id'])])) {
+      $id = driver_mel::gi()->rcToMceId($prop['id']);
       $list = $this->lists[$id];
       if (isset($prop['name']) && $list->owner == $this->user->uid && $prop['name'] != "") {
         $list->name = $prop['name'];
@@ -283,7 +283,7 @@ class tasklist_mel_driver extends tasklist_driver {
     if ($this->rc->task != 'tasks') {
       return;
     }
-    $prop['id'] = $this->_to_M2_id($prop['id']);
+    $prop['id'] = driver_mel::gi()->rcToMceId($prop['id']);
     mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::subscribe_list(" . $prop['id'] . ")");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::subscribe_list() : " . var_export($prop, true));
     // Récupération des préférences de l'utilisateur
@@ -366,7 +366,7 @@ class tasklist_mel_driver extends tasklist_driver {
     if (empty($lists))
       $lists = array_keys($this->lists);
     else if (is_string($lists))
-      $lists = explode(',', $this->_to_M2_id($lists));
+      $lists = explode(',',driver_mel::gi()->rcToMceId($lists));
 
     $today_date = new DateTime('now', $this->plugin->timezone);
     $today = $today_date->format('Y-m-d');
@@ -382,7 +382,7 @@ class tasklist_mel_driver extends tasklist_driver {
         'nodate' => 0
     );
     foreach ($lists as $list_id) {
-      $list_id = $this->_to_M2_id($list_id);
+      $list_id = driver_mel::gi()->rcToMceId($list_id);
       foreach ($this->lists[$list_id]->getAllTasks() as $task) {
         $this->tasks[$task->id] = $task;
         $rec = $this->_to_rcube_task($task);
@@ -435,7 +435,7 @@ class tasklist_mel_driver extends tasklist_driver {
     if (empty($lists))
       $lists = array_keys($this->lists);
     else if (is_string($lists))
-      $lists = explode(',', $this->_to_M2_id($lists));
+      $lists = explode(',', driver_mel::gi()->rcToMceId($lists));
 
     $results = array();
     // Création de la requête
@@ -554,10 +554,10 @@ class tasklist_mel_driver extends tasklist_driver {
       
     // Tasklist
     if (isset($prop['_fromlist'])) {
-      $task->taskslist = $this->_to_M2_id($prop['_fromlist']);
+      $task->taskslist = driver_mel::gi()->rcToMceId($prop['_fromlist']);
     }
     elseif (isset($prop['list'])) {
-      $task->taskslist = $this->_to_M2_id($prop['list']);
+      $task->taskslist = driver_mel::gi()->rcToMceId($prop['list']);
     }
     else {
       $this->_read_lists();
@@ -596,7 +596,7 @@ class tasklist_mel_driver extends tasklist_driver {
     }
 
     $childs = array();
-    $list_id = $this->_to_M2_id($prop['list']);
+    $list_id = driver_mel::gi()->rcToMceId($prop['list']);
     $task_ids = array(
         $prop['id']
     );
@@ -730,7 +730,7 @@ class tasklist_mel_driver extends tasklist_driver {
         'description' => $record->description,
         'flagged' => $record->priority == LibMelanie\Api\Melanie2\Task::PRIORITY_VERY_HIGH,
         'parent_id' => $record->parent,
-        'list' => $this->_to_RC_id($record->taskslist),
+        'list' => driver_mel::gi()->mceToRcId($record->taskslist),
         '_hasdate' => 0
     );
 
@@ -882,7 +882,7 @@ class tasklist_mel_driver extends tasklist_driver {
     mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::edit_task()");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::edit_task() : " . var_export($task, true));
 
-    $list_id = $this->_to_M2_id($task['list']);
+    $list_id = driver_mel::gi()->rcToMceId($task['list']);
     if (!$list_id || !isset($this->lists[$list_id]) || !$this->lists[$list_id]->asRight(LibMelanie\Config\ConfigMelanie::WRITE))
       return false;
 
@@ -957,7 +957,7 @@ class tasklist_mel_driver extends tasklist_driver {
     mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::delete_task()");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::delete_task() : " . var_export($task, true));
 
-    $list_id = $this->_to_M2_id($task['list']);
+    $list_id = driver_mel::gi()->rcToMceId($task['list']);
     if (!$list_id || !isset($this->lists[$list_id]) || !isset($task['id']) || !$this->lists[$list_id]->asRight(LibMelanie\Config\ConfigMelanie::WRITE))
       return false;
 
@@ -1079,25 +1079,6 @@ class tasklist_mel_driver extends tasklist_driver {
     if (strpos($trigger, '-') === false)
       $minutes = -$minutes;
     return $minutes;
-  }
-
-  /**
-   * Converti l'id en identifiant utilisable par RC
-   *
-   * @param string $id
-   * @return string
-   */
-  private function _to_RC_id($id) {
-    return str_replace('.', '_-P-_', $id);
-  }
-  /**
-   * Converti l'id en identifiant utilisable par M2
-   *
-   * @param string $id
-   * @return string
-   */
-  private function _to_M2_id($id) {
-    return str_replace('_-P-_', '.', $id);
   }
 }
    

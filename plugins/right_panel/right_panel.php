@@ -113,7 +113,7 @@ class right_panel extends rcube_plugin
    * Lister les contacts favoris de l'utilisateur
    */
   public function list_contacts_favorites() {
-    $addressbook = $this->rc->get_address_book(str_replace('.', '_-P-_', $this->rc->get_user_name()));
+    $addressbook = $this->rc->get_address_book(driver_mel::gi()->mceToRcId($this->rc->get_user_name()));
     $addressbook->set_group('favorites');
     $addressbook->page_size = 200;
     $records = $addressbook->list_records();

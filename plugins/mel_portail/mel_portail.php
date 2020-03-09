@@ -100,7 +100,7 @@ class mel_portail extends rcube_plugin
   public function resources_init() {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
-      $id = str_replace('_-P-_', '.', $id);
+      $id = driver_mel::gi()->rcToMceId($id);
       
       $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
       
@@ -199,7 +199,7 @@ class mel_portail extends rcube_plugin
         }
       }
       
-      $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id), 'class' => 'portail', 'foldername' => str_replace(".", "_-P-_", $id)));
+      $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail', 'foldername' => driver_mel::gi()->mceToRcId($id)));
       $table->add('name', $item['name']);
       $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_applications[$id]) ? $id : ''), array('value' => $id)));
     }

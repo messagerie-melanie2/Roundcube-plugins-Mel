@@ -220,6 +220,46 @@ abstract class driver_mel {
    * @return boolean Le mot de passe doit changer
    */
   abstract public function isPasswordNeedsToChange(&$title);
+
+  /**
+   * Converti un identifiant Roundcube en MCE
+   * Permet de remplacer tous les caractères spéciaux 
+   *     '.', '@', '%'
+   * par '_-P-_', '_-A-_', '_-C-_'
+   * 
+   * @param string $rcId Identifiant au format Roundcube
+   * 
+   * @return string Identifiant au format MCE
+   */
+  public function rcToMceId($rcId) {
+    return str_replace(['_-P-_', '_-A-_', '_-C-_'], ['.', '@', '%'], $rcId);
+  }
+
+  /**
+   * Converti un identifiant MCE en Roundcube
+   * Permet de remplacer tous les caractères spéciaux 
+   *     '.', '@', '%'
+   * par '_-P-_', '_-A-_', '_-C-_'
+   * 
+   * @param string $mceId Identifiant au format MCE
+   * 
+   * @return string Identifiant au format Roundcube
+   */
+  public function mceToRcId($mceId) {
+    return str_replace(['.', '@', '%'], ['_-P-_', '_-A-_', '_-C-_'], $mceId);
+  }
+
+  /**
+   * Méthode appelée à chaque action sur le backend effectuée dans le code
+   * Va permettre de compléter les actions avec de nouvelles interractions avec le bakcend
+   * En faisant par exemple des écritures LDAP, des appels a des scripts ou du queuing
+   * 
+   * @param string $actionName Nom de l'action
+   * @param array $data Liste des données associées à l'action
+   * 
+   * @return boolean true si tout est OK, false si erreur
+   */
+  abstract public function triggerAction($actionName, $data);
   
   /**
    * Retourne le label des balp dans l'arborescence de fichiers IMAP

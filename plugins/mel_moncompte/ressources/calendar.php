@@ -59,7 +59,7 @@ class M2calendar {
     // Chargement de l'instance rcmail
     $this->rc = rcmail::get_instance();
     if (isset($user) && !empty($user)) {
-      $user = str_replace('_-P-_', '.', $user);
+      $user = driver_mel::gi()->rcToMceId($user);
       $this->user = driver_mel::gi()->getUser($user);
       if (isset($this->user) && $this->user->is_objectshare) {
         $this->user = $this->user->objectshare->mailbox;
@@ -68,7 +68,7 @@ class M2calendar {
     try {
       // Calendar Mce
       if (isset($mbox)) {
-        $mbox = str_replace('_-P-_', '.', $mbox);
+        $mbox = driver_mel::gi()->rcToMceId($mbox);
         if (!isset($this->user)) {
           $this->user = driver_mel::gi()->getUser($mbox);
           if (isset($this->user)) {
@@ -327,7 +327,7 @@ class M2calendar {
 
       // Calendrier principal
       foreach ($calendar_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'calendar','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'calendar','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
@@ -335,7 +335,7 @@ class M2calendar {
       // Calendriers de l'utilisateurs
       asort($calendars_owner);
       foreach ($calendars_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'calendar personnal','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'calendar personnal','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
@@ -343,7 +343,7 @@ class M2calendar {
       // Calendriers partagés
       asort($calendars_shared);
       foreach ($calendars_shared as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . str_replace(".", "_-P-_", $id),'class' => 'calendar','foldername' => str_replace(".", "_-P-_", $id)));
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'calendar','foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));

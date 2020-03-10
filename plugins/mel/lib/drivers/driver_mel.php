@@ -105,10 +105,11 @@ abstract class driver_mel {
    * 
    * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
    * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
+   * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  abstract public function getUser($username = null, $load = true);
+  abstract public function getUser($username = null, $load = true, $fromCache = true);
 
   /**
    * Retourne si le username est une boite partagée ou non
@@ -220,6 +221,14 @@ abstract class driver_mel {
    * @return boolean Le mot de passe doit changer
    */
   abstract public function isPasswordNeedsToChange(&$title);
+
+  /**
+   * Est-ce que le user est bien l'identifiant d'un groupe
+   *
+   * @param string $user Identifiant de l'objet group
+   * @return boolean true si c'est un groupe, false sinon
+   */
+  abstract public function userIsGroup($user);
 
   /**
    * Converti un identifiant Roundcube en MCE

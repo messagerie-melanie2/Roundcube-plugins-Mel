@@ -283,10 +283,10 @@ class mel extends rcube_plugin {
         // Récupération de la liste des balp de l'utilisateur courant
         if ($list_tasks[$this->rc->task][$this->rc->action]) {
           // Boites gestionnaires ?
-          $_objectsShare = driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
+          $_objects = driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
         }
         else {
-          $_objectsShare = driver_mel::gi()->getUser()->getObjectsShared();
+          $_objects = driver_mel::gi()->getUser()->getObjectsShared();
         }
         // Affichage du nom de l'utilisateur et du menu déroulant de balp
         if ($this->rc->task == 'settings') {
@@ -347,14 +347,13 @@ class mel extends rcube_plugin {
         // Récupération des préférences de l'utilisateur
         $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
         $i = 0;
-        if (count($_objectsShare) >= 1) {
+        if (count($_objects) >= 1) {
           // trier la liste
-          //sort($balp);
-          usort($_objectsShare, function($a, $b) {
+          usort($_objects, function($a, $b) {
             return strcmp($a->fullname, $b->fullname);
           });
-          foreach ($_objectsShare as $_object) {
-            $i ++;
+          foreach ($_objects as $_object) {
+            $i++;
             if ($this->rc->task == 'mail' 
                 && isset($hidden_mailboxes[$_object->uid])) {
               continue;
@@ -375,7 +374,14 @@ class mel extends rcube_plugin {
             }
             $current_mailbox = !empty($this->get_account) && urlencode($this->get_account) == $uid;
             if ($this->rc->task == 'mail') {
-              $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode(driver_mel::get_instance()->getMboxFromBalp($_object->mailbox->uid)) . "&_account=" . $uid;
+              // Récupération de la mbox pour une balp depuis le driver
+              $mbox = driver_mel::get_instance()->getMboxFromBalp($_object->mailbox->uid);
+              if (isset($mbox)) {
+                $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode($mbox) . "&_account=" . $uid;
+              }
+              else {
+                $href = $current_mailbox ? "#" : "?_task=mail&_account=" . $uid;
+              }
               // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
               if (isset($_GET['_courrielleur']) && !$current_mailbox) {
                 $href .= "&_courrielleur=1";
@@ -383,7 +389,7 @@ class mel extends rcube_plugin {
               $treetoggle = $current_mailbox ? 'expanded' : 'collapsed';
               $content = html::tag('li', array(
                   "id" => rcube_utils::html_identifier($uid, true),
-                  "class" => "mailbox box liitem" . ($i != count($_objectsShare) ? " liborder" : "") . ($current_mailbox ? ' current' : '')
+                  "class" => "mailbox box liitem" . ($i != count($_objects) ? " liborder" : "") . ($current_mailbox ? ' current' : '')
               ), html::tag('a', array(
                   "href" => $href,
                   "title" => $_object->email_send),
@@ -409,7 +415,7 @@ class mel extends rcube_plugin {
                 $href .= "&_courrielleur=1";
               }
               $content .= html::tag('li', array(
-                  "class" => "mailbox box liitem" . ($i != count($_objectsShare) ? " liborder" : "")
+                  "class" => "mailbox box liitem" . ($i != count($_objects) ? " liborder" : "")
               ), html::tag('a', array(
                   "href" => $href,
                   "title" => $_object->email_send), 

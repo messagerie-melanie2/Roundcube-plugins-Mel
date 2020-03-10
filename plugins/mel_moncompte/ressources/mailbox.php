@@ -105,77 +105,44 @@ class M2mailbox {
    * @return boolean
    */
   public function setAcl($user, $rights) {
-    $id = $this->mbox;
-    if (strpos($id, '.-.') !== false) {
-      $susername = explode('.-.', $id);
-      $id = $susername[1];
+    $_mbox = driver_mel::gi()->getUser($this->mbox, false);
+    // Récupération de la boite
+    if ($_mbox->is_objectshare) {
+      $_mbox = $_mbox->objectshare->mailbox;
     }
-    $infos = LibMelanie\Ldap\Ldap::GetUserInfos($id, null, array('mineqmelpartages', 'mineqliensimport'), LibMelanie\Config\Ldap::$MASTER_LDAP);
-    if ($this->rc->get_user_name() != $id && ! in_array($this->rc->get_user_name() . ':G', $infos['mineqmelpartages'])) {
+    else {
+      $_mbox->load();
+    }
+    // Vérification des droits gestionnaires
+    if ($this->rc->get_user_name() != $_mbox->uid 
+        && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
+          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas modifier les droits de la boite
       return false;
     }
-    $dn = $infos['dn'];
-    // Authentification
-    if (! LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$MASTER_LDAP)->authenticate($dn, $this->rc->get_user_password())) {
+    // Validation de l'authentification sur le LDAP master
+    if (!$_mbox->authentification($this->rc->get_user_password(), true)) {
       // Erreur d'authentification sur le LDAP
       return false;
     }
     // MANTIS 4101: Partage à une adresse mail ne devrait pas être accepté
     // Valide que le droit concerne bien un utilisateur
-    $_infos = mel::get_user_infos($user);
-    if (! isset($_infos)) {
+    $_user = driver_mel::gi()->getUser($user);
+    if (!isset($_user)) {
       return false;
     }
-    
-    // Mantis 4894 est-ce que la bal est Agriculture 
-    if (isset($infos['mineqliensimport'])) {
-        foreach($infos['mineqliensimport'] as $i => $val) {
-            if (strpos($infos['mineqliensimport'][$i], 'AGRI.Lien:') !== false) {
-                $ministere = 'AGRI';
-                break;
-            }
-        }
-    }
-    
-    // MANTIS 4978 : l info de partage a ete trouvee, on remplace par uid
-    $user = $_infos['uid'][0];
-    
-    $haschanged = false;
-    if (! isset($infos['mineqmelpartages'])) {
-      $infos['mineqmelpartages'] = array($user . ":" . strtoupper($rights[0]));
-      $haschanged = true;
-    }
-    else {
-      // Parcour la liste des droits
-      unset($infos['mineqmelpartages']['count']);
-      $modify = false;
-      foreach ($infos['mineqmelpartages'] as $key => $partage) {
-        // Recherche l'utilisateur
-        if (strpos($partage, $user . ':') === 0) {
-          if ($partage != $user . ":" . strtoupper($rights[0])) {
-              // Mantis 4894 pas de modif du droit G pour bal Agriculture
-              if ($ministere == 'AGRI' && strtoupper($rights[0]) == 'G') {
-                  return false;
-              }
-            $infos['mineqmelpartages'][$key] = $user . ":" . strtoupper($rights[0]);
-            $haschanged = true;
-            break;
-          }
-          $modify = true;
-        }
-      }
-      if (! $modify && ! $haschanged) {
-        // Si l'utilisateur n'a pas été modifié on l'ajoute
-        $infos['mineqmelpartages'][] = $user . ":" . strtoupper($rights[0]);
-        $haschanged = true;
-      }
-    }
-    if ($haschanged)
-      return LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$MASTER_LDAP)->modify($dn, array('mineqmelpartages' => $infos['mineqmelpartages']));
-    else
-      return true;
+    $user = $_user->uid;
+
+    // Modification des droits
+    $shares = $_mbox->shares;
+    $share = new \LibMelanie\Api\Mce\Users\Share();
+    $share->type = strtoupper($rights[0]);
+    $share->user = $user;
+    $shares[$user] = $share;
+    $_mbox->shares = $shares;
+
+    return $_mbox->save();
   }
   /**
    * Suppression de l'acl pour l'utilisateur
@@ -393,7 +360,7 @@ class M2mailbox {
     $nbheures = trim(rcube_utils::get_input_value('nbheures', rcube_utils::INPUT_POST));
     $selfolder = trim(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST));
 
-    if (! empty($nbheures)) {
+    if (!empty($nbheures)) {
 
       $nbheures = intval($nbheures);
 

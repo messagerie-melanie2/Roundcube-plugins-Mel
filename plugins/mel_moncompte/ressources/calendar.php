@@ -88,6 +88,9 @@ class M2calendar {
           $this->calendar = null;
         }
       }
+      if (!isset($this->user)) {
+        $this->user = driver_mel::gi()->getUser();
+      }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2calendar::__construct() Melanie2DatabaseException");
@@ -155,12 +158,12 @@ class M2calendar {
       // MANTIS 3939: Partage d'un carnet d'adresses : il est possible de saisir l'uid d'une bali dans "Partager à un groupe"
       // Vérifier que les données partagées existent dans l'annuaire
       if ($this->group === true) {
-        // Valide que le droit concerne bien un groupe
-        if (strpos($user, "mineqRDN=") !== 0 || strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") === false) {
-          return false;
-        }
         // MANTIS 4093: Problème de partage à une liste
         $user = urldecode($user);
+        // Valide que le droit concerne bien un groupe
+        if (!driver_mel::gi()->userIsGroup($user)) {
+          return false;
+        }
       }
       else {
         $_user = driver_mel::gi()->getUser($user);
@@ -243,8 +246,7 @@ class M2calendar {
     try {
       $this->calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
       if (! isset($name)) {
-        $infos = mel::get_user_infos($this->user->uid);
-        $this->calendar->name = $infos['cn'][0];
+        $this->calendar->name = $this->user->fullname;
       }
       else {
         $this->calendar->name = $name;

@@ -68,12 +68,21 @@ class mtes_driver_mel extends driver_mel {
    * 
    * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
    * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
+   * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function getUser($username = null, $load = true) {
+  public function getUser($username = null, $load = true, $fromCache = true) {
     if (!isset($username)) {
       $username = rcmail::get_instance()->user->get_username();
+    }
+    if (!$fromCache) {
+      $user = new \LibMelanie\Api\Mel\User();
+      $user->uid = $username;
+      if ($load && !$user->load()) {
+        $user = null;
+      }
+      return $user;
     }
     if (!isset(self::$_users)) {
       self::$_users = [];
@@ -326,6 +335,16 @@ class mtes_driver_mel extends driver_mel {
       }
     }
     return $needs_to_change;
+  }
+
+  /**
+   * Est-ce que le user est bien l'identifiant d'un groupe
+   *
+   * @param string $user Identifiant de l'objet group
+   * @return boolean true si c'est un groupe, false sinon
+   */
+  public function userIsGroup($user) {
+    return strpos($user, "mineqRDN=") === 0 && strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") !== false;
   }
 
   /**

@@ -142,7 +142,7 @@ class M2tasks {
    * @return boolean
    */
   public function setAcl($user, $rights) {
-    if (! isset($this->taskslist) && ! $this->createTaskslist()) {
+    if (!isset($this->taskslist) && ! $this->createTaskslist()) {
       return false;
     }
     if ($this->taskslist->owner != $this->user->uid) {
@@ -152,21 +152,21 @@ class M2tasks {
       // MANTIS 3939: Partage d'un carnet d'adresses : il est possible de saisir l'uid d'une bali dans "Partager à un groupe"
       // Vérifier que les données partagées existent dans l'annuaire
       if ($this->group === true) {
-        // Valide que le droit concerne bien un groupe
-        if (strpos($user, "mineqRDN=") !== 0 || strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") === false) {
-          return false;
-        }
         // MANTIS 4093: Problème de partage à une liste
         $user = urldecode($user);
+        // Valide que le droit concerne bien un groupe
+        if (!driver_mel::gi()->userIsGroup($user)) {
+          return false;
+        }
       }
       else {
         // Valide que le droit concerne bien un utilisateur
-        $infos = mel::get_user_infos($user);
-        if (! isset($infos)) {
+        $_user = driver_mel::gi()->getUser($user);
+        if (!isset($_user)) {
           return false;
         }
         // MANTIS 4978 : l info de partage a ete trouvee, on remplace par uid
-        $user = $infos['uid'][0];
+        $user = $_user->uid;
       }
       $share = new LibMelanie\Api\Melanie2\Share($this->taskslist);
       $share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
@@ -234,16 +234,15 @@ class M2tasks {
   public function createTaskslist($name = null) {
     try {
       $this->taskslist = new LibMelanie\Api\Melanie2\Taskslist($this->user);
-      if (! isset($name)) {
-        $infos = mel::get_user_infos($this->user->uid);
-        $this->taskslist->name = $infos['cn'][0];
+      if (!isset($name)) {
+        $this->taskslist->name = $this->user->fullname;
       }
       else {
         $this->taskslist->name = $name;
       }
       $this->taskslist->id = $this->mbox ?  : $this->user->uid;
       $this->taskslist->owner = $this->user->uid;
-      if (! is_null($this->taskslist->save())) {
+      if (!is_null($this->taskslist->save())) {
         return $this->taskslist->load();
       }
       else {

@@ -425,65 +425,71 @@ class mel_mobile extends rcube_plugin {
    * Utilisé uniquement pour la partie mobile
    */
   public function init_balp() {
-    $username = $this->rc->get_user_name();
+    // Récupération de l'utilisateur
+    $user = driver_mel::gi()->getUser();
 
     // Récupération de la liste des balp de l'utilisateur
-    $balp = mel::get_user_balp($username);
-    // Récupération des informations sur l'utilisateur courant
-    $infos = mel::get_user_infos($username);
+    $_objects = $user->getObjectsShared();
 
-    $content = [];
-    // Si on est sur une balp, charge les données de l'utilisateur
-    $infos = mel::get_user_infos($username);
+    // Génération de l'url de base
     if ($this->rc->task == 'mail') {
       $href = "?_task=mail&_mbox=INBOX";
     }
     else {
       $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
     }
-    if (empty($this->get_account) || urlencode($this->get_account) == $infos['uid'][0]) {
-      $content[] = html::tag('li', ['class' => 'selected', 'aria-selected' => 'true', 'data-icon' => 'arrow-d'], html::tag('a', ['href' => '#'], driver_mel::get_instance()->getFullname($infos)));
+    // Affichage de la première boite
+    if (empty($this->get_account) || $this->get_share_objet() == $user->uid) {
+      // C'est la boite courante
+      $content[] = html::tag('li', ['class' => 'selected', 'aria-selected' => 'true', 'data-icon' => 'arrow-d'], html::tag('a', ['href' => '#'], $user->fullname));
     }
     else {
-      $content[] = html::tag('li', ['data-theme' => 'h'], html::tag('a', ['href' => $href, 'data-ajax' => 'false'], driver_mel::get_instance()->getFullname($infos)));
+      // Une autre boite est sélectionnée
+      $content[] = html::tag('li', ['data-theme' => 'h'], html::tag('a', ['href' => $href, 'data-ajax' => 'false'], $user->fullname));
     }
-    
     // Récupération des préférences de l'utilisateur
     $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
     $i = 0;
-    if (count($balp) > 1) {
+    // Parcourir les boites
+    if (is_array($_objects) && count($_objects) > 0) {
       // trier la liste
-      sort($balp);
-      foreach ($balp as $b) {
-        $i ++;
-        if ($b['dn'] == "") {
+      usort($_objects, function($a, $b) {
+        return strcmp($a->fullname, $b->fullname);
+      });
+      // Parcourir la liste des objets
+      foreach ($_objects as $_object) {
+        if ($this->rc->task == 'mail' 
+            && isset($hidden_mailboxes[$_object->uid])) {
           continue;
         }
-        if (isset($hidden_mailboxes[driver_mel::get_instance()->getUsername($b)])) {
-          continue;
-        }
-        $uid = driver_mel::get_instance()->getUsername($b);
-        $cn = driver_mel::get_instance()->getFullname($b);
-        list($username, $balpname) = driver_mel::get_instance()->getBalpnameFromUsername($uid);
-        if (isset($balpname)) {
-          $infos = LibMelanie\Ldap\LDAPMelanie::GetInformations($balpname);
+        $uid = urlencode($_object->uid);
+        $cn = $_object->fullname;
+        if (isset($_object->mailbox)) {
           // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-          if (!isset($infos) || !mel::is_internal() && !driver_mel::get_instance()->isInternetAccessEnable($infos)) {
+          if (!mel::is_internal() && !$_object->mailbox->internet_access_enable) {
             continue;
           }
-          $hostname = driver_mel::get_instance()->getRoutage($infos);
+          // Récupération de la configuration de la boite pour l'affichage
+          $hostname = driver_mel::get_instance()->getRoutage($_object->mailbox);
           if (isset($hostname)) {
-            $uid = urlencode(urlencode($uid) . "@" . $hostname);
+            $uid = urlencode($uid . "@" . $hostname);
           }
-          $cn = driver_mel::get_instance()->getFullname($infos);
+          $cn = $_object->mailbox->fullname;
         }
         if ($this->rc->task == 'mail') {
-          $href = "?_task=mail&_account=" . $uid . "&_mbox=" . urlencode(driver_mel::get_instance()->getMboxFromBalp($balpname));
+          // Récupération de la mbox pour une balp depuis le driver
+          $mbox = driver_mel::get_instance()->getMboxFromBalp($_object->mailbox->uid);
+          if (isset($mbox)) {
+            $href = "?_task=mail&_account=" . $uid . "&_mbox=" . urlencode($mbox);
+          }
+          else {
+            $href = "?_task=mail&_account=" . $uid;
+          }
         }
         else {
           $href = "?_task=" . $this->rc->task . "&_account=" . $uid . "&_action=" . $this->rc->action;
         }        
-        if (! empty($this->get_account) && urlencode($this->get_account) == $uid) {
+        if (!empty($this->get_account) && urlencode($this->get_account) == $uid) {
           array_unshift($content, html::tag('li', ['class' => 'selected', 'aria-selected' => 'true', 'data-icon' => 'arrow-d'], html::tag('a', ['href' => '#'], $cn)));
         }
         else {

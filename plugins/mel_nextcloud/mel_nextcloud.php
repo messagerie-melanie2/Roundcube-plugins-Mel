@@ -52,7 +52,7 @@ class mel_nextcloud extends rcube_plugin {
         $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($rcmail->get_user_name());
         
         foreach ($filter_ldap as $key => $value) {
-          if (!isset($user_infos[$key]) || is_array($user_infos[$key]) && ! in_array($value, $user_infos[$key]) || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
+          if (!isset($user_infos[$key]) || is_array($user_infos[$key]) && !in_array($value, $user_infos[$key]) || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
             return;
           }
         }

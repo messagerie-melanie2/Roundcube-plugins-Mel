@@ -20,13 +20,6 @@
 
 abstract class driver_mel {
   /**
-   * Configuration du séparateur pour les boites partagées
-   *
-   * @var string
-   */
-  protected $BAL_SEPARATOR = null;
-  
-  /**
    * Label utilisé dans les boites partagées pour l'arborescence des dossiers
    *
    * @var string
@@ -110,24 +103,6 @@ abstract class driver_mel {
    * @return \LibMelanie\Api\Mce\User
    */
   abstract public function getUser($username = null, $load = true, $fromCache = true);
-
-  /**
-   * Retourne si le username est une boite partagée ou non
-   *
-   * @param string $username
-   * @return boolean
-   */
-  abstract public function isBalp($username);
-  
-  /**
-   * Retourne le username et le balpname à partir d'un username complet
-   * balpname sera null si username n'est pas un objet de partage
-   * username sera nettoyé de la boite partagée si username est un objet de partage
-   *
-   * @param string $username Username à traiter peut être un objet de partage ou non
-   * @return list($username, $balpname) $username traité, $balpname si objet de partage ou null sinon
-   */
-  abstract public function getBalpnameFromUsername($username);
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée
@@ -139,32 +114,6 @@ abstract class driver_mel {
   abstract public function getMboxFromBalp($balpname);
   
   /**
-   * Est-ce que le username a des droits gestionnaire sur l'objet LDAP
-   *
-   * @param string $username
-   * @param array $infos Entry LDAP
-   * @return boolean
-   */
-  abstract public function isUsernameHasGestionnaire($username, $infos);
-  
-  /**
-   * Est-ce que le username a des droits emission sur l'objet LDAP
-   *
-   * @param string $username
-   * @param array $infos Entry LDAP
-   * @return boolean
-   */
-  abstract public function isUsernameHasEmission($username, $infos);
-  
-  /**
-   * Defini si l'accés internet est activé pour l'objet LDAP
-   *
-   * @param array $infos Entry LDAP
-   * @return boolean true si l'accés internet est activé, false sinon
-   */
-  abstract public function isInternetAccessEnable($infos);
-  
-  /**
    * Récupère et traite les infos de routage depuis l'objet LDAP 
    * pour retourner le hostname de connexion IMAP et/ou SMTP
    * 
@@ -172,30 +121,6 @@ abstract class driver_mel {
    * @return string $hostname de routage, null si pas de routage trouvé
    */
   abstract public function getRoutage($infos);
-  
-  /**
-   * Retourne si le username est bien présent dans les infos
-   *
-   * @param array $infos Entry LDAP
-   * @return boolean
-   */
-  abstract public function issetUsername($infos);
-  
-  /**
-   * Retourne le username a partir de l'objet LDAP
-   *
-   * @param array $infos Entry LDAP
-   * @return string username
-   */
-  abstract public function getUsername($infos);
-  
-  /**
-   * Retourne le fullname a partir de l'objet LDAP
-   *
-   * @param array $infos Entry LDAP
-   * @return string fullname
-   */
-  abstract public function getFullname($infos);
   
   /**
    * Positionne des headers pour un message avant de l'envoyer
@@ -231,6 +156,15 @@ abstract class driver_mel {
   abstract public function userIsGroup($user);
 
   /**
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * Utilisé pour la restauration d'un dossier
+   * 
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
+   */
+  abstract public function unexpunge($mbox, $folder, $hours);
+
+  /**
    * Converti un identifiant Roundcube en MCE
    * Permet de remplacer tous les caractères spéciaux 
    *     '.', '@', '%'
@@ -257,18 +191,6 @@ abstract class driver_mel {
   public function mceToRcId($mceId) {
     return str_replace(['.', '@', '%'], ['_-P-_', '_-A-_', '_-C-_'], $mceId);
   }
-
-  /**
-   * Méthode appelée à chaque action sur le backend effectuée dans le code
-   * Va permettre de compléter les actions avec de nouvelles interractions avec le bakcend
-   * En faisant par exemple des écritures LDAP, des appels a des scripts ou du queuing
-   * 
-   * @param string $actionName Nom de l'action
-   * @param array $data Liste des données associées à l'action
-   * 
-   * @return boolean true si tout est OK, false si erreur
-   */
-  abstract public function triggerAction($actionName, $data);
   
   /**
    * Retourne le label des balp dans l'arborescence de fichiers IMAP

@@ -838,10 +838,11 @@ class mel extends rcube_plugin {
    * @return array
    */
   public function render_mailboxlist($args) {
-    if (! empty($this->get_account)) {
-      if (mel_logs::is(mel_logs::DEBUG))
+    if (!empty($this->get_account)) {
+      if (mel_logs::is(mel_logs::DEBUG)) {
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::render_mailboxlist()");
-      if (driver_mel::get_instance()->isBalp($this->get_username())) {
+      }
+      if (driver_mel::gi()->getUser($this->get_username(), false)->is_objectshare) {
         // On est sur une balp
         $balp_label = driver_mel::get_instance()->getBalpLabel();
         if (isset($balp_label)) {
@@ -878,10 +879,11 @@ class mel extends rcube_plugin {
    * @return array
    */
   public function set_folder_name($args) {
-    if (! empty($this->get_account)) {
-      if (mel_logs::is(mel_logs::DEBUG))
+    if (!empty($this->get_account)) {
+      if (mel_logs::is(mel_logs::DEBUG)) {
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::set_folder_name()");
-      if (($args['folder'] == 'INBOX') && driver_mel::get_instance()->isBalp($this->get_username())) {
+      }
+      if ($args['folder'] == 'INBOX' && driver_mel::gi()->getUser($this->get_username(), false)->is_objectshare) {
         // On est sur une balp
         $balp_label = driver_mel::get_instance()->getBalpLabel();
         if (isset($balp_label)) {
@@ -907,9 +909,10 @@ class mel extends rcube_plugin {
    * @return array
    */
   public function set_cache_mailbox($args) {
-    if (! empty($this->get_account) && strpos($args['mailbox'], '##cache##m2#') !== 0) {
-      if (mel_logs::is(mel_logs::DEBUG))
+    if (!empty($this->get_account) && strpos($args['mailbox'], '##cache##m2#') !== 0) {
+      if (mel_logs::is(mel_logs::DEBUG)) {
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::set_cache_mailbox()");
+      }
       $args['mailbox'] = '##cache##m2#' . $this->get_account . '##' . $args['mailbox'];
     }
     return $args;
@@ -921,8 +924,9 @@ class mel extends rcube_plugin {
    * @return string Account
    */
   public function m2_get_account() {
-    if (mel_logs::is(mel_logs::DEBUG))
+    if (mel_logs::is(mel_logs::DEBUG)) {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
+    }
     return array(
             "account" => $this->get_account
     );
@@ -985,8 +989,9 @@ class mel extends rcube_plugin {
    * Handler for user identity edit form
    */
   public function identity_form($args) {
-    if (mel_logs::is(mel_logs::TRACE))
+    if (mel_logs::is(mel_logs::TRACE)) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identity_form() args : " . var_export($args, true));
+    }
     $realname = $args['form']['addressing']['content']['email'];
     $uid = $args['form']['addressing']['content']['email'];
     $realname['label'] = $this->gettext('realname');
@@ -1005,8 +1010,9 @@ class mel extends rcube_plugin {
    * Handler for user identities list
    */
   public function identities_list($args) {
-    if (mel_logs::is(mel_logs::TRACE))
+    if (mel_logs::is(mel_logs::TRACE)) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identities_list() args : " . var_export($args, true));
+    }
     $args['cols'][0] = 'name';
     return $args;
   }
@@ -1019,7 +1025,7 @@ class mel extends rcube_plugin {
    * @return array
    */
   public function folders_list($args) {
-    if (! empty($this->get_account) && isset($args['list']['Corbeille'])) {
+    if (!empty($this->get_account) && isset($args['list']['Corbeille'])) {
       $corbeille = $args['list']['Corbeille'];
       unset($args['list']['Corbeille']);
       $args['list']['Corbeille'] = $corbeille;
@@ -1420,33 +1426,6 @@ class mel extends rcube_plugin {
     return $cache;
   }
   /**
-   * Récupère la liste des balp de l'utilisateur depuis le cache
-   *
-   * @param string $username
-   * @return array Liste des balp de l'utilisateur
-   */
-  public static function get_user_balp($username) {
-    $cache = self::InitM2Cache();
-    if (! isset($cache['users_balp'][$username])) {
-      $cache = self::set_user_balp($username);
-    }
-    return $cache['users_balp'][$username];
-  }
-  /**
-   * Génére le cache session en fonction des données LDAP
-   *
-   * @param string $username
-   */
-  private static function set_user_balp($username) {
-    $cache = self::InitM2Cache();
-    if (! isset($cache['users_balp'])) {
-      $cache['users_balp'] = array();
-    }
-    $cache['users_balp'][$username] = LibMelanie\Ldap\Ldap::GetUserBalPartagees($username);
-    self::SetM2Cache($cache);
-    return $cache;
-  }
-  /**
    * Initialisation du cache M2
    */
   public static function InitM2Cache() {
@@ -1567,7 +1546,6 @@ class mel extends rcube_plugin {
         $identity['uid'] = $_object->uid;
         $identities[strtolower($email)] = $identity;
       }
-      
     }
     // Récuperation des information de l'utilisateur
     // Si on a un mail principal
@@ -1624,7 +1602,7 @@ class mel extends rcube_plugin {
     $trash_mbox = driver_mel::get_instance()->getMboxTrash();
     
     /* PAMELA - Gestion des boites partagées */
-    if (isset($balp_label) && !empty($this->get_account) && driver_mel::get_instance()->isBalp($this->get_share_objet())) {
+    if (isset($balp_label) && !empty($this->get_account) && driver_mel::gi()->getUser($this->get_share_objet(), false)->is_objectshare) {
       $delimiter = $this->rc->get_storage()->delimiter;
       $draft_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $draft_mbox;
       $sent_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $sent_mbox;

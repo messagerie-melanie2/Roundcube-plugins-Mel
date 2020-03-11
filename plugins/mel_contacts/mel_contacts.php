@@ -223,6 +223,9 @@ class mel_contacts extends rcube_plugin {
     $sources = array('amande');
     try {
       // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
+      if (!isset($this->user)) {
+        $this->user = driver_mel::gi()->getUser();
+      }
       $abook = $this->user->getDefaultAddressbook();
       $sources[] = $abook->id;
 

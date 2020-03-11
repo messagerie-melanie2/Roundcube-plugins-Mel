@@ -101,10 +101,8 @@ class mel_portail extends rcube_plugin
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
-      
-      $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
-      
-      $this->items = $this->getCardsConfiguration($user_infos['dn']);
+      $user = driver_mel::gi()->getUser();
+      $this->items = $this->getCardsConfiguration($user->dn);
       
       if (isset($this->items[$id])) {
         $item = $this->items[$id];
@@ -130,7 +128,6 @@ class mel_portail extends rcube_plugin
           $this->rc->output->set_env("resource_back_html", $item['html_back']);
         }
       }
-      
       $this->rc->output->send('mel_portail.resource_portail');
     }
     else {
@@ -165,11 +162,10 @@ class mel_portail extends rcube_plugin
     // Objet HTML
     $table = new html_table();
     $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'application')"));
-    
-    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+    $user = driver_mel::gi()->getUser();
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
-    $this->items = $this->getCardsConfiguration($user_infos['dn']);
+    $this->items = $this->getCardsConfiguration($user->dn);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -182,7 +178,7 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        $res = $this->filter_dn($user_infos['dn'], $item['dn']);
+        $res = $this->filter_dn($user->dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -245,10 +241,10 @@ class mel_portail extends rcube_plugin
     $content = "";
     $scripts_js = [];
     $scripts_css = [];
-    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+    $user = driver_mel::gi()->getUser();
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
-    $this->items = $this->getCardsConfiguration($user_infos['dn']);
+    $this->items = $this->getCardsConfiguration($user->dn);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -265,7 +261,7 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        $res = $this->filter_dn($user_infos['dn'], $item['dn']);
+        $res = $this->filter_dn($user->dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;

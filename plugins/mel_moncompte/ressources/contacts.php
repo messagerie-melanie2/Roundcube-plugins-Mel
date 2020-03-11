@@ -107,7 +107,7 @@ class M2contacts {
    * @return array
    */
   public function getAcl() {
-    if (! isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
+    if (!isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
       return false;
     try {
       $_share = new LibMelanie\Api\Melanie2\Share($this->addressbook);
@@ -143,6 +143,20 @@ class M2contacts {
    * @return boolean
    */
   public function setAcl($user, $rights) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] contacts::setAcl($user, $rights) mbox = " . $this->mbox);
+    // Ajouter un hook lors du positionnement des ACLs
+    $data = $this->rc->plugins->exec_hook('mce.setAcl_before', [
+      'type'    => 'contacts',
+      'mbox'    => $this->mbox,
+      'user'    => $user,
+      'rights'  => $rights,
+      'isgroup' => $this->group,
+      'abort'   => false,
+    ]);
+    // Si on doit annuler
+    if ($data['abort']) {
+      return false;
+    }
     if (!isset($this->addressbook) && !$this->createAddressbook()) {
       return false;
     }
@@ -177,22 +191,30 @@ class M2contacts {
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_WRITE
-        | LibMelanie\Api\Melanie2\Share::ACL_DELETE
-        | LibMelanie\Api\Melanie2\Share::ACL_READ
-        | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+                    | LibMelanie\Api\Melanie2\Share::ACL_DELETE
+                    | LibMelanie\Api\Melanie2\Share::ACL_READ
+                    | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
       else if (in_array('r', $rights)) {
         // Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_READ
-        | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+                    | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
       else if (in_array('l', $rights)) {
         // Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
-      if ($share->save() === null)
-        return false;
-      return true;
+      $ret = $share->save();
+      // Ajouter un hook lors du positionnement des ACLs
+      $data = $this->rc->plugins->exec_hook('mce.setAcl', [
+        'type'    => 'contacts',
+        'mbox'    => $this->mbox,
+        'user'    => $user,
+        'rights'  => $rights,
+        'isgroup' => $this->group,
+        'ret'     => !is_null($ret),
+      ]);
+      return $data['ret'];
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::setAcl() Melanie2DatabaseException");
@@ -209,13 +231,35 @@ class M2contacts {
    * @return boolean
    */
   public function deleteAcl($user) {
-    if (! isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] contacts::deleteAcl($user) mbox = " . $this->mbox);
+    // Ajouter un hook lors du positionnement des ACLs
+    $data = $this->rc->plugins->exec_hook('mce.deleteAcl_before', [
+      'type'    => 'contacts',
+      'mbox'    => $this->mbox,
+      'user'    => $user,
+      'isgroup' => $this->group,
+      'abort'   => false,
+    ]);
+    // Si on doit annuler
+    if ($data['abort']) {
+      return false;
+    }
+    if (!isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
       return false;
     try {
       $share = new LibMelanie\Api\Melanie2\Share($this->addressbook);
       $share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
       $share->name = $user;
-      return $share->delete();
+      $ret = $share->delete();
+      // Ajouter un hook lors du positionnement des ACLs
+      $data = $this->rc->plugins->exec_hook('mce.deleteAcl', [
+        'type'    => 'contacts',
+        'mbox'    => $this->mbox,
+        'user'    => $user,
+        'isgroup' => $this->group,
+        'ret'     => !is_null($ret),
+      ]);
+      return $data['ret'];
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2contacts::deleteAcl() Melanie2DatabaseException");

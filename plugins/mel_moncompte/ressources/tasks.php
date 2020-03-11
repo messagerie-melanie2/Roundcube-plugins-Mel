@@ -103,7 +103,7 @@ class M2tasks {
    * @return array
    */
   public function getAcl() {
-    if (! isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
+    if (!isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
       return false;
     try {
       $_share = new LibMelanie\Api\Melanie2\Share($this->taskslist);
@@ -142,7 +142,21 @@ class M2tasks {
    * @return boolean
    */
   public function setAcl($user, $rights) {
-    if (!isset($this->taskslist) && ! $this->createTaskslist()) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] tasks::setAcl($user, $rights) mbox = " . $this->mbox);
+    // Ajouter un hook lors du positionnement des ACLs
+    $data = $this->rc->plugins->exec_hook('mce.setAcl_before', [
+      'type'    => 'tasks',
+      'mbox'    => $this->mbox,
+      'user'    => $user,
+      'rights'  => $rights,
+      'isgroup' => $this->group,
+      'abort'   => false,
+    ]);
+    // Si on doit annuler
+    if ($data['abort']) {
+      return false;
+    }
+    if (!isset($this->taskslist) && !$this->createTaskslist()) {
       return false;
     }
     if ($this->taskslist->owner != $this->user->uid) {
@@ -176,9 +190,9 @@ class M2tasks {
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_WRITE
-        | LibMelanie\Api\Melanie2\Share::ACL_DELETE
-        | LibMelanie\Api\Melanie2\Share::ACL_READ
-        | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+                    | LibMelanie\Api\Melanie2\Share::ACL_DELETE
+                    | LibMelanie\Api\Melanie2\Share::ACL_READ
+                    | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
       else if (in_array('r', $rights)) {
         // Lecture + Freebusy
@@ -189,9 +203,17 @@ class M2tasks {
         // Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
-      if ($share->save() === null)
-        return false;
-      return true;
+      $ret = $share->save();
+      // Ajouter un hook lors du positionnement des ACLs
+      $data = $this->rc->plugins->exec_hook('mce.setAcl', [
+        'type'    => 'tasks',
+        'mbox'    => $this->mbox,
+        'user'    => $user,
+        'rights'  => $rights,
+        'isgroup' => $this->group,
+        'ret'     => !is_null($ret),
+      ]);
+      return $data['ret'];
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::setAcl() Melanie2DatabaseException");
@@ -208,13 +230,35 @@ class M2tasks {
    * @return boolean
    */
   public function deleteAcl($user) {
-    if (! isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] tasks::deleteAcl($user) mbox = " . $this->mbox);
+    // Ajouter un hook lors du positionnement des ACLs
+    $data = $this->rc->plugins->exec_hook('mce.deleteAcl_before', [
+      'type'    => 'tasks',
+      'mbox'    => $this->mbox,
+      'user'    => $user,
+      'isgroup' => $this->group,
+      'abort'   => false,
+    ]);
+    // Si on doit annuler
+    if ($data['abort']) {
+      return false;
+    }
+    if (!isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
       return false;
     try {
       $share = new LibMelanie\Api\Melanie2\Share($this->taskslist);
       $share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
       $share->name = $user;
-      return $share->delete();
+      $ret = $share->delete();
+      // Ajouter un hook lors du positionnement des ACLs
+      $data = $this->rc->plugins->exec_hook('mce.deleteAcl', [
+        'type'    => 'tasks',
+        'mbox'    => $this->mbox,
+        'user'    => $user,
+        'isgroup' => $this->group,
+        'ret'     => !is_null($ret),
+      ]);
+      return $data['ret'];
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2tasks::deleteAcl() Melanie2DatabaseException");

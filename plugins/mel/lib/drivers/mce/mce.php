@@ -20,13 +20,6 @@
 
 class mce_driver_mel extends driver_mel {
   /**
-   * Configuration du séparateur pour les boites partagées
-   *
-   * @var string
-   */
-  protected $BAL_SEPARATOR = '+';
-
-  /**
    * Retourne l'objet User associé à l'utilisateur courant
    * Permet de retourner l'instance User en fonction du driver
    * 
@@ -62,38 +55,6 @@ class mce_driver_mel extends driver_mel {
   }
   
   /**
-   * Retourne si le username est une boite partagée ou non
-   *
-   * @param string $username
-   * @return boolean
-   */
-  public function isBalp($username) {
-    return strpos($username, $this->BAL_SEPARATOR) !== false;
-  }
-  
-  /**
-   * Retourne le username et le balpname à partir d'un username complet
-   * balpname sera null si username n'est pas un objet de partage
-   * username sera nettoyé de la boite partagée si username est un objet de partage
-   *
-   * @param string $username Username à traiter peut être un objet de partage ou non
-   * @return list($username, $balpname) $username traité, $balpname si objet de partage ou null sinon
-   */
-  public function getBalpnameFromUsername($username) {
-    $balpname = null;
-    if (strpos($username, $this->BAL_SEPARATOR) !== false) {
-      $susername = explode($this->BAL_SEPARATOR, $username);
-      $username = $susername[0];
-      if (isset($susername[1])) {
-        $sbalp = explode('@', $susername[1]);
-        $balpname = $sbalp[0];
-      }
-    }
-    
-    return array($username, $balpname);
-  }
-  
-  /**
    * Retourne le MBOX par defaut pour une boite partagée donnée
    * Peut être INBOX ou autre chose si besoin
    *
@@ -102,44 +63,6 @@ class mce_driver_mel extends driver_mel {
    */
   public function getMboxFromBalp($balpname) {
     return 'INBOX';
-  }
-  
-  /**
-   * Est-ce que le username a des droits gestionnaire sur l'objet LDAP
-   *
-   * @param string $username
-   * @param array $infos Entry LDAP
-   * @return boolean
-   */
-  public function isUsernameHasGestionnaire($username, $infos) {
-    if (isset($infos['mcedelegation']) && in_array("$username:", $infos['mcedelegation'])) {
-        return true;
-    }
-    return false;
-  }
-  
-  /**
-   * Est-ce que le username a des droits emission sur l'objet LDAP
-   *
-   * @param string $username
-   * @param array $infos Entry LDAP
-   * @return boolean
-   */
-  public function isUsernameHasEmission($username, $infos) {
-    if (isset($infos['mcedelegation']) && in_array("$username:", $infos['mcedelegation'])) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Defini si l'accés internet est activé pour l'objet LDAP
-   *
-   * @param array $infos Entry LDAP
-   * @return boolean true si l'accés internet est activé, false sinon
-   */
-  public function isInternetAccessEnable($infos) {
-    return true;
   }
   
   /**
@@ -168,36 +91,6 @@ class mce_driver_mel extends driver_mel {
     }
     
     return $hostname;
-  }
-  
-  /**
-   * Retourne si le username est bien présent dans les infos
-   *
-   * @param array $infos Entry LDAP
-   * @return boolean
-   */
-  public function issetUsername($infos) {
-    return isset($infos['uid']);
-  }
-  
-  /**
-   * Retourne le username a partir de l'objet LDAP
-   *
-   * @param array $infos Entry LDAP
-   * @return string username
-   */
-  public function getUsername($infos) {
-    return isset($infos['uid']) ? $infos['uid'][0] : null;
-  }
-  
-  /**
-   * Retourne le fullname a partir de l'objet LDAP
-   *
-   * @param array $infos Entry LDAP
-   * @return string fullname
-   */
-  public function getFullname($infos) {
-    return $infos[rcmail::get_instance()->config->get('default_object_name_ldap_field', 'cn')][0] ?: $infos['mail'][0];
   }
   
   /**
@@ -257,16 +150,13 @@ class mce_driver_mel extends driver_mel {
   }
 
   /**
-   * Méthode appelée à chaque action sur le backend effectuée dans le code
-   * Va permettre de compléter les actions avec de nouvelles interractions avec le bakcend
-   * En faisant par exemple des écritures LDAP, des appels a des scripts ou du queuing
+   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
+   * Utilisé pour la restauration d'un dossier
    * 
-   * @param string $actionName Nom de l'action
-   * @param array $data Liste des données associées à l'action
-   * 
-   * @return boolean true si tout est OK, false si erreur
+   * @param string $mbox Identifiant de la boite concernée par la restauration
+   * @param string $folder Dossier IMAP à restaurer
    */
-  public function triggerAction($actionName, $data) {
-    return true;
+  public function unexpunge($mbox, $folder, $hours) {
+    return false;
   }
 }

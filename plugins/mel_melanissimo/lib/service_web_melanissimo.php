@@ -116,8 +116,8 @@ class ServiceWebMelanissimo {
 
     // Récupération de l'uid en fonction de l'adresse mail
     if (strtolower($from) != strtolower($_SESSION['m2_from_identity'])) {
-      $infos = LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($from);
-      $uid = $infos['uid'][0];
+      $user = driver_mel::gi()->getUser($from);
+      $uid = $user->uid;
     }
     else {
       $uid = $this->rc->get_user_name();

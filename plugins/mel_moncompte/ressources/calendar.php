@@ -106,7 +106,7 @@ class M2calendar {
    * @return array
    */
   public function getAcl() {
-    if (! isset($this->calendar) || $this->calendar->owner != $this->user->uid)
+    if (!isset($this->calendar) || $this->calendar->owner != $this->user->uid)
       return false;
     try {
       $_share = new LibMelanie\Api\Melanie2\Share($this->calendar);
@@ -148,7 +148,21 @@ class M2calendar {
    * @return boolean
    */
   public function setAcl($user, $rights) {
-    if (! isset($this->calendar) && ! $this->createCalendar()) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] calendar::setAcl($user, $rights) mbox = " . $this->mbox);
+    // Ajouter un hook lors du positionnement des ACLs
+    $data = $this->rc->plugins->exec_hook('mce.setAcl_before', [
+      'type'    => 'calendar',
+      'mbox'    => $this->mbox,
+      'user'    => $user,
+      'rights'  => $rights,
+      'isgroup' => $this->group,
+      'abort'   => false,
+    ]);
+    // Si on doit annuler
+    if ($data['abort']) {
+      return false;
+    }
+    if (!isset($this->calendar) && ! $this->createCalendar()) {
       return false;
     }
     if ($this->calendar->owner != $this->user->uid) {
@@ -181,14 +195,14 @@ class M2calendar {
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_WRITE
-        | LibMelanie\Api\Melanie2\Share::ACL_DELETE
-        | LibMelanie\Api\Melanie2\Share::ACL_READ
-        | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+                    | LibMelanie\Api\Melanie2\Share::ACL_DELETE
+                    | LibMelanie\Api\Melanie2\Share::ACL_READ
+                    | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
       else if (in_array('r', $rights)) {
         // Lecture + Freebusy
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_READ
-        | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+                    | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
       }
       else if (in_array('l', $rights)) {
         // Freebusy
@@ -198,11 +212,17 @@ class M2calendar {
         // Droit privé
         $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_PRIVATE;
       }
-
-      if ($share->save() === null) {
-        return false;
-      }
-      return true;
+      $ret = $share->save();
+      // Ajouter un hook lors du positionnement des ACLs
+      $data = $this->rc->plugins->exec_hook('mce.setAcl', [
+        'type'    => 'calendar',
+        'mbox'    => $this->mbox,
+        'user'    => $user,
+        'rights'  => $rights,
+        'isgroup' => $this->group,
+        'ret'     => !is_null($ret),
+      ]);
+      return $data['ret'];
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2calendar::setAcl() Melanie2DatabaseException");
@@ -219,13 +239,35 @@ class M2calendar {
    * @return boolean
    */
   public function deleteAcl($user) {
-    if (! isset($this->calendar) || $this->calendar->owner != $this->user->uid)
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Resources] calendar::deleteAcl($user) mbox = " . $this->mbox);
+    // Ajouter un hook lors du positionnement des ACLs
+    $data = $this->rc->plugins->exec_hook('mce.deleteAcl_before', [
+      'type'    => 'calendar',
+      'mbox'    => $this->mbox,
+      'user'    => $user,
+      'isgroup' => $this->group,
+      'abort'   => false,
+    ]);
+    // Si on doit annuler
+    if ($data['abort']) {
+      return false;
+    }
+    if (!isset($this->calendar) || $this->calendar->owner != $this->user->uid)
       return false;
     try {
       $share = new LibMelanie\Api\Melanie2\Share($this->calendar);
       $share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
       $share->name = $user;
-      return $share->delete();
+      $ret = $share->delete();
+      // Ajouter un hook lors du positionnement des ACLs
+      $data = $this->rc->plugins->exec_hook('mce.deleteAcl', [
+        'type'    => 'calendar',
+        'mbox'    => $this->mbox,
+        'user'    => $user,
+        'isgroup' => $this->group,
+        'ret'     => !is_null($ret),
+      ]);
+      return $data['ret'];
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] M2calendar::deleteAcl() Melanie2DatabaseException");
@@ -294,12 +336,10 @@ class M2calendar {
    */
   public function resources_elements_list($attrib) {
     // add id to message list table if not specified
-    if (! strlen($attrib['id']))
+    if (! strlen($attrib['id'])) {
       $attrib['id'] = 'rcmresourceselementslist';
-
+    }
     try {
-      $result = array();
-
       // Récupération des préférences de l'utilisateur
       $hidden_calendars = $this->rc->config->get('hidden_calendars', array());
       // Parcour la liste des agendas
@@ -317,7 +357,6 @@ class M2calendar {
         else {
           $calendars_shared[$calendar->id] = "(" . $calendar->owner . ") " . $calendar->name;
         }
-
       }
       // MANTIS 0003913: Création automatique des objets dans Mes ressources
       if (count($calendar_owner) == 0 && $this->createCalendar()) {
@@ -384,9 +423,9 @@ class M2calendar {
     // Allow plugins to modify the form content (e.g. with ACL form)
     $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
 
-    if (! $plugin['form']['sharing']['content'])
+    if (!$plugin['form']['sharing']['content']) {
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
-
+    }
     return $plugin['form']['sharing']['content'];
   }
 
@@ -398,9 +437,9 @@ class M2calendar {
    */
   public function acl_frame($attrib) {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    if (! $attrib['id'])
+    if (! $attrib['id']) {
       $attrib['id'] = 'rcmusersaclframe';
-
+    }
     $attrib['name'] = $attrib['id'];
     $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_calendar_acl','id' => $id,'framed' => 1));
     $attrib['width'] = '100%';
@@ -412,33 +451,9 @@ class M2calendar {
   }
 
   public function restore_cal($attrib) {
-    /*
-     * $html = '';
-     * $html .= html::span(array(), $this->rc->gettext('cal_periode_label', 'mel_moncompte'));
-     * $radio = new html_radiobutton(array('name' => 'all_events', 'value' => '1'));
-     * $html .= html::div(array(), $radio->show('1', array('id' => 'radio_cal_all'))
-     * . html::label(array('for' => 'radio_cal_all'), $this->rc->gettext('radio_cal_all_label', 'mel_moncompte')));
-     * $input_start_date = new html_inputfield(array('id' => 'cal_start_date', 'name' => 'cal_start_date' ));
-     *
-     * $input_end_date = new html_inputfield(array('id' => 'cal_end_date', 'name' => 'cal_end_date' ));
-     * $html .= html::div(array(), $radio->show('0', array('id' => 'radio_cal_some'))
-     * . html::label(array('for' => 'radio_cal_some'), $this->rc->gettext('radio_cal_some_label', 'mel_moncompte')
-     * . $input_start_date->show()
-     * . html::div('cal_end_date_div', html::span(array(), $this->rc->gettext('radio_cal_end_label', 'mel_moncompte'))
-     * . $input_end_date->show()
-     * )));
-     * $select = new html_select(array('name' => 'joursvg'));
-     * $select->add($this->rc->gettext('cal_j-1', 'mel_moncompte'), 'sql-1');
-     * $select->add($this->rc->gettext('cal_j-2', 'mel_moncompte'), 'sql-2');
-     * $select->add('', 'sql-n');
-     * $html .= html::br();
-     * $html .= html::span(array(), $this->rc->gettext('cal_bdd_label', 'mel_moncompte'));
-     * $html .= html::div(array(), $select->show());
-     * return $html;
-     */
-    if (! $attrib['id'])
+    if (!$attrib['id']) {
       $attrib['id'] = 'rcmExportForm';
-
+    }
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     $hidden = new html_hiddenfield(array('name' => 'calendar','id' => 'event-export-calendar','value' => $id));
     $html .= $hidden->show();
@@ -461,7 +476,6 @@ class M2calendar {
     $this->rc->output->add_gui_object('exportform', $attrib['id']);
 
     return html::tag('form', array('action' => $this->rc->url(array('task' => 'calendar','action' => 'export_events')),'method' => "post",'id' => $attrib['id']), $html);
-
   }
 
 }
@@ -495,9 +509,9 @@ class M2calendargroup extends M2calendar {
     // Allow plugins to modify the form content (e.g. with ACL form)
     $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
 
-    if (! $plugin['form']['sharing']['content'])
+    if (!$plugin['form']['sharing']['content']) {
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
-
+    }
     return $plugin['form']['sharing']['content'];
   }
 
@@ -509,9 +523,9 @@ class M2calendargroup extends M2calendar {
    */
   public function acl_frame($attrib) {
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    if (! $attrib['id'])
+    if (!$attrib['id']) {
       $attrib['id'] = 'rcmusersaclframe';
-
+    }
     $attrib['name'] = $attrib['id'];
     $attrib['src'] = $this->rc->url(array('_action' => 'plugin.mel_calendar_acl_group','id' => $id,'framed' => 1));
     $attrib['width'] = '100%';

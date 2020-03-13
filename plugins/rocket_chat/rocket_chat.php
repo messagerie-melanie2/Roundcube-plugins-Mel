@@ -210,11 +210,11 @@ EOF;
             $userId = $rocketClient->userInfo($username);
           }
           if (!isset($userId)) {
-            $user = \LibMelanie\Ldap\LDAPMelanie::GetInformations($username);
-            $ret = $rocketClient->createUser($user['uid'][0], $user['mailpr'][0], $this->rc->get_user_password(), $user['displayname'][0]);
+            $user = driver_mel::gi()->getUser($username);
+            $ret = $rocketClient->createUser($user->uid, $user->email, $this->rc->get_user_password(), $user->name);
             // Gestion du cas ou l'utilisateur est créé, mais pas en ldap
             if (!$ret['success'] && $ret['errorType'] == 'error-field-unavailable') {
-              $ret['user_id'] = $rocketClient->userInfo($user['uid'][0]);
+              $ret['user_id'] = $rocketClient->userInfo($user->uid);
               if (isset($ret['user_id'])) {
                 $ret['success'] = true;
               }

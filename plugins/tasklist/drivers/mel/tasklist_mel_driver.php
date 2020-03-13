@@ -445,29 +445,29 @@ class tasklist_mel_driver extends tasklist_driver {
     $task = new LibMelanie\Api\Melanie2\Task($this->user);
     // Listes des tâches
     $task->taskslist = $lists;
-    $operators['taskslist'] = LibMelanie\Config\MappingMelanie::eq;
+    $operators['taskslist'] = LibMelanie\Config\MappingMce::eq;
     if (isset($query['mask'])) {
       // Completed ?
       if ($query['mask'] & tasklist::FILTER_MASK_COMPLETE) {
         $task->completed = 1;
         $filter .= " AND #completed#";
-        $operators['completed'] = LibMelanie\Config\MappingMelanie::eq;
+        $operators['completed'] = LibMelanie\Config\MappingMce::eq;
       }
       else if ($query['mask'] & tasklist::FILTER_MASK_UNCOMPLETE) {
         $task->completed = 0;
         $filter .= " AND #completed#";
-        $operators['completed'] = LibMelanie\Config\MappingMelanie::eq;
+        $operators['completed'] = LibMelanie\Config\MappingMce::eq;
       }
       // Priority ?
       if ($query['mask'] & tasklist::FILTER_MASK_FLAGGED) {
         $task->priority = LibMelanie\Api\Melanie2\Task::PRIORITY_VERY_HIGH;
         $filter .= " AND #priority#";
-        $operators['priority'] = LibMelanie\Config\MappingMelanie::eq;
+        $operators['priority'] = LibMelanie\Config\MappingMce::eq;
       }
     } else {
       $task->completed = 1;
       $filter .= " AND #completed#";
-      $operators['completed'] = LibMelanie\Config\MappingMelanie::inf;
+      $operators['completed'] = LibMelanie\Config\MappingMce::inf;
     }
     // Start & end date
     if (isset($query['from']) && isset($query['to'])) {
@@ -476,20 +476,20 @@ class tasklist_mel_driver extends tasklist_driver {
           $query['to']
       ];
       $filter .= " AND #due#";
-      $operators['due'] = LibMelanie\Config\MappingMelanie::between;
+      $operators['due'] = LibMelanie\Config\MappingMce::between;
     }
     else {
       // Start date
       if (isset($query['from'])) {
         $task->due = $query['from'];
         $filter .= " AND #due#";
-        $operators['due'] = LibMelanie\Config\MappingMelanie::supeq;
+        $operators['due'] = LibMelanie\Config\MappingMce::supeq;
       }
       // End date
       if (isset($query['to'])) {
         $task->due = $query['to'];
         $filter .= " AND #due#";
-        $operators['due'] = LibMelanie\Config\MappingMelanie::infeq;
+        $operators['due'] = LibMelanie\Config\MappingMce::infeq;
       }
     }
     
@@ -498,8 +498,8 @@ class tasklist_mel_driver extends tasklist_driver {
       $task->name = '%' . $query['search'] . '%';
       $task->description = '%' . $query['search'] . '%';
       $filter .= " AND (#name# OR #description#)";
-      $operators['name'] = LibMelanie\Config\MappingMelanie::like;
-      $operators['description'] = LibMelanie\Config\MappingMelanie::like;
+      $operators['name'] = LibMelanie\Config\MappingMce::like;
+      $operators['description'] = LibMelanie\Config\MappingMce::like;
       $case_unsensitive_fields[] = 'name';
       $case_unsensitive_fields[] = 'description';
     }
@@ -507,13 +507,13 @@ class tasklist_mel_driver extends tasklist_driver {
     if (isset($query['since']) && $query['since']) {
       $task->modified = $query['since'];
       $filter .= " AND #modified#";
-      $operators['modified'] = LibMelanie\Config\MappingMelanie::supeq;
+      $operators['modified'] = LibMelanie\Config\MappingMce::supeq;
     }
     // Alarm
     if (isset($query['alarm']) && $query['alarm']) {
       $task->alarm = 1;
       $filter .= " AND #alarm#";
-      $operators['alarm'] = LibMelanie\Config\MappingMelanie::supeq;
+      $operators['alarm'] = LibMelanie\Config\MappingMce::supeq;
     }
     // Récupère la liste et génére le tableau
     foreach ($task->getList(null, $filter, $operators, 'name', true, null, null, $case_unsensitive_fields) as $object) {

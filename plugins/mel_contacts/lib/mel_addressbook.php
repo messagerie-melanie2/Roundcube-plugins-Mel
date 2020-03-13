@@ -310,10 +310,10 @@ class mel_addressbook extends rcube_addressbook
                         else {
                             $_contact->$mapfield = '%'.$value.'%';
                         }
-                        $operators[$mapfield] = LibMelanie\Config\MappingMelanie::like;
+                        $operators[$mapfield] = LibMelanie\Config\MappingMce::like;
                     } elseif ($mode == 1) {
                         $_contact->$mapfield = $value;
-                        $operators[$mapfield] = LibMelanie\Config\MappingMelanie::eq;
+                        $operators[$mapfield] = LibMelanie\Config\MappingMce::eq;
                     } elseif ($mode == 2) {
                         if (is_array($value)) {
                             foreach ($value as $kval => $val) {
@@ -324,14 +324,14 @@ class mel_addressbook extends rcube_addressbook
                         else {
                             $_contact->$mapfield = $value.'%';
                         }
-                        $operators[$mapfield] = LibMelanie\Config\MappingMelanie::like;
+                        $operators[$mapfield] = LibMelanie\Config\MappingMce::like;
                     }
                 }
             }
             $filter .= ") AND ";
             $filter .= "#addressbook# AND #type#";
-            $operators["addressbook"] = LibMelanie\Config\MappingMelanie::eq;
-            $operators["type"] = LibMelanie\Config\MappingMelanie::eq;
+            $operators["addressbook"] = LibMelanie\Config\MappingMce::eq;
+            $operators["type"] = LibMelanie\Config\MappingMce::eq;
 
             $i=0;
             $this->result = new rcube_result_set();
@@ -714,14 +714,14 @@ class mel_addressbook extends rcube_addressbook
             $operators = array();
             if (!empty($search)) {
                 if ($mode == 0) {
-                    $operators['lastname'] = LibMelanie\Config\MappingMelanie::like;
+                    $operators['lastname'] = LibMelanie\Config\MappingMce::like;
                     $_group->lastname = '%'.$search.'%';
                 } elseif ($mode == 1) {
                     $_group->lastname = $search;
-                    $operators['lastname'] = LibMelanie\Config\MappingMelanie::eq;
+                    $operators['lastname'] = LibMelanie\Config\MappingMce::eq;
                 } elseif ($mode == 2) {
                     $_group->lastname = $search.'%';
-                    $operators['lastname'] = LibMelanie\Config\MappingMelanie::like;
+                    $operators['lastname'] = LibMelanie\Config\MappingMce::like;
                 }
             } else {
                 if (!isset($cache['contacts'])) $cache['contacts'] = array();

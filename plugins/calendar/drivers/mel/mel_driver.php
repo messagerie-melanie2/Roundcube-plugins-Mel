@@ -1474,15 +1474,15 @@ class mel_driver extends calendar_driver {
         $cols = array('title','location','description','category');
         $operators = array();
         $filter = "#calendar#";
-        $operators['calendar'] = LibMelanie\Config\MappingMelanie::eq;
+        $operators['calendar'] = LibMelanie\Config\MappingMce::eq;
         $event->calendar = $calendars;
 
         $filter .= " AND ((#start# AND #end#) OR (#type# AND #enddate#))";
 
-        $operators['type'] = LibMelanie\Config\MappingMelanie::sup;
-        $operators['enddate'] = LibMelanie\Config\MappingMelanie::supeq;
-        $operators['start'] = LibMelanie\Config\MappingMelanie::infeq;
-        $operators['end'] = LibMelanie\Config\MappingMelanie::supeq;
+        $operators['type'] = LibMelanie\Config\MappingMce::sup;
+        $operators['enddate'] = LibMelanie\Config\MappingMce::supeq;
+        $operators['start'] = LibMelanie\Config\MappingMce::infeq;
+        $operators['end'] = LibMelanie\Config\MappingMce::supeq;
 
         $event->start = date("Y-m-d H:i:s", $end);
         $event->end = date("Y-m-d H:i:s", $start);
@@ -1492,7 +1492,7 @@ class mel_driver extends calendar_driver {
         // Ne retourne que les événements modifié depuis une date
         if (isset($modifiedsince) && is_int($modifiedsince)) {
           $filter .= " AND #modified#";
-          $operators['modified'] = LibMelanie\Config\MappingMelanie::supeq;
+          $operators['modified'] = LibMelanie\Config\MappingMce::supeq;
           $event->modified = $modifiedsince;
         }
 
@@ -1510,7 +1510,7 @@ class mel_driver extends calendar_driver {
               $filter .= " OR ";
             }
             $filter .= "#$col#";
-            $operators[$col] = LibMelanie\Config\MappingMelanie::like;
+            $operators[$col] = LibMelanie\Config\MappingMce::like;
             $event->$col = "%$query%";
           }
           $filter .= ")";
@@ -1518,7 +1518,7 @@ class mel_driver extends calendar_driver {
         // Liste les évènements modifiés depuis
         if (isset($modifiedsince)) {
           $event->modified = $modifiedsince;
-          $operators['modified'] = LibMelanie\Config\MappingMelanie::supeq;
+          $operators['modified'] = LibMelanie\Config\MappingMce::supeq;
           $filter .= " AND #modified#";
         }
         $events = $event->getList(array(), $filter, $operators, "", true, null, null, $case_unsensitive_fields);
@@ -1870,7 +1870,7 @@ class mel_driver extends calendar_driver {
       // Clause Where
       $filter = "#calendar# AND #alarm# AND ((#start# - interval '1 minute' * k1.event_alarm) > '" . date('Y-m-d H:i:s', $time_min) . "') AND ((#start# - interval '1 minute' * k1.event_alarm) < '" . date('Y-m-d H:i:s', $time_max) . "')";
       // Operateur
-      $operators = array('alarm' => LibMelanie\Config\MappingMelanie::diff, 'calendar' => LibMelanie\Config\MappingMelanie::in);
+      $operators = array('alarm' => LibMelanie\Config\MappingMce::diff, 'calendar' => LibMelanie\Config\MappingMce::in);
       $fields = array('uid','title','calendar','start','end','location','alarm','owner');
       $_events = $_event->getList($fields, $filter, $operators);
       $events = array();

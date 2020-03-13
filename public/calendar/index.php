@@ -13,7 +13,6 @@
  */
 
 use Sabre\VObject;
-use LibMelanie\Ldap\LDAPMelanie;
 use LibMelanie\Config\ConfigMelanie;
 
 // Inclusion des fichiers
@@ -31,11 +30,15 @@ if (! defined('CONFIGURATION_APP_LIBM2')) {
 require_once '../lib/vendor/autoload.php';
 require_once '../../vendor/autoload.php';
 
+// Génération du User Mce
+$user = new LibMelanie\Api\Mce\User();
+$user->uid = $_SERVER['PHP_AUTH_USER'];
+
 // process HTTP auth info
 if (!empty($_SERVER['PHP_AUTH_USER'])
     && isset($_SERVER['PHP_AUTH_PW'])
-    && LDAPMelanie::Authentification($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
-  $username = $_SERVER['PHP_AUTH_USER'];
+    && $user->authentification($_SERVER['PHP_AUTH_PW'])) {
+  $username = $user->uid;
 }
 
 // require HTTP auth
@@ -71,12 +74,8 @@ else {
 // Pas de start, on prend la date du jour moins deux ans
 $start = time() - (365 * 2 * 24 * 60 * 60);
 
-// Génération du User Mél
-$user = new LibMelanie\Api\Melanie2\User();
-$user->uid = $username;
-
 // Génération du Calendar Mél
-$calendar = new LibMelanie\Api\Melanie2\Calendar($user);
+$calendar = new LibMelanie\Api\Mce\Calendar($user);
 $calendar->id = $calendar_name;
 
 if ($calendar->load()

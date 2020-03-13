@@ -11,7 +11,6 @@
  *
  * Utilise l'ORM M2 pour la génération des freebusy
  */
-
 use Sabre\VObject;
 
 // Inclusion des fichiers
@@ -50,9 +49,9 @@ if (isset($calhash)) {
 
   $ics = $format == 'ics';
 
-  if (!strpos($calhash, ':'))
+  if (!strpos($calhash, ':')) {
     $calhash = base64_decode($calhash);
-
+  }
   list($_user, $calendar_name) = explode(':', $calhash, 2);
   $calendar_name = utils::to_M2_id($calendar_name);
 }
@@ -69,12 +68,11 @@ if (!isset($end)) {
 if (isset($email)
     && !isset($uid)) {
   // Récupération de l'utilisateur depuis le serveur LDAP
-  $infos = LibMelanie\Ldap\LDAPMelanie::GetInformationsFromMail($email);
+  $infos = \LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($email);
   if (isset($infos)) {
     $uid = $infos['uid'][0];
   }
 }
-
 // Si pas d'identifiant on retourne une erreur
 if (!isset($uid) && !isset($calendar_name)) {
   echo "Erreur de lecture pour l'identifiant utilisateur ou de l'agenda.";
@@ -83,15 +81,15 @@ if (!isset($uid) && !isset($calendar_name)) {
 
 if (isset($uid)) {
   // Génération du User Mél
-  $user = new LibMelanie\Api\Melanie2\User();
+  $user = new LibMelanie\Api\Mce\User();
   $user->uid = $uid;
   // Génération du Calendar Mél
-  $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
+  $calendar = new LibMelanie\Api\Mce\Calendar($user);
   $calendar->id = $uid;
 }
 else if (isset($calendar_name)) {
   // Génération du Calendar Mél
-  $calendar = new LibMelanie\Api\Melanie2\Calendar(new LibMelanie\Api\Melanie2\User());
+  $calendar = new LibMelanie\Api\Mce\Calendar(new LibMelanie\Api\Mce\User());
   $calendar->id = $calendar_name;
 }
 
@@ -101,13 +99,11 @@ $events = $calendar->getRangeEvents("@".$start, "@".$end);
 if ($ics) {
   // Parcours les événements pour récupérer les vcalendar
   $freebusy = new VObject\Component\VCalendar();
-
   foreach ($events as $event) {
     $event->ics_freebusy = true;
     $event->vcalendar = $freebusy;
     $freebusy = $event->vcalendar;
   }
-
   // Génération du nom de fichier
   if (isset($calendar_name)) {
     $filename = str_replace('%calendar', $calendar_name, $config['ics_filename']);
@@ -123,7 +119,6 @@ else {
     $event->ics_freebusy = true;
     $vcalendars[] = $event->vcalendar;
   }
-
   // We're giving it the calendar object. It's also possible to specify multiple objects,
   // by setting them as an array.
   //

@@ -21,8 +21,6 @@
 @include_once 'includes/libm2.php';
 require_once 'lib/drivers/driver_mel.php';
 
-use LibMelanie\Ldap\Ldap as Ldap;
-
 class mel extends rcube_plugin {
 
   static $VERSION = "Mél";

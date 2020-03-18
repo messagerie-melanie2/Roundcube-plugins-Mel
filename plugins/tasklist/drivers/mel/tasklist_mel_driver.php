@@ -147,7 +147,19 @@ class tasklist_mel_driver extends tasklist_driver {
       $pref->save();
       $this->_read_lists(true);
     }
-    $default_tasklist = $this->user->getDefaultTaskslist();
+    // Ne récupérer que la liste de taches par défaut de l'utilisateur
+    $cache = \mel::InitM2Cache();
+    if (isset($cache['taskslists']) && isset($cache['taskslists']['default']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS) {
+      $default_taskslist_object_id = $cache['taskslists']['default'];
+    }
+    else {
+      $default_tasklist = $this->user->getDefaultTaskslist();
+      if (isset($default_tasklist)) {
+        $default_taskslist_object_id = $default_tasklist->id;
+        $cache['taskslists']['default'] = $default_taskslist_object_id;
+        \mel::SetM2Cache($cache);
+      }
+    }
     $owner_tasklists = array();
     $other_tasklists = array();
     $shared_tasklists = array();
@@ -182,7 +194,7 @@ class tasklist_mel_driver extends tasklist_driver {
           'norename' => $list->owner != $this->user->uid,
           'active' => $active,
           'parentfolder' => null,
-          'default' => $default_tasklist->id == $list->id,
+          'default' => $default_taskslist_object_id == $list->id,
           'children' => false, // TODO: determine if that folder indeed has child folders
           'class_name' => trim(($list->owner == $this->user->uid ? 'personnal' : 'other') . ' ' . ($default_calendar->id == $list->id ? 'default' : ''))
       );

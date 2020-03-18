@@ -72,6 +72,25 @@ class mel_moncompte extends rcube_plugin {
    * @var string
    */
   private $user_objet_share;
+
+  /**
+   * Durée de conservation des listes de taches dans le cache
+   *
+   * @var int
+   */
+  const CACHE_TASKSLISTS = 4*60*60;
+  /**
+   * Durée de conservation des carnets d'adresses dans le cache
+   *
+   * @var int
+   */
+  const CACHE_ADDRESSBOOKS = 4*60*60;
+  /**
+   * Durée de conservation des calendriers dans le cache
+   *
+   * @var int
+   */
+  const CACHE_CALENDARS = 4*60*60;
   /**
    * Mapping for old actions used by Courrielleur
    * @var array
@@ -326,16 +345,28 @@ class mel_moncompte extends rcube_plugin {
             }
           }
 
-          $default_calendar = $user->getDefaultCalendar();
+          // Ne récupérer que le calendrier par défaut de l'utilisateur
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['calendars']) && isset($cache['calendars']['default']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
+            $default_calendar_object_id = $cache['calendars']['default'];
+          }
+          else {
+            $default_calendar = $user->getDefaultCalendar();
+            if (isset($default_calendar)) {
+              $default_calendar_object_id = $default_calendar->id;
+              $cache['calendars']['default'] = $default_calendar_object_id;
+              \mel::SetM2Cache($cache);
+            }
+          }
           $acl = ($calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
           $shared = $user->uid != $calendar->owner;
-          $is_default = $default_calendar->id == $calendar->id;
+          $is_default = $default_calendar_object_id == $calendar->id;
           $this->rc->output->set_env("resource_id", $id);
           $this->rc->output->set_env("resource_name", $shared ? "(" . $calendar->owner . ") " . $calendar->name : $calendar->name);
           $this->rc->output->set_env("resource_shared", $shared);
           $this->rc->output->set_env("resource_acl", $acl);
           $this->rc->output->set_env("resource_owner", $calendar->owner);
-          $this->rc->output->set_env("resource_default", $default_calendar->id == $calendar->id);
+          $this->rc->output->set_env("resource_default", $default_calendar_object_id == $calendar->id);
           if (count($synchro_mobile) == 0) {
             // Si on n'a pas de ressource définie, utilise celle par défaut
             $this->rc->output->set_env("resource_synchro_mobile", $is_default);
@@ -416,10 +447,22 @@ class mel_moncompte extends rcube_plugin {
             }
           }
 
-          $default_addressbook = $user->getDefaultAddressbook();
+          // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['addressbooks']) && isset($cache['addressbooks']['default']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+            $default_addressbook_object_id = $cache['addressbooks']['default'];
+          }
+          else {
+            $default_addressbook_object = $user->getDefaultAddressbook();
+            if (isset($default_addressbook_object)) {
+              $default_addressbook_object_id = $default_addressbook_object->id;
+              $cache['addressbooks']['default'] = $default_addressbook_object_id;
+              \mel::SetM2Cache($cache);
+            }
+          }
           $acl = ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
           $shared = $user->uid != $addressbook->owner;
-          $is_default = $default_addressbook->id == $addressbook->id;
+          $is_default = $default_addressbook_object_id == $addressbook->id;
           $this->rc->output->set_env("resource_id", $id);
           $this->rc->output->set_env("resource_name", $shared ? "(" . $addressbook->owner . ") " . $addressbook->name : $addressbook->name);
           $this->rc->output->set_env("resource_shared", $shared);
@@ -507,10 +550,22 @@ class mel_moncompte extends rcube_plugin {
             }
           }
 
-          $default_taskslist = $user->getDefaultTaskslist();
+          // Ne récupérer que la liste de taches par défaut de l'utilisateur
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['taskslists']) && isset($cache['taskslists']['default']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS) {
+            $default_taskslist_object_id = $cache['taskslists']['default'];
+          }
+          else {
+            $default_taskslist = $user->getDefaultTaskslist();
+            if (isset($default_taskslist)) {
+              $default_taskslist_object_id = $default_taskslist->id;
+              $cache['taskslists']['default'] = $default_taskslist_object_id;
+              \mel::SetM2Cache($cache);
+            }
+          }
           $acl = ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
           $shared = $user->uid != $taskslist->owner;
-          $is_default = $default_taskslist->id == $taskslist->id;
+          $is_default = $default_taskslist_object_id == $taskslist->id;
           $this->rc->output->set_env("resource_id", $id);
           $this->rc->output->set_env("resource_name", $shared ? "(" . $taskslist->owner . ") " . $taskslist->name : $taskslist->name);
           $this->rc->output->set_env("resource_shared", $shared);
@@ -780,14 +835,52 @@ class mel_moncompte extends rcube_plugin {
           $value = array();
         }
         if (count($value) === 0) {
-          if ($type == 'calendar')
-            $default = $user->getDefaultCalendar();
-          elseif ($type == 'contact')
-            $default = $user->getDefaultAddressbook();
-          else
-            $default = $user->getDefaultTaskslist();
-          if (isset($default)) {
-            $value[] = $default->id;
+          $cache = \mel::InitM2Cache();
+          if ($type == 'calendar') {
+            if (isset($cache['calendars']) && isset($cache['calendars']['default']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
+              $default_id = $cache['calendars']['default'];
+            }
+            else {
+              $default_calendar = $user->getDefaultCalendar();
+              if (isset($default_calendar)) {
+                $default_id = $default_calendar->id;
+                $cache['calendars']['default'] = $default_id;
+                \mel::SetM2Cache($cache);
+              }
+            }
+          }
+          elseif ($type == 'contact') {
+            // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
+            $cache = \mel::InitM2Cache();
+            if (isset($cache['addressbooks']) && isset($cache['addressbooks']['default']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+              $default_id = $cache['addressbooks']['default'];
+            }
+            else {
+              $default_addressbook = $user->getDefaultAddressbook();
+              if (isset($default_addressbook)) {
+                $default_id = $default_addressbook->id;
+                $cache['addressbooks']['default'] = $default_id;
+                \mel::SetM2Cache($cache);
+              }
+            }
+          }
+          else {
+            // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
+            $cache = \mel::InitM2Cache();
+            if (isset($cache['taskslists']) && isset($cache['taskslists']['default']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS) {
+              $default_id = $cache['taskslists']['default'];
+            }
+            else {
+              $default_taskslist = $user->getDefaultTaskslist();
+              if (isset($default_taskslist)) {
+                $default_id = $default_taskslist->id;
+                $cache['taskslists']['default'] = $default_id;
+                \mel::SetM2Cache($cache);
+              }
+            }
+          }
+          if (isset($default_id)) {
+            $value[] = $default_id;
           }
         }
         else {
@@ -840,21 +933,30 @@ class mel_moncompte extends rcube_plugin {
         $user = new LibMelanie\Api\Melanie2\User();
         $user->uid = $this->get_user_bal();
         $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
+        // Gestion du cache
+        $cache = \mel::InitM2Cache();
         if ($type == 'calendar') {
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
           $pref->name = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_DEFAULT_NAME;
+          // Cache
+          $cache['calendars']['default'] = $mbox;
         }
         elseif ($type == 'contact') {
           $pref->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
           $pref->name = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_DEFAULT_NAME;
+          // Cache
+          $cache['addressbooks']['default'] = $mbox;
         }
         else {
           $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
           $pref->name = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_DEFAULT_NAME;
+          // Cache
+          $cache['taskslists']['default'] = $mbox;
         }
+        \mel::SetM2Cache($cache);
         $pref->value = $mbox;
         $ret = $pref->save();
-        if (! is_null($ret))
+        if (!is_null($ret))
           $this->rc->output->show_message('mel_moncompte.set_default_confirm', 'confirmation');
         else
           $this->rc->output->show_message('mel_moncompte.modify_error', 'error');

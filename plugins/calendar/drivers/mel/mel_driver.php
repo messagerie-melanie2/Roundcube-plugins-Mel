@@ -225,12 +225,24 @@ class mel_driver extends calendar_driver {
         }
       }
       try {
-        $default_calendar = $this->user->getDefaultCalendar();
+        // Ne récupérer que le calendrier par défaut de l'utilisateur
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['calendars']) && isset($cache['calendars']['default']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
+          $default_calendar_object_id = $cache['calendars']['default'];
+        }
+        else {
+          $default_calendar = $this->user->getDefaultCalendar();
+          if (isset($default_calendar)) {
+            $default_calendar_object_id = $default_calendar->id;
+            $cache['calendars']['default'] = $default_calendar_object_id;
+            \mel::SetM2Cache($cache);
+          }
+        }
       }
       catch (Exception $ex) {
         // Si la récupération du calendrier par défaut échoue
         // Certainement le cas de la restauration (horde_prefs non présente)
-        $default_calendar = $this->user->uid;
+        $default_calendar_object_id = $this->user->uid;
       }
       $owner_calendars = array();
       $other_calendars = array();
@@ -293,7 +305,7 @@ class mel_driver extends calendar_driver {
             'editname' => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_larry') : ($cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name),
             'color' => $color,
             'showalarms' => $alarm ? 1 : 0,
-            'default' => $default_calendar->id == $cal->id,
+            'default' => $default_calendar_object_id == $cal->id,
             'active' => $active,
             'owner' => $cal->owner,
             'children' => false, // TODO: determine if that folder indeed has child folders
@@ -302,13 +314,13 @@ class mel_driver extends calendar_driver {
             'virtual' => false,
             'editable' => $cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
             'rights' => $rights,
-            'group' => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
+            'group' => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar_object_id == $cal->id ? 'default' : '')),
             'class' => 'user',
     				'caldavurl' => $this->get_caldav_url($cal),
         )
         // 'subscribed' => !isset($hidden_calendars[$cal->id]),
         // TODO: Implémenter la gestion des afficher/masquer un agenda
-        // 'removable' => $default_calendar->id != $cal->id,
+        // 'removable' => $default_calendar_object_id != $cal->id,
         ;
         // Ajout le calendrier dans la liste correspondante
         if ($calendar['owner'] != $this->user->uid) {

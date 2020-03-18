@@ -113,10 +113,23 @@ class mel_contacts extends rcube_plugin {
         }
       }
       if (empty($this->rc->action)) {
-        $default_addressbook_object = $this->user->getDefaultAddressbook();
-        if (isset($default_addressbook_object) && $this->_to_RC_id($default_addressbook_object->id) != $this->rc->config->get('default_addressbook')) {
-          $this->rc->user->save_prefs(array('default_addressbook' => $this->_to_RC_id($default_addressbook_object->id)));
+        if (isset($cache['addressbooks']) && isset($cache['addressbooks']['default']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+          $default_addressbook_object_id = $cache['addressbooks']['default'];
         }
+        else {
+          $default_addressbook_object = $this->user->getDefaultAddressbook();
+          if (isset($default_addressbook_object)) {
+            $default_addressbook_object_id = $default_addressbook_object->id;
+            $cache['addressbooks']['default'] = $default_addressbook_object_id;
+            \mel::SetM2Cache($cache);
+          }
+        }
+        if (isset($default_addressbook_object_id) && $this->_to_RC_id($default_addressbook_object_id) != $this->rc->config->get('default_addressbook')) {
+          $this->rc->user->save_prefs(array('default_addressbook' => $this->_to_RC_id($default_addressbook_object_id)));
+        }
+      }
+      else if ($this->rc->action == 'photo' && $this->has_principal) {
+        $this->addressbooks = [$this->user->uid => $this->addressbooks[$this->user->uid]];
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -136,7 +149,7 @@ class mel_contacts extends rcube_plugin {
    */
   public function address_sources($p) {
     try {
-      if (! isset($this->addressbooks)) {
+      if (!isset($this->addressbooks)) {
         // Récupérer les carnets d'adresses de l'utilisateur
         $this->_list_user_addressbooks();
       }
@@ -157,7 +170,7 @@ class mel_contacts extends rcube_plugin {
         $addressbook->name = $default_addressbook_name;
         $addressbook->owner = $this->user->uid;
         $ret = $addressbook->save();
-        if (! is_null($ret)) {
+        if (!is_null($ret)) {
           $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
           $pref->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
           $pref->name = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_DEFAULT_NAME;
@@ -240,9 +253,19 @@ class mel_contacts extends rcube_plugin {
     $sources = array('amande');
     try {
       // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
-      $abook = $this->user->getDefaultAddressbook();
-      $sources[] = $abook->id;
-
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['addressbooks']) && isset($cache['addressbooks']['default']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+        $default_addressbook_object_id = $cache['addressbooks']['default'];
+      }
+      else {
+        $default_addressbook_object = $this->user->getDefaultAddressbook();
+        if (isset($default_addressbook_object)) {
+          $default_addressbook_object_id = $default_addressbook_object->id;
+          $cache['addressbooks']['default'] = $default_addressbook_object_id;
+          \mel::SetM2Cache($cache);
+        }
+      }
+      $sources[] = $default_addressbook_object_id;
       $args['result'] = $sources;
 
       return $args;

@@ -153,42 +153,43 @@ class mel_addressbook extends rcube_addressbook
             }
 
             $this->result = new rcube_result_set();
-            if (!isset($this->ctag)) {
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag'])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag_time'])
-                        && time() - $cache['contacts'][$this->addressbook->id]['ctag_time'] < self::CTAG_REFRESH) {
-                    $this->ctag = $cache['contacts'][$this->addressbook->id]['ctag'];
-                } else {
-                    $this->ctag = $this->addressbook->getCTag();
-                    if (isset($cache['contacts'][$this->addressbook->id]['ctag_time'])) {
-                        $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
+            if (self::ENABLE_CACHE) {
+                $cache = \mel::InitM2Cache();
+                if (!isset($this->ctag)) {
+                    if (isset($cache['contacts'])
+                            && isset($cache['contacts'][$this->addressbook->id])
+                            && isset($cache['contacts'][$this->addressbook->id]['ctag'])
+                            && isset($cache['contacts'][$this->addressbook->id]['ctag_time'])
+                            && time() - $cache['contacts'][$this->addressbook->id]['ctag_time'] < self::CTAG_REFRESH) {
+                        $this->ctag = $cache['contacts'][$this->addressbook->id]['ctag'];
+                    } else {
+                        $this->ctag = $this->addressbook->getCTag();
+                        if (isset($cache['contacts'][$this->addressbook->id]['ctag_time'])) {
+                            $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
+                        }
                     }
                 }
-            }
-            $cache = \mel::InitM2Cache();
-            // Chargement des contacts depuis le cache
-            if (self::ENABLE_CACHE
-                    && isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'])) {
-                if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
-                    $this->result->count = $cache['contacts'][$this->addressbook->id]['count'];
-                    if (isset($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset])
-                            && !isset($this->group_id)) {
-                        $i = 0;
-                        foreach ($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset] as $_contact) {
-                            $_contact = unserialize($_contact);
-                            $this->result->add(mel_contacts_mapping::m2_to_rc_contact($cols, $_contact));
-                            if ($subset > 0 && $subset == $i) break;
-                            $i++;
+                // Chargement des contacts depuis le cache
+                if (isset($cache['contacts'])
+                        && isset($cache['contacts'][$this->addressbook->id])
+                        && isset($cache['contacts'][$this->addressbook->id]['list'])) {
+                    if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
+                        $this->result->count = $cache['contacts'][$this->addressbook->id]['count'];
+                        if (isset($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset])
+                                && !isset($this->group_id)) {
+                            $i = 0;
+                            foreach ($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset] as $_contact) {
+                                $_contact = unserialize($_contact);
+                                $this->result->add(mel_contacts_mapping::m2_to_rc_contact($cols, $_contact));
+                                if ($subset > 0 && $subset == $i) break;
+                                $i++;
+                            }
+                            $this->result->first = $this->page_size * ($this->list_page - 1);
+                            return $this->result;
                         }
-                        $this->result->first = $this->page_size * ($this->list_page - 1);
-                        return $this->result;
+                    } else {
+                        unset($cache['contacts'][$this->addressbook->id]);
                     }
-                } else {
-                    unset($cache['contacts'][$this->addressbook->id]);
                 }
             }
 
@@ -366,14 +367,19 @@ class mel_addressbook extends rcube_addressbook
               && isset($cache['contacts'][$this->addressbook->id])
               && isset($cache['contacts'][$this->addressbook->id]['groups'])
               && isset($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id])) {
-            $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]);
-            $count = 0;
-            if ($group !== false) {
-              $members = unserialize($group->members);
-              if ($members !== false) {
-                $members = array_unique($members);
-                $count = count($members);
-              }
+            if (isset($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]['count'])) {
+                $count = $cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]['count'];
+            }
+            else {
+                $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]);
+                $count = 0;
+                if ($group !== false) {
+                  $members = unserialize($group->members);
+                  if ($members !== false) {
+                    $members = array_unique($members);
+                    $count = count($members);
+                  }
+                }
             }
           }
           else {
@@ -675,37 +681,39 @@ class mel_addressbook extends rcube_addressbook
         try {
             // Chargement du groupe depuis le cache
             $cache = \mel::InitM2Cache();
-            if (!isset($this->ctag)) {
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag'])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag_time'])
-                        && time() - $cache['contacts'][$this->addressbook->id]['ctag_time'] < self::CTAG_REFRESH) {
-                    $this->ctag = $cache['contacts'][$this->addressbook->id]['ctag'];
-                } else {
-                    $this->ctag = $this->addressbook->getCTag();
-                    if (isset($cache['contacts'][$this->addressbook->id]['ctag_time'])) {
-                        $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
+            if (self::ENABLE_CACHE) {
+                if (!isset($this->ctag)) {
+                    if (isset($cache['contacts'])
+                            && isset($cache['contacts'][$this->addressbook->id])
+                            && isset($cache['contacts'][$this->addressbook->id]['ctag'])
+                            && isset($cache['contacts'][$this->addressbook->id]['ctag_time'])
+                            && time() - $cache['contacts'][$this->addressbook->id]['ctag_time'] < self::CTAG_REFRESH) {
+                        $this->ctag = $cache['contacts'][$this->addressbook->id]['ctag'];
+                    } else {
+                        $this->ctag = $this->addressbook->getCTag();
+                        if (isset($cache['contacts'][$this->addressbook->id]['ctag_time'])) {
+                            $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
+                        }
                     }
                 }
-            }
-            // Chargement des contacts depuis le cache
-            if (isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && !isset($search)
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'])) {
-                if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
-                    $ret = array();
-                    foreach ($cache['contacts'][$this->addressbook->id]['groups'] as $_g) {
-                        $_g = unserialize($_g);
-                        $group = mel_contacts_mapping::m2_to_rc_contact(null, $_g);
-                        $group['user_id'] = $this->user->uid;
-                        $group['changed'] = $_g->modified;
-                        $ret[] = $group;
+                // Chargement des contacts depuis le cache
+                if (isset($cache['contacts'])
+                        && isset($cache['contacts'][$this->addressbook->id])
+                        && !isset($search)
+                        && isset($cache['contacts'][$this->addressbook->id]['groups'])) {
+                    if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
+                        $ret = array();
+                        foreach ($cache['contacts'][$this->addressbook->id]['groups'] as $_g) {
+                            $_g = unserialize($_g);
+                            $group = mel_contacts_mapping::m2_to_rc_contact(null, $_g);
+                            $group['user_id'] = $this->user->uid;
+                            $group['changed'] = $_g->modified;
+                            $ret[] = $group;
+                        }
+                        return $ret;
+                    } else {
+                        unset($cache['contacts'][$this->addressbook->id]);
                     }
-                    return $ret;
-                } else {
-                    unset($cache['contacts'][$this->addressbook->id]);
                 }
             }
 
@@ -719,7 +727,7 @@ class mel_addressbook extends rcube_addressbook
                 } elseif ($mode == 1) {
                     $_group->lastname = $search;
                     $operators['lastname'] = LibMelanie\Config\MappingMelanie::eq;
-                } elseif ($mode == 2) {
+                } else {
                     $_group->lastname = $search.'%';
                     $operators['lastname'] = LibMelanie\Config\MappingMelanie::like;
                 }
@@ -733,9 +741,12 @@ class mel_addressbook extends rcube_addressbook
 
             $ret = array();
             $favorites_exists = false;
-            foreach ($_group->getList(array(), $filter, $operators, "lastname") as $_g) {
+            foreach ($_group->getList(array(), "", $operators, "lastname") as $_g) {
                 if (!isset($search)) {
                     $cache['contacts'][$this->addressbook->id]['groups'][$_g->id] = serialize($_g);
+                }
+                else {
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_g->id]['count'] = count(unserialize($_g->members));
                 }
                 if ($_g->uid == 'favorites') {
                   $favorites_exists = true;
@@ -745,7 +756,7 @@ class mel_addressbook extends rcube_addressbook
                 $group['changed'] = $_g->modified;
                 $ret[] = $group;
             }
-            if (!$favorites_exists && $this->addressbook->id == $this->rc->get_user_name()) {
+            if (!isset($search) && !$favorites_exists && $this->addressbook->id == $this->rc->get_user_name()) {
               $ret[] = $this->create_group($this->rc->gettext('favorites', 'mel_contacts'), true);
             }
             // Sauvegarde dans le cache

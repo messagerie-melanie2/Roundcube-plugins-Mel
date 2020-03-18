@@ -51,6 +51,13 @@ class M2contacts {
   protected $mbox;
 
   /**
+   * Durée de conservation des carnets d'adresses dans le cache
+   *
+   * @var int
+   */
+  const CACHE_ADDRESSBOOKS = 4*60*60;
+
+  /**
    * Constructeur
    *
    * @param string $user
@@ -235,11 +242,18 @@ class M2contacts {
       }
       $this->addressbook->id = $this->mbox ?  : $this->user->uid;
       $this->addressbook->owner = $this->user->uid;
-      if (! is_null($this->addressbook->save())) {
-        return $this->addressbook->load();
-      }
-      else {
-        return false;
+      if (!is_null($this->addressbook->save())) {
+        if ($this->addressbook->load()) {
+          // Mettre à jour le cache
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['addressbooks'])) {
+            $_list = unserialize($cache['addressbooks']['list']);
+            $_list[$this->addressbook->id] = $this->addressbook;
+            $cache['addressbooks']['list'] = serialize($_list);
+            \mel::SetM2Cache($cache);
+          }
+          return true;
+        }
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -262,8 +276,19 @@ class M2contacts {
       foreach ($contacts as $contact) {
         $contact->delete();
       }
+      $id = $this->addressbook->id;
       // Supprime le carnet d'address
-      return $this->addressbook->delete();
+      if ($this->addressbook->delete()) {
+        // Mettre à jour le cache
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['addressbooks'])) {
+          $_list = unserialize($cache['addressbooks']['list']);
+          unset($_list[$id]);
+          $cache['addressbooks']['list'] = serialize($_list);
+          \mel::SetM2Cache($cache);
+        }
+        return true;
+      }
     }
     return false;
   }
@@ -280,12 +305,19 @@ class M2contacts {
       $attrib['id'] = 'rcmresourceselementslist';
 
     try {
-      $result = array();
-
       // Récupération des préférences de l'utilisateur
       $hidden_contacts = $this->rc->config->get('hidden_contacts', array());
-      // Parcour la liste des carnets d'adresses
-      $addressbooks = $this->user->getSharedAddressbooks();
+      // Lecture depuis le cache
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['addressbooks']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+        $addressbooks = unserialize($cache['addressbooks']['list']);
+      }
+      else {
+        // Parcour la liste des carnets d'adresses
+        $addressbooks = $this->user->getSharedAddressbooks();
+        $cache['addressbooks'] = array('time' => time(),'list' => serialize($addressbooks));
+        \mel::SetM2Cache($cache);
+      }
       $addressbook_owner = array();
       $addressbooks_owner = array();
       $addressbooks_shared = array();

@@ -34,6 +34,14 @@ class Driver {
    * Name
    */
   const PREF_NAME = 'etiquette';
+
+  /**
+   * Durée de conservation des labels dans le cache
+   *
+   * @var int
+   */
+  const CACHE_LABELS = 4*60*60;
+
   /**
    * Gestion du cache pour les étiquettes par utilisateur
    * @var array
@@ -46,7 +54,7 @@ class Driver {
   private static $_instance;
 
   function __construct() {
-    $this->_labels_cache = array();
+    $this->_labels_cache = [];
   }
 
   /**
@@ -114,24 +122,36 @@ class Driver {
       return $this->_labels_cache[$username];
     }
     else {
-      $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
-      $pref->scope = self::PREF_SCOPE;
-      $pref->name = self::PREF_NAME;
-      $pref->user = $username;
-      $ret = $pref->load();
-      if (!$ret || empty($pref->value) || $pref->value == "[]") {
-        $labels = array();
+      // Lecture depuis le cache
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['labels']) && time() - $cache['labels']['time'] <= self::CACHE_LABELS) {
+        $this->_labels_cache = unserialize($cache['labels']['list']);
       }
       else {
-        $labels = $this->_m2_to_rc($pref->value);
+        $this->_labels_cache = [];
       }
-      if (!$this->_add_defaults_labels($pref, $labels)) {
-        return array();
+      if (!isset($this->_labels_cache[$username])) {
+        $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
+        $pref->scope = self::PREF_SCOPE;
+        $pref->name = self::PREF_NAME;
+        $pref->user = $username;
+        $ret = $pref->load();
+        if (!$ret || empty($pref->value) || $pref->value == "[]") {
+          $labels = [];
+        }
+        else {
+          $labels = $this->_m2_to_rc($pref->value);
+        }
+        if (!$this->_add_defaults_labels($pref, $labels)) {
+          return array();
+        }
+        if ($username == rcmail::get_instance()->user->get_username()) {
+          $labels = $this->_load_old_tags($labels);
+        }
+        $this->_labels_cache[$username] = $this->order_labels($labels);      
+        $cache['labels'] = array('time' => time(),'list' => serialize($this->_labels_cache));
+        \mel::SetM2Cache($cache);
       }
-      if ($username == rcmail::get_instance()->user->get_username()) {
-        $labels = $this->_load_old_tags($labels);
-      }
-      $this->_labels_cache[$username] = $this->order_labels($labels);
       return $this->_labels_cache[$username];
     }
   }
@@ -156,6 +176,13 @@ class Driver {
       else {
         unset($this->_labels_cache[$username]);
       }
+      // Mettre à jour le cache
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['labels'])) {
+        $this->_labels_cache[$username] = $this->order_labels($this->_labels_cache[$username]);
+        $cache['labels']['list'] = serialize($this->_labels_cache);
+        \mel::SetM2Cache($cache);
+      }
       return true;
     }
     return false;
@@ -172,11 +199,16 @@ class Driver {
     $pref->user = $username;
     unset($this->_labels_cache[$username]);
     if ($pref->load()) {
-      return $pref->delete();
+      if ($pref->delete()) {
+        // Mettre à jour le cache
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['labels'])) {
+          $cache['labels']['list'] = serialize($this->_labels_cache);
+          \mel::SetM2Cache($cache);
+        }
+      }
     }
-    else {
-      return true;
-    }
+    return true;
   }
   
   /**

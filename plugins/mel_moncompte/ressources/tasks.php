@@ -51,6 +51,13 @@ class M2tasks {
   protected $mbox;
 
   /**
+   * Durée de conservation des carnets d'adresses dans le cache
+   *
+   * @var int
+   */
+  const CACHE_TASKSLISTS = 4*60*60;
+
+  /**
    * Constructeur
    *
    * @param string $user
@@ -229,7 +236,7 @@ class M2tasks {
   public function createTaskslist($name = null) {
     try {
       $this->taskslist = new LibMelanie\Api\Melanie2\Taskslist($this->user);
-      if (! isset($name)) {
+      if (!isset($name)) {
         $infos = mel::get_user_infos($this->user->uid);
         $this->taskslist->name = $infos['cn'][0];
       }
@@ -238,11 +245,18 @@ class M2tasks {
       }
       $this->taskslist->id = $this->mbox ?  : $this->user->uid;
       $this->taskslist->owner = $this->user->uid;
-      if (! is_null($this->taskslist->save())) {
-        return $this->taskslist->load();
-      }
-      else {
-        return false;
+      if (!is_null($this->taskslist->save())) {
+        if ($this->taskslist->load()) {
+          // Mettre à jour le cache
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['taskslists'])) {
+            $_list = unserialize($cache['taskslists']['list']);
+            $_list[$this->taskslist->id] = $this->taskslist;
+            $cache['taskslists']['list'] = serialize($_list);
+            \mel::SetM2Cache($cache);
+          }
+          return true;
+        }
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -265,8 +279,19 @@ class M2tasks {
       foreach ($tasks as $task) {
         $task->delete();
       }
+      $id = $this->taskslist->id;
       // Supprime la liste de tâches
-      return $this->taskslist->delete();
+      if ($this->taskslist->delete()) {
+        // Mettre à jour le cache
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['taskslists'])) {
+          $_list = unserialize($cache['taskslists']['list']);
+          unset($_list[$id]);
+          $cache['taskslists']['list'] = serialize($_list);
+          \mel::SetM2Cache($cache);
+        }
+        return true;
+      }
     }
     return false;
   }
@@ -279,15 +304,24 @@ class M2tasks {
    */
   public function resources_elements_list($attrib) {
     // add id to message list table if not specified
-    if (! strlen($attrib['id']))
+    if (!strlen($attrib['id']))
       $attrib['id'] = 'rcmresourceselementslist';
 
     $result = array();
     try {
       // Récupération des préférences de l'utilisateur
       $hidden_tasks = $this->rc->config->get('hidden_tasks', array());
-      // Parcour la liste des listes de tâches
-      $taskslists = $this->user->getSharedTaskslists();
+      // Lecture depuis le cache
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['taskslists']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS) {
+        $taskslists = unserialize($cache['taskslists']['list']);
+      }
+      else {
+        // Parcour la liste des listes de tâches
+        $taskslists = $this->user->getSharedTaskslists();
+        $cache['taskslists'] = array('time' => time(),'list' => serialize($taskslists));
+        \mel::SetM2Cache($cache);
+      }
       $taskslist_owner = array();
       $taskslists_owner = array();
       $taskslists_shared = array();

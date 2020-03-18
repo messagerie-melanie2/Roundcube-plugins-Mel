@@ -16,6 +16,13 @@ class tasklist_mel_driver extends tasklist_driver {
   const DB_DATE_FORMAT = 'Y-m-d H:i:s';
   const SHORT_DB_DATE_FORMAT = 'Y-m-d';
 
+  /**
+   * Durée de conservation des listes de taches dans le cache
+   *
+   * @var int
+   */
+  const CACHE_TASKSLISTS = 4*60*60;
+
   // features supported by the backend
   public $alarms = true;
   public $attachments = false;
@@ -29,7 +36,7 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Tableau de listes de taches Mél
    *
-   * @var LibMelanie\Api\Melanie2\Taskslist []
+   * @var LibMelanie\Api\Melanie2\Taskslist[]
    */
   private $lists;
   private $folders = array();
@@ -77,6 +84,10 @@ class tasklist_mel_driver extends tasklist_driver {
 
   /**
    * Read available calendars for the current user and store them internally
+   * 
+   * @param $force boolean forcer le reload depuis le cache
+   * 
+   * @return LibMelanie\Api\Melanie2\Taskslist[]
    */
   private function _read_lists($force = false) {
     // already read sources
@@ -84,9 +95,16 @@ class tasklist_mel_driver extends tasklist_driver {
       return $this->lists;
 
     if (isset($this->user)) {
-      $this->lists = $this->user->getSharedTaskslists();
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['taskslists']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS && !$force) {
+        $this->lists = unserialize($cache['taskslists']['list']);
+      }
+      else {
+        $this->lists = $this->user->getSharedTaskslists();
+        $cache['taskslists'] = array('time' => time(),'list' => serialize($this->lists));
+        \mel::SetM2Cache($cache);
+      }
     }
-
     return $this->lists;
   }
 
@@ -122,7 +140,7 @@ class tasklist_mel_driver extends tasklist_driver {
           'name' => $default_taskslist_name,
           'color' => $this->_random_color()
       )))
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
+      $pref = new LibMelanie\Api\Melanie2\UserPrefs($this->user);
       $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
       $pref->name = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_DEFAULT_NAME;
       $pref->value = $this->user->uid;
@@ -214,6 +232,8 @@ class tasklist_mel_driver extends tasklist_driver {
     $tasklist->owner = $this->user->uid;
     $saved = $tasklist->save();
     if (!is_null($saved)) {
+      // Actualiser le cache
+      $this->_read_lists(true);
       // Récupération des préférences de l'utilisateur
       $active_tasklists = $this->rc->config->get('active_tasklists', array());
       $alarm_tasklists = $this->rc->config->get('alarm_tasklists', array());
@@ -221,7 +241,7 @@ class tasklist_mel_driver extends tasklist_driver {
       $active_tasklists[$tasklist->id] = 1;
       // Showalarm ?
       if ($prop['showalarms'] == 1) {
-        $alarm_tasklists[$calendar->id] = 1;
+        $alarm_tasklists[$tasklist->id] = 1;
       }
       $this->rc->user->save_prefs(array(
           'active_tasklists' => $active_tasklists,
@@ -258,6 +278,14 @@ class tasklist_mel_driver extends tasklist_driver {
       if (isset($prop['name']) && $list->owner == $this->user->uid && $prop['name'] != "") {
         $list->name = $prop['name'];
         $list->save();
+        // Mettre à jour le cache
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['taskslists'])) {
+          $_list = unserialize($cache['taskslists']['list']);
+          $_list[$id] = $list;
+          $cache['taskslists']['list'] = serialize($_list);
+          \mel::SetM2Cache($cache);
+        }
       }
       // Récupération des préférences de l'utilisateur
       $alarm_tasklists = $this->rc->config->get('alarm_tasklists', array());
@@ -321,22 +349,33 @@ class tasklist_mel_driver extends tasklist_driver {
     if ($this->rc->task != 'tasks') {
       return;
     }
-    mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::remove_list(" . $prop['id'] . ")");
+    $id = $this->_to_M2_id($prop['id']);
+    mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::remove_list($id)");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::remove_list() : " . var_export($prop, true));
-    if (isset($prop['id']) && isset($this->lists[$prop['id']]) && $this->lists[$prop['id']]->owner == $this->user->uid && $this->lists[$prop['id']]->id != $this->user->uid) {
+    if (isset($id) && isset($this->lists[$id]) && $this->lists[$id]->owner == $this->user->uid && $this->lists[$id]->id != $this->user->uid) {
       // Récupération des préférences de l'utilisateur
       $hidden_tasklists = $this->rc->config->get('hidden_tasklists', array());
       $active_tasklists = $this->rc->config->get('active_tasklists', array());
       $alarm_tasklists = $this->rc->config->get('alarm_tasklists', array());
-      unset($hidden_tasklists[$prop['id']]);
-      unset($active_tasklists[$prop['id']]);
-      unset($alarm_tasklists[$prop['id']]);
+      unset($hidden_tasklists[$id]);
+      unset($active_tasklists[$id]);
+      unset($alarm_tasklists[$id]);
       $this->rc->user->save_prefs(array(
           'active_tasklists' => $active_tasklists,
           'alarm_tasklists' => $alarm_tasklists,
           'hidden_tasklists' => $hidden_tasklists
       ));
-      return $this->lists[$prop['id']]->delete();
+      if ($this->lists[$id]->delete()) {
+        // Mettre à jour le cache
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['taskslists'])) {
+          $_list = unserialize($cache['taskslists']['list']);
+          unset($_list[$id]);
+          $cache['taskslists']['list'] = serialize($_list);
+          \mel::SetM2Cache($cache);
+        }
+        return true;
+      }
     }
     return false;
   }
@@ -392,24 +431,27 @@ class tasklist_mel_driver extends tasklist_driver {
     );
     foreach ($lists as $list_id) {
       $list_id = $this->_to_M2_id($list_id);
-      foreach ($this->lists[$list_id]->getAllTasks() as $task) {
-        $this->tasks[$task->id] = $task;
-        $rec = $this->_to_rcube_task($task);
-
-        if ($rec['complete'] >= 1.0) // don't count complete tasks
-          continue;
-
-        $counts['all']++;
-        if ($rec['flagged'])
-          $counts['flagged']++;
-        if (empty($rec['date']))
-          $counts['nodate']++;
-        else if ($rec['date'] == $today)
-          $counts['today']++;
-        else if ($rec['date'] == $tomorrow)
-          $counts['tomorrow']++;
-        else if ($rec['date'] < $today)
-          $counts['overdue']++;
+      $tasks = $this->lists[$list_id]->getAllTasks();
+      if (is_array($tasks)) {
+        foreach ($this->lists[$list_id]->getAllTasks() as $task) {
+          $this->tasks[$task->id] = $task;
+          $rec = $this->_to_rcube_task($task);
+  
+          if ($rec['complete'] >= 1.0) // don't count complete tasks
+            continue;
+  
+          $counts['all']++;
+          if ($rec['flagged'])
+            $counts['flagged']++;
+          if (empty($rec['date']))
+            $counts['nodate']++;
+          else if ($rec['date'] == $today)
+            $counts['today']++;
+          else if ($rec['date'] == $tomorrow)
+            $counts['tomorrow']++;
+          else if ($rec['date'] < $today)
+            $counts['overdue']++;
+        }
       }
     }
     return $counts;

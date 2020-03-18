@@ -49,6 +49,14 @@ class M2calendar {
    * @var string Identifiant de la boite (uid)
    */
   protected $mbox;
+
+  /**
+   * Durée de conservation des calendriers dans le cache
+   *
+   * @var int
+   */
+  const CACHE_CALENDARS = 4*60*60;
+
   /**
    * Constructeur
    *
@@ -246,11 +254,18 @@ class M2calendar {
       }
       $this->calendar->id = $this->mbox ?  : $this->user->uid;
       $this->calendar->owner = $this->user->uid;
-      if (! is_null($this->calendar->save())) {
-        return $this->calendar->load();
-      }
-      else {
-        return false;
+      if (!is_null($this->calendar->save())) {
+        if ($this->calendar->load()) {
+          // Mettre à jour le cache
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['calendars'])) {
+            $_list = unserialize($cache['calendars']['list']);
+            $_list[$this->calendar->id] = $this->calendar;
+            $cache['calendars']['list'] = serialize($_list);
+            \mel::SetM2Cache($cache);
+          }
+          return true;
+        }
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -273,8 +288,19 @@ class M2calendar {
       foreach ($events as $event) {
         $event->delete();
       }
+      $id = $this->calendar->id;
       // Supprime le calendrier
-      return $this->calendar->delete();
+      if ($this->calendar->delete()) {
+        // Mettre à jour le cache
+        $cache = \mel::InitM2Cache();
+        if (isset($cache['calendars'])) {
+          $_list = unserialize($cache['calendars']['list']);
+          unset($_list[$id]);
+          $cache['calendars']['list'] = serialize($_list);
+          \mel::SetM2Cache($cache);
+        }
+        return true;
+      }
     }
     return false;
   }
@@ -291,12 +317,19 @@ class M2calendar {
       $attrib['id'] = 'rcmresourceselementslist';
 
     try {
-      $result = array();
-
       // Récupération des préférences de l'utilisateur
       $hidden_calendars = $this->rc->config->get('hidden_calendars', array());
-      // Parcour la liste des agendas
-      $calendars = $this->user->getSharedCalendars();
+      // Lecture depuis le cache
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['calendars']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
+        $calendars = unserialize($cache['calendars']['list']);
+      }
+      else {
+        // Parcour la liste des agendas
+        $calendars = $this->user->getSharedCalendars();
+        $cache['calendars'] = array('time' => time(),'list' => serialize($calendars));
+        \mel::SetM2Cache($cache);
+      }
       $calendar_owner = array();
       $calendars_owner = array();
       $calendars_shared = array();

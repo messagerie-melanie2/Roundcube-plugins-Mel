@@ -21,7 +21,7 @@ class mel_contacts extends rcube_plugin {
   /**
    * Liste les carnets d'adresse de l'utilisateurs
    *
-   * @var LibMelanie\Api\Melanie2\Addressbook []
+   * @var LibMelanie\Api\Melanie2\Addressbook[]
    */
   private $addressbooks;
   private $has_principal = false;
@@ -41,7 +41,7 @@ class mel_contacts extends rcube_plugin {
    *
    * @var int
    */
-  const CACHE_ADDRESSBOOKS = 30;
+  const CACHE_ADDRESSBOOKS = 4*60*60;
 
   /**
    * Startup method of a Roundcube plugin
@@ -90,11 +90,13 @@ class mel_contacts extends rcube_plugin {
   /**
    * Liste les carnets d'adresses de l'utilisateur
    * Utilise les données de cache si nécessaire
+   * 
+   * @param $force boolean forcer le reload depuis le cache
    */
-  private function _list_user_addressbooks() {
+  private function _list_user_addressbooks($force = false) {
     try {
       $cache = \mel::InitM2Cache();
-      if (isset($cache['addressbooks']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+      if (isset($cache['addressbooks']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS && !$force) {
         $this->addressbooks = unserialize($cache['addressbooks']['list']);
       }
       else {
@@ -103,9 +105,9 @@ class mel_contacts extends rcube_plugin {
         \mel::SetM2Cache($cache);
       }
       foreach ($this->addressbooks as $addressbook) {
-        if (! $this->has_principal
-                        /* Créer le carnet d'adresse principal s'il n'existe pas */
-                        && $addressbook->id == $this->user->uid) {
+        if (!$this->has_principal
+            /* Créer le carnet d'adresse principal s'il n'existe pas */
+            && $addressbook->id == $this->user->uid) {
           $this->has_principal = true;
           break;
         }
@@ -167,7 +169,7 @@ class mel_contacts extends rcube_plugin {
             unset($cache['addressbooks']);
             \mel::SetM2Cache($cache);
           }
-          $this->_list_user_addressbooks();
+          $this->_list_user_addressbooks(true);
         }
       }
 

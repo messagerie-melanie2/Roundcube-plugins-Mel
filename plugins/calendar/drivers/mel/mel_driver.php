@@ -58,7 +58,7 @@ class mel_driver extends calendar_driver {
   /**
    * Tableau de calendrier Mél
    *
-   * @var LibMelanie\Api\Melanie2\Calendar []
+   * @var LibMelanie\Api\Melanie2\Calendar[]
    */
   private $calendars;
   private $has_principal = false;
@@ -78,6 +78,13 @@ class mel_driver extends calendar_driver {
    * @var array
    */
   private $_cache_events = array();
+
+  /**
+   * Durée de conservation des calendriers dans le cache
+   *
+   * @var int
+   */
+  const CACHE_CALENDARS = 4*60*60;
 
   /**
    * Default constructor
@@ -109,25 +116,37 @@ class mel_driver extends calendar_driver {
    * @param string $calid id of the calendar to load
    * @access private
    */
-  private function _read_calendars($calid = null) {
+  private function _read_calendars($calid = null, $force = false) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::_read_calendars()");
     if (isset($this->user)) {
+      $cache = \mel::InitM2Cache();
       if (isset($calid)) {
-        // Charger un calendrier unique
-        $calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
         $calid = $this->_to_M2_id($calid);
-        $calendar->id = $calid;
-        if ($calendar->load() && $calendar->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
-          $this->calendars = array();
-          $this->calendars[$calid] = $calendar;
+        if (isset($cache['calendars']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
+          $this->calendars = unserialize($cache['calendars']['list']);
+        }
+        if (!isset($this->calendars[$calid])) {
+          // Charger un calendrier unique
+          $calendar = new LibMelanie\Api\Melanie2\Calendar($this->user);
+          $calendar->id = $calid;
+          if ($calendar->load() && $calendar->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
+            $this->calendars = array();
+            $this->calendars[$calid] = $calendar;
+          }
         }
       }
       else {
-        $this->calendars = $this->user->getSharedCalendars();
-        // $this->calendars = $this->user->getUserCalendars();
+        if (isset($cache['calendars']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS && !$force) {
+          $this->calendars = unserialize($cache['calendars']['list']);
+        }
+        else {
+          $this->calendars = $this->user->getSharedCalendars();
+          $cache['calendars'] = array('time' => time(),'list' => serialize($this->calendars));
+          \mel::SetM2Cache($cache);
+        }
         foreach ($this->calendars as $calendar) {
-          if (! $this->has_principal && $calendar->id == $this->user->uid) {
+          if (!$this->has_principal && $calendar->id == $this->user->uid) {
             $this->has_principal = true;
             break;
           }
@@ -202,7 +221,7 @@ class mel_driver extends calendar_driver {
           $pref->value = 'a:0:{}';
           $pref->save();
           unset($this->calendars);
-          $this->_read_calendars();
+          $this->_read_calendars(null, true);
         }
       }
       try {
@@ -414,6 +433,9 @@ class mel_driver extends calendar_driver {
         }
         $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'active_calendars' => $active_calendars,'alarm_calendars' => $alarm_calendars));
 
+        // Recharger le cache des calendriers
+        $this->_read_calendars(null, true);
+
         // Return the calendar id
         return $calendar->id;
       }
@@ -456,7 +478,7 @@ class mel_driver extends calendar_driver {
       }
 
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
       if (isset($prop['id'])) {
@@ -466,6 +488,14 @@ class mel_driver extends calendar_driver {
           if (isset($prop['name']) && $cal->owner != $cal->id && $cal->owner == $this->user->uid && $prop['name'] != "" && $prop['name'] != $cal->name) {
             $cal->name = $prop['name'];
             $cal->save();
+            // Mettre à jour le cache
+            $cache = \mel::InitM2Cache();
+            if (isset($cache['calendars'])) {
+              $_list = unserialize($cache['calendars']['list']);
+              $_list[$id] = $cal;
+              $cache['calendars']['list'] = serialize($_list);
+              \mel::SetM2Cache($cache);
+            }
           }
           // Récupération des préférences de l'utilisateur
           $color_calendars = $this->rc->config->get('color_calendars', array());
@@ -545,7 +575,7 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
       if (isset($id) && isset($this->calendars[$id]) && $this->calendars[$id]->owner == $this->user->uid && $this->calendars[$id]->id != $this->user->uid) {
@@ -559,7 +589,17 @@ class mel_driver extends calendar_driver {
         unset($color_calendars[$id]);
         unset($alarm_calendars[$id]);
         $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'active_calendars' => $active_calendars,'alarm_calendars' => $alarm_calendars,'hidden_calendars' => $hidden_calendars));
-        return $this->calendars[$id]->delete();
+        if ($this->calendars[$id]->delete()) {
+          // Mettre à jour le cache
+          $cache = \mel::InitM2Cache();
+          if (isset($cache['calendars'])) {
+            $_list = unserialize($cache['calendars']['list']);
+            unset($_list[$id]);
+            $cache['calendars']['list'] = serialize($_list);
+            \mel::SetM2Cache($cache);
+          }
+          return true;
+        }
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -1445,7 +1485,7 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars) && ! $freebusy) {
+      if (!isset($this->calendars) && !$freebusy) {
         $this->_read_calendars();
       }
 

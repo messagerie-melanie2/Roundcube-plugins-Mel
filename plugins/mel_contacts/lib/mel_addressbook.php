@@ -38,7 +38,7 @@ class mel_addressbook extends rcube_addressbook
      * Durée de conservation du ctag
      * @var string
      */
-    const CTAG_REFRESH = 30;
+    const CTAG_REFRESH = 60;
 
     const ENABLE_CACHE = false;
 

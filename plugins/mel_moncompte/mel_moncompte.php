@@ -355,6 +355,9 @@ class mel_moncompte extends rcube_plugin {
             if (isset($default_calendar)) {
               $default_calendar_object_id = $default_calendar->id;
               $cache['calendars']['default'] = $default_calendar_object_id;
+              if (!isset($cache['addressbooks']['time'])) {
+                $cache['calendars']['time'] = time();
+              }
               \mel::SetM2Cache($cache);
             }
           }
@@ -457,6 +460,9 @@ class mel_moncompte extends rcube_plugin {
             if (isset($default_addressbook_object)) {
               $default_addressbook_object_id = $default_addressbook_object->id;
               $cache['addressbooks']['default'] = $default_addressbook_object_id;
+              if (!isset($cache['addressbooks']['time'])) {
+                $cache['addressbooks']['time'] = time();
+              }
               \mel::SetM2Cache($cache);
             }
           }
@@ -560,6 +566,9 @@ class mel_moncompte extends rcube_plugin {
             if (isset($default_taskslist)) {
               $default_taskslist_object_id = $default_taskslist->id;
               $cache['taskslists']['default'] = $default_taskslist_object_id;
+              if (!isset($cache['addressbooks']['time'])) {
+                $cache['taskslists']['time'] = time();
+              }
               \mel::SetM2Cache($cache);
             }
           }
@@ -845,6 +854,9 @@ class mel_moncompte extends rcube_plugin {
               if (isset($default_calendar)) {
                 $default_id = $default_calendar->id;
                 $cache['calendars']['default'] = $default_id;
+                if (!isset($cache['addressbooks']['time'])) {
+                  $cache['calendars']['time'] = time();
+                }
                 \mel::SetM2Cache($cache);
               }
             }
@@ -860,6 +872,9 @@ class mel_moncompte extends rcube_plugin {
               if (isset($default_addressbook)) {
                 $default_id = $default_addressbook->id;
                 $cache['addressbooks']['default'] = $default_id;
+                if (!isset($cache['addressbooks']['time'])) {
+                  $cache['addressbooks']['time'] = time();
+                }
                 \mel::SetM2Cache($cache);
               }
             }
@@ -875,6 +890,9 @@ class mel_moncompte extends rcube_plugin {
               if (isset($default_taskslist)) {
                 $default_id = $default_taskslist->id;
                 $cache['taskslists']['default'] = $default_id;
+                if (!isset($cache['addressbooks']['time'])) {
+                  $cache['taskslists']['time'] = time();
+                }
                 \mel::SetM2Cache($cache);
               }
             }

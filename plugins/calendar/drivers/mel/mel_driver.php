@@ -235,6 +235,9 @@ class mel_driver extends calendar_driver {
           if (isset($default_calendar)) {
             $default_calendar_object_id = $default_calendar->id;
             $cache['calendars']['default'] = $default_calendar_object_id;
+            if (!isset($cache['addressbooks']['time'])) {
+              $cache['calendars']['time'] = time();
+            }
             \mel::SetM2Cache($cache);
           }
         }

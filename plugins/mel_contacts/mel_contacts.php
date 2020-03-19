@@ -121,6 +121,9 @@ class mel_contacts extends rcube_plugin {
           if (isset($default_addressbook_object)) {
             $default_addressbook_object_id = $default_addressbook_object->id;
             $cache['addressbooks']['default'] = $default_addressbook_object_id;
+            if (!isset($cache['addressbooks']['time'])) {
+              $cache['addressbooks']['time'] = time();
+            }
             \mel::SetM2Cache($cache);
           }
         }
@@ -262,6 +265,9 @@ class mel_contacts extends rcube_plugin {
         if (isset($default_addressbook_object)) {
           $default_addressbook_object_id = $default_addressbook_object->id;
           $cache['addressbooks']['default'] = $default_addressbook_object_id;
+          if (!isset($cache['addressbooks']['time'])) {
+            $cache['addressbooks']['time'] = time();
+          }
           \mel::SetM2Cache($cache);
         }
       }

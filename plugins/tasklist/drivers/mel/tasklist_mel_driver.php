@@ -157,6 +157,9 @@ class tasklist_mel_driver extends tasklist_driver {
       if (isset($default_tasklist)) {
         $default_taskslist_object_id = $default_tasklist->id;
         $cache['taskslists']['default'] = $default_taskslist_object_id;
+        if (!isset($cache['addressbooks']['time'])) {
+          $cache['taskslists']['time'] = time();
+        }
         \mel::SetM2Cache($cache);
       }
     }

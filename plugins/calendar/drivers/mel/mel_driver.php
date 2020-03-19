@@ -137,7 +137,7 @@ class mel_driver extends calendar_driver {
         }
       }
       else {
-        if (isset($cache['calendars']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS && !$force) {
+        if (isset($cache['calendars']) && isset($cache['calendars']['list']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS && !$force) {
           $this->calendars = unserialize($cache['calendars']['list']);
         }
         else {

@@ -96,7 +96,7 @@ class mel_contacts extends rcube_plugin {
   private function _list_user_addressbooks($force = false) {
     try {
       $cache = \mel::InitM2Cache();
-      if (isset($cache['addressbooks']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS && !$force) {
+      if (isset($cache['addressbooks']) && isset($cache['addressbooks']['list']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS && !$force) {
         $this->addressbooks = unserialize($cache['addressbooks']['list']);
       }
       else {

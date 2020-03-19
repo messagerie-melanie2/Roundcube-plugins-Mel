@@ -96,7 +96,7 @@ class tasklist_mel_driver extends tasklist_driver {
 
     if (isset($this->user)) {
       $cache = \mel::InitM2Cache();
-      if (isset($cache['taskslists']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS && !$force) {
+      if (isset($cache['taskslists']) && isset($cache['taskslists']['list']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS && !$force) {
         $this->lists = unserialize($cache['taskslists']['list']);
       }
       else {
@@ -216,7 +216,6 @@ class tasklist_mel_driver extends tasklist_driver {
     asort($shared_tasklists);
 
     $this->rc->user->save_prefs(array(
-        'color_tasklists' => $color_tasklists,
         'active_tasklists' => $active_tasklists,
         'alarm_tasklists' => $alarm_tasklists
     ));

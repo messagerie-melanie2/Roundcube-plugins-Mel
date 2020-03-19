@@ -313,7 +313,7 @@ class M2tasks {
       $hidden_tasks = $this->rc->config->get('hidden_tasks', array());
       // Lecture depuis le cache
       $cache = \mel::InitM2Cache();
-      if (isset($cache['taskslists']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS) {
+      if (isset($cache['taskslists']) && isset($cache['taskslists']['list']) && time() - $cache['taskslists']['time'] <= self::CACHE_TASKSLISTS) {
         $taskslists = unserialize($cache['taskslists']['list']);
       }
       else {

@@ -321,7 +321,7 @@ class M2calendar {
       $hidden_calendars = $this->rc->config->get('hidden_calendars', array());
       // Lecture depuis le cache
       $cache = \mel::InitM2Cache();
-      if (isset($cache['calendars']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
+      if (isset($cache['calendars']) && isset($cache['calendars']['list']) && time() - $cache['calendars']['time'] <= self::CACHE_CALENDARS) {
         $calendars = unserialize($cache['calendars']['list']);
       }
       else {

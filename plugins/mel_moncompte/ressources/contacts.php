@@ -309,7 +309,7 @@ class M2contacts {
       $hidden_contacts = $this->rc->config->get('hidden_contacts', array());
       // Lecture depuis le cache
       $cache = \mel::InitM2Cache();
-      if (isset($cache['addressbooks']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
+      if (isset($cache['addressbooks']) && isset($cache['addressbooks']['list']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
         $addressbooks = unserialize($cache['addressbooks']['list']);
       }
       else {

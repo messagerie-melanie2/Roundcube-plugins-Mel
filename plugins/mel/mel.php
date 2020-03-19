@@ -1548,7 +1548,7 @@ class mel extends rcube_plugin {
    * Initialisation du cache M2
    */
   public static function InitM2Cache() {
-    if (! isset($_SESSION[self::CACHE_KEY])) {
+    if (!isset($_SESSION[self::CACHE_KEY])) {
       $_SESSION[self::CACHE_KEY] = array();
     }
     return $_SESSION[self::CACHE_KEY];

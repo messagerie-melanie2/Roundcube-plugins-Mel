@@ -370,8 +370,8 @@ class mel_addressbook extends rcube_addressbook
             if (isset($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]['count'])) {
                 $count = $cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]['count'];
             }
-            else {
-                $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]);
+            else if (isset($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]['list'])) {
+                $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]['list']);
                 $count = 0;
                 if ($group !== false) {
                   $members = unserialize($group->members);
@@ -700,10 +700,11 @@ class mel_addressbook extends rcube_addressbook
                 if (isset($cache['contacts'])
                         && isset($cache['contacts'][$this->addressbook->id])
                         && !isset($search)
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'])) {
+                        && isset($cache['contacts'][$this->addressbook->id]['groups'])
+                        && isset($cache['contacts'][$this->addressbook->id]['groups']['list'])) {
                     if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
                         $ret = array();
-                        foreach ($cache['contacts'][$this->addressbook->id]['groups'] as $_g) {
+                        foreach ($cache['contacts'][$this->addressbook->id]['groups']['list'] as $_g) {
                             $_g = unserialize($_g);
                             $group = mel_contacts_mapping::m2_to_rc_contact(null, $_g);
                             $group['user_id'] = $this->user->uid;
@@ -743,7 +744,7 @@ class mel_addressbook extends rcube_addressbook
             $favorites_exists = false;
             foreach ($_group->getList(array(), "", $operators, "lastname") as $_g) {
                 if (!isset($search)) {
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_g->id] = serialize($_g);
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_g->id]['list'] = serialize($_g);
                 }
                 else {
                     $cache['contacts'][$this->addressbook->id]['groups'][$_g->id]['count'] = count(unserialize($_g->members));
@@ -788,8 +789,9 @@ class mel_addressbook extends rcube_addressbook
             if (isset($cache['contacts'])
                     && isset($cache['contacts'][$this->addressbook->id])
                     && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'][$group_id])) {
-                $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$group_id]);
+                    && isset($cache['contacts'][$this->addressbook->id]['groups'][$group_id])
+                    && isset($cache['contacts'][$this->addressbook->id]['groups'][$group_id]['list'])) {
+                $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$group_id]['list']);
                 return mel_contacts_mapping::m2_to_rc_contact(null, $group);
             } else {
                 $_group = new Melanie2\Contact($this->user, $this->addressbook);
@@ -849,8 +851,11 @@ class mel_addressbook extends rcube_addressbook
                 $cache = \mel::InitM2Cache();
                 if (isset($cache['contacts'])
                         && isset($cache['contacts'][$this->addressbook->id])) {
-                    if (!isset($cache['contacts'][$this->addressbook->id]['groups'])) $cache['contacts'][$this->addressbook->id]['groups'] = array();
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id] = serialize($_group);
+                    if (!isset($cache['contacts'][$this->addressbook->id]['groups'])) {
+                        $cache['contacts'][$this->addressbook->id]['groups'] = array();
+                    }
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list'] = serialize($_group);
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['count'] = count($_group);
                     \mel::SetM2Cache($cache);
                 }
                 $group = mel_contacts_mapping::m2_to_rc_contact(null, $_group);
@@ -928,7 +933,8 @@ class mel_addressbook extends rcube_addressbook
                             && isset($cache['contacts'][$this->addressbook->id])
                             && isset($cache['contacts'][$this->addressbook->id]['groups'])
                             && isset($cache['contacts'][$this->addressbook->id]['groups'][$gid])) {
-                        $cache['contacts'][$this->addressbook->id]['groups'][$gid] = serialize($group);
+                        $cache['contacts'][$this->addressbook->id]['groups'][$gid]['list'] = serialize($group);
+                        $cache['contacts'][$this->addressbook->id]['groups'][$gid]['count'] = count($group);
                         \mel::SetM2Cache($cache);
                     }
                     return $newname;
@@ -982,10 +988,12 @@ class mel_addressbook extends rcube_addressbook
                 if (isset($cache['contacts'])
                         && isset($cache['contacts'][$this->addressbook->id])
                         && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id])) {
-                    $_grp = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]);
+                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id])
+                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list'])) {
+                    $_grp = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list']);
                     $_grp->members = $group->members;
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id] = serialize($_grp);
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list'] = serialize($_grp);
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['count'] = count($_grp);
                 }
                 // Sauvegarde dans le cache
                 \mel::SetM2Cache($cache);
@@ -1039,10 +1047,12 @@ class mel_addressbook extends rcube_addressbook
                 if (isset($cache['contacts'])
                         && isset($cache['contacts'][$this->addressbook->id])
                         && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id])) {
-                    $_grp = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]);
+                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id])
+                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list'])) {
+                    $_grp = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list']);
                     $_grp->members = $group->members;
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id] = serialize($_grp);
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['list'] = serialize($_grp);
+                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id]['count'] = count($_grp);
                 }
                 // Sauvegarde dans le cache
                 \mel::SetM2Cache($cache);
@@ -1078,8 +1088,9 @@ class mel_addressbook extends rcube_addressbook
             $cache = \mel::InitM2Cache();
             if (isset($cache['contacts'])
                     && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'])) {
-                foreach($cache['contacts'][$this->addressbook->id]['groups'] as $group) {
+                    && isset($cache['contacts'][$this->addressbook->id]['groups'])
+                    && isset($cache['contacts'][$this->addressbook->id]['groups']['list'])) {
+                foreach($cache['contacts'][$this->addressbook->id]['groups']['list'] as $group) {
                     $group = unserialize($group);
                     $members = unserialize($group->members);
                     if (is_array($members)

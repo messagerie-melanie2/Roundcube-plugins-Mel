@@ -81,7 +81,9 @@ class mel_labels_sync extends rcube_plugin {
 
     if ($this->rc->task == 'mail') {
       // disable plugin when printing message
-      if ($this->rc->action == 'print' || $this->rc->action == 'compose' || $this->rc->action == 'get')
+      if ($this->rc->action == 'print' || $this->rc->action == 'compose' || $this->rc->action == 'get' 
+          || $this->rc->action == 'plugin.set_current_page' || $this->rc->action == 'plugin.get_mbox_unread_count' 
+          || $this->rc->action == 'getunread' )
         return;
 
         // Ajoute le script javascript

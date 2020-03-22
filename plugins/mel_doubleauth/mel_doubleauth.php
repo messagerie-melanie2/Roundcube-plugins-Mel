@@ -50,13 +50,9 @@ class mel_doubleauth extends rcube_plugin {
         // hooks
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
             $this->add_hook('login_after', array($this, 'login_after'));
-        //}
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
-        //if (!$this->is_internal()) { // Connexion intranet => pas de double auth
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
         }
-        
-        
         
         $this->add_texts('localization/', true);
         
@@ -83,7 +79,7 @@ class mel_doubleauth extends rcube_plugin {
             return $args;
         }
         
-        $_SESSION['mel_doubleauth_login'] = time;
+        $_SESSION['mel_doubleauth_login'] = time();
         
         $config_2FA = self::__get2FAconfig();
         
@@ -256,7 +252,7 @@ class mel_doubleauth extends rcube_plugin {
         self::__set2FAconfig($data);
         
         // if we can't save time into SESSION, the plugin logouts
-        $_SESSION['mel_doubleauth_2FA_login'] = time;
+        $_SESSION['mel_doubleauth_2FA_login'] = time();
         
         $this->rc->output->show_message($this->gettext('successfully_saved'), 'confirmation');
         
@@ -425,7 +421,7 @@ class mel_doubleauth extends rcube_plugin {
     // redirect to some RC task and remove 'login' user pref
     private function __goingRoundcubeTask($task='mail', $action=null) {
         
-        $_SESSION['mel_doubleauth_2FA_login'] = time;
+        $_SESSION['mel_doubleauth_2FA_login'] = time();
         header('Location: ?_task='.$task . ($action ? '&_action='.$action : '') );
         exit;
     }
@@ -475,7 +471,7 @@ class mel_doubleauth extends rcube_plugin {
         $user = $this->rc->user;
         
         $arr_prefs = $user->get_prefs();
-        if($data["activate"] === false ) {
+        if ($data["activate"] === false ) {
             // Connexion au serveur de webservice
             try {
                 $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(

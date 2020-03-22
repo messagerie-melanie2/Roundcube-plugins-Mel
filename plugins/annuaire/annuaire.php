@@ -167,7 +167,7 @@ class annuaire extends rcube_plugin
         // Set the filter
         driver_annuaire::get_instance()->get_filter_from_search($search);
 
-        if ($this->rc->task == 'addressbook' && !driver_annuaire::get_instance()->issetBaseDn() && ! isset($search) && ! isset($find)) {
+        if ($this->rc->task == 'addressbook' && !driver_annuaire::get_instance()->issetBaseDn() && !isset($search) && !isset($find)) {
             driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
             $source = $this->rc->config->get('annuaire_source', null);
 

@@ -286,6 +286,8 @@ rcube_webmail.prototype.annuaire_folder_expand = function(node) {
 	if ($('#rcmrow' + node.id + ' > ul > li.child').length) {
 		let params = {};
 		if ($('#rcmrow' + node.id).hasClass('addressbook')) {
+			// Ajouter la base a null sinon on a une erreur
+			params['_base'] = null;
 			params['_source'] = node.id;
 		}
 		else {

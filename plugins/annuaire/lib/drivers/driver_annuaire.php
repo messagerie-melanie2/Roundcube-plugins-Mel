@@ -67,6 +67,12 @@ class driver_annuaire {
   protected $source;
 
   /**
+   *
+   * @var string
+   */
+  protected $alias;
+
+  /**
    * Return the singleton instance
    *
    * @return driver_annuaire
@@ -142,6 +148,31 @@ class driver_annuaire {
    */
   public function issetSource() {
     return isset($this->source);
+  }
+
+  /**
+   * Setter pour $alias
+   *
+   * @param string $alias
+   */
+  public function setAlias($alias) {
+    $this->alias = $alias;
+  }
+  /**
+   * Getter pour $alias
+   *
+   * @return string
+   */
+  public function getAlias() {
+    return $this->alias;
+  }
+  /**
+   * Issetter pour $alias
+   *
+   * @return boolean
+   */
+  public function issetAlias() {
+    return isset($this->alias);
   }
 
   /**

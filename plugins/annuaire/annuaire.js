@@ -180,11 +180,11 @@ window.rcmail
 		        	$('#annuaire-list li.added').removeClass('added');
 			    });
 			}
-			else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
+			else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_bal' || rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
 				$(document).on("click", '.showcontacts',
 						function(e) {
 							$('#list-contacts input#contactsearchbox').removeAttr('disabled').removeClass('ui-state-disabled');
-							window.annuaireSelector = $('#input_hidden_isgroup').val() == "false" ? 'person' : 'list';
+							window.annuaireSelector = $('#input_hidden_isgroup').val() == "false" ? 'person' : 'group';
 							$('#listview-float-right').show();
 				        	if ($('#annuaire-list li').length == 0) {
 				        		rcmail.http_get('mail/plugin.annuaire', {_source: rcmail.env.annuaire_source}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
@@ -270,7 +270,7 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 			}
 		}
 	}
-	else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
+	else if (rcmail.env.task == 'settings' && (rcmail.env.action == 'plugin.mel_resources_bal' || rcmail.env.action == 'plugin.mel_resources_agendas' || rcmail.env.action == 'plugin.mel_resources_contacts' || rcmail.env.action == 'plugin.mel_resources_tasks')) {
 		var val = $('#input_hidden_isgroup').val() == "false" ? node.uid : node.dn;
 		$('#acluser').val(val);
 		$('#annuaire-list li.added').removeClass('added');
@@ -284,20 +284,25 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 // Node expand
 rcube_webmail.prototype.annuaire_folder_expand = function(node) {
 	if ($('#rcmrow' + node.id + ' > ul > li.child').length) {
+		let params = {};
 		if ($('#rcmrow' + node.id).hasClass('addressbook')) {
-			var dn = null;
-			var source = node.id;
+			// Ajouter la base a null sinon on a une erreur
+			params['_base'] = null;
+			params['_source'] = node.id;
 		}
 		else {
-			var split = node.id.split('-');
-			var source = split.pop();
-			var dn = split[0];
+			let node_id = node.id;
+			if (node_id.indexOf('-alias') !== -1) {
+				let split_alias = node_id.split('-alias');
+				params['_alias'] = 'alias' + split_alias.pop();
+				node_id = split_alias[0];
+			}
+			let split = node_id.split('-');
+			params['_source'] = split.pop();
+			params['_base'] = split[0];
 		}
 		
-		this.http_get('addressbook/plugin.annuaire', {
-			_base : dn,
-			_source : source
-		}, this.display_message(this.get_label('loading'), 'loading'));
+		this.http_get('addressbook/plugin.annuaire', params, this.display_message(this.get_label('loading'), 'loading'));
 	}
 };
 

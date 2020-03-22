@@ -126,7 +126,7 @@ class annuaire extends rcube_plugin
                     )
                 ));
             }
-        } else if ($this->rc->task == 'settings' && ($this->rc->action == 'plugin.mel_resources_agendas' || $this->rc->action == 'plugin.mel_resources_contacts' || $this->rc->action == 'plugin.mel_resources_tasks')) {
+        } else if ($this->rc->task == 'settings' && ($this->rc->action == 'plugin.mel_resources_bal' || $this->rc->action == 'plugin.mel_resources_agendas' || $this->rc->action == 'plugin.mel_resources_contacts' || $this->rc->action == 'plugin.mel_resources_tasks')) {
             // Chargement de la conf
             $this->load_config();
 
@@ -153,6 +153,7 @@ class annuaire extends rcube_plugin
     {
         driver_annuaire::get_instance()->setBaseDn(rcube_utils::get_input_value('_base', rcube_utils::INPUT_GPC));
         driver_annuaire::get_instance()->setSource(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
+        driver_annuaire::get_instance()->setAlias(rcube_utils::get_input_value('_alias', rcube_utils::INPUT_GPC));
         $find = rcube_utils::get_input_value('_find', rcube_utils::INPUT_GPC);
         $search = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GPC);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
@@ -166,7 +167,7 @@ class annuaire extends rcube_plugin
         // Set the filter
         driver_annuaire::get_instance()->get_filter_from_search($search);
 
-        if ($this->rc->task == 'addressbook' && !driver_annuaire::get_instance()->issetBaseDn() && ! isset($search) && ! isset($find)) {
+        if ($this->rc->task == 'addressbook' && !driver_annuaire::get_instance()->issetBaseDn() && !isset($search) && !isset($find)) {
             driver_annuaire::get_instance()->setBaseDn($this->rc->config->get('annuaire_base_dn', null));
             $source = $this->rc->config->get('annuaire_source', null);
 
@@ -232,6 +233,9 @@ class annuaire extends rcube_plugin
                 }
 
                 $id = rcube_ldap::dn_encode(driver_annuaire::get_instance()->getBaseDn()) . '-' . driver_annuaire::get_instance()->getSource();
+                if (driver_annuaire::get_instance()->issetAlias()) {
+                    $id .= '-' . driver_annuaire::get_instance()->getAlias();
+                }
             } else {
                 $search_mode = (int) $this->rc->config->get('addressbook_search_mode');
                 $elements = [];

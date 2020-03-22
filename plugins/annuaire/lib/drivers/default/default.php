@@ -133,6 +133,9 @@ class default_driver_annuaire extends driver_annuaire {
       else {
         $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source;
       }
+      if (isset($this->alias)) {
+        $id .= '-' . $this->alias;
+      }
       foreach ($info['objectclass'] as $k => $v) {
         switch ($v) {
           case 'list' :
@@ -141,6 +144,10 @@ class default_driver_annuaire extends driver_annuaire {
             $title = $name;
             $order = $name;
             $class = 'list';
+            // 0005526: Dans la gestion des droits agendas/carnets se limiter aux posixGroup
+            if (in_array('posixGroup', $info['objectclass'])) {
+              $class .= ' group';
+            }
             $html = $this->get_html([
                 'name' => $name,
                 'description' => $description,

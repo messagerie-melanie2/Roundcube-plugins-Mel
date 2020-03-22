@@ -94,7 +94,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
         $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source . '-alias' . $key;
       }
       else {
-        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source;
+        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source; 
+      }
+      if (isset($this->alias)) {
+        $id .= '-' . $this->alias;
       }
       foreach ($info['objectclass'] as $k => $v) {
         switch ($v) {
@@ -105,6 +108,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
             $title = $name;
             $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
             $class = 'list';
+            // 0005526: Dans la gestion des droits agendas/carnets se limiter aux posixGroup
+            if (in_array('posixGroup', $info['objectclass'])) {
+              $class .= ' group';
+            }
             $html = $this->get_html([
                 'name' => $name,
                 'description' => $description,

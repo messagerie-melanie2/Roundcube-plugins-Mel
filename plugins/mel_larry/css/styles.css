@@ -428,6 +428,27 @@ body.extwin #taskbar {
   }
 }
 
+
+#taskbar a.button-help {
+    position: absolute;
+    right: 180px;
+}
+
+#taskbar a.button-settings {
+    position: absolute;
+    right: 100px;
+}
+
+#taskbar a.button-logout {
+	display: inline-block;
+    position: absolute;
+    right: 5px;
+}
+
+#taskbar a.button-discussion {
+	display: none;
+}
+
 @media screen and (max-width: 1080px) {
 	#topnav .topright {
  	   margin-left: 50px;
@@ -472,26 +493,18 @@ body.extwin #taskbar {
 		display: block;
 		top: 39px;
 	}
+	#taskbar a.button-help {
+    	right: 130px;
+	}
 	body.right_panel_minified #taskbar a.button-help {
-    	right: 140px !important;
+    	right: 140px;
+	}
+	#taskbar a.button-settings {
+    	right: 70px;
 	}
 	body.right_panel_minified #taskbar a.button-settings {
-    	right: 85px !important;
+    	right: 85px;
 	}
-}
-
-#taskbar a.button-help {
-    position: absolute;
-    right: 130px;
-}
-
-#taskbar a.button-settings {
-    position: absolute;
-    right: 13px;
-}
-
-#taskbar a.button-discussion {
-	display: none;
 }
 
 #taskbar a.button-mail span.button-inner,
@@ -546,6 +559,12 @@ body.extwin #taskbar {
 #taskbar a.button-settings:hover span.button-inner,
 #taskbar a.button-selected.button-settings span.button-inner {
 	background: url(../images/taskbar/settings.png?v=e784.5000) center 20px no-repeat;
+}
+
+#taskbar a.button-logout span.button-inner,
+#taskbar a.button-logout:hover span.button-inner,
+#taskbar a.button-selected.button-logout span.button-inner {
+	background: url(../images/taskbar/logout.png?v=e784.5000) center 20px no-repeat;
 }
 
 #taskbar a.button-help span.button-inner,

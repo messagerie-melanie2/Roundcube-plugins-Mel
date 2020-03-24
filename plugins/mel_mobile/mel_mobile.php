@@ -372,6 +372,15 @@ class mel_mobile extends rcube_plugin {
       case 'layout':
         $args['result'] = 'mobile';
         break;
+      case 'mail_read_time':
+        $args['result'] = 0;
+        break;
+      case 'addressbook_search_mods':
+        $args['result'] = array (
+          'name' => 1,
+          'email' => 1
+        ); // Example: array('name'=>1, 'firstname'=>1, 'surname'=>1, 'email'=>1, '*'=>1);
+        break;
     }
     return $args;
   }

@@ -114,7 +114,7 @@ class Driver {
       return $this->_labels_cache[$username];
     }
     else {
-      $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
+      $pref = new LibMelanie\Api\Mce\UserPrefs(null);
       $pref->scope = self::PREF_SCOPE;
       $pref->name = self::PREF_NAME;
       $pref->user = $username;
@@ -143,7 +143,7 @@ class Driver {
    * @return boolean
    */
   public function modify_user_labels($username, $labels) {
-    $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
+    $pref = new LibMelanie\Api\Mce\UserPrefs(null);
     $pref->scope = self::PREF_SCOPE;
     $pref->name = self::PREF_NAME;
     $pref->value = $this->_rc_to_m2($labels);
@@ -166,7 +166,7 @@ class Driver {
    * @return boolean
    */
   public function remove_user_labels($username) {
-    $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
+    $pref = new LibMelanie\Api\Mce\UserPrefs(null);
     $pref->scope = self::PREF_SCOPE;
     $pref->name = self::PREF_NAME;
     $pref->user = $username;
@@ -260,7 +260,7 @@ class Driver {
   
   /**
    * Création des étiquettes par défaut si elles n'existent pas
-   * @param LibMelanie\Api\Melanie2\UserPrefs $pref
+   * @param LibMelanie\Api\Mce\UserPrefs $pref
    * @param array $current_labels
    * @return boolean
    */

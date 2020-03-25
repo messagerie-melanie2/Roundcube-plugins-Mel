@@ -1,5 +1,5 @@
 <?php
-use LibMelanie\Api\Melanie2;
+use LibMelanie\Api\Mce;
 
 // LibM2 ORM
 @include_once 'includes/libm2.php';
@@ -21,7 +21,7 @@ class mel_contacts extends rcube_plugin {
   /**
    * Liste les carnets d'adresse de l'utilisateurs
    *
-   * @var LibMelanie\Api\Melanie2\Addressbook []
+   * @var Mce\Addressbook []
    */
   private $addressbooks;
   private $has_principal = false;
@@ -266,7 +266,7 @@ class mel_contacts extends rcube_plugin {
           $p['instance'] = new mel_addressbook($this->rc, $this->user, $this->addressbooks[$p['id']]);
         }
         else {
-          $addressbook = new Melanie2\Addressbook($this->user);
+          $addressbook = new Mce\Addressbook($this->user);
           $addressbook->id = $p['id'];
           if ($addressbook->load()) {
             $p['instance'] = new mel_addressbook($this->rc, $this->user, $addressbook);
@@ -313,7 +313,7 @@ class mel_contacts extends rcube_plugin {
 
     try {
       $result = $error = false;
-      $addressbook = new Melanie2\Addressbook($this->user);
+      $addressbook = new Mce\Addressbook($this->user);
       if ($type == 'update') {
         $addressbook->id = $prop['id'];
         $addressbook->load();
@@ -361,7 +361,7 @@ class mel_contacts extends rcube_plugin {
     $folder = trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
 
     try {
-      $addressbook = new Melanie2\Addressbook($this->user);
+      $addressbook = new Mce\Addressbook($this->user);
       $addressbook->id = $folder;
 
       if ($addressbook->id != $this->user->uid && $addressbook->load() && $addressbook->delete()) {

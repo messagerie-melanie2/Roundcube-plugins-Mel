@@ -31,7 +31,7 @@ class M2tasks {
   protected $user;
   /**
    *
-   * @var LibMelanie\Api\Melanie2\Taskslist Liste de tâches Mél
+   * @var LibMelanie\Api\Mce\Taskslist Liste de tâches Mél
    */
   protected $taskslist;
   /**
@@ -83,7 +83,7 @@ class M2tasks {
           }
         }
         $this->mbox = $mbox;
-        $this->taskslist = new LibMelanie\Api\Melanie2\Taskslist($this->user);
+        $this->taskslist = new LibMelanie\Api\Mce\Taskslist($this->user);
         $this->taskslist->id = $mbox;
         if (! $this->taskslist->load())
           $this->taskslist = null;
@@ -106,8 +106,8 @@ class M2tasks {
     if (!isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
       return false;
     try {
-      $_share = new LibMelanie\Api\Melanie2\Share($this->taskslist);
-      $_share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
+      $_share = new LibMelanie\Api\Mce\Share($this->taskslist);
+      $_share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
       $acl = array();
       foreach ($_share->getList() as $share) {
         $acl[$share->name] = array();
@@ -182,26 +182,26 @@ class M2tasks {
         // MANTIS 4978 : l info de partage a ete trouvee, on remplace par uid
         $user = $_user->uid;
       }
-      $share = new LibMelanie\Api\Melanie2\Share($this->taskslist);
-      $share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
+      $share = new LibMelanie\Api\Mce\Share($this->taskslist);
+      $share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
       $share->name = $user;
       $share->acl = 0;
       // Compléter automatiquement les droits
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
-        $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_WRITE
-                    | LibMelanie\Api\Melanie2\Share::ACL_DELETE
-                    | LibMelanie\Api\Melanie2\Share::ACL_READ
-                    | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Mce\Share::ACL_WRITE
+                    | LibMelanie\Api\Mce\Share::ACL_DELETE
+                    | LibMelanie\Api\Mce\Share::ACL_READ
+                    | LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
       }
       else if (in_array('r', $rights)) {
         // Lecture + Freebusy
-        $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_READ
-        | LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Mce\Share::ACL_READ
+        | LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
       }
       else if (in_array('l', $rights)) {
         // Freebusy
-        $share->acl |= LibMelanie\Api\Melanie2\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
       }
       $ret = $share->save();
       // Ajouter un hook lors du positionnement des ACLs
@@ -246,8 +246,8 @@ class M2tasks {
     if (!isset($this->taskslist) || $this->taskslist->owner != $this->user->uid)
       return false;
     try {
-      $share = new LibMelanie\Api\Melanie2\Share($this->taskslist);
-      $share->type = $this->group === true ? LibMelanie\Api\Melanie2\Share::TYPE_GROUP : LibMelanie\Api\Melanie2\Share::TYPE_USER;
+      $share = new LibMelanie\Api\Mce\Share($this->taskslist);
+      $share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
       $share->name = $user;
       $ret = $share->delete();
       // Ajouter un hook lors du positionnement des ACLs
@@ -277,7 +277,7 @@ class M2tasks {
    */
   public function createTaskslist($name = null) {
     try {
-      $this->taskslist = new LibMelanie\Api\Melanie2\Taskslist($this->user);
+      $this->taskslist = new LibMelanie\Api\Mce\Taskslist($this->user);
       if (!isset($name)) {
         $this->taskslist->name = $this->user->fullname;
       }

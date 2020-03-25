@@ -119,14 +119,14 @@ else {
  * @param string $vfsKey
  * @param string $file
  *
- * @return [boolean, string, \LibMelanie\Api\Melanie2\Attachment]
+ * @return [boolean, string, \LibMelanie\Api\Mce\Attachment]
  */
 function getAttachment($username, $vfsKey, $file) {
   // Récupération de la pièce jointe
-  $attachment = new \LibMelanie\Api\Melanie2\Attachment();
+  $attachment = new \LibMelanie\Api\Mce\Attachment();
   $attachment->path = $vfsKey;
   $attachment->name = $file;
-  $attachment->type = \LibMelanie\Api\Melanie2\Attachment::TYPE_BINARY;
+  $attachment->type = \LibMelanie\Api\Mce\Attachment::TYPE_BINARY;
   $attachment->isfolder = false;
   // Est-ce que la pièce jointe est trouvée
   if (!$attachment->load()) {

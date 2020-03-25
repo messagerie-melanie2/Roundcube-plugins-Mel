@@ -335,12 +335,12 @@ class mel_moncompte extends rcube_plugin {
         $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $calendar = new LibMelanie\Api\Melanie2\Calendar($user);
+        $calendar = new LibMelanie\Api\Mce\Calendar($user);
         $calendar->id = $id;
         if ($calendar->load()) {
           // TODO : chargement des preferences en une seule requête (getList)
           $synchro_mobile = array();
-          $prefs = new LibMelanie\Api\Melanie2\UserPrefs($user);
+          $prefs = new LibMelanie\Api\Mce\UserPrefs($user);
           $prefs->name = array('synchro_mobile');
           $prefs->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
           foreach ($prefs->getList() as $pref) {
@@ -424,12 +424,12 @@ class mel_moncompte extends rcube_plugin {
         $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $addressbook = new LibMelanie\Api\Melanie2\Addressbook($user);
+        $addressbook = new LibMelanie\Api\Mce\Addressbook($user);
         $addressbook->id = $id;
         if ($addressbook->load()) {
           // TODO : chargement des preferences en une seule requête (getList)
           $synchro_mobile = array();
-          $prefs = new LibMelanie\Api\Melanie2\UserPrefs($user);
+          $prefs = new LibMelanie\Api\Mce\UserPrefs($user);
           $prefs->name = array('synchro_mobile');
           $prefs->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
           foreach ($prefs->getList() as $pref) {
@@ -513,12 +513,12 @@ class mel_moncompte extends rcube_plugin {
         $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $taskslist = new LibMelanie\Api\Melanie2\Taskslist($user);
+        $taskslist = new LibMelanie\Api\Mce\Taskslist($user);
         $taskslist->id = $id;
         if ($taskslist->load()) {
           // TODO : chargement des preferences en une seule requête (getList)
           $synchro_mobile = array();
-          $prefs = new LibMelanie\Api\Melanie2\UserPrefs($user);
+          $prefs = new LibMelanie\Api\Mce\UserPrefs($user);
           $prefs->name = array('synchro_mobile');
           $prefs->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
           foreach ($prefs->getList() as $pref) {
@@ -720,7 +720,7 @@ class mel_moncompte extends rcube_plugin {
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
+        $pref = new LibMelanie\Api\Mce\UserPrefs($user);
         $pref->name = 'synchro_mobile';
         if ($type == 'calendar')
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
@@ -738,11 +738,11 @@ class mel_moncompte extends rcube_plugin {
             else {
               // Vérifier que l'on a bien les droits sur l'agenda
               if ($type == 'calendar')
-                $sync = new LibMelanie\Api\Melanie2\Calendar($user);
+                $sync = new LibMelanie\Api\Mce\Calendar($user);
               elseif ($type == 'contact')
-                $sync = new LibMelanie\Api\Melanie2\Addressbook($user);
+                $sync = new LibMelanie\Api\Mce\Addressbook($user);
               else
-                $sync = new LibMelanie\Api\Melanie2\Taskslist($user);
+                $sync = new LibMelanie\Api\Mce\Taskslist($user);
               $sync->id = $val;
               if (! $sync->load()) {
                 unset($value[$key]);
@@ -783,7 +783,7 @@ class mel_moncompte extends rcube_plugin {
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
+        $pref = new LibMelanie\Api\Mce\UserPrefs($user);
         $pref->name = 'synchro_mobile';
         if ($type == 'calendar')
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
@@ -814,11 +814,11 @@ class mel_moncompte extends rcube_plugin {
           foreach ($value as $key => $val) {
             // Vérifier que l'on a bien les droits sur l'agenda
             if ($type == 'calendar')
-              $sync = new LibMelanie\Api\Melanie2\Calendar($user);
+              $sync = new LibMelanie\Api\Mce\Calendar($user);
             elseif ($type == 'contact')
-              $sync = new LibMelanie\Api\Melanie2\Addressbook($user);
+              $sync = new LibMelanie\Api\Mce\Addressbook($user);
             else
-              $sync = new LibMelanie\Api\Melanie2\Taskslist($user);
+              $sync = new LibMelanie\Api\Mce\Taskslist($user);
             $sync->id = $val;
             if (! $sync->load()) {
               unset($value[$key]);
@@ -858,7 +858,7 @@ class mel_moncompte extends rcube_plugin {
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $pref = new LibMelanie\Api\Melanie2\UserPrefs($user);
+        $pref = new LibMelanie\Api\Mce\UserPrefs($user);
         if ($type == 'calendar') {
           $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
           $pref->name = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_DEFAULT_NAME;

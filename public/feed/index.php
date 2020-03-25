@@ -57,7 +57,7 @@ else {
 
 // Génération de l'utilisateur Mél
 if (isset($_user)) {
-  $usermelanie = new LibMelanie\Api\Melanie2\User();
+  $usermelanie = new LibMelanie\Api\Mce\User();
   $usermelanie->uid = $_user;
 }
 
@@ -66,7 +66,7 @@ $keyhash = utils::get_input_value('_key', utils::INPUT_GET);
 $keyhash = urldecode($keyhash);
 if (isset($keyhash)) {
   // On compare la clé avec la valeur des paramètres utilisateurs
-  $pref = new LibMelanie\Api\Melanie2\UserPrefs($usermelanie);
+  $pref = new LibMelanie\Api\Mce\UserPrefs($usermelanie);
   $pref->name = "calendarskeyhash";
   $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
 
@@ -86,7 +86,7 @@ if (!isset($keyhash)) {
 }
 
 // Génération du Calendar Mél
-$calendar = new LibMelanie\Api\Melanie2\Calendar(new LibMelanie\Api\Melanie2\User());
+$calendar = new LibMelanie\Api\Mce\Calendar(new LibMelanie\Api\Mce\User());
 $calendar->id = $calendar_name;
 
 // Pas de start, on prend la date du jour moins deux ans

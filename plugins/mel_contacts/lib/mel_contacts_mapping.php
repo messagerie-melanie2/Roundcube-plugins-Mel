@@ -8,10 +8,10 @@
  */
 @include_once 'includes/libm2.php';
 
-use LibMelanie\Api\Melanie2;
+use LibMelanie\Api\Mce;
 
 /**
- * Classe de mapping vers Melanie2 (vers la librairie ORM M2)
+ * Classe de mapping vers Mce (vers la librairie ORM M2)
  * Permet le mapping des données contacts de roundcube vers l'ORM Mél
  * Les méthodes sont statiques et publiques
  * Format de nom de méthode <rc ou m2>_to_<m2 ou rc>_<champ a mapper>
@@ -29,10 +29,10 @@ class mel_contacts_mapping {
    * Converti un contact roundcube pour mel
    *
    * @param array $_contact_rc
-   * @param LibMelanie\Api\Melanie2\Contact $_contact_m2
-   * @return LibMelanie\Api\Melanie2\Contact
+   * @param Mce\Contact $_contact_m2
+   * @return Mce\Contact
    */
-  public static function rc_to_m2_contact($_contact_rc, LibMelanie\Api\Melanie2\Contact $_contact_m2) {
+  public static function rc_to_m2_contact($_contact_rc, $_contact_m2) {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_contacts::rc_to_m2_contact() : " . var_export($_contact_rc, true));
       // Parcour les données de contact
@@ -119,7 +119,7 @@ class mel_contacts_mapping {
   /**
    * Converti un contact mel en contact attendu par roundcube
    *
-   * @param LibMelanie\Api\Melanie2\Contact $_contact
+   * @param Mce\Contact $_contact
    * @return array:
    */
   public static function m2_to_rc_contact($cols = null, $_contact) {
@@ -170,7 +170,7 @@ class mel_contacts_mapping {
       }
       // Name
       if (! isset($contact['name'])) {
-        if ($_contact->type == Melanie2\Contact::TYPE_LIST) {
+        if ($_contact->type == Mce\Contact::TYPE_LIST) {
           if ($_contact->uid == 'favorites') {
             $contact['name'] = rcmail::get_instance()->gettext('favorites', 'mel_contacts');
           }

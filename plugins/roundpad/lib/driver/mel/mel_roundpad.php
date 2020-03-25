@@ -37,7 +37,7 @@ class mel_roundpad extends roundpad_driver
    */
   protected function _saveData() {
     if ($this->hasChanged) {
-      $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
+      $pref = new LibMelanie\Api\Mce\UserPrefs(null);
       $pref->scope = self::PREF_SCOPE;
       $pref->name = self::PREF_NAME;
       $pref->user = rcmail::get_instance()->get_user_name();
@@ -51,7 +51,7 @@ class mel_roundpad extends roundpad_driver
    * Load data from the storage
    */
   protected function _loadData() {
-    $pref = new LibMelanie\Api\Melanie2\UserPrefs(null);
+    $pref = new LibMelanie\Api\Mce\UserPrefs(null);
     $pref->scope = self::PREF_SCOPE;
     $pref->name = self::PREF_NAME;
     $pref->user = rcmail::get_instance()->get_user_name();

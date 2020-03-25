@@ -91,92 +91,32 @@ class mel extends rcube_plugin {
     include_once __DIR__ . '/../../version.php';
     self::$VERSION .= " " . Version::VERSION;
     // Définition des hooks
-    $this->add_hook('login_after', array(
-            $this,
-            'login_after'
-    ));
-    $this->add_hook('storage_connect', array(
-            $this,
-            'storage_connect'
-    ));
-    $this->add_hook('user_create', array(
-            $this,
-            'user_create'
-    ));
-    $this->add_hook('m2_set_folder_name', array(
-            $this,
-            'set_folder_name'
-    ));
-    $this->add_hook('m2_set_cache_mailbox', array(
-            $this,
-            'set_cache_mailbox'
-    ));
-    $this->add_hook('m2_get_account', array(
-            $this,
-            'm2_get_account'
-    ));
-    $this->add_hook('render_mailboxlist', array(
-            $this,
-            'render_mailboxlist'
-    ));
-    $this->add_hook('smtp_connect', array(
-            $this,
-            'smtp_connect'
-    ));
-    $this->add_hook('message_before_send', array(
-            $this,
-            'message_before_send'
-    ));
-    $this->add_hook('identity_select', array(
-            $this,
-            'identity_select'
-    ));
-    $this->add_hook('managesieve_connect', array(
-            $this,
-            'managesieve_connect'
-    ));
-    $this->add_hook('preferences_list', array(
-            $this,
-            'prefs_list'
-    ));
-    $this->add_hook('preferences_save', array(
-            $this,
-            'prefs_save'
-    ));
-    $this->add_hook('identity_form', array(
-            $this,
-            'identity_form'
-    ));
-    $this->add_hook('identities_list', array(
-            $this,
-            'identities_list'
-    ));
-    $this->add_hook('folders_list', array(
-            $this,
-            'folders_list'
-    ));
+    $this->add_hook('login_after',          array($this, 'login_after'));
+    $this->add_hook('storage_connect',      array($this, 'storage_connect'));
+    $this->add_hook('user_create',          array($this, 'user_create'));
+    $this->add_hook('m2_set_folder_name',   array($this, 'set_folder_name'));
+    $this->add_hook('m2_set_cache_mailbox', array($this, 'set_cache_mailbox'));
+    $this->add_hook('m2_get_account',       array($this, 'm2_get_account'));
+    $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
+    $this->add_hook('smtp_connect',         array($this, 'smtp_connect'));
+    $this->add_hook('message_before_send',  array($this, 'message_before_send'));
+    $this->add_hook('identity_select',      array($this, 'identity_select'));
+    $this->add_hook('managesieve_connect',  array($this, 'managesieve_connect'));
+    $this->add_hook('preferences_list',     array($this, 'prefs_list'));
+    $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+    $this->add_hook('identity_form',        array($this, 'identity_form'));
+    $this->add_hook('identities_list',      array($this, 'identities_list'));
+    $this->add_hook('folders_list',         array($this, 'folders_list'));
     // register message hook
     $this->add_hook('message_headers_output', array($this, 'mail_headers'));
 
     // Template
-    $this->add_hook('template_object_loginform', array(
-            $this,
-            'login_form'
-    ));
-    $this->add_hook('template_object_version', array(
-            $this,
-            'version'
-    ));
+    $this->add_hook('template_object_loginform',  array($this, 'login_form'));
+    $this->add_hook('template_object_version',    array($this, 'version'));
 
     // Command
-    $this->register_action('plugin.set_current_page', array(
-            $this,
-            'set_current_page'
-    ));
-    $this->register_action('plugin.get_mbox_unread_count', array(
-        $this,
-        'get_unread_count'
-    ));
+    $this->register_action('plugin.set_current_page',       array($this, 'set_current_page'));
+    $this->register_action('plugin.get_mbox_unread_count',  array($this, 'get_unread_count'));
 
     // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
     if ($this->rc->task == 'mail') {
@@ -638,6 +578,7 @@ class mel extends rcube_plugin {
   public function user_create($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::user_create()");
+
     $user = driver_mel::gi()->getUser($args['user']);
     // Récupération du hostname
     $hostname = driver_mel::get_instance()->getRoutage($user);
@@ -676,7 +617,8 @@ class mel extends rcube_plugin {
   public function identity_select($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::identity_select()");
-      // Gestion de l'identité par défaut en fonction de l'account
+
+    // Gestion de l'identité par défaut en fonction de l'account
     if ($this->rc->task == "mail" && $this->rc->action == "compose") {
       // Parcour les identités pour définir celle par défaut
       foreach ($args['identities'] as $key => $identity) {
@@ -712,7 +654,7 @@ class mel extends rcube_plugin {
    * Utilise les identifiants de la balp si nécessaire
    */
   public function smtp_connect($args) {
-    if (! empty($_SESSION['m2_from_identity'])) {
+    if (!empty($_SESSION['m2_from_identity'])) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::smtp_connect()");
       $user = driver_mel::gi()->getUser($_SESSION['m2_from_identity']);
@@ -729,6 +671,7 @@ class mel extends rcube_plugin {
   public function message_before_send($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::message_before_send()");
+
     $_SESSION['m2_from_identity'] = $args['from'];
     // Parcour les identités pour réécrire le from avec le realname
     $identities = $this->rc->user->list_identities();
@@ -752,6 +695,7 @@ class mel extends rcube_plugin {
   public function login_after($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::login_after()");
+
     if (isset($_GET['_goto_task'])) {
       $args['_task'] = trim(rcube_utils::get_input_value('_goto_task', rcube_utils::INPUT_GET));
     }
@@ -971,10 +915,8 @@ class mel extends rcube_plugin {
     if ($args['section'] != 'mailbox') {
       return $args;
     }
-
     // Check that configuration is not disabled
     $dont_override = ( array ) $this->rc->config->get('dont_override', array());
-
     $key = 'mel_use_infinite_scroll';
     if (! in_array($key, $dont_override)) {
       $config_key = 'use_infinite_scroll';

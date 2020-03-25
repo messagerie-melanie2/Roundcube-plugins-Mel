@@ -57,6 +57,7 @@ class mel_ldap_auth extends rcube_plugin {
   public function authenticate($args) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::authenticate()");
+
     // MANTIS 3193: Mécanisme pour permettre l'authentification transparente depuis le Courrielleur
     if (!isset($args['user']) || strlen($args['user']) === 0) {
       $args['user'] = trim(rcube_utils::get_input_value('_user', rcube_utils::INPUT_GPC));
@@ -64,7 +65,6 @@ class mel_ldap_auth extends rcube_plugin {
     if (!isset($args['pass']) || strlen($args['pass']) === 0) {
       $args['pass'] = rcube_utils::get_input_value('_pass', rcube_utils::INPUT_GPC, true, $this->rc->config->get('password_charset', 'ISO-8859-1'));
     }
-
     // get username and host
     $host = $args['host'];
     $user = $args['user'];

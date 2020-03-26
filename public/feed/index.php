@@ -57,8 +57,8 @@ else {
 
 // Génération de l'utilisateur Mél
 if (isset($_user)) {
-  $usermelanie = new LibMelanie\Api\Mce\User();
-  $usermelanie->uid = $_user;
+  $user = new LibMelanie\Api\Mce\User();
+  $user->uid = $_user;
 }
 
 // Récupération de la clé de la requête
@@ -66,11 +66,9 @@ $keyhash = utils::get_input_value('_key', utils::INPUT_GET);
 $keyhash = urldecode($keyhash);
 if (isset($keyhash)) {
   // On compare la clé avec la valeur des paramètres utilisateurs
-  $pref = new LibMelanie\Api\Mce\UserPrefs($usermelanie);
-  $pref->name = "calendarskeyhash";
-  $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
+  $value = $user->getCalendarPreference("calendarskeyhash");
 
-  if ($pref->load()) {
+  if (isset($value)) {
     $value = unserialize($pref->value);
     if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
       $keyhash = null;

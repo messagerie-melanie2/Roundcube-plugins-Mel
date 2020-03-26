@@ -114,19 +114,12 @@ class Driver {
       return $this->_labels_cache[$username];
     }
     else {
-      $pref = new LibMelanie\Api\Mce\UserPrefs(null);
-      $pref->scope = self::PREF_SCOPE;
-      $pref->name = self::PREF_NAME;
-      $pref->user = $username;
-      $ret = $pref->load();
-      if (!$ret || empty($pref->value) || $pref->value == "[]") {
-        $labels = array();
-      }
-      else {
-        $labels = $this->_m2_to_rc($pref->value);
-      }
-      if (!$this->_add_defaults_labels($pref, $labels)) {
-        return array();
+      // Récupère la liste des étiquettes
+      $value = driver_mel::gi()->getUser($username)->getPreference(self::PREF_SCOPE, self::PREF_NAME);
+      $labels = isset($value) ? $this->_m2_to_rc($value) : [];
+
+      if (!$this->_add_defaults_labels($username, $labels)) {
+        return [];
       }
       if ($username == rcmail::get_instance()->user->get_username()) {
         $labels = $this->_load_old_tags($labels);
@@ -143,13 +136,8 @@ class Driver {
    * @return boolean
    */
   public function modify_user_labels($username, $labels) {
-    $pref = new LibMelanie\Api\Mce\UserPrefs(null);
-    $pref->scope = self::PREF_SCOPE;
-    $pref->name = self::PREF_NAME;
-    $pref->value = $this->_rc_to_m2($labels);
-    $pref->user = $username;
-    $ret = $pref->save();
-    if (!is_null($ret)) {
+    // Modifie la liste des étiquettes
+    if (driver_mel::gi()->getUser($username)->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->_rc_to_m2($labels))) {
       if (!empty($labels)) {
         $this->_labels_cache[$username] = $labels;
       }
@@ -166,17 +154,8 @@ class Driver {
    * @return boolean
    */
   public function remove_user_labels($username) {
-    $pref = new LibMelanie\Api\Mce\UserPrefs(null);
-    $pref->scope = self::PREF_SCOPE;
-    $pref->name = self::PREF_NAME;
-    $pref->user = $username;
     unset($this->_labels_cache[$username]);
-    if ($pref->load()) {
-      return $pref->delete();
-    }
-    else {
-      return true;
-    }
+    return driver_mel::gi()->getUser($username)->deletePreference(self::PREF_SCOPE, self::PREF_NAME);
   }
   
   /**
@@ -260,11 +239,11 @@ class Driver {
   
   /**
    * Création des étiquettes par défaut si elles n'existent pas
-   * @param LibMelanie\Api\Mce\UserPrefs $pref
+   * @param string $username
    * @param array $current_labels
    * @return boolean
    */
-  protected function _add_defaults_labels(&$pref, &$current_labels) {
+  protected function _add_defaults_labels($username, &$current_labels) {
     $default_labels = rcmail::get_instance()->config->get('default_labels');
     $save = false;
     $ret = true;
@@ -283,9 +262,7 @@ class Driver {
     }
     
     if ($save) {
-      $pref->value = $this->_rc_to_m2($current_labels);
-      $ret = $pref->save();
-      $ret = !is_null($ret);
+      $ret = driver_mel::gi()->getUser($username)->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->_rc_to_m2($current_labels));
     }
     return $ret;
   }  

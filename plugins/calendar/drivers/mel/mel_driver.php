@@ -2281,21 +2281,15 @@ class mel_driver extends calendar_driver {
   public function get_calendar_public_key($calendar) {
     $result = null;
     $calendar = driver_mel::gi()->rcToMceId($calendar);
-
-    // Définition de l'utilisateur
-    $user = driver_mel::gi()->getUser();
     // On récupère la clé avec la valeur des paramètres utilisateurs
-    $pref = new LibMelanie\Api\Mce\UserPrefs($user);
-    $pref->name = "calendarskeyhash";
-    $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
-    if ($pref->load()) {
-      $value = unserialize($pref->value);
+    if (isset($value)) {
+      $value = unserialize($value);
       if (isset($value[$calendar])) {
         $result = $value[$calendar];
       }
     }
-
     return $result;
   }
 
@@ -2306,26 +2300,18 @@ class mel_driver extends calendar_driver {
    */
   public function add_calendar_public_key($calendar, $key) {
     $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
-    // On compare la clé avec la valeur des paramètres utilisateurs
-    $pref = new LibMelanie\Api\Mce\UserPrefs();
-    $pref->user = $this->rc->get_user_name();
-    $pref->name = "calendarskeyhash";
-    $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-
-    if ($pref->load()) {
-      $value = unserialize($pref->value);
+    if (isset($value)) {
+      $value = unserialize($value);
       $value[$calendar] = $key;
     }
     else {
       $value = array($calendar => $key);
     }
     // Enregistrement de la valeur de pref
-    $pref->value = serialize($value);
-    $ret = $pref->save();
-
-    // Retourne le résultat
-    return !is_null($ret);
+    return driver_mel::gi()->getUser()->saveCalendarPreference("calendarskeyhash", serialize($value));
   }
 
   /**
@@ -2334,23 +2320,15 @@ class mel_driver extends calendar_driver {
    */
   public function delete_calendar_public_key($calendar) {
     $calendar = driver_mel::gi()->rcToMceId($calendar);
+    // On récupère la clé avec la valeur des paramètres utilisateurs
+    $value = driver_mel::gi()->getUser()->getCalendarPreference("calendarskeyhash");
 
-    // On compare la clé avec la valeur des paramètres utilisateurs
-    $pref = new LibMelanie\Api\Mce\UserPrefs();
-    $pref->user = $this->rc->get_user_name();
-    $pref->name = "calendarskeyhash";
-    $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-
-    if ($pref->load()) {
-      $value = unserialize($pref->value);
+    if (isset($value)) {
+      $value = unserialize($value);
       if (isset($value[$calendar])) {
         unset($value[$calendar]);
         // Enregistrement de la valeur de pref
-        $pref->value = serialize($value);
-        $ret = $pref->save();
-
-        // Retourne le résultat
-        return !is_null($ret);
+        return driver_mel::gi()->getUser()->saveCalendarPreference("calendarskeyhash", serialize($value));
       }
     }
     return true;
@@ -2364,27 +2342,12 @@ class mel_driver extends calendar_driver {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::list_categories()");
     try {
-      // Récupère la liste des catégories
-      $pref_categories = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories->name = "categories";
-      $pref_categories->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      if (! $pref_categories->load()) {
-        $_categories = array();
-      }
-      else {
-        $_categories = explode('|', $pref_categories->value);
-      }
       // Récupère la liste des couleurs des catégories (sic)
-      $pref_categories_colors = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories_colors->name = "category_colors";
-      $pref_categories_colors->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      if (! $pref_categories_colors->load()) {
-        $_categories_color = array();
-      }
-      else {
-        $_categories_color = explode('|', $pref_categories_colors->value);
-      }
-      $categories_colors = array();
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
+      $_categories_color = isset($value) ? explode('|', $value) : [];
+
+      // Géneration du tableau contenant les couleurs des categories
+      $categories_colors = [];
       foreach ($_categories_color as $_category_color) {
         // Sépare les couleurs dans les paramètres de horde
         $c = explode(':', $_category_color);
@@ -2392,8 +2355,13 @@ class mel_driver extends calendar_driver {
           $categories_colors[$c[0]] = $c[1];
         }
       }
+
+      // Récupère la liste des catégories
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("categories");
+      $_categories = isset($value) ? explode('|', $value) : [];
+
       // Génération du tableau contenant les catégories et leur couleurs
-      $categories = array();
+      $categories = [];
       foreach ($_categories as $_category) {
         if (isset($categories_colors[$_category])) {
           $categories[$_category] = str_replace('#', '', $categories_colors[$_category]);
@@ -2424,28 +2392,14 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::add_category($name, $color)");
     try {
       // Récupère la liste des catégories
-      $pref_categories = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories->name = "categories";
-      $pref_categories->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      $pref_categories->load();
-      // Ajoute la nouvelle valeur
-      if (isset($pref_categories->value) && $pref_categories->value != "") {
-        $pref_categories->value .= "|";
-      }
-      $pref_categories->value .= "$name";
-      $pref_categories->save();
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("categories");
+      $value = (isset($value) ? $value."|" : "") . "$name";
+      driver_mel::gi()->getUser()->saveDefaultPreference("categories", $value);
 
       // Récupère la liste des couleurs des catégories (sic)
-      $pref_categories_colors = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories_colors->name = "category_colors";
-      $pref_categories_colors->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      $pref_categories_colors->load();
-      // Ajoute la nouvelle valeur et couleur
-      if (isset($pref_categories_colors->value) && $pref_categories_colors->value != "") {
-        $pref_categories_colors->value .= "|";
-      }
-      $pref_categories_colors->value .= "$name:#$color";
-      $pref_categories_colors->save();
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
+      $value = (isset($value) ? $value."|" : "") . "$name:#$color";
+      driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", $value);
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_driver::add_category() Melanie2DatabaseException");
@@ -2465,15 +2419,9 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_category($name)");
     try {
       // Récupère la liste des catégories
-      $pref_categories = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories->name = "categories";
-      $pref_categories->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      if (! $pref_categories->load()) {
-        $_categories = array();
-      }
-      else {
-        $_categories = explode('|', $pref_categories->value);
-      }
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("categories");
+      $_categories = isset($value) ? explode('|', $value) : [];
+
       // Supprime la valeur dans la liste
       $change = false;
       foreach ($_categories as $key => $_category) {
@@ -2484,20 +2432,14 @@ class mel_driver extends calendar_driver {
       }
       // Enregistre la nouvelle liste si elle a changé
       if ($change) {
-        $pref_categories->value = implode('|', $_categories);
-        $pref_categories->save();
+        $value = implode('|', $_categories);
+        driver_mel::gi()->getUser()->saveDefaultPreference("categories", $value);
       }
 
       // Récupère la liste des couleurs des catégories (sic)
-      $pref_categories_colors = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories_colors->name = "category_colors";
-      $pref_categories_colors->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      if (! $pref_categories_colors->load()) {
-        $_categories_color = array();
-      }
-      else {
-        $_categories_color = explode('|', $pref_categories_colors->value);
-      }
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
+      $_categories_color = isset($value) ? explode('|', $value) : [];
+
       // Supprime la valeur dans la liste
       $change = false;
       foreach ($_categories_color as $key => $_category_color) {
@@ -2510,8 +2452,8 @@ class mel_driver extends calendar_driver {
       }
       // Enregistre la nouvelle liste si elle a changé
       if ($change) {
-        $pref_categories_colors->value = implode('|', $_categories_color);
-        $pref_categories_colors->save();
+        $value = implode('|', $_categories_color);
+        driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", $value);
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -2532,15 +2474,9 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::replace_category($oldname, $name, $color)");
     try {
       // Récupère la liste des catégories
-      $pref_categories = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories->name = "categories";
-      $pref_categories->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      if (! $pref_categories->load()) {
-        $_categories = array();
-      }
-      else {
-        $_categories = explode('|', $pref_categories->value);
-      }
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("categories");
+      $_categories = isset($value) ? explode('|', $value) : [];
+
       // Supprime la valeur dans la liste
       $change = false;
       foreach ($_categories as $key => $_category) {
@@ -2551,20 +2487,14 @@ class mel_driver extends calendar_driver {
       }
       // Enregistre la nouvelle liste si elle a changé
       if ($change) {
-        $pref_categories->value = implode('|', $_categories);
-        $pref_categories->save();
+        $value = implode('|', $_categories);
+        driver_mel::gi()->getUser()->saveDefaultPreference("categories", $value);
       }
 
       // Récupère la liste des couleurs des catégories (sic)
-      $pref_categories_colors = new LibMelanie\Api\Mce\UserPrefs($this->user);
-      $pref_categories_colors->name = "category_colors";
-      $pref_categories_colors->scope = LibMelanie\Config\ConfigMelanie::GENERAL_PREF_SCOPE;
-      if (! $pref_categories_colors->load()) {
-        $_categories_color = array();
-      }
-      else {
-        $_categories_color = explode('|', $pref_categories_colors->value);
-      }
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
+      $_categories_color = isset($value) ? explode('|', $value) : [];
+
       // Supprime la valeur dans la liste
       $change = false;
       foreach ($_categories_color as $key => $_category_color) {
@@ -2577,8 +2507,8 @@ class mel_driver extends calendar_driver {
       }
       // Enregistre la nouvelle liste si elle a changé
       if ($change) {
-        $pref_categories_colors->value = implode('|', $_categories_color);
-        $pref_categories_colors->save();
+        $value = implode('|', $_categories_color);
+        driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", $value);
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

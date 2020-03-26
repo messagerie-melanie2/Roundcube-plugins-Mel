@@ -338,18 +338,9 @@ class mel_moncompte extends rcube_plugin {
         $calendar = new LibMelanie\Api\Mce\Calendar($user);
         $calendar->id = $id;
         if ($calendar->load()) {
-          // TODO : chargement des preferences en une seule requête (getList)
-          $synchro_mobile = array();
-          $prefs = new LibMelanie\Api\Mce\UserPrefs($user);
-          $prefs->name = array('synchro_mobile');
-          $prefs->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-          foreach ($prefs->getList() as $pref) {
-            $value = $pref->value;
-            ${$pref->name} = unserialize($value);
-            if (${$pref->name} === false) {
-              ${$pref->name} = array();
-            }
-          }
+          // Chargement des preferences de l'utilisateur
+          $value = $user->getCalendarPreference('synchro_mobile');
+          $synchro_mobile = isset($value) ? unserialize($value) : [];
 
           $default_calendar = $user->getDefaultCalendar();
           $acl = ($calendar->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($calendar->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -427,18 +418,9 @@ class mel_moncompte extends rcube_plugin {
         $addressbook = new LibMelanie\Api\Mce\Addressbook($user);
         $addressbook->id = $id;
         if ($addressbook->load()) {
-          // TODO : chargement des preferences en une seule requête (getList)
-          $synchro_mobile = array();
-          $prefs = new LibMelanie\Api\Mce\UserPrefs($user);
-          $prefs->name = array('synchro_mobile');
-          $prefs->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
-          foreach ($prefs->getList() as $pref) {
-            $value = $pref->value;
-            ${$pref->name} = unserialize($value);
-            if (${$pref->name} === false) {
-              ${$pref->name} = array();
-            }
-          }
+          // Chargement des preferences de l'utilisateur
+          $value = $user->getAddressbookPreference('synchro_mobile');
+          $synchro_mobile = isset($value) ? unserialize($value) : [];
 
           $default_addressbook = $user->getDefaultAddressbook();
           $acl = ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($addressbook->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -516,18 +498,9 @@ class mel_moncompte extends rcube_plugin {
         $taskslist = new LibMelanie\Api\Mce\Taskslist($user);
         $taskslist->id = $id;
         if ($taskslist->load()) {
-          // TODO : chargement des preferences en une seule requête (getList)
-          $synchro_mobile = array();
-          $prefs = new LibMelanie\Api\Mce\UserPrefs($user);
-          $prefs->name = array('synchro_mobile');
-          $prefs->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
-          foreach ($prefs->getList() as $pref) {
-            $value = $pref->value;
-            ${$pref->name} = unserialize($value);
-            if (${$pref->name} === false) {
-              ${$pref->name} = array();
-            }
-          }
+          // Chargement des preferences de l'utilisateur
+          $value = $user->getTaskslistPreference('synchro_mobile');
+          $synchro_mobile = isset($value) ? unserialize($value) : [];
 
           $default_taskslist = $user->getDefaultTaskslist();
           $acl = ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? $this->gettext('read_write') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::READ) ? $this->gettext('read_only') : ($taskslist->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) ? $this->gettext('show') : $this->gettext('none'))));
@@ -712,49 +685,62 @@ class mel_moncompte extends rcube_plugin {
    * Afficher la ressource dans roundcube
    */
   public function no_synchro_on_mobile() {
-
     try {
       $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
       $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
-
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $pref = new LibMelanie\Api\Mce\UserPrefs($user);
-        $pref->name = 'synchro_mobile';
-        if ($type == 'calendar')
-          $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-        elseif ($type == 'contact')
-          $pref->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
-        else
-          $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
-        if ($pref->load()) {
-          $value = unserialize($pref->value);
-          if ($value === false)
-            $value = array();
+        if ($type == 'calendar') {
+          $value = $user->getCalendarPreference('synchro_mobile');
+        }
+        elseif ($type == 'contact') {
+          $value = $user->getAddressbookPreference('synchro_mobile');
+        }
+        else {
+          $value = $user->getTaskslistPreference('synchro_mobile');
+        }
+        if (isset($value)) {
+          $value = unserialize($value);
+          if ($value === false) {
+            $value = [];
+          }
           foreach ($value as $key => $val) {
-            if ($val == $mbox)
+            if ($val == $mbox) {
               unset($value[$key]);
+            }
             else {
               // Vérifier que l'on a bien les droits sur l'agenda
-              if ($type == 'calendar')
+              if ($type == 'calendar') {
                 $sync = new LibMelanie\Api\Mce\Calendar($user);
-              elseif ($type == 'contact')
+              }
+              elseif ($type == 'contact') {
                 $sync = new LibMelanie\Api\Mce\Addressbook($user);
-              else
+              }
+              else {
                 $sync = new LibMelanie\Api\Mce\Taskslist($user);
+              }
               $sync->id = $val;
-              if (! $sync->load()) {
+              if (!$sync->load()) {
                 unset($value[$key]);
               }
             }
           }
-          $pref->value = serialize($value);
-          $ret = $pref->save();
-          if (! is_null($ret))
+          if ($type == 'calendar') {
+            $ret = $user->saveCalendarPreference('synchro_mobile', serialize($value));
+          }
+          elseif ($type == 'contact') {
+            $ret = $user->saveAddressbookPreference('synchro_mobile', serialize($value));
+          }
+          else {
+            $ret = $user->saveTaskslistPreference('synchro_mobile', serialize($value));
+          }
+          if ($ret) {
             $this->rc->output->show_message('mel_moncompte.no_synchro_mobile_confirm', 'confirmation');
-          else
+          }
+          else {
             $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+          }
         }
         else {
           $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
@@ -769,6 +755,7 @@ class mel_moncompte extends rcube_plugin {
       return false;
     }
     catch (\Exception $ex) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] mel_moncompte::no_synchro_on_mobile() Exception: " . $ex->getMessage());
       return false;
     }
   }
@@ -783,29 +770,34 @@ class mel_moncompte extends rcube_plugin {
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $pref = new LibMelanie\Api\Mce\UserPrefs($user);
-        $pref->name = 'synchro_mobile';
-        if ($type == 'calendar')
-          $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-        elseif ($type == 'contact')
-          $pref->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
-        else
-          $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
-        if ($pref->load()) {
-          $value = unserialize($pref->value);
-          if ($value === false)
-            $value = array();
+        if ($type == 'calendar') {
+          $value = $user->getCalendarPreference('synchro_mobile');
+        }
+        elseif ($type == 'contact') {
+          $value = $user->getAddressbookPreference('synchro_mobile');
+        }
+        else {
+          $value = $user->getTaskslistPreference('synchro_mobile');
+        }
+        if (isset($value)) {
+          $value = unserialize($value);
+          if ($value === false) {
+            $value = [];
+          }
         }
         else {
           $value = array();
         }
         if (count($value) === 0) {
-          if ($type == 'calendar')
+          if ($type == 'calendar') {
             $default = $user->getDefaultCalendar();
-          elseif ($type == 'contact')
+          }
+          elseif ($type == 'contact') {
             $default = $user->getDefaultAddressbook();
-          else
+          }
+          else {
             $default = $user->getDefaultTaskslist();
+          }
           if (isset($default)) {
             $value[] = $default->id;
           }
@@ -813,27 +805,39 @@ class mel_moncompte extends rcube_plugin {
         else {
           foreach ($value as $key => $val) {
             // Vérifier que l'on a bien les droits sur l'agenda
-            if ($type == 'calendar')
+            if ($type == 'calendar') {
               $sync = new LibMelanie\Api\Mce\Calendar($user);
-            elseif ($type == 'contact')
+            }
+            elseif ($type == 'contact') {
               $sync = new LibMelanie\Api\Mce\Addressbook($user);
-            else
+            }
+            else {
               $sync = new LibMelanie\Api\Mce\Taskslist($user);
+            }
             $sync->id = $val;
-            if (! $sync->load()) {
+            if (!$sync->load()) {
               unset($value[$key]);
             }
           }
         }
-        if (! in_array($mbox, $value)) {
+        if (!in_array($mbox, $value)) {
           $value[] = $mbox;
         }
-        $pref->value = serialize($value);
-        $ret = $pref->save();
-        if (! is_null($ret))
+        if ($type == 'calendar') {
+          $ret = $user->saveCalendarPreference('synchro_mobile', serialize($value));
+        }
+        elseif ($type == 'contact') {
+          $ret = $user->saveAddressbookPreference('synchro_mobile', serialize($value));
+        }
+        else {
+          $ret = $user->saveTaskslistPreference('synchro_mobile', serialize($value));
+        }
+        if ($ret) {
           $this->rc->output->show_message('mel_moncompte.synchro_mobile_confirm', 'confirmation');
-        else
+        }
+        else {
           $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+        }
       }
       else {
         $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
@@ -844,6 +848,7 @@ class mel_moncompte extends rcube_plugin {
       return false;
     }
     catch (\Exception $ex) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] mel_moncompte::synchro_on_mobile() Exception: " . $ex->getMessage());
       return false;
     }
   }
@@ -858,25 +863,21 @@ class mel_moncompte extends rcube_plugin {
       if (isset($mbox) && isset($type)) {
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $pref = new LibMelanie\Api\Mce\UserPrefs($user);
         if ($type == 'calendar') {
-          $pref->scope = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-          $pref->name = LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_DEFAULT_NAME;
+          $ret = $user->setDefaultCalendar($mbox);
         }
         elseif ($type == 'contact') {
-          $pref->scope = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_SCOPE;
-          $pref->name = LibMelanie\Config\ConfigMelanie::ADDRESSBOOK_PREF_DEFAULT_NAME;
+          $ret = $user->setDefaultAddressbook($mbox);
         }
         else {
-          $pref->scope = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_SCOPE;
-          $pref->name = LibMelanie\Config\ConfigMelanie::TASKSLIST_PREF_DEFAULT_NAME;
+          $ret = $user->setDefaultTaskslist($mbox);
         }
-        $pref->value = $mbox;
-        $ret = $pref->save();
-        if (! is_null($ret))
+        if ($ret) {
           $this->rc->output->show_message('mel_moncompte.set_default_confirm', 'confirmation');
-        else
+        }
+        else {
           $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+        }
       }
       else {
         $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
@@ -887,6 +888,7 @@ class mel_moncompte extends rcube_plugin {
       return false;
     }
     catch (\Exception $ex) {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Resources] mel_moncompte::set_default_resource() Exception: " . $ex->getMessage());
       return false;
     }
   }

@@ -37,13 +37,7 @@ class mel_roundpad extends roundpad_driver
    */
   protected function _saveData() {
     if ($this->hasChanged) {
-      $pref = new LibMelanie\Api\Mce\UserPrefs(null);
-      $pref->scope = self::PREF_SCOPE;
-      $pref->name = self::PREF_NAME;
-      $pref->user = rcmail::get_instance()->get_user_name();
-      $pref->value = $this->data;
-      $ret = $pref->save();
-      return !is_null($ret);
+      return driver_mel::gi()->getUser()->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->data);
     }
     return true;
   }
@@ -51,16 +45,10 @@ class mel_roundpad extends roundpad_driver
    * Load data from the storage
    */
   protected function _loadData() {
-    $pref = new LibMelanie\Api\Mce\UserPrefs(null);
-    $pref->scope = self::PREF_SCOPE;
-    $pref->name = self::PREF_NAME;
-    $pref->user = rcmail::get_instance()->get_user_name();
-    $ret = $pref->load();
-
-    if ($ret) {
-      $this->data = $pref->value;
+    $value = driver_mel::gi()->getUser()->getPreference(self::PREF_SCOPE, self::PREF_NAME);
+    if (isset($value)) {
+      $this->data = $value;
     }
-
     if (!isset($this->data)) {
       $this->data = json_encode(array(
               "name" => "",
@@ -70,7 +58,6 @@ class mel_roundpad extends roundpad_driver
       ));
       $this->hasChanged = true;
     }
-
-    return $ret;
+    return true;
   }
 }

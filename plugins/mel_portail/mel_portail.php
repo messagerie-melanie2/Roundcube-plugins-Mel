@@ -65,23 +65,22 @@ class mel_portail extends rcube_plugin
       // Add handler
       $this->rc->output->add_handler('portail_items_list', array($this, 'items_list'));
     }
-    else if ($this->rc->task == 'settings') {
-      $this->add_texts('localization/', true);
-      // Chargement de la conf
-      $this->load_config();
-      // Ajout de l'interface
-      include_once 'imodule.php';
-      // Activation du menu dans Mon compte
-      $this->rc->output->set_env('enable_mesressources_portail', true);
-      // register actions
-      $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
-      // Ajout le javascript
-      //$this->include_script('settings.js');
-    }
+    // else if ($this->rc->task == 'settings') {
+    //   $this->add_texts('localization/', true);
+    //   // Chargement de la conf
+    //   $this->load_config();
+    //   // Ajout de l'interface
+    //   include_once 'imodule.php';
+    //   // Activation du menu dans Mon compte
+    //   $this->rc->output->set_env('enable_mesressources_portail', true);
+    //   // register actions
+    //   $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
+    //   // Ajout le javascript
+    //   //$this->include_script('settings.js');
+    // }
   }
   
-  function action()
-  {
+  function action() {
     // register UI objects
     $this->rc->output->add_handlers(array(
         'mel_portail_frame'    => array($this, 'portail_frame'),
@@ -254,9 +253,20 @@ class mel_portail extends rcube_plugin
         unset($this->items[$id]);
         continue;
       }
-      if (isset($hidden_applications[$id])) {
+      if (isset($item['show']) && $item['show'] === false) {
         unset($this->items[$id]);
         continue;
+      }
+      if (isset($hidden_applications[$id]) && !isset($item['show'])) {
+        unset($this->items[$id]);
+        continue;
+      }
+      if (isset($item['provenance'])) {
+        if (mel::is_internal() && $item['provenance'] == 'internet' 
+            || !mel::is_internal() && $item['provenance'] == 'intranet') {
+          unset($this->items[$id]);
+          continue;
+        }
       }
       $template = $this->templates[$item['type']];
       // Check if the item match the dn

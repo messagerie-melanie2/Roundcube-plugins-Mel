@@ -217,6 +217,10 @@
 	overflow: hidden;
 }
 
+#portailview .item.website .front header {
+	height: 16em;
+}
+
 #portailview .item.full .front header {
 	height: 20em;
 }

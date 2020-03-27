@@ -389,15 +389,26 @@
 	text-align: center;
 }
 
-#portailview .item .links > a {
-	display: block;
+#portailview .item .links {
+	height: 17.5em;
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+#portailview .item .links > a.link {
+	display: grid;
 	padding: 10px 5px;
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
-	display: grid; 
 	grid-template-areas: 
 	    "a b";
     grid-template-columns: 4em auto;
+}
+
+#portailview .item .links > a.link_buttons {
+	grid-template-areas: 
+		"a b c";
+	grid-template-columns: 4em 10em 2em;
 }
 
 #portailview .item .links > a:hover {
@@ -416,4 +427,22 @@
 	color: #656565;
 	color: var(--task-title-text-color);
 	align-self: flex-start;
+}
+
+#portailview .item .links > a.link_buttons > span.button_link {
+	grid-area: c;
+	align-self: center;
+	border-radius: 5px;
+	background-color: #fff;
+	background-color: var(--buttons-bg-color);
+	border: solid 1px #d5d5d5;
+	border-color: var(--buttons-border-color);
+	color: var(--buttons-text-color);
+	width: auto;
+	height: 13px;
+	padding: 5px 8px;
+	text-indent: 0;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	margin: 0;
 }

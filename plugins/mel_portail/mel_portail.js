@@ -118,7 +118,8 @@ Portail.prototype.addNews = function(id, news, back = false, newtab = false, ref
   	// Affichage du  titre
   	let h1 = document.createElement('h1');
     h1.textContent = news.title;
-    a.appendChild(h1);
+	a.appendChild(h1);
+	a.title = news.title;
     // Affichage de la description
     if (news.description) {
     	let span = document.createElement('span');

@@ -18,6 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use LibMelanie\Ldap\Ldap;
+
 class mel_portail extends rcube_plugin
 {
   /**
@@ -100,8 +102,10 @@ class mel_portail extends rcube_plugin
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
-      $user = driver_mel::gi()->getUser();
-      $this->items = $this->getCardsConfiguration($user->dn);
+      //$user = driver_mel::gi()->getUser();
+      $user_dn = Ldap::GetUserInfos($this->rc->get_user_name(), null, ['dn'])['dn'];
+      //$this->items = $this->getCardsConfiguration($user->dn);
+      $this->items = $this->getCardsConfiguration($user_dn);
       
       if (isset($this->items[$id])) {
         $item = $this->items[$id];
@@ -161,10 +165,12 @@ class mel_portail extends rcube_plugin
     // Objet HTML
     $table = new html_table();
     $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'application')"));
-    $user = driver_mel::gi()->getUser();
+    //$user = driver_mel::gi()->getUser();
+    $user_dn = Ldap::GetUserInfos($this->rc->get_user_name(), null, ['dn'])['dn'];
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
-    $this->items = $this->getCardsConfiguration($user->dn);
+    //$this->items = $this->getCardsConfiguration($user->dn);
+    $this->items = $this->getCardsConfiguration($user_dn);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -177,7 +183,8 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        $res = $this->filter_dn($user->dn, $item['dn']);
+        //$res = $this->filter_dn($user->dn, $item['dn']);
+        $res = $this->filter_dn($user_dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -240,10 +247,12 @@ class mel_portail extends rcube_plugin
     $content = "";
     $scripts_js = [];
     $scripts_css = [];
-    $user = driver_mel::gi()->getUser();
+    $user_dn = Ldap::GetUserInfos($this->rc->get_user_name(), null, ['dn'])['dn'];
+    //$user = driver_mel::gi()->getUser();
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
-    $this->items = $this->getCardsConfiguration($user->dn);
+    //$this->items = $this->getCardsConfiguration($user->dn);
+    $this->items = $this->getCardsConfiguration($user_dn);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -271,7 +280,8 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        $res = $this->filter_dn($user->dn, $item['dn']);
+        //$res = $this->filter_dn($user->dn, $item['dn']);
+        $res = $this->filter_dn($user_dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -288,7 +298,7 @@ class mel_portail extends rcube_plugin
         }
         $object->init();
       }
-      $content .= $this->item_html(['id' => $id], $item);
+      $content .= $this->item_html(['id' => $id], $item, $user_dn);
       // Ajoute le javascript ?
       if (isset($template['js'])) {
         $scripts_js['modules/' . $item['type'] . '/' . $template['js']] = true;
@@ -452,9 +462,10 @@ class mel_portail extends rcube_plugin
    * 
    * @param array $attrib
    * @param array $item
+   * @param string $user_dn
    * @return string HTML
    */
-  public function item_html($attrib, $item) {
+  public function item_html($attrib, $item, $user_dn) {
     $content = "";
     $attrib['class'] = $item['type'] . " item";
     // Gestion du bouton flip
@@ -504,10 +515,10 @@ class mel_portail extends rcube_plugin
       $buttons_back_list = "";
       foreach ($item['buttons'] as $text => $button) {
         if (isset($button['back']) && $button['back']) {
-          $buttons_back_list .= html::a(['class' => 'button', 'href' => $button['href'] ?: '#', 'target' => $item['newtab'] && isset($button['href']) ? '_blank': null, 'onclick' => $button['onclick'] ?: null], $text);
+          $buttons_back_list .= html::a(['class' => 'button', 'title' => $button['title'] ?: null, 'href' => $button['href'] ?: '#', 'target' => $item['newtab'] && isset($button['href']) ? '_blank': null, 'onclick' => $button['onclick'] ?: null], $text);
         }
         else {
-          $buttons_list .= html::a(['class' => 'button', 'href' => $button['href'] ?: '#', 'target' => $item['newtab'] && isset($button['href']) ? '_blank': null, 'onclick' => $button['onclick'] ?: null], $text);
+          $buttons_list .= html::a(['class' => 'button', 'title' => $button['title'] ?: null, 'href' => $button['href'] ?: '#', 'target' => $item['newtab'] && isset($button['href']) ? '_blank': null, 'onclick' => $button['onclick'] ?: null], $text);
         }
         
       }
@@ -523,9 +534,52 @@ class mel_portail extends rcube_plugin
       $attrib['class'] .= " links";
       $links_list = "";
       foreach ($item['links'] as $text => $link) {
-        $links_list .= html::a(['class' => 'link', 'href' => $link['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $link['onclick'] ?: null],
-            html::img(['class' => 'icon', 'style' => $logo_style, 'alt' => $item['name'] . ' logo', 'src' => isset($link['logo']) ? $link['logo'] : '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png']) .
-            html::tag('h3', 'title', $text)
+        if (isset($link['show']) && !$link['show']) {
+          continue;
+        }
+        if (isset($link['dn'])) {
+          //$res = $this->filter_dn($user->dn, $link['dn']);
+          $res = $this->filter_dn($user_dn, $link['dn']);
+          if ($res !== true) {
+            continue;
+          }
+        }
+        // Gestion de la class
+        $class = 'link';
+        // Gestion du logo
+        if (isset($link['logo'])) {
+          $logo_link = $link['logo'];
+        }
+        else if (isset($item['logo'])) {
+          $logo_link = $item['logo'];
+        }
+        else {
+          $logo_link = '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png';
+        }
+        // Gestion de la couleur du logo
+        if (isset($link['logobg'])) {
+          $logo_style_link = 'background-color: '.$link['logobg'].';
+                         border-radius: 5px;
+                        -webkit-box-shadow: 0 3px 0 0 rgba(43,43,43,.35);
+                        -moz-box-shadow: 0 3px 0 0 rgba(43,43,43,.35);
+                        box-shadow: 0 3px 0 0	rgba(43,43,43,.35);';
+        }
+        else {
+          $logo_style_link = $logo_style;
+        }
+        // Gestion du button
+        if (isset($link['button'])) {
+          $class .= ' link_buttons';
+          $button = $link['button'];
+          $button_link = html::tag('span', ['class' => 'button_link', 'title' => $button['title'] ?: null, 'onclick' => $button['onclick'] ?: null], $button['text']);
+        }
+        else {
+          $button_link = '';
+        }
+        $links_list .= html::a(['class' => $class, 'title' => $link['title'] ?: null, 'href' => $link['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $link['onclick'] ?: null],
+            html::img(['class' => 'icon', 'style' => $logo_style_link, 'alt' => $item['name'] . ' logo', 'src' => $logo_link]) .
+            html::tag('h3', 'title', $text) .
+            $button_link
         );
       }
       $buttons = html::div('links', $links_list);

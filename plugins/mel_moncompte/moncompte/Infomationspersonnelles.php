@@ -38,6 +38,24 @@ class Informationspersonnelles extends Moncompteobject {
     public static function load() {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		// Liste des attributs à charger
+		$attributes = [
+			'employee_number',
+			'ministere',
+			'vpn_profile_name',
+			'street',
+			'postalcode',
+			'locality',
+			'observation',
+			'description',
+			'phonenumber',
+			'faxnumber',
+			'mobilephone',
+			'roomnumber',
+			'title',
+			'business_category',
+			'mission',
+		];
 
 		// Positionnement des données
 		rcmail::get_instance()->output->set_env('moncompte_data_matricule', $user->employee_number);
@@ -46,7 +64,7 @@ class Informationspersonnelles extends Moncompteobject {
 		rcmail::get_instance()->output->set_env('moncompte_data_street', $user->street);
 		rcmail::get_instance()->output->set_env('moncompte_data_codepostal', $user->postalcode);
 		rcmail::get_instance()->output->set_env('moncompte_data_ville', $user->locality);
-		rcmail::get_instance()->output->set_env('moncompte_data_observation', $user->);
+		rcmail::get_instance()->output->set_env('moncompte_data_observation', $user->observation);
 		rcmail::get_instance()->output->set_env('moncompte_data_descr', $user->description);
 		rcmail::get_instance()->output->set_env('moncompte_data_tel', $user->phonenumber);
 		rcmail::get_instance()->output->set_env('moncompte_data_fax', $user->faxnumber);
@@ -57,6 +75,7 @@ class Informationspersonnelles extends Moncompteobject {
 		rcmail::get_instance()->output->set_env('moncompte_data_mission', implode("\n", $user->mission));
 
 		// peut modifier ou pas les infos
+		rcmail::get_instance()->output->set_env('moncompte_data_readonly', $user->update_personnal_info);
 		if ($this->myBal->getAutorise() == 'ok') {
 			rcmail::get_instance()->output->set_env('moncompte_data_readonly', '');
 		} else {

@@ -1,0 +1,78 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<style type="text/css" media="screen">
+body.aclform {
+	background: #efefef;
+	margin: 0;
+}
+
+body.aclform .hint {
+	margin: 1em;
+}
+
+div.legend {
+	display: block;
+	font-size: 14px;
+	font-weight: bold;
+	padding-bottom: 10px;
+	margin-bottom: 0;
+}
+</style>
+</head>
+
+<body class="iframe floatingbuttons">
+
+	<h1 class="boxtitle">
+		<roundcube:var name="env:resource_name" />
+	</h1>
+
+	<div id="preferences-details" class="boxcontent">
+		<div class="legend">
+			<roundcube:label name="mel_moncompte.information" />
+		</div>
+		<table class="propform">
+			<roundcube:if condition="isset(env:resource_type)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.type" /></label></td>
+					<td><roundcube:var name="env:resource_type" /></td>
+				</tr>
+			<roundcube:endif />
+			<roundcube:if condition="isset(env:resource_flip)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.flip" /></label></td>
+					<td><roundcube:var name="env:resource_flip" /></td>
+				</tr>
+			<roundcube:endif />
+			<roundcube:if condition="isset(env:resource_url)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.url" /></label></td>
+					<td><roundcube:var name="env:resource_url" /></td>
+				</tr>
+			<roundcube:endif />
+			<roundcube:if condition="isset(env:resource_feedurl)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.feedurl" /></label></td>
+					<td><roundcube:var name="env:resource_feedurl" /></td>
+				</tr>
+			<roundcube:endif />
+			<roundcube:if condition="isset(env:resource_front_html)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.fronthtml" /></label></td>
+					<td><roundcube:var name="env:resource_front_html" /></td>
+				</tr>
+			<roundcube:endif />
+			<roundcube:if condition="isset(env:resource_back_html)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.backhtml" /></label></td>
+					<td><roundcube:var name="env:resource_back_html" /></td>
+				</tr>
+			<roundcube:endif />
+		</table>
+
+	</div>
+
+</body>
+</html>

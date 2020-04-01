@@ -192,7 +192,7 @@
 		<roundcube:button command="expand-unread" type="link-menuitem" label="expand-unread" class="icon" classAct="icon active" innerclass="icon conversation" />
 		<roundcube:button command="collapse-all" type="link-menuitem" label="collapse-all" class="icon" classAct="icon active" innerclass="icon conversation" />
 	</ul>
-</div>
+</div>	
 
 <div id="listoptions" class="propform popupdialog" role="dialog" aria-labelledby="aria-label-listoptions" aria-hidden="true">
 <h2 id="aria-label-listoptions" class="voice"><roundcube:label name="arialabelmessagelistoptions" /></h2>
@@ -206,8 +206,17 @@
 				<li><label><input type="radio" name="control" value="list" onchange="return rcmail.command('set-listmode','list',this,event)" checked /> <span><roundcube:label name="list" /></span></label></li>
 				<li><label><input type="radio" name="control" value="threads" onchange="return rcmail.command('set-listmode','threads',this,event)" /> <span><roundcube:label name="threads" /></span></label></li>
 			<roundcube:endif />
+			<li>
+				<div id="listselectors">
+					<roundcube:if condition="env:threads" />
+						<br><a href="#threads" id="threadselectmenulink" class="menuselector" onclick="UI.toggle_popup('threadselectmenu', event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="threadselectmenu-menu"><span class="handle"><roundcube:label name="threads" /></span></a>
+					<roundcube:endif />
+					<br><br><a href="#select" id="listselectmenulink" class="menuselector" onclick="UI.toggle_popup('listselectmenu', event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="listselectmenu-menu"><span class="handle"><roundcube:label name="select" /></span></a>
+				</div>
+			</li>
 		</ul>
 	</fieldset>
+	
 	<roundcube:if condition="!in_array('layout', (array)config:dont_override)" />
 	<fieldset id="listoptions-layout" class="floating">
 		<legend><roundcube:label name="layout" /></legend>

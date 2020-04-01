@@ -1444,6 +1444,7 @@ table.propform td.title {
 }
 
 #markmessagemenulink,
+#selectmessagemenulink,
 #messagemenulink {
 	width: 0px;
 	height: 0px;
@@ -1612,10 +1613,13 @@ table.propform td.title {
 
 a.menuselector {
 	border-radius: 0;
+	width: 139px;
+	color: var(--inputs-text-color);
 }
 
 a.menuselector .handle {
 	border-radius: 0;
+	width: 101px;
 }
 
 select.decorated option {
@@ -1640,6 +1644,11 @@ select.decorated option {
 	-webkit-box-shadow: var(--popup-box-sahdow);
 	padding: 5px;
 	z-index: 90;
+}
+
+#listselectmenu,
+#threadselectmenu {
+	z-index: 200;
 }
 
 #searchmenu {

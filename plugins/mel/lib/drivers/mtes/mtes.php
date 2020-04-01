@@ -182,6 +182,7 @@ class mtes_driver_mel extends driver_mel {
     // Si on est sur Internet, vérifier que l'utilisateur a la double auth
     if ($hasAccess 
         && !mel::is_internal() 
+        && class_exists('mel_doubleauth')
         && !mel_doubleauth::is_double_auth_enable()) {
       $hasAccess = false;
     }

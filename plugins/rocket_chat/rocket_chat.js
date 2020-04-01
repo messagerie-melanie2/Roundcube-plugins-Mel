@@ -44,7 +44,7 @@ if (window.rcmail) {
 			window.document.getElementById('rocket_chat_frame').contentWindow.postMessage({
 				externalCommand: 'go',
 				path: rcmail.env.rocket_chat_channel
-			}, rcmail.env.ariane_url);
+			}, rcmail.env.rocket_chat_url);
 		}
 		else if (e.data.eventName == 'unread-changed') {
 			var unread = e.data.data;

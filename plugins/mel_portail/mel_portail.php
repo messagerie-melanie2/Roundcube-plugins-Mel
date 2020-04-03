@@ -50,7 +50,6 @@ class mel_portail extends rcube_plugin
   {
     $this->rc = rcmail::get_instance();
     
-    
     // Si tache = portail, on charge l'onglet
     if ($this->rc->task == 'portail') {
       $this->add_texts('localization/', true);
@@ -62,8 +61,15 @@ class mel_portail extends rcube_plugin
       include_once 'imodule.php';
       // Index
       $this->register_action('index', array($this, 'action'));
+      // Flux
+      $this->register_action('flux', array($this, 'flux'));
       // Ajout du css
       $this->include_stylesheet($this->local_skin_path() . '/mel_portail.css');
+      // Si le panneau de droite n'est pas chargé on charge custom scrollbar
+      if (!in_array('right_panel', $this->rc->config->get('plugins'))) {
+        $this->include_stylesheet($this->local_skin_path() . '/jquery.mCustomScrollbar.min.css');
+        $this->include_script('jquery.mCustomScrollbar.concat.min.js');
+      }
       // Add handler
       $this->rc->output->add_handler('portail_items_list', array($this, 'items_list'));
     }
@@ -91,6 +97,56 @@ class mel_portail extends rcube_plugin
     // Chargement du template d'affichage
     $this->rc->output->set_pagetitle($this->gettext('title'));
     $this->rc->output->send('mel_portail.mel_portail');
+  }
+
+  /**
+   * Lecture d'un fichier de flux
+   */
+  function flux() {
+    function endsWith($haystack, $needle) {
+        $length = strlen($needle);
+        if ($length == 0) {
+            return true;
+        }
+        return (substr($haystack, -$length) === $needle);
+    }
+    // Récupération du nom du fichier
+    $_file = rcube_utils::get_input_value('_file', rcube_utils::INPUT_GET);
+
+    if (isset($_file)) {
+      // Gestion du folder
+      $folder = $this->rc->config->get('portail_flux_folder', null);
+      if (!isset($folder)) {
+        $folder = __DIR__ . '/rss/';
+      }
+      if ($this->rc->config->get('portail_flux_use_provenance', false)) {
+        if (mel::is_internal()) {
+          $folder .= 'intranet/';
+        }
+        else {
+          $folder .= 'intranet/';
+        }
+      }
+      // Gestion de l'extension
+      if (endsWith($_file, '.xml')) {
+        header("Content-Type: application/xml; charset=" . RCUBE_CHARSET);
+      }
+      else if (endsWith($_file, '.html')) {
+        header("Content-Type: text/html; charset=" . RCUBE_CHARSET);
+      }
+      else if (endsWith($_file, '.json')) {
+        header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+      }
+      // Ecriture du fichier
+      $content = file_get_contents($folder . $_file);
+      if ($content === false) {
+        header('HTTP/1.0 404 Not Found');
+      }
+      else {
+        echo $content;
+      }
+      exit;
+    }
   }
   
   /**
@@ -267,6 +323,14 @@ class mel_portail extends rcube_plugin
         continue;
       }
       if (isset($hidden_applications[$id]) && !isset($item['show'])) {
+        unset($this->items[$id]);
+        continue;
+      }
+      if (isset($item['session']) && !isset($_SESSION[$item['session']])) {
+        unset($this->items[$id]);
+        continue;
+      }
+      if (isset($item['!session']) && isset($_SESSION[$item['!session']])) {
         unset($this->items[$id]);
         continue;
       }
@@ -484,13 +548,22 @@ class mel_portail extends rcube_plugin
                   	box-shadow: 0 3px 0 0	rgba(43,43,43,.35);';
     }
     if (isset($item['url'])) {
+      $description = $item['description'];
+      // Gestion des astuces
+      if (isset($item['tips']) 
+          && is_array($item['tips'])) {
+        $description = $item['tips'][array_rand($item['tips'])] . $description;
+      }
+      if (empty($description)) {
+        $attrib['class'] .= " nodescription";
+      }
       // Header html du front
       $header = html::tag('header', [],
           $flip .
           html::a(['href' => $item['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $item['onclick'] ?: null],
                 html::img(['class' => 'icon', 'style' => $logo_style, 'alt' => $item['name'] . ' logo', 'src' => isset($item['logo']) ? $item['logo'] : '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png']) .
                 html::tag('h1', 'title', $item['name']) .
-                ($item['type'] == 'communication' ? "" : html::tag('p', 'description', $item['description']))
+                ($item['type'] == 'communication' ? "" : html::tag('p', 'description', $description))
               )
           );
     }
@@ -587,6 +660,10 @@ class mel_portail extends rcube_plugin
     else if ($item['type'] == 'website' || $item['type'] == 'communication') {
       $attrib['class'] .= " full";
     }
+    // Multi news ?
+    if (isset($item['multiNews']) && $item['multiNews']) {
+      $attrib['class'] .= " multinews";
+    }
     // Générer le contenu html
     if ($item['flip']) {
       if ($item['type'] == 'html') {
@@ -595,9 +672,19 @@ class mel_portail extends rcube_plugin
           html::tag('article', 'back', $item['html_back']);
       }
       else {
+        // Contenu
+        $content_back = "";
+        if (isset($item['tips']) 
+            && is_array($item['tips'])) {
+          $list_back = "";
+          foreach ($item['tips'] as $tips) {
+            $list_back .= html::tag('li', null, html::a(null, html::tag('h1', null, $tips)));
+          }
+          $content_back = html::tag('ul', 'news', $list_back);
+        }
         // Front + back
         $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
-          html::tag('article', 'back', html::tag('header', [], $flip) . $buttons_back);
+          html::tag('article', 'back', html::tag('header', [], $flip) . $content_back . $buttons_back);
       }
       
     }

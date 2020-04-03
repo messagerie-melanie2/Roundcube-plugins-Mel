@@ -196,7 +196,7 @@ class mel_nextcloud extends rcube_plugin {
    * @param boolean $base64 whether or not to base64_encode() the result before returning
    * @return string encrypted text
    */
-  private function encrypt($clear, $key = 'roundcube_nextcloud_des_key', $base64 = true) {
+  public function encrypt($clear, $key = 'roundcube_nextcloud_des_key', $base64 = true) {
     if (! $clear) {
       return '';
     }

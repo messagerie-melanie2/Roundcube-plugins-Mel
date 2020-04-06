@@ -98,6 +98,10 @@
     backface-visibility: hidden;
 }
 
+#portailview .item.html > article {
+	padding: 0;
+}
+
 #portailview .item.wait > article {
 	display: none;
 }
@@ -207,9 +211,13 @@
 
 #portailview .item a.button {
 	width: auto;
+	max-width: 16em;
 	height: auto;
 	padding: 5px 8px;
 	text-indent: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #portailview .item .front header {
@@ -217,8 +225,13 @@
 	overflow: hidden;
 }
 
-#portailview .item.website .front header {
+#portailview .item.website .front header,
+#portailview .item.webconf .front header {
 	height: 16em;
+}
+
+#portailview .item.nodescription .front header {
+	height: 6em;
 }
 
 #portailview .item.full .front header {
@@ -281,13 +294,24 @@
 	margin: 0;
 }
 
-#portailview .item .back ul.news {
-	height: 100%;
+#portailview .item .front ul.news {
+    max-height: 14em;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+#portailview .item .back div.scrollbar {
+	height: 20em;
 }
 
 #portailview .item .back ul.news {
+	height: 100%;
 	overflow-y: auto;
 	scrollbar-width: none;
+}
+
+#portailview .item .back ul.news::-webkit-scrollbar { 
+    display: none; 
 }
 
 #portailview .item .front ul.news li {
@@ -321,6 +345,14 @@
 #portailview .item .front ul.news li > a {
 	max-height: 8em;
 	overflow: hidden;
+}
+
+#portailview .item.multinews .front ul.news li > a {
+	max-height: none;
+}
+
+#portailview .item.multinews .front ul.news li > a span.description {
+	display: none;
 }
 
 #portailview .item ul.news li > a p {
@@ -387,6 +419,7 @@
 
 #portailview .item.links header h1.title {
 	text-align: center;
+	vertical-align: middle;
 }
 
 #portailview .item .links {
@@ -395,9 +428,13 @@
 	scrollbar-width: none;
 }
 
-#portailview .item .links > a.link {
+#portailview .item .links::-webkit-scrollbar { 
+    display: none; 
+}
+
+#portailview .item .links a.link {
 	display: grid;
-	padding: 10px 5px;
+	padding: 13px 5px;
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
 	grid-template-areas: 
@@ -405,31 +442,32 @@
     grid-template-columns: 4em auto;
 }
 
-#portailview .item .links > a.link_buttons {
+#portailview .item .links a.link_buttons {
 	grid-template-areas: 
 		"a b c";
 	grid-template-columns: 4em 10em 2em;
 }
 
-#portailview .item .links > a:hover {
+#portailview .item .links a:hover {
     background-color: #dee9f6;
     background-color: var(--table-item-selected-bg-color);
 }
 
-#portailview .item .links > a > img {
+#portailview .item .links a > img {
 	grid-area: a;
 	width: 3em;
 	align-self: center;
 }
 
-#portailview .item .links > a > h3 {
+#portailview .item .links a > h3 {
 	grid-area: b;
 	color: #656565;
 	color: var(--task-title-text-color);
-	align-self: flex-start;
+	align-self: center;
+	margin: 0;
 }
 
-#portailview .item .links > a.link_buttons > span.button_link {
+#portailview .item .links a.link_buttons > span.button_link {
 	grid-area: c;
 	align-self: center;
 	border-radius: 5px;

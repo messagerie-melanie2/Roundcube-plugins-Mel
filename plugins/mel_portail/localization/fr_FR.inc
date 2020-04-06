@@ -21,6 +21,7 @@ $labels['html'] = "HTML";
 $labels['stockage'] = "Stockage";
 $labels['webconf'] = "Web conférence";
 $labels['fluxrss'] = "Flux RSS";
+$labels['fluxrss'] = "Flux HTML";
 $labels['sondage'] = "Sondage";
 $labels['website'] = "Site web";
 

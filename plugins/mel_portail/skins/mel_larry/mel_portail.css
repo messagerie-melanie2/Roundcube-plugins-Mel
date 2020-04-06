@@ -98,6 +98,10 @@
     backface-visibility: hidden;
 }
 
+#portailview .item.html > article {
+	padding: 0;
+}
+
 #portailview .item.wait > article {
 	display: none;
 }

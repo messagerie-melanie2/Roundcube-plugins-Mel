@@ -91,8 +91,10 @@ Portail.prototype.addNews = function(id, news, back = false, newtab = false, ref
 			div.className = 'scrollbar';
 			div.appendChild(ul);
 			document.querySelector('#' + id + ' ' + _class).appendChild(div);
-			// Custom scroll bar
-			$(div).mCustomScrollbar({theme: 'minimal', scrollInertia: 15});
+			if (!bw.mac && !bw.chrome) {
+				// Custom scroll bar
+				$(div).mCustomScrollbar({theme: 'minimal', scrollInertia: 500});
+			}
 		}
 		else {
 			document.querySelector('#' + id + ' ' + _class).appendChild(ul);
@@ -310,7 +312,10 @@ if (window.rcmail) {
 		}
 		else if (rcmail.env.task == 'portail') {
 			// Gestion des scrollbar custom
-			$('#portailview .item .links').mCustomScrollbar({theme: 'minimal-dark', scrollInertia: 15});			
+			$('#portailview .item .links').mCustomScrollbar({theme: 'minimal-dark', scrollInertia: 500});
+			if (!bw.mac && !bw.chrome) {
+				$('#portailview .item .back .news').mCustomScrollbar({theme: 'minimal', scrollInertia: 500});	
+			}
 		}
 	});
 }

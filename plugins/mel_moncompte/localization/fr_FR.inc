@@ -144,6 +144,7 @@ $labels['managestatisticsmobile'] = 'Affichez les statistiques des synchronisati
 $labels['mymailbox'] = 'Ma boite';
 $labels['mailboxchangetext'] = 'Cliquez ici pour sélectionner la boite mail à afficher';
 $labels['boitespart'] = 'Boites partagées';
+
 $labels['gestionabs'] = 'Gestionnaire d\'absence';
 $labels['gestionlists'] = 'Gestionnaire de listes';
 $labels['modifmdp'] = 'Mot de passe';
@@ -151,6 +152,8 @@ $labels['accesinternet'] = 'Accès depuis Internet';
 $labels['infoperso'] = 'Informations personnelles';
 $labels['photo'] = 'Publication photographie';
 $labels['absence'] = "Gestionnaire d'absence";
+
+$labels['informationspersonnelles'] = 'Informations personnelles';
 
 $labels['userlbl'] = 'Compte utilisateur';
 $labels['oldpasswordlbl'] = 'Mot de passe actuel';
@@ -182,44 +185,68 @@ $labels['changepassword_explic_agri_4'] = 'Si vous possédez un téléphone prof
 $labels['users_shares'] = 'Partager à un utilisateur';
 $labels['groups_shares'] = 'Partager à un groupe';
 
-//Infos perso
-$labels['data_deny'] = "Vous ne pouvez pas modifier les informations de cette boite à lettres. Consultez votre service informatique.";
-$labels['info_texte'] = "Vous pouvez vérifier ici les informations relatives à votre compte.
-Certaines d'entre elles peuvent être modifiées manuellement, les autres sont gérées par votre service informatique.";
+// Informations personnelles
+$labels['info_yes'] = 'oui';
+$labels['info_no'] = 'non';
+
 $labels['info_title'] = "Informations spécifiques au compte";
-$labels['info_matricule'] = "Matricule :";
-$labels['info_inter_auto'] = "Accès internet autorisé :";
-$labels['info_admin'] = "Attachement administratif :";
-$labels['info_inter_active'] = "Accès internet activé :";
-$labels['info_nomade'] = "Accès nomade :";
-$labels['info_burotic'] = "Compte bureautique activé :";
-$labels['info_anais'] = "Informations publiées dans l'annuaire";
+$labels['info_readonly'] = "Vous n'avez pas les droits de modifications de vos informations personnelles, seul la publication de votre photo peut être changée. Consultez votre service informatique pour avoir plus d'informations.";
+
+$labels['info_employee_number'] = "Matricule :";
+$labels['info_internet_access_admin'] = "Accès internet autorisé :";
+$labels['info_ministere'] = "Attachement administratif :";
+$labels['info_internet_access_user'] = "Accès internet activé :";
+$labels['info_access_nomade'] = "Accès nomade :";
+$labels['info_bureautique'] = "Compte bureautique activé :";
+
+$labels['info_annuaire'] = "Informations publiées dans l'annuaire";
+
+$labels['info_photo'] = "Photo :";
+$labels['info_photo_none'] = "Ce type d'entrée ne possède pas de photo.";
+$labels['info_photo_intra'] = "Publication de la photo sur l'Intranet (actif si coché)";
+$labels['info_photo_ader'] = "Publication de la photo sur MAIA (actif si coché)";
+
 $labels['info_adresse'] = "Adresse :";
-$labels['info_cp'] = "Code postal :";
+$labels['info_codepostal'] = "Code postal :";
 $labels['info_ville'] = "Ville :";
-$labels['info_tel'] = "Numéro de téléphone :";
+
+$labels['info_observation'] = "Observation :";
+$labels['info_description'] = "Description :";
+
+$labels['info_telephone'] = "Numéro de téléphone :";
 $labels['info_fax'] = "Numéro de fax :";
 $labels['info_mobile'] = "Numéro de mobile :";
-$labels['info_bur'] = "Bureau :";
-$labels['info_obs'] = "Observation :";
-$labels['info_desc'] = "Description :";
-$labels['info_hiera'] = "Fonction hiérarchique :";
-$labels['info_metier'] = "Fonction métiers";
+$labels['info_bureau'] = "Bureau :";
+$labels['info_hierarchie'] = "Fonction hiérarchique :";
+$labels['info_metier'] = "Fonction métiers :";
 $labels['info_mission'] = "Missions :";
+
 $labels['info_err_postal'] = "Mauvais format du code postal";
 $labels['info_modif_ok'] = "Les données personnelles ont été modifiées.";
 $labels['info_modif_nok'] = "Echec de la modification des données personnelles : ";
 $labels['info_err_tel'] = "Mauvais format du numéro de ";
 
+// Acces internet
+$labels['access_internet_title'] = "Activation de l'accès à Mél depuis Internet";
+$labels['access_internet_status_label'] = "Statut de l'accès depuis Internet : ";
+$labels['access_internet_enable'] = "Activé";
+$labels['access_internet_disable'] = "Désactivé";
+$labels['access_internet_button_enable'] = "Activer";
+$labels['access_internet_button_disable'] = "Désactiver";
+$labels['access_internet_disable_label_forbidden'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Pour accéder à Mél depuis n'importe où, contactez votre service informatique.";
+$labels['access_internet_disable_label_allowed'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder à Mél depuis n'importe où.";
+$labels['access_internet_enable_label'] = "Vous pouvez accéder à Mél depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
+$labels['access_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accés, vous devez vous connecter à cet écran depuis le réseau ministériel.";
 
-//Acces internet
+
+// Acces internet
 $labels['inter_acces_title'] = "Accès à Mél web depuis Internet";
 $labels['inter_acces_label'] = "Activer l'accès par Internet à Mél (actif si coché)";
 $labels['inter_acces_deny'] = "Vous n'êtes pas autorisé à accéder à Mél depuis l'extérieur du ministère.";
 $labels['inter_acces_ok'] = "L'accès par internet est activé.";
 $labels['inter_acces_nok'] = "L'accès par internet est désactivé.";
 
-//CGU inter
+// CGU inter
 $labels['inter_CGU_legend'] = "Conditions Générales d'Utilisation pour le surf internet";
 $labels['inter_CGU_texte'] = "La présente charte – Conditions Générales d'Utilisation (CGU) – a pour objet de définir les modalités de mise à disposition de l'accès internet et les conditions générales d'utilisation de ce service par les utilisateurs du ministère.<br /><br />
 Dans le cadre des textes en vigueur, le ministère met en œuvre tous les moyens pour assurer un accès sécurisé et de qualité aux services internet.<br /><br />
@@ -275,26 +302,6 @@ $labels['abs_texte_inter'] = "Activer la réponse automatique pour les correspon
 $labels['abs_texte_intra_diff'] = "Message spécifique pour les correspondants externes";
 $labels['abs_texte_intra_nodiff'] = "Envoyer le même message qu'en interne";
 $labels['abs_texte_mot_cle'] = 'En tapant les mots clés "jusqu\'au 01/01/1970" dans le texte, la date sera automatiquement modifiée en changeant la date de fin.';
-
-//Publication photo
-$labels['photo_none'] = "Ce type d'entrée ne possède pas de photo.";
-$labels['photo_intra'] = "Publication de la photo sur l'Intranet (actif si coché)";
-$labels['photo_ader'] = "Publication de la photo sur MAIA (actif si coché)";
-$labels['photo_pub_ok'] = "Les informations de publication de la photo ont été modifiées.";
-$labels['photo_pub_nok'] = "Echec de la modification des informations de publication de la photo : ";
-
-//Stats ZP
-$labels['statszp'] = "Informations de synchronisation";
-$labels['zpstats_legend'] = "Liste des appareils mobiles (cliquer sur un identifiant d'appareil pour voir ses détails)";
-$labels['zpstats_deviceid'] = "Identifiant appareil";
-$labels['zpstats_useragent'] = "Appareil";
-$labels['zpstats_devicetype'] = "Nom du client";
-$labels['zpstats_deviceuser'] = "Utilisateur";
-$labels['zpstats_firstsynctime'] = "Premi&egrave;re synchro";
-$labels['zpstats_lastupdatetime'] = "Premi&egrave;re synchro";
-$labels['zpstats_zpushversion'] = "Version de ZPush";
-$labels['zpstats_deviceos'] = "Version d'OS";
-$labels['zpstats_deviceimei'] = "IMEI";
 
 // Gestion des listes
 $labels['listes_titre'] = "Listes";
@@ -383,11 +390,4 @@ $labels['success_DeleteUserDeviceZP1'] = "Le compte vient d'être supprimé de l
 
 $labels['Webservice error'] = "Une erreur s'est produite, il est possible que le serveur de synchronisation mobile soit injoignable. Veuillez réessayer.";
 $labels['Missing arguments'] = "Une erreur s'est produite, essayez de vous déconnecter/reconnecter.";
-
-
-
-
-
-
-
 ?>

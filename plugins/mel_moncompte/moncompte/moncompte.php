@@ -59,8 +59,20 @@ class Moncompte {
 	{
 		$fid = rcube_utils::get_input_value('_fid', rcube_utils::INPUT_GPC);
 		if (isset($fid)) {
-
 			$this->rc->output->add_handler('moncompte_balp_list', array($this, 'moncompte_balp_list'));
+			$classname = ucfirst(strtolower($fid));
+			include_once __DIR__.'/'.$classname.'.php';
+			if (class_exists($classname)) {
+				if (isset($_POST[$classname])) {
+					$classname::change();
+				}
+				$classname::load();
+			}
+			else {
+				$this->rc->output->set_pagetitle($this->plugin->gettext('moncompte'));
+				$this->rc->output->send();
+			}
+			return;
 
 			switch ($fid) {
 				case 'rcmmodifmdp':
@@ -276,9 +288,9 @@ class Moncompte {
 
 				case 'rcmgestionlists':
 					$this->rc->output->add_handlers(array(
-  					'liste_listes' => array($this, 'readUserListes'),
-  					'listes_upload_csv' => array($this, 'rcmail_upload_csv_form'),
-  					'searchform'          => array($this->rc->output, 'search_form')
+						'liste_listes' => array($this, 'readUserListes'),
+						'listes_upload_csv' => array($this, 'rcmail_upload_csv_form'),
+						'searchform'          => array($this->rc->output, 'search_form')
 					));
 					$this->rc->output->send('mel_moncompte.listes');
 					break;
@@ -315,35 +327,45 @@ class Moncompte {
 		$a_show_cols = array('name');
 		
 		$result = array();
+		// Liste des pages Mon compte à afficher
+		$pages = ['informationspersonnelles'];
+		// Génération de l'affichage
+		foreach ($pages as $page) {
+			$class = ucfirst(strtolower($page));
+			include_once __DIR__.'/'.$class.'.php';
+			if ($class::isEnabled()) {
+				$result[] = array('id' => $page, 'name' => $this->plugin->gettext($page), 'class' => '');
+			}
+		}
 		
-		// Ajout du menu informations personnelles
-		if ($this->rc->config->get('enable_moncompte_infos', true)) {
-		    $result[] = array('id' => 'rcminfoperso', 'name' => $this->plugin->gettext('infoperso'), 'class' => '');
-		}
-		// Ajout du menu modification du mot de passe
-		if ($this->rc->config->get('enable_moncompte_mdp', true)) {
-			$result[] = array('id' => 'rcmmodifmdp', 'name' => $this->plugin->gettext('modifmdp'), 'class' => '');
-		}
-		// Ajout du menu Accet Internet
-		if ($this->rc->config->get('enable_moncompte_cgu', true)) {
-		    //$result[] = array('id' => 'rcmaccesinternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
-		}		
-		// Ajout du menu gestion des Listes
-		if ($this->rc->config->get('enable_moncompte_lists', true)) {
-		    $result[] = array('id' => 'rcmgestionlists', 'name' => $this->plugin->gettext('gestionlists'), 'class' => '');
-		}
-		// Ajout du menu Accet Internet
-		if ($this->rc->config->get('enable_moncompte_cgu', true)) {
-		    $result[] = array('id' => 'rcminternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
-		}
-		// Ajout du menu Gestionnaire d'absence
-		if ($this->rc->config->get('enable_moncompte_abs', true)) {
-		    $result[] = array('id' => 'rcmgestionabs', 'name' => $this->plugin->gettext('gestionabs'), 'class' => '');
-		}
-		// Ajout du menu gestion de la photo
-		if ($this->rc->config->get('enable_moncompte_photo', true)) {
-		    //$result[] = array('id' => 'rcmphoto', 'name' => $this->plugin->gettext('photo'), 'class' => '');
-		}
+		// // Ajout du menu informations personnelles
+		// if ($this->rc->config->get('enable_moncompte_infos', true)) {
+		//     $result[] = array('id' => 'rcminfoperso', 'name' => $this->plugin->gettext('infoperso'), 'class' => '');
+		// }
+		// // Ajout du menu modification du mot de passe
+		// if ($this->rc->config->get('enable_moncompte_mdp', true)) {
+		// 	$result[] = array('id' => 'rcmmodifmdp', 'name' => $this->plugin->gettext('modifmdp'), 'class' => '');
+		// }
+		// // Ajout du menu Accet Internet
+		// if ($this->rc->config->get('enable_moncompte_cgu', true)) {
+		//     $result[] = array('id' => 'rcmaccesinternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
+		// }		
+		// // Ajout du menu gestion des Listes
+		// if ($this->rc->config->get('enable_moncompte_lists', true)) {
+		//     $result[] = array('id' => 'rcmgestionlists', 'name' => $this->plugin->gettext('gestionlists'), 'class' => '');
+		// }
+		// // Ajout du menu Accet Internet
+		// if ($this->rc->config->get('enable_moncompte_cgu', true)) {
+		//     $result[] = array('id' => 'rcminternet', 'name' => $this->plugin->gettext('accesinternet'), 'class' => '');
+		// }
+		// // Ajout du menu Gestionnaire d'absence
+		// if ($this->rc->config->get('enable_moncompte_abs', true)) {
+		//     $result[] = array('id' => 'rcmgestionabs', 'name' => $this->plugin->gettext('gestionabs'), 'class' => '');
+		// }
+		// // Ajout du menu gestion de la photo
+		// if ($this->rc->config->get('enable_moncompte_photo', true)) {
+		//     $result[] = array('id' => 'rcmphoto', 'name' => $this->plugin->gettext('photo'), 'class' => '');
+		// }
 
 		// create XHTML table
 		$out = $this->rc->table_output($attrib, $result, $a_show_cols, 'id');

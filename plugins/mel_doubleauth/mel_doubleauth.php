@@ -153,7 +153,7 @@ class mel_doubleauth extends rcube_plugin {
             
             if($code)
             {
-                if(self::__checkCode($code))// || self::__isRecoveryCode($code))
+                if(self::__checkCode($code) || self::__isRecoveryCode($code))
                 {
                     if(self::__isRecoveryCode($code))
                     {

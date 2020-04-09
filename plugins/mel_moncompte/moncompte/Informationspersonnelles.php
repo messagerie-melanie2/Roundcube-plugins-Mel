@@ -19,9 +19,11 @@
  */
 require_once 'Moncompteobject.php';
 
- /**
-  * Classe d'affichage et de modification des informations personnelles de l'utilisateur
-  */
+use LibMelanie\Api\Mce\Users\Type;
+
+/**
+ * Classe d'affichage et de modification des informations personnelles de l'utilisateur
+ */
 class Informationspersonnelles extends Moncompteobject {
 	/**
      * Est-ce que cet objet Mon compte doit être affiché
@@ -113,12 +115,12 @@ class Informationspersonnelles extends Moncompteobject {
 				rcmail::get_instance()->output->set_env('moncompte_data_readonly', 'readonly');
 			}
 			// Gestion de la photo
-			rcmail::get_instance()->output->set_env('moncompte_data_publication_photo', $user->type == \LibMelanie\Api\Mce\Users\Type);
+			rcmail::get_instance()->output->set_env('moncompte_data_publication_photo', 
+				$user->type == Type::INDIVIDUELLE || $user->type == Type::PERSONNE);
 		}
 		else {
 			// Erreur d'auth
 			rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_nok', 'error');
-			return false;
 		}
 		// Envoi de la page
 		rcmail::get_instance()->output->send('mel_moncompte.informationspersonnelles');

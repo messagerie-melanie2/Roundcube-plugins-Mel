@@ -53,6 +53,20 @@ class mce_driver_mel extends driver_mel {
     }
     return self::$_users[$username];
   }
+
+  /**
+   * Retourne l'objet Group
+   * Permet de retourner l'instance Group en fonction du driver
+   * 
+   * @param string $group_dn [Optionnel] DN du groupe a récupérer
+   * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
+   * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
+   *
+   * @return \LibMelanie\Api\Mce\Group
+   */
+  public function getGroup($group_dn = null, $load = true, $fromCache = true) {
+    return null;
+  }
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée

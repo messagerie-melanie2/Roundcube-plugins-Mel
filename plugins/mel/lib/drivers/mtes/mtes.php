@@ -89,6 +89,38 @@ class mtes_driver_mel extends driver_mel {
     }
     return self::$_users[$username];
   }
+
+  /**
+   * Retourne l'objet Group
+   * Permet de retourner l'instance Group en fonction du driver
+   * 
+   * @param string $group_dn [Optionnel] DN du groupe a récupérer
+   * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
+   * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
+   *
+   * @return \LibMelanie\Api\Mce\Group
+   */
+  public function getGroup($group_dn = null, $load = true, $fromCache = true) {
+    if (!$fromCache) {
+      $group = new \LibMelanie\Api\Mel\Group();
+      $group->dn = $group_dn;
+      if ($load && !$group->load()) {
+        $group = null;
+      }
+      return $group;
+    }
+    if (!isset(self::$_groups)) {
+      self::$_groups = [];
+    }
+    if (!isset(self::$_groups[$group_dn])) {
+      self::$_groups[$group_dn] = new \LibMelanie\Api\Mel\Group();
+      self::$_groups[$group_dn]->dn = $group_dn;
+      if ($load && !self::$_groups[$group_dn]->load()) {
+        self::$_groups[$group_dn] = null;
+      }
+    }
+    return self::$_groups[$group_dn];
+  }
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée

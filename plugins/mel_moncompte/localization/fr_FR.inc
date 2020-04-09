@@ -145,22 +145,14 @@ $labels['mymailbox'] = 'Ma boite';
 $labels['mailboxchangetext'] = 'Cliquez ici pour sélectionner la boite mail à afficher';
 $labels['boitespart'] = 'Boites partagées';
 
-$labels['gestionabs'] = 'Gestionnaire d\'absence';
-$labels['gestionlists'] = 'Gestionnaire de listes';
-$labels['modifmdp'] = 'Mot de passe';
-$labels['accesinternet'] = 'Accès depuis Internet';
-$labels['infoperso'] = 'Informations personnelles';
-$labels['photo'] = 'Publication photographie';
-$labels['absence'] = "Gestionnaire d'absence";
-
-$labels['informationspersonnelles'] = 'Informations personnelles';
+// Mot de passe
+$labels['changepassword'] = 'Mot de passe';
 
 $labels['userlbl'] = 'Compte utilisateur';
 $labels['oldpasswordlbl'] = 'Mot de passe actuel';
 $labels['newpasswordlbl'] = 'Nouveau mot de passe';
 $labels['newpasswordconfirmlbl'] = 'Nouveau mot de passe (confirmation)';
 
-// Mot de passe
 $labels['changepassword_confirm'] = 'Votre mot de passe a bien été changé, vous devez redémarrer votre session Windows pour continuer à accéder aux fichiers réseau et aux applications Cerbérisées';
 $labels['changepassword_convention_error'] = 'Le nouveau mot de passe ne respecte pas la convention. ';
 $labels['changepassword_modification_error'] = 'Echec de la modification du mot de passe. ';
@@ -186,6 +178,8 @@ $labels['users_shares'] = 'Partager à un utilisateur';
 $labels['groups_shares'] = 'Partager à un groupe';
 
 // Informations personnelles
+$labels['informationspersonnelles'] = 'Informations personnelles';
+
 $labels['info_yes'] = 'oui';
 $labels['info_no'] = 'non';
 
@@ -227,6 +221,8 @@ $labels['info_modif_nok'] = "Echec de la modification des données personnelles 
 $labels['info_err_tel'] = "Mauvais format du numéro de ";
 
 // Acces internet
+$labels['accessinternet'] = 'Accés internet';
+
 $labels['access_internet_title'] = "Activation de l'accès à Mél depuis Internet";
 $labels['access_internet_status_label'] = "Statut de l'accès depuis Internet : ";
 $labels['access_internet_enable'] = "Activé";
@@ -238,13 +234,19 @@ $labels['access_internet_disable_label_allowed'] = "Vous ne pouvez accéder à M
 $labels['access_internet_enable_label'] = "Vous pouvez accéder à Mél depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
 $labels['access_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accés, vous devez vous connecter à cet écran depuis le réseau ministériel.";
 
+// Gestionnaire d'absence
+$labels['gestionnaireabsence'] = 'Gestionnaire d\'absence';
 
-// Acces internet
-$labels['inter_acces_title'] = "Accès à Mél web depuis Internet";
-$labels['inter_acces_label'] = "Activer l'accès par Internet à Mél (actif si coché)";
-$labels['inter_acces_deny'] = "Vous n'êtes pas autorisé à accéder à Mél depuis l'extérieur du ministère.";
-$labels['inter_acces_ok'] = "L'accès par internet est activé.";
-$labels['inter_acces_nok'] = "L'accès par internet est désactivé.";
+$labels['absence_date'] = 'Dates de début et de fin';
+$labels['absence_date_debut'] = 'À partir du : ';
+$labels['absence_date_fin'] = "Jusqu'au : ";
+$labels['absence_interne_legende'] = "Réponse interne";
+$labels['absence_texte_interne'] = "Activer la réponse automatique pour les correspondants internes (déclarés dans l'annuaire).";
+$labels['absence_externe_legende'] = "Réponse externe";
+$labels['absence_texte_externe'] = "Activer la réponse automatique pour les correspondants externes (interministériel, internet ...)";
+$labels['absence_texte_interne_different'] = "Message spécifique pour les correspondants externes";
+$labels['absence_texte_interne_identique'] = "Envoyer le même message qu'en interne";
+$labels['absence_texte_mot_cle'] = 'En tapant les mots clés "jusqu\'au 01/01/1970" dans le texte, la date sera automatiquement modifiée en changeant la date de fin.';
 
 // CGU inter
 $labels['inter_CGU_legend'] = "Conditions Générales d'Utilisation pour le surf internet";
@@ -291,19 +293,9 @@ $labels['inter_CGUmob_success'] = "Les CGU ont été acceptées.";
 $labels['inter_CGUmob_error'] = "L'opération a échoué : ";
 $labels['inter_CGUmob_fake'] = "Echec, cocher la case pour accepter les CGU.";
 
-//Gestionnaire absence
-$labels['abs_date'] = 'Dates de début et de fin';
-$labels['abs_date_debut'] = 'À partir du : ';
-$labels['abs_date_fin'] = "Jusqu'au : ";
-$labels['abs_intra_legend'] = "Réponse interne";
-$labels['abs_texte_intra'] = "Activer la réponse automatique pour les correspondants internes (déclarés dans l'annuaire).";
-$labels['abs_inter_legend'] = "Réponse externe";
-$labels['abs_texte_inter'] = "Activer la réponse automatique pour les correspondants externes (interministériel, internet ...)";
-$labels['abs_texte_intra_diff'] = "Message spécifique pour les correspondants externes";
-$labels['abs_texte_intra_nodiff'] = "Envoyer le même message qu'en interne";
-$labels['abs_texte_mot_cle'] = 'En tapant les mots clés "jusqu\'au 01/01/1970" dans le texte, la date sera automatiquement modifiée en changeant la date de fin.';
-
 // Gestion des listes
+$labels['gestionnairelists'] = "Gestionnaire de listes";
+
 $labels['listes_titre'] = "Listes";
 $labels['listes_membres'] = "Membres";
 $labels['listes_membres_dyn'] = "Membres (Cette liste est dynamique et n'est pas modifiable. Si vous souhaitez y ajouter des membres, contactez vos administrateurs Amédée)";

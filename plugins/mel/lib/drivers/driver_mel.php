@@ -69,6 +69,13 @@ abstract class driver_mel {
   protected static $_users;
   
   /**
+   * Singleton for the groups
+   * 
+   * @var \LibMelanie\Api\Mce\Group[]
+   */
+  protected static $_groups;
+
+  /**
    * Return the singleton instance
    *
    * @return driver_mel
@@ -103,6 +110,18 @@ abstract class driver_mel {
    * @return \LibMelanie\Api\Mce\User
    */
   abstract public function getUser($username = null, $load = true, $fromCache = true);
+
+  /**
+   * Retourne l'objet Group
+   * Permet de retourner l'instance Group en fonction du driver
+   * 
+   * @param string $group_dn [Optionnel] DN du groupe a récupérer
+   * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
+   * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
+   *
+   * @return \LibMelanie\Api\Mce\Group
+   */
+  abstract public function getGroup($group_dn = null, $load = true, $fromCache = true);
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée

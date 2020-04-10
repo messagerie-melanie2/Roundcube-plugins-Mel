@@ -43,8 +43,7 @@ class Gestionnaireabsence extends Moncompteobject {
 		// Authentification
 		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
-			$user->load(['outofoffices']);
-			rcmail::get_instance()->output->set_pagetitle($this->plugin->gettext('moncompte'));
+			$user->load(['outofoffices']);		
 			// Message interne
 			if (isset($user->outofoffices[Outofoffice::TYPE_INTERNAL])) {
 				rcmail::get_instance()->output->set_env('moncompte_absence_debut_interne', $user->outofoffices[Outofoffice::TYPE_INTERNAL]->start_date);
@@ -68,6 +67,8 @@ class Gestionnaireabsence extends Moncompteobject {
 				rcmail::get_instance()->output->set_env('moncompte_abs_radio_diff', 'checked');
 			}
 		}
+		// Titre de la page
+		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
 		rcmail::get_instance()->output->send('mel_moncompte.absence');
 	}
 	

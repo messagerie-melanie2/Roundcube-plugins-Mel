@@ -67,10 +67,8 @@ class Informationspersonnelles extends Moncompteobject {
 			'update_personnal_info',
 		];
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)) {
-			// Charger les attributs nécessaires
-			$user->load($attributes);
-
+		if ($user->authentification(rcmail::get_instance()->get_user_password(), true) 
+				&& $user->load($attributes)) {
 			// Ajouter les attributs à l'environnement pour la template
 			foreach ($attributes as $attribute) {
 				if ($attribute == 'photo_src' && !isset($user->photo_src)) {
@@ -122,6 +120,8 @@ class Informationspersonnelles extends Moncompteobject {
 			// Erreur d'auth
 			rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_nok', 'error');
 		}
+		// Titre de la page
+		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
 		// Envoi de la page
 		rcmail::get_instance()->output->send('mel_moncompte.informationspersonnelles');
     }

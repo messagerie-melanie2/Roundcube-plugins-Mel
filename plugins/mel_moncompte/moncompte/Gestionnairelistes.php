@@ -41,6 +41,8 @@ class Gestionnairelistes extends Moncompteobject {
 			'listes_upload_csv' => array(__CLASS__, 'rcmail_upload_csv_form'),
 			'searchform'        => array(rcmail::get_instance()->output, 'search_form')
 		));
+		// Titre de la page
+		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
 		rcmail::get_instance()->output->send('mel_moncompte.listes');
 	}
 	

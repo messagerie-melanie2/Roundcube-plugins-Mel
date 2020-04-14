@@ -1,0 +1,16 @@
+.toolbar a.button.archiver {
+    background-image: url('../images/archiver.png?v=e784.5000');
+}
+@media (prefers-color-scheme: dark) {
+	.toolbar a.button.archiver {
+	    background-image: url('../images/archiver-dark.png?v=e784.5000');
+    }
+}
+
+#nb_jours {
+    width: 230px;
+    margin-bottom: 10px;
+}
+#archivage_date {
+    width: 230px;
+}

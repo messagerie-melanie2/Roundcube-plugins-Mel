@@ -1,0 +1,34 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/mel_archivage.css" />
+</head>
+<body class="iframe floatingbuttons">
+	<h1 class="boxtitle">
+		<roundcube:label name="mel_archivage.title" />
+	</h1>
+	<div id="archivage-details" class="boxcontent">
+		<roundcube:object name="mel_archivage" />
+		<form name="valide" action="" method="get" class="propform" id="form_archivage">
+			<fieldset id="fieldset">
+				<input type="hidden" value="settings" name="_task">
+				<input type="hidden" value="plugin.mel_archivage_traitement" name="_action">
+				<div>
+					<label for="nb_jours" style="display: block; width: 120px; float: left;"><roundcube:label name="mel_archivage.nb_jours" /></label>
+					<input type="text" id="nb_jours" name="nb_jours" required/>
+				</div>
+				<div>
+					<label for="archivage_date" style="display: block; width: 120px; float: left;"><roundcube:label name="mel_archivage.date" /></label>
+					<input type="text" id="archivage_date" required/>
+				</div>
+				<br>
+				<div id="nb_mails"></div>
+			</fieldset>
+			
+			<input id="submit_archivage" type="submit" class="button mainaction" value="<roundcube:label name="save" />" />
+		</form>
+	</div>
+</body>
+</html>

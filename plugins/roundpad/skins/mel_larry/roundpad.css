@@ -131,10 +131,12 @@
 #files-folder-list ul li.mailbox.collection.ethercalc.selected span.name {
   background: url(images/ethercalc_selectionne.png?v=e784.5000) 9px center no-repeat;
 }
-#files-folder-list ul li.mailbox.collection.etherpad span.name {
+#files-folder-list ul li.mailbox.collection.etherpad span.name,
+#files-folder-list ul li.mailbox.collection.etherpad_public span.name {
   background: url(images/etherpad.png?v=e784.5000) 9px center no-repeat;
 }
-#files-folder-list ul li.mailbox.collection.etherpad.selected span.name {
+#files-folder-list ul li.mailbox.collection.etherpad.selected span.name,
+#files-folder-list ul li.mailbox.collection.etherpad_public.selected span.name {
   background: url(images/etherpad_selectionne.png?v=e784.5000) 9px center no-repeat;
 }
 

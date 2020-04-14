@@ -2,7 +2,8 @@
   background: url(spreadsheet.png) 0 0 no-repeat;
 }
 
-#filelist tbody td.filename.etherpad span {
+#filelist tbody td.filename.etherpad span,
+#filelist tbody td.filename.etherpad_public span {
   background: url(text.png) 0 0 no-repeat;
 }
 

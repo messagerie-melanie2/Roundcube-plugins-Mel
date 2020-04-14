@@ -729,38 +729,6 @@ roundpad_frame_load = function(frame)
   catch(e) {};
 };
 
-// handler for drag/drop on element
-roundpad_drag_hover = function(e)
-{
-  if (!file_api.env.folder)
-    return;
-
-  e.preventDefault();
-  e.stopPropagation();
-
-  var elem = $(e.target);
-
-  if (!elem.hasClass('droptarget'))
-    elem = elem.parents('.droptarget');
-
-  elem[e.type == 'dragover' ? 'addClass' : 'removeClass']('hover');
-};
-
-// returns localized file size
-roundpad_file_size = function(size)
-{
-  var i, units = ['GB', 'MB', 'KB', 'B'];
-
-  size = file_api.file_size(size);
-
-  for (i = 0; i < units.length; i++)
-    if (size.toUpperCase().indexOf(units[i]) > 0)
-      return size.replace(units[i], rcmail.gettext(units[i]));
-
-  return size;
-};
-
-
 /***********************************************************/
 /**********              Commands                 **********/
 /***********************************************************/

@@ -112,6 +112,9 @@ class roundpad_driver
     if ($file_type == Etherpad::TYPE_ETHERPAD) {
       return $this->createEtherpadFile($file_name, $folder_uri, $file_url, $file_owner);
     }
+    else if ($file_type == Etherpad_public::TYPE_ETHERPAD) {
+      return $this->createEtherpadPublicFile($file_name, $folder_uri, $file_url, $file_owner);
+    }
     else if ($file_type == Ethercalc::TYPE_ETHERCALC) {
       return $this->createEthercalcFile($file_name, $folder_uri, $file_url, $file_owner);
     }
@@ -141,6 +144,42 @@ class roundpad_driver
     $file->url = !empty($file_url) ? $file_url : Etherpad::GenerateURL($file_name);
     $file->owner = !empty($file_owner) ? $file_owner : rcmail::get_instance()->get_user_name();
     if ($this->_findFolder($folder_uri)->addFile($file)) {
+      $this->hasChanged = true;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  /**
+   * Create an etherpad public file
+   *
+   * @param string $file_name
+   * @param string $file_url
+   * @param string $folder_uri Absolute folder uri
+   * @param string $file_url
+   * @param string $file_owner
+   * @return boolean
+   */
+  public function createEtherpadPublicFile($file_name, $folder_uri, $file_url = null, $file_owner = null) {
+    $folder = $this->_findFolder($folder_uri);
+    if (!isset($folder)) {
+      throw new Exception(rcmail::get_instance()->gettext('exceptionfoldernotfound', 'roundpad'));
+      return false;
+    }
+    $file = new Etherpad_public();
+    $file->name = $file_name;
+    $file->created = time();
+    $file->url = !empty($file_url) ? $file_url : Etherpad_public::GenerateURL($file_name);
+    $file->owner = !empty($file_owner) ? $file_owner : rcmail::get_instance()->get_user_name();
+    if ($this->_findFolder($folder_uri)->addFile($file)) {
+      if (empty($file_url) && rcmail::get_instance()->config->get('etherpad_public_create_pad', false)) {
+        $_encoded_file_name = str_replace(rcmail::get_instance()->config->get('etherpad_public_url'), '', $file->url);
+        if (!Etherpad_public::CreatePad($_encoded_file_name)) {
+          $this->_findFolder($folder_uri)->removeFile($file);
+          return false;
+        }
+      }
       $this->hasChanged = true;
       return true;
     }
@@ -288,7 +327,7 @@ class roundpad_driver
   /**
    * Delete a file
    *
-   * @param File $file The file to remove
+   * @param string $file The file url to remove
    * @param string $folder_uri Absolute URI of the folder
    * @return boolean
    */
@@ -298,13 +337,29 @@ class roundpad_driver
       throw new Exception(rcmail::get_instance()->gettext('exceptionfoldernotfound', 'roundpad'));
       return false;
     }
+    list($index, $_file) = $folder->searchFile($file);
     if ($folder->removeFile($file)) {
+      if ($_file->owner == rcmail::get_instance()->get_user_name() && $_file->type == Etherpad_public::TYPE_ETHERPAD) {
+        $_encoded_file_name = str_replace(rcmail::get_instance()->config->get('etherpad_public_url'), '', $_file->url);
+        $ret = $this->deleteEtherpadPublicFile($_encoded_file_name);
+      }
+      else {
+        $ret = true;
+      }
       $this->hasChanged = true;
-      return true;
+      return $ret;
     }
     else {
       return false;
     }
+  }
+  /**
+   * Delete file from public etherpad
+   * 
+   * @return boolean
+   */
+  protected function deleteEtherpadPublicFile($file_name) {
+    return Etherpad_public::DeletePad($file_name);
   }
   /**
    * Create a folder

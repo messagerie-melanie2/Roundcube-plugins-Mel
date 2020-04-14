@@ -29,16 +29,16 @@ class mel_commentaire extends rcube_plugin
      * Tasks du plugin
      * @var string
      */
-    public $task = '.*';
+    public $task = 'mail';
 
     /**
      * Initialisation du plugin
      */
     function init() {
         $rcmail = rcmail::get_instance();
-        $this->add_hook('storage_init', array($this, 'storage_init'));
         
         if ($rcmail->action == 'show' || $rcmail->action == 'preview') {
+            $this->add_hook('storage_init', array($this, 'storage_init'));
             $this->add_hook('message_headers_output', array($this, 'message_headers'));
         }
     }

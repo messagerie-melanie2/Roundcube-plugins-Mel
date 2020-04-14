@@ -24,7 +24,7 @@ class mel_courrielleur extends rcube_plugin
      *
      * @var string
      */
-    public $task = 'login|settings|jappix|owncloud|ariane|discussion';
+    public $task = 'login|settings|ariane|discussion';
     /**
      * (non-PHPdoc)
      * @see rcube_plugin::init()

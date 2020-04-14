@@ -54,7 +54,6 @@ window.rcmail && window.files_api && rcmail.addEventListener('init', function() 
 
       rcmail.file_list.init();
       roundpad_list_coltypes();
-      roundpad_drag_drop_init($(rcmail.gui_objects.filelist).parents('.droptarget'));
     }
 
     // "one file only" commands
@@ -730,69 +729,6 @@ roundpad_frame_load = function(frame)
   catch(e) {};
 };
 
-// activate html5 file drop feature (if browser supports it)
-roundpad_drag_drop_init = function(container)
-{
-  if (!window.FormData && !(window.XMLHttpRequest && XMLHttpRequest.prototype && XMLHttpRequest.prototype.sendAsBinary)) {
-    return;
-  }
-
-  if (!container.length)
-    return;
-
-  $(document.body).bind('dragover dragleave drop', function(e) {
-    if (!file_api.env.folder)
-      return;
-
-    e.preventDefault();
-    container[e.type == 'dragover' ? 'addClass' : 'removeClass']('active');
-  });
-
-  container.bind('dragover dragleave', function(e) {
-    return roundpad_drag_hover(e);
-  })
-  container.children('div').bind('dragover dragleave', function(e) {
-    return roundpad_drag_hover(e);
-  })
-  container.get(0).addEventListener('drop', function(e) {
-      // abort event and reset UI
-      roundpad_drag_hover(e);
-      return file_api.file_drop(e);
-    }, false);
-};
-
-// handler for drag/drop on element
-roundpad_drag_hover = function(e)
-{
-  if (!file_api.env.folder)
-    return;
-
-  e.preventDefault();
-  e.stopPropagation();
-
-  var elem = $(e.target);
-
-  if (!elem.hasClass('droptarget'))
-    elem = elem.parents('.droptarget');
-
-  elem[e.type == 'dragover' ? 'addClass' : 'removeClass']('hover');
-};
-
-// returns localized file size
-roundpad_file_size = function(size)
-{
-  var i, units = ['GB', 'MB', 'KB', 'B'];
-
-  size = file_api.file_size(size);
-
-  for (i = 0; i < units.length; i++)
-    if (size.toUpperCase().indexOf(units[i]) > 0)
-      return size.replace(units[i], rcmail.gettext(units[i]));
-
-  return size;
-};
-
-
 /***********************************************************/
 /**********              Commands                 **********/
 /***********************************************************/
@@ -907,25 +843,25 @@ rcube_webmail.prototype.files_save = function()
   if (!this.file_editor)
     return;
 
-  // binary files like ODF need to be updated using FormData
-  if (this.file_editor.getContentCallback) {
-    if (!file_api.file_uploader_support())
-      return;
+//   // binary files like ODF need to be updated using FormData
+//   if (this.file_editor.getContentCallback) {
+//     if (!file_api.file_uploader_support())
+//       return;
 
-    file_api.req = file_api.set_busy(true, 'saving');
-//    this.file_editor.disable();
-    this.file_editor.getContentCallback(function(content, filename) {
-      file_api.file_uploader([content], {
-        action: 'file_update',
-        params: {file: rcmail.env.file, info: 1, token: file_api.env.token},
-        response_handler: 'file_save_response',
-        fieldname: 'content',
-        single: true
-      });
-    });
+//     file_api.req = file_api.set_busy(true, 'saving');
+// //    this.file_editor.disable();
+//     this.file_editor.getContentCallback(function(content, filename) {
+//       file_api.file_uploader([content], {
+//         action: 'file_update',
+//         params: {file: rcmail.env.file, info: 1, token: file_api.env.token},
+//         response_handler: 'file_save_response',
+//         fieldname: 'content',
+//         single: true
+//       });
+//     });
 
-    return;
-  }
+//     return;
+//   }
 
   var content = this.file_editor.getContent();
 
@@ -1032,7 +968,7 @@ function roundpad_ui()
 
     var first, elem = $('#files-folder-list'),
       list = $('<ul class="listing"></ul>'),
-      collections = !rcmail.env.action.match(/^(preview|show)$/) ? ['etherpad', 'ethercalc'] : [];
+      collections = !rcmail.env.action.match(/^(preview|show)$/) ? ['etherpad', 'etherpad_public', 'ethercalc'] : [];
 
     // try parent window if the list element does not exist
     // i.e. called from dialog in parent window
@@ -1724,112 +1660,6 @@ function roundpad_ui()
 
     // @TODO: we could update metadata instead
     this.file_list();
-  };
-
-  // handler when files are dropped to a designated area.
-  // compose a multipart form data and submit it to the server
-  this.file_drop = function(e)
-  {
-    var files = e.target.files || e.dataTransfer.files;
-
-    if (!files || !files.length)
-      return;
-
-    // prepare multipart form data composition
-    var ts = new Date().getTime(),
-      formdata = window.FormData ? new FormData() : null,
-      fieldname = 'file[]',
-      boundary = '------multipartformboundary' + (new Date).getTime(),
-      dashdash = '--', crlf = '\r\n',
-      multipart = dashdash + boundary + crlf;
-
-    // inline function to submit the files to the server
-    var submit_data = function() {
-      var multiple = files.length > 1;
-
-      rcmail.display_progress({name: ts});
-      if (rcmail.env.files_progress_name)
-        file_api.file_upload_progress(ts, true);
-
-      // complete multipart content and post request
-      multipart += dashdash + boundary + dashdash + crlf;
-
-      $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: file_api.env.url + file_api.url('file_upload', {folder: file_api.env.folder}),
-        contentType: formdata ? false : 'multipart/form-data; boundary=' + boundary,
-        processData: false,
-        timeout: 0, // disable default timeout set in ajaxSetup()
-        data: formdata || multipart,
-        headers: {'X-Session-Token': file_api.env.token},
-        success: function(data) {
-          file_api.file_upload_progress_stop(ts);
-          file_api.file_upload_response(data);
-        },
-        error: function(o, status, err) {
-          file_api.file_upload_progress_stop(ts);
-          rcmail.http_error(o, status, err);
-        },
-        xhr: function() {
-          var xhr = jQuery.ajaxSettings.xhr();
-          if (!formdata && xhr.sendAsBinary)
-            xhr.send = xhr.sendAsBinary;
-          return xhr;
-        }
-      });
-    };
-
-    // upload progress supported (and handler exists)
-    // add progress ID to the request - need to be added before files
-    if (rcmail.env.files_progress_name) {
-      if (formdata)
-        formdata.append(rcmail.env.files_progress_name, ts);
-      else
-        multipart += 'Content-Disposition: form-data; name="' + rcmail.env.files_progress_name + '"'
-          + crlf + crlf + ts + crlf + dashdash + boundary + crlf;
-    }
-
-    // get contents of all dropped files
-    var f, j, i = 0, last = files.length - 1;
-    for (j = 0; j <= last && (f = files[i]); i++) {
-      if (!f.name) f.name = f.fileName;
-      if (!f.size) f.size = f.fileSize;
-      if (!f.type) f.type = 'application/octet-stream';
-
-      // file name contains non-ASCII characters, do UTF8-binary string conversion.
-      if (!formdata && /[^\x20-\x7E]/.test(f.name))
-        f.name_bin = unescape(encodeURIComponent(f.name));
-
-      // do it the easy way with FormData (FF 4+, Chrome 5+, Safari 5+)
-      if (formdata) {
-        formdata.append(fieldname, f);
-        if (j == last)
-          return submit_data();
-      }
-      // use FileReader supporetd by Firefox 3.6
-      else if (window.FileReader) {
-        var reader = new FileReader();
-
-        // closure to pass file properties to async callback function
-        reader.onload = (function(file, j) {
-          return function(e) {
-            multipart += 'Content-Disposition: form-data; name="' + fieldname + '"';
-            multipart += '; filename="' + (f.name_bin || file.name) + '"' + crlf;
-            multipart += 'Content-Length: ' + file.size + crlf;
-            multipart += 'Content-Type: ' + file.type + crlf + crlf;
-            multipart += reader.result + crlf;
-            multipart += dashdash + boundary + crlf;
-
-            if (j == last)  // we're done, submit the data
-              return submit_data();
-          }
-        })(f,j);
-        reader.readAsBinaryString(f);
-      }
-
-      j++;
-    }
   };
 
   // open file in new window

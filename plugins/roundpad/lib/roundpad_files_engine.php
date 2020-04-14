@@ -60,7 +60,7 @@ class roundpad_files_engine
     public function ui()
     {
         $this->plugin->add_texts('localization/');
-        $this->plugin->add_label('etherpad', 'ethercalc', 'other', 'me', 'message_subject', 'message_body', 'help');
+        $this->plugin->add_label('etherpad', 'etherpad_public', 'ethercalc', 'other', 'me', 'message_subject', 'message_body', 'help');
         $this->rc->output->set_env('username', $this->rc->get_user_name());
         if (isset($_GET['_doc_url'])) {
           $this->rc->output->set_env('doc_url', rcube_utils::get_input_value('_doc_url', rcube_utils::INPUT_GET));
@@ -77,6 +77,7 @@ class roundpad_files_engine
             include_once 'files_roundpad/folder_roundpad.php';
             include_once 'files_roundpad/ethercalc.php';
             include_once 'files_roundpad/etherpad.php';
+            include_once 'files_roundpad/etherpad_public.php';
             include_once 'files_roundpad/other_roundpad.php';
 
             $this->driver = roundpad_driver::get_driver();
@@ -224,7 +225,11 @@ class roundpad_files_engine
       $input_name    = new html_inputfield(array('id' => 'file-name', 'name' => 'name', 'size' => 30));
       $select_parent = new html_select(array('id' => 'folder-parent', 'name' => 'parent'));
       $select_type   = new html_select(array('id' => 'file-type', 'name' => 'type'));
-      foreach ($this->rc->config->get('supported_file_types', array()) as $file_type) {
+      $supported_file_types = $this->rc->config->get('supported_file_types', array());
+      if (class_exists('mel') && !mel::is_internal()) {
+        $supported_file_types = $this->rc->config->get('supported_file_types_internet', array());
+      }
+      foreach ($supported_file_types as $file_type) {
         $select_type->add($this->plugin->gettext($file_type), $file_type);
       }
       $table         = new html_table(array('cols' => 2, 'class' => 'propform'));
@@ -274,7 +279,11 @@ class roundpad_files_engine
 
         $input_name    = new html_inputfield(array('id' => 'file-name', 'name' => 'name', 'size' => 30));
         $select_type   = new html_select(array('id' => 'file-type', 'name' => 'type'));
-        foreach ($this->rc->config->get('supported_file_types', array()) as $file_type) {
+        $supported_file_types = $this->rc->config->get('supported_file_types', array());
+        if (class_exists('mel') && !mel::is_internal()) {
+          $supported_file_types = $this->rc->config->get('supported_file_types_internet', array());
+        }
+        foreach ($supported_file_types as $file_type) {
           $select_type->add($this->plugin->gettext($file_type), $file_type);
         }
         $input_url    = new html_inputfield(array('id' => 'file-url', 'name' => 'url', 'size' => 30));
@@ -572,17 +581,12 @@ class roundpad_files_engine
             'folderdeleting', 'folderdeleteconfirm', 'folderdeletenotice',
             'filedeleting', 'filedeletenotice', 'filedeleteconfirm',
             'filemoving', 'filemovenotice', 'filemoveconfirm', 'filecopying', 'filecopynotice',
-            'collection_etherpad', 'collection_ethercalc',
+            'collection_etherpad', 'collection_etherpad_public', 'collection_ethercalc',
             'fileskip', 'fileskipall', 'fileoverwrite', 'fileoverwriteall'
         );
 
-        $this->rc->output->add_label('uploadprogress', 'GB', 'MB', 'KB', 'B');
         $this->rc->output->set_pagetitle($this->plugin->gettext('files'));
         $this->rc->output->set_env('file_mimetypes', $this->get_mimetypes());
-        $this->rc->output->set_env('files_quota', $_SESSION['roundpad_caps']['QUOTA']);
-        $this->rc->output->set_env('files_max_upload', $_SESSION['roundpad_caps']['MAX_UPLOAD']);
-        $this->rc->output->set_env('files_progress_name', $_SESSION['roundpad_caps']['PROGRESS_NAME']);
-        $this->rc->output->set_env('files_progress_time', $_SESSION['roundpad_caps']['PROGRESS_TIME']);
         $this->rc->output->send('roundpad.files');
     }
 
@@ -896,6 +900,7 @@ class roundpad_files_engine
     {
         return array(
                 'etherpad',
+                'etherpad_public',
                 'ethercalc',
                 'other',
         );

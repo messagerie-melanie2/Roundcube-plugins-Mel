@@ -117,10 +117,12 @@
 #files-folder-list ul li.mailbox.collection.ethercalc.selected span.name {
   background-position: 5px -24px;
 }
-#files-folder-list ul li.mailbox.collection.etherpad span.name {
+#files-folder-list ul li.mailbox.collection.etherpad span.name,
+#files-folder-list ul li.mailbox.collection.etherpad_public span.name {
   background-position: 5px -48px;
 }
-#files-folder-list ul li.mailbox.collection.etherpad.selected span.name {
+#files-folder-list ul li.mailbox.collection.etherpad.selected span.name,
+#files-folder-list ul li.mailbox.collection.etherpad_public.selected span.name {
   background-position: 5px -72px;
 }
 

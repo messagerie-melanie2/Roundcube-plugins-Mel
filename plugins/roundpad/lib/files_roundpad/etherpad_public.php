@@ -27,12 +27,12 @@
  * @property string $url Url of the file
  * @property string $owner Owner of the file
  */
-class Etherpad extends file_roundpad
+class Etherpad_public extends file_roundpad
 {
   /**
    * Constant type for etherpad
    */
-  const TYPE_ETHERPAD = 'etherpad';
+  const TYPE_ETHERPAD = 'etherpad_public';
   /**
    * Maximum length name for an etherpad
    */
@@ -53,7 +53,7 @@ class Etherpad extends file_roundpad
    * @return string
    */
   public static function GenerateURL($name) {
-    $etherpad_url = rcmail::get_instance()->config->get('etherpad_url');
+    $etherpad_url = rcmail::get_instance()->config->get('etherpad_public_url');
     $uniqid = uniqid();
     $name = urlencode(preg_replace("/[^a-zA-Z0-9_\-]+/", "", str_replace(' ', '_', trim(self::remove_accents($name)))));
     if (strlen($name . '_' . $uniqid) > self::MAX_LENGTH_NAME) {
@@ -70,9 +70,9 @@ class Etherpad extends file_roundpad
   public static function CreatePad($name) {
     mel_logs::get_instance()->log(mel_logs::INFO, "[Roundpad] Etherpad::CreatePad($name)");
 
-    $etherpad_api_url = rcmail::get_instance()->config->get('etherpad_api_url');
-    $etherpad_api_key = rcmail::get_instance()->config->get('etherpad_api_key');
-    $url = $etherpad_api_url . '/createPad?apikey=' . $etherpad_api_key .  '&padID=' . $name;
+    $etherpad_api_url = rcmail::get_instance()->config->get('etherpad_public_api_url');
+    $etherpad_api_key = rcmail::get_instance()->config->get('etherpad_public_api_key');
+    $url = $etherpad_api_url . '/createPad?apikey=' . $etherpad_api_key .  '&padID=' . urlencode($name);
 
     // Récupération du contenu du service Melanissimo
     $result = self::_get_url($url);
@@ -80,11 +80,38 @@ class Etherpad extends file_roundpad
     // Content
     $content = json_decode($result['content']);
 
-    if ($content['code'] === 0) {
+    if ($content->code === 0) {
       return true;
     }
     else {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "[Roundpad] Etherpad::CreatePad($name) Error : " . $content['message']);
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Roundpad] Etherpad::CreatePad($name) Error : " . $content->message);
+      return false;
+    }
+  }
+
+  /**
+   * Delete PAD on Etherpad using api key
+   * 
+   * @return boolean
+   */
+  public static function DeletePad($name) {
+    mel_logs::get_instance()->log(mel_logs::INFO, "[Roundpad] Etherpad::DeletePad($name)");
+
+    $etherpad_api_url = rcmail::get_instance()->config->get('etherpad_public_api_url');
+    $etherpad_api_key = rcmail::get_instance()->config->get('etherpad_public_api_key');
+    $url = $etherpad_api_url . '/deletePad?apikey=' . $etherpad_api_key .  '&padID=' . urlencode($name);
+
+    // Récupération du contenu du service Melanissimo
+    $result = self::_get_url($url);
+
+    // Content
+    $content = json_decode($result['content']);
+
+    if ($content->code === 0) {
+      return true;
+    }
+    else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[Roundpad] Etherpad::DeletePad($name) Error : " . $content->message);
       return false;
     }
   }
@@ -104,7 +131,7 @@ class Etherpad extends file_roundpad
     $options = array(
             CURLOPT_RETURNTRANSFER => true, // return web page
             CURLOPT_HEADER => false, // don't return headers
-            CURLOPT_USERAGENT => $rcmail->config->get('roundpad_curl_user_agent', ''), // name of client
+            CURLOPT_USERAGENT => $rcmail->config->get('roundpad_curl_user_agent', 'Roundcube'), // name of client
             CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
             CURLOPT_TIMEOUT => 1200, // time-out on response
             CURLOPT_SSL_VERIFYPEER => $rcmail->config->get('roundpad_curl_ssl_verifierpeer', 0),

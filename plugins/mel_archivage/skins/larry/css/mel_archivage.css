@@ -1,0 +1,32 @@
+.toolbar a.button.archiver {
+    background: url(../images/archiver.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
+}
+@media (prefers-color-scheme: dark) {
+	.toolbar a.button.archiver {
+	    background-image: url(./images/archiver-dark.png?v=e784.5000);
+    }
+}
+
+#nb_jours {
+    width: 230px;
+    margin-bottom: 10px;
+}
+
+#archivage_date {
+    width: 230px;
+}
+
+#archivage-details {
+    padding: 0;
+}
+
+#archivage-details .description {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border: 1px solid #FFFFE0;
+    border-color: var(--settings-warn-border-color);
+    background-color: #FFFFE0;
+    background-color: var(--settings-warn-bg-color);
+    margin-bottom: 15px;
+}

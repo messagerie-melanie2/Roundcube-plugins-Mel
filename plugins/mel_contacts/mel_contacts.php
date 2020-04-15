@@ -479,13 +479,6 @@ class mel_contacts extends rcube_plugin {
               'members' => array('type' => 'text', 'label' => false),
           ],
       ];
-      // Add restriction list
-      $args['form']['restriction'] = [
-        'name'    => $this->gettext('restrictions'),
-        'content' => [
-            'restriction' => array('type' => 'text', 'label' => false),
-        ],
-      ];
       // Add owner list
       $args['form']['owner'] = [
         'name'    => $this->gettext('owners'),
@@ -528,12 +521,13 @@ class mel_contacts extends rcube_plugin {
           ];
         }
       }
+      foreach ($args['record']['share'] as $k => $share) {
+        if (strpos($share, ':G') === false) {
+          unset($args['record']['share'][$k]);
+        }
+      }
       // Order share
-      usort($args['record']['share'], function($a, $b) {
-        $_a = explode(':', $a, 2);
-        $_b = explode(':', $b, 2);
-        return strcmp($_a[1].$_a[0], $_b[1].$_b[0]);
-      });
+      sort($args['record']['share']);
       // Add room number
       if (isset($args['form']['contact'])) {
         $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $this->gettext('room'));
@@ -559,8 +553,7 @@ class mel_contacts extends rcube_plugin {
     // TODO: Refaire ca propre en ORM 0.6
     $share = explode(':', $val, 2);
     $user = \LibMelanie\Ldap\Ldap::GetUserInfos($share[0], null, ['dn', 'cn']);
-    return '(' . html::span('share', $this->gettext('share_'.strtolower($share[1]))) . ') ' . 
-          html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($user['dn'])])], $user['cn'][0]);
+    return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($user['dn'])])], $user['cn'][0]);
   }
   
   /**

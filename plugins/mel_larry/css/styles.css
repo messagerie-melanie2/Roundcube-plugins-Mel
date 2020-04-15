@@ -2045,6 +2045,10 @@ ul.treelist li.selected > div.collapsed {
     margin-top: 0.8em;
 }
 
+.ui-tabs .tabsbar.ui-tabs-nav {
+    white-space: nowrap;
+}
+
 /**** Attachments ***/
 .attachmentslist li a {
 	color: #f50059;

@@ -35,17 +35,19 @@ var mel_shortcuts = {
     'mail.new-message' : {
       key: 78, // Ctrl + Shift + N
       ctrl: true,
+      shift: true,
       active: function(e) { return rcmail.task == 'mail'; },
       action: function(e) { return rcmail.command('compose', '', e.target, e); }
     },
     'mail.new-message-bis' : {
-      key: 109, // Ctrl + M
+      key: 77, // Ctrl + Shift + M
       ctrl: true,
+      shift: true,
       active: function(e) { return true; },
       action: function(e) { return rcmail.command('compose', '', e.target, e); }
     },
     'mail.reply': {
-      key: 114, // Ctrl + R
+      key: 82, // Ctrl + R
       ctrl: true,
       active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply']; },
       action: function(e) { 
@@ -55,6 +57,7 @@ var mel_shortcuts = {
     'mail.replyall': {
       key: 82, // Ctrl + Shift + R
       ctrl: true,
+      shift: true,
       active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply-all']; },
       action: function(e) { 
         return rcmail.command('reply-all', 'sub', e.target, e); 
@@ -63,13 +66,14 @@ var mel_shortcuts = {
     'mail.replylist': {
       key: 76, // Ctrl + Shift + L
       ctrl: true,
+      shift: true,
       active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply-list']; },
       action: function(e) {
           return rcmail.command('reply-list', '', e.target, e);
       }
     },
     'mail.forward-attachment': {
-      key: 108, // Ctrl + L
+      key: 76, // Ctrl + L
       ctrl: true,
       active: function(e) { return rcmail.task == 'mail' && rcmail.commands['forward-attachment']; },
       action: function(e) { 
@@ -79,6 +83,7 @@ var mel_shortcuts = {
     'mail.forward-inline': {
         key: 70, // Ctrl + Shift + F
         ctrl: true,
+        shift: true,
         active: function(e) { return rcmail.task == 'mail' && rcmail.commands['forward-inline']; },
         action: function(e) { 
           return rcmail.command('forward-inline', 'sub', e.target, e); 
@@ -89,6 +94,7 @@ var mel_shortcuts = {
     'mail.refresh': {
         key: 90, // Ctrl + Shift + Z
         ctrl: true,
+        shift: true,
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) { return rcmail.command('checkmail', '', e.target, e); }
     },
@@ -130,16 +136,10 @@ var mel_shortcuts = {
             }
         }
     },
-    'mail.open-mailboxes': {
-        key: 98, // Ctrl + B
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail' && $('.folderlist-header-m2').length; },
-        action: function(e) { $('.folderlist-header-m2').focus(); return $('.folderlist-header-m2').click(); }
-    },
     
     ///// Managing your messages     
     'mail.message-source': {
-        key: 117, // Ctrl + U
+        key: 85, // Ctrl + U
         ctrl: true,
         active: function(e) { return rcmail.task == 'mail' && rcmail.commands['viewsource']; },
         action: function(e) { 
@@ -147,7 +147,7 @@ var mel_shortcuts = {
         }
     },
     'mail.select-all': {
-        key: 97, // Ctrl + A
+        key: 65, // Ctrl + A
         ctrl: true,
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) { return rcmail.command('select-all', '', e.target, e); }
@@ -156,6 +156,7 @@ var mel_shortcuts = {
     'mail.copy': {
         key: 67, // Ctrl + Shift + C
         ctrl: true,
+        shift: true,
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) {
             e = mel_shortcuts_menu_target(e);
@@ -164,7 +165,7 @@ var mel_shortcuts = {
         }
     },
     'mail.move': {
-        key: 109, // Ctrl + M
+        key: 77, // Ctrl + M
         ctrl: true,
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) {
@@ -175,7 +176,7 @@ var mel_shortcuts = {
     },
     
     'mail.next-msg': {
-        key: 110, // n
+        key: 78, // n
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) {
             if (rcmail.message_list)
@@ -185,7 +186,7 @@ var mel_shortcuts = {
         }
     },
     'mail.prev-msg': {
-        key: 112, // p
+        key: 80, // p
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) {
             if (rcmail.message_list)
@@ -197,7 +198,7 @@ var mel_shortcuts = {
     
     ////// Tagging and marking your messages
     'mail.mark-as-read-unread': {
-        key: 109, // m
+        key: 77, // m
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) {
           var list = rcmail.message_list;
@@ -217,14 +218,14 @@ var mel_shortcuts = {
         }
     },
     'mail.mark-as-read': {
-        key: 114, // r
+        key: 82, // r
         active: function(e) { return rcmail.task == 'mail' && rcmail.commands['mark']; },
         action: function(e) {
           return rcmail.command('mark', 'read', e.target, e)
         }
     },
     'mail.add-remove-star': {
-        key: 115, // s
+        key: 83, // s
         active: function(e) { return rcmail.task == 'mail'; },
         action: function(e) {
           var list = rcmail.message_list;
@@ -256,7 +257,7 @@ var mel_shortcuts = {
     
     //////// Calendar
     'calendar.new-event': {
-        key: 105, // Ctrl + I
+        key: 73, // Ctrl + I
         ctrl: true,
         active: function(e) { return rcmail.commands['add-event-from-shortcut'] || rcmail.commands['addevent']; },
         action: function(e) {
@@ -265,6 +266,7 @@ var mel_shortcuts = {
     },
     'calendar.prevday': {
         key: 78, // Shift + N
+        shift: true,
         active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['prevDay']; },
         action: function(e) {
           return rcmail.command('prevDay', '', e.target, e);
@@ -280,6 +282,7 @@ var mel_shortcuts = {
     },
     'calendar.nextday': {
         key: 80, // Shift + P
+        shift: true,
         active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['nextDay']; },
         action: function(e) {
           return rcmail.command('nextDay', '', e.target, e);
@@ -304,6 +307,7 @@ var mel_shortcuts = {
     'menu.mail': {
         key: 49, // Ctrl + Shift + 1
         ctrl: true,
+        shift: true,
         active: function(e) { return rcmail.task != 'mail'; },
         action: function(e) {
           return rcmail.command('switch-task', 'mail', e.target, e);
@@ -312,80 +316,68 @@ var mel_shortcuts = {
     'menu.addressbook': {
         key: 50, // Ctrl + Shift + 2
         ctrl: true,
+        shift: true,
         active: function(e) { return rcmail.task != 'addressbook'; },
         action: function(e) {
           return rcmail.command('switch-task', 'addressbook', e.target, e);
         }
     },
-    'menu.moncompte': {
+    'menu.calendar': {
         key: 51, // Ctrl + Shift + 3
         ctrl: true,
-        active: function(e) { return rcmail.task != 'settings' && rcmail.env.action != 'plugin.mel_moncompte'; },
-        action: function(e) {
-          window.location = './?_task=settings&_action=plugin.mel_moncompte';
-        }
-    },
-    'menu.calendar': {
-        key: 52, // Ctrl + Shift + 4
-        ctrl: true,
+        shift: true,
         active: function(e) { return rcmail.task != 'calendar'; },
         action: function(e) {
           return rcmail.command('switch-task', 'calendar', e.target, e);
         }
     },
-    'menu.settings': {
-        key: 53, // Ctrl + Shift + 5
-        ctrl: true,
-        active: function(e) { return rcmail.task != 'settings' || rcmail.env.action == 'plugin.mel_moncompte'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'settings', e.target, e);
-        }
+    'menu.discussion': {
+      key: 52, // Ctrl + Shift + 4
+      ctrl: true,
+      active: function(e) { return rcmail.task != 'discussion'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'discussion', e.target, e);
+      }
     },
-    'menu.pegase': {
-        key: 54, // Ctrl + Shift + 6
-        ctrl: true,
-        active: function(e) { return rcmail.task != 'sondage'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'sondage', e.target, e);
-        }
-    },
-    'menu.jappix': {
-        key: 55, // Ctrl + Shift + 7
-        ctrl: true,
-        active: function(e) { return rcmail.task != 'jappix'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'jappix', e.target, e);
-        }
+    'menu.sondage': {
+      key: 53, // Ctrl + Shift + 5
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task != 'sondage'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'sondage', e.target, e);
+      }
     },
     'menu.tasks': {
-        key: 56, // Ctrl + Shift + 8
+        key: 55, // Ctrl + Shift + 7
         ctrl: true,
         active: function(e) { return rcmail.task != 'tasks'; },
         action: function(e) {
           return rcmail.command('switch-task', 'tasks', e.target, e);
         }
     },
-    'menu.anaisweb': {
-        key: 57, // Ctrl + Shift + 9
+    'menu.stockage': {
+        key: 54, // Ctrl + Shift + 6
         ctrl: true,
-        active: function(e) { return rcmail.task != 'anaisweb'; },
+        active: function(e) { return rcmail.task != 'stockage'; },
         action: function(e) {
-          return rcmail.command('switch-task', 'anaisweb', e.target, e);
+          return rcmail.command('switch-task', 'stockage', e.target, e);
         }
     },
-    'menu.owncloud': {
-        key: 48, // Ctrl + Shift + 0
-        ctrl: true,
-        active: function(e) { return rcmail.task != 'owncloud'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'owncloud', e.target, e);
-        }
+    'menu.settings': {
+      key: 56, // Ctrl + Shift + 8
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task != 'settings' || rcmail.env.action == 'plugin.mel_moncompte'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'settings', e.target, e);
+      }
     },
     
     
     //////// Save
     'save': {
-        key: 115, // Ctrl + S
+        key: 83, // Ctrl + S
         ctrl: true,
         active: function(e) { return rcmail.task == 'mail' || $('#eventedit').length && $('#eventedit').is(':visible'); },
         action: function(e) {
@@ -403,7 +395,7 @@ var mel_shortcuts = {
     
     /////// Edit
     'edit': {
-        key: 101, // Ctrl + E
+        key: 69, // Ctrl + E
         ctrl: true,
         active: function(e) { return rcmail.task == 'mail' && rcmail.commands['edit'] || rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
         action: function(e) {
@@ -430,7 +422,7 @@ var mel_shortcuts = {
     
     //////// Print
     'print': {
-        key: 112, // Ctrl + P
+        key: 80, // Ctrl + P
         ctrl: true,
         active: function(e) { return rcmail.commands['print']; },
         action: function(e) { 
@@ -442,6 +434,7 @@ var mel_shortcuts = {
     'search.focus': {
         key: 75, // Ctrl + Shift + K
         ctrl: true,
+        shift: true,
         active: function(e) { return true; },
         action: function(e) {
             if (!rcmail.is_framed())
@@ -477,15 +470,15 @@ var mel_shortcuts_menu_target = function(e)
 
 var mel_shortcuts_keypress = function(e)
 {
-    var i, handler, key = e.which, alt = e.altKey, ctrl = e.ctrlKey;
+    var i, handler, key = e.which, alt = e.altKey, ctrl = e.ctrlKey, shift = e.shiftKey;
     
     // Detect escape
     if (e.which == 0) {
       key = e.keyCode;
     }
 
-//    console.log(e.which);
-//    console.log(e.keyCode);
+    // console.log(e.which);
+    // console.log(e.keyCode);
 
     // do nothing on input elements if no ctrl
     if ($(e.target).is('textarea,input') && !ctrl && key != 27) {
@@ -504,6 +497,7 @@ var mel_shortcuts_keypress = function(e)
         if (handler.key == key
             && ((handler.ctrl && ctrl) || (!handler.ctrl && !ctrl))
             && ((handler.alt && alt) || (!handler.alt && !alt))
+            && ((handler.shift && shift) || (!handler.shift && !shift))
         ) {          
             // ... and action is active here
             if (handler.active(e)) {
@@ -526,7 +520,7 @@ var mel_shortcuts_keypress = function(e)
 
 // register the keypress handler
 window.rcmail && $(document).ready(function() {
-    $(document).on('keypress.mel_shortcuts', function(e) {
+    $(document).on('keydown.mel_shortcuts', function(e) {
         return mel_shortcuts_keypress(e);
     });
 });

@@ -425,7 +425,8 @@ class mel_contacts extends rcube_plugin {
       $args['form']['head']['content']['category'] = array('type' => 'text');
       $args['form']['head']['content']['type'] = array('type' => 'text');
     }
-    else {
+    // N'ajouter les informations sur Internet que si la double auth est activé (sinon sur intranet)
+    else if (mel::is_internal() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable()) {
       // Add members list
       $args['form']['members'] = [
           'name'    => $this->gettext('members'),
@@ -433,11 +434,112 @@ class mel_contacts extends rcube_plugin {
               'members' => array('type' => 'text', 'label' => false),
           ],
       ];
+      // Add restriction list
+      $args['form']['restriction'] = [
+        'name'    => $this->gettext('restrictions'),
+        'content' => [
+            'restriction' => array('type' => 'text', 'label' => false),
+        ],
+      ];
+      // Add owner list
+      $args['form']['owner'] = [
+        'name'    => $this->gettext('owners'),
+        'content' => [
+            'owner' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderOwner']),
+        ],
+      ];
+      // Add share list
+      $args['form']['share'] = [
+        'name'    => $this->gettext('shares'),
+        'content' => [
+            'share' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderShare']),
+        ],
+      ];
+      if (isset($args['record']['email'])) {
+        // Search in LDAP
+        // TODO: Refaire ca propre en ORM 0.6
+        $ldap = \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$SEARCH_LDAP);
+        $sr = $ldap->search($ldap->getConfig("base_dn"), "(&(objectClass=mineqMelListe)(mineqMelMembres=".$args['record']['email']."))", ['dn', 'mailpr']);
+        if ($sr && $ldap->count_entries($sr) > 0) {
+          $infos = $ldap->get_entries($sr);
+          $args['record']['list'] = [];
+          unset($infos['count']);
+          foreach ($infos as $info) {
+            $args['record']['list'][] = [
+              'dn' => $info['dn'],
+              'mail' => $info['mailpr'][0],
+            ];
+          }
+          // Sort lists
+          usort($args['record']['list'], function($a, $b) {
+            return strcmp($a['mail'], $b['mail']);
+          });
+          // Add share list
+          $args['form']['list'] = [
+            'name'    => $this->gettext('lists'),
+            'content' => [
+                'list' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderList']),
+            ],
+          ];
+        }
+      }
+      // Order share
+      usort($args['record']['share'], function($a, $b) {
+        $_a = explode(':', $a, 2);
+        $_b = explode(':', $b, 2);
+        return strcmp($_a[1].$_a[0], $_b[1].$_b[0]);
+      });
       // Add room number
       if (isset($args['form']['contact'])) {
         $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $this->gettext('room'));
       }
     }
     return $args;
+  }
+
+
+  /**
+   * Render owner field
+   */
+  public function renderOwner($val, $col) {
+    // TODO: Refaire ca propre en ORM 0.6
+    $dn = explode(',', $val, 2);
+    $user = \LibMelanie\Ldap\Ldap::GetUserInfos(null, $dn[0], ['cn']);
+    return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val)])], $user['cn'][0]);
+  }
+
+  /**
+   * Render share field
+   */
+  public function renderShare($val, $col) {
+    // TODO: Refaire ca propre en ORM 0.6
+    $share = explode(':', $val, 2);
+    $user = \LibMelanie\Ldap\Ldap::GetUserInfos($share[0], null, ['dn', 'cn']);
+    return '(' . html::span('share', $this->gettext('share_'.strtolower($share[1]))) . ') ' . 
+          html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($user['dn'])])], $user['cn'][0]);
+  }
+  
+  /**
+   * Render list field
+   */
+  public function renderList($val, $col) {
+    return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val['dn'])])], $val['mail']);
+  }
+
+  /**
+   * Converti l'id en identifiant utilisable par RC
+   * @param string $id
+   * @return string
+   */
+  private function _to_RC_id($id) {
+    return str_replace('.', '_-P-_', $id);
+  }
+  /**
+   * Converti l'id en identifiant utilisable par M2
+   * @param string $id
+   * @return string
+   */
+  private function _to_M2_id($id) {
+    return str_replace('_-P-_', '.', $id);
   }
 }

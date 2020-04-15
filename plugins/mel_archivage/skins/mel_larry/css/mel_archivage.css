@@ -45,3 +45,12 @@ body.archivage.loading {
     background-color: var(--settings-warn-bg-color);
     margin-bottom: 15px;
 }
+
+#archivage-details a.help {
+    text-indent: 0;
+    width: auto;
+    vertical-align: middle;
+    line-height: 26px;
+    padding: 1px 11px 1px 32px;
+    background: url(../images/help.png?v=e784.5000) 5px center no-repeat;
+}

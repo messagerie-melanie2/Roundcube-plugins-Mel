@@ -29,6 +29,11 @@
 				</div>
 			</fieldset>
 			<input type="submit" id="submit_archivage" class="button mainaction" value="<roundcube:label name="mel_archivage.archive" />" />
+			<roundcube:if condition="env:help_url" />
+				<a class="help button" target="_blank" href="<roundcube:var name="env:help_url" />">
+					<roundcube:label name="mel_archivage.help" />
+				</a>
+			<roundcube:endif />
 			<span id="nb_mails"></span>
 		</form>
 	</div>

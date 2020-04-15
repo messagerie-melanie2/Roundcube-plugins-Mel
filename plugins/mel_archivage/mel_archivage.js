@@ -104,7 +104,7 @@ rcube_webmail.prototype.plugin_archiver = function () {
         },
         buttons: buttons,
         width: 400,
-        height: 410,
+        height: 435,
         rcmail: rcmail
     }).width(380);
 };

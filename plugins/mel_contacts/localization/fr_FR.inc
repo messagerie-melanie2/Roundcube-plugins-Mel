@@ -21,7 +21,15 @@ $labels['settings'] = 'Paramètres';
 
 $labels['categories'] = 'Catégories';
 $labels['members'] = 'Membres';
+$labels['owners'] = 'Propriétaires';
+$labels['shares'] = 'Partages';
+$labels['lists'] = 'Listes de diffusion';
+$labels['restrictions'] = 'Restrictions';
 $labels['room'] = 'Bureau';
+$labels['share_l'] = 'Lecture';
+$labels['share_c'] = 'Écriture';
+$labels['share_e'] = 'Émission';
+$labels['share_g'] = 'Gestionnaire';
 
 $labels['bookcreate'] = 'Créer un carnet d\'adresse';
 $labels['bookedit'] = 'Modifier le carnet d\'adresse';

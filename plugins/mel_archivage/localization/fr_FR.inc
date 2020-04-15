@@ -17,5 +17,6 @@ $labels['error_no_message'] = "Il n'y a pas de courriel à archiver. Essayer de 
 $labels['error_bad_folder'] = "Vous ne pouvez pas archiver ce dossier (c'est déjà un dossier d'archives)";
 $labels['error_too_many_messages'] = "Une erreur s'est produite lors de la génération de l'archive. Essayez de réduire le nombre de jours pour diminuer la taille de l'archive.";
 $labels['INBOX'] = 'boite de reception';
+$labels['help'] = 'Afficher l\'aide';
 
 ?>

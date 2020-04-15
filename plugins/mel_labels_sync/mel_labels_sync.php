@@ -114,6 +114,12 @@ class mel_labels_sync extends rcube_plugin {
               'tb_label_popup'
       ));
 
+      // Template
+      $this->add_hook('template_object_searchfilter', array(
+              $this,
+              'search_filter'
+        ));
+
       // additional TB flags
       $this->message_tb_labels = array();
       $this->add_tb_flags = array();
@@ -221,6 +227,22 @@ class mel_labels_sync extends rcube_plugin {
     $this->api->output->add_footer(html::div(array(
             'style' => 'display: none;'
     ), $out));
+  }
+
+  /**
+   * Add labels to search filter
+   */
+  public function search_filter($attrib)
+  {
+      $html = '';
+      // Add labels in filter select
+      foreach ($this->_get_bal_labels() as $label) {
+        $html .= html::tag('option', ['value' => 'KEYWORD ' . strtoupper($label->key)], $this->gettext('labels').': '.$label->tag);
+      }
+      $html .= '</select>';
+
+      $attrib['content'] = str_replace('</select>', $html, $attrib['content']);
+      return $attrib;
   }
 
   /**

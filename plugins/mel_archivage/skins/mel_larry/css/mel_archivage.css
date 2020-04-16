@@ -4,7 +4,7 @@
 }
 @media (prefers-color-scheme: dark) {
 	.toolbar a.button.archiver {
-	    background-image: url(./images/archiver-dark.png?v=e784.5000);
+	    background-image: url(../images/archiver-dark.png?v=e784.5000);
     }
 }
 

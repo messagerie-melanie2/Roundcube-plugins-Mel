@@ -391,6 +391,12 @@
 	opacity: .8;
 }
 
+#portailview .item .front ul.news img {
+	max-width: 145px;
+	max-height: 50px;
+}
+
+
 #portailview .item .front .buttons {
 	padding: 15px 0;
 	border-top: 1px solid #d0d0d0;

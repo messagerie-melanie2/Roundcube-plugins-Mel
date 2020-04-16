@@ -191,8 +191,9 @@ EOF;
         
         // Récupération du username de l'utilisateur
         $username = $this->rc->get_user_name();
-        
-        if (!$rocketClient->authentification($this->rc->config->get('rocket_chat_admin_username', ''), $this->rc->config->get('rocket_chat_admin_password', ''), true)) {
+        $rocketClient->setUserId($this->rc->config->get('rocket_chat_admin_user_id', null));
+        $rocketClient->setAuthToken($this->rc->config->get('rocket_chat_admin_auth_token', null));
+        if (!$rocketClient->authentification($this->rc->config->get('rocket_chat_admin_username', ''), $this->rc->config->get('rocket_chat_admin_password', ''))) {
           throw new Exception($this->gettext('rocket_admin_auth_error'));
         }
         

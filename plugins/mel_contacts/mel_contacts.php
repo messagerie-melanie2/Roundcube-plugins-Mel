@@ -521,11 +521,17 @@ class mel_contacts extends rcube_plugin {
           ];
         }
       }
-      foreach ($args['record']['share'] as $k => $share) {
-        if (strpos($share, ':G') === false) {
-          unset($args['record']['share'][$k]);
+      if (is_array($args['record']['share'])) {
+        foreach ($args['record']['share'] as $k => $share) {
+          if (strpos($share, ':G') === false) {
+            unset($args['record']['share'][$k]);
+          }
         }
       }
+      else if (isset($args['record']['share']) && strpos($args['record']['share'], ':G') === false) {
+        unset($args['record']['share']);
+      }
+      
       // Order share
       sort($args['record']['share']);
       // Add room number

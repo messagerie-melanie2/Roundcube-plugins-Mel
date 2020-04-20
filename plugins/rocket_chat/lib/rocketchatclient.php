@@ -294,6 +294,7 @@ class RocketChatClient {
    * Création d'un token pour l'utilisateur Rocket.Chat
    *
    * @param string $userId
+   * 
    * @return boolean
    */
   public function createUserToken($userId) {
@@ -330,10 +331,11 @@ class RocketChatClient {
     );
   }
   /**
-   * Récupération du userId de l'utilisateur Rocket.Chat s'il existe
+   * Récupération des infos de l'utilisateur Rocket.Chat s'il existe
    *
    * @param string $username
-   * @return string UserId
+   * 
+   * @return array infos
    */
   public function userInfo($username) {
     if (mel_logs::is(mel_logs::TRACE))
@@ -349,18 +351,23 @@ class RocketChatClient {
     );
     
     $result = $this->_get_url($this->_api_url . self::USER_INFO, $params, $headers);
-    $userId = null;
+    $infos = null;
     if (isset($result['content'])) {
       mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::userInfo() content: " . $result['content']);
       if (!is_array($result['content'])) {
         $result['content'] = json_decode($result['content'], true);
       }
       if (isset($result['content']['success']) && $result['content']['success'] == true && isset($result['content']['user'])) {
-        $userId = $result['content']['user']['_id'];
+        $infos = [
+          'id'        => $result['content']['user']['_id'],
+          'name'      => $result['content']['user']['name'],
+          'username'  => $username,
+          'fname'     => $result['content']['user']['name'],
+          'status'    => $result['content']['user']['status'],
+        ]; 
       }
     }
-    
-    return $userId;
+    return $infos;
   }
   /**
    * Getter Auth Token

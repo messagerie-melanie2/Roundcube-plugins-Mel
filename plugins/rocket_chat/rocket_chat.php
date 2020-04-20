@@ -34,7 +34,7 @@ class rocket_chat extends rcube_plugin {
      * 
      * @see rcube_plugin::init()
      */
-    function init() {
+    public function init() {
         global $__page_content;
         
         $this->rc = rcmail::get_instance();
@@ -154,7 +154,7 @@ EOF;
         }
     }
     
-    function action() {
+    public function action() {
         if (mel_logs::is(mel_logs::TRACE))
             mel_logs::get_instance()->log(mel_logs::TRACE, "rocket_chat::action()");
         // register UI objects
@@ -169,18 +169,57 @@ EOF;
         $this->rc->output->send('rocket_chat.rocket_chat');
     }
     
-    function action_courrielleur() {
+    public function action_courrielleur() {
       $rcmail = rcmail::get_instance();
       // Chargement du template d'affichage
       $rcmail->output->set_pagetitle($this->gettext('title'));
       $rcmail->output->send('rocket_chat.rocket_chat_courrielleur');
+    }
+
+    /**
+     * Récupération des informations de l'utilisateur en fonction de son username
+     * Utilise soit les API Rocket.Chat soit l'accés direct à la base de données
+     * 
+     * @param string $username [Optionnel] soit le username soit l'email
+     * @param string $email [Optionnel] soit le username soit l'email
+     * 
+     * @return array Liste des informations de l'utilisateur
+     * "id": "nSYqWzZ4GsKTX4dyK",
+     * "status": "offline",
+     * "active": true,
+     * "name": "Example User",
+     * "username": "example"
+     */
+    public function getUserInfos($username = null, $email = null) {
+      $infos = null;
+      if (!isset($username)) {
+        $user = \LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($email);
+        $username = $user['uid'][0];
+      }
+      if ($useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false)) {
+        // Charge la lib MongoDB si nécessaire
+        require_once __DIR__ . '/lib/rocketchatmongodb.php';
+        $mongoClient = new RocketChatMongoDB($this->rc);
+        $infos = $mongoClient->searchUserByUsername($username);
+      }
+      else {
+        // Charge la lib cliente
+        require_once __DIR__ . '/lib/rocketchatclient.php';
+        $rocketClient = new RocketChatClient($this->rc);
+        $rocketClient->setUserId($this->rc->config->get('rocket_chat_admin_user_id', null));
+        $rocketClient->setAuthToken($this->rc->config->get('rocket_chat_admin_auth_token', null));
+        if ($rocketClient->authentification($this->rc->config->get('rocket_chat_admin_username', ''), $this->rc->config->get('rocket_chat_admin_password', ''))) {
+          $infos = $rocketClient->userInfo($username);
+        }
+      }
+      return $infos;
     }
     
     /**
      * Appel le login vers Rocket.Chat
      * @throws Exception
      */
-    function login() {
+    public function login() {
       $userId = $this->getUserId();
       $authToken = $this->getAuthToken();
       
@@ -203,13 +242,8 @@ EOF;
         }
         
         if (!isset($userId)) {
-          if ($useMongoDB) {
-            $infos = $mongoClient->searchUserByUsername($username);
-            $userId = $infos['id'];
-          }
-          else {
-            $userId = $rocketClient->userInfo($username);
-          }
+          $infos = $this->getUserInfos($username);
+          $userId = $infos['id'];
           if (!isset($userId)) {
             $user = driver_mel::gi()->getUser($username);
             $ret = $rocketClient->createUser($user->uid, $user->email, $this->rc->get_user_password(), $user->name);
@@ -271,7 +305,7 @@ EOF;
      * @param array $attrib            
      * @return string
      */
-    function rocket_chat_frame($attrib) {
+    public function rocket_chat_frame($attrib) {
         if (!$attrib['id'])
             $attrib['id'] = 'rcmrocketchatframe';
         

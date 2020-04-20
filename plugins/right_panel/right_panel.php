@@ -54,8 +54,13 @@ class right_panel extends rcube_plugin
       
       // add hook to refresh panel
       $this->add_hook('refresh', array($this, 'refresh'));
+
+      // Actions list for the right panel
+      $actions = ['', 'plugin.annuaire',];
       
-      if ($this->rc->output->type == 'html') {
+      if ($this->rc->output->type == 'html' 
+          // Is action in the list ?
+          && in_array($this->rc->action, $actions)) {
         // Include css files
         $this->include_stylesheet('css/right_panel.css');
         $skin = $this->rc->config->get('skin');
@@ -67,7 +72,7 @@ class right_panel extends rcube_plugin
         $this->include_script('js/jquery.mCustomScrollbar.concat.min.js');
         $this->include_script('../../program/js/treelist.js');
         
-        $rocket_chat = $this->rc->plugins->get_plugin('rocket_chat');
+        $rocket_chat = $this->rc->config->get('right_panel_use_rocket_chat', false) ?  $this->rc->plugins->get_plugin('rocket_chat') : null;
         if (isset($rocket_chat) && is_object($rocket_chat)) {
           // Ariane Web Socket
           if (!isset($_SESSION['rocket_chat_auth_token'])) {
@@ -77,11 +82,8 @@ class right_panel extends rcube_plugin
             catch (Exception $ex) {}
           }
           // Récupérer le user status Ariane
-          // Charge la lib MongoDB si nécessaire
           try {
-            require_once __DIR__ . '/../rocket_chat/lib/rocketchatmongodb.php';
-            $mongoClient = new RocketChatMongoDB($this->rc);
-            $infos = $mongoClient->searchUserByUsername($this->rc->get_user_name());
+            $infos = $rocket_chat->getUserInfos($this->rc->get_user_name());
             $this->rc->output->set_env('ariane_user_status', $infos['status']);
             $this->rc->output->set_env('ariane_url', $this->rc->config->get('rocket_chat_url'));
             $this->rc->output->set_env('ariane_photo_url', $this->rc->config->get('rocket_chat_url') . 'avatar/');
@@ -91,14 +93,22 @@ class right_panel extends rcube_plugin
             $this->rc->output->set_env('username', $this->rc->get_user_name());
             $this->rc->output->set_env('user_fullname', $infos['fname']);
             $this->rc->output->set_env('user_email', $infos['email']);
+            // Initials
+            $words = explode(" ", $infos['fname']); $acronym = "";
+            foreach ($words as $w) { $acronym .= $w[0]; }
+            $this->rc->output->set_env('user_initials', $acronym);
           }
           catch (Exception $ex) {}
         }
         if (!isset($infos['fname'])) {
-          $identity = $this->rc->user->get_identity();
-          $this->rc->output->set_env('username', $this->rc->get_user_name());
-          $this->rc->output->set_env('user_fullname', $identity['name']);
-          $this->rc->output->set_env('user_email', $identity['email']);
+          $user = \LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+          $this->rc->output->set_env('username', $user['uid'][0]);
+          $this->rc->output->set_env('user_fullname', $user['displayname'][0]);
+          $this->rc->output->set_env('user_email', $user['mailpr'][0]);
+          // Initials
+          $words = explode(" ", $user['displayname'][0]); $acronym = "";
+          foreach ($words as $w) { $acronym .= $w[0]; }
+          $this->rc->output->set_env('user_initials', $acronym);
         }
       }
     }
@@ -117,14 +127,13 @@ class right_panel extends rcube_plugin
     $addressbook->set_group('favorites');
     $addressbook->page_size = 200;
     $records = $addressbook->list_records();
-    // Charge la lib MongoDB si nécessaire
-    require_once __DIR__ . '/../rocket_chat/lib/rocketchatmongodb.php';
-    $mongoClient = new RocketChatMongoDB($this->rc);
+
+    $rocket_chat = $this->rc->config->get('right_panel_use_rocket_chat', false) ?  $this->rc->plugins->get_plugin('rocket_chat') : null;
     $contacts = [];
     
     while ($row = $records->next()) {
-      if (isset($row['email'])) {
-        $infos = $mongoClient->searchUserByEmail($row['email']);
+      if (isset($row['email']) && isset($rocket_chat) && is_object($rocket_chat)) {
+        $infos = $rocket_chat->getUserInfos(null, $row['email']);
         if (isset($infos['username'])) {
           $row['username'] = $infos['username'];
           $row['url'] = $this->rc->config->get('rocket_chat_url') . 'direct/'. $infos['username'];
@@ -158,11 +167,6 @@ class right_panel extends rcube_plugin
         $name = str_replace('> ', '', $name);
         $name = explode(' - ', $name, 2);
         $name = $name[0];
-//         // Message body
-//         $body = $this->rc->storage->get_body($a_header->uid);
-//         if (!isset($body)) {
-//           $body = '';
-//         }
         // Message format date
         $contacts[] = [
             'muid' => $a_header->uid,
@@ -171,7 +175,6 @@ class right_panel extends rcube_plugin
             'munread' => isset($a_header->flags['SEEN']) ? false : true,
             'name' => $name,
             'email' => $a_parts[1]['mailto'],
-//             'text' => (strlen($body) > 55 ? substr($body, 0, 55) . '...' : $body),
             'timestamp' => $timestamp,
         ];
       }
@@ -187,8 +190,7 @@ class right_panel extends rcube_plugin
    * Handler for keep-alive requests
    * This will refresh the right panel
    */
-  public function refresh($attr)
-  {
+  public function refresh($attr) {
     $this->rc->output->command('plugin.refresh_right_panel');
   }
   
@@ -210,12 +212,16 @@ class right_panel extends rcube_plugin
    */
   public function get_contact_email() {
     $username = rcube_utils::get_input_value('_user', rcube_utils::INPUT_GET);
-    // Charge la lib MongoDB si nécessaire
-    require_once __DIR__ . '/../rocket_chat/lib/rocketchatmongodb.php';
-    $mongoClient = new RocketChatMongoDB($this->rc);
-    $infos = $mongoClient->searchUserByUsername($username);
-    // Return the result to the ajax commant
-    $result = array('action' => 'plugin.get_contact_email', 'username' => $username, 'email' => $infos['email'], 'status' => $infos['status']);
+    $rocket_chat = $this->rc->config->get('right_panel_use_rocket_chat', false) ?  $this->rc->plugins->get_plugin('rocket_chat') : null;
+    if (isset($rocket_chat) && is_object($rocket_chat)) {
+      $infos = $rocket_chat->getUserInfos($this->rc->get_user_name());
+      // Return the result to the ajax command
+      $result = array('action' => 'plugin.get_contact_email', 'username' => $username, 'email' => $infos['email'], 'status' => $infos['status']);
+    }
+    else {
+      // Return the result to the ajax command
+      $result = array('action' => 'plugin.get_contact_email', 'username' => $username);
+    }
     echo json_encode($result);
     exit;
   }

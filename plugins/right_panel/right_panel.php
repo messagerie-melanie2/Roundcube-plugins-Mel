@@ -55,7 +55,7 @@ class right_panel extends rcube_plugin
       // add hook to refresh panel
       $this->add_hook('refresh', array($this, 'refresh'));
       
-      if ($this->rc->output->type == 'html' && $this->rc->task == 'portail') {
+      if ($this->rc->output->type == 'html') {
         // Include css files
         $this->include_stylesheet('css/right_panel.css');
         $skin = $this->rc->config->get('skin');

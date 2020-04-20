@@ -14,6 +14,10 @@ body.right_panel_minified #mainscreen {
     right: 80px !important;
 }
 
+.button-logout {
+	display: none !important;
+}
+
 #right_panel {
 	position: absolute;
 	right: 0;

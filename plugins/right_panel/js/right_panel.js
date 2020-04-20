@@ -462,16 +462,28 @@ rcube_webmail.prototype.right_panel_today_date = function() {
   $('#right_panel_date').attr('title', this.get_label("right_panel.day_" + date.getDay()) + " " + date.getDate() + " " + this.get_label("right_panel.month_" + date.getMonth()) + " " + date.getFullYear());
 };
 
-//Set user presence
+// Set user presence
 rcube_webmail.prototype.right_panel_user_presence = function() {
 	// Gestion de la presence
 	if (!rcmail.env['ariane_user_status']) {
 		rcmail.env['ariane_user_status'] = rcmail.right_panel_storage_get('ariane_user_status');
 	}
 	rcmail.right_panel_storage_set('ariane_user_status', rcmail.env['ariane_user_status']);
-	$('#right_panel_presence').append('<span class="userstatus"></span>');
-	if (!$('#right_panel').hasClass('minified')) {
+	if (!$('#right_panel').hasClass('minified') && rcmail.env.web_socket_ariane_url) {
+		$('#right_panel_presence').append('<span class="userstatus"></span>');
+		$('#right_panel_presence').append('<img src="' + rcmail.env.ariane_photo_url + rcmail.env.username + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">');
 		$('#right_panel_presence').append('<span class="fullname">' + rcmail.env['user_fullname'] + '</span>');
+	}
+	else if (!$('#right_panel').hasClass('minified')) {
+		$('#right_panel_presence').append('<span class="name_no_status">' + rcmail.env['user_fullname'] + '</span>');
+	}
+	else if (rcmail.env.web_socket_ariane_url) {
+		$('#right_panel_presence').append('<span class="userstatus"></span>');
+		$('#right_panel_presence').append('<img src="' + rcmail.env.ariane_photo_url + rcmail.env.username + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">');
+	}
+	else {
+
+		$('#right_panel_presence').append('<span class="name_no_status">' + rcmail.env['user_initials'] + '</span>');
 	}
 	
 	$('#right_panel #right_panel_presence').removeClass('online');
@@ -499,6 +511,16 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence away"><a class="active" href="#" onclick="rcmail.change_im_status(\'away\')">' + rcmail.get_label('right_panel.away') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online') + '</a></li>');
+			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout'));
+		}
+	}
+	else {
+		if ($('#right_panel').hasClass('minified')) {
+			$('#useroptions').addClass('minified');
+			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout_min'));
+		}
+		else {
+			$('#useroptions').removeClass('minified');
 			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout'));
 		}
 	}
@@ -1070,10 +1092,10 @@ rcube_webmail.prototype.right_panel_get_mails_count = function(force = false) {
 rcube_webmail.prototype.right_panel_get_contacts_favorites = function(force = false) {
 	this.enable_command('compose', true);
 	if (!window.favoritesList.length || force) {
-	  if (window.lastUpdateFavoritesList && (Date.now() - window.lastUpdateFavoritesList) < window.NEXT_REFRESH) {
-      // The refresh is to early
-      return;
-    }
+	  	if (window.lastUpdateFavoritesList && (Date.now() - window.lastUpdateFavoritesList) < window.NEXT_REFRESH) {
+			// The refresh is to early
+			return;
+		}
 		if (window.favoritesList.length && !$('#right_panel_contacts .contacts_favorites .contact').length) {
 			this.right_panel_refresh_favorites_contacts();
 		}

@@ -87,22 +87,60 @@ body.right_panel_minified #mainscreen {
 }
 
 #right_panel.minified #right_panel_presence {
-	width: 62px;
+	width: 45px;
   	height: 27px;
   	background-position: 50px center
 }
 
-#right_panel_presence .fullname {
+#right_panel_presence .fullname,
+#right_panel_presence img {
 	display: block;
 	font-size: 10px;
 	font-weight: 600;
 	color: #fff;
 	position: relative;
-	top: -35px;
-	left: 35px;
+	top: -43px;
+	left: 48px;
 	padding-right: 35px;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 119px;
+}
+
+#right_panel.iframecss #right_panel_presence .fullname {
+	top: -40px;
+}
+
+#right_panel_presence img {
+	width: 34px;
+	border-radius: 20px;
+	display: inline-block;
+	padding: 0;
+	top: -10px;
+	left: 7px;
+}
+
+#right_panel.minified #right_panel_presence img {
+	width: 22px;
+	top: -13px;
+	left: 18px;
+}
+
+#right_panel_presence .name_no_status {
+	display: block;
+	font-size: 11px;
+	font-weight: 600;
+	color: #fff;
+	position: relative;
+	top: 17px;
+	left: 15px;
+}
+
+#right_panel.minified #right_panel_presence .name_no_status {
+	font-size: 12px;
+	top: 6px;
+	left: 17px;
 }
 
 #right_panel.minified #right_panel_presence .fullname {
@@ -113,16 +151,16 @@ body.right_panel_minified #mainscreen {
 	display: block;
 	font-size: 8px;
 	position: relative;
-	top: -35px;
-	left: 35px;
+	top: -39px;
+	left: 60px;
+}
+
+#right_panel.iframecss #right_panel_presence .presence {
+	top: -36px;
 }
 
 #right_panel.minified #right_panel_presence .presence {
-	top: -20px;
-	left: 23px;
-	width: 20px;
-	overflow: hidden;
-	white-space: nowrap;
+	display: none;
 }
 
 #right_panel_presence.offline .presence {
@@ -143,13 +181,18 @@ body.right_panel_minified #mainscreen {
 
 #right_panel_presence .userstatus {
 	display: block;
-	height: 46px;
-	width: 40px;
+	height: 15px;
+	width: 15px;
+	position: relative;
+	top: 21px;
+	left: 45px;
 }
 
 #right_panel.minified #right_panel_presence .userstatus {
-	height: 27px;
-	width: 25px;
+	height: 15px;
+	width: 15px;
+	top: 6px;
+	left: 0px;
 }
 
 #right_panel_presence.offline .userstatus {
@@ -658,7 +701,7 @@ body.right_panel_minified #mainscreen {
 	font-size: 10px;
 	margin: 0 12px;
 	width: 159px;
-	heigth: 25px;
+	height: 25px;
 	line-height: 15px;
 }
 

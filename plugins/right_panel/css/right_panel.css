@@ -14,7 +14,7 @@ body.right_panel_minified #mainscreen {
     right: 80px !important;
 }
 
-.button-logout {
+#taskbar .button-logout {
 	display: none !important;
 }
 

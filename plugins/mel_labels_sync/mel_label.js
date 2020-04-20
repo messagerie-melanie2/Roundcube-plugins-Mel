@@ -206,6 +206,7 @@ function rcm_tb_label_create_popupmenu()
 {
 	if ($('div#tb_label_popup').length > 0
 			&& !$('div#tb_label_popup').is(":visible")) {
+		$('div#tb_label_popup').attr('data-sticky', 'true');
 		rcmail.http_request('plugin.thunderbird_labels.update_list_labels');
 	}	
 }
@@ -305,6 +306,8 @@ function rcm_tb_label_init_onclick()
 						}
 					}
 				});
+				// Fermer le pop up au click
+				rcmail.hide_menu('tb_label_popup');
 			});
 		});
 	}
@@ -363,6 +366,9 @@ function show_rcube_manage_labels()
     height: 500,
     rcmail: rcmail
   }).width(640);
+
+  // Fermer le pop up au click
+  rcmail.hide_menu('tb_label_popup');
 }
 
 $(document).ready(function() {

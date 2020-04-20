@@ -1072,7 +1072,7 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 		var photo = '<img src="' + photo_url + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">';
 		$('#right_panel_contacts .contacts_favorites .contacts_list').append('<div class="contact ' + id + '" title="' + contact.name + '"><span class="cid">' + contact.ID + '</span><span class="photo">' + photo + '</span><span class="name">' + name + '</span>' + status + im + email + '</div>');
 	}
-	$("#right_panel_contacts .contacts_favorites .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 20});
+	$("#right_panel_contacts .contacts_favorites .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 500});
 };
 
 // Refresh recents contacts list
@@ -1128,7 +1128,7 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 			$('#right_panel_contacts .contacts_recents .contacts_list').append('<div class="contact ' + contact.id + classMunread + '" id="' + i + '" title="' + contact.name + '"><span class="date">' + date + '</span><span class="title">' + rcmail.get_label('right_panel.' + contact.type) + '</span><span class="name">' + contact.name + '</span><span class="subject">' + contact.subject + '</span><span class="text">' + contact.text + '</span></div>');		
 		}
 	}
-	$("#right_panel_contacts .contacts_recents .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 20});
+	$("#right_panel_contacts .contacts_recents .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 500});
 };
 
 // Web socket Ariane

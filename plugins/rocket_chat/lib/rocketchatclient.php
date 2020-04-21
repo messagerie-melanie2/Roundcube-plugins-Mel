@@ -211,8 +211,7 @@ class RocketChatClient {
    * @return boolean
    */
   public function createUser($username, $email, $password, $name) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::createUser($username, $email, $name)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatClient::createUser($username, $email, $name)");
     
     $params = array(
         "username" => $username,
@@ -298,8 +297,7 @@ class RocketChatClient {
    * @return boolean
    */
   public function createUserToken($userId) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::createUserToken($userId)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatClient::createUserToken($userId)");
     
     $params = array(
         "userId" => $userId
@@ -338,8 +336,7 @@ class RocketChatClient {
    * @return array infos
    */
   public function userInfo($username) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::userInfo($username)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatClient::userInfo($username)");
     
     $params = array(
         "username" => $username

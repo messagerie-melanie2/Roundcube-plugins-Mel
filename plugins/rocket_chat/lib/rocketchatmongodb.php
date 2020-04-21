@@ -97,8 +97,7 @@ class RocketChatMongoDB {
    * @return boolean
    */
   public function setLdapUser($userId, $username) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatMongoDB::setLdapUser($userId, $username)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatMongoDB::setLdapUser($userId, $username)");
     $collection = $this->getCollection();
 
     try {
@@ -126,8 +125,7 @@ class RocketChatMongoDB {
    * @return boolean
    */
   public function setAuthTokenUser($userId, $authToken) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatMongoDB::setAuthTokenUser($userId)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatMongoDB::setAuthTokenUser($userId)");
     $collection = $this->getCollection();
     
     try {
@@ -151,8 +149,7 @@ class RocketChatMongoDB {
    * @return boolean
    */
   public function unsetAuthTokenUser($userId, $authToken) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatMongoDB::unsetAuthTokenUser($userId)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatMongoDB::unsetAuthTokenUser($userId)");
     $collection = $this->getCollection();
     
     try {
@@ -176,8 +173,7 @@ class RocketChatMongoDB {
    * @return NULL|string User ID de l'utilisateur
    */
   public function searchUserByUsername($username) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatMongoDB::searchUserByUsername($username)");
+    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatMongoDB::searchUserByUsername($username)");
     $collection = $this->getCollection();
 
     try {
@@ -206,8 +202,7 @@ class RocketChatMongoDB {
    * @return NULL|array ['id', 'name', 'username', 'status']
    */
   public function searchUserByEmail($email) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatMongoDB::searchUserByEmail($email)");
+      mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatMongoDB::searchUserByEmail($email)");
       $collection = $this->getCollection();
       
       try {

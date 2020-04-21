@@ -29,6 +29,18 @@ class right_panel extends rcube_plugin
    * @var rcmail
    */
   private $rc;
+  /**
+   * Durée de conservation des données contacts dans le cache
+   *
+   * @var int
+   */
+  const CACHE_RIGHT_PANEL_CONTACTS = 60*60;
+  /**
+   * Durée de conservation des données messages dans le cache
+   *
+   * @var int
+   */
+  const CACHE_RIGHT_PANEL_MESSAGES = 10*60;
   
   /**
    * (non-PHPdoc)
@@ -125,25 +137,34 @@ class right_panel extends rcube_plugin
    * Lister les contacts favoris de l'utilisateur
    */
   public function list_contacts_favorites() {
-    $addressbook = $this->rc->get_address_book(str_replace('.', '_-P-_', $this->rc->get_user_name()));
-    $addressbook->set_group('favorites');
-    $addressbook->page_size = 200;
-    $records = $addressbook->list_records();
-
-    $rocket_chat = $this->rc->config->get('right_panel_use_rocket_chat', false) ?  $this->rc->plugins->get_plugin('rocket_chat') : null;
-    $contacts = [];
-    
-    while ($row = $records->next()) {
-      if (isset($row['email']) && isset($rocket_chat) && is_object($rocket_chat)) {
-        $infos = $rocket_chat->getUserInfos(null, $row['email']);
-        if (isset($infos['username'])) {
-          $row['username'] = $infos['username'];
-          $row['url'] = $this->rc->config->get('rocket_chat_url') . 'direct/'. $infos['username'];
-          $row['status'] = $infos['status'];
-          $row['photo_url'] = $this->rc->config->get('rocket_chat_url') . 'avatar/'. $infos['username'];
-        }        
+    $cache = \mel::InitM2Cache();
+    if (isset($cache['right_panel_contacts']) 
+        && isset($cache['right_panel_contacts']['contacts']) && time() - $cache['right_panel_contacts']['time'] <= self::CACHE_RIGHT_PANEL_CONTACTS) {
+      $contacts = unserialize($cache['right_panel_contacts']['contacts']);
+    }
+    else {
+      $addressbook = $this->rc->get_address_book(str_replace('.', '_-P-_', $this->rc->get_user_name()));
+      $addressbook->set_group('favorites');
+      $addressbook->page_size = 200;
+      $records = $addressbook->list_records();
+  
+      $rocket_chat = $this->rc->config->get('right_panel_use_rocket_chat', false) ?  $this->rc->plugins->get_plugin('rocket_chat') : null;
+      $contacts = [];
+      
+      while ($row = $records->next()) {
+        if (isset($row['email']) && isset($rocket_chat) && is_object($rocket_chat)) {
+          $infos = $rocket_chat->getUserInfos(null, $row['email']);
+          if (isset($infos['username'])) {
+            $row['username'] = $infos['username'];
+            $row['url'] = $this->rc->config->get('rocket_chat_url') . 'direct/'. $infos['username'];
+            $row['status'] = $infos['status'];
+            $row['photo_url'] = $this->rc->config->get('rocket_chat_url') . 'avatar/'. $infos['username'];
+          }        
+        }
+        $contacts[] = $row;
       }
-      $contacts[] = $row;
+      $cache['right_panel_contacts'] = array('time' => time(), 'contacts' => serialize($contacts));
+      \mel::SetM2Cache($cache);
     }
     // Return the result to the ajax commant
     $result = array('action' => 'plugin.list_contacts_favorites', 'contacts' => $contacts);
@@ -155,31 +176,40 @@ class right_panel extends rcube_plugin
    * Lister les contacts récents de l'utilisateur
    */
   public function list_contacts_recent() {
-    // Desactiver le threading pour éviter les problèmes
-    $this->rc->storage->set_threading(false);
-    // Lister les messages INBOX triés par date
-    $a_headers = $this->rc->storage->list_messages('INBOX', 0, 'date', 'DESC');
-    $contacts = [];
-    foreach ($a_headers as $a_header) {
-      $a_parts = rcube_mime::decode_address_list($a_header->from);
-      $timestamp = strtotime($a_header->date);
-      
-      if (isset($a_parts[1])) {
-        $name = $a_parts[1]['name'];
-        $name = str_replace('> ', '', $name);
-        $name = explode(' - ', $name, 2);
-        $name = $name[0];
-        // Message format date
-        $contacts[] = [
-            'muid' => $a_header->uid,
-            'type' => 'mail',
-            'subject' => trim(rcube_mime::decode_header($a_header->subject, $a_header->charset)),
-            'munread' => isset($a_header->flags['SEEN']) ? false : true,
-            'name' => $name,
-            'email' => $a_parts[1]['mailto'],
-            'timestamp' => $timestamp,
-        ];
+    $cache = \mel::InitM2Cache();
+    if (isset($cache['right_panel_messages']) 
+        && isset($cache['right_panel_messages']['messages']) && time() - $cache['right_panel_messages']['time'] <= self::CACHE_RIGHT_PANEL_MESSAGES) {
+      $contacts = unserialize($cache['right_panel_messages']['messages']);
+    }
+    else {
+      // Desactiver le threading pour éviter les problèmes
+      $this->rc->storage->set_threading(false);
+      // Lister les messages INBOX triés par date
+      $a_headers = $this->rc->storage->list_messages('INBOX', 0, 'date', 'DESC');
+      $contacts = [];
+      foreach ($a_headers as $a_header) {
+        $a_parts = rcube_mime::decode_address_list($a_header->from);
+        $timestamp = strtotime($a_header->date);
+        
+        if (isset($a_parts[1])) {
+          $name = $a_parts[1]['name'];
+          $name = str_replace('> ', '', $name);
+          $name = explode(' - ', $name, 2);
+          $name = $name[0];
+          // Message format date
+          $contacts[] = [
+              'muid' => $a_header->uid,
+              'type' => 'mail',
+              'subject' => trim(rcube_mime::decode_header($a_header->subject, $a_header->charset)),
+              'munread' => isset($a_header->flags['SEEN']) ? false : true,
+              'name' => $name,
+              'email' => $a_parts[1]['mailto'],
+              'timestamp' => $timestamp,
+          ];
+        }
       }
+      $cache['right_panel_messages'] = array('time' => time(), 'messages' => serialize($contacts));
+      \mel::SetM2Cache($cache);
     }
     // send output
     header("Content-Type: application/json; charset=" . RCUBE_CHARSET);

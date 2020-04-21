@@ -191,7 +191,8 @@ EOF;
         $user = \LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($email);
         $username = $user['uid'][0];
       }
-      if ($useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false)) {
+      $useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false);
+      if ($useMongoDB) {
         // Charge la lib MongoDB si nécessaire
         require_once __DIR__ . '/lib/rocketchatmongodb.php';
         $mongoClient = new RocketChatMongoDB($this->rc);

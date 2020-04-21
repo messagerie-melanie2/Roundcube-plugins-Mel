@@ -30,419 +30,423 @@
  * 
  * voir : https://support.mozilla.org/en-US/kb/keyboard-shortcuts
  */
-var mel_shortcuts = {
-    ///// Starting a new message
-    'mail.new-message' : {
-      key: 78, // Ctrl + Shift + N
-      ctrl: true,
-      shift: true,
-      active: function(e) { return rcmail.task == 'mail'; },
-      action: function(e) { return rcmail.command('compose', '', e.target, e); }
-    },
-    'mail.new-message-bis' : {
-      key: 77, // Ctrl + Shift + M
-      ctrl: true,
-      shift: true,
-      active: function(e) { return true; },
-      action: function(e) { return rcmail.command('compose', '', e.target, e); }
-    },
-    'mail.reply': {
-      key: 82, // Ctrl + R
-      ctrl: true,
-      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply']; },
-      action: function(e) { 
-        return rcmail.command('reply', '', e.target, e); 
-      }
-    },
-    'mail.replyall': {
-      key: 82, // Ctrl + Shift + R
-      ctrl: true,
-      shift: true,
-      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply-all']; },
-      action: function(e) { 
-        return rcmail.command('reply-all', 'sub', e.target, e); 
-      }
-    },
-    'mail.replylist': {
-      key: 76, // Ctrl + Shift + L
-      ctrl: true,
-      shift: true,
-      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply-list']; },
-      action: function(e) {
-          return rcmail.command('reply-list', '', e.target, e);
-      }
-    },
-    'mail.forward-attachment': {
-      key: 76, // Ctrl + L
-      ctrl: true,
-      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['forward-attachment']; },
-      action: function(e) { 
-        return rcmail.command('forward-attachment', 'sub', e.target, e); 
-      }
-    },
-    'mail.forward-inline': {
-        key: 70, // Ctrl + Shift + F
-        ctrl: true,
-        shift: true,
-        active: function(e) { return rcmail.task == 'mail' && rcmail.commands['forward-inline']; },
-        action: function(e) { 
-          return rcmail.command('forward-inline', 'sub', e.target, e); 
-        }
-    },    
-    
+var mel_shortcuts_press = { 
     ///// Receiving and reading messages
-    'mail.refresh': {
-        key: 90, // Ctrl + Shift + Z
-        ctrl: true,
-        shift: true,
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) { return rcmail.command('checkmail', '', e.target, e); }
-    },
     'mail.expand-all-threads': {
-      key: 42, // *
+      keypress: 42, // *
       active: function(e) { return rcmail.task == 'mail'; },
       action: function(e) {
           return rcmail.command('expand-all', '', e.target, e);
       }
     },
-    'mail.expand-thread': {
-        key: 39, // ->
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            if (rcmail.message_list) {
-                var row, uid = rcmail.message_list.get_single_selection();
-                if (uid && (row = rcmail.message_list.rows[uid])) {
-                    rcmail.message_list.expand_all(row);
-                }
-            }
-        }
-    },
     'mail.collapse-all-threads': {
-        key: 92, // \
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            return rcmail.command('collapse-all', '', e.target, e);
-        }
-    },
-    'mail.collapse-thread': {
-        key: 37, // <-
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            if (rcmail.message_list) {
-                var row, uid = rcmail.message_list.get_single_selection();
-                if (uid && (row = rcmail.message_list.rows[uid])) {
-                    rcmail.message_list.collapse_all(row);
-                }
-            }
-        }
-    },
-    
-    ///// Managing your messages     
-    'mail.message-source': {
-        key: 85, // Ctrl + U
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail' && rcmail.commands['viewsource']; },
-        action: function(e) { 
-          return rcmail.commands['viewsource'] ? rcmail.command('viewsource', '', e.target, e) : false; 
-        }
-    },
-    'mail.select-all': {
-        key: 65, // Ctrl + A
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) { return rcmail.command('select-all', '', e.target, e); }
-    },
-    
-    'mail.copy': {
-        key: 67, // Ctrl + Shift + C
-        ctrl: true,
-        shift: true,
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            e = mel_shortcuts_menu_target(e);
-            e.rcmail.command('copy', '', e.target, e);
-            e.target.remove();
-        }
-    },
-    'mail.move': {
-        key: 77, // Ctrl + M
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            e = mel_shortcuts_menu_target(e);
-            e.rcmail.command('move', '', e.target, e);
-            e.target.remove();
-        }
-    },
-    
-    'mail.next-msg': {
-        key: 78, // n
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            if (rcmail.message_list)
-                return rcmail.message_list.select_next();
-            else
-                return rcmail.command('nextmessage', '', '', e);
-        }
-    },
-    'mail.prev-msg': {
-        key: 80, // p
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-            if (rcmail.message_list)
-                return rcmail.message_list.use_arrow_key(38, false);
-            else
-                return rcmail.command('previousmessage', '', '', e);
-        }
-    },
-    
-    ////// Tagging and marking your messages
-    'mail.mark-as-read-unread': {
-        key: 77, // m
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-          var list = rcmail.message_list;
-          if (list) {
-            var flag = 'unread', a_uids = list.get_selection();
-            
-            for (n=0, len=a_uids.length; n<len; n++) {
-              id = a_uids[n];
-              if (list.rows[id].unread) {
-                flag = 'read';
-                break;
-              }
-            }
-            
-            return rcmail.command('mark', flag, a_uids, e)
-          }
-        }
-    },
-    'mail.mark-as-read': {
-        key: 82, // r
-        active: function(e) { return rcmail.task == 'mail' && rcmail.commands['mark']; },
-        action: function(e) {
-          return rcmail.command('mark', 'read', e.target, e)
-        }
-    },
-    'mail.add-remove-star': {
-        key: 83, // s
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-          var list = rcmail.message_list;
-          if (list) {
-            var flag = 'unflagged', a_uids = list.get_selection();
-            
-            for (n=0, len=a_uids.length; n<len; n++) {
-              id = a_uids[n];
-              if (!list.rows[id].flagged) {
-                flag = 'flagged';
-                break;
-              }
-            }
-            
-            return rcmail.command('mark', flag, a_uids, e)
-          }
-        }
-    },
-    
-    ////// Mail compose
-    'mail.send': {
-        key: 13, // Ctrl + Enter
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail'; },
-        action: function(e) {
-          return rcmail.commands['send'] ? rcmail.command('send', '', e.target, e) : false;
-        }
-    },
-    
-    //////// Calendar
-    'calendar.new-event': {
-        key: 73, // Ctrl + I
-        ctrl: true,
-        active: function(e) { return rcmail.commands['add-event-from-shortcut'] || rcmail.commands['addevent']; },
-        action: function(e) {
-          return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
-        }
-    },
-    'calendar.prevday': {
-        key: 78, // Shift + N
-        shift: true,
-        active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['prevDay']; },
-        action: function(e) {
-          return rcmail.command('prevDay', '', e.target, e);
-        }
-    },
-    'calendar.today': {
-        key: 35, // Alt + End
-        alt: true,
-        active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['today']; },
-        action: function(e) {
-          return rcmail.command('today', '', e.target, e);
-        }
-    },
-    'calendar.nextday': {
-        key: 80, // Shift + P
-        shift: true,
-        active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['nextDay']; },
-        action: function(e) {
-          return rcmail.command('nextDay', '', e.target, e);
-        }
-    },
-    
-    //////// Escape
-    'escape': {
-        key: 27, // Escape
-        active: function(e) { return true; },
-        action: function(e) {
-          if (rcmail.task == 'mail' && rcmail.env.action == 'compose') {
-            return rcmail.commands['list'] ? rcmail.command('list', '', e.target, e) : false;
-          }
-          else if (rcmail.task == 'calendar' && rcmail.env.action == 'print') {
-            return window.close();
-          }
-        }
-    },
-    
-    //////// Menu switch
-    'menu.mail': {
-        key: 49, // Ctrl + Shift + 1
-        ctrl: true,
-        shift: true,
-        active: function(e) { return rcmail.task != 'mail'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'mail', e.target, e);
-        }
-    },
-    'menu.addressbook': {
-        key: 50, // Ctrl + Shift + 2
-        ctrl: true,
-        shift: true,
-        active: function(e) { return rcmail.task != 'addressbook'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'addressbook', e.target, e);
-        }
-    },
-    'menu.calendar': {
-        key: 51, // Ctrl + Shift + 3
-        ctrl: true,
-        shift: true,
-        active: function(e) { return rcmail.task != 'calendar'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'calendar', e.target, e);
-        }
-    },
-    'menu.discussion': {
-      key: 52, // Ctrl + Shift + 4
-      ctrl: true,
-      active: function(e) { return rcmail.task != 'discussion'; },
+      keypress: 92, // \
+      active: function(e) { return rcmail.task == 'mail'; },
       action: function(e) {
-        return rcmail.command('switch-task', 'discussion', e.target, e);
+          return rcmail.command('collapse-all', '', e.target, e);
       }
     },
-    'menu.sondage': {
-      key: 53, // Ctrl + Shift + 5
+};
+
+var mel_shortcuts_down = {
+  ///// Starting a new message
+  'mail.new-message' : {
+    keydown: 78, // Ctrl + Shift + N
+    ctrl: true,
+    shift: true,
+    active: function(e) { return rcmail.task == 'mail'; },
+    action: function(e) { return rcmail.command('compose', '', e.target, e); }
+  },
+  'mail.new-message-bis' : {
+    keydown: 77, // Ctrl + Shift + M
+    ctrl: true,
+    shift: true,
+    active: function(e) { return true; },
+    action: function(e) { return rcmail.command('compose', '', e.target, e); }
+  },
+  'mail.reply': {
+    keydown: 82, // Ctrl + R
+    ctrl: true,
+    active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply']; },
+    action: function(e) { 
+      return rcmail.command('reply', '', e.target, e); 
+    }
+  },
+  'mail.replyall': {
+    keydown: 82, // Ctrl + Shift + R
+    ctrl: true,
+    shift: true,
+    active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply-all']; },
+    action: function(e) { 
+      return rcmail.command('reply-all', 'sub', e.target, e); 
+    }
+  },
+  'mail.replylist': {
+    keydown: 76, // Ctrl + Shift + L
+    ctrl: true,
+    shift: true,
+    active: function(e) { return rcmail.task == 'mail' && rcmail.commands['reply-list']; },
+    action: function(e) {
+        return rcmail.command('reply-list', '', e.target, e);
+    }
+  },
+  'mail.forward-attachment': {
+    keydown: 76, // Ctrl + L
+    ctrl: true,
+    active: function(e) { return rcmail.task == 'mail' && rcmail.commands['forward-attachment']; },
+    action: function(e) { 
+      return rcmail.command('forward-attachment', 'sub', e.target, e); 
+    }
+  },
+  'mail.forward-inline': {
+      keydown: 70, // Ctrl + Shift + F
       ctrl: true,
       shift: true,
-      active: function(e) { return rcmail.task != 'sondage'; },
-      action: function(e) {
-        return rcmail.command('switch-task', 'sondage', e.target, e);
+      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['forward-inline']; },
+      action: function(e) { 
+        return rcmail.command('forward-inline', 'sub', e.target, e); 
       }
-    },
-    'menu.tasks': {
-        key: 55, // Ctrl + Shift + 7
-        ctrl: true,
-        active: function(e) { return rcmail.task != 'tasks'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'tasks', e.target, e);
-        }
-    },
-    'menu.stockage': {
-        key: 54, // Ctrl + Shift + 6
-        ctrl: true,
-        active: function(e) { return rcmail.task != 'stockage'; },
-        action: function(e) {
-          return rcmail.command('switch-task', 'stockage', e.target, e);
-        }
-    },
-    'menu.settings': {
-      key: 56, // Ctrl + Shift + 8
-      ctrl: true,
-      shift: true,
-      active: function(e) { return rcmail.task != 'settings' || rcmail.env.action == 'plugin.mel_moncompte'; },
-      action: function(e) {
-        return rcmail.command('switch-task', 'settings', e.target, e);
-      }
-    },
-    
-    
-    //////// Save
-    'save': {
-        key: 83, // Ctrl + S
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail' || $('#eventedit').length && $('#eventedit').is(':visible'); },
-        action: function(e) {
-          if ($('#eventedit').length && $('#eventedit').is(':visible')) {
-            $('#eventedit').parent().parent().find('.mainaction').click();
-          }
-          else if (rcmail.env.action == 'list' || rcmail.env.action == 'show' || rcmail.env.action == '') {
-            return rcmail.commands['download'] ? rcmail.command('download', '', e.target, e) : false;
-          }
-          else if (rcmail.env.action == 'compose') {
-            return rcmail.commands['savedraft'] ? rcmail.command('savedraft', '', e.target, e) : false;
-          }
-        }
-    },
-    
-    /////// Edit
-    'edit': {
-        key: 69, // Ctrl + E
-        ctrl: true,
-        active: function(e) { return rcmail.task == 'mail' && rcmail.commands['edit'] || rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
-        action: function(e) {
-          if (rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible')) {
-            $('#eventshow').parent().find('.ui-dialog-buttonset .ui-button').click();
-          }
-          else if (rcmail.task == 'mail' && rcmail.commands['edit']) {
-            var mode = rcmail.env.mailbox == rcmail.env.drafts_mailbox ? '' : 'new';
-            return rcmail.command('edit', mode, e.target, e);
-          }
-        }
-    },
-    
-    //////// Delete
-    'delete': {
-        key: 46, // Delete
-        active: function(e) { return rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
-        action: function(e) {
-          if ($('#eventshow').length && $('#eventshow').is(':visible')) {
-            $('#eventshow').parent().find('.delete').click();
-          }
-        }
-    },
-    
-    //////// Print
-    'print': {
-        key: 80, // Ctrl + P
-        ctrl: true,
-        active: function(e) { return rcmail.commands['print']; },
-        action: function(e) { 
-          return rcmail.commands['print'] ? rcmail.command('print', '', e.target, e) : false; 
-        }
-    },   
+  },    
   
-    //////// Search
-    'search.focus': {
-        key: 75, // Ctrl + Shift + K
-        ctrl: true,
-        shift: true,
-        active: function(e) { return true; },
-        action: function(e) {
-            if (!rcmail.is_framed())
-                $('#quicksearchbox').focus();
-            else if (window.parent && window.parent.$)
-                window.parent.$('#quicksearchbox').focus();
+  ///// Receiving and reading messages
+  'mail.refresh': {
+      keydown: 90, // Ctrl + Shift + Z
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) { return rcmail.command('checkmail', '', e.target, e); }
+  },
+  'mail.expand-thread': {
+    keydown: 39, // ->
+    active: function(e) { return rcmail.task == 'mail'; },
+    action: function(e) {
+        if (rcmail.message_list) {
+            var row, uid = rcmail.message_list.get_single_selection();
+            if (uid && (row = rcmail.message_list.rows[uid])) {
+                rcmail.message_list.expand_all(row);
+            }
         }
-    },
+    }
+  },
+  'mail.collapse-thread': {
+      keydown: 37, // <-
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+          if (rcmail.message_list) {
+              var row, uid = rcmail.message_list.get_single_selection();
+              if (uid && (row = rcmail.message_list.rows[uid])) {
+                  rcmail.message_list.collapse_all(row);
+              }
+          }
+      }
+  },
+  
+  ///// Managing your messages     
+  'mail.message-source': {
+      keydown: 85, // Ctrl + U
+      ctrl: true,
+      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['viewsource']; },
+      action: function(e) { 
+        return rcmail.commands['viewsource'] ? rcmail.command('viewsource', '', e.target, e) : false; 
+      }
+  },
+  'mail.select-all': {
+      keydown: 65, // Ctrl + A
+      ctrl: true,
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) { return rcmail.command('select-all', '', e.target, e); }
+  },
+  
+  'mail.copy': {
+      keydown: 67, // Ctrl + Shift + C
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+          e = mel_shortcuts_menu_target(e);
+          e.rcmail.command('copy', '', e.target, e);
+          e.target.remove();
+      }
+  },
+  'mail.move': {
+      keydown: 77, // Ctrl + M
+      ctrl: true,
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+          e = mel_shortcuts_menu_target(e);
+          e.rcmail.command('move', '', e.target, e);
+          e.target.remove();
+      }
+  },
+  
+  'mail.next-msg': {
+      keydown: 78, // n
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+          if (rcmail.message_list)
+              return rcmail.message_list.select_next();
+          else
+              return rcmail.command('nextmessage', '', '', e);
+      }
+  },
+  'mail.prev-msg': {
+      keydown: 80, // p
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+          if (rcmail.message_list)
+              return rcmail.message_list.use_arrow_key(38, false);
+          else
+              return rcmail.command('previousmessage', '', '', e);
+      }
+  },
+  
+  ////// Tagging and marking your messages
+  'mail.mark-as-read-unread': {
+      keydown: 77, // m
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+        var list = rcmail.message_list;
+        if (list) {
+          var flag = 'unread', a_uids = list.get_selection();
+          
+          for (n=0, len=a_uids.length; n<len; n++) {
+            id = a_uids[n];
+            if (list.rows[id].unread) {
+              flag = 'read';
+              break;
+            }
+          }
+          
+          return rcmail.command('mark', flag, a_uids, e)
+        }
+      }
+  },
+  'mail.mark-as-read': {
+      keydown: 82, // r
+      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['mark']; },
+      action: function(e) {
+        return rcmail.command('mark', 'read', e.target, e)
+      }
+  },
+  'mail.add-remove-star': {
+      keydown: 83, // s
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+        var list = rcmail.message_list;
+        if (list) {
+          var flag = 'unflagged', a_uids = list.get_selection();
+          
+          for (n=0, len=a_uids.length; n<len; n++) {
+            id = a_uids[n];
+            if (!list.rows[id].flagged) {
+              flag = 'flagged';
+              break;
+            }
+          }
+          
+          return rcmail.command('mark', flag, a_uids, e)
+        }
+      }
+  },
+  
+  ////// Mail compose
+  'mail.send': {
+      keydown: 13, // Ctrl + Enter
+      ctrl: true,
+      active: function(e) { return rcmail.task == 'mail'; },
+      action: function(e) {
+        return rcmail.commands['send'] ? rcmail.command('send', '', e.target, e) : false;
+      }
+  },
+  
+  //////// Calendar
+  'calendar.new-event': {
+      keydown: 73, // Ctrl + I
+      ctrl: true,
+      active: function(e) { return rcmail.commands['add-event-from-shortcut'] || rcmail.commands['addevent']; },
+      action: function(e) {
+        return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
+      }
+  },
+  'calendar.prevday': {
+      keydown: 78, // Shift + N
+      shift: true,
+      active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['prevDay']; },
+      action: function(e) {
+        return rcmail.command('prevDay', '', e.target, e);
+      }
+  },
+  'calendar.today': {
+      keydown: 35, // Alt + End
+      alt: true,
+      active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['today']; },
+      action: function(e) {
+        return rcmail.command('today', '', e.target, e);
+      }
+  },
+  'calendar.nextday': {
+      keydown: 80, // Shift + P
+      shift: true,
+      active: function(e) { return rcmail.task == 'calendar' && rcmail.commands['nextDay']; },
+      action: function(e) {
+        return rcmail.command('nextDay', '', e.target, e);
+      }
+  },
+  
+  //////// Escape
+  'escape': {
+      keydown: 27, // Escape
+      active: function(e) { return true; },
+      action: function(e) {
+        if (rcmail.task == 'mail' && rcmail.env.action == 'compose') {
+          return rcmail.commands['list'] ? rcmail.command('list', '', e.target, e) : false;
+        }
+        else if (rcmail.task == 'calendar' && rcmail.env.action == 'print') {
+          return window.close();
+        }
+      }
+  },
+  
+  //////// Menu switch
+  'menu.mail': {
+      keydown: 49, // Ctrl + Shift + 1
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task != 'mail'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'mail', e.target, e);
+      }
+  },
+  'menu.addressbook': {
+      keydown: 50, // Ctrl + Shift + 2
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task != 'addressbook'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'addressbook', e.target, e);
+      }
+  },
+  'menu.calendar': {
+      keydown: 51, // Ctrl + Shift + 3
+      ctrl: true,
+      shift: true,
+      active: function(e) { return rcmail.task != 'calendar'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'calendar', e.target, e);
+      }
+  },
+  'menu.discussion': {
+    keydown: 52, // Ctrl + Shift + 4
+    ctrl: true,
+    active: function(e) { return rcmail.task != 'discussion'; },
+    action: function(e) {
+      return rcmail.command('switch-task', 'discussion', e.target, e);
+    }
+  },
+  'menu.sondage': {
+    keydown: 53, // Ctrl + Shift + 5
+    ctrl: true,
+    shift: true,
+    active: function(e) { return rcmail.task != 'sondage'; },
+    action: function(e) {
+      return rcmail.command('switch-task', 'sondage', e.target, e);
+    }
+  },
+  'menu.tasks': {
+      keydown: 55, // Ctrl + Shift + 7
+      ctrl: true,
+      active: function(e) { return rcmail.task != 'tasks'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'tasks', e.target, e);
+      }
+  },
+  'menu.stockage': {
+      keydown: 54, // Ctrl + Shift + 6
+      ctrl: true,
+      active: function(e) { return rcmail.task != 'stockage'; },
+      action: function(e) {
+        return rcmail.command('switch-task', 'stockage', e.target, e);
+      }
+  },
+  'menu.settings': {
+    keydown: 56, // Ctrl + Shift + 8
+    ctrl: true,
+    shift: true,
+    active: function(e) { return rcmail.task != 'settings' || rcmail.env.action == 'plugin.mel_moncompte'; },
+    action: function(e) {
+      return rcmail.command('switch-task', 'settings', e.target, e);
+    }
+  },
+  
+  
+  //////// Save
+  'save': {
+      keydown: 83, // Ctrl + S
+      ctrl: true,
+      active: function(e) { return rcmail.task == 'mail' || $('#eventedit').length && $('#eventedit').is(':visible'); },
+      action: function(e) {
+        if ($('#eventedit').length && $('#eventedit').is(':visible')) {
+          $('#eventedit').parent().parent().find('.mainaction').click();
+        }
+        else if (rcmail.env.action == 'list' || rcmail.env.action == 'show' || rcmail.env.action == '') {
+          return rcmail.commands['download'] ? rcmail.command('download', '', e.target, e) : false;
+        }
+        else if (rcmail.env.action == 'compose') {
+          return rcmail.commands['savedraft'] ? rcmail.command('savedraft', '', e.target, e) : false;
+        }
+      }
+  },
+  
+  /////// Edit
+  'edit': {
+      keydown: 69, // Ctrl + E
+      ctrl: true,
+      active: function(e) { return rcmail.task == 'mail' && rcmail.commands['edit'] || rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
+      action: function(e) {
+        if (rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible')) {
+          $('#eventshow').parent().find('.ui-dialog-buttonset .ui-button').click();
+        }
+        else if (rcmail.task == 'mail' && rcmail.commands['edit']) {
+          var mode = rcmail.env.mailbox == rcmail.env.drafts_mailbox ? '' : 'new';
+          return rcmail.command('edit', mode, e.target, e);
+        }
+      }
+  },
+  
+  //////// Delete
+  'delete': {
+      keydown: 46, // Delete
+      active: function(e) { return rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
+      action: function(e) {
+        if ($('#eventshow').length && $('#eventshow').is(':visible')) {
+          $('#eventshow').parent().find('.delete').click();
+        }
+      }
+  },
+  
+  //////// Print
+  'print': {
+      keydown: 80, // Ctrl + P
+      ctrl: true,
+      active: function(e) { return rcmail.commands['print']; },
+      action: function(e) { 
+        return rcmail.commands['print'] ? rcmail.command('print', '', e.target, e) : false; 
+      }
+  },   
+
+  //////// Search
+  'search.focus': {
+      keydown: 75, // Ctrl + Shift + K
+      ctrl: true,
+      shift: true,
+      active: function(e) { return true; },
+      action: function(e) {
+          if (!rcmail.is_framed())
+              $('#quicksearchbox').focus();
+          else if (window.parent && window.parent.$)
+              window.parent.$('#quicksearchbox').focus();
+      }
+  },
 
 };
 
@@ -470,6 +474,53 @@ var mel_shortcuts_menu_target = function(e)
 
 var mel_shortcuts_keypress = function(e)
 {
+    var i, handler, key = e.which;
+    
+    // Detect escape
+    if (e.which == 0) {
+      key = e.keyCode;
+    }
+
+    console.log("### mel_shortcuts_keypress");
+    console.log(e.which);
+    console.log(e.keyCode);
+
+    // do nothing on input elements if no ctrl
+    if ($(e.target).is('textarea,input')) {
+        return true;
+    }
+
+    // do nothing if any popup menu is displayed
+    if ($('.popupmenu:visible').length) {
+        return true;
+    }
+
+    for (i in mel_shortcuts_press) {
+        handler = mel_shortcuts_press[i];        
+
+        // check if presses key(s) match
+        if (handler.keypress == key) {          
+            // ... and action is active here
+            if (handler.active(e)) {
+                // execute action, the real check if action is active
+                // will be done in .action() or in rcmail.command()
+                handler.action(e);
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }
+
+            // we can break here, there can be only one handler
+            // for the specified shortcut
+            break;
+        }
+    }
+
+    return true;
+};
+
+var mel_shortcuts_keydown = function(e)
+{
     var i, handler, key = e.which, alt = e.altKey, ctrl = e.ctrlKey, shift = e.shiftKey;
     
     // Detect escape
@@ -477,8 +528,9 @@ var mel_shortcuts_keypress = function(e)
       key = e.keyCode;
     }
 
-    // console.log(e.which);
-    // console.log(e.keyCode);
+    console.log("### mel_shortcuts_keydown");
+    console.log(e.which);
+    console.log(e.keyCode);
 
     // do nothing on input elements if no ctrl
     if ($(e.target).is('textarea,input') && !ctrl && key != 27) {
@@ -490,11 +542,11 @@ var mel_shortcuts_keypress = function(e)
         return true;
     }
 
-    for (i in mel_shortcuts) {
-        handler = mel_shortcuts[i];        
+    for (i in mel_shortcuts_down) {
+        handler = mel_shortcuts_down[i];        
 
         // check if presses key(s) match
-        if (handler.key == key
+        if (handler.keydown == key
             && ((handler.ctrl && ctrl) || (!handler.ctrl && !ctrl))
             && ((handler.alt && alt) || (!handler.alt && !alt))
             && ((handler.shift && shift) || (!handler.shift && !shift))
@@ -518,9 +570,12 @@ var mel_shortcuts_keypress = function(e)
     return true;
 };
 
-// register the keypress handler
+// register the keypress and keydown handler
 window.rcmail && $(document).ready(function() {
-    $(document).on('keydown.mel_shortcuts', function(e) {
+    $(document).on('keypress', function(e) {
         return mel_shortcuts_keypress(e);
     });
+    $(document).on('keydown', function(e) {
+      return mel_shortcuts_keydown(e);
+  });
 });

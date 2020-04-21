@@ -25,6 +25,12 @@ class rocket_chat extends rcube_plugin {
      */
     public $rc;
     /**
+     * Durée de conservation des données rocket dans le cache
+     *
+     * @var int
+     */
+    const CACHE_ROCKETCHAT = 20*60;
+    /**
      * (non-PHPdoc)
      * 
      * @see rcube_plugin::init()
@@ -186,27 +192,41 @@ EOF;
      * "username": "example"
      */
     public function getUserInfos($username = null, $email = null) {
+      if (mel_logs::is(mel_logs::DEBUG))
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email)");
       $infos = null;
       if (!isset($username)) {
         $user = \LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($email);
         $username = $user['uid'][0];
       }
-      $useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false);
-      if ($useMongoDB) {
-        // Charge la lib MongoDB si nécessaire
-        require_once __DIR__ . '/lib/rocketchatmongodb.php';
-        $mongoClient = new RocketChatMongoDB($this->rc);
-        $infos = $mongoClient->searchUserByUsername($username);
+      $cache = \mel::InitM2Cache();
+      if (isset($cache['rocketchat']) && isset($cache['rocketchat']['infos']) && time() - $cache['rocketchat']['time'] <= self::CACHE_ROCKETCHAT) {
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email) from cache");
+        $infos = unserialize($cache['rocketchat']['infos']);
       }
       else {
-        // Charge la lib cliente
-        require_once __DIR__ . '/lib/rocketchatclient.php';
-        $rocketClient = new RocketChatClient($this->rc);
-        $rocketClient->setUserId($this->rc->config->get('rocket_chat_admin_user_id', null));
-        $rocketClient->setAuthToken($this->rc->config->get('rocket_chat_admin_auth_token', null));
-        if ($rocketClient->authentification($this->rc->config->get('rocket_chat_admin_username', ''), $this->rc->config->get('rocket_chat_admin_password', ''))) {
-          $infos = $rocketClient->userInfo($username);
+        if (mel_logs::is(mel_logs::DEBUG))
+          mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email) no cache");
+        $useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false);
+        if ($useMongoDB) {
+          // Charge la lib MongoDB si nécessaire
+          require_once __DIR__ . '/lib/rocketchatmongodb.php';
+          $mongoClient = new RocketChatMongoDB($this->rc);
+          $infos = $mongoClient->searchUserByUsername($username);
         }
+        else {
+          // Charge la lib cliente
+          require_once __DIR__ . '/lib/rocketchatclient.php';
+          $rocketClient = new RocketChatClient($this->rc);
+          $rocketClient->setUserId($this->rc->config->get('rocket_chat_admin_user_id', null));
+          $rocketClient->setAuthToken($this->rc->config->get('rocket_chat_admin_auth_token', null));
+          if ($rocketClient->authentification($this->rc->config->get('rocket_chat_admin_username', ''), $this->rc->config->get('rocket_chat_admin_password', ''))) {
+            $infos = $rocketClient->userInfo($username);
+          }
+        }
+        $cache['rocketchat'] = array('time' => time(),'infos' => serialize($infos));
+        \mel::SetM2Cache($cache);
       }
       return $infos;
     }

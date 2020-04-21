@@ -34,7 +34,7 @@ class rocket_chat extends rcube_plugin {
      *
      * @var int
      */
-    const CACHE_ROCKETCHAT = 20*60;
+    const CACHE_ROCKETCHAT = 10*60;
     /**
      * (non-PHPdoc)
      * 
@@ -206,13 +206,9 @@ EOF;
       }
       $cache = \mel::InitM2Cache();
       if (isset($cache['rocketchat']) && isset($cache['rocketchat']['infos']) && time() - $cache['rocketchat']['time'] <= self::CACHE_ROCKETCHAT) {
-        if (mel_logs::is(mel_logs::DEBUG))
-          mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email) from cache");
         $infos = unserialize($cache['rocketchat']['infos']);
       }
       else {
-        if (mel_logs::is(mel_logs::DEBUG))
-          mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email) no cache");
         $useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false);
         if ($useMongoDB) {
           // Charge la lib MongoDB si nécessaire

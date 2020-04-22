@@ -57,7 +57,7 @@ class mel_junk extends rcube_plugin
     
         $attrib = [
             'id'    => 'mel_junk-box',
-            'class' => 'popupmenu',
+            'class' => 'mel_junk-box popupmenu',
             'data-sticky' => 'true',
         ];
     
@@ -76,7 +76,7 @@ class mel_junk extends rcube_plugin
               html::div('buttons',
                 $button->show(rcube_utils::rep_specialchars_output($this->gettext('junk'), 'html', 'strict'), array('class' => 'button mainaction',
                       'onclick' => rcmail_output::JS_OBJECT_NAME . ".command('plugin.mel_junk_send', this.mel_junkform)")) . ' ' .
-                $button->show($rcmail->gettext('close'), array('class' => 'button', 'onclick' => "UI.toggle_popup('$attrib[id]', event)"))
+                $button->show($rcmail->gettext('close'), array('class' => 'button', 'onclick' => "$('.mel_junk-box').hide();"))
                   
               )
             )

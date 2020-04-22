@@ -42,7 +42,7 @@ function mel_junk_box(prop, item, event) {
 
 // mel junk action
 function mel_junk_send(prop, item, event) {
-    if ($('#mel_junk-box').is(':visible')) {
+    if ($('.mel_junk-box').is(':visible')) {
         // Quels sont les choix de l'utilisateur dans le popup ?
         var send_admin = $('#mel_junk-box #mel_junk_send_admin').is(':checked');
         var junk_folder = $('#mel_junk-box #mel_junk_folder').is(':checked');
@@ -74,8 +74,8 @@ function mel_junk_send(prop, item, event) {
     if (junk_folder) {
         rcmail_markasjunk();
     }
-    if ($('#mel_junk-box').is(':visible')) {
-        $('#mel_junk-box').hide();
+    if ($('.mel_junk-box').is(':visible')) {
+        $('.mel_junk-box').hide();
     }
     return true;
 }

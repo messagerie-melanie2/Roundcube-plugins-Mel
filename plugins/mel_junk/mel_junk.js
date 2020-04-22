@@ -21,15 +21,15 @@
 if (window.rcmail) {
     rcmail.addEventListener('init', function(evt) {
         // register command (directly enable in message view mode)
-        rcmail.register_command('plugin.mel_junk', mel_junk_box);
-        rcmail.register_command('plugin.mel_junk_send', mel_junk_send);
+        rcmail.register_command('plugin.mel_junk', mel_junk_box, rcmail.env.uid && rcmail.env.mailbox != rcmail.env.junk_folder);
+        rcmail.register_command('plugin.mel_junk_send', mel_junk_send, rcmail.env.uid && rcmail.env.mailbox != rcmail.env.junk_folder);
 
         // add event-listener to message list
         if (rcmail.message_list) {
             rcmail.message_list.addEventListener('select', function(list) {
-                rcmail.enable_command('plugin.mel_junk', (list.get_selection().length > 0 || rcmail.env.uid) && rcmail.env.mailbox != rcmail.env.junk_folder);
-                rcmail.enable_command('plugin.mel_junk_send', (list.get_selection().length > 0 || rcmail.env.uid) && rcmail.env.mailbox != rcmail.env.junk_folder);
-                rcmail.enable_command('plugin.markasjunk', (list.get_selection().length > 0 || rcmail.env.uid) && rcmail.env.mailbox != rcmail.env.junk_folder);
+                rcmail.enable_command('plugin.mel_junk', list.get_selection().length > 0 && rcmail.env.mailbox != rcmail.env.junk_folder);
+                rcmail.enable_command('plugin.mel_junk_send', list.get_selection().length > 0 && rcmail.env.mailbox != rcmail.env.junk_folder);
+                rcmail.enable_command('plugin.markasjunk', list.get_selection().length > 0 && rcmail.env.mailbox != rcmail.env.junk_folder);
             });
         }
     });

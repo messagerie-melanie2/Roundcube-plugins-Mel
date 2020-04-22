@@ -261,6 +261,26 @@ a.button,
 	margin: 0;
 }
 
+.dropbutton {
+	margin-right: 16px;
+}
+
+.dropbutton .dropbuttontip {
+	height: 30px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color: #fff;
+	background-color: var(--buttons-bg-color);
+	border: solid 1px #d5d5d5;
+	border-color: var(--buttons-border-color);
+	border-left: none;
+	right: -10px;
+}
+
+.dropbutton a.button {
+	border-right: none;
+}
+
 .buttongroup a.button.first,
 .buttongroup a.button:first-child {
 	border-radius: 0;

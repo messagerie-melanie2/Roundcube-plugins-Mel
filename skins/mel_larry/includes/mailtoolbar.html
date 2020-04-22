@@ -2,12 +2,21 @@
 <roundcube:button command="checkmail" type="link" class="button checkmail disabled" classAct="button checkmail" classSel="button checkmail pressed" label="refresh" title="checkmail" />
 <span class="spacer medium"></span>
 <roundcube:button command="move" type="link" class="button move disabled" classAct="button move" classSel="button move pressed" label="move" title="moveto" />
-<roundcube:button command="plugin.markasjunk" type="link" class="button junk disabled" classAct="button junk" classSel="button junk pressed" label="markasjunk.buttontext" title="markasjunk.buttontitle" />
+<span class="dropbutton">
+	<roundcube:button command="plugin.mel_junk" type="link" class="button junk disabled" classAct="button junk" classSel="button junk pressed" label="markasjunk.buttontext" title="markasjunk.buttontitle" />
+	<a href="#junk" class="dropbuttontip" id="junkmenulink" onclick="UI.toggle_popup('junkmenu',event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="junkmenu-menu" tabindex="0"><roundcube:label name="mel_junk.arialabeljunkoptions" /></a>
+</span>
 <roundcube:button command="delete" type="link" class="button delete disabled" classAct="button delete" classSel="button delete pressed" label="delete" title="deletemessage" />
 <span class="spacer"></span>
 <roundcube:button command="reply" type="link" class="button reply disabled" classAct="button reply" classSel="button reply pressed" label="reply" title="replytomessage" />
-<roundcube:button command="reply-all" type="link" class="button reply-all disabled" classAct="button reply-all" classSel="button reply-all pressed" label="replyall" title="replytoallmessage" />
-<roundcube:button command="forward" type="link" class="button forward disabled" classAct="button forward" classSel="button forward pbuttontextressed" label="forward" title="forwardmessage" />
+<span class="dropbutton">
+	<roundcube:button command="reply-all" type="link" class="button reply-all disabled" classAct="button reply-all" classSel="button reply-all pressed" label="replyall" title="replytoallmessage" />
+	<a href="#reply-all" class="dropbuttontip" id="replyallmenulink" onclick="UI.toggle_popup('replyallmenu',event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="replyallmenu-menu" tabindex="0"><roundcube:label name="arialabelreplyalloptions" /></a>
+</span>
+<span class="dropbutton">
+	<roundcube:button command="forward" type="link" class="button forward disabled" classAct="button forward" classSel="button forward pressed" label="forward" title="forwardmessage" />
+	<a href="#forward" class="dropbuttontip" id="forwardmenulink" onclick="UI.toggle_popup('forwardmenu',event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="forwardmenu-menu" tabindex="0"><roundcube:label name="arialabelforwardingoptions" /></a>
+</span>
 <roundcube:button command="plugin.bounce.box" type="link" class="button bounce disabled" classAct="button bounce" classSel="button bounce pbuttontextressed" label="bounce.bounce" title="bounce.bouncemessage" />
 <span class="spacer"></span>
 <roundcube:button command="plugin.thunderbird_labels.rcm_tb_label_submenu" type="link" id="tb_label_popuplink" class="button thunderbird disabled" classAct="button thunderbird" classSel="button thunderbird pressed" label="mel_labels_sync.label" title="mel_labels_sync.label" />
@@ -17,6 +26,15 @@
 <roundcube:button command="calendar-create-from-mail" type="link" class="button calendarlink disabled" classAct="button calendarlink" classSel="button calendarlink pressed" label="calendar.createfrommail" title="calendar.createfrommail" />
 <roundcube:button name="markmenulink" id="markmessagemenulink" type="link" class="button markmessage" label="mark" title="markmessages" onclick="UI.toggle_popup('markmessagemenu',event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="markmessagemenu-menu" />
 <roundcube:button name="messagemenulink" id="messagemenulink" type="link" class="button more" label="more" title="moreactions" onclick="UI.toggle_popup('messagemenu',event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="messagemenu-menu" />
+
+<div id="junkmenu" class="popupmenu" aria-hidden="true">
+	<h3 id="aria-label-junkmenu" class="voice"><roundcube:label name="mel_junk.arialabeljunkoptions" /></h3>
+	<ul id="junkmenu-menu" class="toolbarmenu" role="menu" aria-labelledby="aria-label-junkmenu">
+		<roundcube:button type="link-menuitem" command="plugin.markasjunk" label="markasjunk.buttontitle" prop="sub" classAct="markasjunk active" class="markasjunk" />
+		<roundcube:button type="link-menuitem" command="plugin.mel_junk_send" label="mel_junk.admin" prop="sub" classAct="junkadmin active" class="junkadmin" />
+		<roundcube:container name="junkmenu" id="junkmenu-menu" />
+	</ul>
+</div>
 
 <div id="forwardmenu" class="popupmenu" aria-hidden="true">
 	<h3 id="aria-label-forwardmenu" class="voice"><roundcube:label name="arialabelforwardingoptions" /></h3>

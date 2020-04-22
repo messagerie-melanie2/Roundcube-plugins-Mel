@@ -28,12 +28,12 @@
   background-color: var(--buttons-bg-color);
 }
 
-#filestoolbar a.button.open {
+/* #filestoolbar a.button.open {
   display: none;
-}
+} */
 
 #filestoolbar a.button.delete {
-  display: none;
+  /* display: none; */
   background: url(images/supprimer.png?v=e784.5000) center center no-repeat #fff;
   background-color: var(--buttons-bg-color);
 }

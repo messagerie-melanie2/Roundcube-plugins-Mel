@@ -481,9 +481,9 @@ var mel_shortcuts_keypress = function(e)
       key = e.keyCode;
     }
 
-    console.log("### mel_shortcuts_keypress");
-    console.log(e.which);
-    console.log(e.keyCode);
+    // console.log("### mel_shortcuts_keypress");
+    // console.log(e.which);
+    // console.log(e.keyCode);
 
     // do nothing on input elements if no ctrl
     if ($(e.target).is('textarea,input')) {
@@ -528,9 +528,9 @@ var mel_shortcuts_keydown = function(e)
       key = e.keyCode;
     }
 
-    console.log("### mel_shortcuts_keydown");
-    console.log(e.which);
-    console.log(e.keyCode);
+    // console.log("### mel_shortcuts_keydown");
+    // console.log(e.which);
+    // console.log(e.keyCode);
 
     // do nothing on input elements if no ctrl
     if ($(e.target).is('textarea,input') && !ctrl && key != 27) {

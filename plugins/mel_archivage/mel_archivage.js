@@ -18,6 +18,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 if (window.rcmail) {
     if (rcmail.env.task == 'mail') {
         rcmail.addEventListener('responseafterlist', function(evt) {
@@ -127,10 +128,4 @@ rcube_webmail.prototype.plugin_archiver = function () {
         height: 435,
         rcmail: rcmail
     }).width(380);
-};
-
-rcube_webmail.prototype.archive_mailbox_test = function()
-{
-    alert('archive_mailbox_test');
-  return this.env.exists && this.env.mailbox == this.env.archive_folder;
 };

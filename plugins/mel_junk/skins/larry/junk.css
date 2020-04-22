@@ -1,0 +1,37 @@
+#mel_junk-box
+{
+  position: absolute;
+  top: 200px;
+  left: 250px;
+  width: 550px;
+}
+
+.mel_junk-title
+{
+  height: 15px !important;
+  padding: 5px 0px 10px 0px;
+  text-align: center;
+  color: #333333;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.junk-body
+{
+  padding: 5px 10px 10px 10px;
+}
+
+.junk-body .title
+{
+  width: 75px;
+}
+
+.junk-body .buttons .button
+{
+  cursor: pointer;
+}
+
+#mel_junk-box input.button
+{
+  margin-top: 8px;
+}

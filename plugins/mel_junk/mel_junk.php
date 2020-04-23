@@ -27,6 +27,13 @@ class mel_junk extends rcube_plugin
     public $task = 'mail';
 
     /**
+     * Box rendered ?
+     * 
+     * @var boolean
+     */
+    public $rendered;
+
+    /**
      * Initialisation du plugin
      * 
      * @see rcube_plugin::init()
@@ -39,6 +46,7 @@ class mel_junk extends rcube_plugin
         $rcmail = rcmail::get_instance();
 
         if ($rcmail->task == 'mail' && ($rcmail->action == '' || $rcmail->action == 'show')) {
+            $this->rendered = false;
             $this->load_config();
             $this->include_script('mel_junk.js');
             $this->add_texts('localization', true);
@@ -52,12 +60,15 @@ class mel_junk extends rcube_plugin
      * Junk box
      */
     public function render_box($p) {
+        if ($this->rendered) {
+          return;
+        }
         $this->add_texts('localization');
         $rcmail = rcmail::get_instance();
     
         $attrib = [
             'id'    => 'mel_junk-box',
-            'class' => 'mel_junk-box popupmenu',
+            'class' => 'popupmenu',
             'data-sticky' => 'true',
         ];
     
@@ -76,7 +87,7 @@ class mel_junk extends rcube_plugin
               html::div('buttons',
                 $button->show(rcube_utils::rep_specialchars_output($this->gettext('junk'), 'html', 'strict'), array('class' => 'button mainaction',
                       'onclick' => rcmail_output::JS_OBJECT_NAME . ".command('plugin.mel_junk_send', this.mel_junkform)")) . ' ' .
-                $button->show($rcmail->gettext('close'), array('class' => 'button', 'onclick' => "$('.mel_junk-box').hide();"))
+                $button->show($rcmail->gettext('close'), array('class' => 'button', 'onclick' => "$('#mel_junk-box').hide();"))
                   
               )
             )
@@ -91,5 +102,6 @@ class mel_junk extends rcube_plugin
         else {
           $this->include_stylesheet($this->local_skin_path() . '/junk.css');
         }
+        $this->rendered = true;
     }
 }

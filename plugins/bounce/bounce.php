@@ -132,13 +132,27 @@ class bounce extends rcube_plugin
     /* need decision for DKIM-Signature */
     /* $headers = preg_replace('/^DKIM-Signature/sm','Content-Description',$headers); */
 
+    //MANTIS 0005731: Problème de from dans le plugin bounce
+    $from = '';
+    if (class_exists('mel')) {
+      $identities = $rcmail->user->list_identities();
+      // Parcour les identités pour définir celle par défaut
+      foreach ($identities as $key => $identity) {
+        if ($identity['uid'] == $rcmail->plugins->get_plugin('mel')->get_share_objet()) {
+          $from = $identity['email'];
+          $_SESSION['m2_from_identity'] = $from;
+          break;
+        }
+      }
+    }
+    
     if (!is_object($rcmail->smtp)) {
       $rcmail->smtp_init(true);
     }
 
     //error_log($rcmail->imap->get_raw_headers($msg_uid)." $msg_uid\n",3,"/var/log/nginx/checkmail_error.log");
-
-    $sent = $rcmail->smtp->send_mail('', $a_recipients, $headers, $body);
+    
+    $sent = $rcmail->smtp->send_mail($from, $a_recipients, $headers, $body);
     $smtp_response = $rcmail->smtp->get_response();
     $smtp_error = $rcmail->smtp->get_error();
 

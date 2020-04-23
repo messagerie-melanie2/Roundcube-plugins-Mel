@@ -10,7 +10,7 @@
 }
 
 /* Files main interface */
-#filestoolbar {
+body.roundrive #filestoolbar {
    position: absolute;
    height: 40px;
    left: 15px;
@@ -18,41 +18,41 @@
    z-index: 10;
 }
 
-#filestoolbar a.button.upload {
+body.roundrive #filestoolbar a.button.upload {
   background: url(images/importer.png?v=e784.5000) center center no-repeat #fff;
   background-color: var(--buttons-bg-color);
 }
 
-#filestoolbar a.button.get {
+body.roundrive #filestoolbar a.button.get {
   background: url(images/partager.png?v=e784.5000) center center no-repeat #fff;
   background-color: var(--buttons-bg-color);
 }
 
-/* #filestoolbar a.button.open {
+body.roundrive #filestoolbar a.button.open {
   display: none;
-} */
+}
 
-#filestoolbar a.button.delete {
-  /* display: none; */
+body.roundrive #filestoolbar a.button.delete {
+  display: none;
   background: url(images/supprimer.png?v=e784.5000) center center no-repeat #fff;
   background-color: var(--buttons-bg-color);
 }
 
-#filestoolbar a.button.edit {
+body.roundrive #filestoolbar a.button.edit {
   display: none;
 }
 
-#filestoolbar a.button.save {
+body.roundrive #filestoolbar a.button.save {
   background: url(images/sauvegarder.png?v=e784.5000) center center no-repeat #fff;
   background-color: var(--buttons-bg-color);
 }
 
-#filestoolbar a.button.print {
+body.roundrive #filestoolbar a.button.print {
   background: url(images/imprimer.png?v=e784.5000) center center no-repeat #fff;
   background-color: var(--buttons-bg-color);
 }
 
-#filestoolbar form {
+body.roundrive #filestoolbar form {
   display: inline;
 }
 

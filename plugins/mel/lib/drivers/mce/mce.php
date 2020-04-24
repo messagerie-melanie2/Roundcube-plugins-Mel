@@ -20,22 +20,31 @@
 
 class mce_driver_mel extends driver_mel {
   /**
+   * Namespace for the objets
+   */
+  protected static $_objectsNS = "\\LibMelanie\\Api\\Mce\\";
+
+  /**
    * Retourne l'objet User associé à l'utilisateur courant
    * Permet de retourner l'instance User en fonction du driver
    * 
    * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
    * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
+   * @param string $username [Optionnel] DN de l'utilisateur a récupérer
+   * @param string $username [Optionnel] Email de l'utilisateur a récupérer
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function getUser($username = null, $load = true, $fromCache = true) {
-    if (!isset($username)) {
+  public function getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null) {
+    if (!isset($username) && !isset($dn) && !isset($email)) {
       $username = rcmail::get_instance()->user->get_username();
     }
     if (!$fromCache) {
-      $user = new \LibMelanie\Api\Mce\User();
-      $user->uid = $username;
+      $user = $this->user();
+      if (isset($username)) {   $user->uid = $username; }
+      else if (isset($dn)) {    $user->dn = $dn; }
+      else if (isset($email)) { $user->email = $email; }
       if ($load && !$user->load()) {
         $user = null;
       }
@@ -45,7 +54,7 @@ class mce_driver_mel extends driver_mel {
       self::$_users = [];
     }
     if (!isset(self::$_users[$username])) {
-      self::$_users[$username] = new \LibMelanie\Api\Mce\User();
+      self::$_users[$username] = $this->user();
       self::$_users[$username]->uid = $username;
       if ($load && !self::$_users[$username]->load()) {
         self::$_users[$username] = null;

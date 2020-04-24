@@ -76,6 +76,11 @@ abstract class driver_mel {
   protected static $_groups;
 
   /**
+   * Namespace for the objets
+   */
+  protected static $_objectsNS = "\\LibMelanie\\Api\\Mce\\";
+
+  /**
    * Return the singleton instance
    *
    * @return driver_mel
@@ -98,6 +103,107 @@ abstract class driver_mel {
   public static function gi() {
     return self::get_instance();
   }
+
+  /**
+   * Generate an object from the ORM with the right Namespace
+   * 
+   * @param string $objectName Object name (add sub namespace if needed, ex : Event, Users\Type)
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return staticClass object of the choosen type
+   */
+  public function object($objectName, $params = null) {
+    $class = new \ReflectionClass(static::$_objectsNS . $objectName);
+    return $class->newInstanceArgs($params);
+  }
+
+  /**
+   * Generate user object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\User User
+   */
+  public function user($params = null) {
+    return $this->object('User', $params);
+  }
+
+  /**
+   * Generate group object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\User User
+   */
+  public function group($params = null) {
+    return $this->object('Group', $params);
+  }
+
+  /**
+   * Generate calendar object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\Calendar User
+   */
+  public function calendar($params = null) {
+    return $this->object('Calendar', $params);
+  }
+
+  /**
+   * Generate event object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\Event User
+   */
+  public function event($params = null) {
+    return $this->object('Event', $params);
+  }
+
+  /**
+   * Generate addressbook object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\Addressbook User
+   */
+  public function addressbook($params = null) {
+    return $this->object('Addressbook', $params);
+  }
+
+  /**
+   * Generate contact object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\Contact User
+   */
+  public function contact($params = null) {
+    return $this->object('Contact', $params);
+  }
+
+  /**
+   * Generate taskslist object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\Taskslist User
+   */
+  public function taskslist($params = null) {
+    return $this->object('Taskslist', $params);
+  }
+
+  /**
+   * Generate task object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Mce\Task User
+   */
+  public function task($params = null) {
+    return $this->object('Task', $params);
+  }
   
   /**
    * Retourne l'objet User associé à l'utilisateur courant
@@ -106,10 +212,12 @@ abstract class driver_mel {
    * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
    * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
+   * @param string $username [Optionnel] DN de l'utilisateur a récupérer
+   * @param string $username [Optionnel] Email de l'utilisateur a récupérer
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  abstract public function getUser($username = null, $load = true, $fromCache = true);
+  abstract public function getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null);
 
   /**
    * Retourne l'objet Group

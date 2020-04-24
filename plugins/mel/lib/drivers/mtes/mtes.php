@@ -19,7 +19,9 @@
  */
 use LibMelanie\Ldap\Ldap as Ldap;
 
-class mtes_driver_mel extends driver_mel {
+include_once '../mce/mce.php';
+
+class mtes_driver_mel extends mce_driver_mel {
   /**
    * Label utilisé dans les boites partagées pour l'arborescence des dossiers
    * 
@@ -56,39 +58,9 @@ class mtes_driver_mel extends driver_mel {
   protected $MBOX_TRASH = "Corbeille";
 
   /**
-   * Retourne l'objet User associé à l'utilisateur courant
-   * Permet de retourner l'instance User en fonction du driver
-   * 
-   * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
-   * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
-   * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
-   *
-   * @return \LibMelanie\Api\Mce\User
+   * Namespace for the objets
    */
-  public function getUser($username = null, $load = true, $fromCache = true) {
-    if (!isset($username)) {
-      $username = rcmail::get_instance()->user->get_username();
-    }
-    if (!$fromCache) {
-      $user = new \LibMelanie\Api\Mel\User();
-      $user->uid = $username;
-      if ($load && !$user->load()) {
-        $user = null;
-      }
-      return $user;
-    }
-    if (!isset(self::$_users)) {
-      self::$_users = [];
-    }
-    if (!isset(self::$_users[$username])) {
-      self::$_users[$username] = new \LibMelanie\Api\Mel\User();
-      self::$_users[$username]->uid = $username;
-      if ($load && !self::$_users[$username]->load()) {
-        self::$_users[$username] = null;
-      }
-    }
-    return self::$_users[$username];
-  }
+  protected static $_objectsNS = "\\LibMelanie\\Api\\Mel\\";
 
   /**
    * Retourne l'objet Group
@@ -102,7 +74,7 @@ class mtes_driver_mel extends driver_mel {
    */
   public function getGroup($group_dn = null, $load = true, $fromCache = true) {
     if (!$fromCache) {
-      $group = new \LibMelanie\Api\Mel\Group();
+      $group = $this->group();
       $group->dn = $group_dn;
       if ($load && !$group->load()) {
         $group = null;
@@ -113,7 +85,7 @@ class mtes_driver_mel extends driver_mel {
       self::$_groups = [];
     }
     if (!isset(self::$_groups[$group_dn])) {
-      self::$_groups[$group_dn] = new \LibMelanie\Api\Mel\Group();
+      self::$_groups[$group_dn] = $this->group();
       self::$_groups[$group_dn]->dn = $group_dn;
       if ($load && !self::$_groups[$group_dn]->load()) {
         self::$_groups[$group_dn] = null;

@@ -20,9 +20,6 @@
 
 include_once 'Bal.php';
 
-use LibMelanie\Ldap\Ldap as Ldap;
-use LibMelanie\Config\Ldap as Config;
-
 /**
  * Classe de gestion pour Mon compte
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE

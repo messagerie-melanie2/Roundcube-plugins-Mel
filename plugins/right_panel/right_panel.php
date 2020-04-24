@@ -75,7 +75,7 @@ class right_panel extends rcube_plugin
         $this->include_script('../../program/js/treelist.js');
         
         $rocket_chat = $this->rc->config->get('right_panel_use_rocket_chat', false) ?  $this->rc->plugins->get_plugin('rocket_chat') : null;
-        $user = \LibMelanie\Ldap\Ldap::GetUserInfos($this->rc->get_user_name());
+        $user = driver_mel::gi()->getUser();
         if (isset($rocket_chat) && is_object($rocket_chat)) {
           // Ariane Web Socket
           if (!isset($_SESSION['rocket_chat_auth_token'])) {
@@ -95,7 +95,7 @@ class right_panel extends rcube_plugin
             $this->rc->output->set_env('ariane_user_id', $this->rc->config->get('rocket_chat_user_id', null));
             $this->rc->output->set_env('username', $this->rc->get_user_name());
             $this->rc->output->set_env('user_fullname', $infos['fname']);
-            $this->rc->output->set_env('user_email', $user['mailpr'][0]);
+            $this->rc->output->set_env('user_email', $user->email);
             // Initials
             $words = explode(" ", $infos['fname']); $acronym = "";
             foreach ($words as $w) { $acronym .= $w[0]; }
@@ -104,11 +104,11 @@ class right_panel extends rcube_plugin
           catch (Exception $ex) {}
         }
         if (!isset($infos['fname'])) {
-          $this->rc->output->set_env('username', $user['uid'][0]);
-          $this->rc->output->set_env('user_fullname', $user['displayname'][0]);
-          $this->rc->output->set_env('user_email', $user['mailpr'][0]);
+          $this->rc->output->set_env('username', $user->uid);
+          $this->rc->output->set_env('user_fullname', $user->name);
+          $this->rc->output->set_env('user_email', $user->email);
           // Initials
-          $words = explode(" ", $user['displayname'][0]); $acronym = "";
+          $words = explode(" ", $user->name); $acronym = "";
           foreach ($words as $w) { $acronym .= $w[0]; }
           $this->rc->output->set_env('user_initials', $acronym);
         }

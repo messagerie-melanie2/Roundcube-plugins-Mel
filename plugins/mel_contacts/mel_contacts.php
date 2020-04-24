@@ -502,20 +502,24 @@ class mel_contacts extends rcube_plugin {
    * Render owner field
    */
   public function renderOwner($val, $col) {
-    // TODO: Refaire ca propre en ORM 0.6
-    $dn = explode(',', $val, 2);
-    $user = \LibMelanie\Ldap\Ldap::GetUserInfos(null, $dn[0], ['cn']);
-    return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val)])], $user['cn'][0]);
+    $user = driver_mel::gi()->user();
+    $user->dn = $val;
+    if ($user->load(['fullname'])) {
+      return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val)])], $user->fullname);
+    }
+    return null;
   }
 
   /**
    * Render share field
    */
   public function renderShare($val, $col) {
-    // TODO: Refaire ca propre en ORM 0.6
     $share = explode(':', $val, 2);
-    $user = \LibMelanie\Ldap\Ldap::GetUserInfos($share[0], null, ['dn', 'cn']);
-    return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($user['dn'])])], $user['cn'][0]);
+    $user = driver_mel::gi()->getUser($share[0], false);
+    if ($user->load(['dn', 'fullname'])) {
+      return html::a(['target' => '_blank', 'href' => $this->rc->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($user->dn)])], $user->fullname);
+    }
+    return null;
   }
   
   /**

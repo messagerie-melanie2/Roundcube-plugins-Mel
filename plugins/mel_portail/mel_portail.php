@@ -18,8 +18,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-use LibMelanie\Ldap\Ldap;
-
 class mel_portail extends rcube_plugin
 {
   /**
@@ -158,10 +156,8 @@ class mel_portail extends rcube_plugin
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
-      //$user = driver_mel::gi()->getUser();
-      $user_dn = Ldap::GetUserInfos($this->rc->get_user_name(), null, ['dn'])['dn'];
-      //$this->items = $this->getCardsConfiguration($user->dn);
-      $this->items = $this->getCardsConfiguration($user_dn);
+      $user = driver_mel::gi()->getUser();
+      $this->items = $this->getCardsConfiguration($user->dn);
       
       if (isset($this->items[$id])) {
         $item = $this->items[$id];
@@ -221,12 +217,10 @@ class mel_portail extends rcube_plugin
     // Objet HTML
     $table = new html_table();
     $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'application')"));
-    //$user = driver_mel::gi()->getUser();
-    $user_dn = Ldap::GetUserInfos($this->rc->get_user_name(), null, ['dn'])['dn'];
+    $user = driver_mel::gi()->getUser();
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
-    //$this->items = $this->getCardsConfiguration($user->dn);
-    $this->items = $this->getCardsConfiguration($user_dn);
+    $this->items = $this->getCardsConfiguration($user->dn);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -303,12 +297,10 @@ class mel_portail extends rcube_plugin
     $content = "";
     $scripts_js = [];
     $scripts_css = [];
-    $user_dn = Ldap::GetUserInfos($this->rc->get_user_name(), null, ['dn'])['dn'];
-    //$user = driver_mel::gi()->getUser();
+    $user = driver_mel::gi()->getUser();
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
-    //$this->items = $this->getCardsConfiguration($user->dn);
-    $this->items = $this->getCardsConfiguration($user_dn);
+    $this->items = $this->getCardsConfiguration($user->dn);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);

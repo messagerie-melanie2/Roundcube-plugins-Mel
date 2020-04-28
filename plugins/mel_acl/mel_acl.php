@@ -878,7 +878,7 @@ class mel_acl extends rcube_plugin
             $bal = driver_mel::gi()->getUser($this->user_bal);
             if ($this->user_bal != $this->rc->get_user_name()
                 && (!isset($bal->shares[$this->rc->get_user_name()]) 
-                    || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
+                    || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
                 // Récupération du username depuis la session
                 $this->user_name = $this->rc->get_user_name();
                 $this->user_objet_share = $this->rc->user->get_username('local');

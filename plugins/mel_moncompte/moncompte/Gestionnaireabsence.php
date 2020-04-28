@@ -19,7 +19,7 @@
 */
 require_once 'Moncompteobject.php';
 
-use LibMelanie\Api\Mce\Users\Outofoffice;
+use LibMelanie\Api\Defaut\Users\Outofoffice;
 
 /**
 * Classe de modification de l'absence de l'utilisateur
@@ -69,7 +69,7 @@ class Gestionnaireabsence extends Moncompteobject {
 		}
 		// Titre de la page
 		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
-		rcmail::get_instance()->output->send('mel_moncompte.absence');
+		rcmail::get_instance()->output->send('mel_moncompte.gestionnaireabsence');
 	}
 	
 	/**

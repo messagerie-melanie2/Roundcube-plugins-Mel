@@ -26,12 +26,12 @@
 class M2contacts {
   /**
    *
-   * @var LibMelanie\Api\Mce\User Utilisateur Mél
+   * @var LibMelanie\Api\Defaut\User Utilisateur Mél
    */
   protected $user;
   /**
    *
-   * @var LibMelanie\Api\Mce\Addressbook Carnet d'adresses Mél
+   * @var LibMelanie\Api\Defaut\Addressbook Carnet d'adresses Mél
    */
   protected $addressbook;
   /**
@@ -83,7 +83,7 @@ class M2contacts {
           }
         }
         $this->mbox = $mbox;
-        $this->addressbook = new LibMelanie\Api\Mce\Addressbook($this->user);
+        $this->addressbook = driver_mel::gi()->addressbook([$this->user]);
         $this->addressbook->id = $mbox;
         if (! $this->addressbook->load()) {
           $this->addressbook = null;
@@ -110,8 +110,8 @@ class M2contacts {
     if (!isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
       return false;
     try {
-      $_share = new LibMelanie\Api\Mce\Share($this->addressbook);
-      $_share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
+      $_share = driver_mel::gi()->share([$this->addressbook]);
+      $_share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
       $acl = array();
       foreach ($_share->getList() as $share) {
         $acl[$share->name] = array();
@@ -183,26 +183,26 @@ class M2contacts {
         // MANTIS 4978 : l info de partage a ete trouvee, on remplace par uid
         $user = $_user->uid;
       }
-      $share = new LibMelanie\Api\Mce\Share($this->addressbook);
-      $share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
+      $share = driver_mel::gi()->share([$this->addressbook]);
+      $share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
       $share->name = $user;
       $share->acl = 0;
       // Compléter automatiquement les droits
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_WRITE
-                    | LibMelanie\Api\Mce\Share::ACL_DELETE
-                    | LibMelanie\Api\Mce\Share::ACL_READ
-                    | LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_WRITE
+                    | LibMelanie\Api\Defaut\Share::ACL_DELETE
+                    | LibMelanie\Api\Defaut\Share::ACL_READ
+                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       else if (in_array('r', $rights)) {
         // Lecture + Freebusy
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_READ
-                    | LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_READ
+                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       else if (in_array('l', $rights)) {
         // Freebusy
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       $ret = $share->save();
       // Ajouter un hook lors du positionnement des ACLs
@@ -247,8 +247,8 @@ class M2contacts {
     if (!isset($this->addressbook) || $this->addressbook->owner != $this->user->uid)
       return false;
     try {
-      $share = new LibMelanie\Api\Mce\Share($this->addressbook);
-      $share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
+      $share = driver_mel::gi()->share([$this->addressbook]);
+      $share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
       $share->name = $user;
       $ret = $share->delete();
       // Ajouter un hook lors du positionnement des ACLs
@@ -278,7 +278,7 @@ class M2contacts {
    */
   public function createAddressbook($name = null) {
     try {
-      $this->addressbook = new LibMelanie\Api\Mce\Addressbook($this->user);
+      $this->addressbook = driver_mel::gi()->addressbook([$this->user]);
       if (!isset($name)) {
         $this->addressbook->name = $this->user->fullname;
       }

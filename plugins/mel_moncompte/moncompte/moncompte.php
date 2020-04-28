@@ -319,7 +319,7 @@ class Moncompte {
 		
 		$result = array();
 		// Liste des pages Mon compte à afficher
-		$pages = ['changepassword','informationspersonnelles','gestionnaireabsence','gestionnairelistes'];
+		$pages = ['informationspersonnelles','changepassword','gestionnaireabsence','accesinternet','synchronisationmobile','gestionnairelistes'];
 		// Génération de l'affichage
 		foreach ($pages as $page) {
 			$class = ucfirst(strtolower($page));
@@ -511,7 +511,6 @@ class Moncompte {
 			$html .= $tab->show();
 		}
 		return $html;
-
 	}
 
 	/**

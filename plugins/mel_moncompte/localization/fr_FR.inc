@@ -185,6 +185,7 @@ $labels['info_no'] = 'non';
 
 $labels['info_title'] = "Informations spécifiques au compte";
 $labels['info_readonly'] = "Vous n'avez pas les droits de modifications de vos informations personnelles, seul la publication de votre photo peut être changée. Consultez votre service informatique pour avoir plus d'informations.";
+$labels['info_texte'] = "En cas d'erreur, d'omission ou modifications souhaitées, contacter votre gestionnaire Amédée";
 
 $labels['info_employee_number'] = "Matricule :";
 $labels['info_internet_access_admin'] = "Accès internet autorisé :";
@@ -221,18 +222,18 @@ $labels['info_modif_nok'] = "Echec de la modification des données personnelles 
 $labels['info_err_tel'] = "Mauvais format du numéro de ";
 
 // Acces internet
-$labels['accessinternet'] = 'Accés internet';
+$labels['accesinternet'] = 'Accés internet';
 
-$labels['access_internet_title'] = "Activation de l'accès à Mél depuis Internet";
-$labels['access_internet_status_label'] = "Statut de l'accès depuis Internet : ";
-$labels['access_internet_enable'] = "Activé";
-$labels['access_internet_disable'] = "Désactivé";
-$labels['access_internet_button_enable'] = "Activer";
-$labels['access_internet_button_disable'] = "Désactiver";
-$labels['access_internet_disable_label_forbidden'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Pour accéder à Mél depuis n'importe où, contactez votre service informatique.";
-$labels['access_internet_disable_label_allowed'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder à Mél depuis n'importe où.";
-$labels['access_internet_enable_label'] = "Vous pouvez accéder à Mél depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
-$labels['access_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accés, vous devez vous connecter à cet écran depuis le réseau ministériel.";
+$labels['acces_internet_title'] = "Activation de l'accès à Mél depuis Internet";
+$labels['acces_internet_status_label'] = "Statut de l'accès depuis Internet : ";
+$labels['acces_internet_enable'] = "Activé";
+$labels['acces_internet_disable'] = "Désactivé";
+$labels['acces_internet_button_enable'] = "Activer";
+$labels['acces_internet_button_disable'] = "Désactiver";
+$labels['acces_internet_disable_label_forbidden'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Pour accéder à Mél depuis n'importe où, contactez votre service informatique.";
+$labels['acces_internet_disable_label_allowed'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder à Mél depuis n'importe où.";
+$labels['acces_internet_enable_label'] = "Vous pouvez accéder à Mél depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
+$labels['acces_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accés, vous devez vous connecter à cet écran depuis le réseau ministériel.";
 
 // Gestionnaire d'absence
 $labels['gestionnaireabsence'] = 'Gestionnaire d\'absence';
@@ -271,30 +272,9 @@ $labels['inter_CGU_date'] = "Les conditions générales d'utilisation de la navi
 $labels['inter_CGU_validee'] = "Les CGU pour le surf authentifié sont validées.";
 $labels['inter_CGU_unvalidee'] = "Les CGU pour le surf authentifié ne sont pas validées, cocher la case pour les accepter";
 
-//CGU mobiles
-$labels['inter_CGUmob_texte'] = "Le ministère offre la possibilité à ses agents de pouvoir synchroniser <b>leur messagerie, leur agenda et leurs contacts</b> professionnels depuis leurs équipements mobiles de type ordiphone. Ce service <b>requiert la souscription aux présentes Conditions Générales d’Utilisation (CGU)</b> que nous vous invitons à consulter. Ces CGU traitent notamment des points suivants :<br /><br/>
-<ul>
-<li>L’offre est <b>ouverte à tout agent</b> en exprimant la demande après accord du RSSI. Des <b>contrôles</b> pourront être effectués pour vérifier la bonne application des CGU.</li>
-<li>Le service est accessible <b>7j/7 et 24h/24, sans engagement</b> de la part de l'utilisateur à consulter ou à répondre à un courriel.
-</li>
-<li>Seuls les <b>terminaux professionnels sont supportés.</b> Les terminaux personnels ont toutefois accès au service, sous réserve de compatibilité.</li>
-<li>En cas de vol ou de perte, des <b>mesures de sécurité sont à mettre en œuvre par l'utilisateur</b> : changement du mot de passe de messagerie, réinitialisation du terminal <i>(obligatoire pour les terminaux professionnels, facultatif pour les terminaux personnels)</i>, etc.</li>
-<li><b>Deux profils</b> de sécurité – standard et sensible – ont été définis. Ils fixent les <b>règles à respecter</b> pour l’utilisation du service (complexité du code de verrouillage, délai de verrouillage automatique, conditions d’utilisation des services Bluetooth, Wi-Fi ou de cartes de stockage amovibles).
-</li>
-</ul>
-<br /><br />";
-$labels['inter_CGUmob_dl'] = "Téléchargement de la charte d'utilisation de mobiles";
-$labels['inter_CGUmob_legend'] = "Conditions Générales d'Utilisation de la synchronisation des appareils mobiles";
-$labels['inter_CGUmob_profil_change'] = "Vous avez maintenant le profil <b>%%getProfilMob%%</b> , vous devez revalider les conditions générales d'utilisation";
-$labels['inter_CGUmob_accept'] = "En cochant cette case, je reconnais avoir téléchargé la charte pour le service de mobilité et pris connaissance des conditions générales d'utilisation et les accepter sans réserve. (<b>Profil: %%getProfilMob%%</b>).";
-$labels['inter_CGUmob_ok'] = "Les conditions générales d'utilisation de la synchronisation pour les mobiles ont été validées le %%getTSMob%% pour le profil <b>%%getProfilMobU%%</b>.";
-$labels['inter_CGUmob_no'] = "Vous n'êtes pas autorisé &agrave; synchroniser vos périphériques avec la future solution de synchronisation de Mél. Si vous souhaitez l'utiliser, contactez votre cellule informatique.";
-$labels['inter_CGUmob_success'] = "Les CGU ont été acceptées.";
-$labels['inter_CGUmob_error'] = "L'opération a échoué : ";
-$labels['inter_CGUmob_fake'] = "Echec, cocher la case pour accepter les CGU.";
 
 // Gestion des listes
-$labels['gestionnairelists'] = "Gestionnaire de listes";
+$labels['gestionnairelistes'] = "Gestionnaire de listes";
 
 $labels['listes_titre'] = "Listes";
 $labels['listes_membres'] = "Membres";
@@ -315,6 +295,30 @@ $labels['listes_upload'] = "Envoyer le fichier .csv";
 $labels['listes_addr_error'] = "Adresse(s) invalide(s) : \n";
 $labels['listes_import_success'] = "L'import s'est correctement effectué";
 $labels['listes_nolist'] = "Vous ne gérez aucune liste serveur (visible par le service) depuis cette boite à lettres. <p>La création de ces listes est assurée par les opérateurs Mél.<p>";
+
+// Synchronisation mobile
+$labels['synchronisationmobile'] = "Synchronisation mobile";
+
+$labels['cgu_mobile_legende'] = "Conditions Générales d'Utilisation de la synchronisation des appareils mobiles";
+$labels['cgu_mobile_texte'] = "Le ministère offre la possibilité à ses agents de pouvoir synchroniser <b>leur messagerie, leur agenda et leurs contacts</b> professionnels depuis leurs équipements mobiles de type ordiphone. Ce service <b>requiert la souscription aux présentes Conditions Générales d’Utilisation (CGU)</b> que nous vous invitons à consulter. Ces CGU traitent notamment des points suivants :<br /><br/>
+<ul>
+<li>L’offre est <b>ouverte à tout agent</b> en exprimant la demande après accord du RSSI. Des <b>contrôles</b> pourront être effectués pour vérifier la bonne application des CGU.</li>
+<li>Le service est accessible <b>7j/7 et 24h/24, sans engagement</b> de la part de l'utilisateur à consulter ou à répondre à un courriel.
+</li>
+<li>Seuls les <b>terminaux professionnels sont supportés.</b> Les terminaux personnels ont toutefois accès au service, sous réserve de compatibilité.</li>
+<li>En cas de vol ou de perte, des <b>mesures de sécurité sont à mettre en œuvre par l'utilisateur</b> : changement du mot de passe de messagerie, réinitialisation du terminal <i>(obligatoire pour les terminaux professionnels, facultatif pour les terminaux personnels)</i>, etc.</li>
+<li><b>Deux profils</b> de sécurité – standard et sensible – ont été définis. Ils fixent les <b>règles à respecter</b> pour l’utilisation du service (complexité du code de verrouillage, délai de verrouillage automatique, conditions d’utilisation des services Bluetooth, Wi-Fi ou de cartes de stockage amovibles).
+</li>
+</ul>
+<br /><br />";
+$labels['cgu_mobile_charte'] = "Téléchargement de la charte d'utilisation de mobiles";
+$labels['cgu_mobile_profil_change'] = "Vous avez maintenant le profil <b>%%getProfilMob%%</b> , vous devez revalider les conditions générales d'utilisation";
+$labels['cgu_mobile_accept'] = "En cochant cette case, je reconnais avoir téléchargé la charte pour le service de mobilité et pris connaissance des conditions générales d'utilisation et les accepter sans réserve. (<b>Profil: %%getProfilMob%%</b>).";
+$labels['cgu_mobile_ok'] = "Les conditions générales d'utilisation de la synchronisation pour les mobiles ont été validées le %%getTSMob%% pour le profil <b>%%getProfilMobU%%</b>.";
+$labels['cgu_mobile_no'] = "Vous n'êtes pas autorisé &agrave; synchroniser vos périphériques avec la future solution de synchronisation de Mél. Si vous souhaitez l'utiliser, contactez votre cellule informatique.";
+$labels['cgu_mobile_success'] = "Les CGU ont été acceptées.";
+$labels['cgu_mobile_error'] = "L'opération a échoué : ";
+$labels['cgu_mobile_fake'] = "Echec, cocher la case pour accepter les CGU.";
 
 // Statistiques mobiles
 $labels['mobile'] = 'Statistiques mobiles';

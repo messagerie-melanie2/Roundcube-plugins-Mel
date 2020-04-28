@@ -31,7 +31,7 @@ require_once '../lib/vendor/autoload.php';
 require_once '../../vendor/autoload.php';
 
 // Génération du User Mce
-$user = new LibMelanie\Api\Mce\User();
+$user = new LibMelanie\Api\Mel\User();
 $user->uid = $_SERVER['PHP_AUTH_USER'];
 
 // process HTTP auth info
@@ -75,7 +75,7 @@ else {
 $start = time() - (365 * 2 * 24 * 60 * 60);
 
 // Génération du Calendar Mél
-$calendar = new LibMelanie\Api\Mce\Calendar($user);
+$calendar = new LibMelanie\Api\Mel\Calendar($user);
 $calendar->id = $calendar_name;
 
 if ($calendar->load()

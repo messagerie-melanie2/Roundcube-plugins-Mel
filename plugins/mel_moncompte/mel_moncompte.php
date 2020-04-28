@@ -216,12 +216,13 @@ class mel_moncompte extends rcube_plugin {
       $this->register_action('plugin.mel_delete_resource', array($this,'delete_resource'));
 
       // Gestion des listes
-      $this->register_action('plugin.listes_membres', array(new Moncompte($this),'readListeMembers'));
-      $this->register_action('plugin.listes_add_externe', array(new Moncompte($this),'addExterneMember'));
-      $this->register_action('plugin.listes_remove', array(new Moncompte($this),'RemoveMember'));
-      $this->register_action('plugin.listes_remove_all', array(new Moncompte($this),'RemoveAllMembers'));
-      $this->register_action('plugin.listes_export', array(new Moncompte($this),'ExportMembers'));
-      $this->register_action('plugin.listes_upload_csv', array(new Moncompte($this),'uploadCSVMembers'));
+      include_once 'moncompte/Gestionnairelistes.php';
+      $this->register_action('plugin.listes_membres', array('Gestionnairelistes','readListeMembers'));
+      $this->register_action('plugin.listes_add_externe', array('Gestionnairelistes','addExterneMember'));
+      $this->register_action('plugin.listes_remove', array('Gestionnairelistes','RemoveMember'));
+      $this->register_action('plugin.listes_remove_all', array('Gestionnairelistes','RemoveAllMembers'));
+      $this->register_action('plugin.listes_export', array('Gestionnairelistes','ExportMembers'));
+      $this->register_action('plugin.listes_upload_csv', array('Gestionnairelistes','uploadCSVMembers'));
     }
 
     $this->ui_initialized = true;
@@ -267,23 +268,23 @@ class mel_moncompte extends rcube_plugin {
       // Utilisateur courant
       $curUser = $this->rc->get_user_name();
       $shared = false;
-      if ($curUser == $user->uid || $user->shares[$curUser]->type == LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN) {
+      if ($curUser == $user->uid || $user->shares[$curUser]->type == LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN) {
         // Si on est gestionnaire
         $acl = $this->gettext('gestionnaire');
         // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
-        $shared = $curUser == $user->uid || ($user->type != LibMelanie\Api\Mce\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Mce\Users\Type::APPLICATIVE);
+        $shared = $curUser == $user->uid || ($user->type != LibMelanie\Api\Defaut\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Defaut\Users\Type::APPLICATIVE);
       }
       else {
         // Si pas gestionnaire on cherche le bon droit a afficher
         switch ($user->shares[$curUser]->type) {
-          case LibMelanie\Api\Mce\Users\Share::TYPE_SEND:
+          case LibMelanie\Api\Defaut\Users\Share::TYPE_SEND:
             $acl = $this->gettext('send');
             break;
-          case LibMelanie\Api\Mce\Users\Share::TYPE_WRITE:
+          case LibMelanie\Api\Defaut\Users\Share::TYPE_WRITE:
             $acl = $this->gettext('write');
             break;
           default:
-          case LibMelanie\Api\Mce\Users\Share::TYPE_READ:
+          case LibMelanie\Api\Defaut\Users\Share::TYPE_READ:
             $acl = $this->gettext('read_only');
             break;
         }
@@ -335,7 +336,7 @@ class mel_moncompte extends rcube_plugin {
         $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $calendar = new LibMelanie\Api\Mce\Calendar($user);
+        $calendar = driver_mel::gi()->calendar([$user]);
         $calendar->id = $id;
         if ($calendar->load()) {
           // Chargement des preferences de l'utilisateur
@@ -415,7 +416,7 @@ class mel_moncompte extends rcube_plugin {
         $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $addressbook = new LibMelanie\Api\Mce\Addressbook($user);
+        $addressbook = driver_mel::gi()->addressbook([$user]);
         $addressbook->id = $id;
         if ($addressbook->load()) {
           // Chargement des preferences de l'utilisateur
@@ -495,7 +496,7 @@ class mel_moncompte extends rcube_plugin {
         $id = driver_mel::gi()->rcToMceId($id);
         // Instancie les objets Mél
         $user = driver_mel::gi()->getUser($this->get_user_bal());
-        $taskslist = new LibMelanie\Api\Mce\Taskslist($user);
+        $taskslist = driver_mel::gi()->taskslist([$user]);
         $taskslist->id = $id;
         if ($taskslist->load()) {
           // Chargement des preferences de l'utilisateur
@@ -712,13 +713,13 @@ class mel_moncompte extends rcube_plugin {
             else {
               // Vérifier que l'on a bien les droits sur l'agenda
               if ($type == 'calendar') {
-                $sync = new LibMelanie\Api\Mce\Calendar($user);
+                $sync = driver_mel::gi()->calendar([$user]);
               }
               elseif ($type == 'contact') {
-                $sync = new LibMelanie\Api\Mce\Addressbook($user);
+                $sync = driver_mel::gi()->addressbook([$user]);
               }
               else {
-                $sync = new LibMelanie\Api\Mce\Taskslist($user);
+                $sync = driver_mel::gi()->taskslist([$user]);
               }
               $sync->id = $val;
               if (!$sync->load()) {
@@ -806,13 +807,13 @@ class mel_moncompte extends rcube_plugin {
           foreach ($value as $key => $val) {
             // Vérifier que l'on a bien les droits sur l'agenda
             if ($type == 'calendar') {
-              $sync = new LibMelanie\Api\Mce\Calendar($user);
+              $sync = driver_mel::gi()->calendar([$user]);
             }
             elseif ($type == 'contact') {
-              $sync = new LibMelanie\Api\Mce\Addressbook($user);
+              $sync = driver_mel::gi()->addressbook([$user]);
             }
             else {
-              $sync = new LibMelanie\Api\Mce\Taskslist($user);
+              $sync = driver_mel::gi()->taskslist([$user]);
             }
             $sync->id = $val;
             if (!$sync->load()) {
@@ -966,7 +967,7 @@ class mel_moncompte extends rcube_plugin {
       $bal = driver_mel::gi()->getUser($this->user_bal);
       if ($this->user_bal != $this->rc->get_user_name()
           && (!isset($bal->shares[$this->rc->get_user_name()]) 
-            || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
+            || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
         // Récupération du username depuis la session
         $this->user_name = $this->rc->get_user_name();
         $this->user_objet_share = $this->rc->user->get_username('local');

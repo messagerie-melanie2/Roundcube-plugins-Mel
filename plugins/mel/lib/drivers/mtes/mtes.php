@@ -19,7 +19,7 @@
  */
 use LibMelanie\Ldap\Ldap as Ldap;
 
-include_once '../mce/mce.php';
+include_once __DIR__ . '/../mce/mce.php';
 
 class mtes_driver_mel extends mce_driver_mel {
   /**
@@ -70,7 +70,7 @@ class mtes_driver_mel extends mce_driver_mel {
    * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
    *
-   * @return \LibMelanie\Api\Mce\Group
+   * @return \LibMelanie\Api\Defaut\Group
    */
   public function getGroup($group_dn = null, $load = true, $fromCache = true) {
     if (!$fromCache) {

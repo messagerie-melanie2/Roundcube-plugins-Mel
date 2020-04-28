@@ -8,7 +8,7 @@
  */
 @include_once 'includes/libm2.php';
 
-use LibMelanie\Api\Mce;
+use LibMelanie\Api\Defaut;
 
 /**
  * Classe de mapping vers Mce (vers la librairie ORM M2)
@@ -29,8 +29,8 @@ class mel_contacts_mapping {
    * Converti un contact roundcube pour mel
    *
    * @param array $_contact_rc
-   * @param Mce\Contact $_contact_m2
-   * @return Mce\Contact
+   * @param Defaut\Contact $_contact_m2
+   * @return Defaut\Contact
    */
   public static function rc_to_m2_contact($_contact_rc, $_contact_m2) {
     if (mel_logs::is(mel_logs::TRACE))
@@ -119,7 +119,7 @@ class mel_contacts_mapping {
   /**
    * Converti un contact mel en contact attendu par roundcube
    *
-   * @param Mce\Contact $_contact
+   * @param Defaut\Contact $_contact
    * @return array:
    */
   public static function m2_to_rc_contact($cols = null, $_contact) {
@@ -170,7 +170,7 @@ class mel_contacts_mapping {
       }
       // Name
       if (! isset($contact['name'])) {
-        if ($_contact->type == Mce\Contact::TYPE_LIST) {
+        if ($_contact->type == Defaut\Contact::TYPE_LIST) {
           if ($_contact->uid == 'favorites') {
             $contact['name'] = rcmail::get_instance()->gettext('favorites', 'mel_contacts');
           }

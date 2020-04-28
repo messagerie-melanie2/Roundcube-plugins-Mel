@@ -763,7 +763,8 @@ class libvcalendar implements Iterator
 
                 // skip dupes
                 if ($seen[$value.':'.$fbtype]++)
-                    continue;
+                    // Fix continue problem
+                    break;
 
                 foreach ($periods as $period) {
                     // Every period is formatted as [start]/[end]. The start is an

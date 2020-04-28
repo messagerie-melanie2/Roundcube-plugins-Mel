@@ -49,9 +49,11 @@
 					<br>
 					<input type="radio" name="absence_reponse_externe" value="abs_texte_diff" id="abs_texte_diff" <roundcube:var name="env:moncompte_abs_radio_diff" /> >
 					<label for="abs_texte_diff"><roundcube:label name="mel_moncompte.absence_texte_interne_different"></roundcube:label></label>
-					<textarea class="Saisie" rows=3 cols=100 name="absence_message_externe" id="abs_msg_inter" style="<roundcube:var name="env:moncompte_absence_texte_externe_style" />">
-						<roundcube:var name="env:moncompte_absence_texte_externe" />
-					</textarea>
+					<p>
+						<textarea class="Saisie" rows=3 cols=100 name="absence_message_externe" id="abs_msg_inter" style="<roundcube:var name="env:moncompte_absence_texte_externe_style" />">
+							<roundcube:var name="env:moncompte_absence_texte_externe" />
+						</textarea>
+					</p>
 				</div>
 			</fieldset>
 			<input type="submit" class="button mainaction" name="save" value="<roundcube:label name="save" />" />

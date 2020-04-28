@@ -24,17 +24,17 @@ require_once 'Moncompteobject.php';
 */
 class Accesinternet extends Moncompteobject {
 	/**
-	* Est-ce que cet objet Mon compte doit être affiché
-	* 
-	* @return boolean true si l'objet doit être affiché false sinon
-	*/
+	 * Est-ce que cet objet Mon compte doit être affiché
+	 * 
+	 * @return boolean true si l'objet doit être affiché false sinon
+	 */
 	public static function isEnabled() {
 		return rcmail::get_instance()->config->get('enable_moncompte_cgu', true);
 	}
 	
 	/**
-	* Chargement des données de l'utilisateur depuis l'annuaire
-	*/
+	 * Chargement des données de l'utilisateur depuis l'annuaire
+	 */
 	public static function load() {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
@@ -57,8 +57,8 @@ class Accesinternet extends Moncompteobject {
 	}
 	
 	/**
-	* Modification des données de l'utilisateur depuis l'annuaire
-	*/
+	 * Modification des données de l'utilisateur depuis l'annuaire
+	 */
 	public static function change() {
 
 	}	

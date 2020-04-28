@@ -108,7 +108,7 @@ class annuaire extends rcube_plugin
             ));
         } else if ($this->rc->task == 'settings' && $this->rc->action == 'plugin.mel_moncompte') {
             $fid = rcube_utils::get_input_value('_fid', rcube_utils::INPUT_GPC);
-            if ($fid == 'rcmgestionlists') {
+            if ($fid == 'rcmgestionlists' || $fid == 'gestionnairelistes') {
                 // Chargement de la conf
                 $this->load_config();
 

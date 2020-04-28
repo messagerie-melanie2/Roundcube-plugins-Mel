@@ -26,7 +26,7 @@
 class M2mailbox {
   /**
    *
-   * @var LibMelanie\Api\Mce\User Utilisateur Mél
+   * @var LibMelanie\Api\Defaut\User Utilisateur Mél
    */
   protected $user;
   /**
@@ -76,7 +76,7 @@ class M2mailbox {
     }
     if ($this->rc->get_user_name() != $_mbox->uid 
         && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()] != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
+          || $_mbox->shares[$this->rc->get_user_name()] != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas afficher les droits de la boite
       return false;
@@ -125,7 +125,7 @@ class M2mailbox {
     // Vérification des droits gestionnaires
     if ($this->rc->get_user_name() != $_mbox->uid 
         && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
+          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas modifier les droits de la boite
       return false;
@@ -147,7 +147,7 @@ class M2mailbox {
     $acl = strtoupper($rights[0]);
     if (in_array($acl, $_mbox->supported_shares)) {
       $shares = $_mbox->shares;
-      $share = new \LibMelanie\Api\Mce\Users\Share();
+      $share = driver_mel::gi()->share();
       $share->type = strtoupper($rights[0]);
       $share->user = $user;
       $shares[$user] = $share;
@@ -198,7 +198,7 @@ class M2mailbox {
     // Vérification des droits gestionnaires
     if ($this->rc->get_user_name() != $_mbox->uid 
         && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN)) {
+          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas modifier les droits de la boite
       return false;

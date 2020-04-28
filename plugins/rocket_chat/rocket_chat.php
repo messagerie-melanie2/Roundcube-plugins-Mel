@@ -201,8 +201,11 @@ EOF;
         mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email)");
       $infos = null;
       if (!isset($username)) {
-        $user = driver_mel::gi()->getUser($email);
-        $username = $user->uid;
+        $user = driver_mel::gi()->user();
+        $user->email = $email;
+        if ($user->load(['uid'])) {
+          $username = $user->uid;
+        }
       }
       $cache = \mel::InitM2Cache();
       if (isset($cache['rocketchat']) && isset($cache['rocketchat']['infos']) && time() - $cache['rocketchat']['time'] <= self::CACHE_ROCKETCHAT) {

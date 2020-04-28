@@ -58,7 +58,7 @@ class mel_driver extends calendar_driver {
   /**
    * Tableau de calendrier Mél
    *
-   * @var LibMelanie\Api\Mce\Calendar[]
+   * @var LibMelanie\Api\Defaut\Calendar[]
    */
   private $calendars;
   private $has_principal = false;
@@ -68,7 +68,7 @@ class mel_driver extends calendar_driver {
   /**
    * Utilisateur Mél
    *
-   * @var LibMelanie\Api\Mce\User
+   * @var LibMelanie\Api\Defaut\User
    */
   private $user;
   /**
@@ -114,7 +114,7 @@ class mel_driver extends calendar_driver {
     if (isset($this->user)) {
       if (isset($calid)) {
         // Charger un calendrier unique
-        $calendar = new LibMelanie\Api\Mce\Calendar($this->user);
+        $calendar = driver_mel::gi()->calendar([$this->user]);
         $calid = driver_mel::gi()->rcToMceId($calid);
         $calendar->id = $calid;
         if ($calendar->load() && $calendar->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
@@ -374,7 +374,7 @@ class mel_driver extends calendar_driver {
         $ret = $this->user->createDefaultCalendar($prop['name']);
       }
       else {
-        $calendar = new LibMelanie\Api\Mce\Calendar($this->user);
+        $calendar = driver_mel::gi()->calendar([$this->user]);
         $calendar->name = $prop['name'];
         $calendar->id = isset($prop['id']) ? driver_mel::gi()->rcToMceId($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
         $calendar->owner = $this->user->uid;
@@ -639,7 +639,7 @@ class mel_driver extends calendar_driver {
       }
       // Récupère le timezone
       // Génère l'évènement
-      $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+      $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
       // Calcul de l'uid de l'évènment
       if (isset($event['uid']) && !empty($event['uid'])) {
         $_event->uid = $event['uid'];
@@ -691,7 +691,7 @@ class mel_driver extends calendar_driver {
           return true;
         }
         // Test si privé
-        $is_private = (($event->class == LibMelanie\Api\Mce\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Mce\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
+        $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
         if ($is_private) {
           return true;
@@ -703,7 +703,7 @@ class mel_driver extends calendar_driver {
         $_event->uid = str_replace('/', '', $_event->uid);
       }
       if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
-        $_exception = new LibMelanie\Api\Mce\Exception($_event, $this->user, $this->calendars[$event['calendar']]);
+        $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en exception Mél
         $exceptions = $_event->exceptions;
         // Positionnement de la recurrenceId et de l'uid
@@ -749,7 +749,7 @@ class mel_driver extends calendar_driver {
             $_event->recurrence->count = '';
             $_event->save();
             // Création de la nouvelle
-            $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+            $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
             // Converti les données de l'évènement en évènement Mél
             $_event = $this->_write_postprocess($_event, $event, true);
             $_event->uid = $event['uid'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@future';
@@ -758,7 +758,7 @@ class mel_driver extends calendar_driver {
       else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
         $event['uid'] = $_event->uid;
         // Création de la nouvelle
-        $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+        $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, true);
         $_event->uid = $event['uid'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@new';
@@ -860,7 +860,7 @@ class mel_driver extends calendar_driver {
       }
       // Récupère le timezone
       // Génère l'évènement
-      $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+      $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
       // Calcul de l'uid de l'évènment
       if (isset($event['uid'])) {
         $_event->uid = $event['uid'];
@@ -891,13 +891,13 @@ class mel_driver extends calendar_driver {
           return true;
         }
         // Test si privé
-        $is_private = (($event->class == LibMelanie\Api\Mce\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Mce\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
+        $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
         if ($is_private) {
           return true;
         }
         if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
-          $_exception = new LibMelanie\Api\Mce\Exception($_event, $this->user, $this->calendars[$event['calendar']]);
+          $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
           if (! is_array($exceptions))
@@ -945,7 +945,7 @@ class mel_driver extends calendar_driver {
           $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
           $_event->save();
           // Création de la nouvelle
-          $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+          $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
@@ -954,7 +954,7 @@ class mel_driver extends calendar_driver {
           // Génération de nouvel identifiant
           $e['uid'] = $e['id'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@rc_new';
           // Création de la nouvelle
-          $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+          $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
@@ -1003,10 +1003,11 @@ class mel_driver extends calendar_driver {
   /**
    * Convert a rcube style event object into sql record
    *
-   * @param LibMelanie\Api\Mce\Event $_event
+   * @param LibMelanie\Api\Defaut\Event $_event
    * @param array $event
    * @param boolean $new
-   * @return LibMelanie\Api\Mce\Event $_event
+   * 
+   * @return LibMelanie\Api\Defaut\Event $_event
    */
   private function _write_postprocess($_event, $event, $new, $move = false) {
     // Gestion des données de l'évènement
@@ -1071,7 +1072,7 @@ class mel_driver extends calendar_driver {
       }
     }
     // Recurrence
-    if (isset($event['recurrence']) && get_class($_event) != 'LibMelanie\Api\Mce\Exception') {
+    if (isset($event['recurrence']) && get_class($_event) != 'LibMelanie\Api\Defaut\Exception') {
       $_event->recurrence->rrule = $event['recurrence'];
     }
     // Status
@@ -1079,11 +1080,11 @@ class mel_driver extends calendar_driver {
       $_event->status = mel_mapping::rc_to_m2_status($event['status']);
     }
     // Transparency
-    if ($_event->status == LibMelanie\Api\Mce\Event::STATUS_NONE) {
-      $_event->transparency = LibMelanie\Api\Mce\Event::TRANS_TRANSPARENT;
+    if ($_event->status == LibMelanie\Api\Defaut\Event::STATUS_NONE) {
+      $_event->transparency = LibMelanie\Api\Defaut\Event::TRANS_TRANSPARENT;
     }
     else {
-      $_event->transparency = LibMelanie\Api\Mce\Event::TRANS_OPAQUE;
+      $_event->transparency = LibMelanie\Api\Defaut\Event::TRANS_OPAQUE;
     }    
     // Class
     if (isset($event['sensitivity'])) {
@@ -1095,7 +1096,8 @@ class mel_driver extends calendar_driver {
       foreach ($event['attendees'] as $event_attendee) {
         if (isset($event_attendee['role']) && $event_attendee['role'] == 'ORGANIZER') {
           if (count($event['attendees']) != 1) {
-            $organizer = new LibMelanie\Api\Mce\Organizer($_event);
+            $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
+            $organizer = driver_mel::gi()->organizer([$_event]);
             if (isset($event_attendee['email'])) {
               $organizer->email = $event_attendee['email'];
             }
@@ -1106,7 +1108,7 @@ class mel_driver extends calendar_driver {
           }
         }
         else {
-          $attendee = new LibMelanie\Api\Mce\Attendee();
+          $attendee = driver_mel::gi()->attendee();
           if (isset($event_attendee['name'])) {
             $attendee->name = $event_attendee['name'];
           }
@@ -1161,7 +1163,7 @@ class mel_driver extends calendar_driver {
         return false;
       }
       // Génère l'évènement
-      $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+      $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
       if (isset($event['uid'])) {
         $_event->uid = $event['uid'];
       }
@@ -1201,7 +1203,7 @@ class mel_driver extends calendar_driver {
       }
       elseif ($event['_savemode'] == 'current') {
         if ($_event->load()) {
-          $_exception = new LibMelanie\Api\Mce\Exception($_event, $this->user, $this->calendars[$event['calendar']]);
+          $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
           // Positionnement de la recurrenceId et de l'uid
@@ -1324,10 +1326,7 @@ class mel_driver extends calendar_driver {
       }
 
       if (isset($event['calendar']) && isset($this->calendars[$event['calendar']])) {
-        // if (strpos($event['id'], '@RECURRENCE-ID') !== false) {
-
-        // }
-        $_event = new LibMelanie\Api\Mce\Event($this->user, $this->calendars[$event['calendar']]);
+        $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
         if (isset($event['uid'])) {
           $_event->uid = $event['uid'];
           // Récupération d'une instance d'événement
@@ -1386,7 +1385,7 @@ class mel_driver extends calendar_driver {
           }
         }
         foreach ($calendars as $cal) {
-          $_event = new LibMelanie\Api\Mce\Event($this->user, $cal);
+          $_event = driver_mel::gi()->event([$this->user, $cal]);
           if (isset($event['uid'])) {
             $_event->uid = $event['uid'];
           }
@@ -1464,12 +1463,12 @@ class mel_driver extends calendar_driver {
 
       if ($freebusy) {
         foreach ($calendars as $key => $value) {
-          $this->calendars[$value] = new LibMelanie\Api\Mce\Calendar($this->user);
+          $this->calendars[$value] = driver_mel::gi()->calendar([$this->user]);
           $this->calendars[$value]->id = $value;
         }
       }
       if (isset($query)) {
-        $event = new LibMelanie\Api\Mce\Event($this->user);
+        $event = driver_mel::gi()->event([$this->user]);
 
         $cols = array('title','location','description','category');
         $operators = array();
@@ -1486,7 +1485,7 @@ class mel_driver extends calendar_driver {
 
         $event->start = date("Y-m-d H:i:s", $end);
         $event->end = date("Y-m-d H:i:s", $start);
-        $event->recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_NORECUR;
+        $event->recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR;
         $event->recurrence->enddate = date("Y-m-d H:i:s", $start);
 
         // Ne retourne que les événements modifié depuis une date
@@ -1537,7 +1536,7 @@ class mel_driver extends calendar_driver {
         if (! $freebusy && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY) && ! $this->calendars[$_e->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
           continue;
         }
-        if ($_e->recurrence->type === LibMelanie\Api\Mce\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {
+        if ($_e->recurrence->type === LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR && ! $_e->deleted) {
           $_events[] = $this->_read_postprocess($_e, $freebusy);
         }
         else {
@@ -1639,7 +1638,7 @@ class mel_driver extends calendar_driver {
   /**
    * Convert sql record into a rcube style event object
    *
-   * @param LibMelanie\Api\Mce\Event $event
+   * @param LibMelanie\Api\Defaut\Event $event
    */
   private function _read_postprocess($event, $freebusy = false, $isexception = false) {
     if (mel_logs::is(mel_logs::TRACE))
@@ -1700,7 +1699,7 @@ class mel_driver extends calendar_driver {
     }
     else {
       // Test si privé
-      $is_private = (($event->class == LibMelanie\Api\Mce\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Mce\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
+      $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
       $is_freebusy = ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::READ) && $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::FREEBUSY);
 
@@ -1801,7 +1800,7 @@ class mel_driver extends calendar_driver {
   /**
    * Génère les exceptions dans la récurrence l'évènement
    *
-   * @param LibMelanie\Api\Mce\Event $event
+   * @param LibMelanie\Api\Defaut\Event $event
    * @param array $recurrence
    * @return array $recurrence
    */
@@ -1860,7 +1859,7 @@ class mel_driver extends calendar_driver {
       if (empty($calendars_id)) {
         $calendars_id = [$this->rc->user->get_username()];
       }
-      $_event = new LibMelanie\Api\Mce\Event($this->user);
+      $_event = driver_mel::gi()->event([$this->user]);
       $_event->calendar = $calendars_id;
       $_event->alarm = 0;
       // Durée dans le passé maximum pour l'affichage des alarmes (5 jours)
@@ -1934,7 +1933,7 @@ class mel_driver extends calendar_driver {
       }
       foreach ($calendars as $key => $calendar) {
         if (isset($alarm_calendars[$calendar->id])) {
-          $event = new LibMelanie\Api\Mce\Event($this->user, $calendar);
+          $event = driver_mel::gi()->event([$this->user, $calendar]);
           $event->uid = $event_id;
           if ($event->load()) {
             if ($snooze != 0) {              
@@ -1966,10 +1965,10 @@ class mel_driver extends calendar_driver {
    * Save an attachment related to the given event
    *
    * @param array $attachment
-   * @param LibMelanie\Api\Mce\Event $event
+   * @param LibMelanie\Api\Defaut\Event $event
    * @return boolean
    */
-  private function add_attachment($attachment, LibMelanie\Api\Mce\Event $event) {
+  private function add_attachment($attachment, $event) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::add_attachment()");
     try {
@@ -1979,7 +1978,7 @@ class mel_driver extends calendar_driver {
         return true;
       }
       // Création de la pièce jointe
-      $_attachment = new LibMelanie\Api\Mce\Attachment();
+      $_attachment = driver_mel::gi()->attachment();
       $_attachment->modified = time();
       $_attachment->name = $attachment['name'];
       $_attachment->path = $event->uid . '/' . $this->calendars[$event->calendar]->owner;
@@ -1987,7 +1986,7 @@ class mel_driver extends calendar_driver {
       $_attachment->isfolder = false;
       $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
       $ret = $_attachment->save();
-      return ! is_null($ret);
+      return !is_null($ret);
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_driver::add_attachment() Melanie2DatabaseException");
@@ -2009,13 +2008,13 @@ class mel_driver extends calendar_driver {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_attachment($attachment_id)");
     try {
-      $attachment = new LibMelanie\Api\Mce\Attachment();
+      $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $attachment_id;
       $ret = true;
       foreach ($attachment->getList() as $att) {
         // Vérifie si d'autres pièces jointes sont présentes
-        $other_attachment = new LibMelanie\Api\Mce\Attachment();
+        $other_attachment = driver_mel::gi()->attachment();
         $other_attachment->isfolder = false;
         $other_attachment->path = $att->path;
         $ret = $ret & $att->delete();
@@ -2023,7 +2022,7 @@ class mel_driver extends calendar_driver {
         if (count($other_att) == 0) {
           // S'il n'y a pas d'autres pieces jointes on supprime le dossier
           $path = explode('/', $other_attachment->path);
-          $folder = new LibMelanie\Api\Mce\Attachment();
+          $folder = driver_mel::gi()->attachment();
           $folder->isfolder = true;
           $folder->name = $path[count($path) - 1];
           $folder->path = $path[count($path) - 2];
@@ -2048,14 +2047,14 @@ class mel_driver extends calendar_driver {
    */
   private function remove_event_attachments($event_uid) {
     try {
-      $_events = new LibMelanie\Api\Mce\Event();
+      $_events = driver_mel::gi()->event();
       $_events->uid = $event_uid;
       $nb_events = $_events->getList('count');
       $count = $nb_events['']->events_count;
       unset($nb_events);
       // Si c'est le dernier evenement avec le même uid on supprime toutes les pièces jointes
       if ($count === 0) {
-        $attachments_folders = new LibMelanie\Api\Mce\Attachment();
+        $attachments_folders = driver_mel::gi()->attachment();
         $attachments_folders->isfolder = true;
         $attachments_folders->path = $event_uid;
         $folders_list = array();
@@ -2065,7 +2064,7 @@ class mel_driver extends calendar_driver {
           foreach ($folders as $folder) {
             $folders_list[] = $folder->path . '/' . $folder->name;
           }
-          $attachments = new LibMelanie\Api\Mce\Attachment();
+          $attachments = driver_mel::gi()->attachment();
           $attachments->isfolder = false;
           $attachments->path = $folders_list;
           // Lecture des pièces jointes pour chaque dossier de l'évènement
@@ -2081,7 +2080,7 @@ class mel_driver extends calendar_driver {
             $folder->delete();
           }
         }
-        $folder = new LibMelanie\Api\Mce\Attachment();
+        $folder = driver_mel::gi()->attachment();
         $folder->isfolder = true;
         $folder->path = '';
         $folder->name = $event_uid;
@@ -2109,7 +2108,7 @@ class mel_driver extends calendar_driver {
     try {
       $_attachments = array();
       // Récupération des pièces jointes
-      $attachments_folders = new LibMelanie\Api\Mce\Attachment();
+      $attachments_folders = driver_mel::gi()->attachment();
       $attachments_folders->isfolder = true;
       $attachments_folders->path = $event->uid;
       $folders_list = array();
@@ -2119,7 +2118,7 @@ class mel_driver extends calendar_driver {
         foreach ($folders as $folder) {
           $folders_list[] = $folder->path . '/' . $folder->name;
         }
-        $attachments = new LibMelanie\Api\Mce\Attachment();
+        $attachments = driver_mel::gi()->attachment();
         $attachments->isfolder = false;
         $attachments->path = $folders_list;
         // Lecture des pièces jointes pour chaque dossier de l'évènement
@@ -2150,7 +2149,7 @@ class mel_driver extends calendar_driver {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::get_attachment($id)");
     try {
-      $attachment = new LibMelanie\Api\Mce\Attachment();
+      $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $id;
       foreach ($attachment->getList() as $att) {
@@ -2187,8 +2186,9 @@ class mel_driver extends calendar_driver {
   public function get_freebusy_list($email, $start, $end) {
     try {
       // Récupération de l'utilisateur depuis l'annuaire
-      $user = driver_mel::gi()->getUser($email);
-      if (isset($user)) {
+      $user = driver_mel::gi()->user();
+      $user->email = $email;
+      if ($user->load(['uid'])) {
         // map vcalendar fbtypes to internal values
         $fbtypemap = array('free' => calendar::FREEBUSY_FREE,'tentative' => calendar::FREEBUSY_TENTATIVE,'outofoffice' => calendar::FREEBUSY_OOF,'busy' => calendar::FREEBUSY_BUSY);
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
@@ -2686,7 +2686,7 @@ class mel_driver extends calendar_driver {
   /**
    * Compose an URL for CalDAV access to this calendar (if configured)
    *
-   * @param \LibMelanie\Api\Mce\Calendar $calendar
+   * @param \LibMelanie\Api\Defaut\Calendar $calendar
    */
   private function get_caldav_url($calendar)
   {

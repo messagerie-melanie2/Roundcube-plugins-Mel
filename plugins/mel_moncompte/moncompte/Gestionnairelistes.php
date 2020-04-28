@@ -156,7 +156,7 @@ class Gestionnairelistes extends Moncompteobject {
 						&& $group->isOwner($user)) {
 					$list_emails = array_map('strtolower', $group->members_email);
 					sort($list_emails);
-					$islistdyn =  $group->is_dynamic;
+					$islistdyn = $group->is_dynamic;
 				}
 			}
 		}
@@ -188,7 +188,8 @@ class Gestionnairelistes extends Moncompteobject {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
 						$list_members = is_array($group->members) ? $group->members : [];
 						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
-							$new_user = driver_mel::gi()->getUser($new_smtp, false);
+							$new_user = driver_mel::gi()->user();
+							$new_user->email = $new_smtp;
 							if ($new_user->load('uid')) {
 								if (!isset($list_members[$new_user->uid])) {
 									$list_members[$new_user->uid] = $new_user;
@@ -240,7 +241,8 @@ class Gestionnairelistes extends Moncompteobject {
 						$list_members = is_array($group->members) ? $group->members : [];
 						if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, var_export($liste_members, true));
 						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
-							$user_to_delete = driver_mel::gi()->getUser($address, false);
+							$user_to_delete = driver_mel::gi()->user();
+							$user_to_delete->email = $address;
 							if ($user_to_delete->load('uid')) {
 								$member_uid = strtolower($user_to_delete->uid);
 								// MANTIS 3570: Problème dans la suppression d'un membre d'une liste
@@ -372,7 +374,8 @@ class Gestionnairelistes extends Moncompteobject {
 								
 								$list_emails[] = $member;
 							}
-							$user_to_add = driver_mel::gi()->getUser($member, false);
+							$user_to_add = driver_mel::gi()->user();
+							$user_to_add->email = $member;
 							if ($user_to_add->load('uid') 
 									&& !isset($list_members[$user_to_add->uid])) {
 								$list_members[$user_to_add->uid] = $user_to_add;

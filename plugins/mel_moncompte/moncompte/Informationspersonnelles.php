@@ -19,7 +19,7 @@
  */
 require_once 'Moncompteobject.php';
 
-use LibMelanie\Api\Mce\Users\Type;
+use LibMelanie\Api\Defaut\Users\Type;
 
 /**
  * Classe d'affichage et de modification des informations personnelles de l'utilisateur

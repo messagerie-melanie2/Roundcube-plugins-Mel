@@ -48,11 +48,11 @@ class mel_mapping {
    */
   public static function rc_to_m2_status($status_rc) {
     $mapping = array(
-            self::DEFAULT_VALUE => LibMelanie\Api\Mce\Event::STATUS_CONFIRMED,
-            'CONFIRMED' => LibMelanie\Api\Mce\Event::STATUS_CONFIRMED,
-            'CANCELLED' => LibMelanie\Api\Mce\Event::STATUS_CANCELLED,
-            'TENTATIVE' => LibMelanie\Api\Mce\Event::STATUS_TENTATIVE, 
-            'FREE' => LibMelanie\Api\Mce\Event::STATUS_NONE
+            self::DEFAULT_VALUE => LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED,
+            'CONFIRMED' => LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED,
+            'CANCELLED' => LibMelanie\Api\Defaut\Event::STATUS_CANCELLED,
+            'TENTATIVE' => LibMelanie\Api\Defaut\Event::STATUS_TENTATIVE, 
+            'FREE' => LibMelanie\Api\Defaut\Event::STATUS_NONE
     );
     if (isset($mapping[$status_rc])) {
       $status_m2 = $mapping[$status_rc];
@@ -72,10 +72,10 @@ class mel_mapping {
   public static function m2_to_rc_status($status_m2) {
     $mapping = array(
             self::DEFAULT_VALUE => 'CONFIRMED',
-            LibMelanie\Api\Mce\Event::STATUS_NONE => 'FREE',
-            LibMelanie\Api\Mce\Event::STATUS_CONFIRMED => 'CONFIRMED',
-            LibMelanie\Api\Mce\Event::STATUS_CANCELLED => 'CANCELLED',
-            LibMelanie\Api\Mce\Event::STATUS_TENTATIVE => 'TENTATIVE',        
+            LibMelanie\Api\Defaut\Event::STATUS_NONE => 'FREE',
+            LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED => 'CONFIRMED',
+            LibMelanie\Api\Defaut\Event::STATUS_CANCELLED => 'CANCELLED',
+            LibMelanie\Api\Defaut\Event::STATUS_TENTATIVE => 'TENTATIVE',        
     );
     if (isset($mapping[$status_m2])) {
       $status_rc = $mapping[$status_m2];
@@ -95,11 +95,11 @@ class mel_mapping {
   public static function rc_to_m2_free_busy($free_busy_rc) {
     $free_busy_rc = strtolower($free_busy_rc);
     $mapping = array(
-            'free' => LibMelanie\Api\Mce\Event::STATUS_NONE,
-            'busy' => LibMelanie\Api\Mce\Event::STATUS_CONFIRMED,
-            'outofoffice' => LibMelanie\Api\Mce\Event::STATUS_CONFIRMED,
-            'tentative' => LibMelanie\Api\Mce\Event::STATUS_TENTATIVE,
-            self::DEFAULT_VALUE => LibMelanie\Api\Mce\Event::STATUS_CONFIRMED
+            'free' => LibMelanie\Api\Defaut\Event::STATUS_NONE,
+            'busy' => LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED,
+            'outofoffice' => LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED,
+            'tentative' => LibMelanie\Api\Defaut\Event::STATUS_TENTATIVE,
+            self::DEFAULT_VALUE => LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED
     );
     if (isset($mapping[$free_busy_rc])) {
       $free_busy_m2 = $mapping[$free_busy_rc];
@@ -118,11 +118,11 @@ class mel_mapping {
    */
   public static function m2_to_rc_free_busy($free_busy_m2) {
     $mapping = array(
-            LibMelanie\Api\Mce\Event::STATUS_NONE => 'free',
-            LibMelanie\Api\Mce\Event::STATUS_CANCELLED => 'free',
-            LibMelanie\Api\Mce\Event::STATUS_CONFIRMED => 'busy',
+            LibMelanie\Api\Defaut\Event::STATUS_NONE => 'free',
+            LibMelanie\Api\Defaut\Event::STATUS_CANCELLED => 'free',
+            LibMelanie\Api\Defaut\Event::STATUS_CONFIRMED => 'busy',
             'outofoffice' => 'outofoffice',
-            LibMelanie\Api\Mce\Event::STATUS_TENTATIVE => 'tentative',
+            LibMelanie\Api\Defaut\Event::STATUS_TENTATIVE => 'tentative',
             self::DEFAULT_VALUE => 'busy'
     );
     if (isset($mapping[$free_busy_m2])) {
@@ -143,10 +143,10 @@ class mel_mapping {
    */
   public static function rc_to_m2_class($class_rc) {
     $mapping = array(
-            self::DEFAULT_VALUE => LibMelanie\Api\Mce\Event::CLASS_PUBLIC,
-            'public' => LibMelanie\Api\Mce\Event::CLASS_PUBLIC,
-            'private' => LibMelanie\Api\Mce\Event::CLASS_PRIVATE,
-            'confidential' => LibMelanie\Api\Mce\Event::CLASS_CONFIDENTIAL
+            self::DEFAULT_VALUE => LibMelanie\Api\Defaut\Event::CLASS_PUBLIC,
+            'public' => LibMelanie\Api\Defaut\Event::CLASS_PUBLIC,
+            'private' => LibMelanie\Api\Defaut\Event::CLASS_PRIVATE,
+            'confidential' => LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL
     );
     if (isset($mapping[$class_rc])) {
       $class_m2 = $mapping[$class_rc];
@@ -167,9 +167,9 @@ class mel_mapping {
   public static function m2_to_rc_class($class_m2) {
     $mapping = array(
             self::DEFAULT_VALUE => 0,
-            LibMelanie\Api\Mce\Event::CLASS_PUBLIC => 'public',
-            LibMelanie\Api\Mce\Event::CLASS_PRIVATE => 'private',
-            LibMelanie\Api\Mce\Event::CLASS_CONFIDENTIAL => 'confidential'
+            LibMelanie\Api\Defaut\Event::CLASS_PUBLIC => 'public',
+            LibMelanie\Api\Defaut\Event::CLASS_PRIVATE => 'private',
+            LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL => 'confidential'
     );
     if (isset($mapping[$class_m2])) {
       $class_rc = $mapping[$class_m2];
@@ -188,11 +188,11 @@ class mel_mapping {
    */
   public static function rc_to_m2_attendee_role($attendee_role_rc) {
     $mapping = array(
-            self::DEFAULT_VALUE => LibMelanie\Api\Mce\Attendee::ROLE_REQ_PARTICIPANT,
-            'REQ-PARTICIPANT' => LibMelanie\Api\Mce\Attendee::ROLE_REQ_PARTICIPANT,
-            'OPT-PARTICIPANT' => LibMelanie\Api\Mce\Attendee::ROLE_OPT_PARTICIPANT,
-            'NON-PARTICIPANT' => LibMelanie\Api\Mce\Attendee::ROLE_NON_PARTICIPANT,
-            'CHAIR' => LibMelanie\Api\Mce\Attendee::ROLE_CHAIR
+            self::DEFAULT_VALUE => LibMelanie\Api\Defaut\Attendee::ROLE_REQ_PARTICIPANT,
+            'REQ-PARTICIPANT' => LibMelanie\Api\Defaut\Attendee::ROLE_REQ_PARTICIPANT,
+            'OPT-PARTICIPANT' => LibMelanie\Api\Defaut\Attendee::ROLE_OPT_PARTICIPANT,
+            'NON-PARTICIPANT' => LibMelanie\Api\Defaut\Attendee::ROLE_NON_PARTICIPANT,
+            'CHAIR' => LibMelanie\Api\Defaut\Attendee::ROLE_CHAIR
     );
     if (isset($mapping[$attendee_role_rc])) {
       $attendee_role_m2 = $mapping[$attendee_role_rc];
@@ -212,10 +212,10 @@ class mel_mapping {
   public static function m2_to_rc_attendee_role($attendee_role_m2) {
     $mapping = array(
             self::DEFAULT_VALUE => 'REQ-PARTICIPANT',
-            LibMelanie\Api\Mce\Attendee::ROLE_REQ_PARTICIPANT => 'REQ-PARTICIPANT',
-            LibMelanie\Api\Mce\Attendee::ROLE_OPT_PARTICIPANT => 'OPT-PARTICIPANT',
-            LibMelanie\Api\Mce\Attendee::ROLE_NON_PARTICIPANT => 'NON-PARTICIPANT',
-            LibMelanie\Api\Mce\Attendee::ROLE_CHAIR => 'CHAIR'
+            LibMelanie\Api\Defaut\Attendee::ROLE_REQ_PARTICIPANT => 'REQ-PARTICIPANT',
+            LibMelanie\Api\Defaut\Attendee::ROLE_OPT_PARTICIPANT => 'OPT-PARTICIPANT',
+            LibMelanie\Api\Defaut\Attendee::ROLE_NON_PARTICIPANT => 'NON-PARTICIPANT',
+            LibMelanie\Api\Defaut\Attendee::ROLE_CHAIR => 'CHAIR'
     );
     if (isset($mapping[$attendee_role_m2])) {
       $attendee_role_rc = $mapping[$attendee_role_m2];
@@ -234,12 +234,12 @@ class mel_mapping {
    */
   public static function rc_to_m2_attendee_status($attendee_status_rc) {
     $mapping = array(
-            self::DEFAULT_VALUE => LibMelanie\Api\Mce\Attendee::RESPONSE_NEED_ACTION,
-            'NEEDS-ACTION' => LibMelanie\Api\Mce\Attendee::RESPONSE_NEED_ACTION,
-            'ACCEPTED' => LibMelanie\Api\Mce\Attendee::RESPONSE_ACCEPTED,
-            'DECLINED' => LibMelanie\Api\Mce\Attendee::RESPONSE_DECLINED,
-            'TENTATIVE' => LibMelanie\Api\Mce\Attendee::RESPONSE_TENTATIVE,
-            'UNKNOWN' => LibMelanie\Api\Mce\Attendee::RESPONSE_IN_PROCESS
+            self::DEFAULT_VALUE => LibMelanie\Api\Defaut\Attendee::RESPONSE_NEED_ACTION,
+            'NEEDS-ACTION' => LibMelanie\Api\Defaut\Attendee::RESPONSE_NEED_ACTION,
+            'ACCEPTED' => LibMelanie\Api\Defaut\Attendee::RESPONSE_ACCEPTED,
+            'DECLINED' => LibMelanie\Api\Defaut\Attendee::RESPONSE_DECLINED,
+            'TENTATIVE' => LibMelanie\Api\Defaut\Attendee::RESPONSE_TENTATIVE,
+            'UNKNOWN' => LibMelanie\Api\Defaut\Attendee::RESPONSE_IN_PROCESS
     );
     if (isset($mapping[$attendee_status_rc])) {
       $attendee_status_m2 = $mapping[$attendee_status_rc];
@@ -259,11 +259,11 @@ class mel_mapping {
   public static function m2_to_rc_attendee_status($attendee_status_m2) {
     $mapping = array(
             self::DEFAULT_VALUE => 'NEEDS-ACTION',
-            LibMelanie\Api\Mce\Attendee::RESPONSE_NEED_ACTION => 'NEEDS-ACTION',
-            LibMelanie\Api\Mce\Attendee::RESPONSE_ACCEPTED => 'ACCEPTED',
-            LibMelanie\Api\Mce\Attendee::RESPONSE_DECLINED => 'DECLINED',
-            LibMelanie\Api\Mce\Attendee::RESPONSE_TENTATIVE => 'TENTATIVE',
-            LibMelanie\Api\Mce\Attendee::RESPONSE_IN_PROCESS => 'UNKNOWN'
+            LibMelanie\Api\Defaut\Attendee::RESPONSE_NEED_ACTION => 'NEEDS-ACTION',
+            LibMelanie\Api\Defaut\Attendee::RESPONSE_ACCEPTED => 'ACCEPTED',
+            LibMelanie\Api\Defaut\Attendee::RESPONSE_DECLINED => 'DECLINED',
+            LibMelanie\Api\Defaut\Attendee::RESPONSE_TENTATIVE => 'TENTATIVE',
+            LibMelanie\Api\Defaut\Attendee::RESPONSE_IN_PROCESS => 'UNKNOWN'
     );
     if (isset($mapping[$attendee_status_m2])) {
       $attendee_status_rc = $mapping[$attendee_status_m2];
@@ -328,7 +328,7 @@ class mel_mapping {
    * @link http://rfc.net/rfc2445.html#s4.3.10
    * @link http://rfc.net/rfc2445.html#s4.8.5
    * @link http://www.shuchow.com/vCalAddendum.html
-   * @param LibMelanie\Api\Mce\Event $event Melanie 2 Event
+   * @param LibMelanie\Api\Defaut\Event $event Melanie 2 Event
    * @return array An iCalendar 2.0 conform RRULE value for roundcube.
    */
   public static function m2_to_RRule20($event) {
@@ -338,7 +338,7 @@ class mel_mapping {
     $_recurrence = $event->recurrence->rrule;
 
     // Si une recurrence est bien definie dans l'evenement
-    if ($_recurrence->type !== LibMelanie\Api\Mce\Recurrence::RECURTYPE_NORECUR) {
+    if ($_recurrence->type !== LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR) {
       if (isset($_recurrence->count) && intval($_recurrence->count) > 0) {
         // Gestion du nombre d'occurences
         $recurrence['COUNT'] = intval($_recurrence->count);
@@ -352,7 +352,7 @@ class mel_mapping {
         }
       }
       switch ($_recurrence->type) {
-        case LibMelanie\Api\Mce\Recurrence::RECURTYPE_DAILY :
+        case LibMelanie\Api\Defaut\Recurrence::RECURTYPE_DAILY :
           $recurrence[LibMelanie\Lib\ICS::FREQ] = LibMelanie\Lib\ICS::FREQ_DAILY;
           if (isset($_recurrence->interval)) {
             // Recupere l'interval de recurrence
@@ -360,7 +360,7 @@ class mel_mapping {
           }
           break;
 
-        case LibMelanie\Api\Mce\Recurrence::RECURTYPE_WEEKLY :
+        case LibMelanie\Api\Defaut\Recurrence::RECURTYPE_WEEKLY :
           $recurrence[LibMelanie\Lib\ICS::FREQ] = LibMelanie\Lib\ICS::FREQ_WEEKLY;
           if (isset($_recurrence->interval)) {
             // Recupere l'interval de recurrence
@@ -372,7 +372,7 @@ class mel_mapping {
           }
           break;
 
-        case LibMelanie\Api\Mce\Recurrence::RECURTYPE_MONTHLY :
+        case LibMelanie\Api\Defaut\Recurrence::RECURTYPE_MONTHLY :
           $recurrence[LibMelanie\Lib\ICS::FREQ] = LibMelanie\Lib\ICS::FREQ_MONTHLY;
           if (isset($_recurrence->interval)) {
             // Recupere l'interval de recurrence
@@ -382,7 +382,7 @@ class mel_mapping {
           $recurrence[LibMelanie\Lib\ICS::BYMONTHDAY] = $start->format('d');
           break;
 
-        case LibMelanie\Api\Mce\Recurrence::RECURTYPE_MONTHLY_BYDAY :
+        case LibMelanie\Api\Defaut\Recurrence::RECURTYPE_MONTHLY_BYDAY :
           $start = new DateTime($event->start);
           $day_of_week = $start->format('w');
           $nth_weekday = ceil($start->format('d') / 7);
@@ -405,7 +405,7 @@ class mel_mapping {
           $recurrence[LibMelanie\Lib\ICS::BYDAY] = $nth_weekday . $vcaldays[$day_of_week];
           break;
 
-        case LibMelanie\Api\Mce\Recurrence::RECURTYPE_YEARLY :
+        case LibMelanie\Api\Defaut\Recurrence::RECURTYPE_YEARLY :
           $recurrence[LibMelanie\Lib\ICS::FREQ] = LibMelanie\Lib\ICS::FREQ_YEARLY;
           if (isset($_recurrence->interval)) {
             // Recupere l'interval de recurrence
@@ -413,7 +413,7 @@ class mel_mapping {
           }
           break;
 
-        case LibMelanie\Api\Mce\Recurrence::RECURTYPE_YEARLY_BYDAY :
+        case LibMelanie\Api\Defaut\Recurrence::RECURTYPE_YEARLY_BYDAY :
           $start = new DateTime($event->start);
           $monthofyear = $start->format('m'); // 01 à 12
           $nth_weekday = ceil($start->format('d') / 7);
@@ -449,11 +449,11 @@ class mel_mapping {
    * @link http://rfc.net/rfc2445.html#s4.8.5
    * @link http://www.shuchow.com/vCalAddendum.html
    * @param string $rrule An iCalendar 2.0 conform RRULE value.
-   * @return LibMelanie\Api\Mce\Event $event Melanie 2 Event
+   * @return LibMelanie\Api\Defaut\Event $event Melanie 2 Event
    */
   public static function RRule20_to_m2($rdata, $event) {
     // Définition de la recurrence Mél
-    $recurrence = new LibMelanie\Api\Mce\Recurrence($event);
+    $recurrence = driver_mel::gi()->recurrence([$event]);
 
     if (isset($rdata[LibMelanie\Lib\ICS::FREQ])) {
       // Always default the recurInterval to 1.
@@ -464,12 +464,12 @@ class mel_mapping {
 
       switch (strtoupper($rdata[LibMelanie\Lib\ICS::FREQ])) {
         case LibMelanie\Lib\ICS::FREQ_DAILY :
-          $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_DAILY;
+          $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_DAILY;
           $nbdays = $nbdays + 7;
           break;
 
         case LibMelanie\Lib\ICS::FREQ_WEEKLY :
-          $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_WEEKLY;
+          $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_WEEKLY;
           if (isset($rdata[LibMelanie\Lib\ICS::BYDAY])) {
             $recurrence->days = explode(',', $rdata[LibMelanie\Lib\ICS::BYDAY]);
           }
@@ -478,25 +478,25 @@ class mel_mapping {
 
         case LibMelanie\Lib\ICS::FREQ_MONTHLY :
           if (isset($rdata[LibMelanie\Lib\ICS::BYDAY])) {
-            $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_MONTHLY_BYDAY;
+            $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_MONTHLY_BYDAY;
             $recurrence->days = explode(',', $rdata[LibMelanie\Lib\ICS::BYDAY]);
           }
           else {
-            $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_MONTHLY;
+            $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_MONTHLY;
           }
           $nbdays = $nbdays * 31 + 31;
           break;
 
         case LibMelanie\Lib\ICS::FREQ_YEARLY :
           if (isset($rdata[LibMelanie\Lib\ICS::BYYEARDAY])) {
-            $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_YEARLY;
+            $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_YEARLY;
           }
           elseif (isset($rdata[LibMelanie\Lib\ICS::BYDAY])) {
-            $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_YEARLY_BYDAY;
+            $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_YEARLY_BYDAY;
             $recurrence->days = explode(',', $rdata[LibMelanie\Lib\ICS::BYDAY]);
           }
           else {
-            $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_YEARLY;
+            $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_YEARLY;
           }
           $nbdays = $nbdays * 366 + 300;
           break;
@@ -534,7 +534,7 @@ class mel_mapping {
     }
     else {
       // No recurrence data - event does not recur.
-      $recurrence->type = LibMelanie\Api\Mce\Recurrence::RECURTYPE_NORECUR;
+      $recurrence->type = LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR;
     }
     return $recurrence;
   }

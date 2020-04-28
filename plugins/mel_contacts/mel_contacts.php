@@ -1,6 +1,4 @@
 <?php
-use LibMelanie\Api\Mce;
-
 // LibM2 ORM
 @include_once 'includes/libm2.php';
 
@@ -15,7 +13,7 @@ class mel_contacts extends rcube_plugin {
   /**
    * Utilisateur Mél
    *
-   * @var LibMelanie\Api\Mce\User
+   * @var LibMelanie\Api\Defaut\User
    */
   private $user;
   /**
@@ -450,17 +448,15 @@ class mel_contacts extends rcube_plugin {
       ];
       if (isset($args['record']['email'])) {
         // Search in LDAP
-        // TODO: Refaire ca propre en ORM 0.6
-        $ldap = \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$SEARCH_LDAP);
-        $sr = $ldap->search($ldap->getConfig("base_dn"), "(&(objectClass=mineqMelListe)(mineqMelMembres=".$args['record']['email']."))", ['dn', 'mailpr']);
-        if ($sr && $ldap->count_entries($sr) > 0) {
-          $infos = $ldap->get_entries($sr);
+        $user = driver_mel::gi()->user();
+        $user->email = $args['record']['email'];
+        $lists = $user->getListsIsMember('dn', 'email');
+        if (is_array($lists)) {
           $args['record']['list'] = [];
-          unset($infos['count']);
-          foreach ($infos as $info) {
+          foreach ($lists as $list) {
             $args['record']['list'][] = [
-              'dn' => $info['dn'],
-              'mail' => $info['mailpr'][0],
+              'dn' => $list->dn,
+              'mail' => $list->email,
             ];
           }
           // Sort lists

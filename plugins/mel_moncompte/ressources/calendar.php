@@ -26,12 +26,12 @@
 class M2calendar {
   /**
    *
-   * @var LibMelanie\Api\Mce\User Utilisateur Mél
+   * @var LibMelanie\Api\Defaut\User Utilisateur Mél
    */
   protected $user;
   /**
    *
-   * @var LibMelanie\Api\Mce\Calendar Calendrier Mél
+   * @var LibMelanie\Api\Defaut\Calendar Calendrier Mél
    */
   protected $calendar;
   /**
@@ -82,7 +82,7 @@ class M2calendar {
           }
         }
         $this->mbox = $mbox;
-        $this->calendar = new LibMelanie\Api\Mce\Calendar($this->user);
+        $this->calendar = driver_mel::gi()->calendar([$this->user]);
         $this->calendar->id = $mbox;
         if (!$this->calendar->load()) {
           $this->calendar = null;
@@ -109,8 +109,8 @@ class M2calendar {
     if (!isset($this->calendar) || $this->calendar->owner != $this->user->uid)
       return false;
     try {
-      $_share = new LibMelanie\Api\Mce\Share($this->calendar);
-      $_share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
+      $_share = driver_mel::gi()->share([$this->calendar]);
+      $_share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
       $acl = array();
       foreach ($_share->getList() as $share) {
         $acl[$share->name] = array();
@@ -187,30 +187,30 @@ class M2calendar {
         // MANTIS 4978 : l info de partage a ete trouvee, on remplace par uid
         $user = $_user->uid;
       }
-      $share = new LibMelanie\Api\Mce\Share($this->calendar);
-      $share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
+      $share = driver_mel::gi()->share([$this->calendar]);
+      $share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
       $share->name = $user;
       $share->acl = 0;
       // Compléter automatiquement les droits
       if (in_array('w', $rights)) {
         // Ecriture + Lecture + Freebusy
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_WRITE
-                    | LibMelanie\Api\Mce\Share::ACL_DELETE
-                    | LibMelanie\Api\Mce\Share::ACL_READ
-                    | LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_WRITE
+                    | LibMelanie\Api\Defaut\Share::ACL_DELETE
+                    | LibMelanie\Api\Defaut\Share::ACL_READ
+                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       else if (in_array('r', $rights)) {
         // Lecture + Freebusy
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_READ
-                    | LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_READ
+                    | LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       else if (in_array('l', $rights)) {
         // Freebusy
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_FREEBUSY;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_FREEBUSY;
       }
       if (in_array('p', $rights)) {
         // Droit privé
-        $share->acl |= LibMelanie\Api\Mce\Share::ACL_PRIVATE;
+        $share->acl |= LibMelanie\Api\Defaut\Share::ACL_PRIVATE;
       }
       $ret = $share->save();
       // Ajouter un hook lors du positionnement des ACLs
@@ -255,8 +255,8 @@ class M2calendar {
     if (!isset($this->calendar) || $this->calendar->owner != $this->user->uid)
       return false;
     try {
-      $share = new LibMelanie\Api\Mce\Share($this->calendar);
-      $share->type = $this->group === true ? LibMelanie\Api\Mce\Share::TYPE_GROUP : LibMelanie\Api\Mce\Share::TYPE_USER;
+      $share = driver_mel::gi()->share([$this->calendar]);
+      $share->type = $this->group === true ? LibMelanie\Api\Defaut\Share::TYPE_GROUP : LibMelanie\Api\Defaut\Share::TYPE_USER;
       $share->name = $user;
       $ret = $share->delete();
       // Ajouter un hook lors du positionnement des ACLs
@@ -286,7 +286,7 @@ class M2calendar {
    */
   public function createCalendar($name = null) {
     try {
-      $this->calendar = new LibMelanie\Api\Mce\Calendar($this->user);
+      $this->calendar = driver_mel::gi()->calendar([$this->user]);
       if (! isset($name)) {
         $this->calendar->name = $this->user->fullname;
       }

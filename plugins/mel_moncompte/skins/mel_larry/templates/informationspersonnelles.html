@@ -12,9 +12,7 @@
 		<roundcube:label name="mel_moncompte.informationspersonnelles" />
 	</h1>
 	<div id="preferences-details" class="boxcontent">
-		<div>
-			<roundcube:label name="mel_moncompte.info_texte" />
-		</div>
+		<roundcube:object name="moncompte_balp_list" />
 		<form name="valide" action="#" method="post" class="propform">
 			<roundcube:if condition="env:moncompte_data_readonly == 'readonly'" />
 				<br>
@@ -78,6 +76,9 @@
 					</tr>
 				</table>
 			</fieldset>
+			<div style="text-align: center;">
+				<roundcube:label name="mel_moncompte.info_texte" />
+			</div>
 			<br />
 			<fieldset style="width:95%">
 				<legend>
@@ -129,7 +130,7 @@
 								</tr>
 								<tr>
 									<td>
-										<roundcube:label name="mel_moncompte.info_cp" />
+										<roundcube:label name="mel_moncompte.info_codepostal" />
 									</td>
 									<td>
 										<input type="text" name="postalcode" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_postalcode" />" size="32" />

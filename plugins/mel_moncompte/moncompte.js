@@ -79,7 +79,7 @@ $(document).on({
       $('#abs_msg_inter').show();
     }
   }
-}, "input[name='abs_reponse']");
+}, "input[name='absence_reponse_externe']");
 // -----------------------------------
 
 // Publication photo

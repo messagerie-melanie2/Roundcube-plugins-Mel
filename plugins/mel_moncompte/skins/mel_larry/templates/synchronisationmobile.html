@@ -1,0 +1,19 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+</head>
+<body class="iframe floatingbuttons">
+<h1 class="boxtitle">
+	<roundcube:label name="mel_moncompte.synchronisationmobile" />
+</h1>
+<div id="preferences-details" class="boxcontent">
+	<roundcube:object name="moncompte_balp_list" />
+	<form name="validecgumobile" action="#" method="post" class="propform">
+		<roundcube:object name="validecgumobile" id="validecgumobile" />
+	</form>
+</div>
+</body>
+</html>

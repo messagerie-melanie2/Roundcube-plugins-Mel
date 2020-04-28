@@ -488,7 +488,7 @@ class mel extends rcube_plugin {
         
         if (strcasecmp(strtolower($mail), strtolower($id['email'])) === 0) {
           $uid = $mailbox->uid;
-          if ($mailbox instanceof \LibMelanie\Api\Mce\ObjectShare) {
+          if ($mailbox instanceof \LibMelanie\Api\Defaut\ObjectShare) {
             $hostname = driver_mel::get_instance()->getRoutage($mailbox->mailbox);
           }
           else {
@@ -657,8 +657,11 @@ class mel extends rcube_plugin {
     if (!empty($_SESSION['m2_from_identity'])) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::smtp_connect()");
-      $user = driver_mel::gi()->getUser($_SESSION['m2_from_identity']);
-      $args['smtp_user'] = $user->uid;
+      $user = driver_mel::gi()->user();
+      $user->email = $_SESSION['m2_from_identity'];
+      if ($user->load('uid')) {
+        $args['smtp_user'] = $user->uid;
+      }
     }
     return $args;
   }

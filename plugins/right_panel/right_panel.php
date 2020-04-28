@@ -29,6 +29,18 @@ class right_panel extends rcube_plugin
    * @var rcmail
    */
   private $rc;
+  /**
+   * Durée de conservation des données contacts dans le cache
+   *
+   * @var int
+   */
+  const CACHE_RIGHT_PANEL_CONTACTS = 60*60;
+  /**
+   * Durée de conservation des données messages dans le cache
+   *
+   * @var int
+   */
+  const CACHE_RIGHT_PANEL_MESSAGES = 10*60;
   
   /**
    * (non-PHPdoc)

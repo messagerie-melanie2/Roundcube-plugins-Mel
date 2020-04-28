@@ -711,7 +711,7 @@ class mel_labels_sync extends rcube_plugin {
     else {
       $bal = driver_mel::gi()->getUser($balpName);
       if (isset($bal->shares[$this->rc->user->get_username()]) 
-          && $bal->shares[$this->rc->user->get_username()]->type == \LibMelanie\Api\Mce\Users\Share::TYPE_ADMIN) {
+          && $bal->shares[$this->rc->user->get_username()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN) {
         return true;
       }
     }

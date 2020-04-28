@@ -1,6 +1,6 @@
 <?php
 
-use LibMelanie\Api\Mce;
+use LibMelanie\Api\Defaut;
 
 // LibM2 ORM
 @include_once 'includes/libm2.php';
@@ -14,11 +14,11 @@ class mel_addressbook extends rcube_addressbook
      */
     private $rc;
     /**
-     * @var Mce\Addressbook
+     * @var Defaut\Addressbook
      */
     private $addressbook;
     /**
-     * @var Mce\User
+     * @var Defaut\User
      */
     private $user;
     /**
@@ -45,8 +45,8 @@ class mel_addressbook extends rcube_addressbook
     /**
      * Constructeur de la classe
      * @param rcube $rc
-     * @param Mce\User $user
-     * @param Mce\Addressbook $addressbook
+     * @param Defaut\User $user
+     * @param Defaut\Addressbook $addressbook
      */
     function __construct($rc, $user, $addressbook) {
         $this->rc = $rc;
@@ -200,8 +200,8 @@ class mel_addressbook extends rcube_addressbook
                     $fields[] = mel_contacts_mapping::$mapping_contact_cols[$col];
                 }
                 // Un groupe est défini
-                $_group = new Mce\Contact($this->user, $this->addressbook);
-                $_group->type = Mce\Contact::TYPE_LIST;
+                $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+                $_group->type = Defaut\Contact::TYPE_LIST;
                 if ($this->group_id == 'favorites') {
                   $_group->uid = $this->group_id;
                 }
@@ -212,8 +212,8 @@ class mel_addressbook extends rcube_addressbook
                 $members = unserialize($group->members);
                 if (is_array($members) && count($members) > 0) {
                     // Récupère les contacts membres du groupe
-                    $_contact = new Mce\Contact($this->user, $this->addressbook);
-                    $_contact->type = Mce\Contact::TYPE_CONTACT;
+                    $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+                    $_contact->type = Defaut\Contact::TYPE_CONTACT;
                     $_contact->id = $members;
                     $_contacts = $_contact->getList($fields, "", array(), "object_lastname, object_firstname", true, $limit, $offset);                    
                     if ($this->result->count == 0) {
@@ -221,8 +221,8 @@ class mel_addressbook extends rcube_addressbook
                     }
                 } else $_contacts = array();
             } else {
-                $_contact = new Mce\Contact($this->user, $this->addressbook);
-                $_contact->type = Mce\Contact::TYPE_CONTACT;
+                $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+                $_contact->type = Defaut\Contact::TYPE_CONTACT;
                 $_contacts = $_contact->getList(null, "", array(), "object_lastname, object_firstname", true, $limit, $offset);
                 if ($this->result->count == 0) {
                     $nb_contacts = $_contact->getList('count');
@@ -285,8 +285,8 @@ class mel_addressbook extends rcube_addressbook
     function search($fields, $value, $mode=0, $select=true, $nocount=false, $required=array()) {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::search($fields, $value, $mode, $select, $nocount, $required");
         try {
-            $_contact = new Mce\Contact($this->user, $this->addressbook);
-            $_contact->type = Mce\Contact::TYPE_CONTACT;
+            $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_contact->type = Defaut\Contact::TYPE_CONTACT;
             $filter = "(";
             $operators = array();
             $case_unsensitive_fields = array();
@@ -391,8 +391,8 @@ class mel_addressbook extends rcube_addressbook
                 && isset($cache['contacts'][$this->addressbook->id]['count'])) {
               $count = $cache['contacts'][$this->addressbook->id]['count'];
             } else {
-              $_contact = new Mce\Contact($this->user, $this->addressbook);
-              $_contact->type = Mce\Contact::TYPE_CONTACT;
+              $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+              $_contact->type = Defaut\Contact::TYPE_CONTACT;
               $results = $_contact->getList('count');
               $count = 0;
               foreach($results as $result) {
@@ -447,9 +447,9 @@ class mel_addressbook extends rcube_addressbook
                     && isset($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset][$id])) {
                 $contact = unserialize($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset][$id]);
             } else {
-                $_contact = new Mce\Contact($this->user, $this->addressbook);
+                $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
                 $_contact->id = $id;
-                $_contact->type = Mce\Contact::TYPE_CONTACT;
+                $_contact->type = Defaut\Contact::TYPE_CONTACT;
                 $_contacts = $_contact->getList();
 
                 foreach($_contacts as $_contact) {
@@ -491,7 +491,8 @@ class mel_addressbook extends rcube_addressbook
             return false;
         }
         try {
-            $contact = mel_contacts_mapping::rc_to_m2_contact($save_data, new Mce\Contact($this->user, $this->addressbook));
+            $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $contact = mel_contacts_mapping::rc_to_m2_contact($save_data, $_contact);
             $contact->id = md5(uniqid(mt_rand(), true));
             $contact->uid = date('YmdHis') . '.' . substr(str_pad(base_convert(microtime(), 10, 36), 16, uniqid(mt_rand()), STR_PAD_LEFT), -16) . '@roundcube';
             $contact->modified = time();
@@ -539,9 +540,9 @@ class mel_addressbook extends rcube_addressbook
             return false;
         }
         try {
-            $_contact = new Mce\Contact($this->user, $this->addressbook);
+            $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_contact->id = $id;
-            $_contact->type = Mce\Contact::TYPE_CONTACT;
+            $_contact->type = Defaut\Contact::TYPE_CONTACT;
             foreach($_contact->getList() as $contact) {
                 break;
             }
@@ -586,9 +587,9 @@ class mel_addressbook extends rcube_addressbook
             return false;
         }
         try {
-            $_contact = new Mce\Contact($this->user, $this->addressbook);
+            $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_contact->id = $ids;
-            $_contact->type = Mce\Contact::TYPE_CONTACT;
+            $_contact->type = Defaut\Contact::TYPE_CONTACT;
             $count = 0;
             foreach($_contact->getList() as $contact) {
                 if (!$contact->delete()) return false;
@@ -631,8 +632,8 @@ class mel_addressbook extends rcube_addressbook
             $contacts = $this->addressbook->getAllContacts();
             foreach ($contacts as $contact) {
                 if ($with_groups
-                        && $contact->type == Mce\Contact::TYPE_LIST
-                        || $contact->type == Mce\Contact::TYPE_CONTACT) {
+                        && $contact->type == Defaut\Contact::TYPE_LIST
+                        || $contact->type == Defaut\Contact::TYPE_CONTACT) {
                     $contact->delete();
                 }
             }
@@ -709,8 +710,8 @@ class mel_addressbook extends rcube_addressbook
                 }
             }
 
-            $_group = new Mce\Contact($this->user, $this->addressbook);
-            $_group->type = Mce\Contact::TYPE_LIST;
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
             $operators = array();
             if (!empty($search)) {
                 if ($mode == 0) {
@@ -781,8 +782,8 @@ class mel_addressbook extends rcube_addressbook
                 $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$group_id]);
                 return mel_contacts_mapping::m2_to_rc_contact(null, $group);
             } else {
-                $_group = new Mce\Contact($this->user, $this->addressbook);
-                $_group->type = Mce\Contact::TYPE_LIST;
+                $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+                $_group->type = Defaut\Contact::TYPE_LIST;
                 $_group->id = $group_id;
                 foreach($_group->getList() as $group) { break; }
                 return mel_contacts_mapping::m2_to_rc_contact(null, $group);
@@ -818,8 +819,8 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::create_group($name)");
         try {
-            $_group = new Mce\Contact($this->user, $this->addressbook);
-            $_group->type = Mce\Contact::TYPE_LIST;
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->lastname = $name;
             // MANTIS 0004236: RC permet de créer des groupes de même nom
             $groups = $_group->getList();
@@ -867,8 +868,8 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::delete_group($gid)");
         try {
-            $_group = new Mce\Contact($this->user, $this->addressbook);
-            $_group->type = Mce\Contact::TYPE_LIST;
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $gid;
             $cache = \mel::InitM2Cache();
             if (isset($cache['contacts'])
@@ -904,8 +905,8 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::rename_group($gid, $newname, &$newid)");
         try {
-            $_group = new Mce\Contact($this->user, $this->addressbook);
-            $_group->type = Mce\Contact::TYPE_LIST;
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $gid;
             foreach($_group->getList() as $group) {
                 $group->lastname = $newname;
@@ -949,8 +950,8 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::add_to_group($group_id, $ids)");
         try {
-            $_group = new Mce\Contact($this->user, $this->addressbook);
-            $_group->type = Mce\Contact::TYPE_LIST;
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $group_id;
             if (!is_array($ids)) $ids = [$ids];
             foreach($_group->getList() as $group) {
@@ -1006,8 +1007,8 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::remove_from_group($group_id, $ids)");
         try {
-            $_group = new Mce\Contact($this->user, $this->addressbook);
-            $_group->type = Mce\Contact::TYPE_LIST;
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $group_id;
             foreach($_group->getList() as $group) {
                 $members = unserialize($group->members);
@@ -1076,8 +1077,8 @@ class mel_addressbook extends rcube_addressbook
                 }
             } else {
                 $result = array();
-                $_group = new Mce\Contact($this->user, $this->addressbook);
-                $_group->type = Mce\Contact::TYPE_LIST;
+                $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+                $_group->type = Defaut\Contact::TYPE_LIST;
                 foreach($_group->getList() as $group) {
                     $members = unserialize($group->members);
                     if (is_array($members)

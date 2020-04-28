@@ -57,7 +57,7 @@ else {
 
 // Génération de l'utilisateur Mél
 if (isset($_user)) {
-  $user = new LibMelanie\Api\Mce\User();
+  $user = new LibMelanie\Api\Mel\User();
   $user->uid = $_user;
 }
 
@@ -84,7 +84,7 @@ if (!isset($keyhash)) {
 }
 
 // Génération du Calendar Mél
-$calendar = new LibMelanie\Api\Mce\Calendar(new LibMelanie\Api\Mce\User());
+$calendar = new LibMelanie\Api\Mel\Calendar(new LibMelanie\Api\Mel\User());
 $calendar->id = $calendar_name;
 
 // Pas de start, on prend la date du jour moins deux ans

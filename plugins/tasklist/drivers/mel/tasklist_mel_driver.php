@@ -29,7 +29,7 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Tableau de listes de taches Mél
    *
-   * @var LibMelanie\Api\Mce\Taskslist[]
+   * @var LibMelanie\Api\Defaut\Taskslist[]
    */
   private $lists;
   private $folders = array();
@@ -39,7 +39,7 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Utilisateur Mél
    *
-   * @var LibMelanie\Api\Mce\User
+   * @var LibMelanie\Api\Defaut\User
    */
   private $user;
 
@@ -199,7 +199,7 @@ class tasklist_mel_driver extends tasklist_driver {
       $saved = $this->user->createDefaultTaskslist($prop['name']);
     } 
     else {
-      $tasklist = new LibMelanie\Api\Mce\Taskslist($this->user);
+      $tasklist = driver_mel::gi()->taskslist([$this->user]);
       $tasklist->name = $prop['name'];
       $tasklist->id = isset($prop['id']) ? $prop['id'] : md5($prop['name'] . time() . $this->user->uid);
       $tasklist->owner = $this->user->uid;
@@ -436,13 +436,17 @@ class tasklist_mel_driver extends tasklist_driver {
       $lists = array_keys($this->lists);
     else if (is_string($lists))
       $lists = explode(',', driver_mel::gi()->rcToMceId($lists));
+    
+    if (empty($lists)) {
+      return [];
+    }
 
     $results = array();
     // Création de la requête
     $filter = "#taskslist#";
     $operators = array();
     $case_unsensitive_fields = array();
-    $task = new LibMelanie\Api\Mce\Task($this->user);
+    $task = driver_mel::gi()->task([$this->user]);
     // Listes des tâches
     $task->taskslist = $lists;
     $operators['taskslist'] = LibMelanie\Config\MappingMce::eq;
@@ -460,7 +464,7 @@ class tasklist_mel_driver extends tasklist_driver {
       }
       // Priority ?
       if ($query['mask'] & tasklist::FILTER_MASK_FLAGGED) {
-        $task->priority = LibMelanie\Api\Mce\Task::PRIORITY_VERY_HIGH;
+        $task->priority = LibMelanie\Api\Defaut\Task::PRIORITY_VERY_HIGH;
         $filter .= " AND #priority#";
         $operators['priority'] = LibMelanie\Config\MappingMce::eq;
       }
@@ -540,7 +544,7 @@ class tasklist_mel_driver extends tasklist_driver {
     mel_logs::get_instance()->log(mel_logs::DEBUG, "[tasklist] tasklist_mel_driver::get_task(" . $prop['id'] . ")");
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::get_task() : " . var_export($prop, true));
 
-    $task = new LibMelanie\Api\Mce\Task($this->user);
+    $task = driver_mel::gi()->task([$this->user]);
     // ID / UID
     if (isset($prop['id'])) {
       $task->id = $prop['id'];
@@ -601,7 +605,7 @@ class tasklist_mel_driver extends tasklist_driver {
         $prop['id']
     );
 
-    $task = new LibMelanie\Api\Mce\Task($this->user);
+    $task = driver_mel::gi()->task([$this->user]);
     $task->taskslist = $list_id;
     $task->parent = $task_ids;
 
@@ -700,7 +704,7 @@ class tasklist_mel_driver extends tasklist_driver {
       }
       else {
         $task['complete'] = 1;
-        $task['status'] = LibMelanie\Api\Mce\Task::STATUS_COMPLETED;
+        $task['status'] = LibMelanie\Api\Defaut\Task::STATUS_COMPLETED;
       }
       return $this->edit_task($task);
     }
@@ -720,15 +724,15 @@ class tasklist_mel_driver extends tasklist_driver {
   /**
    * Convert from Melanie2 format to internal representation
    *
-   * @param LibMelanie\Api\Mce\Task $record
+   * @param LibMelanie\Api\Defaut\Task $record
    */
-  private function _to_rcube_task(LibMelanie\Api\Mce\Task $record) {
+  private function _to_rcube_task($record) {
     $task = array(
         'id' => $record->id,
         'uid' => $record->uid,
         'title' => $record->name,
         'description' => $record->description,
-        'flagged' => $record->priority == LibMelanie\Api\Mce\Task::PRIORITY_VERY_HIGH,
+        'flagged' => $record->priority == LibMelanie\Api\Defaut\Task::PRIORITY_VERY_HIGH,
         'parent_id' => $record->parent,
         'list' => driver_mel::gi()->mceToRcId($record->taskslist),
         '_hasdate' => 0
@@ -788,9 +792,9 @@ class tasklist_mel_driver extends tasklist_driver {
    * Convert the given task record into a data structure that can be passed to mel backend for saving
    * (opposite of self::_to_rcube_event())
    *
-   * @return LibMelanie\Api\Mce\Task
+   * @return LibMelanie\Api\Defaut\Task
    */
-  private function _from_rcube_task($task, LibMelanie\Api\Mce\Task $object) {
+  private function _from_rcube_task($task, $object) {
     if (is_a($task['created'], 'DateTime')) {
       $object->setAttribute('created', $task['created']->getTimestamp());
     }
@@ -816,25 +820,25 @@ class tasklist_mel_driver extends tasklist_driver {
 
     if (isset($task['sensitivity'])) {
       if ($task['sensitivity'] == 0)
-        $object->class = LibMelanie\Api\Mce\Task::CLASS_PUBLIC;
+        $object->class = LibMelanie\Api\Defaut\Task::CLASS_PUBLIC;
       elseif ($task['sensitivity'] == 1)
-        $object->class = LibMelanie\Api\Mce\Task::CLASS_PRIVATE;
+        $object->class = LibMelanie\Api\Defaut\Task::CLASS_PRIVATE;
       elseif ($task['sensitivity'] == 2)
-        $object->class = LibMelanie\Api\Mce\Task::CLASS_CONFIDENTIAL;
+        $object->class = LibMelanie\Api\Defaut\Task::CLASS_CONFIDENTIAL;
     }
     
     if (isset($task['status'])) {
       $object->status = $task['status'];
     }
-    if ($task['status'] == LibMelanie\Api\Mce\Task::STATUS_COMPLETED) {
+    if ($task['status'] == LibMelanie\Api\Defaut\Task::STATUS_COMPLETED) {
       $object->completed = 1;
     }
-    else if ($task['status'] == LibMelanie\Api\Mce\Task::STATUS_IN_PROCESS) {
+    else if ($task['status'] == LibMelanie\Api\Defaut\Task::STATUS_IN_PROCESS) {
       $object->completed = 0;
     }
     else if (isset($task['complete'])) {
       if ($task['complete'] == 1) {
-        $object->status = LibMelanie\Api\Mce\Task::STATUS_COMPLETED;
+        $object->status = LibMelanie\Api\Defaut\Task::STATUS_COMPLETED;
       }
       $object->completed = $task['complete'];
     }
@@ -851,9 +855,9 @@ class tasklist_mel_driver extends tasklist_driver {
     }
 
     if ($task['flagged'])
-      $object->priority = LibMelanie\Api\Mce\Task::PRIORITY_VERY_HIGH;
+      $object->priority = LibMelanie\Api\Defaut\Task::PRIORITY_VERY_HIGH;
     else
-      $object->priority = LibMelanie\Api\Mce\Task::PRIORITY_NORMAL;
+      $object->priority = LibMelanie\Api\Defaut\Task::PRIORITY_NORMAL;
 
     return $object;
   }
@@ -898,7 +902,7 @@ class tasklist_mel_driver extends tasklist_driver {
 
     // load previous version of this task to merge
     if ($task['id']) {
-      $object = new LibMelanie\Api\Mce\Task($this->user, $this->lists[$list_id]);
+      $object = driver_mel::gi()->task([$this->user, $this->lists[$list_id]]);
       $object->id = $task['id'];
       foreach ($object->getList() as $t) {
         $_task = $t;
@@ -908,7 +912,7 @@ class tasklist_mel_driver extends tasklist_driver {
       if (!isset($_task))
         return false;
     } else {
-      $_task = new LibMelanie\Api\Mce\Task($this->user, $this->lists[$list_id]);
+      $_task = driver_mel::gi()->task([$this->user, $this->lists[$list_id]]);
       if (isset($task['uid'])) {
         $_task->uid = $task['uid'];
       } else {
@@ -961,7 +965,7 @@ class tasklist_mel_driver extends tasklist_driver {
     if (!$list_id || !isset($this->lists[$list_id]) || !isset($task['id']) || !$this->lists[$list_id]->asRight(LibMelanie\Config\ConfigMelanie::WRITE))
       return false;
 
-    $object = new LibMelanie\Api\Mce\Task($this->user, $this->lists[$list_id]);
+    $object = driver_mel::gi()->task([$this->user, $this->lists[$list_id]]);
     $object->id = $task['id'];
     foreach ($object->getList() as $t) {
       return $t->delete();

@@ -64,14 +64,14 @@ abstract class driver_mel {
   /**
    * Singleton for the users
    * 
-   * @var \LibMelanie\Api\Mce\User[]
+   * @var \LibMelanie\Api\Defaut\User[]
    */
   protected static $_users;
   
   /**
    * Singleton for the groups
    * 
-   * @var \LibMelanie\Api\Mce\Group[]
+   * @var \LibMelanie\Api\Defaut\Group[]
    */
   protected static $_groups;
 
@@ -112,7 +112,7 @@ abstract class driver_mel {
    * 
    * @return staticClass object of the choosen type
    */
-  public function object($objectName, $params = null) {
+  protected function object($objectName, $params = []) {
     $class = new \ReflectionClass(static::$_objectsNS . $objectName);
     return $class->newInstanceArgs($params);
   }
@@ -122,9 +122,9 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\User User
+   * @return \LibMelanie\Api\Defaut\User
    */
-  public function user($params = null) {
+  public function user($params = []) {
     return $this->object('User', $params);
   }
 
@@ -133,10 +133,21 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\User User
+   * @return \LibMelanie\Api\Defaut\Group
    */
-  public function group($params = null) {
+  public function group($params = []) {
     return $this->object('Group', $params);
+  }
+
+  /**
+   * Generate share object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Share
+   */
+  public function share($params = []) {
+    return $this->object('Share', $params);
   }
 
   /**
@@ -144,9 +155,9 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\Calendar User
+   * @return \LibMelanie\Api\Defaut\Calendar
    */
-  public function calendar($params = null) {
+  public function calendar($params = []) {
     return $this->object('Calendar', $params);
   }
 
@@ -155,10 +166,65 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\Event User
+   * @return \LibMelanie\Api\Defaut\Event
    */
-  public function event($params = null) {
+  public function event($params = []) {
     return $this->object('Event', $params);
+  }
+
+  /**
+   * Generate event object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Exception
+   */
+  public function exception($params = []) {
+    return $this->object('Exception', $params);
+  }
+
+  /**
+   * Generate organizer object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Organizer
+   */
+  public function organizer($params = []) {
+    return $this->object('Organizer', $params);
+  }
+
+  /**
+   * Generate attendee object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Attendee
+   */
+  public function attendee($params = []) {
+    return $this->object('Attendee', $params);
+  }
+
+  /**
+   * Generate attachment object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Attachment
+   */
+  public function attachment($params = []) {
+    return $this->object('Attachment', $params);
+  }
+
+  /**
+   * Generate recurrence object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Recurrence
+   */
+  public function recurrence($params = []) {
+    return $this->object('Recurrence', $params);
   }
 
   /**
@@ -166,9 +232,9 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\Addressbook User
+   * @return \LibMelanie\Api\Defaut\Addressbook
    */
-  public function addressbook($params = null) {
+  public function addressbook($params = []) {
     return $this->object('Addressbook', $params);
   }
 
@@ -177,9 +243,9 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\Contact User
+   * @return \LibMelanie\Api\Defaut\Contact
    */
-  public function contact($params = null) {
+  public function contact($params = []) {
     return $this->object('Contact', $params);
   }
 
@@ -188,9 +254,9 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\Taskslist User
+   * @return \LibMelanie\Api\Defaut\Taskslist
    */
-  public function taskslist($params = null) {
+  public function taskslist($params = []) {
     return $this->object('Taskslist', $params);
   }
 
@@ -199,9 +265,9 @@ abstract class driver_mel {
    * 
    * @param array $params [Optionnal] parameters of the constructor
    * 
-   * @return \LibMelanie\Api\Mce\Task User
+   * @return \LibMelanie\Api\Defaut\Task
    */
-  public function task($params = null) {
+  public function task($params = []) {
     return $this->object('Task', $params);
   }
   
@@ -215,7 +281,7 @@ abstract class driver_mel {
    * @param string $username [Optionnel] DN de l'utilisateur a récupérer
    * @param string $username [Optionnel] Email de l'utilisateur a récupérer
    *
-   * @return \LibMelanie\Api\Mce\User
+   * @return \LibMelanie\Api\Defaut\User
    */
   abstract public function getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null);
 
@@ -227,7 +293,7 @@ abstract class driver_mel {
    * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
    *
-   * @return \LibMelanie\Api\Mce\Group
+   * @return \LibMelanie\Api\Defaut\Group
    */
   abstract public function getGroup($group_dn = null, $load = true, $fromCache = true);
   

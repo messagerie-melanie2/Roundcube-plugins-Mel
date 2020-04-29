@@ -111,7 +111,6 @@ class Changepassword extends Moncompteobject {
 						rcmail::get_instance()->output->show_message($ret->message, 'error');
 						mel_logs::get_instance()->log(mel_logs::ERROR, 'changepassword_modification_error ' . $ret->message);
 					}
-					
 				}
 			} catch (Exception $ex) {
 				// Echec du changement du mot de passe

@@ -32,9 +32,9 @@
 				<div>
 					<input type="checkbox" name="absence_status_interne" value="1" id="abs_texte_intra" <roundcube:var name="env:moncompte_absence_status_interne" /> />
 					<label for="abs_texte_intra"><roundcube:label name="mel_moncompte.absence_texte_interne" /></label>
-					<br>
+					<br><br>
 					<textarea class="Saisie" rows=3 cols=100 name="absence_message_interne" id="abs_msg_mel"><roundcube:var name="env:moncompte_absence_texte_interne" /></textarea>
-					<br>
+					<br><br>
 					<roundcube:label name="mel_moncompte.absence_texte_mot_cle" />
 				</div>
 			</fieldset>
@@ -43,19 +43,17 @@
 				<div>
 					<input type="checkbox" name="absence_texte_externe" value="1" id="abs_texte_inter" <roundcube:var name="env:moncompte_absence_status_externe" /> />
 					<label for="abs_texte_inter"><roundcube:label name="mel_moncompte.absence_texte_externe" /></label>
-					<br>
+					<br><br>
 					<input type="radio" name="absence_reponse_externe" value="abs_texte_nodiff" id="abs_texte_nodiff" <roundcube:var name="env:moncompte_abs_radio_same" /> >
 					<label for="abs_texte_nodiff"><roundcube:label name="mel_moncompte.absence_texte_interne_identique"></roundcube:label></label>
 					<br>
 					<input type="radio" name="absence_reponse_externe" value="abs_texte_diff" id="abs_texte_diff" <roundcube:var name="env:moncompte_abs_radio_diff" /> >
 					<label for="abs_texte_diff"><roundcube:label name="mel_moncompte.absence_texte_interne_different"></roundcube:label></label>
-					<p>
-						<textarea class="Saisie" rows=3 cols=100 name="absence_message_externe" id="abs_msg_inter" style="<roundcube:var name="env:moncompte_absence_texte_externe_style" />">
-							<roundcube:var name="env:moncompte_absence_texte_externe" />
-						</textarea>
-					</p>
+					<br><br>
+					<textarea class="Saisie" rows=3 cols=100 name="absence_message_externe" id="abs_msg_inter" style="<roundcube:var name="env:moncompte_absence_texte_externe_style" />"><roundcube:var name="env:moncompte_absence_texte_externe" /></textarea>
 				</div>
 			</fieldset>
+			<input type="hidden" value="1" name="gestionnaireabsence" />
 			<input type="submit" class="button mainaction" name="save" value="<roundcube:label name="save" />" />
 		</form>
 	</div>

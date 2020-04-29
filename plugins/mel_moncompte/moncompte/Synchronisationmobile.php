@@ -48,8 +48,7 @@ class Synchronisationmobile extends Moncompteobject {
 	 * Modification des données de l'utilisateur depuis l'annuaire
 	 */
 	public static function change() {
-		$date_debut = trim(rcube_utils::get_input_value('absence_date_debut', rcube_utils::INPUT_POST));
-		$date_fin = trim(rcube_utils::get_input_value('absence_date_fin', rcube_utils::INPUT_POST));
+		$check_cgu_mobile = trim(rcube_utils::get_input_value('check_cgu_mobile', rcube_utils::INPUT_POST));
 	}
 
 	/**
@@ -63,9 +62,9 @@ class Synchronisationmobile extends Moncompteobject {
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)) {
+		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
-			$user->load(['acces_synchro_admin_profil', 'acces_synchro_user_profil', 'acces_synchro_user_datetime', 'acces_synchro_admin_datetime', ]);	
+			$user->load(['acces_synchro_admin_profil', 'acces_synchro_user_profil', 'acces_synchro_user_datetime', 'acces_synchro_admin_datetime']);	
 
 			$table = new html_table();
 			$hidden = new html_hiddenfield(array('value' => '1', 'name' => 'synchronisationmobile'));

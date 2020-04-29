@@ -41,26 +41,28 @@ class Gestionnaireabsence extends Moncompteobject {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)) {
+		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
 			$user->load(['outofoffices']);		
 			// Message interne
-			if (isset($user->outofoffices[Outofoffice::TYPE_INTERNAL])) {
-				rcmail::get_instance()->output->set_env('moncompte_absence_debut_interne', $user->outofoffices[Outofoffice::TYPE_INTERNAL]->start_date);
-				rcmail::get_instance()->output->set_env('moncompte_absence_fin_interne', $user->outofoffices[Outofoffice::TYPE_INTERNAL]->start_date);
-				rcmail::get_instance()->output->set_env('moncompte_absence_status_interne', $user->outofoffices[Outofoffice::TYPE_INTERNAL]->enable ? 'checked' : '');
-				rcmail::get_instance()->output->set_env('moncompte_absence_texte_interne', $user->outofoffices[Outofoffice::TYPE_INTERNAL]->message);
+			$internal_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
+			if (isset($internal_oof)) {
+				rcmail::get_instance()->output->set_env('moncompte_absence_debut_interne', isset($internal_oof->start) ? $internal_oof->start->format('d/m/Y') : null);
+				rcmail::get_instance()->output->set_env('moncompte_absence_fin_interne', isset($internal_oof->end) ? $internal_oof->end->format('d/m/Y') : null);
+				rcmail::get_instance()->output->set_env('moncompte_absence_status_interne', $internal_oof->enable ? 'checked' : '');
+				rcmail::get_instance()->output->set_env('moncompte_absence_texte_interne', $internal_oof->message);
 			}
 			// Message externe
-			if (isset($user->outofoffices[Outofoffice::TYPE_EXTERNAL])) {
-				rcmail::get_instance()->output->set_env('moncompte_absence_status_externe', $user->outofoffices[Outofoffice::TYPE_EXTERNAL]->enable ? 'checked' : '');
-				rcmail::get_instance()->output->set_env('moncompte_absence_texte_externe', $user->outofoffices[Outofoffice::TYPE_EXTERNAL]->message);
+			$external_oof = $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
+			if (isset($external_oof)) {
+				rcmail::get_instance()->output->set_env('moncompte_absence_status_externe', $external_oof->enable ? 'checked' : '');
+				rcmail::get_instance()->output->set_env('moncompte_absence_texte_externe', $external_oof->message);
 			}
 			// Gestion du meme message interne/externe
-			if (isset($user->outofoffices[Outofoffice::TYPE_INTERNAL]) 
-					&& isset($user->outofoffices[Outofoffice::TYPE_EXTERNAL]) 
-					&& $user->outofoffices[Outofoffice::TYPE_EXTERNAL]->enable
-					&& $user->outofoffices[Outofoffice::TYPE_EXTERNAL]->message == $user->outofoffices[Outofoffice::TYPE_INTERNAL]->message) {
+			if (isset($internal_oof) 
+					&& isset($external_oof) 
+					&& $external_oof->enable
+					&& $external_oof->message == $internal_oof->message) {
 				rcmail::get_instance()->output->set_env('moncompte_abs_radio_same', 'checked');
 				rcmail::get_instance()->output->set_env('moncompte_absence_texte_externe_style', 'display: none;');
 			} else {
@@ -87,22 +89,22 @@ class Gestionnaireabsence extends Moncompteobject {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)) {
+		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
 			$user->load(['outofoffices']);
 			// Mise a jour des message d'absence
-			$outofoffice_interne = new Outofoffice();
+			$outofoffice_interne = driver_mel::gi()->users_outofoffice();
 			$outofoffice_interne->type = Outofoffice::TYPE_INTERNAL;
 			$outofoffice_interne->enable = (isset($status_interne) && $status_interne == '1' );
-			$outofoffice_interne->start = isset($date_debut) ? new \DateTime($date_debut) : null;
-			$outofoffice_interne->end = isset($date_fin) ? new \DateTime($date_fin) : null;
+			$outofoffice_interne->start = isset($date_debut) ? \DateTime::createFromFormat('d/m/Y', $date_debut) : null;
+			$outofoffice_interne->end = isset($date_fin) ? \DateTime::createFromFormat('d/m/Y', $date_fin) : null;
 			$outofoffice_interne->message = $message_interne;
 			
-			$outofoffice_externe = new Outofoffice();
+			$outofoffice_externe = driver_mel::gi()->users_outofoffice();
 			$outofoffice_externe->type = Outofoffice::TYPE_EXTERNAL;
 			$outofoffice_externe->enable = (isset($status_externe) && $status_externe == '1' );
-			$outofoffice_externe->start = isset($date_debut) ? new \DateTime($date_debut) : null;
-			$outofoffice_externe->end = isset($date_fin) ? new \DateTime($date_fin) : null;
+			$outofoffice_externe->start = isset($date_debut) ? \DateTime::createFromFormat('d/m/Y', $date_debut) : null;
+			$outofoffice_externe->end = isset($date_fin) ? \DateTime::createFromFormat('d/m/Y', $date_fin) : null;
 			$outofoffice_externe->message = isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe;
 
 			$user->outofoffices = [$outofoffice_interne, $outofoffice_externe];
@@ -110,19 +112,19 @@ class Gestionnaireabsence extends Moncompteobject {
 			// Enregistrement de l'utilisateur avec les nouvelles données
 			if ($user->save()) {
 				// Ok
-				rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_ok', 'confirmation');
+				rcmail::get_instance()->output->show_message('mel_moncompte.absence_ok', 'confirmation');
 				return true;
 			}
 			else {
 				// Erreur
 				$err = \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError();
-				rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_nok' . $err, 'error');
+				rcmail::get_instance()->output->show_message(rcmail::get_instance()->gettext('mel_moncompte.absence_nok') . ' : ' . $err, 'error');
 				return false;
 			}
 		}
 		else {
 			// Erreur d'auth
-			rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_nok', 'error');
+			rcmail::get_instance()->output->show_message('mel_moncompte.absence_nok', 'error');
 			return false;
 		}
 	}	

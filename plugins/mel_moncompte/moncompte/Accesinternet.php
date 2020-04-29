@@ -43,23 +43,65 @@ class Accesinternet extends Moncompteobject {
 			'internet_access_admin',
 			'internet_access_user',
 		];
+		// Titre de la page
+		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)
+		if ($user->authentification(Moncompte::get_current_user_password(), true)
 				&& $user->load($attributes)) {
 			// Charger les attributs nécessaires
 			$user->load($attributes);
-			rcmail::get_instance()->output->set_env('moncompte_inter_internetA', $user->internet_access_admin);
-			rcmail::get_instance()->output->set_env('moncompte_inter_internetU', $user->internet_access_user);
+			if ($user->internet_access_admin) {
+				if ($user->internet_access_user && mel::is_internal()) {
+					rcmail::get_instance()->output->send('mel_moncompte.accesinternet_active_intranet');
+				}
+				else if ($user->internet_access_user) {
+					rcmail::get_instance()->output->send('mel_moncompte.accesinternet_active_internet');
+				}
+				else if (mel::is_internal()) {
+					rcmail::get_instance()->output->send('mel_moncompte.accesinternet_desactive');
+				}
+			}
 		}
-		// Titre de la page
-		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
-		rcmail::get_instance()->output->send('mel_moncompte.accesinternet');
+		rcmail::get_instance()->output->send('mel_moncompte.accesinternet_interdit');
 	}
 	
 	/**
 	 * Modification des données de l'utilisateur depuis l'annuaire
 	 */
 	public static function change() {
-
+		$acces_internet_enable = trim(rcube_utils::get_input_value('accesinternetenable', rcube_utils::INPUT_POST));
+		// Récupération de l'utilisateur
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		// Liste des attributs à charger
+		$attributes = [
+			'internet_access_user',
+		];
+		// Authentification
+		if ($user->authentification(Moncompte::get_current_user_password(), true)
+				&& $user->load($attributes)) {
+			$user->internet_access_user = $acces_internet_enable;
+			// Enregistrement de l'utilisateur avec les nouvelles données
+			if ($user->save()) {
+				// Ok
+				if ($user->internet_access_user) {
+					rcmail::get_instance()->output->show_message('mel_moncompte.acces_internet_enable_ok', 'confirmation');
+				}
+				else {
+					rcmail::get_instance()->output->show_message('mel_moncompte.acces_internet_disable_ok', 'confirmation');
+				}
+				return true;
+			}
+			else {
+				// Erreur
+				$err = \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError();
+				rcmail::get_instance()->output->show_message('mel_moncompte.acces_internet_nok' . $err, 'error');
+				return false;
+			}
+		}
+		else {
+			// Erreur d'auth
+			rcmail::get_instance()->output->show_message('mel_moncompte.acces_internet_nok', 'error');
+			return false;
+		}
 	}	
 }

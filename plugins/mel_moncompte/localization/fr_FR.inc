@@ -198,8 +198,8 @@ $labels['info_annuaire'] = "Informations publiées dans l'annuaire";
 
 $labels['info_photo'] = "Photo :";
 $labels['info_photo_none'] = "Ce type d'entrée ne possède pas de photo.";
-$labels['info_photo_intra'] = "Publication de la photo sur l'Intranet (actif si coché)";
-$labels['info_photo_ader'] = "Publication de la photo sur MAIA (actif si coché)";
+$labels['info_photo_intra'] = "Publication de la photo sur l'annuaire ministériel";
+$labels['info_photo_ader'] = "Publication de la photo sur l'annuaire interministériel";
 
 $labels['info_adresse'] = "Adresse :";
 $labels['info_codepostal'] = "Code postal :";
@@ -233,7 +233,14 @@ $labels['acces_internet_button_disable'] = "Désactiver";
 $labels['acces_internet_disable_label_forbidden'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Pour accéder à Mél depuis n'importe où, contactez votre service informatique.";
 $labels['acces_internet_disable_label_allowed'] = "Vous ne pouvez accéder à Mél que depuis le réseau ministériel. Cliquez sur \"Activer\" pour pouvoir accéder à Mél depuis n'importe où.";
 $labels['acces_internet_enable_label'] = "Vous pouvez accéder à Mél depuis n'importe où en vous rendant à l'adresse suivante : https://mel.din.developpement-durable.gouv.fr";
-$labels['acces_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accés, vous devez vous connecter à cet écran depuis le réseau ministériel.";
+$labels['acces_internet_enable_label_internet'] = "Si vous souhaitez désactiver cet accès, vous devez vous connecter à cet écran depuis le réseau ministériel.";
+
+$labels['acces_internet_enable_ok'] = "Votre accès internet a bien été activé";
+$labels['acces_internet_disable_ok'] = "Votre accès internet a bien été désactivé";
+$labels['acces_internet_nok'] = "Une erreur s'est produite lors de la modification de votre accès internet, veuillez contacter votre service informatique.";
+
+$labels['acces_internet_doubleauth'] = "Sécurité renforcée avec la double authentification";
+$labels['acces_internet_doubleauth_link'] = "Accéder a la configuration de la double authentification";
 
 // Gestionnaire d'absence
 $labels['gestionnaireabsence'] = 'Gestionnaire d\'absence';
@@ -249,29 +256,8 @@ $labels['absence_texte_interne_different'] = "Message spécifique pour les corre
 $labels['absence_texte_interne_identique'] = "Envoyer le même message qu'en interne";
 $labels['absence_texte_mot_cle'] = 'En tapant les mots clés "jusqu\'au 01/01/1970" dans le texte, la date sera automatiquement modifiée en changeant la date de fin.';
 
-// CGU inter
-$labels['inter_CGU_legend'] = "Conditions Générales d'Utilisation pour le surf internet";
-$labels['inter_CGU_texte'] = "La présente charte – Conditions Générales d'Utilisation (CGU) – a pour objet de définir les modalités de mise à disposition de l'accès internet et les conditions générales d'utilisation de ce service par les utilisateurs du ministère.<br /><br />
-Dans le cadre des textes en vigueur, le ministère met en œuvre tous les moyens pour assurer un accès sécurisé et de qualité aux services internet.<br /><br />
-A ce titre, des outils de filtrage des connexions sont mis en place au regard des besoins des utilisateurs dans l'exercice de leurs fonctions. Les utilisateurs se voient désormais attribuer un profil fixant les accès aux sites autorisés.<br /><br />
-Par ailleurs, en application de la réglementation, la collecte et la conservation des fichiers journaux sont rendues obligatoires dans le but d'être en capacité de fournir les éléments de preuves en cas d'enquêtes administratives ou judiciaires.<br /><br />
-Le ministère s'engage à ce que l'exploitation des journaux soit strictement encadrée conformément à la loi du 6 janvier 1978 modifiée afin de respecter la vie privée de ses agents.<br /><br />
-A la première connexion sur le service internet, l'utilisateur doit avoir pris connaissance et validé les conditions générales d'utilisation (CGU).<br /><br />
-<b>Avertissement : ce dispositif est actuellement en phase de test sur un panel de services. Le présent texte ainsi que la charte d’utilisation d'internet (CGU) seront soumis à la validation des autorités compétentes avant généralisation de la solution à l'ensemble des services du ministère.</b>";
-$labels['inter_CGU-DDI_texte'] = "La charte des usages de l’Internet en DDI a pour objet de définir les modalités de mise à disposition de l'accès Internet et les conditions générales d'utilisation de ce service par les utilisateurs des Directions Départementales Interministérielles (DDI) relevant du Premier ministre et placées sous l'autorité des directeurs départementaux.<br /><br />
-Dans le cadre des textes en vigueur, les services du Premier ministre mettent en œuvre tous les moyens pour que soit assuré un accès sécurisé et de qualité aux services de l’Internet.<br /><br />
-A ce titre, des outils de filtrage des connexions sont mis en place au regard des besoins des utilisateurs dans l'exercice de leurs fonctions. Les utilisateurs se voient désormais attribuer un profil fixant les accès aux sites autorisés.<br /><br />
-Par ailleurs, en application de la réglementation, la collecte et la conservation des fichiers journaux sont rendues obligatoires dans le but d’être en capacité de fournir les éléments de preuves en cas d'enquêtes administratives ou judiciaires.<br /><br />
-Les services du Premier ministre s’engagent à ce que l'exploitation des journaux soit strictement encadrée conformément à la loi du 6 janvier 1978 modifiée afin de respecter la vie privée des agents.<br /><br />
-A la première connexion sur le service Internet, l’utilisateur doit avoir pris connaissance et validé les conditions générales d’utilisation (CGU) dont le détail est accessible en téléchargement ci-dessous.";
-$labels['inter_CGU-DDI_texte2'] = "<b>Avertissement : ce dispositif est actuellement en phase de test sur un panel de DDI. Le présent texte ainsi que la charte des usages de l’Internet en DDI seront soumis à la validation des autorités compétentes avant généralisation de la solution à l'ensemble des DDI.</b>";
-$labels['inter_CGU_dl'] = "Téléchargement de la charte d'utilisation de l'internet";
-$labels['inter_CGU_dl2'] = "Téléchargement de la charte des usages de l'Internet en DDI";
-$labels['inter_CGU_accept'] = "En cochant cette case, je reconnais avoir téléchargé la charte internet et pris connaissance des conditions générales d'utilisation et les accepter sans réserve.<br />(Profil: <b>%%getProfil%%</b>)<br />";
-$labels['inter_CGU_date'] = "Les conditions générales d'utilisation de la navigation internet ont été validées le %%getTS%%. Profil actuel: <b>%%getProfil%%</b>";
-$labels['inter_CGU_validee'] = "Les CGU pour le surf authentifié sont validées.";
-$labels['inter_CGU_unvalidee'] = "Les CGU pour le surf authentifié ne sont pas validées, cocher la case pour les accepter";
-
+$labels['absence_ok'] = "Votre message d'absence a bien été enregistré";
+$labels['absence_nok'] = "Une erreur s'est produite lors de l'enregistrement de votre message d'absence, veuillez contacter votre service informatique.";
 
 // Gestion des listes
 $labels['gestionnairelistes'] = "Gestionnaire de listes";

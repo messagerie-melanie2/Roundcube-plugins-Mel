@@ -67,7 +67,7 @@ class Informationspersonnelles extends Moncompteobject {
 			'update_personnal_info',
 		];
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true) 
+		if ($user->authentification(Moncompte::get_current_user_password(), true) 
 				&& $user->load($attributes)) {
 			// Ajouter les attributs à l'environnement pour la template
 			foreach ($attributes as $attribute) {
@@ -141,7 +141,6 @@ class Informationspersonnelles extends Moncompteobject {
 			'roomnumber',
 			'use_photo_ader',
 			'use_photo_intranet',
-			'update_personnal_info',
 		];
 		// Liste des attributs lecture seule
 		$attributes_readonly = [
@@ -151,9 +150,8 @@ class Informationspersonnelles extends Moncompteobject {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Authentification
-		if ($user->authentification(rcmail::get_instance()->get_user_password(), true)) {
-			// Chargement des données
-			$user->load($attributes);
+		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
+			$user->load('update_personnal_info');
 			// Readonly ou non ?
 			if ($user->update_personnal_info) {
 				$_attributes = $attributes;
@@ -161,6 +159,8 @@ class Informationspersonnelles extends Moncompteobject {
 			else {
 				$_attributes = $attributes_readonly;
 			}
+			// Chargement des données
+			$user->load($_attributes);
 			// Parcours les attributs
 			foreach ($_attributes as $attribute) {
 				$data = trim(rcube_utils::get_input_value($attribute, rcube_utils::INPUT_POST));
@@ -209,6 +209,9 @@ class Informationspersonnelles extends Moncompteobject {
 	 * @return string
 	 */
 	private static function format_tel($numero, $type) {
+		if (empty($numero)) {
+			return $numero;
+		}
 		$numero = str_replace(array(' ','+','-','.'),'',$numero);
 		$l = strlen($numero);
 	

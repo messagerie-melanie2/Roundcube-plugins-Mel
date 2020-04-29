@@ -198,6 +198,7 @@ input.button {
 	background-color: #fff;
 	background-color: var(--inputs-bg-color);
 	color: var(--inputs-button-text-color);
+	cursor: pointer;
 }
 
 .formbuttons input.button:focus, 

@@ -129,6 +129,39 @@ abstract class driver_mel {
   }
 
   /**
+   * Generate users_outofoffice object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Users\Outofoffice
+   */
+  public function users_outofoffice($params = []) {
+    return $this->object('Users\\Outofoffice', $params);
+  }
+
+  /**
+   * Generate users_type object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Users\Type
+   */
+  public function users_type($params = []) {
+    return $this->object('Users\\Type', $params);
+  }
+
+  /**
+   * Generate users_share object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Users\Share
+   */
+  public function users_share($params = []) {
+    return $this->object('Users\\Share', $params);
+  }
+
+  /**
    * Generate group object from the ORM with the right Namespace
    * 
    * @param array $params [Optionnal] parameters of the constructor

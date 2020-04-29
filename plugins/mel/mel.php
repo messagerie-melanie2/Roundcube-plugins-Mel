@@ -1571,6 +1571,9 @@ class mel extends rcube_plugin {
    * Permet la selection de la bonne url
    */
   public static function is_internal() {
+    if (isset($_GET['internet'])) {
+      return false;
+    }
     return rcmail::get_instance()->config->get('is_internal', false);
   }
   /**

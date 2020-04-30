@@ -958,8 +958,9 @@ rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = fals
 		$.ajax({
 			  method: "GET",
 			  url: './?_task=mail&_action=plugin.list_contacts_recent',
-		}).done(function(contacts) {
-			if (contacts) {
+		}).done(function(json) {
+			if (json.contacts) {
+				var contacts = json.contacts;
 				// Get from session storage
 				window.messagesList = rcmail.right_panel_storage_get('messagesList', true);
 				if (!window.messagesList) {

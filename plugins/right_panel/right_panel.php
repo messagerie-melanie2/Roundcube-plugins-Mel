@@ -168,7 +168,14 @@ class right_panel extends rcube_plugin
     }
     // Return the result to the ajax commant
     $result = array('action' => 'plugin.list_contacts_favorites', 'contacts' => $contacts);
-    echo json_encode($result);
+    $json = json_encode($result);
+    if ($json) {
+      echo $json;
+    }
+    else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[list_contacts_favorites] contacts : " . var_export($contacts, 1));
+      echo json_encode(['action' => 'plugin.list_contacts_favorites']);
+    }
     exit;
   }
 
@@ -184,6 +191,7 @@ class right_panel extends rcube_plugin
     else {
       // Desactiver le threading pour éviter les problèmes
       $this->rc->storage->set_threading(false);
+      $this->rc->storage->set_pagesize(25);
       // Lister les messages INBOX triés par date
       $a_headers = $this->rc->storage->list_messages('INBOX', 0, 'date', 'DESC');
       $contacts = [];
@@ -200,7 +208,7 @@ class right_panel extends rcube_plugin
           $contacts[] = [
               'muid' => $a_header->uid,
               'type' => 'mail',
-              'subject' => trim(rcube_mime::decode_header($a_header->subject, $a_header->charset)),
+              'subject' => $a_header->get('subject', true),
               'munread' => isset($a_header->flags['SEEN']) ? false : true,
               'name' => $name,
               'email' => $a_parts[1]['mailto'],
@@ -214,7 +222,14 @@ class right_panel extends rcube_plugin
     // send output
     header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
     // Return the result to the ajax command
-    echo json_encode($contacts);
+    $json = json_encode(['action' => 'plugin.list_contacts_recent', 'contacts' => $contacts]);
+    if ($json) {
+      echo $json;
+    }
+    else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[list_contacts_recent] contacts : " . var_export($contacts, 1));
+      echo json_encode(['action' => 'plugin.list_contacts_recent']);
+    }
     exit;
   }
   
@@ -235,7 +250,14 @@ class right_panel extends rcube_plugin
     // send output
     header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
     // Return the result to the ajax command
-    echo json_encode(['unseen_count' => $unseen_count]);
+    $json = json_encode(['action' => 'plugin.get_unread_count', 'unseen_count' => $unseen_count]);
+    if ($json) {
+      echo $json;
+    }
+    else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[get_unread_count] unseen_count : " . var_export($unseen_count, 1));
+      echo json_encode(['action' => 'plugin.get_unread_count']);
+    }
     exit;
   }
   
@@ -254,7 +276,16 @@ class right_panel extends rcube_plugin
       // Return the result to the ajax command
       $result = array('action' => 'plugin.get_contact_email', 'username' => $username);
     }
-    echo json_encode($result);
+    // send output
+    header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+    $json = json_encode($result);
+    if ($json) {
+      echo $json;
+    }
+    else {
+      mel_logs::get_instance()->log(mel_logs::ERROR, "[get_contact_email] result : " . var_export($result, 1));
+      echo json_encode(['action' => 'plugin.get_contact_email']);
+    }
     exit;
   }
 }

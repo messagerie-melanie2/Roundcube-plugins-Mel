@@ -264,7 +264,7 @@ $labels['gestionnairelistes'] = "Gestionnaire de listes";
 
 $labels['listes_titre'] = "Listes";
 $labels['listes_membres'] = "Membres";
-$labels['listes_membres_dyn'] = "Membres (Cette liste est dynamique et n'est pas modifiable. Si vous souhaitez y ajouter des membres, contactez vos administrateurs Amédée)";
+$labels['listes_membres_dyn'] = "Membres (Cette liste est dynamique et n'est pas modifiable. Si vous souhaitez y ajouter des membres, contactez votre service informatique)";
 $labels['listes_ajouter'] = "Choisir dans l'annuaire";
 $labels['listes_retirer'] = "Retirer un membre";
 $labels['listes_saisir'] = "Saisir une adresse email";
@@ -298,13 +298,13 @@ $labels['cgu_mobile_texte'] = "Le ministère offre la possibilité à ses agents
 </ul>
 <br /><br />";
 $labels['cgu_mobile_charte'] = "Téléchargement de la charte d'utilisation de mobiles";
-$labels['cgu_mobile_profil_change'] = "Vous avez maintenant le profil <b>%%getProfilMob%%</b> , vous devez revalider les conditions générales d'utilisation";
+$labels['cgu_mobile_profil_change'] = "Vous avez maintenant le profil <b>%%getProfilMob%%</b>, vous devez revalider les conditions générales d'utilisation";
 $labels['cgu_mobile_accept'] = "En cochant cette case, je reconnais avoir téléchargé la charte pour le service de mobilité et pris connaissance des conditions générales d'utilisation et les accepter sans réserve. (<b>Profil: %%getProfilMob%%</b>).";
 $labels['cgu_mobile_ok'] = "Les conditions générales d'utilisation de la synchronisation pour les mobiles ont été validées le %%getTSMob%% pour le profil <b>%%getProfilMobU%%</b>.";
-$labels['cgu_mobile_no'] = "Vous n'êtes pas autorisé &agrave; synchroniser vos périphériques avec la future solution de synchronisation de Mél. Si vous souhaitez l'utiliser, contactez votre cellule informatique.";
-$labels['cgu_mobile_success'] = "Les CGU ont été acceptées.";
-$labels['cgu_mobile_error'] = "L'opération a échoué : ";
-$labels['cgu_mobile_fake'] = "Echec, cocher la case pour accepter les CGU.";
+$labels['cgu_mobile_no'] = "Vous n'êtes pas autorisé à synchroniser vos périphériques mobiles avec la solution de synchronisation de Mél. Si vous souhaitez l'utiliser, contactez votre service informatique.";
+$labels['cgu_mobile_success'] = "Les CGU ont été acceptées, vous pouvez désormais synchroniser votre mobile sur Mél.";
+$labels['cgu_mobile_error'] = "Une erreur s'est produite lors de l'enregistrement des CGU, veuillez contacter votre service informatique.";
+$labels['cgu_mobile_fake'] = "Veuillez cocher la case pour accepter les CGU.";
 
 // Statistiques mobiles
 $labels['mobile'] = 'Statistiques mobiles';

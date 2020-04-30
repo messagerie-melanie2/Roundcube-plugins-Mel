@@ -49,6 +49,45 @@ class Synchronisationmobile extends Moncompteobject {
 	 */
 	public static function change() {
 		$check_cgu_mobile = trim(rcube_utils::get_input_value('check_cgu_mobile', rcube_utils::INPUT_POST));
+		if (isset($check_cgu_mobile) && $check_cgu_mobile == '1') {
+			$date = gmstrftime('%Y%m%d%H%M%S', time()) . 'Z';
+			// Récupération de l'utilisateur
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			// Liste des attributs à charger
+			$attributes = [
+				'acces_synchro_admin_profil',
+				'acces_synchro_user_profil',
+				'acces_synchro_user_datetime',
+			];
+			// Authentification
+			if ($user->authentification(Moncompte::get_current_user_password(), true)
+					&& $user->load($attributes)) {
+				$user->acces_synchro_user_profil = $user->acces_synchro_admin_profil;
+				$user->acces_synchro_user_datetime = gmstrftime('%Y%m%d%H%M%S', time()) . 'Z';
+				// Enregistrement de l'utilisateur avec les nouvelles données
+				if ($user->save()) {
+					// Ok
+					rcmail::get_instance()->output->show_message('mel_moncompte.cgu_mobile_success', 'confirmation');
+					return true;
+				}
+				else {
+					// Erreur
+					$err = \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError();
+					rcmail::get_instance()->output->show_message('mel_moncompte.cgu_mobile_error' . $err, 'error');
+					return false;
+				}
+			}
+			else {
+				// Erreur d'auth
+				rcmail::get_instance()->output->show_message('mel_moncompte.cgu_mobile_error', 'error');
+				return false;
+			}
+		}
+		else {
+			// Case non coché
+			rcmail::get_instance()->output->show_message('mel_moncompte.cgu_mobile_fake', 'error');
+			return false;
+		}
 	}
 
 	/**
@@ -81,7 +120,7 @@ class Synchronisationmobile extends Moncompteobject {
 									rcmail::get_instance()->gettext('mel_moncompte.cgu_mobile_charte'))));
 					$table->add_row();
 
-					$checkbox = new html_checkbox(array('value' => gmstrftime('%Y%m%d%H%M%S', time()) . 'Z', 'name' => 'check_cgu_mobile', 'id' => 'check_cgu_mobile'));
+					$checkbox = new html_checkbox(array('value' => '1', 'name' => 'check_cgu_mobile', 'id' => 'check_cgu_mobile'));
 					$table->add(array(), $checkbox->show());
 					$table->add(array(), html::label(array('for' => 'check_cgu_mobile'), str_replace(array('%%getProfilMob%%'), array($user->acces_synchro_admin_profil),
 						rcmail::get_instance()->gettext('mel_moncompte.cgu_mobile_profil_change'))));
@@ -99,7 +138,7 @@ class Synchronisationmobile extends Moncompteobject {
 											rcmail::get_instance()->gettext('mel_moncompte.cgu_mobile_charte'))));
 						$table->add_row();
 
-						$checkbox = new html_checkbox(array('value' => gmstrftime('%Y%m%d%H%M%S', time()) . 'Z', 'name' => 'check_cgu_mobile', 'id' => 'check_cgu_mobile'));
+						$checkbox = new html_checkbox(array('value' => '1', 'name' => 'check_cgu_mobile', 'id' => 'check_cgu_mobile'));
 						$table->add(array(), $checkbox->show());
 						$table->add(array(),
 								html::label(array('for' => 'check_cgu_mobile'),

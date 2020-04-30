@@ -533,7 +533,7 @@ var mel_shortcuts_keydown = function(e)
     // console.log(e.keyCode);
 
     // do nothing on input elements if no ctrl
-    if ($(e.target).is('textarea,input') && !ctrl && key != 27) {
+    if ($(e.target).is('textarea,input')) {
         return true;
     }
 

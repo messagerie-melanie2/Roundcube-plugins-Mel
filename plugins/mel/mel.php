@@ -1337,38 +1337,6 @@ class mel extends rcube_plugin {
    * ****** Cache data **********
    */
   /**
-   * Récupère les informations LDAP de l'utilisateur depuis le cache
-   *
-   * @param string $username
-   * @return array
-   */
-  public static function get_user_infos($username) {
-    $cache = self::InitM2Cache();
-    if (! isset($cache['users_infos'][$username])) {
-      $cache = self::set_user_infos($username);
-    }
-    return $cache['users_infos'][$username];
-  }
-  /**
-   * Génére le cache session en fonction des données LDAP
-   *
-   * @param string $username
-   */
-  private static function set_user_infos($username) {
-    $cache = self::InitM2Cache();
-    if (! isset($cache['users_infos'])) {
-      $cache['users_infos'] = array();
-    }
-    if (strpos($username, '@') === false) {
-      $cache['users_infos'][$username] = LibMelanie\Ldap\Ldap::GetUserInfos($username);
-    }
-    else {
-      $cache['users_infos'][$username] = LibMelanie\Ldap\Ldap::GetUserInfosFromEmail($username);
-    }    
-    self::SetM2Cache($cache);
-    return $cache;
-  }
-  /**
    * Initialisation du cache M2
    */
   public static function InitM2Cache() {

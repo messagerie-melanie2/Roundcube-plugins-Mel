@@ -266,17 +266,17 @@ class mel_moncompte extends rcube_plugin {
         $user->load();
       }
       // Utilisateur courant
-      $curUser = $this->rc->get_user_name();
+      $currentUser = $this->rc->get_user_name();
       $shared = false;
-      if ($curUser == $user->uid || $user->shares[$curUser]->type == LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN) {
+      if ($currentUser == $user->uid || $user->shares[$currentUser]->type == LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN) {
         // Si on est gestionnaire
         $acl = $this->gettext('gestionnaire');
         // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
-        $shared = $curUser == $user->uid || ($user->type != LibMelanie\Api\Defaut\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Defaut\Users\Type::APPLICATIVE);
+        $shared = $currentUser == $user->uid || ($user->type != LibMelanie\Api\Defaut\Users\Type::INDIVIDUELLE && $user->type != LibMelanie\Api\Defaut\Users\Type::APPLICATIVE);
       }
       else {
         // Si pas gestionnaire on cherche le bon droit a afficher
-        switch ($user->shares[$curUser]->type) {
+        switch ($user->shares[$currentUser]->type) {
           case LibMelanie\Api\Defaut\Users\Share::TYPE_SEND:
             $acl = $this->gettext('send');
             break;

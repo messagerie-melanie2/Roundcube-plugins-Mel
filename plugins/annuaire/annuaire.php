@@ -36,12 +36,6 @@ class annuaire extends rcube_plugin
 
     /**
      *
-     * @var Ldap
-     */
-    private $ldap;
-
-    /**
-     *
      * @var string
      */
     private $server;

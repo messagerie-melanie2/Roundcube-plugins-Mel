@@ -222,7 +222,7 @@ $labels['info_modif_nok'] = "Echec de la modification des données personnelles 
 $labels['info_err_tel'] = "Mauvais format du numéro de ";
 
 // Acces internet
-$labels['accesinternet'] = 'Accés internet';
+$labels['accesinternet'] = 'Accès internet';
 
 $labels['acces_internet_title'] = "Activation de l'accès à Mél depuis Internet";
 $labels['acces_internet_status_label'] = "Statut de l'accès depuis Internet : ";

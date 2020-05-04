@@ -18,8 +18,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-include_once 'Bal.php';
-
 /**
  * Classe de gestion pour Mon compte
  * @author Thomas Payen <thomas.payen@i-carre.net> / PNE Messagerie MEDDE
@@ -34,12 +32,6 @@ class Moncompte {
 	 * @var rcube_plugin Plugin courant
 	 */
 	private $plugin;
-
-	/**
-	 *
-	 * @var Bal
-	 */
-	private $myBal;
 
 	// Construct
 	public function __construct($plugin) {
@@ -143,16 +135,14 @@ class Moncompte {
 		}
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser();
-		// AJoute le javascript
-		// TODO: a faire en jquery
-		//		$attrib['onchange'] = "self.location = self.location + '&_current_username=' + this.value;";
+
 		// Génération du select html
 		$html_select = new html_select($attrib);
 		$html_select->add($user->fullname, $user->uid);
 
 		// Récupération de la liste des objets auquels l'utilisateur a accès en gestionnaire
 		$_objects = $user->getObjectsSharedGestionnaire();
-		// Parcour la liste des boites et ajoute les options
+		// Parcours la liste des boites et ajoute les options
 		if (is_array($_objects)) {
 			foreach ($_objects as $_object) {
 				$html_select->add($_object->mailbox->fullname, $_object->mailbox->uid);

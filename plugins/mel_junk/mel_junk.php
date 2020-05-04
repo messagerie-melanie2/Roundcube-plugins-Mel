@@ -31,7 +31,7 @@ class mel_junk extends rcube_plugin
      * 
      * @var boolean
      */
-    public $rendered;
+    private $rendered;
 
     /**
      * Initialisation du plugin

@@ -469,6 +469,19 @@ $(document).ready(function() {
 				});
 			});
 		}
+		if (rcmail.env.action == 'show') {
+			$('div#tb_label_popup li a').each(function() {
+				if ($(this).attr('id') != "rcube_manage_labels") {
+					// add/remove active class
+					var selection = rcm_tb_label_get_selection();
+					
+					if (selection.length == 0)
+						$(this).removeClass('active');
+					else
+						$(this).addClass('active');
+				}
+			});
+		}
 	});
 	rcmail.addEventListener('listupdate', function() {
 		if ($('td#rcmlabels').length > 0) {
@@ -482,7 +495,6 @@ $(document).ready(function() {
 				if ($(this).attr('id') != "rcube_manage_labels") {
 					// add/remove active class
 					var selection = rcm_tb_label_get_selection();
-					
 					if (selection.length == 0)
 						$(this).removeClass('active');
 					else

@@ -55,6 +55,13 @@ class mel_labels_sync extends rcube_plugin {
   private $driver;
 
   /**
+   * Box rendered ?
+   * 
+   * @var boolean
+   */
+  private $rendered;
+
+  /**
    * ** PUBLIC **
    */
   /**
@@ -405,9 +412,13 @@ class mel_labels_sync extends rcube_plugin {
    * Génération du pop up contenant la liste des labels à selectionner
    */
   function tb_label_popup() {
+    if ($this->rendered) {
+      return;
+    }
     $out = '<div id="tb_label_popup" class="popupmenu">' . $this->get_tb_label_popup() . '</div>';
     $this->rc->output->add_gui_object('tb_label_popup_obj', 'tb_label_popup');
     $this->rc->output->add_footer($out);
+    $this->rendered = true;
   }
 
   private function get_tb_label_popup() {

@@ -629,15 +629,14 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
       $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
 
-      if (! $this->validate($event) || empty($this->calendars) || ! isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
+      if (!$this->validate($event) || empty($this->calendars) || !isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
         return false;
       }
-      // Récupère le timezone
       // Génère l'évènement
       $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
       // Calcul de l'uid de l'évènment
@@ -683,11 +682,15 @@ class mel_driver extends calendar_driver {
         }
       }
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
-      if ($_event->load()) {
+      if (!$new && $_event->load()) {
         $loaded = true;
         // Test si l'utilisateur est seulement participant
         $organizer = $_event->organizer;
-        if (isset($organizer) && ! $organizer->extern && ! empty($organizer->email) && $organizer->uid != $this->calendars[$event['calendar']]->owner) {
+        if (isset($organizer) 
+            && !$organizer->extern
+            && !empty($organizer->uid)
+            && ($organizer->uid != $this->rc->get_user_name() 
+              || $this->currentUserIsOrganiser($organizer))) {
           return true;
         }
         // Test si privé
@@ -778,7 +781,7 @@ class mel_driver extends calendar_driver {
 
       if ($_event->save() !== null) {
         // add attachments
-        if (! empty($event['attachments'])) {
+        if (!empty($event['attachments'])) {
           foreach ($event['attachments'] as $attachment) {
             $this->add_attachment($attachment, $_event);
             unset($attachment);
@@ -786,7 +789,7 @@ class mel_driver extends calendar_driver {
         }
 
         // remove attachments
-        if (! empty($event['deleted_attachments'])) {
+        if (!empty($event['deleted_attachments'])) {
           foreach ($event['deleted_attachments'] as $attachment) {
             $this->remove_attachment($attachment);
           }
@@ -832,6 +835,23 @@ class mel_driver extends calendar_driver {
   }
 
   /**
+   * Est-ce que l'utilisateur courant est organisateur ?
+   * 
+   * @param Organizer $organizer
+   * 
+   * @return boolean
+   */
+  protected function currentUserIsOrganiser($organizer) {
+    $bal = driver_mel::gi()->user();
+    $bal->email = $organizer->email;
+    return $bal->load('shares') 
+        && isset($bal->shares[$this->rc->get_user_name()])
+        && ($bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN 
+          || $bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_SEND
+          || $bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_WRITE);
+  }
+
+  /**
    * Move a single event
    *
    * @param array Hash array with event properties
@@ -855,7 +875,7 @@ class mel_driver extends calendar_driver {
 
       $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
 
-      if (! $this->validate($event) || empty($this->calendars) || ! isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
+      if (!$this->validate($event) || empty($this->calendars) || ! isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
         return false;
       }
       // Récupère le timezone
@@ -887,7 +907,11 @@ class mel_driver extends calendar_driver {
       if ($_event->load()) {
         // Test si l'utilisateur est seulement participant
         $organizer = $_event->organizer;
-        if (isset($organizer) && ! $organizer->extern && ! empty($organizer->uid) && $organizer->uid != $this->calendars[$event['calendar']]->owner) {
+        if (isset($organizer) 
+            && !$organizer->extern
+            && !empty($organizer->uid)
+            && ($organizer->uid != $this->rc->get_user_name() 
+              || $this->currentUserIsOrganiser($organizer))) {
           return true;
         }
         // Test si privé
@@ -1096,7 +1120,6 @@ class mel_driver extends calendar_driver {
       foreach ($event['attendees'] as $event_attendee) {
         if (isset($event_attendee['role']) && $event_attendee['role'] == 'ORGANIZER') {
           if (count($event['attendees']) != 1) {
-            $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
             $organizer = driver_mel::gi()->organizer([$_event]);
             if (isset($event_attendee['email'])) {
               $organizer->email = $event_attendee['email'];

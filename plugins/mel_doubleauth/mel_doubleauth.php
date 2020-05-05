@@ -95,30 +95,30 @@ class mel_doubleauth extends rcube_plugin {
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : true");
                             // mettre à jour le cookie et la base de données dynalogin
                             $expiration = self::$expire_cookie + time();
-                            setcookie('roundcube_doubleauth', $info_doubleauth[0] . "###" . $info_doubleauth[1] . "###" . $expiration . "###roundcube", $expiration);
+                            rcube_utils::setcookie('roundcube_doubleauth', $info_doubleauth[0] . "###" . $info_doubleauth[1] . "###" . $expiration . "###roundcube", $expiration);
                             // envoi des données au webservice pour sauvegarde en base
                             self::__modifyCookie($info_doubleauth[0] , $info_doubleauth[1], intval($expiration),"roundcube");
                             $this->__goingRoundcubeTask('mail');
                         }else{
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : false");
                             unset($_COOKIE['roundcube_doubleauth']);
-                            setcookie('roundcube_doubleauth', null, - 1);
+                            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
                         }
                     }else{
                         mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : expire");
                         unset($_COOKIE['roundcube_doubleauth']);
-                        setcookie('roundcube_doubleauth', null, - 1);
+                        rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
                     }
                 }else{
                     mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : pas correct");
                     unset($_COOKIE['roundcube_doubleauth']);
-                    setcookie('roundcube_doubleauth', null, - 1);
+                    rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
                 }
             }
         }else{
             mel_logs::get_instance()->log(mel_logs::DEBUG, "cookie login : pas présent");
             unset($_COOKIE['roundcube_doubleauth']);
-            setcookie('roundcube_doubleauth', null, - 1);
+            rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
         }
         
         if(!$config_2FA['activate'])
@@ -163,12 +163,12 @@ class mel_doubleauth extends rcube_plugin {
                     if(isset($_COOKIE['roundcube_login'])){
                         // création d'un cookie pour la sauvegarde de l'authentification.
                         $expiration = self::$expire_cookie + time();
-                        setcookie('roundcube_doubleauth', $this->rc->user->get_username() . "###" . $code . "###" . $expiration . "###roundcube", $expiration);
+                        rcube_utils::setcookie('roundcube_doubleauth', $this->rc->user->get_username() . "###" . $code . "###" . $expiration . "###roundcube", $expiration);
                         // envoi des données au webservice pour sauvegarde en base
                         self::__addCookie($this->rc->user->get_username() , $code, intval($expiration),"roundcube");
                     }else{
                         unset($_COOKIE['roundcube_doubleauth']);
-                        setcookie('roundcube_doubleauth', null, - 1);
+                        rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
                     }
                     $this->__goingRoundcubeTask('mail');
                 }

@@ -87,7 +87,7 @@ class mel_ldap_auth extends rcube_plugin {
     if (strlen($user) === 0 || strlen($pass) === 0) {
       // Suppression du cookie
       unset($_COOKIE['roundcube_login']);
-      setcookie('roundcube_login', null, -1);
+      rcube_utils::setcookie('roundcube_login', null, -1);
       $args['abort'] = true;
       $args['valid'] = false;
       return $args;
@@ -136,7 +136,7 @@ class mel_ldap_auth extends rcube_plugin {
           $args['abort'] = true;
           // Suppression du cookie
           unset($_COOKIE['roundcube_login']);
-          setcookie('roundcube_login', null, -1);
+          rcube_utils::setcookie('roundcube_login', null, -1);
         } else {
           $hostname = driver_mel::gi()->getRoutage($_user_mce);
           if (isset($hostname)) {
@@ -144,12 +144,12 @@ class mel_ldap_auth extends rcube_plugin {
             // Gestion du keep login
             if (isset($_POST['_keeplogin'])) {
               // Création du cookie avec le login / cn
-              setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
+              rcube_utils::setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
               $_SESSION['_keeplogin'] = true;
             } else {
               // Suppression du cookie
               unset($_COOKIE['roundcube_login']);
-              setcookie('roundcube_login', null, -1);
+              rcube_utils::setcookie('roundcube_login', null, -1);
               $_SESSION['_keeplogin'] = false;
             }
           } else {
@@ -157,7 +157,7 @@ class mel_ldap_auth extends rcube_plugin {
             $args['error'] = 49;
             // Suppression du cookie
             unset($_COOKIE['roundcube_login']);
-            setcookie('roundcube_login', null, -1);
+            rcube_utils::setcookie('roundcube_login', null, -1);
           }
         }
       } else {
@@ -165,7 +165,7 @@ class mel_ldap_auth extends rcube_plugin {
         $args['error'] = 49;
         // Suppression du cookie
         unset($_COOKIE['roundcube_login']);
-        setcookie('roundcube_login', null, -1);
+        rcube_utils::setcookie('roundcube_login', null, -1);
         
         // 0004988: En mode courrielleur, temporiser les échecs d'authentification
         if (isset($_GET['_courrielleur'])) {

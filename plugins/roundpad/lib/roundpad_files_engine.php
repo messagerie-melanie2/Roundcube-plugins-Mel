@@ -65,6 +65,9 @@ class roundpad_files_engine
         if (isset($_GET['_doc_url'])) {
           $this->rc->output->set_env('doc_url', rcube_utils::get_input_value('_doc_url', rcube_utils::INPUT_GET));
         }
+        if (isset($_GET['_doc_owner'])) {
+          $this->rc->output->set_env('doc_owner', rcube_utils::get_input_value('_doc_owner', rcube_utils::INPUT_GET));
+        }
 
         // set templates of Files UI and widgets
         if ($this->rc->task == 'roundpad') {

@@ -347,7 +347,7 @@ function roundpad_file_create_dialog(url = null)
     select_type = $('select[name="type"]', dialog),
     input_name = $('input[name="name"]', dialog).val(''),
     input_url = $('input[name="url"]', dialog).val(''),
-    input_owner = $('input[name="owner"]', dialog).val('');
+    input_owner = $('input[name="owner"]', dialog).val(rcmail.env.doc_owner);
 
   buttons[rcmail.gettext('roundpad.create')] = function () {
     var name = input_name.val(), folder = select_parent.val(), type = select_type.val(), url = input_url.val(), owner = input_owner.val();
@@ -380,7 +380,8 @@ function roundpad_file_create_dialog(url = null)
     buttons: buttons,
     button_classes: ['mainaction'],
     close: function(event, ui) { 
-      rcmail.env.doc_url = null; 
+      rcmail.env.doc_url = null;
+      rcmail.env.doc_owner = null;
     }
   });
 
@@ -1163,7 +1164,8 @@ function roundpad_ui()
       return;
     }
     roundpad_dialog_close($('#files-file-create-dialog').closest('.ui-dialog-content'));
-    rcmail.env.doc_url = null;      
+    rcmail.env.doc_url = null;
+    rcmail.env.doc_owner = null;
 
     this.display_message('roundpad.filecreatenotice', 'confirmation');
 

@@ -142,7 +142,7 @@ class roundpad_driver
     $file->name = $file_name;
     $file->created = time();
     $file->url = !empty($file_url) ? $file_url : Etherpad::GenerateURL($file_name);
-    $file->owner = !empty($file_owner) ? $file_owner : rcmail::get_instance()->get_user_name();
+    $file->owner = $file_owner;
     if ($this->_findFolder($folder_uri)->addFile($file)) {
       $this->hasChanged = true;
       return true;
@@ -171,7 +171,7 @@ class roundpad_driver
     $file->name = $file_name;
     $file->created = time();
     $file->url = !empty($file_url) ? $file_url : Etherpad_public::GenerateURL($file_name);
-    $file->owner = !empty($file_owner) ? $file_owner : rcmail::get_instance()->get_user_name();
+    $file->owner = $file_owner;
     if ($this->_findFolder($folder_uri)->addFile($file)) {
       if (empty($file_url) && rcmail::get_instance()->config->get('etherpad_public_create_pad', false)) {
         $_encoded_file_name = str_replace(rcmail::get_instance()->config->get('etherpad_public_url'), '', $file->url);
@@ -207,7 +207,7 @@ class roundpad_driver
     $file->name = $file_name;
     $file->created = time();
     $file->url = !empty($file_url) ? $file_url : Ethercalc::GenerateURL($file_name);
-    $file->owner = !empty($file_owner) ? $file_owner : rcmail::get_instance()->get_user_name();
+    $file->owner = $file_owner;
     if ($folder->addFile($file)) {
       $this->hasChanged = true;
       return true;

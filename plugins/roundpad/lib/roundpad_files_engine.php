@@ -68,6 +68,9 @@ class roundpad_files_engine
         if (isset($_GET['_doc_owner'])) {
           $this->rc->output->set_env('doc_owner', rcube_utils::get_input_value('_doc_owner', rcube_utils::INPUT_GET));
         }
+        else {
+          $this->rc->output->set_env('doc_owner', $this->rc->get_user_name());
+        }
 
         // set templates of Files UI and widgets
         if ($this->rc->task == 'roundpad') {

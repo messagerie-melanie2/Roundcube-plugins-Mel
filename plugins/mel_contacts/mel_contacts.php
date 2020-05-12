@@ -19,7 +19,7 @@ class mel_contacts extends rcube_plugin {
   /**
    * Liste les carnets d'adresse de l'utilisateurs
    *
-   * @var Mce\Addressbook []
+   * @var LibMelanie\Api\Defaut\Addressbook[]
    */
   private $addressbooks;
   private $has_principal = false;
@@ -90,19 +90,11 @@ class mel_contacts extends rcube_plugin {
    */
   private function _list_user_addressbooks() {
     try {
-      $cache = \mel::InitM2Cache();
-      if (isset($cache['addressbooks']) && time() - $cache['addressbooks']['time'] <= self::CACHE_ADDRESSBOOKS) {
-        $this->addressbooks = unserialize($cache['addressbooks']['list']);
-      }
-      else {
-        $this->addressbooks = $this->user->getSharedAddressbooks();
-        $cache['addressbooks'] = array('time' => time(),'list' => serialize($this->addressbooks));
-        \mel::SetM2Cache($cache);
-      }
+      $this->addressbooks = $this->user->getSharedAddressbooks();
       foreach ($this->addressbooks as $addressbook) {
-        if (! $this->has_principal
-                        /* Créer le carnet d'adresse principal s'il n'existe pas */
-                        && $addressbook->id == $this->user->uid) {
+        if (!$this->has_principal
+            /* Créer le carnet d'adresse principal s'il n'existe pas */
+            && $addressbook->id == $this->user->uid) {
           $this->has_principal = true;
           break;
         }
@@ -144,12 +136,6 @@ class mel_contacts extends rcube_plugin {
       if (!$this->has_principal) {
         $ret = $this->user->createDefaultAddressbook($this->rc->config->get('default_addressbook_name', null));
         if ($ret) {
-          unset($this->addressbooks);
-          $cache = \mel::InitM2Cache();
-          if (isset($cache['addressbooks'])) {
-            unset($cache['addressbooks']);
-            \mel::SetM2Cache($cache);
-          }
           $this->_list_user_addressbooks();
         }
       }
@@ -226,9 +212,7 @@ class mel_contacts extends rcube_plugin {
       }
       $abook = $this->user->getDefaultAddressbook();
       $sources[] = $abook->id;
-
       $args['result'] = $sources;
-
       return $args;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -248,7 +232,7 @@ class mel_contacts extends rcube_plugin {
    */
   public function get_address_book($p) {
     try {
-      if (! isset($this->addressbooks)) {
+      if (!isset($this->addressbooks)) {
         // Récupérer les carnets d'adresses de l'utilisateur
         $this->_list_user_addressbooks();
       }
@@ -264,7 +248,7 @@ class mel_contacts extends rcube_plugin {
           $p['instance'] = new mel_addressbook($this->rc, $this->user, $this->addressbooks[$p['id']]);
         }
         else {
-          $addressbook = new Mce\Addressbook($this->user);
+          $addressbook = driver_mel::gi()->addressbook($this->user);
           $addressbook->id = $p['id'];
           if ($addressbook->load()) {
             $p['instance'] = new mel_addressbook($this->rc, $this->user, $addressbook);
@@ -311,7 +295,7 @@ class mel_contacts extends rcube_plugin {
 
     try {
       $result = $error = false;
-      $addressbook = new Mce\Addressbook($this->user);
+      $addressbook = driver_mel::gi()->addressbook($this->user);
       if ($type == 'update') {
         $addressbook->id = $prop['id'];
         $addressbook->load();
@@ -329,12 +313,6 @@ class mel_contacts extends rcube_plugin {
         $this->ui->book_edit();
       }
       else {
-        $cache = \mel::InitM2Cache();
-        if (isset($cache['addressbooks'])) {
-          unset($cache['addressbooks']);
-        }
-        \mel::SetM2Cache($cache);
-
         $this->rc->output->show_message('mel_contacts.book' . $type . 'd', 'confirmation');
         $this->rc->output->command('book_update', array('id' => $addressbook->id,'name' => $addressbook->name,'readonly' => false,'editable' => true,'groups' => true,'autocomplete' => true,'realname' => $addressbook->id, // IMAP folder name
 'class_name' => '','mel' => true), $type);
@@ -359,18 +337,11 @@ class mel_contacts extends rcube_plugin {
     $folder = trim(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
 
     try {
-      $addressbook = new Mce\Addressbook($this->user);
+      $addressbook = driver_mel::gi()->addressbook($this->user);
       $addressbook->id = $folder;
-
-      if ($addressbook->id != $this->user->uid && $addressbook->load() && $addressbook->delete()) {
-        $cache = \mel::InitM2Cache();
-        if (isset($cache['contacts']) && isset($cache['contacts'][$folder])) {
-          unset($cache['contacts'][$folder]);
-        }
-        if (isset($cache['addressbooks'])) {
-          unset($cache['addressbooks']);
-        }
-        \mel::SetM2Cache($cache);
+      if ($addressbook->id != $this->user->uid 
+          && $addressbook->load() 
+          && $addressbook->delete()) {
         $this->rc->output->show_message('mel_contacts.bookdeleted', 'confirmation');
         $this->rc->output->set_env('pagecount', 0);
         $this->rc->output->command('set_rowcount', rcmail_get_rowcount_text(new rcube_result_set()));

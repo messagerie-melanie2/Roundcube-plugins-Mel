@@ -1336,22 +1336,104 @@ class mel extends rcube_plugin {
   /**
    * ****** Cache data **********
    */
+
   /**
-   * Initialisation du cache M2
+   * Initialisation du cache en session
    */
-  public static function InitM2Cache() {
+  protected static function _InitSessionCache() {
     if (!isset($_SESSION[self::CACHE_KEY])) {
       $_SESSION[self::CACHE_KEY] = array();
     }
     return $_SESSION[self::CACHE_KEY];
   }
+
   /**
-   * Positionne le cache M2 en session
+   * Positionne le cache en session
    *
    * @param array $cache
    */
-  public static function SetM2Cache($cache) {
+  protected static function _SetSessionCache($cache) {
     $_SESSION[self::CACHE_KEY] = $cache;
+  }
+
+  /**
+   * Positionne en cache la valeur
+   * 
+   * @param string $key Identifiant du cache
+   * @param string|array $value Valeur a stocker en cache
+   * @param boolean $reset RAZ du timer de cache (defaut false)
+   * @param int $duration [Optionnel] Durée du cache pour cette clé
+   */
+  public static function setCache($key, &$value, $reset = false, $duration = null) {
+    $cache = self::_InitSessionCache();
+    if (!isset($duration)) {
+      $default_duration = rcmail::get_instance()->config->get("cache_default-duration", 300);
+      $duration = rcmail::get_instance()->config->get("cache_$key-duration", $default_duration);
+    }
+    if (!$reset && isset($cache[$key])) {
+      $cache[$key]['value'] = serialize($value);
+    }
+    else {
+      $cache[$key] = [
+        'expire'  => time() + $duration,
+        'value' => serialize($value),
+      ];
+    }
+    self::_SetSessionCache($cache);
+  }
+
+  /**
+   * Le cache est-il toujours positionné ?
+   * 
+   * @param string $key Identifiant du cache
+   * 
+   * @return boolean
+   */
+  public static function issetCache($key) {
+    $cache = self::_InitSessionCache();
+    if (isset($cache[$key]) && isset($cache[$key]['expire']) && $cache[$key]['expire'] > time()) {
+      return true;
+    }
+    else if (isset($cache[$key])) {
+      unset($cache[$key]);
+      self::_SetSessionCache($cache);
+    }
+    return false;
+  }
+
+  /**
+   * Récupère la valeur en cache
+   * 
+   * @param $key Identifiant du cache
+   * 
+   * @return mixed $value, null si non trouvée
+   */
+  public static function &getCache($key) {
+    $cache = self::_InitSessionCache();
+    if (isset($cache[$key]) && isset($cache[$key]['expire']) && $cache[$key]['expire'] > time()) {
+      $ret = unserialize($cache[$key]['value']);
+      if ($ret !== false) {
+        return $ret;
+      }
+    }
+    else if (isset($cache[$key])) {
+      unset($cache[$key]);
+      self::_SetSessionCache($cache);
+    }
+    return null;
+  }
+
+  /**
+   * Supprime la valeur en cache
+   * 
+   * @param $key Identifiant du cache
+   */
+  public static function unsetCache($key) {
+    $cache = self::_InitSessionCache();
+    if (isset($cache[$key])) {
+      unset($cache[$key]);
+      self::_SetSessionCache($cache);
+    }
   }
 
   /**

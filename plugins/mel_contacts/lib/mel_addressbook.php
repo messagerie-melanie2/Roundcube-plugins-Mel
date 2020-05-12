@@ -29,18 +29,6 @@ class mel_addressbook extends rcube_addressbook
      * @var mixed Search params to use in listing method, obtained by get_search_set()
      */
     private $filter;
-    /**
-     * ctag du carnet d'adresse en cours
-     * @var string
-     */
-    private $ctag;
-    /**
-     * Durée de conservation du ctag
-     * @var string
-     */
-    const CTAG_REFRESH = 30;
-
-    const ENABLE_CACHE = false;
 
     /**
      * Constructeur de la classe
@@ -153,45 +141,6 @@ class mel_addressbook extends rcube_addressbook
             }
 
             $this->result = new rcube_result_set();
-            $cache = \mel::InitM2Cache();
-            if (!isset($this->ctag)) {
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag'])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag_time'])
-                        && time() - $cache['contacts'][$this->addressbook->id]['ctag_time'] < self::CTAG_REFRESH) {
-                    $this->ctag = $cache['contacts'][$this->addressbook->id]['ctag'];
-                } else {
-                    $this->ctag = $this->addressbook->getCTag();
-                    if (isset($cache['contacts'][$this->addressbook->id]['ctag_time'])) {
-                        $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
-                    }
-                }
-            }
-            // Chargement des contacts depuis le cache
-            if (self::ENABLE_CACHE
-                    && isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'])) {
-                if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
-                    $this->result->count = $cache['contacts'][$this->addressbook->id]['count'];
-                    if (isset($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset])
-                            && !isset($this->group_id)) {
-                        $i = 0;
-                        foreach ($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset] as $_contact) {
-                            $_contact = unserialize($_contact);
-                            $this->result->add(mel_contacts_mapping::m2_to_rc_contact($cols, $_contact));
-                            if ($subset > 0 && $subset == $i) break;
-                            $i++;
-                        }
-                        $this->result->first = $this->page_size * ($this->list_page - 1);
-                        return $this->result;
-                    }
-                } else {
-                    unset($cache['contacts'][$this->addressbook->id]);
-                }
-            }
-
             if (isset($this->group_id)) {
                 // Définition des champs à récupérer
                 if (!isset($cols)) $cols = array_keys(mel_contacts_mapping::$mapping_contact_cols);
@@ -229,15 +178,6 @@ class mel_addressbook extends rcube_addressbook
                     $count = $nb_contacts['']->count;
                     unset($nb_contacts);
                 }
-                if (self::ENABLE_CACHE) {
-                  if (!isset($cache['contacts'])) $cache['contacts'] = array();
-                  if (!isset($cache['contacts'][$this->addressbook->id])) $cache['contacts'][$this->addressbook->id] = array();
-                  if (!isset($cache['contacts'][$this->addressbook->id]['list'])) $cache['contacts'][$this->addressbook->id]['list'] = array();
-                  $cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset] = array();
-                  foreach($_contacts as $_contact) {
-                    $cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset][$_contact->id] = serialize($_contact);
-                  }
-                }
             }
 
             $i=0;
@@ -249,13 +189,7 @@ class mel_addressbook extends rcube_addressbook
             $this->result->first = $this->page_size * ($this->list_page - 1);
             if ($this->result->count == 0) {
                 $this->result->count = $count;
-                if (!isset($cache['contacts'])) $cache['contacts'] = array();
-                if (!isset($cache['contacts'][$this->addressbook->id])) $cache['contacts'][$this->addressbook->id] = array();
-                $cache['contacts'][$this->addressbook->id]['ctag'] = $this->ctag;
-                $cache['contacts'][$this->addressbook->id]['count'] = $count;
-                $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
             }
-            \mel::SetM2Cache($cache);
             return $this->result;
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -360,55 +294,56 @@ class mel_addressbook extends rcube_addressbook
     function count() {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::count()");
         if (isset($this->group_id)) {
-          // Chargement du contact depuis le cache
-          $cache = \mel::InitM2Cache();
-          if (isset($cache['contacts'])
-              && isset($cache['contacts'][$this->addressbook->id])
-              && isset($cache['contacts'][$this->addressbook->id]['groups'])
-              && isset($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id])) {
-            $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$this->group_id]);
-            $count = 0;
-            if ($group !== false) {
-              $members = unserialize($group->members);
-              if ($members !== false) {
-                $members = array_unique($members);
-                $count = count($members);
-              }
-            }
-          }
-          else {
-            $count = 0;
-          }
-          return new rcube_result_set($count, ($this->list_page-1) * $this->page_size);
-        }
-        else {
-          try {
             // Chargement du contact depuis le cache
-            $cache = \mel::InitM2Cache();
-            // Chargement des contacts depuis le cache
-            if (isset($cache['contacts'])
-                && isset($cache['contacts'][$this->addressbook->id])
-                && isset($cache['contacts'][$this->addressbook->id]['count'])) {
-              $count = $cache['contacts'][$this->addressbook->id]['count'];
-            } else {
-              $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
-              $_contact->type = Defaut\Contact::TYPE_CONTACT;
-              $results = $_contact->getList('count');
-              $count = 0;
-              foreach($results as $result) {
-                $count = $result->count;
-                break;
-              }
+            $_contacts = \mel::getCache('contacts');
+            if (isset($_contacts)
+                    && isset($_contacts[$this->addressbook->id])
+                    && isset($_contacts[$this->addressbook->id]['groups'])
+                    && isset($_contacts[$this->addressbook->id]['groups'][$this->group_id])) {
+                $group = $_contacts[$this->addressbook->id]['groups'][$this->group_id];
+                $count = 0;
+                if ($group !== false) {
+                    $members = unserialize($group->members);
+                    if ($members !== false) {
+                        $members = array_unique($members);
+                        $count = count($members);
+                    }
+                }
+            }
+            else {
+                $count = 0;
             }
             return new rcube_result_set($count, ($this->list_page-1) * $this->page_size);
-          }
-          catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_addressbook::count() Melanie2DatabaseException");
-            return false;
-          }
-          catch (\Exception $ex) {
-            return false;
-          }
+        }
+        else {
+            try {
+                // Chargement du contact depuis le cache
+                $_contacts = \mel::getCache('contacts');
+                // Chargement des contacts depuis le cache
+                if (isset($_contacts)
+                        && isset($_contacts[$this->addressbook->id])
+                        && isset($_contacts[$this->addressbook->id]['count'])) {
+                    $count = $_contacts[$this->addressbook->id]['count'];
+                } 
+                else {
+                    $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+                    $_contact->type = Defaut\Contact::TYPE_CONTACT;
+                    $results = $_contact->getList('count');
+                    $count = 0;
+                    foreach($results as $result) {
+                        $count = $result->count;
+                        break;
+                    }
+                }
+                return new rcube_result_set($count, ($this->list_page-1) * $this->page_size);
+            }
+            catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+                mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_addressbook::count() Melanie2DatabaseException");
+                return false;
+            }
+            catch (\Exception $ex) {
+                return false;
+            }
         }
 
         return false;
@@ -435,27 +370,14 @@ class mel_addressbook extends rcube_addressbook
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::get_record($id, $assoc)");
         try {
             // Chargement du contact depuis le cache
-            $cache = \mel::InitM2Cache();
-            $limit = $this->page_size;
-            $offset = $this->page_size * ($this->list_page - 1);
-            // Chargement des contacts depuis le cache
-            if (self::ENABLE_CACHE
-                    && isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset][$id])) {
-                $contact = unserialize($cache['contacts'][$this->addressbook->id]['list'][$limit."_".$offset][$id]);
-            } else {
-                $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
-                $_contact->id = $id;
-                $_contact->type = Defaut\Contact::TYPE_CONTACT;
-                $_contacts = $_contact->getList();
+            $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_contact->id = $id;
+            $_contact->type = Defaut\Contact::TYPE_CONTACT;
+            $_contacts = $_contact->getList();
 
-                foreach($_contacts as $_contact) {
-                    $contact = $_contact;
-                    break;
-                }
+            foreach ($_contacts as $_contact) {
+                $contact = $_contact;
+                break;
             }
 
             $this->result = new rcube_result_set();
@@ -500,19 +422,6 @@ class mel_addressbook extends rcube_addressbook
             if (is_null($ret)) {
                 return false;
             }
-            else {
-                // Chargement du contact depuis le cache
-                $cache = \mel::InitM2Cache();
-                // Chargement des contacts depuis le cache
-                if (self::ENABLE_CACHE
-                        && isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['list'])) {
-                    unset($cache['contacts'][$this->addressbook->id]['list']);
-                    \mel::SetM2Cache($cache);
-                }
-                return $contact->id;
-            }
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_addressbook::insert() Melanie2DatabaseException");
@@ -551,16 +460,6 @@ class mel_addressbook extends rcube_addressbook
                 $contact->id = $id;
                 $contact->modified = time();
                 $ret = $contact->save();
-                // Chargement du contact depuis le cache
-                $cache = \mel::InitM2Cache();
-                // Chargement des contacts depuis le cache
-                if (self::ENABLE_CACHE
-                        && isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['list'])) {
-                    unset($cache['contacts'][$this->addressbook->id]['list']);
-                    \mel::SetM2Cache($cache);
-                }
                 return !is_null($ret);
             }
         }
@@ -595,16 +494,6 @@ class mel_addressbook extends rcube_addressbook
                 if (!$contact->delete()) return false;
                 else $count++;
             }
-            // Chargement du contact depuis le cache
-            $cache = \mel::InitM2Cache();
-            // Chargement des contacts depuis le cache
-            if (self::ENABLE_CACHE
-                    && isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'])) {
-                unset($cache['contacts'][$this->addressbook->id]['list']);
-                \mel::SetM2Cache($cache);
-            }
             return $count;
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -637,16 +526,6 @@ class mel_addressbook extends rcube_addressbook
                     $contact->delete();
                 }
             }
-            // Chargement du contact depuis le cache
-            $cache = \mel::InitM2Cache();
-            // Chargement des contacts depuis le cache
-            if (self::ENABLE_CACHE
-                    && isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['list'])) {
-                unset($cache['contacts'][$this->addressbook->id]['list']);
-                \mel::SetM2Cache($cache);
-            }
             return true;
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -674,42 +553,6 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::list_groups($search, $mode)");
         try {
-            // Chargement du groupe depuis le cache
-            $cache = \mel::InitM2Cache();
-            if (!isset($this->ctag)) {
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag'])
-                        && isset($cache['contacts'][$this->addressbook->id]['ctag_time'])
-                        && time() - $cache['contacts'][$this->addressbook->id]['ctag_time'] < self::CTAG_REFRESH) {
-                    $this->ctag = $cache['contacts'][$this->addressbook->id]['ctag'];
-                } else {
-                    $this->ctag = $this->addressbook->getCTag();
-                    if (isset($cache['contacts'][$this->addressbook->id]['ctag_time'])) {
-                        $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
-                    }
-                }
-            }
-            // Chargement des contacts depuis le cache
-            if (isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && !isset($search)
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'])) {
-                if ($cache['contacts'][$this->addressbook->id]['ctag'] == $this->ctag) {
-                    $ret = array();
-                    foreach ($cache['contacts'][$this->addressbook->id]['groups'] as $_g) {
-                        $_g = unserialize($_g);
-                        $group = mel_contacts_mapping::m2_to_rc_contact(null, $_g);
-                        $group['user_id'] = $this->user->uid;
-                        $group['changed'] = $_g->modified;
-                        $ret[] = $group;
-                    }
-                    return $ret;
-                } else {
-                    unset($cache['contacts'][$this->addressbook->id]);
-                }
-            }
-
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             $operators = array();
@@ -724,20 +567,11 @@ class mel_addressbook extends rcube_addressbook
                     $_group->lastname = $search.'%';
                     $operators['lastname'] = LibMelanie\Config\MappingMce::like;
                 }
-            } else {
-                if (!isset($cache['contacts'])) $cache['contacts'] = array();
-                if (!isset($cache['contacts'][$this->addressbook->id])) $cache['contacts'][$this->addressbook->id] = array();
-                $cache['contacts'][$this->addressbook->id]['groups'] = array();
-                $cache['contacts'][$this->addressbook->id]['ctag'] = $this->ctag;
-                $cache['contacts'][$this->addressbook->id]['ctag_time'] = time();
             }
 
             $ret = array();
             $favorites_exists = false;
             foreach ($_group->getList(array(), $filter, $operators, "lastname") as $_g) {
-                if (!isset($search)) {
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_g->id] = serialize($_g);
-                }
                 if ($_g->uid == 'favorites') {
                   $favorites_exists = true;
                 }
@@ -749,8 +583,6 @@ class mel_addressbook extends rcube_addressbook
             if (!$favorites_exists && $this->addressbook->id == $this->rc->get_user_name()) {
               $ret[] = $this->create_group($this->rc->gettext('favorites', 'mel_contacts'), true);
             }
-            // Sauvegarde dans le cache
-            \mel::SetM2Cache($cache);
             return $ret;
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -773,21 +605,11 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::get_group($group_id)");
         try {
-            // Chargement du groupe depuis le cache
-            $cache = \mel::InitM2Cache();
-            if (isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'][$group_id])) {
-                $group = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$group_id]);
-                return mel_contacts_mapping::m2_to_rc_contact(null, $group);
-            } else {
-                $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
-                $_group->type = Defaut\Contact::TYPE_LIST;
-                $_group->id = $group_id;
-                foreach($_group->getList() as $group) { break; }
-                return mel_contacts_mapping::m2_to_rc_contact(null, $group);
-            }
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
+            $_group->id = $group_id;
+            foreach($_group->getList() as $group) { break; }
+            return mel_contacts_mapping::m2_to_rc_contact(null, $group);
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_addressbook::get_group() Melanie2DatabaseException");
@@ -836,13 +658,6 @@ class mel_addressbook extends rcube_addressbook
             $_group->modified = time();
             $ret = $_group->save();
             if (!is_null($ret)) {
-                $cache = \mel::InitM2Cache();
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])) {
-                    if (!isset($cache['contacts'][$this->addressbook->id]['groups'])) $cache['contacts'][$this->addressbook->id]['groups'] = array();
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id] = serialize($_group);
-                    \mel::SetM2Cache($cache);
-                }
                 $group = mel_contacts_mapping::m2_to_rc_contact(null, $_group);
                 $group['id'] = $_group->id;
                 return $group;
@@ -871,14 +686,6 @@ class mel_addressbook extends rcube_addressbook
             $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
             $_group->type = Defaut\Contact::TYPE_LIST;
             $_group->id = $gid;
-            $cache = \mel::InitM2Cache();
-            if (isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'][$gid])) {
-                unset($cache['contacts'][$this->addressbook->id]['groups'][$gid]);
-                \mel::SetM2Cache($cache);
-            }
             foreach($_group->getList() as $group) {
                 return $group->delete();
             }
@@ -913,14 +720,6 @@ class mel_addressbook extends rcube_addressbook
                 $group->modified = time();
                 $ret = $group->save();
                 if (!is_null($ret)) {
-                    $cache = \mel::InitM2Cache();
-                    if (isset($cache['contacts'])
-                            && isset($cache['contacts'][$this->addressbook->id])
-                            && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                            && isset($cache['contacts'][$this->addressbook->id]['groups'][$gid])) {
-                        $cache['contacts'][$this->addressbook->id]['groups'][$gid] = serialize($group);
-                        \mel::SetM2Cache($cache);
-                    }
                     return $newname;
                 }
                 else {
@@ -966,19 +765,6 @@ class mel_addressbook extends rcube_addressbook
                     }
                 }
                 $group->members = serialize(array_merge($members, $ids));
-                // Chargement du groupe depuis le cache
-                $cache = \mel::InitM2Cache();
-                // Gestion du cache
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id])) {
-                    $_grp = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]);
-                    $_grp->members = $group->members;
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id] = serialize($_grp);
-                }
-                // Sauvegarde dans le cache
-                \mel::SetM2Cache($cache);
                 $group->modified = time();
                 $ret = $group->save();
                 if (!is_null($ret)) return $count;
@@ -1023,19 +809,6 @@ class mel_addressbook extends rcube_addressbook
                 }
                 if (count($members) == 0) $group->members = '';
                 else $group->members = serialize($members);
-                // Chargement du groupe depuis le cache
-                $cache = \mel::InitM2Cache();
-                // Gestion du cache
-                if (isset($cache['contacts'])
-                        && isset($cache['contacts'][$this->addressbook->id])
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'])
-                        && isset($cache['contacts'][$this->addressbook->id]['groups'][$_group->id])) {
-                    $_grp = unserialize($cache['contacts'][$this->addressbook->id]['groups'][$_group->id]);
-                    $_grp->members = $group->members;
-                    $cache['contacts'][$this->addressbook->id]['groups'][$_group->id] = serialize($_grp);
-                }
-                // Sauvegarde dans le cache
-                \mel::SetM2Cache($cache);
                 $group->modified = time();
                 $ret = $group->save();
                 if (!is_null($ret)) return $count;
@@ -1064,26 +837,13 @@ class mel_addressbook extends rcube_addressbook
     {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::get_record_groups($id)");
         try {
-            // Chargement du groupe depuis le cache
-            $cache = \mel::InitM2Cache();
-            if (isset($cache['contacts'])
-                    && isset($cache['contacts'][$this->addressbook->id])
-                    && isset($cache['contacts'][$this->addressbook->id]['groups'])) {
-                foreach($cache['contacts'][$this->addressbook->id]['groups'] as $group) {
-                    $group = unserialize($group);
-                    $members = unserialize($group->members);
-                    if (is_array($members)
-                            && in_array($id, $members)) $result[$group->id] = $group->lastname;
-                }
-            } else {
-                $result = array();
-                $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
-                $_group->type = Defaut\Contact::TYPE_LIST;
-                foreach($_group->getList() as $group) {
-                    $members = unserialize($group->members);
-                    if (is_array($members)
-                            && in_array($id, $members)) $result[$group->id] = $group->lastname;
-                }
+            $result = array();
+            $_group = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_group->type = Defaut\Contact::TYPE_LIST;
+            foreach($_group->getList() as $group) {
+                $members = unserialize($group->members);
+                if (is_array($members)
+                        && in_array($id, $members)) $result[$group->id] = $group->lastname;
             }
             return $result;
         }

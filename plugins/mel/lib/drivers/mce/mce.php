@@ -36,7 +36,7 @@ class mce_driver_mel extends driver_mel {
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null) {
+  public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null) {
     if (!isset($username) && !isset($dn) && !isset($email)) {
       $username = rcmail::get_instance()->user->get_username();
     }
@@ -54,13 +54,31 @@ class mce_driver_mel extends driver_mel {
       self::$_users = [];
     }
     if (!isset(self::$_users[$username])) {
-      self::$_users[$username] = $this->user();
-      self::$_users[$username]->uid = $username;
-      if ($load && !self::$_users[$username]->load()) {
-        self::$_users[$username] = null;
+      $users = \mel::getCache('users');
+      if (isset($users) && isset($users[$username]) && $users[$username]->issetObjectMelanie()) {
+        self::$_users[$username] = $users[$username];
+        self::$_users[$username]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+      }
+      else {
+        self::$_users[$username] = $this->user();
+        self::$_users[$username]->uid = $username;
+        if ($load && !self::$_users[$username]->load()) {
+          self::$_users[$username] = null;
+        }
+        $users[$username] = self::$_users[$username];
+        self::$_users[$username]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
       }
     }
+    // \mel::setCache('users', self::$_users);
     return self::$_users[$username];
+  }
+
+  /**
+   * Enregistrer les donnés en cache quand un utilisateur change
+   */
+  public function onUserChange() {
+    \mel::setCache('users', self::$_users);
+    //\mel::unsetCache('users');
   }
 
   /**
@@ -136,17 +154,17 @@ class mce_driver_mel extends driver_mel {
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = true;
     if (isset($filter_ldap) && count($filter_ldap) > 0) {
-      $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos(rcmail::get_instance()->get_user_name());
-      
+      $user = driver_mel::gi()->getUser();
+      $user->load(array_keys($filter_ldap));
+
       foreach ($filter_ldap as $key => $value) {
-        if (!isset($user_infos[$key])
-            || is_array($user_infos[$key]) && ! in_array($value, $user_infos[$key])
-            || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
-              $hasAccess = false;
-            }
+        if (!isset($user->$key) 
+            || is_array($user->$key) && !in_array($value, $user->$key) 
+            || is_string($user->$key) && $user->$key != $value) {
+          $hasAccess = false;
+        }
       }
     }
-    
     return $hasAccess;
   }
   

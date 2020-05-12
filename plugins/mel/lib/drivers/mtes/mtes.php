@@ -160,26 +160,27 @@ class mtes_driver_mel extends mce_driver_mel {
     // Gestion du filtre LDAP
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
     $hasAccess = true;
-    $user_infos = Ldap::GetUserInfos(rcmail::get_instance()->get_user_name());
+    $user = driver_mel::gi()->getUser();
+    $user->load(array_keys($filter_ldap));
     
     if (isset($filter_ldap) && count($filter_ldap) > 0) {
       foreach ($filter_ldap as $key => $value) {
-        if (!isset($user_infos[$key]) 
-            || is_array($user_infos[$key]) && ! in_array($value, $user_infos[$key]) 
-            || is_string($user_infos[$key]) && $user_infos[$key] != $value) {
+        if (!isset($user->$key) 
+            || is_array($user->$key) && !in_array($value, $user->$key) 
+            || is_string($user->$key) && $user->$key != $value) {
           $hasAccess = false;
         }
       }
     }
     // Parcourir les dn autorisés et valider la connexion
     foreach (rcmail::get_instance()->config->get('roundcube_nextcloud_ldap_allowed_dn', array()) as $allowed_dn) {
-      if (strpos($user_infos['dn'], $allowed_dn) !== false) {
+      if (strpos($user->dn, $allowed_dn) !== false) {
         $hasAccess = true;
       }
     }
     // Parcourir les dn interdits et refuser la connexion
     foreach (rcmail::get_instance()->config->get('roundcube_nextcloud_ldap_forbidden_dn', array()) as $forbidden_dn) {
-      if (strpos($user_infos['dn'], $forbidden_dn) !== false) {
+      if (strpos($user->dn, $forbidden_dn) !== false) {
         $hasAccess = false;
       }
     }

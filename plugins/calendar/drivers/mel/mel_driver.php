@@ -125,7 +125,7 @@ class mel_driver extends calendar_driver {
       else {
         $this->calendars = $this->user->getSharedCalendars();
         foreach ($this->calendars as $calendar) {
-          if (! $this->has_principal && $calendar->id == $this->user->uid) {
+          if (!$this->has_principal && $calendar->id == $this->user->uid) {
             $this->has_principal = true;
             break;
           }

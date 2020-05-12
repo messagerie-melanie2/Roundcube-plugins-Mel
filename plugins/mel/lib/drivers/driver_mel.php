@@ -316,7 +316,7 @@ abstract class driver_mel {
    *
    * @return \LibMelanie\Api\Defaut\User
    */
-  abstract public function getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null);
+  abstract public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null);
 
   /**
    * Retourne l'objet Group

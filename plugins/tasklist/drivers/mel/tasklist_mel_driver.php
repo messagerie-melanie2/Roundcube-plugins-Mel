@@ -634,53 +634,57 @@ class tasklist_mel_driver extends tasklist_driver {
    * @see tasklist_driver::pending_alarms()
    */
   public function pending_alarms($time, $lists = null) {
-    $interval = $this->rc->config->get('refresh_interval', 60);
-    if ($interval === 0) {
-      $interval = 60;
-    }
-    $time -= $time % 60;
-    
-    $slot = $time;
-    $slot -= $slot % $interval;
-    
-    $last = $time - max(60, $interval);
-    $last -= $last % $interval;
-    
-    // only check for alerts once in 5 minutes
-    if ($last == $slot) {
-      return [];
-    }
-    
-    if (!isset($lists)) {
-      $alarmlists = $this->rc->config->get('alarm_tasklists', null);
-      if (isset($alarmlists)) {
-        $lists = [];
-        foreach ($alarmlists as $key => $list) { 
-          if (!empty($key) && $list) { 
-            $lists[] = $key; 
-          } 
+    // Récupération des rappels en cache
+    $tasks = \mel::getCache('tasks_alarm');
+    if (!isset($tasks)) {
+      $interval = $this->rc->config->get('refresh_interval', 60);
+      if ($interval === 0) {
+        $interval = 60;
+      }
+      $time -= $time % 60;
+      
+      $slot = $time;
+      $slot -= $slot % $interval;
+      
+      $last = $time - max(60, $interval);
+      $last -= $last % $interval;
+      
+      // only check for alerts once in 5 minutes
+      if ($last == $slot) {
+        return [];
+      }
+      
+      if (!isset($lists)) {
+        $alarmlists = $this->rc->config->get('alarm_tasklists', null);
+        if (isset($alarmlists)) {
+          $lists = [];
+          foreach ($alarmlists as $key => $list) { 
+            if (!empty($key) && $list) { 
+              $lists[] = $key; 
+            } 
+          }
         }
       }
-    }
+        
+      $time = $slot + $interval;
       
-    $time = $slot + $interval;
-    
-    $oneday = 24 * 60 * 60;
-    $query = [
-        'from' => $time - $oneday,
-        'to' => $time + $interval,
-        'mask' => tasklist::FILTER_MASK_UNCOMPLETE,
-        'alarm' => 1,
-    ];
-    if (!empty($lists)) {
-      $_tasks = $this->list_tasks($query, $lists);
-    }
-    $tasks = [];
-    
-    if (is_array($_tasks)) {
-      foreach($_tasks as $key => $_task) {
-        if (isset($_task['alarmtime']) && $_task['alarmtime'] < $time) {
-          $tasks[] = $_task;
+      $oneday = 24 * 60 * 60;
+      $query = [
+          'from' => $time - $oneday,
+          'to' => $time + $interval,
+          'mask' => tasklist::FILTER_MASK_UNCOMPLETE,
+          'alarm' => 1,
+      ];
+      if (!empty($lists)) {
+        $_tasks = $this->list_tasks($query, $lists);
+      }
+      $tasks = [];
+      
+      if (is_array($_tasks)) {
+        foreach($_tasks as $key => $_task) {
+          if (isset($_task['alarmtime']) && $_task['alarmtime'] < $time) {
+            $tasks[] = $_task;
+          }
         }
       }
     }
@@ -699,6 +703,8 @@ class tasklist_mel_driver extends tasklist_driver {
   public function dismiss_alarm($id, $snooze = 0) {
     $task = $this->get_task(['id' => $id]);
     if (isset($task)) {
+      // Remove cache
+      \mel::unsetCache('tasks_alarm');
       if ($snooze > 0) {
         $task['snoozetime'] = time() + ($snooze * 60);
       }
@@ -852,6 +858,8 @@ class tasklist_mel_driver extends tasklist_driver {
       if (isset($task['snoozetime'])) {
         $object->setAttribute('rc_snooze_time', $task['snoozetime']);
       }
+      // Remove cache
+      \mel::unsetCache('tasks_alarm');
     }
 
     if ($task['flagged'])

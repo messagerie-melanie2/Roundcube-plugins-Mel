@@ -1089,6 +1089,8 @@ class mel_driver extends calendar_driver {
       if (isset($event['valarms'])) {
         if (isset($event['valarms'][0]) && isset($event['valarms'][0]['trigger']) && isset($event['valarms'][0]['action']) && $event['valarms'][0]['action'] == 'DISPLAY') {
           $_event->alarm = mel_mapping::valarm_ics_to_minutes_trigger($event['valarms'][0]['trigger']);
+          // Remove cache
+          \mel::unsetCache('events_alarm');
         }
       }
       else {
@@ -1865,62 +1867,67 @@ class mel_driver extends calendar_driver {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::pending_alarms()");
 
-    try {
-      if (! isset($calendars)) {
-        if (empty($this->calendars)) {
-          $this->_read_calendars();
+    try {      
+      // Récupération des evenements en cache
+      $events = \mel::getCache('events_alarm');
+      if (!isset($events)) {
+        if (!isset($calendars)) {
+          if (empty($this->calendars)) {
+            $this->_read_calendars();
+          }
+          $calendars = $this->calendars;
         }
-        $calendars = $this->calendars;
-      }
-      $calendars_id = array();
-      $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
-      foreach ($calendars as $calendar) {
-        if (isset($alarm_calendars[$calendar->id])) {
-          $calendars_id[] = $calendar->id;
-        }
-      }
-      if (empty($calendars_id)) {
-        $calendars_id = [$this->rc->user->get_username()];
-      }
-      $_event = driver_mel::gi()->event([$this->user]);
-      $_event->calendar = $calendars_id;
-      $_event->alarm = 0;
-      // Durée dans le passé maximum pour l'affichage des alarmes (5 jours)
-      $time_min = $time - 60 * 60 * 24 * 5;
-      // Durée dans le futur maximum, basé sur la configuration du refresh
-      $time_max = $time;
-      // Clause Where
-      $filter = "#calendar# AND #alarm# AND ((#start# - interval '1 minute' * k1.event_alarm) > '" . date('Y-m-d H:i:s', $time_min) . "') AND ((#start# - interval '1 minute' * k1.event_alarm) < '" . date('Y-m-d H:i:s', $time_max) . "')";
-      // Operateur
-      $operators = array('alarm' => LibMelanie\Config\MappingMce::diff, 'calendar' => LibMelanie\Config\MappingMce::in);
-      $fields = array('uid','title','calendar','start','end','location','alarm','owner');
-      $_events = $_event->getList($fields, $filter, $operators);
-      $events = array();
-      foreach ($_events as $_event) {
-        $_event->setCalendarMelanie($this->calendars[$_event->calendar]);
-        $snoozetime = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
-        if (isset($snoozetime)) {
-          $snoozetime = strtotime($snoozetime);
-          if ($snoozetime > time()) {
-            continue;
+        $calendars_id = array();
+        $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
+        foreach ($calendars as $calendar) {
+          if (isset($alarm_calendars[$calendar->id])) {
+            $calendars_id[] = $calendar->id;
           }
         }
-        $lastack = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
-        if (isset($lastack)) {
-          $lastack = strtotime($lastack);
-          if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
-            continue;
+        if (empty($calendars_id)) {
+          $calendars_id = [$this->rc->user->get_username()];
+        }        
+        $_event = driver_mel::gi()->event([$this->user]);
+        $_event->calendar = $calendars_id;
+        $_event->alarm = 0;
+        // Durée dans le passé maximum pour l'affichage des alarmes (5 jours)
+        $time_min = $time - 60 * 60 * 24 * 5;
+        // Durée dans le futur maximum, basé sur la configuration du refresh
+        $time_max = $time;
+        // Clause Where
+        $filter = "#calendar# AND #alarm# AND ((#start# - interval '1 minute' * k1.event_alarm) > '" . date('Y-m-d H:i:s', $time_min) . "') AND ((#start# - interval '1 minute' * k1.event_alarm) < '" . date('Y-m-d H:i:s', $time_max) . "')";
+        // Operateur
+        $operators = array('alarm' => LibMelanie\Config\MappingMce::diff, 'calendar' => LibMelanie\Config\MappingMce::in);
+        $fields = array('uid','title','calendar','start','end','location','alarm','owner');
+        $_events = $_event->getList($fields, $filter, $operators);
+        $events = [];
+        foreach ($_events as $_event) {
+          $_event->setCalendarMelanie($this->calendars[$_event->calendar]);
+          $snoozetime = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
+          if (isset($snoozetime)) {
+            $snoozetime = strtotime($snoozetime);
+            if ($snoozetime > time()) {
+              continue;
+            }
           }
-        }
-        $_e = $this->_read_postprocess($_event);
-        // Ajoute les exceptions
-        if (isset($_e['recurrence']) && isset($_e['recurrence']['EXCEPTIONS']) && count($_e['recurrence']['EXCEPTIONS']) > 0) {
-          foreach ($_e['recurrence']['EXCEPTIONS'] as $_ex) {
-            $events[] = $_ex;
+          $lastack = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+          if (isset($lastack)) {
+            $lastack = strtotime($lastack);
+            if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
+              continue;
+            }
           }
-          unset($_e['recurrence']['EXCEPTIONS']);
+          $_e = $this->_read_postprocess($_event);
+          // Ajoute les exceptions
+          if (isset($_e['recurrence']) && isset($_e['recurrence']['EXCEPTIONS']) && count($_e['recurrence']['EXCEPTIONS']) > 0) {
+            foreach ($_e['recurrence']['EXCEPTIONS'] as $_ex) {
+              $events[] = $_ex;
+            }
+            unset($_e['recurrence']['EXCEPTIONS']);
+          }
+          $events[] = $_e;
         }
-        $events[] = $_e;
+        \mel::setCache('events_alarm', $events);
       }
       return $events;
     }
@@ -1972,6 +1979,8 @@ class mel_driver extends calendar_driver {
           }
         }
       }
+      // Remove cache
+      \mel::unsetCache('events_alarm');
       return true;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

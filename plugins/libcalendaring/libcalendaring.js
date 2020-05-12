@@ -1448,8 +1448,10 @@ rcube_libcalendaring.open_itip_preview = function(url, msgref)
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   if (rcmail.env.libcal_settings) {
     var libcal = new rcube_libcalendaring(rcmail.env.libcal_settings);
-    // PAMELA - Desactiver les alarmes libcalendaring
-    //rcmail.addEventListener('plugin.display_alarms', function(alarms){ libcal.display_alarms(alarms); });
+    // PAMELA - Desactiver les alarmes libcalendaring si pas de right panel
+    if (!$('#right_panel').length) {
+        rcmail.addEventListener('plugin.display_alarms', function(alarms){ libcal.display_alarms(alarms); });
+    }
   }
 
   rcmail.addEventListener('plugin.update_itip_object_status', rcube_libcalendaring.update_itip_object_status)

@@ -207,11 +207,8 @@ EOF;
           $username = $user->uid;
         }
       }
-      $cache = \mel::InitM2Cache();
-      if (isset($cache['rocketchat']) && isset($cache['rocketchat']['infos']) && time() - $cache['rocketchat']['time'] <= self::CACHE_ROCKETCHAT) {
-        $infos = unserialize($cache['rocketchat']['infos']);
-      }
-      else {
+      $infos = \mel::getCache('rocketchat');
+      if (!isset($infos)) {
         $useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false);
         if ($useMongoDB) {
           // Charge la lib MongoDB si nécessaire
@@ -229,8 +226,7 @@ EOF;
             $infos = $rocketClient->userInfo($username);
           }
         }
-        $cache['rocketchat'] = array('time' => time(),'infos' => serialize($infos));
-        \mel::SetM2Cache($cache);
+        \mel::setCache('rocketchat', $infos);
       }
       return $infos;
     }

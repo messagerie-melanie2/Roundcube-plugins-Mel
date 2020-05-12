@@ -137,12 +137,8 @@ class right_panel extends rcube_plugin
    * Lister les contacts favoris de l'utilisateur
    */
   public function list_contacts_favorites() {
-    $cache = \mel::InitM2Cache();
-    if (isset($cache['right_panel_contacts']) 
-        && isset($cache['right_panel_contacts']['contacts']) && time() - $cache['right_panel_contacts']['time'] <= self::CACHE_RIGHT_PANEL_CONTACTS) {
-      $contacts = unserialize($cache['right_panel_contacts']['contacts']);
-    }
-    else {
+    $contacts = \mel::getCache('right_panel_contacts');
+    if (!isset($contacts)) {
       $addressbook = $this->rc->get_address_book(driver_mel::gi()->mceToRcId($this->rc->get_user_name()));
       $addressbook->set_group('favorites');
       $addressbook->page_size = 200;
@@ -163,8 +159,7 @@ class right_panel extends rcube_plugin
         }
         $contacts[] = $row;
       }
-      $cache['right_panel_contacts'] = array('time' => time(), 'contacts' => serialize($contacts));
-      \mel::SetM2Cache($cache);
+      \mel::setCache('right_panel_contacts', $contacts);
     }
     // Return the result to the ajax commant
     $result = array('action' => 'plugin.list_contacts_favorites', 'contacts' => $contacts);
@@ -183,12 +178,8 @@ class right_panel extends rcube_plugin
    * Lister les contacts récents de l'utilisateur
    */
   public function list_contacts_recent() {
-    $cache = \mel::InitM2Cache();
-    if (isset($cache['right_panel_messages']) 
-        && isset($cache['right_panel_messages']['messages']) && time() - $cache['right_panel_messages']['time'] <= self::CACHE_RIGHT_PANEL_MESSAGES) {
-      $contacts = unserialize($cache['right_panel_messages']['messages']);
-    }
-    else {
+    $contacts = \mel::getCache('right_panel_messages');
+    if (!isset($contacts)) {
       // Desactiver le threading pour éviter les problèmes
       $this->rc->storage->set_threading(false);
       $this->rc->storage->set_pagesize(25);
@@ -216,8 +207,7 @@ class right_panel extends rcube_plugin
           ];
         }
       }
-      $cache['right_panel_messages'] = array('time' => time(), 'messages' => serialize($contacts));
-      \mel::SetM2Cache($cache);
+      \mel::setCache('right_panel_messages', $contacts);
     }
     // send output
     header("Content-Type: application/json; charset=" . RCUBE_CHARSET);

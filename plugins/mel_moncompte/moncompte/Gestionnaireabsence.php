@@ -99,6 +99,7 @@ class Gestionnaireabsence extends Moncompteobject {
 			$outofoffice_interne->start = isset($date_debut) ? \DateTime::createFromFormat('d/m/Y', $date_debut) : null;
 			$outofoffice_interne->end = isset($date_fin) ? \DateTime::createFromFormat('d/m/Y', $date_fin) : null;
 			$outofoffice_interne->message = $message_interne;
+			$outofoffice_interne->order = 50;
 			
 			$outofoffice_externe = driver_mel::gi()->users_outofoffice();
 			$outofoffice_externe->type = Outofoffice::TYPE_EXTERNAL;
@@ -106,6 +107,7 @@ class Gestionnaireabsence extends Moncompteobject {
 			$outofoffice_externe->start = isset($date_debut) ? \DateTime::createFromFormat('d/m/Y', $date_debut) : null;
 			$outofoffice_externe->end = isset($date_fin) ? \DateTime::createFromFormat('d/m/Y', $date_fin) : null;
 			$outofoffice_externe->message = isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe;
+			$outofoffice_externe->order = 60;
 
 			$user->outofoffices = [$outofoffice_interne, $outofoffice_externe];
 

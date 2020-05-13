@@ -414,13 +414,13 @@ function show_password_change()
 {
   if (rcmail.is_framed()) {
     var frame = $('<iframe>').attr('id', 'changepasswordframe')
-    .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=rcmmodifmdp&_framed=1')
+    .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
     .attr('frameborder', '0')
     .appendTo(parent.document.body);
   }
   else {
     var frame = $('<iframe>').attr('id', 'changepasswordframe')
-    .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=rcmmodifmdp&_framed=1')
+    .attr('src', rcmail.url('settings/plugin.mel_moncompte') + '&_fid=changepassword&_framed=1')
     .attr('frameborder', '0')
     .appendTo(document.body);
   }

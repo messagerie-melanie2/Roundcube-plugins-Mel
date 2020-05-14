@@ -248,14 +248,14 @@ class Gestionnairelistes extends Moncompteobject {
 								// MANTIS 3570: Problème dans la suppression d'un membre d'une liste
 								if (isset($list_members[$member_uid])) {
 									unset($list_members[$member_uid]);
-									$group->members = $list_members;
+									$group->members = array_values($list_members);
 								}
 							}
 							// MANTIS 3570: Problème dans la suppression d'un membre d'une liste
 							foreach ($list_emails as $key => $value) {
 								if (strtolower($value) == strtolower($address)) {
 									unset($list_emails[$key]);
-									$group->members_email = $list_emails;
+									$group->members_email = array_values($list_emails);
 								}
 							}
 							if (!$group->save()) {

@@ -6,15 +6,13 @@
  * @author PNE Messagerie/Apitech
  */
 class Version {
-  
   /**
    * Version number
    */
-  const VERSION = '1.4.8';
+  const VERSION = '1.4.8b1';
   
   /**
    * Build
    */
-  const BUILD = '20191219171252';
-  
+  const BUILD = '20200514152952';
 }

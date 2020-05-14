@@ -47,39 +47,3 @@ $rcmail_config['enable_mesressources_task']         = true;
 $rcmail_config['enable_messtatistiques']        = true;
 // Activer le menu Mes statistiques / Mobiles
 $rcmail_config['enable_messtatistiques_mobile'] = true;
-
-
-// Liste des attributs ldap à récupérer
-$rcmail_config['ldap_attributes'] = array(
-		"user_cn",
-        "user_pwd_change",				// Raison du mdp doit changer
-        "user_mel_partages",			// Partages 
-        "user_mel_response",			// Message d'absence
-        "user_type_entree",				// Type d'entrée
-        "user_mel_accesinterneta",		// Droit d'accès depuis internet donné par admin
-        "user_mel_accesinternetu",		// Droit d'accès depuis internet accepté par user
-        "user_photo_publiader",   		// Flag publier la photo sur Ader
-        "user_photo_publiintra",    	// Flag publier la photo sur l'intranet
-        "user_employeenumber",
-        "user_zone",
-        "user_street",
-        "user_postalcode",
-        "user_locality",
-        "user_info",
-        "user_description",
-        "user_phonenumber",
-        "user_faxnumber",
-        "user_mobilephone",
-        "user_roomnumber",
-        "user_title",
-        "user_businesscat",
-        "user_vpnprofil",         		// Profil de droits VPN 
-        "user_sambasid",
-        "user_majinfoperso",         	// Droit de modification des infos perso 
-        "user_mel_remise",          		
-        "user_mel_accessynchroa",		// Droit d'accès synchro mobile donné par admin
-        "user_mel_accessynchrou",		// Droit d'accès synchro mobile accepté par user
-        "user_mission",
-        "user_photo",
-        "user_gender"
-);

@@ -130,7 +130,6 @@ class mce_driver_mel extends driver_mel {
         $hostname = $a_host['host'];
       }
     }
-    
     return $hostname;
   }
   

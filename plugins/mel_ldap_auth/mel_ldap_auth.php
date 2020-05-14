@@ -140,7 +140,12 @@ class mel_ldap_auth extends rcube_plugin {
         } else {
           $hostname = driver_mel::gi()->getRoutage($_user_mce);
           if (isset($hostname)) {
-            $args['host'] = "ssl://" . $hostname;
+            if (driver_mel::gi()->isSsl($hostname)) {
+              $args['host'] = "ssl://" . $hostname;
+            }
+            else {
+              $args['host'] = $hostname;
+            }
             // Gestion du keep login
             if (isset($_POST['_keeplogin'])) {
               // Création du cookie avec le login / cn

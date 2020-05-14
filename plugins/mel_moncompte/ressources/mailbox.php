@@ -357,7 +357,12 @@ class M2mailbox {
       // Récupération de la configuration de la boite pour l'affichage
       $host = driver_mel::gi()->getRoutage($mbox);
       if (isset($host)) {
-        $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
+        if (driver_mel::gi()->isSsl($host)) {
+          $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
+        }
+        else {
+          $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
+        }
         $folders = $imap->list_folders_direct();
       }
     }

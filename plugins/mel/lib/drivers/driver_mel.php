@@ -303,6 +303,31 @@ abstract class driver_mel {
   public function task($params = []) {
     return $this->object('Task', $params);
   }
+
+  /**
+   * Est-ce que le host est en ssl pour la connexion IMAP ?
+   * 
+   * @return boolean
+   */
+  public function isSsl($host = null) {
+    $isSsl = false;
+    $config = rcmail::get_instance()->config->get('default_host', null);
+    if (isset($host)) {
+      if (in_array($host, $config)) {
+        $isSsl = false;
+      }
+      else if (in_array('ssl://'.$host, $config)) {
+        $isSsl = true;
+      }
+    }
+    else if (is_array($config) && strpos($config[0], 'ssl://') === 0) {
+      $isSsl = true;
+    }
+    else if (is_string($config) && strpos($config, 'ssl://') === 0) {
+      $isSsl = true;
+    }
+    return $isSsl;
+  }
   
   /**
    * Retourne l'objet User associé à l'utilisateur courant

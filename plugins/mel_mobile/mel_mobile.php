@@ -101,7 +101,9 @@ class mel_mobile extends rcube_plugin {
     // Add the switch to mobile skin button
     if ($this->rc->config->get('skin') == 'mel_larry') {
       if ($this->rc->task == 'settings' && $this->rc->output->type == 'html' && !isset($_GET['_courrielleur'])) {
-        $this->api->add_content(html::span('tablink', $this->rc->output->button(array('task' => 'switch_skin','command' => 'switch_mobile','class' => 'about-link','classsel' => 'about-link button-selected','innerclass' => 'button-inner','label' => 'mel_mobile.mobile'))), 'tabs');
+        // Include button.js script
+        $this->include_script('js/button.js');
+        // $this->api->add_content(html::span('tablink', $this->rc->output->button(array('task' => 'switch_skin','command' => 'switch_mobile','class' => 'mobile-link','classsel' => 'mobile-link button-selected','innerclass' => 'button-inner','label' => 'mel_mobile.mobile'))), 'tabs');
       }
     }
     else {

@@ -65,19 +65,31 @@ table.quota-info tr {
     background-color: var(--table-body-bg-color);
 }
 
+#settings-tabs {
+	margin-bottom: 72px;
+}
+
 #settings-tabs #settingstabresponses {
 	display: none;
 }
 
-#settings-sections div.disconnect {
+#settings-sections div.disconnect,
+#settings-sections div.mobile {
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
 	height: 36px;
+	background-color: #f2f2f2;
+	background-color: var(--listbox-bg-color);
 }
 
-#settings-sections div.disconnect a {
+#settings-sections div.mobile {
+	bottom: 36px;
+}
+
+#settings-sections div.disconnect a,
+#settings-sections div.mobile a {
 	display: block;
 	height: 36px;
 	line-height: 36px;

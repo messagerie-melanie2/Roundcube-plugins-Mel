@@ -312,7 +312,7 @@ abstract class driver_mel {
   public function isSsl($host = null) {
     $isSsl = false;
     $config = rcmail::get_instance()->config->get('default_host', null);
-    if (isset($host)) {
+    if (isset($host) && is_array($config)) {
       if (in_array($host, $config)) {
         $isSsl = false;
       }

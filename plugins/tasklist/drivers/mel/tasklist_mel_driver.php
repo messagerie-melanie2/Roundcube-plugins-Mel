@@ -102,7 +102,7 @@ class tasklist_mel_driver extends tasklist_driver {
     $this->_read_lists();
 
     // Récupération des préférences de l'utilisateur
-    $hidden_tasklists = $this->rc->config->get('hidden_tasklists', array());
+    $hidden_tasks = $this->rc->config->get('hidden_tasks', array());
     $active_tasklists = $this->rc->config->get('active_tasklists', null);
     $alarm_tasklists = $this->rc->config->get('alarm_tasklists', null);
 
@@ -122,7 +122,7 @@ class tasklist_mel_driver extends tasklist_driver {
     $other_tasklists = array();
     $shared_tasklists = array();
     foreach ($this->lists as $id => $list) {
-      if (isset($hidden_tasklists[$list->id]))
+      if (isset($hidden_tasks[$list->id]))
         continue;
 
       // Gestion des calendriers actifs
@@ -316,16 +316,16 @@ class tasklist_mel_driver extends tasklist_driver {
     mel_logs::get_instance()->log(mel_logs::TRACE, "[tasklist] tasklist_mel_driver::remove_list() : " . var_export($prop, true));
     if (isset($prop['id']) && isset($this->lists[$prop['id']]) && $this->lists[$prop['id']]->owner == $this->user->uid && $this->lists[$prop['id']]->id != $this->user->uid) {
       // Récupération des préférences de l'utilisateur
-      $hidden_tasklists = $this->rc->config->get('hidden_tasklists', array());
+      $hidden_tasks = $this->rc->config->get('hidden_tasks', array());
       $active_tasklists = $this->rc->config->get('active_tasklists', array());
       $alarm_tasklists = $this->rc->config->get('alarm_tasklists', array());
-      unset($hidden_tasklists[$prop['id']]);
+      unset($hidden_tasks[$prop['id']]);
       unset($active_tasklists[$prop['id']]);
       unset($alarm_tasklists[$prop['id']]);
       $this->rc->user->save_prefs(array(
           'active_tasklists' => $active_tasklists,
           'alarm_tasklists' => $alarm_tasklists,
-          'hidden_tasklists' => $hidden_tasklists
+          'hidden_tasks' => $hidden_tasks
       ));
       return $this->lists[$prop['id']]->delete();
     }

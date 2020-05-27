@@ -61,7 +61,7 @@ class tasklist_database_driver extends tasklist_driver
      */
     private function _read_lists()
     {
-      $hidden = array_filter(explode(',', $this->rc->config->get('hidden_tasklists', '')));
+      $hidden = array_filter(explode(',', $this->rc->config->get('hidden_tasks', '')));
 
       if (!empty($this->rc->user->ID)) {
         $list_ids = array();
@@ -159,14 +159,14 @@ class tasklist_database_driver extends tasklist_driver
      */
     public function subscribe_list($prop)
     {
-        $hidden = array_flip(explode(',', $this->rc->config->get('hidden_tasklists', '')));
+        $hidden = array_flip(explode(',', $this->rc->config->get('hidden_tasks', '')));
 
         if ($prop['active'])
             unset($hidden[$prop['id']]);
         else
             $hidden[$prop['id']] = 1;
 
-        return $this->rc->user->save_prefs(array('hidden_tasklists' => join(',', array_keys($hidden))));
+        return $this->rc->user->save_prefs(array('hidden_tasks' => join(',', array_keys($hidden))));
     }
 
     /**

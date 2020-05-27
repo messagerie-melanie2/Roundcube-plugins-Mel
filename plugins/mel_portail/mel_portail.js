@@ -175,7 +175,7 @@ Portail.prototype.formatDate = function(datetime) {
 	}
 	
 	var date = new Date(datetime);
-	return rcmail.get_label("right_panel.day_min_" + date.getDay()) + " " + date.getDate() + " " + rcmail.get_label("right_panel.month_min_" + date.getMonth()) 
+	return rcmail.get_label("mel_portail.day_min_" + date.getDay()) + " " + date.getDate() + " " + rcmail.get_label("mel_portail.month_min_" + date.getMonth()) 
 						+ ' ' + checkTime(date.getHours()) + ':' + checkTime(date.getMinutes());
 };
 

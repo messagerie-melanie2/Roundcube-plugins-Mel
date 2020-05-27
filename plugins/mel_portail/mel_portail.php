@@ -62,7 +62,11 @@ class mel_portail extends rcube_plugin
       // Flux
       $this->register_action('flux', array($this, 'flux'));
       // Ajout du css
-      $this->include_stylesheet($this->local_skin_path() . '/mel_portail.css');
+      $skin_path = $this->local_skin_path();
+      if ($this->rc->output->get_env('ismobile')) {
+        $skin_path .= '_mobile';
+      }
+      $this->include_stylesheet($skin_path . '/mel_portail.css');
       // Si le panneau de droite n'est pas chargé on charge custom scrollbar
       if (!in_array('right_panel', $this->rc->config->get('plugins'))) {
         $this->include_stylesheet($this->local_skin_path() . '/jquery.mCustomScrollbar.min.css');

@@ -179,9 +179,9 @@ class Moncompte {
 		if ($user->uid != self::get_current_user_name() 
 				&& $user->load('is_agriculture') 
 				&& $user->is_agriculture) {
-			$liensImport = $user->liens_import;
-			$liensImport = explode(',', $liensImport, 2);
-			$password = '{"uid":"' . $liensImport[0] . '","password":"' . $password . '"}';
+			$value = str_replace('AGRI.Lien: uid=', '', $user->liens_import);
+			$value = explode(',', $value, 2);
+			$password = '{"uid":"' . $value[0] . '","password":"' . $password . '"}';
 			mel_logs::get_instance()->log(mel_logs::INFO, "[Moncompte] moncompte::get_current_user_password() user : " . self::get_current_user_name() . " password : " . '{"uid":"' . $liensImport[0] . '","password":"password"}');
 		}
 		return $password;

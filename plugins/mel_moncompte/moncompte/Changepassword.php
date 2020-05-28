@@ -39,12 +39,14 @@ class Changepassword extends Moncompteobject {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Chargement des informations supplémenaires nécessaires
-		$user->load(['is_agriculture', 'has_bureautique']);
+		$user->load(['is_agriculture', 'liens_import', 'has_bureautique']);
 		// Titre de la page
 		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
 		// Est-ce que c'est un utilisateur de l'agriculture ?
 		if ($user->is_agriculture) {
 			rcmail::get_instance()->output->set_env('moncompte_ministere', 'agri');
+			$user_dn = str_replace('AGRI.Lien: ', '', $user->liens_import);
+			rcmail::get_instance()->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.national.agri/agricoll-liniddm/entry/edit/agentpassword/' . $user_dn);
 			// Envoi de la page agri
 			rcmail::get_instance()->output->send('mel_moncompte.changepassword_agri');
 		}

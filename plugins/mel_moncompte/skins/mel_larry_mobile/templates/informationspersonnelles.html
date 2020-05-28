@@ -1,0 +1,250 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+	<div data-role="page" data-ajax="true" data-theme="a"
+		class="jqm-settings-edit" data-dom-cache="true">
+		<div data-role="header" data-position="fixed" data-theme="f"
+			data-tap-toggle="false">
+			<a href="./?_task=settings&_action=plugin.mel_moncompte"
+				data-ajax="false"
+				class="ui-btn ui-link ui-icon-back ui-btn-icon-notext">Back</a>
+			<h1 class="boxtitle">
+				<roundcube:label name="mel_moncompte.informationspersonnelles" />
+			</h1>
+		</div>
+
+		<div role="main" class="ui-content jqm-content ui-alt-icon">
+			<div id="preferences-details" class="boxcontent">
+				<roundcube:object name="moncompte_balp_list" />
+				<form name="valide" action="#" method="post" class="propform">
+					<roundcube:if condition="env:moncompte_data_readonly == 'readonly'" />
+						<br>
+						<div class="texte_explic">
+							<p>
+								<roundcube:label name="mel_moncompte.info_readonly" />
+							</p>
+						</div>
+					<roundcube:endif />
+					<br>
+					<fieldset style="width:95%">
+						<legend>
+							<roundcube:label name="mel_moncompte.info_title" />
+						</legend>
+						<table border="0" cellspacing="0" width="100%" class="striped">
+							<tr>
+								<td class="header leftAlign" colspan='4'>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td width="25%">
+									<roundcube:label name="mel_moncompte.info_employee_number" />
+								</td>
+								<td width="25%">
+									<b><roundcube:var name="env:moncompte_data_employee_number" /></b></td>
+								<td width="25%">
+									<roundcube:label name="mel_moncompte.info_internet_access_admin" />
+								</td>
+								<td>
+									<b><roundcube:var name="env:moncompte_data_internet_access_admin" /></b>
+								</td>
+							</tr>
+							<tr>
+								<td width="25%">
+									<roundcube:label name="mel_moncompte.info_ministere" />
+								</td>
+								<td width="25%">
+									<b><roundcube:var name="env:moncompte_data_ministere" /></b>
+								</td>
+								<td width="25%">
+									<roundcube:label name="mel_moncompte.info_internet_access_user" />
+								</td>
+								<td>
+									<b><roundcube:var name="env:moncompte_data_internet_access_user" /></b>
+								</td>
+							</tr>
+							<tr>
+								<td width="25%">
+									<roundcube:label name="mel_moncompte.info_access_nomade" />
+								</td>
+								<td width="25%">
+									<b><roundcube:var name="env:moncompte_data_vpn_profile_name" /></b>
+								</td>
+								<td width="25%">
+									<roundcube:label name="mel_moncompte.info_bureautique" />
+								</td>
+								<td>
+									<b><roundcube:var name="env:moncompte_data_has_bureautique" /></b>
+								</td>
+							</tr>
+						</table>
+					</fieldset>
+					<div style="text-align: center;">
+						<roundcube:label name="mel_moncompte.info_texte" />
+					</div>
+					<br />
+					<fieldset style="width:95%">
+						<legend>
+							<roundcube:label name="mel_moncompte.info_annuaire" />
+						</legend>
+						<table border="0" cellspacing="0" width="100%" class="striped">
+							<tr>
+								<td class="header leftAlign" colspan='5'>
+									&nbsp;
+								</td>
+							</tr>
+							<roundcube:if condition="env:moncompte_data_publication_photo" />
+							<tr>
+								<td colspan='5'>
+									<table border=0>
+										<tr>
+											<td width="25%">
+												<roundcube:label name="mel_moncompte.info_photo" />
+											</td>
+											<td>
+												<img src="<roundcube:var name="env:moncompte_data_photo_src" />" height="100">
+											</td>
+											<td colspan='3'>
+												<div>
+													<input type="checkbox" value= "1" name="use_photo_intranet" id="photo_intra" <roundcube:var name="env:moncompte_photo_intranet" /> />
+													<label for="photo_intra"><roundcube:label name="mel_moncompte.info_photo_intra" /></label>
+												</div>
+												<div style="<roundcube:var name="env:moncompte_photo_ader_style" />">
+													<input type="checkbox" value= "1" name="use_photo_ader" id="photo_ader" <roundcube:var name="env:moncompte_photo_ader" /> />
+													<label for="photo_ader"><roundcube:label name="mel_moncompte.info_photo_ader" /></label>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<roundcube:endif />
+							<tr>
+								<td valign="top">
+									<table border=0>
+										<tr>
+											<td width="50%" valign="top">
+												<roundcube:label name="mel_moncompte.info_adresse" />
+											</td>
+											<td>
+												<textarea rows="3" name="street" cols="30" <roundcube:var name="env:moncompte_data_readonly" />><roundcube:var name="env:moncompte_data_street" /></textarea>
+												<input type="hidden" value="1" name="informationspersonnelles" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<roundcube:label name="mel_moncompte.info_codepostal" />
+											</td>
+											<td>
+												<input type="text" name="postalcode" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_postalcode" />" size="32" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<roundcube:label name="mel_moncompte.info_ville" />
+											</td>
+											<td>
+												<input type="text" name="locality" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_locality" />" size="32" />
+											</td>
+										</tr>
+										<tr>
+											<td width="25%">
+												<roundcube:label name="mel_moncompte.info_observation" />
+											</td>
+											<td>
+												<b><roundcube:var name="env:moncompte_data_observation" /></b>
+											</td>
+										</tr>
+										<tr>
+											<td width="25%" valign="top">
+												<roundcube:label name="mel_moncompte.info_description" />
+											</td>
+											<td valign="top">
+												<b><roundcube:var name="env:moncompte_data_description" /></b>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td width='50'>
+								</td>
+								<td valign="top">
+									<table border=0>
+										<tr>
+											<td width="50%">
+												<roundcube:label name="mel_moncompte.info_telephone" />
+											</td>
+											<td>
+												<input type="text" name="phonenumber" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_phonenumber" />" size="30" />
+											</td>
+										</tr>
+										<tr>
+											<td width="50%">
+												<roundcube:label name="mel_moncompte.info_fax" />
+											</td>
+											<td>
+												<input type="text" name="faxnumber" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_faxnumber" />" size="30" />
+											</td>
+										</tr>
+										<tr>
+											<td width="25%">
+												<roundcube:label name="mel_moncompte.info_mobile" />
+											</td>
+											<td>
+												<input type="text" name="mobilephone" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_mobilephone" />" size="30" />
+											</td>
+										</tr>
+										<tr>
+											<td width="25%">
+												<roundcube:label name="mel_moncompte.info_bureau" />
+											</td>
+											<td>
+												<input type="text" name="roomnumber" <roundcube:var name="env:moncompte_data_readonly" /> value="<roundcube:var name="env:moncompte_data_roomnumber" />" size="30" />
+											</td>
+										</tr>
+										<tr>
+											<td width="50%">
+												<roundcube:label name="mel_moncompte.info_hierarchie" />
+											</td>
+											<td>
+												<b><roundcube:var name="env:moncompte_data_title" /></b>
+											</td>
+										</tr>
+										<tr>
+											<td width="50%" valign="top">
+												<roundcube:label name="mel_moncompte.info_metier" />
+											</td>
+											<td>
+												<b><roundcube:var name="env:moncompte_data_business_category" /></b>
+											</td>
+										</tr>
+										<tr>
+											<td width="25%" valign="top">
+												<roundcube:label name="mel_moncompte.info_mission" />
+											</td>
+											<td>
+												<b><roundcube:var name="env:moncompte_data_mission" /></b>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+						<br />
+					</fieldset>
+					<br />
+					<input type="submit" class="button mainaction" name="save" value="<roundcube:label name="save" />" />
+					<br /><br />
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

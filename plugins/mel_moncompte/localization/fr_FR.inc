@@ -184,7 +184,7 @@ $labels['info_yes'] = 'oui';
 $labels['info_no'] = 'non';
 
 $labels['info_title'] = "Informations spécifiques au compte";
-$labels['info_readonly'] = "Vous n'avez pas les droits de modifications de vos informations personnelles, seul la publication de votre photo peut être changée. Consultez votre service informatique pour avoir plus d'informations.";
+$labels['info_readonly'] = "Vous n'avez pas les droits de modifications de vos informations personnelles, seule la publication de votre photo peut être changée. Consultez votre service informatique pour avoir plus d'informations.";
 $labels['info_texte'] = "En cas d'erreur, d'omission ou modifications souhaitées, contacter votre gestionnaire Amédée";
 
 $labels['info_employee_number'] = "Matricule :";

@@ -46,7 +46,12 @@ class Changepassword extends Moncompteobject {
 		if ($user->is_agriculture) {
 			rcmail::get_instance()->output->set_env('moncompte_ministere', 'agri');
 			$user_dn = str_replace('AGRI.Lien: ', '', $user->liens_import);
-			rcmail::get_instance()->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.national.agri/agricoll-liniddm/entry/edit/agentpassword/' . $user_dn);
+			if (\mel::is_internal()) {
+				rcmail::get_instance()->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.national.agri/agricoll-liniddm/entry/edit/agentpassword/' . $user_dn);
+			}
+			else {
+				rcmail::get_instance()->output->set_env('moncompte_dn_agri', 'https://annuaire.agricoll.agriculture.gouv.fr/agricoll-liniddm/entry/edit/agentpassword/' . $user_dn);
+			}
 			// Envoi de la page agri
 			rcmail::get_instance()->output->send('mel_moncompte.changepassword_agri');
 		}

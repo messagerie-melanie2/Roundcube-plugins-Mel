@@ -65,11 +65,11 @@ class mce_driver_mel extends driver_mel {
         if ($load && !self::$_users[$username]->load()) {
           self::$_users[$username] = null;
         }
-        $users[$username] = self::$_users[$username];
-        self::$_users[$username]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+        else {
+          self::$_users[$username]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+        }
       }
     }
-    // \mel::setCache('users', self::$_users);
     return self::$_users[$username];
   }
 
@@ -78,7 +78,6 @@ class mce_driver_mel extends driver_mel {
    */
   public function onUserChange() {
     \mel::setCache('users', self::$_users);
-    //\mel::unsetCache('users');
   }
 
   /**

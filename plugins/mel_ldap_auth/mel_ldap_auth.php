@@ -128,7 +128,7 @@ class mel_ldap_auth extends rcube_plugin {
       $_user_mce = driver_mel::gi()->getUser($args['user']);
       // MANTIS 0004868: Permetttre la connexion M2web avec l'adresse mail comme identifiant
       $args['user'] = $_user_mce->uid;
-      if ($_user_mce->authentification($pass)) {
+      if (isset($_user_mce) && $_user_mce->authentification($pass)) {
         $auth_ok = true;
         // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
         if (!mel::is_internal() && !$_user_mce->internet_access_enable) {

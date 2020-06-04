@@ -15,6 +15,7 @@ $labels['url'] = "Lien";
 $labels['feedurl'] = "Lien du flux";
 $labels['fronthtml'] = "HTML du Recto";
 $labels['backhtml'] = "HTML du Verso";
+$labels['provenance'] = "Provenance";
 
 $labels['communication'] = "Communication";
 $labels['html'] = "HTML";
@@ -24,6 +25,9 @@ $labels['fluxrss'] = "Flux RSS";
 $labels['fluxrss'] = "Flux HTML";
 $labels['sondage'] = "Sondage";
 $labels['website'] = "Site web";
+
+$labels['internet'] = "Internet";
+$labels['intranet'] = "Intranet";
 
 $labels['applications_list'] = "Liste d'applications";
 

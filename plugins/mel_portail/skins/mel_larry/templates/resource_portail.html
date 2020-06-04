@@ -46,6 +46,12 @@ div.legend {
 					<td><roundcube:var name="env:resource_flip" /></td>
 				</tr>
 			<roundcube:endif />
+			<roundcube:if condition="isset(env:resource_provenance)" />
+				<tr>
+					<td class="title"><roundcube:label name="mel_portail.provenance" /></label></td>
+					<td><roundcube:var name="env:resource_provenance" /></td>
+				</tr>
+			<roundcube:endif />
 			<roundcube:if condition="isset(env:resource_url)" />
 				<tr>
 					<td class="title"><roundcube:label name="mel_portail.url" /></label></td>

@@ -75,19 +75,19 @@ class mel_portail extends rcube_plugin
       // Add handler
       $this->rc->output->add_handler('portail_items_list', array($this, 'items_list'));
     }
-    // else if ($this->rc->task == 'settings') {
-    //   $this->add_texts('localization/', true);
-    //   // Chargement de la conf
-    //   $this->load_config();
-    //   // Ajout de l'interface
-    //   include_once 'imodule.php';
-    //   // Activation du menu dans Mon compte
-    //   $this->rc->output->set_env('enable_mesressources_portail', true);
-    //   // register actions
-    //   $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
-    //   // Ajout le javascript
-    //   //$this->include_script('settings.js');
-    // }
+    else if ($this->rc->task == 'settings' && !isset($_GET['_courrielleur'])) {
+      $this->add_texts('localization/', true);
+      // Chargement de la conf
+      $this->load_config();
+      // Ajout de l'interface
+      include_once 'imodule.php';
+      // Activation du menu dans Mon compte
+      $this->rc->output->set_env('enable_mesressources_portail', true);
+      // register actions
+      $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
+      // Ajout le javascript
+      //$this->include_script('settings.js');
+    }
   }
   
   function action() {
@@ -174,6 +174,9 @@ class mel_portail extends rcube_plugin
         if (isset($item['url'])) {
           $this->rc->output->set_env("resource_url", $item['url']);
         }
+        if (isset($item['provenance'])) {
+          $this->rc->output->set_env("resource_provenance", $this->gettext($item['provenance']));
+        }
         if (isset($item['flip'])) {
           $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
         }
@@ -237,8 +240,7 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        //$res = $this->filter_dn($user->dn, $item['dn']);
-        $res = $this->filter_dn($user_dn, $item['dn']);
+        $res = $this->filter_dn($user->dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -254,9 +256,14 @@ class mel_portail extends rcube_plugin
           continue;
         }
       }
+
+      $name = $item['name'];
+      if (isset($item['provenance'])) {
+        $name .= ' (' . $this->gettext($item['provenance']) . ')';
+      }
       
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail', 'foldername' => driver_mel::gi()->mceToRcId($id)));
-      $table->add('name', $item['name']);
+      $table->add('name', $name);
       $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_applications[$id]) ? $id : ''), array('value' => $id)));
     }
     // set client env
@@ -340,8 +347,7 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        //$res = $this->filter_dn($user->dn, $item['dn']);
-        $res = $this->filter_dn($user_dn, $item['dn']);
+        $res = $this->filter_dn($user->dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -358,7 +364,7 @@ class mel_portail extends rcube_plugin
         }
         $object->init();
       }
-      $content .= $this->item_html(['id' => $id], $item, $user_dn);
+      $content .= $this->item_html(['id' => $id], $item, $user->dn);
       // Ajoute le javascript ?
       if (isset($template['js'])) {
         $scripts_js['modules/' . $item['type'] . '/' . $template['js']] = true;

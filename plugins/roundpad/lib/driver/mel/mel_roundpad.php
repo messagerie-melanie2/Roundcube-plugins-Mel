@@ -37,7 +37,7 @@ class mel_roundpad extends roundpad_driver
    */
   protected function _saveData() {
     if ($this->hasChanged) {
-      return driver_mel::gi()->getUser()->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->data);
+      return driver_mel::gi()->getUser(null, false, false)->savePreference(self::PREF_SCOPE, self::PREF_NAME, $this->data);
     }
     return true;
   }
@@ -45,18 +45,20 @@ class mel_roundpad extends roundpad_driver
    * Load data from the storage
    */
   protected function _loadData() {
-    $value = driver_mel::gi()->getUser()->getPreference(self::PREF_SCOPE, self::PREF_NAME);
-    if (isset($value)) {
-      $this->data = $value;
-    }
     if (!isset($this->data)) {
-      $this->data = json_encode(array(
-              "name" => "",
-              "created" => time(),
-              "files" => array(),
-              "folders" => array(),
-      ));
-      $this->hasChanged = true;
+      $value = driver_mel::gi()->getUser(null, false, false)->getPreference(self::PREF_SCOPE, self::PREF_NAME);
+      if (isset($value)) {
+        $this->data = $value;
+      }
+      if (!isset($this->data)) {
+        $this->data = json_encode(array(
+                "name" => "",
+                "created" => time(),
+                "files" => array(),
+                "folders" => array(),
+        ));
+        $this->hasChanged = true;
+      }
     }
     return true;
   }

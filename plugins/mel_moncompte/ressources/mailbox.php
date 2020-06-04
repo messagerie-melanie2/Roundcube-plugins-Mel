@@ -147,7 +147,7 @@ class M2mailbox {
     $acl = strtoupper($rights[0]);
     if (in_array($acl, $_mbox->supported_shares)) {
       $shares = $_mbox->shares;
-      $share = driver_mel::gi()->share();
+      $share = driver_mel::gi()->users_share();
       $share->type = strtoupper($rights[0]);
       $share->user = $user;
       $shares[$user] = $share;

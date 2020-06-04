@@ -382,7 +382,9 @@ rcube_webmail.prototype.acl_init_form = function(id)
     }
     // Mantis 4894 disable les droits en fonction des possibilités de la boite
     if (this.env.supported_acls) {
-        for (const iterator of ['g', 'c', 'e', 'l']) {
+        const data = ['g', 'c', 'e', 'l'];
+        for (const key in data) {
+            const iterator = data[key];
             if (!this.env.supported_acls.includes(iterator)) {
                 $('input[value="' + iterator + '"]').prop('disabled', true);
                 $('input[value="' + iterator + '"]').parent().hide();

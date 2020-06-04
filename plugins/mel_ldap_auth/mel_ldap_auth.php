@@ -131,7 +131,7 @@ class mel_ldap_auth extends rcube_plugin {
       if (isset($_user_mce) && $_user_mce->authentification($pass)) {
         $auth_ok = true;
         // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-        $_user_mce->load(['internet_access_user', 'internet_access_admin']);
+        $_user_mce->load(['internet_access_enable']);
         if (!mel::is_internal() && !$_user_mce->internet_access_enable) {
           $args['error'] = 491;
           $args['abort'] = true;

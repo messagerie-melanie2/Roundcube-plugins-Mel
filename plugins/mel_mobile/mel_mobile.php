@@ -468,6 +468,7 @@ class mel_mobile extends rcube_plugin {
         $cn = $_object->fullname;
         if (isset($_object->mailbox)) {
           // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+          $_object->mailbox->load(['internet_access_enable']);
           if (!mel::is_internal() && !$_object->mailbox->internet_access_enable) {
             continue;
           }

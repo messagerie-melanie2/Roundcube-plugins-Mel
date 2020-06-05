@@ -76,7 +76,7 @@ class M2mailbox {
     }
     if ($this->rc->get_user_name() != $_mbox->uid 
         && (!isset($_mbox->shares[$this->rc->get_user_name()]) 
-          || $_mbox->shares[$this->rc->get_user_name()] != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
+          || $_mbox->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
       // L'utilisateur n'est pas gestionnaire de la boite
       // Il ne peut pas afficher les droits de la boite
       return false;

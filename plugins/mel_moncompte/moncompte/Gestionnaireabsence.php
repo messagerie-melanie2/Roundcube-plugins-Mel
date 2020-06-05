@@ -43,7 +43,7 @@ class Gestionnaireabsence extends Moncompteobject {
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
-			$user->load(['outofoffices']);		
+			$user->load(['outofoffices']);
 			// Message interne
 			$internal_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
 			if (isset($internal_oof)) {

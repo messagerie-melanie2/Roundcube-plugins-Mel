@@ -61,21 +61,21 @@ class mel_archivage extends rcube_plugin
       $this->include_stylesheet($skin_path . '/css/mel_archivage.css');
       $this->include_script('mel_archivage.js');
       $this->add_texts('localization/', true);
-      $this->add_button(
-        array(
-          'type'     => 'link',
-          'label'    => 'mel_archivage.buttontext',
-          'command'  => 'plugin_archiver',
-          'class'    => 'button buttonPas archive',
-          'classact' => 'button archive',
-          'width'    => 32,
-          'height'   => 32,
-          'title'    => 'mel_archivage.buttontitle',
-          'domain'   => $this->ID,
-          'innerclass' => 'inner',
-        ),
-        'toolbar'
-      );
+      // $this->add_button(
+      //   array(
+      //     'type'     => 'link',
+      //     'label'    => 'mel_archivage.buttontext',
+      //     'command'  => 'plugin_archiver',
+      //     'class'    => 'button buttonPas archive',
+      //     'classact' => 'button archive',
+      //     'width'    => 32,
+      //     'height'   => 32,
+      //     'title'    => 'mel_archivage.buttontitle',
+      //     'domain'   => $this->ID,
+      //     'innerclass' => 'inner',
+      //   ),
+      //   'toolbar'
+      // );
       // Utiliser le driver mel ?
       $folder = $rcmail->config->get('mel_archivage_folder');
       if (class_exists('driver_mel') && isset($_GET['_account'])) {

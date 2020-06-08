@@ -781,7 +781,7 @@ class mel_driver extends calendar_driver {
 
       if ($_event->save() !== null) {
         // add attachments
-        if (!empty($event['attachments'])) {
+        if (is_array($event['attachments'])) {
           foreach ($event['attachments'] as $attachment) {
             $this->add_attachment($attachment, $_event);
             unset($attachment);
@@ -789,7 +789,7 @@ class mel_driver extends calendar_driver {
         }
 
         // remove attachments
-        if (!empty($event['deleted_attachments'])) {
+        if (is_array($event['deleted_attachments'])) {
           foreach ($event['deleted_attachments'] as $attachment) {
             $this->remove_attachment($attachment);
           }

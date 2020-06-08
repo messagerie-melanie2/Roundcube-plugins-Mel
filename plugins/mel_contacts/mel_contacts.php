@@ -455,7 +455,9 @@ class mel_contacts extends rcube_plugin {
       }
       
       // Order share
-      sort($args['record']['share']);
+      if (is_array($args['record']['share'])) {
+        sort($args['record']['share']);
+      }
       // Add room number
       if (isset($args['form']['contact'])) {
         $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $this->gettext('room'));

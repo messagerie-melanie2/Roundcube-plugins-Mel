@@ -133,6 +133,7 @@ class mtes_driver_mel extends mce_driver_mel {
       }
     }
     else {
+      $infos->load('server_host');
       $hostname = $infos->server_host;
     }
     return $hostname;
@@ -243,11 +244,8 @@ class mtes_driver_mel extends mce_driver_mel {
     if ($_user->is_objectshare) {
       $_user = $_user->objectshare->mailbox;
     }
-    else {
-      $_user->load();
-    }
     // Récupération de la configuration de la boite pour l'affichage
-    $host = $this->getRoutage($mbox);
+    $host = $this->getRoutage($_user);
     // Ecriture du fichier unexpunge pour le serveur
     $server = explode('.', $host);
     $rep = '/var/pamela/unexpunge/' . $server[0];

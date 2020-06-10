@@ -1071,6 +1071,13 @@ table.records-table {
     z-index: 110;
 }
 
+.searchbox #searchreset, 
+.searchbox .iconbutton.reset, 
+#quicksearchbar #searchreset {
+    top: 7px;
+    right: 4px;
+}
+
 #quicksearchbar input, 
 .searchbox input {
     width: 221px;

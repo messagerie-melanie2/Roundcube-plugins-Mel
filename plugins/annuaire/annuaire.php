@@ -223,7 +223,7 @@ class annuaire extends rcube_plugin
                     $elements = driver_annuaire::get_instance()->get_recurse_elements($find);
                 } else {
                     // Get elements
-                    $elements = driver_annuaire::get_instance()->get_elements(isset($search) && ! empty($search) && strlen($search) >= 3);
+                    $elements = driver_annuaire::get_instance()->get_elements(isset($search) && !empty($search) && strlen($search) >= 3);
                 }
 
                 $id = rcube_ldap::dn_encode(driver_annuaire::get_instance()->getBaseDn()) . '-' . driver_annuaire::get_instance()->getSource();

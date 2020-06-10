@@ -47,8 +47,17 @@ class default_driver_annuaire extends driver_annuaire {
         $searchField = 'telephonenumber';
         $this->filter = "$searchField=*$search";
       } else {
-        $searchField = $this->rc->config->get('annuaire_search_field', 'cn');
-        $this->filter = "$searchField=$search*";
+        $searchField = $this->rc->config->get('annuaire_search_field', ['cn', 'mail']);
+        if (is_array($searchField)) {
+          $filter = "";
+          foreach ($searchField as $field) {
+            $filter .= "($field=$search*)";
+          }
+          $this->filter = "(|$filter)";
+        }
+        else {
+          $this->filter = "$searchField=$search*";
+        }
       }
     }
   }

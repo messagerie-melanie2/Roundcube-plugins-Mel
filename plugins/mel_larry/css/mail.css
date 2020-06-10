@@ -376,7 +376,8 @@ div.message-part blockquote {
 }
 
 div.message-part div.pre {
-    font-size: 13px;
+	font-size: 13px;
+	overflow-wrap: break-word;
 }
 
 #mailview-right {

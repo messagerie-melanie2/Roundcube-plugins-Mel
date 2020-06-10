@@ -25,23 +25,8 @@
 
 <div id="mainscreencontent">
 
-<div id="mailview-left">
-
-<!-- PAMELA Ajout d'un conteneur pour le nom de la boite -->
-<roundcube:container name="folderlistheader" id="folderlistheader" />	
-<!-- folders list -->
-<div id="mailboxcontainer" class="uibox listbox" role="navigation" aria-labelledby="aria-label-folderlist">
-<h2 id="aria-label-folderlist" class="voice"><roundcube:label name="arialabelfolderlist" /></h2>
-<div class="scroller">
-<roundcube:object name="mailboxlist" id="mailboxlist" class="treelist listing folderlist" folder_filter="mail" unreadwrap="%s" />
-</div>
-</div>
-
-</div>
-
-<div id="mailview-right" class="uibox" role="main">
+<div id="mailview-right" class="uibox fullwidth" role="main">
 <roundcube:else />
-<roundcube:object name="mailboxlist" folder_filter="mail" type="js" />
 
 <div id="mailview-right" class="offset fullwidth uibox" role="main">
 <roundcube:endif />

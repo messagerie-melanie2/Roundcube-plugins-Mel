@@ -8,7 +8,7 @@ div.sent_message {
 }
 
 textarea#suggestion-text {
-	height:auto;
+	height: auto;
 	max-width:800px;
 	color:#2e3436;
 	color: var(--login-form-text-color);
@@ -22,11 +22,9 @@ textarea#suggestion-text {
 	line-height:2em;
 	box-shadow:0px 0px 5px 1px rgba(0,0,0,0.1);
 	padding:15px;
-	-webkit-transition: height 2s ease;
-	-moz-transition: height 2s ease;
-	-ms-transition: height 2s ease;
-	-o-transition: height 2s ease;
-	transition: height 2s ease;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 div.sent_message {

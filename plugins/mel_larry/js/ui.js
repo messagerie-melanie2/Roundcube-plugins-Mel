@@ -591,8 +591,8 @@ function rcube_mail_ui()
     h = body.parent().height() - 8;
     body.width(w).height(h);
 
+    $('#composebody_ifr').height($('#compose-content').height() - (rcmail.env.extwin ? 65 : 40) - $('#composeheaders').height());
     $('#composebodycontainer > div').width(w+8);
-    $('#composebody_ifr').height(h + 4 - $('div.mel-toolbar').height());
     $('#googie_edit_layer').width(w).height(h);
 //    $('#composebodycontainer')[(btns ? 'addClass' : 'removeClass')]('buttons');
 //    $('#composeformbuttons')[(btns ? 'show' : 'hide')]();

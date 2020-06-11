@@ -69,7 +69,7 @@ if (isset($keyhash)) {
   $value = $user->getCalendarPreference("calendarskeyhash");
 
   if (isset($value)) {
-    $value = unserialize($pref->value);
+    $value = unserialize($value);
     if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
       $keyhash = null;
     }

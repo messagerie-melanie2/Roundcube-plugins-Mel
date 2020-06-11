@@ -43,9 +43,12 @@ class default_driver_annuaire extends driver_annuaire {
     if (!isset($search) || empty($search) || strlen($search) < 3) {
       $this->filter = $this->rc->config->get('annuaire_default_filter', 'objectclass=*');
     } else {
-      if (is_numeric($search)) {
-        $searchField = 'telephonenumber';
-        $this->filter = "$searchField=*$search";
+      if (is_numeric($search) || strpos($search, '+33') === 0) {
+        $search = trim(str_replace('+33', '', $search));
+        if (strlen($search) === 10 && strpos($search, '0') === 0) {
+          $search = substr($search, 1);
+        }
+        $this->filter = "(|(telephonenumber=*$search)(mobile=*$search))";
       } else {
         $searchField = $this->rc->config->get('annuaire_search_field', ['cn', 'mail']);
         if (is_array($searchField)) {

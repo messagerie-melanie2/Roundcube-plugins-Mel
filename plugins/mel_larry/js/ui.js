@@ -200,6 +200,15 @@ function rcube_mail_ui()
           }
         }
 
+        // PAMELA - On textarea resize
+        $('.compose-headers td textarea').bind('mouseup mousemove',function(){
+          if(this.oldheight === null){this.oldheight = this.style.height;}
+          if(this.style.height != this.oldheight){
+            layout_composeview();
+            this.oldheight = this.style.height;
+          }
+        });
+
         $('#composeoptionstoggle').click(function(e){
           var expanded = $('#composeoptions').toggle().is(':visible');
           $('#composeoptionstoggle').toggleClass('remove').attr('aria-expanded', expanded ? 'true' : 'false');
@@ -223,8 +232,8 @@ function rcube_mail_ui()
         }
 
         // adjust hight when textarea starts to scroll
-        $("textarea[name='_to'], textarea[name='_cc'], textarea[name='_bcc']").change(function(e){ adjust_compose_editfields(this); }).change();
-        rcmail.addEventListener('autocomplete_insert', function(p){ adjust_compose_editfields(p.field); });
+        // $("textarea[name='_to'], textarea[name='_cc'], textarea[name='_bcc']").change(function(e){ adjust_compose_editfields(this); }).change();
+        // rcmail.addEventListener('autocomplete_insert', function(p){ adjust_compose_editfields(p.field); });
 
         // toggle compose options if opened in new window and they were visible before
         var opener_rc = rcmail.opener();

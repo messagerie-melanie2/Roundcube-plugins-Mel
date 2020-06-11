@@ -627,6 +627,10 @@ td span.adr:hover .rcmaddcontact {
 	border: none;
 }
 
+.compose-headers td textarea {
+	resize: vertical;
+}
+
 #compose-contacts.listbox table.listing {
     background: #e0e0e0;
     background-color: var(--table-extanded-body-bg-color);

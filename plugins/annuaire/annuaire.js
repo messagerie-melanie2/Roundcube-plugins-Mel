@@ -119,6 +119,12 @@ window.rcmail
 			$('#compose-contacts .listsearchbox form').attr('onsubmit', null);
 			// Annuaire selector
 			window.annuaireSelector = 'all';
+			if (rcmail.env.action == 'plugin.annuaire') {
+				rcmail.register_command('reset-search', function(props) {
+					rcmail.reset_qsearch();
+					$('#mainscreen.annuaire #quicksearchbar form').submit();
+				}, true);
+			}
 			
 			// init treelist widget
 			if (rcmail.gui_objects.annuaire_list

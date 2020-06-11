@@ -61,19 +61,33 @@ class mel_portail extends rcube_plugin
       $this->register_action('index', array($this, 'action'));
       // Flux
       $this->register_action('flux', array($this, 'flux'));
-      // Ajout du css
-      $skin_path = $this->local_skin_path();
-      if ($this->rc->output->get_env('ismobile')) {
-        $skin_path .= '_mobile';
+      // Gestion des autres actions
+      if (!empty($this->rc->action) && $this->rc->action != 'flux' && $this->rc->action != 'refresh' && $this->rc->action != 'index') {
+        $templates = $this->rc->config->get('portail_templates_list', []);
+        foreach ($templates as $type => $template) {
+          if (isset($template['actions']) && isset($template['actions'][$this->rc->action])) {
+            if (isset($template['php'])) {
+              include_once 'modules/' . $type . '/' . $template['php'];
+            }
+            $this->register_action($this->rc->action, $template['actions'][$this->rc->action]);
+          }
+        }
       }
-      $this->include_stylesheet($skin_path . '/mel_portail.css');
-      // Si le panneau de droite n'est pas chargé on charge custom scrollbar
-      if (!in_array('right_panel', $this->rc->config->get('plugins'))) {
-        $this->include_stylesheet($this->local_skin_path() . '/jquery.mCustomScrollbar.min.css');
-        $this->include_script('jquery.mCustomScrollbar.concat.min.js');
+      else {
+        // Ajout du css
+        $skin_path = $this->local_skin_path();
+        if ($this->rc->output->get_env('ismobile')) {
+          $skin_path .= '_mobile';
+        }
+        $this->include_stylesheet($skin_path . '/mel_portail.css');
+        // Si le panneau de droite n'est pas chargé on charge custom scrollbar
+        if (!in_array('right_panel', $this->rc->config->get('plugins'))) {
+          $this->include_stylesheet($this->local_skin_path() . '/jquery.mCustomScrollbar.min.css');
+          $this->include_script('jquery.mCustomScrollbar.concat.min.js');
+        }
+        // Add handler
+        $this->rc->output->add_handler('portail_items_list', array($this, 'items_list'));
       }
-      // Add handler
-      $this->rc->output->add_handler('portail_items_list', array($this, 'items_list'));
     }
     else if ($this->rc->task == 'settings' && !isset($_GET['_courrielleur'])) {
       $this->add_texts('localization/', true);

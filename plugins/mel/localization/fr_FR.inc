@@ -79,6 +79,11 @@ $labels['groups_shares'] = 'Partager à un groupe';
 
 $labels['mel_use_subscribed_folders'] = 'Utiliser les abonnements pour les dossiers';
 $labels['mel_use_infinite_scroll'] = 'Utiliser le scroll infini pour parcourir les messages';
+$labels['mel_default_task'] = 'Page d\'accueil après la connexion';
+
+$labels['portail'] = 'Portail';
+$labels['calendar'] = 'Agenda';
+$labels['tasks'] = 'Tâches';
 
 $labels['realname'] = 'Nom utilisé';
 $labels['uid'] = 'Identifiant';

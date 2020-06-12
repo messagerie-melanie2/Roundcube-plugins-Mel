@@ -703,6 +703,9 @@ class mel extends rcube_plugin {
     if (isset($_GET['_goto_task'])) {
       $args['_task'] = trim(rcube_utils::get_input_value('_goto_task', rcube_utils::INPUT_GET));
     }
+    else if ($args['_task'] == 'mail')  {
+      $args['_task'] = $this->rc->config->get('default_task', 'mail');
+    }
     // Gestion des identities de l'utilisateur
     $rc_identities = $this->rc->user->list_identities();
     $m2_identities = $this->m2_list_identities();
@@ -882,32 +885,57 @@ class mel extends rcube_plugin {
    * Handler for user preferences form (preferences_list hook)
    */
   function prefs_list($args) {
-    if ($args['section'] != 'mailbox') {
-      return $args;
+    if ($args['section'] == 'general') {
+      // Load localization and configuration
+      $this->add_texts('localization/');
+
+      // Check that configuration is not disabled
+      $dont_override = (array)$this->rc->config->get('dont_override', array());
+
+      $key = 'mel_default_task';
+      if (!in_array($key, $dont_override)) {
+        $config_key = 'default_task';
+        $field_id = "_" . $key;
+        $value = $this->rc->config->get($config_key, 'mail');
+        $input = new html_select(array(
+          'name' => $field_id,
+          'id' => $field_id,
+        ));
+        $list_tasks = $this->rc->config->get('list_tasks', ['mail', 'addressbook', 'settings']);
+        foreach ($list_tasks as $task) {
+          $input->add($this->gettext($task), $task);
+        }
+
+        $args['blocks']['main']['options'][$key] = array(
+          'title' => html::label($field_id, rcube::Q($this->gettext($key))),
+          'content' => $input->show($value),
+        );
+      }
     }
+    else if ($args['section'] == 'mailbox') {
+      // Load localization and configuration
+      $this->add_texts('localization/');
 
-    // Load localization and configuration
-    $this->add_texts('localization/');
+      // Check that configuration is not disabled
+      $dont_override = (array)$this->rc->config->get('dont_override', array());
 
-    // Check that configuration is not disabled
-    $dont_override = ( array ) $this->rc->config->get('dont_override', array());
+      $key = 'mel_use_infinite_scroll';
+      if (!in_array($key, $dont_override)) {
+        $config_key = 'use_infinite_scroll';
+        $field_id = "_" . $key;
+        $is_checked = $this->rc->config->get($config_key, true);
+        $input = new html_checkbox(array(
+                'name' => $field_id,
+                'id' => $field_id,
+                'value' => 1
+        ));
+        $content = $input->show($is_checked);
 
-    $key = 'mel_use_infinite_scroll';
-    if (! in_array($key, $dont_override)) {
-      $config_key = 'use_infinite_scroll';
-      $field_id = "_" . $key;
-      $is_checked = $this->rc->config->get($config_key, true);
-      $input = new html_checkbox(array(
-              'name' => $field_id,
-              'id' => $field_id,
-              'value' => 1
-      ));
-      $content = $input->show($is_checked);
-
-      $args['blocks']['main']['options'][$key] = array(
-              'title' => html::label($field_id, rcube::Q($this->gettext($key))),
-              'content' => $content
-      );
+        $args['blocks']['main']['options'][$key] = array(
+                'title' => html::label($field_id, rcube::Q($this->gettext($key))),
+                'content' => $content
+        );
+      }
     }
     return $args;
   }
@@ -916,15 +944,23 @@ class mel extends rcube_plugin {
    * Handler for user preferences save (preferences_save hook)
    */
   public function prefs_save($args) {
-    if ($args['section'] != 'mailbox') {
-      return $args;
+    if ($args['section'] == 'general') {
+      // Check that configuration is not disabled
+      $dont_override = ( array ) $this->rc->config->get('dont_override', array());
+      $key = 'mel_default_task';
+      if (!in_array($key, $dont_override)) {
+        $config_key = 'default_task';
+        $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
+      }
     }
-    // Check that configuration is not disabled
-    $dont_override = ( array ) $this->rc->config->get('dont_override', array());
-    $key = 'mel_use_infinite_scroll';
-    if (! in_array($key, $dont_override)) {
-      $config_key = 'use_infinite_scroll';
-      $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST) ? true : false;
+    else if ($args['section'] == 'mailbox') {
+      // Check that configuration is not disabled
+      $dont_override = ( array ) $this->rc->config->get('dont_override', array());
+      $key = 'mel_use_infinite_scroll';
+      if (! in_array($key, $dont_override)) {
+        $config_key = 'use_infinite_scroll';
+        $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST) ? true : false;
+      }
     }
     return $args;
   }

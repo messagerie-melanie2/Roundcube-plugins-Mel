@@ -24,10 +24,10 @@
 <roundcube:if condition="!env:extwin" />
 
 <div id="mainscreencontent">
-
+<roundcube:object name="mailboxlist" folder_filter="mail" type="js" />
 <div id="mailview-right" class="uibox fullwidth" role="main">
 <roundcube:else />
-
+<roundcube:object name="mailboxlist" folder_filter="mail" type="js" />
 <div id="mailview-right" class="offset fullwidth uibox" role="main">
 <roundcube:endif />
 

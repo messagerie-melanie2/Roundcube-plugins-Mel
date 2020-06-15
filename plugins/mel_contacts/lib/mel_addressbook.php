@@ -419,9 +419,7 @@ class mel_addressbook extends rcube_addressbook
             $contact->uid = date('YmdHis') . '.' . substr(str_pad(base_convert(microtime(), 10, 36), 16, uniqid(mt_rand()), STR_PAD_LEFT), -16) . '@roundcube';
             $contact->modified = time();
             $ret = $contact->save();
-            if (is_null($ret)) {
-                return false;
-            }
+            return !is_null($ret);
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_addressbook::insert() Melanie2DatabaseException");

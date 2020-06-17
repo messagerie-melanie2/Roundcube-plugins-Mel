@@ -900,15 +900,17 @@ class mel_addressbook extends rcube_addressbook
      * @return array $members Liste nettoyée des membres
      */
     private function _clean_group_members($members) {
-        // Récupère les contacts membres du groupe
-        $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
-        $_contact->type = Defaut\Contact::TYPE_CONTACT;
-        $_contact->id = $members;
-        $_contacts = $_contact->getList(['id']);
-        $_members = [];
+        if (is_array($members) && !empty($members)) {
+            // Récupère les contacts membres du groupe
+            $_contact = driver_mel::gi()->contact([$this->user, $this->addressbook]);
+            $_contact->type = Defaut\Contact::TYPE_CONTACT;
+            $_contact->id = $members;
+            $_contacts = $_contact->getList(['id']);
+            $_members = [];
 
-        foreach ($_contacts as $key => $contact) {
-            $_members[] = $contact->id;
+            foreach ($_contacts as $key => $contact) {
+                $_members[] = $contact->id;
+            }
         }
         return $_members;
     }

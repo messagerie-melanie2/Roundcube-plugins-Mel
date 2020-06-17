@@ -802,7 +802,7 @@ class mel_addressbook extends rcube_addressbook
                 if (!is_array($members)) $members = array();
                 $members = $this->_clean_group_members(array_unique($members));
                 $count = 0;
-                foreach($ids as $key => $id) {
+                foreach($ids as $id) {
                     if (!in_array($id, $members)) {
                         $count++;
                         $members[] = $id;
@@ -908,7 +908,7 @@ class mel_addressbook extends rcube_addressbook
             $_contacts = $_contact->getList(['id']);
             $_members = [];
 
-            foreach ($_contacts as $key => $contact) {
+            foreach ($_contacts as $contact) {
                 $_members[] = $contact->id;
             }
         }

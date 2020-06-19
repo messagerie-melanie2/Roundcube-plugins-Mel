@@ -1,14 +1,19 @@
 if (window.rcmail) {
-	// Rcmail init
-//	rcmail.addEventListener('init', function(evt) {
-//		var tab = $('<span>').attr('id', 'settingstabpluginmel_resources_portail')
-//					.addClass('listitem_mel mel'), 
-//						button = $('<a>').attr('href',
-//								rcmail.env.comm_path + '&_action=plugin.mel_resources_portail')
-//					.attr('title', rcmail.gettext('mel_portail.manageresourcesportail'))
-//					.html(rcmail.gettext('mel_portail.resourcesportail'))
-//				.insertBefore($('#settingstabpluginmel_resources_bal'));
-//		// add tab
-//		rcmail.add_element(tab, 'tabs');
-//	});
+	rcmail.addEventListener('init', function(evt) {
+		rcmail.enable_command('plugin.mel_portail_add_resource', true);
+		// register commands
+		rcmail.register_command('plugin.mel_portail_add_resource', function() {
+			rcmail.portail_add_item()
+		});
+		rcmail.register_command('plugin.mel_portail_delete_resource', function() {
+			rcmail.portail_delete_item()
+		});
+	});
 }
+
+// Add new item on click on add button
+rcube_webmail.prototype.portail_add_item = function() {
+	window.document.getElementById('mel_resources_type_frame').src = this.url('settings/plugin.mel_resources_portail', {_frame: 1, _id: 'new'});
+	$('#mel_resources_elements_list .focused').removeClass('focused');
+	$('#mel_resources_elements_list .selected').removeClass('selected');
+};

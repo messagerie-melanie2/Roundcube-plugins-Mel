@@ -22,6 +22,7 @@ Portail.prototype.init = function() {
 	for (var id in rcmail.env.portail_items) {
 		switch (rcmail.env.portail_items[id].type) {
 			case 'fluxrss':
+			case 'intranet':
 				if (!rcmail.env.portail_items[id].object) {
 					rcmail.env.portail_items[id].object = new fluxrss(id, rcmail.env.portail_items[id].feedUrl);
 				}

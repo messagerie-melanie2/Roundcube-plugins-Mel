@@ -218,6 +218,7 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	margin: 0 2px;
 }
 
 #portailview .item .front header {
@@ -394,6 +395,11 @@
 #portailview .item .front ul.news img {
 	max-width: 145px;
 	max-height: 50px;
+}
+
+#portailview .item .front .description {
+	color: #000;
+	color: var(--main-text-color);
 }
 
 

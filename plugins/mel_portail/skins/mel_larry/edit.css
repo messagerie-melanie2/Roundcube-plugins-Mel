@@ -1,0 +1,36 @@
+#itemwebsite,
+#itemhtml,
+#itemtwitter {
+    display: none;
+}
+
+input,
+select,
+textarea {
+    width: 250px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+#itemlogo .logobg {
+    display: none;
+}
+
+#itemimg img {
+    height: 66px;
+    width: 66px;
+}
+
+#itemimg img.custom {
+    background-color: #4d648d;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 4px 0 0 rgba(43,43,43,.35);
+    -moz-box-shadow: 0 4px 0 0 rgba(43,43,43,.35);
+    box-shadow: 0 4px 0 0 rgba(43,43,43,.35);
+}
+
+#itemtype.modify > table.propform {
+    display: none;
+}

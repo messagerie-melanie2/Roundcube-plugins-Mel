@@ -56,7 +56,8 @@ class mel_portail extends rcube_plugin
       // Chargement de la conf
       $this->load_config();
       // Ajout de l'interface
-      include_once 'imodule.php';
+      include_once 'modules/imodule.php';
+      include_once 'modules/module.php';
       // Index
       $this->register_action('index', array($this, 'action'));
       // Flux
@@ -94,13 +95,13 @@ class mel_portail extends rcube_plugin
       // Chargement de la conf
       $this->load_config();
       // Ajout de l'interface
-      include_once 'imodule.php';
+      include_once 'modules/imodule.php';
+      include_once 'modules/module.php';
       // Activation du menu dans Mon compte
       $this->rc->output->set_env('enable_mesressources_portail', true);
       // register actions
       $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
-      // Ajout le javascript
-      //$this->include_script('settings.js');
+      $this->register_action('plugin.mel_portail_edit', array($this,'portail_edit'));
     }
   }
   
@@ -164,6 +165,21 @@ class mel_portail extends rcube_plugin
       exit;
     }
   }
+
+  /**
+   * Show item name in html template
+   */
+  public function itemname($attrib) {
+    $name = "";
+    if ($this->rc->output->get_env('personal_item_is_new')) {
+      $name = $this->gettext('New item');
+    }
+    else {
+      $item = $this->rc->output->get_env('personal_item');
+      $name = $item['name'];
+    }
+    return $name;
+  }
   
   /**
    * Initialisation du menu ressources pour les Applications du portail
@@ -174,37 +190,70 @@ class mel_portail extends rcube_plugin
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
-      $user = driver_mel::gi()->getUser();
-      $this->items = $this->getCardsConfiguration($user->dn);
-      
-      if (isset($this->items[$id])) {
-        $item = $this->items[$id];
-        $this->rc->output->set_env("resource_id", $id);
-        $this->rc->output->set_env("resource_name", $item['name']);
-        $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
-        if (isset($item['description'])) {
-          $this->rc->output->set_env("resource_description", $item['description']);
+      $personal_items = $this->rc->config->get('portail_personal_items', []);
+      if (isset($personal_items[$id]) || $id == 'new') {
+        // Dans le cas d'une vignette perso on passe en édition
+        $this->rc->output->set_env("personal_item_is_new", $id == 'new');
+        $this->rc->output->set_env("personal_item_id", $id);
+        $this->rc->output->set_env("personal_item", $personal_items[$id]);
+        // register UI objects
+        $this->rc->output->add_handlers(
+          array(
+            'itemname'    => array($this, 'itemname'),
+            'item_edit'   => array(new Module('', $this), 'settings_handler'),
+          )
+        );
+        // Ajout le javascript
+        $this->include_script('edit.js');
+        // Ajout des js des différents modules
+        $templates = $this->rc->config->get('portail_templates_list', []);
+        foreach ($templates as $type => $template) {
+          // Ajoute le javascript ?
+          if (isset($template['edit_js'])) {
+            $this->include_script('modules/' . $type . '/' . $template['edit_js']);
+          }
+          // Ajout le css ?
+          if (isset($template['edit_css'])) {
+            $this->include_stylesheet('modules/' . $type . '/' . $template['edit_css']);
+          }
         }
-        if (isset($item['url'])) {
-          $this->rc->output->set_env("resource_url", $item['url']);
-        }
-        if (isset($item['provenance'])) {
-          $this->rc->output->set_env("resource_provenance", $this->gettext($item['provenance']));
-        }
-        if (isset($item['flip'])) {
-          $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
-        }
-        if (isset($item['feedUrl'])) {
-          $this->rc->output->set_env("resource_feedurl", $item['feedUrl']);
-        }
-        if (isset($item['html'])) {
-          $this->rc->output->set_env("resource_front_html", $item['html']);
-        }
-        if (isset($item['html_back'])) {
-          $this->rc->output->set_env("resource_back_html", $item['html_back']);
-        }
+        $this->rc->output->send('mel_portail.portail_item_edit');
       }
-      $this->rc->output->send('mel_portail.resource_portail');
+      else {
+        // Vignette générique, l'utilisateur ne peut voir que les informations
+        $user = driver_mel::gi()->getUser();
+        $this->items = $this->getCardsConfiguration($user->dn);
+        $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
+        
+        if (isset($this->items[$id])) {
+          $item = $this->items[$id];
+          $this->rc->output->set_env("resource_id", $id);
+          $this->rc->output->set_env("resource_name", $item['name']);
+          $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
+          if (isset($item['description'])) {
+            $this->rc->output->set_env("resource_description", $item['description']);
+          }
+          if (isset($item['url'])) {
+            $this->rc->output->set_env("resource_url", $item['url']);
+          }
+          if (isset($item['provenance'])) {
+            $this->rc->output->set_env("resource_provenance", $this->gettext($item['provenance']));
+          }
+          if (isset($item['flip'])) {
+            $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
+          }
+          if (isset($item['feedUrl'])) {
+            $this->rc->output->set_env("resource_feedurl", $item['feedUrl']);
+          }
+          if (isset($item['html'])) {
+            $this->rc->output->set_env("resource_front_html", $item['html']);
+          }
+          if (isset($item['html_back'])) {
+            $this->rc->output->set_env("resource_back_html", $item['html_back']);
+          }
+        }
+        $this->rc->output->send('mel_portail.resource_portail');
+      }
     }
     else {
       // register UI objects
@@ -216,6 +265,7 @@ class mel_portail extends rcube_plugin
       );
       $this->rc->output->set_env("resources_action", "portail");
       $this->rc->output->include_script('list.js');
+      $this->include_script('settings.js');
       $this->rc->output->set_pagetitle($this->gettext('mel_moncompte.resources'));
       $this->rc->output->send('mel_portail.resources_elements');
     }
@@ -242,6 +292,9 @@ class mel_portail extends rcube_plugin
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
     $this->items = $this->getCardsConfiguration($user->dn);
+    $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
+    $personal_items = $this->rc->config->get('portail_personal_items', []);
+    $this->items = array_merge($this->items, $personal_items);
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -254,7 +307,7 @@ class mel_portail extends rcube_plugin
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        $res = $this->filter_dn($user->dn, $item['dn']);
+        $res = Module::filter_dn($user->dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -264,7 +317,7 @@ class mel_portail extends rcube_plugin
       if (isset($template['php'])) {
         include_once 'modules/' . $item['type'] . '/' . $template['php'];
         $classname = ucfirst($item['type']);
-        $object = new $classname($id);
+        $object = new $classname($id, $this);
         if (!$object->show()) {
           unset($this->items[$id]);
           continue;
@@ -275,8 +328,12 @@ class mel_portail extends rcube_plugin
       if (isset($item['provenance'])) {
         $name .= ' (' . $this->gettext($item['provenance']) . ')';
       }
+      $class = '';
+      if (isset($personal_items[$id])) {
+        $class = ' personal';
+      }
       
-      $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail', 'foldername' => driver_mel::gi()->mceToRcId($id)));
+      $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
       $table->add('name', $name);
       $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_applications[$id]) ? $id : ''), array('value' => $id)));
     }
@@ -326,6 +383,8 @@ class mel_portail extends rcube_plugin
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
     $this->items = $this->getCardsConfiguration($user->dn);
+    $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
+    $this->items = array_merge($this->items, $this->rc->config->get('portail_personal_items', []));
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
@@ -358,10 +417,11 @@ class mel_portail extends rcube_plugin
           continue;
         }
       }
+      $item['id'] = $id;
       $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
-        $res = $this->filter_dn($user->dn, $item['dn']);
+        $res = Module::filter_dn($user->dn, $item['dn']);
         if ($res !== true) {
           unset($this->items[$id]);
           continue;
@@ -371,14 +431,17 @@ class mel_portail extends rcube_plugin
       if (isset($template['php'])) {
         include_once 'modules/' . $item['type'] . '/' . $template['php'];
         $classname = ucfirst($item['type']);
-        $object = new $classname($id);
+        $object = new $classname($id, $this);
         if (!$object->show()) {
           unset($this->items[$id]);
           continue;
         }
         $object->init();
       }
-      $content .= $this->item_html(['id' => $id], $item, $user->dn);
+      else {
+        $object = new Module($id, $this);
+      }
+      $content .= $object->item_html(['id' => $id], $item, $user->dn);
       // Ajoute le javascript ?
       if (isset($template['js'])) {
         $scripts_js['modules/' . $item['type'] . '/' . $template['js']] = true;
@@ -387,6 +450,8 @@ class mel_portail extends rcube_plugin
       if (isset($template['css'])) {
         $scripts_css['modules/' . $item['type'] . '/' . $template['css']] = true;
       }
+      // Actualise l'objet
+      $this->items[$id] = $item;
     }
     // Charger les scripts JS
     foreach ($scripts_js as $script => $load) {
@@ -400,7 +465,6 @@ class mel_portail extends rcube_plugin
         $this->include_stylesheet($script);
       }
     }
-    
     $this->rc->output->set_env("portail_items", $this->items);
     // Ajout le javascript
     $this->include_script('mel_portail.js');
@@ -465,277 +529,20 @@ class mel_portail extends rcube_plugin
   }
   
   /**
-   * 
-   * 
-   * @param string $user_dn
-   * @param string|array $item_dn
-   * @return boolean true si le dn match, false sinon
-   */
-  private function filter_dn($user_dn, $item_dn) {
-    if (is_array($item_dn)) {
-      $res = false;
-      $res_neg = null;
-      $res_eq = null;
-      // C'est un tableau, appel récursif
-      foreach ($item_dn as $dn) {
-        $_res = $this->filter_dn($user_dn, $dn);
-        if (strpos($dn, '=') === 0) {
-          if (is_null($res_eq)) {
-            $res_eq = $_res;
-          }
-          else {
-            $res_eq = $res_eq || $_res;
-          }
-        }
-        else if (strpos($dn, '!') === 0) {
-          if (is_null($res_neg)) {
-            $res_neg = $_res;
-          }
-          else {
-            $res_neg = $res_neg && $_res;
-          }
-        }
-        else {
-          $res = $res || $_res;
-        }
-      }
-      // Validation des resultats
-      if (!is_null($res_eq)) {
-        if (!is_null($res_neg) && $res_neg === false) {
-          $res = $res_neg;
-        }
-        else {
-          $res = $res_eq;
-        }
-      }
-      else if (!is_null($res_neg)) {
-        $res = $res_neg;
-      }
-    }
-    else {
-      if (strpos($item_dn, '!') === 0) {
-        // DN doit être différent
-        $_item_dn = substr($item_dn, 1, strlen($item_dn) - 1);
-        $res = strpos($user_dn, $_item_dn) === false;
-      }
-      else if (strpos($item_dn, '=') === 0) {
-        // DN exactement égal
-        $_item_dn = substr($item_dn, 1, strlen($item_dn) - 1);
-        if (strpos($_item_dn, 'ou') === 0) {
-          $_user_dn = explode(',', $user_dn, 2);
-          $res = $_user_dn[1] == $_item_dn;
-        }
-        else {
-          $res = $user_dn == $_item_dn;
-        }
-      }
-      else {
-        // DN contient
-        $res = strpos($user_dn, $item_dn) !== false;
-      }
-    }
-    return $res;
-  }
-  
-  /**
-   * Génère un item html en fonction des propriétés
-   * 
-   * @param array $attrib
-   * @param array $item
-   * @param string $user_dn
-   * @return string HTML
-   */
-  public function item_html($attrib, $item, $user_dn) {
-    $content = "";
-    $attrib['class'] = $item['type'] . " item";
-    // Gestion du bouton flip
-    if ($item['flip']) {
-      $flip = html::div('flip', html::tag('button', [], 'Flip'));
-    }
-    else {
-      $flip = "";
-    }
-    $logo_style = null;
-    if (isset($item['logobg'])) {
-      $logo_style = 'background-color: '.$item['logobg'].';
-                     border-radius: 5px;
-                  	-webkit-box-shadow: 0 3px 0 0 rgba(43,43,43,.35);
-                  	-moz-box-shadow: 0 3px 0 0 rgba(43,43,43,.35);
-                  	box-shadow: 0 3px 0 0	rgba(43,43,43,.35);';
-    }
-    if (isset($item['url'])) {
-      $description = $item['description'];
-      // Gestion des astuces
-      if (isset($item['tips']) 
-          && is_array($item['tips'])) {
-        $description = $item['tips'][array_rand($item['tips'])] . $description;
-      }
-      if (empty($description)) {
-        $attrib['class'] .= " nodescription";
-      }
-      // Header html du front
-      $header = html::tag('header', [],
-          $flip .
-          html::a(['href' => $item['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $item['onclick'] ?: null],
-                html::img(['class' => 'icon', 'style' => $logo_style, 'alt' => $item['name'] . ' logo', 'src' => isset($item['logo']) ? $item['logo'] : '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png']) .
-                html::tag('h1', 'title', $item['name']) .
-                ($item['type'] == 'communication' ? "" : html::tag('p', 'description', $description))
-              )
-          );
-    }
-    else {
-      // Header html du front
-      $header = html::tag('header', [],
-          $flip .
-            html::tag('h1', 'title', $item['name'])
-          );
-    }
-    
-    // Gestion des boutons
-    $buttons = "";
-    $buttons_back = "";
-    if ($item['type'] == 'communication') {
-      $buttons = html::a(['href' => $item['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $item['onclick'] ?: null],
-        html::tag('span', 'description', $item['description'])
-      );
-    }
-    else if (isset($item['buttons'])) {
-      $buttons_list = "";
-      $buttons_back_list = "";
-      foreach ($item['buttons'] as $text => $button) {
-        if (isset($button['back']) && $button['back']) {
-          $buttons_back_list .= html::a(['class' => 'button', 'title' => $button['title'] ?: null, 'href' => $button['href'] ?: '#', 'target' => $item['newtab'] && isset($button['href']) ? '_blank': null, 'onclick' => $button['onclick'] ?: null], $text);
-        }
-        else {
-          $buttons_list .= html::a(['class' => 'button', 'title' => $button['title'] ?: null, 'href' => $button['href'] ?: '#', 'target' => $item['newtab'] && isset($button['href']) ? '_blank': null, 'onclick' => $button['onclick'] ?: null], $text);
-        }
-        
-      }
-      $buttons = html::div('buttons', $buttons_list);
-      if (strlen($buttons_back_list)) {
-        $buttons_back = html::div('buttons', $buttons_back_list);
-      }
-      if ($item['type'] == 'fluxrss') {
-        $attrib['class'] .= ' nonewsfront';
-      }
-    }
-    else if (isset($item['links'])) {
-      $attrib['class'] .= " links";
-      $links_list = "";
-      foreach ($item['links'] as $text => $link) {
-        if (isset($link['show']) && !$link['show']) {
-          continue;
-        }
-        if (isset($link['dn'])) {
-          //$res = $this->filter_dn($user->dn, $link['dn']);
-          $res = $this->filter_dn($user_dn, $link['dn']);
-          if ($res !== true) {
-            continue;
-          }
-        }
-        // Gestion de la class
-        $class = 'link';
-        // Gestion du logo
-        if (isset($link['logo'])) {
-          $logo_link = $link['logo'];
-        }
-        else if (isset($item['logo'])) {
-          $logo_link = $item['logo'];
-        }
-        else {
-          $logo_link = '/plugins/mel_portail/modules/' . $item['type'] . '/logo.png';
-        }
-        // Gestion de la couleur du logo
-        if (isset($link['logobg'])) {
-          $logo_style_link = 'background-color: '.$link['logobg'].';
-                         border-radius: 5px;
-                        -webkit-box-shadow: 0 3px 0 0 rgba(43,43,43,.35);
-                        -moz-box-shadow: 0 3px 0 0 rgba(43,43,43,.35);
-                        box-shadow: 0 3px 0 0	rgba(43,43,43,.35);';
-        }
-        else {
-          $logo_style_link = $logo_style;
-        }
-        // Gestion du button
-        if (isset($link['button'])) {
-          $class .= ' link_buttons';
-          $button = $link['button'];
-          $button_link = html::tag('span', ['class' => 'button_link', 'title' => $button['title'] ?: null, 'onclick' => $button['onclick'] ?: null], $button['text']);
-        }
-        else {
-          $button_link = '';
-        }
-        $links_list .= html::a(['class' => $class, 'title' => $link['title'] ?: null, 'href' => $link['url'], 'target' => $item['newtab'] ? '_blank': null, 'onclick' => $link['onclick'] ?: null],
-            html::img(['class' => 'icon', 'style' => $logo_style_link, 'alt' => $item['name'] . ' logo', 'src' => $logo_link]) .
-            html::tag('h3', 'title', $text) .
-            $button_link
-        );
-      }
-      $buttons = html::div('links', $links_list);
-    }
-    else if ($item['type'] == 'website' || $item['type'] == 'communication') {
-      $attrib['class'] .= " full";
-    }
-    // Multi news ?
-    if (isset($item['multiNews']) && $item['multiNews']) {
-      $attrib['class'] .= " multinews";
-    }
-    // Générer le contenu html
-    if ($item['flip']) {
-      if ($item['type'] == 'html') {
-        // Front + back
-        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $item['html']) .
-          html::tag('article', 'back', $item['html_back']);
-      }
-      else {
-        // Contenu
-        $content_back = "";
-        if (isset($item['tips']) 
-            && is_array($item['tips'])) {
-          $list_back = "";
-          foreach ($item['tips'] as $tips) {
-            $list_back .= html::tag('li', null, html::a(null, html::tag('h1', null, $tips)));
-          }
-          $content_back = html::tag('ul', 'news', $list_back);
-        }
-        // Front + back
-        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
-          html::tag('article', 'back', html::tag('header', [], $flip) . $content_back . $buttons_back);
-      }
-      
-    }
-    else {
-      if ($item['type'] == 'html') {
-        // Front
-        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $item['html']) .
-          html::tag('article', 'back blank', '');
-      }
-      else {
-        // Front
-        $content = html::tag('article', ['class' => 'front', 'title' => $item['tooltip'] ?: null], $header . $buttons) .
-          html::tag('article', 'back blank', '');
-      }
-    }
-    
-    return html::tag('article', $attrib, $content);
-  }
-  
-  /**
    * Gestion de la frame
    * @param array $attrib
    * @return string
    */
-  function portail_frame($attrib)
-  {
+  function portail_frame($attrib) {
     if (!$attrib['id'])
       $attrib['id'] = 'rcmportailframe';
       
-      $attrib['name'] = $attrib['id'];
-      
-      $this->rc->output->set_env('contentframe', $attrib['name']);
-      $this->rc->output->set_env('blankpage', $attrib['src'] ?
-      $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
-      
-      return $this->rc->output->frame($attrib);
+    $attrib['name'] = $attrib['id'];
+    
+    $this->rc->output->set_env('contentframe', $attrib['name']);
+    $this->rc->output->set_env('blankpage', $attrib['src'] ?
+    $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
+    
+    return $this->rc->output->frame($attrib);
   }
 }

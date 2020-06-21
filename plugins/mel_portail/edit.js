@@ -23,7 +23,7 @@ $(document).ready(function() {
 		$('#itemimg img').attr('style', 'background-color : ' + $(this).val())
 	});
 	// Affichage du type
-	changeType($('#_item_type').val());
+	changeType(rcmail.env.personal_item_is_new ? $('#_item_type').val() : rcmail.env.personal_item.type);
 	// Gestion du logo
 	if ($('#_item_logo').val() != "") {
 		$('#itemlogo .logobg').show();

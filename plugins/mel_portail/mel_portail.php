@@ -190,70 +190,84 @@ class mel_portail extends rcube_plugin
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
-      $personal_items = $this->rc->config->get('portail_personal_items', []);
-      if (isset($personal_items[$id]) || $id == 'new') {
+      if ($id == 'new') {
         // Dans le cas d'une vignette perso on passe en édition
-        $this->rc->output->set_env("personal_item_is_new", $id == 'new');
+        $this->rc->output->set_env("personal_item_is_new", true);
         $this->rc->output->set_env("personal_item_id", $id);
-        $this->rc->output->set_env("personal_item", $personal_items[$id]);
-        // register UI objects
-        $this->rc->output->add_handlers(
-          array(
-            'itemname'    => array($this, 'itemname'),
-            'item_edit'   => array(new Module('', $this), 'settings_handler'),
-          )
-        );
-        // Ajout le javascript
-        $this->include_script('edit.js');
-        // Ajout des js des différents modules
-        $templates = $this->rc->config->get('portail_templates_list', []);
-        foreach ($templates as $type => $template) {
-          // Ajoute le javascript ?
-          if (isset($template['edit_js'])) {
-            $this->include_script('modules/' . $type . '/' . $template['edit_js']);
-          }
-          // Ajout le css ?
-          if (isset($template['edit_css'])) {
-            $this->include_stylesheet('modules/' . $type . '/' . $template['edit_css']);
-          }
-        }
-        $this->rc->output->send('mel_portail.portail_item_edit');
+        $this->rc->output->set_env("personal_item_read_only", false);
+        $this->rc->output->set_env("personal_item", null);
       }
       else {
         // Vignette générique, l'utilisateur ne peut voir que les informations
         $user = driver_mel::gi()->getUser();
         $this->items = $this->getCardsConfiguration($user->dn);
         $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
-        
-        if (isset($this->items[$id])) {
-          $item = $this->items[$id];
-          $this->rc->output->set_env("resource_id", $id);
-          $this->rc->output->set_env("resource_name", $item['name']);
-          $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
-          if (isset($item['description'])) {
-            $this->rc->output->set_env("resource_description", $item['description']);
-          }
-          if (isset($item['url'])) {
-            $this->rc->output->set_env("resource_url", $item['url']);
-          }
-          if (isset($item['provenance'])) {
-            $this->rc->output->set_env("resource_provenance", $this->gettext($item['provenance']));
-          }
-          if (isset($item['flip'])) {
-            $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
-          }
-          if (isset($item['feedUrl'])) {
-            $this->rc->output->set_env("resource_feedurl", $item['feedUrl']);
-          }
-          if (isset($item['html'])) {
-            $this->rc->output->set_env("resource_front_html", $item['html']);
-          }
-          if (isset($item['html_back'])) {
-            $this->rc->output->set_env("resource_back_html", $item['html_back']);
-          }
-        }
-        $this->rc->output->send('mel_portail.resource_portail');
+        $this->items = $this->mergeItems($this->items, $this->rc->config->get('portail_personal_items', []));
+        // if (isset($personal_items[$id]) || $id == 'new') {
+        // Dans le cas d'une vignette perso on passe en édition
+        $this->rc->output->set_env("personal_item_is_new", $id == 'new');
+        $this->rc->output->set_env("personal_item_id", $id);
+        $this->rc->output->set_env("personal_item_read_only", !$this->items[$id]['personal']);
+        $this->rc->output->set_env("personal_item", $this->items[$id]);
       }
+      // register UI objects
+      $this->rc->output->add_handlers(
+        array(
+          'itemname'    => array($this, 'itemname'),
+          'item_edit'   => array(new Module('', $this), 'settings_handler'),
+        )
+      );
+      // Ajout le javascript
+      $this->include_script('edit.js');
+      // Ajout des js des différents modules
+      $templates = $this->rc->config->get('portail_templates_list', []);
+      foreach ($templates as $type => $template) {
+        // Ajoute le javascript ?
+        if (isset($template['edit_js'])) {
+          $this->include_script('modules/' . $type . '/' . $template['edit_js']);
+        }
+        // Ajout le css ?
+        if (isset($template['edit_css'])) {
+          $this->include_stylesheet('modules/' . $type . '/' . $template['edit_css']);
+        }
+      }
+      $this->rc->output->send('mel_portail.portail_item_edit');
+      // }
+      // else {
+      //   // Vignette générique, l'utilisateur ne peut voir que les informations
+      //   $user = driver_mel::gi()->getUser();
+      //   $this->items = $this->getCardsConfiguration($user->dn);
+      //   $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
+        
+      //   if (isset($this->items[$id])) {
+      //     $item = $this->items[$id];
+      //     $this->rc->output->set_env("resource_id", $id);
+      //     $this->rc->output->set_env("resource_name", $item['name']);
+      //     $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
+      //     if (isset($item['description'])) {
+      //       $this->rc->output->set_env("resource_description", $item['description']);
+      //     }
+      //     if (isset($item['url'])) {
+      //       $this->rc->output->set_env("resource_url", $item['url']);
+      //     }
+      //     if (isset($item['provenance'])) {
+      //       $this->rc->output->set_env("resource_provenance", $this->gettext($item['provenance']));
+      //     }
+      //     if (isset($item['flip'])) {
+      //       $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
+      //     }
+      //     if (isset($item['feedUrl'])) {
+      //       $this->rc->output->set_env("resource_feedurl", $item['feedUrl']);
+      //     }
+      //     if (isset($item['html'])) {
+      //       $this->rc->output->set_env("resource_front_html", $item['html']);
+      //     }
+      //     if (isset($item['html_back'])) {
+      //       $this->rc->output->set_env("resource_back_html", $item['html_back']);
+      //     }
+      //   }
+      //   $this->rc->output->send('mel_portail.resource_portail');
+      // }
     }
     else {
       // register UI objects
@@ -294,8 +308,7 @@ class mel_portail extends rcube_plugin
     $this->items = $this->getCardsConfiguration($user->dn);
     $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
     $personal_items = $this->rc->config->get('portail_personal_items', []);
-    $this->items = array_merge($this->items, $personal_items);
-    
+    $this->items = $this->mergeItems($this->items, $personal_items);
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);
     
@@ -323,16 +336,16 @@ class mel_portail extends rcube_plugin
           continue;
         }
       }
-
       $name = $item['name'];
+      $class = '';
       if (isset($item['provenance'])) {
         $name .= ' (' . $this->gettext($item['provenance']) . ')';
       }
-      $class = '';
-      if (isset($personal_items[$id])) {
+      // Item personnel
+      if (isset($item['personal']) && $item['personal']) {
+        $name = '[' . $this->gettext('personal') .'] ' . $name;
         $class = ' personal';
       }
-      
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
       $table->add('name', $name);
       $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_applications[$id]) ? $id : ''), array('value' => $id)));
@@ -350,7 +363,7 @@ class mel_portail extends rcube_plugin
    * @return string
    */
   public function mel_resources_type_frame($attrib) {
-    if (! $attrib['id']) {
+    if (!$attrib['id']) {
       $attrib['id'] = 'rcmsharemeltypeframe';
     }
     
@@ -361,9 +374,40 @@ class mel_portail extends rcube_plugin
     
     return $this->rc->output->frame($attrib);
   }
+
+  /**
+   * Merge entre les global items et les personal items
+   * Certaines valeurs de global items peuvent être modifiées par un personal item
+   */
+  private function mergeItems($globalItems, $personalItems) {
+    if (is_array($personalItems)) {
+      // Support for non personal items
+      foreach ($globalItems as $id => $item) {
+        $globalItems[$id]['personal'] = false;
+      }
+      // Merge personal items to global items
+      foreach ($personalItems as $id => $personalItem) {
+        if (isset($globalItems[$id])) {
+          if (!isset($globalItems[$id]['unchangeable']) || !$globalItems[$id]['unchangeable']) {
+            if (isset($personalItem['hide'])) {
+              $globalItems[$id]['hide'] = $personalItem['hide'];
+            }
+            if (isset($personalItem['order'])) {
+              $globalItems[$id]['order'] = $personalItem['order'];
+            }
+          }
+        }
+        else {
+          $personalItem['personal'] = true;
+          $globalItems[$id] = $personalItem;
+        }
+      }
+    }
+    return $globalItems;
+  }
   
   /**
-  * Génération de la liste des balp pour l'utilisateur courant
+  * Génération de la liste des items pour l'utilisateur courant
   * 
   * @param array $attrib Liste des paramètres de la liste
   * @return string HTML
@@ -384,7 +428,7 @@ class mel_portail extends rcube_plugin
     $this->templates = $this->rc->config->get('portail_templates_list', []);
     $this->items = $this->getCardsConfiguration($user->dn);
     $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
-    $this->items = array_merge($this->items, $this->rc->config->get('portail_personal_items', []));
+    $this->items = $this->mergeItems($this->items, $this->rc->config->get('portail_personal_items', []));
     
     // Tri des items
     uasort($this->items, [$this, 'sortItems']);

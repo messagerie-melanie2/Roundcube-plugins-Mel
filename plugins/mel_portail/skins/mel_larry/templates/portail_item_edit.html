@@ -13,9 +13,11 @@
 <roundcube:object name="item_edit" form="form" class="propform" />
 </div>
 
-<div class="footerleft formbuttons floating">
-	<roundcube:button command="save" type="input" class="button mainaction" label="save" />
-</div>
+<roundcube:if condition="env:personal_item_read_only == false" />
+	<div class="footerleft formbuttons floating">
+		<roundcube:button command="save" type="input" class="button mainaction" label="save" />
+	</div>
+<roundcube:endif />
 
 <roundcube:include file="/includes/footer.html" />
 

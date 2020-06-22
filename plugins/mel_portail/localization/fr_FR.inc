@@ -83,6 +83,9 @@ $labels['itemhtml_item'] = "Configuration de la vignette contenu HTML";
 $labels['itemmailbox_item'] = "Configuration de la vignette boite de messagerie";
 $labels['itemcalendar_item'] = "Configuration de la vignette calendrier";
 $labels['itemariane'] = "Configuration de la vignette salon de discussion";
+$labels['itemcommunication'] = "Configuration de la vignette communication";
+$labels['itemwebconf'] = "Configuration de la vignette Webconf";
+$labels['itemstockage'] = "Configuration de la vignette Stockage";
 
 $labels['item_intranet'] = "Choix du site Intranet à afficher";
 $labels['item_title_intranet'] = "Choisissez le site Intranet que vous souhaitez afficher avec cette vignette";

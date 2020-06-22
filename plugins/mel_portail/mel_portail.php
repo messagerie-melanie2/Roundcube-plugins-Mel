@@ -190,12 +190,13 @@ class mel_portail extends rcube_plugin
     $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     if (isset($id)) {
       $id = driver_mel::gi()->rcToMceId($id);
+      $this->templates = $this->rc->config->get('portail_templates_list', []);
       if ($id == 'new') {
         // Dans le cas d'une vignette perso on passe en édition
         $this->rc->output->set_env("personal_item_is_new", true);
         $this->rc->output->set_env("personal_item_id", $id);
         $this->rc->output->set_env("personal_item_read_only", false);
-        $this->rc->output->set_env("personal_item", null);
+        $this->rc->output->set_env("personal_item", ['personal' => true]);
       }
       else {
         // Vignette générique, l'utilisateur ne peut voir que les informations
@@ -203,12 +204,22 @@ class mel_portail extends rcube_plugin
         $this->items = $this->getCardsConfiguration($user->dn);
         $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
         $this->items = $this->mergeItems($this->items, $this->rc->config->get('portail_personal_items', []));
-        // if (isset($personal_items[$id]) || $id == 'new') {
         // Dans le cas d'une vignette perso on passe en édition
+        $item = $this->items[$id];
         $this->rc->output->set_env("personal_item_is_new", $id == 'new');
         $this->rc->output->set_env("personal_item_id", $id);
-        $this->rc->output->set_env("personal_item_read_only", !$this->items[$id]['personal']);
-        $this->rc->output->set_env("personal_item", $this->items[$id]);
+        $this->rc->output->set_env("personal_item", $item);
+        $template = $this->templates[$item['type']];
+        // Ajoute le php ?
+        if (isset($template['php'])) {
+          include_once 'modules/' . $item['type'] . '/' . $template['php'];
+          $classname = ucfirst($item['type']);
+          $object = new $classname($id, $this);
+          $this->rc->output->set_env("personal_item_read_only", $object->isReadonly($item));
+        }
+        else {
+          $this->rc->output->set_env("personal_item_read_only", !$item['personal']);
+        }
       }
       // register UI objects
       $this->rc->output->add_handlers(
@@ -219,9 +230,8 @@ class mel_portail extends rcube_plugin
       );
       // Ajout le javascript
       $this->include_script('edit.js');
-      // Ajout des js des différents modules
-      $templates = $this->rc->config->get('portail_templates_list', []);
-      foreach ($templates as $type => $template) {
+      // Ajout des js des différents modules      
+      foreach ($this->templates as $type => $template) {
         // Ajoute le javascript ?
         if (isset($template['edit_js'])) {
           $this->include_script('modules/' . $type . '/' . $template['edit_js']);
@@ -232,42 +242,6 @@ class mel_portail extends rcube_plugin
         }
       }
       $this->rc->output->send('mel_portail.portail_item_edit');
-      // }
-      // else {
-      //   // Vignette générique, l'utilisateur ne peut voir que les informations
-      //   $user = driver_mel::gi()->getUser();
-      //   $this->items = $this->getCardsConfiguration($user->dn);
-      //   $this->items = array_merge($this->items, $this->rc->config->get('portail_items_list', []));
-        
-      //   if (isset($this->items[$id])) {
-      //     $item = $this->items[$id];
-      //     $this->rc->output->set_env("resource_id", $id);
-      //     $this->rc->output->set_env("resource_name", $item['name']);
-      //     $this->rc->output->set_env("resource_type", $this->gettext($item['type']));
-      //     if (isset($item['description'])) {
-      //       $this->rc->output->set_env("resource_description", $item['description']);
-      //     }
-      //     if (isset($item['url'])) {
-      //       $this->rc->output->set_env("resource_url", $item['url']);
-      //     }
-      //     if (isset($item['provenance'])) {
-      //       $this->rc->output->set_env("resource_provenance", $this->gettext($item['provenance']));
-      //     }
-      //     if (isset($item['flip'])) {
-      //       $this->rc->output->set_env("resource_flip", $this->gettext($item['flip'] ? 'true' : 'false'));
-      //     }
-      //     if (isset($item['feedUrl'])) {
-      //       $this->rc->output->set_env("resource_feedurl", $item['feedUrl']);
-      //     }
-      //     if (isset($item['html'])) {
-      //       $this->rc->output->set_env("resource_front_html", $item['html']);
-      //     }
-      //     if (isset($item['html_back'])) {
-      //       $this->rc->output->set_env("resource_back_html", $item['html_back']);
-      //     }
-      //   }
-      //   $this->rc->output->send('mel_portail.resource_portail');
-      // }
     }
     else {
       // register UI objects
@@ -317,7 +291,6 @@ class mel_portail extends rcube_plugin
         unset($this->items[$id]);
         continue;
       }
-      $template = $this->templates[$item['type']];
       // Check if the item match the dn
       if (isset($item['dn'])) {
         $res = Module::filter_dn($user->dn, $item['dn']);
@@ -326,6 +299,7 @@ class mel_portail extends rcube_plugin
           continue;
         }
       }
+      $template = $this->templates[$item['type']];
       // Ajoute le php ?
       if (isset($template['php'])) {
         include_once 'modules/' . $item['type'] . '/' . $template['php'];
@@ -395,6 +369,15 @@ class mel_portail extends rcube_plugin
             if (isset($personalItem['order'])) {
               $globalItems[$id]['order'] = $personalItem['order'];
             }
+          }
+          $item = $globalItems[$id];
+          $template = $this->templates[$item['type']];
+          // Ajoute le php ?
+          if (isset($template['php'])) {
+            include_once 'modules/' . $item['type'] . '/' . $template['php'];
+            $classname = ucfirst($item['type']);
+            $object = new $classname($id, $this);
+            $globalItems[$id] = $object->mergeItem($item, $personalItem);
           }
         }
         else {

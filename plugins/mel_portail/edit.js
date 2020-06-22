@@ -25,12 +25,16 @@ $(document).ready(function() {
 	// Affichage du type
 	changeType(rcmail.env.personal_item_is_new ? $('#_item_type').val() : rcmail.env.personal_item.type);
 	// Gestion du logo
-	if ($('#_item_logo').val() != "") {
+	if ($('#_item_logo').val() != undefined && $('#_item_logo').val() != "" || $('#itemlogo .logo .readonly').length) {
 		$('#itemlogo .logobg').show();
-		if ($('#_item_logobg').val() != "") {
-			$('#itemimg img').attr('style', 'background-color : ' + $('#_item_logobg').val())
+		if ($('#_item_logobg').val() != "" && $('#_item_logo').val() != undefined) {
+			$('#itemimg img').attr('style', 'background-color : ' + $('#_item_logobg').val());
+			$('#itemimg img').addClass('custom');
 		}
-		$('#itemimg img').addClass('custom')
+		else if ($('#itemlogo .logobg .readonly').length) {
+			$('#itemimg img').attr('style', 'background-color : ' + $('#itemlogo .logobg .readonly').text());
+			$('#itemimg img').addClass('custom');
+		}
 	}
 });
 
@@ -75,7 +79,6 @@ rcube_webmail.prototype.save_item = function(event, object) {
 
 // Add new item on click on add button
 rcube_webmail.prototype.portail_add_item = function() {
-	alert('proot');
 	window.document.getElementById('mel_resources_type_frame').src = this.url('settings/plugin.mel_resources_portail', {_frame: 1, _id: 'new'});
 	$('#mel_resources_elements_list .focused').removeClass('focused');
 	$('#mel_resources_elements_list .selected').removeClass('selected');

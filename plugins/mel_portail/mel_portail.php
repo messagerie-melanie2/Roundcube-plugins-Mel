@@ -102,6 +102,10 @@ class mel_portail extends rcube_plugin
       // register actions
       $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
       $this->register_action('plugin.mel_portail_edit', array($this,'portail_edit'));
+      $this->register_action('plugin.portail_delete_item', array($this,'delete_item'));
+      $this->register_action('plugin.portail_hide_item', array($this,'hide_item'));
+      $this->register_action('plugin.portail_show_item', array($this,'show_item'));
+      $this->register_action('plugin.portail_sort_items', array($this,'sort_items'));
     }
   }
   
@@ -269,13 +273,10 @@ class mel_portail extends rcube_plugin
     // add id to message list table if not specified
     if (! strlen($attrib['id']))
       $attrib['id'] = 'rcmresourceselementslist';
-    
-    // Récupération des préférences de l'utilisateur
-    $hidden_applications = $this->rc->config->get('hidden_applications', array());
       
     // Objet HTML
     $table = new html_table();
-    $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'application')"));
+    $checkbox_subscribe = new html_checkbox(array('name' => '_portail_show_item[]', 'title' => $this->rc->gettext('changesubscription'), 'onclick' => "rcmail.command(this.checked ? 'plugin.mel_portail_show_resource' : 'plugin.mel_portail_hide_resource', this.value)"));
     $user = driver_mel::gi()->getUser();
     
     $this->templates = $this->rc->config->get('portail_templates_list', []);
@@ -322,10 +323,10 @@ class mel_portail extends rcube_plugin
       }
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
       $table->add('name', $name);
-      $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_applications[$id]) ? $id : ''), array('value' => $id)));
+      $table->add('subscribed', $checkbox_subscribe->show(((!isset($item['hide']) || !$item['hide']) ? $id : ''), array('value' => $id)));
     }
     // set client env
-    $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);
+    $this->rc->output->add_gui_object('mel_portail_items_list', $attrib['id']);
     
     return $table->show($attrib);
   }
@@ -388,6 +389,109 @@ class mel_portail extends rcube_plugin
     }
     return $globalItems;
   }
+
+  /**
+   * Supprimer l'item des prefs roundcube
+   */
+  public function delete_item() {
+    $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_POST);
+    if (isset($id)) {
+      $personal_items = $this->rc->config->get('portail_personal_items', []);
+      if (isset($personal_items[$id])) {
+        unset($personal_items[$id]);
+      }
+      if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
+        $this->rc->output->show_message('mel_portail.delete_item_confirm', 'confirmation');
+        $this->rc->output->command('mel_portail_reload_page');
+      }
+      else {
+        $this->rc->output->show_message('mel_portail.modify_error', 'error');
+      }
+    }
+    else {
+      $this->rc->output->show_message('mel_portail.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Masquer l'item dans roundcube
+   */
+  public function hide_item() {
+    $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_POST);
+    if (isset($id)) {
+      $personal_items = $this->rc->config->get('portail_personal_items', []);
+      if (isset($personal_items[$id])) {
+        $personal_items[$id]['hide'] = true;
+      }
+      else {
+        $personal_items[$id] = [
+          'hide' => true,
+        ];
+      }
+      if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
+        $this->rc->output->show_message('mel_portail.hide_item_confirm', 'confirmation');
+      }
+      else {
+        $this->rc->output->show_message('mel_portail.modify_error', 'error');
+      }
+    }
+    else {
+      $this->rc->output->show_message('mel_portail.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Afficher l'item dans roundcube
+   */
+  public function show_item() {
+    $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_POST);
+    if (isset($id)) {
+      $personal_items = $this->rc->config->get('portail_personal_items', []);
+      if (isset($personal_items[$id])) {
+        unset($personal_items[$id]['hide']);
+      }
+      if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
+        $this->rc->output->show_message('mel_portail.show_item_confirm', 'confirmation');
+      }
+      else {
+        $this->rc->output->show_message('mel_portail.modify_error', 'error');
+      }
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Trier les items
+   */
+  public function sort_items() {
+    $items = rcube_utils::get_input_value('_items', rcube_utils::INPUT_POST);
+    if (isset($items)) {
+      $items = json_decode($items, true);
+      $personal_items = $this->rc->config->get('portail_personal_items', []);
+      foreach ($items as $order => $id) {
+        if (isset($personal_items[$id])) {
+          $personal_items[$id]['order'] = $order;
+        }
+        else {
+          $personal_items[$id] = [
+            'order' => $order,
+          ];
+        }
+      }
+      if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
+        $this->rc->output->show_message('mel_portail.sort_items_confirm', 'confirmation');
+        $this->rc->output->command('mel_portail_reload_page');
+      }
+      else {
+        $this->rc->output->show_message('mel_portail.modify_error', 'error');
+      }
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
   
   /**
   * Génération de la liste des items pour l'utilisateur courant
@@ -399,9 +503,6 @@ class mel_portail extends rcube_plugin
     if (!$attrib['id']) {
       $attrib['id'] = 'portailview';
     }
-    
-    // Récupération des préférences de l'utilisateur
-    $hidden_applications = $this->rc->config->get('hidden_applications', array());
     
     $content = "";
     $scripts_js = [];
@@ -425,7 +526,7 @@ class mel_portail extends rcube_plugin
         unset($this->items[$id]);
         continue;
       }
-      if (isset($hidden_applications[$id]) && !isset($item['show'])) {
+      if (isset($item['hide']) && $item['hide'] === true) {
         unset($this->items[$id]);
         continue;
       }

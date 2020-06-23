@@ -3,8 +3,18 @@ $labels = array();
 $labels['task'] = 'Portail ETN';
 $labels['title'] = 'Portail Environnement de Travail Numérique';
 
-$labels['manageresourcesportail'] = "Liste des applications dans le portail Mél";
-$labels['resourcesportail'] = "Applications";
+$labels['manageresourcesportail'] = "Liste des vignettes dans le portail ETN";
+$labels['applications_list'] = "Liste des vignettes";
+$labels['resourcesportail'] = "Vignettes";
+$labels['add_resource'] = "Ajouter une nouvelle vignette";
+$labels['delete_resource'] = "Supprimer la vignette sélectionnée";
+
+$labels['delete_confirm'] = 'Êtes-vous sûr de vouloir supprimer cette vignette du portail ETN ? La suppression est définitive.';
+$labels['show_item_confirm'] = 'La vignette est bien affichée dans le portail ETN';
+$labels['hide_item_confirm'] = 'La vignette est bien masquée dans le portail ETN';
+$labels['sort_items_confirm'] = 'La vignette a bien été déplacée dans le portail ETN';
+$labels['delete_item_confirm'] = 'La vignette a bien été supprimée du portail ETN';
+$labels['modify_error'] = 'Une erreur s\'est produite lors de l\'enregistrement. Essayez d\'actualiser la page et de recommencer';
 
 $labels['true'] = "Oui";
 $labels['false'] = "Non";
@@ -34,8 +44,6 @@ $labels['ariane'] = "Salon de discussion";
 
 $labels['internet'] = "Internet";
 $labels['intranet'] = "Intranet";
-
-$labels['applications_list'] = "Liste d'applications";
 
 // Edit page
 $labels['New item'] = "Création d'une nouvelle vignette";

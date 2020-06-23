@@ -65,13 +65,13 @@ table#mel_resources_elements_list tr.task td.name {
   font-weight: bold;
 }
 
-#mel_resources_elements_list tbody tr.filtermoveup td
+#mel_resources_elements_list tbody tr.elementmoveup td
 {
   border-top: 2px dotted #555;
   padding-top: 5px;
 }
 
-#mel_resources_elements_list tbody tr.filtermovedown td
+#mel_resources_elements_list tbody tr.elementmovedown td
 {
   border-bottom: 2px dotted #555;
   padding-bottom: 4px;

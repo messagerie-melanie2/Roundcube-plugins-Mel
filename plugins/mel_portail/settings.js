@@ -39,9 +39,33 @@ if (window.rcmail) {
 
 // Add new item on click on add button
 rcube_webmail.prototype.portail_add_item = function() {
-	window.document.getElementById('mel_resources_type_frame').src = this.url('settings/plugin.mel_resources_portail', {_frame: 1, _id: 'new'});
+	// window.document.getElementById('mel_resources_type_frame').src = this.url('settings/plugin.mel_resources_portail', {_frame: 1, _id: 'new'});
 	$('#mel_resources_elements_list .focused').removeClass('focused');
 	$('#mel_resources_elements_list .selected').removeClass('selected');
+
+	var frame = $('<iframe>').attr('id', 'portail_create_item')
+		.attr('src', this.url('settings/plugin.mel_resources_portail', {_frame: 1, _id: 'new'}))
+		.attr('frameborder', '0')
+		.appendTo(document.body);
+
+	var h = Math.floor($(window).height() * 0.75);
+	var w = Math.floor($(window).width() * 0.75);
+	var buttons = {};
+
+	frame.dialog({
+		modal: true,
+		resizable: true,
+		closeOnEscape: true,
+		title: '',
+		close: function() {
+			frame.dialog('destroy').remove();
+			window.location.reload();
+		},
+		buttons: buttons,
+		width: w+20,
+		height: h,
+		rcmail: rcmail
+	}).width(w);
 };
 
 // Delete personal item from list

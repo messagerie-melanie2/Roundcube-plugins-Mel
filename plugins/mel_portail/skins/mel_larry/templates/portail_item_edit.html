@@ -15,7 +15,9 @@
 
 <roundcube:if condition="env:personal_item_read_only == false" />
 	<div class="footerleft formbuttons floating">
-		<roundcube:button command="save" type="input" class="button mainaction" label="save" />
+		<roundcube:button command="previous_edit" type="input" class="button navigation previous" label="previous" />
+		<roundcube:button command="next_edit" type="input" class="button navigation next" label="next" />
+		<roundcube:button command="save" type="input" class="button mainaction save" label="save" />
 	</div>
 <roundcube:endif />
 

@@ -8,6 +8,7 @@ $labels['applications_list'] = "Liste des vignettes";
 $labels['resourcesportail'] = "Vignettes";
 $labels['add_resource'] = "Ajouter une nouvelle vignette";
 $labels['delete_resource'] = "Supprimer la vignette sélectionnée";
+$labels['wait'] = "Chargement en cours...";
 
 $labels['delete_confirm'] = 'Êtes-vous sûr de vouloir supprimer cette vignette du portail ETN ? La suppression est définitive.';
 $labels['show_item_confirm'] = 'La vignette est bien affichée dans le portail ETN';
@@ -50,11 +51,15 @@ $labels['New item'] = "Création d'une nouvelle vignette";
 
 // Type
 $labels['itemtype'] = "Type de vignette";
+$labels['itemtype_choice'] = "Choisissez le type de vignette que vous souhaitez créer";
+$labels['itemtype_choosen'] = "Type de vignette choisi : ";
 $labels['item_type'] = "Type de vignette";
 $labels['item_title_type'] = "Choisissez le type de vignette que vous souhaitez afficher";
 
 // Logo
 $labels['itemlogo'] = "Logo de la vignette";
+$labels['itemlogo_choice'] = "Choisissez le logo que vous souhaitez afficher sur votre vignette";
+$labels['itemlogo_choosen'] = "Logo choisi pour la vignette : ";
 $labels['no icon'] = "Logo par défaut";
 $labels['itemiconalt'] = "Logo de la vignette";
 $labels['item_logo'] = "Choix du logo";
@@ -76,10 +81,15 @@ $labels['item_url'] = "URL de la vignette";
 $labels['item_title_url'] = "Saisissez l'url qui doit s'ouvrir lorsque l'on clic sur la vignette, par exemple : http://mtes.fr/1";
 $labels['item_flip'] = "Vignette de type recto-verso";
 $labels['item_title_flip'] = "Si la vignette est de type recto-verso, elle peut se retourner pour afficher plus d'informations";
+$labels['item_width'] = "Largeur de la vignette";
+$labels['item_title_flip'] = "Choisissez avec quelle largeur la vignette s'affichera dans le portail";
 
 $labels['from all'] = "Toujours afficher";
 $labels['from internet'] = "Seulement sur Internet";
 $labels['from intranet'] = "Seulement sur Intranet";
+
+$labels['normal'] = "Normale";
+$labels['large'] = "Large";
 
 // Types
 $labels['itemwebsite'] = "Configuration de la vignette site web";

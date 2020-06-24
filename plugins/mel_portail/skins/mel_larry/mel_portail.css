@@ -75,6 +75,10 @@
     -webkit-transform-origin: 50% 50%;
 }
 
+#portailview .item.large {
+	width: 42em;
+}
+
 #portailview .item.wait {
 	cursor: wait;
 	background: #eaeaea;
@@ -411,6 +415,10 @@
 	position: absolute;
 	bottom: 0;
 	width: 18em;
+}
+
+#portailview .item.large .front .buttons {
+	width: 40em;
 }
 
 #portailview .item .back .buttons {

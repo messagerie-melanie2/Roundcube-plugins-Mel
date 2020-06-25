@@ -145,6 +145,9 @@ $labels['item_link_title'] = "Infobulle de l'application";
 $labels['item_title_link_title'] = "Infobulle qui s'affichera lorsque la souris passera sur l'application";
 $labels['item_add_link'] = "Ajouter une nouvelle application";
 
+// Twitter
+$labels['twitter of '] = "Twitter de ";
+
 // Days list
 $labels['day_0'] = 'Dimanche';
 $labels['day_1'] = 'Lundi';

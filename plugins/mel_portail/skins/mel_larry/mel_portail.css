@@ -50,6 +50,32 @@
   width: 100%;
 }
 
+#portailview .manage_message {
+	display: none;
+}
+
+#portailview.manage .manage_message {
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+	background-color: #602626;
+	color: #fff;
+	font-weight: bold;
+	z-index: 200;
+	padding: 4px;
+}
+
+#portailview.manage .manage_message .button {
+	text-indent: 0;
+	width: auto;
+	height: auto;
+	padding: 5px 12px;
+	margin-left: 15px;
+}
+
 #portailview .item {
 	height: 22em;
 	width: 20em;
@@ -83,6 +109,10 @@
 	cursor: wait;
 	background: #eaeaea;
 	background: var(--main-bg-color);
+}
+
+#portailview .item > div.managing {
+	display: none;
 }
 
 #portailview .item > article {

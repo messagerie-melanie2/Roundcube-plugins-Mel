@@ -148,6 +148,14 @@ $labels['item_add_link'] = "Ajouter une nouvelle application";
 // Twitter
 $labels['twitter of '] = "Twitter de ";
 
+// Manage
+$labels['You are actually in edition mode'] = "Vous êtes en mode édition des vignettes, dans ce mode vous pouvez réorganiser votre portail";
+$labels['switch off edition mode'] = "Fermer le mode édition";
+$labels['Hide this item'] = "Masquer cette vignette";
+$labels['Clic to hide this item'] = 'Cliquez-ici pour ne plus afficher cette vignette dans votre portail';
+$labels['Edit this item'] = "Modifier cette vignette";
+$labels['Clic to edit this item'] = 'Cliquez-ici pour modifier les paramètres de cette vignette';
+
 // Days list
 $labels['day_0'] = 'Dimanche';
 $labels['day_1'] = 'Lundi';

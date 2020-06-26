@@ -504,7 +504,10 @@ class mel_portail extends rcube_plugin
       $attrib['id'] = 'portailview';
     }
     
-    $content = "";
+    $content = html::div(['class' => 'manage_message'], 
+      $this->gettext('You are actually in edition mode') . 
+      html::a(['class' => 'button', 'href' => '#', 'onclick' => 'rcmail.editPortailItems(event)'], $this->gettext('switch off edition mode'))
+    );
     $scripts_js = [];
     $scripts_css = [];
     $user = driver_mel::gi()->getUser();

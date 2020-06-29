@@ -402,7 +402,7 @@ class mel_portail extends rcube_plugin
       }
       if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
         $this->rc->output->show_message('mel_portail.delete_item_confirm', 'confirmation');
-        $this->rc->output->command('mel_portail_reload_page');
+        $this->rc->output->command('mel_portail_reload_page', 'delete');
       }
       else {
         $this->rc->output->show_message('mel_portail.modify_error', 'error');
@@ -482,7 +482,7 @@ class mel_portail extends rcube_plugin
       }
       if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
         $this->rc->output->show_message('mel_portail.sort_items_confirm', 'confirmation');
-        $this->rc->output->command('mel_portail_reload_page');
+        $this->rc->output->command('mel_portail_reload_page', 'sort');
       }
       else {
         $this->rc->output->show_message('mel_portail.modify_error', 'error');

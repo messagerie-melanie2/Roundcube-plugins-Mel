@@ -448,7 +448,12 @@ class mel_portail extends rcube_plugin
     if (isset($id)) {
       $personal_items = $this->rc->config->get('portail_personal_items', []);
       if (isset($personal_items[$id])) {
-        unset($personal_items[$id]['hide']);
+        $personal_items[$id]['hide'] = false;
+      }
+      else {
+        $personal_items[$id] = [
+          'hide' => false,
+        ];
       }
       if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
         $this->rc->output->show_message('mel_portail.show_item_confirm', 'confirmation');

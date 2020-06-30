@@ -208,21 +208,6 @@ if (window.rcmail) {
 	        rcmail.add_element(tab, 'tabs');
     	}
     	
-    	// Ajout des ressources Mes applications du portail
-    	if (rcmail.env.enable_mesressources_portail) {
-    		tab = $('<span>')
-	            .attr('id', 'settingstabpluginmel_resources_portail')
-	            .addClass('listitem_mel mel'), button = $('<a>')
-	            .attr('href', rcmail.env.comm_path
-	                + '&_action=plugin.mel_resources_portail')
-	            .attr('title', rcmail
-	                .gettext('mel_portail.manageresourcesportail'))
-	            .html(rcmail.gettext('mel_portail.resourcesportail'))
-	            .appendTo(tab);
-	        // add tab
-	        rcmail.add_element(tab, 'tabs');
-    	}
-        
     	// Ajout des ressources mails
     	if (rcmail.env.enable_mesressources_mail) {
     		tab = $('<span>').attr('id', 'settingstabpluginmel_resources_bal')
@@ -266,7 +251,6 @@ if (window.rcmail) {
 	        rcmail.add_element(tab, 'tabs');
     	}
         
-
     	// Ajout des ressources tâches
     	if (rcmail.env.enable_mesressources_task) {
     		tab = $('<span>')
@@ -280,9 +264,23 @@ if (window.rcmail) {
 	            .appendTo(tab);
 	        // add tab
 	        rcmail.add_element(tab, 'tabs');
+      }
+      
+      // Ajout des ressources Mes applications du portail
+    	if (rcmail.env.enable_mesressources_portail) {
+    		tab = $('<span>')
+	            .attr('id', 'settingstabpluginmel_resources_portail')
+	            .addClass('listitem_mel mel'), button = $('<a>')
+	            .attr('href', rcmail.env.comm_path
+	                + '&_action=plugin.mel_resources_portail')
+	            .attr('title', rcmail
+	                .gettext('mel_portail.manageresourcesportail'))
+	            .html(rcmail.gettext('mel_portail.resourcesportail'))
+	            .appendTo(tab);
+	        // add tab
+	        rcmail.add_element(tab, 'tabs');
     	}
     	
-
         var p = rcmail;
 
         if (rcmail.gui_objects.mel_resources_elements_list) {

@@ -67,6 +67,7 @@ html.mozilla #mailboxlist > li:first-child {
 
 .widescreen #messagelistheader {
 	border-radius: 0;
+	background: var(--message-list-header);
 }
 
 .messagelist tr td {
@@ -155,6 +156,11 @@ html.mozilla #mailboxlist > li:first-child {
   width: 26px;
 }
 
+.messagelist tr td.status span.status, 
+.messagelist tr td.subject span.unread {
+	background: url(../images/non-lu.png?v=e784.5000) center center no-repeat !important;
+}
+
 .messagelist thead th:first-child {
     border-radius: 0;
 }
@@ -168,6 +174,8 @@ html.mozilla #mailboxlist > li:first-child {
 	  background: url(../images/non-lu-dark.png?v=e784.5000) center center no-repeat;
 	}
 	
+	.messagelist tr td.status span.status, 
+	.messagelist tr td.subject span.unread,
 	.messagelist tr td.status span.unread,
 	.messagelist tr td.status span.unread:hover {
 	  background: url(../images/non-lu-dark.png?v=e784.5000) center center no-repeat !important;

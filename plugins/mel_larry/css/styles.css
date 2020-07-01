@@ -1643,6 +1643,7 @@ a.menuselector {
 	border-radius: 0;
 	width: 139px;
 	color: var(--inputs-text-color);
+	background: var(--listbox-bg-color);
 }
 
 a.menuselector .handle {

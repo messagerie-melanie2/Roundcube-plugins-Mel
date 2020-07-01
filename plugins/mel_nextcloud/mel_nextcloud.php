@@ -67,8 +67,6 @@ class mel_nextcloud extends rcube_plugin {
     // Ajout du css
     $this->include_stylesheet($this->local_skin_path() . '/mel_nextcloud.css');
 
-    // ajout de la tache
-    $this->register_task('stockage');
     // Ajoute le bouton en fonction de la skin
     if ($rcmail->config->get('ismobile', false)) {
       $this->add_button(array(
@@ -91,6 +89,8 @@ class mel_nextcloud extends rcube_plugin {
 
     // Si tache = stockage, on charge l'onglet
     if ($rcmail->task == 'stockage') {
+      // ajout de la tache
+      $this->register_task('stockage');
       // Ajout du css
       $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
       // Disable refresh
@@ -110,6 +110,28 @@ class mel_nextcloud extends rcube_plugin {
       )));
       $rcmail->output->set_env('nextcloud_external_url', $rcmail->config->get('nextcloud_external_url'));
     }
+    else if ($rcmail->task == 'settings') {
+      $this->add_hook('settings_actions', array($this, 'settings_actions'));
+      $this->register_action('plugin.mel_nextcloud', array(
+        $this,
+        'settings'
+      ));
+    }
+  }
+
+  /**
+   * Adds Filters section in Settings
+   */
+  function settings_actions($args)
+  {
+    $args['actions'][] = array(
+        'action' => 'plugin.mel_nextcloud',
+        'class'  => 'nextcloud',
+        'label'  => 'task',
+        'domain' => 'mel_nextcloud',
+        'title'  => 'nextcloudtitle',
+    );
+    return $args;
   }
 
   function action() {
@@ -124,6 +146,23 @@ class mel_nextcloud extends rcube_plugin {
     // Chargement du template d'affichage
     $rcmail->output->set_pagetitle($this->gettext('title'));
     $rcmail->output->send('mel_nextcloud.mel_nextcloud');
+  }
+
+  function settings() {
+    $rcmail = rcmail::get_instance();
+    // Ajout du css
+    $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
+    $this->login_nextcloud(true);
+    // register UI objects
+    $rcmail->output->add_handlers(array(
+            'mel_nextcloud_frame' => array(
+                    $this,
+                    'nextcloud_frame'
+            )
+    ));
+    // Chargement du template d'affichage
+    $rcmail->output->set_pagetitle($this->gettext('title'));
+    $rcmail->output->send('mel_nextcloud.settings');
   }
   /**
    * Appel apres l'appel au logout
@@ -164,13 +203,13 @@ class mel_nextcloud extends rcube_plugin {
   /**
    * Méthode pour se logger dans l'application de nextcloud
    */
-  private function login_nextcloud() {
+  private function login_nextcloud($settings = false) {
     $rcmail = rcmail::get_instance();
     if (mel::is_internal()) {
-      $nextcloud_url = $rcmail->config->get('nextcloud_url');
+      $nextcloud_url = $rcmail->config->get($settings ? 'nextcloud_settings_url' : 'nextcloud_url');
     }
     else {
-      $nextcloud_url = $rcmail->config->get('nextcloud_external_url');
+      $nextcloud_url = $rcmail->config->get($settings ? 'nextcloud_external_settings_url' : 'nextcloud_external_url');
     }
     // Configuration de l'environnement
     $rcmail->output->set_env('nextcloud_username', $rcmail->user->get_username());

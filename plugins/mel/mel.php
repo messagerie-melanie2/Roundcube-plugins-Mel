@@ -1634,24 +1634,32 @@ class mel extends rcube_plugin {
     /* PAMELA - Gestion des boites partagées */
     if (isset($balp_label) && !empty($this->get_account) && driver_mel::gi()->getUser($this->get_share_objet(), false)->is_objectshare) {
       $delimiter = $this->rc->get_storage()->delimiter;
-      $draft_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $draft_mbox;
-      $sent_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $sent_mbox;
-      $junk_mbox = $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $junk_mbox;
+      $draft_mbox = isset($draft_mbox) ? $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $draft_mbox : null;
+      $sent_mbox = isset($sent_mbox) ? $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $sent_mbox : null;
+      $junk_mbox = isset($junk_mbox) ? $balp_label . $delimiter . $this->get_user_bal() . $delimiter . $junk_mbox : null;
     }
-    $CONFIG['drafts_mbox'] = $draft_mbox;
-    $this->rc->config->set('drafts_mbox', $draft_mbox);
-    $CONFIG['sent_mbox'] = $sent_mbox;
-    $this->rc->config->set('sent_mbox', $sent_mbox);
-    $CONFIG['junk_mbox'] = $junk_mbox;
-    $this->rc->config->set('junk_mbox', $junk_mbox);
-    $CONFIG['trash_mbox'] = $trash_mbox;
-    $this->rc->config->set('trash_mbox', $trash_mbox);
-    $this->rc->config->set('default_folders', array(
-            $draft_mbox,
-            $sent_mbox,
-            $junk_mbox,
-            $trash_mbox
-    ));
+    if (isset($sent_mbox)) {
+      $CONFIG['sent_mbox'] = $sent_mbox;
+      $this->rc->config->set('sent_mbox', $sent_mbox);
+    }
+    if (isset($junk_mbox)) {
+      $CONFIG['junk_mbox'] = $junk_mbox;
+      $this->rc->config->set('junk_mbox', $junk_mbox);
+    }
+    if (isset($trash_mbox)) {
+      $CONFIG['trash_mbox'] = $trash_mbox;
+      $this->rc->config->set('trash_mbox', $trash_mbox);
+    }
+    if (isset($draft_mbox)) {
+      $CONFIG['drafts_mbox'] = $draft_mbox;
+      $this->rc->config->set('drafts_mbox', $draft_mbox);
+      $this->rc->config->set('default_folders', array(
+              $draft_mbox,
+              $sent_mbox,
+              $junk_mbox,
+              $trash_mbox
+      ));
+    }
   }
   /**
    * Défini si on est dans une instance interne ou extene de l'application

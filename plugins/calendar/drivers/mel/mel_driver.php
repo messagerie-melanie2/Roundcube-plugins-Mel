@@ -685,15 +685,15 @@ class mel_driver extends calendar_driver {
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if (!$new && $_event->load()) {
         $loaded = true;
-        // Test si l'utilisateur est seulement participant
-        $organizer = $_event->organizer;
-        if (isset($organizer) 
-            && !$organizer->extern
-            && !empty($organizer->uid)
-            && ($organizer->uid != $this->rc->get_user_name() 
-              || $this->currentUserIsOrganiser($organizer))) {
-          return true;
-        }
+        // // Test si l'utilisateur est seulement participant
+        // $organizer = $_event->organizer;
+        // if (isset($organizer) 
+        //     && !$organizer->extern
+        //     && !empty($organizer->uid)
+        //     && ($organizer->uid != $this->rc->get_user_name() 
+        //       || $this->currentUserIsOrganiser($organizer))) {
+        //   return true;
+        // }
         // Test si privé
         $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
@@ -907,14 +907,14 @@ class mel_driver extends calendar_driver {
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if ($_event->load()) {
         // Test si l'utilisateur est seulement participant
-        $organizer = $_event->organizer;
-        if (isset($organizer) 
-            && !$organizer->extern
-            && !empty($organizer->uid)
-            && ($organizer->uid != $this->rc->get_user_name() 
-              || $this->currentUserIsOrganiser($organizer))) {
-          return true;
-        }
+        // $organizer = $_event->organizer;
+        // if (isset($organizer) 
+        //     && !$organizer->extern
+        //     && !empty($organizer->uid)
+        //     && ($organizer->uid != $this->rc->get_user_name() 
+        //       || $this->currentUserIsOrganiser($organizer))) {
+        //   return true;
+        // }
         // Test si privé
         $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
@@ -1809,7 +1809,9 @@ class mel_driver extends calendar_driver {
         if (count($attachments) > 0) {
           $_event['attachments'] = $attachments;
         }
-
+        else {
+          $_event['attachments'] = [];
+        }
       }
 
       // Recurrence

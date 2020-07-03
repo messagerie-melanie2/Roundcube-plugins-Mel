@@ -318,6 +318,9 @@ class mel_mapping {
     $minutes = $nbMin + $nbHour * 60 + $nbDay * 24 * 60 + $nbWeeks * 24 * 60 * 7;
     if (strpos($trigger, '-') === false)
       $minutes = - $minutes;
+    if ($minutes === 0) {
+      $minutes = 1;
+    }
     return $minutes;
   }
 

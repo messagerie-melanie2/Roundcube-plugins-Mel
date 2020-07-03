@@ -1716,6 +1716,10 @@ class mel_driver extends calendar_driver {
       // Recurrence
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
+        // Problème de UNTIL avec les journées entières
+        if (isset($recurrence['UNTIL']) && $_event['allday']) {
+          $recurrence['UNTIL']->setTime(23, 59);
+        }
         if (is_array($recurrence) && count($recurrence) > 0) {
           // Récupération des exceptions dans la récurrence de l'évènement
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
@@ -1810,6 +1814,10 @@ class mel_driver extends calendar_driver {
       // Recurrence
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
+        // Problème de UNTIL avec les journées entières
+        if (isset($recurrence['UNTIL']) && $_event['allday']) {
+          $recurrence['UNTIL']->setTime(23, 59);
+        }
         if (is_array($recurrence) && count($recurrence) > 0) {
           // Récupération des exceptions dans la récurrence de l'évènement
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);

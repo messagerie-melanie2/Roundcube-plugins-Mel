@@ -47,12 +47,41 @@ class mel_portail extends rcube_plugin
   function init()
   {
     $this->rc = rcmail::get_instance();
+    // Ajout du css
+    $skin_path = $this->local_skin_path();
+    if ($this->rc->output->get_env('ismobile')) {
+      $skin_path .= '_mobile';
+    }
+    $this->include_stylesheet($skin_path . '/styles.css');
+
+    // ajout de la tache
+    $this->register_task('portail');
+
+    // Ajoute le bouton en fonction de la skin
+    if ($this->rc->config->get('ismobile', false)) {
+      $this->add_button(array(
+          'command' => 'portail',
+          'class'	=> 'button-mel_portail ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'classsel' => 'button-mel_portail button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'innerclass' => 'button-inner',
+          'label'	=> 'mel.portail',
+      ), 'taskbar_mobile');
+    } else {
+        $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+        $this->add_button(array(
+            'command' => 'portail',
+            'class'	=> 'button-mel_portail',
+            'classsel' => 'button-mel_portail button-selected',
+            'innerclass' => 'button-inner',
+            'label'	=> 'mel.portail',
+            'title'	=> 'mel.portail_title',
+        ), $taskbar);
+    }
     
     // Si tache = portail, on charge l'onglet
     if ($this->rc->task == 'portail') {
       $this->add_texts('localization/', true);
-      // ajout de la tache
-      $this->register_task('portail');
+      
       // Chargement de la conf
       $this->load_config();
       // Ajout de l'interface
@@ -75,11 +104,6 @@ class mel_portail extends rcube_plugin
         }
       }
       else {
-        // Ajout du css
-        $skin_path = $this->local_skin_path();
-        if ($this->rc->output->get_env('ismobile')) {
-          $skin_path .= '_mobile';
-        }
         $this->include_stylesheet($skin_path . '/mel_portail.css');
         // Si le panneau de droite n'est pas chargé on charge custom scrollbar
         if (!in_array('right_panel', $this->rc->config->get('plugins'))) {

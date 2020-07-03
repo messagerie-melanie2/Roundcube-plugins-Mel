@@ -43,6 +43,7 @@ class mel_driver extends calendar_driver {
   public $attachments = true;
   public $undelete = false;
   public $alarm_types = array('DISPLAY');
+  public $alarm_absolute = false;
   public $categoriesimmutable = false;
 
   /**

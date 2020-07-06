@@ -124,12 +124,12 @@ class mel_portail extends rcube_plugin
       // Activation du menu dans Mon compte
       $this->rc->output->set_env('enable_mesressources_portail', true);
       // register actions
-      $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
-      $this->register_action('plugin.mel_portail_edit', array($this,'portail_edit'));
-      $this->register_action('plugin.portail_delete_item', array($this,'delete_item'));
-      $this->register_action('plugin.portail_hide_item', array($this,'hide_item'));
-      $this->register_action('plugin.portail_show_item', array($this,'show_item'));
-      $this->register_action('plugin.portail_sort_items', array($this,'sort_items'));
+      $this->api->register_action('plugin.mel_resources_portail', $this->ID, array($this,'resources_init'));
+      $this->api->register_action('plugin.mel_portail_edit', $this->ID, array($this,'portail_edit'));
+      $this->api->register_action('plugin.portail_delete_item', $this->ID, array($this,'delete_item'));
+      $this->api->register_action('plugin.portail_hide_item', $this->ID, array($this,'hide_item'));
+      $this->api->register_action('plugin.portail_show_item', $this->ID, array($this,'show_item'));
+      $this->api->register_action('plugin.portail_sort_items', $this->ID, array($this,'sort_items'));
     }
   }
   

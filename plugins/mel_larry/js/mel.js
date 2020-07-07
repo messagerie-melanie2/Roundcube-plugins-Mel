@@ -79,7 +79,36 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 		disconnect_link.text(rcmail.get_label('mel.logout'))
 		disconnect.append(disconnect_link);
 		$('#settings-sections').append(disconnect);
-	}
+  }
+  else if (rcmail.env.task == 'mail') {
+    if (rcmail.env.action == '' || rcmail.env.action == 'show') {
+      var map = {
+        calendar: '#messagetoolbar > a.calendarlink',
+        bounce: '#messagetoolbar > a.bounce',
+        mel_labels_sync: '#messagetoolbar > a.thunderbird',
+        managesieve: '#messagetoolbar > a.filterlink',
+      }
+      for (var key in map) {
+        if (rcmail.env.plugins.indexOf(key) !== -1) {
+          $(map[key]).css('display', 'inline-block');
+        }
+      }
+      if (rcmail.env.action == '' && rcmail.env.plugins.indexOf('mel_archivage') !== -1) {
+        $('#messagetoolbar > a.archiver').css('display', 'inline-block');
+      }
+      if (rcmail.env.plugins.indexOf('mel_junk') !== -1) {
+        $('#messagetoolbar > span.junk').css('display', 'inline-block');
+      }
+      else if (rcmail.env.plugins.indexOf('markasjunk') !== -1) {
+        $('#messagetoolbar > a.junk').css('display', 'inline-block');
+      }
+    }
+    else if (rcmail.env.action == 'preview') {
+      if (rcmail.env.plugins.indexOf('calendar') !== -1) {
+        $('#countcontrols > a.calendarlink').css('display', 'inline-block');
+      }
+    }
+  }
 });
 
 // Change skin after some actions

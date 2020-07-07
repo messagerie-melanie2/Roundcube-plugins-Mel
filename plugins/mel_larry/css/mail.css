@@ -29,6 +29,20 @@
     left: 13px;
 }
 
+#messagetoolbar > span.junk,
+#messagetoolbar > a.junk,
+#messagetoolbar > a.bounce,
+#messagetoolbar > a.thunderbird,
+#messagetoolbar > a.archiver,
+#messagetoolbar > a.filterlink,
+#messagetoolbar > a.calendarlink {
+    display: none;
+}
+
+#countcontrols > a.calendarlink {
+	display: none;
+}
+
 #messagepartcontainer {
 	background-color: #fff;
 	background-color: var(--main-content-bg-color);

@@ -2,10 +2,11 @@
 <roundcube:button command="checkmail" type="link" class="button checkmail disabled" classAct="button checkmail" classSel="button checkmail pressed" label="refresh" title="checkmail" />
 <span class="spacer medium"></span>
 <roundcube:button command="move" type="link" class="button move disabled" classAct="button move" classSel="button move pressed" label="move" title="moveto" />
-<span class="dropbutton">
+<span class="dropbutton junk">
 	<roundcube:button command="plugin.mel_junk" type="link" class="button junk disabled" classAct="button junk" classSel="button junk pressed" label="markasjunk.buttontext" title="markasjunk.buttontitle" />
 	<a href="#junk" class="dropbuttontip" id="junkmenulink" onclick="UI.toggle_popup('junkmenu',event);return false" aria-haspopup="true" aria-expanded="false" aria-owns="junkmenu-menu" tabindex="0"><roundcube:label name="mel_junk.arialabeljunkoptions" /></a>
 </span>
+<roundcube:button command="plugin.markasjunk" type="link" class="button junk disabled" classAct="button junk" classSel="button junk pressed" label="markasjunk.buttontext" title="markasjunk.buttontitle" />
 <roundcube:button command="delete" type="link" class="button delete disabled" classAct="button delete" classSel="button delete pressed" label="delete" title="deletemessage" />
 <span class="spacer"></span>
 <roundcube:button command="reply" type="link" class="button reply disabled" classAct="button reply" classSel="button reply pressed" label="reply" title="replytomessage" />

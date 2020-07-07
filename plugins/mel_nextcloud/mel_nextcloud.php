@@ -67,6 +67,8 @@ class mel_nextcloud extends rcube_plugin {
     // Ajout du css
     $this->include_stylesheet($this->local_skin_path() . '/mel_nextcloud.css');
 
+    // ajout de la tache
+    $this->register_task('stockage');
     // Ajoute le bouton en fonction de la skin
     if ($rcmail->config->get('ismobile', false)) {
       $this->add_button(array(
@@ -89,8 +91,6 @@ class mel_nextcloud extends rcube_plugin {
 
     // Si tache = stockage, on charge l'onglet
     if ($rcmail->task == 'stockage') {
-      // ajout de la tache
-      $this->register_task('stockage');
       // Ajout du css
       $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
       // Disable refresh
@@ -112,7 +112,7 @@ class mel_nextcloud extends rcube_plugin {
     }
     else if ($rcmail->task == 'settings') {
       $this->add_hook('settings_actions', array($this, 'settings_actions'));
-      $this->register_action('plugin.mel_nextcloud', array(
+      $this->api->register_action('plugin.mel_nextcloud', $this->ID, array(
         $this,
         'settings'
       ));
@@ -206,17 +206,26 @@ class mel_nextcloud extends rcube_plugin {
   private function login_nextcloud($settings = false) {
     $rcmail = rcmail::get_instance();
     if (mel::is_internal()) {
-      $nextcloud_url = $rcmail->config->get($settings ? 'nextcloud_settings_url' : 'nextcloud_url');
+      $nextcloud_url = $rcmail->config->get('nextcloud_url');
+      if ($settings) {
+        $nextcloud_settings_url = $rcmail->config->get('nextcloud_settings_url');
+      }
     }
     else {
-      $nextcloud_url = $rcmail->config->get($settings ? 'nextcloud_external_settings_url' : 'nextcloud_external_url');
+      $nextcloud_url = $rcmail->config->get('nextcloud_external_settings_url');
+      if ($settings) {
+        $nextcloud_settings_url = $rcmail->config->get('nextcloud_external_settings_url');
+      }
     }
     // Configuration de l'environnement
     $rcmail->output->set_env('nextcloud_username', $rcmail->user->get_username());
     $rcmail->output->set_env('nextcloud_password', urlencode($this->encrypt($rcmail->get_user_password())));
     $rcmail->output->set_env('nextcloud_url', $nextcloud_url);
 
-    if (isset($_GET['_params'])) {
+    if ($settings) {
+      $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_settings_url);
+    }
+    else if (isset($_GET['_params'])) {
       $params = rcube_utils::get_input_value('_params', rcube_utils::INPUT_GET);
       $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_url . $params);
     }

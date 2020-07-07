@@ -43,6 +43,7 @@ class mel_driver extends calendar_driver {
   public $attachments = true;
   public $undelete = false;
   public $alarm_types = array('DISPLAY');
+  public $alarm_absolute = false;
   public $categoriesimmutable = false;
 
   /**
@@ -684,15 +685,15 @@ class mel_driver extends calendar_driver {
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if (!$new && $_event->load()) {
         $loaded = true;
-        // Test si l'utilisateur est seulement participant
-        $organizer = $_event->organizer;
-        if (isset($organizer) 
-            && !$organizer->extern
-            && !empty($organizer->uid)
-            && ($organizer->uid != $this->rc->get_user_name() 
-              || $this->currentUserIsOrganiser($organizer))) {
-          return true;
-        }
+        // // Test si l'utilisateur est seulement participant
+        // $organizer = $_event->organizer;
+        // if (isset($organizer) 
+        //     && !$organizer->extern
+        //     && !empty($organizer->uid)
+        //     && ($organizer->uid != $this->rc->get_user_name() 
+        //       || $this->currentUserIsOrganiser($organizer))) {
+        //   return true;
+        // }
         // Test si privé
         $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
@@ -906,14 +907,14 @@ class mel_driver extends calendar_driver {
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if ($_event->load()) {
         // Test si l'utilisateur est seulement participant
-        $organizer = $_event->organizer;
-        if (isset($organizer) 
-            && !$organizer->extern
-            && !empty($organizer->uid)
-            && ($organizer->uid != $this->rc->get_user_name() 
-              || $this->currentUserIsOrganiser($organizer))) {
-          return true;
-        }
+        // $organizer = $_event->organizer;
+        // if (isset($organizer) 
+        //     && !$organizer->extern
+        //     && !empty($organizer->uid)
+        //     && ($organizer->uid != $this->rc->get_user_name() 
+        //       || $this->currentUserIsOrganiser($organizer))) {
+        //   return true;
+        // }
         // Test si privé
         $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
@@ -1716,6 +1717,10 @@ class mel_driver extends calendar_driver {
       // Recurrence
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
+        // Problème de UNTIL avec les journées entières
+        if (isset($recurrence['UNTIL']) && $_event['allday']) {
+          $recurrence['UNTIL']->setTime(23, 59);
+        }
         if (is_array($recurrence) && count($recurrence) > 0) {
           // Récupération des exceptions dans la récurrence de l'évènement
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);
@@ -1804,12 +1809,18 @@ class mel_driver extends calendar_driver {
         if (count($attachments) > 0) {
           $_event['attachments'] = $attachments;
         }
-
+        else {
+          $_event['attachments'] = [];
+        }
       }
 
       // Recurrence
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
+        // Problème de UNTIL avec les journées entières
+        if (isset($recurrence['UNTIL']) && $_event['allday']) {
+          $recurrence['UNTIL']->setTime(23, 59);
+        }
         if (is_array($recurrence) && count($recurrence) > 0) {
           // Récupération des exceptions dans la récurrence de l'évènement
           $_event['recurrence'] = $this->_read_event_exceptions($event, $recurrence);

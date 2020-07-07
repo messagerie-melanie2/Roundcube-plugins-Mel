@@ -131,6 +131,8 @@ class mel_larry extends rcube_plugin
       if (isset(self::$tasks_js_map[$rc->task])) {
         $this->include_script(self::JS_FOLDER.self::$tasks_js_map[$rc->task]);
       }
+      // Add plugins list
+      $rc->output->set_env('plugins', $rc->config->get('plugins', []));
     }
     $this->ui_initialized = true;
   }

@@ -1,0 +1,16 @@
+#header #topnav > .logo {
+    display: none;
+}
+
+#taskbar a.button-mel_portail {
+    position: fixed;
+    left: -27px;
+    top: -3px;
+    height: 67px;
+}
+
+#taskbar a.button-mel_portail span.button-inner {
+    background: url(../../../../skins/mel_larry/images/taskbar-logo.png?v=e784.5000) center 15px no-repeat;
+    text-indent: -9999px;
+    width: 50px;
+}

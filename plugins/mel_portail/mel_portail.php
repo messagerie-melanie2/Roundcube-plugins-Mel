@@ -47,12 +47,41 @@ class mel_portail extends rcube_plugin
   function init()
   {
     $this->rc = rcmail::get_instance();
+    // Ajout du css
+    $skin_path = $this->local_skin_path();
+    if ($this->rc->output->get_env('ismobile')) {
+      $skin_path .= '_mobile';
+    }
+    $this->include_stylesheet($skin_path . '/styles.css');
+
+    // ajout de la tache
+    $this->register_task('portail');
+
+    // Ajoute le bouton en fonction de la skin
+    if ($this->rc->config->get('ismobile', false)) {
+      $this->add_button(array(
+          'command' => 'portail',
+          'class'	=> 'button-mel_portail ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'classsel' => 'button-mel_portail button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'innerclass' => 'button-inner',
+          'label'	=> 'mel.portail',
+      ), 'taskbar_mobile');
+    } else {
+        $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+        $this->add_button(array(
+            'command' => 'portail',
+            'class'	=> 'button-mel_portail',
+            'classsel' => 'button-mel_portail button-selected',
+            'innerclass' => 'button-inner',
+            'label'	=> 'mel.portail',
+            'title'	=> 'mel.portail_title',
+        ), $taskbar);
+    }
     
     // Si tache = portail, on charge l'onglet
     if ($this->rc->task == 'portail') {
       $this->add_texts('localization/', true);
-      // ajout de la tache
-      $this->register_task('portail');
+      
       // Chargement de la conf
       $this->load_config();
       // Ajout de l'interface
@@ -75,11 +104,6 @@ class mel_portail extends rcube_plugin
         }
       }
       else {
-        // Ajout du css
-        $skin_path = $this->local_skin_path();
-        if ($this->rc->output->get_env('ismobile')) {
-          $skin_path .= '_mobile';
-        }
         $this->include_stylesheet($skin_path . '/mel_portail.css');
         // Si le panneau de droite n'est pas chargé on charge custom scrollbar
         if (!in_array('right_panel', $this->rc->config->get('plugins'))) {
@@ -100,12 +124,12 @@ class mel_portail extends rcube_plugin
       // Activation du menu dans Mon compte
       $this->rc->output->set_env('enable_mesressources_portail', true);
       // register actions
-      $this->register_action('plugin.mel_resources_portail', array($this,'resources_init'));
-      $this->register_action('plugin.mel_portail_edit', array($this,'portail_edit'));
-      $this->register_action('plugin.portail_delete_item', array($this,'delete_item'));
-      $this->register_action('plugin.portail_hide_item', array($this,'hide_item'));
-      $this->register_action('plugin.portail_show_item', array($this,'show_item'));
-      $this->register_action('plugin.portail_sort_items', array($this,'sort_items'));
+      $this->api->register_action('plugin.mel_resources_portail', $this->ID, array($this,'resources_init'));
+      $this->api->register_action('plugin.mel_portail_edit', $this->ID, array($this,'portail_edit'));
+      $this->api->register_action('plugin.portail_delete_item', $this->ID, array($this,'delete_item'));
+      $this->api->register_action('plugin.portail_hide_item', $this->ID, array($this,'hide_item'));
+      $this->api->register_action('plugin.portail_show_item', $this->ID, array($this,'show_item'));
+      $this->api->register_action('plugin.portail_sort_items', $this->ID, array($this,'sort_items'));
     }
   }
   

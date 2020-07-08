@@ -81,8 +81,12 @@ $labels['mel_use_subscribed_folders'] = 'Utiliser les abonnements pour les dossi
 $labels['mel_use_infinite_scroll'] = 'Utiliser le scroll infini pour parcourir les messages';
 $labels['mel_default_task'] = 'Page d\'accueil après la connexion';
 
-$labels['portail'] = 'Portail';
+$labels['portail'] = 'Portail ETN';
 $labels['calendar'] = 'Agenda';
+$labels['discussion'] = 'Discussion';
+$labels['sondage'] = 'Sondage';
+$labels['stockage'] = 'Stockage';
+$labels['documents'] = 'Documents';
 $labels['tasks'] = 'Tâches';
 
 $labels['realname'] = 'Nom utilisé';
@@ -114,5 +118,4 @@ $labels['Or you can clic here to relogin'] = "Ou vous pouvez cliquer ici pour vo
 
 $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
 
-$labels['portail'] = 'Portail ETN';
 $labels['portail_title'] = 'Ouvrez votre portail environnement de travail';

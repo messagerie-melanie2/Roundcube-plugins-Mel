@@ -212,7 +212,7 @@ class mel_nextcloud extends rcube_plugin {
       }
     }
     else {
-      $nextcloud_url = $rcmail->config->get('nextcloud_external_settings_url');
+      $nextcloud_url = $rcmail->config->get('nextcloud_external_url');
       if ($settings) {
         $nextcloud_settings_url = $rcmail->config->get('nextcloud_external_settings_url');
       }

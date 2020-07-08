@@ -98,7 +98,7 @@ class mel_doubleauth extends rcube_plugin {
                             rcube_utils::setcookie('roundcube_doubleauth', $info_doubleauth[0] . "###" . $info_doubleauth[1] . "###" . $expiration . "###roundcube", $expiration);
                             // envoi des données au webservice pour sauvegarde en base
                             self::__modifyCookie($info_doubleauth[0] , $info_doubleauth[1], intval($expiration),"roundcube");
-                            $this->__goingRoundcubeTask('mail');
+                            $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
                         }else{
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : false");
                             unset($_COOKIE['roundcube_doubleauth']);
@@ -170,7 +170,7 @@ class mel_doubleauth extends rcube_plugin {
                         unset($_COOKIE['roundcube_doubleauth']);
                         rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
                     }
-                    $this->__goingRoundcubeTask('mail');
+                    $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
                 }
                 else
                 {

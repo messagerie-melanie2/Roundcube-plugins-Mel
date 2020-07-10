@@ -829,3 +829,7 @@ td span.adr:hover .rcmaddcontact {
     width: 250px;
 }
 
+.rcmBody pre {
+	white-space: break-spaces;
+}
+

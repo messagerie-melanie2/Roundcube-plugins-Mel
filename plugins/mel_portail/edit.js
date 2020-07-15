@@ -90,15 +90,16 @@ $(document).ready(function() {
 
 if (window.rcmail) {
 	rcmail.addEventListener('init', function(evt) {
-		rcmail.enable_command('previous_edit', true);
-		rcmail.enable_command('next_edit', true);
 		// register commands
+		rcmail.register_command('save_edit', function() {
+			rcmail.mel_portail_save();
+		}, true);
 		rcmail.register_command('previous_edit', function() {
 			rcmail.previous_edit();
-		});
+		}, true);
 		rcmail.register_command('next_edit', function() {
 			rcmail.next_edit();
-		});
+		}, true);
 	});
 }
 
@@ -120,6 +121,31 @@ function changeType(type) {
 		$('#iteminfo tr').show();
 	}
 }
+
+rcube_webmail.prototype.mel_portail_save = function() {
+	var input, form = this.gui_objects.editform;
+	$('fieldset table.propform tr.required.error').removeClass('error');
+	$('fieldset table.propform tr.required.error').removeClass('error');
+	$('fieldset.' + $('#_item_type').val() + ' table.propform tr.required').each(function(index) {
+		var input = $(this).find('input');
+		if (!input.length) {
+			input = $(this).find('textarea');
+		}
+		if (input.length && !input.val()) {
+			var _class = $(this).attr("class").replace(' required', '');
+			$(this).addClass('error');
+			alert(rcmail.get_label('error_' + _class, 'mel_portail'));
+			form = null;
+		}
+	});
+	if (form) {
+		// add selected source (on the list)
+		if (parent.rcmail && parent.rcmail.env.source)
+		form.action = this.add_url(form.action, '_orig_source', parent.rcmail.env.source);
+
+		form.submit();
+	}
+};
 
 rcube_webmail.prototype.mel_portail_reload_page = function() {
 	setTimeout(function() {

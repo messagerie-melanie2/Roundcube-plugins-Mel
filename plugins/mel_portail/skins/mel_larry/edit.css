@@ -161,6 +161,20 @@ textarea {
     background-image: url(images/html_item_selected.png?v=e784.5000);
 }
 
+table.propform span.star {
+    color: #FF4136;
+}
+
+table.propform tr.required.error input,
+table.propform tr.required.error textarea {
+    border: 1px solid #FF4136;
+}
+
+fieldset .buttons .button.delete {
+    background: url(images/supprimer.png?v=e784.5000) center center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
+}
+
 .edittaskbar input.previous,
 .edittaskbar input.previous:hover {
     background: url(images/previous.png?v=e784.5000) left center no-repeat #fff;

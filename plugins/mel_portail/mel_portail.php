@@ -500,6 +500,7 @@ class mel_portail extends rcube_plugin
       $items = json_decode($items, true);
       $personal_items = $this->rc->config->get('portail_personal_items', []);
       foreach ($items as $order => $id) {
+        $order += 50;
         if (isset($personal_items[$id])) {
           $personal_items[$id]['order'] = $order;
         }

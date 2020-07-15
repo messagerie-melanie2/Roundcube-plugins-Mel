@@ -57,6 +57,7 @@ $(document).ready(function() {
 			$(this).addClass('selected');
 		}
 	});
+	$('fieldset.expandable > legend').click(rcmail.mel_portail_expandable_fieldset);
 	if (rcmail.env.personal_item_is_new) {
 		$('fieldset.more').hide();
 		$('#itemlogo').hide();
@@ -107,6 +108,7 @@ if (window.rcmail) {
 function changeType(type) {
 	$('fieldset.more').hide();
 	$('fieldset.' + type).show();
+	$('.edittaskbar a.button.' + type).show();
 	if (rcmail.env.nologo.includes(type)) {
 		$('#table_logo').hide();
 		$('#iteminfo .name').hide();
@@ -130,6 +132,18 @@ rcube_webmail.prototype.mel_portail_reload_page = function() {
 	}, 500);
 };
 
+rcube_webmail.prototype.mel_portail_expandable_fieldset = function(event) {
+	if ($(this).parent().hasClass('collapsed')) {
+		$(this).parent().addClass('expanded');
+		$(this).parent().removeClass('collapsed');
+	}
+	else {
+		$(this).parent().removeClass('expanded');
+		$(this).parent().addClass('collapsed');
+	}
+	$(window).resize();
+};
+
 function setPage(page) {
 	window.page = page;
 	switch (page) {
@@ -147,6 +161,7 @@ function setPage(page) {
 			break;
 		case 'more':
 			$('fieldset.' + $('#_item_type').val()).show();
+			$('.edittaskbar a.button.' + $('#_item_type').val()).show();
 			$('.formbuttons .save').show();
 			$('.formbuttons .previous').show();
 			$('.formbuttons .next').hide();
@@ -167,6 +182,7 @@ rcube_webmail.prototype.previous_edit = function() {
 		case 'more':
 			var type = $('#_item_type').val();
 			$('fieldset.' + type).hide();
+			$('.edittaskbar a.button.' + type).hide();
 			if (rcmail.env.nologo.includes(type)) {
 				setPage('type');
 			}

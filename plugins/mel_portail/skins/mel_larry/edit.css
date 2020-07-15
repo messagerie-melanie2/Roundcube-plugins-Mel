@@ -160,3 +160,54 @@ textarea {
 #itemtype .item_types > span.html_item.selected {
     background-image: url(images/html_item_selected.png?v=e784.5000);
 }
+
+.edittaskbar input.previous,
+.edittaskbar input.previous:hover {
+    background: url(images/previous.png?v=e784.5000) left center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
+}
+
+.edittaskbar input.next,
+.edittaskbar input.next:hover {
+    background: url(images/next.png?v=e784.5000) right center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
+}
+
+.edittaskbar a.button {
+    text-indent: 0;
+    display: none;
+    padding: 8px 10px;
+    box-shadow: 0 1px 1px 0 #ccc;
+    box-shadow: var(--inputs-box-shadow);
+}
+
+.edittaskbar a.button.add {
+    background: url(images/plus-01.png?v=e784.5000) 9px center no-repeat #fff;
+    background-color: var(--buttons-bg-color);
+    padding-left: 35px;
+}
+
+fieldset.expandable > legend {
+    cursor: pointer;
+    padding-left: 15px;
+}
+
+fieldset.expandable > legend.collapse {
+    background: url(images/arrow_right.png?v=e784.5000) left 5px no-repeat;
+}
+
+fieldset.expandable > legend.expand {
+    background: url(images/arrow_down.png?v=e784.5000) left 5px no-repeat;
+}
+
+fieldset.expandable.expanded > legend.collapse {
+    display: none;
+}
+
+fieldset.expandable.collapsed > legend.expand {
+    display: none;
+}
+
+fieldset.expandable.collapsed > table.propform {
+    display: none;
+}

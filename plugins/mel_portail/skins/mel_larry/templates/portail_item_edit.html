@@ -14,7 +14,8 @@
 </div>
 
 <roundcube:if condition="env:personal_item_read_only == false" />
-	<div class="footerleft formbuttons floating">
+	<div class="footerleft formbuttons floating edittaskbar">
+		<roundcube:container name="portail_item_edit_taskbar" id="portail_item_edit_taskbar" />
 		<roundcube:button command="previous_edit" type="input" class="button navigation previous" label="previous" />
 		<roundcube:button command="next_edit" type="input" class="button navigation next" label="next" />
 		<roundcube:button command="save" type="input" class="button mainaction save" label="save" />

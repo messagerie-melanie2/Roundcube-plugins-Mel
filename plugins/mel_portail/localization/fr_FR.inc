@@ -94,7 +94,7 @@ $labels['large'] = "Large";
 // Types
 $labels['itemwebsite'] = "Configuration de la vignette site web";
 $labels['itemwebsite_buttons'] = "Configuration de la vignette site web avec bouton(s)";
-$labels['itemwebsite_links'] = "Configuration de la vignette multi sites web";
+$labels['itemwebsite_links'] = "Configuration de la vignette multi-applications";
 $labels['itemintranet'] = "Configuration de la vignette Intranet";
 $labels['itemtwitter'] = "Configuration de la vignette  compte Twitter";
 $labels['itemhtml_item'] = "Configuration de la vignette contenu HTML";
@@ -120,6 +120,7 @@ $labels['item_title_mailbox'] = "Sélectionnez ici le calendrier que vous souhai
 
 // Boutons
 $labels['item_button_website_buttons'] = "Configuration du bouton";
+$labels['item_button_website_buttons_collapse'] = "Bouton";
 $labels['item_button_name'] = "Nom du bouton";
 $labels['item_title_button_name'] = "Saisissez le nom qui s'affichera sur le bouton, attention de ne pas saisir un nom trop long";
 $labels['item_button_href'] = "Lien du bouton";
@@ -127,13 +128,15 @@ $labels['item_title_button_href'] = "Saisissez le lien qui s'ouvrira lors d'un c
 $labels['item_button_title'] = "Infobulle du bouton";
 $labels['item_title_button_title'] = "Infobulle qui s'affichera lorsque la souris passera sur le bouton";
 $labels['item_add_button'] = "Ajouter un nouveau bouton";
+$labels['item_add_button_title'] = "Cliquez-ici pour ajouter un nouveau button à votre vignette";
 $labels['item_button_back'] = "Positionner ce bouton au verso";
 $labels['item_title_button_back'] = "Si mis à oui, le bouton ne sera pas sur la face avant de la vignette mais au verso";
 
 // Links
 $labels['item_links_logobg'] = "Couleur de fond des logos";
 $labels['item_title_links_logobg'] = "Choisissez ici la couleur de fond qui s'appliquera à chaque logo d'application";
-$labels['item_link_website_links'] = "Configuration de l'application web";
+$labels['item_link_website_links'] = "Configuration de l'application";
+$labels['item_link_website_links_collapse'] = "Application";
 $labels['item_link_logo'] = "Logo de l'application";
 $labels['item_links_iconalt'] = "Logo de l'application";
 $labels['item_title_link_logo'] = "Choisissez ici le logo de l'application";
@@ -144,6 +147,7 @@ $labels['item_title_link_url'] = "Saisissez l'url qui doit s'ouvrir lorsque l'on
 $labels['item_link_title'] = "Infobulle de l'application";
 $labels['item_title_link_title'] = "Infobulle qui s'affichera lorsque la souris passera sur l'application";
 $labels['item_add_link'] = "Ajouter une nouvelle application";
+$labels['item_add_link_title'] = "Cliquez-ici pour ajouter une nouvelle application à votre vignette";
 
 // Twitter
 $labels['twitter of '] = "Twitter de ";

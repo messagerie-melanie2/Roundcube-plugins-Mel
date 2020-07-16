@@ -58,6 +58,11 @@ class mel_contacts_mapping {
       else
         $_contact_m2->email = $_contact_rc['email:home'];
     }
+    // MANTIS 0005842: Problème de mapping de l'adresse postale dans les contacts d'annuaire
+    if (!isset($_contact_rc['address:home']) 
+        && isset($_contact_rc['address'])) {
+      $_contact_rc['address:home'] = $_contact_rc['address'];
+    }
     // Address home
     if (isset($_contact_rc['address:home']) && is_array($_contact_rc['address:home'])) {
       foreach ($_contact_rc['address:home'] as $address_home) {

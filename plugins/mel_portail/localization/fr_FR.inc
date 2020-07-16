@@ -77,6 +77,8 @@ $labels['iteminfo'] = "Informations sur la vignette";
 $labels['item_name'] = "Nom de la vignette";
 $labels['error_name'] = "Vous devez remplir le champ : \"Nom de la vignette\"";
 $labels['item_title_name'] = "Nom à afficher en haut de la vignette";
+$labels['item_color'] = "Couleur de la vignette";
+$labels['item_title_color'] = "Choisissez la couleur de fond de la vignette";
 $labels['item_tooltip'] = "Infobulle";
 $labels['item_title_tooltip'] = "Infobulle qui s'affichera lorsque la souris passera sur la vignette";
 $labels['item_description'] = "Description de la vignette";
@@ -98,6 +100,16 @@ $labels['from intranet'] = "Seulement sur Intranet";
 
 $labels['normal'] = "Normale";
 $labels['large'] = "Large";
+
+$labels['default'] = "Défaut";
+$labels['red'] = "Rouge";
+$labels['blue'] = "Bleu";
+$labels['turquoise'] = "Turquoise";
+$labels['orange'] = "Orange";
+$labels['purple'] = "Violet";
+$labels['green'] = "Vert";
+$labels['yellow'] = "Jaune";
+$labels['grey'] = "Gris";
 
 // Types
 $labels['itemwebsite'] = "Configuration de la vignette site web";

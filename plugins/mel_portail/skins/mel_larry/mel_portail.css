@@ -140,6 +140,40 @@ body.right_panel_minified #portailview.manage .manage_message {
     backface-visibility: hidden;
 }
 
+
+
+#portailview .item.blue > article.front {
+	background-color: #c8e2f5;
+}
+
+#portailview .item.turquoise > article.front {
+	background-color: #bdeaee;
+}
+
+#portailview .item.purple > article.front {
+	background-color: #e4dcf1;
+}
+
+#portailview .item.green > article.front {
+	background-color: #99B898;
+}
+
+#portailview .item.yellow > article.front {
+	background-color: #FECEAB;
+}
+
+#portailview .item.orange > article.front {
+	background-color: #FF847C;
+}
+
+#portailview .item.red > article.front {
+	background-color: #FA6277;
+}
+
+#portailview .item.grey > article.front {
+	background-color: #2A363B;
+}
+
 #portailview .item.html > article {
 	padding: 0;
 }
@@ -193,6 +227,38 @@ body.right_panel_minified #portailview.manage .manage_message {
     z-index: 10;
 }
 
+#portailview .item.blue .flip {
+	background-color: #c8e2f5;
+}
+
+#portailview .item.turquoise .flip {
+	background-color: #bdeaee;
+}
+
+#portailview .item.purple .flip {
+	background-color: #e4dcf1;
+}
+
+#portailview .item.green .flip {
+	background-color: #99B898;
+}
+
+#portailview .item.yellow .flip {
+	background-color: #FECEAB;
+}
+
+#portailview .item.orange .flip {
+	background-color: #FF847C;
+}
+
+#portailview .item.red .flip {
+	background-color: #FA6277;
+}
+
+#portailview .item.grey .flip {
+	background-color: #2A363B;
+}
+
 @media (prefers-color-scheme: dark) {
 	#portailview .item .flip {
 		background-image: url(images/flip-icon-light.png?v=e784.5000);
@@ -240,6 +306,28 @@ body.right_panel_minified #portailview.manage .manage_message {
 	color: var(--task-title-text-color);
 }
 
+#portailview .item.red h1,
+#portailview .item.red h2, 
+#portailview .item.blue h1,
+#portailview .item.blue h2,
+#portailview .item.turquoise h1,
+#portailview .item.turquoise h2,
+#portailview .item.orange h1,
+#portailview .item.orange h2,
+#portailview .item.purple h1,
+#portailview .item.purple h2,
+#portailview .item.grey h1,
+#portailview .item.grey h2,
+#portailview .item.green h1,
+#portailview .item.green h2 {
+	color: #FFF;
+}
+
+#portailview .item.yellow h1,
+#portailview .item.yellow h2 {
+	color: #535353;
+}
+
 #portailview .item h2 {
 	font-size: 1.2em;
 	font-weight: normal;
@@ -250,6 +338,29 @@ body.right_panel_minified #portailview.manage .manage_message {
 	color: #505050;
 	color: var(--labels-date-text-color);
 }
+
+#portailview .item.red .front .news span,
+#portailview .item.red .front p,
+#portailview .item.blue .front .news span,
+#portailview .item.blue .front p,
+#portailview .item.turquoise .news span,
+#portailview .item.turquoise .front p,
+#portailview .item.orange .news span,
+#portailview .item.orange .front p,
+#portailview .item.purple .news span,
+#portailview .item.purple .front p,
+#portailview .item.grey .news span,
+#portailview .item.grey .front p,
+#portailview .item.green .news span,
+#portailview .item.green .front p {
+	color: #FFF;
+}
+
+#portailview .item.yellow .news span,
+#portailview .item.yellow .front p {
+	color: #535353;
+}
+
 
 #portailview .item a.button {
 	width: auto;
@@ -362,6 +473,21 @@ body.right_panel_minified #portailview.manage .manage_message {
 	border-color: var(--main-border-color);
 }
 
+#portailview .item.red .front ul.news li,
+#portailview .item.blue .front ul.news li,
+#portailview .item.turquoise .front ul.news li,
+#portailview .item.orange .front ul.news li,
+#portailview .item.purple .front ul.news li,
+#portailview .item.grey .front ul.news li,
+#portailview .item.green .front ul.news li {
+	border-color: #C4C4C4;
+}
+
+#portailview .item.yellow .front ul.news li {
+	border-color: #909090;
+}
+
+
 #portailview .item .back ul.news li {
 	border-radius: 5px;
 	background-color: rgba(255, 255, 255, 0.08);
@@ -370,6 +496,38 @@ body.right_panel_minified #portailview.manage .manage_message {
 #portailview .item .front ul.news li:hover {
     background-color: #dee9f6;
     background-color: var(--table-item-selected-bg-color);
+}
+
+#portailview .item.red .front ul.news li:hover {
+	background-color: #FF8095;
+}
+
+#portailview .item.blue .front ul.news li:hover {
+	background-color: #d8f2f6;
+}
+
+#portailview .item.turquoise .front ul.news li:hover {
+	background-color: #d1feff;
+}
+
+#portailview .item.orange .front ul.news li:hover {
+	background-color: #FF968E;
+}
+
+#portailview .item.purple .front ul.news li:hover {
+	background-color: #fcf4ff;
+}
+
+#portailview .item.green .front ul.news li:hover {
+	background-color: #749373;
+}
+
+#portailview .item.yellow .front ul.news li:hover {
+	background-color: #FFDFBC;
+}
+
+#portailview .item.grey .front ul.news li:hover {
+	background-color: #111D22;
 }
 
 #portailview .item ul.news li > a {
@@ -449,6 +607,19 @@ body.right_panel_minified #portailview.manage .manage_message {
 	color: var(--main-text-color);
 }
 
+#portailview .item.red .front .description,
+#portailview .item.blue .front .description,
+#portailview .item.turquoise .description,
+#portailview .item.orange .description,
+#portailview .item.purple .description,
+#portailview .item.grey .description,
+#portailview .item.green .description {
+	color: #FFF;
+}
+
+#portailview .item.yellow .description {
+	color: #535353;
+}
 
 #portailview .item .front .buttons {
 	padding: 13px 0;
@@ -458,6 +629,15 @@ body.right_panel_minified #portailview.manage .manage_message {
 	position: absolute;
 	bottom: 0;
 	width: 18em;
+}
+
+#portailview .item.red .front .buttons,
+#portailview .item.blue .front .buttons,
+#portailview .item.turquoise .front .buttons,
+#portailview .item.orange .front .buttons,
+#portailview .item.purple .front .buttons,
+#portailview .item.green .front .buttons {
+	border-color: #FFF;
 }
 
 #portailview .item.large .front .buttons {
@@ -505,6 +685,21 @@ body.right_panel_minified #portailview.manage .manage_message {
     grid-template-columns: 4em auto;
 }
 
+#portailview .item.red .front a.link,
+#portailview .item.blue .front a.link,
+#portailview .item.turquoise .front a.link,
+#portailview .item.orange .front a.link,
+#portailview .item.purple .front a.link,
+#portailview .item.grey .front a.link,
+#portailview .item.green .front a.link {
+	border-color: #C4C4C4;
+}
+
+#portailview .item.yellow .front a.link {
+	border-color: #909090;
+}
+
+
 #portailview .item .links a.link_buttons {
 	grid-template-areas: 
 		"a b c";
@@ -514,6 +709,38 @@ body.right_panel_minified #portailview.manage .manage_message {
 #portailview .item .links a:hover {
     background-color: #dee9f6;
     background-color: var(--table-item-selected-bg-color);
+}
+
+#portailview .item.red .front .links a:hover {
+	background-color: #FF8095;
+}
+
+#portailview .item.blue .front .links a:hover {
+	background-color: #d8f2f6;
+}
+
+#portailview .item.turquoise .front .links a:hover {
+	background-color: #d1feff;
+}
+
+#portailview .item.orange .front .links a:hover {
+	background-color: #FF968E;
+}
+
+#portailview .item.purple .front .links a:hover {
+	background-color: #fcf4ff;
+}
+
+#portailview .item.green .front .links a:hover {
+	background-color: #749373;
+}
+
+#portailview .item.yellow .front .links a:hover {
+	background-color: #FFDFBC;
+}
+
+#portailview .item.grey .front .links a:hover {
+	background-color: #111D22;
 }
 
 #portailview .item .links a > img {
@@ -529,6 +756,21 @@ body.right_panel_minified #portailview.manage .manage_message {
 	align-self: center;
 	margin: 0;
 }
+
+#portailview .item.red .front .links a > h3,
+#portailview .item.blue .front .links a > h3,
+#portailview .item.turquoise .front .links a > h3,
+#portailview .item.orange .front .links a > h3,
+#portailview .item.purple .front .links a > h3,
+#portailview .item.grey .front .links a > h3,
+#portailview .item.green .front .links a > h3 {
+	color: #FFF;
+}
+
+#portailview .item.yellow .front .links a > h3 {
+	color: #535353;
+}
+
 
 #portailview .item .links a.link_buttons > span.button_link {
 	grid-area: c;
@@ -546,4 +788,18 @@ body.right_panel_minified #portailview.manage .manage_message {
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	margin: 0;
+}
+
+#portailview .item.red .front .links a.link_buttons > span.button_link,
+#portailview .item.blue .front .links a.link_buttons > span.button_link,
+#portailview .item.turquoise .front .links a.link_buttons > span.button_link,
+#portailview .item.orange .front .links a.link_buttons > span.button_link,
+#portailview .item.purple .front .links a.link_buttons > span.button_link,
+#portailview .item.grey .front .links a.link_buttons > span.button_link,
+#portailview .item.green .front .links a.link_buttons > span.button_link {
+	color: #FFF;
+}
+
+#portailview .item.yellow .front .links a.link_buttons > span.button_link {
+	color: #535353;
 }

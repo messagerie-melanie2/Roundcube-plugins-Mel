@@ -225,3 +225,9 @@ fieldset.expandable.collapsed > legend.expand {
 fieldset.expandable.collapsed > table.propform {
     display: none;
 }
+
+fieldset .buttons {
+    float: left;
+    margin-top: -45px;
+    margin-left: 0px;
+}

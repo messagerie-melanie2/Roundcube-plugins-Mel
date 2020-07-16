@@ -260,7 +260,7 @@ body.right_panel_minified #portailview.manage .manage_message {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	margin: 0 2px;
+	margin: 2px;
 }
 
 #portailview .item .front header {
@@ -446,7 +446,7 @@ body.right_panel_minified #portailview.manage .manage_message {
 
 
 #portailview .item .front .buttons {
-	padding: 15px 0;
+	padding: 13px 0;
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
 	text-align: center;

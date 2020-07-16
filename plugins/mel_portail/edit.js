@@ -57,7 +57,9 @@ $(document).ready(function() {
 			$(this).addClass('selected');
 		}
 	});
-	$('fieldset.expandable > legend').click(rcmail.mel_portail_expandable_fieldset);
+	$('fieldset.expandable > legend').click(function(event) {
+		rcmail.mel_portail_expandable_fieldset($(this).parent());
+	});
 	if (rcmail.env.personal_item_is_new) {
 		$('fieldset.more').hide();
 		$('#itemlogo').hide();
@@ -158,14 +160,14 @@ rcube_webmail.prototype.mel_portail_reload_page = function() {
 	}, 500);
 };
 
-rcube_webmail.prototype.mel_portail_expandable_fieldset = function(event) {
-	if ($(this).parent().hasClass('collapsed')) {
-		$(this).parent().addClass('expanded');
-		$(this).parent().removeClass('collapsed');
+rcube_webmail.prototype.mel_portail_expandable_fieldset = function(fieldset) {
+	if (fieldset.hasClass('collapsed')) {
+		fieldset.addClass('expanded');
+		fieldset.removeClass('collapsed');
 	}
 	else {
-		$(this).parent().removeClass('expanded');
-		$(this).parent().addClass('collapsed');
+		fieldset.removeClass('expanded');
+		fieldset.addClass('collapsed');
 	}
 	$(window).resize();
 };

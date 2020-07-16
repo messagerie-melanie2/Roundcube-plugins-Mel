@@ -136,6 +136,8 @@ $labels['item_add_button'] = "Ajouter un nouveau bouton";
 $labels['item_add_button_title'] = "Cliquez-ici pour ajouter un nouveau button à votre vignette";
 $labels['item_button_back'] = "Positionner ce bouton au verso";
 $labels['item_title_button_back'] = "Si mis à oui, le bouton ne sera pas sur la face avant de la vignette mais au verso";
+$labels['item_delete_button'] = "Enlever ce bouton";
+$labels['item_delete_button_title'] = "En cliquant ici ce bouton sera définitivement supprimé de la vignette";
 
 // Links
 $labels['item_links_logobg'] = "Couleur de fond des logos";

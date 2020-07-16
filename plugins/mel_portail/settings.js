@@ -10,6 +10,9 @@ if (window.rcmail) {
 		rcmail.register_command('plugin.mel_portail_delete_resource', function() {
 			rcmail.portail_delete_item();
 		});
+		rcmail.register_command('plugin.mel_portail_reinit_resource', function() {
+			rcmail.portail_reinit_items();
+		}, true);
 		rcmail.register_command('plugin.mel_portail_hide_resource', function(item) {
 			rcmail.portail_hide_item(item);
 		});
@@ -77,6 +80,15 @@ rcube_webmail.prototype.portail_delete_item = function() {
 		this.http_post('plugin.portail_delete_item', {
 			_id: id
 		}, lock);
+	}
+};
+
+// RAZ of items list
+rcube_webmail.prototype.portail_reinit_items = function() {
+	if (confirm(rcmail.get_label('mel_portail.reinit_confirm'))) {
+		var lock = this
+			.display_message(rcmail.gettext('mel_portail.wait'), 'loading');
+		this.http_post('plugin.portail_reinit_items', {}, lock);
 	}
 };
 
@@ -180,7 +192,7 @@ rcube_webmail.prototype.mel_portail_dragend = function(e)
 rcube_webmail.prototype.mel_portail_focus_filter = function(row)
 {
   var id = row.id.replace(/^rcmrow/, '');
-  if (this.drag_active && id != this.drag_filter) {
+  if (this.drag_active && id != this.drag_filter && !$('#'+row.id).hasClass('unchangeable')) {
     this.drag_filter_target = id;
     $(row.obj).addClass('elementmoveup');
   }

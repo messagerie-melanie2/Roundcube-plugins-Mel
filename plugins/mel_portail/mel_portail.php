@@ -127,6 +127,7 @@ class mel_portail extends rcube_plugin
       $this->api->register_action('plugin.mel_resources_portail', $this->ID, array($this,'resources_init'));
       $this->api->register_action('plugin.mel_portail_edit', $this->ID, array($this,'portail_edit'));
       $this->api->register_action('plugin.portail_delete_item', $this->ID, array($this,'delete_item'));
+      $this->api->register_action('plugin.portail_reinit_items', $this->ID, array($this,'reinit_items'));
       $this->api->register_action('plugin.portail_hide_item', $this->ID, array($this,'hide_item'));
       $this->api->register_action('plugin.portail_show_item', $this->ID, array($this,'show_item'));
       $this->api->register_action('plugin.portail_sort_items', $this->ID, array($this,'sort_items'));
@@ -345,9 +346,28 @@ class mel_portail extends rcube_plugin
         $name = '[' . $this->gettext('personal') .'] ' . $name;
         $class = ' personal';
       }
+      // Unchangeable item
+      if (isset($item['unchangeable']) && $item['unchangeable']) {
+        $class = ' unchangeable';
+      }
+      // Configuration
+      if ($item['type'] == 'configuration') {
+        $class = ' configuration';
+      }
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'portail' . $class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
-      $table->add('name', $name);
-      $table->add('subscribed', $checkbox_subscribe->show(((!isset($item['hide']) || !$item['hide']) ? $id : ''), array('value' => $id)));
+      if ($item['type'] == 'configuration') {
+        $table->add('name', '');
+        $table->add('subscribed', '');
+      }
+      else {
+        $table->add('name', $name);
+        if (!isset($item['unchangeable']) || !$item['unchangeable']) {
+          $table->add('subscribed', $checkbox_subscribe->show(((!isset($item['hide']) || !$item['hide']) ? $id : ''), array('value' => $id)));
+        }
+        else {
+          $table->add('subscribed', '');
+        }
+      }
     }
     // set client env
     $this->rc->output->add_gui_object('mel_portail_items_list', $attrib['id']);
@@ -391,8 +411,10 @@ class mel_portail extends rcube_plugin
             if (isset($personalItem['hide'])) {
               $globalItems[$id]['hide'] = $personalItem['hide'];
             }
-            if (isset($personalItem['order'])) {
-              $globalItems[$id]['order'] = $personalItem['order'];
+            if ($globalItems[$id]['type'] != 'configuration') {
+              if (isset($personalItem['order'])) {
+                $globalItems[$id]['order'] = $personalItem['order'];
+              }
             }
           }
           $item = $globalItems[$id];
@@ -431,6 +453,35 @@ class mel_portail extends rcube_plugin
       else {
         $this->rc->output->show_message('mel_portail.modify_error', 'error');
       }
+    }
+    else {
+      $this->rc->output->show_message('mel_portail.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Reinitialisation de la configuration par défaut des items
+   */
+  public function reinit_items() {
+    $personal_items = $this->rc->config->get('portail_personal_items', []);
+    foreach ($personal_items as $key => $item) {
+      unset($item['order']);
+      unset($item['hide']);
+      if (isset($item['personal']) && $item['personal']) {
+        $item['hide'] = true;
+        $item['order'] = 500;
+        $personal_items[$key] = $item;
+      }
+      else if (empty($item)) {
+        unset($personal_items[$key]);
+      }
+      else {
+        $personal_items[$key] = $item;
+      }
+    }
+    if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
+      $this->rc->output->show_message('mel_portail.reinit_items_confirm', 'confirmation');
+      $this->rc->output->command('mel_portail_reload_page', 'delete');
     }
     else {
       $this->rc->output->show_message('mel_portail.modify_error', 'error');
@@ -500,7 +551,6 @@ class mel_portail extends rcube_plugin
       $items = json_decode($items, true);
       $personal_items = $this->rc->config->get('portail_personal_items', []);
       foreach ($items as $order => $id) {
-        $order += 50;
         if (isset($personal_items[$id])) {
           $personal_items[$id]['order'] = $order;
         }

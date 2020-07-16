@@ -8,13 +8,16 @@ $labels['applications_list'] = "Liste des vignettes";
 $labels['resourcesportail'] = "Vignettes";
 $labels['add_resource'] = "Ajouter une nouvelle vignette";
 $labels['delete_resource'] = "Supprimer la vignette sélectionnée";
+$labels['reinit_resources'] = "Réinitialiser toutes les vignettes (remet à zéro le tri des vignettes et masque les vignettes personnelles)";
 $labels['wait'] = "Chargement en cours...";
 
 $labels['delete_confirm'] = 'Êtes-vous sûr de vouloir supprimer cette vignette du portail ETN ? La suppression est définitive.';
+$labels['reinit_confirm'] = 'Êtes-vous sûr de vouloir reinitialiser la configuration des vignettes du portail ETN ? (remet à zéro le tri des vignettes et masque les vignettes personnelles)';
 $labels['show_item_confirm'] = 'La vignette est bien affichée dans le portail ETN';
 $labels['hide_item_confirm'] = 'La vignette est bien masquée dans le portail ETN';
 $labels['sort_items_confirm'] = 'La vignette a bien été déplacée dans le portail ETN';
 $labels['delete_item_confirm'] = 'La vignette a bien été supprimée du portail ETN';
+$labels['reinit_items_confirm'] = 'La configuration des vignettes a bien été réinitialisée';
 $labels['modify_error'] = 'Une erreur s\'est produite lors de l\'enregistrement. Essayez d\'actualiser la page et de recommencer';
 
 $labels['true'] = "Oui";

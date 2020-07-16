@@ -390,6 +390,11 @@ body.right_panel_minified #portailview.manage .manage_message {
 	overflow: hidden;
 }
 
+#portailview .item.nodescription .front ul.news li > a {
+	max-height: 14em;
+	overflow-y: auto;
+}
+
 #portailview .item.multinews .front ul.news li > a {
 	max-height: none;
 }

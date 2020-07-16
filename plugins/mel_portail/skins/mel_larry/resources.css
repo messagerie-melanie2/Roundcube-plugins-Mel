@@ -88,6 +88,11 @@ table#mel_resources_elements_list td.subscribed {
   padding-bottom: 4px;
 }
 
+#mel_resources_elements_list tbody tr.configuration td
+{
+  height: 2px;
+}
+
 #mel_resources_type_listbox
 {
   position: absolute;
@@ -370,4 +375,12 @@ body.iframe.mail #filter-form
 #cal_start_date
 {
 	margin-top: 10px;
+}
+
+.boxfooter .listbutton.reinit {
+  right: 30px;
+}
+
+.boxfooter .listbutton.reinit .inner {
+  background-position: center -95px;
 }

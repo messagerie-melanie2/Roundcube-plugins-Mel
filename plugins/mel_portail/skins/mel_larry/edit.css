@@ -161,6 +161,14 @@ textarea {
     background-image: url(images/html_item_selected.png?v=e784.5000);
 }
 
+#itemtype .item_types > span.import_item {
+    background: url(images/import_item.png?v=e784.5000) center center no-repeat;
+}
+
+#itemtype .item_types > span.import_item.selected {
+    background-image: url(images/import_item_selected.png?v=e784.5000);
+}
+
 table.propform span.star {
     color: #FF4136;
 }

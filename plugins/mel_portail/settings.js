@@ -10,6 +10,9 @@ if (window.rcmail) {
 		rcmail.register_command('plugin.mel_portail_delete_resource', function() {
 			rcmail.portail_delete_item();
 		});
+		rcmail.register_command('plugin.mel_portail_export_resource', function() {
+			rcmail.portail_export_item();
+		});
 		rcmail.register_command('plugin.mel_portail_reinit_resource', function() {
 			rcmail.portail_reinit_items();
 		}, true);
@@ -83,6 +86,16 @@ rcube_webmail.prototype.portail_delete_item = function() {
 	}
 };
 
+// Export personal item
+rcube_webmail.prototype.portail_export_item = function() {
+	var id = rcmail.mel_portail_items_list.get_single_selection();
+	if (id != null) {
+		window.location = this.url('plugin.portail_export_item', {
+			_id: id
+		});
+	}
+};
+
 // RAZ of items list
 rcube_webmail.prototype.portail_reinit_items = function() {
 	if (confirm(rcmail.get_label('mel_portail.reinit_confirm'))) {
@@ -130,9 +143,11 @@ rcube_webmail.prototype.load_portail_item_frame = function(id) {
 			&& window.frames[this.env.contentframe]) {
 		if ($('#rcmrow' + id).hasClass('personal')) {
 			rcmail.enable_command('plugin.mel_portail_delete_resource', true);
+			rcmail.enable_command('plugin.mel_portail_export_resource', true);
 		}
 		else {
 			rcmail.enable_command('plugin.mel_portail_delete_resource', false);
+			rcmail.enable_command('plugin.mel_portail_export_resource', false);
 		}
 
 		target = window.frames[this.env.contentframe];

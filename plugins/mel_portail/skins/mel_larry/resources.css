@@ -384,3 +384,11 @@ body.iframe.mail #filter-form
 .boxfooter .listbutton.reinit .inner {
   background-position: center -95px;
 }
+
+.boxfooter .listbutton.export {
+  right: 60px;
+}
+
+.boxfooter .listbutton.export .inner {
+  background-position: center -3px;
+}

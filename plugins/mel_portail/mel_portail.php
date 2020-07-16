@@ -127,6 +127,7 @@ class mel_portail extends rcube_plugin
       $this->api->register_action('plugin.mel_resources_portail', $this->ID, array($this,'resources_init'));
       $this->api->register_action('plugin.mel_portail_edit', $this->ID, array($this,'portail_edit'));
       $this->api->register_action('plugin.portail_delete_item', $this->ID, array($this,'delete_item'));
+      $this->api->register_action('plugin.portail_export_item', $this->ID, array($this,'export_item'));
       $this->api->register_action('plugin.portail_reinit_items', $this->ID, array($this,'reinit_items'));
       $this->api->register_action('plugin.portail_hide_item', $this->ID, array($this,'hide_item'));
       $this->api->register_action('plugin.portail_show_item', $this->ID, array($this,'show_item'));
@@ -482,6 +483,33 @@ class mel_portail extends rcube_plugin
     if ($this->rc->user->save_prefs(array('portail_personal_items' => $personal_items))) {
       $this->rc->output->show_message('mel_portail.reinit_items_confirm', 'confirmation');
       $this->rc->output->command('mel_portail_reload_page', 'delete');
+    }
+    else {
+      $this->rc->output->show_message('mel_portail.modify_error', 'error');
+    }
+  }
+
+  /**
+   * Supprimer l'item des prefs roundcube
+   */
+  public function export_item() {
+    $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
+    if (isset($id)) {
+      $personal_items = $this->rc->config->get('portail_personal_items', []);
+      if (isset($personal_items[$id])) {
+        $personal_items[$id]['id'] = $id;
+        $filename = $id.'.json';
+        $json = json_encode($personal_items[$id], JSON_UNESCAPED_SLASHES);
+        header('Content-Description: File Transfer');
+        header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+        header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+        header('Content-Length: ' . strlen($json));
+        echo $json;
+        exit;
+      }
+      else {
+        $this->rc->output->show_message('mel_portail.modify_error', 'error');
+      }
     }
     else {
       $this->rc->output->show_message('mel_portail.modify_error', 'error');

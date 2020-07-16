@@ -9,6 +9,7 @@ $labels['resourcesportail'] = "Vignettes";
 $labels['add_resource'] = "Ajouter une nouvelle vignette";
 $labels['delete_resource'] = "Supprimer la vignette sélectionnée";
 $labels['reinit_resources'] = "Réinitialiser toutes les vignettes (remet à zéro le tri des vignettes et masque les vignettes personnelles)";
+$labels['export_resources'] = "Exporter la vignette au format JSON (peut-être de la réimporter en faisant une nouvelle vignette)";
 $labels['wait'] = "Chargement en cours...";
 
 $labels['delete_confirm'] = 'Êtes-vous sûr de vouloir supprimer cette vignette du portail ETN ? La suppression est définitive.';
@@ -45,6 +46,7 @@ $labels['twitter'] = "Compte Twitter";
 $labels['calendar_item'] = "Calendrier du jour";
 $labels['mailbox_item'] = "Boite courriel";
 $labels['ariane'] = "Salon de discussion";
+$labels['import_item'] = "Importer une vignette";
 
 $labels['internet'] = "Internet";
 $labels['intranet'] = "Intranet";
@@ -110,6 +112,7 @@ $labels['itemariane'] = "Configuration de la vignette salon de discussion";
 $labels['itemcommunication'] = "Configuration de la vignette communication";
 $labels['itemwebconf'] = "Configuration de la vignette Webconf";
 $labels['itemstockage'] = "Configuration de la vignette Stockage";
+$labels['itemimport_item'] = "Importer une vignette à partir de l'export JSON";
 
 $labels['item_intranet'] = "Choix du site Intranet à afficher";
 $labels['item_title_intranet'] = "Choisissez le site Intranet que vous souhaitez afficher avec cette vignette";
@@ -123,6 +126,9 @@ $labels['item_mailbox'] = "Choix de la boite";
 $labels['item_title_mailbox'] = "Sélectionnez ici la boite de reception que vous souhaitez afficher dans la vignette";
 $labels['item_calendar'] = "Choix du calendrier";
 $labels['item_title_mailbox'] = "Sélectionnez ici le calendrier que vous souhaitez afficher dans la vignette";
+$labels['item_import'] = "Document JSON";
+$labels['item_title_import'] = "Copier/coller ici le contenu du document JSON précédemment exporté";
+
 
 // Boutons
 $labels['item_button_website_buttons'] = "Configuration du bouton";

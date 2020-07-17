@@ -51,6 +51,9 @@ $labels['import_item'] = "Importer une vignette";
 $labels['internet'] = "Internet";
 $labels['intranet'] = "Intranet";
 
+$labels['custom logo'] = 'Logo personnalisé';
+$labels['default logo'] = 'Logo par défaut';
+
 // Edit page
 $labels['New item'] = "Création d'une nouvelle vignette";
 
@@ -69,8 +72,10 @@ $labels['no icon'] = "Logo par défaut";
 $labels['itemiconalt'] = "Logo de la vignette";
 $labels['item_logo'] = "Choix du logo";
 $labels['item_title_logo'] = "Sélectionnez un logo dans la liste déroulante";
+$labels['item_logo_custom'] = "Lien vers un logo personnalisé";
+$labels['item_title_logo_custom'] = "Vous pouvez renseigner ici un logo personnalisé qui s'affichera sur votre vignette";
 $labels['item_logobg'] = "Couleur de fond";
-$labels['item_title_logobg'] = "Choisissez une couleur de fond pour le logo sélectionné";
+$labels['item_title_logobg'] = "Choisissez une couleur de fond pour le logo sélectionné, vous pouvez laisser ce champ vide pour ne pas avoir de couleur de fond";
 
 // Info
 $labels['iteminfo'] = "Informations sur la vignette";

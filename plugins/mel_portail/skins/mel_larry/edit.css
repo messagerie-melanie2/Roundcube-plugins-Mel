@@ -9,7 +9,8 @@ textarea {
 }
 
 #item_edit_form.new #itemlogo .logo,
-#itemlogo .logobg {
+#itemlogo .logobg,
+#itemlogo .logo_custom {
     display: none;
 }
 
@@ -51,6 +52,11 @@ textarea {
 
 #itemlogo .item_logos img {
     height: 66px;
+    width: 66px;
+}
+
+#itemlogo .item_logos img.custom_logo {
+    height: auto;
     width: 66px;
 }
 

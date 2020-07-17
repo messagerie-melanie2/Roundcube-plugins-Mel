@@ -4,13 +4,20 @@ $(document).ready(function() {
 	$('#_item_logo').change(function(event) {
 		if ($(this).val() == "") {
 			$('#itemlogo .logobg').hide();
+			$('#itemlogo .logo_custom').hide();
 			$('#itemimg img').attr('src', '/plugins/mel_portail/modules/' + $('#_item_type').val() + '/logo.png')
 			$('#itemimg img').removeClass('custom')
 			$('#itemimg img').attr('style', '')
 			$('#_item_logobg').val('');
 		}
+		else if ($(this).val() == "custom") {
+			$('#itemlogo .logobg').show();
+			$('#itemlogo .logo_custom').show();
+			$('#itemimg img').attr('src', $('#_item_custom_logo').val())
+		}
 		else {
 			$('#itemlogo .logobg').show();
+			$('#itemlogo .logo_custom').hide();
 			$('#itemimg img').attr('src', $(this).val())
 			$('#itemimg img').addClass('custom')
 		}
@@ -29,9 +36,18 @@ $(document).ready(function() {
 	$('#_item_logobg').change(function(event) {
 		if (rcmail.env.personal_item_is_new) {
 			$('#itemlogo .item_logos img.custom').attr('style', 'background-color : ' + $(this).val());
+			$('#itemlogo .item_logos img.custom_logo').attr('style', 'background-color : ' + $(this).val());
 		}
 		else {
 			$('#itemimg img').attr('style', 'background-color : ' + $(this).val());
+		}
+	});
+	$('#_item_custom_logo').change(function(event) {
+		if (rcmail.env.personal_item_is_new) {
+			$('#itemlogo .item_logos img.custom_logo').attr('src', $(this).val())
+		}
+		else {
+			$('#itemimg img').attr('src', $(this).val());
 		}
 	});
 	$('#itemtype .item_types > span').click(function(event) {
@@ -48,12 +64,15 @@ $(document).ready(function() {
 			if ($(this).hasClass('default')) {
 				$('#_item_logo').val('');
 			}
+			else if ($(this).hasClass('custom_logo')) {
+				$('#_item_logo').val('custom');
+			}
 			else {
 				$('#_item_logo').val($(this).find('> img').attr('src'));
 			}
 			$('#_item_logo').change();
 			$('#itemlogo .item_logos > span').removeClass('selected');
-			$('#itemlogo > legend').text(rcmail.get_label('mel_portail.itemlogo_choosen') + $(this).attr('class'));
+			$('#itemlogo > legend').text(rcmail.get_label('mel_portail.itemlogo_choosen') + $(this).attr('title'));
 			$(this).addClass('selected');
 		}
 	});
@@ -79,7 +98,13 @@ $(document).ready(function() {
 	// Gestion du logo
 	if ($('#_item_logo').val() != undefined && $('#_item_logo').val() != "" || $('#itemlogo .logo .readonly').length) {
 		$('#itemlogo .logobg').show();
-		if ($('#_item_logobg').val() != "" && $('#_item_logo').val() != undefined) {
+		if ($('#_item_logo').val() == 'custom') {
+			$('#itemlogo .logo_custom').show();
+			if ($('#_item_logobg').val() != "" && $('#_item_logo').val() != undefined) {
+				$('#itemimg img').attr('style', 'background-color : ' + $('#_item_logobg').val());
+			}
+		}
+		else if ($('#_item_logobg').val() != "" && $('#_item_logo').val() != undefined) {
 			$('#itemimg img').attr('style', 'background-color : ' + $('#_item_logobg').val());
 			$('#itemimg img').addClass('custom');
 		}

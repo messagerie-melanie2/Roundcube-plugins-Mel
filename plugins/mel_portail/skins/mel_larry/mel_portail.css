@@ -361,7 +361,6 @@ body.right_panel_minified #portailview.manage .manage_message {
 	color: #535353;
 }
 
-
 #portailview .item a.button {
 	width: auto;
 	max-width: 16em;
@@ -486,7 +485,6 @@ body.right_panel_minified #portailview.manage .manage_message {
 #portailview .item.yellow .front ul.news li {
 	border-color: #909090;
 }
-
 
 #portailview .item .back ul.news li {
 	border-radius: 5px;
@@ -699,7 +697,6 @@ body.right_panel_minified #portailview.manage .manage_message {
 	border-color: #909090;
 }
 
-
 #portailview .item .links a.link_buttons {
 	grid-template-areas: 
 		"a b c";
@@ -770,7 +767,6 @@ body.right_panel_minified #portailview.manage .manage_message {
 #portailview .item.yellow .front .links a > h3 {
 	color: #535353;
 }
-
 
 #portailview .item .links a.link_buttons > span.button_link {
 	grid-area: c;

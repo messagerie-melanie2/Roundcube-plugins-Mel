@@ -282,6 +282,12 @@
 	margin: 0.5em 0.3em;
 }
 
+@media screen and (max-width: 1380px) {
+	#portailview .item {
+		width: 24%;
+	}
+}
+
 @media screen and (max-width: 1024px) {
 	#portailview .item {
 		width: 32%;
@@ -326,12 +332,12 @@
 
 #portailview .item.blue,
 #portailview .item.blue > article.front {
-	background-color: #c8e2f5;
+	background-color: #03396c;
 }
 
 #portailview .item.turquoise,
 #portailview .item.turquoise > article.front {
-	background-color: #bdeaee;
+	background-color: #0e9aa7;
 }
 
 #portailview .item.purple,
@@ -464,24 +470,6 @@
 	font-size: 0.8em;
 }
 
-#portailview .item .front header {
-	height: 12em;
-	overflow: hidden;
-}
-
-#portailview .item.website .front header,
-#portailview .item.webconf .front header {
-	height: 16em;
-}
-
-#portailview .item.nodescription .front header {
-	height: 6em;
-}
-
-#portailview .item.full .front header {
-	height: 20em;
-}
-
 #portailview .item.links .front header {
 	height: 3em;
 }
@@ -577,11 +565,11 @@
 }
 
 #portailview .item.blue .front ul.news li:hover {
-	background-color: #d8f2f6;
+	background-color: #005b96;
 }
 
 #portailview .item.turquoise .front ul.news li:hover {
-	background-color: #d1feff;
+	background-color: #3da4ab;
 }
 
 #portailview .item.orange .front ul.news li:hover {
@@ -700,9 +688,6 @@
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
 	text-align: center;
-	position: absolute;
-	bottom: 0;
-	width: 90%;
 }
 
 #portailview .item.red .front .buttons,
@@ -783,11 +768,11 @@
 }
 
 #portailview .item.blue .front .links a:hover {
-	background-color: #d8f2f6;
+	background-color: #005b96;
 }
 
 #portailview .item.turquoise .front .links a:hover {
-	background-color: #d1feff;
+	background-color: #3da4ab;
 }
 
 #portailview .item.orange .front .links a:hover {

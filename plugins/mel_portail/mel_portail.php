@@ -49,7 +49,7 @@ class mel_portail extends rcube_plugin
     $this->rc = rcmail::get_instance();
     // Ajout du css
     $skin_path = $this->local_skin_path();
-    if ($this->rc->output->get_env('ismobile')) {
+    if ($this->rc->output->get_env('ismobile') && strpos($skin_path, '_mobile') === false) {
       $skin_path .= '_mobile';
     }
     $this->include_stylesheet($skin_path . '/styles.css');

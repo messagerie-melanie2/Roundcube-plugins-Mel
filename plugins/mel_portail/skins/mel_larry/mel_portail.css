@@ -143,11 +143,11 @@ body.right_panel_minified #portailview.manage .manage_message {
 
 
 #portailview .item.blue > article.front {
-	background-color: #c8e2f5;
+	background-color: #03396c;
 }
 
 #portailview .item.turquoise > article.front {
-	background-color: #bdeaee;
+	background-color: #0e9aa7;
 }
 
 #portailview .item.purple > article.front {
@@ -228,11 +228,11 @@ body.right_panel_minified #portailview.manage .manage_message {
 }
 
 #portailview .item.blue .flip {
-	background-color: #c8e2f5;
+	background-color: #03396c;
 }
 
 #portailview .item.turquoise .flip {
-	background-color: #bdeaee;
+	background-color: #0e9aa7;
 }
 
 #portailview .item.purple .flip {
@@ -380,7 +380,7 @@ body.right_panel_minified #portailview.manage .manage_message {
 
 #portailview .item.website .front header,
 #portailview .item.webconf .front header {
-	height: 16em;
+	height: 16.4em;
 }
 
 #portailview .item.nodescription .front header {
@@ -501,11 +501,11 @@ body.right_panel_minified #portailview.manage .manage_message {
 }
 
 #portailview .item.blue .front ul.news li:hover {
-	background-color: #d8f2f6;
+	background-color: #005b96;
 }
 
 #portailview .item.turquoise .front ul.news li:hover {
-	background-color: #d1feff;
+	background-color: #3da4ab;
 }
 
 #portailview .item.orange .front ul.news li:hover {
@@ -620,7 +620,7 @@ body.right_panel_minified #portailview.manage .manage_message {
 }
 
 #portailview .item .front .buttons {
-	padding: 13px 0;
+	padding: 10px 0;
 	border-top: 1px solid #d0d0d0;
 	border-color: var(--main-border-color);
 	text-align: center;
@@ -713,11 +713,11 @@ body.right_panel_minified #portailview.manage .manage_message {
 }
 
 #portailview .item.blue .front .links a:hover {
-	background-color: #d8f2f6;
+	background-color: #005b96;
 }
 
 #portailview .item.turquoise .front .links a:hover {
-	background-color: #d1feff;
+	background-color: #3da4ab;
 }
 
 #portailview .item.orange .front .links a:hover {

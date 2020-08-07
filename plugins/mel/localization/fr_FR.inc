@@ -81,7 +81,7 @@ $labels['mel_use_subscribed_folders'] = 'Utiliser les abonnements pour les dossi
 $labels['mel_use_infinite_scroll'] = 'Utiliser le scroll infini pour parcourir les messages';
 $labels['mel_default_task'] = 'Page d\'accueil après la connexion';
 
-$labels['portail'] = 'Portail ETN';
+$labels['portail'] = 'Bureau numérique de l\'agent';
 $labels['calendar'] = 'Agenda';
 $labels['discussion'] = 'Discussion';
 $labels['sondage'] = 'Sondage';

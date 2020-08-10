@@ -778,8 +778,9 @@ body.right_panel_minified #portailview.manage .manage_message {
 	border-color: var(--buttons-border-color);
 	color: var(--buttons-text-color);
 	width: auto;
-	height: 13px;
-	padding: 5px 8px;
+	height: 23px;
+	line-height: 23px;
+	text-align: center;
 	text-indent: 0;
 	box-shadow: none;
 	-webkit-box-shadow: none;

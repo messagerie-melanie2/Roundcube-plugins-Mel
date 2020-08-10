@@ -835,8 +835,9 @@
 	border-color: var(--buttons-border-color);
 	color: var(--buttons-text-color);
 	width: auto;
-	height: 17px;
-	padding: 6px 10px;
+	height: 29px;
+	line-height: 29px;
+	text-align: center;
 	text-indent: 0;
 	box-shadow: none;
 	-webkit-box-shadow: none;

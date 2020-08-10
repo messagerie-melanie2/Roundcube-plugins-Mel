@@ -311,7 +311,7 @@ if (window.rcmail) {
 		  // add tab
 		  rcmail.add_element(tab, 'tabs');
 		}
-		else if (rcmail.env.task == 'portail') {
+		else if (rcmail.env.task == 'portail' && !rcmail.env.ismobile) {
 			// Gestion des scrollbar custom
 			$('#portailview .item .links').mCustomScrollbar({theme: 'minimal-dark', scrollInertia: 500});
 			if (!bw.mac && !bw.chrome) {

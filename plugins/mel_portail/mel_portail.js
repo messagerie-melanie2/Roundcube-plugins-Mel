@@ -224,7 +224,7 @@ Portail.prototype.open_url = function(id, url, event) {
 	if (rcmail.busy) {
 		return;
 	}
-	if (id && rcmail.env.portail_items[id].inner) {
+	if (!rcmail.env.ismobile && id && rcmail.env.portail_items[id].inner && rcmail.env.portail_items[id].inner === true) {
 		var lock = rcmail.set_busy(true, 'loading');
 		if (navigator.appName == "Microsoft Internet Explorer"){
 		   window.document.getElementById('mel_portail_frame').src = url;
@@ -239,7 +239,7 @@ Portail.prototype.open_url = function(id, url, event) {
 				rcmail.set_busy(false, null, lock);
 	  }
 	}
-	else if (id && rcmail.env.portail_items[id].innerCard) {
+	else if (!rcmail.env.ismobile && id && rcmail.env.portail_items[id].innerCard && rcmail.env.portail_items[id].innerCard === true) {
 		$('#portailview #' + id).addClass('flipped');
 		
 	  var h = Math.floor($(window).height() * 0.75);
@@ -273,7 +273,7 @@ Portail.prototype.open_url = function(id, url, event) {
 	}
 	else {
 		var win = window.open(url, '_blank');
-	  win.focus();
+    win.focus();
 	}
 };
 

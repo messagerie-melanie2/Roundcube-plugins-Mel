@@ -92,7 +92,7 @@ Portail.prototype.addNews = function(id, news, back = false, newtab = false, ref
 			div.className = 'scrollbar';
 			div.appendChild(ul);
 			document.querySelector('#' + id + ' ' + _class).appendChild(div);
-			if (!bw.mac && !bw.chrome) {
+			if (!bw.mac && !bw.chrome && !rcmail.env.ismobile) {
 				// Custom scroll bar
 				$(div).mCustomScrollbar({theme: 'minimal', scrollInertia: 500});
 			}

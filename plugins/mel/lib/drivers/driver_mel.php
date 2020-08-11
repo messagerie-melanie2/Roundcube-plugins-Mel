@@ -129,6 +129,17 @@ abstract class driver_mel {
   }
 
   /**
+   * Generate member object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Member
+   */
+  public function member($params = []) {
+    return $this->object('Member', $params);
+  }
+
+  /**
    * Generate users_outofoffice object from the ORM with the right Namespace
    * 
    * @param array $params [Optionnal] parameters of the constructor

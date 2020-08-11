@@ -241,10 +241,10 @@ class Gestionnairelistes extends Moncompteobject {
 						$list_members = is_array($group->members) ? $group->members : [];
 						if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, var_export($list_members, true));
 						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
-							$user_to_delete = driver_mel::gi()->user();
-							$user_to_delete->email = $address;
-							if ($user_to_delete->load('uid')) {
-								$member_uid = strtolower($user_to_delete->uid);
+							$member_to_delete = driver_mel::gi()->member();
+							$member_to_delete->email = $address;
+							if ($member_to_delete->load('uid')) {
+								$member_uid = strtolower($member_to_delete->uid);
 								// MANTIS 3570: Problème dans la suppression d'un membre d'une liste
 								if (isset($list_members[$member_uid])) {
 									unset($list_members[$member_uid]);

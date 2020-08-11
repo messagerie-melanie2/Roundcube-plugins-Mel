@@ -273,7 +273,7 @@
 
 #portailview .item {
 	height: auto;
-	width: 19%;
+	width: 16%;
 	display: inline-block;
 	background: #fff;
 	background-color: var(--table-body-bg-color);
@@ -282,13 +282,19 @@
 	margin: 0.5em 0.3em;
 }
 
+@media screen and (max-width: 1900px) {
+	#portailview .item {
+		width: 19%;
+	}
+}
+
 @media screen and (max-width: 1380px) {
 	#portailview .item {
 		width: 24%;
 	}
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1100px) {
 	#portailview .item {
 		width: 32%;
 	}
@@ -323,11 +329,16 @@
 #portailview .item > div.managing {
 	display: none;
 }
+
 #portailview .item > article {
 	display: block;
 	background: #fff;
 	background-color: var(--table-body-bg-color);
 	padding: 1em;
+}
+
+#portailview .item.links > article {
+	padding: 1em 0;
 }
 
 #portailview .item.blue,
@@ -471,7 +482,7 @@
 }
 
 #portailview .item.links .front header {
-	height: 3em;
+	height: 2em;
 }
 
 #portailview .item header a {
@@ -728,14 +739,22 @@
     display: none; 
 }
 
+#portailview .item .links {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	overflow: hidden;
+	text-align: center;
+}
+
 #portailview .item .links a.link {
 	display: grid;
 	padding: 13px 5px;
-	border-top: 1px solid #d0d0d0;
-	border-color: var(--main-border-color);
 	grid-template-areas: 
-	    "a b";
-    grid-template-columns: 4em auto;
+		"a"
+		"b";
+    grid-template-columns: 7em;
 }
 
 #portailview .item.red .front a.link,
@@ -752,11 +771,12 @@
 	border-color: #909090;
 }
 
-#portailview .item .links a.link_buttons {
+/* #portailview .item .links a.link_buttons {
 	grid-template-areas: 
-		"a b c";
-	grid-template-columns: 4em auto 2em;
-}
+		"a c"
+		"b b";
+	grid-template-columns: 3em 2em;
+} */
 
 #portailview .item .links a:hover {
     background-color: #dee9f6;
@@ -799,6 +819,7 @@
 	grid-area: a;
 	width: 3em;
 	align-self: center;
+	justify-self: center;
 }
 
 #portailview .item .links a > h3 {
@@ -806,7 +827,7 @@
 	color: #656565;
 	color: var(--task-title-text-color);
 	align-self: center;
-	margin: 0;
+	margin: 1em 0 0 0;
 	font-size: 0.9em;
 }
 
@@ -842,6 +863,7 @@
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	margin: 0;
+	display: none;
 }
 
 #portailview .item.red .front .links a.link_buttons > span.button_link,

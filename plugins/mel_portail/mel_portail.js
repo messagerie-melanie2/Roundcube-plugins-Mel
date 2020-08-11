@@ -174,10 +174,15 @@ Portail.prototype.formatDate = function(datetime) {
 	  }
 	  return i;
 	}
-	
 	var date = new Date(datetime);
-	return rcmail.get_label("mel_portail.day_min_" + date.getDay()) + " " + date.getDate() + " " + rcmail.get_label("mel_portail.month_min_" + date.getMonth()) 
-						+ ' ' + checkTime(date.getHours()) + ':' + checkTime(date.getMinutes());
+	if (typeof date.getMonth === 'function') {
+		var text = rcmail.get_label("mel_portail.day_min_" + date.getDay()) + " " + date.getDate() + " " + rcmail.get_label("mel_portail.month_min_" + date.getMonth()) 
+			+ ' ' + checkTime(date.getHours()) + ':' + checkTime(date.getMinutes());
+	}
+	else {
+		var text = '';
+	}
+	return text;
 };
 
 /**

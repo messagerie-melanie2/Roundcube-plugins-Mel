@@ -509,7 +509,7 @@ class mel_mobile extends rcube_plugin {
    */
   public function switch_desktop() {
     rcube_utils::setcookie('roundcube_skin', 'desktop', self::$expire_cookie + time());
-    $this->rc->output->redirect(array('_task' => 'mail'));
+    $this->rc->output->redirect(array('_task' => $this->rc->config->get('default_task', 'mail')));
   }
 
   /**
@@ -517,7 +517,7 @@ class mel_mobile extends rcube_plugin {
    */
   public function switch_mobile() {
     rcube_utils::setcookie('roundcube_skin', 'mobile', self::$expire_cookie + time());
-    $this->rc->output->redirect(array('_task' => 'mail'));
+    $this->rc->output->redirect(array('_task' => $this->rc->config->get('default_task', 'mail')));
   }
 
   /**

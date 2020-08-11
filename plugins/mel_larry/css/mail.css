@@ -295,6 +295,7 @@ div.message-part blockquote {
 
 #messageheader #preview-allheaders {
 	width: 100%;
+	min-width: 700px;
 }
 
 #composeheaders {
@@ -367,6 +368,7 @@ div.message-part blockquote {
   background-color: var(--main-content-bg-color);
   padding: 0;
   width: auto;
+  min-width: 700px;
   right: 0;
   margin: 0 40px;
 }
@@ -391,6 +393,20 @@ div.message-part blockquote {
 	background-color: var(--main-content-bg-color);
 	width: 216px;
 	border-radius: 0;
+}
+
+@media screen and (max-width: 800px) {
+	#messagepreview .rightcol {
+		min-height: 0;
+		width: auto;
+		right: 0;
+		position: relative;
+		padding: 5px 60px;
+	}
+
+	#messagepreview .leftcol {
+		margin-right: 0;
+	}
 }
 
 #messagecontent .rightcol {

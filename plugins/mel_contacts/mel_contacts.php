@@ -181,8 +181,17 @@ class mel_contacts extends rcube_plugin {
               'class_name' => 'all',
           ]
       ];
-      $p['sources'] = $all_source + $owner_sources + $other_sources + $shared_sources + $p['sources'];
-
+      // 0005855: On sature le nb de connexion à la bdd horde si Maia est inaccessible
+      if ($this->rc->action == 'photo' && $this->rc->task == 'addressbook') {
+        // Supprimer MAIA de la récupération des photos
+        unset($p['sources']['annuaire']);
+        unset($p['sources']['amande_group']);
+        $p['sources'] = $owner_sources + $p['sources'];
+      }
+      else {
+        $p['sources'] = $all_source + $owner_sources + $other_sources + $shared_sources + $p['sources'];
+      }
+      
       return $p;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

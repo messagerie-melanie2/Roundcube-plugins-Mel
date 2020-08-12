@@ -188,11 +188,11 @@ class Gestionnairelistes extends Moncompteobject {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
 						$list_members = is_array($group->members) ? $group->members : [];
 						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
-							$new_user = driver_mel::gi()->user();
-							$new_user->email = $new_smtp;
-							if ($new_user->load('uid')) {
-								if (!isset($list_members[$new_user->uid])) {
-									$list_members[$new_user->uid] = $new_user;
+							$new_member = driver_mel::gi()->member();
+							$new_member->email = $new_smtp;
+							if ($new_member->load('uid')) {
+								if (!isset($list_members[$new_member->uid])) {
+									$list_members[$new_member->uid] = $new_member;
 									$group->members = $list_members;
 								}
 							}
@@ -374,11 +374,11 @@ class Gestionnairelistes extends Moncompteobject {
 								
 								$list_emails[] = $member;
 							}
-							$user_to_add = driver_mel::gi()->user();
-							$user_to_add->email = $member;
-							if ($user_to_add->load('uid') 
-									&& !isset($list_members[$user_to_add->uid])) {
-								$list_members[$user_to_add->uid] = $user_to_add;
+							$member_to_add = driver_mel::gi()->member();
+							$member_to_add->email = $member;
+							if ($member_to_add->load('uid') 
+									&& !isset($list_members[$member_to_add->uid])) {
+								$list_members[$member_to_add->uid] = $member_to_add;
 							}
 						}
 						sort($list_emails);

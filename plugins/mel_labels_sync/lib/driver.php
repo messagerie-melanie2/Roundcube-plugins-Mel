@@ -244,7 +244,7 @@ class Driver {
    * @return boolean
    */
   protected function _add_defaults_labels($username, &$current_labels) {
-    $default_labels = rcmail::get_instance()->config->get('default_labels');
+    $default_labels = rcmail::get_instance()->config->get('default_labels', []);
     $save = false;
     $ret = true;
     

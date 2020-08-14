@@ -1,0 +1,12 @@
+<?php
+
+// General help page for the webmail
+$rcmail_config['help_page'] = '';
+
+// Show current page help page if exists
+$rcmail_config['task_help_page'] = [
+    'mail' => '', 
+    'calendar' => '',
+    'addressbook' => '',
+    'settings' => '',
+];

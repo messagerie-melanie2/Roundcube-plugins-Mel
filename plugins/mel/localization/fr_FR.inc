@@ -88,6 +88,7 @@ $labels['sondage'] = 'Sondage';
 $labels['stockage'] = 'Stockage';
 $labels['documents'] = 'Documents';
 $labels['tasks'] = 'Tâches';
+$labels['help'] = 'Besoin d\'aide ?';
 
 $labels['realname'] = 'Nom utilisé';
 $labels['uid'] = 'Identifiant';
@@ -119,3 +120,4 @@ $labels['Or you can clic here to relogin'] = "Ou vous pouvez cliquer ici pour vo
 $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
 
 $labels['portail_title'] = 'Ouvrez votre portail environnement de travail';
+$labels['help_title'] = 'Ouvrez la page d\'assistance dédiée à Mél';

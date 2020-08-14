@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body class="iframe">
+
+<main id="mainscreen" class="box mel_help-box">
+	<div id="help-search">
+		<span class="help-search-label"><roundcube:label name="mel_help.describe your need in few words" /></span>
+		<span class="help-search-input">
+			<input type="text" placeholder="<roundcube:label name="mel_help.what do you want ?" />" onkeyup="help_search(event, this);">
+		</span>
+	</div>
+	<div id="help-search-results"></div>
+	<roundcube:object id="noresulthelp" name="no_result_help" />
+	<roundcube:object id="helppages" name="help_pages" />
+	<div id="help-news"></div>
+</main>
+
+</body>
+</html>

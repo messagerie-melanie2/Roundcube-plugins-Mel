@@ -1,0 +1,347 @@
+[
+    {
+        "title": "Écrire un message avec Mél web",
+        "description": "Cliquez-ici pour écrire un nouveau message avec le portail web",
+        "keywords": [ "ecrire", "rediger", "nouveaux", "messages", "emails", "pieces jointes", "portail web" ],
+        "url": "/?_task=mail&_action=compose",
+        "help_url": "/aide/doc/melweb/index.html#1-Courriel:nbiSP7nANjj0moBuzvNMOd",
+        "help_title": "Ouvrez l'aide pour découvrir comment fonctionne l'écriture d'un nouveau message dans le portail web"
+    },
+    {
+        "title": "Répondre à un message depuis Mél web",
+        "description": "Cliquez-ici pour ouvrir vos messages dans le portail web pour pouvoir y répondre",
+        "keywords": [ "repondre", "transferer", "rediriger", "messages", "emails", "portail web" ],
+        "url": "/?_task=mail",
+        "help_url": "/aide/doc/melweb/index.html#1-Courriel:fVfxBPgMClbT4CSXpuFWvi",
+        "help_title": "Ouvrez l'aide pour découvrir comment répondre à un message depuis le portail web"
+    },
+    {
+        "title": "Fonctionnement du volet d'activité dans Mél web",
+        "description": "Description du fonctionnement du volet d'activité dans le portail web (Gestion de la disponibilité, déconnexion, événements à venir, ...)",
+        "keywords": [ "volet", "activites", "deconnexion", "se deconnecter", "quitter", "evenements a venir", "panneau", "droite", "portail web" ],
+        "url": "/aide/doc/melweb/index.html#02-Interface:n5PAGrnunsk59eqF5B5mWe",
+        "help_url": "/aide/doc/melweb/index.html#02-Interface:n5PAGrnunsk59eqF5B5mWe",
+        "help_title": "Description du fonctionnement du volet d'activité dans le portail web (Gestion de la disponibilité, déconnexion, événements à venir, ...)"
+    },
+    {
+        "title": "Se déconnecter de Mél web",
+        "description": "Cliquez-ici pour vous déconnecter directement de Mél web ou bien ouvrez l'aide pour voir comment vous déconnecter plus rapidement",
+        "keywords": [ "deconnexion", "deconnecter", "fermer", "quitter" ],
+        "url": "/?_task=logout",
+        "help_url": "/aide/doc/melweb/index.html#02-Interface:n5PAGrnunsk59eqF5B5mWe",
+        "help_title": "Ouvrez l'aide pour découvrir comment vous déconnecter du portail web rapidement"
+    },
+    {
+        "title": "Comment archiver les messages de sa boite aux lettres depuis Mél web",
+        "description": "Utiliser le bouton d'archivage <img src=\"/plugins/mel_help/public/images/bouton_archivage.png?v=e784.5000\" alt\"bouton d'archivage\" /> du Portail web pour archiver un dossier depuis une certaine date afin de faire de la place dans votre boite",
+        "keywords": [ "archivage", "archiver", "archivable", "sauvegarder", "quota", "zip", "eml", "maildir", "messages", "portail web" ],
+        "url": "/?_task=mail",
+        "help_url": "/aide/doc/archivage/",
+        "help_title": "Ouvrez l'aide pour découvrir comment fonctionne l'archivage dans le portail web"
+    },
+    {
+        "title": "Accéder aux carnets d'adresse depuis Mél web",
+        "description": "Cliquez-ici pour accéder directement à vos contacts personnels",
+        "keywords": [ "carnets", "adresses", "contacts", "portail web" ],
+        "url": "/?_task=addressbook",
+        "help_url": "/aide/doc/melweb/index.html#2-Carnets_adresses:gPkc8fwMwJkxS3kdVcBexi",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer vos contacts et carnets d'adresses depuis le portail web"
+    },
+    {
+        "title": "Importer ou exporter des contacts depuis Mél web",
+        "description": "Cliquez-ici pour ouvrir vos contacts et utilisez les boutons importer <img src=\"/plugins/mel_help/public/images/bouton_importer.png?v=e784.5000\" alt\"bouton importer\" /> ou exporter <img src=\"/plugins/mel_help/public/images/bouton_exporter.png?v=e784.5000\" alt\"bouton exporter\" /> pour faire des imports/exports de vos contacts",
+        "keywords": [ "importer", "exporter", "contacts", "portail web" ],
+        "url": "/?_task=addressbook",
+        "help_url": "/aide/doc/melweb/index.html#2-Carnets_adresses:MM1LmO41GMe23wL2UQTO4c",
+        "help_title": "Ouvrez l'aide pour découvrir comment importer ou exporter des contacts depuis le portail web"
+    },
+    {
+        "title": "Accéder à l'agenda depuis Mél web",
+        "description": "Cliquez-ici pour ouvrir vos agendas accessibles directement depuis le portail web",
+        "keywords": [ "agendas", "calendriers", "evenements", "rendez-vous", "portail web" ],
+        "url": "/?_task=calendar",
+        "help_url": "/aide/doc/melweb/index.html#3-Agendas",
+        "help_title": "Ouvrez l'aide pour découvrir comment fonctionne l'agenda dans le portail web"
+    },
+    {
+        "title": "Créer un nouvel événement depuis Mél web",
+        "description": "Cliquez-ici pour ouvrir votre agenda et cliquez sur le bouton nouveau <img src=\"/plugins/mel_help/public/images/bouton_nouveau.png?v=e784.5000\" alt\"bouton nouveau\" /> pour commencer à créer un nouvel événement dans le portail web",
+        "keywords": [ "nouveaux", "nouvel", "evenements", "invitations", "periodique", "recurrent", "reunion", "portail web" ],
+        "url": "/?_task=calendar",
+        "help_url": "/aide/doc/melweb/index.html#3-Agendas:XFACJuVipbjVkDtRyYX91f",
+        "help_title": "Ouvrez l'aide pour découvrir comment créer un nouvel événement, une nouvelle invitation, une nouvelle récurrence depuis le portail web"
+    },
+    {
+        "title": "Accéder aux tâches depuis Mél web",
+        "description": "Cliquez-ici pour ouvrir vos tâches dans le portail web",
+        "keywords": [ "nouvelles", "taches", "rappels", "portail web" ],
+        "url": "/?_task=tasks",
+        "help_url": "/aide/doc/melweb/index.html#4-Taches",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer vos tâches et positionner des rappels depuis le portail web"
+    },
+    {
+        "title": "Configurer les paramètres de Mél web",
+        "description": "Cliquez-ici pour directement accéder aux paramètres du portail web",
+        "keywords": [ "parametres", "configurer", "preferences", "portail web" ],
+        "url": "/?_task=tasks",
+        "help_url": "/aide/doc/melweb/index.html#5-Parametres",
+        "help_title": "Ouvrez l'aide pour découvrir comment configurer les différents paramètres du portail web"
+    },
+    {
+        "title": "Gérer les dossiers depuis Mél web",
+        "description": "Cliquez-ici pour accéder directement à la configuration de vos dossiers de messagerie, où vous pourrez en créer de nouveaux",
+        "keywords": [ "dossiers", "parametres", "configurer", "portail web" ],
+        "url": "/?_task=settings&_action=folders",
+        "help_url": "/aide/doc/melweb/index.html#52-Dossiers",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer vos dossiers de messagerie depuis le portail web"
+    },
+    {
+        "title": "Gestion des signatures dans Mél web",
+        "description": "Cliquez-ici pour accéder à la liste de vos boite de messagerie, en sélectionner une pour pouvoir éditer la signature associée",
+        "keywords": [ "signer", "signatures", "messages", "pied", "portail web" ],
+        "url": "/?_task=settings&_action=identities",
+        "help_url": "/aide/doc/melweb/index.html#53-Identites",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer les signatures dans le portail web"
+    },
+    {
+        "title": "Gestion des étiquettes dans Mél web",
+        "description": "Cliquez-ici pour ouvrir directement la page d'édition des étiquettes dans le portail web",
+        "keywords": [ "etiquettes", "etiqueter", "labels", "labeller", "messages", "portail web" ],
+        "url": "/?_task=settings&_action=edit-prefs&_section=labels&_framed=1",
+        "help_url": "/aide/doc/melweb/index.html#51-Preferences:XW8bIaI9YsgJamu8yDEJNf",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer les étiquettes dans le portail web"
+    },
+    {
+        "title": "Gérer les filtres serveur dans Mél web",
+        "description": "Cliquez-ici pour ouvrir directement la page de gestion des filtres serveur dans le portail web",
+        "keywords": [ "filtres", "filtrer", "parametres", "configurer", "messages", "serveur" ],
+        "url": "/?_task=settings&_action=plugin.managesieve",
+        "help_url": "/aide/doc/melweb/index.html#54-Filtres",
+        "help_title": "Ouvrez l'aide pour découvrir comment créer, modifier et supprimer vos filtres de messagerie sur Mél web"
+    },
+    {
+        "title": "Configurer la double authentification dans Mél web",
+        "description": "Cliquez-ici pour configurer la double authentification sur votre compte afin de protéger l'accés internet à vos données et avoir plus de services",
+        "keywords": [ "double", "authentification", "facteur" ],
+        "url": "/?_task=settings&_action=plugin.mel_doubleauth",
+        "help_url": "/aide/doc/melweb/index.html#7-Double_authentification",
+        "help_title": "Ouvrez l'aide pour découvrir comment configurer la double authentification pour protéger votre compte sur Internet"
+    },
+    {
+        "title": "Interface mobile pour Mél web",
+        "description": "Accédez directement à l'interface mobile depuis votre smartphone ou votre tablette via l'adresse http://mtes.fr/1",
+        "keywords": [ "mobiles", "tablettes", "skin", "interface", "smartphones", "portail web" ],
+        "url": "/aide/doc/melweb/index.html#55-PasserEnVueMobile",
+        "help_url": "/aide/doc/melweb/index.html#55-PasserEnVueMobile",
+        "help_title": "Présentation de l'interface mobile du portail web"
+    },
+    {
+        "title": "Gérer vos appareils mobiles synchronisés avec Mél",
+        "description": "Cliauez-ici pour afficher la liste de vos appareils synchronisés sur z-push",
+        "keywords": [ "mobiles", "tablettes", "statistiques", "smartphones", "z-push", "zpush"],
+        "url": "/?_task=settings&_action=plugin.mel_statistics_mobile",
+        "help_url": "/aide/doc/melweb/index.html#58-MesStatistiques",
+        "help_title": "Ouvrez l'aide pour découvrir comment fonctionne les statistiques de synchronisation mobile et la réinitialisation d'un appareil"
+    },
+    {
+        "title": "Partager une boite aux lettres dans Mél web",
+        "description": "Cliquez-ici pour accéder directement à la page de gestion des boites aux lettres, il vous suffira alors de choisir la boite que vous souhaitez partager",
+        "keywords": [ "partager", "boites", "emails", "bali", "balp", "balr", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_bal",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:GZCGzRSekxf3bZf9V6fjAc",
+        "help_title": "Ouvrez l'aide pour découvrir comment partager une boite aux lettres a un utilisateur depuis le portail web"
+    },
+    {
+        "title": "Récupérer des messages supprimés depuis moins de 7 jours dans Mél web",
+        "description": "Cliquez-ici pour accéder directement à la page de gestion des boites aux lettres, vous pourrez alors choisir la boite que vous souhaitez restaurer",
+        "keywords": [ "restaurer", "messages", "recuperer", "sauvegarde", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_bal",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:eIPJrRob8pePxlmw2SKl0e",
+        "help_title": "Ouvrez l'aide pour découvrir comment récupérer des messages supprimés depuis moins de 7 jours depuis le portail web"
+    },
+    {
+        "title": "Créer ou supprimer un agenda dans Mél",
+        "description": "Cliquez-ici pour accéder directement à la page de gestion des agendas, vous pourrez créer un nouvel agenda ou en gérer un existant",
+        "keywords": [ "partager", "agendas", "calendriers", "groupes", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_agendas",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:z7rX8o7AeThpNLlRKC1doj",
+        "help_title": "Ouvrez l'aide pour découvrir comment créer ou supprimer un agenda dans Mél depuis le portail web"
+    },
+    {
+        "title": "Partager un agenda dans Mél",
+        "description": "Cliquez-ici pour accéder directement à la page de gestion des agendas, vous pourrez alors sélectionner un agenda pour le partager",
+        "keywords": [ "partager", "agendas", "calendriers", "groupes", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_agendas",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:onAePdeIwfkiHn0nTFnkmd",
+        "help_title": "Ouvrez l'aide pour découvrir comment partager un agenda a un groupe ou un utilisateur depuis le portail web"
+    },
+    {
+        "title": "Récupérer des événements dans Mél",
+        "description": "Si vous suppression date de moins de 2 jours, cliquez-ici pour accéder directement à la page de gestion des agendas, vous pourrez alors sélectionner un agenda pour le restaurer",
+        "keywords": [ "restaurer", "recuperer", "agendas", "evenements", "calendriers", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_agendas",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:MuJ2lF9zCMexMw9V9xBcTb",
+        "help_title": "Ouvrez l'aide pour découvrir comment restaurer un agenda avec des événements supprimés depuis le Portail web"
+    },
+    {
+        "title": "Partager un carnet d'adresses dans Mél",
+        "description": "Cliquez-ici pour accéder directement à la page de gestion des carnets d'adresse, vous pourrez alors sélectionner un carnet pour le partager",
+        "keywords": [ "partager", "carnets", "adresses", "contacts", "groupes", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_contacts",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:wbotnBIKIdgmJP60zAxlCe",
+        "help_title": "Ouvrez l'aide pour découvrir comment partager un carnet d'adresses a un groupe ou un utilisateur depuis le portail web"
+    },
+    {
+        "title": "Récupérer des contacts dans Mél",
+        "description": "Si vous suppression date de moins de 2 jours, cliquez-ici pour accéder directement à la page de gestion des carnets d'adresses, vous pourrez alors sélectionner un carnet pour le restaurer",
+        "keywords": [ "restaurer", "recuperer", "carnets", "adresses", "contacts", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_resources_contacts",
+        "help_url": "/aide/doc/melweb/index.html#56-MesRessources:wCETA6LF3ZeQrCzooX70rd",
+        "help_title": "Ouvrez l'aide pour découvrir comment restaurer un carnet d'adresse avec des contacts supprimés depuis le portail web"
+    },
+    {
+        "title": "Mon compte - Accès internet",
+        "description": "Cliquez-ici pour ouvrir directement la page de configuration de votre accès internet",
+        "keywords": [ "acces", "internet", "mon compte", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_moncompte&_framed=1&_fid=accesinternet",
+        "help_url": "/aide/doc/melweb/index.html#6-MonCompte:f6rHPoLylFgTumoTJrfOv",
+        "help_title": "Ouvrez l'aide pour découvrir comment activer votre accès internet dans Mon compte depuis le portail web"
+    },
+    {
+        "title": "Mon compte - Synchronisation mobile",
+        "description": "Cliquez-ici pour ouvrir directement la page de configuration de la synchronisation de votre compte sur mobile",
+        "keywords": [ "synchronisations", "mobiles", "smartphones", "mon compte", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_moncompte&_framed=1&_fid=synchronisationmobile",
+        "help_url": "/aide/doc/melweb/index.html#6-MonCompte:f6rHPoLylFgTumoTJrfOv",
+        "help_title": "Ouvrez l'aide pour découvrir comment activer la synchronisation de votre mobile dans Mon compte depuis le portail web"
+    },
+    {
+        "title": "Mon compte - Gestionnaire d'absence",
+        "description": "Cliquez-ici pour ouvrir directement la page de configuration de votre gestionnaire d'absence",
+        "keywords": [ "depart", "absences", "vacances", "mon compte", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_moncompte&_framed=1&_fid=gestionnaireabsence",
+        "help_url": "/aide/doc/melweb/index.html#6-MonCompte:BXsYsA4j8eebTW2jotNeki",
+        "help_title": "Ouvrez l'aide pour découvrir comment configurer un gestionnaire d'absence dans Mél depuis le portail web"
+    },
+    {
+        "title": "Mon compte - Gestionnaire de listes",
+        "description": "Cliquez-ici pour ouvrir directement la page de gestion des listes de diffusion",
+        "keywords": [ "listes", "diffusion", "groupes", "mon compte", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_moncompte&_framed=1&_fid=gestionnairelistes",
+        "help_url": "/aide/doc/melweb/index.html#6-MonCompte:pVc4vXlec4dWyI2OyPMdwb",
+        "help_title": "Ouvrez l'aide pour découvrir comment configurer des listes de diffusion dans Mél depuis le portail web"
+    },
+    {
+        "title": "Mon compte - Informations personnelles",
+        "description": "Cliquez-ici pour ouvrir directement la page de gestion de vos informations personnelles",
+        "keywords": [ "informations", "personnelles", "mon compte", "portail web" ],
+        "url": "/?_task=settings&_action=plugin.mel_moncompte&_framed=1&_fid=informationspersonnelles",
+        "help_url": "/aide/doc/melweb/index.html#6-MonCompte:mjK8anINqFcihYuOLoFy4h",
+        "help_title": "Ouvrez l'aide pour découvrir comment configurer vos informations personnelles dans Mél depuis le portail web"
+    },
+    {
+        "title": "Mon compte - Modification du mot de passe",
+        "description": "Cliquez-ici pour ouvrir directement la page de modification de votre mot de passe",
+        "keywords": [ "mot de passe", "mon compte" ],
+        "url": "/?_task=settings&_action=plugin.mel_moncompte&_framed=1&_fid=changepassword",
+        "help_url": "/aide/doc/melweb/index.html#6-MonCompte:z4hwSmwgkwkYu2BZ6QLVGb",
+        "help_title": "Ouvrez l'aide pour découvrir comment modifier votre mot de passe Mél depuis le portail web"
+    },
+    {
+        "title": "Envoyer un message avec Melanissimo",
+        "description": "Cliquez-ici pour ouvrir le service Melanissimo pour envoyer un message avec une pièce jointe volumineuse",
+        "keywords": [ "envoyer", "messages", "pieces", "jointes", "volumineuses", "volumineux", "grosses", "taille", "melanissimo" ],
+        "url": "https://melanissimo-ng.din.developpement-durable.gouv.fr/message.jsf",
+        "help_url": "/aide/doc/melanissimo/#12-PrepaFichier",
+        "help_title": "Ouvrez l'aide pour découvrir comment envoyer un message avec une pièce jointe volumineuse depuis le service Melanissimo"
+    },
+    {
+        "title": "Réceptionner un message avec Melanissimo",
+        "description": "Comment recevoir un message avec une pièce jointe volumineuse depuis le service Melanissimo",
+        "keywords": [ "recevoir", "receptionner", "pieces", "jointes", "volumineuses", "volumineux", "grosses", "melanissimo" ],
+        "url": "/aide/doc/melanissimo/#14-Reception",
+        "help_url": "/aide/doc/melanissimo/#14-Reception",
+        "help_title": "Comment recevoir un message avec une pièce jointe volumineuse depuis le service Melanissimo"
+    },
+    {
+        "title": "Utiliser Melanissimo depuis Internet",
+        "description": "Cliquez-ici pour ouvrir le service Melanissimo",
+        "keywords": [ "internet", "exterieurs", "externes", "melanissimo" ],
+        "url": "https://melanissimo-ng.din.developpement-durable.gouv.fr/",
+        "help_url": "/aide/doc/melanissimo/#2-UtilisationInternet",
+        "help_title": "Ouvrez l'aide pour découvrir comment utiliser le service Melanissimo depuis Internet"
+    },
+    {
+        "title": "Créer un nouveau sondage avec Pégase",
+        "description": "Cliquez-ici pour créer un nouveau sondage avec Pégase",
+        "keywords": [ "creer", "nouveaux", "sondages", "organisation", "planification", "planifier", "organiser", "reunions", "pegase" ],
+        "url": "/?_task=sondage&_params=?_p=edit&_a=new&_skin=mel_larry",
+        "help_url": "/aide/doc/pegase/co/1-NouveauSondage.html",
+        "help_title": "Ouvrez l'aide pour découvrir comment créer un nouveau sondage ou organiser une nouvelle réunion depuis l'outil Pégase"
+    },
+    {
+        "title": "Répondre à un sondage avec Pégase",
+        "description": "Comment répondre à un sondage depuis l'outil Pégase",
+        "keywords": [ "repondre", "sondages", "reunions", "pegase" ],
+        "url": "/aide/doc/pegase/co/2-VosParticipations.html#cN2e",
+        "help_url": "/aide/doc/pegase/co/2-VosParticipations.html#cN2e",
+        "help_title": "Ouvrez l'aide pour découvrir comment répondre à un sondage depuis l'outil Pégase"
+    },
+    {
+        "title": "Gérer les sondages avec Pégase",
+        "description": "Cliquez-ici pour accéder à la liste de vos sondages Pégase",
+        "keywords": [ "gerer", "sondages", "reunions", "pegase" ],
+        "url": "/?_task=sondage",
+        "help_url": "/aide/doc/pegase/co/1-VosSondages.html",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer les sondages depuis l'outil Pégase"
+    },
+    {
+        "title": "Utiliser Ariane l'outil de discussion instantanée de Mél",
+        "description": "Cliquez-ici pour ouvrir Ariane commencer à discuter en instantanée avec les autres agents du ministère",
+        "keywords": [ "discussion", "messagerie", "instantanee", "groupe", "canal", "salon", "ariane" ],
+        "url": "/?_task=discussion",
+        "help_url": "/aide/doc/ariane/#2-ErgonomieParametrage",
+        "help_title": "Ouvrez l'aide pour découvrir comment utiliser Ariane pour gerer des discussions instantanées dans Mél"
+    },
+    {
+        "title": "Gérer des canaux de discussions instantanées dans Ariane",
+        "description": "Cliquez-ici pour ouvrir Ariane et gérer vos canaux de discussions instannées",
+        "keywords": [ "gerer", "discussion", "instantanee", "groupe", "canal", "salon", "ariane" ],
+        "url": "/?_task=discussion",
+        "help_url": "/aide/doc/ariane/#3-CanauxDiscussion",
+        "help_title": "Ouvrez l'aide pour découvrir comment gérer les canaux de discussions instantanées dans Ariane"
+    },
+    {
+        "title": "Se connecter au Stockage dans Mél",
+        "description": "Cliquez-ici pour ouvrir l'outil de stockage de fichier de Mél. Sur Internet la double authentification doit être activée",
+        "keywords": [ "mdrive", "stockage", "fichiers", "documents", "connexion", "connecter" ],
+        "url": "/?_task=stockage",
+        "help_url": "/aide/doc/stockage/#1-Connexion",
+        "help_title": "Ouvrez l'aide pour découvrir comment se connecter au Stockage pour accéder aux fichiers en ligne dans Mél"
+    },
+    {
+        "title": "Envoyer ses fichiers dans le Stockage de Mél",
+        "description": "Cliquez-ici pour ouvrir l'outil de stockage de fichier de Mél",
+        "keywords": [ "mdrive", "stockage", "fichiers", "documents", "envoie", "envoyer", "telecharger", "uploader", "televerser" ],
+        "url": "/?_task=stockage",
+        "help_url": "/aide/doc/stockage/#2-Ajout_d_un_fichier",
+        "help_title": "Ouvrez l'aide pour découvrir comment envoyer ses fichiers dans le Stockage en ligne de Mél"
+    },
+    {
+        "title": "Partager ses fichiers dans le Stockage de Mél",
+        "description": "Comment partager ses fichiers avec les autres utilisateurs dans le Stockage en ligne de Mél",
+        "keywords": [ "mdrive", "stockage", "fichiers", "documents", "partager", "utilisateurs" ],
+        "url": "/aide/doc/stockage/#4-Partage",
+        "help_url": "/aide/doc/stockage/#4-Partage",
+        "help_title": "Ouvrez l'aide pour découvrir comment partager ses fichiers avec les autres utilisateurs dans le Stockage en ligne de Mél"
+    },
+    {
+        "title": "Synchroniser ses fichiers depuis le Stockage de Mél",
+        "description": "Comment synchroniser ses fichiers sur son PC local avec le Stockage en ligne de Mél",
+        "keywords": [ "mdrive", "stockage", "fichiers", "documents", "synchroniser", "poste local", "bureaux" ],
+        "url": "/aide/doc/stockage/#3-Synchronisation",
+        "help_url": "/aide/doc/stockage/#3-Synchronisation",
+        "help_title": "Ouvrez l'aide pour découvrir comment synchroniser ses fichiers sur son PC local avec le Stockage en ligne de Mél"
+    }
+]
+

@@ -1,0 +1,132 @@
+body {
+    background: #fff !important;
+}
+
+#help-search {
+	text-align: center;
+	margin: 20px;
+}
+#help-search .help-search-label {
+  color: #505050;
+  font-size: 14px;
+  display: block;
+  margin: 10px 0;
+}
+#help-search .help-search-input input {
+  width: 450px;
+  height: 30px;
+  border-radius: 5px;
+}
+#help-search-results {
+	display: none;
+	margin: 20px;
+}
+#help-search-results {
+	display: none;
+	margin: 20px;
+}
+#help-search-results .result {
+	margin: 0 80px;
+	border-bottom: 1px solid #E6E6E6;
+}
+#help-search-results .result:hover {
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+}
+#help-search-results .result > a {
+	text-decoration: none;
+	padding: 30px;
+    display: grid;
+    grid-template-areas: "a b c" "a d d";
+    grid-template-columns: 9em auto 2em;
+}
+
+#help-search-results .title {
+	font-size: 18px;
+	font-weight: bold;
+    color: #4a65e2;
+    grid-area: b;
+}
+
+#help-search-results .numbers {
+	padding-left: 10px;
+    font-size: 14px;
+    grid-area: c;
+}
+
+#help-search-results .description {
+	display: block;
+	padding-top: 10px;
+	color: #505050;
+    font-size: 14px;
+    grid-area: d;
+}
+
+#help-search-results .helpurl {
+    grid-area: a;
+    text-indent: 0;
+    line-height: 25px;
+    padding: 0 10px;
+    width: 70px;
+    align-self: center;
+}
+
+
+#noresulthelp {
+    text-align: center;
+    margin: 40px;
+    display: none;
+}
+
+#noresulthelp .label {
+    color: #505050;
+    font-size: 14px;
+    display: block;
+}
+
+#noresulthelp .helplinks {
+    text-align: center;
+	margin: 20px;
+}
+
+#noresulthelp .helplinks .helplink {
+	margin: 10px;
+}
+
+#noresulthelp .helplinks .helplink a.button {
+    text-indent: 0px;
+    height: 35px;
+    width: 150px;
+}
+
+#helppages {
+    text-align: center;
+    margin: 40px 30px;
+}
+
+#helppages .helppage {
+    margin: 70px 5px 10px 5px;
+    display: inline-block;
+}
+
+#helppages .helppage a {
+    padding: 75px 10px 10px 10px;
+    text-decoration: none;
+    color: #505050;
+    border-radius: 3px;
+}
+
+#helppages .helppage a:hover {
+	box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
+}
+
+#helppages .helppage.general a {
+    background: url(images/help_general_page.png?v=e784.5000) center 10px no-repeat;
+}
+
+#helppages .helppage.current a {
+    background: url(images/help_current_page.png?v=e784.5000) center 10px no-repeat;
+}
+
+#helppages .helppage.suggestion a {
+    background: url(images/help_make_suggestion.png?v=e784.5000) center 10px no-repeat;
+}

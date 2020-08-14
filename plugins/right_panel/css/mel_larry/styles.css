@@ -2,17 +2,18 @@
     right: 230px !important;
 }
 
+#taskbar a.button-mel_help,
 #taskbar a.button-help {
-    right: 310px !important;
+    right: 330px !important;
 }
-
 
 body.right_panel_minified #taskbar a.button-settings {
     right: 98px !important;
 }
 
+body.right_panel_minified #taskbar a.button-mel_help,
 body.right_panel_minified #taskbar a.button-help {
-    right: 180px !important;
+    right: 195px !important;
 }
 
 #searchmenu {

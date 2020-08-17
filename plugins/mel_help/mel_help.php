@@ -139,16 +139,16 @@ class mel_help extends rcube_plugin {
         $html = '';
         $help_page = $this->rc->config->get('help_page', null);
         if (isset($help_page)) {
-            $html .= html::span(['class' => 'helppage general'], html::a(['href' => $help_page, 'target' => '_blank'], $this->gettext('help page')));
+            $html .= html::span(['class' => 'helppage general'], html::a(['href' => $help_page, 'target' => '_blank', 'title' => $this->gettext('help page title')], $this->gettext('help page')));
         }
         
         if (isset($current_help_page)) {
-            $html .= html::span(['class' => 'helppage current'], html::a(['href' => $current_help_page, 'target' => '_blank'], $this->gettext('help current page')));
+            $html .= html::span(['class' => 'helppage current'], html::a(['href' => $current_help_page, 'target' => '_blank', 'title' => $this->gettext('help current page title')], $this->gettext('help current page')));
         }
 
         $suggestion_url = $this->rc->config->get('help_suggestion_url', null);
         if (isset($suggestion_url)) {
-            $html .= html::span(['class' => 'helppage suggestion'], html::a(['href' => $suggestion_url, 'target' => '_blank'], $this->gettext('make a suggestion')));
+            $html .= html::span(['class' => 'helppage suggestion'], html::a(['href' => $suggestion_url, 'target' => '_blank', 'title' => $this->gettext('make a suggestion title')], $this->gettext('make a suggestion')));
         }
 
         return html::div($attrib, $html);
@@ -203,7 +203,7 @@ class mel_help extends rcube_plugin {
 
         $html = html::span(['class' => 'label'], $this->gettext('help no result'));
         $html .= html::div(['class' => 'helplinks'], 
-            html::span(['class' => 'helplink'], html::a(['href' => 'mailto'.$mailtosupport, 'onclick' => "event.preventDefault(); event.stopPropagation(); return rcmail.command('compose','".$mailtosupport."',this);", 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result support'))) .
+            html::span(['class' => 'helplink'], html::a(['href' => 'mailto:'.$mailtosupport, 'onclick' => "event.preventDefault(); event.stopPropagation(); return rcmail.command('compose','".$mailtosupport."',this);", 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result support'))) .
             html::span(['class' => 'helplink'], html::a(['href' => $this->rc->config->get('help_channel_support', ''), 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result channel')))
         );
 

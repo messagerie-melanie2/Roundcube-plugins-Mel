@@ -4,7 +4,14 @@
 <title><roundcube:object name="pagetitle" /></title>
 <roundcube:include file="/includes/links.html" />
 </head>
-<body class="iframe">
+<roundcube:if condition="env:framed" />
+<body class="iframe"></body>
+<roundcube:else />
+<body>
+
+<roundcube:include file="/includes/taskbar.html" />
+<roundcube:include file="/includes/header.html" />
+<roundcube:endif />
 
 <main id="mainscreen" class="box mel_help-box">
 	<div id="help-search">
@@ -16,8 +23,10 @@
 	<div id="help-search-results"></div>
 	<roundcube:object id="noresulthelp" name="no_result_help" />
 	<roundcube:object id="helppages" name="help_pages" />
-	<div id="help-news"></div>
+	<roundcube:object id="helpnews" name="help_news" />
 </main>
+
+<roundcube:include file="/includes/footer.html" />
 
 </body>
 </html>

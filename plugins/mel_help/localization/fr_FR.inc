@@ -12,3 +12,4 @@ $labels['help no result support'] = 'Contacter votre cellule informatique';
 $labels['make a suggestion'] = 'Proposer une amélioration';
 $labels['help search no result'] = 'Pas de résultat, essayez de saisir plus de mots clés (ex: agenda, partager, signature, ...).';
 $labels['help search open'] = 'Ouvrir l\'aide';
+$labels['news'] = 'Actualités :';

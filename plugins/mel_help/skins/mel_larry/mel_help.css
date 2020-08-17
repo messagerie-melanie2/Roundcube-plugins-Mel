@@ -1,5 +1,5 @@
-body {
-    background: #fff !important;
+body.iframe {
+    background: var(--global-bg-color) !important;
 }
 
 #help-search {
@@ -7,7 +7,7 @@ body {
 	margin: 20px;
 }
 #help-search .help-search-label {
-  color: #505050;
+  color: var(--labels-date-text-color);
   font-size: 14px;
   display: block;
   margin: 10px 0;
@@ -56,7 +56,7 @@ body {
 #help-search-results .description {
 	display: block;
 	padding-top: 10px;
-	color: #505050;
+	color: var(--labels-date-text-color);
     font-size: 14px;
     grid-area: d;
 }
@@ -78,7 +78,7 @@ body {
 }
 
 #noresulthelp .label {
-    color: #505050;
+    color: var(--labels-date-text-color);
     font-size: 14px;
     display: block;
 }
@@ -101,6 +101,8 @@ body {
 #helppages {
     text-align: center;
     margin: 40px 30px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #E6E6E6;
 }
 
 #helppages .helppage {
@@ -111,7 +113,7 @@ body {
 #helppages .helppage a {
     padding: 75px 10px 10px 10px;
     text-decoration: none;
-    color: #505050;
+    color: var(--labels-date-text-color);
     border-radius: 3px;
 }
 
@@ -129,4 +131,54 @@ body {
 
 #helppages .helppage.suggestion a {
     background: url(images/help_make_suggestion.png?v=e784.5000) center 10px no-repeat;
+}
+
+#helpnews {
+    margin-top: 20px;
+}
+
+#helpnews span.label {
+    color: var(--labels-date-text-color);
+    font-size: 14px;
+}
+
+#helpnews ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#helpnews ul li.news {
+    display: grid;
+    grid-template-areas: "a c" "b c";
+    grid-template-columns: auto 30em;
+    grid-template-rows: auto 1fr;
+    grid-gap: 0.5em;
+    margin: 5px;
+    padding: 10px;
+    border-bottom: 1px solid #E6E6E6;
+}
+
+#helpnews ul li.news span.title {
+    grid-area: a;
+    color: var(--labels-date-text-color);
+    font-weight: bold;
+    font-size: 13px;
+}
+
+#helpnews ul li.news span.description {
+    grid-area: b;
+    align-self: flex-start;
+}
+
+#helpnews ul li.news div.buttons {
+    grid-area: c;
+}
+
+#helpnews ul li.news div.buttons a.button {
+    text-indent: 0;
+    width: auto;
+    margin: 5px;
+    line-height: 25px;
+    text-align: center;
+    width: 30em;
 }

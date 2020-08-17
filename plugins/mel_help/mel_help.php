@@ -51,7 +51,7 @@ class mel_help extends rcube_plugin {
         if (!$this->rc->config->get('ismobile', false)) {
             $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
             $this->add_button(array(
-                'command' => 'help',
+                'command' => 'help_open_dialog',
                 'class'	=> 'button-mel_help',
                 'classsel' => 'button-mel_help button-selected',
                 'innerclass' => 'button-inner',
@@ -59,6 +59,9 @@ class mel_help extends rcube_plugin {
                 'title'	=> 'mel.help_title',
             ), $taskbar);
         }
+
+        // Include general js
+        $this->include_script('help.js');
 
         // Si tache = help, on charge l'onglet
         if ($this->rc->task == 'help') {
@@ -79,6 +82,7 @@ class mel_help extends rcube_plugin {
         $this->rc->output->add_handlers(array(
             'help_pages'        => array($this, 'help_pages'),
             'no_result_help'    => array($this, 'no_result_help'),
+            'help_news'         => array($this, 'help_news'),
         ));
 
         // Récupération du json
@@ -102,7 +106,7 @@ class mel_help extends rcube_plugin {
         // Positionnement des variables d'env
         $this->rc->output->set_env('help_array', json_encode($help_array));
         $this->rc->output->set_env('help_index', json_encode($index));
-        
+
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
         $this->rc->output->send('mel_help.mel_help');
@@ -150,6 +154,41 @@ class mel_help extends rcube_plugin {
         return html::div($attrib, $html);
     }
 
+    /**
+     * Gestion des actualitées
+     * @param array $attrib
+     * @return string
+     */
+    function help_news($attrib) {
+        if (!$attrib['id'])
+            $attrib['id'] = 'rcmhelpnews';
+
+        $attrib['class'] = 'help_news';
+
+        // Récupération du json
+        $help_news = json_decode(file_get_contents(__DIR__.'/public/news.json'), true);
+
+        $html = html::span(['class' => 'label'], $this->gettext('news'));
+        $list_news = '';
+
+        // Parcourir les news pour les passer en html
+        foreach ($help_news as $news) {
+            $title = html::span(['class' => 'title'], $news['title']);
+            $description = html::span(['class' => 'description'], $news['description']);
+            $buttons = '';
+            if (isset($news['buttons']) && is_array($news['buttons'])) {
+                $_b = '';
+                foreach ($news['buttons'] as $button) {
+                    $_b .= html::a(['class' => 'button', 'target' => '_blank', 'href' => $button['href'], 'title' => $button['tooltip']], $button['name']);
+                }
+                $buttons .= html::div(['class' => 'buttons'], $_b);
+            }
+            $list_news .= html::tag('li', ['class' => 'news'], $title . $description . $buttons);
+        }
+        $html .= html::tag('ul', ['class' => 'news'], $list_news);
+        return html::div($attrib, $html);
+    }
+
 
     /**
      * Affichage des contacts de support
@@ -160,14 +199,47 @@ class mel_help extends rcube_plugin {
         if (!$attrib['id'])
             $attrib['id'] = 'rcmhelpsupport';
 
-        $mailtosupport = 'mailto:pne-messagerie@developpement-durable.gouv.fr';
+        $mailtosupport = $this->_search_operators_mel_by_dn($this->rc->get_user_name());
 
         $html = html::span(['class' => 'label'], $this->gettext('help no result'));
         $html .= html::div(['class' => 'helplinks'], 
-            html::span(['class' => 'helplink'], html::a(['href' => $mailtosupport, 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result support'))) .
+            html::span(['class' => 'helplink'], html::a(['href' => 'mailto'.$mailtosupport, 'onclick' => "event.preventDefault(); event.stopPropagation(); return rcmail.command('compose','".$mailtosupport."',this);", 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result support'))) .
             html::span(['class' => 'helplink'], html::a(['href' => $this->rc->config->get('help_channel_support', ''), 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result channel')))
         );
 
         return html::div($attrib, $html);
+    }
+
+    /**
+     * Rechercher les opérateurs Mél d'un utilisateur
+     * Voir Mantis #4387 (https://mantis.pneam.cp2i.e2.rie.gouv.fr/mantis/view.php?id=4387)
+     * @param string $uid Uid de l'utilisateur
+     */
+    private function _search_operators_mel_by_dn($uid) {
+        if (isset($_SESSION['support_email'])) {
+            return $_SESSION['support_email'];
+        }
+        // Récupération du DN en fonction de l'UID
+        $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
+        $base_dn = $user_infos['dn'];
+        // Initialisation du filtre LDAP
+        $filter = "(&(objectClass=groupOfNames)(mineqRDN=ACL.Opérateurs Mélanie2))";
+        $mail = null;
+        // Récupération de l'instance depuis l'ORM
+        $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
+        if ($ldap->anonymous()) {
+            do {
+                // Search LDAP
+                $result = $ldap->ldap_list($base_dn, $filter, ['mail', 'mailpr']);
+                // Form DN
+                $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
+            } while ((!isset($result) || $ldap->count_entries($result) === 0) && $base_dn != 'dc=equipement,dc=gouv,dc=fr');
+            if (isset($result) && $ldap->count_entries($result) > 0) {
+                $infos = $ldap->get_entries($result);
+                $mail = $infos[0]['mailPR'][0] ?: $infos[0]['mail'][0];
+            }
+        }
+        $_SESSION['support_email'] = $mail;
+        return $mail;
     }
 }

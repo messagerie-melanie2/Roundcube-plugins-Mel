@@ -349,13 +349,19 @@ body.extwin #topnav {
 	right: 0;
 }
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1540px) {
+	#topnav .topright {
+	  left: 9%;
+	}
+}
+
+@media screen and (max-width: 1480px) {
   #topnav .topright {
 	left: 6%;
   }
 }
 
-@media screen and (max-width: 1340px) {
+@media screen and (max-width: 1420px) {
   #topnav .topright {
 	left: 50px;
   }	
@@ -442,6 +448,13 @@ body.extwin #taskbar {
     margin-top: 10px;
 }
 
+@media screen and (max-width: 1380px) {
+	#taskbar a {
+	  min-width: 70px;
+	  margin-left: 25px;
+	}
+}
+
 @media screen and (max-width: 1280px) {
   #taskbar a {
     min-width: 70px;
@@ -449,7 +462,19 @@ body.extwin #taskbar {
   }
 }
 
-@media screen and (max-width: 1080px) {
+@media screen and (max-width: 1230px) {
+	#taskbar a {
+	  margin-left: 15px;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	#taskbar a {
+	  margin-left: 10px;
+	}
+}
+
+@media screen and (max-width: 1150px) {
 	#topnav .topright {
  	   margin-left: 50px;
 	}
@@ -493,11 +518,22 @@ body.extwin #taskbar {
 		display: block;
 		top: 39px;
 	}
+	#taskbar a.button-mel_help,
+	#taskbar a.button-help {
+		right: 290px !important;
+	}
+	body.right_panel_minified #taskbar a.button-mel_help,
 	body.right_panel_minified #taskbar a.button-help {
     	right: 140px !important;
 	}
 	body.right_panel_minified #taskbar a.button-settings {
     	right: 85px !important;
+	}
+}
+
+@media screen and (max-width: 1100px) {
+	#taskbar a {
+	  margin-left: 10px;
 	}
 }
 

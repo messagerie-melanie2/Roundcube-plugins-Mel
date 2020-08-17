@@ -148,30 +148,25 @@ body.iframe {
 }
 
 #helpnews ul li.news {
-    display: grid;
-    grid-template-areas: "a c" "b c";
-    grid-template-columns: auto 30em;
-    grid-template-rows: auto 1fr;
-    grid-gap: 0.5em;
     margin: 5px;
     padding: 10px;
     border-bottom: 1px solid #E6E6E6;
 }
 
 #helpnews ul li.news span.title {
-    grid-area: a;
     color: var(--labels-date-text-color);
     font-weight: bold;
     font-size: 13px;
+    display: block;
 }
 
 #helpnews ul li.news span.description {
-    grid-area: b;
-    align-self: flex-start;
+    display: block;
+    margin: 0.5em 0;
 }
 
 #helpnews ul li.news div.buttons {
-    grid-area: c;
+    text-align: center;
 }
 
 #helpnews ul li.news div.buttons a.button {

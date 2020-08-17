@@ -3,7 +3,26 @@ if (window.rcmail) {
 		// register commands
 		rcmail.register_command('help_open_dialog', function() {
 			rcmail.help_open_dialog();
-		}, true);
+        }, true);
+        // test hash
+        setTimeout(function() {
+            if (rcmail.env.help_action) {
+                switch (rcmail.env.help_action) {
+                    case 'archivage':
+                        if (rcmail.env.task == 'mail') {
+                            rcmail.command('plugin_archiver', '', this, event);
+                        }
+                        break;
+                    case 'new_event':
+                        if (rcmail.env.task == 'calendar') {
+                            rcmail.command('addevent','',this,event);
+                        }
+                        break;
+                }
+                delete rcmail.env.help_action;
+            }
+        }, 1500);
+        // Open Archivage ?
 	});
 }
 

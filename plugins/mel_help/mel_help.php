@@ -63,6 +63,12 @@ class mel_help extends rcube_plugin {
         // Include general js
         $this->include_script('help.js');
 
+        // Help action
+        $help_action = rcube_utils::get_input_value('_help_action', rcube_utils::INPUT_GET);
+        if (isset($help_action)) {
+            $this->rc->output->set_env('help_action', $help_action);
+        }
+
         // Si tache = help, on charge l'onglet
         if ($this->rc->task == 'help') {
             // Chargement de la conf
@@ -199,47 +205,11 @@ class mel_help extends rcube_plugin {
         if (!$attrib['id'])
             $attrib['id'] = 'rcmhelpsupport';
 
-        $mailtosupport = $this->_search_operators_mel_by_dn($this->rc->get_user_name());
-
         $html = html::span(['class' => 'label'], $this->gettext('help no result'));
         $html .= html::div(['class' => 'helplinks'], 
-            html::span(['class' => 'helplink'], html::a(['href' => 'mailto:'.$mailtosupport, 'onclick' => "event.preventDefault(); event.stopPropagation(); return rcmail.command('compose','".$mailtosupport."',this);", 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result support'))) .
             html::span(['class' => 'helplink'], html::a(['href' => $this->rc->config->get('help_channel_support', ''), 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result channel')))
         );
 
         return html::div($attrib, $html);
-    }
-
-    /**
-     * Rechercher les opérateurs Mél d'un utilisateur
-     * Voir Mantis #4387 (https://mantis.pneam.cp2i.e2.rie.gouv.fr/mantis/view.php?id=4387)
-     * @param string $uid Uid de l'utilisateur
-     */
-    private function _search_operators_mel_by_dn($uid) {
-        if (isset($_SESSION['support_email'])) {
-            return $_SESSION['support_email'];
-        }
-        // Récupération du DN en fonction de l'UID
-        $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
-        $base_dn = $user_infos['dn'];
-        // Initialisation du filtre LDAP
-        $filter = "(&(objectClass=groupOfNames)(mineqRDN=ACL.Opérateurs Mélanie2))";
-        $mail = null;
-        // Récupération de l'instance depuis l'ORM
-        $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-        if ($ldap->anonymous()) {
-            do {
-                // Search LDAP
-                $result = $ldap->ldap_list($base_dn, $filter, ['mail', 'mailpr']);
-                // Form DN
-                $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
-            } while ((!isset($result) || $ldap->count_entries($result) === 0) && $base_dn != 'dc=equipement,dc=gouv,dc=fr');
-            if (isset($result) && $ldap->count_entries($result) > 0) {
-                $infos = $ldap->get_entries($result);
-                $mail = $infos[0]['mailPR'][0] ?: $infos[0]['mail'][0];
-            }
-        }
-        $_SESSION['support_email'] = $mail;
-        return $mail;
     }
 }

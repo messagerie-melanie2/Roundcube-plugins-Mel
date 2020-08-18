@@ -295,6 +295,7 @@ if (window.rcmail) {
               });
           rcmail.mel_resources_elements_list.init();
           rcmail.mel_resources_elements_list.focus();
+          rcmail.mel_resources_elements_list.select_first();
         }
         if (rcmail.env.action
             && rcmail.env.action.indexOf('plugin.mel_resources') != -1

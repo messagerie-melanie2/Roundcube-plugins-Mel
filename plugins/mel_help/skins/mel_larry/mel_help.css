@@ -2,6 +2,14 @@ body.iframe {
     background: var(--global-bg-color) !important;
 }
 
+a.button:hover {
+    box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+    box-shadow: var(--buttons-box-shadow);
+    -webkit-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+    -webkit-box-shadow: var(--buttons-box-shadow);
+    outline: 0;
+}
+
 #help-search {
 	text-align: center;
 	margin: 20px;
@@ -26,7 +34,7 @@ body.iframe {
 	margin: 20px;
 }
 #help-search-results .result {
-	margin: 0 80px;
+	margin: 0 40px;
 	border-bottom: 1px solid #E6E6E6;
 }
 #help-search-results .result:hover {
@@ -36,8 +44,9 @@ body.iframe {
 	text-decoration: none;
 	padding: 30px;
     display: grid;
-    grid-template-areas: "a b c" "a d d";
-    grid-template-columns: 9em auto 2em;
+    grid-template-areas: "a b c e" "a d d e";
+    grid-template-columns: 7em auto 3em 2em;
+    grid-gap: 1em;
 }
 
 #help-search-results .title {
@@ -61,15 +70,25 @@ body.iframe {
     grid-area: d;
 }
 
-#help-search-results .helpurl {
-    grid-area: a;
+#help-search-results a.button {
     text-indent: 0;
-    line-height: 25px;
-    padding: 0 10px;
-    width: 70px;
+    line-height: 28px;
+    padding: 0 10px 0 35px;
     align-self: center;
 }
 
+#help-search-results a.button.help {
+    grid-area: a;
+    width: 30px;
+    background: url(images/help.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.action {
+    grid-area: e;
+    width: 0;
+    padding-right: 0;
+    background: url(images/settings.png?v=e784.5000) 7px center no-repeat;
+}
 
 #noresulthelp {
     text-align: center;
@@ -94,8 +113,10 @@ body.iframe {
 
 #noresulthelp .helplinks .helplink a.button {
     text-indent: 0px;
-    height: 35px;
-    width: 150px;
+    height: 30px;
+    width: auto;
+    line-height: 30px;
+    padding: 0 10px;
 }
 
 #helppages {
@@ -165,6 +186,14 @@ body.iframe {
     margin: 0.5em 0;
 }
 
+#helpnews ul li.news span.date {
+    color: var(--labels-date-text-color);
+    font-size: 11px;
+    margin-bottom: 7px;
+    display: block;
+    font-style: italic;
+}
+
 #helpnews ul li.news div.buttons {
     text-align: center;
 }
@@ -173,7 +202,16 @@ body.iframe {
     text-indent: 0;
     width: auto;
     margin: 5px;
-    line-height: 25px;
+    line-height: 28px;
     text-align: center;
-    width: 30em;
+    width: auto;
+    padding: 0 20px 0 35px;
+}
+
+#helpnews ul li.news div.buttons a.button.help {
+    background: url(images/help.png?v=e784.5000) 10px center no-repeat;
+}
+
+#helpnews ul li.news div.buttons a.button.action {
+    background: url(images/settings.png?v=e784.5000) 10px center no-repeat;
 }

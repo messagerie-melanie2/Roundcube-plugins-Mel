@@ -4,13 +4,14 @@ if (window.rcmail) {
 		rcmail.register_command('help_open_dialog', function() {
 			rcmail.help_open_dialog();
         }, true);
-        // test hash
+        // Test le help action
         setTimeout(function() {
             if (rcmail.env.help_action) {
                 switch (rcmail.env.help_action) {
                     case 'archivage':
+                        // Open Archivage ?
                         if (rcmail.env.task == 'mail') {
-                            rcmail.command('plugin_archiver', '', this, event);
+                            rcmail.plugin_archiver();
                         }
                         break;
                     case 'new_event':
@@ -21,8 +22,8 @@ if (window.rcmail) {
                 }
                 delete rcmail.env.help_action;
             }
-        }, 1500);
-        // Open Archivage ?
+        }, 500);
+        
 	});
 }
 

@@ -74,7 +74,7 @@ class mel_help extends rcube_plugin {
             // Chargement de la conf
             $this->load_config();
             $this->add_texts('localization/', false);
-            $this->add_texts('localization/', ['help search no result', 'help search open']);
+            $this->add_texts('localization/', ['help search no result', 'help search open', 'help action open']);
             $this->include_stylesheet($skin_path . '/mel_help.css');
             // Index
             $this->register_action('index', array($this, 'action'));
@@ -181,15 +181,16 @@ class mel_help extends rcube_plugin {
         foreach ($help_news as $news) {
             $title = html::span(['class' => 'title'], $news['title']);
             $description = html::span(['class' => 'description'], $news['description']);
+            $date = html::span(['class' => 'date'], $news['date']);
             $buttons = '';
             if (isset($news['buttons']) && is_array($news['buttons'])) {
                 $_b = '';
                 foreach ($news['buttons'] as $button) {
-                    $_b .= html::a(['class' => 'button', 'target' => '_blank', 'href' => $button['href'], 'title' => $button['tooltip']], $button['name']);
+                    $_b .= html::a(['class' => 'button ' . $button['class'], 'target' => '_blank', 'href' => $button['href'], 'title' => $button['tooltip']], $button['name']);
                 }
                 $buttons .= html::div(['class' => 'buttons'], $_b);
             }
-            $list_news .= html::tag('li', ['class' => 'news'], $title . $description . $buttons);
+            $list_news .= html::tag('li', ['class' => 'news'], $date . $title . $description . $buttons);
         }
         $html .= html::tag('ul', ['class' => 'news'], $list_news);
         return html::div($attrib, $html);
@@ -207,7 +208,7 @@ class mel_help extends rcube_plugin {
 
         $html = html::span(['class' => 'label'], $this->gettext('help no result'));
         $html .= html::div(['class' => 'helplinks'], 
-            html::span(['class' => 'helplink'], html::a(['href' => $this->rc->config->get('help_channel_support', ''), 'target' => '_blank', 'class' => 'button'], $this->gettext('help no result channel')))
+            html::span(['class' => 'helplink'], html::a(['href' => $this->rc->config->get('help_channel_support', ''), 'target' => '_blank', 'class' => 'button', 'title' => $this->gettext('help no result channel title')], $this->gettext('help no result channel')))
         );
 
         return html::div($attrib, $html);

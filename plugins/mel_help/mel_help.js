@@ -56,19 +56,9 @@ function help_search(event, object) {
 					}
 					// A href for url
 					var url = document.createElement('a');
-					url.href = _search[r.key].url ? _search[r.key].url : _search[r.key].help_url;
+					url.href = _search[r.key].action_url ? _search[r.key].action_url : _search[r.key].help_url;
 					url.target = "_blank";
 					url.title = _search[r.key].description;
-					// Help url button
-					if (_search[r.key].help_url) {
-						var help_url = document.createElement('a');
-						help_url.href = _search[r.key].help_url;
-						help_url.target = "_blank";
-						help_url.title = _search[r.key].help_title;
-						help_url.className = "help button";
-						help_url.textContent = rcmail.get_label('help search open', 'mel_help');
-						url.appendChild(help_url);
-					}
 					// Title
 					var title = document.createElement('span');
 					title.className = "title";
@@ -79,21 +69,30 @@ function help_search(event, object) {
 					numbers.className = "numbers";
 					numbers.textContent = r.value === 1 ? "(1)" : "(" + r.value + ")";
 					url.appendChild(numbers);
-					// Description
-					var description = document.createElement('span');
-					description.className = "description";
-					description.innerHTML = _search[r.key].description;
-					url.appendChild(description);
-					// Url button
-					if (_search[r.key].url) {
-						var action_url = document.createElement('a');
-						action_url.href = _search[r.key].url;
-						action_url.target = "_blank";
-						action_url.title = _search[r.key].description;
-						action_url.className = "action button";
-						action_url.textContent = rcmail.get_label('help action open', 'mel_help');
-						url.appendChild(action_url);
+					// Buttons
+					var buttons = document.createElement('div');
+					buttons.className = "buttons"
+					// Help url button
+					if (_search[r.key].help_url) {
+						var help_url = document.createElement('a');
+						help_url.href = _search[r.key].help_url;
+						help_url.target = "_blank";
+						help_url.title = _search[r.key].help_title;
+						help_url.className = "help button";
+						help_url.textContent = _search[r.key].help_name ? _search[r.key].help_name : rcmail.get_label('help search open', 'mel_help');
+						buttons.appendChild(help_url);
 					}
+					// Url button
+					if (_search[r.key].action_url) {
+						var action_url = document.createElement('a');
+						action_url.href = _search[r.key].action_url;
+						action_url.target = "_blank";
+						action_url.title = _search[r.key].action_title;
+						action_url.className = _search[r.key].action_class ? (_search[r.key].action_class + " button") : "action button";
+						action_url.textContent = _search[r.key].action_name;
+						buttons.appendChild(action_url);
+					}
+					url.appendChild(buttons);
 					var result = document.createElement('div');
 					result.className = "result";
 					result.appendChild(url);

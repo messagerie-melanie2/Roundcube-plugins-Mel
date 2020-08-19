@@ -44,50 +44,67 @@ a.button:hover {
 	text-decoration: none;
 	padding: 30px;
     display: grid;
-    grid-template-areas: "a b c e" "a d d e";
-    grid-template-columns: 7em auto 3em 2em;
+    grid-template-areas: "a b" "c c";
+    grid-template-columns: auto 2em;
     grid-gap: 1em;
 }
 
 #help-search-results .title {
 	font-size: 18px;
 	font-weight: bold;
-    color: #4a65e2;
-    grid-area: b;
+    color: var(--labels-date-text-color);
+    grid-area: a;
 }
 
 #help-search-results .numbers {
 	padding-left: 10px;
     font-size: 14px;
-    grid-area: c;
+    grid-area: b;
 }
 
-#help-search-results .description {
-	display: block;
-	padding-top: 10px;
-	color: var(--labels-date-text-color);
-    font-size: 14px;
-    grid-area: d;
+#help-search-results div.buttons {
+    grid-area: c;
+    align-self: center;
 }
 
 #help-search-results a.button {
     text-indent: 0;
     line-height: 28px;
+    margin: 5px;
     padding: 0 10px 0 35px;
-    align-self: center;
+    width: auto;
 }
 
 #help-search-results a.button.help {
-    grid-area: a;
-    width: 30px;
     background: url(images/help.png?v=e784.5000) 7px center no-repeat;
 }
 
 #help-search-results a.button.action {
-    grid-area: e;
-    width: 0;
-    padding-right: 0;
     background: url(images/settings.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.add {
+    background: url(images/add.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.import {
+    background: url(images/import.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.carnet {
+    background: url(images/carnet.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.annuaire {
+    background: url(images/annuaire.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.archive {
+    background: url(images/archive.png?v=e784.5000) 7px center no-repeat;
+}
+
+#help-search-results a.button.calendar {
+    background: url(images/calendar.png?v=e784.5000) 7px center no-repeat;
 }
 
 #noresulthelp {

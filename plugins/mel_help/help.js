@@ -14,8 +14,16 @@ if (window.rcmail) {
                             rcmail.plugin_archiver();
                         }
                         break;
-                    case 'new_event':
-                        if (rcmail.env.task == 'calendar') {
+                    case 'import':
+                        if (rcmail.env.task == 'addressbook') {
+                            rcmail.command('import','',this,event);
+                        }
+                        break;
+                    case 'add':
+                        if (rcmail.env.task == 'addressbook') {
+                            rcmail.command('add','',this,event);
+                        }
+                        else if (rcmail.env.task == 'calendar') {
                             rcmail.command('addevent','',this,event);
                         }
                         break;

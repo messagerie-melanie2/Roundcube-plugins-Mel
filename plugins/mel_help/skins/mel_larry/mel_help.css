@@ -44,9 +44,10 @@ a.button:hover {
 	text-decoration: none;
 	padding: 30px;
     display: grid;
-    grid-template-areas: "a b" "c c";
+    grid-template-areas: "a b" "c c" "d d";
     grid-template-columns: auto 2em;
     grid-gap: 1em;
+    color: var(--main-text-color);
 }
 
 #help-search-results .title {
@@ -56,6 +57,10 @@ a.button:hover {
     grid-area: a;
 }
 
+#help-search-results .description {
+    grid-area: c;
+}
+
 #help-search-results .numbers {
 	padding-left: 10px;
     font-size: 14px;
@@ -63,7 +68,7 @@ a.button:hover {
 }
 
 #help-search-results div.buttons {
-    grid-area: c;
+    grid-area: d;
     align-self: center;
 }
 
@@ -88,7 +93,7 @@ a.button:hover {
 }
 
 #help-search-results a.button.import {
-    background: url(images/import.png?v=e784.5000) 7px center no-repeat;
+    background: url(images/importer.png?v=e784.5000) 7px center no-repeat;
 }
 
 #help-search-results a.button.carnet {
@@ -99,8 +104,8 @@ a.button:hover {
     background: url(images/annuaire.png?v=e784.5000) 7px center no-repeat;
 }
 
-#help-search-results a.button.archive {
-    background: url(images/archive.png?v=e784.5000) 7px center no-repeat;
+#help-search-results a.button.archiver {
+    background: url(images/archiver.png?v=e784.5000) 7px center no-repeat;
 }
 
 #help-search-results a.button.calendar {

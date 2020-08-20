@@ -19,12 +19,20 @@ if (window.rcmail) {
                             rcmail.command('import','',this,event);
                         }
                         break;
+                    case 'labels':
+                        if (rcmail.env.task == 'settings') {
+                            rcmail.sections_list.select('labels');
+                        }
+                        break
                     case 'add':
                         if (rcmail.env.task == 'addressbook') {
                             rcmail.command('add','',this,event);
                         }
                         else if (rcmail.env.task == 'calendar') {
                             rcmail.command('addevent','',this,event);
+                        }
+                        else if (rcmail.env.task == 'tasks') {
+                            $('#createnewtask').click();
                         }
                         break;
                 }

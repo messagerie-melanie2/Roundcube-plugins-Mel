@@ -64,6 +64,13 @@ function help_search(event, object) {
 					title.className = "title";
 					title.textContent = _search[r.key].title;
 					url.appendChild(title);
+					// Description
+					if (_search[r.key].description) {
+						var description = document.createElement('span');
+						description.className = "description";
+						description.innerHTML = _search[r.key].description;
+						url.appendChild(description);
+					}
 					// Numbers
 					var numbers = document.createElement('span');
 					numbers.className = "numbers";

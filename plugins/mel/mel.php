@@ -180,6 +180,9 @@ class mel extends rcube_plugin {
       $_SERVER['HTTP_HOST'] = $http_host;
     }
 
+    // Default task
+    $this->rc->output->set_env('default_task', $this->rc->config->get('default_task', 'mail'));
+
     // Use infinite scroll ?
     $this->rc->output->set_env('use_infinite_scroll', $this->rc->config->get('use_infinite_scroll', true));
     

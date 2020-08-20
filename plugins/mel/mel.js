@@ -111,6 +111,11 @@ if (window.rcmail) {
 		  if (rcmail.env['plugin.show_password_change']) {
 			  show_password_change(this);
 		  }
+
+		  // Switch to default task commande
+			rcmail.register_command('switch-to-default-task', function() {
+				rcmail.switch_to_default_task();
+			}, true);
 		  
 		  // Gestion de l'url courrielleur
 		  var url = window.location.href.split('?')[1];
@@ -405,6 +410,11 @@ rcube_webmail.prototype.mel_storage_remove = function(name) {
 	else {
 		window.sessionStorage.removeItem('mel.' + name);
 	}
+};
+
+// Switch to default task
+rcube_webmail.prototype.switch_to_default_task = function() {
+	this.switch_task(rcmail.env.default_task);
 };
 
 /**

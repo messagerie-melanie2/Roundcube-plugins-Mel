@@ -61,8 +61,8 @@ class mel_portail extends rcube_plugin
     if ($this->rc->config->get('ismobile', false)) {
       $this->add_button(array(
           'command' => 'portail',
-          'class'	=> 'button-mel_portail ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-          'classsel' => 'button-mel_portail button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+          'class'	=> 'button-mel_portail ui-link ui-btn ui-corner-all ui-icon-grid ui-btn-icon-left',
+          'classsel' => 'button-mel_portail button-selected ui-link ui-btn ui-corner-all ui-icon-grid ui-btn-icon-left',
           'innerclass' => 'button-inner',
           'label'	=> 'mel.portail',
       ), 'taskbar_mobile');

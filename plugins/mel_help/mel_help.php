@@ -56,6 +56,7 @@ class mel_help extends rcube_plugin {
                 'label'	=> 'mel.help',
             ), 'taskbar_mobile');
           } else {
+            $this->include_stylesheet($skin_path . '/styles.css');
             $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
             $this->add_button(array(
                 'command' => 'help_open_dialog',

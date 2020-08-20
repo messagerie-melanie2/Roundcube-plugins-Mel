@@ -52,7 +52,6 @@ class mel_portail extends rcube_plugin
     if ($this->rc->output->get_env('ismobile') && strpos($skin_path, '_mobile') === false) {
       $skin_path .= '_mobile';
     }
-    $this->include_stylesheet($skin_path . '/styles.css');
 
     // ajout de la tache
     $this->register_task('portail');

@@ -1,6 +1,6 @@
 <?php
 $labels = array();
-$labels['task'] = 'Bureau numérique de l\'agent';
+$labels['task'] = 'Bureau numérique';
 $labels['title'] = 'Bureau numérique de l\'agent';
 
 $labels['manageresourcesportail'] = "Liste des vignettes dans le portail ETN";

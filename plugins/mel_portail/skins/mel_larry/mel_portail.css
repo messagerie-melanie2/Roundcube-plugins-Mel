@@ -18,21 +18,6 @@
 	height: 100%;
 }
 
-#topnav .logo {
-    color: #000;
-    color: var(--topitem-selected-text-color);
-    background-color: #dee9f6;
-    background-color: var(--topitem-selected-bg-color);
-    border-bottom: 2px solid #f50059;
-    border-bottom-color: rgb(245, 0, 89);
-    border-color: var(--topitem-selected-border-color);
-    text-shadow: none;
-    height: 64px;
-	line-height: 20px;
-	min-width: 60px;
-	display: inline-block;
-}
-
 #portailview {
 	padding: 2em;
     display: flex;

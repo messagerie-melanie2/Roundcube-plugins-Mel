@@ -81,7 +81,7 @@ $labels['mel_use_subscribed_folders'] = 'Utiliser les abonnements pour les dossi
 $labels['mel_use_infinite_scroll'] = 'Utiliser le scroll infini pour parcourir les messages';
 $labels['mel_default_task'] = 'Page d\'accueil après la connexion';
 
-$labels['portail'] = 'Bureau numérique de l\'agent';
+$labels['portail'] = 'Bureau numérique';
 $labels['calendar'] = 'Agenda';
 $labels['discussion'] = 'Discussion';
 $labels['sondage'] = 'Sondage';
@@ -119,5 +119,5 @@ $labels['Or you can clic here to relogin'] = "Ou vous pouvez cliquer ici pour vo
 
 $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
 
-$labels['portail_title'] = 'Ouvrez votre portail environnement de travail';
+$labels['portail_title'] = 'Ouvrez votre bureau numérique';
 $labels['help_title'] = 'Ouvrez la page d\'assistance dédiée à Mél';

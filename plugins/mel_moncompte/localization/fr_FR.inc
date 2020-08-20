@@ -160,7 +160,7 @@ $labels['changepassword_appel_error'] = 'Echec de la modification du mot de pass
 $labels['error_password_confirm'] = 'Mots de passe différents';
 $labels['changepassword_infos'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél et aux applications Cerbère. Une fois ce changement effectué, pensez à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
 $labels['changepassword_infos_bureautique'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél, aux applications Cerbère et à votre poste de travail. Une fois ce changement effectué, fermez votre session Windows et reconnectez-vous avec votre nouveau mot de passe pour retrouver votre accès aux partages réseaux. Pensez également à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
-$labels['changepassword_explic'] = "Votre nouveau mot de passe doit contenir au moins 8 caractères, dont au moins une majuscule, une miniscule, un chiffre et un caractère spécial. Les caractères accentués ne sont pas autorisés.
+$labels['changepassword_explic'] = "Votre nouveau mot de passe doit contenir au moins 10 caractères, dont au moins une majuscule, une miniscule, un chiffre et un caractère spécial. Les caractères accentués ne sont pas autorisés.
 
 Vous ne pouvez pas réutiliser un mot de passe que vous avez déjà utilisé sur Mél, et votre nouveau mot de passe doit être suffisamment différent de votre mot de passe actuel (au moins 3 caractères doivent être modifiés).";
 

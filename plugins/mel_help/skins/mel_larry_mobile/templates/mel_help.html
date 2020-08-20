@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+
+<div data-role="page" class="jqm-help" data-theme="f">
+	<div data-role="header" data-position="fixed" data-theme="f" class="jqm-help-header" data-tap-toggle="false">
+		<h1><roundcube:label name="mel_help.task" /></h1>
+		
+		<div data-role="controlgroup" data-type="horizontal" class="ui-mini ui-btn-right">
+			<a href="#apps-right-panel" class="jqm-apps-rightpanel-link ui-link ui-btn ui-icon-grid ui-btn-icon-notext" data-rel="open">Apps</a>
+		</div>
+	</div>
+	
+	<roundcube:include file="/includes/rightpanel.html" />
+	
+	<div role="main" class="ui-content jqm-content">
+		<div id="help-search">
+			<span class="help-search-label"><roundcube:label name="mel_help.describe your need in few words" /></span>
+			<span class="help-search-input">
+				<input type="text" placeholder="<roundcube:label name="mel_help.what do you want ?" />" onkeyup="help_search(event, this);">
+			</span>
+		</div>
+		<div id="help-search-results"></div>
+		<roundcube:object id="noresulthelp" name="no_result_help" />
+		<roundcube:object id="helppages" name="help_pages" />
+		<roundcube:object id="helpnews" name="help_news" />
+	</div>
+	
+
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+</body>
+</html>

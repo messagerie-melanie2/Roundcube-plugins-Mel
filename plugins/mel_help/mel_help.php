@@ -42,13 +42,20 @@ class mel_help extends rcube_plugin {
         if ($this->rc->output->get_env('ismobile') && strpos($skin_path, '_mobile') === false) {
             $skin_path .= '_mobile';
         }
-        $this->include_stylesheet($skin_path . '/styles.css');
 
         // ajout de la tache
         $this->register_task('help');
 
         // Ajoute le bouton en fonction de la skin
-        if (!$this->rc->config->get('ismobile', false)) {
+        if ($this->rc->config->get('ismobile', false)) {
+            $this->add_button(array(
+                'command' => 'help',
+                'class'	=> 'button-mel_help ui-link ui-btn ui-corner-all ui-icon-info ui-btn-icon-left',
+                'classsel' => 'button-mel_help button-selected ui-link ui-btn ui-corner-all ui-icon-info ui-btn-icon-left',
+                'innerclass' => 'button-inner',
+                'label'	=> 'mel.help',
+            ), 'taskbar_mobile');
+          } else {
             $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
             $this->add_button(array(
                 'command' => 'help_open_dialog',
@@ -153,7 +160,7 @@ class mel_help extends rcube_plugin {
         }
 
         $suggestion_url = $this->rc->config->get('help_suggestion_url', null);
-        if (isset($suggestion_url)) {
+        if (isset($suggestion_url) && !$this->rc->config->get('ismobile', false)) {
             $html .= html::span(['class' => 'helppage suggestion'], html::a(['href' => $suggestion_url, 'target' => '_blank', 'title' => $this->gettext('make a suggestion title')], $this->gettext('make a suggestion')));
         }
 
@@ -186,7 +193,9 @@ class mel_help extends rcube_plugin {
             if (isset($news['buttons']) && is_array($news['buttons'])) {
                 $_b = '';
                 foreach ($news['buttons'] as $button) {
-                    $_b .= html::a(['class' => 'button ' . $button['class'], 'target' => '_blank', 'href' => $button['href'], 'title' => $button['tooltip']], $button['name']);
+                    if (!$this->rc->config->get('ismobile', false) || $button['class'] != "action") {
+                        $_b .= html::a(['class' => 'button ' . $button['class'], 'target' => '_blank', 'href' => $button['href'], 'title' => $button['tooltip']], $button['name']);
+                    }
                 }
                 $buttons .= html::div(['class' => 'buttons'], $_b);
             }

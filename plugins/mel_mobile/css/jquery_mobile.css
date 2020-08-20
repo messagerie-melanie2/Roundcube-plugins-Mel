@@ -28,6 +28,63 @@ body.ui-mobile-viewport, div.ui-mobile-viewport {
     -webkit-overflow-scrolling: touch;
 }
 
+#apps-right-panel .ui-panel-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+#apps-right-panel .ui-panel-inner .button-selected {
+  background-color: #353A4A;
+}
+
+#apps-right-panel .ui-panel-inner .button-mel_portail {
+  order: 1;
+}
+
+#apps-right-panel .ui-panel-inner .button-mail {
+  order: 2;
+}
+
+#apps-right-panel .ui-panel-inner .button-addressbook {
+  order: 3;
+}
+
+#apps-right-panel .ui-panel-inner .button-calendar {
+  order: 4;
+}
+
+#apps-right-panel .ui-panel-inner .button-rocket_chat {
+  order: 5;
+}
+
+#apps-right-panel .ui-panel-inner .button-mel_sondage {
+  order: 6;
+}
+
+#apps-right-panel .ui-panel-inner .button-mel_nextcloud {
+  order: 7;
+}
+
+#apps-right-panel .ui-panel-inner .button-mel_moncompte {
+  order: 8;
+}
+
+#apps-right-panel .ui-panel-inner .button-settings {
+  order: 9;
+}
+
+#apps-right-panel .ui-panel-inner .button-mel_help {
+  order: 10;
+}
+
+#apps-right-panel .ui-panel-inner .button-switch_desktop {
+  order: 11;
+}
+
+#apps-right-panel .ui-panel-inner .button-logout {
+  order: 12;
+}
+
 .ui-input-text {
   border: none;
 }

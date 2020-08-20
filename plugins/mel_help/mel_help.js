@@ -56,7 +56,7 @@ function help_search(event, object) {
 					}
 					// A href for url
 					var url = document.createElement('a');
-					url.href = _search[r.key].action_url ? _search[r.key].action_url : _search[r.key].help_url;
+					url.href = _search[r.key].action_url && !rcmail.env.ismobile ? _search[r.key].action_url : _search[r.key].help_url;
 					url.target = "_blank";
 					url.title = _search[r.key].description;
 					// Title
@@ -90,7 +90,7 @@ function help_search(event, object) {
 						buttons.appendChild(help_url);
 					}
 					// Url button
-					if (_search[r.key].action_url) {
+					if (_search[r.key].action_url && !rcmail.env.ismobile) {
 						var action_url = document.createElement('a');
 						action_url.href = _search[r.key].action_url;
 						action_url.target = "_blank";

@@ -1,6 +1,7 @@
 <?php
 $labels = array();
 $labels['title'] = 'Page d\'assistance de Mél';
+$labels['task'] = 'Page d\'aide';
 $labels['what do you want ?'] = 'Que souhaitez-vous faire ?';
 $labels['describe your need in few words'] = 'Décrivez-nous votre besoin en quelques mots pour que l\'on puisse vous aider (service en bêta)';
 $labels['product news'] = 'Les nouveautés de Mél web';

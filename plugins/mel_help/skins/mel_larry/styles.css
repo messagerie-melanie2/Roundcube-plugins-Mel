@@ -5,6 +5,7 @@
 #taskbar a.button-mel_help {
     position: absolute;
     right: 130px;
+    order: 10;
 }
 
 #taskbar a.button-mel_help span.button-inner {

@@ -561,10 +561,18 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/mail.png?v=e784.5000) center 15px no-repeat;
 }
 
+#taskbar a.button-mail  {
+	order: 2;
+}
+
 #taskbar a.button-addressbook span.button-inner,
 #taskbar a.button-addressbook:hover span.button-inner,
 #taskbar a.button-selected.button-addressbook span.button-inner {
 	background: url(../images/taskbar/contacts.png?v=e784.5000) center 15px no-repeat;
+}
+
+#taskbar a.button-addressbook  {
+	order: 3;
 }
 
 #taskbar a.button-calendar span.button-inner,
@@ -573,10 +581,18 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/agenda.png?v=e784.5000) center 15px no-repeat;
 }
 
+#taskbar a.button-calendar  {
+	order: 4;
+}
+
 #taskbar a.button-mel_sondage span.button-inner,
 #taskbar a.button-mel_sondage:hover span.button-inner,
 #taskbar a.button-selected.button-mel_sondage span.button-inner {
 	background: url(../images/taskbar/sondage.png?v=e784.5000) center 15px no-repeat;
+}
+
+#taskbar a.button-mel_sondage  {
+	order: 6;
 }
 
 #taskbar a.button-discussion span.button-inner,
@@ -585,10 +601,18 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/discussion.png?v=e784.5000) center 15px no-repeat;
 }
 
+#taskbar a.button-discussion  {
+	order: 5;
+}
+
 #taskbar a.button-mel_owncloud span.button-inner,
 #taskbar a.button-mel_owncloud:hover span.button-inner,
 #taskbar a.button-selected.button-mel_owncloud span.button-inner {
 	background: url(../images/taskbar/stockage.png?v=e784.5000) center 15px no-repeat;
+}
+
+#taskbar a.button-mel_owncloud  {
+	order: 7;
 }
 
 #taskbar a.button-mel_nextcloud span.button-inner,
@@ -597,10 +621,18 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/stockage.png?v=e784.5000) center 15px no-repeat;
 }
 
+#taskbar a.button-mel_nextcloud {
+	order: 7;
+}
+
 #taskbar a.button-tasklist span.button-inner,
 #taskbar a.button-tasklist:hover span.button-inner,
 #taskbar a.button-selected.button-tasklist span.button-inner {
 	background: url(../images/taskbar/taches.png?v=e784.5000) center 15px no-repeat;
+}
+
+#taskbar a.button-tasklist {
+	order: 9;
 }
 
 #taskbar a.button-settings span.button-inner,
@@ -609,10 +641,18 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/settings.png?v=e784.5000) center 20px no-repeat;
 }
 
+#taskbar a.button-settings {
+	order: 11;
+}
+
 #taskbar a.button-help span.button-inner,
 #taskbar a.button-help:hover span.button-inner,
 #taskbar a.button-selected.button-help span.button-inner {
 	background: url(../images/taskbar/help.png?v=e784.5000) center 20px no-repeat;
+}
+
+#taskbar a.button-help {
+	order: 10;
 }
 
 #taskbar a.button-mel_portail span.button-inner,
@@ -623,7 +663,7 @@ body.extwin #taskbar {
 }
 
 #taskbar a.button-mel_portail {
-	order: -1;
+	order: 1;
 }
 
 #mainscreen {

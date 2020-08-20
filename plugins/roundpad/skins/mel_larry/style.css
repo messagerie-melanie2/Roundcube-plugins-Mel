@@ -4,3 +4,7 @@
 #taskbar a.button-pads.button-selected span.button-inner {
   background: url(../../../mel_larry/images/taskbar/document.png?v=e784.5000) center 15px no-repeat;
 }
+
+#taskbar a.button-pads {
+	order: 8;
+}

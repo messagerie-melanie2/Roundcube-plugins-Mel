@@ -33,6 +33,10 @@ body.ui-mobile-viewport, div.ui-mobile-viewport {
     flex-direction: column;
 }
 
+#apps-right-panel .ui-panel-inner .ui-btn {
+  min-height: 1.2em;
+}
+
 #apps-right-panel .ui-panel-inner .button-selected {
   background-color: #353A4A;
 }

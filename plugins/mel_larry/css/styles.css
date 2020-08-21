@@ -439,11 +439,16 @@ body.extwin #taskbar {
 	height: 14px;
 }
 
+.minimal #taskbar a {
+	position: static;
+	height: 64px;
+}
+
 .minimal #taskbar .button-inner {
     top: 0px;
     padding: 43px 7px 4px;
     height: 14px !important;
-    width: 74px;
+    width: auto;
     text-indent: 0px;
 }
 
@@ -486,11 +491,13 @@ body.extwin #taskbar {
 	  	min-width: 60px;
 	  	margin-left: 15px;
 	}
+	.minimal #taskbar .button-inner,
 	#taskbar a span.button-inner {
 		text-indent: -9999px;
 		padding: 43px 15px 4px;
 		background-position: center 20px;
 	}
+	.minimal #taskbar .tooltip,
  	#taskbar .tooltip {
 		position: absolute;
 		top: -500px;
@@ -505,6 +512,7 @@ body.extwin #taskbar {
 		z-index: 200;
 		white-space: nowrap;
 	}
+	.minimal #taskbar .tooltip:after,
 	#taskbar .tooltip:after {
 		content: "";
 		position: absolute;
@@ -518,10 +526,13 @@ body.extwin #taskbar {
 		width: 0;
 		z-index: 251;
 	}
+	.minimal #taskbar a:hover .tooltip,
 	#taskbar a:hover .tooltip {
 		display: block;
 		top: 39px;
 	}
+	.minimal #taskbar a.button-mel_help,
+	.minimal #taskbar a.button-help,
 	#taskbar a.button-mel_help,
 	#taskbar a.button-help {
 		right: 290px !important;

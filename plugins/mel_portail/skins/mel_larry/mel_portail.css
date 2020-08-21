@@ -212,6 +212,15 @@ body.right_panel_minified #portailview.manage .manage_message {
     z-index: 10;
 }
 
+#portailview .item.blue .flip,
+#portailview .item.green .flip,
+#portailview .item.turquoise .flip,
+#portailview .item.red .flip,
+#portailview .item.orange .flip,
+#portailview .item.grey .flip {
+	background-image: url(images/flip-icon-light.png?v=e784.5000);
+}
+
 #portailview .item.blue .flip {
 	background-color: #03396c;
 }

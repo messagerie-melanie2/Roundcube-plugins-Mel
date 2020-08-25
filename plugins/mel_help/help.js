@@ -35,6 +35,11 @@ if (window.rcmail) {
                             $('#createnewtask').click();
                         }
                         break;
+                    case 'general':
+                        if (rcmail.env.task == 'settings') {
+                            rcmail.sections_list.select('general');
+                        }
+                        break;
                 }
                 delete rcmail.env.help_action;
             }

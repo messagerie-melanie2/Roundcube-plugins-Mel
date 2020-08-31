@@ -160,9 +160,15 @@ $labels['changepassword_appel_error'] = 'Echec de la modification du mot de pass
 $labels['error_password_confirm'] = 'Mots de passe différents';
 $labels['changepassword_infos'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél et aux applications Cerbère. Une fois ce changement effectué, pensez à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
 $labels['changepassword_infos_bureautique'] = "Vous pouvez modifier ici votre mot de passe d'accès à Mél, aux applications Cerbère et à votre poste de travail. Une fois ce changement effectué, fermez votre session Windows et reconnectez-vous avec votre nouveau mot de passe pour retrouver votre accès aux partages réseaux. Pensez également à mettre à jour le nouveau mot de passe sur vos appareils mobiles synchronisés avec Mél ainsi que dans les différents outils de synchronisation (MDrive, Ariane, ...).";
-$labels['changepassword_explic'] = "Votre nouveau mot de passe doit contenir au moins 10 caractères, dont au moins une majuscule, une miniscule, un chiffre et un caractère spécial. Les caractères accentués ne sont pas autorisés.
-
-Vous ne pouvez pas réutiliser un mot de passe que vous avez déjà utilisé sur Mél, et votre nouveau mot de passe doit être suffisamment différent de votre mot de passe actuel (au moins 3 caractères doivent être modifiés).";
+$labels['changepassword_explic'] = "<p>Le nouveau mot de passe doit être différent des anciens mots de passe (d'au moins 3 caractères pour le dernier) et ne pas contenir nom et prénom de l'utilisateur.
+<br>- Il doit avoir une longueur d'au moins 10 caractères, avec au moins un caractère de chaque type : majuscule, minuscule, chiffre, caractère spécial (!\"#$%&'()*+,-./:<=>?@[^]_{|}~). Les accents (â à â é è ê …) ne sont pas autorisés.
+<br>- Si vous synchronisez un téléphone avec Mél, pensez à mettre à jour le nouveau mot de passe sur les comptes du téléphone.
+</p>
+<p><b>ATTENTION - pour les agents des services MTE/MCTRCT (sauf DREAL Grand-Est et DRIEE) et des DDT :</b>
+<br>- Si vous êtes au bureau ou connecté en VPN, pour synchroniser votre mot de passe de session Windows, verrouiller (touches Windows+L) et déverrouiller (Ctrl+Alt+Supp) votre écran et saisissez votre nouveau mot de passe ;
+<br>- Si vous n'êtes pas au bureau et n'utilisez pas le VPN, votre mot de passe ne sera changé sur votre poste Windows qu'au retour lors de votre première connexion au réseau. Ainsi jusqu'à votre retour votre ancien mot de passe sera celui de votre session Windows, il ne faudra pas oublier de saisir ce nouveau mot de passe de session lors de votre retour sur votre poste de travail au bureau.
+</p>
+<p><b>En cas de difficultés, et en attendant l'intervention de votre assistance de proximité, essayez d'ouvrir votre session Windows avec l'ancien mot de passe.</b></p>";
 
 //$labels['changepassword_explic_agri'] = 'Pour les agents dépendant du Ministère de l\'Agriculture et de l\'Alimentation, le changement de mot de passe se fait à partir de l\'annuaire Agricoll au lien suivant : ';
 $labels['changepassword_explic_agri_0'] = "Pour les agents dépendant du Ministère de l'Agriculture et de l'Alimentation, le changement de mot de passe s'effectue comme suit :"; 

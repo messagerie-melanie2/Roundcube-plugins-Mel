@@ -8,6 +8,7 @@ $labels['applications_list'] = "Liste des vignettes";
 $labels['resourcesportail'] = "Vignettes";
 $labels['add_resource'] = "Ajouter une nouvelle vignette";
 $labels['delete_resource'] = "Supprimer la vignette sélectionnée";
+$labels['export_resource'] = "Exporter la vignette sélectionnée";
 $labels['reinit_resources'] = "Réinitialiser toutes les vignettes (remet à zéro le tri des vignettes et masque les vignettes personnelles)";
 $labels['export_resources'] = "Exporter la vignette au format JSON (peut-être de la réimporter en faisant une nouvelle vignette)";
 $labels['wait'] = "Chargement en cours...";

@@ -20,6 +20,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 $labels['files'] = 'Documents';
+$labels['document_title'] = 'Ouvrez vos documents pad et calc en ligne';
 $labels['create'] = 'Créer';
 $labels['save'] = 'Enregistrer';
 $labels['cancel'] = 'Annuler';

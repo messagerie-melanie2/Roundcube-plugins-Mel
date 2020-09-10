@@ -63,6 +63,7 @@ class mel_sondage extends rcube_plugin
                 'classsel' => 'button-mel_sondage button-selected',
                 'innerclass' => 'button-inner',
                 'label'	=> 'mel_sondage.task',
+                'title' => 'mel_sondage.sondages_title',
             ), $taskbar);
         }
 

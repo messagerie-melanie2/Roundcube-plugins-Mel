@@ -98,6 +98,11 @@ div#contact-details .contactcontrolleremail .row {
     padding: 10px 8px 10px 50px;
 }
 
+#directorylist li.addressbook.selected > a,
+#directorylist li.addressbook > a {
+	padding: 8px 8px 8px 50px;
+}
+
 #directorylist li.addressbook.selected > a[rel=amande],
 #directorylist li.addressbook > a[rel=amande],
 #directorylist li.addressbook.selected > a[rel=annuaire],
@@ -187,7 +192,7 @@ div#contact-details .contactcontrolleremail .row {
 
 #addressbooktoolbar {
     left: 13px;
-    top: 8px;
+    top: 6px;
 }
 
 #addressbooktoolbar.toolbar a.button.add {

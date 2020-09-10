@@ -40,4 +40,13 @@ $labels['personalcalendar'] = 'Agenda personnel';
 $labels['personaladdressbook'] = 'Carnet personnel';
 $labels['personaltasks'] = 'Tâches personnelles';
 
+$labels['logo_title'] = 'Retournez sur la page d\'accueil du portail web';
+$labels['min_toggle_title'] = 'Changer le mode d\'affichage du portail web (compact ou normal)';
+$labels['mail_title'] = 'Ouvrez vos courriels personnels et vos boites partagées';
+$labels['agenda_title'] = 'Ouvrez vos agendas personnels et partagés';
+$labels['contact_title'] = 'Ouvrez vos contacts personnels et partagés';
+$labels['discussion_title'] = 'Ouvrez vos discussions intantanées';
+$labels['tasklist_title'] = 'Ouvrez vos tâches personnelles et partagées';
+$labels['settings_title'] = 'Ouvrez les paramètres du portail web';
+
 $labels['help'] = 'Aide';

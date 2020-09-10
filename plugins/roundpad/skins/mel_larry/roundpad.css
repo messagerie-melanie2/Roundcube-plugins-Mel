@@ -13,6 +13,10 @@
   min-width: 570px;
 }
 
+.minimal #filestoolbar {
+  top: 6px;
+}
+
 #filestoolbar a.button.newpad {
   background: url(images/nouveau_document_blanc.png) no-repeat 8px center #f50059;
   background-color: var(--inputs-mainaction-bg-color);

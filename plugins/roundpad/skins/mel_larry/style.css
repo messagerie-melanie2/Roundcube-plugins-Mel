@@ -5,6 +5,12 @@
   background: url(../../../mel_larry/images/taskbar/document.png?v=e784.5000) center 15px no-repeat;
 }
 
+.minimal #taskbar a.button-pads span.button-inner,
+.minimal #taskbar a.button-pads:hover span.button-inner,
+.minimal #taskbar a.button-pads.button-selected span.button-inner {
+  background-position: center 8px;
+}
+
 #taskbar a.button-pads {
 	order: 8;
 }

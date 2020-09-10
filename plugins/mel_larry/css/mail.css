@@ -29,6 +29,10 @@
     left: 13px;
 }
 
+.minimal #messagetoolbar {
+	top: 6px;
+}
+
 #messagetoolbar > span.junk,
 #messagetoolbar > a.junk,
 #messagetoolbar > a.bounce,
@@ -66,6 +70,10 @@
   -webkit-box-shadow: none;
 }
 
+.minimal .folderlist li.mailbox .unreadcount {
+	top: 5px;
+}
+
 .folderlist li.mailbox.recent > a .unreadcount {
     background: none;
 }
@@ -89,6 +97,11 @@ html.mozilla #mailboxlist > li:first-child {
 	padding-bottom: 8px;
 	border-bottom-color: #cbcbcb;
 	border-bottom-color: var(--table-body-border-color);
+}
+
+.minimal .messagelist tr td {
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
 
 .messagelist tbody td a {
@@ -163,11 +176,20 @@ html.mozilla #mailboxlist > li:first-child {
   opacity: .5;
 }
 
+.minimal .messagelist tr:hover td.status span.msgicon {
+	height: 26px;
+}
+
 .messagelist tr td.status span.unread,
 .messagelist tr td.status span.unread:hover {
   background: url(../images/non-lu.png?v=e784.5000) center center no-repeat !important;
   height: 30px;
   width: 26px;
+}
+
+.minimal .messagelist tr td.status span.unread,
+.minimal .messagelist tr td.status span.unread:hover {
+	height: 26px;
 }
 
 .messagelist tr td.status span.status, 
@@ -273,6 +295,12 @@ div.message-part blockquote {
 #messageheader.previewheader,
 #mailview-right #messageheader {
   	padding: 22px 40px 0px 40px;
+}
+
+.minimal #messageheader,
+.minimal #messageheader.previewheader,
+.minimal #mailview-right #messageheader {
+	padding: 15px 40px 0px 40px;
 }
 
 #previewheaderstoggle,
@@ -431,6 +459,14 @@ div.message-part div.pre {
     padding: 0;
 }
 
+.minimal #mailview-right #messageheader h2.subject,
+.minimal #messageheader.previewheader h3.subject {
+    margin: 0px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    padding: 0;
+}
+
 .moreheaderstoggle {
   background: #eaeaea;
   background-color: var(--main-bg-color);
@@ -481,6 +517,10 @@ td.header-title {
     padding: 10px;
 }
 
+.minimal #messageheader span.date {
+	top: 54px;
+}
+
 #messageheader span.from {
 	display: block;
 	position: absolute;
@@ -489,6 +529,10 @@ td.header-title {
 	right: 235px;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+.minimal #messageheader span.from {
+	top: 65px;
 }
 
 #messageheader td span.adr {
@@ -835,6 +879,7 @@ td span.adr:hover .rcmaddcontact {
 	width: auto;
 	padding: 5px 7px;
 	height: 15px;
+	white-space: nowrap;
 }
 
 #messagessearchfilter {

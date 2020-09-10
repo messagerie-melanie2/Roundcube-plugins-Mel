@@ -16,6 +16,10 @@
     left: 15px;
 }
 
+.minimal #taskstoolbar {
+	top: 6px;
+}
+
 #taskstoolbar a.button.newtask {
     background: url(../images/taches/nouveau.png?v=e784.5000) 10px center no-repeat #f50059;
     background-color: var(--inputs-mainaction-bg-color);
@@ -34,6 +38,10 @@
     top: 8px;
     width: 250px;
     left: 125px;
+}
+
+.minimal #quickaddbox {
+	top: 6px;
 }
 
 #quickaddbox.focus {
@@ -81,6 +89,10 @@
     position: absolute;
     top: 8px;
     right: 300px;
+}
+
+.minimal #taskselector { 
+	top: 6px;
 }
 
 #taskselector ul {

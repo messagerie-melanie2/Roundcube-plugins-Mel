@@ -85,7 +85,8 @@ class mel_nextcloud extends rcube_plugin {
           'class' => 'button-mel_nextcloud',
           'classsel' => 'button-mel_nextcloud button-selected',
           'innerclass' => 'button-inner',
-          'label' => 'mel_nextcloud.task'
+          'label' => 'mel_nextcloud.task',
+          'title' => 'mel_nextcloud.stockage_title',
       ), $taskbar);
     }
 

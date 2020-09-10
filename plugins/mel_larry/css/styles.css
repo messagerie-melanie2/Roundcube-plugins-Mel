@@ -309,6 +309,12 @@ a.button,
     padding-left: 10px;
 }
 
+.minimal #toplogo {
+    padding-top: 5px;
+	padding-left: 5px;
+	height: 35px;
+}
+
 #topnav {
 	position: inherit;
 	height: 65px;
@@ -323,13 +329,13 @@ a.button,
 .minimal #topnav {
 	position: inherit;
 	top: 0px;
-	height: 65px;
+	height: 45px;
 }
 
 .minimal #taskbar a {
 	position: relative;
 	padding: 0;
-	height: 63px;
+	height: 43px;
 }
 
 body.extwin #topnav {
@@ -439,22 +445,17 @@ body.extwin #taskbar {
 	height: 14px;
 }
 
-.minimal #taskbar a {
-	position: static;
-	height: 64px;
+.minimal #taskbar a span.button-inner {
+	height: 45px !important;
 }
 
-.minimal #taskbar .button-inner {
-    top: 0px;
-    padding: 43px 7px 4px;
-    height: 14px !important;
-    width: auto;
-    text-indent: 0px;
+.minimal #taskbar a {
+	position: static;
+	height: 44px;
 }
 
 .minimal #taskbar .tooltip {
-    display: none;
-    margin-top: 10px;
+	display: none !important;
 }
 
 @media screen and (max-width: 1650px) {
@@ -491,59 +492,6 @@ body.extwin #taskbar {
 	  	min-width: 60px;
 	  	margin-left: 15px;
 	}
-	.minimal #taskbar .button-inner,
-	#taskbar a span.button-inner {
-		text-indent: -9999px;
-		padding: 43px 15px 4px;
-		background-position: center 20px;
-	}
-	.minimal #taskbar .tooltip,
- 	#taskbar .tooltip {
-		position: absolute;
-		top: -500px;
-		margin-top: 30px;
-		display: inline-block;
-		padding: 2px 8px 3px 8px;
-		background: #444;
-		color: #eee;
-		font-weight: bold;
-		white-space: nowrap;
-		box-shadow: 0 1px 4px 0 #333;
-		z-index: 200;
-		white-space: nowrap;
-	}
-	.minimal #taskbar .tooltip:after,
-	#taskbar .tooltip:after {
-		content: "";
-		position: absolute;
-		top: -4px;
-		right: 15px;
-		border-style: solid;
-		border-width: 0 4px 4px;
-		border-color: #444 transparent;
-		/* reduce the damage in FF3.0 */
-		display: block;
-		width: 0;
-		z-index: 251;
-	}
-	.minimal #taskbar a:hover .tooltip,
-	#taskbar a:hover .tooltip {
-		display: block;
-		top: 39px;
-	}
-	.minimal #taskbar a.button-mel_help,
-	.minimal #taskbar a.button-help,
-	#taskbar a.button-mel_help,
-	#taskbar a.button-help {
-		right: 290px !important;
-	}
-	body.right_panel_minified #taskbar a.button-mel_help,
-	body.right_panel_minified #taskbar a.button-help {
-    	right: 140px !important;
-	}
-	body.right_panel_minified #taskbar a.button-settings {
-    	right: 85px !important;
-	}
 }
 
 @media screen and (max-width: 1240px) {
@@ -572,6 +520,12 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/mail.png?v=e784.5000) center 15px no-repeat;
 }
 
+.minimal #taskbar a.button-mail span.button-inner,
+.minimal #taskbar a.button-mail:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-mail span.button-inner {
+	background-position: center 8px;
+}
+
 #taskbar a.button-mail  {
 	order: 2;
 }
@@ -580,6 +534,12 @@ body.extwin #taskbar {
 #taskbar a.button-addressbook:hover span.button-inner,
 #taskbar a.button-selected.button-addressbook span.button-inner {
 	background: url(../images/taskbar/contacts.png?v=e784.5000) center 15px no-repeat;
+}
+
+.minimal #taskbar a.button-addressbook span.button-inner,
+.minimal #taskbar a.button-addressbook:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-addressbook span.button-inner {
+	background-position: center 8px;
 }
 
 #taskbar a.button-addressbook  {
@@ -592,6 +552,12 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/agenda.png?v=e784.5000) center 15px no-repeat;
 }
 
+.minimal #taskbar a.button-calendar span.button-inner,
+.minimal #taskbar a.button-calendar:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-calendar span.button-inner {
+	background-position: center 8px;
+}
+
 #taskbar a.button-calendar  {
 	order: 4;
 }
@@ -600,6 +566,12 @@ body.extwin #taskbar {
 #taskbar a.button-mel_sondage:hover span.button-inner,
 #taskbar a.button-selected.button-mel_sondage span.button-inner {
 	background: url(../images/taskbar/sondage.png?v=e784.5000) center 15px no-repeat;
+}
+
+.minimal #taskbar a.button-mel_sondage span.button-inner,
+.minimal #taskbar a.button-mel_sondage:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-mel_sondage span.button-inner {
+	background-position: center 8px;
 }
 
 #taskbar a.button-mel_sondage  {
@@ -612,6 +584,12 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/discussion.png?v=e784.5000) center 15px no-repeat;
 }
 
+.minimal #taskbar a.button-discussion span.button-inner,
+.minimal #taskbar a.button-discussion:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-discussion span.button-inner {
+	background-position: center 8px;
+}
+
 #taskbar a.button-discussion  {
 	order: 5;
 }
@@ -620,6 +598,12 @@ body.extwin #taskbar {
 #taskbar a.button-mel_owncloud:hover span.button-inner,
 #taskbar a.button-selected.button-mel_owncloud span.button-inner {
 	background: url(../images/taskbar/stockage.png?v=e784.5000) center 15px no-repeat;
+}
+
+.minimal #taskbar a.button-mel_owncloud span.button-inner,
+.minimal #taskbar a.button-mel_owncloud:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-mel_owncloud span.button-inner {
+	background-position: center 8px;
 }
 
 #taskbar a.button-mel_owncloud  {
@@ -632,6 +616,12 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/stockage.png?v=e784.5000) center 15px no-repeat;
 }
 
+.minimal #taskbar a.button-mel_nextcloud span.button-inner,
+.minimal #taskbar a.button-mel_nextcloud:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-mel_nextcloud span.button-inner {
+	background-position: center 8px;
+}
+
 #taskbar a.button-mel_nextcloud {
 	order: 7;
 }
@@ -640,6 +630,12 @@ body.extwin #taskbar {
 #taskbar a.button-tasklist:hover span.button-inner,
 #taskbar a.button-selected.button-tasklist span.button-inner {
 	background: url(../images/taskbar/taches.png?v=e784.5000) center 15px no-repeat;
+}
+
+.minimal #taskbar a.button-tasklist span.button-inner,
+.minimal #taskbar a.button-tasklist:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-tasklist span.button-inner {
+	background-position: center 8px;
 }
 
 #taskbar a.button-tasklist {
@@ -652,14 +648,31 @@ body.extwin #taskbar {
 	background: url(../images/taskbar/settings.png?v=e784.5000) center 20px no-repeat;
 }
 
+.minimal #taskbar a.button-settings span.button-inner,
+.minimal #taskbar a.button-settings:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-settings span.button-inner {
+	background-position: center 13px;
+}
+
 #taskbar a.button-settings {
 	order: 11;
+}
+
+#taskbar a.button-logout {
+	background: url(images/buttons.png?v=d70c.9130) 2px -1791px no-repeat;
+	order: 12;
 }
 
 #taskbar a.button-help span.button-inner,
 #taskbar a.button-help:hover span.button-inner,
 #taskbar a.button-selected.button-help span.button-inner {
 	background: url(../images/taskbar/help.png?v=e784.5000) center 20px no-repeat;
+}
+
+.minimal #taskbar a.button-help span.button-inner,
+.minimal #taskbar a.button-help:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-help span.button-inner {
+	background-position: center 8px;
 }
 
 #taskbar a.button-help {
@@ -670,6 +683,13 @@ body.extwin #taskbar {
 #taskbar a.button-mel_portail:hover span.button-inner,
 #taskbar a.button-selected.button-mel_portail span.button-inner {
 	background: url(../images/taskbar/bureau.png?v=e784.5000) center 15px no-repeat;
+	
+}
+
+.minimal #taskbar a.button-mel_portail span.button-inner,
+.minimal #taskbar a.button-mel_portail:hover span.button-inner,
+.minimal #taskbar a.button-selected.button-mel_portail span.button-inner {
+	background-position: center 8px;
 	
 }
 
@@ -685,7 +705,11 @@ body.extwin #taskbar {
 }
 
 .minimal #mainscreen {
-    top: 67px;
+    top: 47px;
+}
+
+.minimal #mainscreen.offset {
+    top: 45px;
 }
 
 .extwin #mainscreen {
@@ -698,7 +722,10 @@ body.extwin #taskbar {
     border-color: var(--content-border-color);
     background-color: #ececec;
     background-color: var(--content-bg-color);
-    
+}
+
+.minimal #mainscreencontent {
+	top: 46px;
 }
 
 .extwin #mainscreencontent {
@@ -1162,6 +1189,10 @@ table.records-table {
     top: 8px;
     z-index: 100;
     right: 13px;
+}
+
+.minimal #quicksearchbar {
+	top: 6px;
 }
 
 #quicksearchbar #searchmenulink, 
@@ -1954,6 +1985,11 @@ ul.treelist li.selected > div.collapsed {
 	padding: 8px 0 8px 46px;
 	color: #0d0d0d;
 	color: var(--listitem-focus-bg-color);
+}
+
+.minimal .folderlist li.mailbox a,
+.minimal .folderlist li.mailbox a:focus {
+	padding: 6px 0 6px 46px;
 }
 
 #mailboxlist li.mailbox a,

@@ -1,3 +1,11 @@
+#taskbar .minmodetoggle {
+    right: 212px !important;
+}
+
+body.right_panel_minified #taskbar .minmodetoggle {
+    right: 80px !important;
+}
+
 #taskbar a.button-settings {
     right: 230px !important;
 }
@@ -7,6 +15,11 @@
     right: 330px !important;
 }
 
+.minimal #taskbar a.button-mel_help,
+.minimal #taskbar a.button-help {
+    right: 300px !important;
+}
+
 body.right_panel_minified #taskbar a.button-settings {
     right: 98px !important;
 }
@@ -14,6 +27,21 @@ body.right_panel_minified #taskbar a.button-settings {
 body.right_panel_minified #taskbar a.button-mel_help,
 body.right_panel_minified #taskbar a.button-help {
     right: 195px !important;
+}
+
+body.minimal.right_panel_minified #taskbar a.button-mel_help,
+body.minimal.right_panel_minified #taskbar a.button-help {
+    right: 165px !important;
+}
+
+@media screen and (max-width: 1290px) {
+	body.right_panel_minified #taskbar a.button-mel_help,
+	body.right_panel_minified #taskbar a.button-help {
+    	right: 140px !important;
+	}
+	body.right_panel_minified #taskbar a.button-settings {
+    	right: 85px !important;
+	}
 }
 
 #searchmenu {

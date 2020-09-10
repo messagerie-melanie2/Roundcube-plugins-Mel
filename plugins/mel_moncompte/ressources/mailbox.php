@@ -18,6 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+use LibMelanie\Api\Defaut\ObjectShare;
+
 /**
  * Classes de gestion de partage des ressources de boites aux lettres Mél dans Roundcube
  *
@@ -255,8 +257,12 @@ class M2mailbox {
       $_objects = [];
     }
     foreach (array_merge([$this->user], $_objects) as $_object) {
+      if ($_object instanceof ObjectShare) {
+        $_object = $_object->mailbox;
+      }
       $id = $_object->uid;
-      $name = $this->m2_mailbox_shortname($_object->fullname);
+      //$name = $this->m2_mailbox_shortname($_object->fullname);
+      $name = $_object->fullname;
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);

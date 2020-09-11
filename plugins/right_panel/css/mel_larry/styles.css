@@ -10,6 +10,10 @@ body.right_panel_minified #taskbar .minmodetoggle {
     right: 230px !important;
 }
 
+.minimal #taskbar a.button-settings {
+    right: 240px !important;
+}
+
 #taskbar a.button-mel_help,
 #taskbar a.button-help {
     right: 330px !important;
@@ -37,10 +41,13 @@ body.minimal.right_panel_minified #taskbar a.button-help {
 @media screen and (max-width: 1290px) {
 	body.right_panel_minified #taskbar a.button-mel_help,
 	body.right_panel_minified #taskbar a.button-help {
-    	right: 140px !important;
+    	right: 170px !important;
 	}
 	body.right_panel_minified #taskbar a.button-settings {
     	right: 85px !important;
+	}
+	body.minimal.right_panel_minified #taskbar a.button-settings {
+    	right: 98px !important;
 	}
 }
 

@@ -65,7 +65,7 @@ body.calendarmain #mainscreen {
 }
 
 .minimal #datepicker {
-	top: 3px;
+	top: 2px;
 }
 
 #datepicker .ui-datepicker {
@@ -89,6 +89,10 @@ body.calendarmain #mainscreen {
 	text-shadow: none;
 	text-align: center;
 	font-weight: normal;
+}
+
+.minimal #datepicker .ui-datepicker td a {
+	padding: 5px 4px;
 }
 
 #datepicker .ui-datepicker td a.ui-priority-secondary {
@@ -197,7 +201,7 @@ pre {
 }
 
 .minimal #calendars {
-	top: 230px;
+	top: 195px;
 }
 
 #calendars .boxtitle {
@@ -1765,6 +1769,10 @@ a.dropdown-link:after {
 	border: 0;
 	font-size: 13px;
   	font-weight: normal;
+}
+
+.minimal .ui-datepicker-calendar th {
+	padding: .3em .3em;
 }
 
 .ui-datepicker-calendar .ui-datepicker-week-col {

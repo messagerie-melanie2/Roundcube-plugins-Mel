@@ -355,9 +355,16 @@ body.extwin #topnav {
 	right: 0;
 }
 
+.minimal #topnav .topright {
+	left: 15%;
+}
+
 @media screen and (max-width: 1540px) {
 	#topnav .topright {
 	  left: 9%;
+	}
+	.minimal #topnav .topright {
+		left: 13%;
 	}
 }
 
@@ -365,12 +372,24 @@ body.extwin #topnav {
   #topnav .topright {
 	left: 6%;
   }
+  .minimal #topnav .topright {
+	left: 10%;
+  }
 }
 
 @media screen and (max-width: 1420px) {
   #topnav .topright {
 	left: 50px;
   }	
+  .minimal #topnav .topright {
+	left: 10%;
+  }	
+}
+
+@media screen and (max-width: 1200px) {
+	.minimal #topnav .topright {
+	  left: 50px;
+	}	
 }
 
 #topline a, 

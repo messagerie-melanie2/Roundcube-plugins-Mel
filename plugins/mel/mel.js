@@ -175,7 +175,8 @@ if (window.rcmail) {
 			  $('#messagelistcontainer').scroll(function() {
 				  if (($('#messagelistcontainer').scrollTop() > 1 
 						  && (($('#messagelistcontainer').scrollTop() + $('#messagelistcontainer').height()) / $('#messagelist').height()) >= 0.95)
-						  && current_page_scroll > 1) {
+						  && current_page_scroll > 1
+						  && (!rcmail.env.iselectron || rcmail.env.mailbox.indexOf(rcmail.env.local_archive_folder) !== 0)) {
 					  // Affichage de la page suivante au bas de la page					  					  
 					  var page = current_page_scroll;
 					  if (page > 0 && page <= rcmail.env.pagecount && !page_loading[page]) {

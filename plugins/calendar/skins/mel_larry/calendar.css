@@ -201,7 +201,7 @@ pre {
 }
 
 .minimal #calendars {
-	top: 205px;
+	top: 210px;
 }
 
 #calendars .boxtitle {
@@ -1792,15 +1792,13 @@ a.dropdown-link:after {
 .ui-datepicker .ui-datepicker-header .ui-icon-circle-triangle-e {
 	background: url("images/arrow_right.png?v=e784.5000") 0 4px no-repeat;
 	cursor: pointer;
-	right: 20px;
-	left: 0;
+	left: 15px;
 }
 
 .ui-datepicker .ui-datepicker-header .ui-icon-circle-triangle-w {
 	background: url("images/arrow_left.png?v=e784.5000") 0 4px no-repeat;
 	cursor: pointer;
-	right: 0;
-	left: 35px;
+	left: 15px;
 }
 
 

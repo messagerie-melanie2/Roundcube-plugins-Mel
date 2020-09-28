@@ -257,6 +257,7 @@ class M2mailbox {
       $_objects = [];
     }
     foreach (array_merge([$this->user], $_objects) as $_object) {
+      $object_id = $_object->uid;
       if ($_object instanceof ObjectShare) {
         $_object = $_object->mailbox;
       }
@@ -266,7 +267,7 @@ class M2mailbox {
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);
-      $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_mailboxes[$id]) ? $id : ''), array('value' => $id)));
+      $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_mailboxes[$object_id]) ? $object_id : ''), array('value' => $object_id)));
     }
     // set client env
     $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);

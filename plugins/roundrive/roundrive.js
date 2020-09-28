@@ -174,7 +174,7 @@ function roundrive_directory_selector_dialog(id)
 
     form.show();
     dialog.addClass('saveas');
-    input.val(filename);
+    input.val(filename.trim());
   }
   // attachment preview page
   else if (rcmail.env.action == 'get') {

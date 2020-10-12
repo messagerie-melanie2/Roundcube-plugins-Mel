@@ -1,0 +1,12 @@
+<?php
+// Webconf URL
+$rcmail_config['webconf_url'] = "";
+
+// Pad URL
+$rcmail_config['pad_url'] = "";
+
+// Stockage URL
+$rcmail_config['stockage_url'] = "";
+
+// Ariane URL
+$rcmail_config['ariane_url'] = "";

@@ -1,0 +1,145 @@
+﻿body #header.vertical {
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+
+body #header.vertical span.logo {
+    display: block;
+    width: 60px;
+    text-align: center;
+}
+
+body #header.vertical span.logo #toplogo {
+    padding-left: 0;
+}
+
+body #header.vertical span.title,
+body #header.vertical span.date {
+    display: block;
+    color: white;
+    width: 52px;
+    padding: 8px 4px;
+    font-size: 12px;
+    font-weight: 700;
+    overflow: hidden;
+    max-height: 45px;
+    text-overflow: ellipsis;
+}
+
+#leftnav {
+    position: inherit;
+    height: 100%;
+    background-color: #242d38;
+    border-color: var(--top-border-color);
+    margin-bottom: 0;
+    width: 60px;
+}
+
+body #header.vertical #taskbar {
+    flex-direction: column;
+    width: 60px;
+    height: 100%;
+}
+
+body #header.vertical #taskbar a {
+    min-width: auto;
+    margin-left: 0;
+    margin-top: 10px;
+}
+
+#mainscreen,
+.minimal #mainscreen {
+    top: 0 !important;
+    left: 60px !important;
+}
+
+#projectview-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 640px;
+    bottom: 0;
+    z-index: 1;
+    border-right: 1px solid #d0d0d0;
+    border-right-color: rgb(208, 208, 208);
+}
+
+#projectview-right {
+    position: absolute;
+    top: 0;
+    left: 640px;
+    right: 0;
+    bottom: 0;
+}
+
+.iframebox {
+    top: 0px !important;
+}
+
+.iframebox iframe {
+    width: 100%;
+    height: 100%;
+}
+
+#taskbar a.button-webconf span.button-inner, 
+#taskbar a.button-webconf:hover span.button-inner, 
+#taskbar a.button-selected.button-webconf span.button-inner {
+    background: url(images/webconf.png?v=e784.5000) center 7px no-repeat;
+}
+
+#taskbar a.button-stockage span.button-inner, 
+#taskbar a.button-stockage:hover span.button-inner, 
+#taskbar a.button-selected.button-stockage span.button-inner {
+    background: url(images/stockage.png?v=e784.5000) center 7px no-repeat;
+}
+
+#taskbar a.button-pad span.button-inner, 
+#taskbar a.button-pad:hover span.button-inner, 
+#taskbar a.button-selected.button-pad span.button-inner {
+    background: url(images/document.png?v=e784.5000) center 7px no-repeat;
+}
+
+#taskbar a.button-ariane span.button-inner, 
+#taskbar a.button-ariane:hover span.button-inner, 
+#taskbar a.button-selected.button-ariane span.button-inner {
+    background: url(images/discussion.png?v=e784.5000) center 7px no-repeat;
+}
+
+.minimal #taskbar a,
+#taskbar a {
+    display: none;
+    height: 54px !important;
+    border-left: 2px solid transparent !important;
+}
+
+.minimal #taskbar .button-inner,
+#taskbar a span.button-inner {
+    width: 60px !important;
+    text-align: center;
+    text-indent: 0;
+    padding: 35px 0 0 !important;
+    width: 40px;
+    color: #fff !important;
+    font-size: 10px !important;
+}
+
+#taskbar a.button-selected {
+    background-color: #4a535e !important;
+    border-bottom: none !important;
+}
+
+#taskbar a.button-launched {
+    border-left: 2px solid #f50059 !important;
+}
+
+#taskbar a:focus, 
+#taskbar a:hover,
+#taskbar a.button-selected:hover {
+    background-color: #4a535e !important;
+}
+

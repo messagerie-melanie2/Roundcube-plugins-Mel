@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+</head>
+<body>
+
+<div id="header" class="vertical">
+	<div id="leftnav">
+		<h2 id="aria-label-tasknav" class="voice"><roundcube:label name="arialabeltasknav" /></h2>
+		<span class="logo">
+			<roundcube:object name="logo" title="mel_larry.logo_title" src="/images/taskbar-logo.png" id="toplogo" alt="Logo" onclick="if(window.rcmail)rcmail.command('switch-to-default-task')" />
+		</span>
+		<span class="title" title="<roundcube:var name="env:mel_project_title" />">
+			<roundcube:var name="env:mel_project_title" />
+		</span>
+		<span class="date" title="<roundcube:var name="env:mel_project_date" />">
+			<roundcube:var name="env:mel_project_date" />
+		</span>
+		<div id="taskbar" role="navigation" aria-labelledby="aria-label-tasknav">
+			<roundcube:button command="switch-to-webconf" label="mel_project.webconf" title="mel_project.webconf_title" class="button-webconf" classSel="button-webconf button-selected" innerClass="button-inner" />
+			<roundcube:button command="switch-to-pad" label="mel_project.pad" title="mel_project.pad_title" class="button-pad" classSel="button-pad button-selected" innerClass="button-inner" />
+			<roundcube:button command="switch-to-ariane" label="mel_project.ariane" title="mel_project.ariane_title" class="button-ariane" classSel="button-ariane button-selected" innerClass="button-inner" />
+			<roundcube:button command="switch-to-stockage" label="mel_project.stockage" title="mel_project.stockage_title" class="button-stockage" classSel="button-stockage button-selected" innerClass="button-inner" />
+		</div>
+	</div>
+</div>
+
+<div id="mainscreen" class="box mel_project-box">
+	<div id="projectview-left">
+		<div class="iframebox">
+			<!-- <iframe id="mel_project_webconf_frame" allow="camera;microphone" name="mel_project_webconf_frame" src="https://webconf.numerique.gouv.fr/"></iframe> -->
+		</div>
+	</div>
+	<div id="projectview-right">
+		<div class="iframebox">
+			<!-- <iframe id="mel_project_pad_frame" name="mel_project_pad_frame" src="https://partage.din.developpement-durable.gouv.fr/etherpad/p/test_5f7b16ac04255"></iframe> -->
+		</div>
+	</div>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+	new rcube_splitter({ id:'melprojectsplitter', p1:'#projectview-left', p2:'#projectview-right',
+	   orientation:'v', relative:true, start:640, min:320, size:1 }).init();
+</script>
+
+</body>
+</html>

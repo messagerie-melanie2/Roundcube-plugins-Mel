@@ -683,15 +683,22 @@ class mel extends rcube_plugin {
     // Parcour les identités pour réécrire le from avec le realname
     $identities = $this->rc->user->list_identities();
     $headers = array();
+    $found = false;
     foreach ($identities as $identity) {
       if ($args['from'] == $identity['email'] && isset($args['message']->_headers['From'])) {
         // Si on retrouve l'identité on met à jour le From des headers pour formatter avec le realname
         $headers['From'] = '"' . $identity['realname'] . '" <' . $identity['email'] . '>';
+        $found = true;
         break;
       }
     }
-    $headers = driver_mel::get_instance()->setHeadersMessageBeforeSend($headers);
-    $args['message']->headers($headers, true);
+    if ($found) {
+      $headers = driver_mel::get_instance()->setHeadersMessageBeforeSend($headers);
+      $args['message']->headers($headers, true);
+    }
+    else {
+      $args['abort'] = true;
+    }
     return $args;
   }
 

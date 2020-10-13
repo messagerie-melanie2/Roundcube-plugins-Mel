@@ -366,11 +366,17 @@ function rcube_libcalendaring(settings)
         var mailto_pattern = new RegExp('([^\\s\\n\\(\\);]+@'+utf_domain+')', 'ig');
         var link_replace = function(matches, p1, p2) {
           var title = '', text = p2;
+          // MANTIS 0005931: Le lien d'une invitation à une réunion Microsoft Teams ne fonctionne pas depuis l'agenda par rapport au lien du mail
+          var end = '';
+          if (p2.endsWith('&gt')) {
+            p2 = p2.substr(0, p2.length-3);
+            end = '&gt';
+          }
           if (p2 && p2.length > 55) {
             text = p2.substr(0, 45) + '...' + p2.substr(-8);
             title = p1 + p2;
           }
-          return '<a href="'+p1+p2+'" class="extlink" target="_blank" title="'+title+'">'+p1+text+'</a>'
+          return '<a href="'+p1+p2+'" class="extlink" target="_blank" title="'+title+'">'+p1+text+'</a>' + end;
         };
 
         return html

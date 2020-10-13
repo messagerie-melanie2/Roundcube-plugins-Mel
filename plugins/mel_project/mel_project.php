@@ -87,14 +87,14 @@ class mel_project extends rcube_plugin {
         else {
           $value = $v;
         }
-        if (isset($url)) {
+        if (isset($url) && strpos($value, 'https://') !== 0) {
           $objects[$object]['url'] = str_replace('%%param%%', $value, $url);
         }
         else {
           $objects[$object]['url'] = $value;
         }
         // Login Ariane
-        if ($object == 'webconf') {
+        if ($object == 'ariane') {
           $rocket_chat = $rcmail->plugins->get_plugin('rocket_chat');
           try {
             $rocket_chat->login();

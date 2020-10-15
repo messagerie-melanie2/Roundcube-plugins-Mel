@@ -83,6 +83,7 @@ class M2mailbox {
       // Il ne peut pas afficher les droits de la boite
       return false;
     }
+    $_mbox->load(['supported_shares']);
     // Gestion des droits supportés par la boite
     $this->rc->output->set_env('supported_acls', array_map('strtolower', $_mbox->supported_shares));
     // Récupération de la liste des acls

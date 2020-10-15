@@ -19,6 +19,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+use LibMelanie\Config\MappingMce;
+
 // Inclusion de l'ORM
 @include_once 'includes/libm2.php';
 
@@ -792,7 +795,7 @@ class mel_driver extends calendar_driver {
         // remove attachments
         if (is_array($event['deleted_attachments'])) {
           foreach ($event['deleted_attachments'] as $attachment) {
-            $this->remove_attachment($attachment);
+            $this->remove_attachment($attachment, $_event->uid);
           }
         }
         return $_event->uid;
@@ -1499,15 +1502,15 @@ class mel_driver extends calendar_driver {
         $cols = array('title','location','description','category');
         $operators = array();
         $filter = "#calendar#";
-        $operators['calendar'] = LibMelanie\Config\MappingMce::eq;
+        $operators['calendar'] = MappingMce::eq;
         $event->calendar = $calendars;
 
         $filter .= " AND ((#start# AND #end#) OR (#type# AND #enddate#))";
 
-        $operators['type'] = LibMelanie\Config\MappingMce::sup;
-        $operators['enddate'] = LibMelanie\Config\MappingMce::supeq;
-        $operators['start'] = LibMelanie\Config\MappingMce::infeq;
-        $operators['end'] = LibMelanie\Config\MappingMce::supeq;
+        $operators['type'] = MappingMce::sup;
+        $operators['enddate'] = MappingMce::supeq;
+        $operators['start'] = MappingMce::infeq;
+        $operators['end'] = MappingMce::supeq;
 
         $event->start = date("Y-m-d H:i:s", $end);
         $event->end = date("Y-m-d H:i:s", $start);
@@ -1517,7 +1520,7 @@ class mel_driver extends calendar_driver {
         // Ne retourne que les événements modifié depuis une date
         if (isset($modifiedsince) && is_int($modifiedsince)) {
           $filter .= " AND #modified#";
-          $operators['modified'] = LibMelanie\Config\MappingMce::supeq;
+          $operators['modified'] = MappingMce::supeq;
           $event->modified = $modifiedsince;
         }
 
@@ -1535,7 +1538,7 @@ class mel_driver extends calendar_driver {
               $filter .= " OR ";
             }
             $filter .= "#$col#";
-            $operators[$col] = LibMelanie\Config\MappingMce::like;
+            $operators[$col] = MappingMce::like;
             $event->$col = "%$query%";
           }
           $filter .= ")";
@@ -1543,7 +1546,7 @@ class mel_driver extends calendar_driver {
         // Liste les évènements modifiés depuis
         if (isset($modifiedsince)) {
           $event->modified = $modifiedsince;
-          $operators['modified'] = LibMelanie\Config\MappingMce::supeq;
+          $operators['modified'] = MappingMce::supeq;
           $filter .= " AND #modified#";
         }
         $events = $event->getList(array(), $filter, $operators, "", true, null, null, $case_unsensitive_fields);
@@ -1908,7 +1911,7 @@ class mel_driver extends calendar_driver {
         // Clause Where
         $filter = "#calendar# AND #alarm# AND ((#start# - interval '1 minute' * k1.event_alarm) > '" . date('Y-m-d H:i:s', $time_min) . "') AND ((#start# - interval '1 minute' * k1.event_alarm) < '" . date('Y-m-d H:i:s', $time_max) . "')";
         // Operateur
-        $operators = array('alarm' => LibMelanie\Config\MappingMce::diff, 'calendar' => LibMelanie\Config\MappingMce::in);
+        $operators = array('alarm' => MappingMce::diff, 'calendar' => MappingMce::in);
         $fields = array('uid','title','calendar','start','end','location','alarm','owner');
         $_events = $_event->getList($fields, $filter, $operators);
         $events = [];
@@ -2047,15 +2050,16 @@ class mel_driver extends calendar_driver {
    * @param string $attachment_id
    * @return boolean
    */
-  private function remove_attachment($attachment_id) {
+  private function remove_attachment($attachment_id, $event_uid) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::remove_attachment($attachment_id)");
     try {
       $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $attachment_id;
+      $attachment->path = $event_uid . '/%';
       $ret = true;
-      foreach ($attachment->getList() as $att) {
+      foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
         // Vérifie si d'autres pièces jointes sont présentes
         $other_attachment = driver_mel::gi()->attachment();
         $other_attachment->isfolder = false;
@@ -2195,7 +2199,8 @@ class mel_driver extends calendar_driver {
       $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $id;
-      foreach ($attachment->getList() as $att) {
+      $attachment->path = $event['id'] . '/%';
+      foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
         $ret = array('id' => $att->id,'name' => $att->name,'mimetype' => $att->contenttype,'size' => $att->size);
         $this->attachment = $att;
         return $ret;

@@ -685,18 +685,18 @@ class mel extends rcube_plugin {
     $headers = array();
     $found = false;
     foreach ($identities as $identity) {
+      $found |= strtolower($args['from']) == strtolower($identity['email']);
       if ($args['from'] == $identity['email'] && isset($args['message']->_headers['From'])) {
         // Si on retrouve l'identité on met à jour le From des headers pour formatter avec le realname
         $headers['From'] = '"' . $identity['realname'] . '" <' . $identity['email'] . '>';
-        $found = true;
         break;
       }
     }
-    if ($found) {
+    if (!empty($headers)) {
       $headers = driver_mel::get_instance()->setHeadersMessageBeforeSend($headers);
       $args['message']->headers($headers, true);
     }
-    else {
+    if (!$found) {
       $args['abort'] = true;
     }
     return $args;

@@ -51,6 +51,33 @@ class mel_contacts_mapping {
       if (! isset($_contact_rc[$key]) && isset($_contact_m2->$col) && $key != 'ID' && $key != 'cuid')
         $_contact_m2->$col = '';
     }
+    // Office
+    if (isset($_contact_rc['office'])) {
+      if (is_array($_contact_rc['office'])) {
+        $_contact_m2->notes .= $_contact_rc['office'][0];
+      }
+      else {
+        $_contact_m2->notes .= $_contact_rc['office'];
+      }
+    }
+    // Description
+    if (isset($_contact_rc['description'])) {
+      if (is_array($_contact_rc['description'])) {
+        $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'][0]. ')';
+        $_contact_m2->notes .= $_contact_rc['description'][0];
+      }
+      else {
+        $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'] . ')';
+        $_contact_m2->notes .= $_contact_rc['description'];
+      }
+    }
+    // Departement
+    if (isset($_contact_rc['department'])) {
+      if (is_array($_contact_rc['department']))
+        $_contact_m2->name = $_contact_m2->name . ' - ' . $_contact_rc['department'][0];
+      else
+        $_contact_m2->name = $_contact_m2->name . ' - ' . $_contact_rc['department'];
+    }
     // Email home
     if (isset($_contact_rc['email:home'])) {
       if (is_array($_contact_rc['email:home']))

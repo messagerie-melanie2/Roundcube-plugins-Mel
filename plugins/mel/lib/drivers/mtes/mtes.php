@@ -360,7 +360,7 @@ class mtes_driver_mel extends mce_driver_mel {
         $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $plugin->gettext('room'));
       }
     }
-    else {
+    if (!isset($args['form']['head'])) {
       $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
       // Gestion de l'url sympa
       if (isset($args['record']['info']) && $args['record']['info'] == 'GESTION: auto/sympa') {

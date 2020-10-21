@@ -427,6 +427,15 @@ abstract class driver_mel {
   abstract public function unexpunge($mbox, $folder, $hours);
 
   /**
+   * Méthode permettant de personnaliser l'affichage des contacts
+   * 
+   * @param array $args Tableau utilisé pour l'affichage du formulaire des contacts
+   * 
+   * @return array $args personnalisé
+   */
+  abstract public function contact_form($args);
+
+  /**
    * Converti un identifiant Roundcube en MCE
    * Permet de remplacer tous les caractères spéciaux 
    *     '.', '@', '%'

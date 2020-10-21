@@ -198,4 +198,22 @@ class mce_driver_mel extends driver_mel {
   public function unexpunge($mbox, $folder, $hours) {
     return false;
   }
+
+  /**
+   * Méthode permettant de personnaliser l'affichage des contacts
+   * 
+   * @param array $args Tableau utilisé pour l'affichage du formulaire des contacts
+   * 
+   * @return array $args personnalisé
+   */
+  public function contact_form($args) {
+    // Ajout du Type et de la Category d'un contact
+    $args['head_fields']['category'] = ['category'];
+    $args['head_fields']['type'] = ['type'];
+    if (isset($args['form']['head'])) {
+      $args['form']['head']['content']['category'] = array('type' => 'text');
+      $args['form']['head']['content']['type'] = array('type' => 'text');
+    }
+    return $args;
+  }
 }

@@ -275,4 +275,122 @@ class mtes_driver_mel extends mce_driver_mel {
     }
     return true;
   }
+
+  /**
+   * Méthode permettant de personnaliser l'affichage des contacts
+   * 
+   * @param array $args Tableau utilisé pour l'affichage du formulaire des contacts
+   * 
+   * @return array $args personnalisé
+   */
+  public function contact_form($args) {
+    $args['head_fields']['category'] = ['category'];
+    $args['head_fields']['type'] = ['type'];
+    if (isset($args['form']['head'])) {
+      $args['form']['head']['content']['category'] = array('type' => 'text');
+      $args['form']['head']['content']['type'] = array('type' => 'text');
+    }
+    // N'ajouter les informations sur Internet que si la double auth est activé (sinon sur intranet)
+    else if (mel::is_internal() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable()) {
+      $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
+      // Add members list
+      $args['form']['members'] = [
+          'name'    => $plugin->gettext('members'),
+          'content' => [
+              'members' => array('type' => 'text', 'label' => false),
+          ],
+      ];
+      // Add owner list
+      $args['form']['owner'] = [
+        'name'    => $plugin->gettext('owners'),
+        'content' => [
+            'owner' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderOwner']),
+        ],
+      ];
+      // Add share list
+      $args['form']['share'] = [
+        'name'    => $plugin->gettext('shares'),
+        'content' => [
+            'share' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderShare']),
+        ],
+      ];
+      if (isset($args['record']['email'])) {
+        // Search in LDAP
+        $user = $this->user();
+        $user->email = $args['record']['email'];
+        $lists = $user->getListsIsMember('dn', 'email');
+        if (is_array($lists)) {
+          $args['record']['list'] = [];
+          foreach ($lists as $list) {
+            $args['record']['list'][] = [
+              'dn' => $list->dn,
+              'mail' => $list->email,
+            ];
+          }
+          // Sort lists
+          usort($args['record']['list'], function($a, $b) {
+            return strcmp($a['mail'], $b['mail']);
+          });
+          // Add share list
+          $args['form']['list'] = [
+            'name'    => $plugin->gettext('lists'),
+            'content' => [
+                'list' => array('type' => 'text', 'label' => false, 'render_func' => [$this, 'renderList']),
+            ],
+          ];
+        }
+      }
+      if (is_array($args['record']['share'])) {
+        foreach ($args['record']['share'] as $k => $share) {
+          if (strpos($share, ':G') === false) {
+            unset($args['record']['share'][$k]);
+          }
+        }
+      }
+      else if (isset($args['record']['share']) && strpos($args['record']['share'], ':G') === false) {
+        unset($args['record']['share']);
+      }
+      
+      // Order share
+      if (is_array($args['record']['share'])) {
+        sort($args['record']['share']);
+      }
+      // Add room number
+      if (isset($args['form']['contact'])) {
+        $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $plugin->gettext('room'));
+      }
+    }
+    return $args;
+  }
+
+  /**
+   * Render owner field
+   */
+  public function renderOwner($val, $col) {
+    $user = $this->user();
+    $user->dn = $val;
+    if ($user->load(['fullname'])) {
+      return html::a(['target' => '_blank', 'href' => rcmail::get_instance()->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val)])], $user->fullname);
+    }
+    return null;
+  }
+
+  /**
+   * Render share field
+   */
+  public function renderShare($val, $col) {
+    $share = explode(':', $val, 2);
+    $user = $this->getUser($share[0], false);
+    if ($user->load(['dn', 'fullname'])) {
+      return html::a(['target' => '_blank', 'href' => rcmail::get_instance()->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($user->dn)])], $user->fullname);
+    }
+    return null;
+  }
+  
+  /**
+   * Render list field
+   */
+  public function renderList($val, $col) {
+    return html::a(['target' => '_blank', 'href' => rcmail::get_instance()->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val['dn'])])], $val['mail']);
+  }
 }

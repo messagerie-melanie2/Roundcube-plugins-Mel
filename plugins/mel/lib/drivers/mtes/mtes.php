@@ -360,6 +360,29 @@ class mtes_driver_mel extends mce_driver_mel {
         $args['form']['contact']['content']['room'] = array('type' => 'text', 'label' => $plugin->gettext('room'));
       }
     }
+    else {
+      $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
+      // Gestion de l'url sympa
+      if (isset($args['record']['info']) && $args['record']['info'] == 'GESTION: auto/sympa') {
+        $args['form']['sympa'] = [
+          'name'    => $plugin->gettext('sympaUrl'),
+          'content' => [
+              'sympa' => array('type' => 'html', 'label' => false, 'render_func' => [$this, 'renderSympa']),
+          ],
+        ];
+        $conf = rcmail::get_instance()->config->get('contacts_robots_sympa', null);
+        if (isset($conf)) {
+          $split = explode('@', $args['record']['email'], 2);
+          $url = isset($conf[$split[1]]) ? $conf[$split[1]] : $conf['default'];
+          $provenance = mel::is_internal() ? 'intranet' : 'internet';
+          if (!isset($url['provenance']) || $url['provenance'] == $provenance) {
+            $split[1] = substr($split[1], 0, strpos($split[1], '.'));
+            $args['record']['sympa'] = str_replace(['%l', '%h'], $split, $url['href']);
+          }
+          
+        }
+      }
+    }
     return $args;
   }
 
@@ -373,6 +396,15 @@ class mtes_driver_mel extends mce_driver_mel {
       return html::a(['target' => '_blank', 'href' => rcmail::get_instance()->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val)])], $user->fullname);
     }
     return null;
+  }
+
+  /**
+   * Render sympa field
+   */
+  public function renderSympa($val, $col) {
+    return html::label([], rcmail::get_instance()->plugins->get_plugin('mel_contacts')->gettext('sympaUrllabel')) 
+          . html::br()
+          . html::a(['target' => '_blank', 'href' => $val], $val);   
   }
 
   /**

@@ -51,31 +51,39 @@ class mel_contacts_mapping {
       if (! isset($_contact_rc[$key]) && isset($_contact_m2->$col) && $key != 'ID' && $key != 'cuid')
         $_contact_m2->$col = '';
     }
-    // Office
-    if (isset($_contact_rc['office'])) {
-      if (is_array($_contact_rc['office'])) {
-        $_contact_m2->notes .= $_contact_rc['office'][0];
+    // Room
+    if (isset($_contact_rc['room'])) {
+      if (!empty($_contact_m2->notes)) {
+        $_contact_m2->notes .= "\r\n\r\n";
+      }
+      if (is_array($_contact_rc['room'])) {
+        $_contact_m2->notes .= rcmail::get_instance()->plugins->get_plugin('mel_contacts')->gettext('room') . ' : ' . $_contact_rc['room'][0];
       }
       else {
-        $_contact_m2->notes .= $_contact_rc['office'];
+        $_contact_m2->notes .= rcmail::get_instance()->plugins->get_plugin('mel_contacts')->gettext('room') . ' : ' .$_contact_rc['room'];
       }
     }
     // Description
     if (isset($_contact_rc['description'])) {
+      if (!empty($_contact_m2->notes)) {
+        $_contact_m2->notes .= "\r\n\r\n";
+      }
       if (is_array($_contact_rc['description'])) {
-        $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'][0]. ')';
+        if (strpos($_contact_m2->name, $_contact_rc['description'][0]) === false)
+          $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'][0]. ')';
         $_contact_m2->notes .= $_contact_rc['description'][0];
       }
       else {
-        $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'] . ')';
+        if (strpos($_contact_m2->name, $_contact_rc['description']) === false)
+          $_contact_m2->name = $_contact_m2->name . ' (' . $_contact_rc['description'] . ')';
         $_contact_m2->notes .= $_contact_rc['description'];
       }
     }
     // Departement
     if (isset($_contact_rc['department'])) {
-      if (is_array($_contact_rc['department']))
+      if (is_array($_contact_rc['department']) && strpos($_contact_m2->name, $_contact_rc['department'][0]) === false)
         $_contact_m2->name = $_contact_m2->name . ' - ' . $_contact_rc['department'][0];
-      else
+      else if (is_string($_contact_rc['department']) && strpos($_contact_m2->name, $_contact_rc['department']) === false)
         $_contact_m2->name = $_contact_m2->name . ' - ' . $_contact_rc['department'];
     }
     // Email home

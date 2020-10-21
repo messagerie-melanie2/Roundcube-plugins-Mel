@@ -77,6 +77,10 @@ $labels["Spouse"] = "Epouse";
 
 // PAMELA - Categories
 $labels["Categories"] = "Catégories";
+// PAMELA - Room
+$labels["Room"] = "Bureau";
+// PAMELA - Description
+$labels["Description"] = "Description";
 $labels["Groups"] = "Groupes";
 $labels["Notes"] = "Notes";
 

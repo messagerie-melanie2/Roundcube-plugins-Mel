@@ -98,6 +98,10 @@ class vcard2csv
                         'groups'            => $this->plugin->gettext("Groups"),
                         // PAMELA - Categories
                         'category'          => $this->plugin->gettext("Categories"),
+                        // PAMELA - Room
+                        'room'              => $this->plugin->gettext("Room"),
+                        // PAMELA - Description
+                        'description'       => $this->plugin->gettext("Description"),
                         'notes'             => $this->plugin->gettext("Notes"),
                         
                         'website:homepage'  => $this->plugin->gettext("Home Web Page"),

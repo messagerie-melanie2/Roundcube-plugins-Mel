@@ -35,6 +35,8 @@ $labels['menumanageresources_calendars'] = 'Gérer les agendas';
 $labels['menumanageresources_mailboxes'] = 'Gérer les boites aux lettres';
 $labels['menumanageresources_taskslists'] = 'Gérer les listes de tâches';
 
+$labels['menumanage_create_mailbox_folder'] = 'Créer un nouveau dossier';
+
 $labels['resourcesettings'] = 'Configurez la ressource';
 
 $labels['resourcesbal'] = 'Boites aux lettres';

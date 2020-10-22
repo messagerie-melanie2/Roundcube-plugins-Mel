@@ -351,7 +351,6 @@ function show_rcube_manage_labels()
     .attr('frameborder', '0')
     .appendTo(document.body);
 
-  var h = Math.floor($(window).height() * 0.75);
   var buttons = {};
 
   frame.dialog({

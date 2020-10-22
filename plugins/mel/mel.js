@@ -166,9 +166,19 @@ if (window.rcmail) {
     
     if (rcmail.env.task == 'mail' 
         && (!rcmail.env.action || rcmail.env.action == "")) {
-      rcmail.register_command('window-edit-folder', function() {
-        rcmail.window_edit_folder();
-      }, true);
+      rcmail.enable_command('window-edit-folder', true);
+
+      rcmail.addEventListener('contextmenu_init', function(menu) {
+        // identify the folder list context menu
+        if (menu.menu_name == 'folderlist') {
+          // make sure this new shortcut is always active
+          menu.addEventListener('activate', function(p) {
+            if (p.command == 'window-edit-folder') {
+              return true;
+            }
+          });
+        }
+      });
       if (rcmail.env.use_infinite_scroll) {
         var scroll = false;
         $('.pagenavbuttons').hide();
@@ -251,9 +261,10 @@ if (window.rcmail) {
 // Open edit folder iframe
 rcube_webmail.prototype.window_edit_folder = function() {
   window.location.hash = 'createfolder';
+  var folder = $('#mailboxlist > li.contextRow').length ? atob($('#mailboxlist > li.contextRow').attr('id').replace('rcmli', '')) : rcmail.env.mailbox;
   var frame = $('<iframe>').attr('id', 'managemailboxfolder')
-    .attr('src', rcmail.url('settings/edit-folder') + '&_framed=1&_path=' + encodeURIComponent(rcmail.env.mailbox))
-    .attr('onLoad', "if (this.contentWindow.location.href.indexOf('edit-folder') === -1) $('#managemailboxfolder').dialog('close');")
+    .attr('src', rcmail.url('settings/edit-folder') + '&_framed=1&_path=' + encodeURIComponent(folder))
+    .attr('onLoad', "if (this.contentWindow.location.href.indexOf('edit-folder') === -1) {$('#managemailboxfolder').dialog('close'); window.location.reload();} ")
     .attr('frameborder', '0')
     .appendTo(document.body);
   
@@ -267,7 +278,6 @@ rcube_webmail.prototype.window_edit_folder = function() {
     title: '',
     close: function() {
       frame.dialog('destroy').remove();
-      window.location.reload();
     },
     buttons: buttons,
     width: 450,

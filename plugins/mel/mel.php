@@ -383,7 +383,7 @@ class mel extends rcube_plugin {
           ), $content_last), 'folderlistheader-last');
           // 0005830: Bouton pour créer directement un dossier dans l'interface Courriel
           $content = html::tag('li', array(
-            'class' => 'menuitem'
+            'role' => 'menuitem'
           ), $this->api->output->button(array(
                   'label' => 'mel.menumanage_create_mailbox_folder',
                   'type' => 'link',
@@ -393,7 +393,7 @@ class mel extends rcube_plugin {
           $this->api->add_content($content, 'mailboxoptions');
           // Link to Settings/Folders
           $content = html::tag('li', array(
-                  'class' => 'menuitem'
+                  'role' => 'menuitem'
           ), $this->api->output->button(array(
                   'label' => 'mel.menumanageresources_mailboxes',
                   'type' => 'link',

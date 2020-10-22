@@ -179,6 +179,7 @@ $labels['nextslot'] = 'Créneau suivant';
 $labels['suggestedslot'] = 'Emplacement suggéré';
 $labels['noslotfound'] = 'Impossible de trouver un créneau disponible';
 $labels['invitationsubject'] = 'Vous avez été invité à "$title"';
+$labels['invitationmailbody'] = "*\$title*\n\nQuand: \$date\n\nParticipants: \$attendees\n\n\$description\n\nVous trouverez ci-joint un fichier iCalendar avec toutes les modifications à l'événement que vous pourrez importer dans votre calendrier électronique.";
 $labels['invitationattendlinks'] = "Dans le cas où votre application de messagerie ne gère pas les demandes \"iTip\", vous pouvez utiliser ce lien pour accepter ou refuser l'invitation : \n\$url";
 $labels['eventupdatesubject'] = '"$title" a été modifié';
 $labels['eventupdatesubjectempty'] = 'Un événement vous concernant a été modifié';

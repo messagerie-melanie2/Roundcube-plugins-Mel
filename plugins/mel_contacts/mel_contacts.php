@@ -75,6 +75,19 @@ class mel_contacts extends rcube_plugin {
       $this->register_action('plugin.contacts-acl', array($this,'contacts_acl'));
       $this->register_action('plugin.contacts-acl-group', array($this,'contacts_acl_group'));
 
+      // Show contact button
+      if ($this->rc->action == 'show') {
+        $source = rcube_utils::get_input_value('_source', rcube_utils::INPUT_GET);
+        if ($source == 'amande') {
+          $this->rc->output->set_env('copy_to_contact', $source == 'amande');
+          $this->rc->output->set_env('default_addressbook', driver_mel::gi()->mceToRcId($this->rc->get_user_name()));
+          // Include script
+          $this->include_script('mel_contact_show.js');
+          // Envi
+        }
+        
+      }
+
       // Load UI elements
       if ($this->api->output->type == 'html') {
         $this->load_config();

@@ -18,6 +18,7 @@ $labels['typeisdn'] = 'ISDN';
 $labels['typettytdd'] = 'TTY/TDD';
 $labels['typecallback'] = 'Rappel';
 $labels['settings'] = 'Paramètres';
+$labels['copy_to_contact'] = 'Ajouter à mes contacts';
 
 $labels['categories'] = 'Catégories';
 $labels['members'] = 'Membres';

@@ -124,6 +124,9 @@ window.rcmail
 					rcmail.reset_qsearch();
 					$('#mainscreen.annuaire #quicksearchbar form').submit();
 				}, true);
+				rcmail.register_command('export', function() {
+					rcmail.annuaire_export();
+				});
 			}
 			
 			// init treelist widget
@@ -135,19 +138,17 @@ window.rcmail
 							id_prefix : 'rcmrow'
 						});
 
-				rcmail.annuaire_list.addEventListener('expand', function(node) {
-					rcmail.annuaire_folder_expand(node)
-				}).addEventListener('beforeselect', function(node) {
-					return !$('#rcmrow' + node.id).hasClass('folder') && !$('#rcmrow' + node.id).hasClass('legend');
-				}).addEventListener('select', function(node) {
-					rcmail.annuaire_node_select(node)
-				}).addEventListener('dragstart', function(o) {
-					rcmail.drag_start(o);
-				}).addEventListener('dragmove', function(e) {
-					rcmail.drag_move(e);
-				}).addEventListener('dragend', function(e) {
-					rcmail.drag_end(e);
-				});
+				rcmail.annuaire_list
+					.addEventListener('expand', function(node) {
+						rcmail.annuaire_folder_expand(node)
+					})
+					.addEventListener('beforeselect', function(node) {
+						return !$('#rcmrow' + node.id).hasClass('folder') && !$('#rcmrow' + node.id).hasClass('legend');
+						// return !$('#rcmrow' + node.id).hasClass('legend');
+					})
+					.addEventListener('select', function(node) {
+						rcmail.annuaire_node_select(node)
+					});
 
 				if (rcmail.env.annuaire_list) {
 					rcmail.annuaire_list_fill_list(null,
@@ -221,10 +222,16 @@ rcube_webmail.prototype.annuaire_gototree = function(obj, event) {
 	}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 };
 
+// Node export
+rcube_webmail.prototype.annuaire_export = function() {
+	this.goto_url('export', { _cid: this.annuaire_list.get_selection(), _format: 'csv' }, false, true);
+};
+
 // Node select
 rcube_webmail.prototype.annuaire_node_select = function(node) {
 	var node_id = node.id.split('-alias')[0];
 	if (rcmail.env.task == 'addressbook') {
+		this.enable_command('export', true);
 		this.load_contact(node_id, 'show');
 	}
 	else if (rcmail.env.task == 'mail' && !$('#rcmrow' + node_id).hasClass('added')) {

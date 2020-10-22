@@ -18,8 +18,9 @@
 <div id="addressbooktoolbar" class="toolbar" role="toolbar" aria-labelledby="aria-label-toolbar">
 	<roundcube:button command="add" type="link" class="button add disabled" classAct="button add" classSel="button add pressed" label="add" title="newcontact" />
 	<span class="spacer"></span>
-	<roundcube:button command="import" type="link" class="button import disabled" classAct="button import" classSel="button import pressed" label="import" title="importcontacts" />
-	<roundcube:button command="export" type="link" class="button export disabled" classAct="button export" classSel="button export pressed" label="export" title="exportvcards" />
+	<roundcube:if condition="env:annuaire_export" />
+		<roundcube:button command="export" type="link" class="button export disabled" classAct="button export" classSel="button export pressed" label="export" title="exportvcards" />
+	<roundcube:endif />
 </div>
 
 <div id="annuaireselector" role="region" aria-labelledby="aria-label-annuaireselector">

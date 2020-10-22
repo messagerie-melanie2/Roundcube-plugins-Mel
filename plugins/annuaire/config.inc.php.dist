@@ -7,3 +7,6 @@ $config['annuaire_base_dn'] = 'dc=example,dc=com';
 
 // Driver configuration (default, mtes, ...)
 $config['annuaire_driver'] = 'default';
+
+// Activer l'export de l'annuaire pour les utilisateurs
+$config['annuaire_export'] = false;

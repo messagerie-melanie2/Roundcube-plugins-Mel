@@ -72,14 +72,25 @@ class annuaire extends rcube_plugin
             $this,
             'annuaire_actions'
         ]);
+        
 
         if ($this->rc->task == 'addressbook') {
-            // use jQuery for draggable item
-            $this->require_plugin('jqueryui');
-
             // Chargement de la conf
             $this->load_config();
 
+            // use jQuery for draggable item
+            $this->require_plugin('jqueryui');
+
+            // csv export
+            if ($this->rc->config->get('annuaire_export', false)) {
+                $this->require_plugin('csv_export');
+                // $this->register_action('plugin.annuaire_export', [
+                //     $this,
+                //     'annuaire_export'
+                // ]);
+                $this->rc->output->set_env('annuaire_export', true);
+            }
+            
             $this->rc->output->set_env('annuaire_source', $this->rc->config->get('annuaire_source'));
 
             $this->include_script('directorylist.js');
@@ -139,6 +150,14 @@ class annuaire extends rcube_plugin
             ));
         }
     }
+
+    /**
+     * Export data from annuaire
+     */
+    // function annuaire_export() 
+    // {
+    //     $cid = rcube_utils::get_input_value('_cid', rcube_utils::INPUT_GPC);
+    // }
 
     /**
      * Plugin action handler

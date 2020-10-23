@@ -207,7 +207,9 @@ function openAttachment(uid, partid) {
 }
 
 function addMessageRow(row, mbox) {
-  row.date = new Date(row.date).toLocaleString('fr-FR', { timeZone: 'UTC' });
+  row.fromto = "<span class='adr'><span class='rcmContactAddress'>" + row.fromto + "</span></span>";
+  let date = new Date(row.date);
+  row.date = date.getUTCDate() + '/' + date.getUTCMonth() + '/' + date.getUTCFullYear() + ' ' + (date.getUTCHours()<10?'0':'') + date.getUTCHours() + ':' + (date.getUTCMinutes()<10?'0':'') + date.getUTCMinutes();
   let etiquettes = JSON.parse(row.etiquettes);
   let seen = etiquettes.SEEN ? 1 : 0;
   let flagged = etiquettes.FLAGGED ? 1 : 0;

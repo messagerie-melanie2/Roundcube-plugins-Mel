@@ -106,7 +106,10 @@ class mel_archivage extends rcube_plugin
    */
   public function traitement_archivage_browser()
   {
-    $this->_download_messages($this->traitement_archivage());
+    $messageset = [];
+    $messageset = $this->traitement_archivage();
+    $this->_download_messages($messageset);
+    $this->move_message($messageset);
   }
 
   /**
@@ -145,7 +148,6 @@ class mel_archivage extends rcube_plugin
         $rcmail->output->send('mel_archivage.mel_archivage');
       }
 
-      $message_uid = [];
       $messageset = [];
       $break = false;
       for ($page = 1; $page <= $pages; $page++) {
@@ -175,31 +177,7 @@ class mel_archivage extends rcube_plugin
           break;
         }
       }
-
-      // Créer un folder "Mes messages archivés" si non existant
-      if (isset($folder)) {
-        $delimiter = $storage->get_hierarchy_delimiter();
-
-        // Utiliser le driver mel ?
-        if (class_exists('driver_mel')) {
-          $folder = driver_mel::get_instance()->getMboxFromBalp($rcmail->plugins->get_plugin('mel')->get_user_bal()) . $delimiter . $folder;
-        }
-
-        $list_folders = $storage->list_folders('', $folder . '*', 'mail', null, true);
-
-        //Si le dossier n'existe pas
-        if (!in_array($folder, $list_folders)) {
-          $path = explode($delimiter, $folder);
-
-          for ($i = 0; $i < count($path); $i++) {
-            $_folder = implode($delimiter, array_slice($path, 0, $i + 1));
-            if (!in_array($_folder, $list_folders)) {
-              $storage->create_folder($_folder, true);
-            }
-          }
-        }
-        $storage->move_message($messageset[$message->folder], $folder);
-      }
+     
 
       if (count($messageset) > 0) {
         setcookie("current_archivage", "1");
@@ -227,6 +205,40 @@ class mel_archivage extends rcube_plugin
     // Variable pour archivage_avancement
     setcookie("current_archivage", "1");
     exit;
+  }
+
+  // Créer un folder "Mes messages archivés" si non existant et déplace les mails archivés
+  private function move_message($messageset) {
+    $rcmail = rcmail::get_instance();
+    $storage = $rcmail->get_storage();
+
+    $folder = $rcmail->config->get('mel_archivage_folder');
+    
+    if (isset($folder)) {
+      $delimiter = $storage->get_hierarchy_delimiter();
+
+      // Utiliser le driver mel ?
+      if (class_exists('driver_mel')) {
+        $folder = driver_mel::get_instance()->getMboxFromBalp($rcmail->plugins->get_plugin('mel')->get_user_bal()) . $delimiter . $folder;
+      }
+
+      $list_folders = $storage->list_folders('', $folder . '*', 'mail', null, true);
+
+      //Si le dossier n'existe pas
+      if (!in_array($folder, $list_folders)) {
+        $path = explode($delimiter, $folder);
+
+        for ($i = 0; $i < count($path); $i++) {
+          $_folder = implode($delimiter, array_slice($path, 0, $i + 1));
+          if (!in_array($_folder, $list_folders)) {
+            $storage->create_folder($_folder, true);
+          }
+        }
+      }
+      foreach ($messageset as $messageset_uid) {
+        $storage->move_message($messageset_uid, $folder);
+      }
+    }
   }
 
   // /**

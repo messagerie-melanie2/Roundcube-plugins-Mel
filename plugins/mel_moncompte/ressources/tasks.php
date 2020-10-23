@@ -333,50 +333,57 @@ class M2tasks {
     $result = array();
     try {
       // Récupération des préférences de l'utilisateur
-      $hidden_tasks = $this->rc->config->get('hidden_tasks', array());
+      $hidden_tasks = $this->rc->config->get('hidden_tasks', []);
+      $sort_tasks = $this->rc->config->get('sort_tasks', []);
       // Parcour la liste des listes de tâches
-      $taskslists = $this->user->getSharedTaskslists();
-      $taskslist_owner = array();
-      $taskslists_owner = array();
-      $taskslists_shared = array();
-      foreach ($taskslists as $taskslist) {
-        if ($taskslist->owner == $this->user->uid) {
-          if ($taskslist->id == $this->user->uid)
-            $taskslist_owner[$taskslist->id] = $taskslist->name;
-          else
-            $taskslists_owner[$taskslist->id] = $taskslist->name;
+      $_taskslists = $this->user->getSharedTaskslists();
+      $taskslists = [];
+      foreach ($_taskslists as $taskslist) {
+        $taskslists[$taskslist->id] = [
+          'name' => $taskslist->owner == $this->user->uid ? $taskslist->name : "(" . $taskslist->owner . ") " . $taskslist->name,
+          'class' => $taskslist->owner == $this->user->uid && $taskslist->id != $this->user->uid ? ' personnal' : '',
+        ];
+        if (($order = array_search(driver_mel::gi()->mceToRcId($taskslist->id), $sort_tasks)) !== false) {
+          $taskslists[$taskslist->id]['order'] = $order;
+        }
+        else if ($taskslist->owner == $this->user->uid) {
+          if ($taskslist->id == $this->user->uid) {
+            $taskslists[$taskslist->id]['order'] = 1000;
+          }
+          else {
+            $taskslists[$taskslist->id]['order'] = 2000;
+            $taskslists[$taskslist->id]['class'] = ' personnal';
+          }
         }
         else {
-          $taskslists_shared[$taskslist->id] = "(" . $taskslist->owner . ") " . $taskslist->name;
+          $taskslists[$taskslist->id]['order'] = 3000;
         }
-
       }
       // MANTIS 0003913: Création automatique des objets dans Mes ressources
-      if (count($taskslist_owner) == 0 && $this->createTaskslist()) {
-        $taskslist_owner[$this->taskslist->id] = $this->taskslist->name;
+      if (!isset($taskslists[$this->user->uid]) && $this->createTaskslist()) {
+        $taskslists[$this->taskslist->id] = [
+          'name' => $this->taskslist->name,
+          'order' => 1000,
+        ];
       }
+
       // Objet HTML
       $table = new html_table();
       $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'task')"));
-      // Liste de tâches principal
-      foreach ($taskslist_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'task','foldername' => driver_mel::gi()->mceToRcId($id)));
 
-        $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));
-      }
-      // Listes de tâches de l'utilisateurs
-      asort($taskslists_owner);
-      foreach ($taskslists_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'task personnal','foldername' => driver_mel::gi()->mceToRcId($id)));
+      // sort taskslists
+      uasort($taskslists, function ($a, $b) {
+        if ($a['order'] === $b['order'])
+          return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+        else
+          return ($a['order'] < $b['order']) ? -1 : 1;
+      });
 
-        $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));
-      }
-      // Listes de tâches partagés
-      asort($taskslists_shared);
-      foreach ($taskslists_shared as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'task','foldername' => driver_mel::gi()->mceToRcId($id)));
+      // Affichage des listes de taches
+      foreach ($taskslists as $id => $value) {
+        $name = $value['name'];
+        $class = $value['class'];
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'task'.$class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_tasks[$id]) ? $id : ''), array('value' => $id)));

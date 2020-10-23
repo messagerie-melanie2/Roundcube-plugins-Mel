@@ -341,53 +341,58 @@ class M2calendar {
     }
     try {
       // Récupération des préférences de l'utilisateur
-      $hidden_calendars = $this->rc->config->get('hidden_calendars', array());
+      $hidden_calendars = $this->rc->config->get('hidden_calendars', []);
+      $sort_calendars = $this->rc->config->get('sort_agendas', []);
       // Parcour la liste des agendas
-      $calendars = $this->user->getSharedCalendars();
-      $calendar_owner = array();
-      $calendars_owner = array();
-      $calendars_shared = array();
-      foreach ($calendars as $calendar) {
-        if ($calendar->owner == $this->user->uid) {
-          if ($calendar->id == $this->user->uid)
-            $calendar_owner[$calendar->id] = $calendar->name;
-          else
-            $calendars_owner[$calendar->id] = $calendar->name;
+      $_calendars = $this->user->getSharedCalendars();
+      $calendars = [];
+      foreach ($_calendars as $calendar) {
+        $calendars[$calendar->id] = [
+          'name' => $calendar->owner == $this->user->uid ? $calendar->name : "(" . $calendar->owner . ") " . $calendar->name,
+          'class' => $calendar->owner == $this->user->uid && $calendar->id != $this->user->uid ? ' personnal' : '',
+        ];
+        if (($order = array_search(driver_mel::gi()->mceToRcId($calendar->id), $sort_calendars)) !== false) {
+          $calendars[$calendar->id]['order'] = $order;
+        }
+        else if ($calendar->owner == $this->user->uid) {
+          if ($calendar->id == $this->user->uid) {
+            $calendars[$calendar->id]['order'] = 1000;
+          }
+          else {
+            $calendars[$calendar->id]['order'] = 2000;
+            $calendars[$calendar->id]['class'] = ' personnal';
+          }
         }
         else {
-          $calendars_shared[$calendar->id] = "(" . $calendar->owner . ") " . $calendar->name;
+          $calendars[$calendar->id]['order'] = 3000;
         }
       }
       // MANTIS 0003913: Création automatique des objets dans Mes ressources
-      if (count($calendar_owner) == 0 && $this->createCalendar()) {
-        $calendar_owner[$this->calendar->id] = $this->calendar->name;
+      if (!isset($calendars[$this->user->uid]) && $this->createCalendar()) {
+        $calendars[$this->calendar->id] = [
+          'name' => $this->calendar->name,
+          'order' => 1000,
+        ];
       }
       // Objet HTML
       $table = new html_table();
       $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'calendar')"));
 
-      // Calendrier principal
-      foreach ($calendar_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'calendar','foldername' => driver_mel::gi()->mceToRcId($id)));
+      // sort calendars
+      uasort($calendars, function ($a, $b) {
+        if ($a['order'] === $b['order'])
+          return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+        else
+          return ($a['order'] < $b['order']) ? -1 : 1;
+      });
+      // Affichage des calendriers
+      foreach ($calendars as $id => $value) {
+        $name = $value['name'];
+        $class = $value['class'];
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'calendar'.$class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
-      }
-      // Calendriers de l'utilisateurs
-      asort($calendars_owner);
-      foreach ($calendars_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'calendar personnal','foldername' => driver_mel::gi()->mceToRcId($id)));
-
-        $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
-      }
-      // Calendriers partagés
-      asort($calendars_shared);
-      foreach ($calendars_shared as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'calendar','foldername' => driver_mel::gi()->mceToRcId($id)));
-
-        $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
+        $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_calendars[$id]) ? $id : ''), array('value' => $id)));
       }
       // set client env
       $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);

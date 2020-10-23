@@ -243,33 +243,56 @@ class M2mailbox {
     $result = array();
 
     // Récupération des préférences de l'utilisateur
-    $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
-    // Objet HTML
-    $table = new html_table();
-    $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'mailboxe')"));
+    $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
+    $sort_bal = $this->rc->config->get('sort_bal', []);
+
+    $mailboxes = [];
     $_objects = $this->user->getObjectsShared();
-    if (isset($_objects) && is_array($_objects)) {
-      // trier la liste
-      uasort($_objects, function($a, $b) {
-        return strcmp(strtolower($a->fullname), strtolower($b->fullname));
-      });
-    }
-    else {
+    if (!is_array($_objects)) {
       $_objects = [];
     }
+
     foreach (array_merge([$this->user], $_objects) as $_object) {
       $object_id = $_object->uid;
-      if ($_object instanceof ObjectShare) {
+      if ($_object->is_objectshare) {
         $_object = $_object->mailbox;
       }
       $id = $_object->uid;
-      //$name = $this->m2_mailbox_shortname($_object->fullname);
-      $name = $_object->fullname;
+
+      $mailboxes[$object_id] = [
+        'name' => $_object->fullname,
+        'id' => $id,
+      ];
+      if (($order = array_search(driver_mel::gi()->mceToRcId($object_id), $sort_bal)) !== false) {
+        $mailboxes[$object_id]['order'] = $order;
+      }
+      else {
+        $mailboxes[$object_id]['order'] = $object_id == $this->user->uid ? 1000 : 2000;
+      }
+    }
+
+    // Objet HTML
+    $table = new html_table();
+    $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'mailboxe')"));
+
+    // sort mailboxes
+    uasort($mailboxes, function ($a, $b) {
+      if ($a['order'] === $b['order'])
+        return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+      else
+        return ($a['order'] < $b['order']) ? -1 : 1;
+  });
+
+    // Affichage des boites
+    foreach ($mailboxes as $object_id => $value) {
+      $name = $value['name'];
+      $id = $value['id'];
       $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'mailbox','foldername' => driver_mel::gi()->mceToRcId($id)));
 
       $table->add('name', $name);
       $table->add('subscribed', $checkbox_subscribe->show((!isset($hidden_mailboxes[$object_id]) ? $object_id : ''), array('value' => $object_id)));
     }
+
     // set client env
     $this->rc->output->add_gui_object('mel_resources_elements_list', $attrib['id']);
 

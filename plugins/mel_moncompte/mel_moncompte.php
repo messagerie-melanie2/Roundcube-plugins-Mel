@@ -179,6 +179,7 @@ class mel_moncompte extends rcube_plugin {
       // http post actions
       $this->register_action('plugin.hide_resource_roundcube', array($this,'hide_resource_roundcube'));
       $this->register_action('plugin.show_resource_roundcube', array($this,'show_resource_roundcube'));
+      $this->register_action('plugin.sort_resource_roundcube', array($this,'sort_resource_roundcube'));
       $this->register_action('plugin.synchro_on_mobile', array($this,'synchro_on_mobile'));
       $this->register_action('plugin.no_synchro_on_mobile', array($this,'no_synchro_on_mobile'));
       $this->register_action('plugin.set_default_resource', array($this,'set_default_resource'));
@@ -677,6 +678,27 @@ class mel_moncompte extends rcube_plugin {
         $this->rc->output->show_message('mel_moncompte.show_resource_confirm', 'confirmation');
       else
         $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+    else {
+      $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+    }
+  }
+  /**
+   * Trier la ressource pour l'affichage dans Roundcube
+   */
+  public function sort_resource_roundcube() {
+    $items = rcube_utils::get_input_value('_items', rcube_utils::INPUT_POST);
+    $type = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+
+    if (isset($items) && isset($type)) {
+      $conf_name = 'sort_' . $type;
+      if ($this->rc->user->save_prefs(array($conf_name => json_decode($items, true)))) {
+        $this->rc->output->show_message('mel_moncompte.sort_resource_confirm', 'confirmation');
+        $this->rc->output->command('mel_resources_reload_page', 'sort');
+      }
+      else {
+        $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
+      }
     }
     else {
       $this->rc->output->show_message('mel_moncompte.modify_error', 'error');

@@ -83,6 +83,7 @@ $labels['wait'] = 'Chargement en cours...';
 $labels['modify_error'] = 'Erreur lors de la modification';
 $labels['hide_resource_confirm'] = 'Ressource masquée dans le webmail';
 $labels['show_resource_confirm'] = 'Ressource affichée dans le webmail';
+$labels['sort_resource_confirm'] = 'La ressource a bien été triée';
 
 $labels['synchro_mobile_confirm'] = 'Ressource ajoutée pour la synchronisation mobile';
 $labels['no_synchro_mobile_confirm'] = 'Ressource supprimée de la synchronisation mobile';

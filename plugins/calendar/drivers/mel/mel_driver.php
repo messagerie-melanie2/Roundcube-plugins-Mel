@@ -177,10 +177,11 @@ class mel_driver extends calendar_driver {
         $this->_read_calendars($calid);
       }
       // Récupération des préférences de l'utilisateur
-      $hidden_calendars = $this->rc->config->get('hidden_calendars', array());
-      $color_calendars = $this->rc->config->get('color_calendars', array());
-      $active_calendars = $this->rc->config->get('active_calendars', array());
-      $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
+      $hidden_calendars = $this->rc->config->get('hidden_calendars', []);
+      $sort_calendars = $this->rc->config->get('sort_agendas', []);
+      $color_calendars = $this->rc->config->get('color_calendars', []);
+      $active_calendars = $this->rc->config->get('active_calendars', []);
+      $alarm_calendars = $this->rc->config->get('alarm_calendars', []);
 
       // attempt to create a default calendar for this user
       if (!$this->has_principal) {
@@ -193,6 +194,7 @@ class mel_driver extends calendar_driver {
           true);
       }
       $default_calendar = $this->user->getDefaultCalendar();
+      $calendars = [];
       $owner_calendars = array();
       $other_calendars = array();
       $shared_calendars = array();
@@ -202,6 +204,16 @@ class mel_driver extends calendar_driver {
             && (count($hidden_calendars) < count($this->calendars)
                 || $this->user->uid != $cal->id)) {
           continue;
+        }
+        // Gestion du order
+        $order = array_search(driver_mel::gi()->mceToRcId($cal->id), $sort_calendars);
+        if ($order === false) {
+          if ($cal->id == $this->user->uid)
+            $order = 1000;
+          else if ($cal->owner == $this->user->uid)
+            $order = 2000;
+          else
+            $order = 3000;
         }
         // Gestion des paramètres du calendrier
         if (isset($color_calendars[$cal->id])) {
@@ -246,7 +258,9 @@ class mel_driver extends calendar_driver {
           $rights = 'l';
         }
         // formatte le calendrier pour le driver
-        $calendar = array('id' => driver_mel::gi()->mceToRcId($cal->id),
+        $calendars[driver_mel::gi()->mceToRcId($id)] = array(
+            'id' => driver_mel::gi()->mceToRcId($cal->id),
+            'order' => $order,
             'name' => $cal->name,
             'listname' => $cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name,
             'editname' => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_larry') : ($cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name),
@@ -264,27 +278,13 @@ class mel_driver extends calendar_driver {
             'group' => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
             'class' => 'user',
     				'caldavurl' => $this->get_caldav_url($cal),
-        )
-        // 'subscribed' => !isset($hidden_calendars[$cal->id]),
-        // TODO: Implémenter la gestion des afficher/masquer un agenda
-        // 'removable' => $default_calendar->id != $cal->id,
-        ;
-        // Ajout le calendrier dans la liste correspondante
-        if ($calendar['owner'] != $this->user->uid) {
-          $id = driver_mel::gi()->mceToRcId($id);
-          $shared_calendars[$id] = $calendar;
-        }
-        elseif ($this->user->uid == $cal->id) {
-          $id = driver_mel::gi()->mceToRcId($id);
-          $owner_calendars[$id] = $calendar;
-        }
-        else {
-          $id = driver_mel::gi()->mceToRcId($id);
-          $other_calendars[$id] = $calendar;
-        }
+        );
       }
 
-      $this->rc->user->save_prefs(array('color_calendars' => $color_calendars,'active_calendars' => $active_calendars,'alarm_calendars' => $alarm_calendars));
+      $this->rc->user->save_prefs(array(
+        'color_calendars'   => $color_calendars,
+        'active_calendars'  => $active_calendars,
+        'alarm_calendars'   => $alarm_calendars));
 
       if (mel_logs::is(mel_logs::TRACE))
         mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::list_calendars() : " . var_export($owner_calendars + $other_calendars + $shared_calendars, true));
@@ -294,13 +294,18 @@ class mel_driver extends calendar_driver {
         $prefs = $this->rc->config->get('birthday_calendar', array('color' => '87CEFA'));
 
         $id = self::BIRTHDAY_CALENDAR_ID;
-        if (! $active || ! in_array($id, $hidden_calendars)) {
-          $owner_calendars[$id] = array('id' => $id,'name' => $this->cal->gettext('birthdays'),'listname' => $this->cal->gettext('birthdays'),'color' => $prefs['color'],'showalarms' => ( bool ) $this->rc->config->get('calendar_birthdays_alarm_type'),'active' => isset($active_calendars[$id]),'group' => 'x-birthdays','editable' => false,'default' => false,'children' => false);
+        if (!$active || !in_array($id, $hidden_calendars)) {
+          $calendars[$id] = array('id' => $id, 'name' => $this->cal->gettext('birthdays'), 'listname' => $this->cal->gettext('birthdays'), 'color' => $prefs['color'], 'showalarms' => (bool)$this->rc->config->get('calendar_birthdays_alarm_type'), 'active' => isset($active_calendars[$id]), 'group' => 'x-birthdays', 'editable' => false, 'default' => false, 'children' => false);
         }
       }
-
+      uasort($calendars, function ($a, $b) {
+        if ($a['order'] === $b['order'])
+          return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+        else
+          return ($a['order'] < $b['order']) ? -1 : 1;
+      });
       // Retourne la concaténation des agendas pour avoir une liste ordonnée
-      return $owner_calendars + $this->array_sort($other_calendars, 'name') + $this->array_sort($shared_calendars, 'name');
+      return $calendars;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_driver::list_calendars() Melanie2DatabaseException");
@@ -310,48 +315,6 @@ class mel_driver extends calendar_driver {
       return array();
     }
     return array();
-  }
-
-  /**
-   * Tri le tableau en fonction d'une valeur du sous tableau
-   * @param array $array
-   * @param string $on
-   * @param string $order
-   * @return array
-   */
-  private function array_sort($array, $on, $order = SORT_ASC) {
-    $new_array = array();
-    $sortable_array = array();
-
-    if (count($array) > 0) {
-      foreach ($array as $k => $v) {
-        if (is_array($v)) {
-          foreach ($v as $k2 => $v2) {
-            if ($k2 == $on) {
-              $sortable_array[$k] = $v2;
-            }
-          }
-        }
-        else {
-          $sortable_array[$k] = $v;
-        }
-      }
-
-      switch ($order) {
-        case SORT_ASC :
-          asort($sortable_array);
-          break;
-        case SORT_DESC :
-          arsort($sortable_array);
-          break;
-      }
-
-      foreach ($sortable_array as $k => $v) {
-        $new_array[$k] = $array[$k];
-      }
-    }
-
-    return $new_array;
   }
 
   /**

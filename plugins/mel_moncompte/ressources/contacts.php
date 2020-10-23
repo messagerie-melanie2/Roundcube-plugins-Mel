@@ -332,53 +332,58 @@ class M2contacts {
       $attrib['id'] = 'rcmresourceselementslist';
 
     try {
-      $result = array();
-
       // Récupération des préférences de l'utilisateur
       $hidden_contacts = $this->rc->config->get('hidden_contacts', array());
+      $sort_contacts = $this->rc->config->get('sort_contacts', []);
       // Parcour la liste des carnets d'adresses
-      $addressbooks = $this->user->getSharedAddressbooks();
-      $addressbook_owner = array();
-      $addressbooks_owner = array();
-      $addressbooks_shared = array();
-      foreach ($addressbooks as $addressbook) {
-        if ($addressbook->owner == $this->user->uid) {
-          if ($addressbook->id == $this->user->uid)
-            $addressbook_owner[$addressbook->id] = $addressbook->name;
-          else
-            $addressbooks_owner[$addressbook->id] = $addressbook->name;
+      $_addressbooks = $this->user->getSharedAddressbooks();
+      $addressbooks = [];
+      foreach ($_addressbooks as $addressbook) {
+        $addressbooks[$addressbook->id] = [
+          'name' => $addressbook->owner == $this->user->uid ? $addressbook->name : "(" . $addressbook->owner . ") " . $addressbook->name,
+          'class' => $addressbook->owner == $this->user->uid && $addressbook->id != $this->user->uid ? ' personnal' : '',
+        ];
+        if (($order = array_search(driver_mel::gi()->mceToRcId($addressbook->id), $sort_contacts)) !== false) {
+          $addressbooks[$addressbook->id]['order'] = $order;
+        }
+        else if ($addressbook->owner == $this->user->uid) {
+          if ($addressbook->id == $this->user->uid) {
+            $addressbooks[$addressbook->id]['order'] = 1000;
+          }
+          else {
+            $addressbooks[$addressbook->id]['order'] = 2000;
+            $addressbooks[$addressbook->id]['class'] = ' personnal';
+          }
         }
         else {
-          $addressbooks_shared[$addressbook->id] = "(" . $addressbook->owner . ") " . $addressbook->name;
+          $addressbooks[$addressbook->id]['order'] = 3000;
         }
-
       }
       // MANTIS 0003913: Création automatique des objets dans Mes ressources
-      if (count($addressbook_owner) == 0 && $this->createAddressbook()) {
-        $addressbook_owner[$this->addressbook->id] = $this->addressbook->name;
+      if (!isset($addressbooks[$this->user->uid]) && $this->createAddressbook()) {
+        $addressbooks[$this->addressbook->id] = [
+          'name' => $this->addressbook->name,
+          'order' => 1000,
+        ];
       }
+
       // Objet HTML
       $table = new html_table();
       $checkbox_subscribe = new html_checkbox(array('name' => '_show_resource_rc[]','title' => $this->rc->gettext('changesubscription'),'onclick' => "rcmail.command(this.checked ? 'show_resource_in_roundcube' : 'hide_resource_in_roundcube', this.value, 'contact')"));
-      // Carnet d'adresses principal
-      foreach ($addressbook_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'contact','foldername' => driver_mel::gi()->mceToRcId($id)));
 
-        $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
-      }
-      // Carnets d'adresses de l'utilisateurs
-      asort($addressbooks_owner);
-      foreach ($addressbooks_owner as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'contact personnal','foldername' => driver_mel::gi()->mceToRcId($id)));
+      // sort addressbooks
+      uasort($addressbooks, function ($a, $b) {
+        if ($a['order'] === $b['order'])
+          return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+        else
+          return ($a['order'] < $b['order']) ? -1 : 1;
+      });
 
-        $table->add('name', $name);
-        $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));
-      }
-      // Carnets d'adresses partagés
-      asort($addressbooks_shared);
-      foreach ($addressbooks_shared as $id => $name) {
-        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id),'class' => 'contact','foldername' => driver_mel::gi()->mceToRcId($id)));
+      // Affichage des carnets
+      foreach ($addressbooks as $id => $value) {
+        $name = $value['name'];
+        $class = $value['class'];
+        $table->add_row(array('id' => 'rcmrow' . driver_mel::gi()->mceToRcId($id), 'class' => 'contact'.$class, 'foldername' => driver_mel::gi()->mceToRcId($id)));
 
         $table->add('name', $name);
         $table->add('subscribed', $checkbox_subscribe->show((! isset($hidden_contacts[$id]) ? $id : ''), array('value' => $id)));

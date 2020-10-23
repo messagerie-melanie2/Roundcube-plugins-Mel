@@ -206,11 +206,13 @@ rcube_webmail.prototype.mel_portail_dragend = function(e)
 
 rcube_webmail.prototype.mel_portail_focus_filter = function(row)
 {
-  var id = row.id.replace(/^rcmrow/, '');
-  if (this.drag_active && id != this.drag_filter && !$('#'+row.id).hasClass('unchangeable')) {
-    this.drag_filter_target = id;
-    $(row.obj).addClass('elementmoveup');
-  }
+	if (this.drag_active) {
+		var id = row.id.replace(/^rcmrow/, '');
+		if (id != this.drag_filter && !$('#'+row.id).hasClass('unchangeable')) {
+			this.drag_filter_target = id;
+			$(row.obj).addClass('elementmoveup');
+		}
+	}
 };
 
 rcube_webmail.prototype.mel_portail_unfocus_filter = function(row)

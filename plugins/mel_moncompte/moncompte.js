@@ -286,12 +286,16 @@ if (window.rcmail) {
         if (rcmail.gui_objects.mel_resources_elements_list) {
           rcmail.mel_resources_elements_list = new rcube_list_widget(rcmail.gui_objects.mel_resources_elements_list, {
             multiselect : false,
-            draggable : false,
+            draggable : true,
             keyboard : false
           });
           rcmail.mel_resources_elements_list
-              .addEventListener('select', function(e) {
-                p.mel_resources_element_select(e);
+              .addEventListener('select', function(e) { p.mel_resources_element_select(e); })
+              .addEventListener('dragstart', function(e) { p.mel_resources_element_dragstart(e); })
+              .addEventListener('dragend', function(e) { p.mel_resources_element_dragend(e); })
+              .addEventListener('initrow', function(row) {
+                row.obj.onmouseover = function() { p.mel_resources_element_focus_filter(row); };
+                row.obj.onmouseout = function() { p.mel_resources_element_unfocus_filter(row); };
               });
           rcmail.mel_resources_elements_list.init();
           rcmail.mel_resources_elements_list.focus();
@@ -581,6 +585,70 @@ rcube_webmail.prototype.mel_resources_element_select = function(element) {
   if (id != null) {
     this.load_shares_element_frame(id);
   }
+};
+
+// load filter frame
+rcube_webmail.prototype.mel_resources_element_dragstart = function(list)
+{
+	var id = list.get_single_selection();
+
+  this.drag_active = true;
+	this.drag_filter = id;
+};
+
+rcube_webmail.prototype.mel_resources_element_dragend = function(e)
+{
+	if (this.drag_active) {
+		if (this.drag_filter_target) {
+		  var lock = this.set_busy(true, 'loading');
+		  var items = [];
+		  var index = 0, i = 0;
+		  $('#mel_resources_elements_list tbody > tr').each(function() {
+        var id = this.id.replace(/^rcmrow/, '');
+        if (id == rcmail.drag_filter_target) {
+          index = i;
+        }
+        if (id != rcmail.drag_filter) {
+          items.push(id);
+          i++;
+        }
+		  });
+		  items.splice(index, 0, this.drag_filter);
+		  this.show_contentframe(false);
+		  this.http_post('plugin.sort_resource_roundcube', '_items='+JSON.stringify(items)+'&_type='+rcmail.env.resources_action, lock);
+		}
+		this.drag_active = false;
+	  }
+};
+
+rcube_webmail.prototype.mel_resources_element_focus_filter = function(row)
+{
+  if (this.drag_active) {
+    var id = row.id.replace(/^rcmrow/, '');
+    if (id != this.drag_filter) {
+      this.drag_filter_target = id;
+      $(row.obj).addClass('elementmoveup');
+    }
+  }
+};
+
+rcube_webmail.prototype.mel_resources_element_unfocus_filter = function(row)
+{
+  if (this.drag_active) {
+    $(row.obj).removeClass('elementmoveup');
+    this.drag_filter_target = null;
+  }
+};
+
+rcube_webmail.prototype.mel_resources_reload_page = function() {
+	setTimeout(function() {
+		if (rcmail.env.framed) {
+			window.parent.location = rcmail.url('settings/plugin.mel_resources_' + rcmail.env.resources_action);
+		}
+		else {
+			window.location = rcmail.url('settings/plugin.mel_resources_' + rcmail.env.resources_action);
+		}
+	}, 500);
 };
 
 // load filter frame

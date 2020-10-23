@@ -38,7 +38,7 @@ $labels['hide_secret'] = 'Masquer le secret';
 $labels['create_secret'] = 'Générer un secret';
 
 $labels['action_2'] = "Sur votre téléphone, ouvrez FreeOTP et cliquer sur l'icône ";
-$labels['action_3'] = "Scannez l'image ci-dessous";
+$labels['action_3'] = "Scannez l'image ci-dessous ou copiez le code suivant : ";
 $labels['action_4'] = "Tapez le code donné par votre téléphone puis cliquez sur &laquo; Vérifier &raquo;";
 $labels['action_5'] = "Si le code est correct, enregistrez la configuration";
 

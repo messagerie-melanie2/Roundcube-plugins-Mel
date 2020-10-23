@@ -37,7 +37,7 @@ if (window.rcmail) {
 								.before(
 										'<tr class=\"added\"><td width="20px"><span class="cercle">3</span></td><td colspan="2">'
 												+ rcmail.gettext('action_3',
-														'mel_doubleauth')
+														'mel_doubleauth') + '&nbsp;&nbsp;<input type="text" size="32" id="2FA_code_input" value="' + $('#2FA_secret').get(0).value + '">'
 												+ '</tr><tr class=\"added\"><td></td><td colspan="2"><div id="2FA_qr_code" style="display: inline-block; margin-top: 10px; padding: 10px; background: #fff;"></div></td></tr>');
 	
 						$('table tr:last')

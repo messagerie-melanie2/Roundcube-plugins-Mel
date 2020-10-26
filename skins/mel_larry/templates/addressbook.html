@@ -58,6 +58,9 @@
 	<h3 class="boxtitle voice"><roundcube:label name="savedsearches" /></h3>
 	<roundcube:object name="savedsearchlist" id="savedsearchlist" class="treelist listing iconized" />
 </div>
+<div id="directorylist-footer" class="boxfooter">
+	<roundcube:button name="groupoptions" id="groupoptionslink" type="link" title="moreactions" class="listbutton groupactions" onclick="return UI.toggle_popup('groupoptions',event)" innerClass="inner" label="arialabelabookgroupoptions" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptionsmenu" />
+</div>
 </div>
 
 <div id="groupoptions" class="popupmenu" aria-hidden="true">

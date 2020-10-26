@@ -66,6 +66,9 @@
 			<div class="scroller">
 				<roundcube:object name="plugin.tasklists" id="tasklists" class="treelist listing" />
 			</div>
+			<div class="boxfooter">
+				<roundcube:button name="tasklistoptionslink" id="tasklistoptionsmenulink" type="link" title="tasklist.listactions" class="listbutton groupactions" onclick="return UI.toggle_popup('tasklistoptionsmenu', event, { above:true })" innerClass="inner" label="tasklist.listactions" aria-haspopup="true" aria-expanded="false" aria-owns="tasklistoptionsmenu-menu" />
+			</div>
 		</div>
 
 		<div id="tasklistoptionsmenu" class="popupmenu" aria-hidden="true">

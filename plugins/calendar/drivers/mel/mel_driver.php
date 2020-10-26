@@ -179,9 +179,10 @@ class mel_driver extends calendar_driver {
       // Récupération des préférences de l'utilisateur
       $hidden_calendars = $this->rc->config->get('hidden_calendars', []);
       $sort_calendars = $this->rc->config->get('sort_agendas', []);
-      $color_calendars = $this->rc->config->get('color_calendars', []);
-      $active_calendars = $this->rc->config->get('active_calendars', []);
-      $alarm_calendars = $this->rc->config->get('alarm_calendars', []);
+      $color_calendars = $this->rc->config->get('color_calendars', null);
+      $active_calendars = $this->rc->config->get('active_calendars', null);
+      $alarm_calendars = $this->rc->config->get('alarm_calendars', null);
+      $save_prefs = false;
 
       // attempt to create a default calendar for this user
       if (!$this->has_principal) {
@@ -195,9 +196,6 @@ class mel_driver extends calendar_driver {
       }
       $default_calendar = $this->user->getDefaultCalendar();
       $calendars = [];
-      $owner_calendars = array();
-      $other_calendars = array();
-      $shared_calendars = array();
       foreach ($this->calendars as $id => $cal) {
         if (isset($hidden_calendars[$cal->id])
             && ! ($filter & self::FILTER_ALL)
@@ -205,8 +203,9 @@ class mel_driver extends calendar_driver {
                 || $this->user->uid != $cal->id)) {
           continue;
         }
+        $rcId = driver_mel::gi()->mceToRcId($cal->id);
         // Gestion du order
-        $order = array_search(driver_mel::gi()->mceToRcId($cal->id), $sort_calendars);
+        $order = array_search($rcId, $sort_calendars);
         if ($order === false) {
           if ($cal->id == $this->user->uid)
             $order = 1000;
@@ -216,29 +215,33 @@ class mel_driver extends calendar_driver {
             $order = 3000;
         }
         // Gestion des paramètres du calendrier
-        if (isset($color_calendars[$cal->id])) {
+        if (is_array($color_calendars) && isset($color_calendars[$cal->id])) {
           $color = $color_calendars[$cal->id];
         }
         else {
+          $save_prefs = true;
           $color = $this->_random_color();
+          if (!is_array($color_calendars)) {
+            $color_calendars = [];
+          }
           $color_calendars[$cal->id] = $color;
         }
         // Gestion des calendriers actifs
-        if (isset($active_calendars) && is_array($active_calendars)) {
+        if (is_array($active_calendars)) {
           $active = isset($active_calendars[$cal->id]);
         }
-        else {
+        else if ($cal->id == $this->user->uid) {
+          $save_prefs = true;
           $active = true;
-          $active_calendars[$cal->id] = 1;
+          $active_calendars = [ $cal->id => 1 ];
         }
         // Gestion des alarmes dans les calendriers
-        if (isset($alarm_calendars) && is_array($alarm_calendars)) {
+        if (is_array($alarm_calendars)) {
           $alarm = isset($alarm_calendars[$cal->id]);
         }
-        else {
-          $alarm = $cal->owner == $this->user->uid;
-          if ($alarm)
-            $alarm_calendars[$cal->id] = 1;
+        else if ($cal->id == $this->user->uid) {
+          $alarm = true;
+          $alarm_calendars = [ $cal->id => 1 ];
         }
         // Se limiter aux calendriers actifs
         // Se limiter aux calendriers perso
@@ -258,8 +261,8 @@ class mel_driver extends calendar_driver {
           $rights = 'l';
         }
         // formatte le calendrier pour le driver
-        $calendars[driver_mel::gi()->mceToRcId($id)] = array(
-            'id' => driver_mel::gi()->mceToRcId($cal->id),
+        $calendars[$rcId] = array(
+            'id' => $rcId,
             'order' => $order,
             'name' => $cal->name,
             'listname' => $cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name,
@@ -281,13 +284,16 @@ class mel_driver extends calendar_driver {
         );
       }
 
-      $this->rc->user->save_prefs(array(
-        'color_calendars'   => $color_calendars,
-        'active_calendars'  => $active_calendars,
-        'alarm_calendars'   => $alarm_calendars));
+      if ($save_prefs) {
+        $this->rc->user->save_prefs(array(
+          'color_calendars'   => $color_calendars,
+          'active_calendars'  => $active_calendars,
+          'alarm_calendars'   => $alarm_calendars));
+      }
+      
 
       if (mel_logs::is(mel_logs::TRACE))
-        mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::list_calendars() : " . var_export($owner_calendars + $other_calendars + $shared_calendars, true));
+        mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::list_calendars() : " . var_export($calendars, true));
 
         // append the virtual birthdays calendar
       if ($this->rc->config->get('calendar_contact_birthdays', false)) {
@@ -300,9 +306,9 @@ class mel_driver extends calendar_driver {
       }
       uasort($calendars, function ($a, $b) {
         if ($a['order'] === $b['order'])
-          return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+          return strcmp(strtolower($a['listname']), strtolower($b['listname']));
         else
-          return ($a['order'] < $b['order']) ? -1 : 1;
+          return strnatcmp($a['order'], $b['order']);
       });
       // Retourne la concaténation des agendas pour avoir une liste ordonnée
       return $calendars;

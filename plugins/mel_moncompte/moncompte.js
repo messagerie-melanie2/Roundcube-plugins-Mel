@@ -286,7 +286,7 @@ if (window.rcmail) {
         if (rcmail.gui_objects.mel_resources_elements_list) {
           rcmail.mel_resources_elements_list = new rcube_list_widget(rcmail.gui_objects.mel_resources_elements_list, {
             multiselect : false,
-            draggable : true,
+            draggable : rcmail.env.account ? false : true,
             keyboard : false
           });
           rcmail.mel_resources_elements_list

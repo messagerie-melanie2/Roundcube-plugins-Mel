@@ -102,9 +102,11 @@ class tasklist_mel_driver extends tasklist_driver {
     $this->_read_lists();
 
     // Récupération des préférences de l'utilisateur
-    $hidden_tasks = $this->rc->config->get('hidden_tasks', array());
+    $hidden_tasks = $this->rc->config->get('hidden_tasks', []);
+    $sort_tasks = $this->rc->config->get('sort_tasks', []);
     $active_tasklists = $this->rc->config->get('active_tasklists', null);
     $alarm_tasklists = $this->rc->config->get('alarm_tasklists', null);
+    $save_prefs = false;
 
     // attempt to create a default list for this user
     if (empty($this->lists)) {
@@ -118,31 +120,42 @@ class tasklist_mel_driver extends tasklist_driver {
       $this->_read_lists(true);
     }
     $default_tasklist = $this->user->getDefaultTaskslist();
-    $owner_tasklists = array();
-    $other_tasklists = array();
-    $shared_tasklists = array();
+    $tasklists = [];
     foreach ($this->lists as $id => $list) {
       if (isset($hidden_tasks[$list->id]))
         continue;
 
+      $rcId = driver_mel::gi()->mceToRcId($list->id);
+      // Gestion du order
+      $order = array_search($rcId, $sort_tasks);
+      if ($order === false) {
+        if ($list->id == $this->user->uid)
+          $order = 1000;
+        else if ($list->owner == $this->user->uid)
+          $order = 2000;
+        else
+          $order = 3000;
+      }
       // Gestion des calendriers actifs
-      if (isset($active_tasklists) && is_array($active_tasklists)) {
+      if (is_array($active_tasklists)) {
         $active = isset($active_tasklists[$list->id]);
-      } else {
+      } else if ($list->id == $this->user->uid) {
+        $save_prefs = true;
         $active = true;
-        $active_tasklists[$list->id] = 1;
+        $active_tasklists = [ $list->id => 1 ];
       }
       // Gestion des alarmes dans les calendriers
-      if (isset($alarm_tasklists) && is_array($alarm_tasklists)) {
+      if (is_array($alarm_tasklists)) {
         $alarm = isset($alarm_tasklists[$list->id]);
-      } else {
-        $alarm = $list->owner == $this->user->uid;
-        if ($alarm)
-          $alarm_tasklists[$list->id] = 1;
+      } else if ($list->id == $this->user->uid) {
+        $save_prefs = true;
+        $alarm = true;
+        $alarm_tasklists = [ $list->id => 1];
       }
 
-      $tasklist = array(
-          'id' => driver_mel::gi()->mceToRcId($list->id),
+      $tasklists[$rcId] = [
+          'id' => $rcId,
+          'order' => $order,
           'name' => $list->name,
           'listname' => $list->id == $this->user->uid ? $this->rc->gettext('personaltasks', 'mel_larry') : ($list->owner == $this->user->uid ? $list->name : "[" . $list->owner . "] " . $list->name),
           'editname' => $list->name,
@@ -155,27 +168,24 @@ class tasklist_mel_driver extends tasklist_driver {
           'default' => $default_tasklist->id == $list->id,
           'children' => false, // TODO: determine if that folder indeed has child folders
           'class_name' => trim(($list->owner == $this->user->uid ? 'personnal' : 'other') . ' ' . ($default_tasklist->id == $list->id ? 'default' : ''))
-      );
-      // Ajout la liste de taches dans la liste correspondante
-      if ($list->owner != $this->user->uid) {
-        $shared_tasklists[driver_mel::gi()->mceToRcId($id)] = $tasklist;
-      } elseif ($this->user->uid == $list->id) {
-        $owner_tasklists[driver_mel::gi()->mceToRcId($id)] = $tasklist;
-      } else {
-        $other_tasklists[driver_mel::gi()->mceToRcId($id)] = $tasklist;
-      }
+      ];
     }
-    // Tri des tableaux
-    asort($owner_tasklists);
-    asort($other_tasklists);
-    asort($shared_tasklists);
+    // Tri des taskslist
+    uasort($tasklists, function ($a, $b) {
+      if ($a['order'] === $b['order'])
+        return strcmp(strtolower($a['listname']), strtolower($b['listname']));
+      else
+        return strnatcmp($a['order'], $b['order']);
+    });
 
-    $this->rc->user->save_prefs(array(
+    if ($save_prefs) {
+      $this->rc->user->save_prefs(array(
         'active_tasklists' => $active_tasklists,
         'alarm_tasklists' => $alarm_tasklists
     ));
-    // Retourne la concaténation des agendas pour avoir une liste ordonnée
-    return $owner_tasklists + $other_tasklists + $shared_tasklists;
+    }
+    
+    return $tasklists;
   }
 
   /**

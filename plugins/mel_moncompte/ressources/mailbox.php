@@ -278,10 +278,10 @@ class M2mailbox {
     // sort mailboxes
     uasort($mailboxes, function ($a, $b) {
       if ($a['order'] === $b['order'])
-        return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+        return strcmp(strtolower($a['name']), strtolower($b['name']));
       else
-        return ($a['order'] < $b['order']) ? -1 : 1;
-  });
+        return strnatcmp($a['order'], $b['order']);
+    });
 
     // Affichage des boites
     foreach ($mailboxes as $object_id => $value) {

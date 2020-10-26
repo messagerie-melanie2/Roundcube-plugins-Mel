@@ -224,10 +224,10 @@ class mel extends rcube_plugin {
         // Récupération de la liste des balp de l'utilisateur courant
         if ($list_tasks[$this->rc->task][$this->rc->action]) {
           // Boites gestionnaires ?
-          $_objects = driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
+          $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
         }
         else {
-          $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+          $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsShared();
         }
         // Affichage du nom de l'utilisateur et du menu déroulant de balp
         if ($this->rc->task == 'settings') {
@@ -239,59 +239,74 @@ class mel extends rcube_plugin {
                   "title" => $this->gettext('mailboxchangetext')
           ), $_fullName)), 'folderlistheader-settings');
         }
-        $content = "";
-        $current_mailbox = empty($this->get_account) || $this->get_share_objet() == driver_mel::gi()->getUser()->uid;
-        if ($this->rc->task == 'mail') {
-          $content_first = "";
-          $content_last = "";
-          $last = false;
+        // $content = "";
+        // $current_mailbox = empty($this->get_account) || $this->get_share_objet() == driver_mel::gi()->getUser()->uid;
+        // if ($this->rc->task == 'mail') {
+        //   $content_first = "";
+        //   $content_last = "";
+        //   $last = false;
           
-          $href = $current_mailbox ? "#" : "?_task=mail&_mbox=INBOX";
-          // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
-          if (isset($_GET['_courrielleur'])) {
-            $href .= "&_courrielleur=1";
-          }
-          $treetoggle = $current_mailbox ? 'expanded' : 'collapsed';
-          $content = html::tag('li', array(
-              "id" => rcube_utils::html_identifier($username, true),
-              "class" => "mailbox box liitem liborder" . ($current_mailbox ? ' current' : '')
-          ), html::tag('a', array(
-              "href" => $href,
-              "title" => driver_mel::gi()->getUser()->email_send), // TODO: Ouvrir dans un nouvel onglet ?
-              html::tag('span', array(
-                  "class" => "button-inner-m2"
-              ), driver_mel::gi()->getUser()->fullname) .
-              html::div(['class' => 'treetoggle ' . $treetoggle], ' ') .
-              html::tag('span', ['class' => 'unreadcount'], '')
-            )
-          );
-          $content_first .= $content;
-          $last = $current_mailbox;
-        }
-        else if (!$current_mailbox) {
-          $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
-          // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
-          if (isset($_GET['_courrielleur'])) {
-            $href .= "&_courrielleur=1";
-          }
-          $content .= html::tag('li', array(
-              "class" => "mailbox box liitem liborder"
-          ), html::tag('a', array(
-              "href" => $href,
-              "title" => driver_mel::gi()->getUser()->email_send), // TODO: Ouvrir dans un nouvel onglet ?
-              html::tag('span', array(
-                  "class" => "button-inner-m2"
-              ), driver_mel::gi()->getUser()->fullname)
-            )
-          );
-        }
+        //   $href = $current_mailbox ? "#" : "?_task=mail&_mbox=INBOX";
+        //   // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
+        //   if (isset($_GET['_courrielleur'])) {
+        //     $href .= "&_courrielleur=1";
+        //   }
+        //   $treetoggle = $current_mailbox ? 'expanded' : 'collapsed';
+        //   $content = html::tag('li', array(
+        //       "id" => rcube_utils::html_identifier($username, true),
+        //       "class" => "mailbox box liitem liborder" . ($current_mailbox ? ' current' : '')
+        //   ), html::tag('a', array(
+        //       "href" => $href,
+        //       "title" => driver_mel::gi()->getUser()->email_send), // TODO: Ouvrir dans un nouvel onglet ?
+        //       html::tag('span', array(
+        //           "class" => "button-inner-m2"
+        //       ), driver_mel::gi()->getUser()->fullname) .
+        //       html::div(['class' => 'treetoggle ' . $treetoggle], ' ') .
+        //       html::tag('span', ['class' => 'unreadcount'], '')
+        //     )
+        //   );
+        //   $content_first .= $content;
+        //   $last = $current_mailbox;
+        // }
+        // else if (!$current_mailbox) {
+        //   $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
+        //   // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
+        //   if (isset($_GET['_courrielleur'])) {
+        //     $href .= "&_courrielleur=1";
+        //   }
+        //   $content .= html::tag('li', array(
+        //       "class" => "mailbox box liitem liborder"
+        //   ), html::tag('a', array(
+        //       "href" => $href,
+        //       "title" => driver_mel::gi()->getUser()->email_send), // TODO: Ouvrir dans un nouvel onglet ?
+        //       html::tag('span', array(
+        //           "class" => "button-inner-m2"
+        //       ), driver_mel::gi()->getUser()->fullname)
+        //     )
+        //   );
+        // }
         // Récupération des préférences de l'utilisateur
         $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
         $i = 0;
         if (count($_objects) >= 1) {
+          $sort_bal = $this->rc->config->get('sort_bal', []);
+          foreach ($_objects as $key => $_object) {
+            // Gestion du order
+            $order = array_search(driver_mel::gi()->mceToRcId($_object->uid), $sort_bal);
+            if ($order === false) {
+              if ($_object->uid == $this->rc->get_user_name())
+                $order = 1000;
+              else
+                $order = 2000;
+            }
+            $_objects[$key]->order = $order;
+          }
           // trier la liste
-          usort($_objects, function($a, $b) {
-            return strcmp($a->fullname, $b->fullname);
+          uasort($_objects, function ($a, $b) {
+            if ($a->order === $b->order)
+              return strcmp(strtolower($a->fullname), strtolower($b->fullname));
+            else
+              return strnatcmp($a->order, $b->order);
           });
           foreach ($_objects as $_object) {
             $i++;
@@ -301,28 +316,31 @@ class mel extends rcube_plugin {
             }
             $uid = urlencode($_object->uid);
             $cn = $_object->fullname;
+            $mailbox = $_object;
             if (isset($_object->mailbox)) {
+              $mailbox = $_object->mailbox;
               // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-              $_object->mailbox->load(['internet_access_enable']);
-              if (!mel::is_internal() && !$_object->mailbox->internet_access_enable) {
+              $mailbox->load(['internet_access_enable']);
+              if (!mel::is_internal() && !$mailbox->internet_access_enable) {
                 continue;
               }
               // Récupération de la configuration de la boite pour l'affichage
-              $hostname = driver_mel::get_instance()->getRoutage($_object->mailbox);
+              $hostname = driver_mel::get_instance()->getRoutage($mailbox);
               if (isset($hostname)) {
                 $uid = urlencode($uid . "@" . $hostname);
               }
-              $cn = $_object->mailbox->fullname;
+              $cn = $mailbox->fullname;
             }
-            $current_mailbox = !empty($this->get_account) && urlencode($this->get_account) == $uid;
+            $current_mailbox = empty($this->get_account) && $_object->uid == $this->rc->get_user_name() || urlencode($this->get_account) == $uid;
             if ($this->rc->task == 'mail') {
               // Récupération de la mbox pour une balp depuis le driver
-              $mbox = driver_mel::get_instance()->getMboxFromBalp($_object->mailbox->uid);
+              $mbox = driver_mel::get_instance()->getMboxFromBalp($mailbox->uid);
+              $_account_url = $mailbox->uid == $this->rc->get_user_name() ? "" : "&_account=" . $uid;
               if (isset($mbox)) {
-                $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode($mbox) . "&_account=" . $uid;
+                $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode($mbox) . $_account_url;
               }
               else {
-                $href = $current_mailbox ? "#" : "?_task=mail&_account=" . $uid;
+                $href = $current_mailbox ? "#" : "?_task=mail$_account_url";
               }
               // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
               if (isset($_GET['_courrielleur']) && !$current_mailbox) {

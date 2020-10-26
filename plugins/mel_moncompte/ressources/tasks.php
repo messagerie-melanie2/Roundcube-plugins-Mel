@@ -374,9 +374,9 @@ class M2tasks {
       // sort taskslists
       uasort($taskslists, function ($a, $b) {
         if ($a['order'] === $b['order'])
-          return (strtolower($a['name']) < strtolower($b['name'])) ? -1 : 1;
+          return strcmp(strtolower($a['name']), strtolower($b['name']));
         else
-          return ($a['order'] < $b['order']) ? -1 : 1;
+          return strnatcmp($a['order'], $b['order']);
       });
 
       // Affichage des listes de taches

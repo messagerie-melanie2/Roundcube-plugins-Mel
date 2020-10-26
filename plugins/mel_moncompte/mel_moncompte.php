@@ -392,6 +392,7 @@ class mel_moncompte extends rcube_plugin {
                 'mel_resources_type_frame'    => array($this,'mel_resources_type_frame'),
             )
         );
+        $this->rc->output->set_env("account", rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
         $this->rc->output->set_env("resources_action", "agendas");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -472,6 +473,7 @@ class mel_moncompte extends rcube_plugin {
                 'mel_resources_type_frame'    => array($this, 'mel_resources_type_frame'),
             )
         );
+        $this->rc->output->set_env("account", rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
         $this->rc->output->set_env("resources_action", "contacts");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));
@@ -550,6 +552,7 @@ class mel_moncompte extends rcube_plugin {
                 
             )
         );
+        $this->rc->output->set_env("account", rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
         $this->rc->output->set_env("resources_action", "tasks");
         $this->rc->output->include_script('list.js');
         $this->rc->output->set_pagetitle($this->gettext('resources'));

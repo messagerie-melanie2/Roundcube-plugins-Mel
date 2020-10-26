@@ -140,11 +140,10 @@ class mel_contacts extends rcube_plugin {
         // Récupérer les carnets d'adresses de l'utilisateur
         $this->_list_user_addressbooks();
       }
-      $owner_sources = array();
-      $other_sources = array();
-      $shared_sources = array();
+      $sources = [];
       // Récupération des préférences de l'utilisateur
-      $hidden_contacts = $this->rc->config->get('hidden_contacts', array());
+      $hidden_contacts = $this->rc->config->get('hidden_contacts', []);
+      $sort_contacts = $this->rc->config->get('sort_contacts', []);
       // attempt to create a default calendar for this user
       if (!$this->has_principal) {
         $ret = $this->user->createDefaultAddressbook($this->rc->config->get('default_addressbook_name', null));
@@ -159,30 +158,39 @@ class mel_contacts extends rcube_plugin {
             && (count($hidden_contacts) < count($this->addressbooks)
                 || $this->user->uid != $abook->id))
           continue;
+
+        // Gestion du order
+        $order = array_search($id, $sort_contacts);
+        if ($order === false) {
+          if ($abook->id == $this->user->uid)
+            $order = 1000;
+          else if ($abook->owner == $this->user->uid)
+            $order = 2000;
+          else
+            $order = 3000;
+        }
         // register this address source
-        $source = array(
-            'id' => $id, 
-            'name' => $abook->id == $this->user->uid ? $this->rc->gettext('personaladdressbook', 'mel_larry') : ($abook->owner == $this->user->uid ? $abook->name : "(" . $abook->owner . ") " . $abook->name), 
-            'realname' => $abook->name, 
-            'readonly' => ! $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
-            'writeable' => $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
-            'editable' => $abook->owner == $this->user->uid,
-            'groups' => true,
-            'autocomplete' => true,
-            'class_name' => ($abook->owner != $this->user->uid ? ' other' : ''),
-            'mel' => true
-        );
-        // Ajout le calendrier dans la liste correspondante
-        if ($abook->owner != $this->user->uid) {
-          $shared_sources[$id] = $source;
-        }
-        elseif ($this->user->uid == $abook->id) {
-          $owner_sources[$id] = $source;
-        }
-        else {
-          $other_sources[$id] = $source;
-        }
+        $sources[$id] = [
+          'id' => $id,
+          'order' => $order,
+          'name' => $abook->id == $this->user->uid ? $this->rc->gettext('personaladdressbook', 'mel_larry') : ($abook->owner == $this->user->uid ? $abook->name : "(" . $abook->owner . ") " . $abook->name), 
+          'realname' => $abook->name, 
+          'readonly' => ! $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
+          'writeable' => $abook->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
+          'editable' => $abook->owner == $this->user->uid,
+          'groups' => true,
+          'autocomplete' => true,
+          'class_name' => ($abook->owner != $this->user->uid ? ' other' : ''),
+          'mel' => true
+        ];
       }
+      // Tri des carnets
+      uasort($sources, function ($a, $b) {
+        if ($a['order'] === $b['order'])
+          return strcmp(strtolower($a['name']), strtolower($b['name']));
+        else
+          return strnatcmp($a['order'], $b['order']);
+      });
       // Générer la source All
       $all_source = [ 'all' => [
               'id' => 'all',
@@ -199,12 +207,11 @@ class mel_contacts extends rcube_plugin {
         // Supprimer MAIA de la récupération des photos
         unset($p['sources']['annuaire']);
         unset($p['sources']['amande_group']);
-        $p['sources'] = $owner_sources + $p['sources'];
+        $p['sources'] = [$sources[driver_mel::gi()->mceToRcId($this->user->uid)]] + $p['sources'];
       }
       else {
-        $p['sources'] = $all_source + $owner_sources + $other_sources + $shared_sources + $p['sources'];
+        $p['sources'] = $all_source + $sources + $p['sources'];
       }
-      
       return $p;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

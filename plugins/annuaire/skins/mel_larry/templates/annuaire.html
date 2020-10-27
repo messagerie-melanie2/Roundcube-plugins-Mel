@@ -64,19 +64,19 @@
 <!-- sources/groups list -->
 <div id="directorylistbox" class="uibox listbox" role="navigation" aria-labelledby="directorylist-header">
 <h2 id="directorylist-header" class="boxtitle"><roundcube:label name="groups" /></h2>
-<roundcube:button command="group-create" type="link" title="newgroup" class="listbutton add disabled" classAct="listbutton add" />
-<div id="directorylist-content" class="scroller">
+<div id="directorylist-content" class="scroller withfooter">
 	<roundcube:object name="directorylist" id="directorylist" class="treelist listing iconized" />
-	<h3 class="boxtitle voice"><roundcube:label name="savedsearches" /></h3>
-	<roundcube:object name="savedsearchlist" id="savedsearchlist" class="treelist listing iconized" />
+	<!-- <h3 class="boxtitle voice"><roundcube:label name="savedsearches" /></h3>
+	<roundcube:object name="savedsearchlist" id="savedsearchlist" class="treelist listing iconized" /> -->
+</div>
+<div id="directorylist-footer" class="boxfooter">
+	<!-- <roundcube:button name="groupoptions" id="groupoptionslink" type="link" title="moreactions" class="listbutton groupactions" onclick="return UI.toggle_popup('groupoptions',event)" innerClass="inner" label="arialabelabookgroupoptions" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptionsmenu" /> -->
 </div>
 </div>
 
 <div id="groupoptions" class="popupmenu" aria-hidden="true">
 	<h3 id="aria-label-groupoptions" class="voice"><roundcube:label name="arialabelabookgroupoptions" /></h3>
 	<ul id="groupoptionsmenu" class="toolbarmenu" role="menu" aria-labelledby="aria-label-groupoptions">
-		<roundcube:button type="link-menuitem" command="group-rename" label="grouprename" classAct="active" />
-		<roundcube:button type="link-menuitem" command="group-delete" label="groupdelete" classAct="active" />
 		<roundcube:button type="link-menuitem" command="search-create" label="searchsave" classAct="active" />
 		<roundcube:button type="link-menuitem" command="search-delete" label="searchdelete" classAct="active" />
 		<roundcube:container name="groupoptions" id="groupoptionsmenu" />

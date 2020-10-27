@@ -16,8 +16,9 @@ rcube_webmail.prototype.set_book_actions = function()
     var source = this.env.source,
         sources = this.env.address_sources;
     this.enable_command('book-create', true);
-    this.enable_command('book-edit', 'book-delete', source && sources[source] && sources[source].mel && sources[source].editable);
-    this.enable_command('book-showurl', source && sources[source] && sources[source].carddavurl);
+    this.enable_command('book-edit', source && sources[source] && sources[source].mel && sources[source].editable);
+    this.enable_command('book-delete', source && sources[source] && sources[source].mel && sources[source].deletable);
+    // this.enable_command('book-showurl', source && sources[source] && sources[source].carddavurl);
 };
 
 rcube_webmail.prototype.book_create = function()

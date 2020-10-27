@@ -561,7 +561,7 @@ class mel_addressbook extends rcube_addressbook
                 } elseif ($mode == 1) {
                     $_group->lastname = $search;
                     $operators['lastname'] = LibMelanie\Config\MappingMce::eq;
-                } elseif ($mode == 2) {
+                } else {
                     $_group->lastname = $search.'%';
                     $operators['lastname'] = LibMelanie\Config\MappingMce::like;
                 }
@@ -588,7 +588,7 @@ class mel_addressbook extends rcube_addressbook
                 $ret[] = $group;
             }
             \mel::setCache('contacts', $_contacts);
-            if (!$favorites_exists && $this->addressbook->id == $this->rc->get_user_name()) {
+            if (empty($search) && !$favorites_exists && $this->addressbook->id == $this->rc->get_user_name()) {
               $ret[] = $this->create_group($this->rc->gettext('favorites', 'mel_contacts'), true);
             }
             return $ret;

@@ -83,7 +83,8 @@ div#contact-details .contactcontrolleremail .row {
 	}
 }
 
-#directorylist li.legend {
+#directorylist li.legend,
+#savedsearchlist li.legend {
 	margin-top: 6px;
 	padding: 8px 20px;
     font-size: 10px;
@@ -96,6 +97,12 @@ div#contact-details .contactcontrolleremail .row {
 #directorylist li.addressbook > a {
     background: url(../images/contact/carnet.png?v=e784.5000) 25px center no-repeat;
     padding: 10px 8px 10px 50px;
+}
+
+#savedsearchlist li.contactsearch.selected > a,
+#savedsearchlist li.contactsearch > a {
+    background: url(../images/contact/rechercher.png?v=e784.5000) 28px center no-repeat;
+    padding: 5px 8px 5px 50px;
 }
 
 #directorylist li.addressbook.selected > a,
@@ -126,6 +133,11 @@ div#contact-details .contactcontrolleremail .row {
 	#directorylist li.contactgroup.selected a,
 	#directorylist li.contactgroup a {
 	    background: url(../images/contact/groupe-dark.png?v=e784.5000) 35px center no-repeat !important;
+	}
+
+	#savedsearchlist li.contactsearch.selected > a,
+	#savedsearchlist li.contactsearch > a {
+		background: url(../images/contact/rechercher-dark.png?v=e784.5000) 28px center no-repeat;
 	}
 }
 

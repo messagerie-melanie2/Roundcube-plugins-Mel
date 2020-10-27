@@ -33,6 +33,7 @@ $labels['showcontactstitle'] = 'Ouvrir la fenêtre pour chercher un contact';
 $labels['allcontacts'] = 'Tous les contacts';
 $labels['allannuaires'] = 'Tous les annuaires';
 $labels['personalannuaire'] = 'Annuaire personnel et ministériel (Mél)';
+$labels['personalsearchs'] = 'Vos recherches enregistrées';
 
 $labels['foundin'] = 'Trouvé dans';
 

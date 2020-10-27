@@ -60,6 +60,9 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
   if (rcmail.env.task == 'addressbook') {
     $('#directorylist-header').text(rcmail.get_label('mel_larry.allannuaires'));
     $('<li class="legend"><span>' + rcmail.get_label('mel_larry.personalannuaire') + '</span></li>').insertAfter( "#directorylist li.all" );
+    if ($('#savedsearchlist > li').length) {
+      $('#savedsearchlist').prepend('<li class="legend"><span>' + rcmail.get_label('mel_larry.personalsearchs') + '</span></li>')
+    }
   }
 	if (rcmail.env.task == 'addressbook' && rcmail.env.action == 'plugin.annuaire') {
 		$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in') + ' ' + $('#directorylist li.addressbook.selected > a').text());

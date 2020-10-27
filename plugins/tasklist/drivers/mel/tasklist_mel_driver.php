@@ -152,6 +152,22 @@ class tasklist_mel_driver extends tasklist_driver {
         $alarm = true;
         $alarm_tasklists = [ $list->id => 1];
       }
+      // Gestion des droits de la liste de taches
+      if ($list->id == $this->user->uid) {
+        $rights = 'lrswiktev';
+      }
+      else if ($list->owner == $this->user->uid) {
+        $rights = 'lrswikxteav';
+      }
+      else if ($list->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
+        $rights = 'lrsw';
+      }
+      else if ($list->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
+        $rights = 'lrs';
+      }
+      else {
+        $rights = 'l';
+      }
 
       $tasklists[$rcId] = [
           'id' => $rcId,
@@ -162,9 +178,11 @@ class tasklist_mel_driver extends tasklist_driver {
           'showalarms' => $alarm,
           'owner' => $list->owner,
           'editable' => $list->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
-          'norename' => $list->owner != $this->user->uid,
+          'removable' => $list->owner == $this->user->uid && $list->id != $this->user->uid,
+          'norename' => $list->owner != $this->user->uid || $list->id == $this->user->uid,
           'active' => $active,
           'parentfolder' => null,
+          'rights' => $rights,
           'default' => $default_tasklist->id == $list->id,
           'children' => false, // TODO: determine if that folder indeed has child folders
           'class_name' => trim(($list->owner == $this->user->uid ? 'personnal' : 'other') . ' ' . ($default_tasklist->id == $list->id ? 'default' : ''))

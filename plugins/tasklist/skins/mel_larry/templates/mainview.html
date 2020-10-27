@@ -74,18 +74,21 @@
 		<div id="tasklistoptionsmenu" class="popupmenu" aria-hidden="true">
 			<h3 id="aria-label-tasklistoptions" class="voice"><roundcube:label name="tasklist.listactions" /></h3>
 			<ul class="toolbarmenu" id="tasklistoptionsmenu-menu" role="menu" aria-labelledby="aria-label-tasklistoptions">
-				<li role="menuitem"><roundcube:button type="link" command="list-edit" label="edit" classAct="active" /></li>
-				<li role="menuitem"><roundcube:button type="link" command="list-delete" label="delete" classAct="active" /></li>
+				<li role="menuitem"><roundcube:button type="link" command="list-create" label="tasklist.createlist" classAct="active" /></li>
+				<li role="menuitem"><roundcube:button type="link" command="list-edit" label="tasklist.editlist" classAct="active" /></li>
+				<li role="menuitem"><roundcube:button type="link" command="list-delete" label="tasklist.deletelist" classAct="active" /></li>
 				<!--<li role="menuitem"><roundcube:button command="list-import" label="tasklist.import" classAct="active" /></li>-->
 				<roundcube:if condition="env:tasklist_driver == 'kolab'" />
 				<li role="menuitem"><roundcube:button type="link" command="list-remove" label="tasklist.removelist" classAct="active" /></li>
 				<roundcube:endif />
-				<roundcube:if condition="config:calendar_caldav_url" />
+				<!-- <roundcube:if condition="config:calendar_caldav_url" />
 				<li role="menuitem"><roundcube:button type="link" command="list-showurl" label="tasklist.showcaldavurl" classAct="active" /></li>
-				<roundcube:endif />
+				<roundcube:endif /> -->
 				<roundcube:if condition="env:tasklist_driver == 'kolab'" />
 				<li role="menuitem"><roundcube:button type="link" command="folders" task="settings" label="managefolders" classAct="active" /></li>
 				<roundcube:endif />
+				<!-- PAMELA -->
+				<roundcube:container name="tasklistoptionsmenu" id="tasklistgroupoptionsmenu" />
 			</ul>
 		</div>
 	</div>

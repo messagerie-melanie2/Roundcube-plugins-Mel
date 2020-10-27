@@ -247,8 +247,11 @@ class mel_driver extends calendar_driver {
         // Se limiter aux calendriers perso
         if (($filter & self::FILTER_ACTIVE) && ! $active || ($filter & self::FILTER_PERSONAL) && $cal->owner != $this->user->uid)
           continue;
-          // Gestion des droits du calendrier
-        if ($cal->owner == $this->user->uid) {
+        // Gestion des droits du calendrier
+        if ($cal->id == $this->user->uid) {
+          $rights = 'lrswiktev';
+        }
+        else if ($cal->owner == $this->user->uid) {
           $rights = 'lrswikxteav';
         }
         else if ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
@@ -277,6 +280,7 @@ class mel_driver extends calendar_driver {
             'history' => false,
             'virtual' => false,
             'editable' => $cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
+            'deletable' => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
             'rights' => $rights,
             'group' => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
             'class' => 'user',

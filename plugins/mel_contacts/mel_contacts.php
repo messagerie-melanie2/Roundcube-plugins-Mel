@@ -66,6 +66,7 @@ class mel_contacts extends rcube_plugin {
     if ($this->rc->task == 'addressbook') {
       $this->add_texts('localization');
       $this->add_hook('contact_form', array($this, 'contact_form'));
+      $this->add_hook('saved_search_create', array($this, 'saved_search_create'));
 
       // Plugin actions
       $this->register_action('plugin.book', array($this,'book_actions'));
@@ -419,5 +420,16 @@ class mel_contacts extends rcube_plugin {
    */
   public function contact_form($args) {
     return driver_mel::gi()->contact_form($args);
+  }
+
+  /**
+   * Hooks for saved_search_create to add source in data saved
+   * 
+   * @param array $args
+   * @return array
+   */
+  public function saved_search_create($args) {
+    $args['data']['data']['source'] = rcube_utils::get_input_value('_source', rcube_utils::INPUT_POST);
+    return $args;
   }
 }

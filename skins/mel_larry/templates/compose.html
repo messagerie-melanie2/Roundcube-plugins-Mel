@@ -24,7 +24,7 @@
 	<roundcube:button command="send" type="link" class="button send disabled" classAct="button send" label="send" title="sendmessage" tabindex="2" />
 	<span class="spacer large"></span>
 	<roundcube:button command="savedraft" type="link" class="button savedraft disabled" classAct="button savedraft" label="save" title="savemessage" tabindex="2" />
-	<roundcube:button name="addattachment" type="link" class="button attach" label="attach" title="addattachment" onclick="$('#compose-attachments').show(); rcmail.upload_input('uploadform')" aria-haspopup="true" aria-expanded="false" tabindex="2" />
+	<roundcube:button name="addattachment" type="link" class="button attach" label="attach" title="addattachment" onclick="$('#compose-attachments').removeClass('hide'); rcmail.upload_input('uploadform')" aria-haspopup="true" aria-expanded="false" tabindex="2" />
 	<roundcube:button name="morefields" type="link" class="button morefields" label="morefields" title="morefieldsoptions" onclick="UI.toggle_popup('morefields',event); return false" aria-haspopup="true" aria-expanded="false" tabindex="2" />
 	<roundcube:button id="composeoptionstoggle" name="formattext" type="link" class="button formattext" label="formattext" title="formattextoptions" aria-haspopup="true" aria-expanded="false" tabindex="2" />
 	<roundcube:if condition="config:enable_spellcheck" />
@@ -166,7 +166,7 @@
 		<label for="composebody" class="voice"><roundcube:label name="arialabelmessagebody" /></label>
 		<roundcube:object name="composeBody" id="composebody" form="form" cols="70" rows="20" tabindex="1" />
 	</div>
-	<div id="compose-attachments" class="rightcol" role="region" aria-labelledby="aria-label-composeattachments">
+	<div id="compose-attachments" class="rightcol hide" role="region" aria-labelledby="aria-label-composeattachments">
 		<h2 id="aria-label-composeattachments" class="voice"><roundcube:label name="attachments" /></h2>
 		<div style="text-align:center; margin-bottom:10px">
             <roundcube:object name="composeAttachmentForm" mode="hint" />

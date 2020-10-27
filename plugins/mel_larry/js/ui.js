@@ -228,7 +228,7 @@ function rcube_mail_ui()
         
         // PAMELA
         if ($('#attachment-list li').length) {
-        	$('#compose-attachments').show();
+          $('#compose-attachments').removeClass('hide');
         }
 
         // adjust hight when textarea starts to scroll

@@ -654,7 +654,6 @@ td span.adr:hover .rcmaddcontact {
 }
 
 #compose-attachments {
-	display: none;
 	background-color: #fff;
 	background-color: var(--main-content-bg-color);
 	top: 0;
@@ -662,6 +661,17 @@ td span.adr:hover .rcmaddcontact {
 	border-color: var(--main-border-color);
 	padding: 8px 0;
 	width: 255px;
+}
+
+#compose-attachments.hide {
+	background-color: #ececec;
+	background-color: var(--content-bg-color);
+	border: none;
+}
+
+#compose-attachments.hide > div,
+#compose-attachments.hide > ul {
+	display: none;
 }
 
 #compose-attachments .hint {

@@ -108,6 +108,9 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         $('#countcontrols > a.calendarlink').css('display', 'inline-block');
       }
     }
+    else if (rcmail.env.action == 'compose') {
+      $(rcmail.gui_objects.filedrop).get(0).addEventListener('drop', function(e) { $('#compose-attachments').removeClass('hide'); }, false);
+    }
   }
 });
 

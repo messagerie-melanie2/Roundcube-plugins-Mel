@@ -127,7 +127,20 @@ window.rcmail
 				rcmail.register_command('export', function() {
 					rcmail.annuaire_export();
 				});
+				rcmail.enable_command('annuairelistsearch', true);
 			}
+
+			if (rcmail.gui_objects.savedsearchlist) {
+				rcmail.savedsearchlist = new rcube_treelist_widget(rcmail.gui_objects.savedsearchlist, {
+				  id_prefix: 'rcmli',
+				  id_encode: rcmail.html_identifier_encode,
+				  id_decode: rcmail.html_identifier_decode
+				});
+	  
+				rcmail.savedsearchlist.addEventListener('select', function(node) {
+				  ref.triggerEvent('selectfolder', { folder:node.id, prefix:'rcmli' }); });
+			}
+	  
 			
 			// init treelist widget
 			if (rcmail.gui_objects.annuaire_list
@@ -321,6 +334,14 @@ rcube_webmail.prototype.annuaire_folder_expand = function(node) {
 
 // Call refresh panel
 rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
+	rcmail.enable_command('search-create', evt.response.search_request ? true : false);
+	rcmail.enable_command('search-delete', evt.response.search_id);
+	if (evt.response.search_request) {
+		rcmail.env.search_request = evt.response.search_request;
+	}
+	if (evt.response.search_request) {
+		rcmail.env.search_id = evt.response.search_id;
+	}
 	if (evt.response.id) {
 		if (evt.response.search) {
 			if (evt.response.elements.length) {
@@ -400,4 +421,22 @@ rcube_webmail.prototype.load_contact_annuaire = function(cid, action, framed) {
 	}
 
 	return true;
+};
+
+// Search from recorded search
+rcube_webmail.prototype.annuairelistsearch = function(id)
+{
+	var lock = this.set_busy(true, 'searching');
+
+	rcmail.env.search_id = id;
+	
+    this.reset_qsearch();
+
+	$('#savedsearchlist > li').removeClass('selected');
+	$('#savedsearchlist li a[rel=S' + id + ']').parent().addClass('selected');
+
+	rcmail.http_get('addressbook/plugin.annuaire', {
+		_source : rcmail.env.source,
+		_sid : id
+	}, lock);
 };

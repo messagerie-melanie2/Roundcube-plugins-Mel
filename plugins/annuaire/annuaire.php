@@ -72,6 +72,9 @@ class annuaire extends rcube_plugin
             $this,
             'annuaire_actions'
         ]);
+
+        // hook for saving search
+        $this->add_hook('saved_search_create', [$this, 'saved_search_create']);
         
 
         if ($this->rc->task == 'addressbook') {
@@ -80,6 +83,11 @@ class annuaire extends rcube_plugin
 
             // use jQuery for draggable item
             $this->require_plugin('jqueryui');
+
+            if ($this->rc->action == 'plugin.annuaire') {
+                // register UI objects
+                $this->rc->output->add_handler('annuairesavedsearchlist', [$this, 'annuaire_savedsearch_list']);
+            }
 
             // csv export
             if ($this->rc->config->get('annuaire_export', false)) {
@@ -170,6 +178,15 @@ class annuaire extends rcube_plugin
         $find = rcube_utils::get_input_value('_find', rcube_utils::INPUT_GPC);
         $search = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GPC);
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
+        $sid = rcube_utils::get_input_value('_sid', rcube_utils::INPUT_GPC);
+
+        // Gestion de la recherche enregistrée
+        if (isset($sid)) {
+            $prefs = $this->rc->config->get('annuaire_saved_search', []);
+            if (isset($prefs[$sid])) {
+                $search = $prefs[$sid]['data']['search'];
+            }
+        }
 
         // load localization
         $this->add_texts('localization/', true);
@@ -241,6 +258,14 @@ class annuaire extends rcube_plugin
                     // Get recursive elements list
                     $elements = driver_annuaire::get_instance()->get_recurse_elements($find);
                 } else {
+                    if (isset($search) && !empty($search) && strlen($search) >= 3) {
+                        $fields = ['name', 'email'];
+                        // search request ID
+                        $search_request = md5('addr'
+                            .(is_array($fields) ? implode(',', $fields) : $fields)
+                            .(is_array($search) ? implode(',', $search) : $search));
+                        $_SESSION['search_params'] = array('id' => $search_request, 'data' => array($fields, $search));
+                    }
                     // Get elements
                     $elements = driver_annuaire::get_instance()->get_elements(isset($search) && !empty($search) && strlen($search) >= 3);
                 }
@@ -367,6 +392,8 @@ class annuaire extends rcube_plugin
                 echo json_encode([
                     'action' => 'plugin.annuaire',
                     'elements' => $elements,
+                    'search_request' => $search_request,
+                    'search_id' => $sid ?: false,
                     'source' => driver_annuaire::get_instance()->getSource(),
                     'unlock' => $unlock
                 ]);
@@ -488,7 +515,7 @@ class annuaire extends rcube_plugin
      */
     public function annuaire_frame($attrib)
     {
-        if (! $attrib['id'])
+        if (!$attrib['id'])
             $attrib['id'] = 'annuaire-frame';
 
         $attrib['name'] = $attrib['id'];
@@ -497,5 +524,68 @@ class annuaire extends rcube_plugin
         $this->rc->output->set_env('blankpage', $attrib['src'] ? $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
 
         return $this->rc->output->frame($attrib);
+    }
+
+    /**
+     * Affichage des recherches enregistrées pour l'annuaire
+     * 
+     * @param array $attrib
+     * @return string
+     */
+    function annuaire_savedsearch_list($attrib)
+    {
+        if (!$attrib['id'])
+            $attrib['id'] = 'rcmannuairesavedsearchlist';
+
+        $out = '';
+        $line_templ = html::tag('li', array(
+            'id' => 'rcmli%s', 'class' => '%s'),
+            html::a(array('href' => '#', 'rel' => 'S%s',
+                'onclick' => "return ".rcmail_output::JS_OBJECT_NAME.".command('annuairelistsearch', '%s', this)"), '%s'));
+
+        // Saved searches
+        $sources = $this->rc->config->get('annuaire_saved_search', []);
+        foreach ($sources as $id => $source) {
+            $js_id = rcube::JQ($id);
+
+            // set class name(s)
+            $classes = array('contactsearch');
+            if (!empty($source['class_name']))
+                $classes[] = $source['class_name'];
+
+            $out .= sprintf($line_templ,
+                rcube_utils::html_identifier('S'.$id, true),
+                join(' ', $classes),
+                $id,
+                $js_id, rcube::Q($source['name'] ?: $id)
+            );
+        }
+
+        $this->rc->output->add_gui_object('savedsearchlist', $attrib['id']);
+
+        return html::tag('ul', $attrib, $out, html::$common_attrib);
+    }
+
+    /**
+     * Enregistrement de la recherche dans les preferences si elle concerne l'annuaire
+     * 
+     * @param array $args
+     * @return string
+     */
+    function saved_search_create($args) {
+        $search = $args['data'];
+        if (isset($search['data']['source']) && $search['data']['source'] == $this->rc->config->get('annuaire_source', null)) {
+            $prefs = $this->rc->config->get('annuaire_saved_search', []);
+            $id = rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST);
+            if (isset($prefs[$id])) {
+                $args['result'] = false;
+            }
+            else {
+                $prefs[$id] = $search;
+                $args['result'] = $this->rc->user->save_prefs(['annuaire_saved_search' => $prefs]);
+            }
+            $args['abort'] = true;
+        }
+        return $args;
     }
 }

@@ -75,8 +75,8 @@ class annuaire extends rcube_plugin
 
         // hook for saving search
         $this->add_hook('saved_search_create', [$this, 'saved_search_create']);
+        $this->add_hook('saved_search_delete', [$this, 'saved_search_delete']);
         
-
         if ($this->rc->task == 'addressbook') {
             // Chargement de la conf
             $this->load_config();
@@ -578,13 +578,51 @@ class annuaire extends rcube_plugin
             $prefs = $this->rc->config->get('annuaire_saved_search', []);
             $id = rcube_utils::get_input_value('_search', rcube_utils::INPUT_POST);
             if (isset($prefs[$id])) {
-                $args['result'] = false;
+                $result = false;
             }
             else {
                 $prefs[$id] = $search;
-                $args['result'] = $this->rc->user->save_prefs(['annuaire_saved_search' => $prefs]);
+                uasort($prefs, function ($a, $b) {
+                    return strnatcmp($a['name'], $b['name']);
+                });
+                $result = $this->rc->user->save_prefs(['annuaire_saved_search' => $prefs]) ? $id : false;
             }
-            $args['abort'] = true;
+            if ($result) {
+                $this->rc->output->show_message('savedsearchcreated', 'confirmation');
+                $this->rc->output->command('annuaire_insert_saved_search', rcube::Q($search['name']), rcube::Q($result));
+            }
+            else
+                $this->rc->output->show_message('savedsearchcreateerror', 'error');
+        
+            $this->rc->output->send();
+        }
+        return $args;
+    }
+
+    /**
+     * Suppression de la recherche dans les preferences si elle concerne l'annuaire
+     * 
+     * @param array $args
+     * @return string
+     */
+    function saved_search_delete($args) {
+        $id = $args['id'];
+        $prefs = $this->rc->config->get('annuaire_saved_search', []);
+        if (isset($prefs[$id])) {
+            unset($prefs[$id]);
+            $result = $this->rc->user->save_prefs(['annuaire_saved_search' => $prefs]);
+
+            if ($result) {
+                $this->rc->output->show_message('savedsearchdeleted', 'confirmation');
+                $this->rc->output->command('annuaire_remove_search_item', rcube::Q($id));
+                // contact list will be cleared, clear also page counter
+                $this->rc->output->command('set_rowcount', $this->rc->gettext('nocontactsfound'));
+                $this->rc->output->set_env('pagecount', 0);
+            }
+            else
+                $this->rc->output->show_message('savedsearchdeleteerror', 'error');
+        
+            $this->rc->output->send();
         }
         return $args;
     }

@@ -96,21 +96,18 @@ $(document).on("keyup", 'input#contactsearchbox', function(e) {
 });
 
 // register event handlers for UI elements
-$(document).on(
-		"click",
-		'#annuaireselector a',
-		function(e) {
-			if (!$(this).parent().hasClass('inactive')
-					&& !$(this).parent().hasClass('selected')) {
-				window.annuaireSelector = this.href.replace(/^.*#/, '');
-				$('#annuaireselector li.selected').removeClass('selected')
-						.attr('aria-checked', 'false');
-				$(this).parent().addClass('selected').attr('aria-checked',
-						'true');
-				rcmail.annuaire_filter_list();
-			}
-			return false;
-		});
+$(document).on("click", '#annuaireselector a', function(e) {
+	if (!$(this).parent().hasClass('inactive')
+			&& !$(this).parent().hasClass('selected')) {
+		window.annuaireSelector = this.href.replace(/^.*#/, '');
+		$('#annuaireselector li.selected').removeClass('selected')
+				.attr('aria-checked', 'false');
+		$(this).parent().addClass('selected').attr('aria-checked',
+				'true');
+		rcmail.annuaire_filter_list();
+	}
+	return false;
+});
 
 window.rcmail
 		&& rcmail.addEventListener('init', function(evt) {
@@ -128,19 +125,13 @@ window.rcmail
 					rcmail.annuaire_export();
 				});
 				rcmail.enable_command('annuairelistsearch', true);
-			}
-
-			if (rcmail.gui_objects.savedsearchlist) {
-				rcmail.savedsearchlist = new rcube_treelist_widget(rcmail.gui_objects.savedsearchlist, {
-				  id_prefix: 'rcmli',
-				  id_encode: rcmail.html_identifier_encode,
-				  id_decode: rcmail.html_identifier_decode
+				// Event clic on annuaire
+				$('#directorylist li a[rel=' + rcmail.env.annuaire_source + ']').parent().click(function(event) {
+					event.preventDefault();
+					rcmail.reset_qsearch();
+					$('#mainscreen.annuaire #quicksearchbar form').submit();
 				});
-	  
-				rcmail.savedsearchlist.addEventListener('select', function(node) {
-				  ref.triggerEvent('selectfolder', { folder:node.id, prefix:'rcmli' }); });
 			}
-	  
 			
 			// init treelist widget
 			if (rcmail.gui_objects.annuaire_list
@@ -339,8 +330,11 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 	if (evt.response.search_request) {
 		rcmail.env.search_request = evt.response.search_request;
 	}
-	if (evt.response.search_request) {
+	if (evt.response.search_id) {
 		rcmail.env.search_id = evt.response.search_id;
+	}
+	else {
+		$('#savedsearchlist > li').removeClass('selected');
 	}
 	if (evt.response.id) {
 		if (evt.response.search) {
@@ -428,15 +422,48 @@ rcube_webmail.prototype.annuairelistsearch = function(id)
 {
 	var lock = this.set_busy(true, 'searching');
 
-	rcmail.env.search_id = id;
+	this.env.search_id = id;
 	
     this.reset_qsearch();
 
 	$('#savedsearchlist > li').removeClass('selected');
 	$('#savedsearchlist li a[rel=S' + id + ']').parent().addClass('selected');
 
-	rcmail.http_get('addressbook/plugin.annuaire', {
-		_source : rcmail.env.source,
+	this.http_get('addressbook/plugin.annuaire', {
+		_source : this.env.source,
 		_sid : id
 	}, lock);
+};
+
+// callback for creating a new saved search record
+rcube_webmail.prototype.annuaire_insert_saved_search = function(name, id)
+{
+	var key = 'S'+id,
+		link = $('<a>').attr('href', '#')
+						.attr('rel', key)
+						.click(function() { return rcmail.command('annuairelistsearch', id, this); })
+						.html(name),
+		prop = { name:name, id:id };
+
+	rcmail.savedsearchlist.insert({ id:key, html:link, classes:['contactsearch'] }, null, 'contactsearch');
+	rcmail.enable_command('search-delete', true);
+	rcmail.env.search_id = id;
+
+	rcmail.triggerEvent('abook_search_insert', prop);
+};
+
+// callback from server upon search-delete command
+rcube_webmail.prototype.annuaire_remove_search_item = function(id)
+{
+	var li, key = 'S'+id;
+	if (this.savedsearchlist.remove(key)) {
+		this.triggerEvent('search_delete', { id:id, li:li });
+	}
+
+	this.env.search_id = null;
+	this.env.search_request = null;
+	this.enable_command('search-delete', 'search-create', false);
+
+	this.reset_qsearch();
+	$('#mainscreen.annuaire #quicksearchbar form').submit();
 };

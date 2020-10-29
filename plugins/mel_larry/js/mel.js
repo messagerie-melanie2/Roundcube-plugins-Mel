@@ -63,6 +63,11 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     if ($('#savedsearchlist > li').length) {
       $('#savedsearchlist').prepend('<li class="legend"><span>' + rcmail.get_label('mel_larry.personalsearchs') + '</span></li>')
     }
+    rcmail.addEventListener('abook_search_insert', function(evt) {
+      if (!$('#savedsearchlist > li.legend').length) {
+        $('#savedsearchlist').prepend('<li class="legend"><span>' + rcmail.get_label('mel_larry.personalsearchs') + '</span></li>')
+      }
+    });
   }
 	if (rcmail.env.task == 'addressbook' && rcmail.env.action == 'plugin.annuaire') {
 		$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in') + ' ' + $('#directorylist li.addressbook.selected > a').text());

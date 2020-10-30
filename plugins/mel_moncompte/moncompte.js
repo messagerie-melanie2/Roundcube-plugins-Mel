@@ -618,7 +618,7 @@ rcube_webmail.prototype.mel_resources_element_dragend = function(e)
 		  this.http_post('plugin.sort_resource_roundcube', '_items='+JSON.stringify(items)+'&_type='+rcmail.env.resources_action, lock);
 		}
 		this.drag_active = false;
-	  }
+  }
 };
 
 rcube_webmail.prototype.mel_resources_element_focus_filter = function(row)
@@ -643,10 +643,10 @@ rcube_webmail.prototype.mel_resources_element_unfocus_filter = function(row)
 rcube_webmail.prototype.mel_resources_reload_page = function() {
 	setTimeout(function() {
 		if (rcmail.env.framed) {
-			window.parent.location = rcmail.url('settings/plugin.mel_resources_' + rcmail.env.resources_action);
+      window.parent.location.reload();
 		}
 		else {
-			window.location = rcmail.url('settings/plugin.mel_resources_' + rcmail.env.resources_action);
+      window.location.reload();
 		}
 	}, 500);
 };

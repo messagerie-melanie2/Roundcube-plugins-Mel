@@ -162,10 +162,10 @@ rcube_webmail.prototype.mel_portail_reload_page = function()
 {
 	setTimeout(function() {
 		if (rcmail.env.framed) {
-			window.parent.location = rcmail.url('settings/plugin.mel_resources_portail');
+			window.parent.location.reload();
 		}
 		else {
-			window.location = rcmail.url('settings/plugin.mel_resources_portail');
+			window.location.reload();
 		}
 	}, 500);
 };

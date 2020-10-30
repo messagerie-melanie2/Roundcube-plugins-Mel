@@ -239,52 +239,6 @@ class mel extends rcube_plugin {
                   "title" => $this->gettext('mailboxchangetext')
           ), $_fullName)), 'folderlistheader-settings');
         }
-        // $content = "";
-        // $current_mailbox = empty($this->get_account) || $this->get_share_objet() == driver_mel::gi()->getUser()->uid;
-        // if ($this->rc->task == 'mail') {
-        //   $content_first = "";
-        //   $content_last = "";
-        //   $last = false;
-          
-        //   $href = $current_mailbox ? "#" : "?_task=mail&_mbox=INBOX";
-        //   // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
-        //   if (isset($_GET['_courrielleur'])) {
-        //     $href .= "&_courrielleur=1";
-        //   }
-        //   $treetoggle = $current_mailbox ? 'expanded' : 'collapsed';
-        //   $content = html::tag('li', array(
-        //       "id" => rcube_utils::html_identifier($username, true),
-        //       "class" => "mailbox box liitem liborder" . ($current_mailbox ? ' current' : '')
-        //   ), html::tag('a', array(
-        //       "href" => $href,
-        //       "title" => driver_mel::gi()->getUser()->email_send), // TODO: Ouvrir dans un nouvel onglet ?
-        //       html::tag('span', array(
-        //           "class" => "button-inner-m2"
-        //       ), driver_mel::gi()->getUser()->fullname) .
-        //       html::div(['class' => 'treetoggle ' . $treetoggle], ' ') .
-        //       html::tag('span', ['class' => 'unreadcount'], '')
-        //     )
-        //   );
-        //   $content_first .= $content;
-        //   $last = $current_mailbox;
-        // }
-        // else if (!$current_mailbox) {
-        //   $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
-        //   // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
-        //   if (isset($_GET['_courrielleur'])) {
-        //     $href .= "&_courrielleur=1";
-        //   }
-        //   $content .= html::tag('li', array(
-        //       "class" => "mailbox box liitem liborder"
-        //   ), html::tag('a', array(
-        //       "href" => $href,
-        //       "title" => driver_mel::gi()->getUser()->email_send), // TODO: Ouvrir dans un nouvel onglet ?
-        //       html::tag('span', array(
-        //           "class" => "button-inner-m2"
-        //       ), driver_mel::gi()->getUser()->fullname)
-        //     )
-        //   );
-        // }
         // Récupération des préférences de l'utilisateur
         $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
         $i = 0;
@@ -308,6 +262,12 @@ class mel extends rcube_plugin {
             else
               return strnatcmp($a->order, $b->order);
           });
+          $content = "";
+          if ($this->rc->task == 'mail') {
+            $content_first = "";
+            $content_last = "";
+            $last = false;
+          }
           foreach ($_objects as $_object) {
             $i++;
             if ($this->rc->task == 'mail' 
@@ -369,7 +329,12 @@ class mel extends rcube_plugin {
               }
             }
             else if (!$current_mailbox) {
-              $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action . "&_account=" . $uid;
+              if ($uid == $this->rc->get_user_name()) {
+                $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
+              }
+              else {
+                $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action . "&_account=" . $uid;
+              }
               // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
               if (isset($_GET['_courrielleur'])) {
                 $href .= "&_courrielleur=1";

@@ -121,6 +121,19 @@ class mel_moncompte extends rcube_plugin {
     $this->add_texts('localization/', true);
     $this->include_script('moncompte.js');
 
+    if ($this->api->output->type == 'html') {
+      // Link to Settings/Mon compte
+      $content = html::tag('li', ['id' => 'useroptionsitemmoncompte'],
+      $this->api->output->button(array(
+            'label'    => 'mel_moncompte.moncompte',
+            'type'     => 'link',
+            'classact' => 'active',
+            'command'  => 'plugin.mel_moncompte',
+            'task'     => 'settings',
+      )));
+      $this->api->add_content($content, 'useroptionsitems');
+    }
+
     if ($this->rc->config->get('enable_moncompte', true)) {
         // Ajout des boutons
         if ($this->rc->config->get('ismobile', false)) {

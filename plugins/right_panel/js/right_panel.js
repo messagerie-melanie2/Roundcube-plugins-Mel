@@ -502,6 +502,7 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy_min') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online_min') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout_min'));
+			$('#useroptions ul#useroptionsmenu #useroptionsitemmoncompte a').text(rcmail.get_label('right_panel.moncompte_min'));
 		}
 		else {
 			$('#useroptions ul#useroptionsmenu .presence').remove();
@@ -512,16 +513,19 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence busy"><a class="active" href="#" onclick="rcmail.change_im_status(\'busy\')">' + rcmail.get_label('right_panel.busy') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu').prepend('<li role="menuitem" class="presence online"><a class="active" href="#" onclick="rcmail.change_im_status(\'online\')">' + rcmail.get_label('right_panel.online') + '</a></li>');
 			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout'));
+			$('#useroptions ul#useroptionsmenu #useroptionsitemmoncompte a').text(rcmail.get_label('mel_moncompte.moncompte'));
 		}
 	}
 	else {
 		if ($('#right_panel').hasClass('minified')) {
 			$('#useroptions').addClass('minified');
 			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout_min'));
+			$('#useroptions ul#useroptionsmenu #useroptionsitemmoncompte a').text(rcmail.get_label('right_panel.moncompte_min'));
 		}
 		else {
 			$('#useroptions').removeClass('minified');
 			$('#useroptions ul#useroptionsmenu #useroptionsitemlogout a').text(rcmail.get_label('right_panel.logout'));
+			$('#useroptions ul#useroptionsmenu #useroptionsitemmoncompte a').text(rcmail.get_label('mel_moncompte.moncompte'));
 		}
 	}
 };

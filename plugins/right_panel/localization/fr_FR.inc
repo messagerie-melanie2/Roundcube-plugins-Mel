@@ -62,6 +62,7 @@ $labels['busy_min'] = 'Occup.';
 $labels['online_min'] = 'Disp.';
 $labels['offline_min'] = 'Invi.';
 $labels['logout_min'] = 'Déco.';
+$labels['moncompte_min'] = 'Compte';
 
 // Days list
 $labels['day_0'] = 'Dimanche';

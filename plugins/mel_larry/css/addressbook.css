@@ -167,6 +167,11 @@ div#contact-details .contactcontrolleremail .row {
 	cursor: default;
 }
 
+#addresslist div.legend {
+	padding: 0 10px;
+	text-align: center;
+}
+
 #addresslist div.scroller,
 #directorylist-content {
 	top: 30px;

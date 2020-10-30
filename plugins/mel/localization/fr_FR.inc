@@ -50,6 +50,9 @@ $labels['manageresourcestaches'] = 'Gérez vos listes de tâches Mél (affichage
 
 $labels['options'] = 'Options';
 
+$labels['contacts_search_only'] = 'Utilisez le champ de recherche pour trouver les contacts de cet annuaire';
+$labels['contacts_search_only_all'] = 'Utilisez le champ de recherche pour trouver les contacts de tous vos carnets et annuaires';
+
 // Mon compte
 $labels['moncompte'] = 'Mon Compte';
 $labels['managemoncompte'] = 'Gérer votre compte Mél';

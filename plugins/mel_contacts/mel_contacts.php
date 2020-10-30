@@ -201,6 +201,7 @@ class mel_contacts extends rcube_plugin {
               'writeable' => false,
               'groups' => false,
               'autocomplete' => false,
+              'searchonly'   => true,
               'class_name' => 'all',
           ]
       ];

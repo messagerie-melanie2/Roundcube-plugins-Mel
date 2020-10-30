@@ -10,6 +10,19 @@ if (window.rcmail) {
     });
 }
 
+// Search only addressbooks
+rcube_webmail.prototype.contacts_search_only = function()
+{
+    $('#contacts_search_only').show();
+    $('#contacts_search_only').text(this.env.source == 'all' ? this.get_label('mel.contacts_search_only_all') : this.get_label('mel.contacts_search_only'));
+};
+
+// Hide search only addressbooks
+rcube_webmail.prototype.contacts_search_only_hide = function()
+{
+    $('#contacts_search_only').hide();
+};
+
 // (De-)activates address book management commands
 rcube_webmail.prototype.set_book_actions = function()
 {

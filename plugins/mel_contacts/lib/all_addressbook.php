@@ -25,6 +25,7 @@ class all_addressbook extends rcube_addressbook
         $this->ready    = true;
         $this->groups   = false;
         $this->readonly = true;
+        $this->searchonly = true;
 
         $this->coltypes = array(
             'name'         => array('type' => 'text', 'size' => 40, 'maxlength' => 50, 'limit' => 1, 'label' => $this->rc->gettext('name'), 'category' => 'main'),
@@ -93,7 +94,9 @@ class all_addressbook extends rcube_addressbook
     function list_records($cols=null, $subset=0) {
         if (isset($this->result)) return $this->result;
 
-        return new rcube_result_set();
+        $result = new rcube_result_set();
+        $result->searchonly = true;
+        return $result;
     }
 
     /**

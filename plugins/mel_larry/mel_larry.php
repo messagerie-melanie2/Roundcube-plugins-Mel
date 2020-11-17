@@ -92,6 +92,29 @@ class mel_larry extends rcube_plugin
   {
     // default startup routine
     $this->add_hook('startup', array($this, 'startup'));
+
+    // Config hook
+    if (rcmail::get_instance()->config->get('skin') == 'mel_larry') {
+      $this->add_hook('config_get', array($this,'config_get'));
+    }
+  }
+
+  /**
+   * Modify the user configuration to adapt to mobile skin
+   *
+   * @param array $args
+   */
+  public function config_get($args) {
+    switch ($args['name']) {
+      // Passer en lu automatiquement lors du double clic
+      case 'mail_read_time':
+        $rcmail = rcmail::get_instance();
+        if ($rcmail->task == 'mail' && $rcmail->action == 'show' && $args['result'] == -1) {
+          $args['result'] = 0;
+        }
+        break;
+    }
+    return $args;
   }
 
   /**

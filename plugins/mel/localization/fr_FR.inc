@@ -111,7 +111,7 @@ $labels['login_productioninformation'] = "Plateforme de communication réservée
 $labels['login_footerbox'] = isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) ? "Connexion depuis : " : " ";
 $labels['login_footerbox_info'] = isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) ? ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"]) : " ";
 $labels['login_warning'] = "Respectez les principes de l'étiquette en vigueur sur l'internet, à savoir un ensemble de règles de savoir-vivre concernant l'emploi de l'internet";
-$labels['login_footer1'] = " © Ministère de la Transition écologique et solidaire, 
+$labels['login_footer1'] = " © Ministère de la Transition écologique, 
 © Ministère de la Cohésion des territoires et des Relations avec les collectivités territoriales, 
 © Ministère de la mer, 
 © Ministère de l'Agriculture et de l'Alimentation";

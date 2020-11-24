@@ -68,9 +68,9 @@ class Changepassword extends Moncompteobject {
 	*/
 	public static function change() {
 		$username = trim(rcube_utils::get_input_value('_changepassword_username', rcube_utils::INPUT_POST));
-		$old_pwd = trim(rcube_utils::get_input_value('_changepassword_oldpassword', rcube_utils::INPUT_POST));
-		$new_pwd = trim(rcube_utils::get_input_value('_changepassword_newpassword', rcube_utils::INPUT_POST));
-		$new_pwd_confirm = trim(rcube_utils::get_input_value('_changepassword_newpassword_confirm', rcube_utils::INPUT_POST));
+		$old_pwd = trim(rcube_utils::get_input_value('_changepassword_oldpassword', rcube_utils::INPUT_POST, true, rcmail::get_instance()->config->get('password_charset', 'ISO-8859-1')));
+		$new_pwd = trim(rcube_utils::get_input_value('_changepassword_newpassword', rcube_utils::INPUT_POST, true, rcmail::get_instance()->config->get('password_charset', 'ISO-8859-1')));
+		$new_pwd_confirm = trim(rcube_utils::get_input_value('_changepassword_newpassword_confirm', rcube_utils::INPUT_POST, true, rcmail::get_instance()->config->get('password_charset', 'ISO-8859-1')));
 		
 		if ($new_pwd == $new_pwd_confirm) {
 			try {

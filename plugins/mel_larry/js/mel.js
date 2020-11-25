@@ -39,18 +39,18 @@ if (rcmail.env.task == 'addressbook') {
       else {
         var obj = $(this).find('> td.name');
       }
+      var val = obj.text().replace(/(<([^>]+)>)/gi, "");
       if (search.length > 1) {
-        if (obj.text().toLowerCase().indexOf(search) >= 0) {
-          obj.html(obj.text());
-          obj.html(obj.text().replace(new RegExp(search, 'gi'), '<strong>$&</strong>'));
+        if (val.toLowerCase().indexOf(search) >= 0) {
+          obj.html(val.replace(new RegExp(search, 'gi'), '<strong>$&</strong>'));
         }
         else {
-          obj.html(obj.text());
+          obj.html(val);
           $(this).hide();
         }
       }
       else {
-        obj.html(obj.text());
+        obj.html(val);
       }
     });
   });

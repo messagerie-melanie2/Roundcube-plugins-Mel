@@ -1083,7 +1083,7 @@ class mel extends rcube_plugin {
                 $name = explode('@', $mailto, 2);
                 $name = ucfirst(str_replace('.', ' ', $name[0])) . ' (' . $name[1] . ')';
               }
-              $content =  html::tag('span', 'name', $name) . html::tag('span', 'mailto', $mailto);
+              $content =  html::tag('span', 'name', rcube::Q($name)) . html::tag('span', 'mailto', rcube::Q($mailto));
               
               $address = html::a($attrs, $content);
             }

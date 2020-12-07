@@ -110,11 +110,29 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
       else if (rcmail.env.plugins.indexOf('markasjunk') !== -1) {
         $('#messagetoolbar > a.junk').css('display', 'inline-block');
       }
+      if (rcmail.env.action == 'show') {
+        if (localStorage.getItem('message.theme') == 'light') {
+          $('#messagecontent .switch.theme input').prop('checked', true);
+          $('#mainscreencontent').addClass('light');
+        }
+        $('#messagecontent .switch.theme input').change(function() {
+          $('#mainscreencontent').toggleClass('light');
+          localStorage.setItem('message.theme', this.checked ? 'light' : 'dark');
+        });
+      }
     }
     else if (rcmail.env.action == 'preview') {
       if (rcmail.env.plugins.indexOf('calendar') !== -1) {
         $('#countcontrols > a.calendarlink').css('display', 'inline-block');
       }
+      if (localStorage.getItem('message.theme') == 'light') {
+        $('#messagepreview .switch.theme input').prop('checked', true);
+        $('body.iframe').addClass('light');
+      }
+      $('#messagepreview .switch.theme input').change(function() {
+        $('body.iframe').toggleClass('light');
+        localStorage.setItem('message.theme', this.checked ? 'light' : 'dark');
+      });
     }
     else if (rcmail.env.action == 'compose') {
       $(rcmail.gui_objects.filedrop).get(0).addEventListener('drop', function(e) { $('#compose-attachments').removeClass('hide'); }, false);

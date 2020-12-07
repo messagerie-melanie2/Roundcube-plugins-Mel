@@ -82,7 +82,6 @@ if (window.rcmail) {
                 $("body.archivage").addClass("loading");
                 $("#nb_mails").text(rcmail.get_label('mel_archivage.generating_archive') + ' ' + rcmail.get_label('mel_archivage.dont_reload_page'));
                 listenCookieChange("current_archivage", function () {
-                    console.log('test');
                     $("body.archivage").removeClass("loading");
                     $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_generated'));
                     rcmail.display_message(rcmail.get_label('mel_archivage.archive_generated'), 'confirm');

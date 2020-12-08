@@ -113,10 +113,10 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
       if (rcmail.env.action == 'show') {
         if (localStorage.getItem('message.theme') == 'light') {
           $('#messagecontent .switch.theme input').prop('checked', true);
-          $('#mainscreencontent').addClass('light');
+          $('#mainscreen').addClass('light');
         }
         $('#messagecontent .switch.theme input').change(function() {
-          $('#mainscreencontent').toggleClass('light');
+          $('#mainscreen').toggleClass('light');
           localStorage.setItem('message.theme', this.checked ? 'light' : 'dark');
         });
       }

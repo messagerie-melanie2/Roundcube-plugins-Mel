@@ -265,14 +265,14 @@ div.message-part blockquote {
 }
 
 body.light div.message-part blockquote,
-#mainscreencontent.light div.message-part blockquote {
+#mainscreen.light div.message-part blockquote {
 	background-color: #f6f6f6;
 	color: blue;
 	border-color: blue;
 }
 
 body.light div.message-part blockquote blockquote,
-#mainscreencontent.light div.message-part blockquote blockquote
+#mainscreen.light div.message-part blockquote blockquote
 {
   color: green;
   border-left: 2px solid green;
@@ -280,7 +280,7 @@ body.light div.message-part blockquote blockquote,
 }
 
 body.light div.message-part blockquote blockquote blockquote,
-#mainscreencontent.light div.message-part blockquote blockquote blockquote
+#mainscreen.light div.message-part blockquote blockquote blockquote
 {
   color: #990000;
   border-left: 2px solid #bb0000;
@@ -430,7 +430,7 @@ body.light div.message-part blockquote blockquote blockquote,
 }
 
 body.light #messagepreview,
-#mainscreencontent.light #messagecontent {
+#mainscreen.light #messagecontent {
 	background: #fff;
 }
 
@@ -458,7 +458,7 @@ body.light #messagepreview,
 	min-height: 90px;
 }
 
-#mainscreencontent.light #messagecontent .leftcol,
+#mainscreen.light #messagecontent .leftcol,
 body.light #messagepreview .leftcol {
 	background: #fff;
 	border-right: 1px solid #e4e4e4;
@@ -477,7 +477,7 @@ body.light #messagepreview .leftcol {
 }
 
 body.light #messagepreview .rightcol,
-#mainscreencontent.light #messagecontent .rightcol {
+#mainscreen.light #messagecontent .rightcol {
 	background: #fff;
 }
 
@@ -950,7 +950,7 @@ td span.adr:hover .rcmaddcontact {
 }
 
 body.light #messagepreview div a.button,
-#mainscreencontent.light #messagecontent div a.button {
+#mainscreen.light #messagecontent div a.button {
 	background-color: #fff;
 	border-color: #d5d5d5;
 	color: #000;

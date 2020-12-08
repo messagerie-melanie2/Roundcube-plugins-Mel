@@ -2486,6 +2486,12 @@ div.calendar-invitebox {
 	background-color: var(--calendar-invitebox-bg-color);
 }
 
+body.light div.calendar-invitebox,
+#mainscreen.light #messagepreview div.calendar-invitebox {
+	background-color: #fef893;
+	border-color: #ffdf0e;
+}
+
 div.calendar-invitebox td.ititle {
 	font-weight: bold;
 	padding-right: 0.5em;
@@ -2499,6 +2505,11 @@ div.calendar-invitebox td.label {
 	color: #666;
 	color: var(--labels-text-color);
 	padding-right: 1em;
+}
+
+body.light div.calendar-invitebox td.label,
+#mainscreen.light #messagepreview div.calendar-invitebox td.label {
+	color: #666;
 }
 
 div.calendar-invitebox td.sensitivity {
@@ -2603,6 +2614,11 @@ div.calendar-invitebox .calendar-agenda-preview h3.preview-title {
 	color: var(--inputs-text-color);
 }
 
+body.light div.calendar-invitebox .calendar-agenda-preview h3.preview-title,
+#mainscreen.light #messagepreview div.calendar-invitebox .calendar-agenda-preview h3.preview-title {
+	color: #333;
+}
+
 div.calendar-invitebox .calendar-agenda-preview .event-row {
 	color: #777;
 	padding: 2px 0;
@@ -2615,6 +2631,11 @@ div.calendar-invitebox .calendar-agenda-preview .event-row.current {
 	color: #333;
 	color: var(--inputs-text-color);
 	font-weight: bold;
+}
+
+body.light div.calendar-invitebox .calendar-agenda-preview .event-row.current,
+#mainscreen.light #messagepreview div.calendar-invitebox .calendar-agenda-preview .event-row.current {
+	color: #333;
 }
 
 div.calendar-invitebox .calendar-agenda-preview .event-row.no-event {

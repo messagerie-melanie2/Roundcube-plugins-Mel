@@ -809,7 +809,7 @@ body.extwin #taskbar {
     background-color: var(--content-bg-color);
 }
 
-#mainscreencontent.light,
+#mainscreen.light #mainscreencontent,
 body.light {
 	background-color: #ececec;
 }
@@ -836,7 +836,7 @@ body.light {
 	background-color: var(--main-bg-color);
 }
 
-#mainscreencontent.light #mailview-right.uibox,
+#mainscreen.light #mailview-right.uibox,
 body.light #mailview-right.uibox {
 	background: #eaeaea;
 }

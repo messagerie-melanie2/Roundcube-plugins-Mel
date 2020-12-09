@@ -253,12 +253,6 @@ body.right_panel_minified #portailview.manage .manage_message {
 	background-color: #2A363B;
 }
 
-@media (prefers-color-scheme: dark) {
-	#portailview .item .flip {
-		background-image: url(images/flip-icon-light.png?v=e784.5000);
-	}
-}
-
 #portailview .item .back .flip {
 	background: url(images/flip-icon-light.png?v=e784.5000) left bottom no-repeat #242d38;
 }

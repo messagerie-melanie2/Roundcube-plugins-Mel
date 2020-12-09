@@ -49,17 +49,12 @@
 	position: absolute;
 	display: none;
 	background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-gototree);
 	background-color: var(--sublistitem-bg-color);
 	right: 0;
 	top: 0;
 	height: 33px;
 	width: 33px;
-}
-
-@media (prefers-color-scheme: dark) {
-	#annuaire-list li > .gototree {
-		background-image: url(images/goto-dark.png?v=e784.5000);
-	}
 }
 
 #annuaire-list li.selected > .gototree {
@@ -92,12 +87,7 @@
 
 #annuaire-list .folder.addressbook {
 	background: url(images/carnet.png?v=e784.5000) 17px 9px no-repeat;
-}
-
-@media (prefers-color-scheme: dark) {
-	#annuaire-list .folder.addressbook {
-		background-image: url(images/carnet-dark.png?v=e784.5000);
-	}
+	background-image: var(--image-carnet);
 }
 
 #annuaire-list .list {

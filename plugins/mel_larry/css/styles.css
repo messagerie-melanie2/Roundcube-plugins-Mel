@@ -47,20 +47,11 @@ div.background-image {
   	top: 0;
   	height: 100%;
 	background: url(../images/background.png?v=e784.5000) no-repeat center center fixed; 
+	background-image: var(--image-background);
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
-}
-
-@media (prefers-color-scheme: dark) {
-	div.background-image {
-		background: url(../images/background_dark.png?v=e784.5000) no-repeat center center fixed;
-		-webkit-background-size: cover;
-		-moz-background-size: cover;
-		-o-background-size: cover;
-		background-size: cover;
-	}
 }
 
 input[type="text"],
@@ -1177,15 +1168,10 @@ ul#mailboxlist.treelist li a:focus {
     width: 25px;
     height: 25px;
     text-indent: -5000px;
-    background-image: url(../images/icons.png?v=e784.5000);
+	background-image: url(../images/icons.png?v=e784.5000);
+	background-image: var(--image-icons);
     background-position: -1000px 0;
     background-repeat: no-repeat;
-}
-
-@media (prefers-color-scheme: dark) {
-	.boxfooter .listbutton .inner {
-	    background-image: url(../images/icons-dark.png?v=e784.5000);
-	}
 }
 
 .boxfooter .listbutton.groupactions .inner {
@@ -1194,12 +1180,7 @@ ul#mailboxlist.treelist li a:focus {
 
 .boxfooter .listbutton.add .inner {
 	background: url(../images/plus-01.png?v=e784.5000) center center no-repeat;
-}
-
-@media (prefers-color-scheme: dark) {
-	.boxfooter .listbutton.add .inner {
-		background-image: url(../images/plus-01-dark.png?v=e784.5000);
-	}
+	background-image: var(--image-plus);
 }
 
 .boxfooter .listbutton.delete .inner {
@@ -1248,6 +1229,10 @@ table.records-table {
 	padding: 10px 7px;
 	background-color: var(--table-body-bg-color);
 	border-color: var(--jquery-ui-border-color);
+}
+
+.records-table:not(.threaded) tbody tr:nth-child(even) td {
+	background-color: var(--table-body-bg-color-even);
 }
 
 .records-table tr.selected td a, 
@@ -1657,45 +1642,53 @@ table.propform td.title {
 }
 
 .toolbar a.button.move {
-    background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/archiver.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-archiver);
     background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.refreshcalendar,
 .toolbar a.button.checkmail {
-    background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/actualiser.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-actualiser);
     background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.junk {
-    background: url(../images/mail/pourriel.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/pourriel.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-pourriel);
     background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.delete {
-    background: url(../images/mail/supprimer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/supprimer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-supprimer);
     background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.print {
-    background: url(../images/mail/imprimer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/imprimer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-imprimer);
     background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.filterlink {
-    background: url(../images/mail/filtrer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/filtrer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-filtrer);
     background-color: var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button.calendarlink,
 #messageheader #formatcontrols  a.button.calendarlink,
 .toolbar a.button.calendarlink {
-    background: url(../images/mail/evenement.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/evenement.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-evenement);
     background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.thunderbird {
-    background: url(../images/mail/etiquettes.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/etiquettes.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-etiquettes);
     background-color: var(--buttons-bg-color);
 }
 
@@ -1709,14 +1702,16 @@ table.propform td.title {
 #messageheader #countcontrols a.button.reply,
 #messageheader #formatcontrols  a.button.reply,
 .toolbar a.button.reply {
-    background: url(../images/mail/repondre.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/repondre.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-repondre);
     background-color: var(--buttons-bg-color);
 }
 
 #messageheader #countcontrols a.button.replyall,
 #messageheader #formatcontrols  a.button.replyall,
 .toolbar a.button.reply-all {
-    background: url(../images/mail/repondre_tous.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/repondre_tous.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-repondre_tous);
     background-color: var(--buttons-bg-color);
     min-width: auto;
 }
@@ -1724,7 +1719,8 @@ table.propform td.title {
 #messageheader #countcontrols a.button.forward,
 #messageheader #formatcontrols  a.button.forward,
 .toolbar a.button.forward {
-    background: url(../images/mail/transferer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/transferer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-transferer);
     background-color: var(--buttons-bg-color);
     min-width: auto;
 }
@@ -1732,79 +1728,16 @@ table.propform td.title {
 #messageheader #countcontrols a.button.bounce,
 #messageheader #formatcontrols  a.button.bounce,
 .toolbar a.button.bounce {
-    background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/rediriger.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-rediriger);
     background-color: var(--buttons-bg-color);
     min-width: auto;
 }
 
 .toolbar a.button.back {
-    background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/mail/retour.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-mail-retour);
     background-color: var(--buttons-bg-color);
-}
-
-@media (prefers-color-scheme: dark) {
-	.toolbar a.button.move {
-	    background-image: url(../images/mail/archiver-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.refreshcalendar,
-	.toolbar a.button.checkmail {
-	    background-image: url(../images/mail/actualiser-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.junk {
-	    background-image: url(../images/mail/pourriel-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.delete {
-	    background-image: url(../images/mail/supprimer-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.print {
-	    background-image: url(../images/mail/imprimer-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.filterlink {
-	    background-image: url(../images/mail/filtrer-dark.png?v=e784.5000);
-	}
-	
-	#messageheader #countcontrols a.button.calendarlink,
-	#messageheader #formatcontrols  a.button.calendarlink,
-	.toolbar a.button.calendarlink {
-	    background-image: url(../images/mail/evenement-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.thunderbird {
-	    background-image: url(../images/mail/etiquettes-dark.png?v=e784.5000);
-	}
-	
-	#messageheader #countcontrols a.button.reply,
-	#messageheader #formatcontrols  a.button.reply,
-	.toolbar a.button.reply {
-	    background-image: url(../images/mail/repondre-dark.png?v=e784.5000);
-	}
-	
-	#messageheader #countcontrols a.button.replyall,
-	#messageheader #formatcontrols  a.button.replyall,
-	.toolbar a.button.reply-all {
-	    background-image: url(../images/mail/repondre_tous-dark.png?v=e784.5000);
-	}
-	
-	#messageheader #countcontrols a.button.forward,
-	#messageheader #formatcontrols  a.button.forward,
-	.toolbar a.button.forward {
-	    background-image: url(../images/mail/transferer-dark.png?v=e784.5000);
-	}
-	
-	#messageheader #countcontrols a.button.bounce,
-	#messageheader #formatcontrols  a.button.bounce,
-	.toolbar a.button.bounce {
-	    background-image: url(../images/mail/rediriger-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.back {
-	    background-image: url(../images/mail/retour-dark.png?v=e784.5000);
-	}
 }
 
 .toolbar .spacer {
@@ -1916,23 +1849,15 @@ select.decorated option {
 a.iconbutton.searchicon {
 	width: 35px;
 	height: 19px;
-    background: url(../images/tools/rechercher.png?v=e784.5000) center center no-repeat;
+	background: url(../images/tools/rechercher.png?v=e784.5000) center center no-repeat;
+	background-image: var(--image-rechercher);
 } 
 
 a.iconbutton.searchoptions {
 	width: 35px;
 	height: 19px;
-    background: url(../images/tools/rechercher_menu.png?v=e784.5000) center center no-repeat;
-}
-
-@media (prefers-color-scheme: dark) {
-	a.iconbutton.searchicon {
-	    background-image: url(../images/tools/rechercher-dark.png?v=e784.5000);
-	} 
-	
-	a.iconbutton.searchoptions {
-	    background-image: url(../images/tools/rechercher_menu-dark.png?v=e784.5000);
-	}
+	background: url(../images/tools/rechercher_menu.png?v=e784.5000) center center no-repeat;
+	background-image: var(--image-rechercher-menu);
 }
 
 .popupmenu.dropdown {
@@ -2132,11 +2057,13 @@ ul.treelist li.selected > div.collapsed {
 }
 
 .folderlist li.mailbox.box > a {
-    background: url(../images/mail/dossiers/reception.png?v=e784.5000) 17px 3px no-repeat;
+	background: url(../images/mail/dossiers/reception.png?v=e784.5000) 17px 3px no-repeat;
+	background-image: var(--image-dossier-reception);
 }
 
 .folderlist li.mailbox.inbox > a {
-    background: url(../images/mail/dossiers/reception.png?v=e784.5000) 17px 3px no-repeat;
+	background: url(../images/mail/dossiers/reception.png?v=e784.5000) 17px 3px no-repeat;
+	background-image: var(--image-dossier-reception);
 }
 
 #mailboxlist.folderlist li.mailbox.inbox > a {
@@ -2145,7 +2072,8 @@ ul.treelist li.selected > div.collapsed {
 
 .folderlist li.mailbox.inbox.selected > a, 
 .folderlist li.mailbox.inbox > a:focus {
-    background: url(../images/mail/dossiers/reception_selectionne.png?v=e784.5000) 17px 3px no-repeat #fff;
+	background: url(../images/mail/dossiers/reception_selectionne.png?v=e784.5000) 17px 3px no-repeat #fff;
+	background-image: var(--image-dossier-reception_selectionne);
     background-color: var(--listitem-selected-bg-color);
 }
 
@@ -2156,6 +2084,7 @@ ul.treelist li.selected > div.collapsed {
 
 .folderlist li.mailbox.drafts > a {
 	background: url(../images/mail/dossiers/brouillons.png?v=e784.5000) 17px center no-repeat;
+	background-image: var(--image-dossier-brouillons);
 }
 
 #mailboxlist.folderlist li.mailbox.drafts > a {
@@ -2164,7 +2093,8 @@ ul.treelist li.selected > div.collapsed {
 
 .folderlist li.mailbox.drafts.selected > a, 
 .folderlist li.mailbox.drafts > a:focus {
-    background: url(../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background: url(../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background-image: var(--image-dossier-brouillons_selectionne);
     background-color: var(--listitem-selected-bg-color);
 }
 
@@ -2174,7 +2104,8 @@ ul.treelist li.selected > div.collapsed {
 }
 
 .folderlist li.mailbox.sent > a {
-    background: url(../images/mail/dossiers/envoyes.png?v=e784.5000) 17px center no-repeat;
+	background: url(../images/mail/dossiers/envoyes.png?v=e784.5000) 17px center no-repeat;
+	background-image: var(--image-dossier-envoyes);
 }
 
 #mailboxlist.folderlist li.mailbox.sent > a {
@@ -2183,7 +2114,8 @@ ul.treelist li.selected > div.collapsed {
 
 .folderlist li.mailbox.sent.selected > a, 
 .folderlist li.mailbox.sent > a:focus {
-    background: url(../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background: url(../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background-image: var(--image-dossier-envoyes_selectionne);
     background-color: var(--listitem-selected-bg-color);
 }
 
@@ -2193,7 +2125,8 @@ ul.treelist li.selected > div.collapsed {
 }
 
 .folderlist li.mailbox.junk > a {
-    background: url(../images/mail/dossiers/indesirables.png?v=e784.5000) 17px center no-repeat;
+	background: url(../images/mail/dossiers/indesirables.png?v=e784.5000) 17px center no-repeat;
+	background-image: var(--image-dossier-indesirables);
 }
 
 #mailboxlist.folderlist li.mailbox.junk > a {
@@ -2202,7 +2135,8 @@ ul.treelist li.selected > div.collapsed {
 
 .folderlist li.mailbox.junk.selected > a, 
 .folderlist li.mailbox.junk > a:focus {
-    background: url(../images/mail/dossiers/indesirables_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background: url(../images/mail/dossiers/indesirables_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background-image: var(--image-dossier-indesirables_selectionne);
     background-color: var(--listitem-selected-bg-color);
 }
 
@@ -2212,7 +2146,8 @@ ul.treelist li.selected > div.collapsed {
 }
 
 .folderlist li.mailbox.trash > a {
-    background: url(../images/mail/dossiers/supprimes.png?v=e784.5000) 17px center no-repeat;
+	background: url(../images/mail/dossiers/supprimes.png?v=e784.5000) 17px center no-repeat;
+	background-image: var(--image-dossier-supprimes);
 }
 
 #mailboxlist.folderlist li.mailbox.trash > a {
@@ -2221,65 +2156,14 @@ ul.treelist li.selected > div.collapsed {
 
 .folderlist li.mailbox.trash.selected > a, 
 .folderlist li.mailbox.trash > a:focus {
-    background: url(../images/mail/dossiers/supprimes_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background: url(../images/mail/dossiers/supprimes_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background-image: var(--image-dossier-supprimes_selectionne);
     background-color: var(--listitem-selected-bg-color);
 }
 
 #mailboxlist.folderlist li.mailbox.trash.selected > a, 
 #mailboxlist.folderlist li.mailbox.trash > a:focus {
     background-position: 27px 3px;
-}
-
-@media (prefers-color-scheme: dark) {
-	.folderlist li.mailbox.box > a {
-	    background-image: url(../images/mail/dossiers/reception-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.inbox > a {
-	    background-image: url(../images/mail/dossiers/reception-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.inbox.selected > a, 
-	.folderlist li.mailbox.inbox > a:focus {
-	    background-image: url(../images/mail/dossiers/reception_selectionne-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.drafts > a {
-		background-image: url(../images/mail/dossiers/brouillons-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.drafts.selected > a, 
-	.folderlist li.mailbox.drafts > a:focus {
-	    background-image: url(../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.sent > a {
-	    background-image: url(../images/mail/dossiers/envoyes-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.sent.selected > a, 
-	.folderlist li.mailbox.sent > a:focus {
-	    background-image: url(../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.junk > a {
-	    background-image: url(../images/mail/dossiers/indesirables-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.junk.selected > a, 
-	.folderlist li.mailbox.junk > a:focus {
-	    background-image: url(../images/mail/dossiers/indesirables_selectionne-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.trash > a {
-	    background-image: url(../images/mail/dossiers/supprimes-dark.png?v=e784.5000);
-	}
-	
-	.folderlist li.mailbox.trash.selected > a, 
-	.folderlist li.mailbox.trash > a:focus {
-	    background-image: url(../images/mail/dossiers/supprimes_selectionne-dark.png?v=e784.5000);
-	}
-
 }
 
 .ui-dialog .propform .ui-tabs-panel {
@@ -2422,18 +2306,13 @@ ul.treelist li.selected > div.collapsed {
 /** Contacts **/
 a.button.showcontacts {
 	background: url(../images/envoyer/contact.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-contacts);
 	background-color: var(--buttons-bg-color);
 	border: none;
 	border: none;
 	width: 28px;
 	margin-left: 4px;
 	border-radius: 4px;
-}
-
-@media (prefers-color-scheme: dark) {
-	a.button.showcontacts {
-		background-image: url(../images/envoyer/contact-dark.png?v=e784.5000);
-	}
 }
 
 #aclform a.button.showcontacts {

@@ -152,27 +152,20 @@ html.mozilla #mailboxlist > li:first-child {
 }
 
 .messagelist thead tr th.attachment span.attachment {
-  	background: url(../images/attachement.png?v=e784.5000) center center no-repeat;
+	  background: url(../images/attachement.png?v=e784.5000) center center no-repeat;
+	  background-image: var(--image-messages-attachment);
 }
 
 .messagelist tbody tr .attachment span.attachment {
    background: url(../images/attachement.png?v=e784.5000) center center no-repeat;
-}
-
-@media (prefers-color-scheme: dark) {
-	.messagelist thead tr th.attachment span.attachment {
-	  	background: url(../images/attachement-dark.png?v=e784.5000) center center no-repeat;
-	}
-	
-	.messagelist tbody tr .attachment span.attachment {
-	   background: url(../images/attachement-dark.png?v=e784.5000) center center no-repeat;
-	}
+   background-image: var(--image-messages-attachment);
 }
 
 .messagelist tr:hover td.status span.msgicon {
   height: 30px;
   width: 26px;
   background: url(../images/non-lu.png?v=e784.5000) center center no-repeat;
+  background-image: var(--image-messages-nonlu);
   opacity: .5;
 }
 
@@ -183,6 +176,7 @@ html.mozilla #mailboxlist > li:first-child {
 .messagelist tr td.status span.unread,
 .messagelist tr td.status span.unread:hover {
   background: url(../images/non-lu.png?v=e784.5000) center center no-repeat !important;
+  background-image: var(--image-messages-nonlu) !important;
   height: 30px;
   width: 26px;
 }
@@ -195,6 +189,7 @@ html.mozilla #mailboxlist > li:first-child {
 .messagelist tr td.status span.status, 
 .messagelist tr td.subject span.unread {
 	background: url(../images/non-lu.png?v=e784.5000) center center no-repeat !important;
+	background-image: var(--image-messages-nonlu) !important;
 }
 
 .messagelist thead th:first-child {
@@ -203,35 +198,13 @@ html.mozilla #mailboxlist > li:first-child {
 
 .messagelist thead tr th.status span.status {
   background: url(../images/non-lu.png?v=e784.5000) 10px center no-repeat;  
-}
-
-@media (prefers-color-scheme: dark) {
-	.messagelist tr:hover td.status span.msgicon {
-	  background: url(../images/non-lu-dark.png?v=e784.5000) center center no-repeat;
-	}
-	
-	.messagelist tr td.status span.status, 
-	.messagelist tr td.subject span.unread,
-	.messagelist tr td.status span.unread,
-	.messagelist tr td.status span.unread:hover {
-	  background: url(../images/non-lu-dark.png?v=e784.5000) center center no-repeat !important;
-	}
-	
-	.messagelist thead tr th.status span.status {
-	  background: url(../images/non-lu-dark.png?v=e784.5000) 10px center no-repeat;  
-	}
+  background-image: var(--image-messages-nonlu);
 }
 
 .messagelist thead tr th.flag span.flagged,
 .messagelist tbody tr td.flag span.flagged {
 	background: url(../images/suivi.png?v=e784.5000) center center no-repeat; 
-}
-
-@media (prefers-color-scheme: dark) {
-	.messagelist thead tr th.flag span.flagged,
-	.messagelist tbody tr td.flag span.flagged {
-		background: url(../images/suivi-dark.png?v=e784.5000) center center no-repeat; 
-	}	
+	background-image: var(--image-messages-suivi);
 }
 
 .messagelist tr:hover td.flag span.unflagged {
@@ -438,15 +411,9 @@ body.light #messagepreview,
 #messagecontent .switch.theme {
 	margin-left: 10px;
 	margin-top: 5px;
-	display: none;
+	display: var(--display-message-switch-theme);
 }
 
-@media (prefers-color-scheme: dark) {
-	#messagepreview .switch.theme,
-	#messagecontent .switch.theme {
-		display: inline-block;
-	}
-}
 #messagecontent .leftcol, 
 #messagepreview .leftcol {
 	background: #fff;
@@ -860,6 +827,7 @@ td span.adr:hover .rcmaddcontact {
 
 .toolbar a.button.close {
 	background: url(../images/envoyer/retour.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-retour);
 	background-color: var(--buttons-bg-color);
 }
 
@@ -878,26 +846,31 @@ td span.adr:hover .rcmaddcontact {
 
 .toolbar a.button.savedraft {
 	background: url(../images/envoyer/brouillon.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-brouillon);
 	background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.attach {
 	background: url(../images/envoyer/piece_jointe.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-piece_jointe);
 	background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.morefields {
 	background: url(../images/envoyer/options.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-options);
 	background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.formattext {
 	background: url(../images/envoyer/format-texte.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-format-texte);
 	background-color: var(--buttons-bg-color);
 }
 
 .toolbar a.button.spellcheck {
 	background: url(../images/envoyer/orthographe.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-orthographe);
 	background-color: var(--buttons-bg-color);
 	min-width: auto;
 }
@@ -907,37 +880,8 @@ td span.adr:hover .rcmaddcontact {
 	top: 0;
 	right: 30px;
 	background: url(../images/envoyer/nouvelle_fenetre.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-nouvelle_fenetre);
 	background-color: var(--buttons-bg-color);
-}
-
-@media (prefers-color-scheme: dark) {
-	.toolbar a.button.close {
-		background-image: url(../images/envoyer/retour-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.savedraft {
-		background-image: url(../images/envoyer/brouillon-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.attach {
-		background-image: url(../images/envoyer/piece_jointe-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.morefields {
-		background-image: url(../images/envoyer/options-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.formattext {
-		background-image: url(../images/envoyer/format-texte-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.spellcheck {
-		background-image: url(../images/envoyer/orthographe-dark.png?v=e784.5000);
-	}
-	
-	.toolbar a.button.extwin {
-		background-image: url(../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000);
-	}
 }
 
 #messagepreview div a.button,

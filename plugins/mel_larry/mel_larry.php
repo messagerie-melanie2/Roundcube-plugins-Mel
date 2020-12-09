@@ -38,7 +38,7 @@ class mel_larry extends rcube_plugin
    * Themes colors css file for Roundcube
    * @var string
    */
-  const THEMES_CSS = 'themes.css';
+  const THEMES_CSS = 'theme-%%param%%.css';
   /**
    * Global css file for Roundcube
    * @var string
@@ -132,7 +132,8 @@ class mel_larry extends rcube_plugin
     // Check if the user use mel_larry skin
     if ($skin == self::SKIN_NAME && !$rc->output->get_env('mobile')) {
       // Themes css
-      $this->include_stylesheet(self::CSS_FOLDER.self::THEMES_CSS);
+      $theme_param = $rc->config->get('mel_larry_theme', 'dark');
+      $this->include_stylesheet(self::CSS_FOLDER.str_replace('%%param%%', $theme_param, self::THEMES_CSS));
       // App css
       $this->include_stylesheet(self::CSS_FOLDER.self::APP_CSS);
       // For each plugin, add the associated css file

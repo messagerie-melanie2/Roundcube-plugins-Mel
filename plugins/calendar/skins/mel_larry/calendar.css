@@ -350,15 +350,10 @@ pre {
 	width: 16px;
 	padding: 0;
 	background: url(images/calendars.png?v=e784.5000) -100px 0 no-repeat;
+	background-image: var(--image-calendars);
 	overflow: hidden;
 	text-indent: -5000px;
 	cursor: pointer;
-}
-
-@media (prefers-color-scheme: dark) {
-	#calendars .treelist li a.subscribed {
-		background: url(images/calendars-dark.png?v=e784.5000) -100px 0 no-repeat;
-	}
 }
 
 #calendars .treelist div:hover a.subscribed,
@@ -566,32 +561,21 @@ pre {
 
 #calendartoolbar a.button.export {
 	background: url(images/calendar/exporter.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-calendar-export);
 	background-color: var(--buttons-bg-color);
 	min-width: auto;
 }
 
 #calendartoolbar a.button.import {
 	background: url(images/calendar/importer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-calendar-import);
 	background-color: var(--buttons-bg-color);
 }
 
 #calendartoolbar a.button.print {
 	background: url(images/calendar/imprimer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-calendar-print);
 	background-color: var(--buttons-bg-color);
-}
-
-@media (prefers-color-scheme: dark) {
-	#calendartoolbar a.button.export {
-		background-image: url(images/calendar/exporter-dark.png?v=e784.5000);
-	}
-	
-	#calendartoolbar a.button.import {
-		background-image: url(images/calendar/importer-dark.png?v=e784.5000);
-	}
-	
-	#calendartoolbar a.button.print {
-		background-image: url(images/calendar/imprimer-dark.png?v=e784.5000);
-	}
 }
 
 body.calendarmain #quicksearchbar {

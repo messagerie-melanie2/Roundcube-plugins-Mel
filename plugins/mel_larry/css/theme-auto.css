@@ -90,9 +90,10 @@
   	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
   	
   	--table-body-text-color: #333;
-  	--table-body-bg-color: var(--global-bg-color);
+	--table-body-bg-color: #f8f8f8;
+	--table-body-bg-color-even: #f8f8f8;
 	--table-extanded-body-bg-color: #e0e0e0;
-  	--table-body-border-color: #cbcbcb;
+  	--table-body-border-color: #e9e9e9;
   	
   	--table-item-selected-text-color: #333;
   	--table-item-selected-bg-color: var(--global-selected-bg-color);
@@ -189,7 +190,80 @@
   	--jquery-tabs-active-bg-color: #f4f4f4;
   	--jquery-buttons-text-color: #323232;
   	--jquery-buttons-focus-text-color: #2b2b2b;
-  	--jquery-buttons-focus-bg-color: #ededed;
+	--jquery-buttons-focus-bg-color: #ededed;
+	
+	--image-gototree: url("images/goto.png?v=e784.5000");
+	--image-carnet: url("images/images/carnet.png?v=e784.5000");
+	--image-calendar: url("images/calendars.png?v=e784.5000");
+
+	--image-calendar-export: url("images/calendar/exporter.png?v=e784.5000");
+	--image-calendar-import: url("images/calendar/importer.png?v=e784.5000");
+	--image-calendar-print: url("images/calendar/imprimer.png?v=e784.5000");
+
+	--image-dossier: url("../images/dossier.png?v=e784.5000");
+	--image-dossier-selectionne: url("../images/dossier_selectionne.png?v=e784.5000");
+
+	--image-listclick: url("images/listclick.png?v=e784.5000");
+	--image-archiver: url("../images/archiver.png?v=e784.5000");
+
+	--image-contact-phone: url("../images/contact/phone.png?v=e784.5000");
+	--image-contact-mail: url("../images/contact/mail.png?v=e784.5000");
+	--image-contact-carnet: url("../images/contact/carnet.png?v=e784.5000");
+	--image-contact-groupe: url("../images/contact/groupe.png?v=e784.5000");
+	--image-contact-annuaire: url("../images/contact/annuaire.png?v=e784.5000");
+	--image-contact-rechercher: url("../images/contact/rechercher.png?v=e784.5000");
+	--image-contact-importer: url("../images/contact/importer.png?v=e784.5000");
+	--image-contact-exporter: url("../images/contact/exporter.png?v=e784.5000");
+	--image-contact-imprimer: url("../images/contact/imprimer.png?v=e784.5000");
+	--image-contact-supprimer: url("../images/contact/supprimer.png?v=e784.5000");
+
+	--image-messages-attachment: url("../images/attachement.png?v=e784.5000");
+	--image-messages-nonlu: url("../images/non-lu.png?v=e784.5000");
+	--image-messages-suivi: url("../images/suivi.png?v=e784.5000");
+
+	--display-message-switch-theme: none;
+
+	--image-send-retour: url("../images/envoyer/retour.png?v=e784.50000");
+	--image-send-brouillon: url("../images/envoyer/brouillon.png?v=e784.5000");
+	--image-send-piece_jointe: url("../images/envoyer/piece_jointe.png?v=e784.5000");
+	--image-send-options: url("../images/envoyer/options.png?v=e784.5000");
+	--image-send-format-texte: url("../images/envoyer/format-texte.png?v=e784.5000");
+	--image-send-orthographe: url("../images/envoyer/orthographe.png?v=e784.5000");
+	--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre.png?v=e784.5000");
+
+	--image-background: url("../images/background.png?v=e784.5000");
+	--image-icons: url("../images/icons.png?v=e784.5000");
+	--image-plus: url("../images/plus-01.png?v=e784.5000");
+
+	--image-mail-archiver: url("../images/mail/archiver.png?v=e784.5000");
+	--image-mail-actualiser: url("../images/mail/actualiser.png?v=e784.5000");
+	--image-mail-pourriel: url("../images/mail/pourriel.png?v=e784.5000");
+	--image-mail-supprimer: url("../images/mail/supprimer.png?v=e784.5000");
+	--image-mail-imprimer: url("../images/mail/imprimer.png?v=e784.5000");
+	--image-mail-filtrer: url("../images/mail/filtrer.png?v=e784.5000");
+	--image-mail-evenement: url("../images/mail/evenement.png?v=e784.5000");
+	--image-mail-etiquettes: url("../images/mail/etiquettes.png?v=e784.5000");
+	--image-mail-repondre: url("../images/mail/repondre.png?v=e784.5000");
+	--image-mail-repondre_tous: url("../images/mail/repondre_tous.png?v=e784.5000");
+	--image-mail-transferer: url("../images/mail/transferer.png?v=e784.5000");
+	--image-mail-rediriger: url("../images/mail/rediriger.png?v=e784.5000");
+	--image-mail-retour: url("../images/mail/retour.png?v=e784.5000");
+
+	--image-rechercher: url("../images/tools/rechercher.png?v=e784.5000");
+	--image-rechercher-menu: url("../images/tools/rechercher_menu.png?v=e784.5000");
+
+	--image-dossier-reception: url("../images/mail/dossiers/reception.png?v=e784.5000");
+	--image-dossier-reception_selectionne: url("../images/mail/dossiers/reception_selectionne.png?v=e784.5000");
+	--image-dossier-brouillons: url("../images/mail/dossiers/brouillons.png?v=e784.5000");
+	--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000");
+	--image-dossier-envoyes: url("../images/mail/dossiers/envoyes.png?v=e784.5000");
+	--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000");
+	--image-dossier-indesirables: url("../images/mail/dossiers/indesirables.png?v=e784.5000");
+	--image-dossier-indesirables_selectionne: url("../images/mail/dossiers/indesirables_selectionne.png?v=e784.5000");
+	--image-dossier-supprimes: url("../images/mail/dossiers/supprimes.png?v=e784.5000");
+	--image-dossier-supprimes_selectionne: url("../images/mail/dossiers/supprimes_selectionne.png?v=e784.5000");
+
+	--image-send-contacts: url("../images/envoyer/contact.png?v=e784.5000");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -201,7 +275,7 @@
 		--global-selected-bg-color: #323232;
 		  	
 		--main-text-color: #ccc;
-	 	--main-bg-color: #121212;
+	 	--main-bg-color: #171717;
 	 	--main-border-color: var(--global-border-color);
 	 	--main-sepratator-color: #1e1e1e;
 		
@@ -285,9 +359,10 @@
 	 	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
 	 	
 	 	--table-body-text-color: #D2D2D2;
-	 	--table-body-bg-color: #1d1d1d;
-	 	--table-extanded-body-bg-color: #222222;
-	 	--table-body-border-color: var(--main-border-color);
+		--table-body-bg-color: #222222;
+		--table-body-bg-color-even: #1d1d1d;
+	 	--table-extanded-body-bg-color: #1d1d1d;
+	 	--table-body-border-color: #1d1d1d;
 	 	
 	 	--table-item-selected-text-color: var(--global-text-color);
 	 	--table-item-selected-bg-color: var(--global-selected-bg-color);
@@ -384,6 +459,79 @@
 	  	--jquery-tabs-active-bg-color: #1e1e1e;
 	  	--jquery-buttons-text-color: var(--global-text-color);
 	  	--jquery-buttons-focus-text-color: var(--global-text-color);
-	  	--jquery-buttons-focus-bg-color: #373737;
+		--jquery-buttons-focus-bg-color: #373737;
+		
+		--image-gototree: url("images/goto-dark.png?v=e784.5000");
+		--image-carnet: url("images/carnet-dark.png?v=e784.5000");
+		--image-calendar: url("images/calendars-dark.png?v=e784.5000");
+
+		--image-calendar-export: url("images/calendar/exporter-dark.png?v=e784.5000");
+		--image-calendar-import: url("images/calendar/importer-dark.png?v=e784.5000");
+		--image-calendar-print: url("images/calendar/imprimer-dark.png?v=e784.5000");
+
+		--image-dossier: url("../images/dossier-dark.png?v=e784.5000");
+		--image-dossier-selectionne: url("../images/dossier_selectionne-dark.png?v=e784.5000");
+
+		--image-listclick: url("images/listclick-dark.png?v=e784.5000");
+		--image-archiver: url("../images/archiver-dark.png?v=e784.5000");
+
+		--image-contact-phone: url("../images/contact/phone-dark.png?v=e784.5000");
+		--image-contact-mail: url("../images/contact/mail-dark.png?v=e784.5000");
+		--image-contact-carnet: url("../images/contact/carnet-dark.png?v=e784.5000");
+		--image-contact-groupe: url("../images/contact/groupe-dark.png?v=e784.5000");
+		--image-contact-annuaire: url("../images/contact/annuaire.png?v=e784.5000");
+		--image-contact-rechercher: url("../images/contact/rechercher-dark.png?v=e784.5000");
+		--image-contact-importer: url("../images/contact/importer-dark.png?v=e784.5000");
+		--image-contact-exporter: url("../images/contact/exporter-dark.png?v=e784.5000");
+		--image-contact-imprimer: url("../images/contact/imprimer-dark.png?v=e784.5000");
+		--image-contact-supprimer: url("../images/contact/supprimer-dark.png?v=e784.5000");
+
+		--image-messages-attachment: url("../images/attachement-dark.png?v=e784.5000");
+		--image-messages-nonlu: url("../images/non-lu-dark.png?v=e784.5000");
+		--image-messages-suivi: url("../images/suivi-dark.png?v=e784.5000");
+
+		--display-message-switch-theme: inline-block;
+
+		--image-send-retour: url("../images/envoyer/retour-dark.png?v=e784.5000");
+		--image-send-brouillon: url("../images/envoyer/brouillon-dark.png?v=e784.5000");
+		--image-send-piece_jointe: url("../images/envoyer/piece_jointe-dark.png?v=e784.5000");
+		--image-send-options: url("../images/envoyer/options-dark.png?v=e784.5000");
+		--image-send-format-texte: url("../images/envoyer/format-texte-dark.png?v=e784.5000");
+		--image-send-orthographe: url("../images/envoyer/orthographe-dark.png?v=e784.5000");
+		--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000");
+
+		--image-background: url("../images/background_dark.png?v=e784.5000");
+		--image-icons: url("../images/icons-dark.png?v=e784.5000");
+		--image-plus: url("../images/plus-01-dark.png?v=e784.5000");
+
+		--image-mail-archiver: url("../images/mail/archiver-dark.png?v=e784.5000");
+		--image-mail-actualiser: url("../images/mail/actualiser-dark.png?v=e784.5000");
+		--image-mail-pourriel: url("../images/mail/pourriel-dark.png?v=e784.5000");
+		--image-mail-supprimer: url("../images/mail/supprimer-dark.png?v=e784.5000");
+		--image-mail-imprimer: url("../images/mail/imprimer-dark.png?v=e784.5000");
+		--image-mail-filtrer: url("../images/mail/filtrer-dark.png?v=e784.5000");
+		--image-mail-evenement: url("../images/mail/evenement-dark.png?v=e784.5000");
+		--image-mail-etiquettes: url("../images/mail/etiquettes-dark.png?v=e784.5000");
+		--image-mail-repondre: url("../images/mail/repondre-dark.png?v=e784.5000");
+		--image-mail-repondre_tous: url("../images/mail/repondre_tous-dark.png?v=e784.5000");
+		--image-mail-transferer: url("../images/mail/transferer-dark.png?v=e784.5000");
+		--image-mail-rediriger: url("../images/mail/rediriger-dark.png?v=e784.5000");
+		--image-mail-retour: url("../images/mail/retour-dark.png?v=e784.5000");
+
+		--image-rechercher: url("../images/tools/rechercher-dark.png?v=e784.5000");
+		--image-rechercher-menu: url("../images/tools/rechercher_menu-dark.png?v=e784.5000");
+
+		--image-dossier-reception: url("../images/mail/dossiers/reception-dark.png?v=e784.5000");
+		--image-dossier-reception_selectionne: url("../images/mail/dossiers/reception_selectionne-dark.png?v=e784.5000");
+		--image-dossier-brouillons: url("../images/mail/dossiers/brouillons-dark.png?v=e784.5000");
+		--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000");
+		--image-dossier-envoyes: url("../images/mail/dossiers/envoyes-dark.png?v=e784.5000");
+		--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000");
+		--image-dossier-indesirables: url("../images/mail/dossiers/indesirables-dark.png?v=e784.5000");
+		--image-dossier-indesirables_selectionne: url("../images/mail/dossiers/indesirables_selectionne-dark.png?v=e784.5000");
+		--image-dossier-supprimes: url("../images/mail/dossiers/supprimes-dark.png?v=e784.5000");
+		--image-dossier-supprimes_selectionne: url("../images/mail/dossiers/supprimes_selectionne-dark.png?v=e784.5000");
+
+		--image-send-contacts: url("../images/envoyer/contact-dark.png?v=e784.5000");
 	}
 }

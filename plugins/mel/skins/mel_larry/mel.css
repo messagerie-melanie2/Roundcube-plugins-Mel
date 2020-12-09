@@ -116,6 +116,7 @@
 	padding-left: 20px;
 	padding-right: 20px;
 	background: url(images/listclick.png?v=e784.5000) right 5px no-repeat;
+	background-image: var(--image-listclick);
 	text-overflow: ellipsis;
 	width: auto;
 	left: 0px;
@@ -123,12 +124,7 @@
 	position: absolute;
 	overflow: hidden;
 }
-@media (prefers-color-scheme: dark) {
-	#folderlist-header-m2 span,
-	#folderlist-header-m2-settings span {	
-		background-image: url(images/listclick-dark.png?v=e784.5000);
-	}
-}
+
 #folderlist-header-m2 span.click,
 #folderlist-header-m2-settings span.click {	
 	background-position: right -25px;

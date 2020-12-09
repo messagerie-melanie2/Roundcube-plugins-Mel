@@ -65,22 +65,14 @@ div#contact-details .contactfieldcontent.composite {
 
 div#contact-details .contactcontrollerphone .row {
 	background: url(../images/contact/phone.png?v=e784.5000) right center no-repeat #e8e8e8;
+	background-image: var(--image-contact-phone);
 	background-color: var(--contact-field-bg-color);
 }
 
 div#contact-details .contactcontrolleremail .row {
 	background: url(../images/contact/mail.png?v=e784.5000) right center no-repeat #e8e8e8;
+	background-image: var(--image-contact-mail);
 	background-color: var(--contact-field-bg-color);
-}
-
-@media (prefers-color-scheme: dark) {
-	div#contact-details .contactcontrollerphone .row {
-		background-image: url(../images/contact/phone-dark.png?v=e784.5000);
-	}
-	
-	div#contact-details .contactcontrolleremail .row {
-		background-image: url(../images/contact/mail-dark.png?v=e784.5000);
-	}
 }
 
 #directorylist li.legend,
@@ -95,13 +87,15 @@ div#contact-details .contactcontrolleremail .row {
 
 #directorylist li.addressbook.selected > a,
 #directorylist li.addressbook > a {
-    background: url(../images/contact/carnet.png?v=e784.5000) 25px center no-repeat;
+	background: url(../images/contact/carnet.png?v=e784.5000) 25px center no-repeat;
+	background-image: var(--image-contact-carnet);
     padding: 10px 8px 10px 50px;
 }
 
 #savedsearchlist li.contactsearch.selected > a,
 #savedsearchlist li.contactsearch > a {
-    background: url(../images/contact/rechercher.png?v=e784.5000) 28px center no-repeat;
+	background: url(../images/contact/rechercher.png?v=e784.5000) 28px center no-repeat;
+	background-image: var(--image-contact-rechercher);
     padding: 5px 8px 5px 50px;
 }
 
@@ -114,31 +108,16 @@ div#contact-details .contactcontrolleremail .row {
 #directorylist li.addressbook > a[rel=amande],
 #directorylist li.addressbook.selected > a[rel=annuaire],
 #directorylist li.addressbook > a[rel=annuaire] {
-    background: url(../images/contact/annuaire.png?v=e784.5000) 25px center no-repeat;
+	background: url(../images/contact/annuaire.png?v=e784.5000) 25px center no-repeat;
+	background-image: var(--image-contact-annuaire);
     padding: 10px 8px 10px 50px;
 }
 
 #directorylist li.contactgroup.selected a,
 #directorylist li.contactgroup a {
-    background: url(../images/contact/groupe.png?v=e784.5000) 35px center no-repeat !important;
+	background: url(../images/contact/groupe.png?v=e784.5000) 35px center no-repeat !important;
+	background-image: var(--image-contact-groupe);
     padding: 10px 8px 10px 60px;
-}
-
-@media (prefers-color-scheme: dark) {
-	#directorylist li.addressbook.selected > a,
-	#directorylist li.addressbook > a {
-	    background-image: url(../images/contact/carnet-dark.png?v=e784.5000);
-	}
-	
-	#directorylist li.contactgroup.selected a,
-	#directorylist li.contactgroup a {
-	    background: url(../images/contact/groupe-dark.png?v=e784.5000) 35px center no-repeat !important;
-	}
-
-	#savedsearchlist li.contactsearch.selected > a,
-	#savedsearchlist li.contactsearch > a {
-		background: url(../images/contact/rechercher-dark.png?v=e784.5000) 28px center no-repeat;
-	}
 }
 
 #directorylist li.addressbook div.collapsed, 
@@ -228,42 +207,28 @@ div#contact-details .contactcontrolleremail .row {
 
 
 #addressbooktoolbar.toolbar a.button.import {
-    background: url(../images/contact/importer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/contact/importer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-contact-importer);
     background-color: var(--buttons-bg-color);
 }
 
 #addressbooktoolbar.toolbar a.button.export {
-    background: url(../images/contact/exporter.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/contact/exporter.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-contact-exporter);
     background-color: var(--buttons-bg-color);
     min-width: auto;
 }
 
 #addressbooktoolbar.toolbar a.button.print {
-    background: url(../images/contact/imprimer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/contact/imprimer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-contact-imprimer);
     background-color: var(--buttons-bg-color);
 }
 
 #addressbooktoolbar.toolbar a.button.delete {
-    background: url(../images/contact/supprimer.png?v=e784.5000) center center no-repeat #fff;
+	background: url(../images/contact/supprimer.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-contact-supprimer);
     background-color: var(--buttons-bg-color);
-}
-
-@media (prefers-color-scheme: dark) {
-	#addressbooktoolbar.toolbar a.button.import {
-	    background-image: url(../images/contact/importer-dark.png?v=e784.5000);
-	}
-	
-	#addressbooktoolbar.toolbar a.button.export {
-	    background-image: url(../images/contact/exporter-dark.png?v=e784.5000);
-	}
-	
-	#addressbooktoolbar.toolbar a.button.print {
-	    background-image: url(../images/contact/imprimer-dark.png?v=e784.5000);
-	}
-	
-	#addressbooktoolbar.toolbar a.button.delete {
-	    background-image: url(../images/contact/supprimer-dark.png?v=e784.5000);
-	}
 }
 
 #sourcename {

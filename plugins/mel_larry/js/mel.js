@@ -142,21 +142,35 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 
 // Change skin after some actions
 rcmail.addEventListener('actionafter', function(props) {
-	if (props.action == 'list'
-			&& rcmail.env.task == 'mail') {
-		if ($('#searchmenu-menu #s_scope_all').is(':checked')) {
-			$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in_all_folders'));
-		}
-		else {
-			$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in') + ' ' + $('#folderlist-content #mailboxlist li.mailbox.selected > a').clone().children().remove().end().text());
-		}
-	}
-	else if (props.action == 'list'
-			&& rcmail.env.task == 'addressbook') {
-		rcmail.set_searchscope('list');
-	  var text = $('#directorylist li.addressbook.selected > a').clone().children().remove().end().text();
-		$('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in') + ' ' + text);
-	}
+  if (props.action == 'set-listmode') {
+    if (props.props == 'threads') {
+      $('#messagelist').addClass('threaded');
+    }
+    else {
+      $('#messagelist').removeClass('threaded');
+    }
+  }
+  if (props.action == 'list') {
+    if (rcmail.env.task == 'mail') {
+      if ($('#searchmenu-menu #s_scope_all').is(':checked')) {
+        $('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in_all_folders'));
+      }
+      else {
+        $('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in') + ' ' + $('#folderlist-content #mailboxlist li.mailbox.selected > a').clone().children().remove().end().text());
+      }
+      if (rcmail.env.threading) {
+        $('#messagelist').addClass('threaded');
+      }
+      else {
+        $('#messagelist').removeClass('threaded');
+      }
+    }
+    else if (rcmail.env.task == 'addressbook') {
+      rcmail.set_searchscope('list');
+      var text = $('#directorylist li.addressbook.selected > a').clone().children().remove().end().text();
+      $('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_larry.search_in') + ' ' + text);
+    }
+  }
 });
 
 // After search addressbook for all reform

@@ -655,13 +655,13 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 
 // Get calendar next events
 rcube_webmail.prototype.right_panel_get_events = function() {
-  if (window.eventsList.length && !$('#right_panel_events .events_list .event').length) {
-    this.right_panel_refresh_events();
-  }
-  if (window.lastUpdateEventsList && (Date.now() - window.lastUpdateEventsList) < window.NEXT_REFRESH) {
-    // The refresh is to early
-    return;
-  }
+	if (window.eventsList.length && !$('#right_panel_events .events_list .event').length) {
+		this.right_panel_refresh_events();
+	}
+	if (window.lastUpdateEventsList && (Date.now() - window.lastUpdateEventsList) < window.NEXT_REFRESH) {
+		// The refresh is to early
+		return;
+	}
 	// Get current timestamp
 	if ($('#right_panel').hasClass('minified')) {
 		var end_timestamp = window.current_timestamp + (1 * 24 * 60 * 60); // Add 1 day
@@ -670,12 +670,12 @@ rcube_webmail.prototype.right_panel_get_events = function() {
 		var end_timestamp = window.current_timestamp + (5 * 24 * 60 * 60); // Add 5 days
 	}
 	$.ajax({
-		  method: "GET",
-		  url: this.url('calendar/load_events', {
-		        source: this.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_'),
-		        start: window.current_timestamp,
-		        end: end_timestamp,
-		    }),
+		method: "GET",
+		url: this.url('calendar/load_events', {
+			source: this.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_'),
+			start: window.current_timestamp,
+			end: end_timestamp,
+		}),
 	}).done(function(json) {
 		let events = JSON.parse(json);
 		if (events) {

@@ -103,3 +103,31 @@ table.quota-info tr {
 	color: #f63267;
 	color: var(--settings-disconnect-text-color);
 }
+
+.themeselection
+{
+  display: block;
+  white-space: nowrap;
+  margin: 0.3em 0;
+}
+
+.themeselection span
+{
+  display: inline-block;
+  vertical-align: middle;
+  padding-right: 1em;
+}
+
+.themeselection .themename
+{
+  font-weight: bold;
+}
+
+img.themethumbnail
+{
+  width: 120px;
+  height: 64px;
+  border: 1px solid #999;
+  background: #fff;
+  border-radius: 4px;
+}

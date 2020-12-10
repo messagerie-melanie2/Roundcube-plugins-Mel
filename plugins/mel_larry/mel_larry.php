@@ -35,6 +35,12 @@ class mel_larry extends rcube_plugin
    */
   const CSS_FOLDER = 'css/';
   /**
+   * Liste des thèmes supportés par la skin mel_larry
+   * 
+   * @var array
+   */
+  const THEMES = ['auto', 'light', 'dark', 'sunset'];
+  /**
    * Themes colors css file for Roundcube
    * @var string
    */
@@ -96,6 +102,9 @@ class mel_larry extends rcube_plugin
     // Config hook
     if (rcmail::get_instance()->config->get('skin') == 'mel_larry') {
       $this->add_hook('config_get', array($this,'config_get'));
+      // Theme preference configuration
+      $this->add_hook('preferences_list',     array($this, 'prefs_list'));
+      $this->add_hook('preferences_save',     array($this, 'prefs_save'));
     }
   }
 
@@ -113,6 +122,77 @@ class mel_larry extends rcube_plugin
           $args['result'] = 0;
         }
         break;
+    }
+    return $args;
+  }
+
+  /**
+   * Handler for user preferences form (preferences_list hook)
+   */
+  function prefs_list($args) {
+    if ($args['section'] == 'general') {
+      $rc = rcmail::get_instance();
+      // Check that configuration is not disabled
+      $dont_override = ( array ) $rc->config->get('dont_override', array());
+      $key = 'themes';
+      if (!in_array($key, $dont_override)) {
+        $themes = [ $key => [
+          'name' => $this->gettext("settings_themes"),
+          'options' => [],
+        ]];
+        
+        $input    = new html_radiobutton(array('name'=>'_themes'));
+        $field_id = 'rcmfd_theme';
+        foreach (self::THEMES as $theme) {
+          $thumbnail   = "plugins/mel_larry/images/themes/$theme.png";
+          $themename    = $this->gettext("themes_title_$theme");
+          $themedescription    = $this->gettext("themes_description_$theme");
+  
+          $img = html::img(array(
+                  'src'     => $thumbnail,
+                  'class'   => 'themethumbnail',
+                  'alt'     => $themename,
+                  'onerror' => "this.src = rcmail.assets_path('program/resources/blank.gif')",
+          ));
+  
+          $themes[$key]['options'][$theme]['content'] = html::label(array('class' => 'themeselection'),
+              html::span('themeitem', $input->show($rc->config->get('mel_larry_theme', 'auto'), array('value' => $theme, 'id' => $field_id.$theme))) .
+              html::span('themeitem', $img) .
+              html::span('themeitem', html::span('themename', rcube::Q($themename)) . html::br() .
+                  html::span('themedescription', $themedescription))
+          );
+        }
+        $this->array_insert($args['blocks'], 1, $themes);
+      }
+    }
+    return $args;
+  }
+
+  /**
+   * Insert at
+   */
+  private function array_insert(&$array, $position, $insert_array) {
+    $first_array = array_splice ($array, 0, $position);
+    $array = array_merge ($first_array, $insert_array, $array);
+  } 
+
+  /**
+   * Handler for user preferences save (preferences_save hook)
+   */
+  public function prefs_save($args) {
+    if ($args['section'] == 'general') {
+      $rc = rcmail::get_instance();
+      // Check that configuration is not disabled
+      $dont_override = ( array ) $rc->config->get('dont_override', array());
+      $key = 'themes';
+      if (!in_array($key, $dont_override)) {
+        $config_key = 'mel_larry_theme';
+        $value = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
+        if ($rc->config->get($config_key, 'auto') != $value) {
+          $rc->output->command('reload', 500);
+        }
+        $args['prefs'][$config_key] = $value;
+      }
     }
     return $args;
   }

@@ -51,3 +51,12 @@ $labels['tasklist_title'] = 'Ouvrez vos tâches personnelles et partagées';
 $labels['settings_title'] = 'Ouvrez les paramètres du portail web';
 
 $labels['help'] = 'Aide';
+$labels['settings_themes'] = 'Choix du thème pour l\'interface';
+$labels['themes_title_auto'] = 'Automatique';
+$labels['themes_description_auto'] = 'La couleur du thème s\'adapte automatiquement à la configuration de votre système (fonctionnement par défaut).';
+$labels['themes_title_light'] = 'Clair';
+$labels['themes_description_light'] = 'Un thème clair basé sur les couleurs blanc et gris clair.';
+$labels['themes_title_dark'] = 'Sombre';
+$labels['themes_description_dark'] = 'Un thème sombre basé sur des nunances de gris foncés.';
+$labels['themes_title_sunset'] = 'Sunset by JP';
+$labels['themes_description_sunset'] = 'Un thème sombre basé sur des nunances de gris.';

@@ -876,7 +876,8 @@ function rcube_calendar_ui(settings)
               status: eventstatus.val(),
               recurrence: me.serialize_recurrence(endtime.val()),
               valarms: me.serialize_alarms('#edit-alarms'),
-              attendees: event_attendees,
+              // 0005994: Copier un comme un nouvel évènement interagit avec les participants de evt initial
+              attendees: $('#edit-attendees-notify').is(":visible") ? event_attendees : [],
               links: me.selected_event.links,
               deleted_attachments: rcmail.env.deleted_attachments,
               attachments: []

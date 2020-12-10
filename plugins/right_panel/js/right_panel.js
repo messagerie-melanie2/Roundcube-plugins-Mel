@@ -24,7 +24,7 @@
 // Store current_timestamp
 var current_timestamp;
 // Configure number of milliseconds before next refresh
-const NEXT_REFRESH = 300000;
+const NEXT_REFRESH = 180000;
 // Current page for events
 var current_event_page = 0;
 var events_element_by_page = 2;
@@ -35,16 +35,13 @@ var webSocketArianeConnected = false;
 var currentUserID;
 // Events list
 var eventsList = []
-var lastUpdateEventsList = 0;
 // Alarms list
 var alarmsList = []
 // Recents messages
 var messagesList = [];
-var lastUpdateContactsList = 0;
 var refreshContactsListTimeout = null;
 // Favorites contacts
 var favoritesList = [];
-var lastUpdateFavoritesList = 0;
 
 // On click right panel minifier
 $(document).on("click", '#right_panel #right_panel_minifier', function(e) {
@@ -406,7 +403,7 @@ if (window.rcmail) {
 		window.favoritesList = evt.response.contacts;
 		rcmail.right_panel_refresh_favorites_contacts();
 		rcmail.right_panel_storage_set('favoritesList', window.favoritesList, true);
-		window.lastUpdateFavoritesList = Date.now();
+		rcmail.right_panel_storage_set('lastUpdateFavoritesList', Date.now());
 	});
 }
 
@@ -658,7 +655,8 @@ rcube_webmail.prototype.right_panel_get_events = function() {
 	if (window.eventsList.length && !$('#right_panel_events .events_list .event').length) {
 		this.right_panel_refresh_events();
 	}
-	if (window.lastUpdateEventsList && (Date.now() - window.lastUpdateEventsList) < window.NEXT_REFRESH) {
+	var lastUpdateEventsList = rcmail.right_panel_storage_get('lastUpdateEventsList', false, false, 0);
+	if (lastUpdateEventsList > 0 && (Date.now() - lastUpdateEventsList) < NEXT_REFRESH) {
 		// The refresh is to early
 		return;
 	}
@@ -682,7 +680,7 @@ rcube_webmail.prototype.right_panel_get_events = function() {
 			window.eventsList = events;
 			rcmail.right_panel_storage_set('eventsList', window.eventsList, true);
 			rcmail.right_panel_refresh_events();
-			window.lastUpdateEventsList = Date.now();
+			rcmail.right_panel_storage_set('lastUpdateEventsList', Date.now());
 		}
 	});
 };
@@ -690,10 +688,10 @@ rcube_webmail.prototype.right_panel_get_events = function() {
 // Refresh calendar events display based on local storage
 rcube_webmail.prototype.right_panel_refresh_events = function() {
 	function checkTime(i) {
-	  if (i < 10) {
-	    i = "0" + i;
-	  }
-	  return i;
+		if (i < 10) {
+			i = "0" + i;
+		}
+		return i;
 	}
 
 	let events = window.eventsList;
@@ -949,16 +947,17 @@ rcube_webmail.prototype.right_panel_get_contacts_list_minified = function(force 
 // Get contacts recent
 rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = false) {
 	if (!window.messagesList.length || force) {
-	  if (window.messagesList.length && !$('#right_panel_contacts .contacts_recents .contact').length) {
-      clearTimeout(window.refreshContactsListTimeout);
-      window.refreshContactsListTimeout = setTimeout(function() {
-        rcmail.right_panel_refresh_recents_contacts();
-      }, 500);
-    }
-	  if (window.lastUpdateContactsList && (Date.now() - window.lastUpdateContactsList) < window.NEXT_REFRESH) {
-	    // The refresh is to early
-	    return;
-	  }
+		if (window.messagesList.length && !$('#right_panel_contacts .contacts_recents .contact').length) {
+			clearTimeout(window.refreshContactsListTimeout);
+			window.refreshContactsListTimeout = setTimeout(function() {
+				rcmail.right_panel_refresh_recents_contacts();
+			}, 500);
+		}
+		var lastUpdateContactsList = rcmail.right_panel_storage_get('lastUpdateContactsList', false, false, 0);
+		if (lastUpdateContactsList && (Date.now() - lastUpdateContactsList) < NEXT_REFRESH) {
+			// The refresh is to early
+			return;
+		}
 		$.ajax({
 			  method: "GET",
 			  url: './?_task=mail&_action=plugin.list_contacts_recent',
@@ -1057,7 +1056,7 @@ rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = fals
 					}, 500);
 					rcmail.right_panel_storage_set('messagesList', window.messagesList, true);
 				}
-				window.lastUpdateContactsList = Date.now();
+				rcmail.right_panel_storage_set('lastUpdateContactsList', Date.now());
 			}
 		});
 	}
@@ -1097,7 +1096,8 @@ rcube_webmail.prototype.right_panel_get_mails_count = function(force = false) {
 rcube_webmail.prototype.right_panel_get_contacts_favorites = function(force = false) {
 	this.enable_command('compose', true);
 	if (!window.favoritesList.length || force) {
-	  	if (window.lastUpdateFavoritesList && (Date.now() - window.lastUpdateFavoritesList) < window.NEXT_REFRESH) {
+		var lastUpdateFavoritesList = rcmail.right_panel_storage_get('lastUpdateFavoritesList', false, false, 0);
+	  	if (lastUpdateFavoritesList && (Date.now() - lastUpdateFavoritesList) < NEXT_REFRESH) {
 			// The refresh is to early
 			return;
 		}

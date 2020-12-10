@@ -374,6 +374,12 @@ class mel_mobile extends rcube_plugin {
       case 'layout':
         $args['result'] = 'mobile';
         break;
+      // Passer en lu automatiquement lors du clic sur un message
+      case 'mail_read_time':
+        if ($args['result'] == -1) {
+          $args['result'] = 0;
+        }
+        break;
     }
     return $args;
   }

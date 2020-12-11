@@ -373,8 +373,11 @@ if (window.rcmail) {
 			}, 500);
 		}
 		else if (e.key == 'right_panel.eventsList') {
-			window.eventsList = JSON.parse(e.newValue);
-			rcmail.right_panel_refresh_events();
+			let events = JSON.parse(e.newValue);
+			if (events) {
+				window.eventsList = events;
+				rcmail.right_panel_refresh_events();
+			}
 		}
 		else if (e.key == 'right_panel.alarmsList') {
 			window.alarmsList = JSON.parse(e.newValue);
@@ -652,7 +655,7 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 
 // Get calendar next events
 rcube_webmail.prototype.right_panel_get_events = function() {
-	if (window.eventsList.length && !$('#right_panel_events .events_list .event').length) {
+	if (!$('#right_panel_events .events_list .event').length) {
 		this.right_panel_refresh_events();
 	}
 	var lastUpdateEventsList = rcmail.right_panel_storage_get('lastUpdateEventsList', false, false, 0);

@@ -26,7 +26,7 @@ if (rcmail.env.iselectron) {
     let events;
 
     rcmail.addEventListener('init', function (evt) {
-      if (rcmail.env.username) {
+      if (rcmail.env.account) {
         //On finit de télécharger les archives s'il en reste
         window.api.send('download_eml', { "token": rcmail.env.request_token });
       }
@@ -102,7 +102,7 @@ if (rcmail.env.iselectron) {
       window.api.send('subfolder');
       window.api.receive('listSubfolder', (subfolders) => {
         subfolders.forEach(subfolder => {
-          if (subfolder.name == rcmail.env.username) {
+          if (subfolder.name == rcmail.env.account) {
             subfolder.relativePath = '';
             getChildren(subfolder);
           }
@@ -222,7 +222,7 @@ if (rcmail.env.iselectron) {
 
     function drag_end_import(list) {
       if (drag_uid && list.target.rel) {
-        if (!list.target.rel.includes(rcmail.env.username)) {
+        if (!list.target.rel.includes(rcmail.env.account)) {
           for (const uid of drag_uid) {
             window.api.send('eml_read', { "uid": uid, "folder": list.target.rel });
           }
@@ -232,7 +232,7 @@ if (rcmail.env.iselectron) {
 
     function drag_end_archive(list) {
       if (drag_uid.length && list.target.rel) {
-        if (list.target.rel.includes(rcmail.env.username) || list.target.rel == rcmail.env.local_archive_folder) {
+        if (list.target.rel.includes(rcmail.env.account) || list.target.rel == rcmail.env.local_archive_folder) {
           rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
             _mbox: rcmail.env.mailbox,
             _account: rcmail.env.account,
@@ -254,7 +254,7 @@ if (rcmail.env.iselectron) {
           if (!uid.flags.hasOwnProperty('SEEN')) {
             uid.flags.SEEN = false;
           }
-          files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).concat("&_save=1"), "uid": uid.message_uid, "path_folder": rcmail.env.username + "/" + mbox, "mbox": mbox, "etiquettes": uid.flags });
+          files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).concat("&_save=1"), "uid": uid.message_uid, "path_folder": rcmail.env.account + "/" + mbox, "mbox": mbox, "etiquettes": uid.flags });
         }
         window.parent.api.send('download_eml', { "files": files, "token": rcmail.env.request_token });
         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));

@@ -183,7 +183,7 @@ class mel_larry extends rcube_plugin
     if ($args['section'] == 'general') {
       $rc = rcmail::get_instance();
       // Check that configuration is not disabled
-      $dont_override = ( array ) $rc->config->get('dont_override', array());
+      $dont_override = (array)$rc->config->get('dont_override', array());
       $key = 'themes';
       if (!in_array($key, $dont_override)) {
         $config_key = 'mel_larry_theme';

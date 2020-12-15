@@ -1571,7 +1571,8 @@ table.propform td.title {
     width: 38px;
     min-width: auto;
     max-width: auto;
-    height: 30px;
+	height: 30px;
+	line-height: 30px;
     overflow: hidden;
     padding: 0;
     text-shadow: none;

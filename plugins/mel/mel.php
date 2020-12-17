@@ -173,6 +173,10 @@ class mel extends rcube_plugin {
         $this->api->add_content($hidden_account->show($this->get_account), 'composeoptions');
       }
     }
+    // MANTIS 0006003: Problème pour convertir un mail en événement dans une ouverture par double clic
+    else if ($this->rc->task == 'mail' && $this->rc->action == 'show') {
+      $this->rc->output->include_script('treelist.js');
+    }
 
     // Définition du host
     $http_host = $this->rc->config->get('http_host');

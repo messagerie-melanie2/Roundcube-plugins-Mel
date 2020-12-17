@@ -150,7 +150,8 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
       rcmail.register_command('calendar-create-from-mail', function() { cal.create_from_mail(); });
       rcmail.register_command('attachment-save-calendar', function() { cal.save_to_calendar(); });
       rcmail.addEventListener('plugin.mail2event_dialog', function(p) { cal.mail2event_dialog(p); });
-      rcmail.addEventListener('plugin.unlock_saving', function(p) { cal.ui && cal.ui.unlock_saving(); });
+      // PAMELA - Add event every where from shortcut
+      // rcmail.addEventListener('plugin.unlock_saving', function(p) { cal.ui && cal.ui.unlock_saving(); });
 
       if (rcmail.env.action != 'show') {
         rcmail.env.message_commands.push('calendar-create-from-mail');
@@ -170,6 +171,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     }
     
     // PAMELA - Add event every where from shortcut
+    rcmail.addEventListener('plugin.unlock_saving', function(p) { cal.ui && cal.ui.unlock_saving(); });
     rcmail.register_command('add-event-from-shortcut', function() { cal.add_event_from_shortcut(); }, true);
   }
 

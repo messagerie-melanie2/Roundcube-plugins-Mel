@@ -160,29 +160,33 @@ class mtes_driver_mel extends mce_driver_mel {
   public function userHasAccessToStockage() {
     // Gestion du filtre LDAP
     $filter_ldap = rcmail::get_instance()->config->get('roundcube_nextcloud_filter_ldap', array());
-    $hasAccess = true;
+    $hasAccess = false;
     $user = driver_mel::gi()->getUser();
     $user->load(array_keys($filter_ldap));
     
     if (isset($filter_ldap) && count($filter_ldap) > 0) {
       foreach ($filter_ldap as $key => $value) {
-        if (!isset($user->$key) 
-            || is_array($user->$key) && !in_array($value, $user->$key) 
-            || is_string($user->$key) && $user->$key != $value) {
-          $hasAccess = false;
+        if (isset($user->$key) 
+            && (is_array($user->$key) && in_array($value, $user->$key) 
+              || is_string($user->$key) && $user->$key == $value)) {
+          // Le filtre est valide, l'utilisateur a accès au stockage
+          $hasAccess = true;
         }
       }
     }
-    // Parcourir les dn autorisés et valider la connexion
-    foreach (rcmail::get_instance()->config->get('roundcube_nextcloud_ldap_allowed_dn', array()) as $allowed_dn) {
-      if (strpos($user->dn, $allowed_dn) !== false) {
-        $hasAccess = true;
+    // Si le filtre n'est pas trouvé, on check par dn
+    if (!$hasAccess) {
+      // Parcourir les dn autorisés et valider la connexion
+      foreach (rcmail::get_instance()->config->get('roundcube_nextcloud_ldap_allowed_dn', array()) as $allowed_dn) {
+        if (strpos($user->dn, $allowed_dn) !== false) {
+          $hasAccess = true;
+        }
       }
-    }
-    // Parcourir les dn interdits et refuser la connexion
-    foreach (rcmail::get_instance()->config->get('roundcube_nextcloud_ldap_forbidden_dn', array()) as $forbidden_dn) {
-      if (strpos($user->dn, $forbidden_dn) !== false) {
-        $hasAccess = false;
+      // Parcourir les dn interdits et refuser la connexion
+      foreach (rcmail::get_instance()->config->get('roundcube_nextcloud_ldap_forbidden_dn', array()) as $forbidden_dn) {
+        if (strpos($user->dn, $forbidden_dn) !== false) {
+          $hasAccess = false;
+        }
       }
     }
     // Si on est sur Internet, vérifier que l'utilisateur a la double auth

@@ -79,6 +79,15 @@ class mel_logs extends rcube_plugin
 	}
 
 	/**
+	 * get_instance short
+	 *
+	 * @return mel_logs
+	 */
+	public static function gi() {
+		return self::get_instance();
+	}
+
+	/**
 	 * Test si l'instance de mel_log permet de logger a ce niveau
 	 * @param string $level voir mel_log::
 	 * @return boolean
@@ -143,6 +152,19 @@ class mel_logs extends rcube_plugin
 	        $doubleauth = isset($_SESSION['mel_doubleauth_2FA_login']) ? " [doubleauth]" : "";
 	        rcmail::get_instance()->write_log($this->log_file, "[$level] $ip ($provenance)$doubleauth PROC[$procid]$courrielleur $username - $message");
 	    }
+	}
+
+	/**
+	 * Short version of log function
+	 * 
+	 * Appel la methode de log de roundcube
+	 * Log dans un fichier mel
+	 * @param string $level voir mel_log::
+	 * @param string $message
+	 * 
+	 */
+	public function l($level, $message) {
+		return $this->log($level, $message);
 	}
 
 	/******** PRIVATE **********/

@@ -98,10 +98,11 @@ class mel_archivage extends rcube_plugin
   {
     header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
     $uids = rcube_utils::get_input_value('_uids', rcube_utils::INPUT_GET);
+    $path_folder = rcube_utils::get_input_value('_path_folder', rcube_utils::INPUT_GET);
     $result = "";
     //Système d'archivage avec glisser/déposer
     if ($uids) {
-      $result = array('action' => 'plugin.mel_archivage_traitement_electron', 'data' => $this->traitement_archivage_drag_drop());
+      $result = array('action' => 'plugin.mel_archivage_traitement_electron', 'data' => $this->traitement_archivage_drag_drop(), 'path_folder' => $path_folder);
     } else {
       $result = array('action' => 'plugin.mel_archivage_traitement_electron', 'data' => $this->traitement_archivage());
     }

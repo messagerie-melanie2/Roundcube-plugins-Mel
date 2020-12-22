@@ -55,7 +55,7 @@ if (window.rcmail) {
                 event.preventDefault();
                 rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
                     _mbox: rcmail.env.mailbox,
-                    _account: rcmail.env.account,
+                    _account: rcmail.env.account_electron,
                     nb_jours: $('#nb_jours').val(),
                     archivage_date: $('#archivage_date').val()
                 });
@@ -70,7 +70,7 @@ if (window.rcmail) {
                             if (!uid.flags.hasOwnProperty('SEEN')) {
                                 uid.flags.SEEN = false;
                             }
-                            files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save='), "uid": uid.message_uid, "path_folder": rcmail.env.username + "/" + mbox, "mbox": mbox, "etiquettes": uid.flags });
+                            files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save='), "uid": uid.message_uid, "path_folder": rcmail.env.account_electron + "/" + mbox, "mbox": mbox, "etiquettes": uid.flags });
                         }
                         window.parent.api.send('download_eml', { "files": files, "token": rcmail.env.request_token });
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
@@ -137,7 +137,7 @@ function changeDatepicker(nbJours) {
 
 rcube_webmail.prototype.plugin_archiver = function () {
     var frame = $('<iframe>').attr('id', 'archivageframe')
-        .attr('src', rcmail.url('settings/plugin.mel_archivage', { _mbox: this.env.mailbox, _account: this.env.account }) + '&_framed=1')
+        .attr('src', rcmail.url('settings/plugin.mel_archivage', { _mbox: this.env.mailbox, _account: this.env.account_electron }) + '&_framed=1')
         .attr('frameborder', '0')
         .appendTo(document.body);
     var buttons = {};

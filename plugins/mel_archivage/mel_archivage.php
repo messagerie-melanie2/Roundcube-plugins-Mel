@@ -403,6 +403,7 @@ class mel_archivage extends rcube_plugin
           $subject = rcube_mime::decode_header($headers->subject, $headers->charset);
           $subject = $this->_filename_from_subject(mb_substr($subject, 0, 32));
           $subject = $this->_convert_filename($subject);
+          $subject = preg_replace('/[^A-Z a-z0-9\-]/', '', $subject);
 
           $disp_name = $path . $uid . ($subject ? " $subject" : '') . '.eml';
 

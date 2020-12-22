@@ -28,24 +28,40 @@ class electron extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
 
+        $this->load_config();
+        $this->charset = $rcmail->config->get('mel_archivage_charset', RCUBE_CHARSET);
+
         $rcmail->output->set_env('iselectron', $this->isElectron());
-        if ($this->isElectron()) {
-            $this->include_script('electron.js');
-        }
 
         if ($rcmail->task == 'settings' || $rcmail->task == 'mail') {
 
             $username = $rcmail->get_user_name();
             $account = rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET);
 
-            $account ? $rcmail->output->set_env('account', $account) : $rcmail->output->set_env('account', $username);
+            $account ? $rcmail->output->set_env('account_electron', $account) : $rcmail->output->set_env('account_electron', $username);
 
             $skin_path = $this->local_skin_path();
             $this->include_stylesheet($skin_path . '/css/electron.css');
 
             $this->add_texts('localization/', true);
             $this->register_action('plugin.import_message', array($this, 'import_message'));
-        }
+
+            if ($this->isElectron()) {
+                $this->include_script('electron.js');
+    
+                if ($this->api->output->type == 'html' && $rcmail->task == 'mail') {
+                    $content = html::tag('li', array(
+                        'role' => 'menuitem'
+                    ), $this->api->output->button(array(
+                        'label' => 'electron.title',
+                        'type' => 'link',
+                        'classact' => 'active',
+                        'command' => 'plugin_import_archive',
+                    )));
+                    $this->api->add_content($content, 'mailboxoptions');
+                }
+            }
+        }       
     }
 
     /**
@@ -59,7 +75,8 @@ class electron extends rcube_plugin
         $pos = strpos($useragent, 'Mel_Electron');
         if ($pos === false) {
             $isElectron = false;
-        } else {
+        }
+        else {
             $isElectron = true;
         }
         return $isElectron;
@@ -73,7 +90,7 @@ class electron extends rcube_plugin
 
         $imported = 0;
         if (!empty($message)) {
-            $imported = (int) $this->rcmail_save_message($folder, $message);
+            $imported = (int)$this->rcmail_save_message($folder, $message);
         }
 
         header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
@@ -87,8 +104,8 @@ class electron extends rcube_plugin
     {
         if (strncmp($message, 'From ', 5) === 0) {
             // Extract the mbox from_line
-            $pos     = strpos($message, "\n");
-            $from    = substr($message, 0, $pos);
+            $pos = strpos($message, "\n");
+            $from = substr($message, 0, $pos);
             $message = substr($message, $pos + 1);
 
             // Read the received date, support only known date formats
@@ -99,12 +116,13 @@ class electron extends rcube_plugin
             $imapdate_rx = '/^([0-9]{1,2}-[a-z]{3}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9+-]{5})/i';
 
             if (($pos = strpos($from, ' ', 6)) && ($dt_str = substr($from, $pos + 1))
-                && (preg_match($mboxdate_rx, $dt_str, $m) || preg_match($imapdate_rx, $dt_str, $m))
+            && (preg_match($mboxdate_rx, $dt_str, $m) || preg_match($imapdate_rx, $dt_str, $m))
             ) {
                 try {
                     $date = new DateTime($m[0], new DateTimeZone('UTC'));
-                } catch (Exception $e) {
-                    // ignore
+                }
+                catch (Exception $e) {
+                // ignore
                 }
             }
         }
@@ -112,7 +130,7 @@ class electron extends rcube_plugin
         // unquote ">From " lines in message body
         $message = preg_replace('/\n>([>]*)From /', "\n\\1From ", $message);
         $message = rtrim($message);
-        $rcmail  = rcmail::get_instance();
+        $rcmail = rcmail::get_instance();
 
         if ($rcmail->storage->save_message($folder, $message, '', false, array(), $date)) {
             return true;

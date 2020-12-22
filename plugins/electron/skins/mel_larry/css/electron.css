@@ -5,22 +5,43 @@
 
 .folderlist li.mailbox.archives_locales > a {
 	background: url(../images/dossier.png) 17px center no-repeat;
-	background-image: var(--image-dossier);
+}
+
+.folderlist li.mailbox.sub_archives_locales > a {
+	background: url(../images/dossier.png) 17px center no-repeat;
 }
 
 #mailboxlist.folderlist li.mailbox.archives_locales > a {
     background-position: 32px 7px;
 }
 
-.folderlist li.mailbox.archives_locales.selected > a, 
-.folderlist li.mailbox.archives_locales > a:focus {
-	background: url(../images/dossier_selectionne.png) 17px center no-repeat #fff;
-	background-image: var(--image-dossier-selectionne);
-	background-color: var(--listitem-selected-bg-color);
+#mailboxlist.folderlist li.mailbox.sub_archives_locales > a {
+	background-position: 45px 7px;
 }
 
 #mailboxlist.folderlist li.mailbox.archives_locales.selected > a, 
 #mailboxlist.folderlist li.mailbox.archives_locales > a:focus {
 	background: url(../images/dossier_selectionne.png) 32px 7px no-repeat var(--listitem-selected-bg-color);
-	background-image: var(--image-dossier-selectionne);
+}
+
+#mailboxlist.folderlist li.mailbox.sub_archives_locales.selected > a, 
+#mailboxlist.folderlist li.mailbox.sub_archives_locales > a:focus {
+	background: url(../images/dossier_selectionne.png) 45px 7px no-repeat var(--listitem-selected-bg-color);
+}
+
+@media (prefers-color-scheme: dark) {
+    .folderlist li.mailbox.archives_locales > a {
+	    background-image: url(../images/dossier-dark.png);
+	}
+	
+		#mailboxlist.folderlist li.mailbox.archives_locales.selected > a, 
+		#mailboxlist.folderlist li.mailbox.archives_locales > a:focus {
+			background: url(../images/dossier_selectionne-dark.png) 32px 7px no-repeat var(--listitem-selected-bg-color);
+		}
+
+		#mailboxlist.folderlist li.mailbox.sub_archives_locales.selected > a, 
+		#mailboxlist.folderlist li.mailbox.sub_archives_locales > a:focus {
+			background: url(../images/dossier_selectionne-dark.png) 45px 7px no-repeat var(--listitem-selected-bg-color);
+		}
+
 }

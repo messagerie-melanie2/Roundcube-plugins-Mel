@@ -141,6 +141,7 @@ class bounce extends rcube_plugin
         if ($identity['uid'] == $rcmail->plugins->get_plugin('mel')->get_share_objet()) {
           $from = $identity['email'];
           $_SESSION['m2_from_identity'] = $from;
+          $_SESSION['m2_uid_identity'] = $identity['uid'];
           break;
         }
       }

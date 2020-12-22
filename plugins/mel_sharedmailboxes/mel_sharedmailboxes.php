@@ -283,6 +283,33 @@ class mel_sharedmailboxes extends rcube_plugin {
     }
 
     /**
+     * Rafraichissement de la liste des dossiers dans la page compose
+     */
+    public function refresh_store_target_selection() {
+        $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GET);
+
+        $attrib = array(
+                'name'      => '_store_target',
+                'maxlength' => '30',
+                'style'     => 'max-width:12em',
+                'tabindex'  => '4',
+        );
+        $select = $this->rc->folder_selector(array_merge($attrib, array(
+                'noselection'   => '- ' . $this->rc->gettext('dontsave') . ' -',
+                'folder_filter' => 'mail',
+                'folder_rights' => 'w',
+        )));
+
+        $result = array(
+                'action' => 'plugin.refresh_store_target_selection',
+                'select_html' => $select->show($this->rc->config->get('sent_mbox'), $attrib),
+                'unlock' => $unlock,
+        );
+        echo json_encode($result);
+        exit;
+    }
+
+    /**
      * Connect to IMAP server
      * Utilise les identifiants de la balp si nécessaire
      */

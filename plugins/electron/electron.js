@@ -89,6 +89,16 @@ if (rcmail.env.iselectron) {
       rcmail.display_message('Fin du téléchargement des archives', 'confirmation');
     });
 
+    window.api.receive('import-advancement', (data) => {
+      rcmail.hide_message(message_archivage);
+      message_archivage = rcmail.display_message(`Nombre de mails restants à importer : ${data}`, 'loading');
+    })
+
+    window.api.receive('import-finish', () => {
+      rcmail.hide_message(message_archivage);
+      rcmail.display_message("Fin de l'importation des archives", 'confirmation');
+    })
+
     // ----- Créer le dossier des archives -----
     function createFolder() {
       let link = $('<a>').attr('href', '#')

@@ -51,28 +51,18 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         $this->require_plugin('mel');
         $this->mel = $this->rc->plugins->get_plugin('mel');
 
-        $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
+        // Hooks
+        $this->add_hook('storage_connect',      array($this, 'storage_connect'));
+
+        // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
+        if ($this->rc->task == 'mail') {
+            $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
+        }
 
         // Chargement de l'account passé en Get
         $this->get_account = mel::get_account();
         // Chargement de l'ui
         $this->init_ui();
-    }
-
-    /**
-     * Gestion de l'affichage des boites mails
-     * Hook pour la gestion des boites partagées
-     *
-     * @param array $args
-     * @return array
-     */
-    public function render_mailboxlist($args) {
-        if (!empty($this->get_account)) {
-            if (mel_logs::is(mel_logs::DEBUG)) {
-                mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes_imap::render_mailboxlist()");
-            }
-        }
-        return $args;
     }
 
     /**
@@ -82,6 +72,316 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         if ($this->ui_initialized) {
             return;
         }
+        // Folders list handler
+        if ($this->rc->task == 'mail' && empty($this->rc->action)) {
+            $this->rc->output->add_handler('mailboxlist_mel', array($this, 'folder_list'));
+        }
         $this->ui_initialized = true;
+    }
+
+    /**
+     * Rafraichissement de la liste des dossiers dans la page compose
+     */
+    public function refresh_store_target_selection() {
+        $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GET);
+
+        $attrib = array(
+                'name'      => '_store_target',
+                'maxlength' => '30',
+                'style'     => 'max-width:12em',
+                'tabindex'  => '4',
+        );
+        $select = $this->rc->folder_selector(array_merge($attrib, array(
+                'noselection'   => '- ' . $this->rc->gettext('dontsave') . ' -',
+                'folder_filter' => 'mail',
+                'folder_rights' => 'w',
+        )));
+
+        $result = array(
+                'action' => 'plugin.refresh_store_target_selection',
+                'select_html' => $select->show($this->rc->config->get('sent_mbox'), $attrib),
+                'unlock' => $unlock,
+        );
+        echo json_encode($result);
+        exit;
+    }
+
+    /**
+     * Connect to IMAP server
+     * Utilise les identifiants de la balp si nécessaire
+     */
+    public function storage_connect($args) {
+        if ($args['driver'] == 'imap') {
+            if (mel_logs::is(mel_logs::DEBUG))
+                mel_logs::gi()->l(mel_logs::DEBUG, "mel::storage_connect()");
+            /* PAMELA - Gestion des boites partagées */
+            if (!empty($this->get_account)) {
+                $args['user'] = $this->mel->get_share_objet();
+                $args['host'] = $this->mel->get_host();
+            }
+            else {
+                $folder = $this->rc->storage->get_folder();
+                $balp_label = driver_mel::gi()->getBalpLabel();
+                if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
+                    $delim = $this->rc->storage->get_hierarchy_delimiter();
+                    $data = explode($delim, $folder, 3);
+                    $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+                    if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . '.-.' . $data[1]])) {
+                        $_object = $_objects[$this->rc->get_user_name() . '.-.' . $data[1]];
+                        if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
+                            $mailbox = $_object->mailbox;
+                            // Récupération de la configuration de la boite pour l'affichage
+                            $args['user'] = $_object->uid;
+                            $args['host'] = driver_mel::gi()->getRoutage($mailbox);
+                            // Gestion de la corbeille individuelle
+                            if ($folder == $balp_label.$delim.$_object->mailbox->uid.$delim.driver_mel::gi()->getMboxTrash() . '-individuelle') {
+                                $this->rc->storage->set_folder(driver_mel::gi()->getMboxTrash());
+                            }
+                        }
+                    }
+
+                }
+            }
+            // Utiliser les proxy imap ?
+            if ($this->rc->config->get('use_imap_proxy', false)) {
+                $args['host'] = $this->rc->config->get('imap_proxy', null);
+            }
+        }
+        return $args;
+    }
+
+    /**
+     * Return folders list in HTML
+     *
+     * @param array $attrib Named parameters
+     *
+     * @return string HTML code for the gui object
+     */
+    public function folder_list($attrib)
+    {
+        static $a_mailboxes;
+
+        $attrib += array('maxlength' => 100, 'realnames' => false, 'unreadwrap' => ' (%s)');
+
+        $type = $attrib['type'] ? $attrib['type'] : 'ul';
+        unset($attrib['type']);
+
+        if ($type == 'ul' && !$attrib['id']) {
+            $attrib['id'] = 'rcmboxlist';
+        }
+
+        if (empty($attrib['folder_name'])) {
+            $attrib['folder_name'] = '*';
+        }
+
+        // get current folder
+        $storage   = $this->rc->get_storage();
+        $mbox_name = $storage->get_folder();
+
+        // build the folders tree
+        if (empty($a_mailboxes)) {
+            // Récupération des préférences de l'utilisateur
+            $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
+            $sort_bal = $this->rc->config->get('sort_bal', []);
+
+            $delimiter = $storage->get_hierarchy_delimiter();
+            $a_mailboxes = array();
+            $folders = array();
+
+            if (!isset($hidden_mailboxes[$this->rc->get_user_name()])) {
+                // Gestion du order
+                $order = array_search(driver_mel::gi()->mceToRcId($this->rc->get_user_name()), $sort_bal);
+                if ($order === false) {
+                    $order = 1000;
+                }
+                // get mailbox list
+                $a_folders = $storage->list_folders_subscribed(
+                    '', $attrib['folder_name'], $attrib['folder_filter']);
+
+                foreach ($a_folders as $folder) {
+                    $this->rc->build_folder_tree($folders, $folder, $delimiter);
+                }
+
+                $a_mailboxes[$this->rc->get_user_name()] = [ 
+                    'id' => $this->rc->get_user_name(),
+                    'name' => driver_mel::gi()->getUser()->fullname,
+                    'virtual' => true,
+                    'order' => $order,
+                    'folders' => $folders,
+                ];
+            }
+
+            // Parcourir toutes les boites partagées de l'utilisateur
+            $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+            if (count($_objects) >= 1) {
+                foreach ($_objects as $_object) {
+                    if (isset($hidden_mailboxes[$_object->uid])) {
+                        continue;
+                    }
+                    // Gestion du order
+                    $order = array_search(driver_mel::gi()->mceToRcId($_object->uid), $sort_bal);
+                    if ($order === false) {
+                        $order = 2000;
+                    }
+                    $mailbox = $_object;
+                    if (isset($_object->mailbox)) {
+                        $mailbox = $_object->mailbox;
+                        // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                        $mailbox->load(['internet_access_enable']);
+                        if (!mel::is_internal() && !$mailbox->internet_access_enable) {
+                            continue;
+                        }
+                        // Récupération de la configuration de la boite pour l'affichage
+                        $hostname = driver_mel::gi()->getRoutage($mailbox);
+                    }
+
+                    if ($storage->connect($hostname, 
+                                $_object->uid, 
+                                $this->rc->decrypt($_SESSION['password']), 
+                                $_SESSION['storage_port'], 
+                                $_SESSION['storage_ssl'])) {
+                        // Gestion du cache des folders
+                        $this->mel->get_account = $_object->uid . '@' . $hostname;
+                        // get mailbox list
+                        $a_folders = $storage->list_folders_subscribed(
+                            '', $attrib['folder_name'], $attrib['folder_filter']);
+
+                        $folders = array();
+
+                        foreach ($a_folders as $folder) {
+                            // if ($folder == 'INBOX' || $folder == 'Corbeille' || $folder == driver_mel::gi()->getBalpLabel()) {
+                            //     continue;
+                            // }
+                            $this->rc->build_folder_tree($folders, $folder, $delimiter);
+                        }
+
+                        $a_mailboxes[$_object->uid] = [ 
+                            'id' => $_object->uid,
+                            'name' => $mailbox->fullname,
+                            'virtual' => true,
+                            'order' => $order,
+                            'folders' => $this->render_mailboxlist($folders, $mailbox->uid, $delimiter),
+                        ];
+                    }
+                }
+                $this->mel->get_account = mel::get_account();
+            }
+            // trier la liste
+            uasort($a_mailboxes, function ($a, $b) {
+                if ($a['order'] === $b['order'])
+                    return strcmp(strtolower($a['name']), strtolower($b['name']));
+                else
+                    return strnatcmp($a['order'], $b['order']);
+            });
+        }
+
+        // allow plugins to alter the folder tree or to localize folder names
+        $hook = $this->rc->plugins->exec_hook('render_mailboxlist', array(
+            'list'      => $a_mailboxes,
+            'delimiter' => $delimiter,
+            'type'      => $type,
+            'attribs'   => $attrib,
+        ));
+
+        $a_mailboxes = $hook['list'];
+        $attrib      = $hook['attribs'];
+
+        if ($type == 'select') {
+            $attrib['is_escaped'] = true;
+            $select = new html_select($attrib);
+
+            // add no-selection option
+            if ($attrib['noselection']) {
+                $select->add(html::quote($this->rc->gettext($attrib['noselection'])), '');
+            }
+
+            $this->rc->render_folder_tree_select($a_mailboxes, $mbox_name, $attrib['maxlength'], $select, $attrib['realnames']);
+            $out = $select->show($attrib['default']);
+        }
+        else {
+            $js_mailboxlist = array();
+            $tree = $this->rc->render_folder_tree_html($a_mailboxes, $mbox_name, $js_mailboxlist, $attrib);
+
+            if ($type != 'js') {
+                $out = html::tag('ul', $attrib, $tree, html::$common_attrib);
+
+                $this->rc->output->include_script('treelist.js');
+                $this->rc->output->add_gui_object('mailboxlist', $attrib['id']);
+                $this->rc->output->set_env('unreadwrap', $attrib['unreadwrap']);
+                $this->rc->output->set_env('collapsed_folders', (string) $this->rc->config->get('collapsed_folders'));
+            }
+
+            $this->rc->output->set_env('mailboxes', $js_mailboxlist);
+
+            // we can't use object keys in javascript because they are unordered
+            // we need sorted folders list for folder-selector widget
+            $this->rc->output->set_env('mailboxes_list', array_keys($js_mailboxlist));
+        }
+
+        // add some labels to client
+        $this->rc->output->add_label('purgefolderconfirm', 'deletemessagesconfirm');
+
+        return $out;
+    }
+
+    /**
+     * Gestion de l'affichage des boites mails
+     *
+     * @param array $list
+     * @return array
+     */
+    private function render_mailboxlist($list, $balp_name, $delim) {
+        if (mel_logs::is(mel_logs::DEBUG)) {
+            mel_logs::gi()->l(mel_logs::DEBUG, "mel::render_mailboxlist()");
+        }
+        // On est sur une balp
+        $driver_mel = driver_mel::gi();
+        $balp_label = $driver_mel->getBalpLabel();
+        if (isset($balp_label)) {
+            unset($list['INBOX']);
+            $folders = $list[$balp_label]['folders'];
+            // Gestion de l'INBOX
+            $folders[$balp_name]['class'] = 'INBOX';
+            $subfolders = $folders[$balp_name]['folders'];
+            $folders[$balp_name]['folders'] = [];
+            // Merge les subfolders directement à la racine
+            $folders = array_merge($folders, $subfolders);
+            $result = [];
+            $result[$balp_name] = $folders[$balp_name];
+            unset($folders[$balp_name]);
+            // Gestion des Brouillons
+            if (isset($folders[$driver_mel->getMboxDraft()])) {
+                $folders[$driver_mel->getMboxDraft()]['class'] = $driver_mel->getMboxDraft();
+                $result[$driver_mel->getMboxDraft()] = $folders[$driver_mel->getMboxDraft()];
+                unset($folders[$driver_mel->getMboxDraft()]);
+            }
+            // Gestion des Elements envoyées
+            if (isset($folders[$driver_mel->getMboxSent()])) {
+                $folders[$driver_mel->getMboxSent()]['class'] = $driver_mel->getMboxSent();
+                $result[$driver_mel->getMboxSent()] = $folders[$driver_mel->getMboxSent()];
+                unset($folders[$driver_mel->getMboxSent()]);
+            }
+            // Gestion des Indésirables
+            if (isset($folders[$driver_mel->getMboxJunk()])) {
+                $folders[$driver_mel->getMboxJunk()]['class'] = $driver_mel->getMboxJunk();
+                $result[$driver_mel->getMboxJunk()] = $folders[$driver_mel->getMboxJunk()];
+                unset($folders[$driver_mel->getMboxJunk()]);
+            }
+            // Gestion de la corbeille individuelle et de la corbeille partagée
+            if (!isset($folders[$driver_mel->getMboxTrash()]) && isset($list[$driver_mel->getMboxTrash()])) {
+                $folders[$driver_mel->getMboxTrash()] = $list[$driver_mel->getMboxTrash()];
+                $folders[$driver_mel->getMboxTrash()]['id'] = $balp_label . $delim . $balp_name . $delim . $driver_mel->getMboxTrash() . '-individuelle';
+                $folders[$driver_mel->getMboxTrash()]['class'] = $driver_mel->getMboxTrash();
+                $result[$driver_mel->getMboxTrash()] = $folders[$driver_mel->getMboxTrash()];
+                unset($folders[$driver_mel->getMboxTrash()]);
+            }
+            else if (isset($folders[$driver_mel->getMboxTrash()])) {
+                $folders[$driver_mel->getMboxTrash()]['class'] = $driver_mel->getMboxTrash();
+                $result[$driver_mel->getMboxTrash()] = $folders[$driver_mel->getMboxTrash()];
+                unset($folders[$driver_mel->getMboxTrash()]);
+            }
+            $list = array_merge($result, $folders);
+        }
+        return $list;
     }
 }

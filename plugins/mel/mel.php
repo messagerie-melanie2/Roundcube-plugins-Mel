@@ -46,7 +46,7 @@ class mel extends rcube_plugin {
    *
    * @var string
    */
-  private $get_account;
+  public $get_account;
   /**
    * Identifiant de la bal
    *
@@ -395,7 +395,7 @@ class mel extends rcube_plugin {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
     }
     return array(
-            "account" => $this->get_account
+      "account" => $this->get_account
     );
   }
 
@@ -1009,6 +1009,15 @@ class mel extends rcube_plugin {
     return $this->user_objet_share;
   }
   /**
+   * Positionne l'uid de l'objet de partage
+   *
+   * @param string $share_objet
+   * @return string
+   */
+  public function set_share_objet($share_objet) {
+    $this->user_objet_share = $share_objet;
+  }
+  /**
    * Récupère l'host de l'utilisateur
    *
    * @return string
@@ -1018,6 +1027,15 @@ class mel extends rcube_plugin {
       $this->set_user_properties();
     }
     return $this->user_host;
+  }
+  /**
+   * Force le host de l'utilisateur
+   *
+   * @param string $host
+   * @return string
+   */
+  public function set_host($host) {
+    $this->user_host = $host;
   }
   /**
    * ****** PRIVATE *********

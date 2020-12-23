@@ -148,9 +148,9 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $order = array_search(driver_mel::gi()->mceToRcId($_object->uid), $sort_bal);
                         if ($order === false) {
                             if ($_object->uid == $this->rc->get_user_name())
-                            $order = 1000;
+                                $order = 1000;
                             else
-                            $order = 2000;
+                                $order = 2000;
                         }
                         $_objects[$key]->order = $order;
                     }

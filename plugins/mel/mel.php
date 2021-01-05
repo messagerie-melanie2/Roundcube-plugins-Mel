@@ -36,12 +36,6 @@ class mel extends rcube_plugin {
    */
   private $rc;
   /**
-   * Tableau listant les identitées
-   *
-   * @var array
-   */
-  private $identities;
-  /**
    * Stocke le _account passé en get
    *
    * @var string

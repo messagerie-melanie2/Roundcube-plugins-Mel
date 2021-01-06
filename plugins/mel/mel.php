@@ -1097,7 +1097,7 @@ class mel extends rcube_plugin {
       $mails = [$user->email_send];
       // Si on a une liste de mail en plus du principal
       if (isset($user->email_send_list) && count($user->email_send_list) > 1) {
-        array_merge($mails, $user->email_send_list);
+        $mails = array_unique(array_merge($mails, $user->email_send_list));
       }
     }
     // Sinon on utilise la liste

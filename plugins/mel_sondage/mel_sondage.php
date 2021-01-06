@@ -126,7 +126,7 @@ class mel_sondage extends rcube_plugin
 
     	$rcmail->output->set_env('contentframe', $attrib['name']);
     	$rcmail->output->set_env('blankpage', $attrib['src'] ?
-    			$rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
+        $rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
 
     	return $rcmail->output->frame($attrib);
     }

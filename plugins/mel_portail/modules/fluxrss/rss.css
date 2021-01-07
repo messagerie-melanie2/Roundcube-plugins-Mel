@@ -1,0 +1,15 @@
+#portailview .item#intranet-bureautique header h1 {
+	font-size: 1.2em;
+}
+
+#portailview .item#flux-mtes-intranet header h1,
+#portailview .item#flux-mtes-internet header h1,
+#portailview .item#intranet-snum header h1,
+#portailview .item#internet-snum header h1 {
+	font-size: 1em;
+	-webkit-line-clamp: 3;
+}
+
+#portailview .item.fluxrss:not(.nonewsfront) .back ul.news li:first-child {
+	display: none;
+}

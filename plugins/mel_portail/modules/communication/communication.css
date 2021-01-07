@@ -1,0 +1,20 @@
+#portailview .item.communication header {
+	height: 5em;
+}
+
+#portailview .item.communication header a {
+	grid-template-areas: 
+	    "a b";
+    grid-template-rows: auto;
+    height: 4em;
+}
+
+#portailview .item#communication-snum header h1,
+#portailview .item#communication-mel header h1 {
+	font-size: 1.1em;
+}
+
+#portailview .item#communication-sg header h1 {
+	font-size: 1em;
+	-webkit-line-clamp: 3;
+}

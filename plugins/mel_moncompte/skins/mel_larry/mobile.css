@@ -73,7 +73,8 @@
 .m2_stats_device_table {
 	margin-top: 0px;
 	width: 100%;
-	background-color: #FFF;
+  background-color: #FFF;
+  background-color: var(--table-body-bg-color);
 	border: 1px solid #000;
 	border-spacing: 0px;
 	empty-cells: show;
@@ -92,14 +93,15 @@
 }
 
 .m2_stats_device_table td {
-    border-left: 1px solid #CBCBCB;
-    font-size: inherit;
+  font-size: inherit;
 	margin: 0px;
 	overflow: visible;
 	padding: 6px 12px;
 	border-width: 0px 0px 1px;
-	border-bottom: 1px solid #CBCBCB;
-	background-color: #FAFAFA;
+  border-bottom: 1px solid #CBCBCB;
+  border-bottom-color: var(--table-body-border-color);
+  background-color: #FAFAFA;
+  background-color: var(--table-body-bg-color);
 	text-align: center;
 }
 

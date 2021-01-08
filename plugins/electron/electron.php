@@ -45,23 +45,54 @@ class electron extends rcube_plugin
 
             $this->add_texts('localization/', true);
             $this->register_action('plugin.import_message', array($this, 'import_message'));
+            $this->register_action('plugin.create_folder', array($this, 'create_folder'));
 
             if ($this->isElectron()) {
                 $this->include_script('electron.js');
-    
+
                 if ($this->api->output->type == 'html' && $rcmail->task == 'mail') {
-                    $content = html::tag('li', array(
+                    $import = html::tag('li', array(
                         'role' => 'menuitem'
                     ), $this->api->output->button(array(
-                        'label' => 'electron.title',
+                        'label' => 'electron.import_button',
                         'type' => 'link',
                         'classact' => 'active',
                         'command' => 'plugin_import_archive',
                     )));
-                    $this->api->add_content($content, 'mailboxoptions');
+
+                    $this->api->add_content($import, 'mailboxoptions');
+                } else if ($rcmail->task == 'settings') {
+                    $this->add_hook('settings_actions', array($this, 'settings_actions'));
+                    $this->api->register_action('plugin.electron', $this->ID, array(
+                        $this,
+                        'settings'
+                    ));
                 }
             }
-        }       
+        }
+    }
+
+
+    /**
+     * Adds Electron section in Settings
+     */
+    function settings_actions($args)
+    {
+        $args['actions'][] = array(
+            'action' => 'plugin.electron',
+            'label'  => 'electron.electron',
+            'title'  => 'electron.electron_title',
+        );
+        return $args;
+    }
+
+    function settings()
+    {
+        $rcmail = rcmail::get_instance();
+        // Ajout du css
+        $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
+        // Chargement du template d'affichage
+        $rcmail->output->send('electron.electron');
     }
 
     /**
@@ -75,8 +106,7 @@ class electron extends rcube_plugin
         $pos = strpos($useragent, 'Mel_Electron');
         if ($pos === false) {
             $isElectron = false;
-        }
-        else {
+        } else {
             $isElectron = true;
         }
         return $isElectron;
@@ -116,13 +146,12 @@ class electron extends rcube_plugin
             $imapdate_rx = '/^([0-9]{1,2}-[a-z]{3}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9+-]{5})/i';
 
             if (($pos = strpos($from, ' ', 6)) && ($dt_str = substr($from, $pos + 1))
-            && (preg_match($mboxdate_rx, $dt_str, $m) || preg_match($imapdate_rx, $dt_str, $m))
+                && (preg_match($mboxdate_rx, $dt_str, $m) || preg_match($imapdate_rx, $dt_str, $m))
             ) {
                 try {
                     $date = new DateTime($m[0], new DateTimeZone('UTC'));
-                }
-                catch (Exception $e) {
-                // ignore
+                } catch (Exception $e) {
+                    // ignore
                 }
             }
         }
@@ -139,5 +168,4 @@ class electron extends rcube_plugin
         rcube::raise_error("Failed to import message to $folder", true, false);
         return false;
     }
-
 }

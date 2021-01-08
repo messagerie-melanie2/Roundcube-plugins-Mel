@@ -24,7 +24,17 @@
 
 $labels = array();
 $labels['null'] = ' ';
-$labels['title'] = 'Importer des archives';
-$labels['buttontext'] = 'Importer';
+$labels['import_button'] = 'Importer des archives';
+$labels['create_folder'] = 'Créer un dossier local';
+$labels['create'] = 'Créer';
+$labels['delete_folder'] = 'Supprimer un dossier local';
+$labels['delete'] = 'Supprimer le dossier';
+$labels['electron'] = 'Electron';
+
+$labels['archive_path'] = 'Chemin vers le dossier des archives : ';
+$labels['actual_archive_path'] = 'Chemin actuel vers le dossier des archives : ';
+$labels['save'] = 'Enregistrer';
+$labels['change'] = 'Modifier';
+$labels['change_archive_path'] = 'Changer le dossier de destination des archives';
 
 ?>

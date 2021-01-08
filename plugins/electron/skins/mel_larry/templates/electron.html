@@ -1,0 +1,105 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+
+<head>
+  <title>
+    <roundcube:object name="pagetitle" />
+  </title>
+  <roundcube:include file="/includes/links.html" />
+  <link rel="stylesheet" type="text/css" href="/this/electron.css" />
+</head>
+
+<body class="noscroll">
+
+  <roundcube:include file="/includes/header.html" />
+
+  <div id="mainscreen" class="offset">
+
+    <roundcube:include file="/includes/settingstabs.html" />
+
+    <div id="pluginbody" class="uibox contentbox">
+
+      <div id="change_archive_path" class="boxcontent">
+        <h4>
+          <roundcube:label name="electron.change_archive_path" />
+        </h4>
+        <div class="texte_explic">Un dossier "Archives locales" sera créé s'il n'existe pas</div>
+        <br>
+        <form name="form" method="post" action="#" class="propform" id="change_path_form">
+          <fieldset>
+            <table class="propform">
+              <tbody>
+                <tr>
+                  <td class="title">
+                    <label for="rcmfd_changepassword_oldpassword">
+                      <roundcube:label name="electron.archive_path" />
+                    </label>
+                  </td>
+                  <td>
+                    <input name="archive_path" id="archive_path" size="60" type="text" required>
+                    <input type="button" class="button" name="browse" id="browse"
+                      value="<roundcube:label name='electron.change' />"/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </fieldset>
+          <div id="relaunch"></div>
+          <br>
+          <input type="submit" class="button mainaction" name="save" value="<roundcube:label name='electron.save' />" />
+          </p>
+        </form>
+      </div>
+
+
+      <hr>
+
+      <div id="create_folder" class="boxcontent">
+        <h4>
+          <roundcube:label name="electron.create_folder" />
+        </h4>
+
+        <form id="create_folder_form" method="post" action="#" class="propform">
+          <fieldset>
+            <legend>Emplacement</legend>
+            <table class="propform">
+              <tbody>
+                <tr>
+                  <td class="title"><label for="folder_name">Nom du dossier</label>
+                  </td>
+                  <td><input name="folder_name" id="folder_name" size="30" type="text" required></td>
+                </tr>
+                <tr>
+                  <td class="title"><label for="folder_path">Dossier parent</label>
+                  </td>
+                  <td>
+                    <select id="folder_path" name="folder_path" required>
+                    </select>
+                    <input type="button" class="button" name="delete_folder" id="delete_folder"
+                      value="<roundcube:label name='electron.delete' />" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </fieldset>
+          <div class="footerleft formbuttons">
+            <input type="submit" class="button mainaction" id="rcmbtn108"
+              value="<roundcube:label name='electron.create' />">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <roundcube:include file="/includes/footer.html" />
+
+  <script type="text/javascript">
+    new rcube_splitter({
+      id: 'melsplitter', p1: '#settings-sections', p2: '#settings-right',
+      orientation: 'v', relative: true, start: 180, min: 42, size: 12
+    }).init();
+  </script>
+
+</body>
+
+</html>

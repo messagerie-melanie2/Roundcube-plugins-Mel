@@ -19,34 +19,114 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+
+
 if (rcmail.env.iselectron) {
   if (window.api) {
     //Définition variables globales
     let searchform_onsubmit;
 
     rcmail.addEventListener('init', function (evt) {
-      if (rcmail.env.account_electron) {
-        //On finit de télécharger les archives s'il en reste
-        window.api.send('download_eml', { "token": rcmail.env.request_token });
-      }
-
-      //Récupère le nom du dossier des archive configuré dans le fichier .env
-      window.api.send('get_archive_folder')
-      window.api.receive('archive_folder', (folder) => {
-        rcmail.env.local_archive_folder = folder;
-        createFolder();
-        displaySubfolder();
-      });
-      rcmail.message_list
-        .addEventListener('dragstart', function (o) { drag_start(o); })
-        .addEventListener('dragend', function (o) { drag_end_archive(o) })
-
       if (rcmail.env.task == 'mail') {
-        rcmail.register_command('plugin_import_archive', function(){
+        if (rcmail.env.account_electron) {
+          //On finit de télécharger les archives s'il en reste
+          window.api.send('download_eml', { "token": rcmail.env.request_token });
+        }
+
+        //Récupère le nom du dossier des archive configuré dans le fichier .env
+        window.api.send('get_archive_folder')
+        window.api.receive('archive_folder', (folder) => {
+          rcmail.env.local_archive_folder = folder;
+          createFolder();
+          displaySubfolder();
+        });
+
+        rcmail.message_list
+          .addEventListener('dragstart', function (o) { drag_start(o); })
+          .addEventListener('dragend', function (o) { drag_end_archive(o) })
+
+        rcmail.register_command('plugin_import_archive', function () {
           window.api.send('import-archivage')
         }, true);
       }
+
+      else if (rcmail.env.task == 'settings') {
+        if (rcmail.env.action == 'plugin.electron') {
+
+          window.api.send('get_archive_path');
+          window.api.receive('archive_path', (archive_path) => {
+            $('#archive_path').val(archive_path)
+            $('#folder_path').append($('<option>', {
+              value: archive_path + "/" + rcmail.env.account_electron,
+              text: "---",
+            }));
+          });
+
+          window.api.send('subfolder');
+          window.api.receive('listSubfolder', (subfolders) => {
+            subfolders.forEach(subfolder => {
+              if (subfolder.name == rcmail.env.account_electron) {
+                displayTree(subfolder.children, '', 1);
+              }
+            })
+          });
+
+        }
+      }
     });
+
+    $(document)
+      .on({
+        click: function (e) {
+          // Toggle les items de la liste
+          window.api.send('new_archive_path');
+        }
+      }, "#browse");
+
+    $(document)
+      .on({
+        submit: function (e) {
+          // Toggle les items de la liste
+          e.preventDefault();
+          let path = $('#archive_path').val();
+          window.api.send('change_archive_path', path);
+        }
+      }, "#change_path_form");
+
+    $(document)
+      .on({
+        click: function (e) {
+          // Toggle les items de la liste
+          let path = $('#folder_path').val();
+          if (path) {
+            if (confirm('Voulez-vous supprimer ce dossier ainsi que tout son contenu ?')) {
+              window.api.send('delete_folder', path);
+              window.location.reload();
+            }
+          }
+        }
+      }, "#delete_folder");
+
+    $(document)
+      .on({
+        submit: function (e) {
+          // Toggle les items de la liste
+          let name = $('#folder_name').val();
+          let path = $('#folder_path').val();
+          window.api.send('create_folder', { name: name, path: path })
+        }
+      }, "#create_folder_form");
+
+
+    window.api.receive('change_archive_path_success', (result) => {
+      $('#relaunch').append('<div class="texte_explic">Merci de redémarrer le client pour appliquer le changement</div>');
+    })
+
+    //  ----- Récupère le nouveau chemin pour le dossier des archives -----
+    window.api.receive('new_archive_path_result', (result) => {
+      $('#archive_path').val(result.filePaths)
+    })
 
     //  ----- Réaffiche les sous-dossier après archivage d'un nouveau dossier -----
     window.api.receive('new_folder', (folder) => {
@@ -88,6 +168,8 @@ if (rcmail.env.iselectron) {
       rcmail.hide_message(message_cancel);
       rcmail.display_message('Fin du téléchargement des archives', 'confirmation');
     });
+
+
 
     window.api.receive('import-advancement', (data) => {
       rcmail.hide_message(message_archivage);
@@ -145,6 +227,24 @@ if (rcmail.env.iselectron) {
           }
           getChildren(child);
         }
+      }
+    }
+
+    function getSelectChildren(parent, niveau = 0) {
+      if (parent && parent.children) {
+        // for (var i = 0, l = parent.children.length; i < l; ++i) {
+        //   let child = parent.children[i];
+        //   let space = 'A';
+        //   let text = space.repeat(niveau) + child.name;
+        //   console.log(text);
+
+        //   $('#select_folder').append($('<option>', {
+        //     value: child.path,
+        //     text: text,
+        //   }));
+
+        //   getSelectChildren(child, niveau++);
+        // }
       }
     }
 
@@ -399,7 +499,7 @@ if (rcmail.env.iselectron) {
       let date = new Date(row_date);
       return (date.getDate() < 10 ? '0' : '') + date.getDate() +
         '/'
-        + (date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1) +
+        + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) +
         '/'
         + date.getFullYear() +
         ' '
@@ -413,6 +513,24 @@ if (rcmail.env.iselectron) {
       doc.open();
       doc.write("");
       doc.close();
+    }
+
+    function displayTree(children, prefix, depth) {
+      let result = '';
+      children
+        .forEach(function (child, index, children) {
+          let last = '─> ';
+          let line = (index === children.length - 1) ? '└' + last : '├' + last;
+          let newPrefix = prefix + (index === children.length - 1 ? '    ' : '│   ');
+          result = prefix + line + child.name;
+          $('#folder_path').append($('<option>', {
+            value: child.path,
+            text: result,
+          }));
+          result = (child.children ? displayTree(child.children, newPrefix, depth + 1) : '');
+        });
+
+      return result;
     }
 
     function translateFolder(name) {

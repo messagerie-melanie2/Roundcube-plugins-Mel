@@ -316,6 +316,15 @@ abstract class driver_mel {
   }
 
   /**
+   * Return the object share delimiter from ObjectShare ORM object
+   * 
+   * @return string DELIMITER
+   */
+  public function objectShareDelimiter() {
+    return constant(static::$_objectsNS . 'ObjectShare::DELIMITER');
+  }
+
+  /**
    * Est-ce que le host est en ssl pour la connexion IMAP ?
    * 
    * @return boolean

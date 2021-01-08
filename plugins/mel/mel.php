@@ -215,6 +215,7 @@ class mel extends rcube_plugin {
    */
   public function set_account($_account) {
     $this->get_account = $_account;
+    $this->set_user_properties();
   }
 
   /**

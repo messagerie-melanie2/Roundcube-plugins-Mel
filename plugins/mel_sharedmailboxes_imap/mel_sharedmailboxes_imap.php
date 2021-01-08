@@ -54,7 +54,8 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         // Hooks
         $this->add_hook('storage_connect',      array($this, 'storage_connect'));
         $this->add_hook('identity_select',      array($this, 'identity_select'));
-        $this->add_hook('config_get', array($this,'config_get'));
+        $this->add_hook('message_before_send',  array($this, 'message_before_send'));
+        $this->add_hook('config_get',           array($this,'config_get'));
 
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
@@ -204,7 +205,12 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             case 'sent_mbox':
                 $sent_mbox = $args['result'];
                 if (!empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
-                    $sent_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $sent_mbox;
+                    if ($sent_mbox == 'INBOX') {
+                        $sent_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal();
+                    }
+                    else {
+                        $sent_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $sent_mbox;
+                    }
                 }
                 $args['result'] = $sent_mbox;
                 break;
@@ -219,6 +225,42 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 }
                 $args['result'] = $drafts_mbox;
                 break;
+        }
+        return $args;
+    }
+
+    /**
+     * Connect to smtp
+     * Stock l'identité utilisé avant que le message soit envoyé
+     * Utilisé pour la connexion smtp
+     */
+    public function message_before_send($args) {
+        if (mel_logs::is(mel_logs::DEBUG))
+            mel_logs::gi()->l(mel_logs::DEBUG, "mel::message_before_send()");
+
+        $_SESSION['m2_from_identity'] = $args['from'];
+        $_SESSION['m2_uid_identity'] = null;
+        // Parcour les identités pour réécrire le from avec le realname
+        $identities = $this->rc->user->list_identities();
+        $headers = [];
+        $found = false;
+        foreach ($identities as $identity) {
+            if (strtolower($args['from']) == strtolower($identity['email'])) {
+                $found = true; 
+                $_SESSION['m2_uid_identity'] = $identity['uid'];
+                if (isset($args['message']->_headers['From'])) {
+                    // Si on retrouve l'identité on met à jour le From des headers pour formatter avec le realname
+                    $headers['From'] = '"' . $identity['realname'] . '" <' . $identity['email'] . '>';
+                    break;
+                }
+            }
+        }
+        if (!empty($headers)) {
+            $headers = driver_mel::gi()->setHeadersMessageBeforeSend($headers);
+            $args['message']->headers($headers, true);
+        }
+        if (!$found) {
+            $args['abort'] = true;
         }
         return $args;
     }
@@ -524,17 +566,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             $COMPOSE =& $_SESSION['compose_data_'.$COMPOSE_ID];
 
         if (isset($COMPOSE)) {
-            $driver_mel = driver_mel::gi();
-            $balp_label = $driver_mel->getBalpLabel();
-            $sent_mbox = $driver_mel->getMboxSent();
-
-            /* PAMELA - Gestion des boites partagées */
-            if (isset($balp_label) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
-                $delimiter = $_SESSION['imap_delimiter'];
-                $sent_mbox = isset($sent_mbox) ? $balp_label . $delimiter . $this->mel->get_user_bal() . $delimiter . $sent_mbox : null;
-            }
-
-            $_SESSION['compose_data_'.$COMPOSE_ID]['param']['sent_mbox'] = $sent_mbox;
+            $_SESSION['compose_data_'.$COMPOSE_ID]['param']['sent_mbox'] = $this->rc->config->get('sent_mbox');
         }
     }
 }

@@ -231,24 +231,6 @@ if (rcmail.env.iselectron) {
       }
     }
 
-    function getSelectChildren(parent, niveau = 0) {
-      if (parent && parent.children) {
-        // for (var i = 0, l = parent.children.length; i < l; ++i) {
-        //   let child = parent.children[i];
-        //   let space = 'A';
-        //   let text = space.repeat(niveau) + child.name;
-        //   console.log(text);
-
-        //   $('#select_folder').append($('<option>', {
-        //     value: child.path,
-        //     text: text,
-        //   }));
-
-        //   getSelectChildren(child, niveau++);
-        // }
-      }
-    }
-
     // ----- Changement de l'environnement et chargement de la liste  ----- 
     // ----- Fonction appelée lors du clique sur un dossier -----
     function chargementArchivage(path) {

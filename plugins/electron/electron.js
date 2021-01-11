@@ -44,6 +44,7 @@ if (rcmail.env.iselectron) {
 
         rcmail.message_list
           .addEventListener('dragstart', function (o) { drag_start(o); })
+          .addEventListener('dragmove', function (o) { drag_move_archive(o); })
           .addEventListener('dragend', function (o) { drag_end_archive(o) })
 
         rcmail.register_command('plugin_import_archive', function () {
@@ -306,6 +307,7 @@ if (rcmail.env.iselectron) {
             .addEventListener('dragstart', function (o) { rcmail.drag_start(o); })
             .addEventListener('dragstart', function (o) { drag_start(o); })
             .addEventListener('dragmove', function (e) { rcmail.drag_move(e); })
+            .addEventListener('dragmove', function (e) { drag_move_archive(e); })
             .addEventListener('dragend', function (e) { rcmail.drag_end(e); })
             .addEventListener('dragend', function (o) { drag_end_archive(o) })
             .addEventListener('expandcollapse', function (o) { rcmail.msglist_expand(o); })
@@ -328,8 +330,6 @@ if (rcmail.env.iselectron) {
     });
 
 
-
-
     let drag_uid = [];
     function drag_start(list) {
       drag_uid = list.get_selection();
@@ -342,6 +342,13 @@ if (rcmail.env.iselectron) {
             window.api.send('eml_read', { "uid": uid, "folder": list.target.rel });
           }
         }
+      }
+    }
+
+    function drag_move_archive(list) {
+      let path = list.path[1];
+      if (path.className == "mailbox sub_archives_locales") {
+        $('#' + path.id).addClass('droptarget');
       }
     }
 

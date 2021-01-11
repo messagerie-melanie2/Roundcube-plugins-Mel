@@ -41,6 +41,14 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
     private $get_account;
 
     /**
+     * Connexion au folder precedent, 
+     * si on change de boite on doit refaire une connexion au storage
+     * 
+     * @var string
+     */
+    private $prev_folder;
+
+    /**
      * Initialisation du plugin
      *
      * @see rcube_plugin::init()
@@ -55,7 +63,15 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         $this->add_hook('storage_connect',      array($this, 'storage_connect'));
         $this->add_hook('identity_select',      array($this, 'identity_select'));
         $this->add_hook('message_before_send',  array($this, 'message_before_send'));
-        $this->add_hook('config_get',           array($this,'config_get'));
+        $this->add_hook('check_recent',         array($this, 'check_recent'));
+        $this->add_hook('messages_list',        array($this, 'messages_list'));
+
+        $this->add_hook('config_get',           array($this, 'config_get'));
+
+        $this->add_hook('mel_is_inbox',         array($this, 'is_inbox'));
+        $this->add_hook('mel_target_folder',    array($this, 'target_folder'));
+        $this->add_hook('mel_folder_cache',     array($this, 'folder_cache'));
+        $this->add_hook('m2_set_folder_name',   array($this, 'set_folder_name'));
 
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
@@ -138,13 +154,20 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 if ($this->rc->task == 'mail' && $this->rc->action == 'send' && isset($_POST['_store_target'])) {
                     $folder = rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST);
                 }
+                else if (isset($_GET['_mbox']) || isset($_POST['_mbox'])) {
+                    $folder = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC);
+                    if (strpos($folder, driver_mel::gi()->getBalpLabel()) !== 0 
+                            || strpos($folder, driver_mel::gi()->getMboxTrash() . '-individuelle') === false) {
+                        $folder = $this->rc->storage->get_folder();
+                    }
+                }
                 else {
                     $folder = $this->rc->storage->get_folder();
                 }
                 
                 $balp_label = driver_mel::gi()->getBalpLabel();
                 if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
-                    $delim = $this->rc->storage->get_hierarchy_delimiter();
+                    $delim = $_SESSION['imap_delimiter'];
                     $osDelim = driver_mel::gi()->objectShareDelimiter();
                     $data = explode($delim, $folder, 3);
                     $_objects = driver_mel::gi()->getUser()->getObjectsShared();
@@ -157,10 +180,6 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                             $args['host'] = driver_mel::gi()->getRoutage($mailbox);
                             $this->get_account = urlencode($args['user']) . '@' . $args['host'];
                             $this->mel->set_account($this->get_account);
-                            // Gestion de la corbeille individuelle
-                            if ($folder == $balp_label.$delim.$_object->mailbox->uid.$delim.driver_mel::gi()->getMboxTrash() . '-individuelle') {
-                                $this->rc->storage->set_folder(driver_mel::gi()->getMboxTrash());
-                            }
                         }
                     }
 
@@ -196,6 +215,56 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
     }
 
     /**
+     * Check recent BALP Inbox folders list
+     *
+     * @param array $args
+     */
+    public function check_recent($args) {
+        if (in_array('INBOX', $args['folders'])) {
+            // Récupération des préférences de l'utilisateur
+            $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
+            $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+            if (count($_objects) >= 1) {
+                foreach ($_objects as $_object) {
+                    if (isset($hidden_mailboxes[$_object->uid])) {
+                        continue;
+                    }
+                    if (isset($_object->mailbox)) {
+                        $mailbox = $_object->mailbox;
+                        // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                        $mailbox->load(['internet_access_enable']);
+                        if (!mel::is_internal() && !$mailbox->internet_access_enable) {
+                            continue;
+                        }
+                        $args['folders'][] = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $mailbox->uid;
+                    }
+                }
+            }
+        }
+        return $args;
+    }
+
+    /**
+     * Messages list header for Corbeille mbox
+     *
+     * @param array $args
+     */
+    public function messages_list($args) {
+        if ($this->rc->storage->get_folder() == driver_mel::gi()->getMboxTrash()) {
+            $trash_mbox = $this->rc->config->get('trash_mbox');
+            if ($trash_mbox != driver_mel::gi()->getMboxTrash()) {
+                foreach ($args['messages'] as $key => $message) {
+                    if ($args['messages'][$key]->folder == driver_mel::gi()->getMboxTrash()) {
+                        $args['messages'][$key]->folder = $trash_mbox;
+                    }
+                }
+                $this->rc->output->set_env('mailbox', $trash_mbox);
+            }
+        }
+        return $args;
+    }
+
+    /**
      * Modify the user configuration to adapt to mobile skin
      *
      * @param array $args
@@ -225,6 +294,93 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 }
                 $args['result'] = $drafts_mbox;
                 break;
+            case 'junk_mbox':
+                $junk_mbox = $args['result'];
+                if (!empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
+                    $junk_mbox = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $junk_mbox;
+                }
+                $args['result'] = $junk_mbox;
+                break;
+            case 'trash_mbox':
+                $trash_mbox = $args['result'];
+                if (!empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
+                    $trash_mbox = $_SESSION['trash_folders'][$this->mel->get_user_bal()];
+                }
+                $args['result'] = $trash_mbox;
+                break;
+        }
+        return $args;
+    }
+
+    /**
+     * Is current mbox is Inbox for BALP
+     *
+     * @param array $args
+     */
+    public function is_inbox($args) {
+        if (!$args['isInbox'] && strpos($args['mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
+            $exp = explode($_SESSION['imap_delimiter'], $args['mbox']);
+            $args['isInbox'] = count($exp) === 2;
+        }
+        return $args;
+    }
+
+    /**
+     * Change target folder for Corbeille
+     *
+     * @param array $args
+     */
+    public function target_folder($args) {
+        if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
+            $args['target'] = driver_mel::gi()->getMboxTrash();
+        }
+        return $args;
+    }
+
+    /**
+     * Change folder name for Corbeille individuelle
+     *
+     * @param array $args
+     */
+    public function set_folder_name($args) {
+        if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['folder'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
+            $args['folder'] = driver_mel::gi()->getMboxTrash();
+        }
+        else if ($args['folder'] == 'INBOX' && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
+            $args['folder'] = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal();
+        }
+        if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
+            $relog = false;
+            if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
+                $folderTmp = explode($_SESSION['imap_delimiter'], $args['folder'], 3);
+                $prevFolderTmp = explode($_SESSION['imap_delimiter'], $args['folder'], 3);
+                $relog = $folderTmp[1] != $prevFolderTmp[1];
+            }
+            else if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
+                $relog = true;
+            }
+            if ($relog) {
+                $this->prev_folder = $args['folder'];
+                $this->rc->storage->set_folder($args['folder']);
+                $this->rc->storage->connect($_SESSION['storage_host'], 
+                    $_SESSION['username'], 
+                    $this->rc->decrypt($_SESSION['password']), 
+                    $_SESSION['storage_port'], 
+                    $_SESSION['storage_ssl']);
+            }
+        }
+        $this->prev_folder = $args['folder'];
+        return $args;
+    }
+
+    /**
+     * Change folder name for Corbeille individuelle
+     *
+     * @param array $args
+     */
+    public function folder_cache($args) {
+        if ($args['folder'] == driver_mel::gi()->getMboxTrash()) {
+            $args['folder'] = $this->rc->config->get('trash_mbox');
         }
         return $args;
     }
@@ -329,6 +485,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             }
 
             // Parcourir toutes les boites partagées de l'utilisateur
+            $_SESSION['trash_folders'];
             $_objects = driver_mel::gi()->getUser()->getObjectsShared();
             if (count($_objects) >= 1) {
                 foreach ($_objects as $_object) {
@@ -473,35 +630,42 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             $result[$balp_name] = $folders[$balp_name];
             unset($folders[$balp_name]);
             // Gestion des Brouillons
-            if (isset($folders[$driver_mel->getMboxDraft()])) {
-                $folders[$driver_mel->getMboxDraft()]['class'] = $driver_mel->getMboxDraft();
-                $result[$driver_mel->getMboxDraft()] = $folders[$driver_mel->getMboxDraft()];
-                unset($folders[$driver_mel->getMboxDraft()]);
+            $dratfs_mbox = $this->rc->config->get('drafts_mbox');
+            if (isset($folders[$dratfs_mbox])) {
+                $folders[$dratfs_mbox]['class'] = $dratfs_mbox;
+                $result[$dratfs_mbox] = $folders[$dratfs_mbox];
+                unset($folders[$dratfs_mbox]);
             }
             // Gestion des Elements envoyées
-            if (isset($folders[$driver_mel->getMboxSent()])) {
-                $folders[$driver_mel->getMboxSent()]['class'] = $driver_mel->getMboxSent();
-                $result[$driver_mel->getMboxSent()] = $folders[$driver_mel->getMboxSent()];
-                unset($folders[$driver_mel->getMboxSent()]);
+            $sent_mbox = $this->rc->config->get('sent_mbox');
+            if (isset($folders[$sent_mbox]) && $sent_mbox != 'INBOX') {
+                $folders[$sent_mbox]['class'] = $sent_mbox;
+                $result[$sent_mbox] = $folders[$sent_mbox];
+                unset($folders[$sent_mbox]);
             }
             // Gestion des Indésirables
-            if (isset($folders[$driver_mel->getMboxJunk()])) {
-                $folders[$driver_mel->getMboxJunk()]['class'] = $driver_mel->getMboxJunk();
-                $result[$driver_mel->getMboxJunk()] = $folders[$driver_mel->getMboxJunk()];
-                unset($folders[$driver_mel->getMboxJunk()]);
+            $junk_mbox = $this->rc->config->get('junk_mbox');
+            if (isset($folders[$junk_mbox])) {
+                $folders[$junk_mbox]['class'] = $junk_mbox;
+                $result[$junk_mbox] = $folders[$junk_mbox];
+                unset($folders[$junk_mbox]);
             }
             // Gestion de la corbeille individuelle et de la corbeille partagée
-            if (!isset($folders[$driver_mel->getMboxTrash()]) && isset($list[$driver_mel->getMboxTrash()])) {
-                $folders[$driver_mel->getMboxTrash()] = $list[$driver_mel->getMboxTrash()];
-                $folders[$driver_mel->getMboxTrash()]['id'] = $balp_label . $delim . $balp_name . $delim . $driver_mel->getMboxTrash() . '-individuelle';
-                $folders[$driver_mel->getMboxTrash()]['class'] = $driver_mel->getMboxTrash();
-                $result[$driver_mel->getMboxTrash()] = $folders[$driver_mel->getMboxTrash()];
-                unset($folders[$driver_mel->getMboxTrash()]);
+            $trash_mbox = $this->rc->config->get('trash_mbox');
+            if (!isset($folders[$trash_mbox]) && isset($list[$trash_mbox])) {
+                $trash_mbox_indiv = $trash_mbox . '-individuelle';
+                $folders[$trash_mbox_indiv] = $list[$trash_mbox];
+                $folders[$trash_mbox_indiv]['id'] = $balp_label . $delim . $balp_name . $delim . $trash_mbox_indiv;
+                $folders[$trash_mbox_indiv]['class'] = $trash_mbox;
+                $result[$trash_mbox_indiv] = $folders[$trash_mbox_indiv];
+                unset($folders[$trash_mbox_indiv]);
+                $_SESSION['trash_folders'][$balp_name] = $balp_label . $delim . $balp_name . $delim . $trash_mbox_indiv;
             }
-            else if (isset($folders[$driver_mel->getMboxTrash()])) {
-                $folders[$driver_mel->getMboxTrash()]['class'] = $driver_mel->getMboxTrash();
-                $result[$driver_mel->getMboxTrash()] = $folders[$driver_mel->getMboxTrash()];
-                unset($folders[$driver_mel->getMboxTrash()]);
+            else if (isset($folders[$trash_mbox])) {
+                $folders[$trash_mbox]['class'] = $trash_mbox;
+                $result[$trash_mbox] = $folders[$trash_mbox];
+                unset($folders[$trash_mbox]);
+                $_SESSION['trash_folders'][$balp_name] = $balp_label . $delim . $balp_name . $delim . $trash_mbox;
             }
             $list = array_merge($result, $folders);
         }

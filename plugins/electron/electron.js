@@ -377,6 +377,7 @@ if (rcmail.env.iselectron) {
             uid.flags.SEEN = false;
           }
           files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).concat("&_save=1"), "uid": uid.message_uid, "path_folder": event.response.path_folder, "mbox": mbox, "etiquettes": uid.flags });
+          rcmail.message_list.remove_row(uid.message_uid);
         }
         window.parent.api.send('download_eml', { "files": files, "token": rcmail.env.request_token });
         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));

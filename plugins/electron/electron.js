@@ -521,7 +521,7 @@ if (rcmail.env.iselectron) {
         .forEach(function (child, index, children) {
           let last = '─> ';
           let line = (index === children.length - 1) ? '└' + last : '├' + last;
-          let newPrefix = prefix + (index === children.length - 1 ? '    ' : '│   ');
+          let newPrefix = prefix + '│   ';
           result = prefix + line + child.name;
           $('#folder_path').append($('<option>', {
             value: child.path,

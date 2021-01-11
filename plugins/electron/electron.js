@@ -44,6 +44,7 @@ if (rcmail.env.iselectron) {
 
         rcmail.message_list
           .addEventListener('dragstart', function (o) { drag_start(o); })
+          .addEventListener('dragmove', function (o) { drag_move_archive(o); })
           .addEventListener('dragend', function (o) { drag_end_archive(o) })
 
         rcmail.register_command('plugin_import_archive', function () {
@@ -230,24 +231,6 @@ if (rcmail.env.iselectron) {
       }
     }
 
-    function getSelectChildren(parent, niveau = 0) {
-      if (parent && parent.children) {
-        // for (var i = 0, l = parent.children.length; i < l; ++i) {
-        //   let child = parent.children[i];
-        //   let space = 'A';
-        //   let text = space.repeat(niveau) + child.name;
-        //   console.log(text);
-
-        //   $('#select_folder').append($('<option>', {
-        //     value: child.path,
-        //     text: text,
-        //   }));
-
-        //   getSelectChildren(child, niveau++);
-        // }
-      }
-    }
-
     // ----- Changement de l'environnement et chargement de la liste  ----- 
     // ----- Fonction appelée lors du clique sur un dossier -----
     function chargementArchivage(path) {
@@ -306,6 +289,7 @@ if (rcmail.env.iselectron) {
             .addEventListener('dragstart', function (o) { rcmail.drag_start(o); })
             .addEventListener('dragstart', function (o) { drag_start(o); })
             .addEventListener('dragmove', function (e) { rcmail.drag_move(e); })
+            .addEventListener('dragmove', function (e) { drag_move_archive(e); })
             .addEventListener('dragend', function (e) { rcmail.drag_end(e); })
             .addEventListener('dragend', function (o) { drag_end_archive(o) })
             .addEventListener('expandcollapse', function (o) { rcmail.msglist_expand(o); })
@@ -328,8 +312,6 @@ if (rcmail.env.iselectron) {
     });
 
 
-
-
     let drag_uid = [];
     function drag_start(list) {
       drag_uid = list.get_selection();
@@ -342,6 +324,13 @@ if (rcmail.env.iselectron) {
             window.api.send('eml_read', { "uid": uid, "folder": list.target.rel });
           }
         }
+      }
+    }
+
+    function drag_move_archive(list) {
+      let path = list.path[1];
+      if (path.className == "mailbox sub_archives_locales") {
+        $('#' + path.id).addClass('droptarget');
       }
     }
 
@@ -370,6 +359,7 @@ if (rcmail.env.iselectron) {
             uid.flags.SEEN = false;
           }
           files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).concat("&_save=1"), "uid": uid.message_uid, "path_folder": event.response.path_folder, "mbox": mbox, "etiquettes": uid.flags });
+          rcmail.message_list.remove_row(uid.message_uid);
         }
         window.parent.api.send('download_eml', { "files": files, "token": rcmail.env.request_token });
         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));
@@ -521,7 +511,7 @@ if (rcmail.env.iselectron) {
         .forEach(function (child, index, children) {
           let last = '─> ';
           let line = (index === children.length - 1) ? '└' + last : '├' + last;
-          let newPrefix = prefix + (index === children.length - 1 ? '    ' : '│   ');
+          let newPrefix = prefix + '│   ';
           result = prefix + line + child.name;
           $('#folder_path').append($('<option>', {
             value: child.path,

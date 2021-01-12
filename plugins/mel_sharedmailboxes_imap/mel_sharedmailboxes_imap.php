@@ -321,6 +321,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         if (!$args['isInbox'] && strpos($args['mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
             $exp = explode($_SESSION['imap_delimiter'], $args['mbox']);
             $args['isInbox'] = count($exp) === 2;
+            if (!$args['isInbox'] && isset($args['smart']) && $args['smart']) {
+                $args['isInbox'] = $args['mbox'] != $this->rc->config->get('sent_mbox') && $args['mbox'] != $this->rc->config->get('drafts_mbox');
+            }
         }
         return $args;
     }
@@ -331,7 +334,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
      * @param array $args
      */
     public function target_folder($args) {
-        if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
+        if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
             $args['target'] = driver_mel::gi()->getMboxTrash();
         }
         return $args;

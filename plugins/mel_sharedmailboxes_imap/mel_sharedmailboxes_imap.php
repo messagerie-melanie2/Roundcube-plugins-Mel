@@ -306,6 +306,12 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 if (!empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
                     $trash_mbox = $_SESSION['trash_folders'][$this->mel->get_user_bal()];
                 }
+                else if (isset($_POST['_mbox']) && strpos($_POST['_mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
+                    $tmp = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
+                    if (isset($_SESSION['trash_folders'][$tmp[1]])) {
+                        $trash_mbox = $_SESSION['trash_folders'][$tmp[1]];
+                    }
+                }
                 $args['result'] = $trash_mbox;
                 break;
         }

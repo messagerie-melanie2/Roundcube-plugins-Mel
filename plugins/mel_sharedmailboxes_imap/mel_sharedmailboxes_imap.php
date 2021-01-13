@@ -69,9 +69,11 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         $this->add_hook('config_get',           array($this, 'config_get'));
 
         $this->add_hook('mel_is_inbox',         array($this, 'is_inbox'));
-        $this->add_hook('mel_target_folder',    array($this, 'target_folder'));
         $this->add_hook('mel_folder_cache',     array($this, 'folder_cache'));
         $this->add_hook('m2_set_folder_name',   array($this, 'set_folder_name'));
+
+        $this->add_hook('mel_move_message',     array($this, 'move_message'));
+        $this->add_hook('mel_copy_message',     array($this, 'copy_message'));
 
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
@@ -335,11 +337,116 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
     }
 
     /**
-     * Change target folder for Corbeille
+     * Move message from folder to folder or mailboxe to mailboxe
      *
      * @param array $args
      */
-    public function target_folder($args) {
+    public function move_message($args) {
+        $mbox  = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST, true);
+        if (isset($mbox)) {
+            if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
+                $targetTmp = explode($_SESSION['imap_delimiter'], $args['target'], 3);
+                $mboxTmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
+                $args['continue'] = $targetTmp[1] == $mboxTmp[1];
+            }
+            else if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
+                $args['continue'] = false;
+            }
+            if (!$args['continue']) {
+                $messages = [];
+                $storages = [];
+                $args['success'] = false;
+                // Move from mailboxe to mailboxe
+                foreach (rcmail::get_uids(null, null, $multifolder, rcube_utils::INPUT_POST) as $mbox => $uids) {
+                    if ($mbox === $args['target']) {
+                        $args['count'] += is_array($uids) ? count($uids) : 1;
+                    }
+                    else {
+                        // Récupérer l'eml et l'envoyer sur l'autre dossier
+                        $this->rc->storage->set_folder($mbox);
+                        $messages[$mbox] = [];
+                        foreach ($uids as $uid) {
+                            $messages[$mbox][$uid] = $this->rc->storage->get_raw_body($uid);
+                        }
+                        $storages[$mbox] = clone $this->rc->storage;
+                        $storages[$mbox]->conn = clone $this->rc->storage->conn;
+                    }
+                }
+                // Envoyer les eml vers la target
+                $this->rc->storage->set_folder($args['target']);
+                $this->rc->storage->connect($_SESSION['storage_host'], 
+                    $_SESSION['username'], 
+                    $this->rc->decrypt($_SESSION['password']), 
+                    $_SESSION['storage_port'], 
+                    $_SESSION['storage_ssl']);
+
+                foreach ($messages as $mbox => $list) {
+                    foreach ($list as $uid => $item) {
+                        if ($this->rc->storage->save_message($args['target'], $item)) {
+                            $storages[$mbox]->delete_message($uid, $mbox);
+                            $args['count']++;
+                            $args['success'] = true;
+                        }
+                    }
+                }
+                unset($storages);
+                unset($messages);
+            }
+        }
+        if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
+            $args['target'] = driver_mel::gi()->getMboxTrash();
+        }
+        return $args;
+    }
+
+    /**
+     * Copy message from folder to folder or mailboxe to mailboxe
+     *
+     * @param array $args
+     */
+    public function copy_message($args) {
+        $mbox  = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST, true);
+        if (isset($mbox)) {
+            if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
+                $targetTmp = explode($_SESSION['imap_delimiter'], $args['target'], 3);
+                $mboxTmp = explode($_SESSION['imap_delimiter'], $mbox, 3);
+                $args['continue'] = $targetTmp[1] == $mboxTmp[1];
+            }
+            else if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($mbox, driver_mel::gi()->getBalpLabel()) === 0) {
+                $args['continue'] = false;
+            }
+            if (!$args['continue']) {
+                $messages = [];
+                // Copy from mailboxe to mailboxe
+                foreach (rcmail::get_uids(null, null, $multifolder, rcube_utils::INPUT_POST) as $mbox => $uids) {
+                    if ($mbox === $args['target']) {
+                        $args['copied']++;
+                    }
+                    else {
+                        // Récupérer l'eml et l'envoyer sur l'autre dossier
+                        $this->rc->storage->set_folder($mbox);
+                        foreach ($uids as $uid) {
+                            $messages[$uid] = $this->rc->storage->get_raw_body($uid);
+                        }
+                        $args['sources'][] = $mbox;
+                    }
+                }
+                // Envoyer les eml vers la target
+                $this->rc->storage->set_folder($args['target']);
+                $this->rc->storage->connect($_SESSION['storage_host'], 
+                    $_SESSION['username'], 
+                    $this->rc->decrypt($_SESSION['password']), 
+                    $_SESSION['storage_port'], 
+                    $_SESSION['storage_ssl']);
+
+                foreach ($messages as $uid => $message) {
+                    if ($this->rc->storage->save_message($args['target'], $message)) {
+                        $args['copied']++;
+                    }
+                }
+                unset($messages);
+            }
+        }
         if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
             $args['target'] = driver_mel::gi()->getMboxTrash();
         }

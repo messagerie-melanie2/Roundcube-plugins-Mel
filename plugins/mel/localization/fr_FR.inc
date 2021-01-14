@@ -128,4 +128,8 @@ $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
 $labels['portail_title'] = 'Ouvrez votre bureau numérique';
 $labels['help_title'] = 'Ouvrez la page d\'assistance dédiée à Mél';
 
+$labels['mel_mailboxes_display'] = 'Mode d\'affichage des dossiers';
+$labels['default_pref_text'] = "Par défaut";
+$labels['subfolders_pref_text'] = "Regrouper les dossiers";
+$labels['unified_pref_text'] = "Dossiers unifiés";
 $labels['subfolders'] = 'Dossiers';

@@ -77,6 +77,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
 
         $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
 
+        $this->add_hook('preferences_list',     array($this, 'prefs_list'));
+        $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
             $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
@@ -524,6 +527,52 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 $_folders['virtual'. $default_folder] = $folder;
             }
             $args['list'] = array_merge($_folders, $args['list']);
+        }
+        return $args;
+    }
+
+    /**
+     * Handler for user preferences form (preferences_list hook)
+     */
+    function prefs_list($args) {
+        if ($args['section'] == 'mailbox') {
+            // Check that configuration is not disabled
+            $dont_override = (array)$this->rc->config->get('dont_override', array());
+
+            $key = 'mel_mailboxes_display';
+            if (!in_array($key, $dont_override)) {
+                $config_key = 'mailboxes_display';
+                $field_id = "_" . $key;
+                $value = $this->rc->config->get($config_key, 'mail');
+                $input = new html_select(array(
+                    'name' => $field_id,
+                    'id' => $field_id,
+                ));
+                foreach (['default', 'subfolders', 'unified'] as $type) {
+                    $input->add($this->rc->gettext($type.'_pref_text', 'mel'), $type);
+                }
+
+                $args['blocks']['main']['options'][$key] = array(
+                    'title' => html::label($field_id, rcube::Q($this->rc->gettext($key, 'mel'))),
+                    'content' => $input->show($value),
+                );
+            }
+        }
+        return $args;
+    }
+
+    /**
+     * Handler for user preferences save (preferences_save hook)
+     */
+    public function prefs_save($args) {
+        if ($args['section'] == 'mailbox') {
+            // Check that configuration is not disabled
+            $dont_override = ( array ) $this->rc->config->get('dont_override', array());
+            $key = 'mel_mailboxes_display';
+            if (!in_array($key, $dont_override)) {
+                $config_key = 'mailboxes_display';
+                $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
+            }
         }
         return $args;
     }

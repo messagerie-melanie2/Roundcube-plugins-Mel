@@ -256,6 +256,8 @@
 	--image-dossier-reception_selectionne: url("../images/mail/dossiers/reception_selectionne.png?v=e784.5000");
 	--image-dossier-brouillons: url("../images/mail/dossiers/brouillons.png?v=e784.5000");
 	--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000");
+	--image-dossier-modeles: url("../images/mail/dossiers/modeles.png?v=e784.5000");
+	--image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne.png?v=e784.5000");
 	--image-dossier-envoyes: url("../images/mail/dossiers/envoyes.png?v=e784.5000");
 	--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000");
 	--image-dossier-indesirables: url("../images/mail/dossiers/indesirables.png?v=e784.5000");
@@ -525,6 +527,8 @@
 		--image-dossier-reception_selectionne: url("../images/mail/dossiers/reception_selectionne-dark.png?v=e784.5000");
 		--image-dossier-brouillons: url("../images/mail/dossiers/brouillons-dark.png?v=e784.5000");
 		--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000");
+		--image-dossier-modeles: url("../images/mail/dossiers/modeles-dark.png?v=e784.5000");
+		--image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne-dark.png?v=e784.5000");
 		--image-dossier-envoyes: url("../images/mail/dossiers/envoyes-dark.png?v=e784.5000");
 		--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000");
 		--image-dossier-indesirables: url("../images/mail/dossiers/indesirables-dark.png?v=e784.5000");

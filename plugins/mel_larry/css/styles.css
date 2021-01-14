@@ -2120,6 +2120,27 @@ ul.treelist li.selected > div.collapsed {
 	background-position: 27px 3px;
 }
 
+.folderlist li.mailbox.models > a {
+	background: url(../images/mail/dossiers/modeles.png?v=e784.5000) 17px center no-repeat;
+	background-image: var(--image-dossier-modeles);
+}
+
+#mailboxlist.folderlist li.mailbox.models > a {
+	background-position: 27px 3px;
+}
+
+.folderlist li.mailbox.models.selected > a, 
+.folderlist li.mailbox.models > a:focus {
+	background: url(../images/mail/dossiers/modeles_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background-image: var(--image-dossier-modeles_selectionne);
+    background-color: var(--listitem-selected-bg-color);
+}
+
+#mailboxlist.folderlist li.mailbox.models.selected > a, 
+#mailboxlist.folderlist li.mailbox.models > a:focus {
+	background-position: 27px 3px;
+}
+
 .folderlist li.mailbox.sent > a {
 	background: url(../images/mail/dossiers/envoyes.png?v=e784.5000) 17px center no-repeat;
 	background-image: var(--image-dossier-envoyes);

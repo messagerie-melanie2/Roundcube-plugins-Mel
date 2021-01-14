@@ -127,3 +127,5 @@ $labels['no bal'] = "Pas de BALI ? Cliquez-ici pour changer votre mot de passe";
 
 $labels['portail_title'] = 'Ouvrez votre bureau numérique';
 $labels['help_title'] = 'Ouvrez la page d\'assistance dédiée à Mél';
+
+$labels['subfolders'] = 'Dossiers';

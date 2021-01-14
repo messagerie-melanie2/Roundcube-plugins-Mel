@@ -330,7 +330,14 @@ if (rcmail.env.iselectron) {
     function drag_move_archive(list) {
       let path = list.path[1];
       if (path.className == "mailbox sub_archives_locales") {
-        $('#' + path.id).addClass('droptarget');
+        $('#' + path.id).hover(
+          function () {
+            $(this).addClass('droptarget');
+          },
+          function () {
+            $(this).removeClass('droptarget');
+          }
+        );
       }
     }
 

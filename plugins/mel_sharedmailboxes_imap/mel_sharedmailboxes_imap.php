@@ -468,7 +468,63 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
      * @param array $args
      */
     public function render_mailboxlist($args) {
-        $display = $this->rc->config->get('mailboxes_display', 'subfolders');
+        $display = $this->rc->config->get('mailboxes_display', 'default');
+        if ($display == 'unified') {
+            $_folders = [];
+            foreach ($this->rc->config->get('default_folders', 
+                    [   'INBOX',
+                        'sent',
+                        'drafts',
+                        'models',
+                        'junk',
+                        'trash']) as $default_folder) {
+                $folder_mbox = $this->rc->config->get($default_folder.'_mbox');
+                if ($folder_mbox == 'INBOX' && $default_folder != 'INBOX') {
+                    continue;
+                }
+                $folder = [
+                    'id'        => 'virtual'. $default_folder,
+                    'class'     => $default_folder,
+                    'name'      => $this->rc->gettext(strtolower($default_folder)),
+                    'virtual'   => true,
+                    'folders'   => [],
+                ];
+
+                foreach ($args['list'] as $mailbox => $folders) {
+                    if ($default_folder == 'INBOX') {
+                        if ($mailbox == $this->rc->user->get_username()) {
+                            $key = 'INBOX';
+                        }
+                        else {
+                            $key = array_key_first($folders['folders']);
+                        }
+                    }
+                    else if ($default_folder == 'trash') {
+                        if ($mailbox == $this->rc->user->get_username()) {
+                            $key = $folder_mbox;
+                        }
+                        else if (isset($folders['folders'][$folder_mbox])) {
+                            $key = $folder_mbox;
+                        }
+                        else if (isset($folders['folders'][$folder_mbox.'-individuelle'])) {
+                            $key = $folder_mbox.'-individuelle';
+                        }
+                    }
+                    else {
+                        $key = $folder_mbox;
+                    }
+                    if (!isset($folders['folders'][$key])) {
+                        continue;
+                    }
+                    $folder['folders'][$mailbox.$default_folder] = $folders['folders'][$key];
+                    $folder['folders'][$mailbox.$default_folder]['name'] = $folders['name'];
+                    $folder['folders'][$mailbox.$default_folder]['realname'] = true;
+                    unset($args['list'][$mailbox]['folders'][$key]);
+                }
+                $_folders['virtual'. $default_folder] = $folder;
+            }
+            $args['list'] = array_merge($_folders, $args['list']);
+        }
         return $args;
     }
 
@@ -481,9 +537,6 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['folder'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
             $args['folder'] = driver_mel::gi()->getMboxTrash();
         }
-        // else if ($args['folder'] == 'INBOX' && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
-        //     $args['folder'] = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal();
-        // }
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
             if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
@@ -612,11 +665,13 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 }
 
                 $a_mailboxes[$this->rc->get_user_name()] = [ 
-                    'id' => $this->rc->get_user_name(),
-                    'name' => driver_mel::gi()->getUser()->fullname,
-                    'virtual' => true,
-                    'order' => $order,
-                    'folders' => $this->render_sharedmailboxlist($folders, $this->rc->get_user_name(), $delimiter, false),
+                    'id'        => $this->rc->get_user_name(),
+                    'name'      => driver_mel::gi()->getUser()->fullname,
+                    'virtual'   => true,
+                    'class'     => 'container',
+                    'realname'  => true,
+                    'order'     => $order,
+                    'folders'   => $this->render_sharedmailboxlist($folders, $this->rc->get_user_name(), $delimiter, false),
                 ];
             }
 
@@ -668,11 +723,13 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                         }
 
                         $a_mailboxes[$_object->uid] = [ 
-                            'id' => $_object->uid,
-                            'name' => $mailbox->fullname,
-                            'virtual' => true,
-                            'order' => $order,
-                            'folders' => $this->render_sharedmailboxlist($folders, $mailbox->uid, $delimiter),
+                            'id'        => $_object->uid,
+                            'name'      => $mailbox->fullname,
+                            'class'     => 'container',
+                            'realname'  => true,
+                            'virtual'   => true,
+                            'order'     => $order,
+                            'folders'   => $this->render_sharedmailboxlist($folders, $mailbox->uid, $delimiter),
                         ];
                     }
                 }
@@ -818,8 +875,8 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             unset($folders[$folder]);
         }
 
-        $display = $this->rc->config->get('mailboxes_display', 'subfolders');
-        if ($display == 'default') {
+        $display = $this->rc->config->get('mailboxes_display', 'default');
+        if ($display == 'default' || $display == 'unified') {
             $_folders = array_merge($_folders, $folders);
         }
         else if ($display == 'subfolders') {

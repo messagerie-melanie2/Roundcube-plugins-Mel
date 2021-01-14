@@ -2022,6 +2022,10 @@ ul.treelist li.selected > div.collapsed {
 	padding-left: 56px;
 }
 
+#mailboxlist li.mailbox.unread a {
+	padding-right: 40px;
+}
+
 .folderlist li.mailbox.selected > a, 
 .folderlist li.mailbox > a:focus {
     background: none;
@@ -2054,6 +2058,16 @@ ul.treelist li.selected > div.collapsed {
 #mailboxlist li.mailbox ul ul li.mailbox a,
 #mailboxlist li.mailbox ul ul li.mailbox a:focus {
 	padding-left: 76px;
+}
+
+#mailboxlist li.mailbox ul ul ul li.mailbox a,
+#mailboxlist li.mailbox ul ul ul li.mailbox a:focus {
+	padding-left: 86px;
+}
+
+#mailboxlist li.mailbox ul ul ul ul li.mailbox a,
+#mailboxlist li.mailbox ul ul ul ul li.mailbox a:focus {
+	padding-left: 96px;
 }
 
 .folderlist li.mailbox ul ul ul li.mailbox a,

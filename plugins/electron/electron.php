@@ -33,21 +33,21 @@ class electron extends rcube_plugin
 
         $rcmail->output->set_env('iselectron', $this->isElectron());
 
-        if ($rcmail->task == 'settings' || $rcmail->task == 'mail') {
+        if ($this->isElectron()) {
+            if ($rcmail->task == 'settings' || $rcmail->task == 'mail') {
 
-            $username = $rcmail->get_user_name();
-            $account = rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET);
+                $username = $rcmail->get_user_name();
+                $account = rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET);
 
-            $account ? $rcmail->output->set_env('account_electron', $account) : $rcmail->output->set_env('account_electron', $username);
+                $account ? $rcmail->output->set_env('account_electron', $account) : $rcmail->output->set_env('account_electron', $username);
 
-            $skin_path = $this->local_skin_path();
-            $this->include_stylesheet($skin_path . '/css/electron.css');
+                $skin_path = $this->local_skin_path();
+                $this->include_stylesheet($skin_path . '/css/electron.css');
 
-            $this->add_texts('localization/', true);
-            $this->register_action('plugin.import_message', array($this, 'import_message'));
-            $this->register_action('plugin.create_folder', array($this, 'create_folder'));
+                $this->add_texts('localization/', true);
+                $this->register_action('plugin.import_message', array($this, 'import_message'));
+                $this->register_action('plugin.create_folder', array($this, 'create_folder'));
 
-            if ($this->isElectron()) {
                 $this->include_script('electron.js');
 
                 if ($this->api->output->type == 'html' && $rcmail->task == 'mail') {

@@ -74,9 +74,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
 
         $this->add_hook('mel_move_message',     array($this, 'move_message'));
         $this->add_hook('mel_copy_message',     array($this, 'copy_message'));
-
+    
         $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
-
+        
         $this->add_hook('preferences_list',     array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
 
@@ -113,6 +113,171 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             // $this->include_script('sharedmailboxes.js');
             $this->rc->output->add_handler('mailboxlist_mel', array($this, 'folder_list'));
 
+        }
+        // ajouter les boites partagées
+        if ($this->api->output->type == 'html') {
+            // Tableau pour la conf du chargement des boites partagées
+            // task => [action => needs_gestionnaire ?]
+            $list_tasks = [
+                'settings' => [
+                    'plugin.managesieve' => true,
+                    'folders' => false,
+                    'plugin.mel_resources_agendas' => true,
+                    'plugin.mel_resources_contacts' => true,
+                    'plugin.mel_resources_tasks' => true,
+                ],
+            ];
+  
+            // Définition des valeurs par défaut en session
+            $_SESSION['page'] = 1;
+    
+            if (isset($list_tasks[$this->rc->task]) && isset($list_tasks[$this->rc->task][$this->rc->action])) {
+                $user = driver_mel::gi()->getUser($this->mel->get_share_objet(), false);
+                if (!$user->is_objectshare) {
+                    $user->load();
+                }
+                // Récupération de la liste des balp de l'utilisateur courant
+                if ($list_tasks[$this->rc->task][$this->rc->action]) {
+                    // Boites gestionnaires ?
+                    $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
+                }
+                else {
+                    $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsShared();
+                }
+                // Affichage du nom de l'utilisateur et du menu déroulant de balp
+                if ($this->rc->task == 'settings') {
+                    $_fullName = $user->is_objectshare ? $user->objectshare->mailbox->fullname : $user->fullname;
+                    $this->api->add_content(html::tag('div', array(
+                            "class" => "folderlist-header-m2-settings",
+                            "id" => "folderlist-header-m2-settings"
+                    ), html::tag('span', array(
+                            "title" => $this->gettext('mailboxchangetext')
+                    ), $_fullName)), 'folderlistheader-settings');
+                }
+                // Récupération des préférences de l'utilisateur
+                $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', array());
+                $i = 0;
+                if (count($_objects) >= 1) {
+                    $sort_bal = $this->rc->config->get('sort_bal', []);
+                    foreach ($_objects as $key => $_object) {
+                        // Gestion du order
+                        $order = array_search(driver_mel::gi()->mceToRcId($_object->uid), $sort_bal);
+                        if ($order === false) {
+                            if ($_object->uid == $this->rc->get_user_name())
+                                $order = 1000;
+                            else
+                                $order = 2000;
+                        }
+                        $_objects[$key]->order = $order;
+                    }
+                    // trier la liste
+                    uasort($_objects, function ($a, $b) {
+                        if ($a->order === $b->order)
+                            return strcmp(strtolower($a->fullname), strtolower($b->fullname));
+                        else
+                            return strnatcmp($a->order, $b->order);
+                    });
+                    $content = "";
+                    if ($this->rc->task == 'mail') {
+                        $content_first = "";
+                        $content_last = "";
+                        $last = false;
+                    }
+                    foreach ($_objects as $_object) {
+                        $i++;
+                        if ($this->rc->task == 'mail' 
+                            && isset($hidden_mailboxes[$_object->uid])) {
+                            continue;
+                        }
+                        $uid = urlencode($_object->uid);
+                        $cn = $_object->fullname;
+                        $mailbox = $_object;
+                        if (isset($_object->mailbox)) {
+                            $mailbox = $_object->mailbox;
+                            // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                            $mailbox->load(['internet_access_enable']);
+                            if (!mel::is_internal() && !$mailbox->internet_access_enable) {
+                                continue;
+                            }
+                            // Récupération de la configuration de la boite pour l'affichage
+                            $hostname = driver_mel::gi()->getRoutage($mailbox);
+                            if (isset($hostname)) {
+                                $uid = urlencode($uid . "@" . $hostname);
+                            }
+                            $cn = $mailbox->fullname;
+                        }
+                        $current_mailbox = empty($this->get_account) && $_object->uid == $this->rc->get_user_name() || urlencode($this->get_account) == $uid;
+                        if ($this->rc->task == 'mail') {
+                            // Récupération de la mbox pour une balp depuis le driver
+                            $mbox = driver_mel::gi()->getMboxFromBalp($mailbox->uid);
+                            $_account_url = $mailbox->uid == $this->rc->get_user_name() ? "" : "&_account=" . $uid;
+                            if (isset($mbox)) {
+                                $href = $current_mailbox ? "#" : "?_task=mail&_mbox=" . urlencode($mbox) . $_account_url;
+                            }
+                            else {
+                                $href = $current_mailbox ? "#" : "?_task=mail$_account_url";
+                            }
+                            // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
+                            if (isset($_GET['_courrielleur']) && !$current_mailbox) {
+                                $href .= "&_courrielleur=1";
+                            }
+                            $treetoggle = $current_mailbox ? 'expanded' : 'collapsed';
+                            $content = html::tag('li', array(
+                                    "id" => rcube_utils::html_identifier($uid, true),
+                                    "class" => "mailbox box liitem" . ($i != count($_objects) ? " liborder" : "") . ($current_mailbox ? ' current' : '')
+                                ), html::tag('a', array(
+                                    "href" => $href,
+                                    "title" => $_object->email_send),
+                                    html::tag('span', array(
+                                        "class" => "button-inner-m2"
+                                    ), $cn) .
+                                    html::div(['class' => 'treetoggle ' . $treetoggle], ' ') .
+                                    html::tag('span', ['class' => 'unreadcount'], '')
+                                )
+                            );
+                            if ($last) {
+                                $content_last .= $content;
+                            }
+                            else {
+                                $content_first .= $content;
+                                $last = $current_mailbox;
+                            }
+                        }
+                        else if (!$current_mailbox) {
+                            if ($uid == $this->rc->get_user_name()) {
+                                $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
+                            }
+                            else {
+                                $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action . "&_account=" . $uid;
+                            }
+                            // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
+                            if (isset($_GET['_courrielleur'])) {
+                                $href .= "&_courrielleur=1";
+                            }
+                            $content .= html::tag('li', array(
+                                    "class" => "mailbox box liitem" . ($i != count($_objects) ? " liborder" : "")
+                                ), html::tag('a', array(
+                                    "href" => $href,
+                                    "title" => $_object->email_send), 
+                                    html::tag('span', array(
+                                    "class" => "button-inner-m2"
+                                    ), $cn)
+                                )
+                            );
+                        }
+                    }
+                }
+                // Affiche les données sur la bal
+                if ($this->rc->task == 'settings') {
+                    $this->api->add_content(html::tag('div', array(
+                                "class" => "sharesmailboxeshide",
+                                "id" => "sharesmailboxeslist-settings"
+                        ), html::tag('ul', array(
+                                "class" => "sharesmailboxesul",
+                                "id" => "sharesmailboxesul"
+                        ), $content)), 'folderlistheader-settings');
+                }
+            }
         }
         $this->ui_initialized = true;
     }
@@ -499,7 +664,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                             $key = 'INBOX';
                         }
                         else {
-                            $key = array_key_first($folders['folders']);
+                            foreach ($folders['folders'] as $key => $f) {
+                                break;
+                            }
                         }
                     }
                     else if ($default_folder == 'trash') {

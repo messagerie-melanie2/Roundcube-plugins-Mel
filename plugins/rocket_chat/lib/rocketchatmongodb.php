@@ -127,11 +127,11 @@ class RocketChatMongoDB {
   public function setAuthTokenUser($userId, $authToken) {
     mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatMongoDB::setAuthTokenUser($userId)");
     $collection = $this->getCollection();
-    
+    $hashedToken = base64_encode(hash('sha256', $authToken));
     try {
       $updateResult = $collection->updateOne(
           ['_id' => $userId],
-          ['$push' => ['services.resume.loginTokens' => ['when' => (new MongoDB\BSON\UTCDateTime()), 'hashedToken' => $authToken]]]
+          ['$push' => ['services.resume.loginTokens' => ['when' => (new MongoDB\BSON\UTCDateTime()), 'hashedToken' => $hashedToken]]]
       );
     }
     catch (Exception $ex) {

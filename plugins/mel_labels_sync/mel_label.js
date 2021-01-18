@@ -80,11 +80,13 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 	{
 		tb_labels_for_message = preview_frame.get(0).contentWindow.tb_labels_for_message;
 		headers_table = preview_frame.contents().find('table.headers-table');
-		if (rcmail.env.action == 'show') {
-			header_preview_all_table = preview_frame.contents().find('table.headers-table');
-		} else {
-			header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
-		}		
+		// if (rcmail.env.action == 'show') {
+		// 	header_preview_all_table = preview_frame.contents().find('table.headers-table');
+		// } else {
+		// 	header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
+		// }
+		// Reload cache
+		preview_frame.get(0).contentWindow.location.reload(true);
 	}
 	
 	if (!rcmail.message_list

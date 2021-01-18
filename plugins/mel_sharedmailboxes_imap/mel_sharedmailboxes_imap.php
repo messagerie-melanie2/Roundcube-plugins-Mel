@@ -84,11 +84,6 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
             $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
-
-            // TODO en test : Cache sur l'ouverture des messages ?
-            if ($this->rc->action == 'show') {
-                $this->rc->output->future_expire_header();
-            }
         }
 
         // Chargement de l'account passé en Get

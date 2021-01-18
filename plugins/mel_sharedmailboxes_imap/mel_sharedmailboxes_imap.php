@@ -61,6 +61,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
 
         // Hooks
         $this->add_hook('storage_connect',      array($this, 'storage_connect'));
+        $this->add_hook('managesieve_connect',  array($this, 'managesieve_connect'));
         $this->add_hook('identity_select',      array($this, 'identity_select'));
         $this->add_hook('message_before_send',  array($this, 'message_before_send'));
         $this->add_hook('check_recent',         array($this, 'check_recent'));
@@ -83,6 +84,11 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
             $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
+
+            // TODO en test : Cache sur l'ouverture des messages ?
+            if ($this->rc->action == 'show') {
+                $this->rc->output->future_expire_header();
+            }
         }
 
         // Chargement de l'account passé en Get
@@ -366,6 +372,41 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
     }
 
     /**
+     * Connect to sieve server
+     * Utilise les identifiants de la balp si nécessaire
+     */
+    public function managesieve_connect($args) {
+        /* PAMELA - Gestion des boites partagées */
+        if (!empty($this->get_account)) {
+            if (mel_logs::is(mel_logs::DEBUG))
+                mel_logs::gi()->l(mel_logs::DEBUG, "mel::managesieve_connect()");
+            $args['user'] = $this->mel->get_user_bal();
+            // Ajouter également l'host pour les règles sieve
+            $args['host'] = $this->mel->get_host();
+        }
+        else if (isset($_GET['_mbox'])) {
+            $folder = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
+            $balp_label = driver_mel::gi()->getBalpLabel();
+            if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
+                $delimiter = $_SESSION['imap_delimiter'];
+                $osDelim = driver_mel::gi()->objectShareDelimiter();
+                $data = explode($delimiter, $folder, 3);
+                $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+                if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . $osDelim . $data[1]])) {
+                    $_object = $_objects[$this->rc->get_user_name() . $osDelim . $data[1]];
+                    if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
+                        $mailbox = $_object->mailbox;
+                        // Récupération de la configuration de la boite pour l'affichage
+                        $args['user'] = $_object->uid;
+                        $args['host'] = driver_mel::gi()->getRoutage($mailbox);
+                    }
+                }
+            }
+        }
+        return $args;
+    }
+
+    /**
      * Select the good identity
      * Lors de l'écriture d'un mail, l'identité liée à la boite mail est sélectionnée
      */
@@ -412,6 +453,35 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                     }
                 }
             }
+            // Ajout des 5 derniers dossiers visités
+            $i = 1;
+            $folders = array_reverse($_SESSION['folders'], true);
+            foreach ($folders as $folder => $status) {
+                if (!in_array($folder, $args['folders'])) {
+                    $args['folders'][] = $folder;
+                    $i++;
+                    if ($i == 5) {
+                        break;
+                    }
+                }
+            }
+            // Tri par boite
+            usort($args['folders'], function($a, $b) {
+                if (strpos($a, driver_mel::gi()->getBalpLabel()) === 0) {
+                    if (strpos($b, driver_mel::gi()->getBalpLabel()) === 0) {
+                        return ($a < $b) ? -1 : 1;
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+                else if (strpos($b, driver_mel::gi()->getBalpLabel()) === 0) {
+                    return -1;
+                }
+                else {
+                    return ($a < $b) ? -1 : 1;
+                }
+            });
         }
         return $args;
     }

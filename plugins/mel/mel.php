@@ -169,7 +169,30 @@ class mel extends rcube_plugin {
 
     // ajouter les boites partagées
     if ($this->api->output->type == 'html') {
-      if ($this->rc->task == 'calendar') {
+      if ($this->rc->task == 'mail') {
+        // 0005830: Bouton pour créer directement un dossier dans l'interface Courriel
+        $content = html::tag('li', array(
+          'role' => 'menuitem'
+        ), $this->api->output->button(array(
+                'label' => 'mel.menumanage_create_mailbox_folder',
+                'type' => 'link',
+                'classact' => 'active',
+                'command' => 'window-edit-folder'
+        )));
+        $this->api->add_content($content, 'mailboxoptions');
+          // Link to Settings/Folders
+          $content = html::tag('li', array(
+                  'role' => 'menuitem'
+          ), $this->api->output->button(array(
+                  'label' => 'mel.menumanageresources_mailboxes',
+                  'type' => 'link',
+                  'classact' => 'active',
+                  'command' => 'plugin.mel_resources_bal',
+                  'task' => 'settings'
+        )));
+        $this->api->add_content($content, 'mailboxoptions');
+      }
+      else if ($this->rc->task == 'calendar') {
         // Link to Settings/Folders
         $content = html::tag('li', array(
                 'class' => 'separator_above'
@@ -182,7 +205,7 @@ class mel extends rcube_plugin {
         )));
         $this->api->add_content($content, 'calendaroptionsmenu');
       }
-      elseif ($this->rc->task == 'tasks') {
+      else if ($this->rc->task == 'tasks') {
         // Link to Settings/Folders
         $content = html::tag('li', array(
                 'class' => 'separator_above'

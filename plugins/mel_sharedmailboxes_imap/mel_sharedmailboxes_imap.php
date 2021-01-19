@@ -88,6 +88,13 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
 
         // Chargement de l'account passé en Get
         $this->get_account = mel::get_account();
+        // Gestion de la connexion pour les dossiers
+        if ($this->rc->task == 'settings' && $this->rc->action == 'edit-folder') {
+            $this->get_user_from_folder(rcube_utils::get_input_value('_path', rcube_utils::INPUT_GET));
+        }
+        else if ($this->rc->task == 'settings' && $this->rc->action == 'save-folder') {
+            $this->get_user_from_folder(rcube_utils::get_input_value('_parent', rcube_utils::INPUT_POST));
+        }
         // Chargement de l'ui
         $this->init_ui();
     }
@@ -327,6 +334,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 if ($this->rc->task == 'mail' && $this->rc->action == 'send' && isset($_POST['_store_target'])) {
                     $folder = rcube_utils::get_input_value('_store_target', rcube_utils::INPUT_POST);
                 }
+                else if ($this->rc->task == 'settings' && $this->rc->action == 'edit-folder') {
+                    $folder = rcube_utils::get_input_value('_path', rcube_utils::INPUT_GET);
+                }
                 else if (isset($_GET['_mbox']) || isset($_POST['_mbox'])) {
                     $folder = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC);
                     if (strpos($folder, driver_mel::gi()->getBalpLabel()) !== 0 
@@ -337,25 +347,12 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                 else {
                     $folder = $this->rc->storage->get_folder();
                 }
-                
-                $balp_label = driver_mel::gi()->getBalpLabel();
-                if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
-                    $delimiter = $_SESSION['imap_delimiter'];
-                    $osDelim = driver_mel::gi()->objectShareDelimiter();
-                    $data = explode($delimiter, $folder, 3);
-                    $_objects = driver_mel::gi()->getUser()->getObjectsShared();
-                    if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . $osDelim . $data[1]])) {
-                        $_object = $_objects[$this->rc->get_user_name() . $osDelim . $data[1]];
-                        if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
-                            $mailbox = $_object->mailbox;
-                            // Récupération de la configuration de la boite pour l'affichage
-                            $args['user'] = $_object->uid;
-                            $args['host'] = driver_mel::gi()->getRoutage($mailbox);
-                            $this->get_account = urlencode($args['user']) . '@' . $args['host'];
-                            $this->mel->set_account($this->get_account);
-                        }
-                    }
 
+                $ret = $this->get_user_from_folder($folder);
+                if (isset($ret)) {
+                    // Récupération de la configuration de la boite pour l'affichage
+                    $args['user'] = $ret['user'];
+                    $args['host'] = $ret['host'];
                 }
             }
             // Utiliser les proxy imap ?
@@ -364,6 +361,39 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             }
         }
         return $args;
+    }
+
+
+    /**
+     * Récupère la configuration user/host en fonction du folder
+     * 
+     * @param string $folder Nom du folder
+     * 
+     * @return null|array null si pas de configuration, ['user', 'host'] sinon 
+     */
+    private function get_user_from_folder($folder) {
+        $ret = null;
+        $balp_label = driver_mel::gi()->getBalpLabel();
+        if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
+            $delimiter = $_SESSION['imap_delimiter'];
+            $osDelim = driver_mel::gi()->objectShareDelimiter();
+            $data = explode($delimiter, $folder, 3);
+            $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+            if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . $osDelim . $data[1]])) {
+                $_object = $_objects[$this->rc->get_user_name() . $osDelim . $data[1]];
+                if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
+                    $mailbox = $_object->mailbox;
+                    // Récupération de la configuration de la boite pour l'affichage
+                    $ret = [
+                        'user' => $_object->uid,
+                        'host' => driver_mel::gi()->getRoutage($mailbox),
+                    ];
+                    $this->get_account = urlencode($ret['user']) . '@' . $ret['host'];
+                    $this->mel->set_account($this->get_account);
+                }
+            }
+        }
+        return $ret;
     }
 
     /**

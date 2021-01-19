@@ -1458,10 +1458,11 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 							}								
 						}
 						else {
+							// window.console.log(JSON.stringify(contact));
 							// Add to contact list
 							window.messagesList.push({
 								name: name,
-								username: contact.name,
+								username: contact.u.name,
 								type: 'im',
 								channel: contact.t,
 								im: im,
@@ -1535,6 +1536,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 								&& data.result) {
 							var message = data.result.messages[0];
 							if (message) {
+								// window.console.log("message = " + JSON.stringify(message));
 								// timestamp
 								var timestamp = message.ts['$date'].toString();
 								timestamp = timestamp.substr(0, timestamp.length - 3);
@@ -1547,7 +1549,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 										window.messagesList[key].subject = message.msg;
 									}
 									else {
-										window.messagesList[key].subject = message.alias + ': ' + message.msg;
+										window.messagesList[key].subject = message.u.name + ': ' + message.msg;
 									}
 								}
 								

@@ -1988,7 +1988,11 @@ ul.listing.folderlist li.selected > a:focus {
 }
 
 .folderlist li.mailbox ul li div.treetoggle {
-    top: 11px;
+    top: 10px;
+}
+
+.minimal .folderlist li.mailbox ul li div.treetoggle {
+    top: 7px;
 }
 
 ul.treelist li div.treetoggle.expanded {
@@ -2007,14 +2011,14 @@ ul.treelist li.selected > div.collapsed {
 .folderlist li.mailbox a,
 .folderlist li.mailbox a:focus {
 	background: none;
-	padding: 8px 0 8px 46px;
+	padding: 7px 0 7px 46px;
 	color: #0d0d0d;
 	color: var(--listitem-focus-bg-color);
 }
 
 .minimal .folderlist li.mailbox a,
 .minimal .folderlist li.mailbox a:focus {
-	padding: 6px 0 6px 46px;
+	padding: 5px 0 5px 46px;
 }
 
 #mailboxlist li.mailbox a,
@@ -2080,22 +2084,19 @@ ul.treelist li.selected > div.collapsed {
 	background-image: var(--image-dossier-reception);
 }
 
-/* #mailboxlist.folderlist > li.mailbox > a, */
 .folderlist li.mailbox.inbox > a {
 	background: url(../images/mail/dossiers/reception.png?v=e784.5000) 17px 3px no-repeat;
 	background-image: var(--image-dossier-reception);
 }
 
-/* #mailboxlist.folderlist > li.mailbox > a {
-	background-position: 20px 3px;
-} */
-
 #mailboxlist.folderlist li.mailbox.inbox > a {
 	background-position: 27px 3px;
 }
 
-/* #mailboxlist.folderlist > li.mailbox.selected > a, 
-#mailboxlist.folderlist > li.mailbox > a:focus, */
+.minimal #mailboxlist.folderlist li.mailbox.inbox > a {
+	background-position: 27px 1px;
+}
+
 .folderlist li.mailbox.inbox.selected > a, 
 .folderlist li.mailbox.inbox > a:focus {
 	background: url(../images/mail/dossiers/reception_selectionne.png?v=e784.5000) 17px 3px no-repeat #fff;
@@ -2103,14 +2104,14 @@ ul.treelist li.selected > div.collapsed {
     background-color: var(--listitem-selected-bg-color);
 }
 
-/* #mailboxlist.folderlist > li.mailbox.selected > a, 
-#mailboxlist.folderlist > li.mailbox > a:focus {
-	background-position: 20px 3px;
-} */
-
 #mailboxlist.folderlist li.mailbox.inbox.selected > a, 
 #mailboxlist.folderlist li.mailbox.inbox > a:focus {
 	background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.inbox.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.inbox > a:focus {
+	background-position: 27px 1px;
 }
 
 .folderlist li.mailbox.drafts > a {
@@ -2120,6 +2121,10 @@ ul.treelist li.selected > div.collapsed {
 
 #mailboxlist.folderlist li.mailbox.drafts > a {
 	background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.drafts > a {
+	background-position: 27px 1px;
 }
 
 .folderlist li.mailbox.drafts.selected > a, 
@@ -2134,6 +2139,11 @@ ul.treelist li.selected > div.collapsed {
 	background-position: 27px 3px;
 }
 
+.minimal #mailboxlist.folderlist li.mailbox.drafts.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.drafts > a:focus {
+	background-position: 27px 1px;
+}
+
 .folderlist li.mailbox.models > a {
 	background: url(../images/mail/dossiers/modeles.png?v=e784.5000) 17px center no-repeat;
 	background-image: var(--image-dossier-modeles);
@@ -2141,6 +2151,10 @@ ul.treelist li.selected > div.collapsed {
 
 #mailboxlist.folderlist li.mailbox.models > a {
 	background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.models > a {
+	background-position: 27px 1px;
 }
 
 .folderlist li.mailbox.models.selected > a, 
@@ -2155,6 +2169,11 @@ ul.treelist li.selected > div.collapsed {
 	background-position: 27px 3px;
 }
 
+.minimal #mailboxlist.folderlist li.mailbox.models.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.models > a:focus {
+	background-position: 27px 1px;
+}
+
 .folderlist li.mailbox.sent > a {
 	background: url(../images/mail/dossiers/envoyes.png?v=e784.5000) 17px center no-repeat;
 	background-image: var(--image-dossier-envoyes);
@@ -2162,6 +2181,10 @@ ul.treelist li.selected > div.collapsed {
 
 #mailboxlist.folderlist li.mailbox.sent > a {
 	background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.sent > a {
+	background-position: 27px 1px;
 }
 
 .folderlist li.mailbox.sent.selected > a, 
@@ -2176,6 +2199,11 @@ ul.treelist li.selected > div.collapsed {
     background-position: 27px 3px;
 }
 
+.minimal #mailboxlist.folderlist li.mailbox.sent.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.sent > a:focus {
+    background-position: 27px 1px;
+}
+
 .folderlist li.mailbox.junk > a {
 	background: url(../images/mail/dossiers/indesirables.png?v=e784.5000) 17px center no-repeat;
 	background-image: var(--image-dossier-indesirables);
@@ -2183,6 +2211,10 @@ ul.treelist li.selected > div.collapsed {
 
 #mailboxlist.folderlist li.mailbox.junk > a {
     background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.junk > a {
+    background-position: 27px 1px;
 }
 
 .folderlist li.mailbox.junk.selected > a, 
@@ -2197,6 +2229,11 @@ ul.treelist li.selected > div.collapsed {
     background-position: 27px 3px;
 }
 
+.minimal #mailboxlist.folderlist li.mailbox.junk.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.junk > a:focus {
+    background-position: 27px 1px;
+}
+
 .folderlist li.mailbox.trash > a {
 	background: url(../images/mail/dossiers/supprimes.png?v=e784.5000) 17px center no-repeat;
 	background-image: var(--image-dossier-supprimes);
@@ -2204,6 +2241,10 @@ ul.treelist li.selected > div.collapsed {
 
 #mailboxlist.folderlist li.mailbox.trash > a {
     background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.trash > a {
+    background-position: 27px 1px;
 }
 
 .folderlist li.mailbox.trash.selected > a, 
@@ -2216,6 +2257,11 @@ ul.treelist li.selected > div.collapsed {
 #mailboxlist.folderlist li.mailbox.trash.selected > a, 
 #mailboxlist.folderlist li.mailbox.trash > a:focus {
     background-position: 27px 3px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.trash.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.trash > a:focus {
+    background-position: 27px 1px;
 }
 
 .ui-dialog .propform .ui-tabs-panel {

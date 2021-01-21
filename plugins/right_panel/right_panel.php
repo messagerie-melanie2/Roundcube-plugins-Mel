@@ -68,7 +68,7 @@ class right_panel extends rcube_plugin
       $this->add_hook('refresh', array($this, 'refresh'));
 
       // Actions list for the right panel
-      $actions = ['', 'plugin.annuaire', 'preferences', 'folders', 'identities', 'show', 'compose',
+      $actions = ['', 'plugin.annuaire', 'preferences', 'folders', 'identities', 'show', 'compose', 'plugin.mel_signatures', 
         'plugin.managesieve', 'plugin.mel_resources_bal', 'plugin.mel_resources_agendas', 'plugin.mel_resources_contacts', 'plugin.mel_resources_tasks', 
         'plugin.mel_moncompte', 'plugin.mel_statistics_mobile', 'plugin.mel_suggestion_box', 'plugin.mel_doubleauth',];
       

@@ -100,6 +100,10 @@ label {
     margin-top: 20px;
 }
 
+.grid-form .custom-link {
+    display: none;
+}
+
 .left-form,
 .right-form {
   margin-top: 20px;

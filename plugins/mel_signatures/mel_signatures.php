@@ -78,7 +78,7 @@ class mel_signatures extends rcube_plugin
     function settings() {
         // Chargement des informations de l'utilisateur
         $user = driver_mel::gi()->getUser();
-        $fields = ['name', 'lastname', 'firstname', 'service', 'title', 'street', 'postalcode', 'locality', 'phonenumber', 'mobilephone', 'roomnumber', ];
+        $fields = ['name', 'lastname', 'firstname', 'service', 'observation', 'street', 'postalcode', 'locality', 'phonenumber', 'mobilephone', 'roomnumber', ];
         $user->load($fields);
         if (isset($user->lastname)) {
             $user->name = $user->firstname . " " . $user->lastname;
@@ -142,6 +142,8 @@ class mel_signatures extends rcube_plugin
         $env_links = [];
         $checkbox = new html_checkbox();
         $i = 1;
+
+        $links .= html::tag('li', [], $checkbox->show("", ['value' => 'custom-link', 'id' => "checkbox-custom-link", 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-custom-link"], $this->gettext('customlink')));
         foreach ($this->rc->config->get('signature_links', []) as $name => $link) {
             $id = "signature_links_$i";
             $i++;

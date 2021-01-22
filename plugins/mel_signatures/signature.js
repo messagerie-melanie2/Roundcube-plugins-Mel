@@ -90,8 +90,25 @@ function getSignatureHTML() {
     // Gestion des liens
     let checkboxes = document.querySelectorAll("#input-links .items input");
     let links = "";
+    if (document.getElementById("checkbox-custom-link").checked) {
+        document.querySelector(".grid-form .custom-link").style.display = 'block';
+        let customlink = document.getElementById("input-custom-link").value;
+        let a = document.createElement('a');
+        a.style = "color:#000000;font-size:8pt;font-family: Arial,sans-serif; font-weight : bold;";
+        if (customlink.indexOf('://') === -1) {
+            a.href = 'http://' + customlink;
+        }
+        else {
+            a.href = customlink;
+        }
+        a.innerText = customlink;
+        links += a.outerHTML + '<br>';
+    }
+    else {
+        document.querySelector(".grid-form .custom-link").style.display = 'none';
+    }
     for (const checkbox of checkboxes) {
-        if (checkbox.checked) {
+        if (checkbox.checked && checkbox.id != 'checkbox-custom-link') {
             let a = document.createElement('a');
             a.style = "color:#000000;font-size:8pt;font-family: Arial,sans-serif; font-weight : bold;";
             a.href = checkbox.value;

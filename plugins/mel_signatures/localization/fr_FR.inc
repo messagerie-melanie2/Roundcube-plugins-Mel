@@ -24,3 +24,4 @@ $labels['signaturecopied'] = "Copiée !";
 $labels['logo'] = "Choix du logo";
 $labels['links'] = "Choix des liens";
 $labels['linksselection'] = "Liens";
+$labels['customlink'] = "Lien personnalisé";

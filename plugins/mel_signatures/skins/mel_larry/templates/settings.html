@@ -25,7 +25,7 @@
                   </div>
                   <div class="form-section" style="margin-top: 23px;">
                       <label for="input-fonction"><roundcube:label name="mel_signatures.jobtitle" /></label>
-                      <input type="text" id="input-fonction" onkeyup="onInputChange();" value="<roundcube:var name="env:title" />" required="">
+                      <input type="text" id="input-fonction" onkeyup="onInputChange();" value="<roundcube:var name="env:observation" />" required="">
                   </div>
                   <div class="form-section">
                     <label for="input-service"><roundcube:label name="mel_signatures.service" /></label>
@@ -38,6 +38,10 @@
                   <div class="form-section">
                     <label for="input-links"><roundcube:label name="mel_signatures.links" /></label>
                     <roundcube:object name="signaturelinks" id="input-links" />
+                  </div>
+                  <div class="form-section custom-link">
+                    <label for="input-custom-link"><roundcube:label name="mel_signatures.customlink" /></label>
+                    <input type="text" id="input-custom-link" onkeyup="onInputChange();" value="">
                   </div>
               </div>
               <div class="right-form">

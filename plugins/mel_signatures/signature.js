@@ -70,16 +70,16 @@ function getSignatureHTML() {
     mobile = formatPhoneNumber(mobile);
     document.getElementById("input-mobile").value = mobile;
     if (phone && mobile) {
-        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', rcmail.get_label('mel_signatures.phonephone') + phone + ' - ' + rcmail.get_label('mel_signatures.mobilephone') + mobile);
+        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', rcmail.get_label('mel_signatures.phonephone') + phone + ' - ' + rcmail.get_label('mel_signatures.mobilephone') + mobile + '<br>');
     }
     else if (phone) {
-        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', rcmail.get_label('mel_signatures.phonephone') + phone);
+        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', rcmail.get_label('mel_signatures.phonephone') + phone + '<br>');
     }
     else if (mobile) {
-        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', rcmail.get_label('mel_signatures.mobilephone') + mobile);
+        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', rcmail.get_label('mel_signatures.mobilephone') + mobile + '<br>');
     }
     else {
-        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', document.getElementById("input-fixe").value);
+        signature_html = signature_html.replace('%%TEMPLATE_PHONE%%', '');
     }
 
     // Service

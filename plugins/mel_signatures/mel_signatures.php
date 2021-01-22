@@ -78,7 +78,7 @@ class mel_signatures extends rcube_plugin
     function settings() {
         // Chargement des informations de l'utilisateur
         $user = driver_mel::gi()->getUser();
-        $fields = ['name', 'lastname', 'firstname', 'service', 'observation', 'street', 'postalcode', 'locality', 'phonenumber', 'mobilephone', 'roomnumber', ];
+        $fields = ['name', 'lastname', 'firstname', 'service', 'observation', 'title', 'mission', 'business_category', 'street', 'postalcode', 'locality', 'phonenumber', 'mobilephone', 'roomnumber', ];
         $user->load($fields);
         if (isset($user->lastname)) {
             $user->name = $user->firstname . " " . $user->lastname;
@@ -103,8 +103,9 @@ class mel_signatures extends rcube_plugin
         // Ajout du JS
         $this->include_script('signature.js');
         $this->rc->output->add_handlers(array(
-            'signaturelinks'  => array($this, 'links'),
-            'signaturelogo'   => array($this, 'logo'),
+            'signaturelinks'        => array($this, 'links'),
+            'signaturelogo'         => array($this, 'logo'),
+            'datalistfunctions'     => array($this, 'functions'),
         ));
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
@@ -155,5 +156,31 @@ class mel_signatures extends rcube_plugin
             html::span(['class' => 'anchor'], $this->gettext('linksselection')) .
             html::tag('ul', ['class' => 'items'], $links)
         );
+    }
+
+
+    /**
+     * Handler pour la liste des fonctions de l'utilisateur
+     */
+    function functions($attrib) {
+        if (empty($attrib['id']))
+            $attrib['id'] = 'functions-list';
+
+        $fields = ['observation', 'title', 'mission', 'business_category'];
+        $options = '';
+        foreach ($fields as $field) {
+            $value = $this->rc->output->get_env($field);
+            if (!empty($value)) {
+                if (is_array($value)) {
+                    foreach ($value as $val) {
+                        $options .= html::tag('option', ['value' => $val], '');
+                    }
+                }
+                else {
+                    $options .= html::tag('option', ['value' => $value], '');
+                }
+            }
+        }
+        return html::tag('datalist', $attrib, $options);
     }
 }

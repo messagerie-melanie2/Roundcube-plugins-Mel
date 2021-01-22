@@ -25,7 +25,8 @@
                   </div>
                   <div class="form-section" style="margin-top: 23px;">
                       <label for="input-fonction"><roundcube:label name="mel_signatures.jobtitle" /></label>
-                      <input type="text" id="input-fonction" onkeyup="onInputChange();" value="<roundcube:var name="env:observation" />" required="">
+                      <input type="text" list="functions-list" id="input-fonction" onchange="onInputChange();" onkeyup="onInputChange();" value="<roundcube:var name="env:observation" />" required="">
+                      <roundcube:object name="datalistfunctions" id="functions-list" />
                   </div>
                   <div class="form-section">
                     <label for="input-service"><roundcube:label name="mel_signatures.service" /></label>

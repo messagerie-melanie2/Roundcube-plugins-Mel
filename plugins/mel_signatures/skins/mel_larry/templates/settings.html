@@ -14,70 +14,72 @@
 
 <div id="settings-right">
   <div class="container">
-    <div class="userinfos">
-      <span><roundcube:label name="mel_signatures.informationslabel" /></span>
-      <div class="form">
-          <div class="grid-form">
-              <div class="left-form">
-                  <div class="form-section">
-                      <label for="input-nom"><roundcube:label name="mel_signatures.name" /></label>
-                      <input type="text" id="input-nom" onkeyup="onInputChange();" value="<roundcube:var name="env:name" />" disabled="disabled" required="">
-                  </div>
-                  <div class="form-section" style="margin-top: 23px;">
-                      <label for="input-fonction"><roundcube:label name="mel_signatures.jobtitle" /></label>
-                      <input type="text" list="functions-list" id="input-fonction" onchange="onInputChange();" onkeyup="onInputChange();" value="<roundcube:var name="env:observation" />" required="">
-                      <roundcube:object name="datalistfunctions" id="functions-list" />
-                  </div>
-                  <div class="form-section">
-                    <label for="input-service"><roundcube:label name="mel_signatures.service" /></label>
-                    <input type="text" id="input-service" onkeyup="onInputChange();" value="<roundcube:var name="env:service" />">
-                  </div>
-                  <div class="form-section">
-                    <label for="input-department"><roundcube:label name="mel_signatures.department" /></label>
-                    <input type="text" id="input-department" onkeyup="onInputChange();" value="<roundcube:var name="env:department" />">
-                  </div>
-                  <div class="form-section">
-                    <label for="input-links"><roundcube:label name="mel_signatures.links" /></label>
-                    <roundcube:object name="signaturelinks" id="input-links" />
-                  </div>
-                  <div class="form-section custom-link">
-                    <label for="input-custom-link"><roundcube:label name="mel_signatures.customlink" /></label>
-                    <input type="text" id="input-custom-link" onkeyup="onInputChange();" value="">
-                  </div>
-              </div>
-              <div class="right-form">
-                  <div class="form-section">
-                      <label for="input-address"><roundcube:label name="mel_signatures.address" /></label>
-                      <textarea id="input-address" type="text" onkeyup="onInputChange();" required=""><roundcube:var name="env:street" /> <roundcube:var name="env:postalcode" /> <roundcube:var name="env:locality" /></textarea>
-                  </div>
-                  <div class="form-section">
-                    <label for="input-bureau"><roundcube:label name="mel_signatures.office" /></label>
-                    <input type="text" id="input-bureau" onkeyup="onInputChange();" value="<roundcube:var name="env:roomnumber" />">
-                  </div>
-                  <div class="form-section">
-                      <label for="input-fixe"><roundcube:label name="mel_signatures.phone" /></label>
-                      <input type="text" id="input-fixe" onkeyup="onInputChange();" value="<roundcube:var name="env:phonenumber" />">
-                  </div>
-                  <div class="form-section">
-                      <label for="input-mobile"><roundcube:label name="mel_signatures.mobile" /></label>
-                      <input type="text" id="input-mobile" onkeyup="onInputChange();" value="<roundcube:var name="env:mobilephone" />">
-                  </div>
-                  <div class="form-section">
-                    <label for="input-logo"><roundcube:label name="mel_signatures.logo" /></label>
-                    <roundcube:object name="signaturelogo" id="input-logo" onchange="onInputChange();" />
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
   <div class="usersignature">
     <span><roundcube:label name="mel_signatures.signaturelabel" /></span>
     <div class="sign"></div>
     <textarea id="signature_html" readonly="readonly" type="text"></textarea>
     <div class="action">
+      <input type="button" class="action-button" id="modify-signature" value="<roundcube:label name="mel_signatures.modify" />" onclick="modify_signature();">
+      <input type="button" class="action-button" id="use-signature" value="<roundcube:label name="mel_signatures.usesignature" />" onclick="use_signature();">
       <input type="button" class="action-button" id="copy-to-clipboard" value="<roundcube:label name="mel_signatures.clictocopy" />" onclick="copy_signature();">
     </div>
   </div>
+  <div class="userinfos">
+    <span><roundcube:label name="mel_signatures.informationslabel" /></span>
+    <div class="form">
+        <div class="grid-form">
+            <div class="left-form">
+                <div class="form-section">
+                    <label for="input-nom"><roundcube:label name="mel_signatures.name" /></label>
+                    <input type="text" id="input-nom" onkeyup="onInputChange();" value="<roundcube:var name="env:name" />" disabled="disabled" required="">
+                </div>
+                <div class="form-section" style="margin-top: 23px;">
+                    <label for="input-fonction"><roundcube:label name="mel_signatures.jobtitle" /></label>
+                    <input type="text" list="functions-list" id="input-fonction" onchange="onInputChange();" onkeyup="onInputChange();" value="<roundcube:var name="env:observation" />" required="">
+                    <roundcube:object name="datalistfunctions" id="functions-list" />
+                </div>
+                <div class="form-section">
+                  <label for="input-service"><roundcube:label name="mel_signatures.service" /></label>
+                  <input type="text" id="input-service" onkeyup="onInputChange();" value="<roundcube:var name="env:service" />">
+                </div>
+                <div class="form-section">
+                  <label for="input-department"><roundcube:label name="mel_signatures.department" /></label>
+                  <input type="text" id="input-department" onkeyup="onInputChange();" value="<roundcube:var name="env:department" />">
+                </div>
+                <div class="form-section">
+                  <label for="input-links"><roundcube:label name="mel_signatures.links" /></label>
+                  <roundcube:object name="signaturelinks" id="input-links" />
+                </div>
+                <div class="form-section custom-link">
+                  <label for="input-custom-link"><roundcube:label name="mel_signatures.customlink" /></label>
+                  <input type="text" id="input-custom-link" onkeyup="onInputChange();" value="">
+                </div>
+            </div>
+            <div class="right-form">
+                <div class="form-section">
+                    <label for="input-address"><roundcube:label name="mel_signatures.address" /></label>
+                    <textarea id="input-address" type="text" onkeyup="onInputChange();" required=""><roundcube:var name="env:street" /> <roundcube:var name="env:postalcode" /> <roundcube:var name="env:locality" /></textarea>
+                </div>
+                <div class="form-section">
+                  <label for="input-bureau"><roundcube:label name="mel_signatures.office" /></label>
+                  <input type="text" id="input-bureau" onkeyup="onInputChange();" value="<roundcube:var name="env:roomnumber" />">
+                </div>
+                <div class="form-section">
+                    <label for="input-fixe"><roundcube:label name="mel_signatures.phone" /></label>
+                    <input type="text" id="input-fixe" onkeyup="onInputChange();" value="<roundcube:var name="env:phonenumber" />">
+                </div>
+                <div class="form-section">
+                    <label for="input-mobile"><roundcube:label name="mel_signatures.mobile" /></label>
+                    <input type="text" id="input-mobile" onkeyup="onInputChange();" value="<roundcube:var name="env:mobilephone" />">
+                </div>
+                <div class="form-section">
+                  <label for="input-logo"><roundcube:label name="mel_signatures.logo" /></label>
+                  <roundcube:object name="signaturelogo" id="input-logo" onchange="onInputChange();" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <div class="notice-container">
   <div class="texte">
@@ -116,7 +118,7 @@
       <tbody>
         <tr style="border:0">
           <td style="padding:0;padding-bottom:5px;padding-top:15px">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAKCAYAAABFXiVrAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAF4SURBVDhPjZLNSkJRFIXXVQzzn/wXIfMnwwJrWmBB0MhKg+gBQnqEoFGTCCFo0AtEj+AzRBBUWNawBmEGSqU38aade29qG0rwXv0mZ691NmexzzncdPxAxpBMRd3IHq4jFHSQA0jlMvi1TUgvJXKU0dA6EINhBEfZVE9QB85ghDYcJKXO0GHpVByBgJ3UH5zJCN3SIil1hg775L+o6qXVauHD7yWljmqYzTYKrfa35er6uX2w2K3/I4oM+kgYnNVCjjKKH2SifWWRiBMWsx6JRBiyJCMW88Lr6XOoJIFPb4Hd5MnoT9/JNBoO9Xqz/RmcyGzPI5cr4PTsEvYxA3X0Ir29g+XvSCmjOJler+tO8VFtwOezYm93Bc0mQ2DcDrfb3O1h9w9g5xeQGwKE45Oup4ZimNNhQijkgCB8IzrpQumVx9ysHzuZBeoA+OQG2G2B1GC0Ls/yPtU9CEILxWIVlUod5va7dUJWkzO0SzAG8fEJcq1GhhrAD2mkb620Ld1UAAAAAElFTkSuQmCC" alt="Marianne" class="img_marianne">
+            <img src="<roundcube:var name="env:logo_source_marianne" />" alt="Marianne">
           </td>
         </tr>
         <tr style="border:0">
@@ -130,7 +132,7 @@
         </tr>
         <tr style="border:0">
           <td style="border:0;text-align:left;vertical-align:top;padding:0;padding-right:30px" valign="top" align="left">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAeCAIAAADVShu3AAAACXBIWXMAAAsTAAALEwEAmpwYAAAFyGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNi4wLWMwMDIgNzkuMTY0NDYwLCAyMDIwLzA1LzEyLTE2OjA0OjE3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMiAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIwLTA4LTA2VDE3OjA1OjAxKzAyOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMC0wOC0wNlQxNzo0MDo1NCswMjowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyMC0wOC0wNlQxNzo0MDo1NCswMjowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OWVlZDVhMDAtYTlkZS0yZTRmLTk2OWYtMTA5Y2M2ZThmM2VkIiB4bXBNTTpEb2N1bWVudElEPSJh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" alt="liberté, égalité, fraternité">
+            <img src="<roundcube:var name="env:logo_source_devise" />" alt="liberté, égalité, fraternité">
           </td>
         </tr>
       </tbody>

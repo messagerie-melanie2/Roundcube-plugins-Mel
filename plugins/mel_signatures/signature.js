@@ -12,6 +12,18 @@ window.onload = function() {
     }
 };
 
+if (window.rcmail) {
+    // Call refresh panel
+    rcmail.addEventListener('responseafterplugin.save_signature', function(evt) {
+        if (evt.response.success) {
+            rcmail.display_message(rcmail.get_label('mel_signatures.savesignaturesuccess'), 'confirmation');
+        }
+        else {
+            rcmail.display_message(rcmail.get_label('mel_signatures.savesignatureerror'), 'error');
+        }
+    });
+}
+
 /**
  * On input change event refresh signature html
  */
@@ -30,13 +42,34 @@ function onInputChange() {
  * Copier la signature dans le presse papier
  */
 function copy_signature() {
+    document.querySelector("#signature_html").style.display = 'block';
     document.querySelector("#signature_html").select();
     let success = document.execCommand("copy");
     if (success) {
-        document.querySelector(".action-button").value = rcmail.get_label('mel_signatures.signaturecopied');
+        rcmail.display_message(rcmail.get_label('mel_signatures.signaturecopiedmessage'), 'confirmation');
+        document.querySelector(".action-button#copy-to-clipboard").value = rcmail.get_label('mel_signatures.signaturecopied');
         setTimeout(() => {
-            document.querySelector(".action-button").value = rcmail.get_label('mel_signatures.clictocopy');
+            document.querySelector(".action-button#copy-to-clipboard").value = rcmail.get_label('mel_signatures.clictocopy');
         }, 1000);
+    }
+}
+
+/**
+ * Activer la modification de la signature
+ */
+function modify_signature() {
+    document.querySelector(".userinfos").style.display = 'block';
+}
+
+/**
+ * Enregistrement de la signature dans la conf Roundcube
+ */
+function use_signature() {
+    if (confirm(rcmail.get_label('mel_signatures.usesignature_confirm'))) {
+        rcmail.http_post('settings/plugin.save_signature', {
+                _signature: document.querySelector("#signature_html").value,
+            },
+            rcmail.set_busy(true, 'mel_signatures.savingsignature'));
     }
 }
 
@@ -124,7 +157,7 @@ function getSignatureHTML() {
     logo.alt = select.options[select.selectedIndex].text;
     signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', logo.outerHTML);
     
-    return signature_html;
+    return signature_html.replace(/(\r\n|\n|\r)/gm,"").trim();
 }
 
 /**

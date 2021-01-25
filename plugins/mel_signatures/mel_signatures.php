@@ -47,12 +47,20 @@ class mel_signatures extends rcube_plugin
             // Chargement de la conf
             $this->load_config();
 
-            $this->add_texts('localization/', ['mobilephone', 'phonephone', 'signaturecopied', 'clictocopy']);
+            $this->add_texts('localization/', [
+                'mobilephone', 'phonephone', 'signaturecopied', 'clictocopy', 'signaturecopiedmessage', 'usesignature_confirm',
+                'savesignaturesuccess', 'savesignatureerror', 'savingsignature',
+            ]);
             
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
+            // Plugin actions
             $this->api->register_action('plugin.mel_signatures', $this->ID, array(
-              $this,
-              'settings'
+                $this,
+                'settings'
+            ));
+            $this->api->register_action('plugin.save_signature', $this->ID, array(
+                $this,
+                'save_signature'
             ));
         }
     }
@@ -78,7 +86,7 @@ class mel_signatures extends rcube_plugin
     function settings() {
         // Chargement des informations de l'utilisateur
         $user = driver_mel::gi()->getUser();
-        $fields = ['name', 'lastname', 'firstname', 'service', 'observation', 'title', 'mission', 'business_category', 'street', 'postalcode', 'locality', 'phonenumber', 'mobilephone', 'roomnumber', ];
+        $fields = $this->rc->config->get('signature_field_list', []);
         $user->load($fields);
         if (isset($user->lastname)) {
             $user->name = $user->firstname . " " . $user->lastname;
@@ -107,9 +115,56 @@ class mel_signatures extends rcube_plugin
             'signaturelogo'         => array($this, 'logo'),
             'datalistfunctions'     => array($this, 'functions'),
         ));
+        // Gestion des images
+        $this->rc->output->set_env('logo_source_marianne', $this->image_data($this->rc->config->get('signature_image_marianne')));
+        $this->rc->output->set_env('logo_source_devise', $this->image_data($this->rc->config->get('signature_image_devise')));
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
         $this->rc->output->send('mel_signatures.settings');
+    }
+
+    /**
+     * Return image data from image name uri
+     * 
+     * @param string $uri Image URI
+     * 
+     * @return string image data
+     */
+    private function image_data($uri) {
+        // Format the image SRC:  data:{mime};base64,{data};
+        return 'data:'.mime_content_type(__DIR__.'/'.$uri).';base64,'.base64_encode(file_get_contents(__DIR__.'/'.$uri));
+    }
+
+    /**
+     * Return the default url for the user dn
+     * 
+     * @return string default url
+     */
+    private function get_default_url() {
+        $dn = driver_mel::gi()->getUser()->dn;
+        $links = $this->rc->config->get('signature_default_link', []);
+        foreach ($links as $serviceDN => $link) {
+            if (strpos($dn, $serviceDN) !== false) {
+                return $link;
+            }
+        }
+        return isset($links['default']) ? $links['default'] : null;
+    }
+
+    /**
+     * Return the default image for the user dn
+     * 
+     * @return string default image
+     */
+    private function get_default_image() {
+        $dn = driver_mel::gi()->getUser()->dn;
+        $images = $this->rc->config->get('signature_default_image', []);
+        foreach ($images as $serviceDN => $link) {
+            if (strpos($dn, $serviceDN) !== false) {
+                return $link;
+            }
+        }
+        return isset($images['default']) ? $images['default'] : null;
     }
 
     /**
@@ -123,11 +178,10 @@ class mel_signatures extends rcube_plugin
         $sources = [];
         foreach ($this->rc->config->get('signature_images', []) as $name => $link) {
             $select->add($name, $link);
-            // Format the image SRC:  data:{mime};base64,{data};
-            $sources[$link] = 'data:'.mime_content_type(__DIR__.'/'.$link).';base64,'.base64_encode(file_get_contents(__DIR__.'/'.$link));
+            $sources[$link] = $this->image_data($link);
         }
         $this->rc->output->set_env('logo_sources', $sources);
-        return $select->show();
+        return $select->show($this->get_default_image());
     }
 
     /**
@@ -144,12 +198,13 @@ class mel_signatures extends rcube_plugin
         $checkbox = new html_checkbox();
         $i = 1;
 
+        $default_url = $this->get_default_url();
         $links .= html::tag('li', [], $checkbox->show("", ['value' => 'custom-link', 'id' => "checkbox-custom-link", 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-custom-link"], $this->gettext('customlink')));
         foreach ($this->rc->config->get('signature_links', []) as $name => $link) {
             $id = "signature_links_$i";
             $i++;
             $env_links[$link] = $name;
-            $links .= html::tag('li', [], $checkbox->show("https://www.ecologie.gouv.fr", ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
+            $links .= html::tag('li', [], $checkbox->show($default_url, ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
         }
         $this->rc->output->set_env('signature_links', $env_links);
         return html::div($attrib,
@@ -166,7 +221,7 @@ class mel_signatures extends rcube_plugin
         if (empty($attrib['id']))
             $attrib['id'] = 'functions-list';
 
-        $fields = ['observation', 'title', 'mission', 'business_category'];
+        $fields = $this->rc->config->get('signature_jobtitle_field_list', []);
         $options = '';
         foreach ($fields as $field) {
             $value = $this->rc->output->get_env($field);
@@ -182,5 +237,63 @@ class mel_signatures extends rcube_plugin
             }
         }
         return html::tag('datalist', $attrib, $options);
+    }
+
+    /**
+     * Action de sauvegarde de la signature dans l'identité par défaut
+     */
+    function save_signature() {
+        $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
+        $success = false;
+        $identity = $this->rc->user->get_identity();
+        $data = [];
+        $data['signature'] = $this->rcmail_wash_html(rcube_utils::get_input_value('_signature', rcube_utils::INPUT_POST, true));
+        $data['html_signature'] = 1;
+        if ($this->rc->user->update_identity($identity['identity_id'], $data)) {
+            if ($this->rc->config->get('htmleditor', 0) !== 1) {
+                $this->rc->user->save_prefs(['htmleditor' => 1]);
+            }
+            $success = true;
+        }
+        header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+        $result = array('action' => 'plugin.save_signature', 'success' => $success, 'unlock' => $unlock);
+        echo json_encode($result);
+        exit;
+    }
+
+    /**
+     * Sanity checks/cleanups on HTML body of signature
+     */
+    private function rcmail_wash_html($html)
+    {
+       // Add header with charset spec., washtml cannot work without that
+       $html = '<html><head>'
+           . '<meta http-equiv="Content-Type" content="text/html; charset='.RCUBE_CHARSET.'" />'
+           . '</head><body>' . $html . '</body></html>';
+   
+       // clean HTML with washhtml by Frederic Motte
+       $wash_opts = array(
+           'show_washed'   => false,
+           'allow_remote'  => 1,
+           'charset'       => RCUBE_CHARSET,
+           'html_elements' => array('body', 'link'),
+           'html_attribs'  => array('rel', 'type'),
+       );
+   
+       // initialize HTML washer
+       $washer = new rcube_washtml($wash_opts);
+   
+       //$washer->add_callback('form', 'rcmail_washtml_callback');
+       //$washer->add_callback('style', 'rcmail_washtml_callback');
+   
+       // Remove non-UTF8 characters (#1487813)
+       $html = rcube_charset::clean($html);
+   
+       $html = $washer->wash($html);
+   
+       // remove unwanted comments and tags (produced by washtml)
+       $html = preg_replace(array('/<!--[^>]+-->/', '/<\/?body>/'), '', $html);
+   
+       return $html;
     }
 }

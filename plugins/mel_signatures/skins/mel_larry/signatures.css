@@ -16,6 +16,7 @@ select {
     height: 100px;
     padding: 2px;
     margin-top: 20px;
+    display: none;
 }
 
 #settings-right {
@@ -54,9 +55,13 @@ label {
     display: inline-block !important;
 }
 
-.userinfos {
+.usersignature {
     margin-right: 20px;
     margin-bottom: 20px;
+}
+
+.userinfos {
+    display: none;
 }
 
 .usersignature .action .message {
@@ -82,7 +87,6 @@ label {
     text-transform: uppercase;
     font-weight: 700;
     padding: 5px 10px;
-    display: block;
     white-space: normal;
 }
 

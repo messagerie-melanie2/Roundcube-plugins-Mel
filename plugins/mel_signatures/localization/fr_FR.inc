@@ -1,8 +1,8 @@
 <?php
 $labels = array();
-$labels['task'] = 'Générer une signature';
+$labels['task'] = 'Générer ma signature';
 $labels['signaturestitle'] = 'Utilisez ce menu pour générer automatiquement une signature au format ministériel';
-$labels['title'] = 'Générateur de signature';
+$labels['title'] = 'Générateur de signature ministérielle';
 
 $labels['informationslabel'] = "Mes informations :";
 $labels['neededfields'] = "(*) champs obligatoires";
@@ -14,14 +14,22 @@ $labels['postcode'] = "Code postal ville";
 $labels['phone'] = "Téléphone fixe";
 $labels['mobile'] = "Téléphone mobile";
 $labels['office'] = "Bureau (ou pôle)";
-$labels['signaturelabel'] = "Ma signature :";
+$labels['signaturelabel'] = "Ma signature générée :";
 $labels['roomnumber'] = "Bureau : ";
 $labels['department'] = "Direction / Département";
 $labels['mobilephone'] = "Mobile : ";
 $labels['phonephone'] = "Tel : ";
 $labels['clictocopy'] = "Copier la signature";
+$labels['modify'] = "Éditer la signature";
+$labels['usesignature'] = "Utiliser la signature dans le portail web";
+$labels['usesignature_confirm'] = "Définir la signature générée comme signature utilisée par défaut dans le portail web (la rédaction de message sera automatiquement définie en HTML par défaut) ?";
 $labels['signaturecopied'] = "Copiée !";
+$labels['signaturecopiedmessage'] = "La signature est copiée, vous pouvez maintenant la coller dans la configuration de votre Courrielleur.";
 $labels['logo'] = "Choix du logo";
 $labels['links'] = "Choix des liens";
 $labels['linksselection'] = "Liens";
 $labels['customlink'] = "Lien personnalisé";
+
+$labels['savingsignature'] = "Enregistrement de la signature en cours...";
+$labels['savesignaturesuccess'] = "La signature est maintenant votre signature par défaut";
+$labels['savesignatureerror'] = "Une erreur s'est produite lors de l'enregistrement de votre signature";

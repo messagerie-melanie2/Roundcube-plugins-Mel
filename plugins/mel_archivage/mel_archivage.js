@@ -53,12 +53,17 @@ if (window.rcmail) {
         $('#form_archivage').submit(function (event) {
             if (rcmail.env.iselectron) {
                 event.preventDefault();
-                rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
+                var params = {
                     _mbox: rcmail.env.mailbox,
-                    _account: rcmail.env.account_electron,
                     nb_jours: $('#nb_jours').val(),
                     archivage_date: $('#archivage_date').val()
-                });
+                };
+                //Dans le cas d'une boite partagée
+                if (rcmail.env.account) {
+                    params._account = rcmail.env.account;
+                }
+                rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', params);
+
                 rcmail.addEventListener('responseafterplugin.mel_archivage_traitement_electron', function (event) {
                     let stringified = JSON.stringify(event.response.data);
                     let parsedObj = JSON.parse(stringified);
@@ -148,7 +153,7 @@ rcube_webmail.prototype.plugin_archiver = function () {
             .attr('frameborder', '0')
             .appendTo(document.body);
     }
-    
+
     var buttons = {};
 
     frame.dialog({

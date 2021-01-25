@@ -344,12 +344,17 @@ if (rcmail.env.iselectron) {
     function drag_end_archive(list) {
       if (drag_uid.length && list.target.rel) {
         if (list.target.rel.includes(rcmail.env.account_electron)) {
-          rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', {
+
+          var params = {
             _mbox: rcmail.env.mailbox,
-            _account: rcmail.env.account_electron,
             _path_folder: list.target.rel,
             _uids: drag_uid,
-          });
+          };
+          //Dans le cas d'une boite partagée
+          if (rcmail.env.account) {
+            params._account = rcmail.env.account;
+          }
+          rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', params);
         }
       }
     }

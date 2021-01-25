@@ -87,6 +87,7 @@ class mel_archivage extends rcube_plugin
     $rcmail = rcmail::get_instance();
     $rcmail->output->set_env('help_url', $rcmail->config->get('mel_archivage_help_url'));
     $rcmail->output->set_env('mailbox', rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET));
+    $rcmail->output->set_env('account', rcube_utils::get_input_value('_account', rcube_utils::INPUT_GET));
     $rcmail->output->send('mel_archivage.mel_archivage');
   }
 

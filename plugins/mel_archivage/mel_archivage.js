@@ -141,19 +141,17 @@ function changeDatepicker(nbJours) {
 }
 
 rcube_webmail.prototype.plugin_archiver = function () {
-    if (rcmail.env.iselectron) {
-        var frame = $('<iframe>').attr('id', 'archivageframe')
-            .attr('src', rcmail.url('settings/plugin.mel_archivage', { _mbox: this.env.mailbox, _account: this.env.account_electron }) + '&_framed=1')
-            .attr('frameborder', '0')
-            .appendTo(document.body);
+    var params = {
+        _mbox: this.env.mailbox
     }
-    else {
-        var frame = $('<iframe>').attr('id', 'archivageframe')
-            .attr('src', rcmail.url('settings/plugin.mel_archivage', { _mbox: this.env.mailbox }) + '&_framed=1')
-            .attr('frameborder', '0')
-            .appendTo(document.body);
+    if (rcmail.env.account) {
+        params._account = rcmail.env.account;
     }
-
+    var frame = $('<iframe>').attr('id', 'archivageframe')
+        .attr('src', rcmail.url('settings/plugin.mel_archivage', params) + '&_framed=1')
+        .attr('frameborder', '0')
+        .appendTo(document.body);
+        
     var buttons = {};
 
     frame.dialog({

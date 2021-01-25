@@ -124,7 +124,7 @@ class mel_signatures extends rcube_plugin
         foreach ($this->rc->config->get('signature_images', []) as $name => $link) {
             $select->add($name, $link);
             // Format the image SRC:  data:{mime};base64,{data};
-            $sources[$link] = 'data: '.mime_content_type(__DIR__.'/'.$link).';base64,'.base64_encode(file_get_contents(__DIR__.'/'.$link));
+            $sources[$link] = 'data:'.mime_content_type(__DIR__.'/'.$link).';base64,'.base64_encode(file_get_contents(__DIR__.'/'.$link));
         }
         $this->rc->output->set_env('logo_sources', $sources);
         return $select->show();

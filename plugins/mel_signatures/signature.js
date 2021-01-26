@@ -88,7 +88,7 @@ function getSignatureHTML() {
     signature_html = signature_html.replace('%%TEMPLATE_JOBTITLE%%', jobtitle ? jobtitle + '<br>' : '');
 
     // User address
-    let address = document.getElementById("input-address").value;
+    let address = document.getElementById("input-address").value.replace(/(\r\n|\n|\r)/gm," ");
     signature_html = signature_html.replace('%%TEMPLATE_ADDRESS%%', address ? address + '<br>' : '');
 
     // User office

@@ -32,7 +32,12 @@ $labels['logo'] = "Choix du logo";
 $labels['links'] = "Choix des liens";
 $labels['linksselection'] = "Liens";
 $labels['customlink'] = "Lien personnalisé";
+$labels['allmailboxes'] = "Toutes les boîtes";
+$labels['identitiesdescription'] = "Vous avez la possibilité d'utiliser des signatures différentes en fonction de vos boîtes aux lettres. Cochez ci-desous la ou les boîtes pour lesquelles la signature générée sera utilisée.";
+$labels['identitiesdialogtitle'] = "Choix des boîtes aux lettres";
+$labels['save'] = "Enregistrer";
+$labels['cancel'] = "Annuler";
 
 $labels['savingsignature'] = "Enregistrement de la signature en cours...";
-$labels['savesignaturesuccess'] = "La signature est maintenant votre signature par défaut";
+$labels['savesignaturesuccess'] = "La signature a correctement été enregistrée";
 $labels['savesignatureerror'] = "Une erreur s'est produite lors de l'enregistrement de votre signature";

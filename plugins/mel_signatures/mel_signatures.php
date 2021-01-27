@@ -49,7 +49,7 @@ class mel_signatures extends rcube_plugin
 
             $this->add_texts('localization/', [
                 'mobilephone', 'phonephone', 'signaturecopied', 'clictocopy', 'signaturecopiedmessage', 'usesignature_confirm',
-                'savesignaturesuccess', 'savesignatureerror', 'savingsignature',
+                'savesignaturesuccess', 'savesignatureerror', 'savingsignature', 'identitiesdialogtitle', 'save', 'cancel',
             ]);
             
             $this->add_hook('settings_actions', array($this, 'settings_actions'));
@@ -114,6 +114,7 @@ class mel_signatures extends rcube_plugin
             'signaturelinks'        => array($this, 'links'),
             'signaturelogo'         => array($this, 'logo'),
             'datalistfunctions'     => array($this, 'functions'),
+            'identiteslist'         => array($this, 'identities'),
         ));
         // Gestion des images
         $this->rc->output->set_env('logo_source_marianne', $this->image_data($this->rc->config->get('signature_image_marianne')));
@@ -240,20 +241,50 @@ class mel_signatures extends rcube_plugin
     }
 
     /**
+     * Handler pour l'affichage des identités de l'utilisateur
+     */
+    function identities($attrib) {
+        if (empty($attrib['id']))
+            $attrib['id'] = 'identities-list';
+
+        // $attrib['class'] = "dropdown-check-list";
+
+        $identities = $this->rc->user->list_identities();
+        $checkbox = new html_checkbox();
+        $mailboxes = "";
+
+        $mailboxes .= html::span([], $checkbox->show("all-mailboxes", ['value' => 'all-mailboxes', 'id' => "checkbox-all-mailboxes", 'onchange' => 'checkAllIdentities(this);'])) . html::label(['for' => "checkbox-all-mailboxes"], $this->gettext('allmailboxes'));
+        foreach ($identities as $identity) {
+            $id = "mailbox".$identity['identity_id'];
+            $name = $identity['name'];
+            $mailboxes .= html::span([], $checkbox->show($identity['identity_id'], ['value' => $identity['identity_id'], 'id' => $id, 'class' => 'mailbox', 'onchange' => 'checkOneIdentity(this);'])) . html::label(['for' => $id], $name);
+        }
+        return html::div($attrib,
+            html::span(['class' => 'description'], $this->gettext('identitiesdescription')) .
+            html::div(['class' => 'list'], $mailboxes)
+        );
+    }
+
+    /**
      * Action de sauvegarde de la signature dans l'identité par défaut
      */
     function save_signature() {
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
+        $identities = rcube_utils::get_input_value('_identities', rcube_utils::INPUT_GPC);
+        
         $success = false;
-        $identity = $this->rc->user->get_identity();
         $data = [];
         $data['signature'] = $this->rcmail_wash_html(rcube_utils::get_input_value('_signature', rcube_utils::INPUT_POST, true));
         $data['html_signature'] = 1;
-        if ($this->rc->user->update_identity($identity['identity_id'], $data)) {
-            if ($this->rc->config->get('htmleditor', 0) !== 1) {
+
+        if (isset($identities) && is_array($identities)) {
+            $success = true;
+            foreach ($identities as $identity) {
+                $success &= $this->rc->user->update_identity($identity, $data);
+            }
+            if ($success && $this->rc->config->get('htmleditor', 0) !== 1) {
                 $this->rc->user->save_prefs(['htmleditor' => 1]);
             }
-            $success = true;
         }
         header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
         $result = array('action' => 'plugin.save_signature', 'success' => $success, 'unlock' => $unlock);

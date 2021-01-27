@@ -3,13 +3,13 @@ var inputTimeout = null;
 window.onload = function() {
     onInputChange();
 
-    var checkList = document.getElementById('input-links');
-    checkList.getElementsByClassName('anchor')[0].onclick = function(evt) {
-        if (checkList.classList.contains('visible'))
-            checkList.classList.remove('visible');
+    var onclickFunc = function(evt) {
+        if (this.parentNode.classList.contains('visible'))
+            this.parentNode.classList.remove('visible');
         else
-            checkList.classList.add('visible');
-    }
+            this.parentNode.classList.add('visible');
+    };
+    document.getElementById('input-links').getElementsByClassName('anchor')[0].onclick = onclickFunc;
 };
 
 if (window.rcmail) {
@@ -65,11 +65,53 @@ function modify_signature() {
  * Enregistrement de la signature dans la conf Roundcube
  */
 function use_signature() {
-    if (confirm(rcmail.get_label('mel_signatures.usesignature_confirm'))) {
-        rcmail.http_post('settings/plugin.save_signature', {
-                _signature: document.querySelector("#signature_html").value,
-            },
-            rcmail.set_busy(true, 'mel_signatures.savingsignature'));
+    var close_fn = function() { $(this).dialog('close'); };
+
+    rcmail.show_popup_dialog(
+        $('#identities-dialog'), 
+        rcmail.get_label('mel_signatures.identitiesdialogtitle'),
+        [{
+            text: rcmail.get_label('mel_signatures.save'),
+            'class': 'mainaction',
+            click: function() {
+                $(this).dialog('close');
+                var identities = [];
+                var checkboxes = document.querySelectorAll('#identities-list .list input.mailbox');
+                for (var i=0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        identities.push(checkboxes[i].value);
+                    }
+                }
+                rcmail.http_post('settings/plugin.save_signature', {
+                                _signature: document.querySelector("#signature_html").value,
+                                _identities: identities
+                            },
+                            rcmail.set_busy(true, 'mel_signatures.savingsignature'));
+            }
+        },
+        {
+            text: rcmail.get_label('mel_signatures.cancel'),
+            click: close_fn
+        }],
+        {close: close_fn}
+    );
+}
+
+/**
+ * Check/uncheck all identities checkbox
+ */
+function checkAllIdentities(source) {
+    var checkboxes = document.querySelectorAll('#identities-list .list input.mailbox');
+    for (var i=0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = source.checked;
+    }
+}
+/**
+ * Uncheck "all mailboxes" when uncheck mailbox
+ */
+function checkOneIdentity(source) {
+    if (!source.checked && document.querySelector('#identities-list .list input#checkbox-all-mailboxes').checked) {
+        document.querySelector('#identities-list .list input#checkbox-all-mailboxes').checked = false;
     }
 }
 

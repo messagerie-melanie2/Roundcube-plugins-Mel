@@ -24,7 +24,8 @@ select {
     overflow: auto;
 }
 
-#signature_template {
+#signature_template,
+#identities-content {
     display: none;
 }
 
@@ -53,6 +54,23 @@ label {
 
 #input-links .items label {
     display: inline-block !important;
+}
+
+#identities-list .description {
+    display: block;
+    padding: 10px 0;
+    border-bottom: 1px solid #d0d0d0;
+    border-color: var(--top-border-color);
+}
+
+#identities-list .list {
+    padding-top: 10px;
+    display: grid;
+    grid-template-columns: 20px auto;
+    grid-gap: 10px;
+    align-items: center;
+    max-height: 250px;
+    overflow-y: auto;
 }
 
 .usersignature {

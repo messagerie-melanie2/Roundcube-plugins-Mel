@@ -39,5 +39,5 @@ $labels['save'] = "Enregistrer";
 $labels['cancel'] = "Annuler";
 
 $labels['savingsignature'] = "Enregistrement de la signature en cours...";
-$labels['savesignaturesuccess'] = "La signature a correctement été enregistrée";
+$labels['savesignaturesuccess'] = "La signature a bien été enregistrée";
 $labels['savesignatureerror'] = "Une erreur s'est produite lors de l'enregistrement de votre signature";

@@ -128,7 +128,7 @@ if (rcmail.env.iselectron) {
           // Toggle les items de la liste
           window.api.send('log_export')
         }
-      }, "#log_export_button");
+      }, "#log_open_button");
 
 
     window.api.receive('change_archive_path_success', (result) => {

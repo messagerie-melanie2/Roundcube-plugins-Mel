@@ -36,6 +36,6 @@ $labels['actual_archive_path'] = 'Chemin actuel vers le dossier des archives : '
 $labels['save'] = 'Enregistrer';
 $labels['change'] = 'Modifier';
 $labels['change_archive_path'] = 'Changer le dossier de destination des archives';
-$labels['log_export'] = 'Exporter les logs';
+$labels['log_open'] = 'Ouvrir les logs';
 
 ?>

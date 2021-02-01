@@ -30,6 +30,9 @@ if (rcmail.env.iselectron) {
     rcmail.addEventListener('init', function (evt) {
       if (rcmail.env.task == 'mail') {
         if (rcmail.env.account_electron) {
+          //Send informations to Electron
+          window.api.send('account_electron', rcmail.env.account_electron);
+
           //On finit de télécharger les archives s'il en reste
           window.api.send('download_eml', { "token": rcmail.env.request_token });
         }
@@ -64,7 +67,7 @@ if (rcmail.env.iselectron) {
             }));
           });
 
-          window.api.send('subfolder');
+          window.api.send('subfolder', rcmail.env.account_electron);
           window.api.receive('listSubfolder', (subfolders) => {
             subfolders.forEach(subfolder => {
               if (subfolder.name == rcmail.env.account_electron) {
@@ -118,6 +121,14 @@ if (rcmail.env.iselectron) {
           window.api.send('create_folder', { name: name, path: path })
         }
       }, "#create_folder_form");
+
+    $(document)
+      .on({
+        click: function (e) {
+          // Toggle les items de la liste
+          window.api.send('log_export')
+        }
+      }, "#log_export_button");
 
 
     window.api.receive('change_archive_path_success', (result) => {

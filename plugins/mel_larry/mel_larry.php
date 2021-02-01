@@ -104,13 +104,16 @@ class mel_larry extends rcube_plugin
     if ($rcmail->config->get('skin') == 'mel_larry') {
       $this->add_hook('config_get', array($this,'config_get'));
       // Theme preference configuration
-      $this->add_hook('preferences_list',     array($this, 'prefs_list'));
-      $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+      $this->add_hook('preferences_list',             array($this, 'prefs_list'));
+      $this->add_hook('preferences_save',             array($this, 'prefs_save'));
+      $this->add_hook('preferences_sections_list',    array($this, 'sections_list'));
 
       // // Folders list handler
-      // if ($rcmail->task == 'mail' && empty($rcmail->action)) {
-      //   $rcmail->output->add_handler('mailboxlist_mel', array($rcmail, 'folder_list'));
-      // }
+      if ($rcmail->task == 'mail' && empty($rcmail->action)
+         && !in_array('mel_sharedmailboxes_imap', $rcmail->config->get('plugins', []))
+         && !in_array('mel_sharedmailboxes', $rcmail->config->get('plugins', []))) {
+        $rcmail->output->add_handler('mailboxlist_mel', array($rcmail, 'folder_list'));
+      }
     }
   }
 
@@ -128,6 +131,17 @@ class mel_larry extends rcube_plugin
           $args['result'] = 0;
         }
         break;
+    }
+    return $args;
+  }
+
+  /**
+   * Handler for user preferences sections list
+   * Remove folders section
+   */
+  function sections_list($args) {
+    if (isset($args['list']['folders'])) {
+      unset($args['list']['folders']);
     }
     return $args;
   }

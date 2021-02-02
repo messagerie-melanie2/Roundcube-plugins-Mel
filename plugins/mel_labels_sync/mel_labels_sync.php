@@ -306,7 +306,7 @@ class mel_labels_sync extends rcube_plugin {
    * @param array $p
    */
   public function color_headers($p) {
-    if (! $this->header_loaded) {
+    if ($p['valueof'] == 'from' && !$this->header_loaded) {
       // always write array, even when empty
       $p['content'] .= '<script type="text/javascript">
         		var tb_labels_for_message = [' . join(',', $this->message_tb_labels) . '];

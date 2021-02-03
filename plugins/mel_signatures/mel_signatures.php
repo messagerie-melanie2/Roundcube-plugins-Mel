@@ -30,10 +30,6 @@ class mel_signatures extends rcube_plugin
      * @var rcmail
      */
     private $rc;
-    /**
-     * Directions list
-     */
-    private $directions = ['SG' => 'Secrétariat Général'];
 
     /**
      * (non-PHPdoc)
@@ -96,7 +92,7 @@ class mel_signatures extends rcube_plugin
             // Gestion du service
             if ($field == 'service' && !empty($value)) {
                 $tmp = explode('/', $value, 2);
-                $this->rc->output->set_env('department', $this->directions[$tmp[0]] ?: $tmp[0]);
+                $this->rc->output->set_env('department', $this->get_direction_name($tmp[0], $user->dn));
                 $this->rc->output->set_env($field, $tmp[1]);
             }
             else if ($field == 'roomnumber' && !empty($value) && strpos($value, $this->gettext('roomnumber')) === false) {
@@ -122,6 +118,30 @@ class mel_signatures extends rcube_plugin
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
         $this->rc->output->send('mel_signatures.settings');
+    }
+
+    /**
+     * Retrouve le nom de la direction en fonction de l'acronyme et du DN de l'utilisateur
+     * 
+     * @param string $direction Acronyme de la direction
+     * @param string $dn DN de l'utilisateur
+     * 
+     * @return string Nom complet de la direction
+     */
+    private function get_direction_name($direction, $dn = null) {
+        $pos = strpos($dn, "ou=$direction,");
+        if ($pos !== false) {
+            $searchDN = substr($dn, $pos);
+            $ou = driver_mel::gi()->user();
+            $ou->dn = $searchDN;
+            $ou->load('observation');
+            $direction = $ou->observation;
+        }
+        else {
+            $directions = $this->rc->config->get('signature_directions', []);
+            $direction = $directions[$direction] ?: $direction;
+        }
+        return $direction;
     }
 
     /**
@@ -175,14 +195,37 @@ class mel_signatures extends rcube_plugin
         if (empty($attrib['id']))
             $attrib['id'] = 'input-logo';
 
-        $select = new html_select($attrib);
+        $content = "";
         $sources = [];
-        foreach ($this->rc->config->get('signature_images', []) as $name => $link) {
-            $select->add($name, $link);
-            $sources[$link] = $this->image_data($link);
+        $default_image = $this->get_default_image();
+        foreach ($this->rc->config->get('signature_images', []) as $name => $logo) {
+            if (is_array($logo)) {
+                $logo_html = "";
+                foreach ($logo as $n => $l) {
+                    if ($default_image == $l) {
+                        $params = ['value' => $l, 'selected' => 'selected'];
+                    }
+                    else {
+                        $params = ['value' => $l];
+                    }
+                    $logo_html .= html::tag('option', $params, $n);
+                    $sources[$l] = $this->image_data($l);
+                }
+                $content .= html::tag('optgroup', ['label' => $name], $logo_html);
+            }
+            else {
+                if ($default_image == $logo) {
+                    $params = ['value' => $logo, 'selected' => 'selected'];
+                }
+                else {
+                    $params = ['value' => $logo];
+                }
+                $content .= html::tag('option', $params, $name);
+                $sources[$logo] = $this->image_data($logo);
+            }
         }
         $this->rc->output->set_env('logo_sources', $sources);
-        return $select->show($this->get_default_image());
+        return html::tag('select', $attrib, $content);
     }
 
     /**

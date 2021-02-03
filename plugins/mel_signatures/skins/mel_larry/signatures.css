@@ -54,6 +54,7 @@ label {
 
 #input-links .items label {
     display: inline-block !important;
+    padding: 0 0 0 2px;
 }
 
 #identities-list .description {
@@ -197,10 +198,15 @@ label {
     background-color: var(--inputs-bg-color);
     color: var(--inputs-text-color);
     border-top: none;
+    max-height: 150px;
+    width: 286px;
+    overflow: auto;
 }
   
 .dropdown-check-list ul.items li {
     list-style: none;
+    padding: 2px 0;
+    width: 380px;
 }
   
 .dropdown-check-list.visible .items {

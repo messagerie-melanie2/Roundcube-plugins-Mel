@@ -200,15 +200,18 @@ label {
     border-top: none;
     max-height: 150px;
     width: 286px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
   
 .dropdown-check-list ul.items li {
     list-style: none;
     padding: 2px 0;
-    width: 380px;
+    width: 286px;
+    overflow: hidden;
+    white-space: nowrap;
 }
-  
+
 .dropdown-check-list.visible .items {
     display: block;
 }

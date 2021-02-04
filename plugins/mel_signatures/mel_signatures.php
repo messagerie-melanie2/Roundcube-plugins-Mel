@@ -248,7 +248,7 @@ class mel_signatures extends rcube_plugin
             $id = "signature_links_$i";
             $i++;
             $env_links[$link] = $name;
-            $links .= html::tag('li', [], $checkbox->show($default_url, ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
+            $links .= html::tag('li', ['title' => $name], $checkbox->show($default_url, ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
         }
         $this->rc->output->set_env('signature_links', $env_links);
         return html::div($attrib,

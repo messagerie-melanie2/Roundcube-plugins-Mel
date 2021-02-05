@@ -37,7 +37,7 @@ class Informationspersonnelles extends Moncompteobject {
 	/**
 	 * Chargement des données de l'utilisateur depuis l'annuaire
 	 */
-    public static function load() {
+    public static function load($plugin = null) {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Liste des attributs à charger

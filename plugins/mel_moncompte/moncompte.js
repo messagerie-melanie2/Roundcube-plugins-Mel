@@ -482,67 +482,6 @@ if (window.rcmail) {
         /* dates du gestionnaire absence */
 
         if (rcmail.env.action.indexOf('plugin.mel_moncompte') != -1) {
-
-          $.datepicker.setDefaults({
-            dateFormat : "dd/mm/yy"
-          });
-
-          var shift_enddate = function(dateText) {
-            var start_date = $.datepicker.parseDate("dd/mm/yy", dateText);
-            var end_date = $.datepicker
-                .parseDate("dd/mm/yy", $('#abs_date_fin').val());
-
-            if (!end_date || start_date.getTime() > end_date.getTime()) {
-
-              $('#abs_date_fin').val(dateText);
-              $('#abs_msg_mel').val($('#abs_msg_mel').val()
-                  .replace(/jusqu'au [\dj]{1,2}\/[\dm]{1,2}\/[\da]{2,4}/i, "jusqu'au "
-                      + dateText));
-              $('#abs_msg_inter').val($('#abs_msg_inter').val()
-                  .replace(/jusqu'au [\dj]{1,2}\/[\dm]{1,2}\/[\da]{2,4}/i, "jusqu'au "
-                      + dateText));
-
-            }
-          };
-
-          var shift_startdate = function(dateText) {
-            var end_date = $.datepicker.parseDate("dd/mm/yy", dateText);
-            var start_date = $.datepicker
-                .parseDate("dd/mm/yy", $('#abs_date_debut').val());
-
-            if (!start_date || start_date.getTime() > end_date.getTime()) {
-
-              $('#abs_date_debut').val(dateText);
-
-            }
-            $('#abs_msg_mel').val($('#abs_msg_mel').val()
-                .replace(/jusqu'au [\dj]{1,2}\/[\dm]{1,2}\/[\da]{2,4}/i, "jusqu'au "
-                    + dateText));
-            $('#abs_msg_inter').val($('#abs_msg_inter').val()
-                .replace(/jusqu'au [\dj]{1,2}\/[\dm]{1,2}\/[\da]{2,4}/i, "jusqu'au "
-                    + dateText));
-
-          };
-
-          $('#abs_date_debut').datepicker()
-              .datepicker('option', 'onSelect', shift_enddate)
-              .change(function() {
-                shift_enddate(this.value);
-              });
-          $('#abs_date_fin').datepicker()
-              .datepicker('option', 'onSelect', shift_startdate)
-              .change(function() {
-                shift_startdate(this.value);
-              });
-          
-          //modifier texte au submit
-          $('#gest_save').click(function(){
-        	  $('#abs_msg_mel').val($('#abs_msg_mel').val()
-                  .replace(/jusqu'au [\dj]{1,2}\/[\dm]{1,2}\/[\da]{2,4}/i, "jusqu'au "
-                      + $('#abs_date_fin').val()));
-          })
-          
-
           // gestion des listes - import CSV
           rcmail
               .register_command('upload-listes-csv', function() {

@@ -51,11 +51,12 @@ class Moncompte {
 			$this->rc->output->add_handler('moncompte_balp_list', array($this, 'moncompte_balp_list'));
 			$classname = ucfirst(strtolower($fid));
 			include_once __DIR__.'/'.$classname.'.php';
+			$this->rc->output->set_env('fid', $fid);
 			if (class_exists($classname)) {
 				if (isset($_POST[strtolower($classname)])) {
 					$classname::change();
 				}
-				$classname::load();
+				$classname::load($this->plugin);
 			}
 			else {
 				$this->rc->output->set_pagetitle($this->plugin->gettext('moncompte'));

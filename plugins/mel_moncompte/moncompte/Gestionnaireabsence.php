@@ -37,7 +37,7 @@ class Gestionnaireabsence extends Moncompteobject {
 	/**
 	* Chargement des données de l'utilisateur depuis l'annuaire
 	*/
-	public static function load() {
+	public static function load($plugin = null) {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Authentification
@@ -69,9 +69,125 @@ class Gestionnaireabsence extends Moncompteobject {
 				rcmail::get_instance()->output->set_env('moncompte_abs_radio_diff', 'checked');
 			}
 		}
+		// Add script
+		$plugin->include_script('absence.js');
+		// Handler
+		rcmail::get_instance()->output->add_handler('moncompte_absence_hebdomadaire', ['Gestionnaireabsence', 'absence_hebdomadaire']);
 		// Titre de la page
 		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
 		rcmail::get_instance()->output->send('mel_moncompte.gestionnaireabsence');
+	}
+
+	private static function test_absences_hebdo(&$user) {
+		$outofoffices = $user->outofoffices;
+		$ooo = driver_mel::gi()->users_outofoffice();
+		$ooo->offset = '2';
+		$ooo->hour_start = '160000';
+		$ooo->hour_end = '200000';
+		$ooo->days = [Outofoffice::DAY_FRIDAY];
+		$ooo->message = "Je suis pas là le vendredi aprem";
+		$outofoffices[Outofoffice::TYPE_ALL.'0'] = $ooo;
+		$ooo = driver_mel::gi()->users_outofoffice();
+		$ooo->offset = '2';
+		$ooo->hour_start = '020000';
+		$ooo->hour_end = '020000';
+		$ooo->days = [Outofoffice::DAY_MONDAY];
+		$ooo->message = "Je suis pas là le lundi";
+		$outofoffices[Outofoffice::TYPE_ALL.'1'] = $ooo;
+		$user->outofoffices = $outofoffices;
+	}
+
+	/**
+	 * Handler for moncompte_absence_hebdomadaire
+	 */
+	public static function absence_hebdomadaire($attrib) {
+		// Récupération de l'utilisateur
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		// Parcourir les absences
+		$hasAbsence = false;
+		$html = self::absence_template('%%template%%');
+		$i = 0;
+		foreach ($user->outofoffices as $type => $outofoffice) {
+			if (strpos($type, Outofoffice::TYPE_ALL) === 0 && isset($outofoffice->days)) {
+				$hasAbsence = true;
+				$all_day = $outofoffice->hour_start->format('H:i') == '00:00' 
+							&& $outofoffice->hour_end->format('H:i') == '00:00';
+				$html .= self::absence_template($i, $all_day, 
+						$outofoffice->hour_start->format('H:i'), 
+						$outofoffice->hour_end->format('H:i'),
+						$outofoffice->days,
+						$outofoffice->message);
+				$i++;
+			}
+		}
+		// Pas d'absence ?
+		if (!$hasAbsence) {
+			$html .= html::div('noabsence', rcmail::get_instance()->gettext('noabsence', 'mel_moncompte'));
+		}
+		return $html;
+	}
+
+	/**
+	 * Génération du template pour les absence hebdo
+	 */
+	private static function absence_template($i, $all_day = false, $hour_start = '', $hour_end = '', $days = [], $message = '') {
+		$input_hour_start = new html_inputfield(['id' => "hour_start$i", 'name' => "hour_start$i", "type" => "text", 'size' => '6', 'disabled' => $all_day]);
+		$input_hour_end = new html_inputfield(['id' => "hour_end$i", 'name' => "hour_end$i", "type" => "text", 'size' => '6', 'disabled' => $all_day]);
+		$textarea_message = new html_textarea(['id' => "message$i", 'name' => "message$i", 'rows' => '3', 'cols' => '100']);
+		$checkbox_all_day = new html_checkbox(['id' => "all_day$i", 'name' => "all_day$i", 'value' => '1', 'onclick' => 'all_day_check(this);']);
+		return html::div('absence' . ($i === '%%template%%' ? ' template' : ''), 
+			html::span('hourstart',
+				html::label(['for' => "hour_start$i"], rcmail::get_instance()->gettext('hourstart', 'mel_moncompte')) .
+				$input_hour_start->show($hour_start)
+			) .
+			html::span('hourend',
+				html::label(['for' => "hour_end$i"], rcmail::get_instance()->gettext('hourend', 'mel_moncompte')) .
+				$input_hour_end->show($hour_end)
+			) .
+			html::span('allday',
+				$checkbox_all_day->show($all_day ? '1' : '0') .
+				html::label(['for' => "all_day$i"], rcmail::get_instance()->gettext('allday', 'mel_moncompte'))
+			) .
+			html::span('delete',
+				html::a(['href' => '#', 'class' => 'button button-text delete', 'onclick' => 'delete_absence(this);'], rcmail::get_instance()->gettext('deleteabsence', 'mel_moncompte'))
+			) .
+			html::span('days',
+				self::days_checkbox($days, $i)
+			) .
+			html::span('message',
+				$textarea_message->show($message)
+			)
+		);
+	}
+
+	/**
+	 * Generation for the days checkbox form
+	 * 
+	 * @param array $days list of checked days
+	 * @param string $id id of the line
+	 * 
+	 * @return string $html
+	 */
+	private static function days_checkbox($days, $id) {
+		$dayslist = [
+			'monday' 	=> Outofoffice::DAY_MONDAY, 
+			'tuesday' 	=> Outofoffice::DAY_TUESDAY, 
+			'wednesday' => Outofoffice::DAY_WEDNESDAY, 
+			'thursday' 	=> Outofoffice::DAY_THURSDAY, 
+			'friday' 	=> Outofoffice::DAY_FRIDAY, 
+			'saturday' 	=> Outofoffice::DAY_SATURDAY, 
+			'sunday' 	=> Outofoffice::DAY_SUNDAY,
+		];
+		$html = '';
+		foreach ($dayslist as $day => $map) {
+			$checked = in_array($map, $days);
+			$checkbox = new html_checkbox(['id' => "day_$day$id", 'name' => "day_$day$id", 'value' => '1']);
+			$html .= html::span('checkbox', 
+				$checkbox->show($checked ? '1' : '0') .
+				html::label(['for' => "day_$day$id"], rcmail::get_instance()->gettext($day, 'mel_moncompte'))
+			);
+		}
+		return $html;
 	}
 	
 	/**
@@ -109,7 +225,58 @@ class Gestionnaireabsence extends Moncompteobject {
 			$outofoffice_externe->message = isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe;
 			$outofoffice_externe->order = 60;
 
-			$user->outofoffices = [$outofoffice_interne, $outofoffice_externe];
+			$outofoffices = [$outofoffice_interne, $outofoffice_externe];
+
+			// Gestion des absences hebdo
+			$i = 0;
+			while (isset($_POST["message$i"])) {
+				if (!empty($_POST["hour_start$i"]) || !empty("all_day$i")) {
+					$outofoffice = driver_mel::gi()->users_outofoffice();
+					$days = [];
+					if (isset($_POST["day_monday$i"])) {
+						$days[] = Outofoffice::DAY_MONDAY;
+					}
+					if (isset($_POST["day_tuesday$i"])) {
+						$days[] = Outofoffice::DAY_TUESDAY;
+					}
+					if (isset($_POST["day_wednesday$i"])) {
+						$days[] = Outofoffice::DAY_WEDNESDAY;
+					}
+					if (isset($_POST["day_thursday$i"])) {
+						$days[] = Outofoffice::DAY_THURSDAY;
+					}
+					if (isset($_POST["day_friday$i"])) {
+						$days[] = Outofoffice::DAY_FRIDAY;
+					}
+					if (isset($_POST["day_saturday$i"])) {
+						$days[] = Outofoffice::DAY_SATURDAY;
+					}
+					if (isset($_POST["day_sunday$i"])) {
+						$days[] = Outofoffice::DAY_SUNDAY;
+					}
+					if (!empty($days)) {
+						$outofoffice->order = 70;
+						$outofoffice->days = $days;
+						$outofoffice->type = Outofoffice::TYPE_ALL;
+						$outofoffice->message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
+						$all_day = trim(rcube_utils::get_input_value("all_day$i", rcube_utils::INPUT_POST));
+						if ($all_day) {
+							$outofoffice->hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+							$outofoffice->hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+						}
+						else {
+							$hour_start = trim(rcube_utils::get_input_value("hour_start$i", rcube_utils::INPUT_POST));
+							$hour_end = trim(rcube_utils::get_input_value("hour_end$i", rcube_utils::INPUT_POST));
+							$outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+							$outofoffice->hour_end = \DateTime::createFromFormat('H:i', $hour_end, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+						}
+						$outofoffices[] = $outofoffice;
+					}
+				}
+				$i++;
+			}
+
+			$user->outofoffices = $outofoffices;
 
 			// Enregistrement de l'utilisateur avec les nouvelles données
 			if ($user->save()) {

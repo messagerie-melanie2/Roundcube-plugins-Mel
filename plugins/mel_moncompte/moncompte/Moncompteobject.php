@@ -31,7 +31,7 @@ abstract class Moncompteobject {
     /**
 	 * Chargement des données de l'utilisateur depuis l'annuaire
 	 */
-    abstract public static function load();
+    abstract public static function load($plugin = null);
 
 	/**
 	 * Modification des données de l'utilisateur depuis l'annuaire

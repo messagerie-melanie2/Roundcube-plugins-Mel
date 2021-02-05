@@ -35,7 +35,7 @@ class Gestionnairelistes extends Moncompteobject {
 	/**
 	 * Chargement des données de l'utilisateur depuis l'annuaire
 	 */
-	public static function load() {
+	public static function load($plugin = null) {
 		rcmail::get_instance()->output->add_handlers(array(
 			'liste_listes' 		=> array(__CLASS__, 'readUserListes'),
 			'listes_upload_csv' => array(__CLASS__, 'rcmail_upload_csv_form'),

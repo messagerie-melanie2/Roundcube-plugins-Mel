@@ -740,14 +740,24 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         $display = $this->rc->config->get('mailboxes_display', 'default');
         if ($display == 'unified') {
             $_folders = [];
-            foreach ($this->rc->config->get('default_folders', 
-                    [   'INBOX',
-                        'sent',
-                        'drafts',
-                        'models',
-                        'junk',
-                        'trash']) as $default_folder) {
-                $folder_mbox = $this->rc->config->get($default_folder.'_mbox');
+            $defaults_folders = $this->rc->config->get('default_folders', 
+                        [   'INBOX',
+                            'sent',
+                            'drafts',
+                            'models',
+                            'junk',
+                            'trash']);
+            // Ajouter les archives locales pour Electron
+            if ($this->rc->output->get_env('iselectron') === true) {
+                $defaults_folders[] = 'local';
+            }
+            foreach ($defaults_folders as $default_folder) {
+                if ($default_folder == 'local') {
+                    $folder_mbox = $this->rc->gettext('local');
+                }
+                else {
+                    $folder_mbox = $this->rc->config->get($default_folder.'_mbox');
+                }
                 if ($folder_mbox == 'INBOX' && $default_folder != 'INBOX') {
                     continue;
                 }
@@ -1147,13 +1157,18 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         }
 
         $_folders = [];
-        foreach ($this->rc->config->get('default_folders', 
-                [   'INBOX',
-                    'sent',
-                    'drafts',
-                    'models',
-                    'junk',
-                    'trash']) as $default_folder) {
+        $defaults_folders = $this->rc->config->get('default_folders', 
+                        [   'INBOX',
+                            'sent',
+                            'drafts',
+                            'models',
+                            'junk',
+                            'trash']);
+        // Ajouter les archives locales pour Electron
+        if ($this->rc->output->get_env('iselectron') === true) {
+            $defaults_folders[] = 'local';
+        }
+        foreach ($defaults_folders as $default_folder) {
             if ($default_folder == 'INBOX') {
                 if ($is_balp) {
                     $folder = $mailbox;
@@ -1180,6 +1195,14 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                     $_SESSION['trash_folders'][$mailbox] = $balp_label . $delimiter . $mailbox . $delimiter . $folder;
                 }
                 continue;
+            }
+            else if ($default_folder == 'local') {
+                $folder = $this->rc->gettext('local');
+                $folders[$folder]['id'] = $default_folder.'-'.$mailbox;
+                $folders[$folder]['virtual'] = true;
+                $folders[$folder]['class'] = 'local';
+                $folders[$folder]['name'] = $folder;
+                $folders[$folder]['folders'] = [];
             }
             else {
                 $folder = $this->rc->config->get($default_folder.'_mbox');

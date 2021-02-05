@@ -11,6 +11,10 @@
 	background-position: 20px 3px !important;
 }
 
+#mailboxlist.folderlist > li.mailbox.local > a {
+	background-position: 23px 5px !important;
+}
+
 #mailboxlist.folderlist > li.mailbox.container.selected > a, 
 #mailboxlist.folderlist > li.mailbox.container > a:focus {
 	background: url(../images/mail/dossiers/reception_selectionne.png?v=e784.5000) 17px 3px no-repeat #fff;

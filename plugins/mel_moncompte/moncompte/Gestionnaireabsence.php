@@ -78,25 +78,6 @@ class Gestionnaireabsence extends Moncompteobject {
 		rcmail::get_instance()->output->send('mel_moncompte.gestionnaireabsence');
 	}
 
-	private static function test_absences_hebdo(&$user) {
-		$outofoffices = $user->outofoffices;
-		$ooo = driver_mel::gi()->users_outofoffice();
-		$ooo->offset = '2';
-		$ooo->hour_start = '160000';
-		$ooo->hour_end = '200000';
-		$ooo->days = [Outofoffice::DAY_FRIDAY];
-		$ooo->message = "Je suis pas là le vendredi aprem";
-		$outofoffices[Outofoffice::TYPE_ALL.'0'] = $ooo;
-		$ooo = driver_mel::gi()->users_outofoffice();
-		$ooo->offset = '2';
-		$ooo->hour_start = '020000';
-		$ooo->hour_end = '020000';
-		$ooo->days = [Outofoffice::DAY_MONDAY];
-		$ooo->message = "Je suis pas là le lundi";
-		$outofoffices[Outofoffice::TYPE_ALL.'1'] = $ooo;
-		$user->outofoffices = $outofoffices;
-	}
-
 	/**
 	 * Handler for moncompte_absence_hebdomadaire
 	 */
@@ -108,7 +89,10 @@ class Gestionnaireabsence extends Moncompteobject {
 		$html = self::absence_template('%%template%%');
 		$i = 0;
 		foreach ($user->outofoffices as $type => $outofoffice) {
-			if (strpos($type, Outofoffice::TYPE_ALL) === 0 && isset($outofoffice->days)) {
+			if (strpos($type, Outofoffice::TYPE_ALL) === 0 
+					&& isset($outofoffice->days)
+					&& isset($outofoffice->hour_start)
+					&& isset($outofoffice->hour_end)) {
 				$hasAbsence = true;
 				$all_day = $outofoffice->hour_start->format('H:i') == '00:00' 
 							&& $outofoffice->hour_end->format('H:i') == '00:00';
@@ -208,24 +192,30 @@ class Gestionnaireabsence extends Moncompteobject {
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
 			$user->load(['outofoffices']);
-			// Mise a jour des message d'absence
-			$outofoffice_interne = driver_mel::gi()->users_outofoffice();
-			$outofoffice_interne->type = Outofoffice::TYPE_INTERNAL;
-			$outofoffice_interne->enable = (isset($status_interne) && $status_interne == '1' );
-			$outofoffice_interne->start = isset($date_debut) ? \DateTime::createFromFormat('d/m/Y', $date_debut) : null;
-			$outofoffice_interne->end = isset($date_fin) ? \DateTime::createFromFormat('d/m/Y', $date_fin) : null;
-			$outofoffice_interne->message = $message_interne;
-			$outofoffice_interne->order = 50;
-			
-			$outofoffice_externe = driver_mel::gi()->users_outofoffice();
-			$outofoffice_externe->type = Outofoffice::TYPE_EXTERNAL;
-			$outofoffice_externe->enable = (isset($status_externe) && $status_externe == '1' );
-			$outofoffice_externe->start = isset($date_debut) ? \DateTime::createFromFormat('d/m/Y', $date_debut) : null;
-			$outofoffice_externe->end = isset($date_fin) ? \DateTime::createFromFormat('d/m/Y', $date_fin) : null;
-			$outofoffice_externe->message = isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe;
-			$outofoffice_externe->order = 60;
+			// Res
+			$outofoffices = [];
+			if (isset($message_interne) 
+					&& isset($date_debut)
+					&& isset($date_fin)) {
+				// Mise a jour des message d'absence
+				$outofoffice_interne = driver_mel::gi()->users_outofoffice();
+				$outofoffice_interne->type = Outofoffice::TYPE_INTERNAL;
+				$outofoffice_interne->enable = (isset($status_interne) && $status_interne == '1' );
+				$outofoffice_interne->start = \DateTime::createFromFormat('d/m/Y', $date_debut);
+				$outofoffice_interne->end = \DateTime::createFromFormat('d/m/Y', $date_fin);
+				$outofoffice_interne->message = $message_interne;
+				$outofoffice_interne->order = 50;
+				$outofoffices[] = $outofoffice_interne;
 
-			$outofoffices = [$outofoffice_interne, $outofoffice_externe];
+				$outofoffice_externe = driver_mel::gi()->users_outofoffice();
+				$outofoffice_externe->type = Outofoffice::TYPE_EXTERNAL;
+				$outofoffice_externe->enable = (isset($status_externe) && $status_externe == '1' );
+				$outofoffice_externe->start = \DateTime::createFromFormat('d/m/Y', $date_debut);
+				$outofoffice_externe->end = \DateTime::createFromFormat('d/m/Y', $date_fin);
+				$outofoffice_externe->message = isset($radio_externe) && $radio_externe == 'abs_texte_nodiff' ? $message_interne : $message_externe;
+				$outofoffice_externe->order = 60;
+				$outofoffices[] = $outofoffice_externe;
+			}
 
 			// Gestion des absences hebdo
 			$i = 0;

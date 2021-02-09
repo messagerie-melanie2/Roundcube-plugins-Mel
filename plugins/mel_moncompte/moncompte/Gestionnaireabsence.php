@@ -159,6 +159,7 @@ class Gestionnaireabsence extends Moncompteobject {
 			'wednesday' => Outofoffice::DAY_WEDNESDAY, 
 			'thursday' 	=> Outofoffice::DAY_THURSDAY, 
 			'friday' 	=> Outofoffice::DAY_FRIDAY, 
+			// Ne pas afficher les weekend
 			'saturday' 	=> Outofoffice::DAY_SATURDAY, 
 			'sunday' 	=> Outofoffice::DAY_SUNDAY,
 		];
@@ -194,9 +195,9 @@ class Gestionnaireabsence extends Moncompteobject {
 			$user->load(['outofoffices']);
 			// Res
 			$outofoffices = [];
-			if (isset($message_interne) 
-					&& isset($date_debut)
-					&& isset($date_fin)) {
+			if (isset($message_interne) && !empty($message_interne)
+					&& isset($date_debut) && !empty($date_debut)
+					&& isset($date_fin) && !empty($date_fin)) {
 				// Mise a jour des message d'absence
 				$outofoffice_interne = driver_mel::gi()->users_outofoffice();
 				$outofoffice_interne->type = Outofoffice::TYPE_INTERNAL;

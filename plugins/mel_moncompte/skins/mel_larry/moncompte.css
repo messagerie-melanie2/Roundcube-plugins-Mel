@@ -351,6 +351,11 @@ body.iframe.mail #filter-form
   opacity: 0.6;
 }
 
+#form_gest_abs .absence > span.days span.checkbox label {
+  width: 55px;
+  display: inline-block;
+}
+
 .listes_buttons div {
 	margin-bottom: 10px;
 }

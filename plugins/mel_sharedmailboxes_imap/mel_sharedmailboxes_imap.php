@@ -1003,7 +1003,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             }
 
             // Parcourir toutes les boites partagées de l'utilisateur
-            $_SESSION['trash_folders'];
+            $_SESSION['trash_folders'] = [];
             $_objects = driver_mel::gi()->getUser()->getObjectsShared();
             if (count($_objects) >= 1) {
                 foreach ($_objects as $_object) {

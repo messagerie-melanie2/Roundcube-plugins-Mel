@@ -9,7 +9,9 @@ window.onload = function() {
         else
             this.parentNode.classList.add('visible');
     };
-    document.getElementById('input-links').getElementsByClassName('anchor')[0].onclick = onclickFunc;
+    if (document.getElementById('input-links').getElementsByClassName('anchor').length) {
+        document.getElementById('input-links').getElementsByClassName('anchor')[0].onclick = onclickFunc;
+    }
 };
 
 if (window.rcmail) {
@@ -47,9 +49,9 @@ function copy_signature() {
     let success = document.execCommand("copy");
     if (success) {
         rcmail.display_message(rcmail.get_label('mel_signatures.signaturecopiedmessage'), 'confirmation');
-        document.querySelector(".action-button#copy-to-clipboard").value = rcmail.get_label('mel_signatures.signaturecopied');
+        document.querySelector("#copy-to-clipboard").value = rcmail.get_label('mel_signatures.signaturecopied');
         setTimeout(() => {
-            document.querySelector(".action-button#copy-to-clipboard").value = rcmail.get_label('mel_signatures.clictocopy');
+            document.querySelector("#copy-to-clipboard").value = rcmail.get_label('mel_signatures.clictocopy');
         }, 1000);
     }
 }
@@ -58,7 +60,12 @@ function copy_signature() {
  * Activer la modification de la signature
  */
 function modify_signature() {
-    document.querySelector(".userinfos").style.display = 'block';
+    var x = document.querySelector(".userinfos");
+    if (x.style.display === "block") {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+    }
 }
 
 /**
@@ -95,6 +102,13 @@ function use_signature() {
         }],
         {close: close_fn}
     );
+}
+
+/**
+ * Téléchargement de la signature dans un fichier HTML pour le tester sur Outlook
+ */
+function download_signature() {
+    download('signature.html', document.querySelector("#signature_html").value);
 }
 
 /**
@@ -163,7 +177,7 @@ function getSignatureHTML() {
     signature_html = signature_html.replace(/%%TEMPLATE_DIRECTION%%/g, document.getElementById("input-department").value);
 
     // Gestion des liens
-    let checkboxes = document.querySelectorAll("#input-links .items input");
+    let checkboxes = document.querySelectorAll("#input-links input");
     let links = "";
     if (document.getElementById("checkbox-custom-link").checked) {
         document.querySelector(".grid-form .custom-link").style.display = 'block';
@@ -223,4 +237,20 @@ function formatPhoneNumber(number) {
         number = number.replace(/(.{2})/g,"$1 ");
     }
     return number.trim();
+}
+
+/**
+ * Download file HTML from javascript
+ */
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
 }

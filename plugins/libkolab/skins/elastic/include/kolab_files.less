@@ -1,0 +1,525 @@
+/**
+ * Kolab core library
+ *
+ * This file contains Elastic skin styles for kolab_files plugin.
+ *
+ * @author Aleksander Machniak <machniak@kolabsys.com>
+ *
+ * Copyright (C) 2012-2018, Kolab Systems AG <contact@kolabsys.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+a.btn.fromcloud:before,
+li > a.icon.saveas:before,
+a.button.filesaveall:before,
+a.button.saveas:before {
+    &:extend(.font-icon-class);
+    content: @fa-var-folder;
+}
+
+.menu {
+    a.mount.storage:before {
+        content: @fa-var-database;
+    }
+
+    a.open:before {
+        content: @fa-var-eye;
+    }
+
+    a.cancel:before {
+        content: @fa-var-times;
+    }
+
+    a.share:before {
+        content: @fa-var-share-alt;
+    }
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset a.btn-link.options.add-folder {
+    order: -1;
+
+    &:before {
+        content: @fa-var-plus;
+    }
+}
+
+.folderlist {
+    li.collection {
+        a.name {
+            padding-left: .5em;
+        }
+
+        &.audio a.name:before {
+            .font-icon-solid(@fa-var-volume-up);
+        }
+
+        &.video a.name:before {
+            .font-icon-solid(@fa-var-video);
+        }
+
+        &.image a.name:before {
+            content: @fa-var-image;
+        }
+
+        &.document a.name:before {
+            .font-icon-solid(@fa-var-book);
+        }
+
+        &.sessions a.name:before {
+            .font-icon-solid(@fa-var-users);
+        }
+    }
+
+    li.mailbox {
+        a.subscription {
+            cursor: pointer;
+            // reset listing's link style
+            padding: 0 !important;
+            border-left: 0;
+            width: auto;
+
+            &:before {
+                .font-icon-regular(@fa-var-bookmark); // TODO: better icon
+                height: auto;
+                color: @color-link;
+                margin-right: .25rem;
+            }
+
+            &.subscribed:before {
+                &:extend(.font-icon-class);
+                .font-icon-solid(@fa-var-bookmark); // TODO: better icon
+            }
+        }
+    }
+}
+
+#filelistcontainer {
+    position: relative;
+}
+
+#filesuploadform {
+    // force upload form position, otherwise it breaks layout
+    position: absolute !important;
+}
+
+#filelistbox {
+    height: 100%;
+
+    &.droptarget {
+        &.active {
+            box-shadow: 0 0 2px 1px darken(@color-toolbar-button-background-hover, 20%) inset;
+        }
+
+        &.hover {
+            box-shadow: 0 0 2px 1px darken(@color-toolbar-button-background-hover, 20%) inset;
+            background-color: @color-toolbar-button-background-hover;
+        }
+    }
+}
+
+.filelist {
+    thead {
+        display: none;
+    }
+
+    td.options {
+        display: none;
+    }
+
+    td.name {
+        position: relative;
+    }
+
+    td.mtime {
+        width: 11em;
+    }
+
+    td.size {
+        text-align: right;
+        width: 6em;
+    }
+
+    tr.session > td.name {
+        padding-right: 2em;
+
+        &:after {
+            &:extend(.font-icon-class);
+            content: @fa-var-users;
+            color: @color-black-shade-border;
+            position: absolute;
+            right: .25em;
+            top: 0;
+        }
+    }
+
+    tr.session.invited > td.name:after {
+        color: @color-success;
+    }
+
+    tr.session.owner > td.name:after {
+        color: @color-black;
+    }
+}
+
+@media screen and (max-width: @screen-width-xs) {
+    .filelist {
+        td.mtime {
+            display: none;
+        }
+    }
+}
+
+.filelist tbody td.filename {
+    & span {
+        background: transparent !important;
+    }
+
+    & span:before {
+        &:extend(.font-icon-class);
+        .font-icon-regular(@fa-var-file);
+    }
+
+    &.pdf span:before,
+    &.application_pdf span:before {
+        content: @fa-var-file-pdf;
+    }
+
+    &.application_vnd_openxmlformats_officedocument_wordprocessingml_document span:before,
+    &.application_vnd_openxmlformats_officedocument_wordprocessingml_template span:before,
+    &.application_vnd_ms_word span:before,
+    &.application_msword span:before {
+        content: @fa-var-file-word;
+    }
+
+    &.application_vnd_ms_excel span:before,
+    &.application_vnd_openxmlformats_officedocument_spreadsheetml_sheet span:before,
+    &.application_vnd_openxmlformats_officedocument_spreadsheetml_template span:before,
+    &.application_vnd_oasis_opendocument_spreadsheet span:before,
+    &.application_vnd_oasis_opendocument_spreadsheet_template span:before {
+        content: @fa-var-file-excel;
+    }
+
+    &.application_vnd_openxmlformats_officedocument_presentationml_presentation span:before,
+    &.application_vnd_openxmlformats_officedocument_presentationml_template span:before,
+    &.application_vnd_openxmlformats_officedocument_presentationml_slideshow span:before,
+    &.application_vnd_ms_powerpoint span:before {
+        content: @fa-var-file-powerpoint;
+    }
+
+    &.application_vnd_oasis_opendocument_text span:before {
+        content: @fa-var-file-alt; // TODO
+    }
+
+    &.application_vnd_oasis_opendocument_presentation span:before,
+    &.application_vnd_oasis_opendocument_presentation_template span:before {
+        content: @fa-var-file-powerpoint; // TODO
+    }
+
+    &.tar span:before,
+    &.application_zip span:before,
+    &.application_x_7z_compressed span:before,
+    &.application_x_ace span:before,
+    &.application_x_arc span:before,
+    &.application_x_arj span:before,
+    &.application_x_bzip_compressed_tar span:before,
+    &.application_x_lha span:before,
+    &.application_x_rar span:before,
+    &.application_x_tarz span:before,
+    &.application_x_tzo span:before,
+    &.application_x_zip span:before,
+    &.application_x_zoo span:before {
+        content: @fa-var-file-archive;
+    }
+
+    &.image span:before,
+    &.image_png span:before,
+    &.image_svg_xml span:before,
+    &.image_jpeg span:before,
+    &.image_jpeg2000 span:before,
+    &.image_x_eps span:before,
+    &.application_vnd_stardivision_draw span:before,
+    &.application_vnd_sun_xml_draw span:before,
+    &.application_vnd_sun_xml_draw_template span:before {
+        content: @fa-var-file-image;
+    }
+
+    &.application_pgp_keys span:before,
+    &.application_pkcs7_mime span:before {
+        // TODO
+    }
+
+    &.audio span:before {
+        content: @fa-var-file-audio;
+    }
+
+    &.video span:before {
+        content: @fa-var-file-video;
+    }
+
+    &.ascii span:before,
+    &.text_plain span:before {
+        content: @fa-var-file-alt;
+    }
+
+    &.vcalendar span:before {
+        // TODO
+    }
+
+    &.vcard span:before,
+    &.text_x_vcard span:before {
+        // TODO
+    }
+
+    &.text_html span:before {
+        content: @fa-var-file-code;
+    }
+
+    &.style_css span:before {
+        // TODO
+    }
+
+    &.text_csv span:before {
+        // TODO
+    }
+
+    &.message_rfc822 span:before {
+        // TODO
+    }
+}
+
+#folder-mount-form {
+    td.source {
+        display: flex;
+        align-items: flex-start;
+        padding: .5rem;
+
+        &.selected {
+            background-color: @color-list-selected-background;
+        }
+
+        & > input {
+            height: 32px;
+            margin-right: .5rem;
+        }
+
+        & > div {
+            flex: 1;
+        }
+
+        img {
+            height: 32px;
+            margin-right: .5rem;
+        }
+
+        .name {
+            font-weight: bold;
+        }
+
+        .description {
+            font-size: 90%;
+        }
+
+        table {
+            margin-top: .5rem;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+    }
+
+    .auth-options {
+        margin-top: .5rem;
+
+        & > label:before {
+            line-height: 1;
+        }
+    }
+}
+
+.files-dialog {
+    .selection-list {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .selection-content {
+        flex: 2;
+
+        @media screen and (min-width: (@screen-width-small + 1px)) {
+            border: 1px solid @color-layout-border;
+            border-left: 0;
+        }
+    }
+
+    a.subscription {
+        display: none;
+    }
+
+    @media screen and (max-width: @screen-width-small) {
+        .selection-list {
+            display: none;
+        }
+    }
+}
+
+.document-editor-header {
+    .toolbar {
+        text-align: left !important;
+        flex: 1;
+
+        a {
+            text-align: center;
+        }
+    }
+
+    a.button.icon.members:before {
+        content: @fa-var-users;
+    }
+
+    #collaborators {
+        order: 9;
+        display: flex;
+        margin-right: .5rem;
+        margin-left: 2rem;
+
+        a.button.add:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-plus;
+        }
+
+        .inner {
+            display: none;
+        }
+    }
+
+    #doc-title {
+        flex: 1;
+        order: 8;
+
+        input {
+            display: inline;
+        }
+    }
+}
+
+.session-members {
+    img.photo {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        overflow: hidden;
+        background: url("@{skin-path}/images/contactpic.png") center center no-repeat #fff;
+        background-size: cover;
+        border-radius: 50%;
+        border: solid 3px #eee;
+        margin-left: .5rem;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+
+        li {
+            display: flex;
+            align-items: center;
+        }
+
+        img.photo {
+            margin-left: 0;
+            margin-right: 1em;
+        }
+    }
+}
+
+.editors-dialog {
+    table {
+        th {
+            border: 0;
+        }
+
+        tr:last-child td {
+            border-bottom: 1px solid @color-layout-border;
+        }
+
+        td.options {
+            width: 1%;
+
+            a.delete:before {
+                &:extend(.font-icon-class);
+                content: @fa-var-trash-alt;
+                display: inline;
+                line-height: 1;
+            }
+        }
+    }
+
+    label {
+        display: block;
+    }
+}
+
+button.participant.add:before {
+    content: @fa-var-user-plus;
+}
+
+.iframe-wrapper.file-type-audio,
+.iframe-wrapper.file-type-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media screen and (min-width: (@screen-width-small + 1px)) {
+        padding: 1em;
+    }
+}
+
+#shareform {
+    table {
+        td,th {
+            padding-left: .15rem;
+            max-width: 10vw; // needed for overflow
+            .overflow-ellipsis;
+
+            &:last-child {
+                padding-right: .15rem;
+                width: 1%;
+                max-width: unset;
+            }
+        }
+
+        td {
+            vertical-align: middle;
+
+            &.form {
+                input {
+                    margin-bottom: .25rem;
+                    width: 100%;
+                }
+            }
+        }
+
+        tr + tr > td {
+            border-top: 0;
+            padding-bottom: .25rem;
+        }
+
+        button {
+            padding: .185rem .75rem;
+            width: 100%;
+        }
+    }
+}

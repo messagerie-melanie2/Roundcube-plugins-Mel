@@ -349,6 +349,7 @@ if (window.rcmail) {
 		}
 		else if (props.action == 'event') {
 			// Récupération des événéments
+			console.log("yolo");
 			rcmail.right_panel_get_events();
 		}
 	});

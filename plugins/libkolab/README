@@ -1,0 +1,40 @@
+libkolab plugin to access to Kolab groupware data
+=================================================
+
+The contained library classes establish a connection to the Kolab server
+and manage the access to the Kolab groupware objects stored in various
+IMAP folders. For reading and writing these objects, the PHP bindings of
+the libkolabxml library are used.
+
+This plugin also provides Elastic/Larry skin support for Kolab plugins.
+
+
+REQUIREMENTS
+------------
+* libkolabxml PHP bindings
+  - kolabformat.so loaded into PHP
+  - kolabformat.php placed somewhere in the include_path
+* PEAR: HTTP/Request2
+* PEAR: Net/URL2
+
+
+INSTALLATION
+------------
+To use local cache you need to create a dedicated table in Roundcube's database.
+To do so, execute the SQL commands in SQL/<yourdatabase>.initial.sql
+
+
+CONFIGURATION
+-------------
+Rename config.inc.php.dist to config.inc.php in the plugin folder.
+For available configuration options see config.inc.php.dist file.
+
+
+IMPORTANT
+---------
+
+This plugin doesn't work with the Classic skin of Roundcube because no
+templates are available for that skin.
+
+Use Roundcube `skins_allowed` option to limit skins available to the user
+or remove incompatible skins from the skins folder.

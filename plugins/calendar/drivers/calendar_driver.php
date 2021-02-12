@@ -175,15 +175,6 @@ abstract class calendar_driver
   abstract function delete_calendar($prop);
 
   /**
-   * Delete all the events in the given calendar
-   *
-   * @param array Hash array with calendar properties
-   *      id: Calendar Identifier
-   * @return boolean True on success, Fales on failure
-   */
-  abstract function delete_all_events($prop);
-
-  /**
    * Search for shared or otherwise not listed calendars the user has access
    *
    * @param string Search string
@@ -464,26 +455,6 @@ abstract class calendar_driver
   }
 
   /**
-   * Récupération de la clé de partage pour le calendrier
-   * @param string $calendar
-   * @return string|NULL
-   */
-  public function get_calendar_public_key($calendar) { }
-
-  /**
-   * Création de la clé pour le calendrier pour le partage public
-   * @param string $calendar
-   * @param string $key
-   */
-  public function add_calendar_public_key($calendar, $key) { }
-
-  /**
-   * Suppression de la clé pour le calendrier pour le partage public
-   * @param string $calendar
-   */
-  public function delete_calendar_public_key($calendar) { }
-
-  /**
    * Create instances of a recurring event
    *
    * @param array  Hash array with event properties
@@ -621,14 +592,16 @@ abstract class calendar_driver
    */
   public function calendar_form($action, $calendar, $formfields)
   {
-    $html = '';
-    foreach ($formfields as $field) {
-      $html .= html::div('form-section',
-        html::label($field['id'], $field['label']) .
-        $field['value']);
+    $table = new html_table(array('cols' => 2, 'class' => 'propform'));
+
+    foreach ($formfields as $col => $colprop) {
+      $label = !empty($colprop['label']) ? $colprop['label'] : $rcmail->gettext("$domain.$col");
+
+      $table->add('title', html::label($colprop['id'], rcube::Q($label)));
+      $table->add(null, $colprop['value']);
     }
 
-    return $html;
+    return $table->show();
   }
 
   /**
@@ -758,7 +731,7 @@ abstract class calendar_driver
 
     $rcmail = rcmail::get_instance();
 
-    if ($source && $contact_id && ($abook = $rcmail->get_address_book($source))) {
+    if (strlen($source) && $contact_id && ($abook = $rcmail->get_address_book($source))) {
       if ($contact = $abook->get_record($contact_id, true)) {
         return self::parse_contact($contact, $source);
       }

@@ -1,6 +1,10 @@
 /* (Manage) Mon compte */
 $(document).on({
   click : function(e) {
+    if ($('#settingstabpluginmel_resources').hasClass("_selected"))
+      $('#settingstabpluginmel_resources').removeClass("_selected")
+    else
+      $('#settingstabpluginmel_resources').addClass("_selected")
     // Toggle les items de la liste
   	$('#settingstabpluginmel_resources_portail').toggle();
     $('#settingstabpluginmel_resources_bal').toggle();
@@ -13,6 +17,10 @@ $(document).on({
 $(document).on({
   click : function(e) {
     // Toggle les items de la liste
+    if ($('#settingstabpluginmel_statistics').hasClass("_selected"))
+      $('#settingstabpluginmel_statistics').removeClass("_selected")
+    else
+      $('#settingstabpluginmel_statistics').addClass("_selected")
     $('#settingstabpluginmel_statistics_mobile').toggle();
   }
 }, ".tablink.mel.statistics"); // pass the element as an argument to .on
@@ -200,7 +208,7 @@ if (window.rcmail) {
 
         // Ajout des resources
     	if (rcmail.env.enable_mesressources) {
-    		tab = $('<span>').attr('id', 'settingstabpluginmel_resources')
+    		tab = $('<li>').attr('id', 'settingstabpluginmel_resources')
 	            .addClass('tablink mel resources'), button = $('<a>')
 	            .attr('title', rcmail.gettext('mel_moncompte.manageresources'))
 	            .html(rcmail.gettext('mel_moncompte.resources')).appendTo(tab);
@@ -210,7 +218,7 @@ if (window.rcmail) {
     	
     	// Ajout des ressources mails
     	if (rcmail.env.enable_mesressources_mail) {
-    		tab = $('<span>').attr('id', 'settingstabpluginmel_resources_bal')
+    		tab = $('<li>').attr('id', 'settingstabpluginmel_resources_bal')
 	            .addClass('listitem_mel mel'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
 	                + '&_action=plugin.mel_resources_bal')
@@ -223,7 +231,7 @@ if (window.rcmail) {
         
     	// Ajout des ressources calendar
     	if (rcmail.env.enable_mesressources_cal) {
-    		tab = $('<span>')
+    		tab = $('<li>')
 	            .attr('id', 'settingstabpluginmel_resources_agendas')
 	            .addClass('listitem_mel mel'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
@@ -238,7 +246,7 @@ if (window.rcmail) {
         
     	// Ajout des ressources contacts
     	if (rcmail.env.enable_mesressources_addr) {
-    		tab = $('<span>')
+    		tab = $('<li>')
 	            .attr('id', 'settingstabpluginmel_resources_contacts')
 	            .addClass('listitem_mel mel'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
@@ -253,7 +261,7 @@ if (window.rcmail) {
         
     	// Ajout des ressources tâches
     	if (rcmail.env.enable_mesressources_task) {
-    		tab = $('<span>')
+    		tab = $('<li>')
 	            .attr('id', 'settingstabpluginmel_resources_tasks')
 	            .addClass('listitem_mel mel'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
@@ -268,7 +276,7 @@ if (window.rcmail) {
       
       // Ajout des ressources Mes applications du portail
     	if (rcmail.env.enable_mesressources_portail) {
-    		tab = $('<span>')
+    		tab = $('<li>')
 	            .attr('id', 'settingstabpluginmel_resources_portail')
 	            .addClass('listitem_mel mel'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
@@ -309,6 +317,23 @@ if (window.rcmail) {
           $('#settingstabpluginmel_resources_agendas').show();
           $('#settingstabpluginmel_resources_contacts').show();
           $('#settingstabpluginmel_resources_tasks').show();
+          $('#settingstabpluginmel_resources').addClass("_selected")
+          switch (rcmail.env.resources_action) {
+            case "bal":
+              $("#settingstabpluginmel_resources_bal").addClass("selected");
+              break;
+            case "agendas":
+              $("#settingstabpluginmel_resources_agendas").addClass("selected");
+              break;
+            case "contacts":
+              $("#settingstabpluginmel_resources_contacts").addClass("selected");
+              break;
+            case "tasks":
+              $("#settingstabpluginmel_resources_tasks").addClass("selected");
+              break;
+            default:
+              break;
+          }  
           // Activation des commandes
           rcmail.enable_command('set_default_resource', true);
           rcmail.enable_command('hide_resource_in_roundcube', true);
@@ -319,6 +344,7 @@ if (window.rcmail) {
           // register commands
           rcmail
               .register_command('plugin.mel_moncompte_add_resource', function() {
+                //console.log('yolo');
                 rcmail.add_resource()
               });
           rcmail
@@ -416,7 +442,7 @@ if (window.rcmail) {
 
         // Moncompte
         if (rcmail.env.enable_moncompte) {
-        	tab = $('<span>').attr('id', 'settingstabpluginmel_moncompte')
+        	tab = $('<li>').attr('id', 'settingstabpluginmel_moncompte')
 	            .addClass('tablink mel moncompte'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
 	                + '&_action=plugin.mel_moncompte').attr('title', rcmail
@@ -447,7 +473,7 @@ if (window.rcmail) {
 
         // Statistiques
         if (rcmail.env.enable_messtatistiques) {
-        	tab = $('<span>').attr('id', 'settingstabpluginmel_statistics')
+        	tab = $('<li>').attr('id', 'settingstabpluginmel_statistics')
             .addClass('tablink mel statistics'), button = $('<a>')
             .attr('title', rcmail
                 .gettext('mel_moncompte.managestatistics')).html(rcmail
@@ -459,7 +485,7 @@ if (window.rcmail) {
         
         // Mes statistiques mobile
         if (rcmail.env.enable_messtatistiques_mobile) {
-        	tab = $('<span>')
+        	tab = $('<li>')
 	            .attr('id', 'settingstabpluginmel_statistics_mobile')
 	            .addClass('listitem_mel mel statistics mobile'), button = $('<a>')
 	            .attr('href', rcmail.env.comm_path
@@ -576,6 +602,16 @@ if (window.rcmail) {
               });
         }
         /* -------------------------------- */
+        switch (rcmail.env.action) {
+          case "plugin.mel_moncompte":
+            $("#settingstabpluginmel_moncompte").addClass("selected");
+            break;
+          case "plugin.mel_statistics_mobile":
+            $("#settingstabpluginmel_statistics").addClass("_selected");
+            $("#settingstabpluginmel_statistics_mobile").addClass("selected");
+          default:
+            break;
+        }
       });
 };
 
@@ -666,10 +702,13 @@ rcube_webmail.prototype.load_shares_element_frame = function(id) {
     }
 
     target = window.frames[this.env.contentframe];
-    var msgid = this.set_busy(true, 'loading');
+    // var msgid = this.set_busy(true, 'loading');
+    this.lock_frame(target);
     target.location.href = this.env.comm_path
         + '&_action=plugin.mel_resources_' + this.env.resources_action
-        + '&_framed=1' + (has_id ? '&_id=' + id : '') + '&_unlock=' + msgid;
+        + '&_framed=1' + (has_id ? '&_id=' + id : '');// + '&_unlock=' + msgid;
+    // this.http_post("plugin.mel_resources_" + this.env.resources_action, '&_framed=1' + (has_id ? '&_id=' + id : ''),
+    // msgid);
   }
 };
 

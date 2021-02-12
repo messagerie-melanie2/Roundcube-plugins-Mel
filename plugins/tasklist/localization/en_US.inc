@@ -20,6 +20,7 @@ $labels['currentview'] = 'current view';
 $labels['tasklistsubscribe'] = 'List permanently';
 $labels['listsearchresults'] = 'Available Tasklists';
 $labels['findlists'] = 'Find tasklists...';
+$labels['findtasks'] = 'Find tasks...';
 $labels['searchterms'] = 'Search terms';
 $labels['notasklistsfound'] = 'No tasklists found';
 $labels['nrtasklistsfound'] = '$nr tasklists found';
@@ -74,7 +75,7 @@ $labels['removetag'] = 'Remove';
 $labels['removelink'] = 'Remove email reference';
 $labels['auto'] = 'Auto';
 
-$labels['taskdetails'] = 'Details';
+$labels['taskdetails'] = 'Task details';
 $labels['newtask'] = 'New Task';
 $labels['edittask'] = 'Edit Task';
 $labels['save'] = 'Save';
@@ -92,14 +93,17 @@ $labels['tabassignments'] = 'Assignments';
 $labels['tabattachments'] = 'Attachments';
 $labels['tabsharing'] = 'Sharing';
 
-$labels['editlist'] = 'Edit list';
+$labels['editlist'] = 'Edit/Share list';
+$labels['deletelist'] = 'Delete list';
 $labels['createlist'] = 'Add list';
 $labels['listactions'] = 'List options...';
 $labels['listname'] = 'Name';
 $labels['showalarms'] = 'Show reminders';
 $labels['import'] = 'Import';
+$labels['importtasks'] = 'Import Tasks';
 $labels['viewactions'] = 'View actions';
 $labels['focusview'] = 'View only this list';
+$labels['activate'] = 'Activate';
 
 // date words
 $labels['on'] = 'on';
@@ -132,6 +136,9 @@ $labels['arialabelquicksearchbox'] = 'Task search input';
 $labels['arialabellistsearchform'] = 'Tasklists search form';
 $labels['arialabeltaskselector'] = 'List mode';
 $labels['arialabeltasklisting'] = 'Tasks listing';
+$labels['arialabelsortmenu'] = 'Tasks sorting options';
+$labels['arialabeltasklistform'] = 'Tasks list properties';
+$labels['arialabeltaskform'] = 'Task editing form';
 
 // attendees
 $labels['attendee'] = 'Assignee';
@@ -196,12 +203,16 @@ $labels['errornotifying'] = 'Failed to send notifications to task assignees';
 $labels['removefromcalendar'] = 'Remove from my tasks';
 $labels['delegateinvitation'] = 'Delegate assignment';
 
+$labels['importtext'] = 'You can upload tasks in <a href="https://wikipedia.org/wiki/ICalendar">iCalendar</a> format (.ics).';
 $labels['andnmore'] = '$nr more...';
 $labels['savetotasklist'] = 'Save to tasks';
 $labels['comment'] = 'Comment';
+$labels['rsvpcomment'] = 'Comment';
 $labels['errorimportingtask'] = 'Failed to import task(s)';
 $labels['importwarningexists'] = 'A copy of this task already exists in your tasklist.';
 $labels['importsuccess'] = 'Successfully imported $nr tasks';
+$labels['importnone'] = 'No tasks found to be imported';
+$labels['importerror'] = 'An error occured while importing';
 $labels['newerversionexists'] = 'A newer version of this task already exists! Aborted.';
 $labels['nowritetasklistfound'] = 'No tasklist found to save the task';
 $labels['importedsuccessfully'] = 'The task was successfully added to \'$list\'';
@@ -212,4 +223,3 @@ $labels['itipinvalidrequest'] = 'This invitation is no longer valid';
 $labels['sentresponseto'] = 'Successfully sent assignment response to $mailto';
 $labels['successremoval'] = 'The task has been deleted successfully.';
 $labels['invalidlistproperties'] = 'Invalid list properties! Please set a valid name.';
-$labels['arialabelsortmenu'] = 'Tasks sorting options';

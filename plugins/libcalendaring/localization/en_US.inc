@@ -70,7 +70,9 @@ $labels['days'] = 'day(s)';
 $labels['weeks'] = 'week(s)';
 $labels['months'] = 'month(s)';
 $labels['years'] = 'year(s)';
+$labels['bydates'] = 'On';
 $labels['bydays'] = 'On';
+$labels['bymonths'] = 'On';
 $labels['untildate'] = 'the';
 $labels['each'] = 'Each';
 $labels['onevery'] = 'On every';
@@ -78,7 +80,9 @@ $labels['onsamedate'] = 'On the same date';
 $labels['forever'] = 'forever';
 $labels['recurrencend'] = 'until';
 $labels['untilenddate'] = 'until date';
-$labels['forntimes'] = 'for $nr time(s)';
+$labels['forntimes'] = 'for $nr time(s)'; // old
+$labels['ntimes'] = '$n time(s)';
+$labels['for'] = 'for';
 $labels['first'] = 'first';
 $labels['second'] = 'second';
 $labels['third'] = 'third';
@@ -179,6 +183,7 @@ $labels['delegatedto'] = 'Delegated to:';
 $labels['delegatedfrom'] = 'Delegated from:';
 
 $labels['savingdata'] = 'Saving data...';
+$labels['savein'] = 'Save in';
 
 // attendees labels
 $labels['expandattendeegroup'] = 'Substitute with group members';

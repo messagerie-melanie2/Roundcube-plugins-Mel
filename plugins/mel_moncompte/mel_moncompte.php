@@ -158,7 +158,7 @@ class mel_moncompte extends rcube_plugin {
                     html::tag('a',
                             array(
                                             "id" => "rcmbtn210",
-                                            "class" => "button-mel_moncompte",
+                                            "class" => "button-mel_moncompte hidden",
                                             "href" => "./?_task=settings&_action=plugin.mel_moncompte",
                                             "style" => "position: relative;"),
                             html::tag('span', array("class" => "button-inner"),

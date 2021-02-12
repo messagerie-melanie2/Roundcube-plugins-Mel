@@ -24,6 +24,7 @@ $labels['triggerend+M'] = 'λεπτά πριν το τέλος';
 $labels['triggerend+D'] = 'ημέρες μετά το τέλος';
 $labels['frequency'] = 'Επανάληψη';
 $labels['recurrencend'] = 'μέχρι';
+$labels['forntimes'] = ''; // old
 $labels['statusorganizer'] = 'Οργανωτής';
 $labels['statuscompleted'] = 'Ολοκληρώθηκε';
 $labels['savingdata'] = 'Αποθήκευση δεδομένων...';

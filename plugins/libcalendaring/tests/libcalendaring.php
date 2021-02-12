@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class libcalendaring_test extends PHPUnit_Framework_TestCase
+class libcalendaring_test extends PHPUnit\Framework\TestCase
 {
     function setUp()
     {

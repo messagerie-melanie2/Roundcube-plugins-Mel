@@ -1,0 +1,344 @@
+/* #layout>div>.header {
+    background-color: white;
+    border: none;
+} */
+
+body{
+    color:#363A5B;
+}
+
+#layout>div>.header
+{
+    border:none;
+}
+
+#layout-sidebar, #layout-list
+{
+    border:none;
+}
+
+#layout-sidebar, #layout-sidebar>.header
+{
+    background-color: #363A5B !important;
+    color:white !important;
+}
+
+#layout-list, #layout-list>.header
+{
+    background-color: #484D7A !important;
+    color:white !important;
+}
+
+#layout>div>.header a.button
+{
+    color:white;
+}
+
+ul.treelist li.selected>div>a, ul.treelist li.selected>a
+{
+    background-color: #484D7A;
+    color:white;
+} 
+
+.listing li.selected, .listing tr.selected td
+{
+    background-color: #2C3054;
+    color:white; 
+}
+
+a.button.icon:not(.disabled):focus, .header a.button.icon:not(.disabled):hover
+{
+    background-color: #484D7A !important;
+    color:white;   
+}
+
+.menu a:not(.disabled):focus, .menu a:not(.disabled):hover
+{
+    background-color: #2C3054!important;
+    color:white!important;
+}
+
+.listing tbody td, .scroller>.listing li a
+{
+    color:white;
+}
+
+ .listing tbody td, .listing li
+{
+    border:none;
+}  
+
+.listing tbody td a
+{
+    color:white;
+}
+
+.messagelist td.subject span.fromto
+{
+    color:lightgray;
+}
+
+td.subject {
+    border-bottom: 1px solid #363a5b !important;
+}
+
+.messagelist td.subject span.date
+{
+    color:lightgray;
+}
+
+.messagelist td.subject a
+{
+    color:lightgray;
+}
+
+.messagelist tr.unread td.subject a
+{
+    color:white;
+}
+
+.listing-info
+{
+    color:white;
+}
+
+.popup > div >div #directorylist > li
+{
+    background-color: #2C3054;
+}
+.popup > div >div #directorylist > li:hover
+{
+    background-color: #484D7A;
+}
+.popup > div >div #directorylist > li > a:hover
+{
+    background-color:transparent;
+}
+
+#contacts-table > tbody > tr >td.contactgroup,
+#contacts-table > tbody > tr >td.contact
+{
+    background-color: #2C3054;
+}
+
+#contacts-table > tbody > tr >td.contactgroup:hover,
+#contacts-table > tbody > tr >td.contact:hover
+{
+    background-color: #484D7A;
+}
+
+#contacts-table > tbody > tr.selected >td.contactgroup,
+#contacts-table > tbody > tr.selected >td.contact
+{
+    background-color: #484D7A;
+}
+
+#layout>#layout-content>.header a.button {
+    color: black;
+}
+
+/******Calendrier*******/
+.listing li.selected>div>*
+{
+    background-color: #484D7A !important;
+}
+/******Fin cal*******/
+
+.mel-add{
+    display:inline-block;
+    width: 107px;
+    height: 32px;
+    border-radius: 50px;
+    background-color: #363A5B;
+    color: white;
+    padding: 5px 10px;
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+    float:right;
+    font-size: 1rem;
+    font-weight: initial;
+}
+
+.mel-add:hover
+{
+    background-color: #484D7A;
+}
+
+
+.mel-add >span>.plus
+{
+    position: absolute;
+    top: 3px;
+    right: -43px;
+}
+
+.mel-add.left{
+    float: left;
+}
+
+select.mel-select.form-control{
+    border-radius: 60px;
+    background-color: #F0F0F0;
+    border: none;
+    color:#363A5B;
+}
+
+separate {
+    border-top-color: #5C5F7B;
+    border-top-style: solid;
+    border-top-width: thin;
+    margin: 20px 30px;
+}
+
+
+
+
+
+
+
+
+
+/*************************/
+.task-addressbook>#layout>#layout-sidebar>.header,
+.task-addressbook>#layout>#layout-list>.header
+{
+	height: 120px;
+}
+
+.searchgroup > center > span,
+.filtergroup > center > span
+{
+    font-size: larger;
+}
+
+
+.task-addressbook .searchbar form:before {
+    content: none;
+}
+
+
+.task-addressbook .searchbar form:after {
+    content: "\f002";
+    height: 36px;
+    color: #363A5B;
+	margin: 0 .75rem 0 0;
+	
+	font-size: 1.25em;
+    display: block;
+    float: left;
+    width: 1.18em;
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: 900;
+    text-decoration: inherit;
+    text-align: center;
+    speak: none;
+    font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+.filtergroup > .row{
+	margin-top: -11px;
+}
+
+.filtergroup > .row > div > select{
+	border-radius: 60px;
+}
+
+.task-addressbook .searchbar
+{
+	border-radius: 60px;
+}
+
+.task-addressbook .button.reset
+{
+	display:none!important;
+}
+#tasklist li.taskitem div.taskhead.selected
+{
+    background-color:#2C3054!important;
+}
+
+li.mel >a:before, 
+li#settingstabpluginmel_doubleauth > a::before,
+li#settingstabpluginmel_suggestion_box > a::before
+{
+    content: " ";
+}
+
+#settingstabpluginmel_resources,
+#settingstabpluginmel_statistics,
+.noselect
+{
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+#settingstabpluginmel_resources > a::before
+{
+    font-family: 'IcoFont';
+    content: "\eaa0";
+}
+
+#settingstabpluginmel_resources._selected > a::before
+{
+    font-family: 'IcoFont';
+    content: "\ea99";
+}
+
+#settingstabpluginmel_statistics > a::before
+{
+    font-family: 'IcoFont';
+    content: "\eaa0";
+}
+
+#settingstabpluginmel_statistics._selected > a::before
+{
+    font-family: 'IcoFont';
+    content: "\ea99";
+}
+
+.menu.pagenav.pagenav-list+.navlist
+{
+    background-color: #363A5B;
+}
+
+#tasklist li.taskitem div.taskhead.complete span.title
+{
+    color: white!important;
+}
+
+
+#showcontacts::before
+{
+  vertical-align: sub;
+  margin: 0!important;
+}
+
+#tb_label_popuplink::before
+{
+    font-family: 'IcoFont'!important;
+    content: "\ec85";
+}
+
+/* .task-addressbook
+{
+    margin-top: 60px;
+} */
+
+/* .task-addressbook>#layout>div>.footer.small
+{
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+} */

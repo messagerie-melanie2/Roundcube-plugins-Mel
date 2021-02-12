@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="0.91" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<channel>
+	<title>AC au quotidien</title>
+	<link>http://intra.ac.e2.rie.gouv.fr/</link>
+	<description></description>
+	<language>fr</language>
+
+	<image>
+		<title>AC au quotidien</title>
+		<url>http://intra.ac.e2.rie.gouv.fr/-s0.html</url>
+		<link>http://intra.ac.e2.rie.gouv.fr/</link>
+		<description></description>
+	</image>
+
+<!-- les articles du site qui ont le mot cle _portail_actu_principale et _portail_actu -->
+    
+	    <item>
+		<title>Nouvelles consignes pour la continuit&#233; des activit&#233;s du p&#244;le minist&#233;riel au regard de la d&#233;gradation sanitaire.</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/nouvelles-consignes-pour-la-continuite-des-a17848.html</link>
+	    <date>2020-11-02 08:04:09</date>
+	    <description>&lt;p&gt;Pr&#233;sent&#233;e en CHSCT minist&#233;riel vendredi 30 octobre, l'instruction d&#233;taille les modalit&#233;s relatives &#224; la poursuite de l'activite&#769; pour les services du p&#244;le minist&#233;riel dans le cadre de la crise sanitaire.&lt;/p&gt;</description>
+		<author>XIMENES Eric</author>
+		<dc:date>2020-11-02T07:04:09Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Rappel des bons comportements &#224; adopter</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/rappel-des-bons-comportements-a-adopter-a17833.html</link>
+	    <date>2020-07-15 14:14:49</date>
+	    <description>&lt;p&gt;Restons vigilants et continuons &#224; respecter les gestes barri&#232;re !&lt;br class='autobr' /&gt;
+Sur le site de La D&#233;fense &#224; la suite du d&#233;confinement, voici un rappel des bons comportements &#224; adopter.&lt;/p&gt;</description>
+		<author>XIMENES Eric</author>
+		<dc:date>2020-07-15T12:14:49Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>COVID-19 : disposition pour les cantines / Caf&#233;t&#233;rias de S&#233;quoia, Arche et Roquelaure</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/covid-19-disposition-pour-les-cantines-cafeterias-a17812.html</link>
+	    <date>2020-03-26 17:51:49</date>
+	    <description>&lt;p&gt;MAJ 16/03 : La cantine de Roquelaure est ferm&#233;e.&lt;br class='autobr' /&gt;
+En raison des mesures gouvernementales annonc&#233;es samedi 14 mars par le Premier ministre, les caf&#233;t&#233;rias Tour S&#233;quoia, Grande Arche et Roquelaure sont d&#233;sormais ferm&#233;es.&lt;br class='autobr' /&gt;
+Seule la cantine de l'Arche reste ouverte.&lt;br class='autobr' /&gt;
+Les agents sont invit&#233;s &#224; respecter les am&#233;nagements mis en place (&#224; savoir l'usage d'une place sur deux) afin de garder les distances entre (&#8230;)&lt;/p&gt;</description>
+		<author>XIMENES Eric</author>
+		<dc:date>2020-03-26T16:51:49Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Rencontre Fran&#231;ois Ascher - Individu hypermodernit&#233; m&#233;tapole</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/rencontre-francois-ascher-individu-hypermodernite-a17763.html</link>
+	    <date>2020-02-25 09:00:31</date>
+	    <description></description>
+		<author>XIMENES Eric</author>
+		<dc:date>2020-02-25T08:00:31Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Conf&#233;rence du 17 janvier : Pourquoi et comment r&#233;nover votre logement personnel ?</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/conference-du-17-janvier-pourquoi-et-comment-a17680.html</link>
+	    <date>2020-01-14 09:28:37</date>
+	    <description>&lt;p&gt;Vendredi 17 janvier 2019 entre 12H30 et 14h salle Passy &#8211; Entr&#233;e libre&lt;/p&gt;</description>
+		<author>XIMENES Eric</author>
+		<dc:date>2020-01-14T08:28:37Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Les ministres pr&#233;senteront leurs v&#339;ux aux agents le mardi 14 janvier 2020</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/les-ministres-presenteront-leurs-voeux-aux-agents-a17657.html</link>
+	    <date>2020-01-13 11:18:00</date>
+	    <description>&lt;p&gt;Les ministres pr&#233;senteront leurs v&#339;ux 2020 aux agents mardi 14 janvier &#224; 11h &#224; la Grande Galerie de l'&#201;volution - Mus&#233;um national d'histoire naturelle. Comment s'y rendre ?&lt;/p&gt;</description>
+		<author>RUER Suzanne</author>
+		<dc:date>2020-01-13T10:18:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>RUER Suzanne</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mention Administration centrale au quotidien</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/mention-administration-centrale-au-quotidien-a2328.html</link>
+	    <date>2014-03-28 17:33:45</date>
+	    <description></description>
+		<author></author>
+		<dc:date>2014-03-28T16:33:45Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator></dc:creator>
+	    </item>
+	
+    
+	    <item>
+		<title>Retour sur une collecte solidaire et &#233;cologique de v&#234;tements b&#233;b&#233; en administration centrale.</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/retour-sur-une-collecte-solidaire-et-ecologique-de-a17863.html</link>
+	    <date>2021-01-14 12:31:29</date>
+	    <description>&lt;p&gt;Merci aux nombreux agents pour leurs g&#233;n&#233;reux dons de v&#234;tements et accessoires b&#233;b&#233; !&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2021-01-14T11:31:29Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Campagne de vaccination contre la grippe saisonni&#232;re 2020-2021</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/campagne-de-vaccination-contre-la-grippe-a3613.html</link>
+	    <date>2021-01-05 10:28:05</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.ac.e2.rie.gouv.fr/IMG/jpg/infirmiere_40.jpg' width=&#034;40&#034; height=&#034;40&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;La grippe saisonni&#232;re n'est pas un simple rhume, c'est une maladie contagieuse.&lt;br class='manualbr' /&gt;Vous pouvez vous en prot&#233;ger en vous faisant vacciner gratuitement avec le vaccin fourni par le minist&#232;re, du lundi 16 novembre au mercredi 3 d&#233;cembre 2020.</description>
+	    <author>LEVIF-MAIRE Patricia, COULY Magali, NIANG Corine</author>
+		<dc:date>2021-01-05T09:28:05Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LEVIF-MAIRE PatriciaCOULY MagaliNIANG Corine</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>R&#233;ouverture du restaurant &#224; S&#233;quoia</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/reouverture-du-restaurant-a-sequoia-a17861.html</link>
+	    <date>2021-01-04 10:00:00</date>
+	    <description>&lt;p&gt;Le restaurant administratif de la tour S&#233;quoia ouvre ses portes &#224; compter du service du &lt;strong&gt;lundi 4 janvier 2021.&lt;/strong&gt;&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2021-01-04T09:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Fermeture du passage souterrain</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/fermeture-du-passage-souterrain-a17860.html</link>
+	    <date>2020-11-30 14:58:05</date>
+	    <description>&lt;p&gt;Fermeture du passage souterrain qui permet d'acc&#233;der aux escalators desservant le niveau 3 de l'Arche Paroi Sud.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-30T13:58:05Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Travaux de r&#233;novation des tisaneries de la Tour S&#233;quoia</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/travaux-de-renovation-des-tisaneries-de-la-tour-a17859.html</link>
+	    <date>2020-11-30 11:58:39</date>
+	    <description>&lt;p&gt;Nous vous informons du d&#233;marrage des travaux de r&#233;novation des tisaneries de la Tour S&#233;quoia.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-30T10:58:39Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Carte blanche &#224; l'Espace 34 : c'est vous qui faites le programme </title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/carte-blanche-a-l-espace-34-c-est-vous-qui-faites-a17858.html</link>
+	    <date>2020-11-26 20:33:10</date>
+	    <description>&lt;p&gt;Jusqu'au 15 janvier 2021, proposez vos id&#233;es d'usage innovant et collaboratif pour l'Espace 34. (Portail du p&#244;le minist&#233;riel)&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-26T19:33:10Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Enqu&#234;te mobilit&#233; durable pour les agents d'administration centrale</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/enquete-mobilite-durable-pour-les-agents-d-a17856.html</link>
+	    <date>2020-11-23 12:28:31</date>
+	    <description>&lt;p&gt;L'administration centrale lance son plan de mobilit&#233; durable ! Vous travaillez &#224; la Grande Arche, la Tour S&#233;quoia ou l'h&#244;tel de Roquelaure ? Participez &#224; l'enqu&#234;te !&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-23T11:28:31Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Fermeture du restaurant de la tour S&#233;quoia du 16 au 30 novembre</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/fermeture-du-restaurant-de-la-tour-sequoia-du-16-a17852.html</link>
+	    <date>2020-11-12 16:44:20</date>
+	    <description>&lt;p&gt;Compte-tenu du reconfinement national de la population et de la r&#232;gle des 5 jours de t&#233;l&#233;travail qui doit &#234;tre appliqu&#233;e le plus largement possible, le restaurant administratif de la tour S&#233;quoia sera ferm&#233; du 16 au 30 novembre 2020 inclus. La DAF profitera de cette p&#233;riode pour r&#233;aliser des travaux de maintenance dans les locaux de restauration.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-12T15:44:20Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>&#034;Questions pour un champion&#034; et &#224; un Quiz cin&#233;ma, les 16 et 17 novembre prochains.</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/questions-pour-un-champion-et-a-un-quiz-cinema-les-a17851.html</link>
+	    <date>2020-11-09 12:08:00</date>
+	    <description>&lt;p&gt;A l'occasion de la Semaine Europ&#233;enne pour l'Emploi des Personnes Handicap&#233;es, le Clas de Paris et la Direction des Ressources Humaines vous invitent &#224; partager un moment de convivialit&#233;, malgr&#233; la distance et le contexte actuel, au c&#233;l&#232;bre jeu :&lt;br class='autobr' /&gt;
+&#034;Questions pour un champion&#034; et &#224; un Quiz cin&#233;ma, les 16 et 17 novembre prochains.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-09T11:08:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Semaine Europ&#233;enne pour l'Emploi des Personnes Handicap&#233;es</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/semaine-europeenne-pour-l-emploi-des-personnes-a17850.html</link>
+	    <date>2020-11-05 16:07:17</date>
+	    <description>&lt;p&gt;Le Clas, la DRH et l'ASCE vous proposeront pendant la Semaine Europ&#233;enne pour l'Emploi des Personnes Handicap&#233;es, du 16 au 20 novembre 2020, des actions ludiques de sensibilisation.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-05T15:07:17Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Message de Barbara Pompili aux agents</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/message-de-barbara-pompili-aux-agents-a17849.html</link>
+	    <date>2020-11-04 19:35:00</date>
+	    <description>&lt;p&gt;Face &#224; la forte progression de l'&#233;pid&#233;mie de Covid-19, la ministre de la Transition &#233;cologique vous adresse un message. (Portail du p&#244;le minist&#233;riel)&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-11-04T18:35:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>26 novembre 2020 - L'article 55 de la loi SRU &#8230;</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/26-novembre-2020-l-article-55-de-la-loi-sru-a17847.html</link>
+	    <date>2020-10-21 14:41:15</date>
+	    <description>&lt;p&gt;Ce colloque associera des chercheurs.es, responsables politiques, acteurs de l'administration, du logement et de la soci&#233;t&#233; civile. Il permettra de revisiter l'histoire de l'article 55 &#8230;&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-10-21T12:41:15Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Votre poste informatique fixe ou portable est&#8230;</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/votre-poste-informatique-fixe-ou-portable-est-a17845.html</link>
+	    <date>2020-09-28 16:41:21</date>
+	    <description>&lt;p&gt;Descriptif de votre poste informatique&lt;/p&gt;</description>
+	    <author>ROUMIER Isabelle</author>
+		<dc:date>2020-09-28T14:41:21Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>ROUMIER Isabelle</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>R&#233;ouverture prochaine des 2 espaces documentaires en arche sud et en S&#233;quoia</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/reouverture-prochaine-des-2-espaces-documentaires-a17843.html</link>
+	    <date>2020-09-22 14:55:42</date>
+	    <description>&lt;p&gt;Les 2 espaces documentaires en arche sud et en S&#233;quoia vont rouvrir leurs portes lundi 28/09 dans le respect des consignes sanitaires (port du masque, utilisation du gel hydroalcoolique &#224; l'entr&#233;e, maintien de la mise en quarantaine des ouvrages lors des retours de pr&#234;ts).&lt;/p&gt;
+&lt;p&gt;Le CRDAJ vous propose depuis juillet une s&#233;lection d'ouvrages sur le &#171; Management &#187; ainsi qu'une bibliographie compl&#232;te du fonds documentaire dont il dispose sur le sujet.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-09-22T12:55:42Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Proposition de &#034;lunch box&#034; dans les restaurants de l'Arche et de la tour S&#233;quoia</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/proposition-de-lunch-box-dans-les-restaurants-de-l-a17840.html</link>
+	    <date>2020-09-07 10:04:30</date>
+	    <description>&lt;p&gt;Le prestataire de restauration sur le site de la D&#233;fense, Eurest, propose dor&#233;navant aux agents venant d&#233;jeuner dans les selfs, des &#034;lunch box&#034; (photo jointe), compos&#233;s &#224; l'avance et sur place, de plats froids avec la possibilit&#233; de les manger dans le self ou &#224; emporter.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-09-07T08:04:30Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>29 ET 30 septembre 2020 : De la r&#233;serve int&#233;grale &#224; la nature ordinaire</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/29-et-30-septembre-2020-de-la-reserve-integrale-a-a17538.html</link>
+	    <date>2020-09-03 14:20:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.ac.e2.rie.gouv.fr/IMG/png/ahpne-50.png' width=&#034;50&#034; height=&#034;50&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; Compte tenu des incertitudes relatives aux conditions sanitaires, les organisateurs ont fait le choix de ne pas r&#233;unir physiquement les participants. Seuls les intervenants seront pr&#233;sents sur site.</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-09-03T12:20:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Port du masque devient obligatoire dans les locaux des services publics</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/port-du-masque-devient-obligatoire-dans-les-locaux-a17839.html</link>
+	    <date>2020-08-31 18:57:14</date>
+	    <description>&lt;p&gt;Compte tenu de l'&#233;volution actuelle de la situation sanitaire li&#233;es &#224; l'&#233;pid&#233;mie de la COVID 19, le port du masque devient obligatoire dans les locaux des services publics, &#224; l'exception des bureaux individuels, &#224; compter du 1er septembre.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-08-31T16:57:14Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Port du masque obligatoire en ext&#233;rieur &#224; Paris et dans la petite couronne</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/port-du-masque-obligatoire-en-exterieur-a-paris-et-a17838.html</link>
+	    <date>2020-08-27 11:34:02</date>
+	    <description>&lt;p&gt;Dans un contexte de hausse des cas de contamination au Covid-19 &#224; Paris et dans la r&#233;gion parisienne, le port du masque est rendu obligatoire, &#224; compter du vendredi 28 ao&#251;t &#224; 08h00, dans la totalit&#233; de l'espace public &#224; Paris et sur l'ensemble des trois d&#233;partements de la petite couronne : la Seine-Saint-Denis, les Hauts-de-Seine et le Val-de-Marne. Tout contrevenant s'expose &#224; une amende de 135 euros.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-08-27T09:34:02Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Programme des actions du Clas du 18 septembre au 8 octobre 2020</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/programme-des-actions-du-clas-du-18-septembre-au-8-a17836.html</link>
+	    <date>2020-08-24 10:03:15</date>
+	    <description>&lt;p&gt;Au second semestre, le Clas va enfin reprendre ses activit&#233;s et pouvoir vous proposer des actions diverses et vari&#233;es, notamment des ateliers et une projection de film pendant la semaine europ&#233;enne du d&#233;veloppement durable.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-08-24T08:03:15Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>#Bon&#201;t&#233;BonsR&#233;flexes </title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/bonetebonsreflexes-a17835.html</link>
+	    <date>2020-07-20 11:39:55</date>
+	    <description>&lt;p&gt;Une campagne gouvernementale pour rappeler l'importance des gestes barri&#232;res cet &#233;t&#233;. (Portail du p&#244;le minist&#233;riel)&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-07-20T09:39:55Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Fermeture du restaurant de l'Arche</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/fermeture-du-restaurant-de-l-arche-a17832.html</link>
+	    <date>2020-07-06 17:21:19</date>
+	    <description>&lt;p&gt;Pendant la p&#233;riode estivale, comme tous les ans, un des restaurants du site de la D&#233;fense sera ferm&#233; une partie du mois d'ao&#251;t pour tenir compte de la baisse de fr&#233;quentation due aux cong&#233;s.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-07-06T15:21:19Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Restauration : prestations annexes</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/restauration-prestations-annexes-a17830.html</link>
+	    <date>2020-07-06 09:38:44</date>
+	    <description>&lt;p&gt;La commande et la livraison de l'ensemble des prestations annexes par le prestataire Eurest reprennent sur les deux sites de l'Arche paroi sud et de la tour S&#233;quoia.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-07-06T07:38:44Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Message de Emilie Piette, Secr&#233;taire g&#233;n&#233;rale du p&#244;le minist&#233;riel</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/message-de-emilie-piette-secretaire-generale-du-a17829.html</link>
+	    <date>2020-06-24 10:24:24</date>
+	    <description>&lt;p&gt;Tirer les le&#231;ons de la crise sanitaire.&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-06-24T08:24:24Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Retour sur le Webinaire Plan v&#233;lo et usage du v&#233;lo en administration centrale</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/retour-sur-le-webinaire-plan-velo-et-usage-du-velo-a17828.html</link>
+	    <date>2020-06-22 20:03:52</date>
+	    <description></description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-06-22T18:03:52Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Visioconf&#233;rence sur le plan v&#233;lo et l'usage du v&#233;lo en AC</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/visioconference-sur-le-plan-velo-et-l-usage-du-a17827.html</link>
+	    <date>2020-06-04 13:52:00</date>
+	    <description>&lt;p&gt;Visioconf&#233;rence sur le plan v&#233;lo et l'usage du v&#233;lo en administration centrale le 11 juin &#224; 13h30&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-06-04T11:52:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Restaurants administratifs</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/restaurants-administratifs-a17826.html</link>
+	    <date>2020-05-20 23:20:22</date>
+	    <description>&lt;p&gt;Compte-tenu de la fr&#233;quentation actuelle des restaurants administratifs et des sondages effectu&#233;s ces derniers jours, la prestation de restauration sur site est adapt&#233;e de la fa&#231;on suivante&#8230;&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-05-20T21:20:22Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Venir &#224; v&#233;lo &#224; La D&#233;fense et Saint-Germain</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/venir-a-velo-a-la-defense-et-saint-germain-a11392.html</link>
+	    <date>2020-05-20 11:22:00</date>
+	    <description>&lt;p&gt;Garer son v&#233;lo, trouver son itin&#233;raire, prendre une douche&#8230;.&lt;br class='autobr' /&gt;
+Tout savoir pour vos d&#233;placement &#224; v&#233;lo.&lt;/p&gt;</description>
+	    <author></author>
+		<dc:date>2020-05-20T09:22:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator></dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Covid-19 : Livret de reprise des activit&#233;s en administration centrale</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/covid-19-livret-de-reprise-des-activites-en-a17823.html</link>
+	    <date>2020-05-11 08:45:55</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.ac.e2.rie.gouv.fr/IMG/png/livret_de_reprise_des_activites_en_administration_centrale.png' width=&#034;156&#034; height=&#034;200&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; T&#233;l&#233;chargez le &lt;a href='http://intra.ac.e2.rie.gouv.fr/IMG/pdf/livret_de_reprise_ac.pdf' class='spip_in' type='application/pdf'&gt;livret de reprise des activit&#233;s en administration centrale&lt;/a&gt;. Au sommaire : les modes d'acc&#232;s aux sites, votre environnement de travail, la restauration, l'accompagnement m&#233;dico-social, les outils num&#233;riques et le temps d'&#233;change avec votre manager. &lt;span class='spip_document_203324561 spip_documents'&gt; &lt;a class=&#034;liendoc&#034; href='http://intra.ac.e2.rie.gouv.fr/IMG/pdf/livret_de_reprise_ac.pdf' title='livret de reprise des activit&#233;s en administration centrale - pdf - 550.6 ko ' target=&#034;_blank&#034;&gt; livret de reprise des activit&#233;s en administration centrale &lt;/a&gt; (format pdf - 550.6 ko - 11/05/2020)
+&lt;/span&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-05-11T06:45:55Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Reprise des activit&#233;s en administration centrale</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/reprise-des-activites-en-administration-centrale-a17816.html</link>
+	    <date>2020-05-11 07:38:49</date>
+	    <description>&lt;p&gt;Message de la Secr&#233;taire g&#233;n&#233;rale&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-05-11T05:38:49Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>COVID-19 : disposition pour les cantines / Caf&#233;t&#233;rias de S&#233;quoia, Arche et Roquelaure</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/covid-19-disposition-pour-les-cantines-cafeterias-a17812.html</link>
+	    <date>2020-03-26 17:51:49</date>
+	    <description>&lt;p&gt;MAJ 16/03 : La cantine de Roquelaure est ferm&#233;e.&lt;br class='autobr' /&gt;
+En raison des mesures gouvernementales annonc&#233;es samedi 14 mars par le Premier ministre, les caf&#233;t&#233;rias Tour S&#233;quoia, Grande Arche et Roquelaure sont d&#233;sormais ferm&#233;es.&lt;br class='autobr' /&gt;
+Seule la cantine de l'Arche reste ouverte.&lt;br class='autobr' /&gt;
+Les agents sont invit&#233;s &#224; respecter les am&#233;nagements mis en place (&#224; savoir l'usage d'une place sur deux) afin de garder les distances entre (&#8230;)&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-03-26T16:51:49Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Sites ASCE 75-AC et FNASCE</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/sites-asce-75-ac-et-fnasce-a17806.html</link>
+	    <date>2020-03-19 10:26:53</date>
+	    <description>&lt;p&gt;(sport, culture, entraide, loisirs, voyages)&lt;br class='autobr' /&gt;
+(F&#233;d&#233;ration national des associations sportives, culturelles et d'entraide)&lt;/p&gt;</description>
+	    <author>XIMENES Eric</author>
+		<dc:date>2020-03-19T09:26:53Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>XIMENES Eric</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Coronavirus-COVID 19 : consignes sanitaires du minist&#232;re des Solidarit&#233;s et de la Sant&#233;</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/coronavirus-covid-19-consignes-sanitaires-du-a17725.html</link>
+	    <date>2020-02-25 11:11:00</date>
+	    <description>&lt;p&gt;Le minist&#232;re des Solidarit&#233;s et de la Sant&#233; rappelle les recommandations suivantes pour les personnes revenant de Chine (Chine continentale, Hong Kong, Macao), de Singapour, de Cor&#233;e du Sud, ou des r&#233;gions de Lombardie et de V&#233;n&#233;tie en Italie.&lt;/p&gt;</description>
+	    <author>RUER Suzanne</author>
+		<dc:date>2020-02-25T10:11:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>RUER Suzanne</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Groupes de partage sur la parentalit&#233;</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/groupes-de-partage-sur-la-parentalite-a8498.html</link>
+	    <date>2020-02-12 09:00:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.ac.e2.rie.gouv.fr/IMG/png/groupe_partage_50.png' width=&#034;69&#034; height=&#034;50&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;Participez aux groupes de partage sur la parentalit&#233; pour en savoir plus, r&#233;fl&#233;chir sur les petits probl&#232;mes du quotidien rencontr&#233;s avec vos enfants, poser vos questions, entendre des t&#233;moignages&#8230; Le prochain aura lieu le &lt;strong&gt;25 f&#233;vrier&lt;/strong&gt; 2020, sur le th&#232;me &#034;&lt;strong&gt;Alimentation diversifi&#233;e&lt;/strong&gt;&#034;.</description>
+	    <author></author>
+		<dc:date>2020-02-12T08:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator></dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Exposition &#171; Les Alpes : un voyage &#224; travers cartes et images &#187;</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/exposition-les-alpes-un-voyage-a-travers-cartes-et-a17555.html</link>
+	    <date>2019-11-13 11:14:25</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.ac.e2.rie.gouv.fr/IMG/png/expo-desalpes-70.png' width=&#034;70&#034; height=&#034;59&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; L'exposition photographique &#171; Les Alpes : un voyage &#224; travers cartes et images &#187; propos&#233;e par la Convention alpine, s'installe dans le hall de la tour S&#233;quoia &#224; La D&#233;fense, &#224; partir du 18 novembre jusqu'au mois de d&#233;cembre.</description>
+	    <author>RUER Suzanne</author>
+		<dc:date>2019-11-13T10:14:25Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>RUER Suzanne</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Journ&#233;e de la donn&#233;e 2019</title>
+	    <link>http://intra.ac.e2.rie.gouv.fr/journee-de-la-donnee-2019-a17548.html</link>
+	    <date>2019-11-12 09:51:48</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.ac.e2.rie.gouv.fr/IMG/png/la-donnee-50.png' width=&#034;50&#034; height=&#034;50&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; Pour la troisi&#232;me ann&#233;e, le Secr&#233;tariat g&#233;n&#233;ral et le Commissariat g&#233;n&#233;ral au d&#233;veloppement durable organisent une journ&#233;e de pr&#233;sentations et d'ateliers d&#233;di&#233;e &#224; la donn&#233;e, le 18 novembre 2019. Cet &#233;v&#233;nement interne au p&#244;le minist&#233;riel s'adresse &#224; tous les agents de nos minist&#232;res, en administration centrale, en service d&#233;concentr&#233; et chez les op&#233;rateurs.</description>
+	    <author>RUER Suzanne</author>
+		<dc:date>2019-11-12T08:51:48Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>RUER Suzanne</dc:creator>
+	    </item>
+	
+</channel>
+
+</rss>

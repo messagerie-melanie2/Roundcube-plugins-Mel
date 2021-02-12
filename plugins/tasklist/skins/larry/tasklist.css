@@ -64,17 +64,9 @@ ul.toolbarmenu li span.icon.taskadd,
 	width: 15px;
 }
 
-#tagsbox {
-	position: absolute;
-	top: 42px;
-	left: 0;
-	width: 100%;
-	height: 242px;
-}
-
 #tasklistsbox {
 	position: absolute;
-	top: 300px;
+	top: 42px;
 	left: 0;
 	width: 100%;
 	bottom: 0px;
@@ -105,7 +97,6 @@ ul.toolbarmenu li span.icon.taskadd,
 	top: 68px;
 }
 
-
 #taskselector {
 	margin: -1px 40px 0 0;
 	padding: 0;
@@ -118,7 +109,6 @@ ul.toolbarmenu li span.icon.taskadd,
 	padding-right: 0.3em;
 }
 
-.tagcloud li,
 #taskselector li a {
 	display: inline-block;
 	color: #004458;
@@ -130,11 +120,9 @@ ul.toolbarmenu li span.icon.taskadd,
 	border-color: transparent;
 }
 
-.webkit .tagcloud li,
 .webkit #taskselector li a {
 	padding-bottom: 0.25em;
 }
-
 
 #taskselector li:first-child {
 	border-top: 0;
@@ -155,7 +143,6 @@ ul.toolbarmenu li span.icon.taskadd,
 	color: #97b3bf;
 }
 
-.tagcloud li.selected,
 #taskselector li.selected a {
 	color: #fff;
 	background: #005d76;
@@ -201,51 +188,6 @@ ul.toolbarmenu li span.icon.taskadd,
 	border-color: #ff3800 transparent;
 }
 
-.tagcloud {
-	padding: 0;
-	margin: 6px;
-	list-style: none;
-}
-
-.tagcloud li {
-	display: inline-block;
-	color: #004458;
-	padding-right: 0.2em;
-	margin-right: 0.3em;
-	margin-bottom: 0.4em;
-	min-width: 1.2em;
-	cursor: pointer;
-}
-
-.tagcloud li.inactive {
-	color: #89b3be;
-	padding-right: 0.6em;
-	font-size: 80%;
-/*	display: none; */
-}
-
-.tagcloud li .count {
-	position: relative;
-	top: -1px;
-	margin-left: 5px;
-	padding: 0.2em 0.5em;
-	font-size: 80%;
-	font-weight: bold;
-	color: #59838e;
-	background: #c7e3ef;
-	border: 1px solid #b0ccd7;
-	border-radius: 8px;
-}
-
-.tagcloud li.selected .count {
-	border: none;
-}
-
-.tag-draghelper .tag .count,
-.tagcloud li.inactive .count {
-	display: none;
-}
-
 #tasklistsbox .treelist li {
 	margin: 0;
 	display: block;
@@ -280,7 +222,7 @@ ul.toolbarmenu li span.icon.taskadd,
 	display: block;
 }
 
-#tasklistsbox .treelist li span.listname {
+#tasklistsbox .treelist li a.listname {
 	display: block;
 	position: absolute;
 	top: 7px;
@@ -296,11 +238,11 @@ ul.toolbarmenu li span.icon.taskadd,
 }
 
 .quickview-active #tasklistsbox .treelist li input,
-.quickview-active #tasklistsbox .treelist li span.listname {
+.quickview-active #tasklistsbox .treelist li a.listname {
 	opacity: 0.35;
 }
 
-.quickview-active #tasklistsbox .treelist div.focusview span.listname {
+.quickview-active #tasklistsbox .treelist div.focusview a.listname {
 	opacity: 1.0;
 }
 
@@ -381,19 +323,19 @@ ul.toolbarmenu li span.icon.taskadd,
 	outline: 2px solid rgba(30,150,192, 0.5);
 }
 
-#tasklistsbox .treelist li.selected > div > span.listname {
+#tasklistsbox .treelist li.selected > div > a.listname {
 	font-weight: bold;
 }
 
-#tasklistsbox .treelist .readonly > span.listname {
+#tasklistsbox .treelist .readonly > a.listname {
 	background-position: right -142px;
 }
 
-#tasklistsbox .treelist .user > span.listname {
+#tasklistsbox .treelist .user > a.listname {
 	background-position: right -160px;
 }
 
-#tasklistsbox .treelist .virtual > span.listname {
+#tasklistsbox .treelist .virtual > a.listname {
 	color: #aaa;
 	top: 4px;
 	left: 20px;
@@ -660,7 +602,6 @@ ul.toolbarmenu li span.icon.taskadd,
 	text-align: right;
 }
 
-.tag-draghelper .tag,
 .taskhead .tags .tag {
 	font-size: 85%;
 	background: #d9ecf4;
@@ -668,11 +609,6 @@ ul.toolbarmenu li span.icon.taskadd,
 	border-radius: 4px;
 	padding: 1px 7px;
 	margin-right: 3px;
-}
-
-.tag-draghelper li.tag {
-	list-style: none;
-	font-size: 100%;
 }
 
 .taskhead .date {
@@ -788,10 +724,6 @@ ul.toolbarmenu .sortcol.by-auto a {
 }
 
 .taskitem-draghelper {
-/*
-	width: 32px;
-	height: 26px;
-*/
 	background: #444;
 	border: 1px solid #555;
 	border-radius: 4px;
@@ -836,6 +768,18 @@ ul.toolbarmenu .sortcol.by-auto a {
 	display: none;
 }
 
+body.taskdialog {
+	margin: 0;
+	overflow-y: auto;
+}
+
+body.taskdialog #taskedit {
+	display: block;
+	top: 0;
+	padding: 1em;
+	border: 0;
+}
+
 #taskedit {
 	position: relative;
 	top: -1.5em;
@@ -866,10 +810,6 @@ ul.toolbarmenu .sortcol.by-auto a {
 
 .taskshow label {
 	color: #999;
-}
-
-.taskshow.status-cancelled {
-	background: url(images/badge_cancelled.png) top right no-repeat;
 }
 
 .task-parent-title {
@@ -1019,14 +959,14 @@ a.morelink:hover {
 	display: block;
 	color: #333;
 	font-weight: bold;
-	padding: 3px 4px 3px 30px;
+	padding: 2px 4px 2px 30px;
 	text-shadow: 0px 1px 1px #fff;
 	text-decoration: none;
 	white-space: nowrap;
 	line-height: 20px;
 }
 
-#taskedit-attachments ul li a.file {
+#taskedit-attachments ul li a.filename {
 	padding: 0;
 }
 
@@ -1166,8 +1106,11 @@ label.block {
 }
 
 #taskedit-links .task-text {
-	margin-left: 8em;
 	min-height: 22px;
+}
+
+#taskedit-links .attachmentslist li {
+	padding-right: 2em;
 }
 
 #taskedit-links .attachmentslist li a.delete {
@@ -1243,18 +1186,18 @@ label.block {
 	min-height: 290px;
 }
 
-.tasklistview .uidialog .propform #taskedit-tasklistame {
+.tasklistview .uidialog .propform #taskedit-tasklistname {
 	width: 20em;
 }
 
-.task-dialog-message {
+.dialog-message {
 	margin-top: 0.5em;
 	padding: 0.8em;
 	border: 1px solid #ffdf0e;
 	background-color: #fef893;
 }
 
-.task-dialog-message .message,
+.dialog-message .message,
 .task-update-confirm .message {
 	margin-bottom: 0.5em;
 }
@@ -1434,62 +1377,19 @@ div.messagetasklinks .messagetaskref input.complete {
 	vertical-align: middle;
 }
 
-
-.tasklist.attachmentwin #attachmenttoolbar {
-	position: relative;
-	top: -6px;
-	height: 40px;
+.form-section label + div {
+	line-height: 2;
+	vertical-align: top;
 }
 
-.tasklist.attachmentwin #attachmentcontainer {
-	position: absolute;
-	top: 0;
-	left: 232px;
-	right: 0;
-	bottom: 0;
+.form-section label + div {
+	display: inline-block;
 }
 
-.tasklist.attachmentwin #attachmentframe {
-	width: 100%;
-	height: 100%;
-	border: 0;
-	background-color: #fff;
-	border-radius: 4px;
+.col-form-label {
+	line-height: 2;
 }
 
-.tasklist.attachmentwin #partheader {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 220px;
-	bottom: 0;
-}
-
-.tasklist.attachmentwin #partheader table {
-	table-layout: fixed;
-	overflow: hidden;
-}
-
-.tasklist.attachmentwin #partheader table td {
-	color: #666;
-	padding: 4px 6px;
-	text-overflow: ellipsis;
-	overflow: hidden;
-}
-
-.tasklist.attachmentwin #partheader table td.header {
-	font-weight: bold;
-}
-
-.tasklist.attachmentwin #partheader table td.title {
-	width: 60px;
-	padding-right: 0;
-}
-
-
-/** Special hacks for IE7 **/
-/** They need to be in this file to also affect the task-create dialog embedded in mail view **/
-
-html.ie7 #taskedit-completeness-slider {
-	display: inline;
+.col-sm-4 {
+	min-width: 8em !important;
 }

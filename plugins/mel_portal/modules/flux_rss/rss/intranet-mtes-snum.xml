@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="0.91" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<channel>
+	<title>SG - Service du num&#233;rique</title>
+	<link>http://intra.snum.sg.e2.rie.gouv.fr/</link>
+	<description></description>
+	<language>fr</language>
+
+	<image>
+		<title>SG - Service du num&#233;rique</title>
+		<url>http://intra.snum.sg.e2.rie.gouv.fr/-s0.html</url>
+		<link>http://intra.snum.sg.e2.rie.gouv.fr/</link>
+		<description></description>
+	</image>
+
+<!-- les articles du site qui ont le mot cle _portail_actu_principale et _portail_actu -->
+    
+	    <item>
+		<title>Lancement de la saison 4</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/lancement-de-la-saison-4-a12825.html</link>
+	    <date>2020-12-18 15:55:00</date>
+	    <description>&lt;p&gt;Appel &#224; candidature 4e saison de la Fabrique num&#233;rique. Vous voulez am&#233;liorer le service public sur nos missions ? Candidatez &#224; la 4e saison de la Fabrique num&#233;rique des MTE-MCTRCT-MMer&lt;/p&gt;</description>
+		<author>MARCHEIX Annie, SNUM</author>
+		<dc:date>2020-12-18T14:55:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>MARCHEIX Annie, SNUM</dc:creator>
+	    </item>
+	
+    
+	    <item>
+		<title>La lettre T'NUM !</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/la-lettre-t-num-a12681.html</link>
+	    <date>2021-01-15 14:00:00</date>
+	    <description>&lt;p&gt;Le num&#233;ro 5 T'Num ! aborde les pratiques agiles au travers des d&#233;marches conduites au sein du p&#244;le minist&#233;riel.&lt;/p&gt;</description>
+	    <author>MOMPART Sylvie, SNUM, MARCHEIX Annie, SNUM</author>
+		<dc:date>2021-01-15T13:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>MOMPART Sylvie, SNUMMARCHEIX Annie, SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Lettre d'information du Snum</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/lettre-d-information-du-snum-a12565.html</link>
+	    <date>2020-12-18 12:30:00</date>
+	    <description>&lt;p&gt;La lettre d'information destin&#233;e aux agents du Snum, le n&#176; 15 de d&#233;cembre 2020 est publi&#233; ! Belles f&#234;tes de fin d'ann&#233;e &#224; tous.&lt;/p&gt;</description>
+	    <author>MARCHEIX Annie, SNUM</author>
+		<dc:date>2020-12-18T11:30:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>MARCHEIX Annie, SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Le Retex Covid du Snum</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/le-retex-covid-du-snum-a12836.html</link>
+	    <date>2020-12-09 14:17:00</date>
+	    <description>&lt;p&gt;Le rapport final de la mission Retex Covid du Snum.&lt;/p&gt;</description>
+	    <author>MARCHEIX Annie, SNUM</author>
+		<dc:date>2020-12-09T13:17:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>MARCHEIX Annie, SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Club du num&#233;rique</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/club-du-numerique-a12435.html</link>
+	    <date>2020-12-08 17:30:00</date>
+	    <description>&lt;ul class=&#034;spip&#034;&gt;&lt;li&gt; Le calendrier des r&#233;unions et les pr&#233;sentations sont en ligne.&lt;br class='autobr' /&gt;
+Derni&#232;re r&#233;union : &lt;strong&gt;le 8 d&#233;cembre 2020 - documents disponibles&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;</description>
+	    <author>DOBA Serge, SNUM/UNI/RC</author>
+		<dc:date>2020-12-08T16:30:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>DOBA Serge, SNUM/UNI/RC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>SPOTE Caf&#233;</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/spote-cafe-a12698.html</link>
+	    <date>2020-12-03 11:00:00</date>
+	    <description>&lt;p&gt;Vendredi 4 D&#233;cembre &#224; 9h15 d&#233;marrez la journ&#233;e avec le SPOTE Caf&#233; !&lt;br class='autobr' /&gt;
+Pr&#233;sentation de l'offre &#034;Assistance &#224; la publication de contenu sur la plateforme SPOTE&#034;&lt;/p&gt;</description>
+	    <author> FOURNEL Gilles, SNUM/MSP, MOMPART Sylvie, SNUM</author>
+		<dc:date>2020-12-03T10:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator> FOURNEL Gilles, SNUM/MSPMOMPART Sylvie, SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Webinaires Snum et petites visios</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/webinaires-snum-et-petites-visios-a12599.html</link>
+	    <date>2020-12-02 11:00:00</date>
+	    <description>&lt;p&gt;Le prochain webinaire est pr&#233;vu le 28 janvier 2021.&lt;/p&gt;</description>
+	    <author>BETTOCHI Catherine, SNUM/DPTN</author>
+		<dc:date>2020-12-02T10:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BETTOCHI Catherine, SNUM/DPTN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Organigrammes du service du num&#233;rique</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/organigrammes-du-service-du-numerique-a12594.html</link>
+	    <date>2020-11-30 14:00:00</date>
+	    <description>&lt;p&gt;Les organigrammes sont mis &#224; jour &#224; la date du 14 d&#233;cembre 2020&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2020-11-30T13:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - Informations importantes - cartes et &#233;volutions</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-informations-importantes-cartes-et-evolutions-a12699.html</link>
+	    <date>2020-09-09 16:00:36</date>
+	    <description>&lt;p&gt;Un des dysfonctionnement de la carte a &#233;t&#233; r&#233;solu &lt;br class='autobr' /&gt;
+Pr&#233;visions d'interruptions de service&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-09-09T14:00:36Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - D&#233;ploiement de la version 4.12.6 est pr&#233;vu&#8230;</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-deploiement-de-la-version-4-12-6-est-prevu-a12688.html</link>
+	    <date>2020-07-07 16:16:45</date>
+	    <description>&lt;p&gt;D&#233;ploiement de la version 4.12.6 est pr&#233;vu mercredi 08 juillet 2020 &#224; 12h00 et entrainera une interruption de service de PGCA&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-07-07T14:16:45Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mise &#224; disposition de la nouvelle charte intranet : c'est parti !</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mise-a-disposition-de-la-nouvelle-charte-intranet-a12686.html</link>
+	    <date>2020-06-19 15:02:46</date>
+	    <description>&lt;p&gt;La nouvelle charte intranet est &#224; disposition des sites concern&#233;s.&lt;br class='autobr' /&gt;
+Le p&#244;le produits collaboratifs et web (PPCW) met tout en &#339;uvre pour accompagner les services afin d'int&#233;grer la nouvelle charte dans de bonnes conditions.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM, GANDAR Julien, SNUM/UNI/DETN/collaboratif et web</author>
+		<dc:date>2020-06-19T13:02:46Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUMGANDAR Julien, SNUM/UNI/DETN/collaboratif et web</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - Dysfonctionnement de certaines cartes</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-dysfonctionnement-de-certaines-cartes-a12678.html</link>
+	    <date>2020-05-28 16:18:06</date>
+	    <description>&lt;p&gt;Depuis le d&#233;ploiement de PGCA et du nouveau format de carte, nous constatons 2 types d'anomalies de fonctionnement des cartes&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-05-28T14:18:06Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - Points d'attention : renouvellement des certificats et des cartes</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-points-d-attention-renouvellement-des-a12679.html</link>
+	    <date>2020-05-28 16:17:56</date>
+	    <description>&lt;p&gt;Cet article apporte des pr&#233;cisions sur le renouvellement des diff&#233;rents types de cartes.&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-05-28T14:17:56Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - Nouvelle mise &#224; jour le 04/06/2020</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-nouvelle-mise-a-jour-le-04-06-2020-a12680.html</link>
+	    <date>2020-05-28 16:17:51</date>
+	    <description>&lt;p&gt;D&#233;ploiement de la version 4.12.4.2 est pr&#233;vu jeudi 04 juin 2020 &#224; 12h00 et entrainera une interruption de service de PGCA&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-05-28T14:17:51Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - Livraison des cartes en administration centrale</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-livraison-des-cartes-en-administration-a12670.html</link>
+	    <date>2020-03-03 16:42:33</date>
+	    <description>&lt;p&gt;Attention, le prestataire qui livre les CAE a chang&#233;, veillez &#224; s&#233;lectionner la bonne adresse&#8230;&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-03-03T15:42:33Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA &#233;tat des lieux au 11 f&#233;vrier 2020</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-etat-des-lieux-au-11-fevrier-2020-a12663.html</link>
+	    <date>2020-02-11 15:05:23</date>
+	    <description>&lt;p&gt;Il est maintenant possible de commander de nouvelles cartes que ce soit des cartes standards ou des cartes instantan&#233;es.&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-02-11T14:05:23Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Ouverture du site Sharepoint qualit&#233; aux agents du SNUM</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/ouverture-du-site-sharepoint-qualite-aux-agents-du-a12648.html</link>
+	    <date>2020-01-20 18:28:29</date>
+	    <description>&lt;p&gt;Le site Sharepoint SNUM - D&#233;marche qualit&#233; est d&#233;sormais ouvert &#224; l'ensemble des agents du SNUM&lt;/p&gt;</description>
+	    <author>BETTOCHI Catherine, SNUM/DPTN</author>
+		<dc:date>2020-01-20T17:28:29Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BETTOCHI Catherine, SNUM/DPTN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>PGCA - &#201;tat des lieux des fonctionnalit&#233;s ouvertes au 20 janvier 2020</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-etat-des-lieux-des-fonctionnalites-ouvertes-a12647.html</link>
+	    <date>2020-01-20 10:46:52</date>
+	    <description>&lt;p&gt;Depuis le 16 janvier vous pouvez r&#233;aliser les actions suivantes : &lt;br /&gt;&lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/squelettes-dist/puce.gif' width=&#034;8&#034; height=&#034;11&#034; class=&#034;puce&#034; alt=&#034;-&#034; /&gt; diagnostic de support pour les porteurs de cartes
+&lt;br /&gt;&lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/squelettes-dist/puce.gif' width=&#034;8&#034; height=&#034;11&#034; class=&#034;puce&#034; alt=&#034;-&#034; /&gt; commande, remplacement et remise de carte&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2020-01-20T09:46:52Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>M&#233;l Infos &#171; num&#233;rique et territoires &#187;</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mel-infos-numerique-et-territoires-a11034.html</link>
+	    <date>2019-12-23 10:45:00</date>
+	    <description>&lt;p&gt;Sommaire de la lettre d'information Num&#233;rique et territoires n&#176;4 de d&#233;cembre 2019. Pensez &#224; vous abonner !&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2019-12-23T09:45:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title> PGCA : ouverture en cours</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/pgca-ouverture-en-cours-a12641.html</link>
+	    <date>2019-12-12 11:40:45</date>
+	    <description>&lt;p&gt;L'ouverture de la Plateforme de Gestion des Cartes Agents (PGCA) est en cours. Son fonctionnement n'est pas satisfaisant actuellement.&lt;/p&gt;</description>
+	    <author>BOTTIN Laurence, DSGC</author>
+		<dc:date>2019-12-12T10:40:45Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BOTTIN Laurence, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title> Nouvelle application pour g&#233;rer l'IGC : PGCA </title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nouvelle-application-pour-gerer-l-igc-pgca-a12603.html</link>
+	    <date>2019-12-03 15:07:50</date>
+	    <description>&lt;p&gt;Une nouvelle application permettra, &#224; compter du 5 d&#233;cembre 2019, de g&#233;rer le cycle de vie des cartes agents de l'&#201;tat.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2019-12-03T14:07:50Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>La feuille de route qualit&#233; 2019 - 2020</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/la-feuille-de-route-qualite-2019-2020-a12592.html</link>
+	    <date>2019-09-27 16:39:31</date>
+	    <description>&lt;p&gt;Feuille de route qualit&#233; du SNUM&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2019-09-27T14:39:31Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Notre ambition num&#233;rique</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/notre-ambition-numerique-a12591.html</link>
+	    <date>2019-09-27 16:28:05</date>
+	    <description>&lt;p&gt;En trois planches, ce document pr&#233;sente l'ambition num&#233;rique du p&#244;le minist&#233;riel.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2019-09-27T14:28:05Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mentorat ISIC - Appel &#224; candidatures pour les futurs mentors</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mentorat-isic-appel-a-candidatures-pour-les-futurs-a12590.html</link>
+	    <date>2019-09-27 16:22:40</date>
+	    <description>&lt;p&gt;Devenez mentor d'un laur&#233;at du concours des ing&#233;nieurs des syst&#232;mes d'information et de communication (ISIC)&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2019-09-27T14:22:40Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Cartographie des sources de financements de la transformation publique</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/cartographie-des-sources-de-financements-de-la-a12589.html</link>
+	    <date>2019-09-27 16:20:10</date>
+	    <description>&lt;p&gt;Sur le portail de la transformation de l'action publique, la DITP a &#233;tabli une cartographie pour vous aider &#224; identifier les solutions de financement &#224; solliciter pour r&#233;aliser vos projets de transformation.&lt;br class='autobr' /&gt;
+Une cartographie &#224; lire et &#224; enrichir.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2019-09-27T14:20:10Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Pr&#233;sentation du service du Num&#233;rique</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/presentation-du-service-du-numerique-a12566.html</link>
+	    <date>2019-06-28 19:23:15</date>
+	    <description>&lt;p&gt;Pr&#233;sentation du service, organisation et activit&#233;s des d&#233;partements du SNUM, organigramme.&lt;/p&gt;</description>
+	    <author>MARCHEIX Annie, SNUM</author>
+		<dc:date>2019-06-28T17:23:15Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>MARCHEIX Annie, SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>D&#233;mat&#233;rialisation au sein du p&#244;le minist&#233;riel</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/dematerialisation-au-sein-du-pole-ministeriel-a12569.html</link>
+	    <date>2019-06-28 18:14:40</date>
+	    <description>&lt;p&gt;Fiche d&#233;mat&#233;rialisation&lt;/p&gt;</description>
+	    <author>HENRY Karl, SNUM/CAB</author>
+		<dc:date>2019-06-28T16:14:40Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>HENRY Karl, SNUM/CAB</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Examens de v&#233;rification d'aptitude (EVA) Analyste et Pupitreur - session 2019</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/examens-de-verification-d-aptitude-eva-analyste-et-a12473.html</link>
+	    <date>2018-12-18 14:30:00</date>
+	    <description>&lt;p&gt;Vous avez jusqu'au lundi 04 f&#233;vrier 2019 pour vous inscrire aux EVA Analyste et EVA Pupitreur 2019.&lt;/p&gt;</description>
+	    <author>Z_GUIOT Mathieu, DDAC</author>
+		<dc:date>2018-12-18T13:30:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_GUIOT Mathieu, DDAC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Campagne de sensibilisation &#224; la s&#233;curit&#233; des syst&#232;mes d'information 2018-2019</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/campagne-de-sensibilisation-a-la-securite-des-a12442.html</link>
+	    <date>2018-10-24 17:00:06</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/png/camapgnesi-2_cle779181.png?arg=882257333&amp;#38;cle=64baaf35c687936ff25651d1b9b7b73b029151f7&amp;#38;file=png%2Fcamapgnesi-2_cle779181.png' width=&#034;145&#034; height=&#034;76&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; Le Secr&#233;tariat G&#233;n&#233;ral a diffus&#233; une campagne sur la s&#233;curit&#233; des SI d'octobre 2018 jusqu'en janvier 2019. Elle sensibilise les agents aux risques et propose astuces et r&#233;flexes pour lutter collectivement contre les attaques malveillantes.
+Retrouvez &lt;a href=&#034;http://bureautique.metier.e2.rie.gouv.fr/campagne-securite-des-si-2018-r322.html&#034; class='spip_out' rel='external'&gt;la campagne de sensibilisation &#224; la SSI&lt;/a&gt; sur le site &#034;Votre environnement bureautique&#034; : les illustrations, les fiches r&#233;flexe sur les bons gestes &#224; adopter, ainsi qu'un quiz pour tester les connaissances des agents sur les 9 th&#232;mes abord&#233;s dans la campagne.</description>
+	    <author>POMPIDOR C&#233;line, DSGC</author>
+		<dc:date>2018-10-24T15:00:06Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>POMPIDOR C&#233;line, DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Examen de v&#233;rification d'aptitude (EVA) - session 2018</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/examen-de-verification-d-aptitude-eva-session-2018-a12324.html</link>
+	    <date>2018-05-28 14:43:07</date>
+	    <description>&lt;p&gt;Ouverture des inscriptions EVA de Programmeur et de Programmeur de syst&#232;me d'exploitation : 14 juin 2018&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2018-05-28T12:43:07Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Formation des nouveaux RSSI - 28 septembre 2017</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/formation-des-nouveaux-rssi-28-septembre-2017-a12141.html</link>
+	    <date>2017-10-03 17:29:30</date>
+	    <description>&lt;p&gt;Ordre du jour et pr&#233;sentations effectu&#233;es lors de la formation des nouveaux RSSI&lt;/p&gt;</description>
+	    <author>Z_LEMOIGNE Jocelyne, SNUM/DSGC</author>
+		<dc:date>2017-10-03T15:29:30Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_LEMOIGNE Jocelyne, SNUM/DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>ODICE (SAD 2017)</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/odice-sad-2017-a12070.html</link>
+	    <date>2017-08-11 09:45:08</date>
+	    <description>&lt;p&gt;&lt;strong&gt;Notification&lt;/strong&gt; du march&#233; d'acquisition de mat&#233;riel bureautique pour 2017-2021 (SAD 2017)&lt;/p&gt;</description>
+	    <author>BLANC Isabelle, SNUM/UNI/DETN</author>
+		<dc:date>2017-08-11T07:45:08Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BLANC Isabelle, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>March&#233;s SSI 2016-2020</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/marches-ssi-2016-2020-a3256.html</link>
+	    <date>2016-09-05 12:43:00</date>
+	    <description>&lt;p&gt;&lt;i&gt;Trois&lt;/i&gt; march&#233;s relatifs &#224; des &#171; Prestations de conseil, d'expertise et d'audit en s&#233;curit&#233; des syst&#232;mes d'information &#187; ont &#233;t&#233; notifi&#233;s le 01 septembre 2016 par le MEEM-MLHD, pour une dur&#233;e ferme jusqu'au 31 mars 2020.&lt;br class='autobr' /&gt;
+Ces nouveaux march&#233;s SSI &#224; bons de commande, en relais aux march&#233;s &#233;chus &#224; mi-ao&#251;t 2016, sont pass&#233;s au profit des services centraux et d&#233;concentr&#233;s du MEEM-MLHD avec obligation d'y recourir pour toute prestation pr&#233;vue dans leur objet.&lt;/p&gt;</description>
+	    <author>Z_GENTILHOMME Claudette, PSI4</author>
+		<dc:date>2016-09-05T10:43:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_GENTILHOMME Claudette, PSI4</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Attention ! Tentative de phishing sur M&#233;lanie2web via un message malveillant</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/attention-tentative-de-phishing-sur-melanie2web-a11284.html</link>
+	    <date>2015-08-21 16:36:43</date>
+	    <description>&lt;p&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Un message malveillant s&#233;vit actuellement dans notre minist&#232;re.&lt;br class='autobr' /&gt;
+Attention ! En aucun cas vous ne devez r&#233;pondre &#224; cette sollicitation.&lt;/p&gt;</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2015-08-21T14:36:43Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Plan de nommage des sites et applications web</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/plan-de-nommage-des-sites-et-applications-web-a3740.html</link>
+	    <date>2015-06-02 18:23:22</date>
+	    <description>&lt;p&gt;En application des nouvelles exigences du r&#233;f&#233;rentiel g&#233;n&#233;ral de s&#233;curit&#233; (RGS), le domaine interne &#171; .i2 &#187;, adopt&#233; depuis des ann&#233;es par le minist&#232;re pour nommer ses applications et sites web internes, est en cours de remplacement par &#171; .e2.rie.gouv.fr &#187;.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2015-06-02T16:23:22Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>L'enrichissement de M&#233;lanie 2 : bient&#244;t sur vos &#233;crans !</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/l-enrichissement-de-melanie-2-bientot-sur-vos-a3720.html</link>
+	    <date>2015-03-05 17:30:38</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/png/melanie_2015_80x52_cle5c6339.png?arg=176632674&amp;#38;cle=ced52a98ac0ef3eb5a89437b7fefb3ff2dac8fe7&amp;#38;file=png%2Fmelanie_2015_80x52_cle5c6339.png' width=&#034;44&#034; height=&#034;44&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Apr&#232;s 9 ans de bons et loyaux services, Melanie2Web va &#233;voluer pour se rapprocher visuellement de l'interface du courrielleur et am&#233;liorer l'ergonomie g&#233;n&#233;rale. Au-del&#224; d'un design plus moderne, cette nouvelle version vous permettra d'utiliser beaucoup plus largement la souris : pour d&#233;placer vos courriels et rendez-vous, pour ajouter un label &#224; un courriel, le transformer en &#233;v&#233;nement, etc.</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2015-03-05T16:30:38Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mise &#224; jour 5.1 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mise-a-jour-5-1-du-courrielleur-a3682.html</link>
+	    <date>2014-12-15 10:00:00</date>
+	    <description>&lt;p&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Une mise &#224; jour, &lt;strong&gt;5.1&lt;/strong&gt; du Courrielleur, sera d&#233;ploy&#233;e de fa&#231;on automatique sur les postes de travail dans les prochains jours.&lt;/p&gt;</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2014-12-15T09:00:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Formations messagerie 2014</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/formations-messagerie-2014-a3552.html</link>
+	    <date>2014-07-01 14:49:47</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Consultez le &lt;strong&gt;calendrier des formations&lt;/strong&gt; de formateurs programm&#233;es pour l'ann&#233;e 2014.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2014-07-01T12:49:47Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Un nouvel accompagnement pour les agents de la famille professionnelle des syst&#232;mes d'information (SI)</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/un-nouvel-accompagnement-pour-les-agents-de-la-a721.html</link>
+	    <date>2014-06-06 12:23:00</date>
+	    <description>&lt;p&gt;Une exp&#233;rimentation de suivi individualis&#233; des agents de la famille professionnelle des syst&#232;mes d'information se met en place sur le p&#233;rim&#232;tre de l'administration centrale.&lt;/p&gt;</description>
+	    <author>Z_GAUDINEAU Val&#233;rie, DDAC</author>
+		<dc:date>2014-06-06T10:23:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_GAUDINEAU Val&#233;rie, DDAC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>L'usage du smartphone ou ordiphone (t&#233;l&#233;phone intelligent)</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/l-usage-du-smartphone-ou-ordiphone-telephone-a3149.html</link>
+	    <date>2014-05-26 16:05:00</date>
+	    <description>&lt;p&gt;Consignes de s&#233;curit&#233; pour les utilisateurs de t&#233;l&#233;phones portables&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2014-05-26T14:05:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mise &#224; jour corrective 5.0.2 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mise-a-jour-corrective-5-0-2-du-courrielleur-a3582.html</link>
+	    <date>2014-04-28 16:58:08</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Une mise &#224; jour corrective, &lt;strong&gt;5.0.2&lt;/strong&gt; du Courrielleur, sera d&#233;ploy&#233;e de fa&#231;on automatique sur les postes de travail dans les prochains jours.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2014-04-28T14:58:08Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mise &#224; jour corrective 5.0.1 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mise-a-jour-corrective-5-0-1-du-courrielleur-a3566.html</link>
+	    <date>2014-04-02 10:19:33</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Une mise &#224; jour corrective, &lt;strong&gt;5.0.1&lt;/strong&gt; du Courrielleur, sera d&#233;ploy&#233;e de fa&#231;on automatique sur les postes de travail dans les prochains jours.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2014-04-02T08:19:33Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Nouvelle version 5 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nouvelle-version-5-du-courrielleur-a3551.html</link>
+	    <date>2014-02-24 10:52:00</date>
+	    <description>&lt;p&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - La version 5 du courrielleur sera mise &#224; disposition des services &#224; partir du 24 f&#233;vrier 2014.&lt;br class='autobr' /&gt;
+Cette version am&#233;liore la s&#233;curit&#233; et apporte son lot de nouveaut&#233;s.&lt;br class='autobr' /&gt;
+D&#233;couvrez les.&lt;/p&gt;</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2014-02-24T09:52:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Synchronisation des ordiphones</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/synchronisation-des-ordiphones-a3510.html</link>
+	    <date>2013-10-11 11:32:33</date>
+	    <description>&lt;p&gt;La synchronisation des terminaux mobiles intelligents (ordiphones) &#233;volue. Cet article donne des &#233;l&#233;ments de compr&#233;hension et de calendrier.&lt;/p&gt;</description>
+	    <author>Z_DARRINE Christophe, SNUM/UNI/DETN</author>
+		<dc:date>2013-10-11T09:32:33Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_DARRINE Christophe, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Formations messagerie 2013</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/formations-messagerie-2013-a3493.html</link>
+	    <date>2013-08-01 14:47:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Consultez le &lt;strong&gt;calendrier des formations&lt;/strong&gt; de formateurs programm&#233;es pour l'ann&#233;e 2013.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-08-01T12:47:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service le mercredi 03 juillet 2013 pour Am&#233;lie-01</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-le-mercredi-03-juillet-a3430.html</link>
+	    <date>2013-06-03 14:30:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-01&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-06-03T12:30:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service le mercredi 26 juin 2013 pour Am&#233;lie-02</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-le-mercredi-26-juin-2013-a3429.html</link>
+	    <date>2013-05-27 14:41:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-02&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-05-27T12:41:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service le mercredi 19 juin 2013 pour Am&#233;lie-05</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-le-mercredi-19-juin-2013-a3428.html</link>
+	    <date>2013-05-20 14:39:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-05&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-05-20T12:39:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service, pr&#233;vue le mercredi 03 avril 2013, report&#233;e le mercredi 10 avril 2013 pour Am&#233;lie-06</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-prevue-le-mercredi-03-a3395.html</link>
+	    <date>2013-03-25 16:36:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-06&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-03-25T15:36:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service le mercredi 03 avril 2013 pour Am&#233;lie-03</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-le-mercredi-03-avril-2013-a3371.html</link>
+	    <date>2013-03-04 09:01:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-03&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-03-04T08:01:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service le mercredi 27 mars 2013 pour Am&#233;lie-04</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-le-mercredi-27-mars-2013-a3366.html</link>
+	    <date>2013-02-28 14:41:21</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-04&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-02-28T13:41:21Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Version corrective 4.1.1 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/version-corrective-4-1-1-du-courrielleur-a3358.html</link>
+	    <date>2013-02-25 16:22:52</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Une version corrective &lt;strong&gt;4.1.1&lt;/strong&gt; du courrielleur va &#234;tre d&#233;ploy&#233;e &#224; partir du 27 f&#233;vrier 2013. Elle sera install&#233;e de mani&#232;re transparente sur le poste de travail des utilisateurs.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-02-25T15:22:52Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Version 4.1 de mise &#224; jour du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/version-4-1-de-mise-a-jour-du-courrielleur-a3353.html</link>
+	    <date>2013-02-12 18:07:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Le courrielleur en version 4.1 va &#234;tre d&#233;ploy&#233; au cours de la semaine 8 (18 f&#233;vrier - 22 f&#233;vrier 2013). Il sera install&#233; de mani&#232;re transparente sur le poste de travail des utilisateurs.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-02-12T17:07:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Interruption de service le mercredi 13 f&#233;vrier 2013 pour Am&#233;lie-04</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/interruption-de-service-le-mercredi-13-fevrier-a3330.html</link>
+	    <date>2013-02-04 09:32:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; &lt;strong&gt;Messagerie&lt;/strong&gt; - Afin d'am&#233;liorer la qualit&#233; du service, l'infrastructure technique de messagerie va &#233;voluer vers une architecture plus performante. Le serveur concern&#233; est &lt;strong&gt;Am&#233;lie-04&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2013-02-04T08:32:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>R&#233;union des RSSI des 13 et 14 novembre 2012</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/reunion-des-rssi-des-13-et-14-novembre-2012-a3285.html</link>
+	    <date>2012-11-19 17:43:49</date>
+	    <description>&lt;p&gt;Les pr&#233;sentations des divers intervenants aux journ&#233;es d&#233;di&#233;es aux Responsables de S&#233;curit&#233; des Syst&#232;mes d'Information sont en ligne.&lt;/p&gt;</description>
+	    <author>Z_GENTILHOMME Claudette, PSI4</author>
+		<dc:date>2012-11-19T16:43:49Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_GENTILHOMME Claudette, PSI4</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Nouvelle version 4 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nouvelle-version-4-du-courrielleur-a3280.html</link>
+	    <date>2012-11-08 09:14:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - La version 4 du courrielleur est mise &#224; disposition des services. Consultez les nouveaut&#233;s et le pack de communication pour l'accompagnement des utilisateurs.</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2012-11-08T08:14:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Nouvelle version 3.1.41 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nouvelle-version-3-1-41-du-courrielleur-a3211.html</link>
+	    <date>2012-06-13 11:17:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Le courrielleur en version 3.1.41 va &#234;tre d&#233;ploy&#233; au cours de la semaine 24 (11 juin - 15 juin 2012). Il sera install&#233; de mani&#232;re transparente sur le poste de travail des utilisateurs.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2012-06-13T09:17:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title> Formations messagerie 2012</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/formations-messagerie-2012-a3192.html</link>
+	    <date>2012-04-24 16:59:13</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Consultez le &lt;strong&gt;calendrier des formations&lt;/strong&gt; de formateurs programm&#233;es pour l'ann&#233;e 2012 - &lt;i&gt;mis &#224; jour au 24 avril 2012&lt;/i&gt;.</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2012-04-24T14:59:13Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Arr&#234;t d&#233;finitif de la solution de synchronisation dite &#034;Funambol&#034;</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/arret-definitif-de-la-solution-de-synchronisation-a3184.html</link>
+	    <date>2012-04-13 13:49:40</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='' width=&#034;40&#034; height=&#034;38&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; Cette solution sera arr&#234;t&#233;e le &lt;strong&gt;2 mai 2012 dans la matin&#233;e&lt;/strong&gt;.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2012-04-13T11:49:40Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Nouvelle version 3.1.40 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nouvelle-version-3-1-40-du-courrielleur-a3210.html</link>
+	    <date>2012-03-11 10:49:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Le courrielleur en version 3.1.40 va &#234;tre d&#233;ploy&#233; au cours de la semaine 11 (12 mars - 16 mars 2012). Il sera install&#233; de mani&#232;re transparente sur le poste de travail des utilisateurs.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2012-03-11T09:49:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Nouvelle version 3.1.39 du courrielleur</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nouvelle-version-3-1-39-du-courrielleur-a3158.html</link>
+	    <date>2012-02-06 19:05:15</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Le courrielleur en version 3.1.39 va &#234;tre d&#233;ploy&#233; au cours de la semaine 6 (6 f&#233;vrier - 10 f&#233;vrier 2012). Il sera install&#233; de mani&#232;re transparente sur le poste de travail des utilisateurs.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2012-02-06T18:05:15Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Arr&#234;t de l'ancienne solution de synchronisation Funambol</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/arret-de-l-ancienne-solution-de-synchronisation-a3154.html</link>
+	    <date>2012-01-26 18:20:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Cette solution de synchronisation, bas&#233;e sur le protocole SyncMl, va &#234;tre prochainement arr&#234;t&#233;e.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2012-01-26T17:20:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>R&#233;unions des RSSI des 29 et 30 novembre 2011</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/reunions-des-rssi-des-29-et-30-novembre-2011-a3121.html</link>
+	    <date>2011-12-07 15:23:30</date>
+	    <description>&lt;p&gt;Les pr&#233;sentations des divers intervenants aux journ&#233;es d&#233;di&#233;es aux Responsables de S&#233;curit&#233; des Syst&#232;mes d'Information sont en ligne.&lt;/p&gt;</description>
+	    <author>Z_TOQUIN Gilles, SNUM/DSGC</author>
+		<dc:date>2011-12-07T14:23:30Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_TOQUIN Gilles, SNUM/DSGC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mise &#224; jour de l'annuaire et listes de diffusion automatiques</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mise-a-jour-de-l-annuaire-et-listes-de-diffusion-a3003.html</link>
+	    <date>2011-07-11 18:49:50</date>
+	    <description>&lt;p&gt;Modalit&#233;s de mise &#224; jour de l'annuaire par les services via l'application Am&#233;d&#233;e et mise en place de nouvelles listes de diffusion nationales, g&#233;n&#233;r&#233;es de fa&#231;on automatique.&lt;/p&gt;</description>
+	    <author>Z_DARRINE Christophe, SNUM/UNI/DETN</author>
+		<dc:date>2011-07-11T16:49:50Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_DARRINE Christophe, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Mise en place d'extensions interdites au minist&#232;re des Finances</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/mise-en-place-d-extensions-interdites-au-ministere-a2860.html</link>
+	    <date>2011-03-25 12:59:18</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt; L'attaque virale subie par le minist&#232;re des finances a eu pour effet la mise en place d'une politique de filtrage des pi&#232;ces jointes.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2011-03-25T11:59:18Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Arr&#234;t de la pr&#233;s&#233;lection Completel</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/arret-de-la-preselection-completel-a2789.html</link>
+	    <date>2011-02-23 14:36:51</date>
+	    <description></description>
+	    <author>Z_ALCOULOMBRE, PSI2</author>
+		<dc:date>2011-02-23T13:36:51Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_ALCOULOMBRE, PSI2</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Les anciennes URL sont supprim&#233;es</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/les-anciennes-url-sont-supprimees-a2726.html</link>
+	    <date>2011-01-27 15:04:56</date>
+	    <description>&lt;p&gt;Les adresses &#224; prendre en compte pour les sites PSI et PNE sont les suivantes&#8230;&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2011-01-27T14:04:56Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Nos interlocuteurs &#224; contacter chez ORANGE Business Service</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/nos-interlocuteurs-a-contacter-chez-orange-a2620.html</link>
+	    <date>2010-11-10 19:28:52</date>
+	    <description>&lt;p&gt;&lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/squelettes-dist/puce.gif' width=&#034;8&#034; height=&#034;11&#034; class=&#034;puce&#034; alt=&#034;-&#034; /&gt; &lt;strong&gt;T&#233;l&#233;phonie&lt;/strong&gt; - Pour trouver le bon interlocuteur suivant la typologie de l'abonnement et la situation dans laquelle vous &#234;tes.&lt;/p&gt;</description>
+	    <author>Z_ALCOULOMBRE, PSI2</author>
+		<dc:date>2010-11-10T18:28:52Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_ALCOULOMBRE, PSI2</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>R&#233;union des RSSI du 20 octobre 2010</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/reunion-des-rssi-du-20-octobre-2010-a2558.html</link>
+	    <date>2010-10-28 17:15:00</date>
+	    <description>&lt;p&gt;&lt;strong&gt;- Animation s&#233;curit&#233; -&lt;/strong&gt; Les pr&#233;sentations des divers intervenants &#224; la r&#233;union des Responsables de S&#233;curit&#233; des Syst&#232;mes d'Information sont en ligne.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2010-10-28T15:15:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Site internet informatique</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/site-internet-informatique-a2532.html</link>
+	    <date>2010-10-08 16:56:00</date>
+	    <description>&lt;p&gt;Modalit&#233;s de migration du site internet informatique vers le site internet du minist&#232;re.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2010-10-08T14:56:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Modifications de l'annuaire du minist&#232;re - d&#233;cembre 2009</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/modifications-de-l-annuaire-du-ministere-decembre-a2227.html</link>
+	    <date>2009-12-23 18:43:00</date>
+	    <description>&lt;p&gt;Suite &#224; la r&#233;organisation des services d&#233;partementaux et r&#233;gionaux, l'annuaire du minist&#232;re est en cours de modification.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2009-12-23T17:43:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Lettre M&#233;lanie 2 n&#176;7 - Avril 2009</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/lettre-melanie-2-no7-avril-2009-a1959.html</link>
+	    <date>2009-04-30 15:47:00</date>
+	    <description>&lt;figure class='alignleft'&gt; &lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/fichier/jpg/melanie_verte_41x27_cle01765e.jpg?arg=176630999&amp;#38;cle=049796969bb4b70191b6b4a434a7f49c3f4a90b7&amp;#38;file=jpg%2Fmelanie_verte_41x27_cle01765e.jpg' width=&#034;27&#034; height=&#034;41&#034; alt=&#034;&#034; /&gt; &lt;figcaption&gt; &lt;/figcaption&gt;
+&lt;/figure&gt;&lt;strong&gt;Messagerie&lt;/strong&gt; - Les solutions de synchronisation, les bulletins techniques M2, ouverture du site des PNE, nouvelles modalit&#233;s d'assistance M2.</description>
+	    <author>LANGLET Patrick, SNUM/UNI/DETN</author>
+		<dc:date>2009-04-30T13:47:00Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>LANGLET Patrick, SNUM/UNI/DETN</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>R&#233;pertoire des m&#233;tiers</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/repertoire-des-metiers-a1857.html</link>
+	    <date>2008-12-26 11:35:23</date>
+	    <description>&lt;p&gt;Le r&#233;pertoire des emplois-types du minist&#232;re d&#233;crit les m&#233;tiers exerc&#233;s au p&#244;le minist&#233;riel au travers de fiches class&#233;es par th&#232;mes&lt;/p&gt;</description>
+	    <author>Z_GAUDINEAU Val&#233;rie, DDAC</author>
+		<dc:date>2008-12-26T10:35:23Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Z_GAUDINEAU Val&#233;rie, DDAC</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Bascule des adresses &#233;lectroniques en developpement-durable.gouv.fr en administration centrale - janvier 2008</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/bascule-des-adresses-electroniques-en-a1314.html</link>
+	    <date>2008-01-21 19:01:19</date>
+	    <description>&lt;p&gt;Cette op&#233;ration &lt;strong&gt;concernera dans un premier temps l'administration centrale&lt;/strong&gt; :
+&lt;br /&gt;&lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/squelettes-dist/puce.gif' width=&#034;8&#034; height=&#034;11&#034; class=&#034;puce&#034; alt=&#034;-&#034; /&gt; 21 janvier dans la soir&#233;e : agents &#201;cologie
+&lt;br /&gt;&lt;img src='http://intra.snum.sg.e2.rie.gouv.fr/squelettes-dist/puce.gif' width=&#034;8&#034; height=&#034;11&#034; class=&#034;puce&#034; alt=&#034;-&#034; /&gt; 22 et 23 janvier : agents &#201;quipement.&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2008-01-21T18:01:19Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>&#034;La d&#233;marche engag&#233;e sur la Gpeec&#034; et &#034;l'&#233;valuation par le comit&#233; de domaine&#034;</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/la-demarche-engagee-sur-la-gpeec-et-l-evaluation-a996.html</link>
+	    <date>2007-05-11 12:49:47</date>
+	    <description>&lt;p&gt;Deux nouvelles rubriques pr&#233;cisent les travaux engag&#233;s sur la gestion pr&#233;visionnelle des emplois, des effectifs et des comp&#233;tences (Gpeec) et le r&#244;le du comit&#233; de domaine &#034;syst&#232;mes d'information&#034; (&#8230;)&lt;/p&gt;</description>
+	    <author>Administrateur - Webmestre SNUM</author>
+		<dc:date>2007-05-11T10:49:47Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>Administrateur - Webmestre SNUM</dc:creator>
+	    </item>
+	
+	    <item>
+		<title>Guides d'architecture et de m&#233;thodologie</title>
+	    <link>http://intra.snum.sg.e2.rie.gouv.fr/guides-d-architecture-et-de-methodologie-a669.html</link>
+	    <date>2006-10-05 15:38:41</date>
+	    <description>&lt;p&gt;Guides destin&#233;s aux ma&#238;tres d'ouvrage et aux ma&#238;tres d'&#339;uvre de syst&#232;mes d'information d&#233;cisionnels.&lt;/p&gt;</description>
+	    <author>BRUNEAU Fran&#231;ois, SNUM/MSP/DS</author>
+		<dc:date>2006-10-05T13:38:41Z</dc:date>
+		<dc:format>text/html</dc:format>
+		<dc:language>fr</dc:language>
+		<dc:creator>BRUNEAU Fran&#231;ois, SNUM/MSP/DS</dc:creator>
+	    </item>
+	
+</channel>
+
+</rss>

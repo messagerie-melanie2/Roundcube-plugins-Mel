@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <atom:link href="https://www.lefigaro.fr/rss/figaro_actualites.xml" rel="self" type="application/rss+xml"/>
+        <category>HP www</category>
+        <title>Le Figaro - Actualité en direct et informations en continu</title>
+        <description>A la Une : Retrouvez toute l'actualité en France, à l'international, l'actualité économique et politique avec Le Figaro</description>
+        <link>http://www.lefigaro.fr</link>
+        <language>fr</language>
+        <copyright>Droits de reproduction et de diffusion réservés LeFigaro.fr</copyright>
+        <lastBuildDate>Tue, 12 Jan 2021 13:15:45 +0100</lastBuildDate>
+        <docs>https://www.lefigaro.fr/rss</docs>
+        <ttl>1</ttl>
+        <image>
+            <title>Le Figaro - Actualité en direct et informations en continu</title>
+            <url>http://a.f1g.fr/assets-img/i/f/m150.png</url>
+            <link>http://www.lefigaro.fr</link>
+            <description>A la Une : Retrouvez toute l'actualité en France, à l'international, l'actualité économique et politique avec Le Figaro</description>
+        </image>
+
+                    <item>
+                <guid>https://www.lefigaro.fr/actualite-france/covid-19-les-differents-scenarios-etudies-par-l-executif-pour-freiner-l-epidemie-20210112</guid>
+                <title>Covid-19 : reconfinement, fermeture des écoles... Les différents scénarios étudiés par l'exécutif</title>
+                <link>https://www.lefigaro.fr/actualite-france/covid-19-les-differents-scenarios-etudies-par-l-executif-pour-freiner-l-epidemie-20210112</link>
+                <description>Alors que le gouvernement doit s'exprimer jeudi soir, Le Figaro fait le point sur les options envisagées pour freiner l'épidémie.</description>
+                <category>Société</category>
+                <pubDate>Tue, 12 Jan 2021 13:15:45 +0100</pubDate>
+                <author>Steve Tenré</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/en-direct-covid-19-olivier-veran-auditionne-au-senat-et-a-l-assemblee-20210112</guid>
+                <title>EN DIRECT - Covid-19 : «Nous ne naviguons pas à vue», assure Véran</title>
+                <link>https://www.lefigaro.fr/sciences/en-direct-covid-19-olivier-veran-auditionne-au-senat-et-a-l-assemblee-20210112</link>
+                <description>Le ministre de la Santé rend compte devant les élus de la stratégie de la France pour lutter contre l'épidémie de coronavirus et répond aux critiques.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Tue, 12 Jan 2021 12:25:10 +0100</pubDate>
+                <author>Stanislas Poyet</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/une-immunite-d-au-moins-huit-mois-pour-les-malades-du-covid-20210111</guid>
+                <title>Une immunité d’au moins huit mois pour les malades du Covid</title>
+                <link>https://www.lefigaro.fr/sciences/une-immunite-d-au-moins-huit-mois-pour-les-malades-du-covid-20210111</link>
+                <description>DÉCRYPTAGE - Les scientifiques américains ont étudié les différents mécanismes du système immunitaire d’environ 200 malades guéris du Covid-19, dont 43 infectés depuis plus de six mois.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Tue, 12 Jan 2021 08:48:25 +0100</pubDate>
+                <author>Vincent Bordenave</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/covid-19-pas-d-immunite-collective-en-2021-malgre-les-vaccins-selon-l-oms-20210112</guid>
+                <title>Covid-19 : pas d'immunité collective en 2021 malgré les vaccins, selon l'OMS</title>
+                <link>https://www.lefigaro.fr/sciences/covid-19-pas-d-immunite-collective-en-2021-malgre-les-vaccins-selon-l-oms-20210112</link>
+                <description>Nouvelles mesures, nouveaux bilans et faits marquants : Le Figaro fait le point sur les dernières évolutions de la pandémie de Covid-19 dans le monde.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Tue, 12 Jan 2021 10:19:19 +0100</pubDate>
+                <author/>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/vaccination-covid-19-ou-se-situe-la-france-20210105</guid>
+                <title>Vaccination Covid-19: où se situe la France?</title>
+                <link>https://www.lefigaro.fr/sciences/vaccination-covid-19-ou-se-situe-la-france-20210105</link>
+                <description>INFOGRAPHIE - Vingt huit millions de personnes ont reçu, dans le monde à la date du 11 janvier, une première injection de vaccin anti-Covid 19. La France accuse un retard très important, obligeant le gouvernement à revoir sa stratégie.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Tue, 12 Jan 2021 12:53:58 +0100</pubDate>
+                <author>Nicole Triouleyre, Service Infographie</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/politique/a-roubaix-un-depistage-massif-a-la-recherche-du-variant-anglais-20210111</guid>
+                <title>À Roubaix, un dépistage massif à la recherche du variant anglais</title>
+                <link>https://www.lefigaro.fr/politique/a-roubaix-un-depistage-massif-a-la-recherche-du-variant-anglais-20210111</link>
+                <description>REPORTAGE - Le but de la campagne est d’essayer d’évaluer la distribution du variant anglais parmi les nouveaux cas.</description>
+                <category>Politique</category>
+                <pubDate>Tue, 12 Jan 2021 10:05:13 +0100</pubDate>
+                <author>Marc Cherki</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/nancy-premiere-ville-de-france-a-vacciner-des-patients-de-plus-de-75-ans-hors-ehpad-20210112</guid>
+                <title>Nancy : première ville de France à vacciner des patients de plus de 75 ans hors Ehpad</title>
+                <link>https://www.lefigaro.fr/sciences/nancy-premiere-ville-de-france-a-vacciner-des-patients-de-plus-de-75-ans-hors-ehpad-20210112</link>
+                <description>Une faille dans le système de prise de rendez-vous Doctolib a permis à des patients d'être vaccinés une semaine avant le début de la campagne nationale.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Tue, 12 Jan 2021 13:26:42 +0100</pubDate>
+                <author/>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/en-cas-de-reconfinement-etes-vous-favorable-a-une-fermeture-de-tous-les-etablissements-scolaires-20210112</guid>
+                <title>En cas de reconfinement, êtes-vous favorable à une fermeture de tous les établissements scolaires ?</title>
+                <link>https://www.lefigaro.fr/sciences/en-cas-de-reconfinement-etes-vous-favorable-a-une-fermeture-de-tous-les-etablissements-scolaires-20210112</link>
+                <description/>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Tue, 12 Jan 2021 11:22:45 +0100</pubDate>
+                <author/>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/actualite-france/a-sciences-po-paris-l-ideologie-racialiste-fait-peu-a-peu-son-nid-20210110</guid>
+                <title>À Sciences Po Paris, l’idéologie racialiste fait peu à peu son nid</title>
+                <link>https://www.lefigaro.fr/actualite-france/a-sciences-po-paris-l-ideologie-racialiste-fait-peu-a-peu-son-nid-20210110</link>
+                <description>ENQUÊTE - Le prestigieux établissement connaît une montée croissante des pensées racialiste, décolonialiste et indigéniste. Conférences, travaux de recherche, revendications de modules de cours… De petits groupes, inspirés par des thèses américaines, constituent une minorité agissante qui inquiète de nombreux étudiants et des parlementaires.</description>
+                <category>Société</category>
+                <pubDate>Tue, 12 Jan 2021 09:44:29 +0100</pubDate>
+                <author>Wally Bordas</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/faits-divers/je-ne-livre-pas-les-juifs-plusieurs-plaintes-deposees-contre-un-livreur-a-strasbourg-20210111</guid>
+                <title>«Je ne livre pas les Juifs» : Schiappa convoque la direction de Deliveroo après des accusations contre un livreur</title>
+                <link>https://www.lefigaro.fr/faits-divers/je-ne-livre-pas-les-juifs-plusieurs-plaintes-deposees-contre-un-livreur-a-strasbourg-20210111</link>
+                <description>Une enquête est en cours pour identifier le mis en cause, indique le parquet de Strasbourg.</description>
+                <category>Faits divers</category>
+                <pubDate>Tue, 12 Jan 2021 08:52:24 +0100</pubDate>
+                <author>Guillaume Poingt</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/social/inquietudes-sur-les-pensions-des-soignants-retraites-20210111</guid>
+                <title>Inquiétudes sur les pensions des soignants retraités</title>
+                <link>https://www.lefigaro.fr/social/inquietudes-sur-les-pensions-des-soignants-retraites-20210111</link>
+                <description>DÉCRYPTAGE - Les professionnels mobilisés contre le Covid pourraient être amenés à rembourser une partie de leur pension.</description>
+                <category>Social</category>
+                <pubDate>Tue, 12 Jan 2021 12:49:28 +0100</pubDate>
+                <author>Marie-Cécile Renault</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/flash-actu/procedure-de-destitution-les-democrates-presentent-l-acte-d-accusation-contre-trump-20210111</guid>
+                <title>Donald Trump de nouveau cible d'un impeachment</title>
+                <link>https://www.lefigaro.fr/flash-actu/procedure-de-destitution-les-democrates-presentent-l-acte-d-accusation-contre-trump-20210111</link>
+                <description>Les représentants démocrates à la Chambre ont accusé lundi le président sortant «d'incitation à la violence contre le gouvernement des États-Unis» après l'assaut de ses partisans contre le Capitole.</description>
+                <category>Flash Actu</category>
+                <pubDate>Tue, 12 Jan 2021 10:38:26 +0100</pubDate>
+                <author>Adrien Jaulmes</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/international/donald-trump-pourrait-il-etre-rendu-ineligible-20210111</guid>
+                <title>Donald Trump pourrait-il être rendu inéligible ?</title>
+                <link>https://www.lefigaro.fr/international/donald-trump-pourrait-il-etre-rendu-ineligible-20210111</link>
+                <description>LA VÉRIFICATION - Un second «impeachment» serait sans précédent dans l'histoire politique américaine. Suffirait-il à empêcher Donald Trump de se représenter en 2024?</description>
+                <category>International</category>
+                <pubDate>Mon, 11 Jan 2021 15:51:03 +0100</pubDate>
+                <author>Philippe Gélie</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/international/trump-et-pence-se-sont-rencontres-lundi-soir-dans-le-bureau-ovale-20210112</guid>
+                <title>Trump et Pence font front commun face aux démocrates</title>
+                <link>https://www.lefigaro.fr/international/trump-et-pence-se-sont-rencontres-lundi-soir-dans-le-bureau-ovale-20210112</link>
+                <description>Le président sortant n'a pas l'intention de démissionner avant le 20 janvier, et son vice-président ne souhaite pas invoquer le 25e amendement pour le démettre.</description>
+                <category>International</category>
+                <pubDate>Tue, 12 Jan 2021 09:14:02 +0100</pubDate>
+                <author/>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/social/covid-plus-de-2500-demandes-d-arret-de-travail-immediat-ont-ete-deposees-en-un-jour-20210112</guid>
+                <title>Covid : plus de 2500 demandes d'arrêt de travail immédiat ont été déposées en un jour</title>
+                <link>https://www.lefigaro.fr/social/covid-plus-de-2500-demandes-d-arret-de-travail-immediat-ont-ete-deposees-en-un-jour-20210112</link>
+                <description>Ce dispositif «démarre normalement», a jugé le patron de l'Assurance-maladie. Le patronat, de son côté, alertait sur le risque d'«absentéisme incontrôlé» qu'il pouvait engendrer.</description>
+                <category>Social</category>
+                <pubDate>Tue, 12 Jan 2021 11:16:41 +0100</pubDate>
+                <author>Wladimir Garcin-Berson</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/social/arrets-de-travail-automatiques-pour-suspicion-de-covid-19-y-a-t-il-un-risque-d-abus-20210108</guid>
+                <title>Arrêts de travail automatiques pour suspicion de Covid-19 : y a-t-il un risque d'abus ?</title>
+                <link>https://www.lefigaro.fr/social/arrets-de-travail-automatiques-pour-suspicion-de-covid-19-y-a-t-il-un-risque-d-abus-20210108</link>
+                <description>LA VÉRIFICATION - Ces nouveaux arrêts de travail annoncés par Jean Castex suscitent des interrogations. Quel est le dispositif précis et des fraudes sont-elles possibles ?</description>
+                <category>Social</category>
+                <pubDate>Sat, 09 Jan 2021 10:28:25 +0100</pubDate>
+                <author>Guillaume Poingt</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/politique/covid-19-jean-castex-face-aux-critiques-de-l-opposition-20210111</guid>
+                <title>Covid-19: Jean Castex face aux critiques de l’opposition</title>
+                <link>https://www.lefigaro.fr/politique/covid-19-jean-castex-face-aux-critiques-de-l-opposition-20210111</link>
+                <description>Les responsables parlementaires ont interrogé le premier ministre sur la vaccination, le troisième confinement et les régionales.</description>
+                <category>Politique</category>
+                <pubDate>Tue, 12 Jan 2021 10:12:36 +0100</pubDate>
+                <author>Emmanuel Galiero, Sophie de Ravinel, Mathilde Siraud</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/covid-19-pourquoi-le-variant-anglais-risque-de-rendre-l-epidemie-incontrolable-en-france-20210107</guid>
+                <title>Covid-19: pourquoi le variant anglais risque de rendre l’épidémie incontrôlable en France</title>
+                <link>https://www.lefigaro.fr/sciences/covid-19-pourquoi-le-variant-anglais-risque-de-rendre-l-epidemie-incontrolable-en-france-20210107</link>
+                <description>DÉCRYPTAGE - 19 cas ont été détectés à ce jour dans l’Hexagone, mais la circulation réelle est sans aucun doute bien plus élevée.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Fri, 08 Jan 2021 15:05:16 +0100</pubDate>
+                <author>Cyrille Vanlerberghe</author>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/conjoncture/les-50-000-premieres-doses-du-vaccin-moderna-sont-arrives-cette-semaine-indique-agnes-pannier-runacher-20210112</guid>
+                <title>Les 50.000  premières doses du vaccin Moderna sont arrivées cette semaine, indique Agnès Pannier-Runacher</title>
+                <link>https://www.lefigaro.fr/conjoncture/les-50-000-premieres-doses-du-vaccin-moderna-sont-arrives-cette-semaine-indique-agnes-pannier-runacher-20210112</link>
+                <description>138.000 personnes ont été vaccinées depuis le lancement de la campagne, a assuré la ministre déléguée chargée de l'Industrie.</description>
+                <category>Conjoncture</category>
+                <pubDate>Tue, 12 Jan 2021 12:11:46 +0100</pubDate>
+                <author/>
+            </item>
+                    <item>
+                <guid>https://www.lefigaro.fr/sciences/covid-19-comment-prendre-rendez-vous-pour-se-faire-vacciner-20210107</guid>
+                <title>Covid-19 : comment prendre rendez-vous pour se faire vacciner ?</title>
+                <link>https://www.lefigaro.fr/sciences/covid-19-comment-prendre-rendez-vous-pour-se-faire-vacciner-20210107</link>
+                <description>Les personnes âgées de plus de 75 ans pourront recevoir une première injection dès lundi 18 janvier, alors que l'exécutif veut accélérer la campagne de vaccination française.</description>
+                <category>Sciences &amp; Environnement</category>
+                <pubDate>Mon, 11 Jan 2021 20:35:27 +0100</pubDate>
+                <author>Steve Tenré</author>
+            </item>
+            </channel>
+</rss>

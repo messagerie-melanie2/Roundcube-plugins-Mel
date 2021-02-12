@@ -1,0 +1,24 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<!-- <h1 class="voice"><roundcube:label name="preferences" /></h1> -->
+<!-- <div id="layout-sidebar" class="listbox<roundcube:exp expression="!request:_action ? ' selected' : ''"/>" role="navigation" aria-labelledby="aria-label-settingstabs">
+	<div class="header">
+		<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
+		<span id="aria-label-settingstabs" class="header-title"></span>
+		<roundcube:object class="logo-mel" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
+	</div>
+	<div class="">
+		<!-- <roundcube:object name="mel_portal_sectionslist"  /> --
+	</div>
+</div> -->
+<img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
+<div id="layout-content" class="dwp" role="main">
+	<center>
+		<img class="" name="logo" src="plugins/mel_portal/skins/elastic/images/dwp.PNG"  data-src-small="0" id="logo" alt="Logo" />
+	</center>
+	<div class="body" id="contents">
+		<roundcube:object name="modules"/>
+	</div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

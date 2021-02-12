@@ -1,0 +1,229 @@
+﻿.body{
+  color:#3A3E5E;
+}
+
+.button-mel_sondage
+{
+  background: url(images/taskbar_icon.png) 3px 0px no-repeat;
+  height: 18px;
+}
+
+.button-mel_sondage:hover
+{
+  background: url(images/taskbar_icon_hov.png) 3px 0px no-repeat !important;
+  height: 18px;
+}
+
+.button-mel_sondage.selected 
+{
+  background: url(images/taskbar_icon_sel.png) 3px 0px no-repeat !important;
+  height: 18px;
+}
+
+.button-mel_sondage.selected:hover
+{
+  background: url(images/taskbar_icon_hov.png) 3px 0px no-repeat !important;
+  height: 18px;
+}
+
+.square_div > .contents
+{
+  background-color:#F8F8F8;
+  height:230px;
+  border-radius: 5px;
+}
+
+.square_div > .contents.DARK
+{
+  background-color:#484D7A;
+  color:#E6E7ED;
+}
+
+#headlines_fi_block
+{
+  color:#ffffffff;
+}
+#headlines_fi_contents
+{
+  background-color:#FC945A;
+  color: initial;
+}
+.tablinks
+{
+  font-size: 18px;
+  background-color:#F0F0F0;
+  color:#3A3E5E;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border:0px;
+}
+
+.tablinks:hover
+{
+  background-color:#F8F8F8;
+  color:#3A3E5E;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border:0px;
+}
+
+.tablinks.selected
+{
+  background-color:#F8F8F8;
+  color:#3A3E5E;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border:0px;
+}
+
+.tabs-contents
+{
+  background-color:#F8F8F8;
+  height:200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.tabcontent
+{
+  padding-left:15px;
+  padding-top:15px;
+}
+
+.my_day_table > tbody> tr > td{
+  padding-bottom: 15px;
+}
+
+.marginright
+{
+  margin-right: 15px;
+}
+
+.roundbadge{
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    line-height: 12px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    background-color: lightgray;    
+    text-align: center;  
+    font-weight: bold;
+    font-size: 6px;
+}
+
+.roundbadge.large
+{
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  font-size: initial;
+}
+
+.roundbadge.clear
+{
+  background-color: #F0F0F0;
+}
+
+.roundbadge.dark
+{
+  background-color: #363A5B;
+}
+
+.roundbadge.setalign
+{
+  top: 1px;
+  left: -8px;
+  position: absolute;
+}
+
+.roundbadge.warning{
+  background-color: #FC945A;
+}
+
+.roundbadge.lightgreen,
+.roundbadge.hover.tick:hover
+{
+  background-color: #80D5C6;
+}
+
+.roundbadge.hover.tick
+{
+  cursor: pointer;
+}
+
+.roundbadge.hover.tick:hover:before{
+  content: "\eed8"!important;
+}
+
+.module_parent{
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 38px;
+}
+
+#layout-content
+{
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#layout-sidebar, #layout-sidebar>.header
+{
+  background-color: white !important;
+  border-right-color: #ACB0C3;
+  border-right-width: 2px;
+  border-right-style: solid;
+}
+
+#layout-sidebar>.header
+{
+  min-height:200px !important;
+}
+
+.logo-mel
+{
+  position: absolute;
+  margin: 30px;
+  top: 60px;
+  left: 0px;
+  max-width: 150px;
+}
+
+.square_tab > p
+{
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.dwp{
+  padding-left: 200px;
+  padding-right: 200px;
+}
+
+.dwp > center > img{
+  max-width: 100%;
+}
+
+.logo-mel.startup.mel_portal-frame.mm-frame
+{
+  left:60px;
+}
+
+@media screen and (max-width: 1025px){
+  .dwp{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .logo-mel
+{
+  position: initial;
+  margin: 30px;
+  display: none;
+  max-width: 150px;
+}
+
+}

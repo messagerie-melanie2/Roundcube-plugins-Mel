@@ -1,0 +1,143 @@
+
+ul.toolbarmenu li a.history {
+	padding: 2px 6px;
+	color: #eee;
+}
+
+ul.toolbarmenu li a.history span.icon {
+	background-image: url('data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAQAAAD8x0bcAAABXUlEQVQoFbXBvUsCYQAH4N/mdm5uN9UStzn1AYG0HC1Jg01tV/9A0NYQ5dRm4BI0VYRYUYOD3CSB2FaLXBJhIXYeXr7veVGd8qus0D6Whp4H+Duq1LnEBDX8jiqz3XpgPzqB3a0zSw3fUetavlux0hkjlc5cnPtut84EBlEJLr1WOoN5RKEiisTylmMHNjX0Pa17rd0TRAFqzOLN8Ma2FN4u+tpVx8Y4Xp1O+y7eaRXroUkFn7xWqYieXFwKfDjek6IxCYAqy6xJ8dBkjatALi4FDfQUN6XIxfEqPJt0bCmkMAuIAXMjx/nnBvPUAGtfip0p9ERmk45tFqDjTQix0TXrzFqg4t3cVhHBh8jECnQqVPAujAS0zqHXOshgQJhKx+ycUUcPx5j33YqFcXwRMo/a94HNMrMsd+58t1gaWsQPMSNlFq7Kvlu7LpaMFGYQwi9U6JjHEgzMQMU/eAHASL3dDo5S4wAAAABJRU5ErkJggg==');
+	background-position: 0px 2px;
+	background-repeat: no-repeat;
+}
+
+.changelog-table .loading {
+	color: #666;
+	margin: 1em 0;
+	padding: 1px 0 2px 24px;
+	background: url('data:image/gif;base64,R0lGODlhEAAQAPQAAP///xB1v/j6/ESTzIu83xV4wDOJyNjo9K3P6CSAxH603G+s2OXv957G5Mnf8FOb0GCj1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAFUCAgjmRpnqUwFGwhKoRgqq2YFMaRGjWA8AbZiIBbjQQ8AmmFUJEQhQGJhaKOrCksgEla+KIkYvC6SJKQOISoNSYdeIk1ayA8ExTyeR3F749CACH5BAkKAAAALAAAAAAQABAAAAVoICCKR9KMaCoaxeCoqEAkRX3AwMHWxQIIjJSAZWgUEgzBwCBAEQpMwIDwY1FHgwJCtOW2UDWYIDyqNVVkUbYr6CK+o2eUMKgWrqKhj0FrEM8jQQALPFA3MAc8CQSAMA5ZBjgqDQmHIyEAIfkECQoAAAAsAAAAABAAEAAABWAgII4j85Ao2hRIKgrEUBQJLaSHMe8zgQo6Q8sxS7RIhILhBkgumCTZsXkACBC+0cwF2GoLLoFXREDcDlkAojBICRaFLDCOQtQKjmsQSubtDFU/NXcDBHwkaw1cKQ8MiyEAIfkECQoAAAAsAAAAABAAEAAABVIgII5kaZ6AIJQCMRTFQKiDQx4GrBfGa4uCnAEhQuRgPwCBtwK+kCNFgjh6QlFYgGO7baJ2CxIioSDpwqNggWCGDVVGphly3BkOpXDrKfNm/4AhACH5BAkKAAAALAAAAAAQABAAAAVgICCOZGmeqEAMRTEQwskYbV0Yx7kYSIzQhtgoBxCKBDQCIOcoLBimRiFhSABYU5gIgW01pLUBYkRItAYAqrlhYiwKjiWAcDMWY8QjsCf4DewiBzQ2N1AmKlgvgCiMjSQhACH5BAkKAAAALAAAAAAQABAAAAVfICCOZGmeqEgUxUAIpkA0AMKyxkEiSZEIsJqhYAg+boUFSTAkiBiNHks3sg1ILAfBiS10gyqCg0UaFBCkwy3RYKiIYMAC+RAxiQgYsJdAjw5DN2gILzEEZgVcKYuMJiEAOwAAAAAAAAAAAA==') top left no-repeat;
+}
+
+.changelog-dialog .compare-button {
+	margin: 4px 0;
+}
+
+.changelog-table tbody td {
+	padding: 4px 7px;
+	vertical-align: middle;
+}
+
+.changelog-table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.changelog-table tbody tr.undisclosed td.date,
+.changelog-table tbody tr.undisclosed td.user {
+	font-style: italic;
+}
+
+.changelog-table .diff {
+	width: 4em;
+	padding: 2px;
+}
+
+.changelog-table .revision {
+	width: 6em;
+}
+
+.changelog-table .date {
+	width: 11em;
+}
+
+.changelog-table .user {
+	width: auto;
+}
+
+.changelog-table .operation {
+	width: 15%;
+}
+
+.changelog-table .actions {
+	width: 50px;
+	text-align: right;
+	padding: 4px;
+}
+
+#mailmessagehistory .changelog-table .diff,
+#mailmessagehistory .changelog-table .actions {
+	display: none;
+}
+
+#mailmessagehistory .changelog-table .operation {
+	width: 25%;
+}
+
+fieldset.birthdays .proplist li {
+	padding: 0;
+	border: 0;
+}
+
+fieldset.categories input {
+	height: auto !important;
+	line-height: 16px !important;
+}
+
+#calendarcategories .minicolors-swatch {
+	height: 14px;
+	width: 14px;
+}
+
+a.button.input-group-text {
+	line-height: 19px;
+	vertical-align: middle;
+}
+
+.libkolab.attachmentwin #attachmenttoolbar {
+	position: relative;
+	top: -6px;
+	height: 40px;
+}
+
+.libkolab.attachmentwin #attachmentcontainer {
+	position: absolute;
+	top: 0;
+	left: 232px;
+	right: 0;
+	bottom: 0;
+}
+
+.libkolab.attachmentwin #attachmentframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background-color: #fff;
+	border-radius: 4px;
+}
+
+.libkolab.attachmentwin #partheader {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 220px;
+	bottom: 0;
+}
+
+.libkolab.attachmentwin #partheader table {
+	table-layout: fixed;
+	overflow: hidden;
+}
+
+.libkolab.attachmentwin #partheader table td {
+	color: #666;
+	padding: 4px 6px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.libkolab.attachmentwin #partheader table td.header {
+	font-weight: bold;
+}
+
+.libkolab.attachmentwin #partheader table td.title {
+	width: 60px;
+	padding-right: 0;
+}

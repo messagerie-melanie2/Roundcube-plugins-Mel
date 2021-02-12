@@ -1,0 +1,123 @@
+/**
+ * Kolab core library
+ *
+ * This file contains Elastic skin style of kolab_tags plugin.
+ *
+ * @author Aleksander Machniak <machniak@kolabsys.com>
+ *
+ * Copyright (C) 2012-2018, Kolab Systems AG <contact@kolabsys.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.menu {
+    a.tags:before {
+        content: @fa-var-tags;
+    }
+
+    a.tag:before,
+    a.tag.remove:before,
+    a.tag.remove.all:before {
+        content: @fa-var-tag;
+    }
+}
+
+#taglist {
+    li {
+        padding: 0 .5rem;
+
+        &:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-tag;
+            margin: 0 .5rem 0 .2rem;
+        }
+    }
+}
+
+#tagsform option:before,
+#taglist li:before,
+#tag-selector li a:before {
+    color: darken(@color-main, 15%); // default tag color
+}
+
+#tagsform option:checked:before,
+#tag-selector li:hover a:before {
+    color: #fff;
+}
+
+#tagsform {
+    min-height: 15rem;
+
+    select {
+        padding: 0;
+        margin-bottom: .5rem;
+
+        &:focus {
+            box-shadow: none !important;
+            border: 1px solid @color-layout-border;
+        }
+    }
+
+    option {
+        color: @color-font; // fix Firefox issue caused by text-shadow below
+        text-shadow: none;
+        padding: .5rem;
+        outline: 0;
+        border: 0;
+
+        &:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-tag;
+            line-height: 1;
+        }
+    }
+
+    .buttons {
+        text-align: center;
+
+        button {
+            margin: 0 .25rem;
+        }
+    }
+}
+
+.tagbox {
+    color: #fff;
+    background-color: @color-main !important;
+    border: 0 !important;
+    border-radius: .25rem;
+    max-width: 4em;
+    padding: .1rem .4rem;
+    margin-right: .2rem;
+    font-weight: bold;
+
+    &:not(.tagedit-listelement) a {
+        color: inherit;
+        padding-left: .5rem;
+        text-decoration: none;
+    }
+
+    h2 > & {
+        font-size: 1.2rem;
+    }
+}
+
+.tag-droppable.formcontainer {
+    &.ui-droppable-active {
+        background-color: @color-black-shade-bg !important;
+    }
+    &.ui-droppable-hover {
+        background-color: @color-list-droptarget-background !important;
+    }
+}

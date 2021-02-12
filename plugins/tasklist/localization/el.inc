@@ -45,3 +45,4 @@ $labels['roleorganizer'] = 'Οργανωτής';
 $labels['taskhistory'] = 'Ιστορικό';
 $labels['objectchangelog'] = 'Αλλαγή ιστορικού';
 $labels['comment'] = 'Σχόλιο';
+$labels['rsvpcomment'] = 'Σχόλιο';

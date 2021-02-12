@@ -107,7 +107,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
             $email = $info['mailpr'][0];
             $title = $name;
             $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-            $class = 'list';
+            $class = 'list contactslist';
             // 0005526: Dans la gestion des droits agendas/carnets se limiter aux posixGroup
             if (in_array('posixGroup', $info['objectclass'])) {
               $class .= ' group';
@@ -144,7 +144,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
               $name = $name[0];
             }
             $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-            $class = 'folder';
+            $class = 'folder icofont-ui-folder';
             $html = $this->get_html([
                 'name' => $name,
                 'description' => $description,

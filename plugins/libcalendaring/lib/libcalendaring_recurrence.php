@@ -61,15 +61,15 @@ class libcalendaring_recurrence
 
         $this->set_start($start);
 
-        if (is_array($recurrence['EXDATE'])) {
-            foreach ($recurrence['EXDATE'] as $exdate) {
+        if (!empty($recurrence['EXDATE'])) {
+            foreach ((array) $recurrence['EXDATE'] as $exdate) {
                 if (is_a($exdate, 'DateTime')) {
                     $this->engine->addException($exdate->format('Y'), $exdate->format('n'), $exdate->format('j'));
                 }
             }
         }
-        if (is_array($recurrence['RDATE'])) {
-            foreach ($recurrence['RDATE'] as $rdate) {
+        if (!empty($recurrence['RDATE'])) {
+            foreach ((array) $recurrence['RDATE'] as $rdate) {
                 if (is_a($rdate, 'DateTime')) {
                     $this->engine->addRDate($rdate->format('Y'), $rdate->format('n'), $rdate->format('j'));
                 }
@@ -160,9 +160,10 @@ class libcalendaring_recurrence
         $start      = clone $this->start;
         $orig_start = clone $this->start;
         $r          = $this->recurrence;
-        $interval   = intval($r['INTERVAL'] ?: 1);
+        $interval   = !empty($r['INTERVAL']) ? intval($r['INTERVAL']) : 1;
+        $frequency  = isset($this->recurrence['FREQ']) ? $this->recurrence['FREQ'] : null;
 
-        switch ($this->recurrence['FREQ']) {
+        switch ($frequency) {
         case 'WEEKLY':
             if (empty($this->recurrence['BYDAY'])) {
                 return $start;
@@ -193,7 +194,7 @@ class libcalendaring_recurrence
 
         $r = $this->recurrence;
         $r['INTERVAL'] = $interval;
-        if ($r['COUNT']) {
+        if (!empty($r['COUNT'])) {
             // Increase count so we do not stop the loop to early
             $r['COUNT'] += 100;
         }

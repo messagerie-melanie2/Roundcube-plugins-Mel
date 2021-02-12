@@ -68,7 +68,8 @@ class mel_contacts_ui
                         'label'    => 'mel_contacts.'.str_replace('-', '', $command),
                         'domain'   => $this->ID,
                         'classact' => 'active',
-                        'command'  => $command
+                        'command'  => $command,
+                        'type'       => 'link'
                 )));
                 $this->plugin->api->add_content($content, 'groupoptions');
                 $idx++;

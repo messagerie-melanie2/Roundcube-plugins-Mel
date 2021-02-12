@@ -10,6 +10,7 @@ $labels['until'] = 'até';
 $labels['alarmemailoption'] = 'Email';
 $labels['frequency'] = 'Repetir';
 $labels['recurrencend'] = 'até';
+$labels['forntimes'] = ''; // old
 $labels['statusorganizer'] = 'Organizador';
 $labels['statustentative'] = 'Tentativa';
 $labels['statusunknown'] = 'Desconhecido';

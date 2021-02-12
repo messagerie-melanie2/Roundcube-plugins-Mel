@@ -1,0 +1,119 @@
+#aclcontainer
+{
+  overflow-x: auto;
+  border: 1px solid #d0d0d0;
+  border-color: var(--main-border-color);
+  background-color: #fff;
+  background-color: var(--main-content-bg-color);
+  height: 272px;
+  box-shadow: none;
+}
+
+#acllist-content
+{
+  position: relative;
+  height: 240px;
+  background-color: #fff;
+  background-color: var(--main-content-bg-color);
+}
+
+#acllist-footer
+{
+  position: relative;
+}
+
+#acltable
+{
+  width: 100%;
+  border-collapse: collapse;
+  border: none;
+}
+
+#acltable th,
+#acltable td
+{
+  white-space: nowrap;
+  text-align: center;
+}
+
+#acltable thead tr th
+{
+  font-size: 11px;
+  font-weight: bold;
+}
+
+#acltable tbody td
+{
+  text-align: center;
+  height: 16px;
+  cursor: default;
+}
+
+#acltable thead tr > .user
+{
+  width: 30%;
+  border-left: none;
+}
+
+#acltable.advanced thead tr > .user {
+  width: 25%;
+}
+
+#acltable tbody td.user
+{
+  text-align: left;
+}
+
+#acltable tbody td.partial
+{
+  background-image: url(images/partial.png?v=05d7.389);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#acltable tbody td.enabled
+{
+  background-image: url(images/enabled.png?v=9d9a.674);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#acltable tbody tr.selected td.partial
+{
+  background-color: #484D7A;
+  background-image: url(images/partial.png?v=05d7.389);
+}
+
+#acltable tbody tr.selected td.enabled
+{
+  background-color: #484D7A;
+  background-image: url(images/enabled.png?v=9d9a.674);
+}
+
+#aclform
+{
+  display: none;
+}
+
+#aclform div
+{
+  padding: 0;
+  text-align: center;
+  clear: both;
+}
+
+#aclform ul
+{
+  list-style: none;
+  margin: 0.2em;
+  padding: 0;
+}
+
+#aclform ul li label
+{
+  margin-left: 0.5em;
+}
+
+ul.toolbarmenu li span.delete {
+  background-position: 0 -1509px;
+}

@@ -1,0 +1,7 @@
+{
+    "name":"Mél",
+    "author": "Mél/PNE Annuaire et messagerie basé sur la skin Elastic by Aleksander Machniak",
+    "license": "Creative Commons Attribution-ShareAlike",
+    "license-url":"http://creativecommons.org/licenses/by-sa/3.0/",
+    "extends":"elastic"
+}

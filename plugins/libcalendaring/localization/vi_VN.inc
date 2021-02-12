@@ -6,6 +6,7 @@
  *
  * For translation see https://www.transifex.com/projects/p/kolab/resource/libcalendaring/
  */
+$labels['forntimes'] = ''; // old
 $labels['statusorganizer'] = 'Organizer';
 $labels['statustentative'] = 'Tentative';
 $labels['statusunknown'] = 'Unknown';

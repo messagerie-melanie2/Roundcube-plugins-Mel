@@ -9,6 +9,7 @@
 $labels['until'] = 'until';
 $labels['frequency'] = 'Repeat';
 $labels['recurrencend'] = 'until';
+$labels['forntimes'] = ''; // old
 $labels['statusorganizer'] = 'Organizer';
 $labels['statustentative'] = 'Tentative';
 $labels['statusunknown'] = 'Unknown';

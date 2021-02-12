@@ -1,0 +1,62 @@
+<roundcube:include file="includes/layout.html" />
+<style>
+    .acl_action
+    {
+        height:auto!important;
+        padding-top: 0px!important;
+        padding-bottom: 0px!important;
+    }
+</style>
+<div id="aclcontainer" class="uibox listbox">
+<div id="acllist-content" class="scroller withfooter">
+    <h2 class="voice" id="aria-label-acltable"><roundcube:label name="mel_acl.ariasummaryacltable" /></h2>
+    <roundcube:object name="acltable" id="acltable" class="table table-striped records-table" aria-labelledby="aria-label-acltable" role="listbox" />
+</div>
+<div id="acllist-footer" class="footer toolbar menu">
+    <!-- <roundcube:button command="acl-create" id="aclcreatelink" type="link" title="mel_acl.newuser" class="create disabled" classAct="create" innerClass="inner hidden" /> -->
+    <!-- <roundcube:button name="aclmenulink" id="aclmenulink" type="link" title="mel_acl.actions" class="actions" onclick="return UI.toggle_popup('aclmenu', event)" innerClass="inner hidden" aria-haspopup="true" aria-expanded="false" aria-owns="aclmenu-menu" /> -->
+    <roundcube:button command="acl-create" type="link" class="acl_action create disabled" classAct="acl_action create"
+    label="mel_acl.add" title="mel_acl.newuser" innerClass="inner hidden" />
+<roundcube:button name="aclmenulink" type="link"
+    label="actions" title="mel_acl.actions" href="#acl-actions"
+    class="acl_action actions" innerClass="inner hidden" data-popup="aclmenu"  />
+</div>
+</div>
+
+<div id="aclmenu" class="popupmenu" aria-hidden="true" data-align="bottom">
+    <h3 id="aria-label-aclactions" class="voice"><roundcube:label name="mel_acl.arialabelaclactions" /></h3>
+    <ul id="aclmenu-menu" class="menu listing iconized" role="menu" aria-labelledby="aria-label-aclactions">
+        <!-- <li role="menuitem"><roundcube:button command="acl-edit" label="edit" class="icon" classAct="icon active" innerclass="icon edit" /></li>
+        <li role="menuitem"><roundcube:button command="acl-delete" label="delete" class="icon" classAct="icon active" innerclass="icon delete" /></li> -->
+        <roundcube:button command="acl-edit" label="edit" type="link-menuitem" class="edit disabled" classAct="edit active" />
+		<roundcube:button command="acl-delete" label="delete" type="link-menuitem" class="delete disabled" classAct="delete active" />
+		<!-- <roundcube:if condition="!in_array('acl_advanced_mode', (array)config:dont_override)" />
+			<roundcube:button name="acl-switch" type="link-menuitem" class="active check" id="acl-switch" onclick="rcmail.command('acl-mode-switch')" label="acl.advanced" />
+		<roundcube:endif /> -->
+    </ul>
+</div>
+
+<div id="aclform" class="propform" aria-labelledby="aria-label-aclform" aria-hidden="true" role="dialog">
+    <h3 id="aria-label-aclform" class="voice"><roundcube:label name="mel_acl.arialabelaclform" /></h3>
+    <fieldset class="thinbordered"><legend><roundcube:label name="mel_acl.identifier" /></legend>
+        <div class="input-group">
+            <roundcube:object name="acluser" id="acluser" size="45" class="proplist" />
+            <div class="input-group-append">
+                <roundcube:button id="showcontacts" name="showcontacts" type="link" class="button btn btn-outline-secondary icofont-address-book showcontacts" innerClass="hidden" label=" " title="mel_larry.showcontactstitle" aria-expanded="false" tabindex="2" />
+            </div>
+        </div>
+
+
+        <input type="hidden" id="input_hidden_isgroup" name="isgroup" value="false"/>
+    </fieldset>
+    <fieldset class="thinbordered"><legend><roundcube:label name="mel_acl.myrights" /></legend>
+        <roundcube:object name="aclrights" class="proplist" />
+    </fieldset>
+</div>
+
+ <div class=layout-content></div>
+<script>
+    rcmail.env.framed = true;
+    parent = parent.parent;
+</script>
+<roundcube:include file="includes/footer.html" /> 

@@ -1,0 +1,42 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/settings-menu.html" />
+
+<h1 class="voice"><roundcube:label name="preferences" /></h1>
+
+<!-- <div id="layout-list" class="listbox<roundcube:exp expression="!request:_action ? '' : ' selected'"/>" aria-labelledby="aria-label-prefsection">
+	<div class="header">
+		<a class="button icon back-sidebar-button" href="#sidebar"><span class="inner"><roundcube:label name="settings" /></span></a>
+		<span id="aria-label-prefsection" class="header-title"><roundcube:label name="preferences" /></span>
+	</div>
+	<div class="scroller">
+		<roundcube:object name="sectionslist" id="sections-table" class="listing iconized settings-default-icon"
+			noheader="true" role="listbox" data-list="sections_list" />
+	</div>
+</div> -->
+
+<div id="layout-content" role="main">
+	<div class="header">
+		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
+		<span class="header-title" style="display:block;"></span>
+	</div>
+	<div id="mel_suggestion_box_option_box" class="uibox contentbox" style="    margin: 15px;">
+		<h1 class="boxtitle"><roundcube:label name="mel_suggestion_box.suggestionbox" /></h1>
+		<div class="suggestion-box">
+			<div id="preferences-details" class="boxcontent">
+				<form name="form" method="post" action="#" class="propform" id="suggestion_box_form">
+					<fieldset><legend><roundcube:label name="mel_suggestion_box.suggestionboxtext"></legend>
+						<textarea name="suggestion" id="suggestion-text" class="text" rows="5" autofocus></textarea>
+					</fieldset>
+				</form>
+			</div>
+			<div class="footerleft formbuttons" style="margin-top:15px">
+				<roundcube:button command="send-suggestion-message" type="input" class="button mainaction" label="send" />
+			</div>
+		</div>
+		<div class="sent_message"></div>
+		  <roundcube:object name="message" id="message" class="statusbar" />
+	</div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

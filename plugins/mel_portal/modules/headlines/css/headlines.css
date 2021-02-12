@@ -1,0 +1,45 @@
+.square-footer {
+    position: absolute;
+    bottom: 15px;
+}
+
+.square-header{
+    padding-bottom: 15px;;
+}
+
+.square-footer{
+    color:#FF704D;
+}
+.DARK > div > .square-footer {
+    color:#33BBA1;
+}
+
+.square-body{
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.square-contents
+{
+    padding:15px;
+}
+
+.roundbadge.signet
+{
+  position: absolute;
+  font-size: initial;
+  font-weight: initial;
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  background-color: white;
+  color: black;
+  bottom: 15px;
+  right: 30px;
+
+}
+
+.square_div > p{
+    font-size: x-large;
+    font-weight: bold;
+}

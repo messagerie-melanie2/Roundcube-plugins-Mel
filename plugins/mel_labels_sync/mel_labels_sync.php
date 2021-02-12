@@ -153,7 +153,8 @@ class mel_labels_sync extends rcube_plugin {
       if ($this->rc->config->get('ismobile', false)) {
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
-                'command' => 'plugin.thunderbird_labels.rcm_tb_label_submenu',
+                'command' => 'Event.preventDefault()',
+                "data-popup"=>"tb_label_popup",
                 'id' => 'tb_label_popuplink',
                 'title' => 'label', // gets translated
                 'domain' => $this->ID,
@@ -163,7 +164,8 @@ class mel_labels_sync extends rcube_plugin {
         ), 'toolbar_mobile');
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
-                'command' => 'plugin.thunderbird_labels.rcm_tb_label_submenu',
+                'command' => 'Event.preventDefault()',
+                "data-popup"=>"tb_label_popup",
                 'id' => 'tb_label_popuplink',
                 'title' => 'label', // gets translated
                 'domain' => $this->ID,
@@ -175,8 +177,9 @@ class mel_labels_sync extends rcube_plugin {
       else {
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
-                'command' => 'plugin.thunderbird_labels.rcm_tb_label_submenu',
-                'id' => 'tb_label_popuplink',
+                'command' => 'Event.preventDefault()',
+                "data-popup"=>"tb_label_popup",
+                'id' => 'tb_label_popuplink',//tb_label_popup
                 'title' => 'label', // gets translated
                 'domain' => $this->ID,
                 'type' => 'link',
@@ -435,7 +438,7 @@ class mel_labels_sync extends rcube_plugin {
       }
     }
 
-    $out .= '<ul class="toolbarmenu">';
+    $out .= '<ul class="toolbarmenu menu listing">';
     $out .= '<li id="label0" class="label0 click0"><a href="#">0 ' . $this->gettext('label0') . '</a></li>';
     $i = 0;
     foreach ($this->_get_bal_labels() as $label) {
@@ -450,7 +453,7 @@ class mel_labels_sync extends rcube_plugin {
       else {
         $text = $label->tag;
       }
-      $out .= '<li id="' . $this->_convert_key_to_css($label->key) . '" class="' . $class . ' separator_below"><a href="#">' . $text . '</a></li>';
+      $out .= '<li id="' . $this->_convert_key_to_css($label->key) . '" class="' . $class . ' separator_below"><a style="color:inherit;" href="#">' . $text . '</a></li>';
     }
 
     $out .= '</ul>';
@@ -499,10 +502,15 @@ class mel_labels_sync extends rcube_plugin {
                 'type' => 'button',
                 'value' => 'X',
                 'class' => 'button',
-                'onclick' => '$(this).parent().remove()',
+                'onclick' => '$(this).parent().parent().remove()',
                 'title' => $this->gettext('remove_label')
         ));
-        $labels_list .= html::div(null, $hidden . $label_name->show($name) . '&nbsp;' . $label_color->show($color) . '&nbsp;' . $label_remove->show());
+        $parent = html::div(["class" => "row"],
+          html::div(["class" => "col-5"], $label_name->show($name)).
+          html::div(["class" => "col-5"], $label_color->show($color)).
+          html::div(["class" => "col-2"], $label_remove->show())
+      );
+    $labels_list .= html::div(null, $hidden . $parent/* $label_name->show($name) . '&nbsp;' . $label_color->show($color) . '&nbsp;' . $label_remove->show()*/);
       }
 
       $p['blocks']['show_labels']['options']['labels_list']['content'] = $this->_labels_balp_list() . html::br() . html::br() . html::div(array(
@@ -522,7 +530,11 @@ class mel_labels_sync extends rcube_plugin {
               'onclick' => "rcube_label_add_label()"
       ));
       $p['blocks']['show_labels']['options']['new_label'] = array(
-              'content' => $new_label->show('') . '&nbsp;' . $add_label->show()
+              'content' => html::div(["class" => "row"], //$new_label->show('') . '&nbsp;' . $add_label->show()
+              html::div(["class" => "col-7"], $new_label->show('')).
+              html::div(["class" => "col-3"], $add_label->show()).
+              html::div(["class" => "col-2"])
+              )
       );
       
       $colors = require_once 'lib/colors.php';
@@ -531,10 +543,15 @@ class mel_labels_sync extends rcube_plugin {
           var name = $("#rcmfd_new_label").val();
           var label = name.replace(/ /g, "_");
           if (name.length) {
-            var input = $("<input>").attr("type", "text").attr("name", "_labels["+label+"]").attr("size", 30).val(name);
-            var color = $("<input>").attr("type", "text").attr("readonly", true).attr("name", "_colors["+label+"]").attr("size", 6).addClass("colors").val("");
-            var button = $("<input>").attr("type", "button").attr("value", "X").addClass("button").click(function(){ $(this).parent().remove() });
-            $("<div>").append(input).append("&nbsp;").append(color).append("&nbsp;").append(button).appendTo("#labelslist");
+            var input = $("<input>").addClass("form-control").attr("type", "text").attr("name", "_labels["+label+"]").attr("size", 30).val(name);
+            var color = $("<input>").addClass("form-control").attr("type", "text").attr("readonly", true).attr("name", "_colors["+label+"]").attr("size", 6).addClass("colors").val("");
+            var button = $("<input>").addClass("btn btn-secondary").attr("type", "button").attr("value", "X").addClass("button").click(function(){ $(this).parent().parent().remove() });
+            let tmp = $("<div>").addClass("row").append("<div class=col-5 id=col1></div>").append("<div class=col-5 id=col2></div>").append("<div class=col-2></div>");
+            tmp.find("#col1").removeAttr("id").append(input);
+            tmp.find("#col2").removeAttr("id").append(color);
+            tmp.find(".col-2").append(button);
+            tmp.appendTo("#labelslist");
+            //.append(input).append("&nbsp;").append(color).append("&nbsp;").append(button).appendTo("#labelslist");
             color.miniColors({ colorValues:(' . json_encode($colors) .') });
             $("#rcmfd_new_label").val("");
           }

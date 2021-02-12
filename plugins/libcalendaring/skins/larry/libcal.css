@@ -118,8 +118,9 @@ label.noreply-toggle + a.reply-comment-toggle {
 	min-width: 5em;
 }
 
-#edit-recurrence-yearly-bymonthblock {
-	margin-left: 7.5em;
+.recurrence-form .event-section label + div,
+.recurrence-form .form-section label + div {
+	display: inline-block;
 }
 
 #edit-recurrence-rdates {
@@ -131,6 +132,10 @@ label.noreply-toggle + a.reply-comment-toggle {
 	overflow: auto;
 }
 
+#edit-recurrence-rdates:empty {
+	margin: 0;
+}
+
 #edit-recurrence-rdates li {
 	display: block;
 	position: relative;
@@ -140,20 +145,12 @@ label.noreply-toggle + a.reply-comment-toggle {
 
 #edit-recurrence-rdates li a.delete {
 	position: absolute;
-	top: 2px;
+	top: 5px;
 	right: 0;
-	width: 20px;
-	height: 18px;
+	width: 8px;
+	height: 16px;
 	background-position: -7px -337px;
-}
-
-#recurrence-form-until div.line {
-	margin-left: 7.5em;
-	margin-bottom: 0.3em;
-}
-
-#recurrence-form-until div.line.first {
-	margin-top: -1.4em;
+	border: 0;
 }
 
 .itip-dialog-form input.text {
@@ -163,4 +160,62 @@ label.noreply-toggle + a.reply-comment-toggle {
 .itip-dialog-form label > input.checkbox {
 	margin-left: 0;
 	margin-right: 10px;
+}
+
+.edit-attendees-table td.options a.button {
+	border: 0;
+}
+
+.ui-widget-content a.button {
+	color: #52525;
+}
+
+#event-status-badge {
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	overflow: hidden;
+}
+
+#event-status-badge span {
+	display: none;
+	text-transform: uppercase;
+	width: 150px;
+	height: 20px;
+	line-height: 20px;
+	position: absolute;
+	left: -20px;
+	top: 35px;
+	padding-left: 10px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 12px;
+	color: #fff;
+	box-shadow: 1px 1px 2px #ccc, -1px -1px 2px #ccc;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+}
+
+.status-cancelled #event-status-badge span {
+	background: url(images/badge.png) 26px -24px no-repeat #cc0000;
+	display: block;
+}
+
+.sensitivity-private #event-status-badge span {
+	background: url(images/badge.png) 40px -52px no-repeat #0066ff;
+	display: block;
+}
+
+.sensitivity-confidential #event-status-badge span {
+	background: url(images/badge.png) 20px 2px no-repeat #cc0000;
+	display: block;
+}
+
+#edit-attendees-comment {
+	margin-top: .5em;
 }

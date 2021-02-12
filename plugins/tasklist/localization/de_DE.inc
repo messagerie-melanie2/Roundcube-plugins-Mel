@@ -68,7 +68,6 @@ $labels['nodate'] = 'Ohne Datum';
 $labels['removetag'] = 'Entfernen';
 $labels['removelink'] = 'E-Mail-Referenz entfernen';
 $labels['auto'] = 'Automatisch';
-$labels['taskdetails'] = 'Details';
 $labels['newtask'] = 'Neue Aufgabe';
 $labels['edittask'] = 'Aufgabe ändern';
 $labels['save'] = 'Speichern';
@@ -84,7 +83,6 @@ $labels['tabrecurrence'] = 'Wiederholung';
 $labels['tabassignments'] = 'Zuweisungen';
 $labels['tabattachments'] = 'Anhänge';
 $labels['tabsharing'] = 'Freigabe';
-$labels['editlist'] = 'Liste bearbeiten';
 $labels['createlist'] = 'Liste hinzufügen';
 $labels['listactions'] = 'Listeneinstellungen…';
 $labels['listname'] = 'Name';
@@ -118,6 +116,7 @@ $labels['arialabelquicksearchbox'] = 'Sucheingabe für Aufgaben';
 $labels['arialabellistsearchform'] = 'Sucheingabe für Aufgabenlisten';
 $labels['arialabeltaskselector'] = 'Listenmodus';
 $labels['arialabeltasklisting'] = 'Aufgabenauflistung';
+$labels['arialabelsortmenu'] = 'Aufgaben-Sortierungsoptionen';
 $labels['attendee'] = 'Beauftragter';
 $labels['role'] = 'Rolle';
 $labels['availability'] = 'Verfüg.';
@@ -132,12 +131,23 @@ $labels['sendinvitations'] = 'Einladungen versenden';
 $labels['sendnotifications'] = 'Beauftragte Teilnehmer über die Änderung informieren';
 $labels['sendcancellation'] = 'Beauftragte Teilnehmer über die Stornierung informieren';
 $labels['invitationsubject'] = 'Ihnen wurde "$title" zugewiesen';
-$labels['invitationmailbody'] = "*\$title*\n\nFällig: \$date\n\nTeilnehmer: \$attendees\n\n\$description\n\nAngehängt finden Sie eine iCalendar-Datei mit allen Aufgabendetails, welche in Ihre Aufgabenanwendung importiert werden kann.";
+$labels['invitationmailbody'] = "*$title*
+Fällig: $date
+Teilnehmer: $attendees
+$description
+Angehängt finden Sie eine iCalendar-Datei mit allen Aufgabendetails, welche in Ihre Aufgabenanwendung importiert werden kann.";
 $labels['itipupdatesubject'] = '"$title" wurde aktualisiert';
 $labels['itipupdatesubjectempty'] = 'Eine ihrer Aufgabe wurde aktualisiert';
-$labels['itipupdatemailbody'] = "*\$title*\n\nFällig: \$date\n\nTeilnehmer: \$attendees\n\nAngehängt finden Sie eine iCalendar-Datei mit den aktualisierten Aufgabendetails, welche in Ihre Aufgabenanwendung importiert werden kann.";
+$labels['itipupdatemailbody'] = "*$title*
+Fällig: $date
+Teilnehmer: $attendees
+Angehängt finden Sie eine iCalendar-Datei mit den aktualisierten Aufgabendetails, welche in Ihre Aufgabenanwendung importiert werden kann.";
 $labels['itipcancelsubject'] = '"$title" wurde abgesagt';
-$labels['itipcancelmailbody'] = "*\$title*\n\nFällig: \$date\n\nTeilnehmer: \$attendees\n\nDie Aufgabe wurde durch \$organizer storniert.\n\nAngehängt finden Sie eine iCalendar-Datei mit den aktualisierten Aufgabendetails.";
+$labels['itipcancelmailbody'] = "*$title*
+Fällig: $date
+Teilnehmer: $attendees
+Die Aufgabe wurde durch $organizer storniert.
+Angehängt finden Sie eine iCalendar-Datei mit den aktualisierten Aufgabendetails.";
 $labels['saveintasklist'] = 'speichern in';
 $labels['taskhistory'] = 'Historie';
 $labels['objectchangelog'] = 'Änderungshistorie';
@@ -149,14 +159,33 @@ $labels['revisionrestoreconfirm'] = 'Möchten Sie wirklich die Version $rev dies
 $labels['objectrestoresuccess'] = 'Revision $rev erfolgreich wiederhergestellt';
 $labels['objectrestoreerror'] = 'Fehler beim Wiederherstellen der alten Revision';
 $labels['itipobjectnotfound'] = 'Die Aufgabe, auf welche sich diese Nachricht bezieht, wurde nicht in Ihrer Aufgabenliste gefunden.';
-$labels['itipmailbodyaccepted'] = "\$sender hat die Zuweisung folgender Aufgabe akzeptiert:\n\n*\$title*\n\nFällig: \$date\n\nVerantwortlich: \$attendees";
-$labels['itipmailbodytentative'] = "\$sender hat die Zuweisung folgender Aufgabe unter Vorbehalt akzeptiert:\n\n*\$title*\n\nFällig: \$date\n\nVerantwortlich: \$attendees";
-$labels['itipmailbodydeclined'] = "\$sender hat die Zuweisung folgender Aufgabe abgeleht:\n\n*\$title*\n\nFällig: \$date\n\nVerantwortlich: \$attendees";
-$labels['itipmailbodycancel'] = "\$sender hat die Zuweisung folgender Aufgabe abgeleht:\n\n*\$title*\n\nFällig: \$date";
-$labels['itipmailbodyin-process'] = "\$sender hat den Status folgender Aufgabe auf in-Bearbeitung gesetzt:\n\n*\$title*\n\nFällig: \$date";
-$labels['itipmailbodycompleted'] = "\$sender hat folgende Aufgabe abgeschlossen:\n\n*\$title*\n\nFällig: \$date";
-$labels['itipmailbodydelegated'] = "\$sender hat folgende Aufgabe delegiert:\n\n*\$title*\n\nFällig: \$date";
-$labels['itipmailbodydelegatedto'] = "\$sender hat folgende Aufgabe an Sie delegiert:\n\n*\$title*\n\nFällig: \$date";
+$labels['itipmailbodyaccepted'] = "$sender hat die Zuweisung folgender Aufgabe akzeptiert:
+*$title*
+Fällig: $date
+Verantwortlich: $attendees";
+$labels['itipmailbodytentative'] = "$sender hat die Zuweisung folgender Aufgabe unter Vorbehalt akzeptiert:
+*$title*
+Fällig: $date
+Verantwortlich: $attendees";
+$labels['itipmailbodydeclined'] = "$sender hat die Zuweisung folgender Aufgabe abgeleht:
+*$title*
+Fällig: $date
+Verantwortlich: $attendees";
+$labels['itipmailbodycancel'] = "$sender hat die Zuweisung folgender Aufgabe abgeleht:
+*$title*
+Fällig: $date";
+$labels['itipmailbodyin-process'] = "$sender hat den Status folgender Aufgabe auf in-Bearbeitung gesetzt:
+*$title*
+Fällig: $date";
+$labels['itipmailbodycompleted'] = "$sender hat folgende Aufgabe abgeschlossen:
+*$title*
+Fällig: $date";
+$labels['itipmailbodydelegated'] = "$sender hat folgende Aufgabe delegiert:
+*$title*
+Fällig: $date";
+$labels['itipmailbodydelegatedto'] = "$sender hat folgende Aufgabe an Sie delegiert:
+*$title*
+Fällig: $date";
 $labels['attendeeaccepted'] = 'Delegierter hat akzeptiert';
 $labels['attendeetentative'] = 'Delegierter hat unter Vorbehalt akzeptiert';
 $labels['attendeedeclined'] = 'Delegierter hat abgelehnt';
@@ -175,17 +204,16 @@ $labels['delegateinvitation'] = 'Zuweisung delegieren';
 $labels['andnmore'] = '$nr weitere...';
 $labels['savetotasklist'] = 'In den Aufgaben speichern';
 $labels['comment'] = 'Kommentar';
+$labels['rsvpcomment'] = 'Kommentar';
 $labels['errorimportingtask'] = 'Fehler beim Importieren der Aufgabe(n)';
 $labels['importwarningexists'] = 'Eine Kopie dieser Aufgabe exisistiert bereits in Ihrer Aufgabenliste';
 $labels['importsuccess'] = '$nr Aufgaben erfolgreich importiert';
+$labels['importerror'] = 'Fehler beim Importieren';
 $labels['newerversionexists'] = 'Eine neuere Version dieser Aufgabe existiert bereits! Abbruch.';
 $labels['nowritetasklistfound'] = 'Keine Aufgabenliste zum Speichern der Aufgabe gefunden';
-$labels['importedsuccessfully'] = 'Die Aufgabe wurde erfolgreich unter \'$list\' gespeichert';
-$labels['updatedsuccessfully'] = 'Die Aufgabe wurde erfolgreich in \'$list\' aktualisiert';
 $labels['attendeupdateesuccess'] = 'Teilnehmerstatus erfolgreich aktualisiert';
 $labels['itipresponseerror'] = 'Senden der Antwort auf diese Aufgabenzuweisung fehlgeschlagen';
 $labels['itipinvalidrequest'] = 'Diese Einladung ist nicht mehr gültig.';
 $labels['sentresponseto'] = 'Antwort auf Aufgabenzuweisung erfolgreich an $mailto versendet';
 $labels['successremoval'] = 'Diese Aufgabe wurde erfolgreich gelöscht.';
 $labels['invalidlistproperties'] = 'Ungültige Listeneigenschaften! Bitte einen gültigen Namen eingeben.';
-$labels['arialabelsortmenu'] = 'Aufgaben-Sortierungsoptionen';

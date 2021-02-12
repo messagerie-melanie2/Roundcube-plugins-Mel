@@ -366,10 +366,11 @@ function show_rcube_manage_labels()
     },
     buttons: buttons,
     width: 660,
-    height: 500,
+	height: 500,
     rcmail: rcmail
   }).width(640);
-
+  frame.css("max-width","640px");
+//   frame.css("max-height","85%");
   // Fermer le pop up au click
   rcmail.hide_menu('tb_label_popup');
 }

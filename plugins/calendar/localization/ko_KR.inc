@@ -29,7 +29,6 @@ $labels['calendars'] = '캘린더';
 $labels['category'] = '카테고리';
 $labels['categories'] = '카테고리';
 $labels['createcalendar'] = '새 캘린더 추가';
-$labels['editcalendar'] = '캘린더 설정';
 $labels['name'] = '이름';
 $labels['color'] = '색상';
 $labels['day'] = '일';

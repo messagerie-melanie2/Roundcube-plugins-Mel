@@ -22,13 +22,6 @@
 			<roundcube:container name="toolbar" id="taskstoolbar" />
 		</div>
 
-		<div id="tagsbox" class="uibox listbox">
-			<h2 class="boxtitle" id="aria-label-tagsbox"><roundcube:label name="tasklist.tags" id="taglist" /></h2>
-			<div class="scroller">
-				<roundcube:object name="plugin.tagslist" id="tagslist" class="tagcloud" role="region" aria-labelledby="aria-label-tagsbox" aria-controls="thelist" />
-			</div>
-		</div>
-
 		<div id="tasklistsbox" class="uibox listbox" role="navigation" aria-labelledby="aria-label-tasklists">
 			<h2 class="boxtitle" id="aria-label-tasklists"><roundcube:label name="tasklist.lists" />
 				<a href="#tasklists" class="iconbutton search" title="<roundcube:label name='tasklist.findlists' />" tabindex="0"><roundcube:label name="tasklist.findlists" /></a>
@@ -166,6 +159,7 @@
 
 <div id="taskshow" class="taskshow">
 	<div id="task-parent-title" class="form-section task-parent-title"></div>
+	<div id="event-status-badge"><span></span></div>
 	<div class="form-section">
 		<h2 id="task-title"></h2>
 	</div>
@@ -241,7 +235,7 @@
 		<span class="task-text"></span>
 	</div>
 
-	<roundcube:object name="plugin.task_rsvp_buttons" id="task-rsvp" class="task-dialog-message" style="display:none" />
+	<roundcube:object name="plugin.task_rsvp_buttons" id="task-rsvp" class="dialog-message" style="display:none" />
 </div>
 
 <roundcube:if condition="env:tasklist_driver == 'kolab' && config:kolab_bonnie_api" />
@@ -343,8 +337,6 @@ $(document).ready(function(e){
 
 	new rcube_splitter({ id:'taskviewsplitter', p1:'#sidebar', p2:'#mainview-right',
 		orientation:'v', relative:true, start:240, min:180, size:12 }).init();
-	new rcube_splitter({ id:'taskviewsplitterv', p1:'#tagsbox', p2:'#tasklistsbox',
-		orientation:'h', relative:true, start:242, min:120, size:12, offset:4 }).init();
 
 	// animation to unfold list search box
 	$('#tasklistsbox .boxtitle a.search').click(function(e){

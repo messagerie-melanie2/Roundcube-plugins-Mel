@@ -33,29 +33,29 @@ class bounce extends rcube_plugin
       $this->include_script('bounce.js');
       $this->add_texts('localization', true);
       // Ajoute le bouton en fonction de la skin
-      if ($rcmail->config->get('ismobile', false)) {
-          $this->add_button(
-                  array(
-                      'command' => 'plugin.bounce.box',
-                      'id' => 'bounce_button_mobile',
-                      'title'   => 'bouncemessage',
-                      'domain'  =>  $this->ID,
-                      'label' => 'bounce',
-                      'class' => 'button disabled ui-link ui-btn ui-corner-all ui-icon-arrow-r ui-btn-icon-left'
-                  ),
-                  'toolbar_mobile');
-      } else {
-          $this->add_button(
-                  array(
-                      'command' => 'plugin.bounce.box',
-                      'id' => 'bounce_button',
-                      'title'   => 'bouncemessage',
-                      'domain'  =>  $this->ID,
-                      'content' => rcube_utils::rep_specialchars_output($this->gettext('bounce'), 'html', 'strict'),
-                      'class' => 'button bounce-ico disabled'
-                  ),
-                  'toolbar');
-      }
+      // if ($rcmail->config->get('ismobile', false)) {
+      //     $this->add_button(
+      //             array(
+      //                 'command' => 'plugin.bounce.box',
+      //                 'id' => 'bounce_button_mobile',
+      //                 'title'   => 'bouncemessage',
+      //                 'domain'  =>  $this->ID,
+      //                 'label' => 'bounce',
+      //                 'class' => 'button disabled ui-link ui-btn ui-corner-all ui-icon-arrow-r ui-btn-icon-left'
+      //             ),
+      //             'toolbar_mobile');
+      // } else {
+      //     $this->add_button(
+      //             array(
+      //                 'command' => 'plugin.bounce.box',
+      //                 'id' => 'bounce_button',
+      //                 'title'   => 'bouncemessage',
+      //                 'domain'  =>  $this->ID,
+      //                 'content' => rcube_utils::rep_specialchars_output($this->gettext('bounce'), 'html', 'strict'),
+      //                 'class' => 'button bounce-ico disabled'
+      //             ),
+      //             'toolbar');
+      // }
 
 
       $this->add_hook('render_page', array($this, 'render_box'));

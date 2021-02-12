@@ -1,0 +1,28 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/settings-menu.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+<h1 class="voice"><roundcube:label name="preferences" /></h1>
+
+<div id="layout-list" class="listbox<roundcube:exp expression="!request:_action ? '' : ' selected'"/>" aria-labelledby="aria-label-prefsection">
+	<div class="header">
+		<a class="button icon back-sidebar-button" href="#sidebar"><span class="inner"><roundcube:label name="settings" /></span></a>
+		<span id="aria-label-prefsection" class="header-title"><roundcube:label name="mel_moncompte.options" /></span>
+    <!-- <h2 class="boxtitle"><roundcube:label name="mel_moncompte.options" /></h2> -->
+	</div>
+	<div class="scroller">
+    <roundcube:object name="mel_moncompte_options_list" id="mel_moncompte_options_list" class="listing" cellspacing="0" summary="Options list" noheader="true" />
+	</div>
+</div>
+
+<div id="layout-content" role="main">
+	<div class="header">
+		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
+		<span class="header-title"></span>
+	</div>
+	<div class="iframe-wrapper">
+		<roundcube:object name="contentframe" id="preferences-frame" src="env:blankpage" title="arialabelpreferencesform" />
+	</div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

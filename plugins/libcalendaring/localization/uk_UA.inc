@@ -10,6 +10,7 @@ $labels['until'] = 'до';
 $labels['alarmemailoption'] = 'Пошта';
 $labels['frequency'] = 'Повторити';
 $labels['recurrencend'] = 'до';
+$labels['forntimes'] = ''; // old
 $labels['statusorganizer'] = 'Організатор';
 $labels['statustentative'] = 'Невизначений';
 $labels['statusunknown'] = 'Невідомо';

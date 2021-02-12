@@ -1,0 +1,90 @@
+.btn.btn-block.btn-secondary.btn-mel{
+    margin-bottom: 20px;
+    min-height: 160px;
+    background-color: #F8F8F8;
+    border:none;
+    color:inherit;
+}
+
+.btn.btn-block.btn-secondary.btn-mel:hover{
+    background-color:rgba(0, 0, 0, 0.05);
+}
+
+.btn.btn-block.btn-secondary.btn-mel.disabled{
+    background-color: #d4d1d1;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.btn.btn-block.btn-secondary.btn-mel > span
+{
+    font-size: 80px;
+    margin-right: 50px;
+}
+
+.btn.btn-block.btn-secondary.btn-mel > span.block
+{
+    display: block;
+    margin-right: 0px;
+}
+
+.task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable {
+    /* top: 70px !important; */
+    z-index: 9999;
+}
+
+ /* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane
+{
+    position: absolute;
+    top: 0px;
+    width: 100%;
+}  */
+
+/* .icon-gestion{
+    display: inline !important;
+    cursor: pointer;
+    margin-left: 27px;
+    margin-right: -15px;
+}
+
+.div-gestion-option
+{
+    width: 100%;
+    display: grid;
+}
+
+.gestion-options
+{
+    color: white;
+    text-decoration: none;
+    /* margin-left: 12px; */
+    font-family: inherit!important;
+    padding-left: 0.9em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.gestion-options:hover
+{
+    background-color:#484D7A;
+    color:white;
+    text-decoration: none;
+}
+
+.gestion-options[aria-describedby]
+{
+    background-color:#484D7A;  
+}
+
+.gestion-options::before
+{
+font-family: 'IcoFont'!important;
+    margin-right:9px;
+    /* float:none!important;
+    font-family: 'IcoFont'!important;
+
+    font-size: inherit!important;
+    display: inline!important;
+    width: inherit!important;
+    height: inherit!important; */
+} */

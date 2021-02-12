@@ -36,7 +36,6 @@ class tasklist extends rcube_plugin
     const FILTER_MASK_MYTASKS = 512;
     // PAMELA
     const FILTER_MASK_UNCOMPLETE = 1024;
-
     const SESSION_KEY = 'tasklist_temp';
 
     public static $filter_masks = array(
@@ -70,6 +69,7 @@ class tasklist extends rcube_plugin
 
     private $collapsed_tasks = array();
     private $message_tasks   = array();
+    private $task_titles     = array();
 
 
     /**
@@ -78,7 +78,7 @@ class tasklist extends rcube_plugin
     function init()
     {
         $this->require_plugin('libcalendaring');
-        $this->require_plugin('jqueryui');
+        $this->require_plugin('libkolab');
 
         $this->rc  = rcube::get_instance();
         $this->lib = libcalendaring::get_instance();
@@ -119,8 +119,7 @@ class tasklist extends rcube_plugin
             $this->register_action('counts', array($this, 'fetch_counts'));
             $this->register_action('fetch', array($this, 'fetch_tasks'));
             $this->register_action('print', array($this, 'print_tasks'));
-            $this->register_action('inlineui', array($this, 'get_inline_ui'));
-            $this->register_action('mail2task', array($this, 'mail_message2task'));
+            $this->register_action('dialog-ui', array($this, 'mail_message2task'));
             $this->register_action('get-attachment', array($this, 'attachment_get'));
             $this->register_action('upload', array($this, 'attachment_upload'));
             $this->register_action('import', array($this, 'import_tasks'));
@@ -144,14 +143,14 @@ class tasklist extends rcube_plugin
             }
 
             // add 'Create event' item to message menu
-            if ($this->api->output->type == 'html') {
-                $this->api->add_content(html::tag('li', null, 
+            if ($this->api->output->type == 'html' && (empty($_GET['_rel']) || $_GET['_rel'] != 'task')) {
+                $this->api->add_content(html::tag('li', array('role' => 'menuitem'),
                     $this->api->output->button(array(
                         'command'  => 'tasklist-create-from-mail',
                         'label'    => 'tasklist.createfrommail',
                         'type'     => 'link',
                         'classact' => 'icon taskaddlink active',
-                        'class'    => 'icon taskaddlink',
+                        'class'    => 'icon taskaddlink disabled',
                         'innerclass' => 'icon taskadd',
                     ))),
                 'messagemenu');
@@ -160,7 +159,7 @@ class tasklist extends rcube_plugin
             }
         }
 
-        if (!$this->rc->output->ajax_call && !$this->rc->output->env['framed']) {
+        if (!$this->rc->output->ajax_call && empty($this->rc->output->env['framed'])) {
             $this->load_ui();
             $this->ui->init();
         }
@@ -186,8 +185,9 @@ class tasklist extends rcube_plugin
      */
     private function load_driver()
     {
-        if (is_object($this->driver))
+        if (!empty($this->driver)) {
             return;
+        }
 
         $driver_name  = $this->rc->config->get('tasklist_driver', 'database');
         $driver_class = 'tasklist_' . $driver_name . '_driver';
@@ -195,17 +195,10 @@ class tasklist extends rcube_plugin
         require_once($this->home . '/drivers/tasklist_driver.php');
         require_once($this->home . '/drivers/' . $driver_name . '/' . $driver_class . '.php');
 
-        switch ($driver_name) {
-        case "kolab":
-            $this->require_plugin('libkolab');
-        default:
-            $this->driver = new $driver_class($this);
-            break;
-        }
+        $this->driver = new $driver_class($this);
 
         $this->rc->output->set_env('tasklist_driver', $driver_name);
     }
-
 
     /**
      * Dispatcher for task-related actions initiated by the client
@@ -220,15 +213,16 @@ class tasklist extends rcube_plugin
 
         // force notify if hidden + active
         $itip_send_option = (int)$this->rc->config->get('calendar_itip_send_option', 3);
-        if ($itip_send_option === 1 && empty($rec['_reportpartstat']))
+        if ($itip_send_option === 1 && empty($rec['_reportpartstat'])) {
             $rec['_notify'] = 1;
+        }
 
         switch ($action) {
         case 'new':
             $oldrec = null;
             $rec = $this->prepare_task($rec);
             $rec['uid'] = $this->generate_uid();
-            $temp_id = $rec['tempid'];
+            $temp_id = !empty($rec['tempid']) ? $rec['tempid'] : null;
             if ($success = $this->driver->create_task($rec)) {
                 $refresh = $this->driver->get_task($rec);
                 if ($temp_id) $refresh['tempid'] = $temp_id;
@@ -525,7 +519,7 @@ class tasklist extends rcube_plugin
         }
 
         // send out notifications
-        if ($success && $rec['_notify'] && ($rec['attendees'] || $oldrec['attendees'])) {
+        if ($success && !empty($rec['_notify']) && ($rec['attendees'] || $oldrec['attendees'])) {
             // make sure we have the complete record
             $task = $action == 'delete' ? $oldrec : $this->driver->get_task($rec);
 
@@ -539,7 +533,7 @@ class tasklist extends rcube_plugin
             }
         }
 
-        if ($success && $rec['_reportpartstat'] && $rec['_reportpartstat'] != 'NEEDS-ACTION') {
+        if ($success && !empty($rec['_reportpartstat']) && $rec['_reportpartstat'] != 'NEEDS-ACTION') {
             // get the full record after update
             if (!$task) {
                 $task = $this->driver->get_task($rec);
@@ -564,10 +558,10 @@ class tasklist extends rcube_plugin
         }
 
         // unlock client
-        $this->rc->output->command('plugin.unlock_saving');
+        $this->rc->output->command('plugin.unlock_saving', $success);
 
         if ($refresh) {
-            if ($refresh['id']) {
+            if (!empty($refresh['id'])) {
                 $this->encode_task($refresh);
             }
             else if (is_array($refresh)) {
@@ -586,8 +580,8 @@ class tasklist extends rcube_plugin
      */
     private function load_itip()
     {
-        if (!$this->itip) {
-            require_once realpath(__DIR__ . '/../libcalendaring/lib/libcalendaring_itip.php');
+        if (empty($this->itip)) {
+            require_once __DIR__ . '/../libcalendaring/lib/libcalendaring_itip.php';
             $this->itip = new libcalendaring_itip($this, 'tasklist');
             $this->itip->set_rsvp_actions(array('accepted','declined','delegated'));
             $this->itip->set_rsvp_status(array('accepted','tentative','declined','delegated','in-process','completed'));
@@ -602,7 +596,7 @@ class tasklist extends rcube_plugin
     private function prepare_task($rec)
     {
         // try to be smart and extract date from raw input
-        if ($rec['raw']) {
+        if (!empty($rec['raw'])) {
             foreach (array('today','tomorrow','sunday','monday','tuesday','wednesday','thursday','friday','saturday','sun','mon','tue','wed','thu','fri','sat') as $word) {
                 $locwords[] = '/^' . preg_quote(mb_strtolower($this->gettext($word))) . '\b/i';
                 $normwords[] = $word;
@@ -686,7 +680,7 @@ class tasklist extends rcube_plugin
         }
 
         // convert the submitted alarm values
-        if ($rec['valarms']) {
+        if (!empty($rec['valarms'])) {
             $valarms = array();
             foreach (libcalendaring::from_client_alarms($rec['valarms']) as $alarm) {
                 // alarms can only work with a date (either task start, due or absolute alarm date)
@@ -712,7 +706,7 @@ class tasklist extends rcube_plugin
                 // translate count into an absolute end date.
                 // why? because when shifting completed tasks to the next recurrence,
                 // the initial start date to count from gets lost.
-                if ($rec['recurrence']['COUNT']) {
+                if (!empty($rec['recurrence']['COUNT'])) {
                     $engine = libcalendaring::get_recurrence();
                     $engine->init($rec['recurrence'], $refdate);
                     if ($until = $engine->end()) {
@@ -728,7 +722,7 @@ class tasklist extends rcube_plugin
 
         $attachments = array();
         $taskid = $rec['id'];
-        if (is_array($_SESSION[self::SESSION_KEY]) && $_SESSION[self::SESSION_KEY]['id'] == $taskid) {
+        if (!empty($_SESSION[self::SESSION_KEY]) && $_SESSION[self::SESSION_KEY]['id'] == $taskid) {
             if (!empty($_SESSION[self::SESSION_KEY]['attachments'])) {
                 foreach ($_SESSION[self::SESSION_KEY]['attachments'] as $id => $attachment) {
                     if (is_array($rec['attachments']) && in_array($id, $rec['attachments'])) {
@@ -747,12 +741,15 @@ class tasklist extends rcube_plugin
         }
 
         // convert invalid data
-        if (isset($rec['attendees']) && !is_array($rec['attendees']))
+        if (isset($rec['attendees']) && !is_array($rec['attendees'])) {
             $rec['attendees'] = array();
+        }
 
-        foreach ((array)$rec['attendees'] as $i => $attendee) {
-            if (is_string($attendee['rsvp'])) {
-                $rec['attendees'][$i]['rsvp'] = $attendee['rsvp'] == 'true' || $attendee['rsvp'] == '1';
+        if (!empty($rec['attendees'])) {
+            foreach ((array) $rec['attendees'] as $i => $attendee) {
+                if (is_string($attendee['rsvp'])) {
+                    $rec['attendees'][$i]['rsvp'] = $attendee['rsvp'] == 'true' || $attendee['rsvp'] == '1';
+                }
             }
         }
 
@@ -994,12 +991,16 @@ class tasklist extends rcube_plugin
         $list    = rcube_utils::get_input_value('l', rcube_utils::INPUT_GPC, true);
         $success = false;
 
-        if (isset($list['showalarms']))
-          $list['showalarms'] = intval($list['showalarms']);
+        unset($list['_token']);
+
+        if (isset($list['showalarms'])) {
+            $list['showalarms'] = intval($list['showalarms']);
+        }
 
         switch ($action) {
         case 'form-new':
         case 'form-edit':
+            $this->load_ui();
             echo $this->ui->tasklist_editform($action, $list);
             exit;
 
@@ -1007,7 +1008,7 @@ class tasklist extends rcube_plugin
             $list += array('showalarms' => true, 'active' => true, 'editable' => true);
             if ($insert_id = $this->driver->create_list($list)) {
                 $list['id'] = $insert_id;
-                if (!$list['_reload']) {
+                if (empty($list['_reload'])) {
                     $this->load_ui();
                     $list['html'] = $this->ui->tasklist_list_item($insert_id, $list, $jsenv);
                     $list += (array)$jsenv[$insert_id];
@@ -1055,18 +1056,20 @@ class tasklist extends rcube_plugin
                 $results[] = $prop;
             }
             // report more results available
-            if ($this->driver->search_more_results) {
-                $this->rc->output->show_message('autocompletemore', 'info');
+            if (!empty($this->driver->search_more_results)) {
+                $this->rc->output->show_message('autocompletemore', 'notice');
             }
 
             $this->rc->output->command('multi_thread_http_response', $results, rcube_utils::get_input_value('_reqid', rcube_utils::INPUT_GPC));
             return;
         }
 
-        if ($success)
+        if ($success) {
             $this->rc->output->show_message('successfullysaved', 'confirmation');
-        else
+        }
+        else {
             $this->rc->output->show_message('tasklist.errorsaving', 'error');
+        }
 
         $this->rc->output->command('plugin.unlock_saving');
     }
@@ -1081,8 +1084,9 @@ class tasklist extends rcube_plugin
         }
         else {
             foreach ($this->driver->get_lists() as $list) {
-                if ($list['active'])
+                if (!empty($list['active'])) {
                     $lists[] = $list['id'];
+                }
             }
         }
         $counts = $this->driver->count_tasks($lists);
@@ -1168,7 +1172,7 @@ class tasklist extends rcube_plugin
         $data = $this->task_tree = $this->task_titles = array();
 
         foreach ($records as $rec) {
-            if ($rec['parent_id']) {
+            if (!empty($rec['parent_id'])) {
                 $this->task_tree[$rec['id']] = $rec['parent_id'];
             }
 
@@ -1231,18 +1235,20 @@ class tasklist extends rcube_plugin
             }
         }
 
-        if ($rec['valarms']) {
+        if (!empty($rec['valarms'])) {
             $rec['alarms_text'] = libcalendaring::alarms_text($rec['valarms']);
             $rec['valarms'] = libcalendaring::to_client_alarms($rec['valarms']);
         }
 
-        if ($rec['recurrence']) {
+        if (!empty($rec['recurrence'])) {
             $rec['recurrence_text'] = $this->lib->recurrence_text($rec['recurrence']);
             $rec['recurrence'] = $this->lib->to_client_recurrence($rec['recurrence'], $rec['time'] || $rec['starttime']);
         }
 
-        foreach ((array)$rec['attachments'] as $k => $attachment) {
-            $rec['attachments'][$k]['classname'] = rcube_utils::file2class($attachment['mimetype'], $attachment['name']);
+        if (!empty($rec['attachments'])) {
+            foreach ((array) $rec['attachments'] as $k => $attachment) {
+                $rec['attachments'][$k]['classname'] = rcube_utils::file2class($attachment['mimetype'], $attachment['name']);
+            }
         }
 
         // convert link URIs references into structs
@@ -1290,11 +1296,13 @@ class tasklist extends rcube_plugin
     {
         $rec['_depth'] = 0;
         $parent_titles = array();
-        $parent_id = $this->task_tree[$rec['id']];
+        $parent_id = isset($this->task_tree[$rec['id']]) ? $this->task_tree[$rec['id']] : null;
         while ($parent_id) {
             $rec['_depth']++;
-            array_unshift($parent_titles, $this->task_titles[$parent_id]);
-            $parent_id = $this->task_tree[$parent_id];
+            if (isset($this->task_titles[$parent_id])) {
+                array_unshift($parent_titles, $this->task_titles[$parent_id]);
+            }
+            $parent_id = isset($this->task_tree[$parent_id]) ? $this->task_tree[$parent_id] : null;
         }
 
         if (count($parent_titles)) {
@@ -1337,10 +1345,8 @@ class tasklist extends rcube_plugin
             $mask |= self::FILTER_MASK_FLAGGED;
         if ($this->driver->is_complete($rec))
             $mask |= self::FILTER_MASK_COMPLETE;
-        // PAMELA
         else
             $mask |= self::FILTER_MASK_UNCOMPLETE;
-
         if (empty($rec['date']))
             $mask |= self::FILTER_MASK_NODATE;
         else if ($rec['date'] < $today)
@@ -1456,42 +1462,6 @@ class tasklist extends rcube_plugin
 
         $this->rc->output->set_pagetitle($this->gettext('navtitle'));
         $this->rc->output->send('tasklist.mainview');
-    }
-
-
-    /**
-     *
-     */
-    public function get_inline_ui()
-    {
-        foreach (array('save','cancel','savingdata') as $label)
-            $texts['tasklist.'.$label] = $this->gettext($label);
-
-        $texts['tasklist.newtask'] = $this->gettext('createfrommail');
-
-
-        $this->ui->init_templates();
-        $this->ui->tasklists();
-
-        // collect env variables
-        $env = array(
-            'tasklists' => $this->rc->output->get_env('tasklists'),
-            'tasklist_settings' => $this->ui->load_settings(),
-        );
-
-        echo $this->api->output->parse('tasklist.taskedit', false, false);
-
-        $script_add = '';
-        foreach ($this->ui->get_gui_objects() as $obj => $id) {
-            $script_add .= rcmail_output::JS_OBJECT_NAME . ".gui_object('$obj', '$id');\n";
-        }
-
-        echo html::tag('script', array('type' => 'text/javascript'),
-            rcmail_output::JS_OBJECT_NAME . ".set_env(" . json_encode($env) . ");\n".
-            rcmail_output::JS_OBJECT_NAME . ".add_label(" . json_encode($texts) . ");\n".
-            $script_add
-        );
-        exit;
     }
 
     /**
@@ -1748,7 +1718,7 @@ class tasklist extends rcube_plugin
         header("Content-Disposition: inline; filename=\"". $plugin['filename'] ."\"");
 
         $this->get_ical()->export($plugin['result'], '', true,
-            $plugins['attachments'] ? array($this->driver, 'get_attachment_body') : null);
+            !empty($plugin['attachments']) ? array($this->driver, 'get_attachment_body') : null);
         exit;
     }
 
@@ -1760,7 +1730,8 @@ class tasklist extends rcube_plugin
     */
     public function attachment_upload()
     {
-        $this->lib->attachment_upload(self::SESSION_KEY);
+        $handler = new kolab_attachments_handler();
+        $handler->attachment_upload(self::SESSION_KEY);
     }
 
     /**
@@ -1768,9 +1739,11 @@ class tasklist extends rcube_plugin
      */
     public function attachment_get()
     {
+        $handler = new kolab_attachments_handler();
+
         // show loading page
         if (!empty($_GET['_preload'])) {
-            return $this->lib->attachment_loading_page();
+            return $handler->attachment_loading_page();
         }
 
         $task = rcube_utils::get_input_value('_t', rcube_utils::INPUT_GPC);
@@ -1778,20 +1751,17 @@ class tasklist extends rcube_plugin
         $id   = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
         $rev  = rcube_utils::get_input_value('_rev', rcube_utils::INPUT_GPC);
 
-        $task = array('id' => $task, 'list' => $list, 'rev' => $rev);
+        $task       = array('id' => $task, 'list' => $list, 'rev' => $rev);
         $attachment = $this->driver->get_attachment($id, $task);
 
         // show part page
         if (!empty($_GET['_frame'])) {
-            $this->lib->attachment = $attachment;
-            $this->register_handler('plugin.attachmentframe', array($this->lib, 'attachment_frame'));
-            $this->register_handler('plugin.attachmentcontrols', array($this->lib, 'attachment_header'));
-            $this->rc->output->send('tasklist.attachment');
+            $handler->attachment_page($attachment);
         }
         // deliver attachment content
         else if ($attachment) {
             $attachment['body'] = $this->driver->get_attachment_body($id, $task);
-            $this->lib->attachment_get($attachment);
+            $handler->attachment_get($attachment);
         }
 
         // if we arrive here, the requested part was not found
@@ -1804,19 +1774,22 @@ class tasklist extends rcube_plugin
 
     public function mail_message2task()
     {
-        $uid  = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
-        $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
+        $this->load_ui();
+        $this->ui->init();
+        $this->ui->init_templates();
+        $this->ui->tasklists();
+
+        $uid  = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GET);
+        $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
         $task = array();
 
-        // establish imap connection
-        $imap = $this->rc->get_storage();
-        $imap->set_folder($mbox);
-        $message = new rcube_message($uid);
+        $imap    = $this->rc->get_storage();
+        $message = new rcube_message($uid, $mbox);
 
         if ($message->headers) {
-            $task['title'] = trim($message->subject);
+            $task['title']       = trim($message->subject);
             $task['description'] = trim($message->first_text_part());
-            $task['id'] = -$uid;
+            $task['id']          = -$uid;
 
             $this->load_driver();
 
@@ -1827,18 +1800,19 @@ class tasklist extends rcube_plugin
             // copy mail attachments to task
             else if ($message->attachments && $this->driver->attachments) {
                 if (!is_array($_SESSION[self::SESSION_KEY]) || $_SESSION[self::SESSION_KEY]['id'] != $task['id']) {
-                    $_SESSION[self::SESSION_KEY] = array();
-                    $_SESSION[self::SESSION_KEY]['id'] = $task['id'];
-                    $_SESSION[self::SESSION_KEY]['attachments'] = array();
+                    $_SESSION[self::SESSION_KEY] = array(
+                        'id'          => $task['id'],
+                        'attachments' => array(),
+                    );
                 }
 
                 foreach ((array)$message->attachments as $part) {
                     $attachment = array(
-                        'data' => $imap->get_message_part($uid, $part->mime_id, $part),
-                        'size' => $part->size,
-                        'name' => $part->filename,
+                        'data'     => $imap->get_message_part($uid, $part->mime_id, $part),
+                        'size'     => $part->size,
+                        'name'     => $part->filename,
                         'mimetype' => $part->mimetype,
-                        'group' => $task['id'],
+                        'group'    => $task['id'],
                     );
 
                     $attachment = $this->rc->plugins->exec_hook('attachment_save', $attachment);
@@ -1857,13 +1831,13 @@ class tasklist extends rcube_plugin
                 }
             }
 
-            $this->rc->output->command('plugin.mail2taskdialog', $task);
+            $this->rc->output->set_env('task_prop', $task);
         }
         else {
             $this->rc->output->command('display_message', $this->gettext('messageopenerror'), 'error');
         }
 
-        $this->rc->output->send();
+        $this->rc->output->send('tasklist.dialog');
     }
 
     /**
@@ -1891,7 +1865,7 @@ class tasklist extends rcube_plugin
 
             // get prepared inline UI for this event object
             if ($ical_objects->method) {
-                $html .= html::div('tasklist-invitebox',
+                $html .= html::div('tasklist-invitebox invitebox boxinformation',
                     $this->itip->mail_itip_inline_ui(
                         $task,
                         $ical_objects->method,
@@ -1913,7 +1887,7 @@ class tasklist extends rcube_plugin
         foreach ($this->message_tasks as $task) {
             $checkbox = new html_checkbox(array(
                 'name' => 'completed',
-                'class' => 'complete',
+                'class' => 'complete pretty-checkbox',
                 'title' => $this->gettext('complete'),
                 'data-list' => $task['list'],
             ));
@@ -1933,7 +1907,7 @@ class tasklist extends rcube_plugin
             );
         }
         if (count($links)) {
-            $html .= html::div('messagetasklinks', html::tag('ul', 'tasklist', join("\n", $links)));
+            $html .= html::div('messagetasklinks boxinformation', html::tag('ul', 'tasklist', join("\n", $links)));
         }
 
         // prepend iTip/relation boxes to message body
@@ -1954,7 +1928,7 @@ class tasklist extends rcube_plugin
                 'type'       => 'link',
                 'wrapper'    => 'li',
                 'command'    => 'attachment-save-task',
-                'class'      => 'icon tasklistlink',
+                'class'      => 'icon tasklistlink disabled',
                 'classact'   => 'icon tasklistlink active',
                 'innerclass' => 'icon taskadd',
                 'label'      => 'tasklist.savetotasklist',
@@ -1969,7 +1943,7 @@ class tasklist extends rcube_plugin
      */
     public function mail_message_load($p)
     {
-        if (!$p['object']->headers->others['x-kolab-type']) {
+        if (empty($p['object']->headers->others['x-kolab-type'])) {
             $this->load_driver();
             $this->message_tasks = $this->driver->get_message_related_tasks($p['object']->headers, $p['object']->folder);
 
@@ -1992,7 +1966,7 @@ class tasklist extends rcube_plugin
      */
     public function get_ical()
     {
-        if (!$this->ical) {
+        if (empty($this->ical)) {
             $this->ical = libcalendaring::get_ical();
         }
 
@@ -2401,7 +2375,7 @@ class tasklist extends rcube_plugin
         // get a list of writeable lists to save new tasks to
         if ((!$existing || $is_shared) && $response['action'] == 'rsvp' || $response['action'] == 'import') {
             $lists  = $this->driver->get_lists($mode);
-            $select = new html_select(array('name' => 'tasklist', 'id' => 'itip-saveto', 'is_escaped' => true));
+            $select = new html_select(array('name' => 'tasklist', 'id' => 'itip-saveto', 'is_escaped' => true, 'class' => 'form-control'));
             $select->add('--', '');
 
             foreach ($lists as $list) {
@@ -2484,7 +2458,7 @@ class tasklist extends rcube_plugin
         if ($task['flagged']) {
             $object['priority'] = 1;
         }
-        else if (!$task['priority']) {
+        else if (empty($task['priority'])) {
             $object['priority'] = 0;
         }
 

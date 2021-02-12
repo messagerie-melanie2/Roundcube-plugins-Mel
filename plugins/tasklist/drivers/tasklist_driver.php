@@ -423,18 +423,21 @@ abstract class tasklist_driver
      * @param string  The action called this form
      * @param array   Tasklist properties
      * @param array   List with form fields to be rendered
+     *
      * @return string HTML content of the form
      */
     public function tasklist_edit_form($action, $list, $formfields)
     {
-        $html = '';
-        foreach ($formfields as $field) {
-            $html .= html::div('form-section',
-                html::label($field['id'], $field['label']) .
-                $field['value']);
+        $table = new html_table(array('cols' => 2, 'class' => 'propform'));
+
+        foreach ($formfields as $col => $colprop) {
+            $label = !empty($colprop['label']) ? $colprop['label'] : $rcmail->gettext("$domain.$col");
+
+            $table->add('title', html::label($colprop['id'], rcube::Q($label)));
+            $table->add(null, $colprop['value']);
         }
 
-        return $html;
+        return $table->show();
     }
 
     /**

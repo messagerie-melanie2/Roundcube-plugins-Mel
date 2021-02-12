@@ -3,39 +3,37 @@
 # This file is distributed under the same license as the Roundcube Webmail Help package.
 # 
 # Translators:
-# Ettore Atalan <atalanttore@googlemail.com>, 2014
-# Gerd Seyfarth <mail@netsecond.net>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Kolab Documentation\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-26 23:28+0100\n"
-"PO-Revision-Date: 2017-09-23 20:32+0000\n"
-"Last-Translator: Jeroen van Meeuwen <vanmeeuwen@kolabsys.com>\n"
-"Language-Team: German (http://www.transifex.com/kolab/kolab-documentation/language/de/)\n"
+"PO-Revision-Date: 2014-11-27 23:34+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: German (Germany) (http://www.transifex.com/kolab/kolab-documentation/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
+"Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../en_US/_plugins/tasks/manage.rst:7
 msgid "Managing Tasks"
-msgstr "Aufgaben verwalten"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:9
 msgid ""
 "All the described functions to manage your tasks are accessible from the "
 "main task view."
-msgstr "Alle beschriebenen Funktionen zum Verwalten Ihrer Aufgaben sind in der Hauptaufgabenansicht zugänglich."
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:13
 msgid "Create new Tasks"
-msgstr "Neue Aufgaben erstellen"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:18
 msgid "**The New Task Dialog**"
-msgstr "**Der Dialog für neue Aufgaben**"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:16
 msgid ""
@@ -46,7 +44,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:27
 msgid "**Quick Entry**"
-msgstr "**Schnelleintrag**"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:21
 msgid ""
@@ -63,11 +61,11 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:32
 msgid "Edit Tasks"
-msgstr "Aufgaben bearbeiten"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:35
 msgid "The Edit Dialog"
-msgstr "Der Bearbeitungsdialog"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:37
 msgid ""
@@ -84,7 +82,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:42
 msgid "**Summary**"
-msgstr "**Zusammenfassung**"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:44
 msgid ""
@@ -95,13 +93,13 @@ msgstr ""
 #: ../../en_US/_plugins/tasks/manage.rst:46
 msgid ""
 "``Title``: The title of the task. This is what you will see in the list."
-msgstr "``Titel``: Der Titel der Aufgabe. Das ist was Sie in der Liste sehen werden."
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:47
 msgid ""
 "``Description``: Any text that describes the task. Links and email addresses"
 " will be become clickable."
-msgstr "``Beschreibung``: Jeder Text, der die Aufgabe beschreibt. Links und E-Mail-Adressen werden anklickbar."
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:48
 msgid ""
@@ -139,7 +137,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:58
 msgid "**Attachments**"
-msgstr "**Anhänge**"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:60
 msgid ""
@@ -210,7 +208,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:107
 msgid "Mark Tasks as Complete"
-msgstr "Aufgaben als abgeschlossen markieren"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:109
 msgid ""
@@ -230,7 +228,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:120
 msgid "Organize Tasks in Groups"
-msgstr "Aufgaben in Gruppen organisieren"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:122
 msgid ""
@@ -240,7 +238,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:126
 msgid "Create a Subtask"
-msgstr "Teilaufgabe erstellen"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:132
 #: ../../en_US/_plugins/tasks/manage.rst:172
@@ -251,7 +249,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:133
 msgid "Select *Add subtask*"
-msgstr "*Teilaufgabe hinzufügen* auswählen"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:134
 msgid ""
@@ -264,7 +262,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:141
 msgid "Re-organize Groups"
-msgstr "Gruppen umorganisieren"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:143
 msgid ""
@@ -289,7 +287,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:157
 msgid "Get Notifications"
-msgstr "Benachrichtigungen holen"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:159
 msgid ""
@@ -308,7 +306,7 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:167
 msgid "Delete Tasks"
-msgstr "Aufgaben löschen"
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:169
 msgid ""
@@ -318,8 +316,8 @@ msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:173
 msgid "Select *Delete*."
-msgstr "*Löschen* auswählen."
+msgstr ""
 
 #: ../../en_US/_plugins/tasks/manage.rst:174
 msgid "Click *Delete* again in the confirmation dialog."
-msgstr "Klicken Sie im Bestätigungsdialog erneut auf *Löschen*."
+msgstr ""

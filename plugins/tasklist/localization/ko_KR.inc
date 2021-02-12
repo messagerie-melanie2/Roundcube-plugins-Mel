@@ -44,4 +44,6 @@ $labels['taskhistory'] = '이력';
 $labels['objectrestoreerror'] = '이전 버전으로 복구하지 못하였습니다';
 $labels['andnmore'] = '$nr 더...';
 $labels['comment'] = '코멘트';
+$labels['rsvpcomment'] = '코멘트';
+$labels['importerror'] = '가져오는 도중 오류가 발생했습니다';
 $labels['itipinvalidrequest'] = '이 초대장은 더이상 유효하지 않습니다';

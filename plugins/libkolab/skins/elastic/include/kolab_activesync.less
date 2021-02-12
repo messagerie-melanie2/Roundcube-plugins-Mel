@@ -1,0 +1,53 @@
+/**
+ * Kolab core library
+ *
+ * This file contains Elastic skin styles for kolab_activesync plugin.
+ *
+ * @author Aleksander Machniak <machniak@kolabsys.com>
+ *
+ * Copyright (C) 2012-2018, Kolab Systems AG <contact@kolabsys.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.listing.iconized li {
+    &.activesync > a:before {
+        content: @fa-var-rss-square;
+    }
+}
+
+#devices-table {
+    td:not(.selection) {
+        display: flex;
+
+        &:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-rss-square; // TODO: mobile icon is not free
+        }
+
+        span {
+            .overflow-ellipsis;
+        }
+    }
+
+    .devicealias {
+        flex: 1;
+    }
+
+    .devicetype {
+        max-width: 40%;
+        font-style: italic;
+        padding-left: .5em;
+    }
+}

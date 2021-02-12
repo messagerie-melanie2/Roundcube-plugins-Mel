@@ -1,0 +1,44 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/mobile.css" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="settings-right">
+
+
+<div id="mel_mobiles_list_listbox" class="uibox listbox">
+<h2 class="boxtitle"><roundcube:label name="mel_moncompte.mobiles_list" /></h2>
+<div class="scroller">
+  <roundcube:object name="mel_statistics_mobiles_list" id="mel_statistics_mobiles_list" class="listing" cellspacing="0" summary="Mobiles list" />
+</div>
+</div>
+
+<div id="mel_statistics_mobile_box" class="uibox contentbox">
+  <div class="iframebox">
+    <roundcube:object name="mel_statistics_mobile_frame" id="mel_statistics_mobile_frame" style="width:100%; height:100%" frameborder="0" src="/watermark.html" />
+  </div>
+  <roundcube:object name="message" id="message" class="statusbar" />
+</div>
+
+
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+ new rcube_splitter({ id:'melmobilesplitter', p1:'#settings-sections', p2:'#settings-right',
+	orientation:'v', relative:true, start:180, min:42, size:1 }).init();
+  new rcube_splitter({ id:'melmobilesplitter2', p1:'#mel_mobiles_list_listbox', p2:'#mel_statistics_mobile_box',
+          orientation:'v', relative:true, start:180, min:120, size:1 }).init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/settings-menu.html" />
+
+<h1 class="voice"><roundcube:label name="preferences" /></h1>
+
+<div id="layout-list" class="listbox<roundcube:exp expression="!request:_action ? '' : ' selected'"/>" aria-labelledby="aria-label-prefsection">
+	<div class="header">
+		<a class="button icon back-sidebar-button" href="#sidebar"><span class="inner"><roundcube:label name="settings" /></span></a>
+		<span id="aria-label-prefsection" class="header-title" style="display:block"><roundcube:label name="mel_moncompte.mobiles_list" /></span>
+	</div>
+	<div class="scroller">
+    <roundcube:object name="mel_statistics_mobiles_list" id="mel_statistics_mobiles_list" class="listing" cellspacing="0" summary="Mobiles list" />
+	</div>
+</div>
+
+<div id="layout-content" role="main">
+	<div class="header">
+		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
+		<span class="header-title"></span>
+	</div>
+  <div id="mel_statistics_mobile_box" class="uibox contentbox">
+    <div class="iframebox">
+      <roundcube:object name="mel_statistics_mobile_frame" id="mel_statistics_mobile_frame" style="width:100%; height:100%" frameborder="0" src="/watermark.html" />
+    </div>
+    <roundcube:object name="message" id="message" class="statusbar" />
+  </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

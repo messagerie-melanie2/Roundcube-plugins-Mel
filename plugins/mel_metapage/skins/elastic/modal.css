@@ -1,0 +1,42 @@
+/* .modal{
+    top:160px;
+} */
+
+.modal-header{
+    border: none;
+}
+
+.modal-content{
+    border-radius: 15px;
+    border:none;
+}
+
+.modal-header > .modal-close
+{
+    font-size: xx-large;
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+}
+
+.modal-header > .modal-close:hover
+{
+    text-shadow: 0px 0px 2px black;
+    color: white;
+}
+
+.modal-title{
+    /* margin: 15px; */
+    /* margin-bottom: 15px; */
+    margin-top: 30px;
+    margin-left: 30px;
+}
+
+.modal-body{
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.modal-footer{
+    border: none;
+}
+

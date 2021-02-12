@@ -27,26 +27,20 @@ $labels['afterflagdeleted'] = 'Marquer comme supprimer';
 $labels['aftermoveto'] = 'Déplacer vers...';
 $labels['itipoptions'] = 'Invitations à l\'événement';
 $labels['afteraction'] = 'Après une invitation ou une modification, le message est traité';
-// PAMELA
-$labels['calendar'] = 'Agenda';
-$labels['calendars'] = 'Agendas';
+$labels['weeknonone'] = 'jamais';
+$labels['calendar'] = 'Calendrier';
+$labels['calendars'] = 'Calendriers';
 $labels['category'] = 'Catégorie';
 $labels['categories'] = 'Catégories';
 $labels['createcalendar'] = 'Créer un nouveau calendrier';
-$labels['editcalendar'] = 'Modifier les propriétés du calendrier';
-$labels['deletecalendar'] = 'Supprimer le calendrier';
 $labels['name'] = 'Nom';
 $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
 $labels['week'] = 'Semaine';
 $labels['month'] = 'Mois';
-// PAMELA
-$labels['agenda'] = 'Planning';
-$labels['calendar_name'] = 'Nom d\'agenda';
-$labels['listsort'] = 'Trier par :';
+$labels['agenda'] = 'Ordre du jour';
 $labels['new'] = 'Nouveau';
-// PAMELA
-$labels['new_event'] = 'Nouveau';
+$labels['new_event'] = 'Nouvel événement';
 $labels['edit_event'] = 'Modifier l\'événement';
 $labels['edit'] = 'Modifier';
 $labels['save'] = 'Enregistrer';
@@ -55,25 +49,20 @@ $labels['cancel'] = 'Annuler';
 $labels['select'] = 'Sélectionner';
 $labels['print'] = 'Imprimer';
 $labels['printtitle'] = 'Imprimer les calendriers';
-$labels['title'] = 'Titre de l\'événement';
+$labels['title'] = 'Résumé';
 $labels['description'] = 'Description';
-// PAMELA
-$labels['all-day'] = 'Journée entière';
-$labels['period'] = 'Période';
+$labels['all-day'] = 'toute la journée';
 $labels['export'] = 'Exporter';
 $labels['exporttitle'] = 'Exporter vers iCalendar';
-// MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
-$labels['delete_all'] = 'Vider l\'agenda';
 $labels['exportrange'] = 'Événements depuis';
 $labels['exportattachments'] = 'Avec pièces jointes';
 $labels['customdate'] = 'Date personnalisée';
 $labels['location'] = 'Lieu';
 $labels['url'] = 'URL';
 $labels['date'] = 'Date';
-// PAMELA - Skin Mel
-$labels['start'] = 'De :';
+$labels['start'] = 'Début';
 $labels['starttime'] = 'Heure de début';
-$labels['end'] = 'à :';
+$labels['end'] = 'Fin';
 $labels['endtime'] = 'Heure de fin';
 $labels['repeat'] = 'Répéter';
 $labels['selectdate'] = 'Sélectionner une date';
@@ -83,17 +72,14 @@ $labels['busy'] = 'Occupé';
 $labels['outofoffice'] = 'Absent';
 $labels['tentative'] = 'Provisoire';
 $labels['mystatus'] = 'Mon statut';
-// PAMELA - Skin Mel
-$labels['status'] = 'Afficher comme';
-$labels['status-confirmed'] = 'Occupé';
+$labels['status'] = 'Statut';
+$labels['status-confirmed'] = 'Confirmé';
 $labels['status-cancelled'] = 'Annulé';
 $labels['status-tentative'] = 'Provisoire';
-// MANTIS 0005114: Gestion d'un seul statut comme le courrielleur
-$labels['status-free'] = 'Libre';
 $labels['priority'] = 'Priorité';
 $labels['sensitivity'] = 'Diffusion';
-$labels['public'] = 'Publique';
-$labels['private'] = 'Privée';
+$labels['public'] = 'publique';
+$labels['private'] = 'privée';
 $labels['confidential'] = 'Confidentiel';
 $labels['links'] = 'Référence';
 $labels['alarms'] = 'Rappel';
@@ -109,6 +95,7 @@ $labels['printdescriptions'] = 'Imprimer les descriptions';
 $labels['parentcalendar'] = 'Ajouter à l\'intérieur';
 $labels['searchearlierdates'] = '« Chercher des événements plus anciens';
 $labels['searchlaterdates'] = 'Chercher des événement plus récents »';
+$labels['laterevents'] = 'Plus tard';
 $labels['andnmore'] = '$nr de plus...';
 $labels['togglerole'] = 'Cliquez pour changer de rôle';
 $labels['createfrommail'] = 'Enregistrer comme un événement';
@@ -117,11 +104,8 @@ $labels['importrange'] = 'Événements depuis';
 $labels['onemonthback'] = '1 mois auparavant';
 $labels['nmonthsback'] = '$nr mois précédents';
 $labels['showurl'] = 'Afficher l\'URL du calendrier';
-$labels['showurldescription'] = 'L\'adresse suivante permet d\'afficher en lecture seule votre calendrier depuis une autre application. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. Cette adresse nécessite une authentification (compte Mél).';
-// PAMELA
-$labels['freebusyurldescription'] = 'L\'adresse suivante permet d\'afficher les disponibilités de l\'agenda depuis une autre application. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. Cette adresse ne nécessite pas d\'authentification.';
-$labels['calendarfeedurldescription'] = "Cochez cette case pour partager votre agenda via une adresse unique sans authentification. Vous pouvez copier/coller celle-ci dans n'importe quel agenda électronique gérant le format iCal.";
-$labels['caldavurldescription'] = 'Copiez cette adresse vers une application client (comme Evolution ou Mozilla Thunderbird) compatible <a href="http://fr.wikipedia.org/wiki/CalDAV" target="_blank">CalDAV</a> pour synchroniser ce calendrier avec votre ordinateur ou votre smartphone.';
+$labels['showurldescription'] = 'Utilisez l\'adresse suivante pour accéder (lecture seule) à votre calendrier depuis d\'autres applications. Vous pouvez copier/coller celle-ci dans n\'importe quel calendrier électronique gérant le format iCal.';
+$labels['caldavurldescription'] = 'Copiez cette adresse vers une application client (comme Evolution ou Mozilla Thunderbird) compatible <a href="http://fr.wikipedia.org/wiki/CalDAV" target="_blank">CalDAV</a> pour synchroniser pleinement ce calendrier avec votre ordinateur ou votre smartphone.';
 $labels['findcalendars'] = 'Recherche de calendriers...';
 $labels['searchterms'] = 'Critères de recherche';
 $labels['calsearchresults'] = 'Calendriers disponibles';
@@ -180,7 +164,6 @@ $labels['nextslot'] = 'Créneau suivant';
 $labels['suggestedslot'] = 'Emplacement suggéré';
 $labels['noslotfound'] = 'Impossible de trouver un créneau disponible';
 $labels['invitationsubject'] = 'Vous avez été invité à "$title"';
-$labels['invitationmailbody'] = "*\$title*\n\nQuand: \$date\n\nParticipants: \$attendees\n\n\$description\n\nVous trouverez ci-joint un fichier iCalendar avec toutes les modifications à l'événement que vous pourrez importer dans votre calendrier électronique.";
 $labels['invitationattendlinks'] = "Dans le cas où votre application de messagerie ne gère pas les demandes \"iTip\", vous pouvez utiliser ce lien pour accepter ou refuser l'invitation : \n\$url";
 $labels['eventupdatesubject'] = '"$title" a été modifié';
 $labels['eventupdatesubjectempty'] = 'Un événement vous concernant a été modifié';
@@ -219,14 +202,10 @@ $labels['tabattendees'] = 'Participants';
 $labels['tabresources'] = 'Ressources';
 $labels['tabattachments'] = 'Pièces jointes';
 $labels['tabsharing'] = 'Partage';
-// PAMELA
-$labels['tabsharinggroup'] = 'Partage à un groupe';
 $labels['deleteobjectconfirm'] = 'Voulez-vous vraiment supprimer cet événement?';
 $labels['deleteventconfirm'] = 'Voulez-vous vraiment supprimer cet événement?';
 $labels['deletecalendarconfirm'] = 'Voulez-vous vraiment supprimer ce calendrier et tous ses événements?';
 $labels['deletecalendarconfirmrecursive'] = 'Voulez-vous vraiment supprimer ce calendrier avec tous ses événements et ses sous-calendriers ?';
-// MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
-$labels['deleteallcalendarconfirm'] = 'Voulez-vous vraiment supprimer tous les évènements de cet agenda (l\'opération ne peut pas être annulée) ?';
 $labels['savingdata'] = 'Enregistrer...';
 $labels['errorsaving'] = 'Échec lors de l\'enregistrement des changements';
 $labels['operationfailed'] = 'L\'opération demandée a échoué';
@@ -285,13 +264,4 @@ $labels['arialabeleventattendees'] = 'Liste des participants à l\'événement';
 $labels['arialabeleventresources'] = 'Liste des ressources de l\'événement';
 $labels['arialabelresourcesearchform'] = 'Formulaire de recherche des ressources';
 $labels['arialabelresourceselection'] = 'Ressources disponibles';
-
-// PAMELA
-$labels['event private'] = 'Évènement privé';
-$labels['event free'] = 'Évènement libre';
-$labels['event busy'] = 'Évènement confirmé';
-$labels['event tentative'] = 'Évènement provisoire';
-$labels['event outofoffice'] = 'Absent';
-$labels['close'] = 'Fermer';
-$labels['showmore'] = 'Afficher plus...';
 ?>

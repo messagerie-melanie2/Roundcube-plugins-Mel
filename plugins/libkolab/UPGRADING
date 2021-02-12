@@ -1,0 +1,9 @@
+UPGRADING instructions
+======================
+
+To update database schema please run in Roundcube bin/ directory:
+
+updatedb.sh --package=libkolab --version=<version> --dir=../plugins/libkolab/SQL
+
+[*] Replace <version> with Roundcube version e.g. 0.7.3
+[*] Roundcube should be upgraded before plugin upgrades

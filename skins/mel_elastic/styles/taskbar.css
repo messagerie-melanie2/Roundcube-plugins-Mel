@@ -1,0 +1,148 @@
+#layout-menu{
+    background-color:#2C3054;
+}
+
+#taskmenu{
+    display: flex;
+    flex-direction: column;
+}
+
+#taskmenu .special-buttons
+{
+    background-color:#2C3054;
+}
+
+#taskmenu .compose {
+    display:none;
+}
+
+#taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover
+{
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    background-color: #484D7A !important;    
+    
+}
+
+#taskmenu span.inner, #taskmenu span.button-inner
+{
+    display:none;
+}
+
+#layout-menu, #taskmenu a
+{
+    width:60px;
+    font-size: 1.3rem;
+}
+
+#taskmenu a:before
+{
+    line-height: 45px;
+}
+
+@media screen and (max-width: 1024px) and (min-width: 481px)
+{
+#taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover
+{
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    width: 42px;
+    margin-left: 9px;
+    
+}
+}
+
+#taskmenu > span > a.icofont::before
+{
+    font-family:inherit;
+    /* content:unset; */
+}
+
+
+.order1{
+    order:1;
+}
+
+.action-buttons{
+    order:2;
+}
+
+.mail{
+    order:3;
+}
+
+.button-calendar, .calendar
+{
+    order:4;
+}
+
+.button-rocket_chat {
+    order:5;
+}
+
+.space{
+    order:6;
+}
+
+.icofont-document-folder {
+    order:7;
+}
+
+.news
+{
+    order:8;
+}
+
+.tasklist{
+    order:9;
+}
+
+.button-mel_sondage {
+    order:10;
+}
+
+.contacts{
+    order:11;
+}
+
+.settings{
+    order:12;
+}
+
+.popover-header{
+    display: none;
+}
+
+.menu.toolbar a.home.icofont-home:before
+{
+    content:"\ef47";
+    font-family: "IcoFont"!important;
+}
+
+.menu.toolbar a.mel.icofont-letter:before
+{
+    content:"\ef63";
+    font-family: "IcoFont"!important;
+    font-weight: inherit;
+}
+
+.menu.toolbar a.icofont-chat:before
+{
+    content:"\eed5";
+    font-family: "IcoFont"!important;
+    font-weight: inherit;
+}
+
+.menu.toolbar a.icofont-document-folder:before
+{
+    content:"\ef06";
+    font-family: "IcoFont"!important;
+    font-weight: inherit;
+}
+
+.menu.toolbar a.news.icofont-newspaper:before
+{
+    content:"\efa7";
+    font-family: "IcoFont"!important;
+}
+

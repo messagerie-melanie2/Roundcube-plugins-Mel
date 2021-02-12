@@ -1,0 +1,52 @@
+<div class="form_flux">
+    <form action="?_task=mel_portal&_action=addflux" method="POST">
+        <input type="hidden" name=id id="rss-form-key"/>
+        <input type="hidden" name=tab id='rdd-form-tab'/>
+        <label class="label-title" for="intralist"><roundcube:label name="mel_portal.choose_intra" /></label>
+        <div class="has-validation">
+            <roundcube:object name="selectIntra" />
+        </div>
+        <label class="label-title"><roundcube:label name="mel_portal.choose_format" /></label>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="format" id="petitformat" value="1x1" checked />
+                    <label class="form-check-label" for="petitformat">
+                        <roundcube:label name="mel_portal.little_format" />
+                    </label>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="format" id="grandformat" value="2x1" />
+                    <label class="form-check-label" for="grandformat">
+                        <roundcube:label name="mel_portal.big_format" />
+                    </label>
+                </div>
+            </div>
+        </div>
+        <label class="label-title"><roundcube:label name="mel_portal.choose_mode_showed" /></label>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="background" id="lightbackground" value="light" checked />
+                    <label class="form-check-label label-span" for="lightbackground">
+                        <roundcube:label name="mel_portal.light_background" />
+                    </label>
+                </div>
+                <roundcube:object name="light" />
+            </div>
+            <div class="col-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="background" id="darkbackground" value="dark" />
+                    <label class="form-check-label label-span" for="darkbackground">
+                        <roundcube:label name="mel_portal.dark_background" />
+                    </label>
+                </div>
+                <roundcube:object name="dark" />
+            </div>
+        </div>
+        <div id="rss-t-add-button"></div>
+        <button class="hidden" id="rss-submit-form"></button>
+    </form>
+</div>

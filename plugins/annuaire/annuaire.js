@@ -25,7 +25,7 @@
 var field = null;
 
 // On click gototree element list
-$(document).on("submit", '#mainscreen.annuaire #quicksearchbar form', function(e) {
+$(document).on("submit", '#quicksearchbar form', function(e) {
 	e.preventDefault();
 	rcmail.http_get('addressbook/plugin.annuaire', {
 		_source : rcmail.env.source,
@@ -96,16 +96,18 @@ $(document).on("keyup", 'input#contactsearchbox', function(e) {
 });
 
 // register event handlers for UI elements
-$(document).on("click", '#annuaireselector a', function(e) {
-	if (!$(this).parent().hasClass('inactive')
-			&& !$(this).parent().hasClass('selected')) {
-		window.annuaireSelector = this.href.replace(/^.*#/, '');
-		$('#annuaireselector li.selected').removeClass('selected')
-				.attr('aria-checked', 'false');
-		$(this).parent().addClass('selected').attr('aria-checked',
-				'true');
-		rcmail.annuaire_filter_list();
-	}
+$(document).on("change", '#annuaireselector', function(e) {
+	// if (!$(this).parent().hasClass('inactive')
+	// 		&& !$(this).parent().hasClass('selected')) {
+	// 	window.annuaireSelector = this.href.replace(/^.*#/, '');
+	// 	$('#annuaireselector li.selected').removeClass('selected')
+	// 			.attr('aria-checked', 'false');
+	// 	$(this).parent().addClass('selected').attr('aria-checked',
+	// 			'true');
+	// 	rcmail.annuaire_filter_list();
+	// }
+	window.annuaireSelector = e.currentTarget.value;
+	rcmail.annuaire_filter_list();
 	return false;
 });
 

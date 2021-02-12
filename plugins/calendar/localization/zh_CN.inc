@@ -113,8 +113,11 @@ $labels['scheduletime'] = '查找是否有空';
 $labels['sendinvitations'] = '发送邀请';
 $labels['sendnotifications'] = '通知参加者修改事项';
 $labels['resource'] = '资源';
+$labels['resourceowner'] = '所有者';
 $labels['tabsummary'] = '汇总';
+$labels['tabresources'] = '资源';
 $labels['tabsharing'] = '分享';
 $labels['savingdata'] = '保存数据...';
 $labels['futurevents'] = '未来';
+$labels['allevents'] = '全部';
 ?>

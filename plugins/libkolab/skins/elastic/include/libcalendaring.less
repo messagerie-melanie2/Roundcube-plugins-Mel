@@ -1,0 +1,717 @@
+/**
+ * Kolab core library
+ *
+ * This file contains Elastic skin styles for libcalendaring plugin.
+ *
+ * @author Aleksander Machniak <machniak@kolabsys.com>
+ *
+ * Copyright (C) 2012-2018, Kolab Systems AG <contact@kolabsys.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.invitebox {
+    & > i.icon {
+        position: absolute;
+        top: 0;
+        padding-top: .5em;
+    }
+
+    & > span {
+        padding-left: 2.5em;
+    }
+
+    td {
+        padding: 2px;
+        vertical-align: top;
+
+        &.ititle {
+            font-weight: bold;
+            padding-right: 0.5em;
+        }
+
+        &.label {
+            color: #666;
+            padding-right: 1em;
+        }
+
+        &.sensitivity {
+            font-weight: bold;
+        }
+
+        &.recurrence-id {
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        &.date.modified {
+            font-weight: bold;
+            color: @color-error;
+        }
+
+        em {
+            font-weight: bold;
+        }
+    }
+
+    .itip-buttons {
+        display: flex;
+        flex-wrap: wrap;
+
+        input.button {
+            margin: 0 .25rem .25rem 0;
+        }
+    }
+
+    .rsvp-buttons {
+        width: 100%;
+        padding-top: .25rem;
+    }
+
+    .itip-reply-controls {
+        margin-top: .25rem;
+        width: 100%;
+        line-height: 2;
+
+        & > label {
+            display: inline;
+
+            label {
+                line-height: 1;
+                margin-right: .25rem;
+            }
+        }
+
+        a {
+            margin-left: 1em;
+            white-space: nowrap;
+        }
+    }
+
+    .rsvp-status {
+        margin: .5rem 0;
+        width: 100%;
+
+        &.hint {
+            color: #666;
+            font-style: italic;
+        }
+    }
+
+    .folder-select {
+        white-space: nowrap;
+
+        select {
+            display: initial;
+            width: auto;
+        }
+    }
+}
+
+.rsvp-status {
+    &:before {
+        line-height: 1.1;
+        color: lighten(@color-black, 25%);
+        float: none;
+        display: inline;
+    }
+
+    &.loading:before {
+        &:extend(.font-icon-class);
+        .animated-icon-class;
+        content: @fa-var-circle-notch;
+        line-height: 1;
+    }
+
+    &.declined:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-ban;
+        color: @color-error;
+    }
+
+    &.tentative:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-check-circle;
+        color: @color-warning;
+    }
+
+    &.accepted:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-check-circle;
+        color: @color-success;
+    }
+
+    &.delegated:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-share;
+    }
+
+    &.needs-action:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-question-circle;
+    }
+}
+
+.attendee {
+    &:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-question-circle;
+        display: inline;
+        float: none;
+        font-size: 1em;
+        color: @color-black-shade-text;
+    }
+
+    &.req-participant:before {
+        content: @fa-var-user;
+    }
+
+    &.opt-participant:before {
+        .font-icon-regular(@fa-var-user);
+    }
+
+    &.non-participant:before {
+        content: @fa-var-user;
+        color: #ccc;
+    }
+
+    &.chair:before {
+        content: @fa-var-user; // todo
+        color: @color-warning;
+    }
+
+    &.completed:before,
+    &.accepted:before {
+        content: @fa-var-check-circle;
+        color: @color-success;
+    }
+
+    &.declined:before {
+        content: @fa-var-ban;
+        color: @color-error;
+    }
+
+    &.tentative:before {
+        content: @fa-var-check-circle;
+        color: @color-warning;
+    }
+
+    &.delegated:before {
+        content: @fa-var-share;
+    }
+
+    &.organizer:before {
+        content: @fa-var-briefcase; // TODO: better icon
+    }
+
+    &.in-process:before {
+        content: @fa-var-cog;
+    }
+}
+
+.attendees-comentbox {
+    label {
+        display: inline;
+    }
+}
+
+.edit-attendees-table {
+    width: 100%;
+
+    th, td {
+        width: 1%;
+        text-align: center;
+    }
+
+    td {
+        border: 0;
+        padding: 0 .3rem;
+    }
+
+    th {
+        border-bottom: 1px solid #eee !important;
+    }
+
+    th.name, td.name, th.role, td.role {
+        width: auto;
+        text-align: left;
+    }
+
+    th.invite {
+        input {
+            display: none;
+        }
+
+        label {
+            cursor: pointer;
+        }
+
+        label:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-envelope;
+            display: inline;
+            float: none;
+            margin-left: .25rem;
+        }
+
+    }
+
+    td.invite {
+        .custom-switch {
+            margin-top: .15rem;
+        }
+    }
+
+    td.name {
+        span {
+            line-height: 2.5;
+            display: flex;
+
+            & > :first-child {
+                .overflow-ellipsis;
+                // width and flex is required to make overflow working
+                flex: 1;
+                width: 1px;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    td.availability,
+    td.confirmstate {
+        span {
+            margin: 0;
+        }
+
+        span:after,
+        span:before {
+            line-height: 2;
+            margin: 0;
+            font-size: 1.2em;
+            height: 2em;
+            width: 2em;
+        }
+    }
+
+    td.options {
+        a {
+            display: inline-block;
+            height: 2em;
+
+            &:before {
+                line-height: 1.8;
+                margin: 0;
+            }
+        }
+    }
+
+    a.expandlink {
+        &:before {
+            content: @fa-var-plus-square;
+            line-height: 2;
+        }
+    }
+
+    .inner {
+        display: none;
+    }
+
+    html.layout-phone & {
+        th.availability,
+        th.confirmstate {
+            text-indent: -5000px;
+        }
+
+        td.role {
+            max-width: 7em;
+        }
+
+        select {
+            padding-left: .5rem;
+        }
+    }
+}
+
+.form-searchbar {
+    display: flex;
+    margin-bottom: .5rem;
+
+    input[type=text] {
+        flex: 1;
+
+        html.layout-phone & {
+            max-width: 50%;
+        }
+    }
+
+    input[type=button] {
+        margin-left: .5em;
+        .overflow-ellipsis;
+    }
+}
+
+.attachmentslist li.ics:before,
+.attachmentslist li.text.calendar:before,
+.messagelist tbody .attachment span.ical:before {
+    .font-icon-regular(@fa-var-calendar-alt);
+}
+
+.alarms-input {
+    .edit-alarm-item {
+        display: flex;
+
+        & + .edit-alarm-item {
+            margin-top: .25rem;
+        }
+
+        &.first .delete-alarm,
+        &:not(.first) .add-alarm {
+            display: none;
+        }
+    }
+
+    .edit-alarm-buttons {
+        a {
+            border-top-right-radius: .25rem !important;
+            border-bottom-right-radius: .25rem !important;
+
+            &:before {
+                margin: 0;
+                width: 1em;
+            }
+
+            &:focus {
+                box-shadow: none;
+            }
+
+            &.add:before {
+                content: @fa-var-plus;
+            }
+        }
+
+        .inner {
+            display: none;
+        }
+    }
+
+    .edit-alarm-type {
+        flex: 1;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+
+        &:focus {
+            z-index: 2;
+        }
+    }
+
+    .edit-alarm-set {
+        display: flex;
+        flex: 1;
+    }
+
+    .edit-alarm-values {
+        flex: 5;
+
+        .form-control {
+            border-radius: 0;
+        }
+
+        :first-child {
+            border-left: 0;
+        }
+    }
+
+    .edit-alarm-offset {
+        flex: 5;
+    }
+
+    .edit-alarm-date,
+    .edit-alarm-time,
+    .edit-alarm-related {
+        flex: 3;
+    }
+}
+
+.recurrence-form {
+    .recurrence-rdates {
+        width: 100%;
+        padding: 0;
+        list-style-type: none;
+
+        &:empty {
+            margin: 0;
+        }
+
+        a.delete {
+            margin-left: 2em;
+            &:before {
+                display: inline-block;
+                float: none;
+            }
+        }
+
+        .inner {
+            display: none;
+        }
+    }
+
+    .recurrence-onevery {
+        select {
+            width: 40%;
+            display: inline;
+        }
+    }
+
+    .inputform {
+        display: flex;
+
+        input.button {
+            margin-left: .25rem;
+        }
+    }
+
+    div.line {
+        width: 100%;
+        display: flex;
+        margin-bottom: .25rem;
+
+        label {
+            margin-left: .5em;
+            min-width: 4em;
+            line-height: 2.5;
+        }
+    }
+
+    .month,
+    .monthday,
+    .weekday {
+        display: inline-block;
+        width: 3.5em;
+        margin-right: .5rem;
+        white-space: nowrap;
+
+        input {
+            margin-right: .25rem;
+        }
+    }
+
+    .monthday {
+        width: 2.75em;
+    }
+
+    .table td {
+        border: 0;
+        padding: 0;
+
+        &.label {
+            white-space: nowrap;
+        }
+
+        &:first-child label {
+            line-height: 2.5;
+        }
+
+        & label.monthday:first-child {
+            margin-top: .5rem;
+        }
+    }
+
+    .input-group-append,
+    .input-group-prepend {
+        display: initial; // fixes buggy height of the element
+    }
+}
+
+#event-status-badge {
+    width: 7rem;
+    height: 7rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+
+    span {
+        display: none;
+        text-transform: uppercase;
+        line-height: 20px;
+        position: absolute;
+        left: -2.4rem;
+        top: 2.4rem;
+        width: 13.2rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: .85rem;
+        color: #fff;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+
+        &:before {
+            &:extend(.font-icon-class);
+            display: inline;
+            float: none;
+        }
+
+        .status-cancelled & {
+            background-color: darken(@color-error, 10%);
+            display: block;
+
+            &:before {
+                content: @fa-var-times-circle;
+            }
+        }
+
+        .sensitivity-private & {
+            background-color: darken(@color-warning, 10%);
+            display: block;
+
+            &:before {
+                content: @fa-var-lock;
+            }
+        }
+
+        .sensitivity-confidential & {
+            background-color: darken(@color-error, 10%);
+            display: block;
+
+            &:before {
+                content: @fa-var-user-secret;
+            }
+        }
+    }
+}
+
+#alarm-display {
+    h3 {
+        font-size: 1.2rem;
+        margin-bottom: .25rem;
+
+        &:before {
+            &:extend(.font-icon-class);
+            .font-icon-regular(@fa-var-calendar-alt);
+            font-size: 1em;
+        }
+
+        &.type-task:before {
+            .font-icon-regular(@fa-var-calendar-check);
+        }
+    }
+
+    .event-section {
+        font-size: .9rem;
+        color: @color-black-shade-text;
+        white-space: nowrap;
+        .overflow-ellipsis;
+    }
+
+    .alarm-actions {
+        text-align: right;
+        margin-bottom: .25rem;
+
+        a {
+            &:first-child {
+                margin-right: 1em;
+            }
+
+            &:before {
+                &:extend(.font-icon-class);
+                display: inline;
+                float: none;
+            }
+        }
+    }
+
+    a.alarm-action-snooze:before {
+        content: @fa-var-bell-slash;
+    }
+
+    a.alarm-action-dismiss:before {
+        content: @fa-var-trash-alt;
+    }
+}
+
+#alarm-snooze-dropdown a:before {
+    .font-icon-regular(@fa-var-clock);
+}
+
+.dialog-message {
+    margin: 0;
+    opacity: .95;
+    width: 100%;
+    padding: .75em;
+    margin-top: .25em;
+    color: @color-message;
+    background-color: @color-message-warning-box-background;
+
+    & > label {
+        margin: 0;
+        display: block;
+
+        label:before {
+            line-height: 1.25;
+            margin-right: .25rem;
+        }
+    }
+
+    .message {
+        display: flex;
+    }
+
+    & + .savemode {
+        margin-top: 1rem;
+
+        a.btn {
+            margin-right: .5rem;
+        }
+    }
+
+    & > .savemode {
+        margin-top: .5rem;
+
+        label {
+            margin-right: 1rem;
+        }
+
+        input {
+            margin-right: .25rem;
+        }
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .nav-link.nav-icon {
+        width: 3em;
+        margin-right: 5px;
+        padding: .5rem .5rem .5rem .65rem;
+
+        &:before {
+            .font-icon-class;
+            margin: 0 1rem 0 0;
+            width: 1em;
+            line-height: 1.2;
+        }
+
+        &.resources:before {
+            content: @fa-var-cube;
+            margin-left: .1rem;
+        }
+
+        &.attachments:before {
+            content: @fa-var-paperclip;
+        }
+
+        &.attendees:before {
+            content: @fa-var-users;
+        }
+    }
+}

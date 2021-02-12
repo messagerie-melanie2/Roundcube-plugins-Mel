@@ -40,22 +40,23 @@ class libcalendaring extends rcube_plugin
     public $ical_message;
 
     public $defaults = array(
-      'calendar_date_format'  => "yyyy-MM-dd",
-      'calendar_date_short'   => "M-d",
-      'calendar_date_long'    => "MMM d yyyy",
-      'calendar_date_agenda'  => "ddd MM-dd",
-      'calendar_time_format'  => "HH:mm",
-      'calendar_first_day'    => 1,
-      'calendar_first_hour'   => 6,
-      'calendar_date_format_sets' => array(
-        'yyyy-MM-dd' => array('MMM d yyyy',   'M-d',  'ddd MM-dd'),
-        'dd-MM-yyyy' => array('d MMM yyyy',   'd-M',  'ddd dd-MM'),
-        'yyyy/MM/dd' => array('MMM d yyyy',   'M/d',  'ddd MM/dd'),
-        'MM/dd/yyyy' => array('MMM d yyyy',   'M/d',  'ddd MM/dd'),
-        'dd/MM/yyyy' => array('d MMM yyyy',   'd/M',  'ddd dd/MM'),
-        'dd.MM.yyyy' => array('dd. MMM yyyy', 'd.M',  'ddd dd.MM.'),
-        'd.M.yyyy'   => array('d. MMM yyyy',  'd.M',  'ddd d.MM.'),
-      ),
+        'calendar_date_format'  => "Y-m-d",
+        'calendar_date_short'   => "M-j",
+        'calendar_date_long'    => "F j Y",
+        'calendar_date_agenda'  => "l M-d",
+        'calendar_time_format'  => "H:m",
+        'calendar_first_day'    => 1,
+        'calendar_first_hour'   => 6,
+        'calendar_date_format_sets' => array(
+            'Y-m-d' => array('d M Y',   'm-d',  'l m-d'),
+            'Y/m/d' => array('d M Y',   'm/d',  'l m/d'),
+            'Y.m.d' => array('d M Y',   'm.d',  'l m.d'),
+            'd-m-Y' => array('d M Y',   'd-m',  'l d-m'),
+            'd/m/Y' => array('d M Y',   'd/m',  'l d/m'),
+            'd.m.Y' => array('d M Y',  'd.m',  'l d.m'),
+            'j.n.Y' => array('d M Y',  'd.m',  'l d.m'),
+            'm/d/Y' => array('M d Y',   'm/d',  'l m/d'),
+        ),
     );
 
     private static $instance;
@@ -96,8 +97,7 @@ class libcalendaring extends rcube_plugin
         $this->dst_active      = $now->format('I');
         $this->timezone_offset = $this->gmt_offset / 3600 - $this->dst_active;
 
-        // PAMELA - MANTIS 0003848: Présentation d'un événement avec des participants
-        $this->add_texts('localization/', true);
+        $this->add_texts('localization/', false);
     }
 
     /**
@@ -187,18 +187,19 @@ class libcalendaring extends rcube_plugin
      */
     public function adjust_timezone($dt, $dateonly = false)
     {
-        if (is_numeric($dt))
+        if (is_numeric($dt)) {
             $dt = new DateTime('@'.$dt);
-        else if (is_string($dt))
+        }
+        else if (is_string($dt)) {
             $dt = rcube_utils::anytodatetime($dt);
+        }
 
-        if ($dt instanceof DateTime && !($dt->_dateonly || $dateonly)) {
+        if ($dt instanceof DateTime && empty($dt->_dateonly) && !$dateonly) {
             $dt->setTimezone($this->timezone);
         }
 
         return $dt;
     }
-
 
     /**
      *
@@ -208,14 +209,14 @@ class libcalendaring extends rcube_plugin
         $this->date_format_defaults();
 
         $settings = array();
-        $keys     = array('date_format', 'time_format', 'date_short', 'date_long');
+        $keys     = array('date_format', 'time_format', 'date_short', 'date_long', 'date_agenda');
 
         foreach ($keys as $key) {
             $settings[$key] = (string)$this->rc->config->get('calendar_' . $key, $this->defaults['calendar_' . $key]);
-            $settings[$key] = str_replace('Y', 'y', $settings[$key]);
+            $settings[$key] = self::from_php_date_format($settings[$key]);
         }
 
-        $settings['dates_long']  = str_replace(' yyyy', '[ yyyy]', $settings['date_long']) . "{ '&mdash;' " . $settings['date_long'] . '}';
+        $settings['dates_long']  = $settings['date_long'];
         $settings['first_day']   = (int)$this->rc->config->get('calendar_first_day', $this->defaults['calendar_first_day']);
         $settings['timezone']    = $this->timezone_offset;
         $settings['dst']         = $this->dst_active;
@@ -232,13 +233,6 @@ class libcalendaring extends rcube_plugin
             $this->rc->gettext('tue'), $this->rc->gettext('wed'),
             $this->rc->gettext('thu'), $this->rc->gettext('fri'),
             $this->rc->gettext('sat')
-        );
-        // PAMELA
-        $settings['days_min'] = array(
-            $this->rc->gettext('sun_min'), $this->rc->gettext('mon_min'),
-            $this->rc->gettext('tue_min'), $this->rc->gettext('wed_min'),
-            $this->rc->gettext('thu_min'), $this->rc->gettext('fri_min'),
-            $this->rc->gettext('sat_min')
         );
         $settings['months'] = array(
             $this->rc->gettext('longjan'), $this->rc->gettext('longfeb'),
@@ -258,10 +252,6 @@ class libcalendaring extends rcube_plugin
         );
         $settings['today'] = $this->rc->gettext('today');
 
-        // define list of file types which can be displayed inline
-        // same as in program/steps/mail/show.inc
-        $settings['mimetypes'] = (array)$this->rc->config->get('client_mimetypes');
-
         return $settings;
     }
 
@@ -277,8 +267,8 @@ class libcalendaring extends rcube_plugin
         if (isset($defaults['date_format']))
           return;
 
-        $defaults['date_format'] = $this->rc->config->get('calendar_date_format', self::from_php_date_format($this->rc->config->get('date_format')));
-        $defaults['time_format'] = $this->rc->config->get('calendar_time_format', self::from_php_date_format($this->rc->config->get('time_format')));
+        $defaults['date_format'] = $this->rc->config->get('calendar_date_format', $this->rc->config->get('date_format'));
+        $defaults['time_format'] = $this->rc->config->get('calendar_time_format', $this->rc->config->get('time_format'));
 
         // override defaults
         if ($defaults['date_format'])
@@ -300,11 +290,12 @@ class libcalendaring extends rcube_plugin
      */
     public function event_date_text($event, $tzinfo = false)
     {
-        $fromto = '--';
+        $fromto  = '--';
+        $is_task = !empty($event['_type']) && $event['_type'] == 'task';
 
         // handle task objects
-        if ($event['_type'] == 'task' && is_object($event['due'])) {
-            $date_format = $event['due']->_dateonly ? self::to_php_date_format($this->rc->config->get('calendar_date_format', $this->defaults['calendar_date_format'])) : null;
+        if ($is_task && !empty($event['due']) && is_object($event['due'])) {
+            $date_format = !empty($event['due']->_dateonly) ? self::to_php_date_format($this->rc->config->get('calendar_date_format', $this->defaults['calendar_date_format'])) : null;
             $fromto = $this->rc->format_date($event['due'], $date_format, false);
 
             // add timezone information
@@ -327,8 +318,8 @@ class libcalendaring extends rcube_plugin
         $time_format = self::to_php_date_format($this->rc->config->get('calendar_time_format', $this->defaults['calendar_time_format']));
 
         if ($event['allday']) {
-            $fromto = $this->rc->format_date($event['start'], $date_format);
-            if (($todate = $this->rc->format_date($event['end'], $date_format)) != $fromto)
+            $fromto = $this->rc->format_date($event['start'], $date_format, false);
+            if (($todate = $this->rc->format_date($event['end'], $date_format, false)) != $fromto)
                 $fromto .= ' - ' . $todate;
         }
         else if ($duration < 86400 && $event['start']->format('d') == $event['end']->format('d')) {
@@ -356,56 +347,52 @@ class libcalendaring extends rcube_plugin
     {
         unset($attrib['name']);
 
-        $input_value = new html_inputfield(array('name' => 'alarmvalue[]', 'class' => 'edit-alarm-value', 'size' => 3));
-        $input_date  = new html_inputfield(array('name' => 'alarmdate[]', 'class' => 'edit-alarm-date', 'size' => 10));
-        $input_time  = new html_inputfield(array('name' => 'alarmtime[]', 'class' => 'edit-alarm-time', 'size' => 6));
-        $select_type    = new html_select(array('name' => 'alarmtype[]', 'class' => 'edit-alarm-type', 'id' => $attrib['id']));
-        $select_offset  = new html_select(array('name' => 'alarmoffset[]', 'class' => 'edit-alarm-offset'));
-        // PAMELA MANTIS 0004211: Nouvelle liste déroulante dans le rappel d'un événement
-        //$select_related = new html_select(array('name' => 'alarmrelated[]', 'class' => 'edit-alarm-related'));
-        $object_type    = $attrib['_type'] ?: 'event';
+        $input_value    = new html_inputfield(array('name' => 'alarmvalue[]', 'class' => 'edit-alarm-value form-control', 'size' => 3));
+        $input_date     = new html_inputfield(array('name' => 'alarmdate[]', 'class' => 'edit-alarm-date form-control', 'size' => 10));
+        $input_time     = new html_inputfield(array('name' => 'alarmtime[]', 'class' => 'edit-alarm-time form-control', 'size' => 6));
+        $select_type    = new html_select(array('name' => 'alarmtype[]', 'class' => 'edit-alarm-type form-control', 'id' => $attrib['id']));
+        $select_offset  = new html_select(array('name' => 'alarmoffset[]', 'class' => 'edit-alarm-offset form-control'));
+        $select_related = new html_select(array('name' => 'alarmrelated[]', 'class' => 'edit-alarm-related form-control'));
+        $object_type    = !empty($attrib['_type']) ? $attrib['_type'] : 'event';
 
         $select_type->add($this->gettext('none'), '');
-        foreach ($alarm_types as $type)
+        foreach ($alarm_types as $type) {
             $select_type->add($this->gettext(strtolower("alarm{$type}option")), $type);
+        }
 
-        foreach (array('-M','-H','-D','+M','+H','+D') as $trigger)
+        foreach (array('-M','-H','-D','+M','+H','+D') as $trigger) {
             $select_offset->add($this->gettext('trigger' . $trigger), $trigger);
+        }
 
         $select_offset->add($this->gettext('trigger0'), '0');
-        if ($absolute_time)
+        if ($absolute_time) {
             $select_offset->add($this->gettext('trigger@'), '@');
+        }
 
-        // PAMELA MANTIS 0004211: Nouvelle liste déroulante dans le rappel d'un événement
-        //$select_related->add($this->gettext('relatedstart'), 'start');
-        //$select_related->add($this->gettext('relatedend' . $object_type), 'end');
+        $select_related->add($this->gettext('relatedstart'), 'start');
+        $select_related->add($this->gettext('relatedend' . $object_type), 'end');
 
         // pre-set with default values from user settings
         $preset = self::parse_alarm_value($this->rc->config->get('calendar_default_alarm_offset', '-15M'));
         $hidden = array('style' => 'display:none');
-        $html = html::span('edit-alarm-set',
-          html::div("formfield-select--container", $select_type->show($this->rc->config->get('calendar_default_alarm_type', ''))) . ' ' .
-            html::span(array('class' => 'edit-alarm-values', 'style' => 'display:none'),
+
+        return html::span('edit-alarm-set',
+            $select_type->show($this->rc->config->get('calendar_default_alarm_type', '')) . ' ' .
+            html::span(array('class' => 'edit-alarm-values input-group', 'style' => 'display:none'),
                 $input_value->show($preset[0]) . ' ' .
-                html::div("formfield-select--container", $select_offset->show($preset[1]) ) . ' ' .
-                // PAMELA MANTIS 0004211: Nouvelle liste déroulante dans le rappel d'un événement
-                //$select_related->show() . ' ' .
+                $select_offset->show($preset[1]) . ' ' .
+                $select_related->show() . ' ' .
                 $input_date->show('', $hidden) . ' ' .
                 $input_time->show('', $hidden)
             )
         );
-
-        // TODO: support adding more alarms
-        #$html .= html::a(array('href' => '#', 'id' => 'edit-alam-add', 'title' => $this->gettext('addalarm')),
-        #  $attrib['addicon'] ? html::img(array('src' => $attrib['addicon'], 'alt' => 'add')) : '(+)');
-
-        return $html;
     }
 
     /**
      * Get a list of email addresses of the given user (from login and identities)
      *
      * @param string User Email (default to current user)
+     *
      * @return array Email addresses related to the user
      */
     public function get_user_emails($user = null)
@@ -417,7 +404,7 @@ class libcalendaring extends rcube_plugin
         }
 
         // return cached result
-        if (is_array($_emails[$user])) {
+        if (isset($_emails[$user])) {
             return $_emails[$user];
         }
 
@@ -438,10 +425,13 @@ class libcalendaring extends rcube_plugin
 
     /**
      * Set the given participant status to the attendee matching the current user's identities
+     * Unsets 'rsvp' flag too.
      *
-     * @param array   Hash array with event struct
-     * @param string  The PARTSTAT value to set
-     * @return mixed  Email address of the updated attendee or False if none matching found
+     * @param array  &$event    Event data
+     * @param string $status    The PARTSTAT value to set
+     * @param bool   $recursive Recurive call
+     *
+     * @return mixed Email address of the updated attendee or False if none matching found
      */
     public function set_partstat(&$event, $status, $recursive = true)
     {
@@ -450,6 +440,7 @@ class libcalendaring extends rcube_plugin
         foreach ((array)$event['attendees'] as $i => $attendee) {
             if ($attendee['email'] && in_array(strtolower($attendee['email']), $emails)) {
                 $event['attendees'][$i]['status'] = strtoupper($status);
+                unset($event['attendees'][$i]['rsvp']);
                 $success = $attendee['email'];
             }
         }
@@ -624,33 +615,45 @@ class libcalendaring extends rcube_plugin
      */
     public static function get_next_alarm($rec, $type = 'event')
     {
-        if (!($rec['valarms'] || $rec['alarms']) || $rec['cancelled'] || $rec['status'] == 'CANCELLED')
+        if (
+            (empty($rec['valarms']) && empty($rec['alarms']))
+            || !empty($rec['cancelled'])
+            || (!empty($rec['status']) && $rec['status'] == 'CANCELLED')
+        ) {
             return null;
+        }
 
         if ($type == 'task') {
             $timezone = self::get_instance()->timezone;
-            if ($rec['startdate'])
-                $rec['start'] = new DateTime($rec['startdate'] . ' ' . ($rec['starttime'] ?: '12:00'), $timezone);
-            if ($rec['date'])
-                $rec[($rec['start'] ? 'end' : 'start')] = new DateTime($rec['date'] . ' ' . ($rec['time'] ?: '12:00'), $timezone);
+            if (!empty($rec['startdate'])) {
+                $time = !empty($rec['starttime']) ? $rec['starttime'] : '12:00';
+                $rec['start'] = new DateTime($rec['startdate'] . ' ' . $time, $timezone);
+            }
+            if (!empty($rec['date'])) {
+                $time = !empty($rec['time']) ? $rec['time'] : '12:00';
+                $rec[!empty($rec['start']) ? 'end' : 'start'] = new DateTime($rec['date'] . ' ' . $time, $timezone);
+            }
         }
 
-        if (!$rec['end'])
+        if (empty($rec['end'])) {
             $rec['end'] = $rec['start'];
+        }
 
         // support legacy format
-        if (!$rec['valarms']) {
+        if (empty($rec['valarms'])) {
             list($trigger, $action) = explode(':', $rec['alarms'], 2);
             if ($alarm = self::parse_alarm_value($trigger)) {
                 $rec['valarms'] = array(array('action' => $action, 'trigger' => $alarm[3] ?: $alarm[0]));
             }
         }
 
-        $expires  = new DateTime('now - 12 hours');
-        $alarm_id = $rec['id'];  // alarm ID eq. record ID by default to keep backwards compatibility
+        // alarm ID eq. record ID by default to keep backwards compatibility
+        $alarm_id   = isset($rec['id']) ? $rec['id'] : null;
+        $alarm_prop = null;
+        $expires    = new DateTime('now - 12 hours');
+        $notify_at  = null;
 
         // handle multiple alarms
-        $notify_at = null;
         foreach ($rec['valarms'] as $alarm) {
             $notify_time = null;
 
@@ -658,11 +661,12 @@ class libcalendaring extends rcube_plugin
                 $notify_time = $alarm['trigger'];
             }
             else if (is_string($alarm['trigger'])) {
-                $refdate = $alarm['related'] == 'END' ? $rec['end'] : $rec['start'];
+                $refdate = !empty($alarm['related']) && $alarm['related'] == 'END' ? $rec['end'] : $rec['start'];
 
                 // abort if no reference date is available to compute notification time
-                if (!is_a($refdate, 'DateTime'))
+                if (!is_a($refdate, 'DateTime')) {
                     continue;
+                }
 
                 // TODO: for all-day events, take start @ 00:00 as reference date ?
 
@@ -680,19 +684,20 @@ class libcalendaring extends rcube_plugin
 
             if ($notify_time && (!$notify_at || ($notify_time > $notify_at && $notify_time > $expires))) {
                 $notify_at  = $notify_time;
-                $action     = $alarm['action'];
+                $action     = isset($alarm['action']) ? $alarm['action'] : null;
                 $alarm_prop = $alarm;
 
                 // generate a unique alarm ID if multiple alarms are set
                 if (count($rec['valarms']) > 1) {
-                    $alarm_id = substr(md5($rec['id']), 0, 16) . '-' . $notify_at->format('Ymd\THis');
+                    $rec_id = substr(md5(isset($rec['id']) ? $rec['id'] : 'none'), 0, 16);
+                    $alarm_id = $rec_id . '-' . $notify_at->format('Ymd\THis');
                 }
             }
         }
 
         return !$notify_at ? null : array(
             'time'   => $notify_at->format('U'),
-            'action' => $action ? strtoupper($action) : 'DISPLAY',
+            'action' => !empty($action) ? strtoupper($action) : 'DISPLAY',
             'id'     => $alarm_id,
             'prop'   => $alarm_prop,
         );
@@ -717,10 +722,6 @@ class libcalendaring extends rcube_plugin
             $this->rc->output->set_env('snooze_select', $this->snooze_select());
             $this->rc->output->command('plugin.display_alarms', $this->_alarms_output($plugin['alarms']));
         }
-        // PAMELA
-        else if (empty($plugin['alarms'])) {
-          $this->rc->output->command('plugin.display_alarms', []);
-        }
     }
 
     /**
@@ -734,10 +735,12 @@ class libcalendaring extends rcube_plugin
         $data['ids'] = explode(',', $data['id']);
         $plugin = $this->rc->plugins->exec_hook('dismiss_alarms', $data);
 
-        if ($plugin['success'])
+        if (!empty($plugin['success'])) {
             $this->rc->output->show_message('successfullysaved', 'confirmation');
-        else
+        }
+        else {
             $this->rc->output->show_message('calendar.errorsaving', 'error');
+        }
     }
 
     /**
@@ -749,9 +752,9 @@ class libcalendaring extends rcube_plugin
         foreach ($alarms as $alarm) {
             $out[] = array(
                 'id'       => $alarm['id'],
-                'start'    => $alarm['start'] ? $this->adjust_timezone($alarm['start'])->format('c') : '',
-                'end'      => $alarm['end']   ? $this->adjust_timezone($alarm['end'])->format('c') : '',
-                'allDay'   => $alarm['allday'] == 1,
+                'start'    => !empty($alarm['start']) ? $this->adjust_timezone($alarm['start'])->format('c') : '',
+                'end'      => !empty($alarm['end'])? $this->adjust_timezone($alarm['end'])->format('c') : '',
+                'allDay'   => !empty($alarm['allday']),
                 'action'   => $alarm['action'],
                 'title'    => $alarm['title'],
                 'location' => $alarm['location'],
@@ -785,7 +788,7 @@ class libcalendaring extends rcube_plugin
                 $this->gettext(array('name' => $label, 'vars' => array('min' => $n % 60, 'hrs' => intval($n / 60))))));
         }
 
-        return html::tag('ul', $attrib + array('class' => 'toolbarmenu'), join("\n", $items), html::$common_attrib);
+        return html::tag('ul', $attrib + array('class' => 'toolbarmenu menu'), join("\n", $items), html::$common_attrib);
     }
 
 
@@ -804,12 +807,13 @@ class libcalendaring extends rcube_plugin
             return rcmail::get_instance()->format_date($dt, $format);
         };
 
-        if (is_array($rrule['EXDATE']) && !empty($rrule['EXDATE'])) {
+        if (!empty($rrule['EXDATE']) && is_array($rrule['EXDATE'])) {
             $exdates = array_map($format_fn, $rrule['EXDATE']);
         }
 
         if (empty($rrule['FREQ']) && !empty($rrule['RDATE'])) {
             $rdates = array_map($format_fn, $rrule['RDATE']);
+            $more   = false;
 
             if (!empty($exdates)) {
                 $rdates = array_diff($rdates, $exdates);
@@ -820,8 +824,7 @@ class libcalendaring extends rcube_plugin
                 $more   = true;
             }
 
-            return $this->gettext('ondate') . ' ' . join(', ', $rdates)
-                . ($more ? '...' : '');
+            return $this->gettext('ondate') . ' ' . join(', ', $rdates) . ($more ? '...' : '');
         }
 
         $output  = sprintf('%s %d ', $this->gettext('every'), $rrule['INTERVAL'] ?: 1);
@@ -841,10 +844,10 @@ class libcalendaring extends rcube_plugin
             break;
         }
 
-        if ($rrule['COUNT']) {
+        if (!empty($rrule['COUNT'])) {
             $until = $this->gettext(array('name' => 'forntimes', 'vars' => array('nr' => $rrule['COUNT'])));
         }
-        else if ($rrule['UNTIL']) {
+        else if (!empty($rrule['UNTIL'])) {
             $until = $this->gettext('recurrencend') . ' ' . $this->rc->format_date($rrule['UNTIL'], $format);
         }
         else {
@@ -854,13 +857,13 @@ class libcalendaring extends rcube_plugin
         $output .= ', ' . $until;
 
         if (!empty($exdates)) {
+            $more = false;
             if (count($exdates) > $limit) {
                 $exdates = array_slice($exdates, 0, $limit);
                 $more    = true;
             }
 
-            $output  = '; ' . $this->gettext('except') . ' ' . join(', ', $exdates)
-                . ($more ? '...' : '');
+            $output  .= '; ' . $this->gettext('except') . ' ' . join(', ', $exdates) . ($more ? '...' : '');
         }
 
         return $output;
@@ -874,30 +877,35 @@ class libcalendaring extends rcube_plugin
         switch ($attrib['part']) {
             // frequency selector
             case 'frequency':
-                $select = new html_select(array('name' => 'frequency', 'id' => 'edit-recurrence-frequency'));
+                $select = new html_select(array('name' => 'frequency', 'id' => 'edit-recurrence-frequency', 'class' => 'form-control'));
                 $select->add($this->gettext('never'),   '');
                 $select->add($this->gettext('daily'),   'DAILY');
                 $select->add($this->gettext('weekly'),  'WEEKLY');
                 $select->add($this->gettext('monthly'), 'MONTHLY');
                 $select->add($this->gettext('yearly'),  'YEARLY');
                 $select->add($this->gettext('rdate'),   'RDATE');
-                $html = html::label('edit-recurrence-frequency', $this->gettext('frequency')) . $select->show('');
+                $html = html::label(array('for' => 'edit-recurrence-frequency', 'class' => 'col-form-label col-sm-2'), $this->gettext('frequency'))
+                    . html::div('col-sm-10', $select->show(''));
                 break;
 
             // daily recurrence
             case 'daily':
-                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval', 'id' => 'edit-recurrence-interval-daily'));
-                $html = html::div($attrib, html::label('edit-recurrence-interval-daily', $this->gettext('every')) . $select->show(1) . html::span('label-after', $this->gettext('days')));
+                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval form-control', 'id' => 'edit-recurrence-interval-daily'));
+                $html = html::div($attrib, html::label(array('for' => 'edit-recurrence-interval-daily', 'class' => 'col-form-label col-sm-2'), $this->gettext('every'))
+                    . html::div('col-sm-10 input-group', $select->show(1) . html::span('label-after input-group-append', html::span('input-group-text', $this->gettext('days')))));
                 break;
 
             // weekly recurrence form
             case 'weekly':
-                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval', 'id' => 'edit-recurrence-interval-weekly'));
-                $html = html::div($attrib, html::label('edit-recurrence-interval-weekly', $this->gettext('every')) . $select->show(1) . html::span('label-after', $this->gettext('weeks')));
+                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval form-control', 'id' => 'edit-recurrence-interval-weekly'));
+                $html = html::div($attrib, html::label(array('for' => 'edit-recurrence-interval-weekly', 'class' => 'col-form-label col-sm-2'), $this->gettext('every'))
+                    . html::div('col-sm-10 input-group', $select->show(1) . html::span('label-after input-group-append', html::span('input-group-text', $this->gettext('weeks')))));
+
                 // weekday selection
-                $daymap = array('sun','mon','tue','wed','thu','fri','sat');
+                $daymap   = array('sun','mon','tue','wed','thu','fri','sat');
                 $checkbox = new html_checkbox(array('name' => 'byday', 'class' => 'edit-recurrence-weekly-byday'));
-                $first = $this->rc->config->get('calendar_first_day', 1);
+                $first    = $this->rc->config->get('calendar_first_day', 1);
+
                 for ($weekdays = '', $j = $first; $j <= $first+6; $j++) {
                     $d = $j % 7;
                     $weekdays .= html::label(array('class' => 'weekday'),
@@ -905,13 +913,16 @@ class libcalendaring extends rcube_plugin
                         $this->gettext($daymap[$d])
                     ) . ' ';
                 }
-                $html .= html::div($attrib, html::label(null, $this->gettext('bydays')) . $weekdays);
+
+                $html .= html::div($attrib, html::label(array('class' => 'col-form-label col-sm-2'), $this->gettext('bydays'))
+                    . html::div('col-sm-10 form-control-plaintext', $weekdays));
                 break;
 
             // monthly recurrence form
             case 'monthly':
-                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval', 'id' => 'edit-recurrence-interval-monthly'));
-                $html = html::div($attrib, html::label('edit-recurrence-interval-monthly', $this->gettext('every')) . $select->show(1) . html::span('label-after', $this->gettext('months')));
+                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval form-control', 'id' => 'edit-recurrence-interval-monthly'));
+                $html = html::div($attrib, html::label(array('for' => 'edit-recurrence-interval-monthly', 'class' => 'col-form-label col-sm-2'), $this->gettext('every'))
+                    . html::div('col-sm-10 input-group', $select->show(1) . html::span('label-after input-group-append', html::span('input-group-text', $this->gettext('months')))));
 
                 $checkbox = new html_checkbox(array('name' => 'bymonthday', 'class' => 'edit-recurrence-monthly-bymonthday'));
                 for ($monthdays = '', $d = 1; $d <= 31; $d++) {
@@ -924,62 +935,81 @@ class libcalendaring extends rcube_plugin
                 $table = new html_table(array('cols' => 2, 'border' => 0, 'cellpadding' => 0, 'class' => 'formtable'));
                 $table->add('label', html::label(null, $radio->show('BYMONTHDAY', array('value' => 'BYMONTHDAY')) . ' ' . $this->gettext('each')));
                 $table->add(null, $monthdays);
-                $table->add('label', html::label(null, $radio->show('', array('value' => 'BYDAY')) . ' ' . $this->gettext('onevery')));
-                $table->add(null, $this->rrule_selectors($attrib['part']));
+                $table->add('label', html::label(null, $radio->show('', array('value' => 'BYDAY')) . ' ' . $this->gettext('every')));
+                $table->add('recurrence-onevery', $this->rrule_selectors($attrib['part']));
 
-                $html .= html::div($attrib, $table->show());
+                $html .= html::div($attrib, html::label(array('class' => 'col-form-label col-sm-2'), $this->gettext('bydays'))
+                    . html::div('col-sm-10 form-control-plaintext', $table->show()));
                 break;
 
             // annually recurrence form
             case 'yearly':
-                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval', 'id' => 'edit-recurrence-interval-yearly'));
-                $html = html::div($attrib, html::label('edit-recurrence-interval-yearly', $this->gettext('every')) . $select->show(1) . html::span('label-after', $this->gettext('years')));
+                $select = $this->interval_selector(array('name' => 'interval', 'class' => 'edit-recurrence-interval form-control', 'id' => 'edit-recurrence-interval-yearly'));
+                $html = html::div($attrib, html::label(array('for' => 'edit-recurrence-interval-yearly', 'class' => 'col-form-label col-sm-2'), $this->gettext('every'))
+                    . html::div('col-sm-10 input-group', $select->show(1) . html::span('label-after input-group-append', html::span('input-group-text', $this->gettext('years')))));
+
                 // month selector
                 $monthmap = array('','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec');
                 $checkbox = new html_checkbox(array('name' => 'bymonth', 'class' => 'edit-recurrence-yearly-bymonth'));
+
                 for ($months = '', $m = 1; $m <= 12; $m++) {
                     $months .= html::label(array('class' => 'month'), $checkbox->show(null, array('value' => $m)) . $this->gettext($monthmap[$m]));
                     $months .= $m % 4 ? ' ' : html::br();
                 }
-                $html .= html::div($attrib + array('id' => 'edit-recurrence-yearly-bymonthblock'), $months);
 
-                // day rule selection
-                $html .= html::div($attrib, html::label(null, $this->gettext('onevery')) . $this->rrule_selectors($attrib['part'], '---'));
+                $html .= html::div($attrib, html::label(array('class' => 'col-form-label col-sm-2'), $this->gettext('bymonths'))
+                    . html::div('col-sm-10 form-control-plaintext',
+                        html::div(array('id' => 'edit-recurrence-yearly-bymonthblock'), $months)
+                        . html::div('recurrence-onevery', $this->rrule_selectors($attrib['part'], '---'))
+                    ));
                 break;
 
             // end of recurrence form
             case 'until':
-                $radio = new html_radiobutton(array('name' => 'repeat', 'class' => 'edit-recurrence-until'));
-                $select = $this->interval_selector(array('name' => 'times', 'id' => 'edit-recurrence-repeat-times'));
-                $input = new html_inputfield(array('name' => 'untildate', 'id' => 'edit-recurrence-enddate', 'size' => "10"));
+                $radio  = new html_radiobutton(array('name' => 'repeat', 'class' => 'edit-recurrence-until'));
+                $select = $this->interval_selector(array('name' => 'times', 'id' => 'edit-recurrence-repeat-times', 'class' => 'form-control'));
+                $input  = new html_inputfield(array('name' => 'untildate', 'id' => 'edit-recurrence-enddate', 'size' => '10', 'class' => 'form-control datepicker'));
 
                 $html = html::div('line first',
-                    html::label(null, $radio->show('', array('value' => '', 'id' => 'edit-recurrence-repeat-forever')) . ' ' .
-                        $this->gettext('forever'))
+                    $radio->show('', array('value' => '', 'id' => 'edit-recurrence-repeat-forever'))
+                        . ' ' . html::label('edit-recurrence-repeat-forever', $this->gettext('forever'))
                 );
 
-                $forntimes = $this->gettext(array(
-                    'name' => 'forntimes',
-                    'vars' => array('nr' => '%s'))
-                );
+                $label = $this->gettext('ntimes');
+                if (strpos($label, '$') === 0) {
+                    $label = str_replace('$n', '', $label);
+                    $group  = $select->show(1)
+                        . html::span('input-group-append', html::span('input-group-text', rcube::Q($label)));
+                }
+                else {
+                    $label = str_replace('$n', '', $label);
+                    $group  = html::span('input-group-prepend', html::span('input-group-text', rcube::Q($label)))
+                        . $select->show(1);
+                }
+
                 $html .= html::div('line',
-                    html::label(null, $radio->show('', array('value' => 'count', 'id' => 'edit-recurrence-repeat-count', 'aria-label' => sprintf($forntimes, 'N')))) . ' ' .
-                        sprintf($forntimes, $select->show(1))
+                    $radio->show('', array('value' => 'count', 'id' => 'edit-recurrence-repeat-count'))
+                        . ' ' . html::label('edit-recurrence-repeat-count', $this->gettext('for'))
+                        . ' ' . html::span('input-group', $group)
                 );
 
                 $html .= html::div('line',
-                    html::label(null, $radio->show('', array('value' => 'until', 'id' => 'edit-recurrence-repeat-until', 'aria-label' => $this->gettext('untilenddate')))) . ' ' .
-                        $this->gettext('untildate') . ' ' . $input->show('', array('aria-label' => $this->gettext('untilenddate')))
+                    $radio->show('', array('value' => 'until', 'id' => 'edit-recurrence-repeat-until', 'aria-label' => $this->gettext('untilenddate')))
+                        . ' ' . html::label('edit-recurrence-repeat-until', $this->gettext('untildate'))
+                        . ' ' . $input->show('', array('aria-label' => $this->gettext('untilenddate')))
                 );
 
-                $html = html::div($attrib, html::label(null, ucfirst($this->gettext('recurrencend'))) . $html);
+                $html = html::div($attrib, html::label(array('class' => 'col-form-label col-sm-2'), ucfirst($this->gettext('recurrencend')))
+                    . html::div('col-sm-10', $html));
                 break;
 
             case 'rdate':
-                $ul = html::tag('ul', array('id' => 'edit-recurrence-rdates'), '');
-                $input = new html_inputfield(array('name' => 'rdate', 'id' => 'edit-recurrence-rdate-input', 'size' => "10"));
+                $ul     = html::tag('ul', array('id' => 'edit-recurrence-rdates', 'class' => 'recurrence-rdates'), '');
+                $input  = new html_inputfield(array('name' => 'rdate', 'id' => 'edit-recurrence-rdate-input', 'size' => "10", 'class' => 'form-control datepicker'));
                 $button = new html_inputfield(array('type' => 'button', 'class' => 'button add', 'value' => $this->gettext('addrdate')));
-                $html .= html::div($attrib, $ul . html::div('inputform', $input->show() . $button->show()));
+
+                $html = html::div($attrib, html::label(array('class' => 'col-form-label col-sm-2', 'for' => 'edit-recurrence-rdate-input'), $this->gettext('bydates'))
+                    . html::div('col-sm-10', $ul . html::div('inputform', $input->show() . $button->show())));
                 break;
         }
 
@@ -1002,7 +1032,7 @@ class libcalendaring extends rcube_plugin
     private function rrule_selectors($part, $noselect = null)
     {
         // rule selectors
-        $select_prefix = new html_select(array('name' => 'bydayprefix', 'id' => "edit-recurrence-$part-prefix"));
+        $select_prefix = new html_select(array('name' => 'bydayprefix', 'id' => "edit-recurrence-$part-prefix", 'class' => 'form-control'));
         if ($noselect) $select_prefix->add($noselect, '');
         $select_prefix->add(array(
                 $this->gettext('first'),
@@ -1013,7 +1043,7 @@ class libcalendaring extends rcube_plugin
             ),
             array(1, 2, 3, 4, -1));
 
-        $select_wday = new html_select(array('name' => 'byday', 'id' => "edit-recurrence-$part-byday"));
+        $select_wday = new html_select(array('name' => 'byday', 'id' => "edit-recurrence-$part-byday", 'class' => 'form-control'));
         if ($noselect) $select_wday->add($noselect, '');
 
         $daymap = array('sunday','monday','tuesday','wednesday','thursday','friday','saturday');
@@ -1031,15 +1061,16 @@ class libcalendaring extends rcube_plugin
      */
     public function to_client_recurrence($recurrence, $allday = false)
     {
-        if ($recurrence['UNTIL'])
+        if (!empty($recurrence['UNTIL'])) {
             $recurrence['UNTIL'] = $this->adjust_timezone($recurrence['UNTIL'], $allday)->format('c');
+        }
 
         // format RDATE values
-        if (is_array($recurrence['RDATE'])) {
+        if (!empty($recurrence['RDATE'])) {
             $libcal = $this;
             $recurrence['RDATE'] = array_map(function($rdate) use ($libcal) {
                 return $libcal->adjust_timezone($rdate, true)->format('c');
-            }, $recurrence['RDATE']);
+            }, (array) $recurrence['RDATE']);
         }
 
         unset($recurrence['EXCEPTIONS']);
@@ -1056,7 +1087,7 @@ class libcalendaring extends rcube_plugin
             $recurrence['UNTIL'] = new DateTime($recurrence['UNTIL'], $this->timezone);
         }
 
-        if (is_array($recurrence) && is_array($recurrence['RDATE'])) {
+        if (is_array($recurrence) && !empty($recurrence['RDATE'])) {
             $tz = $this->timezone;
             $recurrence['RDATE'] = array_map(function($rdate) use ($tz, $start) {
                 try {
@@ -1072,259 +1103,6 @@ class libcalendaring extends rcube_plugin
         }
 
         return $recurrence;
-    }
-
-
-    /*********  Attachments handling  *********/
-
-    /**
-     * Handler for attachment uploads
-     */
-    public function attachment_upload($session_key, $id_prefix = '')
-    {
-        // Upload progress update
-        if (!empty($_GET['_progress'])) {
-            $this->rc->upload_progress();
-        }
-
-        $recid = $id_prefix . rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-        $uploadid = rcube_utils::get_input_value('_uploadid', rcube_utils::INPUT_GPC);
-
-        if (!is_array($_SESSION[$session_key]) || $_SESSION[$session_key]['id'] != $recid) {
-            $_SESSION[$session_key] = array();
-            $_SESSION[$session_key]['id'] = $recid;
-            $_SESSION[$session_key]['attachments'] = array();
-        }
-
-        // clear all stored output properties (like scripts and env vars)
-        $this->rc->output->reset();
-
-        if (is_array($_FILES['_attachments']['tmp_name'])) {
-            foreach ($_FILES['_attachments']['tmp_name'] as $i => $filepath) {
-              // Process uploaded attachment if there is no error
-              $err = $_FILES['_attachments']['error'][$i];
-
-              if (!$err) {
-                $attachment = array(
-                    'path' => $filepath,
-                    'size' => $_FILES['_attachments']['size'][$i],
-                    'name' => $_FILES['_attachments']['name'][$i],
-                    'mimetype' => rcube_mime::file_content_type($filepath, $_FILES['_attachments']['name'][$i], $_FILES['_attachments']['type'][$i]),
-                    'group' => $recid,
-                );
-
-                $attachment = $this->rc->plugins->exec_hook('attachment_upload', $attachment);
-              }
-
-              if (!$err && $attachment['status'] && !$attachment['abort']) {
-                  $id = $attachment['id'];
-
-                  // store new attachment in session
-                  unset($attachment['status'], $attachment['abort']);
-                  $_SESSION[$session_key]['attachments'][$id] = $attachment;
-
-                  if (($icon = $_SESSION[$session_key . '_deleteicon']) && is_file($icon)) {
-                      $button = html::img(array(
-                          'src' => $icon,
-                          'alt' => $this->rc->gettext('delete')
-                      ));
-                  }
-                  else {
-                      $button = rcube::Q($this->rc->gettext('delete'));
-                  }
-
-                  $content = html::a(array(
-                      'href' => "#delete",
-                      'class' => 'delete',
-                      'onclick' => sprintf("return %s.remove_from_attachment_list('rcmfile%s')", rcmail_output::JS_OBJECT_NAME, $id),
-                      'title' => $this->rc->gettext('delete'),
-                      'aria-label' => $this->rc->gettext('delete') . ' ' . $attachment['name'],
-                  ), $button);
-
-                  $content .= rcube::Q($attachment['name']);
-
-                  $this->rc->output->command('add2attachment_list', "rcmfile$id", array(
-                      'html' => $content,
-                      'name' => $attachment['name'],
-                      'mimetype' => $attachment['mimetype'],
-                      'classname' => rcube_utils::file2class($attachment['mimetype'], $attachment['name']),
-                      'complete' => true), $uploadid);
-              }
-              else {  // upload failed
-                  if ($err == UPLOAD_ERR_INI_SIZE || $err == UPLOAD_ERR_FORM_SIZE) {
-                    $msg = $this->rc->gettext(array('name' => 'filesizeerror', 'vars' => array(
-                        'size' => $this->rc->show_bytes(parse_bytes(ini_get('upload_max_filesize'))))));
-                  }
-                  else if ($attachment['error']) {
-                      $msg = $attachment['error'];
-                  }
-                  else {
-                      $msg = $this->rc->gettext('fileuploaderror');
-                  }
-
-                  $this->rc->output->command('display_message', $msg, 'error');
-                  $this->rc->output->command('remove_from_attachment_list', $uploadid);
-                }
-            }
-        }
-        else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // if filesize exceeds post_max_size then $_FILES array is empty,
-            // show filesizeerror instead of fileuploaderror
-            if ($maxsize = ini_get('post_max_size'))
-                $msg = $this->rc->gettext(array('name' => 'filesizeerror', 'vars' => array(
-                    'size' => $this->rc->show_bytes(parse_bytes($maxsize)))));
-            else
-                $msg = $this->rc->gettext('fileuploaderror');
-
-            $this->rc->output->command('display_message', $msg, 'error');
-            $this->rc->output->command('remove_from_attachment_list', $uploadid);
-        }
-
-        $this->rc->output->send('iframe');
-    }
-
-
-    /**
-     * Deliver an event/task attachment to the client
-     * (similar as in Roundcube core program/steps/mail/get.inc)
-     */
-    public function attachment_get($attachment)
-    {
-        ob_end_clean();
-
-        if ($attachment && $attachment['body']) {
-            // allow post-processing of the attachment body
-            $part = new rcube_message_part;
-            $part->filename  = $attachment['name'];
-            $part->size      = $attachment['size'];
-            $part->mimetype  = $attachment['mimetype'];
-
-            $plugin = $this->rc->plugins->exec_hook('message_part_get', array(
-                'body'     => $attachment['body'],
-                'mimetype' => strtolower($attachment['mimetype']),
-                'download' => !empty($_GET['_download']),
-                'part'     => $part,
-            ));
-
-            if ($plugin['abort'])
-                exit;
-
-            $mimetype = $plugin['mimetype'];
-            list($ctype_primary, $ctype_secondary) = explode('/', $mimetype);
-
-            $browser = $this->rc->output->browser;
-
-            // send download headers
-            if ($plugin['download']) {
-                header("Content-Type: application/octet-stream");
-                if ($browser->ie)
-                    header("Content-Type: application/force-download");
-            }
-            else if ($ctype_primary == 'text') {
-                header("Content-Type: text/$ctype_secondary");
-            }
-            else {
-                header("Content-Type: $mimetype");
-                header("Content-Transfer-Encoding: binary");
-            }
-
-            // display page, @TODO: support text/plain (and maybe some other text formats)
-            if ($mimetype == 'text/html' && empty($_GET['_download'])) {
-                $OUTPUT = new rcmail_html_page();
-                // @TODO: use washtml on $body
-                $OUTPUT->write($plugin['body']);
-            }
-            else {
-                // don't kill the connection if download takes more than 30 sec.
-                @set_time_limit(0);
-
-                $filename = $attachment['name'];
-                $filename = preg_replace('[\r\n]', '', $filename);
-
-                if ($browser->ie && $browser->ver < 7)
-                    $filename = rawurlencode(abbreviate_string($filename, 55));
-                else if ($browser->ie)
-                    $filename = rawurlencode($filename);
-                else
-                    $filename = addcslashes($filename, '"');
-
-                $disposition = !empty($_GET['_download']) ? 'attachment' : 'inline';
-                header("Content-Disposition: $disposition; filename=\"$filename\"");
-
-                echo $plugin['body'];
-            }
-
-            exit;
-        }
-
-        // if we arrive here, the requested part was not found
-        header('HTTP/1.1 404 Not Found');
-        exit;
-    }
-
-    /**
-     * Show "loading..." page in attachment iframe
-     */
-    public function attachment_loading_page()
-    {
-        $url = str_replace('&_preload=1', '', $_SERVER['REQUEST_URI']);
-        $message = $this->rc->gettext('loadingdata');
-
-        header('Content-Type: text/html; charset=' . RCUBE_CHARSET);
-        print "<html>\n<head>\n"
-            . '<meta http-equiv="refresh" content="0; url='.rcube::Q($url).'">' . "\n"
-            . '<meta http-equiv="content-type" content="text/html; charset='.RCUBE_CHARSET.'">' . "\n"
-            . "</head>\n<body>\n$message\n</body>\n</html>";
-        exit;
-    }
-
-    /**
-     * Template object for attachment display frame
-     */
-    public function attachment_frame($attrib = array())
-    {
-        $mimetype = strtolower($this->attachment['mimetype']);
-        list($ctype_primary, $ctype_secondary) = explode('/', $mimetype);
-
-        $attrib['src'] = './?' . str_replace('_frame=', ($ctype_primary == 'text' ? '_show=' : '_preload='), $_SERVER['QUERY_STRING']);
-
-        $this->rc->output->add_gui_object('attachmentframe', $attrib['id']);
-
-        return html::iframe($attrib);
-    }
-
-    /**
-     *
-     */
-    public function attachment_header($attrib = array())
-    {
-        $rcmail = rcmail::get_instance();
-        $dl_link = strtolower($attrib['downloadlink']) == 'true';
-        $dl_url = $this->rc->url(array('_frame' => null, '_download' => 1) + $_GET);
-
-        $table = new html_table(array('cols' => $dl_link ? 3 : 2));
-
-        if (!empty($this->attachment['name'])) {
-            $table->add('title', rcube::Q($this->rc->gettext('filename')));
-            $table->add('header', rcube::Q($this->attachment['name']));
-            if ($dl_link) {
-                $table->add('download-link', html::a($dl_url, rcube::Q($this->rc->gettext('download'))));
-            }
-        }
-
-        if (!empty($this->attachment['mimetype'])) {
-            $table->add('title', rcube::Q($this->rc->gettext('type')));
-            $table->add('header', rcube::Q($this->attachment['mimetype']));
-        }
-
-        if (!empty($this->attachment['size'])) {
-            $table->add('title', rcube::Q($this->rc->gettext('filesize')));
-            $table->add('header', rcube::Q($this->rc->show_bytes($this->attachment['size'])));
-        }
-
-        $this->rc->output->set_env('attachment_download_url', $dl_url);
-
-        return $table->show($attrib);
     }
 
 
@@ -1422,7 +1200,7 @@ class libcalendaring extends rcube_plugin
             $headers = $imap->get_message_headers($uid);
             $parser  = $this->get_ical();
 
-            if ($part->ctype_parameters['charset']) {
+            if (!empty($part->ctype_parameters['charset'])) {
                 $charset = $part->ctype_parameters['charset'];
             }
 
@@ -1465,8 +1243,9 @@ class libcalendaring extends rcube_plugin
             $level = explode('.', $part->mime_id);
 
             while (array_pop($level) !== null) {
-                $parent = $message->mime_parts[join('.', $level) ?: 0];
-                if ($parent->mimetype == 'multipart/report') {
+                $id     = join('.', $level) ?: 0;
+                $parent = !empty($message->mime_parts[$id]) ? $message->mime_parts[$id] : null;
+                if ($parent && $parent->mimetype == 'multipart/report') {
                     return false;
                 }
             }
@@ -1475,7 +1254,7 @@ class libcalendaring extends rcube_plugin
         return (
             in_array($part->mimetype, array('text/calendar', 'text/x-vcalendar', 'application/ics')) ||
             // Apple sends files as application/x-any (!?)
-            ($part->mimetype == 'application/x-any' && $part->filename && preg_match('/\.ics$/i', $part->filename))
+            ($part->mimetype == 'application/x-any' && !empty($part->filename) && preg_match('/\.ics$/i', $part->filename))
         );
     }
 
@@ -1515,7 +1294,7 @@ class libcalendaring extends rcube_plugin
      */
     public static function recurrence_id_format($event)
     {
-        return $event['allday'] ? 'Ymd' : 'Ymd\THis';
+        return !empty($event['allday']) ? 'Ymd' : 'Ymd\THis';
     }
 
     /**
@@ -1528,13 +1307,13 @@ class libcalendaring extends rcube_plugin
      */
     public static function recurrence_instance_identifier($event, $allday = null)
     {
-        $instance_date = $event['recurrence_date'] ?: $event['start'];
+        $instance_date = !empty($event['recurrence_date']) ? $event['recurrence_date'] : $event['start'];
 
-        if ($instance_date && is_a($instance_date, 'DateTime')) {
+        if ($instance_date instanceof DateTime) {
             // According to RFC5545 (3.8.4.4) RECURRENCE-ID format should
             // be date/date-time depending on the main event type, not the exception
             if ($allday === null) {
-                $allday = $event['allday'];
+                $allday = !empty($event['allday']);
             }
 
             return $instance_date->format($allday ? 'Ymd' : 'Ymd\THis');
@@ -1670,8 +1449,9 @@ class libcalendaring extends rcube_plugin
      */
     public static function to_rrule($recurrence, $allday = false)
     {
-        if (is_string($recurrence))
+        if (is_string($recurrence)) {
             return $recurrence;
+        }
 
         $rrule = '';
         foreach ((array)$recurrence as $k => $val) {
@@ -1680,7 +1460,7 @@ class libcalendaring extends rcube_plugin
             case 'UNTIL':
                 // convert to UTC according to RFC 5545
                 if (is_a($val, 'DateTime')) {
-                    if (!$allday && !$val->_dateonly) {
+                    if (!$allday && empty($val->_dateonly)) {
                         $until = clone $val;
                         $until->setTimezone(new DateTimeZone('UTC'));
                         $val = $until->format('Ymd\THis\Z');
@@ -1693,8 +1473,9 @@ class libcalendaring extends rcube_plugin
             case 'RDATE':
             case 'EXDATE':
                 foreach ((array)$val as $i => $ex) {
-                    if (is_a($ex, 'DateTime'))
+                    if (is_a($ex, 'DateTime')) {
                         $val[$i] = $ex->format('Ymd\THis');
+                    }
                 }
                 $val = join(',', (array)$val);
                 break;
@@ -1702,8 +1483,9 @@ class libcalendaring extends rcube_plugin
                 continue 2;
             }
 
-            if (strlen($val))
+            if (strlen($val)) {
                 $rrule .= $k . '=' . $val . ';';
+            }
         }
 
         return rtrim($rrule, ';');
@@ -1726,8 +1508,8 @@ class libcalendaring extends rcube_plugin
             'M'    => 'n',
             'dddd' => 'l',
             'ddd'  => 'D',
-            'dd'   => 'd',
-            'd'    => 'j',
+            'DD'   => 'd',
+            'D'    => 'j',
             'HH'   => '**',
             'hh'   => '%%',
             'H'    => 'G',
@@ -1746,20 +1528,20 @@ class libcalendaring extends rcube_plugin
     }
 
     /**
-     * Convert from PHP date() format to fullcalendar format string
+     * Convert from PHP date() format to fullcalendar (MomentJS) format string
      */
     public static function from_php_date_format($from)
     {
         // "d.m.Y H:i:s" => "dd.MM.yyyy HH:mm:ss"
         return strtr($from, array(
-            'y' => 'yy',
-            'Y' => 'yyyy',
+            'y' => 'YY',
+            'Y' => 'YYYY',
             'M' => 'MMM',
             'F' => 'MMMM',
             'm' => 'MM',
             'n' => 'M',
-            'j' => 'd',
-            'd' => 'dd',
+            'j' => 'D',
+            'd' => 'DD',
             'D' => 'ddd',
             'l' => 'dddd',
             'H' => 'HH',
@@ -1768,10 +1550,7 @@ class libcalendaring extends rcube_plugin
             'g' => 'h',
             'i' => 'mm',
             's' => 'ss',
-            'A' => 'TT',
-            'a' => 'tt',
-            'c' => 'u',
+            'c' => '',
         ));
     }
-
 }

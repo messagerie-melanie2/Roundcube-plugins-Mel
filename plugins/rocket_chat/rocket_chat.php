@@ -67,7 +67,7 @@ class rocket_chat extends rcube_plugin {
           if ($this->rc->config->get('ismobile', false)) {
             $this->add_button(array(
                 'command' => 'discussion',
-                'class' => 'button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
+                'class' => ' button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
                 'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
                 'innerclass' => 'button-inner',
                 'label' => 'rocket_chat.task'
@@ -75,10 +75,11 @@ class rocket_chat extends rcube_plugin {
           } else {
             $this->add_button(array(
                 'command' => 'discussion',
-                'class' => 'button-rocket_chat',
-                'classsel' => 'button-rocket_chat button-selected',
+                'class' => 'icofont-chat button-rocket_chat',
+                'classsel' => 'icofont-chat button-rocket_chat button-selected',
                 'innerclass' => 'button-inner',
-                'label' => 'rocket_chat.task'
+                'label' => 'rocket_chat.task',
+                'type'=> 'link'
             ), 'taskbar');
           }
         }

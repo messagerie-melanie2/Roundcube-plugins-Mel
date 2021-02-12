@@ -43,15 +43,19 @@ function rcube_libcalendaring(settings)
     var me = this;
     var gmt_offset = (new Date().getTimezoneOffset() / -60) - (settings.timezone || 0) - (settings.dst || 0);
     var client_timezone = new Date().getTimezoneOffset();
+    var color_map = {};
 
     // general datepicker settings
-    var datepicker_settings = {
-        // translate from fullcalendar format to datepicker format
-        dateFormat: settings.date_format.replace(/M/g, 'm').replace(/mmmmm/, 'MM').replace(/mmm/, 'M').replace(/dddd/, 'DD').replace(/ddd/, 'D').replace(/yy/g, 'y'),
+    this.datepicker_settings = {
+        // translate from fullcalendar (MomentJS) format to datepicker format
+        dateFormat: settings.date_format.replace(/M/g, 'm').replace(/mmmm/, 'MM').replace(/mmm/, 'M')
+            .replace(/dddd/, 'DD').replace(/ddd/, 'D').replace(/DD/, 'dd').replace(/D/, 'd')
+            .replace(/Y/g, 'y').replace(/yyyy/, 'yy'),
         firstDay : settings.first_day,
         dayNamesMin: settings.days_short,
         monthNames: settings.months,
         monthNamesShort: settings.months,
+        showWeek: settings.show_weekno >= 0,
         changeMonth: false,
         showOtherMonths: true,
         selectOtherMonths: true
@@ -76,19 +80,27 @@ function rcube_libcalendaring(settings)
       if (!event.end)
         event.end = event.start;
 
-      var fromto, duration = event.end.getTime() / 1000 - event.start.getTime() / 1000,
+      // Support Moment.js objects
+      var start = 'toDate' in event.start ? event.start.toDate() : event.start,
+        end = event.end && 'toDate' in event.end ? event.end.toDate() : event.end;
+
+      var fromto, duration = end.getTime() / 1000 - start.getTime() / 1000,
         until = voice ? ' ' + rcmail.gettext('until','libcalendaring') + ' ' : ' — ';
+
       if (event.allDay) {
-        fromto = this.format_datetime(event.start, 1, voice)
-          + (duration > 86400 || event.start.getDay() != event.end.getDay() ? until + this.format_datetime(event.end, 1, voice) : '');
+        // fullcalendar end dates of all-day events are exclusive
+        end = new Date(end.getTime() - 1000*60*60*24*1);
+        duration = end.getTime() / 1000 - start.getTime() / 1000;
+        fromto = this.format_datetime(start, 1, voice)
+          + (duration > 86400 || start.getDay() != end.getDay() ? until + this.format_datetime(end, 1, voice) : '');
       }
-      else if (duration < 86400 && event.start.getDay() == event.end.getDay()) {
-        fromto = this.format_datetime(event.start, 0, voice)
-          + (duration > 0 ? until + this.format_datetime(event.end, 2, voice) : '');
+      else if (duration < 86400 && start.getDay() == end.getDay()) {
+        fromto = this.format_datetime(start, 0, voice)
+          + (duration > 0 ? until + this.format_datetime(end, 2, voice) : '');
       }
       else {
-        fromto = this.format_datetime(event.start, 0, voice)
-          + (duration > 0 ? until + this.format_datetime(event.end, 0, voice) : '');
+        fromto = this.format_datetime(start, 0, voice)
+          + (duration > 0 ? until + this.format_datetime(end, 0, voice) : '');
       }
 
       return fromto;
@@ -154,7 +166,7 @@ function rcube_libcalendaring(settings)
     this.parse_datetime = function(time, date)
     {
         // we use the utility function from datepicker to parse dates
-        var date = date ? $.datepicker.parseDate(datepicker_settings.dateFormat, date, datepicker_settings) : new Date();
+        var date = date ? $.datepicker.parseDate(this.datepicker_settings.dateFormat, date, this.datepicker_settings) : new Date();
 
         var time_arr = time.replace(/\s*[ap][.m]*/i, '').replace(/0([0-9])/g, '$1').split(/[:.]/);
         if (!isNaN(time_arr[0])) {
@@ -229,6 +241,12 @@ function rcube_libcalendaring(settings)
      */
     this.date2ISO8601 = function(date)
     {
+        if (!date)
+            return null;
+
+        if ('toDate' in date)
+            return date.format('YYYY-MM-DD[T]HH:mm:ss'); // MomentJS
+
         var zeropad = function(num) { return (num < 10 ? '0' : '') + num; };
 
         return date.getFullYear() + '-' + zeropad(date.getMonth()+1) + '-' + zeropad(date.getDate())
@@ -242,7 +260,7 @@ function rcube_libcalendaring(settings)
     {
         var res = '';
         if (!mode || mode == 1) {
-          res += $.datepicker.formatDate(voice ? 'MM d yy' : datepicker_settings.dateFormat, date, datepicker_settings);
+          res += $.datepicker.formatDate(voice ? 'MM d yy' : this.datepicker_settings.dateFormat, date, this.datepicker_settings);
         }
         if (!mode) {
             res += voice ? ' ' + rcmail.gettext('at','libcalendaring') + ' ' : ' ';
@@ -269,10 +287,8 @@ function rcube_libcalendaring(settings)
             hh  : function(d) { return zeroPad(d.getHours() % 12 || 12) },
             H   : function(d) { return d.getHours() },
             HH  : function(d) { return zeroPad(d.getHours()) },
-            t   : function(d) { return d.getHours() < 12 ? 'a' : 'p' },
-            tt  : function(d) { return d.getHours() < 12 ? 'am' : 'pm' },
-            T   : function(d) { return d.getHours() < 12 ? 'A' : 'P' },
-            TT  : function(d) { return d.getHours() < 12 ? 'AM' : 'PM' }
+            a   : function(d) { return d.getHours() < 12 ? 'am' : 'pm' },
+            A   : function(d) { return d.getHours() < 12 ? 'AM' : 'PM' }
         };
 
         var i, i2, c, formatter, res = '',
@@ -299,8 +315,10 @@ function rcube_libcalendaring(settings)
      */
     this.date2unixtime = function(date)
     {
-        var dst_offset = (client_timezone - date.getTimezoneOffset()) * 60;  // adjust DST offset
-        return Math.round(date.getTime()/1000 + gmt_offset * 3600 + dst_offset);
+        var dt = date && 'toDate' in date ? date.toDate() : date,
+            dst_offset = (client_timezone - dt.getTimezoneOffset()) * 60;  // adjust DST offset
+
+        return Math.round(dt.getTime()/1000 + gmt_offset * 3600 + dst_offset);
     }
 
     /**
@@ -314,6 +332,38 @@ function rcube_libcalendaring(settings)
         if (dst_offset)  // adjust DST offset
             date.setTime((ts + 3600) * 1000);
         return date;
+    }
+
+    /**
+     * Finds text color for specified background color
+     */
+    this.text_color = function(color)
+    {
+        var res = '#222';
+
+        if (!color) {
+            return res;
+        }
+
+        if (!color_map[color]) {
+            color_map[color] = '#fff';
+
+            // Convert 3-char to 6-char
+            if (/^#?([a-f0-9]{1})([a-f0-9]{1})([a-f0-9]{1})$/i.test(color)) {
+                color = '#' + RegExp.$1 + RegExp.$1 + RegExp.$2 + RegExp.$2 + RegExp.$3 + RegExp.$3;
+            }
+
+            if (/^#?([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.test(color)) {
+                // use information about brightness calculation found at
+                // http://javascriptrules.com/2009/08/05/css-color-brightness-contrast-using-javascript/
+                brightness = (parseInt(RegExp.$1, 16) * 299 + parseInt(RegExp.$2, 16) * 587 + parseInt(RegExp.$3, 16) * 114) / 1000;
+                if (brightness > 125) {
+                    color_map[color] = res;
+                }
+            }
+        }
+
+        return color_map[color];
     }
 
     /**
@@ -366,17 +416,11 @@ function rcube_libcalendaring(settings)
         var mailto_pattern = new RegExp('([^\\s\\n\\(\\);]+@'+utf_domain+')', 'ig');
         var link_replace = function(matches, p1, p2) {
           var title = '', text = p2;
-          // MANTIS 0005931: Le lien d'une invitation à une réunion Microsoft Teams ne fonctionne pas depuis l'agenda par rapport au lien du mail
-          var end = '';
-          if (p2.endsWith('&gt')) {
-            p2 = p2.substr(0, p2.length-3);
-            end = '&gt';
-          }
           if (p2 && p2.length > 55) {
             text = p2.substr(0, 45) + '...' + p2.substr(-8);
             title = p1 + p2;
           }
-          return '<a href="'+p1+p2+'" class="extlink" target="_blank" title="'+title+'">'+p1+text+'</a>' + end;
+          return '<a href="'+p1+p2+'" class="extlink" target="_blank" title="'+title+'">'+p1+text+'</a>'
         };
 
         return html
@@ -393,28 +437,24 @@ function rcube_libcalendaring(settings)
 
         // register events on alarm fields
         edit_type.change(function(){
-            // PAMELA
-            $(this).parent().parent().find('span.edit-alarm-values')[(this.selectedIndex>0?'show':'hide')]();
+            $(this).parent().find('span.edit-alarm-values')[(this.selectedIndex>0?'show':'hide')]();
         });
         $(prefix+' select.edit-alarm-offset').change(function(){
-            // PAMELA
-            var val = $(this).val(), parent = $(this).parent().parent();
+            var val = $(this).val(),
+                parent = $(this).parent(),
+                class_map = {'0': 'ontime', '@': 'ondate'};
+
             parent.find('.edit-alarm-date, .edit-alarm-time')[val === '@' ? 'show' : 'hide']();
-            parent.find('.edit-alarm-value').prop('disabled', val === '@' || val === '0');
+            parent.find('.edit-alarm-value')[val === '@' || val === '0' ? 'hide' : 'show']();
             parent.find('.edit-alarm-related')[val === '@' ? 'hide' : 'show']();
+            parent.removeClass('offset-ontime offset-ondate offset-default')
+                .addClass('offset-' + (class_map[val] || 'default'));
         });
 
-        $(prefix+' .edit-alarm-date').removeClass('hasDatepicker').removeAttr('id').datepicker(datepicker_settings);
+        $(prefix+' .edit-alarm-date').removeClass('hasDatepicker').removeAttr('id').datepicker(this.datepicker_settings);
 
         if (rcmail.env.action != 'print')
             this.init_time_autocomplete($(prefix+' .edit-alarm-time')[0], {});
-
-        $(prefix).on('click', 'a.delete-alarm', function(e){
-            if ($(this).closest('.edit-alarm-item').siblings().length > 0) {
-                $(this).closest('.edit-alarm-item').remove();
-            }
-            return false;
-        });
 
         // set a unique id attribute and set label reference accordingly
         if ((index || 0) > 0 && dom_id) {
@@ -423,16 +463,32 @@ function rcube_libcalendaring(settings)
             $(prefix+' label:first').attr('for', dom_id);
         }
 
-        $(prefix).on('click', 'a.add-alarm', function(e){
-            var i = $(this).closest('.edit-alarm-item').siblings().length + 1;
-            var item = $(this).closest('.edit-alarm-item').clone(false)
-              .removeClass('first')
-              .appendTo(prefix);
+        // Elastic
+        if (window.UI && UI.pretty_select) {
+            $(prefix + ' select').each(function() { UI.pretty_select(this); });
+        }
 
-              me.init_alarms_edit(prefix + ' .edit-alarm-item:eq(' + i + ')', i);
-              $('select.edit-alarm-type, select.edit-alarm-offset', item).change();
-              return false;
-        });
+        if (index)
+            return;
+
+        $(prefix)
+            .on('click', 'a.delete-alarm', function(e){
+                if ($(this).closest('.edit-alarm-item').siblings().length > 0) {
+                    $(this).closest('.edit-alarm-item').remove();
+                }
+                return false;
+            })
+            .on('click', 'a.add-alarm', function(e) {
+                var orig = $(this).closest('.edit-alarm-item'),
+                    i = orig.siblings().length + 1,
+                    item = orig.clone(false)
+                      .removeClass('first')
+                      .appendTo(orig.parent());
+
+                  me.init_alarms_edit(prefix + ' .edit-alarm-item:eq(' + i + ')', i);
+                  $('select.edit-alarm-type, select.edit-alarm-offset', item).change();
+                  return false;
+            });
     }
 
     this.set_alarms_edit = function(prefix, valarms)
@@ -442,13 +498,14 @@ function rcube_libcalendaring(settings)
         var i, alarm, domnode, val, offset;
         for (i=0; i < valarms.length; i++) {
           alarm = valarms[i];
+
           if (!alarm.action)
               alarm.action = 'DISPLAY';
 
           domnode = $(prefix + ' .edit-alarm-item').eq(0);
 
           if (i > 0) {
-            domnode = domnode.clone(false).removeClass('first').appendTo(prefix);
+            domnode = domnode.clone(false).removeClass('first').insertAfter(domnode);
             this.init_alarms_edit(prefix + ' .edit-alarm-item:eq(' + i + ')', i);
           }
 
@@ -570,7 +627,7 @@ function rcube_libcalendaring(settings)
             widget = $this.autocomplete('widget')
             menu = $this.data('ui-autocomplete').menu,
             amregex = /^(.+)(a[.m]*)/i,
-            pmregex = /^(.+)(a[.m]*)/i,
+            pmregex = /^(.+)(p[.m]*)/i,
             val = $(this).val().replace(amregex, '0:$1').replace(pmregex, '1:$1');
 
         widget.css('width', '10em');
@@ -633,8 +690,8 @@ function rcube_libcalendaring(settings)
         if (this.alarm_dialog)
             this.alarm_dialog.dialog('destroy').remove();
 
-        var i, actions, adismiss, asnooze, alarm, html,
-            audio_alarms = [], records = [], event_ids = [], buttons = {};
+        var i, actions, adismiss, asnooze, alarm, html, type,
+            audio_alarms = [], records = [], event_ids = [], buttons = [];
 
         for (i=0; i < alarms.length; i++) {
             alarm = alarms[i];
@@ -648,21 +705,27 @@ function rcube_libcalendaring(settings)
 
             event_ids.push(alarm.id);
 
-            html = '<h3 class="event-title">' + Q(alarm.title) + '</h3>';
+            type = alarm.id.match(/^task/) ? 'type-task' : 'type-event';
+
+            html = '<h3 class="event-title ' + type + '">' + Q(alarm.title) + '</h3>';
             html += '<div class="event-section">' + Q(alarm.location || '') + '</div>';
             html += '<div class="event-section">' + Q(this.event_date_text(alarm)) + '</div>';
 
-            adismiss = $('<a href="#" class="alarm-action-dismiss"></a>').html(rcmail.gettext('dismiss','libcalendaring')).click(function(e){
-                me.dismiss_link = $(this);
-                me.dismiss_alarm(me.dismiss_link.data('id'), 0, e);
-            });
-            asnooze = $('<a href="#" class="alarm-action-snooze"></a>').html(rcmail.gettext('snooze','libcalendaring')).click(function(e){
-                me.snooze_dropdown($(this), e);
-                e.stopPropagation();
-                return false;
-            });
-            actions = $('<div>').addClass('alarm-actions').append(adismiss.data('id', alarm.id)).append(asnooze.data('id', alarm.id));
+            adismiss = $('<a href="#" class="alarm-action-dismiss"></a>')
+                .text(rcmail.gettext('dismiss','libcalendaring'))
+                .click(function(e) {
+                    me.dismiss_link = $(this);
+                    me.dismiss_alarm(me.dismiss_link.data('id'), 0, e);
+                });
+            asnooze = $('<a href="#" class="alarm-action-snooze"></a>')
+                .text(rcmail.gettext('snooze','libcalendaring'))
+                .click(function(e) {
+                    me.snooze_dropdown($(this), e);
+                    e.stopPropagation();
+                    return false;
+                });
 
+            actions = $('<div>').addClass('alarm-actions').append(adismiss.data('id', alarm.id)).append(asnooze.data('id', alarm.id));
             records.push($('<div>').addClass('alarm-item').html(html).append(actions));
         }
 
@@ -674,18 +737,26 @@ function rcube_libcalendaring(settings)
 
         this.alarm_dialog = $('<div>').attr('id', 'alarm-display').append(records);
 
-        buttons[rcmail.gettext('close')] = function() {
-            $(this).dialog('close');
-        };
+        buttons.push({
+            text: rcmail.gettext('dismissall','libcalendaring'),
+            click: function(e) {
+                // submit dismissed event_ids to server
+                me.dismiss_alarm(me.alarm_ids.join(','), 0, e);
+                $(this).dialog('close');
+            },
+            'class': 'delete'
+        });
 
-        buttons[rcmail.gettext('dismissall','libcalendaring')] = function(e) {
-            // submit dismissed event_ids to server
-            me.dismiss_alarm(me.alarm_ids.join(','), 0, e);
-            $(this).dialog('close');
-        };
+        buttons.push({
+            text: rcmail.gettext('close'),
+            click: function() {
+                $(this).dialog('close');
+            },
+            'class': 'cancel'
+        });
 
         this.alarm_dialog.appendTo(document.body).dialog({
-            modal: false,
+            modal: true,
             resizable: true,
             closeOnEscape: false,
             dialogClass: 'alarms',
@@ -693,7 +764,7 @@ function rcube_libcalendaring(settings)
             buttons: buttons,
             open: function() {
               setTimeout(function() {
-                me.alarm_dialog.parent().find('.ui-button:not(.ui-dialog-titlebar-close)').first().focus();
+                me.alarm_dialog.parent().find('button:not(.ui-dialog-titlebar-close)').first().focus();
               }, 5);
             },
             close: function() {
@@ -729,6 +800,7 @@ function rcube_libcalendaring(settings)
         // Internet Explorer does not support wav files,
         // support in other browsers depends on enabled plugins,
         // so we use wav as a fallback
+
         src += bw.ie || (plugin && plugin.enabledPlugin) ? '.mp3' : '.wav';
 
         // HTML5
@@ -830,9 +902,9 @@ function rcube_libcalendaring(settings)
             return false;
         });
 
-        $('#edit-recurrence-enddate').datepicker(datepicker_settings).click(function(){ $("#edit-recurrence-repeat-until").prop('checked', true) });
+        $('#edit-recurrence-enddate').datepicker(this.datepicker_settings).click(function(){ $("#edit-recurrence-repeat-until").prop('checked', true) });
         $('#edit-recurrence-repeat-times').change(function(e){ $('#edit-recurrence-repeat-count').prop('checked', true); });
-        $('#edit-recurrence-rdate-input').datepicker(datepicker_settings);
+        $('#edit-recurrence-rdate-input').datepicker(this.datepicker_settings);
     };
 
     /**
@@ -840,7 +912,7 @@ function rcube_libcalendaring(settings)
      */
     this.set_recurrence_edit = function(rec)
     {
-        var recurrence = $('#edit-recurrence-frequency').val(rec.recurrence ? rec.recurrence.FREQ || (rec.recurrence.RDATE ? 'RDATE' : '') : '').change(),
+        var date, recurrence = $('#edit-recurrence-frequency').val(rec.recurrence ? rec.recurrence.FREQ || (rec.recurrence.RDATE ? 'RDATE' : '') : '').change(),
             interval = $('.recurrence-form select.edit-recurrence-interval').val(rec.recurrence ? rec.recurrence.INTERVAL || 1 : 1),
             rrtimes = $('#edit-recurrence-repeat-times').val(rec.recurrence ? rec.recurrence.COUNT || 1 : 1),
             rrenddate = $('#edit-recurrence-enddate').val(rec.recurrence && rec.recurrence.UNTIL ? this.format_datetime(this.parseISO8601(rec.recurrence.UNTIL), 1) : '');
@@ -870,13 +942,15 @@ function rcube_libcalendaring(settings)
             $('input.edit-recurrence-'+section+'-mode').val(['BYDAY']);
         }
         else if (rec.start) {
-            $('#edit-recurrence-monthly-byday').val(weekdays[rec.start.getDay()]);
+            date = 'toDate' in rec.start ? rec.start.toDate() : rec.start;
+            $('#edit-recurrence-monthly-byday').val(weekdays[date.getDay()]);
         }
         if (rec.recurrence && rec.recurrence.BYMONTH) {
             $('input.edit-recurrence-yearly-bymonth').val(String(rec.recurrence.BYMONTH).split(','));
         }
         else if (rec.start) {
-            $('input.edit-recurrence-yearly-bymonth').val([String(rec.start.getMonth()+1)]);
+            date = 'toDate' in rec.start ? rec.start.toDate() : rec.start;
+            $('input.edit-recurrence-yearly-bymonth').val([String(date.getMonth()+1)]);
         }
         if (rec.recurrence && rec.recurrence.RDATE) {
             $.each(rec.recurrence.RDATE, function(i,rdate){
@@ -952,10 +1026,8 @@ function rcube_libcalendaring(settings)
             .html('<span>' + Q(this.format_datetime(date, 1)) + '</span>')
             .appendTo('#edit-recurrence-rdates');
 
-        $('<a>').attr('href', '#del')
-            .addClass('iconbutton delete')
-            .html(rcmail.get_label('delete', 'libcalendaring'))
-            .attr('title', rcmail.get_label('delete', 'libcalendaring'))
+        $('<a>').attr({href: '#del', 'class': 'iconbutton delete icon button', title: rcmail.get_label('delete', 'libcalendaring')})
+            .append($('<span class="inner">').text(rcmail.get_label('delete', 'libcalendaring')))
             .appendTo(li);
     };
 
@@ -1034,7 +1106,7 @@ function rcube_libcalendaring(settings)
     // Render message reference links to the given container
     this.render_message_links = function(links, container, edit, plugin)
     {
-        var ul = $('<ul>').addClass('attachmentslist');
+        var ul = $('<ul>').addClass('attachmentslist linkslist');
 
         $.each(links, function(i, link) {
             if (!link.mailurl)
@@ -1043,8 +1115,7 @@ function rcube_libcalendaring(settings)
             var li = $('<li>').addClass('link')
                 .addClass('message eml')
                 .append($('<a>')
-                    .attr('href', link.mailurl)
-                    .addClass('messagelink')
+                    .attr({href: link.mailurl, 'class': 'messagelink filename'})
                     .text(link.subject || link.uri)
                 )
                 .appendTo(ul);
@@ -1052,11 +1123,8 @@ function rcube_libcalendaring(settings)
             // add icon to remove the link
             if (edit) {
                 $('<a>')
-                    .attr('href', '#delete')
-                    .attr('title', rcmail.gettext('removelink', plugin))
-                    .attr('data-uri', link.uri)
-                    .addClass('delete')
-                    .text(rcmail.gettext('delete'))
+                    .attr({href: '#delete', title: rcmail.gettext('removelink', plugin), 'data-uri': link.uri, 'class': 'delete'})
+                    .append($('<span class="inner">').text(rcmail.gettext('delete')))
                     .appendTo(li);
             }
         });
@@ -1067,11 +1135,14 @@ function rcube_libcalendaring(settings)
     // resize and reposition (center) the dialog window
     this.dialog_resize = function(id, height, width)
     {
-        var win = $(window), w = win.width(), h = win.height();
+        var win = $(window), w = win.width(), h = win.height(),
+            dialog = $('.ui-dialog:visible'),
+            h_delta = dialog.find('.ui-dialog-titlebar').outerHeight() + dialog.find('.ui-dialog-buttonpane').outerHeight() + 30,
+            w_delta = 50;
 
         $(id).dialog('option', {
-            height: Math.min(h-20, height+130),
-            width: Math.min(w-20, width+50)
+            height: Math.min(h-20, height + h_delta),
+            width: Math.min(w-20, width + w_delta)
         });
     };
 }
@@ -1164,29 +1235,32 @@ rcube_libcalendaring.add_from_itip_mail = function(mime_id, task, status, dom_id
 rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
 {
     // show dialog for entering the delegatee address and comment
-    var html = '<form class="itip-dialog-form" action="javascript:void()">' +
-        '<div class="form-section">' +
-            '<label for="itip-delegate-to">' + rcmail.gettext('itip.delegateto') + '</label><br/>' +
+    var dialog, buttons = [];
+    var form = $('<form class="itip-dialog-form propform" action="javascript:void()">' +
+        '<div class="form-section form-group">' +
+            '<label for="itip-delegate-to">' + rcmail.gettext('itip.delegateto') + '</label>' +
             '<input type="text" id="itip-delegate-to" class="text" size="40" value="" />' +
         '</div>' +
-        '<div class="form-section">' +
-            '<label for="itip-delegate-rsvp">' +
-                '<input type="checkbox" id="itip-delegate-rsvp" class="checkbox" size="40" value="" />' +
-                rcmail.gettext('itip.delegatersvpme') +
-            '</label>' +
+        '<div class="form-section form-group form-check">' +
+            '<label><input type="checkbox" id="itip-delegate-rsvp" value="1" />' + rcmail.gettext('itip.delegatersvpme') + '</label>' +
         '</div>' +
-        '<div class="form-section">' +
+        '<div class="form-section form-group">' +
             '<textarea id="itip-delegate-comment" class="itip-comment" cols="40" rows="8" placeholder="' +
                 rcmail.gettext('itip.itipcomment') + '"></textarea>' + 
         '</div>' +
-        '<div class="form-section">' +
-            (selector && selector.length ? selector.html() : '') +
-        '</div>' +
-    '</form>';
+    '</form>');
 
-    var dialog, buttons = [];
+    if (selector && selector.length) {
+        form.append(
+            $('<div class="form-section form-group">')
+                .append($('<label for="itip-saveto">').text(rcmail.gettext('libcalendaring.savein')))
+                .append($('select', selector).clone(true))
+        );
+    }
+
     buttons.push({
         text: rcmail.gettext('itipdelegated', 'itip'),
+        'class': 'save mainaction',
         click: function() {
             var doc = window.parent.document,
                 delegatee = String($('#itip-delegate-to', doc).val()).replace(/(^\s+)|(\s+$)/, '');
@@ -1202,23 +1276,24 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
                 setTimeout(function() { dialog.dialog("close"); }, 500);
             }
             else {
-                alert(rcmail.gettext('itip.delegateinvalidaddress'));
+                rcmail.alert_dialog(rcmail.gettext('itip.delegateinvalidaddress'));
                 $('#itip-delegate-to', doc).focus();
             }
         }
     });
 
     buttons.push({
-        text: rcmail.gettext('cancel', 'itip'),
+        text: rcmail.gettext('cancel'),
+        'class': 'cancel',
         click: function() {
             dialog.dialog('close');
         }
     });
 
-    dialog = rcmail.show_popup_dialog(html, rcmail.gettext('delegateinvitation', 'itip'), buttons, {
+    dialog = rcmail.show_popup_dialog(form, rcmail.gettext('delegateinvitation', 'itip'), buttons, {
         width: 460,
         open: function(event, ui) {
-            $(this).parent().find('.ui-button:not(.ui-dialog-titlebar-close)').first().addClass('mainaction');
+            $(this).parent().find('button:not(.ui-dialog-titlebar-close)').first().addClass('mainaction');
             $(this).find('#itip-saveto').val('');
 
             // initialize autocompletion
@@ -1245,35 +1320,24 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
 /**
  * Show a menu for selecting the RSVP reply mode
  */
-rcube_libcalendaring.itip_rsvp_recurring = function(btn, callback)
+rcube_libcalendaring.itip_rsvp_recurring = function(btn, callback, event)
 {
-    var mnu = $('<ul></ul>').addClass('popupmenu libcal-rsvp-replymode');
+    var list, menu = $('#itip-rsvp-menu'), action = btn.attr('rel');
 
-    $.each(['all','current'/*,'future'*/], function(i, mode) {
-        $('<li><a>' + rcmail.get_label('rsvpmode'+mode, 'libcalendaring') + '</a>')
-        .addClass('ui-menu-item')
-        .attr('rel', mode)
-        .appendTo(mnu);
-    });
+    if (!menu.length) {
+        menu = $('<div>').attr({'class': 'popupmenu', id: 'itip-rsvp-menu', 'aria-hidden': 'true'}).appendTo(document.body);
+        list = $('<ul>').attr({'class': 'toolbarmenu menu', role: 'menu'}).appendTo(menu);
 
-    var action = btn.attr('rel');
+        $.each(['all','current'/*,'future'*/], function(i, mode) {
+            var link = $('<a>').attr({'class': 'active', rel: mode})
+                .text(rcmail.get_label('rsvpmode' + mode))
+                .on('click', function() { callback(action, $(this).attr('rel')); });
 
-    // open the mennu
-    mnu.menu({
-        select: function(event, ui) {
-            callback(action, ui.item.attr('rel'));
-        }
-    })
-    .appendTo(document.body)
-    .position({ my: 'left top', at: 'left bottom+2', of: btn })
-    .data('action', action);
-
-    setTimeout(function() {
-        $(document).one('click', function() {
-            mnu.menu('destroy');
-            mnu.remove();
+            $('<li>').attr({role: 'menuitem'}).append(link).appendTo(list);
         });
-    }, 100);
+    }
+
+    rcmail.show_menu('itip-rsvp-menu', true, event);
 };
 
 /**
@@ -1281,12 +1345,9 @@ rcube_libcalendaring.itip_rsvp_recurring = function(btn, callback)
  */
 rcube_libcalendaring.remove_from_itip = function(event, task, title)
 {
-    if (confirm(rcmail.gettext('itip.deleteobjectconfirm').replace('$title', title))) {
-        rcmail.http_post(task + '/itip-remove',
-            event,
-            rcmail.set_busy(true, 'itip.savingdata')
-        );
-    }
+    rcmail.confirm_dialog(rcmail.gettext('itip.deleteobjectconfirm').replace('$title', title), 'delete', function() {
+        rcmail.http_post(task + '/itip-remove', event, rcmail.set_busy(true, 'itip.savingdata'));
+    });
 };
 
 /**
@@ -1322,7 +1383,7 @@ rcube_libcalendaring.decline_attendee_reply = function(mime_id, task)
     dialog = rcmail.show_popup_dialog(html, rcmail.gettext('declineattendee', 'itip'), buttons, {
         width: 460,
         open: function() {
-            $(this).parent().find('.ui-button:not(.ui-dialog-titlebar-close)').first().addClass('mainaction');
+            $(this).parent().find('button:not(.ui-dialog-titlebar-close)').first().addClass('mainaction');
             $('#itip-decline-comment').focus();
         }
     });
@@ -1383,6 +1444,10 @@ rcube_libcalendaring.update_itip_object_status = function(p)
       elem.html(p.append.html)
     }
     elem.show();
+  }
+
+  if (window.UI && UI.pretty_select) {
+    $('#rsvp-'+p.id+' select').each(function() { UI.pretty_select(this); });
   }
 };
 
@@ -1454,26 +1519,10 @@ rcube_libcalendaring.open_itip_preview = function(url, msgref)
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   if (rcmail.env.libcal_settings) {
     var libcal = new rcube_libcalendaring(rcmail.env.libcal_settings);
-    // PAMELA - Desactiver les alarmes libcalendaring si pas de right panel
-    if (!$('#right_panel').length) {
-        rcmail.addEventListener('plugin.display_alarms', function(alarms){ libcal.display_alarms(alarms); });
-    }
+    rcmail.addEventListener('plugin.display_alarms', function(alarms){ libcal.display_alarms(alarms); });
   }
 
   rcmail.addEventListener('plugin.update_itip_object_status', rcube_libcalendaring.update_itip_object_status)
     .addEventListener('plugin.fetch_itip_object_status', rcube_libcalendaring.fetch_itip_object_status)
     .addEventListener('plugin.itip_message_processed', rcube_libcalendaring.itip_message_processed);
-
-  if (rcmail.env.action == 'get-attachment' && rcmail.gui_objects['attachmentframe']) {
-    rcmail.register_command('print-attachment', function() {
-      var frame = rcmail.get_frame_window(rcmail.gui_objects['attachmentframe'].id);
-      if (frame) frame.print();
-    }, true);
-  }
-
-  if (rcmail.env.action == 'get-attachment' && rcmail.env.attachment_download_url) {
-    rcmail.register_command('download-attachment', function() {
-      rcmail.location_href(rcmail.env.attachment_download_url, window);
-    }, true);
-  }
 });

@@ -4,7 +4,7 @@
 if (window.rcmail) {
 	// Plugin  init
 	rcmail.addEventListener('init', function(evt) {
-		var tab = $('<span>').attr('id', 'settingstabpluginmel_suggestion_box')
+		var tab = $('<li>').attr('id', 'settingstabpluginmel_suggestion_box')
 	    	.addClass('tablink mel_suggestion_box'), button = $('<a>')
 	    	.attr('href', rcmail.env.comm_path
 	    			+ '&_action=plugin.mel_suggestion_box').attr('title', rcmail

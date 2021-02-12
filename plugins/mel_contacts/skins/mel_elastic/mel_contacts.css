@@ -1,0 +1,48 @@
+.icon-gestion{
+    display: inline !important;
+    cursor: pointer;
+    margin-left: 27px;
+    margin-right: -15px;
+}
+
+.div-gestion-option
+{
+    width: 100%;
+    display: grid;
+}
+
+.gestion-options
+{
+    color: white;
+    text-decoration: none;
+    /* margin-left: 12px; */
+    font-family: inherit!important;
+    padding-left: 1.8em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.gestion-options:hover
+{
+    background-color:#484D7A;
+    color:white;
+    text-decoration: none;
+}
+
+.gestion-options[aria-describedby]
+{
+    background-color:#484D7A;  
+}
+
+.gestion-options::before
+{
+font-family: 'IcoFont'!important;
+    margin-right:9px;
+    /* float:none!important;
+    font-family: 'IcoFont'!important;
+
+    font-size: inherit!important;
+    display: inline!important;
+    width: inherit!important;
+    height: inherit!important; */
+}

@@ -9,6 +9,7 @@
 $labels['until'] = '까지';
 $labels['frequency'] = '반복';
 $labels['recurrencend'] = '까지';
+$labels['forntimes'] = ''; // old
 $labels['statusorganizer'] = '주최자';
 $labels['statustentative'] = '임시';
 $labels['statusunknown'] = '알 수 없는';

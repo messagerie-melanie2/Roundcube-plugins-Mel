@@ -1,0 +1,363 @@
+/**
+ * Kolab core library
+ *
+ * This file contains Elastic skin styles for tasklist plugin.
+ *
+ * @author Aleksander Machniak <machniak@kolabsys.com>
+ *
+ * Copyright (C) 2012-2018, Kolab Systems AG <contact@kolabsys.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+.menu {
+    a.tasklist:before,
+    a.tasklistlink:before,
+    a.taskaddlink:before {
+        content: @fa-var-calendar-check;
+    }
+}
+
+.tasklist-invitebox {
+    & > i.icon:before {
+        content: @fa-var-calendar-check !important;
+    }
+}
+
+.listing {
+    li {
+        & > div {
+            &.tasklist .listname:before {
+                &:extend(.font-icon-class);
+                content: @fa-var-calendar-check;
+            }
+        }
+    }
+}
+
+@tasklist-record-height: 3.8rem;
+
+#tasklist {
+    li.taskitem {
+        border-bottom: 0;
+
+        div.taskhead {
+            position: relative;
+            display: block;
+            height: @tasklist-record-height;
+            padding-left: (1 * @listing-treetoggle-width);
+            outline: 0;
+
+            &.flagged {
+                color: @color-list-flagged !important;
+            }
+
+            &.selected {
+                background-color: @color-list-selected-background;
+            }
+
+            &.droptarget {
+                background-color: @color-list-droptarget-background;
+            }
+
+            &.complete {
+                span.title {
+                    color: @color-list-deleted;
+                }
+
+                .progressbar {
+                    display: none;
+                }
+            }
+        }
+
+        & > div,
+        & > span {
+            border-bottom: 1px solid @color-list-border;
+        }
+
+        ul {
+            padding: 0;
+            border: 0;
+
+            li {
+                padding-left: 0;
+                .taskhead, .title { padding-left: (2 * @listing-treetoggle-width + .25rem); }
+                .childtoggle { left: @listing-treetoggle-width; }
+
+                li {
+                    .taskhead, .title { padding-left: (3 * @listing-treetoggle-width + .25rem); }
+                    .childtoggle { left: (2 * @listing-treetoggle-width); }
+
+                    li {
+                        .taskhead, .title { padding-left: (4 * @listing-treetoggle-width + .25rem); }
+                        .childtoggle { left: (3 * @listing-treetoggle-width); }
+
+                        li {
+                            .taskhead, .title { padding-left: (5 * @listing-treetoggle-width + .25rem); }
+                            .childtoggle { left: (4 * @listing-treetoggle-width); }
+
+                            li {
+                                .taskhead, .title { padding-left: (6 * @listing-treetoggle-width + .25rem); }
+                                .childtoggle { left: (5 * @listing-treetoggle-width); }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .childtoggle {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: @listing-treetoggle-width;
+        padding: 0 0 0 .25rem;
+        height: @tasklist-record-height;
+        cursor: pointer;
+        z-index: 1;
+
+        .inner {
+            display: none;
+        }
+
+        &:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-angle-right;
+            margin: 0;
+            width: 1em;
+            line-height: @tasklist-record-height;
+        }
+
+        &.expanded:before {
+            content: @fa-var-angle-down;
+        }
+
+        &.collapsed:before {
+            content: @fa-var-angle-right;
+        }
+    }
+
+    span.title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        line-height: 2em;
+        padding: 0 0 0 .2em;
+        padding-left: (1 * @listing-treetoggle-width + .25rem);
+        margin-right: 2em;
+        .overflow-ellipsis;
+    }
+
+    span.tags {
+        position: absolute;
+        right: 2em;
+        top: 0;
+        line-height: 2em;
+        text-align: right;
+    }
+
+    span.date {
+        position: absolute;
+        padding-left: .2em;
+        font-size: 90%;
+        line-height: 2.5;
+        color: @color-list-secondary;
+        cursor: pointer;
+
+        input {
+            line-height: 1;
+            padding: 0;
+            margin-top: -2px;
+        }
+    }
+
+    span.flagged {
+        position: absolute;
+        right: 0;
+        top: 0;
+        line-height: 1.8em;
+        cursor: pointer;
+    }
+
+    .taskhead:not(.flagged):hover span.flagged:before {
+        &:extend(.font-icon-class);
+        .font-icon-regular(@fa-var-flag);
+    }
+
+    .taskhead.flagged span.flagged:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-flag;
+    }
+
+    .progressbar {
+        position: absolute;
+        bottom: 1px;
+        left: .2em;
+        right: .2em;
+
+        .progressvalue {
+            border-top: 2px solid @color-warning;
+        }
+    }
+
+    .custom-switch {
+        position: absolute;
+        top: 1.4rem;
+        z-index: 1;
+        height: 2.3em;
+    }
+
+    .actions {
+        display: none;
+    }
+
+    // Focus indicator
+    @media screen and (min-width: @screen-width-large) {
+        .taskhead {
+            border-left: 2px solid transparent;
+        }
+
+        .taskhead.focused {
+            border-left: 2px solid @color-list-focus-indicator;
+            outline: 0;
+        }
+    }
+}
+
+html.touch #tasklist {
+    li {
+        font-size: 1rem;
+    }
+
+    span.flagged,
+    input[type=checkbox],
+    .custom-switch {
+        display: none;
+    }
+
+    span.title {
+        margin-right: .5rem;
+    }
+
+    span.tags {
+        right: .5rem;
+    }
+}
+
+#taskshow {
+    & + .formbuttons {
+        button.disabled {
+            display: none;
+        }
+    }
+
+    .task-parent-title {
+        color: @color-black-shade-text;
+        font-size: 90%;
+        margin-bottom: .5rem;
+    }
+
+    .task-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .task-description {
+        margin: 1rem 0;
+    }
+
+    &.status-completed h2 {
+        color: @color-list-deleted;
+    }
+
+    &.status-flagged h2:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-flag;
+        color: @color-error;
+        font-size: .9em;
+    }
+
+    .attachmentslist li {
+        margin-right: 1em;
+    }
+}
+
+#taskedit-attachment-form {
+    // fixes redundant scrolling and height issue on task edit form
+    position: absolute;
+}
+
+.messagetasklinks {
+    & > i.icon:before {
+        content: @fa-var-calendar-check !important;
+    }
+
+    .tasklist {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    input {
+        height: auto !important;
+    }
+}
+
+#print-layout {
+    #tasklist {
+        padding: 0;
+
+        li {
+            list-style-type: none;
+        }
+
+        .description {
+            display: block;
+            white-space: pre-wrap;
+        }
+
+        .title {
+            position: relative;
+            font-weight: bold;
+            padding: 0;
+            margin: 0;
+        }
+
+        .taskhead {
+            height: auto;
+        }
+    }
+}
+
+.taskitem-draghelper {
+    .overflow-ellipsis;
+}
+
+.quickview-active {
+    // TODO ?
+}
+
+#rootdroppable {
+    // TODO ?
+}
+

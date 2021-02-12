@@ -1,4 +1,4 @@
-<div id="taskedit" class="uidialog uidialog-tabbed">
+<div id="taskedit" class="uidialog uidialog-tabbed"<roundcube:exp expression="env:framed ? 'data-nodialog=true' : ''">>
 	<form id="taskeditform" action="#" method="post" enctype="multipart/form-data">
 		<ul>
 			<li><a href="#taskedit-panel-main"><roundcube:label name="tasklist.tabsummary" /></a></li><li><a href="#taskedit-panel-recurrence"><roundcube:label name="tasklist.tabrecurrence" /></a></li><li id="edit-tab-attendees"><a href="#taskedit-panel-attendees"><roundcube:label name="tasklist.tabassignments" /></a></li><li id="taskedit-tab-attachments"><a href="#taskedit-panel-attachments"><roundcube:label name="tasklist.tabattachments" /></a></li>
@@ -17,7 +17,7 @@
 			</div>
 			<div class="form-section">
 				<label for="tagedit-input"><roundcube:label name="tasklist.tags" /></label>
-				<roundcube:object name="plugin.tags_editline" id="taskedit-tagline" class="tagedit" tabindex="0" />
+				<roundcube:object name="plugin.tags_editline" id="taskedit-tagline" class="tagedit tagline" tabindex="0" />
 			</div>
 			<div class="form-section">
 				<label for="taskedit-startdate"><roundcube:label name="tasklist.start" /></label>
@@ -92,20 +92,21 @@
 			</div>
 			<h3 id="aria-label-attendeestable" class="voice"><roundcube:label name="tasklist.arialabeleventassignments" /></h3>
 			<roundcube:object name="plugin.attendees_list" id="edit-attendees-table" class="records-table edit-attendees-table" coltitle="attendee" aria-labelledby="aria-label-attendeestable" />
-			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" />
-			<roundcube:include file="/templates/freebusylegend.html" />
+			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" size="30" />
 		</div>
 		<!-- attachments list (with upload form) -->
 		<div id="taskedit-panel-attachments">
 			<div id="taskedit-attachments">
 				<roundcube:object name="plugin.attachments_list" id="taskedit-attachment-list" class="attachmentslist" />
 			</div>
-			<div id="taskedit-attachments-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
+			<div id="taskedit-attachments-form" role="region" aria-labelledby="aria-label-attachmentuploadform" style="text-align:center">
 				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
-				<roundcube:object name="plugin.attachments_form" id="taskedit-attachment-form" attachmentFieldSize="30" />
+				<roundcube:object name="plugin.attachments_form" id="taskedit-attachment-form" mode="hint" />
+				<a class="button" tabindex="1" href="#" onclick="rcmail.upload_input('taskedit-attachment-form')"><roundcube:label name="addattachment" /></a>
 			</div>
 			<roundcube:object name="plugin.filedroparea" id="taskedit-panel-attachments" />
 		</div>
 	</form>
-	<roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="task-dialog-message" style="display:none" />
+	<roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="dialog-message" style="display:none" />
+	<roundcube:object name="plugin.attachments_form" id="taskedit-attachment-form" mode="smart" />
 </div>

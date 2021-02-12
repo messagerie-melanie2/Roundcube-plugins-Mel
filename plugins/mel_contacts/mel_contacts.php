@@ -67,6 +67,8 @@ class mel_contacts extends rcube_plugin {
       $this->add_texts('localization');
       $this->add_hook('contact_form', array($this, 'contact_form'));
       $this->add_hook('saved_search_create', array($this, 'saved_search_create'));
+      // $this->add_hook("send_page", array($this, "book_gestions"));
+
 
       // Plugin actions
       $this->register_action('plugin.book', array($this,'book_actions'));
@@ -75,6 +77,9 @@ class mel_contacts extends rcube_plugin {
       // ACL Actions
       $this->register_action('plugin.contacts-acl', array($this,'contacts_acl'));
       $this->register_action('plugin.contacts-acl-group', array($this,'contacts_acl_group'));
+
+      if ($this->rc->config->get('skin') == 'mel_elastic')
+        $this->include_stylesheet($this->local_skin_path().'/mel_contacts.css');
 
       // Show contact button
       if ($this->rc->action == 'show') {
@@ -96,6 +101,34 @@ class mel_contacts extends rcube_plugin {
         $this->ui = new mel_contacts_ui($this);
       }
     }
+  }
+
+  public function book_gestions($args)
+  {
+    return $args;
+    $content = $args['content'];
+    if (strpos($content, '<html lang="fr" class="iframe') !== false)
+      return $args;
+    $var = '<ul id="directorylist"';
+    $tmp = explode($var, $content);
+    $size = strlen($tmp[1]);
+    $index = -1;
+    $text = "";
+    for ($i=0; $i < $size; ++$i) { 
+        if (strpos($text, "</ul></div>") !== false)
+        {
+            $index = $i-6;
+            unset($text);
+            break;
+        }
+        if ($tmp[1][$i] == ' ' || $tmp[1][$i] == PHP_EOL || $tmp[1][$i] == "\t")
+            continue;
+        $text .= $tmp[1][$i];
+    }
+    $temp = substr_replace($tmp[1], $this->rc->output->parse("mel_contacts.contact_option", false, false), $index, 0);
+    $temp = str_replace('[|¤¤¤|]', "Gestion des annuaires", $temp);
+    $args['content'] = $tmp[0].$var.$temp;
+    return $args;
   }
 
   /**
@@ -215,6 +248,7 @@ class mel_contacts extends rcube_plugin {
       else {
         $p['sources'] = $all_source + $sources + $p['sources'];
       }
+      
       return $p;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

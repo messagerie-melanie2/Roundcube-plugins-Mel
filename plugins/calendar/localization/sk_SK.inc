@@ -27,7 +27,6 @@ $labels['calendars'] = 'Kalendáre';
 $labels['category'] = 'Kategória';
 $labels['categories'] = 'Kategórie';
 $labels['createcalendar'] = 'Vytvoriť nový kalendár';
-$labels['editcalendar'] = 'Upraviť nastavenie kalendára';
 $labels['name'] = 'Meno';
 $labels['color'] = 'Farba';
 $labels['day'] = 'Deň';

@@ -41,7 +41,12 @@ if (rcmail.env.iselectron) {
         window.api.send('get_archive_folder')
         window.api.receive('archive_folder', (folder) => {
           rcmail.env.local_archive_folder = folder;
-          createFolder();
+          let users = []
+          $('#mailboxlist li.mailbox.local').each(function () {
+            var user = atob($(this).attr('id').replace('rcmli', '')).replace('local-', '');
+            users.push(user);
+          });
+          rcmail.env.local_users_list = users;
           displaySubfolder();
         });
 
@@ -193,33 +198,22 @@ if (rcmail.env.iselectron) {
       rcmail.display_message("Fin de l'importation des archives", 'confirmation');
     })
 
-    // ----- Créer le dossier des archives -----
-    function createFolder() {
-      let link = $('<a>').attr('href', '#')
-        .attr('rel', rcmail.env.local_archive_folder)
-        .attr('onClick', "chargementArchivage('')")
-        .html(rcmail.env.local_archive_folder);
-
-      rcmail.treelist.insert({ id: rcmail.env.local_archive_folder, html: link, classes: ['mailbox archives_locales'] });
-      if ($("li.trash").length) {
-        $("li.archives_locales").detach().insertAfter($("li.trash"));
-      }
-    }
-
     // ----- Affiche les sous-dossier des archives (récursif)-----
     function displaySubfolder() {
       window.api.send('subfolder');
       window.api.receive('listSubfolder', (subfolders) => {
         subfolders.forEach(subfolder => {
-          if (subfolder.name == rcmail.env.account_electron) {
-            subfolder.relativePath = '';
-            getChildren(subfolder);
-          }
+          rcmail.env.local_users_list.forEach(user => {
+            if (subfolder.name === user) {
+              subfolder.relativePath = '';
+              getChildren(subfolder, user);
+            }
+          })
         })
       });
     }
 
-    function getChildren(parent) {
+    function getChildren(parent, user) {
       if (parent && parent.children) {
         for (var i = 0, l = parent.children.length; i < l; ++i) {
           var child = parent.children[i];
@@ -231,13 +225,13 @@ if (rcmail.env.iselectron) {
             .html(translateFolder(child.name));
           //On ignore le dossier de l'utilisateur
           if (parent.relativePath == "") {
-            rcmail.treelist.insert({ id: rcmail.env.local_archive_folder + '/' + key, html: link, classes: ['mailbox sub_archives_locales'] }, rcmail.env.local_archive_folder, 'mailbox');
+            rcmail.treelist.insert({ id: `local-${user}/${key}`, html: link, classes: ['mailbox sub_archives_locales'] }, `local-${user}`, 'mailbox');
           }
           //On insère les dossiers sous le dossier principal
           else {
-            rcmail.treelist.insert({ id: rcmail.env.local_archive_folder + '/' + key, html: link, classes: ['mailbox sub_archives_locales'] }, rcmail.env.local_archive_folder + '/' + parent.relativePath, 'mailbox');
+            rcmail.treelist.insert({ id: `local-${user}/${key}`, html: link, classes: ['mailbox sub_archives_locales'] }, `local-${user}/${parent.relativePath}`, 'mailbox');
           }
-          getChildren(child);
+          getChildren(child, user);
         }
       }
     }
@@ -354,19 +348,19 @@ if (rcmail.env.iselectron) {
 
     function drag_end_archive(list) {
       if (drag_uid.length && list.target.rel) {
-        if (list.target.rel.includes(rcmail.env.account_electron)) {
 
-          var params = {
-            _mbox: rcmail.env.mailbox,
-            _path_folder: list.target.rel,
-            _uids: drag_uid,
-          };
-          //Dans le cas d'une boite partagée
-          if (rcmail.env.account) {
-            params._account = rcmail.env.account;
-          }
-          rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', params);
+        var params = {
+          _mbox: rcmail.env.mailbox,
+          _path_folder: list.target.rel,
+          _uids: drag_uid,
+        };
+
+        //Dans le cas d'une boite partagée
+        if (rcmail.env.account) {
+          params._account = rcmail.env.account;
         }
+
+        rcmail.http_get('mail/plugin.mel_archivage_traitement_electron', params);
       }
     }
 

@@ -1,7 +1,7 @@
 <?php
 // Si pas en interne on rejète la page
 if (!is_internal()) {
-    header('HTTP/1.0 403 Forbidden');
+    echo "Le générateur de signature est uniquement accessible depuis le réseau Ministériel ou depuis un VPN (Contactez votre support informatique local pour savoir comment faire).";
     exit;
 }
 

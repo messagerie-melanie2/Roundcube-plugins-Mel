@@ -281,10 +281,6 @@ input[type=text]:not(.browser-default):focus:not([readonly]){
     margin: 5px;
 }
 
-i.btn {
-    padding: 0;
-}
-
 .btn:hover {
     background-color: #5770BE ;
 }

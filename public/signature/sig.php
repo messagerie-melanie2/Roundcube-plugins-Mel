@@ -250,9 +250,9 @@ else {
             <div id="signature" class="sign"></div>
             <textarea id="signature_html" class="sig-markup" readonly="readonly" type="text"></textarea>
             <div class="action">
-              <input type="button" class="waves-effect waves-light btn" id="modify-signature" title="Utilisez ce bouton pour éditer les champs de la signature" value="Éditer la signature" onclick="modify_signature();">
-              <input type="button" class="waves-effect waves-light btn" id="copy-to-clipboard" title="Utilisez ce bouton pour copier le code généré de la signature afin de le coller dans la configuration de votre outil de messagerie" value="Copier la signature" onclick="copy_signature();">
-              <input type="button" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook" value="Télécharger la signature (Outlook)" onclick="download_signature();">
+              <button type="submit" class="waves-effect waves-light btn" id="modify-signature" title="Utilisez ce bouton pour éditer les champs de la signature" onclick="modify_signature();">Éditer la signature</button>
+              <button type="submit" class="waves-effect waves-light btn" id="copy-to-clipboard" title="Utilisez ce bouton pour copier le code généré de la signature afin de le coller dans la configuration de votre outil de messagerie" onclick="copy_signature();">Copier la signature</button>
+              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook" onclick="download_signature();">Télécharger la signature (Outlook)</button>
             </div>
           </div>
           <div class="userinfos">

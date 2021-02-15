@@ -132,6 +132,8 @@ function logo() {
       $sources[$logo] = image_data($logo);
     }
   }
+  $sources[$rcmail_config['signature_image_marianne']] = image_data($rcmail_config['signature_image_marianne']);
+  $sources[$rcmail_config['signature_image_devise']] = image_data($rcmail_config['signature_image_devise']);
   $html .= '</select>';
   return $html;
 }
@@ -252,7 +254,7 @@ else {
             <div class="action">
               <button type="submit" class="waves-effect waves-light btn" id="modify-signature" title="Utilisez ce bouton pour éditer les champs de la signature" onclick="modify_signature();">Éditer la signature</button>
               <button type="submit" class="waves-effect waves-light btn" id="copy-to-clipboard" title="Utilisez ce bouton pour copier le code généré de la signature afin de le coller dans la configuration de votre outil de messagerie" onclick="copy_signature();">Copier la signature</button>
-              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook" onclick="download_signature();">Télécharger la signature (Outlook)</button>
+              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook" onclick="download_signature_outlook();">Télécharger la signature (Outlook)</button>
             </div>
           </div>
           <div class="userinfos">
@@ -352,7 +354,7 @@ else {
           <tbody>
             <tr style="border:0">
               <td style="padding:10px 0 0 0">
-                <img src="<?= image_data($rcmail_config['signature_image_marianne']) ?>" alt="Marianne">
+                <img src="%%TEMPLATE_SRC_MARIANNE%%" alt="Marianne">
               </td>
             </tr>
             <tr style="border:0">
@@ -367,7 +369,7 @@ else {
             </tr>
             <tr style="border:0">
               <td style="border:0;text-align:left;vertical-align:top;padding:3px 0 0 0" valign="top" align="left">
-                <img src="<?= image_data($rcmail_config['signature_image_devise']) ?>" alt="liberté, égalité, fraternité">
+                <img src="%%TEMPLATE_SRC_DEVISE%%" alt="liberté, égalité, fraternité">
               </td>
             </tr>
           </tbody>

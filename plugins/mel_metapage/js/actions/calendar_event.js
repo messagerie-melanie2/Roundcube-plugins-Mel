@@ -3,6 +3,8 @@ $(document).ready(
     {
         let event = rcmail.local_storage_get_item("calendar_redirect");
         let cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+        if (parent.child_cal === undefined)
+            parent.child_cal = cal;
         if (event !== null)
         {
             cal.event_show_dialog(event);
@@ -16,8 +18,9 @@ $(document).ready(
             event = rcmail.local_storage_get_item("calendar_create");
             if(event !== null)
             {
+                console.log("event", event);
                 if (event === true)
-                    cal.add_event("")
+                    parent.child_cal.add_event("")
                 rcmail.local_storage_remove_item("calendar_create");
             }
         }

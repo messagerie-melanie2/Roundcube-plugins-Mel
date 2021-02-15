@@ -78,7 +78,6 @@ function setup_tasks(datas)
 	else
 		$("#tasksnew").addClass("hidden");
 }
-const delay = ms => new Promise(res => setTimeout(res, ms));
 function add_task_to_completed(id)
 {
 	if (rcmail.busy)

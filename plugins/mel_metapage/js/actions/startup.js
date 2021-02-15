@@ -100,12 +100,15 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     eClass = mm_st_ClassContract(eClass);
     let querry = $("." + eClass + "-frame");
     if (changepage)
+    {
+        rcmail.env.curren_frame_name = eClass;
         $("."+mm_frame).css("display", "none");/*.each((i,e) => {
         e.classList.add("hidden");
     })*/
-    
+}   
     if (querry.length == 0)
     {
+        rcmail.env.frame_created = false;
         let id = "fame-n-" + $("iframe").length;
         rcmail.env.current_frame = id;
         $("#layout").append('<iframe id="'+id+'" style="flex: auto; border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>');
@@ -117,12 +120,14 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
             $("."+eClass+"-frame").contents().find(".barup").remove();
             rcmail.set_busy(false);
             rcmail.clear_messages();
+            rcmail.env.frame_created = true;
             if (changepage)
                 $("#"+id).css("display", "");
         })
         return id;
     }
     else {
+        rcmail.env.frame_created = true;
        /* $("." + eClass + "-frame")*/querry.css("display", "");//.removeClass("hidden");
         let id = querry[0].id;
         if (window.FrameUpdate === undefined || !FrameUpdate.exists(id))

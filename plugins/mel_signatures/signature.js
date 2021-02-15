@@ -108,6 +108,7 @@ function use_signature() {
  * Téléchargement de la signature dans un fichier HTM pour Outlook
  */
 function download_signature_outlook() {
+    // HTML for Outlook
     var html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">';
     html += '<HTML><HEAD><TITLE>Email Signature</TITLE>';
     html += '<META content="text/html; charset=utf-8" http-equiv="Content-Type">';
@@ -116,7 +117,27 @@ function download_signature_outlook() {
     html += getSignatureHTML(false);
     html += '</BODY>';
     html += '</HTML>';
-    download('signature.htm', html);
+
+    // Create the zip file
+    var zip = new JSZip();
+
+    // Add HTM file to zip
+    zip.file("signature.htm", html);
+
+    // Images folder
+    var img = zip.folder("images");
+    let select = document.getElementById("input-logo");
+
+    // Add images files
+    img.file("marianne.gif", rcmail.env.logo_sources['images/marianne.gif'].replace('data:image/gif;base64,', ''), { base64: true });
+    img.file("devise.gif", rcmail.env.logo_sources['images/devise.gif'].replace('data:image/gif;base64,', ''), { base64: true });
+    img.file(select.value.replace('images/', ''), rcmail.env.logo_sources[select.value].replace('data:image/gif;base64,', ''), { base64: true });
+
+    // Download zip to browser
+    zip.generateAsync({type:"base64"})
+        .then(function(content) {
+            download('signature.zip', content, 'data:application/zip;base64');
+        });
 }
 
 /**
@@ -157,7 +178,7 @@ function checkOneIdentity(source) {
  * 
  * return HTML
  */
-function getSignatureHTML(embeddedImage = true) {
+function getSignatureHTML(embeddedImage = true, images_url = "") {
     let signature_html = document.getElementById("signature_template").innerHTML;
     // User name
     signature_html = signature_html.replace('%%TEMPLATE_NAME%%', document.getElementById("input-nom").value);
@@ -236,7 +257,7 @@ function getSignatureHTML(embeddedImage = true) {
         logo.src = rcmail.env.logo_sources[select.value];
     }
     else {
-        logo.src = "https://mel.din.developpement-durable.gouv.fr/new/plugins/mel_signatures/" + select.value;
+        logo.src = images_url + select.value;
     }
     logo.alt = select.options[select.selectedIndex].text;
     signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', logo.outerHTML);
@@ -249,7 +270,7 @@ function getSignatureHTML(embeddedImage = true) {
             src = rcmail.env.logo_sources[logo_marianne];
         }
         else {
-            src = "https://mel.din.developpement-durable.gouv.fr/new/plugins/mel_signatures/" + logo_marianne;
+            src = images_url + logo_marianne;
         }
         signature_html = signature_html.replace('%%TEMPLATE_SRC_MARIANNE%%', src);
     }
@@ -262,7 +283,7 @@ function getSignatureHTML(embeddedImage = true) {
             src = rcmail.env.logo_sources[logo_devise];
         }
         else {
-            src = "https://mel.din.developpement-durable.gouv.fr/new/plugins/mel_signatures/" + logo_devise;
+            src = images_url + logo_devise;
         }
         signature_html = signature_html.replace('%%TEMPLATE_SRC_DEVISE%%', src);
     }
@@ -296,9 +317,9 @@ function formatPhoneNumber(number) {
 /**
  * Download file HTML from javascript
  */
-function download(filename, text) {
+function download(filename, text, type = 'text/html;charset=utf-8') {
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('href', 'data:' + type + ',' + encodeURIComponent(text));
     element.setAttribute('download', filename);
 
     element.style.display = 'none';

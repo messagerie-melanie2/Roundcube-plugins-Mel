@@ -108,7 +108,7 @@ function use_signature() {
  * Téléchargement de la signature dans un fichier HTML pour le tester sur Outlook
  */
 function download_signature() {
-    download('signature.html', document.querySelector("#signature_html").value);
+    download('signature.htm', document.querySelector("#signature_html").value);
 }
 
 /**

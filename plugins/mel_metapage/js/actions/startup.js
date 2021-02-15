@@ -101,7 +101,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     let querry = $("." + eClass + "-frame");
     if (changepage)
     {
-        rcmail.env.curren_frame_name = eClass;
+        rcmail.env.current_frame_name = eClass;
         $("."+mm_frame).css("display", "none");/*.each((i,e) => {
         e.classList.add("hidden");
     })*/

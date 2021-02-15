@@ -40,6 +40,7 @@ function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}){
 
 function m_mp_CreateEvent()
 {
+    window.create_popUp.close();
     const action = () => {
         m_mp_set_storage("calendar_create");
     };
@@ -80,13 +81,18 @@ function m_mp_set_storage(key, item = true, close = true)
         window.create_popUp.close();
 }
 
-function m_mp_action_from_storage(storage_key, action, remove = true)
+function m_mp_action_from_storage(storage_key, action, remove = true, eventValue = true)
 {
     let event = rcmail.local_storage_get_item(storage_key);
     if(event !== null)
     {
-        if (event === true)
-            action();
+        console.log("eventvalue", eventValue);
+        if (eventValue === "¤avoid")
+            action(event);
+        else{
+            if (event === eventValue)
+                action(event);
+        }
         if (remove)
             rcmail.local_storage_remove_item(storage_key);
     }  

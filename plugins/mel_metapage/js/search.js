@@ -1,5 +1,6 @@
 function mm_s_Action(e)
 {
+    rcmail.set_busy(true, "loading");
     const replaced = rcmail.env.REPLACED_SEARCH;
     //console.log(e);
     let val = e.value;
@@ -9,8 +10,28 @@ function mm_s_Action(e)
     {
         $("#barup-search").addClass("hidden");
         $("body").unbind("click");
+        rcmail.set_busy(false);
+        rcmail.clear_messages();
         return;
     }
+    rcmail.env.mel_metapage_search = {
+        size:config.length,
+        finished:[],
+        timeout: function () {
+            if (rcmail.env.mel_metapage_search.size === rcmail.env.mel_metapage_search.finished.length)
+            {
+                rcmail.env.mel_metapage_search = null;
+                delete rcmail.env.mel_metapage_search
+                rcmail.set_busy(false);
+                rcmail.clear_messages();
+            }
+            else 
+                setTimeout(() => {
+                    rcmail.env.mel_metapage_search.timeout(); 
+                }, 1000);
+        }
+    };
+    setTimeout(rcmail.env.mel_metapage_search.timeout, 1000);
     //rcmail.display_message("Recherche en cours....", "loading")
     for (let index = 0; index < config.length; ++index) {
         const element = config[index];
@@ -20,6 +41,7 @@ function mm_s_Action(e)
         url: element.replace(replaced, val), // url du fichier php
         dataType: 'json',
         success: function (data) {
+            rcmail.env.mel_metapage_search.finished.push(null);
             //console.log(Array.isArray(data), data.length > 0 , data[0].calendar !== undefined);
              if (Array.isArray(data) && data.length > 0 && data[0].calendar !== undefined)
                 data = SearchResultCalendar.from_array(data);
@@ -69,6 +91,7 @@ function mm_s_OnClick()
 
 function mm_s_AfficheResults(datas)
 {
+
     let querry = $("#barup-search");
     if (querry.hasClass("hidden"))
         querry.removeClass("hidden");
@@ -106,6 +129,55 @@ function mm_s_Calendar(cal)
     cal = JSON.parse(cal.replace(/£¤£/g, '"'));
     rcmail.local_storage_set_item("calendar_redirect", cal);
     window.location.href = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
+}
+
+function mm_s_CreateOrUpdateFrame(action, url)
+{
+    event.preventDefault();
+    $("#barup-search").addClass("hidden");
+    rcmail.set_busy(true, "loading");
+    let querry = $("." + action + "-frame");
+    let changePage;
+    if (querry.length > 0)
+    {
+        querry[0].src = url;
+        if (!rcmail.busy)
+            rcmail.set_busy(true, "loading");
+        rcmail.env.frame_created = false;
+        mm_st_CreateOrOpenModal(action, true);
+        new Promise(async (a, b) => {
+            while (rcmail.env.frame_created === false) {
+                await delay(1000);
+                if (!rcmail.busy)
+                    rcmail.set_busy(true, "loading");
+            }
+            rcmail.set_busy(false);
+            rcmail.clear_messages();}
+        );
+    }
+    else {
+        let id = mm_st_CreateOrOpenModal(action, false);
+        if (!rcmail.busy)
+            rcmail.set_busy(true, "loading");
+        querry = $("#" + id);
+        new Promise(async (a, b) => {
+            while (rcmail.env.frame_created === false) {
+                await delay(1000);
+                if (!rcmail.busy)
+                    rcmail.set_busy(true, "loading");
+            }
+            rcmail.env.frame_created = false;
+            if (!rcmail.busy)
+                rcmail.set_busy(true, "loading");
+            querry[0].src = url;
+            while (rcmail.env.frame_created === false) {
+                await delay(1000);
+            }
+            mm_st_CreateOrOpenModal(action);
+            rcmail.set_busy(false);
+            rcmail.clear_messages();
+        });
+    }
 }
 
 /*

@@ -7,22 +7,28 @@ $(document).ready(
             parent.child_cal = cal;
         if (event !== null)
         {
-            cal.event_show_dialog(event);
-            rcmail.local_storage_remove_item("calendar_redirect");
-            // console.log(moment(event.start).format("YYYY-MM-DD")),
-            // setTimeout(() => {
-            //     $('#datepicker').datepicker("setDate", moment(event.start).format("YYYY-MM-DD"))
-            // }, 1000);
+            console.log("parent.rcmail.env.calendar_mm_created", parent.rcmail.env.calendar_mm_created);
+            if (parent.rcmail.env.calendar_mm_created !== undefined && parent.rcmail.env.calendar_mm_created === true)
+            {
+                event = JSON.parse(event.replace(/£¤£/g, '"'))
+                cal.event_show_dialog(event);
+                rcmail.local_storage_remove_item("calendar_redirect");
+                console.log(moment(event.start).format("YYYY-MM-DD")),
+                // setTimeout(() => {
+                //     $('#datepicker').datepicker("setDate", moment(event.start).format("YYYY-MM-DD"))
+                // }, 1000);
+                delete parent.rcmail.env.calendar_mm_created;
+            }
         }
         else {
-            event = rcmail.local_storage_get_item("calendar_create");
-            if(event !== null)
-            {
-                console.log("event", event);
-                if (event === true)
-                    parent.child_cal.add_event("")
-                rcmail.local_storage_remove_item("calendar_create");
-            }
+            // event = rcmail.local_storage_get_item("calendar_create");
+            // if(event !== null)
+            // {
+            //     console.log("event", event, parent.child_cal);
+            //     if (event === true)
+            //         parent.child_cal.add_event("")
+            //     rcmail.local_storage_remove_item("calendar_create");
+            // }
         }
 
 

@@ -20,7 +20,7 @@ class SearchResultContact extends ASearchResult
 
     function up($nom, $prenom, $contact)
     {
-        return '<a href="?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'")>'.$prenom." ".$nom."</a>";
+        return '<a href="?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'" onclick="mm_s_CreateOrUpdateFrame(`searchmail`, `?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'`)">'.$prenom." ".$nom."</a>";
     }
 
     function down($mail, $tel)

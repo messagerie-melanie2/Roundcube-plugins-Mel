@@ -2,6 +2,7 @@
 include_once "search_result.php";
 class SearchResultMail extends ASearchResult
 {
+    public $onclick;
     public function __construct($msg) {
         //$a  = rcube_mime::decode_header($msg->date, $msg->charset);
         $a1 = rcube_mime::decode_header($msg->from, $msg->charset);
@@ -12,7 +13,8 @@ class SearchResultMail extends ASearchResult
         $down = '<div '.$this->style_down().'>'.rcube_mime::decode_header($msg->subject, $msg->charset).'</div>';
         parent::__construct( $up
         , $down,
-         "?_task=mail&_mbox=INBOX&_uid=".$msg->uid."&_action=show");
+         "#");
+         $this->onclick = "mm_s_CreateOrUpdateFrame('searchmail', '?_task=mail&_mbox=INBOX&_uid=".$msg->uid."&_action=show')";
     }  
 
     function style_up($b = true)

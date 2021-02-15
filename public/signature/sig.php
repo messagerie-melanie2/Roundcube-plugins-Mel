@@ -318,6 +318,7 @@ else {
             <ol>
               <li>Cliquez sur le bouton "Télécharger la signature (Outlook)"</li>
               <li>Enregistrez le fichier sous : C:\Users\[votre utilisateur]\AppData\Roaming\Microsoft\Signatures\</li>
+              <li>Faites un clic droit sur le fichier signature.zip et "Extraire ici"</li>
               <li>Ouvrez Outlook et allez dans les Options puis cliquez sur le bouton Signatures</li>
               <li>Vous devez retrouver votre signature générée</li>
             </ol>

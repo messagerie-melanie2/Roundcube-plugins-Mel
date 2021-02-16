@@ -59,7 +59,7 @@ class mel_metapage extends rcube_plugin
             $args["content"] = $this->from_iframe($args["content"]);
             return $args;
         }
-        if (strpos($args["content"],'<body class="iframe') !== false)
+        if (strpos($args["content"],'<body class="iframe') !== false || strpos($args["content"],'<framed_item>') !== false)
         {
             $args["content"] = $this->from_iframe($args["content"]);
             return $args;

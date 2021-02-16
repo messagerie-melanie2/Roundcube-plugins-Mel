@@ -81,10 +81,10 @@ $(document).on({
       // alert(msg);
       // $('#abs_msg_inter').val(msg);
       // $('#abs_msg_inter').val($('#abs_msg_mel').val());
-      $('#abs_msg_inter').hide();
+      $('#abs_msg_inter').addClass("disabled").attr("disabled", "disabled");
     }
     else {
-      $('#abs_msg_inter').show();
+      $('#abs_msg_inter').removeClass("disabled").removeAttr("disabled");//.show();
     }
   }
 }, "input[name='absence_reponse_externe']");

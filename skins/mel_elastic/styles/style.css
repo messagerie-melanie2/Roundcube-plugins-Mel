@@ -342,3 +342,14 @@ li#settingstabpluginmel_suggestion_box > a::before
     bottom: 60px;
     width: 100%;
 } */
+
+framed_item > .framed_item{
+    padding:15px;
+}
+
+.row.separate,
+.btn.separate,
+.mel_separate
+{
+    margin-top:5px;
+}

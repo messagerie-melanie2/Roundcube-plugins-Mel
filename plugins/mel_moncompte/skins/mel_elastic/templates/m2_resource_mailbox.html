@@ -1,34 +1,24 @@
-<roundcube:object name="doctype" value="html5" />
-<html>
-<head>
-<title><roundcube:object name="pagetitle" /></title>
-<roundcube:include file="/includes/links.html" />
+<roundcube:include file="includes/layout.html" />
 <style type="text/css" media="screen">
-body.aclform {
-	background: #efefef;
-	margin: 0;
-}
-
-body.aclform .hint {
-	margin: 1em;
-}
-
-div.legend {
-	display: block;
-	font-size: 14px;
-	font-weight: bold;
-	padding-bottom: 10px;
-	margin-bottom: 0;
-}
+	body.aclform {
+		background: #efefef;
+		margin: 0;
+	}
+	
+	body.aclform .hint {
+		margin: 1em;
+	}
+	
+	div.legend {
+		display: block;
+		font-size: 14px;
+		font-weight: bold;
+		padding-bottom: 10px;
+		margin-bottom: 0;
+	}
 </style>
-</head>
-
-<body class="iframe floatingbuttons">
-
-	<h1 class="boxtitle">
-		<roundcube:var name="env:resource_name" />
-	</h1>
-
+<framed_item>
+<div class="framed_item">
 	<div id="preferences-details" class="boxcontent">
 
 		<div class="legend">
@@ -46,7 +36,7 @@ div.legend {
 		</table>
 		<br>
 		<br>
-
+	
 		<roundcube:if condition="env:resource_shared == false" />
 		<div class="legend">
 			<roundcube:label name="mel_moncompte.users_shares" />
@@ -55,14 +45,14 @@ div.legend {
 		<roundcube:endif />
 		<br>
 		<br>
-
+	
 		<roundcube:if condition="env:resource_shared == false and config:enable_mesressources_mail_restore == true" />
 		<form name="valide" action="#" method="post" class="propform">
 			<div class="legend">
 				<roundcube:label name="mel_moncompte.restore_bal" />
 			</div>
-			<roundcube:object name="restore_bal" />
-			<br /> <input type="submit" class="button mainaction"
+			<roundcube:object name="restore_bal"/>
+			<br /> <input type="submit" class="btn btn-primary button mainaction"
 				value="<roundcube:label name="mel_moncompte.restore_mail" />" />
 				&nbsp;
 		</form>
@@ -70,8 +60,7 @@ div.legend {
 			<roundcube:object name="restore_bal_expl" />
 		</div>
 		<roundcube:endif />
-
+	
 	</div>
-
-</body>
-</html>
+</div>
+</framed_item>

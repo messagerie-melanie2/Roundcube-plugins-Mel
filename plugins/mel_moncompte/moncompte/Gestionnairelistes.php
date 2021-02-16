@@ -62,6 +62,8 @@ class Gestionnairelistes extends Moncompteobject {
 	 * @return string HTML
 	 */
 	public static function readUserListes($attrib) {
+		$attrib["class"] = "form-control";
+		$attrib["style"] = "max-".$attrib["style"];
 		$select_listes = new html_select($attrib);
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());

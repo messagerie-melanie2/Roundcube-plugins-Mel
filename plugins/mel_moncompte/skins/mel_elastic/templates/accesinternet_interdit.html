@@ -1,28 +1,24 @@
-<roundcube:object name="doctype" value="html5" />
-<html>
-<head>
-<title><roundcube:object name="pagetitle" /></title>
-<roundcube:include file="/includes/links.html" />
+<roundcube:include file="includes/layout.html" />
 <link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
-</head>
-<body class="iframe floatingbuttons">
-<h1 class="boxtitle">
-	<roundcube:label name="mel_moncompte.accesinternet" />
-</h1>
-<div id="preferences-details" class="boxcontent">
-	<roundcube:object name="moncompte_balp_list" />
-	<form name="valide" action="#" method="post" class="propform">
-		<fieldset>
-			<legend><roundcube:label name="mel_moncompte.acces_internet_title" /></legend>
-			<div>
-				<span><roundcube:label name="mel_moncompte.acces_internet_status_label" /></span>
-				<span style="font-weight: bold;"><roundcube:label name="mel_moncompte.acces_internet_disable" /></span>
-			</div>
-			<div style="margin-top: 10px;">
-				<roundcube:label name="mel_moncompte.acces_internet_disable_label_forbidden" />
-			</div>
-		</fieldset>
-	</form>
-</div>
-</body>
-</html>
+<framed_item>
+	<div class="framed_item">
+		<h1 class="boxtitle">
+			<roundcube:label name="mel_moncompte.accesinternet" />
+		</h1>
+		<div id="preferences-details" class="boxcontent">
+			<roundcube:object name="moncompte_balp_list" />
+			<form name="valide" action="#" method="post" class="propform">
+				<fieldset>
+					<legend><roundcube:label name="mel_moncompte.acces_internet_title" /></legend>
+					<div>
+						<span><roundcube:label name="mel_moncompte.acces_internet_status_label" /></span>
+						<span style="font-weight: bold;"><roundcube:label name="mel_moncompte.acces_internet_disable" /></span>
+					</div>
+					<div style="margin-top: 10px;">
+						<roundcube:label name="mel_moncompte.acces_internet_disable_label_forbidden" />
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</framed_item>

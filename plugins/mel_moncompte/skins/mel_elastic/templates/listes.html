@@ -1,69 +1,68 @@
-<roundcube:object name="doctype" value="html5" />
-<html>
-<head>
-<title><roundcube:object name="pagetitle" /></title>
-<roundcube:include file="/includes/links.html" />
+<roundcube:include file="includes/layout.html" />
 <link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
-</head>
-<body class="iframe floatingbuttons">
-	<h1 class="boxtitle">
-		<roundcube:label name="mel_moncompte.gestionnairelistes" />
-	</h1>
-	<div id="preferences-details" class="boxcontent propform">
-		<roundcube:object name="moncompte_balp_list" />	
-		<fieldset>
-			<legend><roundcube:label name="mel_moncompte.listes_titre" /></legend>
-			<roundcube:object name="liste_listes" id="liste_listes" size="6" style="width:650px" />
-		</fieldset>
-		<fieldset>
-			<legend><roundcube:label name="mel_moncompte.listes_membres" /></legend>
-			<table>
-				<tr>
-					<td>
-						<select style="width:450px" SIZE="16" name="LboxMembers" id="idLboxMembers">
+<framed_item>
+	<div class="framed_item">
+		<h1 class="boxtitle">
+			<roundcube:label name="mel_moncompte.gestionnairelistes" />
+		</h1>
+		<div id="preferences-details" class="boxcontent propform">
+			<roundcube:object name="moncompte_balp_list" />	
+			<fieldset>
+				<legend><roundcube:label name="mel_moncompte.listes_titre" /></legend>
+				<roundcube:object name="liste_listes" id="liste_listes" size="6" style="width:650px" />
+			</fieldset>
+			<fieldset>
+				<legend><roundcube:label name="mel_moncompte.listes_membres" /></legend>
+				<div class="row">
+					<div class="col-md-6">
+						<select class="form-control" style="max-width:450px" SIZE="16" name="LboxMembers" id="idLboxMembers">
 						</select>
 						<div id="members_count"></div>
-					</td>
-					<td>
-						<div class="listes_buttons">
-							<div><input type="BUTTON" id="listes_ajouter" class="anaisweb_amande_button search_anaisweb_membre" value="<roundcube:label name="mel_moncompte.listes_ajouter" />" /></div>
-							<div><input type="BUTTON" id="listes_saisir" value="<roundcube:label name="mel_moncompte.listes_saisir" />" /></div>
-							<div><input type="BUTTON" id="listes_retirer" value="<roundcube:label name="mel_moncompte.listes_retirer" />" /></div>
-							<div><input type="BUTTON" id="listes_purger" value="<roundcube:label name="mel_moncompte.listes_purger" />" /></div>
-							<div><input type="BUTTON" id="listes_exporter" value="<roundcube:label name="mel_moncompte.listes_exporter" />" /></div>
-							<div><input type="BUTTON" id="listes_importer" value="<roundcube:label name="mel_moncompte.listes_importer" />" /></div>
+					</div>
+					<div class="col-md-3">
+						<div class="btn-group-vertical" style="display: block;">
+							<input type="BUTTON" id="listes_ajouter" class="btn btn-primary anaisweb_amande_button search_anaisweb_membre" value="<roundcube:label name="mel_moncompte.listes_ajouter" />" />
+							<input type="BUTTON" id="listes_saisir" class="btn btn-primary" value="<roundcube:label name="mel_moncompte.listes_saisir" />" />
 						</div>
-					</td>
-				</tr>
-			</table>
-		</fieldset>
-		<div id="upload-dialog" class="propform popupdialog" title="<roundcube:label name='mel_moncompte.listes_upload' />">
-			<roundcube:object name="listes_upload_csv" id="upload-form" size="30" buttons="no" />
-			<div class="formbuttons">
-				<roundcube:button command="upload-listes-csv" type="input" class="button mainaction" label="upload" />
-				<roundcube:button name="close" type="input" class="button" label="cancel" onclick="UI.show_uploadform()" />
-			</div>
-		</div>
-		<roundcube:include file="/includes/footer.html" />
-	</div>
-	<div id="listview-float-right">
-		<!-- inline address book -->
-		<div id="list-contacts" class="uibox listbox contactslist" role="region" aria-labelledby="aria-label-listcontacts">
-			<h2 id="aria-label-listcontacts" class="boxtitle2"><roundcube:label name="contacts" /></h2>
-			<div class="close">&nbsp;</div>
-			<div class="listsearchbox" role="search" aria-labelledby="aria-label-listquicksearch">
-				<h3 id="aria-label-listquicksearch" class="voice"><roundcube:label name="arialabelcontactquicksearch" /></h3>
-				<div class="searchbox">
-					<label for="contactsearchbox" class="voice"><roundcube:label name="arialabelcontactsearchbox" /></label>
-					<roundcube:object name="searchform" id="contactsearchbox" />
-					<a id="searchmenulink" href="#" class="iconbutton searchicon"> </a>
-					<roundcube:button command="reset-search" class="iconbutton reset" title="resetsearch" content=" " />
+						<div class="btn-group-vertical" style="display: block;">
+							<input type="BUTTON" id="listes_retirer" class="btn btn-primary" value="<roundcube:label name="mel_moncompte.listes_retirer" />" />
+							<input type="BUTTON" id="listes_purger" class="btn btn-primary" value="<roundcube:label name="mel_moncompte.listes_purger" />" />
+						</div>	
+						<div class="btn-group-vertical" style="display: block;">
+							<input type="BUTTON" id="listes_exporter" class="btn btn-primary" value="<roundcube:label name="mel_moncompte.listes_exporter" />" />
+							<input type="BUTTON" id="listes_importer" class="btn btn-primary" value="<roundcube:label name="mel_moncompte.listes_importer" />" />
+						</div>
+					</div>
+					<div class="col-md-3"></div>
+				</div>
+			</fieldset>
+			<div id="upload-dialog" class="propform popupdialog" title="<roundcube:label name='mel_moncompte.listes_upload' />">
+				<roundcube:object name="listes_upload_csv" id="upload-form" size="30" buttons="no" />
+				<div class="formbuttons">
+					<roundcube:button command="upload-listes-csv" type="input" class="btn btn-primary button mainaction" label="upload" />
+					<roundcube:button name="close" type="input" class="button btn btn-warning" label="cancel" onclick="UI.show_uploadform()" />
 				</div>
 			</div>
-			<div class="scroller withfooter" tabindex="-1">
-				<roundcube:object name="annuaire_list" id="annuaire-list" class="treelist listing iconized" noheader="true" role="listbox" />
+			<roundcube:include file="/includes/footer.html" />
+		</div>
+		<div id="listview-float-right">
+			<!-- inline address book -->
+			<div id="list-contacts" class="uibox listbox contactslist" role="region" aria-labelledby="aria-label-listcontacts">
+				<h2 id="aria-label-listcontacts" class="boxtitle2"><roundcube:label name="contacts" /></h2>
+				<div class="close">&nbsp;</div>
+				<div class="listsearchbox" role="search" aria-labelledby="aria-label-listquicksearch">
+					<h3 id="aria-label-listquicksearch" class="voice"><roundcube:label name="arialabelcontactquicksearch" /></h3>
+					<div class="searchbox">
+						<label for="contactsearchbox" class="voice"><roundcube:label name="arialabelcontactsearchbox" /></label>
+						<roundcube:object name="searchform" id="contactsearchbox" />
+						<a id="searchmenulink" href="#" class="iconbutton searchicon"> </a>
+						<roundcube:button command="reset-search" class="iconbutton reset" title="resetsearch" content=" " />
+					</div>
+				</div>
+				<div class="scroller withfooter" tabindex="-1">
+					<roundcube:object name="annuaire_list" id="annuaire-list" class="treelist listing iconized" noheader="true" role="listbox" />
+				</div>
 			</div>
 		</div>
 	</div>
-</body>
-</html>
+</framed_item>

@@ -1,14 +1,8 @@
-<roundcube:object name="doctype" value="html5" />
-<html>
-<head>
-<title><roundcube:object name="pagetitle" /></title>
-<roundcube:include file="/includes/links.html" />
+<roundcube:include file="includes/layout.html" />
 <link rel="stylesheet" type="text/css" href="/this/mobile.css" />
-</head>
-
-<body class="iframe floatingbuttons">
-
-<h1 class="boxtitle"><roundcube:label name="mel_moncompte.device_info" /> <roundcube:var name="env:deviceid" /></h1>
+<framed_item>
+	<div class="framed_item">
+		<h1 class="boxtitle"><roundcube:label name="mel_moncompte.device_info" /> <roundcube:var name="env:deviceid" /></h1>
 
 <div id="mobile_actions" class="boxcontent">
 	<roundcube:if condition="env:zp_version == 1" />
@@ -25,6 +19,5 @@
 	<roundcube:object name="mel_statistics_device_info" id="mel_statistics_device_info" class="listing m2_stats_device_table" cellspacing="0" summary="Device informations" />
 	<roundcube:object name="mel_statistics_sync_details" id="mel_statistics_sync_details" class="listing m2_stats_device_table" cellspacing="0" summary="Sync details" />
 </div>
-
-</body>
-</html>
+	</div>
+</framed_item>

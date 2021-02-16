@@ -70,7 +70,7 @@ function is_internal() {
                     </div>
                     <div class="input-field">
                         <i class="material-icons prefix">mail</i>
-                        <input type="text" name="email" id="email">
+                        <input type="text" name="email" id="email" autofocus>
                         <label for="name">Adresse e-mail</label>
                     </div>
                 </div>

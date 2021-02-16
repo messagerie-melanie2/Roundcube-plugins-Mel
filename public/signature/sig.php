@@ -339,45 +339,45 @@ else {
         </div>
       </div>
     </div>
-    <div id="signature_template">
-      <div style="line-height:10pt;margin:10px 0;font-family:Arial,Helvetica,sans-serif;">
-        <div style="font-size:9pt;">
-          <b>%%TEMPLATE_NAME%%</b>
-          <br>
-          <span style="font-size:8pt;">%%TEMPLATE_JOBTITLE%%%%TEMPLATE_SERVICE%%%%TEMPLATE_DIRECTION%%</span>
-        </div>
-        <p style="margin:15px 0;height:0px;"></p>
-        <p style="font-size:8pt;">%%TEMPLATE_ADDRESS%%%%TEMPLATE_OFFICE%%%%TEMPLATE_PHONE%%
-          <span>
-          %%TEMPLATE_LINKS%%
-          </span>
-        </p>
-        <table style="border:0;line-height:10pt;border-collapse:collapse;width:auto;background-color:#fff;">
-          <tbody>
-            <tr style="border:0">
-              <td style="padding:10px 0 0 0">
-                <img src="%%TEMPLATE_SRC_MARIANNE%%" alt="Marianne">
-              </td>
-            </tr>
-            <tr style="border:0">
-              <td style="border:0;border-right:1.5px solid #000;text-align:left;vertical-align:middle;padding:5px 30px 5px 0" valign="top" align="left">
-                %%TEMPLATE_LOGO%%
-              </td>
-              <td style="border:0;text-align:left;vertical-align:middle;padding:0 0 0 5px" valign="center" align="left">
-                <span style="font-weight:bold;font-size:8pt;line-height:9pt;">
-                  <p style="color:#000;font-size:8pt;font-weight:bold;max-width:180px;"> %%TEMPLATE_DIRECTION%%</p>
-                </span>
-              </td>
-            </tr>
-            <tr style="border:0">
-              <td style="border:0;text-align:left;vertical-align:top;padding:3px 0 0 0" valign="top" align="left">
-                <img src="%%TEMPLATE_SRC_DEVISE%%" alt="liberté, égalité, fraternité">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+<div id="signature_template">
+<div style="line-height:10pt;margin:10px 0;font-family:Arial,Helvetica,sans-serif;">
+<div style="font-size:9pt;">
+<b>%%TEMPLATE_NAME%%</b>
+<br>
+<span style="font-size:8pt;">%%TEMPLATE_JOBTITLE%%%%TEMPLATE_SERVICE%%%%TEMPLATE_DIRECTION%%</span>
+</div>
+<p style="margin:15px 0;height:0px;"></p>
+<p style="font-size:8pt;">%%TEMPLATE_ADDRESS%%%%TEMPLATE_OFFICE%%%%TEMPLATE_PHONE%%
+<span>
+%%TEMPLATE_LINKS%%
+</span>
+</p>
+<table style="border:0;line-height:10pt;border-collapse:collapse;width:auto;background-color:#fff;">
+<tbody>
+<tr style="border:0">
+<td style="padding:10px 0 0 0">
+<img src="%%TEMPLATE_SRC_MARIANNE%%" alt="Marianne">
+</td>
+</tr>
+<tr style="border:0">
+<td style="border:0;border-right:1.5px solid #000;text-align:left;vertical-align:middle;padding:5px 30px 5px 0" valign="top" align="left">
+%%TEMPLATE_LOGO%%
+</td>
+<td style="border:0;text-align:left;vertical-align:middle;padding:0 0 0 5px" valign="center" align="left">
+<span style="font-weight:bold;font-size:8pt;line-height:9pt;">
+<p style="color:#000;font-size:8pt;font-weight:bold;max-width:180px;"> %%TEMPLATE_DIRECTION%%</p>
+</span>
+</td>
+</tr>
+<tr style="border:0">
+<td style="border:0;text-align:left;vertical-align:top;padding:3px 0 0 0" valign="top" align="left">
+<img src="%%TEMPLATE_SRC_DEVISE%%" alt="liberté, égalité, fraternité">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
   </body>
   <script type="text/javascript">
     // Morceau du js de roundcube pour que le signature.js fonctionne

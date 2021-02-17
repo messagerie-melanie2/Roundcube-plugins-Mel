@@ -3,8 +3,8 @@ $(document).ready(
     {
         let event = rcmail.local_storage_get_item("calendar_redirect");
         let cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
-        if (parent.child_cal === undefined)
-            parent.child_cal = cal;
+        // if (parent.child_cal === undefined)
+        //     parent.child_cal = cal;
         if (event !== null)
         {
             console.log("parent.rcmail.env.calendar_mm_created", parent.rcmail.env.calendar_mm_created);

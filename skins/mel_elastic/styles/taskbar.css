@@ -1,5 +1,8 @@
 #layout-menu{
     background-color:#2C3054;
+    position: absolute;
+    height: 100%;
+    z-index:999;
 }
 
 #taskmenu{
@@ -18,8 +21,8 @@
 
 #taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover
 {
-    -moz-border-radius: 100%;
-    border-radius: 100%;
+    /* -moz-border-radius: 100%;
+    border-radius: 100%; */
     background-color: #484D7A !important;    
     
 }
@@ -146,3 +149,31 @@
     font-family: "IcoFont"!important;
 }
 
+iframe.mm-frame/*,
+#layout-sidebar,
+.task-mel_portal > #layout > #layout-content*/
+{
+    margin-left:60px;
+}
+
+#layout-menu:hover{
+    width: 200px;
+}
+
+#layout-menu:hover > div > a > span.inner,
+#layout-menu:hover > div > span > a > span.inner {
+    display: block;
+    position: absolute;
+    left: 65px;
+    margin-top: -32px;
+    /* top: inherit; */
+    font-family: Roboto,sans-serif;
+    border-top-style: solid;
+    /* border-bottom-style: solid; */
+    border-width: thin;
+    padding-top: 17px;
+    /* padding-bottom: 8px; */
+    min-width: 100px;
+    text-align: left;
+    border-color: #363A5B;
+}

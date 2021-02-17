@@ -3441,7 +3441,8 @@ var rctasks;
 
 window.rcmail && rcmail.addEventListener('init', function(evt) {
     rctasks = new rcube_tasklist_ui($.extend(rcmail.env.tasklist_settings, rcmail.env.libcal_settings));
-
+    if (parent !== window)
+        parent.rctasks = rctasks;
     // register button commands
     rcmail.register_command('newtask', function(){ rctasks.edit_task(null, 'new', {}); }, true);
     rcmail.register_command('print', function(){ rctasks.print_tasks(); }, true);

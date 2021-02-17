@@ -89,8 +89,8 @@ class Flux_rss extends Module
           'prop' => '_data=news',
           'class'	=> 'news icofont-newspaper',
           'classsel' => 'news icofont-newspaper selected',
-          'innerclass' => 'button-inner',
-          'label'	=> '',
+          'innerclass' => 'inner',
+          'label'	=> 'mel_portal.news',
           'title' => '',
           'type'       => 'link'
       ), $this->plugin->sidebarName);   

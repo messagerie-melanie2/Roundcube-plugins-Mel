@@ -60,7 +60,7 @@ if (rcmail)
                 rcmail.set_busy(true, "loading");
                 if (parent.rcmail.env.ev_calendar_url === undefined)
                     parent.rcmail.env.ev_calendar_url = ev_calendar_url;
-                $.ajax({ // fonction permettant de faire de l'ajax
+                return $.ajax({ // fonction permettant de faire de l'ajax
                 type: "POST", // methode de transmission des données au fichier php
                 url: parent.rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
@@ -127,7 +127,7 @@ if (rcmail)
                 rcmail.set_busy(true, "loading");
                 //?_task=tasks&_action=fetch&filter=0&lists=tommy_-P-_delphin_-P-_i&_remote=1&_unlock=true&_=1613118450180
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
-                $.ajax({ // fonction permettant de faire de l'ajax
+                return $.ajax({ // fonction permettant de faire de l'ajax
                 type: "POST", // methode de transmission des données au fichier php
                 url: '?_task=tasks&_action=fetch&filter=0&_remote=1&_unlock=true&_=1613118450180',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
@@ -162,13 +162,39 @@ if (rcmail)
                 rcmail.clear_messages();
              });
             },
-            refresh: function () {}
+            refresh: function () {
+                let querry = $(".calendar-frame");
+                if (querry.length > 0)
+                {
+                    //refresh du calendrier
+                    if (parent.child_cal !== undefined)
+                    {
+                        //child_cal.refresh({ source:child_cal.calendars["tommy_-P-_delphin_-P-_i"].id, refetch:true });
+                        for (const key in parent.child_cal.calendars) {
+                            child_cal.refresh({ source:key, refetch:true });
+                        }
+                    }
+                }
+                querry = $("")
+                if (querry.length > 0)
+                {
+                    if (parent.rctasks !== undefined)
+                        rctasks.init();
+
+                }
+                parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
+                    parent.rcmail.mel_metapage_fn.tasks_updated();
+                });
+            }
         };
 
         //ajout des events listener
         parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.get, parent.rcmail.mel_metapage_fn.calendar_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.get, parent.rcmail.mel_metapage_fn.tasks_updated);
-
+        if (parent != window && rcmail.mel_metapage_fn === undefined)
+             rcmail.mel_metapage_fn = {
+                 refresh:() => {}
+             };
         //checks
         let local_storage = {
             calendar:rcmail.local_storage_get_item(mel_metapage.Storage.calendar)

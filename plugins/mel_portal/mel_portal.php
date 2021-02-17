@@ -72,9 +72,10 @@ class mel_portal extends rcube_plugin
             'class'	=> 'button-home order1 icofont-home',
             'classsel' => 'button-home button-selected order1 icofont-home',
             'innerclass' => 'button-inner',
-            'label'	=> '',
+            'label'	=> 'portal',
             'title' => '',
-            'type'       => 'link'
+            'type'       => 'link',
+            'domain' => $this->taskName
         ), $this->sidebarName);
       }
     }

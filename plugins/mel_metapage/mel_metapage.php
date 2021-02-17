@@ -33,12 +33,18 @@ class mel_metapage extends rcube_plugin
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('search_contact', array($this, 'search_contact'));
             $this->register_action('contact', array($this, 'display_contact'));
+            $this->add_hook('refresh', array($this, 'refresh'));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
             $this->add_hook("send_page", array($this, "generate_html"));//$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         }
         //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
+    }
+
+    function refresh()
+    {
+        $this->rc->output->command('mel_metapage_fn.refresh');
     }
 
     function include_plugin()

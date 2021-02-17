@@ -4161,6 +4161,7 @@ if (rcmail.env.devel_mode && window.less) {
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   // let's go
   var cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+  parent.child_cal = cal;
   if (rcmail.env.action == 'dialog-ui') {
     return;
   }

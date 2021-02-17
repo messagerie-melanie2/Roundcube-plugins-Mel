@@ -1,8 +1,10 @@
 <?php
+$labels = array();
+$labels['portal'] = "Accueil";
+$labels['news'] = "S'informer";
 //Modules
 
 //Flux_rss
-$labels = array();
 $labels['rss_sample_header'] = "Ministère de la transition écologique";
 $labels['rss_sample_body'] = "Longue vie aux objets : lancement de la campagne Nos objets ont plein d'avenirs";
 $labels['rss_sample_footer'] = "Economiecirculaire";

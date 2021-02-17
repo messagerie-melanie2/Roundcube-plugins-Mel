@@ -109,14 +109,16 @@ function use_signature() {
  */
 function download_signature_outlook() {
     // HTML for Outlook
-    var html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">';
-    html += '<HTML><HEAD><TITLE>Email Signature</TITLE>';
-    html += '<META content="text/html; charset=utf-8" http-equiv="Content-Type">';
-    html += '</HEAD>';
-    html += '<BODY style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
-    html += getSignatureHTML(false);
-    html += '</BODY>';
-    html += '</HTML>';
+    var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml"';
+    html += ' xmlns:v="urn:schemas-microsoft-com:vml"';
+    html += ' xmlns:o="urn:schemas-microsoft-com:office:office">';
+    html += '<head>';
+    html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
+    html += '</head>';
+    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += getSignatureHTML(false, '', true);
+    html += '</body>';
+    html += '</html>';
 
     // Create the zip file
     var zip = new JSZip();
@@ -178,7 +180,7 @@ function checkOneIdentity(source) {
  * 
  * return HTML
  */
-function getSignatureHTML(embeddedImage = true, images_url = "") {
+function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = false) {
     let signature_html = document.getElementById("signature_template").innerHTML;
     // User name
     signature_html = signature_html.replace('%%TEMPLATE_NAME%%', document.getElementById("input-nom").value);
@@ -251,44 +253,69 @@ function getSignatureHTML(embeddedImage = true, images_url = "") {
     }
     signature_html = signature_html.replace('%%TEMPLATE_LINKS%%', links);
 
-    let logo = document.createElement('img');
+    // Logo de la signature
     let select = document.getElementById("input-logo");
     if (embeddedImage) {
-        logo.src = rcmail.env.logo_sources[select.value];
+        signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', 
+                createImage(rcmail.env.logo_sources[select.value], select.options[select.selectedIndex].text, isOutlook));
     }
     else {
-        logo.src = images_url + select.value;
+        signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', 
+                createImage(images_url + select.value, select.options[select.selectedIndex].text, isOutlook));
     }
-    logo.alt = select.options[select.selectedIndex].text;
-    signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', logo.outerHTML);
 
     // Logo Marianne
     let logo_marianne = 'images/marianne.gif';
     if (rcmail.env.logo_sources[logo_marianne]) {
-        var src = '';
         if (embeddedImage) {
-            src = rcmail.env.logo_sources[logo_marianne];
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
+                    createImage(rcmail.env.logo_sources[logo_marianne], 'Marianne', isOutlook));
         }
         else {
-            src = images_url + logo_marianne;
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
+                    createImage(images_url + logo_marianne, 'Marianne', isOutlook));
         }
-        signature_html = signature_html.replace('%%TEMPLATE_SRC_MARIANNE%%', src);
     }
 
     // Logo Devise
     let logo_devise = 'images/devise.gif';
     if (rcmail.env.logo_sources[logo_devise]) {
-        var src = '';
         if (embeddedImage) {
-            src = rcmail.env.logo_sources[logo_devise];
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
+                    createImage(rcmail.env.logo_sources[logo_devise], 'Liberté, Égalité, Fraternité', isOutlook));
         }
         else {
-            src = images_url + logo_devise;
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
+                    createImage(images_url + logo_devise, 'Liberté, Égalité, Fraternité', isOutlook));
         }
-        signature_html = signature_html.replace('%%TEMPLATE_SRC_DEVISE%%', src);
     }
     
     return signature_html.replace(/(\r\n|\n|\r)/gm,"").trim();
+}
+
+/**
+ * Retour le HTML d'une image en fonction de la source et du alt
+ * Pour Outlook fourni en plus du vml de l'image
+ */
+function createImage(src, alt, isOutlook = false) {
+    let html = '';
+    let img = document.createElement('img');
+    img.src = src;
+    img.alt = alt;
+    
+    if (isOutlook) {
+        // Pour Outlook ajouter des balise <v:image>
+        html += '<!--[if gte vml 1]>';
+        html += '<v:imagedata src="'+src+'" o:title="'+escape(alt)+'"/>';
+        html += '<![endif]-->';
+        html += '<![if !vml]>';
+        html += img.outerHTML;
+        html += '<![endif]>';
+    }
+    else {
+        html = img.outerHTML;
+    }
+    return html;
 }
 
 /**

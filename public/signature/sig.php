@@ -225,13 +225,13 @@ else {
         <!--Let browser know website is optimized for mobile-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script type="text/javascript" src="../../plugins/mel_signatures/signature.js?v=20210215155652"></script>
+        <script type="text/javascript" src="../../plugins/mel_signatures/signature.js?v=20210217112052"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
         <script type="text/javascript" src="js/getSignature.js"></script>
         <script type="text/javascript" src="js/jszip.min.js"></script>
         <link rel="stylesheet" href="css/ghpages-materialize.css">
         <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css?v=20210215155652">
+        <link rel="stylesheet" href="css/main.css?v=20210217112052">
     <!--Import materialize.css-->
   </head>
   <body  id="main-body">
@@ -356,7 +356,7 @@ else {
 <tbody>
 <tr style="border:0">
 <td style="padding:10px 0 0 0">
-<img src="%%TEMPLATE_SRC_MARIANNE%%" alt="Marianne">
+%%TEMPLATE_LOGO_MARIANNE%%
 </td>
 </tr>
 <tr style="border:0">
@@ -371,7 +371,7 @@ else {
 </tr>
 <tr style="border:0">
 <td style="border:0;text-align:left;vertical-align:top;padding:3px 0 0 0" valign="top" align="left">
-<img src="%%TEMPLATE_SRC_DEVISE%%" alt="liberté, égalité, fraternité">
+%%TEMPLATE_LOGO_DEVISE%%
 </td>
 </tr>
 </tbody>

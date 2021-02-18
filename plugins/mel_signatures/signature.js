@@ -181,7 +181,13 @@ function checkOneIdentity(source) {
  * return HTML
  */
 function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = false) {
-    let signature_html = document.getElementById("signature_template").innerHTML;
+    let signature_html = '';
+    if (isOutlook) {
+        signature_html = document.getElementById("signature_outlook_template").innerHTML;
+    }
+    else {
+        signature_html = document.getElementById("signature_template").innerHTML;
+    }
     // User name
     signature_html = signature_html.replace('%%TEMPLATE_NAME%%', document.getElementById("input-nom").value);
 

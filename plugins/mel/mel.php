@@ -748,19 +748,22 @@ class mel extends rcube_plugin {
               'id' => 'rcmloginurl',
               'value' => $url
       ));
+      $input_class = (($this->rc->config->get('skin') == 'mel_elastic' || $this->rc->config->get('skin') == 'elastic') ? "form-control" : "");
       $input_login = new html_inputfield(array(
               'name' => '_user',
               'id' => 'rcmloginuser',
               'size' => '40',
               'autocapitalize' => 'off',
-              'autocomplete' => 'on'
+              'autocomplete' => 'on',
+              "class" => $input_class
       ));
       $input_password = new html_passwordfield(array(
               'name' => '_pass',
               'id' => 'rcmloginpwd',
               'size' => '40',
               'autocapitalize' => 'off',
-              'autocomplete' => 'off'
+              'autocomplete' => 'off',
+              'class' => $input_class
       ));
       if (!$this->rc->config->get('hide_keep_login_button', false)) {
           $checkbox_keeplogin = new html_checkbox(array(
@@ -826,12 +829,12 @@ class mel extends rcube_plugin {
                 'for' => 'rcmloginpwd'
         ), $this->rc->gettext('password'))) . html::div(null, $input_password->show()) . $keeplogin_html) . html::p(array(
                 'class' => 'formbuttons'
-        ), html::tag('input', array(
+        ), html::tag('button', array(
                 'id' => 'rcmloginsubmit',
                 'class' => 'button mainaction',
                 'type' => 'submit',
                 'value' => $this->rc->gettext('login')
-        )));
+        ), $this->rc->gettext('login')));
       }
       else {
         $table = new html_table(array(
@@ -873,12 +876,12 @@ class mel extends rcube_plugin {
 
         $args['content'] = $input_task->show() . $input_action->show() . $input_timezone->show() . $input_url->show() . $login_div . $table->show() . html::p(array(
                 'class' => 'formbuttons'
-        ), html::tag('input', array(
+        ), html::tag('button', array(
                 'id' => 'rcmloginsubmit',
                 'class' => 'button mainaction',
                 'type' => 'submit',
                 'value' => $this->rc->gettext('login')
-        )));
+        ), $this->rc->gettext('login')));
         if ($this->rc->config->get('show_no_bal_message', true) && mel::is_internal()) {
           $args['content'] .= html::div(array(), html::a(array(
                   "href" => "./changepassword/index.php"

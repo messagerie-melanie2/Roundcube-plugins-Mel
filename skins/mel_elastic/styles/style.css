@@ -353,3 +353,82 @@ framed_item > .framed_item{
 {
     margin-top:5px;
 }
+
+/*roundbadges*/
+
+.roundbadge{
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    line-height: 12px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    background-color: lightgray;    
+    text-align: center;  
+    font-weight: bold;
+    font-size: 6px;
+}
+
+.roundbadge.large
+{
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  font-size: initial;
+}
+
+.roundbadge.clear
+{
+  background-color: #F0F0F0;
+}
+
+.roundbadge.dark
+{
+  background-color: #363A5B;
+}
+
+.roundbadge.setalign
+{
+  top: 1px;
+  left: -8px;
+  position: absolute;
+}
+
+.roundbadge.warning{
+  background-color: #FC945A;
+}
+
+.roundbadge.lightgreen,
+.roundbadge.hover.tick:hover
+{
+  background-color: #80D5C6;
+}
+
+.roundbadge.hover.tick
+{
+  cursor: pointer;
+}
+
+.roundbadge.hover.tick:hover:before{
+  content: "\eed8"!important;
+}
+
+.roundbadge.menu
+{
+    top: -13px;
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    line-height: 16px;
+    font-size: 8px;
+    color: #2C3054;
+    left: 2px;
+}
+
+#taskmenu a.selected > sup > span, 
+#taskmenu a:hover > sup > span, 
+#taskmenu a.selected:hover > sup > span, 
+#taskmenu .action-buttons a:hover > sup > span
+{
+    color:#484D7A;
+}

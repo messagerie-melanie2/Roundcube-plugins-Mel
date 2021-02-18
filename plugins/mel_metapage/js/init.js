@@ -1,57 +1,17 @@
-class EventListenerDatas
-{
-    constructor(event, before = null, after = null)
-    {
-        this.get = event;
-        if (before === null)
-        {
-           if (event.includes("."))
-           {
-               let tmp = event.split(".");
-               before = tmp[0] + ".before." + tmp[1];
-           } 
-        }
-        this.before = before;
-        if (after === null)
-        {
-           if (event.includes("."))
-           {
-               let tmp = event.split(".");
-               after = tmp[0] + ".after." + tmp[1];
-           } 
-        }
-        this.after = after;
-    }
-
-    toString()
-    {
-        return this.get;
-    }
-}
-const ev_calendar_url = '?_task=calendar&_action=load_events';
-const mel_metapage = {
-    EventListeners: {
-        calendar_updated:new EventListenerDatas("mel_metapage.calendar_updated"),
-        tasks_updated:new EventListenerDatas("mel_metapage.tasks_updated"),
-    },
-    Storage: {
-        calendar:"mel_metapage.calendar",
-        tasks:"mel_metapage.tasks"
-    },
-    Symbols: {
-        my_day:{
-            calendar:Symbol("calendar"),
-            tasks:Symbol("tasks")
-        }
-    }
-}; 
-
 (function(){
 
 if (rcmail)
 {
     if (rcmail.env.task === "tasks")
         parent.child_rcmail = rcmail;
+    if (parent != window && rcmail.mel_metapage_fn === undefined)
+    {
+            rcmail.mel_metapage_fn = {
+                refresh:() => {}
+            };
+    }
+    if (parent.rcmail.mel_metapage_fn !== undefined)
+        return;
     parent.rcmail.addEventListener("init", function() {
         //Definition des functions
         parent.rcmail.mel_metapage_fn = {
@@ -107,7 +67,9 @@ if (rcmail)
                             }
                         }
                         data = null;
-                        rcmail.local_storage_set_item(mel_metapage.Storage.calendar, events);
+                        try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
+                        update_badge(events.length, mel_metapage.Ids.menu.badge.calendar);
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar, events);
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
                     } catch (ex) {
                         console.error(ex);
@@ -146,8 +108,10 @@ if (rcmail)
                             }
                         }
                         datas_to_save.sort((a,b) => a.mel_metapage.order - b.mel_metapage.order);
-                        rcmail.local_storage_set_item(mel_metapage.Storage.tasks, datas_to_save);
+                        mel_metapage.Storage.set(mel_metapage.Storage.tasks, datas_to_save);
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
+                        try_add_round(".tasklist", mel_metapage.Ids.menu.badge.tasks);
+                        update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
                     } catch (ex) {
                         console.error(ex);
                         rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -162,6 +126,28 @@ if (rcmail)
                 rcmail.clear_messages();
              });
             },
+            mail_updated: function() {
+                parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
+                return $.ajax({ // fonction permettant de faire de l'ajax
+                type: "GET", // methode de transmission des données au fichier php
+                url: '?_task=mel_metapage&_action=get_unread_mail_count',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
+                success: function (data) {
+                    try {
+                        mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
+                        try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
+                        update_badge(data, mel_metapage.Ids.menu.badge.mail);
+                        parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
+                    } catch (ex) {
+                        console.error(ex);
+                        rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                    console.error(xhr, ajaxOptions, thrownError);
+                    rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                },
+                });
+            },
             refresh: function () {
                 let querry = $(".calendar-frame");
                 if (querry.length > 0)
@@ -175,7 +161,7 @@ if (rcmail)
                         }
                     }
                 }
-                querry = $("")
+                querry = $(".tasks-frame");
                 if (querry.length > 0)
                 {
                     if (parent.rctasks !== undefined)
@@ -184,6 +170,7 @@ if (rcmail)
                 }
                 parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
                     parent.rcmail.mel_metapage_fn.tasks_updated();
+                    parent.rcmail.mel_metapage_fn.mail_updated();
                 });
             }
         };
@@ -191,13 +178,15 @@ if (rcmail)
         //ajout des events listener
         parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.get, parent.rcmail.mel_metapage_fn.calendar_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.get, parent.rcmail.mel_metapage_fn.tasks_updated);
-        if (parent != window && rcmail.mel_metapage_fn === undefined)
-             rcmail.mel_metapage_fn = {
-                 refresh:() => {}
-             };
+        parent.rcmail.addEventListener(mel_metapage.EventListeners.mails_updated.get, parent.rcmail.mel_metapage_fn.mail_updated);
+
         //checks
         let local_storage = {
-            calendar:rcmail.local_storage_get_item(mel_metapage.Storage.calendar)
+            calendar:mel_metapage.Storage.get(mel_metapage.Storage.calendar),
+            tasks:mel_metapage.Storage.get(mel_metapage.Storage.tasks),
+            mails:{
+                unread_count:mel_metapage.Storage.get(mel_metapage.Storage.mail),
+            }
         }
         if (local_storage.calendar != null && local_storage.calendar.length > 0)
         {
@@ -209,12 +198,73 @@ if (rcmail)
             let date = now.date();
             //console.log(startDate != date, endDate != date, startMoment, now, endMoment);
             if (startDate != date)
-            {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-            }
+        }
+
+        //add
+        if (parent === window) //Si on est pas dans une frame
+        {
+            init_badge(local_storage.calendar, mel_metapage.Storage.calendar, rcmail.mel_metapage_fn.calendar_updated,
+                ".calendar", mel_metapage.Ids.menu.badge.calendar, true);
+            init_badge(local_storage.tasks, mel_metapage.Storage.tasks, rcmail.mel_metapage_fn.tasks_updated,
+                ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);
+            init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated, 
+                ".mail", mel_metapage.Ids.menu.badge.mail, true, true);
         }
     });
 
+}
+
+function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc = false, isLength = false)
+{
+    if (storage === null)
+    {
+        if (isAsyncFunc)
+        {
+            func().then(() => {
+                try_add_round(selector, idBadge);
+                storage = mel_metapage.Storage.get(storage_key);
+                update_badge((isLength ? storage : storage.length), idBadge);
+            });
+        }
+        else {
+            func();
+            try_add_round(selector, idBadge);
+            storage = mel_metapage.Storage.get(storage_key);
+            update_badge((isLength ? storage : storage.length), idBadge);
+        }
+    }
+    else
+    {
+        try_add_round(selector, idBadge);
+        update_badge((isLength ? storage : storage.length), idBadge);
+    }
+}
+
+function try_add_round(selector, idBadge)
+{
+    selector =  $(selector);
+    if ($("#" + idBadge).length === 0)
+        selector.append(`<sup><span id="` + idBadge + `" class="roundbadge menu lightgreen" style="display:none;">?</span></sup>`)
+}
+
+function update_badge(size, idBadge)
+{
+    let querry = $("#" + idBadge);
+    if (size === 0)
+        querry.css("display", "none");
+    else
+    {
+        if (size > 999)
+        {
+            size = "999+";
+            querry.css("font-size", "6px");
+        }
+        else
+            querry.css("font-size", "");
+        querry.html(size);
+        querry.css("display", "");
+    }
 }
 
 function dateNow(date){

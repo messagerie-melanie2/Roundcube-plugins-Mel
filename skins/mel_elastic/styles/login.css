@@ -2,7 +2,7 @@
     margin: 0 auto;
     top: 10vh;
     width: 95%;
-    max-width: 800px;
+    max-width: 54%;
     position: relative;
 }
 
@@ -33,7 +33,14 @@
 
 #rcmloginsubmit
 {
+    background-color: #363A5B;
+    border-color: #363A5B;
     border-radius: 60px;
+}
+
+#rcmloginsubmit:hover{
+    background-color: #484D7A;
+    border-color: #484D7A;
 }
 
 #rcmloginsubmit::after{
@@ -125,6 +132,17 @@
 
 @media screen and (max-width: 795px) {
 
-    #mel-login-form{top:0}
-    #loginfooter{margin-top: 15px;}
+    #mel-login-form{
+        top:0;
+        max-width: 100%;
+    }
+    #loginfooter{
+        margin-top: 15px;
+        padding: 0 15px;
+    }
+
+     .card-body.mel_correction
+    {
+        padding: 30px 15px;
+    } 
 }

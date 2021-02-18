@@ -109,3 +109,11 @@ function m_mp_OpenTask()
         navigator.command('newtask','',this, event);
     });
 }
+
+rcmail.addEventListener('responseafter', function(props) {
+    //console.log("responseafter", props);
+    if (props.response && (props.response.action == 'mark' || props.response.action=='getunread')) {
+     parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get);
+    }
+
+});

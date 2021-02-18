@@ -9,7 +9,7 @@ function my_day(symbol = null)
 
 function current_day(storage, trigger, setup_func = (local_storage) => { console.log(local_storage);})
 {
-	let local_storage = rcmail.local_storage_get_item(storage);
+	let local_storage = mel_metapage.Storage.get(storage);
 	if (local_storage !== null)
 	{
 		//console.log(setup_func);

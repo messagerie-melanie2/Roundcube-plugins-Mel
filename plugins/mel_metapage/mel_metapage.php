@@ -22,6 +22,7 @@ class mel_metapage extends rcube_plugin
     {
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
+        $this->startup();
         if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic')
         {
             $this->add_texts('localization/', true);
@@ -31,12 +32,19 @@ class mel_metapage extends rcube_plugin
             $this->rc->get_storage();
             $this->register_task("mel_metapage");
             $this->register_action('search_mail', array($this, 'search_mail'));
+            $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
             $this->register_action('search_contact', array($this, 'search_contact'));
             $this->register_action('contact', array($this, 'display_contact'));
             $this->add_hook('refresh', array($this, 'refresh'));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
             $this->add_hook("send_page", array($this, "generate_html"));//$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
+        }
+        else if ($this->rc->task == 'logout' 
+        || $this->rc->task == 'login') {
+      // Include javascript files
+            $this->include_script('js/actions/logout.js');
+            $this->include_script('js/actions/login.js');
         }
         //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
@@ -45,6 +53,15 @@ class mel_metapage extends rcube_plugin
     function refresh()
     {
         $this->rc->output->command('mel_metapage_fn.refresh');
+    }
+
+    /**
+     * Action à faire avant tout. 
+     */
+    function startup()
+    {
+        $this->include_script('js/init/classes.js');
+        $this->include_script('js/init/constants.js');
     }
 
     function include_plugin()
@@ -165,6 +182,19 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env('mm_search_config', $tmp);
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);
         //$this->rc->output->set_env('currentTask', $this->rc->task);
+    }
+
+    public function get_unread_mail_count()
+    {
+        $msgs = $this->rc->storage->list_messages();
+        $size = count($msgs);
+        $retour = 0;
+        for ($i=0; $i < $size; ++$i) { 
+            if (count($msgs[$i]) == 0 || $msgs[$i]->flags["SEEN"] === null || !$msgs[$i]->flags["SEEN"] )
+                ++$retour;
+        }
+        echo $retour;
+        exit;
     }
 
     public function search_mail()

@@ -1,31 +1,42 @@
 <?php
+// *** CONFIGURATION
+// Application locale ou intégrée à Roundcube Mél ?
+define('APPLICATION_LOCALE', true);
+
+// Fichier de log errors
+define('LOG_FILE', "/var/log/roundcube/errors");
+
+// *** Control de provenance de l'application (erreur si pas RIE)
 // Si pas en interne on rejète la page
 if (!is_internal()) {
   echo "Le générateur de signature est uniquement accessible depuis le réseau Ministériel ou depuis un VPN (Contactez votre support informatique local pour savoir comment faire).";
   exit;
 }
-
 /**
-* Défini si on est dans une instance interne ou extene de l'application
-* Permet la selection de la bonne url
-*/
+ * Défini si on est dans une instance interne ou extene de l'application
+ * Permet la selection de la bonne url
+ */
 function is_internal() {
   return (!isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) || strcasecmp($_SERVER["HTTP_X_MINEQPROVENANCE"], "intranet") === 0);
 }
 
-// PAMELA - Application name configuration for ORM Mél
-if (! defined('CONFIGURATION_APP_LIBM2')) {
-  define('CONFIGURATION_APP_LIBM2', 'roundcube');
-}
+// Gestion des logs
 ini_set("log_errors", 1);
-ini_set("error_log", "/var/log/roundcube/errors");
-
-@include_once 'includes/libm2.php';
-include_once __DIR__ . '/../../vendor/autoload.php';
+ini_set("error_log", LOG_FILE);
 
 // Configuration du plugin
 $rcmail_config = [];
-include_once __DIR__ . '/../../plugins/mel_signatures/config.inc.php';
+if (APPLICATION_LOCALE) {
+  include_once __DIR__ . '/config.inc.php';
+}
+else {
+  // PAMELA - Application name configuration for ORM Mél
+  define('CONFIGURATION_APP_LIBM2', 'roundcube');
+
+  @include_once 'includes/libm2.php';
+  include_once __DIR__ . '/../../vendor/autoload.php';
+  include_once __DIR__ . '/../../plugins/mel_signatures/config.inc.php';
+}
 
 if(!empty($_GET['email'])){
   $email = htmlspecialchars($_GET['email']);
@@ -45,7 +56,7 @@ $sources = [];
 function get_direction_name($direction, $dn = null) {
   global $rcmail_config;
   $pos = strpos($dn, "ou=$direction,");
-  if ($pos !== false) {
+  if ($pos !== false && !APPLICATION_LOCALE) {
       $searchDN = substr($dn, $pos);
       $ou = new LibMelanie\Api\Mel\User();
       $ou->dn = $searchDN;
@@ -69,7 +80,13 @@ function get_direction_name($direction, $dn = null) {
  */
 function image_data($uri) {
   // Format the image SRC: data:{mime};base64,{data};
-  $dir = __DIR__.'/../../plugins/mel_signatures';
+  if (APPLICATION_LOCALE) {
+    $dir = __DIR__;
+  }
+  else {
+    $dir = __DIR__.'/../../plugins/mel_signatures';
+  }
+  
   return 'data:'.mime_content_type($dir.'/'.$uri).';base64,'.base64_encode(file_get_contents($dir.'/'.$uri));
 }
 
@@ -164,13 +181,29 @@ function links() {
   $html .= '</div>';
   return $html;
 }
-// Modifier le filtre de recherche ldap
-\LibMelanie\Config\Ldap::$SERVERS[\LibMelanie\Config\Ldap::$SEARCH_LDAP]['get_user_infos_from_email_filter'] = "(mail=%%email%%)";
 
-// Récupération des infos utilisateur
-$user = new LibMelanie\Api\Mel\User();
-$user->email = $email;
-if ($user->load($rcmail_config['signature_field_list'])) {
+// Pour un fonctionnement local aller chercher les informations dans le jeu de données du fichier de configuration
+if (APPLICATION_LOCALE) {
+  // Include class de test User
+  include_once __DIR__ . '/user.php';
+  $userLoaded = isset($rcmail_config['users'][$email]);
+  if ($userLoaded) {
+    $user = new User($rcmail_config['users'][$email]);
+  }
+}
+else {
+  // Utiliser l'ORM pour lire les informations de l'utilisateur
+  // Modifier le filtre de recherche ldap
+  \LibMelanie\Config\Ldap::$SERVERS[\LibMelanie\Config\Ldap::$SEARCH_LDAP]['get_user_infos_from_email_filter'] = "(mail=%%email%%)";
+
+  // Récupération des infos utilisateur
+  $user = new LibMelanie\Api\Mel\User();
+  $user->email = $email;
+  $userLoaded = $user->load($rcmail_config['signature_field_list']);
+}
+
+// Est-ce que l'utilisateur a été trouvé
+if ($userLoaded) {
   if (isset($user->lastname)) {
     $name = $user->firstname . " " . $user->lastname;
   }
@@ -225,7 +258,12 @@ else {
         <!--Let browser know website is optimized for mobile-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script type="text/javascript" src="../../plugins/mel_signatures/signature.js?v=20210217112052"></script>
+        <?php if (APPLICATION_LOCALE) { ?>
+          <script type="text/javascript" src="signature.js?v=20210217112052"></script>
+        <?php } else { ?>
+          <script type="text/javascript" src="../../plugins/mel_signatures/signature.js?v=20210217112052"></script>
+        <?php } ?>
+        
         <script type="text/javascript" src="js/materialize.min.js"></script>
         <script type="text/javascript" src="js/getSignature.js"></script>
         <script type="text/javascript" src="js/jszip.min.js"></script>
@@ -339,45 +377,10 @@ else {
         </div>
       </div>
     </div>
-<div id="signature_template">
-<div style="line-height:10pt;margin:10px 0;font-family:Arial,Helvetica,sans-serif;">
-<div style="font-size:9pt;">
-<b>%%TEMPLATE_NAME%%</b>
-<br>
-<span style="font-size:8pt;">%%TEMPLATE_JOBTITLE%%%%TEMPLATE_SERVICE%%%%TEMPLATE_DIRECTION%%</span>
-</div>
-<p style="margin:15px 0;height:0px;"></p>
-<p style="font-size:8pt;">%%TEMPLATE_ADDRESS%%%%TEMPLATE_OFFICE%%%%TEMPLATE_PHONE%%
-<span>
-%%TEMPLATE_LINKS%%
-</span>
-</p>
-<table style="border:0;line-height:10pt;border-collapse:collapse;width:auto;background-color:#fff;">
-<tbody>
-<tr style="border:0">
-<td style="padding:10px 0 0 0">
-%%TEMPLATE_LOGO_MARIANNE%%
-</td>
-</tr>
-<tr style="border:0">
-<td style="border:0;border-right:1.5px solid #000;text-align:left;vertical-align:middle;padding:5px 30px 5px 0" valign="top" align="left">
-%%TEMPLATE_LOGO%%
-</td>
-<td style="border:0;text-align:left;vertical-align:middle;padding:0 0 0 5px" valign="center" align="left">
-<span style="font-weight:bold;font-size:8pt;line-height:9pt;">
-<p style="color:#000;font-size:8pt;font-weight:bold;max-width:180px;"> %%TEMPLATE_DIRECTION%%</p>
-</span>
-</td>
-</tr>
-<tr style="border:0">
-<td style="border:0;text-align:left;vertical-align:top;padding:3px 0 0 0" valign="top" align="left">
-%%TEMPLATE_LOGO_DEVISE%%
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+    <?php
+      include_once __DIR__.'/templates/signature_html.html';
+      include_once __DIR__.'/templates/signature_outlook.html';
+    ?>
   </body>
   <script type="text/javascript">
     // Morceau du js de roundcube pour que le signature.js fonctionne

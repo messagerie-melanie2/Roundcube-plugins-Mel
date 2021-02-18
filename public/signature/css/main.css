@@ -584,6 +584,7 @@ input[type=text]:not(.browser-default):focus:not([readonly])+label{
 }
 
 #signature_template,
+#signature_outlook_template,
 #signature_html,
 .userinfos {
     display: none;

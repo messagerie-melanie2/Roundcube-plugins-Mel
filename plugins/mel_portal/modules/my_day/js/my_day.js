@@ -30,12 +30,18 @@ function setupMyDay(datas)
 	datas.sort(function(a,b){
 		return moment(a.start) - moment(b.start);
 	});
+	let style;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
+		console.log(element);
+		if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
+			style = "";
+		else
+			style = "display:none;";
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
         html += "<div class=col-md-8>" + moment(element.start).format('HH:mm') + " - " + moment(element.end).format('HH:mm') + "<br/>" + element.title +"</div>";
-		html += '<div class=col-md-2><a style="display:none;" href=# onclick="removeEvent('+element.id+', '+element.calendar+')" class="roundbadge large dark icofont-trash"></a></div>';
-        html += '<div class=col-md-2><a class="roundbadge large ' + (element.free_busy == "free" ? "icofont-ui-check lightgreen" : "icofont-hour-glass clear") + '"></a></div>'
+        html += '<div class=col-md-2><a class="roundbadge large ' + (element.free_busy == "free" ? "icofont-ui-check lightgreen" : "icofont-hour-glass clear") + '"></a></div>';
+		html += '<div class=col-md-2><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a></div>';
         html += "</div>";
     }
     html += ""

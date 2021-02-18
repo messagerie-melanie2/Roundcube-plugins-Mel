@@ -425,6 +425,15 @@ framed_item > .framed_item{
     left: 2px;
 }
 
+a.roundbadge.link{
+    color:white;
+    text-decoration: none;
+}
+
+a.roundbadge.link:hover{
+    background-color: #484D7A;
+}
+
 #taskmenu a.selected > sup > span, 
 #taskmenu a:hover > sup > span, 
 #taskmenu a.selected:hover > sup > span, 

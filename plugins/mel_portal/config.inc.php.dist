@@ -1,0 +1,49 @@
+<?php
+
+$config['task_name']='mel_portal';
+$config['sidebar_name'] = 'taskbar';
+$config['css_name'] ='mel-portal.css';
+$config['template_name'] = "mel_portal";
+$config['left_menu_module'] = "left_menu";
+$config['user_interface_config'] = array(
+    "dashboard" => array("headlines", "my_day", "workplaces"),
+    "news" => array("flux_rss", "flux_rss")
+);
+$config['user_menu_config'] = array("dashboard", "news", "config");
+//...................FLUX RSS MODULE.......................//
+$config['flux_rss'] = [];
+$config['flux_rss_classes'] = ["flux_config.php"];
+include_once 'modules/flux_rss/flux_config.php';
+$config['flux_rss'][0] = new FluxConfig(
+    array(
+        new FluxTab("hidden", 
+            array(
+                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
+                new FluxItem("liberation.xml", new FluxSize(FluxSize::two_by_one)),
+                new FluxItem("figaro.xml", new FluxSize(FluxSize::one_by_one), FluxColor::DARK))
+    ),
+    ),
+    "news"
+);
+$config['flux_rss'][1] = new FluxConfig(
+    array(
+        new FluxTab("headline", 
+            array(
+                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
+                new FluxItem("liberation.xml", new FluxSize(FluxSize::two_by_one)),
+                new FluxItem("figaro.xml", new FluxSize(FluxSize::one_by_one)),
+                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
+                new FluxItem("liberation.xml", new FluxSize(FluxSize::one_by_one)),
+                new FluxItem("figaro.xml", new FluxSize(FluxSize::two_by_one), FluxColor::DARK))
+    ),
+    new FluxTab("thematic_1", array(                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
+    new FluxItem("liberation.xml", new FluxSize(FluxSize::two_by_one)),
+    new FluxItem("figaro.xml", new FluxSize(FluxSize::one_by_one)))),
+    new FluxTab("thematic_2", array(                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
+    new FluxItem("liberation.xml", new FluxSize(FluxSize::one_by_one)),
+    new FluxItem("figaro.xml", new FluxSize(FluxSize::two_by_one), FluxColor::DARK)))
+    ),
+    "",true
+);
+$config['flux_rss'] = serialize($config['flux_rss']);
+//............................................................................//

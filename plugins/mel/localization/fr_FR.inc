@@ -133,3 +133,5 @@ $labels['default_pref_text'] = "Par défaut";
 $labels['subfolders_pref_text'] = "Regrouper les dossiers";
 $labels['unified_pref_text'] = "Dossiers unifiés";
 $labels['subfolders'] = 'Dossiers';
+$labels['welcome'] = 'Bienvenue';
+$labels['on_your_dwp'] = 'sur votre bureau numérique';

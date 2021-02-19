@@ -398,6 +398,14 @@ framed_item > .framed_item{
   background-color: #FC945A;
 }
 
+.roundbadge.danger{
+    background-color: #ff5552;
+}
+
+.roundbadge.royal{
+    background-color:#FDCF42;
+}
+
 .roundbadge.lightgreen,
 .roundbadge.hover.tick:hover
 {

@@ -1,8 +1,46 @@
 <?php
-include_once 'program/search/search_metapage.php';
-include_once 'program/search/search_calendar.php';
+
+// Configuration de la recherche dans le menu du haut.
 $config["search"] = [];
-$config["search"]["mail"] = new SearchMetapage("search_mail");
-$config["search"]["contact"] = new SearchMetapage("search_contact", ASearch::REPLACED_SEARCH, "name,firstname,surname,email");
-$config["search"]["calendar"] = new SearchCalendar("now", "now+60");
-$config["calendar_datas"] = null;
+//Vous pouvez commenter les recherches qui ne vous interesse pas, une recheche ce configure comme ceci : 
+/*
+$config["search"]["module"] = [
+    "type" => "type d'action",
+    "action" => "action dans le plugin",
+    "headers" => "où chercher",
+    "startDate" => "date de départ de la recherche",
+    "endDate"  => "date de fin de la recherche"
+];
+
+"type" sert à dire de quel plugin vient la recherche, "default" pour le plugin mel_metapage, "calendar" pour le plugin calendar.
+=> Liste des types disponibles : "default", "calendar"
+
+"action" c'est l'action à efféctuer lorsque l'on effectue une recherche dans la barre de recherche.
+=> Uniquement disponible pour le type "default"
+
+"headers" ce sont les champs, si ils éxistent, à tester.
+=> Uniquement disponible pour le type "défaut"
+
+"startDate", la date de départ pour la recherche des évènements dans le calendrier. "now" signifie la date de maintenant, auquel on peut ajouter ou soustraire un nombre de jours.
+"endDate", la date de fin pour la recherche des évènements dans le calendrier. 
+=> Uniquement disponible pour le type "calendar".
+
+ */
+$config["search"]["mail"] = [
+    "type" => "default",
+    "action" => "search_mail"
+];
+$config["search"]["contact"] = [
+    "type" => "default",
+    "action" => "search_contact",
+    //Possibilité d'enlever des champs, vous pouvez choisir de rechercher dans tout les champs
+    //contact en mettant seulement '*'.
+    "headers" => "name,firstname,surname,email"
+    //nom complet, prénom, nom de famille, email  
+];
+$config["search"]["calendar"] = [
+    "type" => "calendar",
+    //nom peux être suivi de + ou - ainsi qu'un nombre de jours.
+    "startDate" => "now",
+    "endDate" => "now+60"
+];

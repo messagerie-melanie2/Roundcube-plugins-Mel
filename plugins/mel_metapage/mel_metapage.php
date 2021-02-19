@@ -174,10 +174,12 @@ class mel_metapage extends rcube_plugin
      */
     function setup_env_js_vars()
     {
+        include_once "program/search/search.php";
+        include_once "program/search/search_config.php";
         $tmp = [];
         $it = 0;
         foreach ($this->rc->config->get("search") as $key => $value) {
-            $tmp[$it++] = $value->url();
+            $tmp[$it++] = (new SearchConfig($value))->get()->url();//$value->url();
         }
         $this->rc->output->set_env('mm_search_config', $tmp);
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);

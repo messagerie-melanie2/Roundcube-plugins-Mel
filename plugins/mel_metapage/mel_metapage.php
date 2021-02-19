@@ -181,6 +181,13 @@ class mel_metapage extends rcube_plugin
         }
         $this->rc->output->set_env('mm_search_config', $tmp);
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);
+        
+        foreach ($this->rc->user->list_emails() as $identity) {
+            $emails[] = strtolower($identity['email']);
+        }
+
+        $this->rc->output->set_env('mel_metapage_user_emails', $emails);
+        
         //$this->rc->output->set_env('currentTask', $this->rc->task);
     }
 

@@ -26,21 +26,55 @@ Update(my_day);
 
 function setupMyDay(datas)
 {
+	const classes = {
+		organizer:"icofont-royal royal",
+		tick:"icofont-check lightgreen",
+		waiting:"icofont-hour-glass clear",
+		declined:"icofont-close danger"
+	}
 	let html = ''
 	datas.sort(function(a,b){
 		return moment(a.start) - moment(b.start);
 	});
 	let style;
+	let bool;
+	let icon;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
-		console.log(element);
+        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+        html += "<div class=col-md-8>" + moment(element.start).format('HH:mm') + " - " + moment(element.end).format('HH:mm') + "<br/>" + element.title +"</div>";
+		bool = element.attendees !== undefined && 
+			element.attendees.length > 0 && 
+			Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
+		if (bool)
+		{
+			icon = null;
+			for (let it = 0; it < rcmail.env.mel_metapage_user_emails.length; it++) {
+				const mail = rcmail.env.mel_metapage_user_emails[it];
+				for (let j = 0; j < element.attendees.length; j++) {
+					const attendee = element.attendees[j];
+					if (attendee.email == mail)
+					{
+						if (attendee.role === "ORGANIZER")
+							icon = classes.organizer;
+						else if (attendee.status.toUpperCase() === 'CONFIRMED')
+							icon = classes.tick;
+						else if (attendee.status.toUpperCase() === 'DECLINED')
+							icon = classes.declined;
+						else 
+							icon = classes.waiting;
+						break;
+					}
+				}
+				if (icon !== null)
+					break;
+			}
+		}
+        html += '<div class=col-md-2><a ' + (bool ? "" : 'style="display:none;') + ' class="roundbadge large ' + (icon !== null ? icon : "") + '"></a></div>';
 		if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
 			style = "";
 		else
 			style = "display:none;";
-        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-        html += "<div class=col-md-8>" + moment(element.start).format('HH:mm') + " - " + moment(element.end).format('HH:mm') + "<br/>" + element.title +"</div>";
-        html += '<div class=col-md-2><a class="roundbadge large ' + (element.free_busy == "free" ? "icofont-ui-check lightgreen" : "icofont-hour-glass clear") + '"></a></div>';
 		html += '<div class=col-md-2><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a></div>';
         html += "</div>";
     }

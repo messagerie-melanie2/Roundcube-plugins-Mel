@@ -109,37 +109,36 @@ function use_signature() {
  */
 function download_signature_outlook() {
     // HTML for Outlook
-    var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml"';
-    html += ' xmlns:v="urn:schemas-microsoft-com:vml"';
-    html += ' xmlns:o="urn:schemas-microsoft-com:office:office">';
+    var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">';
     html += '<head>';
     html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</head>';
     html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
-    html += getSignatureHTML(false, '', true);
+    html += getSignatureHTML(true, '', true);
     html += '</body>';
     html += '</html>';
+    download('signature.htm', html);
 
-    // Create the zip file
-    var zip = new JSZip();
+    // // Create the zip file
+    // var zip = new JSZip();
 
-    // Add HTM file to zip
-    zip.file("signature.htm", html);
+    // // Add HTM file to zip
+    // zip.file("signature.htm", html);
 
-    // Images folder
-    var img = zip.folder("images");
-    let select = document.getElementById("input-logo");
+    // // Images folder
+    // var img = zip.folder("images");
+    // let select = document.getElementById("input-logo");
 
-    // Add images files
-    img.file("marianne.gif", rcmail.env.logo_sources['images/marianne.gif'].replace('data:image/gif;base64,', ''), { base64: true });
-    img.file("devise.gif", rcmail.env.logo_sources['images/devise.gif'].replace('data:image/gif;base64,', ''), { base64: true });
-    img.file(select.value.replace('images/', ''), rcmail.env.logo_sources[select.value].replace('data:image/gif;base64,', ''), { base64: true });
+    // // Add images files
+    // img.file("marianne.gif", rcmail.env.logo_sources['images/marianne.gif'].replace('data:image/gif;base64,', ''), { base64: true });
+    // img.file("devise.gif", rcmail.env.logo_sources['images/devise.gif'].replace('data:image/gif;base64,', ''), { base64: true });
+    // img.file(select.value.replace('images/', ''), rcmail.env.logo_sources[select.value].replace('data:image/gif;base64,', ''), { base64: true });
 
-    // Download zip to browser
-    zip.generateAsync({type:"base64"})
-        .then(function(content) {
-            download('signature.zip', content, 'data:application/zip;base64');
-        });
+    // // Download zip to browser
+    // zip.generateAsync({type:"base64"})
+    //     .then(function(content) {
+    //         download('signature.zip', content, 'data:application/zip;base64');
+    //     });
 }
 
 /**
@@ -309,18 +308,18 @@ function createImage(src, alt, isOutlook = false) {
     img.src = src;
     img.alt = alt;
     
-    if (isOutlook) {
-        // Pour Outlook ajouter des balise <v:image>
-        html += '<!--[if gte vml 1]>';
-        html += '<v:imagedata src="'+src+'" o:title="'+escape(alt)+'"/>';
-        html += '<![endif]-->';
-        html += '<![if !vml]>';
-        html += img.outerHTML;
-        html += '<![endif]>';
-    }
-    else {
-        html = img.outerHTML;
-    }
+    // if (isOutlook) {
+    //     // Pour Outlook ajouter des balise <v:image>
+    //     html += '<!--[if gte vml 1]>';
+    //     html += '<v:imagedata src="'+src+'" o:title="'+escape(alt)+'"/>';
+    //     html += '<![endif]-->';
+    //     html += '<![if !vml]>';
+    //     html += img.outerHTML;
+    //     html += '<![endif]>';
+    // }
+    // else {
+    html = img.outerHTML;
+    // }
     return html;
 }
 

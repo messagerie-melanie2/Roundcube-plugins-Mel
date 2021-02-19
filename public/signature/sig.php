@@ -1,7 +1,7 @@
 <?php
 // *** CONFIGURATION
 // Application locale ou intégrée à Roundcube Mél ?
-define('APPLICATION_LOCALE', true);
+define('APPLICATION_LOCALE', false);
 
 // Fichier de log errors
 define('LOG_FILE', "/var/log/roundcube/errors");
@@ -86,7 +86,6 @@ function image_data($uri) {
   else {
     $dir = __DIR__.'/../../plugins/mel_signatures';
   }
-  
   return 'data:'.mime_content_type($dir.'/'.$uri).';base64,'.base64_encode(file_get_contents($dir.'/'.$uri));
 }
 
@@ -124,11 +123,12 @@ function get_default_image($dn, $images) {
 function logo() {
   global $user, $rcmail_config, $sources;
   $html = '<select name="signaturelogo" class="browser-default" id="input-logo" onchange="onInputChange();">';
-  $default_image = get_default_image($user->dn, $rcmail_config['signature_default_image']);
+  $default_image = str_replace('.gif', '.png', get_default_image($user->dn, $rcmail_config['signature_default_image']));
   foreach ($rcmail_config['signature_images'] as $name => $logo) {
     if (is_array($logo)) {
       $logo_html = "";
       foreach ($logo as $n => $l) {
+        $l = str_replace('.gif', '.png', $l);
         if ($default_image == $l) {
           $logo_html .= '<option value="'.$l.'" selected="selected">'.$n.'</option>';
         }
@@ -140,6 +140,7 @@ function logo() {
       $html .= '<optgroup label="'.$name.'">'.$logo_html.'</optgroup>';
     }
     else {
+      $logo = str_replace('.gif', '.png', $logo);
       if ($default_image == $logo) {
         $html .= '<option value="'.$logo.'" selected="selected">'.$name.'</option>';
       }
@@ -149,8 +150,8 @@ function logo() {
       $sources[$logo] = image_data($logo);
     }
   }
-  $sources[$rcmail_config['signature_image_marianne']] = image_data($rcmail_config['signature_image_marianne']);
-  $sources[$rcmail_config['signature_image_devise']] = image_data($rcmail_config['signature_image_devise']);
+  $sources[$rcmail_config['signature_image_marianne']] = image_data(str_replace('.gif', '.png', $rcmail_config['signature_image_marianne']));
+  $sources[$rcmail_config['signature_image_devise']] = image_data(str_replace('.gif', '.png', $rcmail_config['signature_image_devise']));
   $html .= '</select>';
   return $html;
 }
@@ -266,7 +267,7 @@ else {
         
         <script type="text/javascript" src="js/materialize.min.js"></script>
         <script type="text/javascript" src="js/getSignature.js"></script>
-        <script type="text/javascript" src="js/jszip.min.js"></script>
+        <!-- <script type="text/javascript" src="js/jszip.min.js"></script> -->
         <link rel="stylesheet" href="css/ghpages-materialize.css">
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css?v=20210217112052">
@@ -356,7 +357,6 @@ else {
             <ol>
               <li>Cliquez sur le bouton "Télécharger la signature (Outlook)"</li>
               <li>Enregistrez le fichier sous : C:\Users\[votre utilisateur]\AppData\Roaming\Microsoft\Signatures\</li>
-              <li>Faites un clic droit sur le fichier signature.zip et "Extraire ici"</li>
               <li>Ouvrez Outlook et allez dans les Options puis cliquez sur le bouton Signatures</li>
               <li>Vous devez retrouver votre signature générée</li>
             </ol>

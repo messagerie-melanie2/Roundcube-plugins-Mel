@@ -105,6 +105,12 @@ class Module implements iModule {
             include_once $value;
         }        
         $this->config = unserialize($config);
+        $this->after_set_config();
+    }
+
+    protected function after_set_config()
+    {
+
     }
 
     public function text($text)

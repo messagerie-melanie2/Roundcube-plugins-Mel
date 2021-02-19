@@ -168,6 +168,7 @@ class Flux_rss extends Module
 
     public function add_flux()
     {
+      include_once 'program/config_parser.php';
       include_once 'flux_config.php';
       $id = rcube_utils::get_input_value('id', rcube_utils::INPUT_POST);
       $tabName = rcube_utils::get_input_value('tab', rcube_utils::INPUT_POST);
@@ -183,7 +184,7 @@ class Flux_rss extends Module
       else
         $format = new FluxSize(FluxSize::two_by_one);
       $this->plugin->load_config();
-      $config =  unserialize($this->rc->config->get('flux_rss'));
+      $config =  (new FCParser(unserialize($this->rc->config->get('flux_rss'))))->get();
       // $config = [];
       // foreach ($configTmp as $key => $value) {
       //   $config[$key] = clone $value;
@@ -205,11 +206,18 @@ class Flux_rss extends Module
       if ($index >= 0)
       {
         $config[$id]->tabs[$index]->add(new FluxItem($link, $format, $background));
-        $this->rc->user->save_prefs(array('flux_rss' => serialize( $config)));
+        $this->rc->user->save_prefs(array('flux_rss' => serialize( (new FCParser($config, true))->toArray() )));
         unset($tmp);
         unset($config);
       }
       $this->rc->output->redirect(array("_action" => "index", "_task" => "mel_portal", "data" => "news"));
+    }
+
+    function after_set_config()
+    {
+      include_once 'program/config_parser.php';
+      include_once "flux_config.php";
+      $this->config = (new FCParser($this->config))->get();
     }
 
     /**

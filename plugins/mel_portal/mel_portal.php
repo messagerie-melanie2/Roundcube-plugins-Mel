@@ -1,4 +1,22 @@
 <?php
+/**
+ * Plugin Mél Portail
+ *
+ * Portail web
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 class mel_portal extends rcube_plugin
 {
     /**
@@ -62,11 +80,6 @@ class mel_portal extends rcube_plugin
         $this->add_texts('localization/', true);
         $this->register_task($this->taskName);
         // Ajoute le bouton en fonction de la skin
-        if (false && $this->rc->config->get('skin') == 'mel_elastic')
-        {
-
-        }
-        else{
         $this->add_button(array(
             'command' => $this->taskName,
             'class'	=> 'button-home order1 icofont-home',
@@ -77,7 +90,7 @@ class mel_portal extends rcube_plugin
             'type'       => 'link',
             'domain' => $this->taskName
         ), $this->sidebarName);
-      }
+      
     }
 
     /**
@@ -90,11 +103,6 @@ class mel_portal extends rcube_plugin
         $this->templateName = $config['template_name'];
         $this->sidebarName = $config['sidebar_name'];
         $this->cssName = $config['css_name'];
-    }
-
-    function setup_link()
-    {
-      return html::a(array("class" => "home"));
     }
 
     /**
@@ -117,13 +125,14 @@ class mel_portal extends rcube_plugin
               $object = new $classname($config[$pageName][$i], $this, $i);
               $object->init();
               $confModule = $this->rc->config->get($config[$pageName][$i]);
-              if ($confModule !== null)
+              if ($confModule !== null) //Si il existe une config, on fait quelque chose.
                 $object->set_config($confModule, $this->rc->config->get($config[$pageName][$i])."_classes");
-              if ($existing[$config[$pageName][$i]] == null)
+              if ($existing[$config[$pageName][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
               {
                 $object->include_module();
                 $existing[$config[$pageName][$i]] = true;
               }
+              //Ajout du module.
               $this->add_module($config[$pageName][$i], $object->item_html(), $object->row_size());
           } catch (\Throwable $th) {
               $a = 0;
@@ -133,6 +142,7 @@ class mel_portal extends rcube_plugin
 
     /**
      * Charge le module du menu de gauche.
+     * [Obsolete]
      */
     function load_menu($current_page)
     {
@@ -162,18 +172,12 @@ class mel_portal extends rcube_plugin
      */
     function load_action($current_page)
     {
-      if ($current_page === "redirect")
-      {
-        $this->rc->output->redirect(array("_action" => "index", "_task" => "mel_portal", "data" => "dashboard"));
-      }
-      else{
-        $this->include_css();
-        $this->include_js();
-        $this->setup_env_js_vars();
-        $this->load_modules($current_page);
-        $this->load_menu($current_page);
-        $this->generate_html();
-      }
+      $this->include_css();
+      $this->include_js();
+      $this->setup_env_js_vars();
+      $this->load_modules($current_page);
+      $this->load_menu($current_page);
+      $this->generate_html();
     }
 
     /**
@@ -221,16 +225,6 @@ class mel_portal extends rcube_plugin
       $acname = rcube_utils::get_input_value('_data', rcube_utils::INPUT_GPC);
       $this->load_action(($acname == null) ? "dashboard" : $acname);
     }
-
-    /**
-     * Not used
-     */
-    function action()
-    {
-        $acname = rcube_utils::get_input_value('_data', rcube_utils::INPUT_GPC);
-        $this->load_action($acname);
-    }
-
 
     /**
      * Récupère le css utile pour ce plugin.
@@ -309,57 +303,6 @@ class mel_portal extends rcube_plugin
     {
         return $this->left_menu;
     }
-
-    /**
-   * Lecture d'un fichier de flux
-   */
-  function flux() {
-    function endsWith($haystack, $needle) {
-        $length = strlen($needle);
-        if ($length == 0) {
-            return true;
-        }
-        return (substr($haystack, -$length) === $needle);
-    }
-    // Récupération du nom du fichier
-    $_file = rcube_utils::get_input_value('_file', rcube_utils::INPUT_GET);
-
-    if (isset($_file)) {
-      // Gestion du folder
-      $folder = $this->rc->config->get('portail_flux_folder', null);
-      if (!isset($folder)) {
-        $folder = __DIR__ . '/rss/';
-      }
-      if ($this->rc->config->get('portail_flux_use_provenance', false)) {
-        if (mel::is_internal()) {
-          $folder .= 'intranet/';
-        }
-        else {
-          $folder .= 'intranet/';
-        }
-      }
-      // Gestion de l'extension
-      if (endsWith($_file, '.xml')) {
-        header("Content-Type: application/xml; charset=" . RCUBE_CHARSET);
-      }
-      else if (endsWith($_file, '.html')) {
-        header("Content-Type: text/html; charset=" . RCUBE_CHARSET);
-      }
-      else if (endsWith($_file, '.json')) {
-        header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
-      }
-      // Ecriture du fichier
-      $content = file_get_contents($folder . $_file);
-      if ($content === false) {
-        header('HTTP/1.0 404 Not Found');
-      }
-      else {
-        echo $content;
-      }
-      exit;
-    }
-  }
-
 
 }
 

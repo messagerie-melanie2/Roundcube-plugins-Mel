@@ -35,9 +35,18 @@ class Module implements iModule {
      */
     protected $id;
 
+    /**
+     * Configuration du module.
+     */
     protected $config;
+    /**
+     * Identification si il y a plusieurs modules identiques.
+     */
     protected $identifier;
 
+    /**
+     * Taille du module.
+     */
     private $row_size;
     /**
      * Constructeur avec identifiant du module
@@ -50,11 +59,17 @@ class Module implements iModule {
         $this->identifier = $identifier;
     }
 
+    /**
+     * Dossier module
+     */
     public function folder()
     {
         return "modules/";
     }
 
+    /**
+     * Chemin du fichier "module_action.php"
+     */
     public function module_action_path()
     {
         return getcwd()."/plugins/mel_portal/".$this->folder()."module_action.php";
@@ -92,6 +107,9 @@ class Module implements iModule {
         return $this->generate_html();
     }
 
+    /**
+     * Ajoute les éléments nécessaire au module pour fonctionner.
+     */
     public function include_module()
     {
         $this->include_js();
@@ -99,6 +117,9 @@ class Module implements iModule {
         $this->set_js_vars();
     }
 
+    /**
+     * Récupère la configuration d'un module.
+     */
     public function set_config($config, $includes)
     {
         foreach ($includes as $key => $value) {
@@ -108,11 +129,17 @@ class Module implements iModule {
         $this->after_set_config();
     }
 
+    /**
+     * Actions à faire après avoir récupérer une configuration.
+     */
     protected function after_set_config()
     {
 
     }
 
+    /**
+     * Récupère un texte.
+     */
     public function text($text)
     {
         return $this->plugin->gettext($text);
@@ -127,6 +154,9 @@ class Module implements iModule {
         $this->config = $config;
     }
 
+    /**
+     * Charge les actions d'un module.
+     */
     public function load_actions()
     {
         $actions = $this->register_actions();
@@ -142,6 +172,9 @@ class Module implements iModule {
         }
     }
 
+    /**
+     * Ajoute le plugin au menu.
+     */
     public function add_to_menu()
     {
         
@@ -153,6 +186,9 @@ class Module implements iModule {
     protected function include_css(){}
     protected function register_actions(){}
 
+    /**
+     * Carré en html
+     */
     function html_square($title = "",$idSquare = null, $idContent = null, $content = "", $classContent='')
     {
         $arraySquare = array("class" => 'square_div');
@@ -166,6 +202,9 @@ class Module implements iModule {
             (($title == "") ? "" : html::p(array(), $title)).html::div($arrayContent, $content));
     }
 
+    /**
+     * Block html séparé en header/body/footer
+     */
     function html_square_hbf($title, $classHeader = "", $classBody = "", $classFooter = "", $idSquare = null, $idContent = null, $contents = null, $classContent = '')
     {
         return $this->html_square($title, $idSquare, $idContent, 
@@ -176,6 +215,9 @@ class Module implements iModule {
         ,$classContent);
     }
 
+    /**
+     * Onglet html
+     */
     function html_tab($tabName, $id, $selected=false, $misc = "")
     {
         return html::tag("button",
@@ -184,6 +226,9 @@ class Module implements iModule {
         );
     }
 
+    /**
+     * Données d'un onglet html.
+     */
     function html_tab_content($id, $hidden = false)
     {
         return html::div(
@@ -191,6 +236,9 @@ class Module implements iModule {
         );
     }
 
+    /**
+     * Bloack html avec des onglets.
+     */
     function html_square_tab($array, $title="", $id="")
     {
         $count = count($array);

@@ -1,8 +1,25 @@
 <?php
 
-
 /**
- * Taille de la vignette d'un flux.
+ * Module "Flux Rss" pour le portail Mél
+ *
+ * Portail web
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/**
+ * Parce une config en objet et vice-versa
  */
 class FCParser  {    
 
@@ -15,6 +32,9 @@ class FCParser  {
     const COLOR = "color";
     const SHOW_TABS = "show_tabs";
 
+    /**
+     * Représentation de la config.
+     */
     private $flux_config;
 
     function __construct($config, $isObject = false) {
@@ -28,11 +48,17 @@ class FCParser  {
         }
     }
 
+    /**
+     * Remplace l'objet config par celui spécifié en vue d'être changer en tableaux
+     */
     public function set($flux_config)
     {
         $this->flux_config = $flux_config;
     }
 
+    /**
+     * Change l'objet config en tableau pour être sauvegarder par l'utilisateur.
+     */
     public function toArray()
     {
         $retour = [];
@@ -57,6 +83,9 @@ class FCParser  {
         return $retour;
     }
 
+    /**
+     * Change un tableau en oject config.
+     */
     private function create($config)
     {
         $fc = new FluxConfig([], $config[FCParser::TITLE], $config[FCParser::SHOW_TABS]);
@@ -73,6 +102,9 @@ class FCParser  {
         return $fc;
     }
 
+    /**
+     * Récupère l'objet config.
+     */
     public function get()
     {
         return $this->flux_config;

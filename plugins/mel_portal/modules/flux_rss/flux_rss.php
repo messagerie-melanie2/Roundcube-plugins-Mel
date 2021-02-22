@@ -1,5 +1,23 @@
 <?php
 /**
+ * Module "Flux Rss" pour le portail Mél
+ *
+ * Portail web
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+/**
  * Module flux_rss, gère les différents flux.
  */
 class Flux_rss extends Module
@@ -8,49 +26,16 @@ class Flux_rss extends Module
    * Nom du dossier qui contient les fichiers xml.
    */
     const FOLDER_NAME = "rss";
+    /**
+     * Lien des différents flux.
+     */
     public $links;
 
     function init()
     {
         $this->load_config();
         $this->links = $this->config;
-        //$this->write_files();
         $this->edit_row_size(12);
-
-      //   $config = [];
-      //   $config['flux_rss'][0] = new FluxConfig(
-      //     array(
-      //         new FluxTab("hidden", 
-      //             array(
-      //                 new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
-      //                 new FluxItem("liberation.xml", new FluxSize(FluxSize::two_by_one)),
-      //                 new FluxItem("figaro.xml", new FluxSize(FluxSize::one_by_one), FluxColor::DARK))
-      //     ),
-      //     ),
-      //     "news"
-      // );
-      // $config['flux_rss'][1] = new FluxConfig(
-      //     array(
-      //         new FluxTab("headline", 
-      //             array(
-      //                 new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
-      //                 new FluxItem("liberation.xml", new FluxSize(FluxSize::two_by_one)),
-      //                 new FluxItem("figaro.xml", new FluxSize(FluxSize::one_by_one)),
-      //                 new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
-      //                 new FluxItem("liberation.xml", new FluxSize(FluxSize::one_by_one)),
-      //                 new FluxItem("figaro.xml", new FluxSize(FluxSize::two_by_one), FluxColor::DARK))
-      //     ),
-      //     new FluxTab("Thématique 1", array(                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
-      //     new FluxItem("liberation.xml", new FluxSize(FluxSize::two_by_one)),
-      //     new FluxItem("figaro.xml", new FluxSize(FluxSize::one_by_one)))),
-      //     new FluxTab("Thématique 2", array(                new FluxItem("intranet-dgitm.xml", new FluxSize(FluxSize::one_by_one)),
-      //     new FluxItem("liberation.xml", new FluxSize(FluxSize::one_by_one)),
-      //     new FluxItem("figaro.xml", new FluxSize(FluxSize::two_by_one), FluxColor::DARK)))
-      //     ),
-      //     "",true
-      // );
-      // $this->rc->user->save_prefs(array('flux_rss' => serialize($config['flux_rss'])));
-
     }
 
     function write_files(){
@@ -74,6 +59,9 @@ class Flux_rss extends Module
         }
     }
 
+    /**
+     * Génère le html du module.
+     */
     function generate_html()
     {
         return html::div(array("class" => "rss-master", "id" => "rss-master-id-".$this->identifier), 
@@ -82,6 +70,10 @@ class Flux_rss extends Module
         html::div(array("class" => "rss-contents", "id" => "rss-contents-id-".$this->identifier))
         );
     }
+
+    /**
+     * Ajoute le module au menu.
+     */
     function add_to_menu()
     {
         $this->plugin->add_button(array(
@@ -114,6 +106,9 @@ class Flux_rss extends Module
       $this->rc->output->set_env('flux_rss_form', $this->get_html_form());
     } 
 
+    /**
+     * Récupère le formulaire d'ajout d'un flux en html.
+     */
     function get_html_form()
     {
       $this->rc->output->add_handlers(array(
@@ -128,6 +123,9 @@ class Flux_rss extends Module
       return $this->rc->output->parse("mel_portal.form_add_flux", false, false);
     }
 
+    /**
+     * Récupère la liste des flux pour la mettre sous forme de select.
+     */
     function get_select_list()
     {
       $html = '<select id="rss-select" name="intralist" class="mel-select form-control" required><option value="" style="display:none">'.$this->text('choose_web_site').'</option>';
@@ -141,6 +139,9 @@ class Flux_rss extends Module
       return $html;
     }
 
+    /**
+     * Données "vide" d'un block de flux.
+     */
     function get_contents()
     {
       $config = [];
@@ -150,13 +151,22 @@ class Flux_rss extends Module
       return $config;
     }
 
+    /**
+     * Block flux clair
+     */
     function get_light(){
       return $this->html_square_hbf("", "square-header", "square-body", "square-footer", "", "", $this->get_contents());
     }
+    /**
+     * Block flux sombre.
+     */
     function get_dark(){
       return $this->html_square_hbf("", "square-header", "square-body", "square-footer", "", "", $this->get_contents(), "DARK");
     }
 
+    /**
+     * Actions du module.
+     */
     function register_actions()
     {
         include_once $this->module_action_path();
@@ -166,6 +176,9 @@ class Flux_rss extends Module
         );
     }
 
+    /**
+     * Ajoute un flux.
+     */
     public function add_flux()
     {
       include_once 'program/config_parser.php';
@@ -213,6 +226,9 @@ class Flux_rss extends Module
       $this->rc->output->redirect(array("_action" => "index", "_task" => "mel_portal", "data" => "news"));
     }
 
+    /**
+     * Met en forme la config après l'avoir récupérée.
+     */
     function after_set_config()
     {
       include_once 'program/config_parser.php';

@@ -66,6 +66,14 @@
             <table class="propform">
               <tbody>
                 <tr>
+                  <td class="title"><label for="folder_path">Boite mail</label>
+                  </td>
+                  <td>
+                    <select id="users" name="users" required>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
                   <td class="title"><label for="folder_name">Nom du dossier</label>
                   </td>
                   <td><input name="folder_name" id="folder_name" size="30" type="text" required></td>
@@ -92,7 +100,9 @@
 
       <div id="log_open" class="boxcontent">
         <h4>
-          <a href="#" id="log_open_button"><roundcube:label name="electron.log_open" /></a>
+          <a href="#" id="log_open_button">
+            <roundcube:label name="electron.log_open" />
+          </a>
         </h4>
       </div>
 

@@ -151,7 +151,7 @@ rcube_webmail.prototype.plugin_archiver = function () {
         .attr('src', rcmail.url('settings/plugin.mel_archivage', params) + '&_framed=1')
         .attr('frameborder', '0')
         .appendTo(document.body);
-        
+
     var buttons = {};
 
     frame.dialog({

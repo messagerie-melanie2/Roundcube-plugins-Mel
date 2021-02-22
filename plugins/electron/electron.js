@@ -21,6 +21,7 @@
  */
 
 
+let users_list = [];
 
 if (rcmail.env.iselectron) {
   if (window.api) {
@@ -46,7 +47,11 @@ if (rcmail.env.iselectron) {
             var user = atob($(this).attr('id').replace('rcmli', '')).replace('local-', '');
             users.push(user);
           });
+
           rcmail.env.local_users_list = users;
+
+          window.api.send('set_local_users_list', users);
+
           displaySubfolder();
         });
 
@@ -66,29 +71,47 @@ if (rcmail.env.iselectron) {
           window.api.send('get_archive_path');
           window.api.receive('archive_path', (archive_path) => {
             $('#archive_path').val(archive_path)
-            $('#folder_path').append($('<option>', {
-              value: archive_path + "/" + rcmail.env.account_electron,
-              text: "---",
-            }));
+            rcmail.env.archive_path = archive_path;
+
           });
 
-          window.api.send('subfolder', rcmail.env.account_electron);
-          window.api.receive('listSubfolder', (subfolders) => {
-            subfolders.forEach(subfolder => {
-              if (subfolder.name == rcmail.env.account_electron) {
-                displayTree(subfolder.children, '', 1);
-              }
+          window.api.send('get_local_users_list');
+          window.api.receive('local_users_list', (users) => {
+            users.forEach(user => {
+              $('#users').append($('<option>', {
+                value: user,
+                text: user,
+              }));
             })
+          })
+
+          window.api.send('subfolder', $('#users').val());
+          window.api.receive('listSubfolder', (subfolders) => {
+            rcmail.env.listSubfolder = subfolders;
+
+            get_subfolder_list();
+
           });
+
 
         }
       }
     });
 
+
+
+
+
+    $(document)
+      .on({
+        change: function (e) {
+          get_subfolder_list()
+        }
+      }, "#users");
+
     $(document)
       .on({
         click: function (e) {
-          // Toggle les items de la liste
           window.api.send('new_archive_path');
         }
       }, "#browse");
@@ -96,7 +119,6 @@ if (rcmail.env.iselectron) {
     $(document)
       .on({
         submit: function (e) {
-          // Toggle les items de la liste
           e.preventDefault();
           let path = $('#archive_path').val();
           window.api.send('change_archive_path', path);
@@ -106,7 +128,6 @@ if (rcmail.env.iselectron) {
     $(document)
       .on({
         click: function (e) {
-          // Toggle les items de la liste
           let path = $('#folder_path').val();
           if (path) {
             if (confirm('Voulez-vous supprimer ce dossier ainsi que tout son contenu ?')) {
@@ -120,7 +141,6 @@ if (rcmail.env.iselectron) {
     $(document)
       .on({
         submit: function (e) {
-          // Toggle les items de la liste
           let name = $('#folder_name').val();
           let path = $('#folder_path').val();
           window.api.send('create_folder', { name: name, path: path })
@@ -130,7 +150,6 @@ if (rcmail.env.iselectron) {
     $(document)
       .on({
         click: function (e) {
-          // Toggle les items de la liste
           window.api.send('log_export')
         }
       }, "#log_open_button");
@@ -248,6 +267,7 @@ if (rcmail.env.iselectron) {
       rcmail.env.mailbox = mbox;
 
       displayMessageList(path);
+
       rcmail.message_list
         .addEventListener('select', function (o) { messagelist_select(o) })
         .addEventListener('dragstart', function (o) { drag_start(o) })
@@ -520,6 +540,20 @@ if (rcmail.env.iselectron) {
       doc.open();
       doc.write("");
       doc.close();
+    }
+
+    function get_subfolder_list() {
+      $('#folder_path').empty();
+
+      $('#folder_path').append($('<option>', {
+        value: rcmail.env.archive_path + "/" + $('#users').val(),
+        text: "---",
+      }));
+      rcmail.env.listSubfolder.forEach(subfolder => {
+        if (subfolder.name == $('#users').val()) {
+          displayTree(subfolder.children, '', 1);
+        }
+      })
     }
 
     function displayTree(children, prefix, depth) {

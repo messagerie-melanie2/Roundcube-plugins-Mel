@@ -109,9 +109,10 @@ if (rcmail)
                         }
                         datas_to_save.sort((a,b) => a.mel_metapage.order - b.mel_metapage.order);
                         mel_metapage.Storage.set(mel_metapage.Storage.tasks, datas_to_save);
-                        parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
                         try_add_round(".tasklist", mel_metapage.Ids.menu.badge.tasks);
                         update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
+                        console.log(datas_to_save);
+                        parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
                     } catch (ex) {
                         console.error(ex);
                         rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")

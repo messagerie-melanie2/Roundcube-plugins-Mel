@@ -10,10 +10,10 @@ $(document).ready(function() {
 		})
 	}
     // console.log(parent, window, parent == window);
+    parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, my_day_calendar);
+    parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, my_day_tasks);
     if (parent != window)
     {
-        parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, my_day_calendar);
-        parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, my_day_tasks);
         if (parent.FrameUpdate === undefined || parent.FrameUpdate === null)
             parent.FrameUpdate = new ParentUpdate();
         parent.FrameUpdate.add(parent.rcmail.env.current_frame, Update);

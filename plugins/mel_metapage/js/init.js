@@ -215,6 +215,18 @@ if (rcmail)
 
 }
 
+/**
+ * Initialise un des badges du menu.
+ * @param {*} storage Donnée en local.
+ * @param {string} storage_key Clé de la donnée en local.
+ * @param {function} func Fonction à appeller si la donnée en local est nulle.
+ * @param {string} selector Classe ou id de la commande du menu à ajouter un badge.
+ * @param {string} idBadge Id du badge.
+ * @param {boolean} isAsyncFunc Si la function "func" est asynchrone ou non. "false" par défaut. 
+ * @param {boolean} isLength Si la données en local est un tableau ou une taille. 
+ * - "false" = tableau (défaut)
+ * - "true" = taille
+ */
 function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc = false, isLength = false)
 {
     if (storage === null)
@@ -241,6 +253,11 @@ function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc =
     }
 }
 
+/**
+ * Ajoute un badge si la taille est supérieur à 0.
+ * @param {string} selector Objet à ajouter le badge.
+ * @param {string} idBadge Id du badge.
+ */
 function try_add_round(selector, idBadge)
 {
     selector =  $(selector);
@@ -248,6 +265,11 @@ function try_add_round(selector, idBadge)
         selector.append(`<sup><span id="` + idBadge + `" class="roundbadge menu lightgreen" style="display:none;">?</span></sup>`)
 }
 
+/**
+ * Met à jours le badge.
+ * @param {number} size Nombre à afficher.
+ * @param {string} idBadge Id du badge à modifier.
+ */
 function update_badge(size, idBadge)
 {
     let querry = $("#" + idBadge);

@@ -1,4 +1,22 @@
 <?php
+/**
+ * Plugin Mél Métapage
+ *
+ * Méta Page
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 class mel_metapage extends rcube_plugin
 {
     /**
@@ -50,6 +68,9 @@ class mel_metapage extends rcube_plugin
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
     }
 
+    /**
+     * Fonction js appelé au refresh de roundcube.
+     */
     function refresh()
     {
         $this->rc->output->command('mel_metapage_fn.refresh');
@@ -72,11 +93,11 @@ class mel_metapage extends rcube_plugin
         $this->setup_env_js_vars();
     }
 
+    /**
+     * Html du plugin.
+     */
     function generate_html($args)
     {
-        //$this->rc->output->send('mel_metapage.metapage');
-        //$args["content"] = "<div class=yolo>test</div>".$args["content"];
-        //<body class="iframe
         if (strpos($args["content"],'<html lang="fr" class="iframe') !== false)
         {
             $args["content"] = $this->from_iframe($args["content"]);
@@ -95,6 +116,9 @@ class mel_metapage extends rcube_plugin
         return $args;
     }
 
+    /**
+     * Ajoute le html à la page.
+     */
     function add_html($content){
         $var = '<ul id="directorylist"';
         $tmp = explode($var, $content);
@@ -117,11 +141,17 @@ class mel_metapage extends rcube_plugin
         return $tmp[0].$var.$temp;
     }
 
+    /**
+     * Retire le menu si la page vient d'un iframe.
+     */
     function from_iframe($contents)
     {
         return str_replace('<div id="layout-menu"', '<div id="layout-menu" data-edited=true style="display:none;"', $contents);
     }
 
+    /**
+     * Affiche un contact.
+     */
     function display_contact()
     {   
         $id = rcube_utils::get_input_value('_cid', rcube_utils::INPUT_GET);
@@ -193,6 +223,9 @@ class mel_metapage extends rcube_plugin
         //$this->rc->output->set_env('currentTask', $this->rc->task);
     }
 
+    /**
+     * Récupère le nombre de mails non lu.
+     */
     public function get_unread_mail_count()
     {
         $msgs = $this->rc->storage->list_messages();
@@ -206,6 +239,9 @@ class mel_metapage extends rcube_plugin
         exit;
     }
 
+    /**
+     * Recherche un texte dans les mails.
+     */
     public function search_mail()
     {
         include_once "program/search_result/search_result_mail.php";
@@ -229,6 +265,9 @@ class mel_metapage extends rcube_plugin
 
     }
 
+    /**
+     * Recherche un id parmis les mails.
+     */
     function mail_where($id, $array, $size = null)
     {
         if ($size === null)
@@ -241,6 +280,9 @@ class mel_metapage extends rcube_plugin
 
     }
 
+    /**
+     * Recherche un texte dans les contacts.
+     */
     public function search_contact()
     {
         include_once "program/search_result/search_result_contact.php";

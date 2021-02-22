@@ -1,3 +1,6 @@
+/**
+ * Configuration d'une modale.
+ */
 class GlobalModalConfig
 {
     constructor(title, header = "default", content = "default", footer = null, exit = "default", text = "default", onclick = () => {})
@@ -29,9 +32,17 @@ class GlobalModalConfig
 }
 
 
-
+/**
+ * Gère la modale globale.
+ */
 class GlobalModal
 {
+    /**
+     * 
+     * @param {string} idModal Id de la modale.
+     * @param {GlobalModalConfig} config Configuration de la modale.
+     * @param {boolean} show Afficher la modale à la création ? (faux par défaut).
+     */
     constructor(idModal = "globalModal", config = {
         header:"default",
         title:"Ma modale",
@@ -88,27 +99,44 @@ class GlobalModal
             this.show();
     }
 
+    /**
+     * Modifie l'en-tête de la modale.
+     * @param {string} header Nouveau header.
+     */
     editHeader(header)
     {
         this.header.querry.html(header);
     }
 
+    /**
+     * Modifie le titre de la modale.
+     * @param {string} title Nouveau titre de la modale.
+     */
     editTitle(title)
     {
         this.header.title.html(title);
     }
 
+    /**
+     * Modifie la position en Y de la modale.
+     * @param {string} pos Position Y avec "px" à la fin.
+     */
     setTopPosition(pos)
     {
         this.modal.css("top", pos);
     }
 
+    /**
+     * Ferme la modale.
+     */
     close()
     {
-        console.log(this, this.modal);
         this.modal.modal('hide');
     }
 
+    /**
+     * Affiche la modale.
+     */
     show()
     {
         this.modal.modal("show");
@@ -116,6 +144,9 @@ class GlobalModal
 
 }
 
+/**
+ * Ferme la modale avec l'id "globalModal".
+ */
 GlobalModal.close = function ()
 {
     $("#globalModal").modal('hide');

@@ -1,8 +1,0 @@
-<?php
-include_once 'program/search/search_metapage.php';
-include_once 'program/search/search_calendar.php';
-$config["search"] = [];
-$config["search"]["mail"] = new SearchMetapage("search_mail");
-$config["search"]["contact"] = new SearchMetapage("search_contact", ASearch::REPLACED_SEARCH, "name,firstname,surname,email");
-$config["search"]["calendar"] = new SearchCalendar("now", "now+60");
-$config["calendar_datas"] = null;

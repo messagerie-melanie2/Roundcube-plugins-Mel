@@ -1,4 +1,13 @@
+/**
+ * Représentation d'un résultat de recherche.
+ */
 class SearchResult {
+    /**
+     * 
+     * @param {string} header Titre du résultat
+     * @param {string} sub_header Corps du résultat
+     * @param {string} link Action à faire lorsque l'on clique sur le résultat
+     */
     constructor(header, sub_header, link)
     {
         this.header = header;
@@ -7,8 +16,15 @@ class SearchResult {
     }
 }
 
+/**
+ * Représente le résultat de recherche d'un évènement de calendrier.
+ */
 class SearchResultCalendar extends SearchResult
 {
+    /**
+     * 
+     * @param {*} cal Evènement d'un calendrier.
+     */
     constructor(cal)
     {
         const format = "DD/MM/YYYY HH:mm";
@@ -18,6 +34,10 @@ class SearchResultCalendar extends SearchResult
     }    
 }
 
+/**
+ * Convertit une liste d'évènement en résultat de recherche.
+ * @param {array} cals Liste d'évènements.
+ */
 SearchResultCalendar.from_array = function (cals)
 {
     retour = [];
@@ -26,6 +46,10 @@ SearchResultCalendar.from_array = function (cals)
     }
     return {label:rcmail.gettext('agenda', 'mel_portal'), datas:retour};
 }
+/**
+ * Ouvre ou ferme une frame calendrier.
+ * @param {string} json 
+ */
 SearchResultCalendar.CreateOrOpen= function (json)
 {
     event.preventDefault();
@@ -83,10 +107,11 @@ SearchResultCalendar.CreateOrOpen= function (json)
             });
         }
     }
-    // m_mp_CreateOrOpenFrame('calendar', 
-    // () => m_mp_set_storage('calendar_redirect', json, false), 
-    // () => m_mp_action_from_storage('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid"));
 }
+/**
+ * Action à faire après avoir charger la frame des calendriers.
+ * @param {*} event Evènement à afficher.
+ */
 SearchResultCalendar.after_loading = function (event)
 {
     event = JSON.parse(event.replace(/£¤£/g, '"'))

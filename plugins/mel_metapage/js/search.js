@@ -1,3 +1,7 @@
+/**
+ * Action à faire lorsque l'on a tapé un texte dans la recherche.
+ * @param {*} e Input recherche
+ */
 function mm_s_Action(e)
 {
     rcmail.set_busy(true, "loading");
@@ -58,6 +62,10 @@ function mm_s_Action(e)
         $("body").click(mm_s_bodyClick);
 }
 
+/**
+ * Affiche ou non les résultats de recherche si il y en a.
+ * @param {*} event 
+ */
 function mm_s_bodyClick(event)
 {
     let querry = $("#barup-search");
@@ -77,7 +85,9 @@ function mm_s_bodyClick(event)
 
 }
 
-
+/**
+ * Cache la recherche en cours.
+ */
 function mm_s_OnClick()
 {
     //console.log($(".search-container").html() !== "");
@@ -89,6 +99,10 @@ function mm_s_OnClick()
     }
 }
 
+/**
+ * Affiche les résultats de la recherche.
+ * @param {*} datas Résultats de la recherche.
+ */
 function mm_s_AfficheResults(datas)
 {
 
@@ -108,6 +122,10 @@ function mm_s_AfficheResults(datas)
     $(".search-container").append(html);
 }
 
+/**
+ * Affiche ou cache une catégorie.
+ * @param {*} e Catégorie à afficher ou fermer.
+ */
 function mm_s_extend(e)
 {
     window.temp1 = e;
@@ -131,6 +149,11 @@ function mm_s_Calendar(cal)
     window.location.href = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
 }
 
+/**
+ * Ouvre ou créer une frame.
+ * @param {string} action Frame à ouvrir.
+ * @param {string} url Url de la frame.
+ */
 function mm_s_CreateOrUpdateFrame(action, url)
 {
     event.preventDefault();

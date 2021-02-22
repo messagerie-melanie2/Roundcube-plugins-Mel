@@ -1,10 +1,19 @@
 <?php
 include_once "search.php";
+/**
+ * Représenta la recherche dans un calendrier.
+ */
 class SearchCalendar extends ASearch
 {
     const NOW = "now";
 
+    /**
+     * Date de départ de la recherche.
+     */
     public $startDate;
+    /**
+     * Date de fin de la recherche.
+     */
     public $endDate;
 
     public function __construct($startDate, $endDate,$search = ASearch::REPLACED_SEARCH) {
@@ -13,6 +22,9 @@ class SearchCalendar extends ASearch
         $this->endDate = $this->set_date($endDate);
     }  
 
+    /**
+     * Change le texte "now(+/-[day])" en date.
+     */
     function set_date($date)
     {
         if (strpos($date, SearchCalendar::NOW) !== false)

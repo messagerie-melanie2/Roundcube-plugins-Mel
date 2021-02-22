@@ -1,5 +1,26 @@
 <?php
+/**
+ * Plugin Mél Métapage
+ *
+ * Méta Page
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 include_once "search_result.php";
+/**
+ * Représente un contact une fois rechercher, ainsi que les actions à effectuer.
+ */
 class SearchResultContact extends ASearchResult
 {
     public function __construct($contact, $search, $rcmail) {
@@ -18,11 +39,17 @@ class SearchResultContact extends ASearchResult
         parent::__construct($this->up($nom, $prenom, $contact), $this->down($mail, $tel), "");
     }  
 
+    /**
+     * Récupre l'en-tête.
+     */
     function up($nom, $prenom, $contact)
     {
         return '<a href="?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'" onclick="mm_s_CreateOrUpdateFrame(`searchmail`, `?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'`)">'.$prenom." ".$nom."</a>";
     }
 
+    /**
+     * Récupère le corps.
+     */
     function down($mail, $tel)
     {
         $retour = "";
@@ -35,8 +62,9 @@ class SearchResultContact extends ASearchResult
         return $retour;
     }
 
-    //http://localhost/?_task=addressbook&_framed=1&_cid=4&_action=show&_source=0
-
+    /**
+     * Récupère le mail le plus pertinant à afficher.
+     */
     function mail($mails, $search)
     {
         $size = count($mails);

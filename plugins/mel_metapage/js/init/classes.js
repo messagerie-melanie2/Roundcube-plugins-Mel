@@ -1,5 +1,14 @@
+/**
+ * String des différents listeners pour rcmail.
+ */
 class EventListenerDatas
 {
+    /**
+     * 
+     * @param {string} event Evènement par défaut
+     * @param {string} before Trigger à appeler avant l'évènement
+     * @param {string} after Trigger à appeler après l'évènement.
+     */
     constructor(event, before = null, after = null)
     {
         this.get = event;

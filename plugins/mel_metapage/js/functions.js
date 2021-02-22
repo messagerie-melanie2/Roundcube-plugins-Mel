@@ -1,4 +1,11 @@
+/**
+ * Met en pause une fonction asynchrone.
+ * @param {number} ms 
+ */
 const delay = ms => new Promise(res => setTimeout(res, ms));
+/**
+ * Affiche la modale du bouton "créer".
+ */
 function m_mp_Create()
 {
     if (window.create_popUp === undefined)
@@ -25,6 +32,12 @@ function m_mp_Create()
         window.create_popUp.show();
 }
 
+/**
+ * Ouvre ou créer une frame.
+ * @param {string} frameClasse Frame à ouvrir
+ * @param {function} funcBefore Fonction à appelé avant d'ouvrir.
+ * @param {function} func Fonction à appelé une fois ouvert.
+ */
 function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}){
     if (funcBefore !== null)
         funcBefore();
@@ -38,6 +51,9 @@ function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}){
     });
 }
 
+/**
+ * Action de créer un évènement.
+ */
 function m_mp_CreateEvent()
 {
     window.create_popUp.close();
@@ -63,6 +79,9 @@ function m_mp_CreateEvent()
     }
 }
 
+/**
+ * Action de créer un évènement après affichage de la frame.
+ */
 function m_mp_CreateEvent_inpage()
 {
     let event = rcmail.local_storage_get_item("calendar_create");
@@ -74,6 +93,12 @@ function m_mp_CreateEvent_inpage()
     }   
 }
 
+/**
+ * Sauvegarde une donnée et ferme la fenêtre de création.
+ * @param {string} key Clé à sauvegarder.
+ * @param {boolean} item Données à sauvegarder. "true" par défaut.
+ * @param {boolean} close Ferme la fenêtre de création. "true" par défaut.
+ */
 function m_mp_set_storage(key, item = true, close = true)
 {
     rcmail.local_storage_set_item(key, item);
@@ -81,12 +106,18 @@ function m_mp_set_storage(key, item = true, close = true)
         window.create_popUp.close();
 }
 
+/**
+ * Effectue une action à faire si il y a des données dans le stockage local.
+ * @param {string} storage_key Clé de la donnée à réupérer.
+ * @param {function} action Action à faire si la donnée existe.
+ * @param {boolean} remove Supprimer la données après avoir fait l'action. "true" par défaut.
+ * @param {*} eventValue La valeur du stockage pour faire l'action. "true" par défaut. Si "¤avoid", l'action est toujours faite.
+ */
 function m_mp_action_from_storage(storage_key, action, remove = true, eventValue = true)
 {
     let event = rcmail.local_storage_get_item(storage_key);
     if(event !== null)
     {
-        console.log("eventvalue", eventValue);
         if (eventValue === "¤avoid")
             action(event);
         else{
@@ -98,6 +129,9 @@ function m_mp_action_from_storage(storage_key, action, remove = true, eventValue
     }  
 }
 
+/**
+ * Ouvre une nouvelle tâche.
+ */
 function m_mp_OpenTask()
 {
     let navigator = window.child_rcmail === undefined ? rcmail : child_rcmail;
@@ -110,8 +144,8 @@ function m_mp_OpenTask()
     });
 }
 
+//Action à faire après certains actions des mails.
 rcmail.addEventListener('responseafter', function(props) {
-    //console.log("responseafter", props);
     if (props.response && (props.response.action == 'mark' || props.response.action=='getunread')) {
      parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get);
     }

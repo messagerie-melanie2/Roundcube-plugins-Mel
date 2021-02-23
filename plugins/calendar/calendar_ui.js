@@ -892,9 +892,8 @@ function rcube_calendar_ui(settings)
               }
             });
           }
-          console.log(event);
           // tell server to send notifications
-          if ((data.attendees.length || (event.id && event.attendees.length)) && allow_invitations && (notify.checked || invite.checked || need_invitation)) {
+          if ((data.attendees.length || (event.id && event.attendees && event.attendees.length)) && allow_invitations && (notify.checked || invite.checked || need_invitation)) {
             data._notify = settings.itip_notify;
             data._comment = comment.val();
           }

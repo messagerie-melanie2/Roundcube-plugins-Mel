@@ -134,6 +134,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     }
     eClass = mm_st_ClassContract(eClass);
     let querry = $("." + eClass + "-frame");
+    console.log("querry 1", querry, eClass);
     if (changepage)
     {
         rcmail.env.current_frame_name = eClass;
@@ -166,11 +167,16 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     else {
         rcmail.env.frame_created = true;
        /* $("." + eClass + "-frame")*/querry.css("display", "");//.removeClass("hidden");
+       console.log("querry",querry);
         let id = querry[0].id;
-        if (window.FrameUpdate === undefined || !FrameUpdate.exists(id))
+        console.log(window.FrameUpdate)
+        if (window.FrameUpdate === undefined)
             Update();
         else
-            FrameUpdate.start(id);
+        {
+            if (FrameUpdate.exists(id))
+                FrameUpdate.start(id);
+        }
         m_mp_ChangeLasteFrameInfo();
         return id;
     }

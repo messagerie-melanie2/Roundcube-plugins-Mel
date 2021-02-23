@@ -66,54 +66,87 @@
     order:1;
 }
 
-.action-buttons{
+.menu-last-frame{
     order:2;
 }
 
-.mail{
+.action-buttons{
     order:3;
+}
+
+.mail{
+    order:4;
 }
 
 .button-calendar, .calendar
 {
-    order:4;
-}
-
-.button-rocket_chat {
     order:5;
 }
 
-.space{
+.button-rocket_chat {
     order:6;
 }
 
-.icofont-document-folder {
+.space{
     order:7;
+}
+
+.icofont-document-folder {
+    order:8;
 }
 
 .news
 {
-    order:8;
-}
-
-.tasklist{
     order:9;
 }
 
-.button-mel_sondage {
+.tasklist{
     order:10;
 }
 
-.contacts{
+.button-mel_sondage {
     order:11;
 }
 
-.settings{
+.contacts{
     order:12;
+}
+
+.settings{
+    order:13;
 }
 
 .popover-header{
     display: none;
+}
+
+span.menu-last-frame-item{
+    position: absolute;
+    left: 24px;
+    font-size: 12px;
+    margin-top: -8px;
+}
+
+.menu-last-frame-item::before{
+    font-weight: 900;
+}
+
+.menu-last-frame-inner-up
+{
+    margin-top: -7px;
+    font-size: 9px;
+    display: block;
+}
+
+.menu.toolbar a.menu-last-frame.icofont-spinner-alt-5:before
+{
+    content:"\eff8";
+    font-family: "IcoFont"!important;
+    transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
+    -moz-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
+    -webkit-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
+    -o-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
+    -ms-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
 }
 
 .menu.toolbar a.home.icofont-home:before

@@ -134,7 +134,6 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     }
     eClass = mm_st_ClassContract(eClass);
     let querry = $("." + eClass + "-frame");
-    console.log("querry 1", querry, eClass);
     if (changepage)
     {
         rcmail.env.current_frame_name = eClass;
@@ -167,9 +166,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     else {
         rcmail.env.frame_created = true;
        /* $("." + eClass + "-frame")*/querry.css("display", "");//.removeClass("hidden");
-       console.log("querry",querry);
         let id = querry[0].id;
-        console.log(window.FrameUpdate)
         if (window.FrameUpdate === undefined)
             Update();
         else
@@ -197,13 +194,18 @@ function m_mp_CreateOrUpdateIcon(querry_selector)
     if ($(".menu-last-frame").find(".menu-last-frame-item").length == 0)
         $(".menu-last-frame").append(`<span class="menu-last-frame-item"></span>`);
     else
+    {
         document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+        document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+    }
     let content =    window.getComputedStyle(
             document.querySelector(querry_selector), ':before'
         ).getPropertyValue('content').replace(/"/g, '').charCodeAt(0).toString(16);
     let font =    window.getComputedStyle(
         document.querySelector(querry_selector), ':before'
     ).getPropertyValue('font-family');
-    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'content: "\\' + content + '";font-family: "'+font+'"');
+    console.log("font",font);
+    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'content: "\\' + content + '"; font-family: "'+font+'"');
+    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'font-family: '+font+';');
 }
 

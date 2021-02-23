@@ -8,11 +8,13 @@
 #taskmenu{
     display: flex;
     flex-direction: column;
+    max-height: 100%;
 }
 
 #taskmenu .special-buttons
 {
     background-color:#2C3054;
+    position: initial;
 }
 
 #taskmenu .compose {
@@ -114,6 +116,10 @@
 
 .settings{
     order:13;
+}
+
+#taskmenu .special-buttons{
+    order:14;
 }
 
 .popover-header{

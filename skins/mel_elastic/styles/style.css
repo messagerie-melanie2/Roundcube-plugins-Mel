@@ -423,6 +423,7 @@ framed_item > .framed_item{
 
 .roundbadge.menu
 {
+    -moz-transform: translateY(15px);
     top: -13px;
     position: absolute;
     height: 15px;

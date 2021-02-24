@@ -46,27 +46,27 @@ class mel_help extends rcube_plugin {
         // ajout de la tache
         $this->register_task('help');
 
-        // Ajoute le bouton en fonction de la skin
-        if ($this->rc->config->get('ismobile', false)) {
-            $this->add_button(array(
-                'command' => 'help',
-                'class'	=> 'button-mel_help ui-link ui-btn ui-corner-all ui-icon-info ui-btn-icon-left',
-                'classsel' => 'button-mel_help button-selected ui-link ui-btn ui-corner-all ui-icon-info ui-btn-icon-left',
-                'innerclass' => 'button-inner',
-                'label'	=> 'mel.help',
-            ), 'taskbar_mobile');
-          } else {
-            $this->include_stylesheet($skin_path . '/styles.css');
-            $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
-            $this->add_button(array(
-                'command' => 'help_open_dialog',
-                'class'	=> 'button-mel_help',
-                'classsel' => 'button-mel_help button-selected',
-                'innerclass' => 'button-inner',
-                'label'	=> 'mel.help',
-                'title'	=> 'mel.help_title',
-            ), $taskbar);
-        }
+        // // Ajoute le bouton en fonction de la skin
+        // if ($this->rc->config->get('ismobile', false)) {
+        //     $this->add_button(array(
+        //         'command' => 'help',
+        //         'class'	=> 'button-mel_help ui-link ui-btn ui-corner-all ui-icon-info ui-btn-icon-left',
+        //         'classsel' => 'button-mel_help button-selected ui-link ui-btn ui-corner-all ui-icon-info ui-btn-icon-left',
+        //         'innerclass' => 'button-inner',
+        //         'label'	=> 'mel.help',
+        //     ), 'taskbar_mobile');
+        //   } else {
+        //     $this->include_stylesheet($skin_path . '/styles.css');
+        //     $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+        //     $this->add_button(array(
+        //         'command' => 'help_open_dialog',
+        //         'class'	=> 'button-mel_help',
+        //         'classsel' => 'button-mel_help button-selected',
+        //         'innerclass' => 'button-inner',
+        //         'label'	=> 'mel.help',
+        //         'title'	=> 'mel.help_title',
+        //     ), $taskbar);
+        // }
 
         // Include general js
         $this->include_script('help.js');

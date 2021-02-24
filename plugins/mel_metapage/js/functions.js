@@ -32,6 +32,58 @@ function m_mp_Create()
         window.create_popUp.show();
 }
 
+function m_mp_Help()
+{
+    rcmail.mel_metapage_url_info = m_mp_DecodeUrl();
+    rcmail.command("help_open_dialog");
+}
+
+function m_mp_DecodeUrl()
+{
+    let url;// = $("#" + rcmail.env.current_frame)[0].contentDocument.location.href;
+    if (rcmail.env.current_frame === undefined || rcmail.env.current_frame == "default")
+        url = window.location.href;
+    else
+        url = $("#" + rcmail.env.current_frame)[0].contentDocument.location.href;
+    
+    let text = "";
+    let hasTask = false;
+    let task = null;
+    let action = null;
+    for (let index = 0; index < url.length; ++index) {
+        const element = url[index];
+        if (element === "/")
+            text = "";
+        else if (element === "&" || index == url.length-1)
+        {
+            if (index == url.length-1)
+                text += element;
+            if (hasTask && text.includes("_action"))
+            {
+                action = text.replace("&", "").replace("?", "").replace("_action=", "");
+                break;
+            }
+            else if (!hasTask && text.includes("_task")){
+                hasTask = true;
+                task = text.replace("?", "").replace("&", "").replace("_task=", "");
+                text = ";"
+            }
+            else
+                text = "";
+        }
+        else
+            text += element;
+    }
+    console.log("url decode", {
+        task:task,
+        action:action
+    });
+    return {
+        task:task,
+        action:action
+    };
+}
+
 /**
  * Ouvre ou créer une frame.
  * @param {string} frameClasse Frame à ouvrir

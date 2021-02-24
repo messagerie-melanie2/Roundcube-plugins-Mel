@@ -51,7 +51,7 @@ if (window.rcmail) {
 // Click on Help button open a dialog
 rcube_webmail.prototype.help_open_dialog = function() {
 	var frame = $('<iframe>').attr('id', 'helppageframe')
-        .attr('src', rcmail.url('help/index', {'_framed': '1', '_current_task': rcmail.env.task, '_current_action': rcmail.env.action}))
+        .attr('src', rcmail.url('help/index', {'_framed': '1', '_current_task': rcmail.mel_metapage_url_info.task, '_current_action': rcmail.mel_metapage_url_info.action}))
         .attr('frameborder', '0')
         .appendTo(document.body);
     
@@ -73,4 +73,5 @@ rcube_webmail.prototype.help_open_dialog = function() {
         height: h,
         rcmail: rcmail
     }).width(w);
+    $("#helppageframe").css("max-width", w+"px");
 };

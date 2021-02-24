@@ -15,6 +15,7 @@
 {
     background-color:#2C3054;
     position: initial;
+    display: none;
 }
 
 #taskmenu .compose {

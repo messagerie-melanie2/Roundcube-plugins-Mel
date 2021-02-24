@@ -122,6 +122,10 @@ class mel_metapage extends rcube_plugin
         $args["content"] = $tmp[0].$this->rc->output->parse("mel_metapage.mel_modal", false, false).'<div id="layout">'.$this->rc->output->parse("mel_metapage.barup", false, false).$tmp[1];
         if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) === "iframe")
             $args["content"] = $this->from_iframe($args["content"]);
+        if (strpos($args["content"],'<user/>') !== false)
+        {
+            $args["content"] = str_replace("<user/>", $this->rc->output->parse("mel_metapage.user", false, false), $args["content"]);
+        }
         $args["content"] = $this->add_html($args["content"]);
         return $args;
     }
@@ -181,6 +185,7 @@ class mel_metapage extends rcube_plugin
         $this->include_stylesheet($this->local_skin_path().'/barup.css');
         $this->include_stylesheet($this->local_skin_path().'/modal.css');
         $this->include_stylesheet($this->local_skin_path().'/global.css');
+        $this->include_stylesheet($this->local_skin_path().'/user.css');
     }
 
     /**

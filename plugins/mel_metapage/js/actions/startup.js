@@ -117,6 +117,8 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
 {
     if (changepage)
     {
+        if ($(".ui-dialog-titlebar-close").length > 0)
+            $(".ui-dialog-titlebar-close").click();
         $("#taskmenu").find("a").each((i,e) => {
             if (e.classList.contains(eClass))
             {
@@ -167,6 +169,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
         rcmail.env.frame_created = true;
        /* $("." + eClass + "-frame")*/querry.css("display", "");//.removeClass("hidden");
         let id = querry[0].id;
+        rcmail.env.current_frame = querry.length > 1 ? "default" : id;
         if (window.FrameUpdate === undefined)
             Update();
         else

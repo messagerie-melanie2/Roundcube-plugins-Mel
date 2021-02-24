@@ -1,0 +1,23 @@
+#taskbar a.button-help {
+    display: none;
+}
+
+#taskbar a.button-mel_help {
+    position: absolute;
+    right: 130px;
+    order: 10;
+}
+
+.minimal #taskbar a.button-mel_help {
+    position: absolute;
+    right: 110px;
+    order: 10;
+}
+
+#taskbar a.button-mel_help span.button-inner {
+    background: url(../../../mel_larry/images/taskbar/help.png?v=e784.5000) center 20px no-repeat;
+}
+
+.minimal #taskbar a.button-mel_help span.button-inner {
+    background-position: center 13px;
+}

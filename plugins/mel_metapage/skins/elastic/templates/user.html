@@ -1,0 +1,32 @@
+<a data-popup="groupoptions-user" role="button" href="#" 
+aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-user" 
+data-original-title=""
+style="text-decoration: none;">
+<div class="user-child">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="user-child" comment="Parent ariane, photo + dispo">
+                <div id="user-picture" comment="photo utilisateur"></div>
+                <div id="user-dispo" comment="Disponibilitée"></div>
+            </div>
+        </div>
+        <div class="col-md-4" style="color:white">
+            <div id="user-welcome" comment="Bienvenue !">Bienvenue !</div>
+            <div id="user-status" comment="Status de l'utilisateur">Télétravail</div>
+        </div>
+        <div class="col-md-6" comment="météo">
+            <div comment="Icon"></div>
+            <div comment="Température"></div>
+        </div>
+    </div>
+</div>
+</a>
+
+<div id="groupoptions-user" class="popupmenu">
+	<h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3>
+	<ul class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-user">
+		<roundcube:button type="link-menuitem" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="settings" classAct="" />
+		<roundcube:button type="link-menuitem" command="logout" label="logout" class="logout logout-color" classAct="" />
+		<roundcube:container name="groupoptions" id="groupoptionsmenu" />
+	</ul>
+</div>

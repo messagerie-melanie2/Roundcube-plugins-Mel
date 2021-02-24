@@ -180,6 +180,10 @@ if (rcmail)
         parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.get, parent.rcmail.mel_metapage_fn.calendar_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.get, parent.rcmail.mel_metapage_fn.tasks_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.mails_updated.get, parent.rcmail.mel_metapage_fn.mail_updated);
+        parent.rcmail.enable_command("my_account", true);
+        parent.rcmail.register_command("my_account", () => {
+            window.location.href = "./?_task=settings&_action=plugin.mel_moncompte";
+        })
 
         //checks
         let local_storage = {

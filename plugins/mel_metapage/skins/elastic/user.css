@@ -1,0 +1,49 @@
+div.user-child{
+    width: auto;
+    height: 60px;
+    /* margin-left: -15px; */
+}
+
+/* div.user-child > .row > div > div.user-child{
+    margin-left: 0;
+} */
+
+div#user-picture  {
+    background-color: aliceblue;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    /* padding-top: 5px; */
+    position: absolute;
+    top: 3px;
+    left: 10px;   
+}
+
+div#user-dispo{
+    height: 14px;
+    width: 14px;
+    background-color: black;
+    border-radius: 100%;
+    border-style: solid;
+    border-color: #484D7A;
+    bottom: 5px;
+    left: 41px;
+    position: absolute;
+}
+
+div#user-welcome{
+    font-size: large;
+    margin-top: 8px;
+}
+
+div#user-status{
+    font-size: 12px;
+}
+
+.logout-color{
+    color:#ff5552 !important
+}
+
+.menu a.logout-color:not(.disabled):focus, .menu a.logout-color:not(.disabled):hover{
+    background-color:#ff5552 !important
+}

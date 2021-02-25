@@ -46,6 +46,16 @@ class ArianePopUp{
         this.is_show = false;
     }
 
+    anchor()
+    {
+        this.ariane.anchor();
+    }
+
+    is_anchor()
+    {
+        return this.ariane.is_anchor();
+    }
+
     show()
     {
         this.button.loading();
@@ -71,6 +81,8 @@ class ArianePopUp{
 
     hide()
     {
+        if (this.is_anchor())
+            this.anchor();
         this.ariane.popUp.css("display", "none");
         this.ariane.popUp.removeClass("tiny-rocket-chat-card");
         this.button.button.css("display", "initial");
@@ -135,6 +147,30 @@ class ArianeFrame{
                 this.load_ended = true;
             });
         }
+    }
+
+    anchor()
+    {
+        if (!this.is_anchor())
+        {
+            this.popUp.css("flex","0 0 400px");
+            this.popUp.css("position", "initial");
+            this.popUp.css("width", "initial");
+            this.popUp.css("margin-top", "60px");
+            this.popUp.contents().find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
+        }
+        else {
+            this.popUp.css("position", "");
+            this.popUp.css("width", "");
+            this.popUp.css("margin-top", "");
+            this.popUp.contents().find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
+        }
+
+    }
+
+    is_anchor()
+    {
+        return this.popUp.contents().find(".card-anchor").hasClass("icofont-external-link");
     }
 
     enable()

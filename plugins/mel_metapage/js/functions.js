@@ -210,3 +210,16 @@ function m_mp_close_ariane()
     if (parent.mel_metapage.PopUp.ariane !== undefined)
         parent.mel_metapage.PopUp.ariane.hide();
 }
+
+function m_mp_full_screen_ariane()
+{
+    event.preventDefault();
+    parent.mm_st_CreateOrOpenModal('rocket');
+}
+
+function m_mp_anchor_ariane()
+{
+    event.preventDefault();
+    if (parent.mel_metapage.PopUp.ariane !== undefined)
+        parent.mel_metapage.PopUp.ariane.anchor();
+}

@@ -248,11 +248,24 @@ iframe{
     position: relative;
 }
 
-.card-close{
+.card-close,
+.card-expand,
+.card-anchor{
     font-size: x-large;
     float: right;
     color: inherit;
     transition: all 0.1s ease-in;
+}
+
+.card-expand,
+.card-anchor{
+    margin-right:5px;
+}
+
+.card-expand:hover,
+.card-anchor:hover{
+    text-decoration: none;
+    color:#80D5C6;
 }
 
 .card-close:hover{

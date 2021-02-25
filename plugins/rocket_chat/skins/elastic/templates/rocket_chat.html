@@ -1,0 +1,25 @@
+﻿<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<style>
+	.card-header-disabled
+	{
+		display:none;
+	}
+</style>
+<div id="layout-content" class="box rocket_chat-box">
+	<div class="card-disabled">
+		<div class="card-header-disabled">
+			<span>Ariane</span>
+			<a href="close_ariane" onclick="m_mp_close_ariane()" class="icofont-close-squared-alt card-close"></a>
+		</div>
+		<div class="card-body-disabled">
+			<roundcube:object name="rocket_chat_frame" id="rocket_chat_frame" />
+			<!-- <div class="iframebox">
+
+			  </div> -->
+		</div>
+	</div>
+</div>
+
+<roundcube:include file="/includes/footer.html" />
+

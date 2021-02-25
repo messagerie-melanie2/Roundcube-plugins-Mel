@@ -216,6 +216,22 @@ if (rcmail)
             init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated, 
                 ".mail", mel_metapage.Ids.menu.badge.mail, true, true);
         }
+
+        let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
+        let btn = ArianeButton.default();
+        if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+        {
+            if (rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
+                btn.hide_button();
+            else {
+                btn.show_button();
+                btn.place_button(rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, rcmail.env.mel_metapage_ariane_button_config[eClass].right);
+            }
+        }
+        else {
+            btn.show_button();
+            btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
+        }
     });
 
 }

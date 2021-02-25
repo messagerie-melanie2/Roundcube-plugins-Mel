@@ -12,6 +12,7 @@ $(document).ready(function() {
     // console.log(parent, window, parent == window);
     parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, my_day_calendar);
     parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, my_day_tasks);
+
     if (parent != window)
     {
         if (parent.FrameUpdate === undefined || parent.FrameUpdate === null)

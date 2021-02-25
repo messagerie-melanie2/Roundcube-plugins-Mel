@@ -227,6 +227,7 @@ class mel_metapage extends rcube_plugin
             $tmp[$it++] = (new SearchConfig($value))->get()->url();//$value->url();
         }
         $this->rc->output->set_env('mm_search_config', $tmp);
+        $this->rc->output->set_env('mel_metapage_ariane_button_config', $this->rc->config->get("pop_up_ariane"));
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);
         
         foreach ($this->rc->user->list_emails() as $identity) {

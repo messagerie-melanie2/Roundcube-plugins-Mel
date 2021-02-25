@@ -9,6 +9,19 @@ $(document).ready(function() {
     $(".startup").addClass(rcmail.env.task + "-frame");
     $(".startup").addClass(mm_frame);
     rcmail.addEventListener("init", () => {
+        if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
+        {
+            mel_metapage.Storage.set("open_frame", "rocket");
+            window.location.href = "./?_task=mel_portal";
+            return;
+        }
+        else if (parent === window && mel_metapage.Storage.get("open_frame") !== null)
+        {
+            $(document).ready(() =>{
+                mm_st_CreateOrOpenModal(mel_metapage.Storage.get("open_frame"));
+            mel_metapage.Storage.remove("open_frame");
+            });
+        }
         rcmail.env.last_frame_class = mm_st_GetClass($("#layout-menu a.selected")[0].classList);//[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
         rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
         let querry = $(".menu-last-frame").find(".inner");
@@ -98,6 +111,10 @@ function mm_st_ClassContract(_class)
             return "tasks";
         case "tasks":
             return "tasklist";
+         case "rocket":
+            return "discussion";
+        case "discussion":
+            return "rocket";
         default:
             return _class;
     }
@@ -119,6 +136,8 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     {
         if ($(".ui-dialog-titlebar-close").length > 0)
             $(".ui-dialog-titlebar-close").click();
+        if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+            mel_metapage.PopUp.ariane.hide();
         $("#taskmenu").find("a").each((i,e) => {
             if (e.classList.contains(eClass))
             {
@@ -139,11 +158,25 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     if (changepage)
     {
         rcmail.env.current_frame_name = eClass;
-        $("."+mm_frame).css("display", "none");/*.each((i,e) => {
-        e.classList.add("hidden");
-    })*/
-}   
-    window.history.replaceState({}, document.title, "/?_task=" + mm_st_CommandContract(eClass));
+        $("."+mm_frame).css("display", "none");
+        window.history.replaceState({}, document.title, "/?_task=" + mm_st_CommandContract(eClass));
+        if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+        {
+            let btn = ArianeButton.default();
+            if (rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
+                btn.hide_button();
+            else {
+                btn.show_button();
+                btn.place_button(rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, rcmail.env.mel_metapage_ariane_button_config[eClass].right);
+            }
+        }
+        else {
+            let btn = ArianeButton.default();
+            btn.show_button();
+            btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
+        }
+    }   
+
     if (querry.length == 0)
     {
         rcmail.env.frame_created = false;
@@ -162,7 +195,8 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
             if (changepage)
                 $("#"+id).css("display", "");
         });
-        m_mp_ChangeLasteFrameInfo();
+        if (changepage)
+            m_mp_ChangeLasteFrameInfo();
         return id;
     }
     else {
@@ -177,7 +211,8 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
             if (FrameUpdate.exists(id))
                 FrameUpdate.start(id);
         }
-        m_mp_ChangeLasteFrameInfo();
+        if (changepage)
+            m_mp_ChangeLasteFrameInfo();
         return id;
     }
 
@@ -188,6 +223,7 @@ function m_mp_ChangeLasteFrameInfo()
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
+    window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
     m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
     $(".menu-last-frame").removeClass("disabled");
 }

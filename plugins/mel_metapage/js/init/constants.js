@@ -99,5 +99,15 @@ const mel_metapage = {
             }
         }
     },
+    PopUp:{
+        open_ariane: function () {
+            if (mel_metapage.PopUp.ariane === null)
+                mel_metapage.PopUp.ariane = new ArianePopUp(ArianeButton.default());
+            console.log(mel_metapage, window == parent);
+            mel_metapage.PopUp.ariane.show();
+        },
+        ariane:null,
+    }
 
 }; 
+window.mel_metapage = mel_metapage;

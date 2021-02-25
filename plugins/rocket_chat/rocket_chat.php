@@ -173,7 +173,7 @@ EOF;
         ));
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
-        $this->rc->output->send('rocket_chat.rocket_chat');
+        $this->rc->output->send( ((rcube_utils::get_input_value('_tiny', rcube_utils::INPUT_GET) == 1) ? 'rocket_chat.tiny_rocket_chat' : 'rocket_chat.rocket_chat' ));
     }
     
     public function action_courrielleur() {

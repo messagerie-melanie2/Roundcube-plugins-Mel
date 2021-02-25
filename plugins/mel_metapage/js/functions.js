@@ -203,3 +203,10 @@ rcmail.addEventListener('responseafter', function(props) {
     }
 
 });
+
+function m_mp_close_ariane()
+{
+    event.preventDefault();
+    if (parent.mel_metapage.PopUp.ariane !== undefined)
+        parent.mel_metapage.PopUp.ariane.hide();
+}

@@ -192,3 +192,76 @@ v_separate{
     border-left-width: thin;
     border-left-color: #A3A7BC;
 }
+
+.tiny-rocket-chat{
+    position: absolute;
+    /* top: 188px;
+    left: 70px; */
+    width: 64px;
+    height: 64px;
+    background-color: #FDCF42;
+    border-radius: 100%;
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+    display: none;
+}
+
+.tiny-rocket-chat:hover{
+    background-color: #484D7A;
+    color:white;
+}
+
+.tiny-rocket-chat.disabled{
+    pointer-events: none;
+    color: #484D7A;
+}
+
+.tiny-rocket-chat-icon{
+    font-size: xx-large;
+    position: absolute;
+    top: 28%;
+    left: 28%;
+}
+
+.tiny-rocket-chat-card{
+    position: absolute;
+    top:60px;
+    right:0px;
+    z-index:9999;
+    display: none;
+}
+
+.ariane-popup,
+.ariane-card-body,
+.ariane-card
+{
+    width: 400px;
+    height: 500px;
+}
+
+iframe{
+    border:none;
+}
+
+.ariane-card-body
+{
+    position: relative;
+}
+
+.card-close{
+    font-size: x-large;
+    float: right;
+    color: inherit;
+    transition: all 0.1s ease-in;
+}
+
+.card-close:hover{
+    text-decoration: none;
+    color:#ff5552;
+}
+
+/* .icofont-spinner-alt-6
+{
+    -webkit-animation:spinner-border .75s linear infinite;
+    animation:spinner-border .75s linear infinite;
+} */

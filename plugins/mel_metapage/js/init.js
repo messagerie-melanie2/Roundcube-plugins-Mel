@@ -10,6 +10,7 @@ if (rcmail)
                 refresh:() => {}
             };
     }
+    console.log(parent, window, parent === window);
     if (parent.rcmail.mel_metapage_fn !== undefined)
         return;
     parent.rcmail.addEventListener("init", function() {
@@ -134,6 +135,7 @@ if (rcmail)
                 url: '?_task=mel_metapage&_action=get_unread_mail_count',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
                     try {
+                        console.log("datas", data);
                         mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);
@@ -185,7 +187,7 @@ if (rcmail)
             window.location.href = "./?_task=settings&_action=plugin.mel_moncompte";
         })
 
-        //checks
+        // //checks
         let local_storage = {
             calendar:mel_metapage.Storage.get(mel_metapage.Storage.calendar),
             tasks:mel_metapage.Storage.get(mel_metapage.Storage.tasks),
@@ -206,7 +208,7 @@ if (rcmail)
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
         }
 
-        //add
+        // //add
         if (parent === window) //Si on est pas dans une frame
         {
             init_badge(local_storage.calendar, mel_metapage.Storage.calendar, rcmail.mel_metapage_fn.calendar_updated,
@@ -219,18 +221,19 @@ if (rcmail)
 
         let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
         let btn = ArianeButton.default();
-        if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+        console.log(parent.rcmail, rcmail);
+        if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
         {
-            if (rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
+            if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
                 btn.hide_button();
             else {
                 btn.show_button();
-                btn.place_button(rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, rcmail.env.mel_metapage_ariane_button_config[eClass].right);
+                btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, parent.rcmail.env.mel_metapage_ariane_button_config[eClass].right);
             }
         }
         else {
             btn.show_button();
-            btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
+            btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
         }
     });
 
@@ -250,27 +253,35 @@ if (rcmail)
  */
 function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc = false, isLength = false)
 {
-    if (storage === null)
-    {
-        if (isAsyncFunc)
+    try {
+        if (storage === null)
         {
-            func().then(() => {
+            if (isAsyncFunc)
+            {
+                func().then(() => {
+                    try {
+                        try_add_round(selector, idBadge);
+                        storage = mel_metapage.Storage.get(storage_key);
+                        update_badge((isLength ? storage : storage.length), idBadge);
+                    } catch (error) {
+                        console.error(error);
+                    }
+                });
+            }
+            else {
+                func();
                 try_add_round(selector, idBadge);
                 storage = mel_metapage.Storage.get(storage_key);
                 update_badge((isLength ? storage : storage.length), idBadge);
-            });
+            }
         }
-        else {
-            func();
+        else
+        {
             try_add_round(selector, idBadge);
-            storage = mel_metapage.Storage.get(storage_key);
             update_badge((isLength ? storage : storage.length), idBadge);
-        }
-    }
-    else
-    {
-        try_add_round(selector, idBadge);
-        update_badge((isLength ? storage : storage.length), idBadge);
+        }       
+    } catch (error) {
+        console.error(error);
     }
 }
 

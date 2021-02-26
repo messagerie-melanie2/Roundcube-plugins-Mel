@@ -46,14 +46,18 @@ class mel_metapage extends rcube_plugin
             $this->add_texts('localization/', true);
             $this->load_config();
             //$this->include_depedencies();
+            if ($this->rc->action === "chat")
+            {
+                $this->include_script('js/actions/ariane.js');
+            }
             $this->include_plugin();
             $this->rc->get_storage();
             $this->register_task("mel_metapage");
-            $this->register_task("chat");
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
             $this->register_action('search_contact', array($this, 'search_contact'));
             $this->register_action('contact', array($this, 'display_contact'));
+            $this->register_action('chat', array($this, 'ariane'));
             $this->add_hook('refresh', array($this, 'refresh'));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
@@ -66,11 +70,7 @@ class mel_metapage extends rcube_plugin
             $this->include_script('js/actions/login.js');
         }
 
-        if ($this->rc->task === "chat")
-        {
-            $this->register_action('index', array($this, 'ariane'));
-            $this->include_script('js/actions/ariane.js');
-        }
+
         //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
     }

@@ -278,3 +278,8 @@ iframe{
     -webkit-animation:spinner-border .75s linear infinite;
     animation:spinner-border .75s linear infinite;
 } */
+
+#layout-frames
+{
+    width: 100%;
+}

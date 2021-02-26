@@ -132,8 +132,10 @@ function mm_st_CommandContract(_class)
 
 function mm_st_CreateOrOpenModal(eClass, changepage = true)
 {
+    if ($("#layout-frames").length === 0)
+        $("#layout").append(`<div id="layout-frames" style="display:none;"></div>`)
     if (changepage)
-    {
+    {  
         if ($(".ui-dialog-titlebar-close").length > 0)
             $(".ui-dialog-titlebar-close").click();
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
@@ -155,6 +157,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     }
     eClass = mm_st_ClassContract(eClass);
     let querry = $("." + eClass + "-frame");
+    let isAriane = eClass === "discussion" || eClass === "ariane";
     if (changepage)
     {
         rcmail.env.current_frame_name = eClass;
@@ -175,6 +178,10 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
             btn.show_button();
             btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
         }
+        if (isAriane || $("."+eClass+"-frame").length > 1)
+            $("#layout-frames").css("display", "none");
+        else 
+            $("#layout-frames").css("display", "");
     }   
 
     if (querry.length == 0)
@@ -182,7 +189,8 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
         rcmail.env.frame_created = false;
         let id = "fame-n-" + $("iframe").length;
         rcmail.env.current_frame = id;
-        $("#layout").append('<iframe id="'+id+'" style="flex: auto; border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>');
+        ( isAriane ? $("#layout") : $("#layout-frames")).append('<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>');
+
         $("#"+id).css("display", "none");
         rcmail.set_busy(true, "loading");
         $("."+eClass+"-frame").on("load", () =>

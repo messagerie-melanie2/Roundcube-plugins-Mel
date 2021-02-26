@@ -84,6 +84,8 @@ class ArianePopUp{
         if (this.is_anchor())
             this.anchor();
         this.ariane.popUp.css("display", "none");
+        this.ariane.popUp.css("height", "");
+        this.ariane.popUp.css("flex", "1 0 auto");
         this.ariane.popUp.removeClass("tiny-rocket-chat-card");
         this.button.button.css("display", "initial");
         this.ariane.disable();
@@ -160,6 +162,8 @@ class ArianeFrame{
             this.popUp.contents().find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
         }
         else {
+            // this.popUp.css("flex","1 0 auto");
+            //this.popUp.css("height", '');
             this.popUp.css("position", "");
             this.popUp.css("width", "");
             this.popUp.css("margin-top", "");

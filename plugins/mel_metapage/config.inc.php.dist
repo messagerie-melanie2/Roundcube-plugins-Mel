@@ -44,3 +44,13 @@ $config["search"]["calendar"] = [
     "startDate" => "now",
     "endDate" => "now+60"
 ];
+
+//Configuration de la popup d'ariane.
+$config["pop_up_ariane"] = [
+    //A ne pas supprimer, position par défaut pour toute les pages.
+    "all" => ["right" => "50px", "bottom" => "50px"],
+    //Exception pour la page "Discussion", cache le bouton.
+    "discussion" => ["hidden"=> true],
+    //Exception pour la page "Ariane", cache le bouton.
+    "ariane" => ["hidden" => true]
+];

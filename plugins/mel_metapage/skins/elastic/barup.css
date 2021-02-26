@@ -8,12 +8,12 @@
     z-index: 999;
 }
 
-@media screen and (max-height: 640px) and (min-width: 769px){
+/* @media screen and (max-height: 640px) and (min-width: 769px){
     .barup
     {
         left:42px;
     }  
-}
+} */
 
 
 .help{
@@ -47,12 +47,14 @@
     border-radius: 50px;
     background-color: #363A5B;
     color: white;
-    padding: 5px 10px;
+    /* padding: 5px 10px; */
     padding-top: 5px;
     padding-right: 10px;
     padding-bottom: 5px;
     padding-left: 10px;
     cursor: pointer;
+    display: inline-block;
+    margin-right: 15px;
     transition: all 0.1s ease-in;
 }
 
@@ -64,15 +66,19 @@
 .create >span>.plus
 {
     position: absolute;
-    top: 3px;
-    right: -54px;
+    top: 0.2em;
+    right: -4em;
+    /* top: 3px;
+    right: -54px; */
 }
 
 .help >span>.question
 {
     position: absolute;
-    top: 3px;
-    right: -47px;
+    /* top: 3px; */
+    /* right: -47px; */
+    top: 0.2em;
+    right: -3.5em;
 }
 
 .barup > .wrapper

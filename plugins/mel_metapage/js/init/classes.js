@@ -73,6 +73,7 @@ class ArianePopUp{
     {
         this.button.button.css("display", "none");
         this.ariane.enable();
+        this.ariane.popUp.contents().find("#rocket_chat_frame").css("top", "0px");
         this.ariane.popUp.addClass("tiny-rocket-chat-card");
         this.ariane.popUp.css("display", "initial");
         this.button.stop();
@@ -83,6 +84,7 @@ class ArianePopUp{
     {
         if (this.is_anchor())
             this.anchor();
+        this.ariane.popUp.contents().find("#rocket_chat_frame").css("top", "");
         this.ariane.popUp.css("display", "none");
         this.ariane.popUp.css("height", "");
         this.ariane.popUp.css("flex", "1 0 auto");

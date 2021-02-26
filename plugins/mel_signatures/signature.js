@@ -107,7 +107,7 @@ function use_signature() {
 /**
  * Téléchargement de la signature dans un fichier HTM pour Outlook
  */
-function download_signature_outlook() {
+function download_signature_outlook_htm() {
     // HTML for Outlook
     var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">';
     html += '<head>';
@@ -118,27 +118,42 @@ function download_signature_outlook() {
     html += '</body>';
     html += '</html>';
     download('signature.htm', html);
+}
 
-    // // Create the zip file
-    // var zip = new JSZip();
+/**
+ * Téléchargement de la signature dans un fichier zip pour Outlook
+ */
+function download_signature_outlook_zip() {
+    // HTML for Outlook
+    var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">';
+    html += '<head>';
+    html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
+    html += '</head>';
+    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += getSignatureHTML(false, '', true);
+    html += '</body>';
+    html += '</html>';
 
-    // // Add HTM file to zip
-    // zip.file("signature.htm", html);
+    // Create the zip file
+    var zip = new JSZip();
 
-    // // Images folder
-    // var img = zip.folder("images");
-    // let select = document.getElementById("input-logo");
+    // Add HTM file to zip
+    zip.file("signature.htm", html);
 
-    // // Add images files
-    // img.file("marianne.gif", rcmail.env.logo_sources['images/marianne.gif'].replace('data:image/gif;base64,', ''), { base64: true });
-    // img.file("devise.gif", rcmail.env.logo_sources['images/devise.gif'].replace('data:image/gif;base64,', ''), { base64: true });
-    // img.file(select.value.replace('images/', ''), rcmail.env.logo_sources[select.value].replace('data:image/gif;base64,', ''), { base64: true });
+    // Images folder
+    var img = zip.folder("images");
+    let select = document.getElementById("input-logo");
 
-    // // Download zip to browser
-    // zip.generateAsync({type:"base64"})
-    //     .then(function(content) {
-    //         download('signature.zip', content, 'data:application/zip;base64');
-    //     });
+    // Add images files
+    img.file("marianne.png", rcmail.env.logo_sources['images/marianne.gif'].replace('data:image/png;base64,', ''), { base64: true });
+    img.file("devise.png", rcmail.env.logo_sources['images/devise.gif'].replace('data:image/png;base64,', ''), { base64: true });
+    img.file(select.value.replace('images/', ''), rcmail.env.logo_sources[select.value].replace('data:image/png;base64,', ''), { base64: true });
+
+    // Download zip to browser
+    zip.generateAsync({type:"base64"})
+        .then(function(content) {
+            download('signature.zip', content, 'data:application/zip;base64');
+        });
 }
 
 /**
@@ -277,6 +292,9 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
                     createImage(rcmail.env.logo_sources[logo_marianne], 'Marianne', isOutlook));
         }
         else {
+            if (isOutlook) {
+                logo_marianne = 'images/marianne.jpg';
+            }
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
                     createImage(images_url + logo_marianne, 'Marianne', isOutlook));
         }
@@ -290,6 +308,9 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
                     createImage(rcmail.env.logo_sources[logo_devise], 'Liberté, Égalité, Fraternité', isOutlook));
         }
         else {
+            if (isOutlook) {
+                logo_devise = 'images/devise.jpg';
+            }
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
                     createImage(images_url + logo_devise, 'Liberté, Égalité, Fraternité', isOutlook));
         }

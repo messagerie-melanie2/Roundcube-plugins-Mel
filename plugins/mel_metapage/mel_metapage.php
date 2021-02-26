@@ -49,6 +49,7 @@ class mel_metapage extends rcube_plugin
             $this->include_plugin();
             $this->rc->get_storage();
             $this->register_task("mel_metapage");
+            $this->register_task("chat");
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
             $this->register_action('search_contact', array($this, 'search_contact'));
@@ -63,6 +64,12 @@ class mel_metapage extends rcube_plugin
       // Include javascript files
             $this->include_script('js/actions/logout.js');
             $this->include_script('js/actions/login.js');
+        }
+
+        if ($this->rc->task === "chat")
+        {
+            $this->register_action('index', array($this, 'ariane'));
+            $this->include_script('js/actions/ariane.js');
         }
         //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
@@ -174,6 +181,11 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env("contact_url", $url);
         $this->include_script('js/actions/set_iframe_contact.js');
         $this->rc->output->send("mel_metapage.contact");
+    }
+
+    function ariane()
+    {
+        $this->rc->output->send("mel_metapage.ariane");
     }
 
     /**

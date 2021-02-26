@@ -162,7 +162,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     {
         rcmail.env.current_frame_name = eClass;
         $("."+mm_frame).css("display", "none");
-        window.history.replaceState({}, document.title, "/?_task=" + mm_st_CommandContract(eClass));
+        window.history.replaceState({}, document.title, "/?_task=" + (isAriane ? "chat" : mm_st_CommandContract(eClass)));
         if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
         {
             let btn = ArianeButton.default();

@@ -66,7 +66,7 @@ class rocket_chat extends rcube_plugin {
           // Ajoute le bouton en fonction de la skin
           if ($this->rc->config->get('ismobile', false)) {
             $this->add_button(array(
-                'command' => 'discussion',
+                'command' => 'chat',
                 'class' => ' button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
                 'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
                 'innerclass' => 'button-inner',
@@ -74,7 +74,7 @@ class rocket_chat extends rcube_plugin {
             ), 'taskbar_mobile');
           } else {
             $this->add_button(array(
-                'command' => 'discussion',
+                'command' => 'chat',
                 'class' => 'icofont-chat button-rocket_chat',
                 'classsel' => 'icofont-chat button-rocket_chat button-selected',
                 'innerclass' => 'button-inner',

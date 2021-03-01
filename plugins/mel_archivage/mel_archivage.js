@@ -75,7 +75,14 @@ if (window.rcmail) {
                             if (!uid.flags.hasOwnProperty('SEEN')) {
                                 uid.flags.SEEN = false;
                             }
-                            files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save='), "uid": uid.message_uid, "path_folder": rcmail.env.account_electron + "/" + mbox, "mbox": mbox, "etiquettes": uid.flags });
+                            
+                            if (rcmail.env.mailbox.contains("Boitepartag&AOk-e")) {
+                                var path_folder = rcmail.env.mailbox.replace("Boitepartag&AOk-e/", "");
+                            }
+                            else {
+                                var path_folder = rcmail.env.account + "/" + mbox;
+                            }
+                            files.push({ "url": rcmail.url('mail/viewsource', rcmail.params_from_uid(uid.message_uid)).replace(/_framed=/, '_save='), "uid": uid.message_uid, "path_folder": path_folder, "mbox": mbox, "etiquettes": uid.flags });
                         }
                         window.parent.api.send('download_eml', { "files": files, "token": rcmail.env.request_token });
                         $("#nb_mails").text(rcmail.get_label('mel_archivage.archive_downloading'));

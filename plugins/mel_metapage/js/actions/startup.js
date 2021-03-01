@@ -139,8 +139,6 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     {  
         if ($(".ui-dialog-titlebar-close").length > 0)
             $(".ui-dialog-titlebar-close").click();
-        if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
-            mel_metapage.PopUp.ariane.hide();
         $("#taskmenu").find("a").each((i,e) => {
             if (e.classList.contains(eClass))
             {
@@ -162,7 +160,11 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     if (changepage)
     {
         rcmail.env.current_frame_name = eClass;
-        $("."+mm_frame).css("display", "none");
+        $("."+mm_frame).each((i,e) => {
+            if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame"))
+                return;
+            e.style.display = "none";
+        });//.css("display", "none");
         window.history.replaceState({}, document.title, "/?_task=" + (isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)));
         if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
         {
@@ -183,6 +185,11 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
             $("#layout-frames").css("display", "none");
         else 
             $("#layout-frames").css("display", "");
+        if (isAriane)
+        {
+            if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+                mel_metapage.PopUp.ariane.hide();
+        }
     }   
 
     if (querry.length == 0)

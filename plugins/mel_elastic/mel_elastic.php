@@ -41,6 +41,7 @@ class mel_elastic extends rcube_plugin
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
             $this->load_css();
+            //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->load_folders();
             $this->add_texts('localization/', true);

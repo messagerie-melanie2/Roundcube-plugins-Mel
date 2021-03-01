@@ -78,6 +78,8 @@ class ArianePopUp{
         this.ariane.popUp.css("display", "initial");
         this.button.stop();
         this.is_show = true;
+        if ($("#pop-up-resizer").length === 0)
+            ArianePopUp.splitter_init(this.ariane.popUp);
     }
 
     hide()
@@ -94,6 +96,129 @@ class ArianePopUp{
         this.is_show = false;
     }
 }
+ArianePopUp.set_width = function(node)
+{
+    let set_width = function(width) {
+        let max = 300;
+        if (width > window.innerWidth / 2.0)
+            width = window.innerWidth / 2.0;
+        node.css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+        //.ariane-popup, .ariane-card-body, .ariane-card
+        node.contents().find(".ariane-popup").css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+        node.contents().find(".ariane-card-body").css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+        node.contents().find(".ariane-card").css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+    };
+    let pos = rcmail.local_storage_get_item("ariane_popUp");
+    if (pos) {
+        set_width(pos);
+        $("#pop-up-resizer").css("right", (pos-3) + "px");
+    }
+}
+ArianePopUp.splitter_init =     function splitter_init(node)
+{
+    // Use id of the list element, if exists, as a part of the key, instead of action.column-id
+    // This way e.g. the sidebar in Settings is always the same width for all Settings' pages
+    let pos = rcmail.local_storage_get_item("ariane_popUp");
+    let reverted = true;
+    let set_width = function(width) {
+        let max = 300;
+        if (width > window.innerWidth / 2.0)
+            width = window.innerWidth / 2.0;
+        node.css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+        //.ariane-popup, .ariane-card-body, .ariane-card
+        node.contents().find(".ariane-popup").css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+        node.contents().find(".ariane-card-body").css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+        node.contents().find(".ariane-card").css({
+            width: width,
+            // reset default properties
+            // 'min-width': 100,
+            flex: 'none'
+        });
+    };
+    $('<div id="pop-up-resizer" class="column-resizer" style=right:396px>')
+        .appendTo(node.parent())
+        .on('mousedown', function(e) {
+            var ts, splitter = $(this), offset = node.position().left;
+
+            // Makes col-resize cursor follow the mouse pointer on dragging
+            // and fixes issues related to iframes
+            splitter.width(10000).css('right',  node.width()-3);
+
+            // Disable selection on document while dragging
+            // It can happen when you move mouse out of window, on top
+            document.body.style.userSelect = 'none';
+
+            // Start listening to mousemove events
+            $(document)
+                .on('mousemove.resizer', function(e) {
+                    // Use of timeouts makes the move more smooth in Chrome
+                    clearTimeout(ts);
+                    ts = setTimeout(function() {
+                        // For left-side-splitter we need the current offset
+                        if (reverted) {
+                            offset = node.position().left;
+                        }
+                        var cursor_position = rcube_event.get_mouse_pos(e).x,
+                            width = reverted ? node.width() + (offset - cursor_position) : cursor_position - offset;
+
+                        set_width(width);
+                    }, 5);
+                })
+                .on('mouseup.resizer', function() {
+                    // Remove registered events
+                    $(document).off('.resizer');
+                    $('iframe').off('.resizer');
+                    document.body.style.userSelect = 'auto';
+
+                    // Set back the splitter width to normal
+                    splitter.width(6).css('right', node.width()-3);
+
+                    // Save the current position (width)
+                    rcmail.local_storage_set_item("ariane_popUp", node.width());
+                });
+        });
+
+    if (pos) {
+        set_width(pos);
+        $("#pop-up-resizer").css("right", (pos-3) + "px");
+    }
+};
+
 
 ArianePopUp.hide = function()
 {
@@ -157,11 +282,12 @@ class ArianeFrame{
     {
         if (!this.is_anchor())
         {
-            this.popUp.css("flex","0 0 400px");
+            //this.popUp.css("flex","1 0 "+this.popUp.css("width")+"px");
             this.popUp.css("position", "initial");
             this.popUp.css("width", "initial");
             this.popUp.css("margin-top", "60px");
             this.popUp.contents().find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
+            ArianePopUp.set_width(this.popUp);
         }
         else {
             // this.popUp.css("flex","1 0 auto");
@@ -170,6 +296,7 @@ class ArianeFrame{
             this.popUp.css("width", "");
             this.popUp.css("margin-top", "");
             this.popUp.contents().find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
+            ArianePopUp.set_width(this.popUp);
         }
 
     }

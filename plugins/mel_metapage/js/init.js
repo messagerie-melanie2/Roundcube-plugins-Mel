@@ -343,7 +343,9 @@ $(document).ready(() => {
     if (parent != window)
     {
         rcmail.addEventListener("init", function() {
-        $(".mm-frame").css("margin-top", "0");
+            //$(".mm-frame").css("margin-top", "0");
+            if ($("html.iframe").length > 0)
+                $(".mm-frame").css("margin-top", "0");
         });
     }
 })

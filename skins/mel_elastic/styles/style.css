@@ -450,3 +450,7 @@ a.roundbadge.link:hover{
 {
     color:#484D7A;
 }
+
+.task-error-login > #layout > #layout-content{
+    margin-top:60px;
+}

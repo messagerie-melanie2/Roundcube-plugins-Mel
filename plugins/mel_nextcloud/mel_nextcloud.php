@@ -82,8 +82,8 @@ class mel_nextcloud extends rcube_plugin {
       $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
       $this->add_button(array(
           'command' => 'stockage',
-          'class' => 'button-mel_nextcloud icofont-document-folder',
-          'classsel' => 'button-mel_nextcloud icofont-document-folder button-selected',
+          'class' => 'button-mel_nextcloud nextcloud icofont-document-folder',
+          'classsel' => 'button-mel_nextcloud nextcloud icofont-document-folder button-selected',
           'innerclass' => 'button-inner',
           'label' => 'mel_nextcloud.task',
           'title' => 'mel_nextcloud.stockage_title',

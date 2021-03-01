@@ -235,6 +235,7 @@ if (rcmail)
             btn.show_button();
             btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
         }
+        
     });
 
 }
@@ -337,3 +338,12 @@ function dateNow(date){
   }
 
 })();
+
+$(document).ready(() => {
+    if (parent != window)
+    {
+        rcmail.addEventListener("init", function() {
+        $(".mm-frame").css("margin-top", "0");
+        });
+    }
+})

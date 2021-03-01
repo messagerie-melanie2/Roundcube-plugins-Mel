@@ -88,7 +88,7 @@ class mel_portal extends rcube_plugin
             'label'	=> 'portal',
             'title' => '',
             'type'       => 'link',
-            'domain' => $this->taskName
+            'domain' => "mel_portal"
         ), $this->sidebarName);
       
     }
@@ -116,24 +116,25 @@ class mel_portal extends rcube_plugin
 
       // Recuperation de la configuration
       $config = $this->rc->config->get('user_interface_config');
-      $size = count($config[$pageName]);
+      $this->rc->output->set_pagetitle($config[$pageName]["title"]);
+      $size = count($config[$pageName]["modules"]);
       $existing = array();
       for ($i=0; $i < $size; ++$i) { 
           try {
-              include_once 'modules/'.$config[$pageName][$i]."/".$config[$pageName][$i].".php";
-              $classname = ucfirst($config[$pageName][$i]);
-              $object = new $classname($config[$pageName][$i], $this, $i);
+              include_once 'modules/'.$config[$pageName]["modules"][$i]."/".$config[$pageName]["modules"][$i].".php";
+              $classname = ucfirst($config[$pageName]["modules"][$i]);
+              $object = new $classname($config[$pageName]["modules"][$i], $this, $i);
               $object->init();
-              $confModule = $this->rc->config->get($config[$pageName][$i]);
+              $confModule = $this->rc->config->get($config[$pageName]["modules"][$i]);
               if ($confModule !== null) //Si il existe une config, on fait quelque chose.
-                $object->set_config($confModule, $this->rc->config->get($config[$pageName][$i])."_classes");
-              if ($existing[$config[$pageName][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
+                $object->set_config($confModule, $this->rc->config->get($config[$pageName]["modules"][$i])."_classes");
+              if ($existing[$config[$pageName]["modules"][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
               {
                 $object->include_module();
-                $existing[$config[$pageName][$i]] = true;
+                $existing[$config[$pageName]["modules"][$i]] = true;
               }
               //Ajout du module.
-              $this->add_module($config[$pageName][$i], $object->item_html(), $object->row_size());
+              $this->add_module($config[$pageName]["modules"][$i], $object->item_html(), $object->row_size());
           } catch (\Throwable $th) {
               $a = 0;
           }

@@ -59,8 +59,8 @@ class mel_sondage extends rcube_plugin
             $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
             $this->add_button(array(
                 'command' => 'sondage',
-                'class'	=> 'button-mel_sondage icofont-letter',
-                'classsel' => 'button-mel_sondage button-selected icofont-letter',
+                'class'	=> 'button-mel_sondage icofont-letter sondage',
+                'classsel' => 'button-mel_sondage button-selected icofont-letter sondage',
                 'innerclass' => 'button-inner',
                 'label'	=> 'mel_sondage.task',
                 'title' => 'mel_sondage.sondages_title',
@@ -81,6 +81,9 @@ class mel_sondage extends rcube_plugin
             $this->include_script('sondage_link.js');
             $rcmail->output->set_env('sondage_apppoll_url', $rcmail->url(array("_task" => "sondage", "_params" => "%%other_params%%")));
             $rcmail->output->set_env('sondage_external_url', $rcmail->config->get('sondage_external_url'));
+            $rcmail->output->set_env('sondage_create_sondage_url', $rcmail->config->get('sondage_create_sondage_url'));
+        }
+        else{
             $rcmail->output->set_env('sondage_create_sondage_url', $rcmail->config->get('sondage_create_sondage_url'));
         }
     }

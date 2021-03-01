@@ -12,7 +12,7 @@ $(document).ready(function() {
         if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
         {
             mel_metapage.Storage.set("open_frame", "rocket");
-            window.location.href = "./?_task=mel_portal";
+            window.location.href = "./?_task=bureau";
             return;
         }
         else if (parent === window && mel_metapage.Storage.get("open_frame") !== null)
@@ -69,7 +69,8 @@ function mm_st_ChangeClicks()
                     return;
                 case "order1":
                     return;
-                
+                case "mel":
+                    return;
                 default:
                     break;
             }
@@ -100,8 +101,8 @@ function mm_st_ClassContract(_class)
 {
     switch (_class) {
         case "home":
-            return "mel_portal";
-        case "mel_portal":
+            return "bureau";
+        case "bureau":
             return "home";
         case "contacts":
             return "addressbook";
@@ -124,7 +125,7 @@ function mm_st_CommandContract(_class)
 {
     switch (_class) {
         case "news":
-            return 'mel_portal&action=index&_data=news'
+            return 'bureau&action=index&_data=news'
         default:
             return _class;
     }

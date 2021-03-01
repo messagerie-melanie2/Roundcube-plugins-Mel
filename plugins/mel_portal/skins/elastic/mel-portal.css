@@ -2,7 +2,7 @@
   color:#3A3E5E;
 }
 
-.button-mel_sondage
+/* .button-mel_sondage
 {
   background: url(images/taskbar_icon.png) 3px 0px no-repeat;
   height: 18px;
@@ -24,7 +24,7 @@
 {
   background: url(images/taskbar_icon_hov.png) 3px 0px no-repeat !important;
   height: 18px;
-}
+} */
 
 .square_div > .contents
 {
@@ -150,7 +150,7 @@
   max-width: 100%;
 }
 
-.logo-mel.startup.mel_portal-frame.mm-frame
+.logo-mel.startup.bureau-frame.mm-frame
 {
   left:60px;
 }

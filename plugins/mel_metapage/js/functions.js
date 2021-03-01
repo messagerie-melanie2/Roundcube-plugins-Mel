@@ -23,7 +23,7 @@ function m_mp_Create()
         let viso = '<div class="col-3">' + button("Une visio-conférence", "icofont-slidshare block") + "</div>";
         let document = '<div class="col-4">' + button("Un document", "icofont-file-document block") + "</div>";
         let blocnote = '<div class="col-4">' + button("Un bloc-note", "icofont-ui-note block") + "</div>";
-        let pega = '<div class="col-4">' + button("Un sondage pégaze", "icofont-letter block") + "</div>";
+        let pega = '<div class="col-4">' + button("Un sondage pégaze", "icofont-letter block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";
         html = '<div class="row">' + workspace + mail + tache + reu + viso + document + blocnote + pega + '</div>';
         let config = new GlobalModalConfig("Que souhaitez-vous créer ?", "default", html, '   ');
         create_popUp = new GlobalModal("globalModal", config, true);

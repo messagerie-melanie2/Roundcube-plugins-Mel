@@ -73,20 +73,21 @@ class ArianePopUp{
     {
         this.button.button.css("display", "none");
         this.ariane.enable();
-        this.ariane.popUp.contents().find("#rocket_chat_frame").css("top", "0px");
+        this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "0px");
         this.ariane.popUp.addClass("tiny-rocket-chat-card");
         this.ariane.popUp.css("display", "initial");
         this.button.stop();
         this.is_show = true;
         if ($("#pop-up-resizer").length === 0)
             ArianePopUp.splitter_init(this.ariane.popUp);
+        window.onresize();
     }
 
     hide()
     {
         if (this.is_anchor())
             this.anchor();
-        this.ariane.popUp.contents().find("#rocket_chat_frame").css("top", "");
+        this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "");
         this.ariane.popUp.css("display", "none");
         this.ariane.popUp.css("height", "");
         this.ariane.popUp.css("flex", "1 0 auto");
@@ -321,10 +322,10 @@ class ArianeFrame{
         {
             if (mel_metapage.PopUp.ariane !== undefined && mel_metapage.PopUp.ariane.is_show)
             {
-                let height = $(window).height()-60 + "px";
-                mel_metapage.PopUp.ariane.ariane.popUp.css("height", height);
-                mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", height);
-                mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", height);
+                let height = $(window).height();
+                mel_metapage.PopUp.ariane.ariane.popUp.css("height", height+ "px");
+                mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", height+ "px");
+                mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height-105)+ "px");
             }
         }
     }
@@ -452,3 +453,44 @@ class ArianeButton
 ArianeButton.default = function () {
     return new ArianeButton(".tiny-rocket-chat", "icofont-chat");
 }
+
+class MetapageFrames {
+    constructor()
+    {
+        this._events = {};
+    }
+
+    addEvent(key, event)
+    {
+        if (this._events[key] === undefined)
+            this._events[key] = [];
+        this._events[key].push(event);
+    }
+
+    triggerEvent(key, ...args)
+    {
+        if (this._events[key] === undefined)
+            return;
+        else {
+            let result = null;
+            for (let index = 0; index < this._events[key].length; index++) {
+                const element = this._events[key][index];
+                try {
+                    if (index === 0)
+                    result = element(...args);
+                    else {
+                        if (result !== null && result !== undefined)    
+                            result = element(...[...args, result]);
+                        else
+                            result = element(...args);
+                    }  
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            return result;
+        }
+    }
+}
+
+var metapage_frames = new MetapageFrames();

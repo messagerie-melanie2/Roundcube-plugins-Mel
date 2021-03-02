@@ -133,109 +133,175 @@ function mm_st_CommandContract(_class)
 
 function mm_st_CreateOrOpenModal(eClass, changepage = true)
 {
+    mm_st_OpenOrCreateFrame(eClass, changepage);
+} 
+
+function mm_st_OpenOrCreateFrame(eClass, changepage = true)
+{
+    //Actions à faire avant de traiter la classe.
+    metapage_frames.triggerEvent("before", eClass, changepage);
+    if (changepage) //Actions à faire si on change de page, avant d'avoir traité la classe.
+        metapage_frames.triggerEvent("changepage.before", eClass);
+    eClass = mm_st_ClassContract(eClass);
+    let querry = $("." + eClass + "-frame");
+    let isAriane = eClass === "discussion" || eClass === "ariane";
+    if (changepage)//Actions à faire si on change de page.
+        metapage_frames.triggerEvent("changepage", eClass, changepage, isAriane, querry);
+
+    if (querry.length == 0) //Si on doit créer la frame
+    {
+        let id = "fame-n-" + $("iframe").length;
+        //Mise en place de diverses configurations lorque l'on doit créer une frame.
+        metapage_frames.triggerEvent("rcmailconfig.no", eClass, changepage, isAriane, querry, id);
+        metapage_frames.triggerEvent("node", eClass, changepage, isAriane, querry, id) //Récupération de la node
+        .append(metapage_frames.triggerEvent("frame", eClass, changepage, isAriane, querry, id) /* Récupération de la frame */);
+        //Mise à jours de la frame
+        metapage_frames.triggerEvent("editFrame", eClass, changepage, isAriane, $("#"+id));
+        rcmail.set_busy(true, "loading");
+        $("."+eClass+"-frame").on("load", () =>
+        {
+            //Action à faire une fois que la frame est chargée.
+            metapage_frames.triggerEvent("onload", eClass, changepage, isAriane, querry, id);
+            //Actions à faire une fois que l'évènement "onload" est fini.
+            metapage_frames.triggerEvent("onload.after", eClass, changepage, isAriane, querry, id);
+        });
+        if (changepage) //Action à faire après avoir créer la frame, si on change de page.
+            metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
+        //Action à faire avant de terminer la fonction.
+        metapage_frames.triggerEvent("after", eClass, changepage, isAriane, querry, id);
+        return id;
+    }
+    else {
+        let id = querry[0].id;
+        //Mise en place de diverses configurations lorque l'on doit ouvrir une frame.
+        metapage_frames.triggerEvent("rcmailconfig.yes", eClass, changepage, isAriane, querry, id);
+        //Ouverture d'une frame.
+        metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id);
+        if (changepage)//Action à faire après avoir ouvert la frame, si on change de page.
+            metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
+        //Action à faire avant de terminer la fonction.
+        metapage_frames.triggerEvent("after", eClass, changepage, isAriane, querry, id);
+        return id;
+    }
+
+}
+
+metapage_frames.addEvent("before", (eClass, changepage) => {
     if ($("#layout-frames").length === 0)
         $("#layout").append(`<div id="layout-frames" style="display:none;"></div>`)
-    if (changepage)
-    {  
-        if ($(".ui-dialog-titlebar-close").length > 0)
-            $(".ui-dialog-titlebar-close").click();
-        $("#taskmenu").find("a").each((i,e) => {
-            if (e.classList.contains(eClass))
-            {
-                if (!e.classList.contains("selected"))
-                    e.classList.add("selected");
-            }
-            else
-                e.classList.remove("selected");
-        });
-    }
     if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
     {
         rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
         rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
     }
-    eClass = mm_st_ClassContract(eClass);
-    let querry = $("." + eClass + "-frame");
-    let isAriane = eClass === "discussion" || eClass === "ariane";
-    if (changepage)
-    {
-        rcmail.env.current_frame_name = eClass;
-        $("."+mm_frame).each((i,e) => {
-            if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame"))
-                return;
-            e.style.display = "none";
-        });//.css("display", "none");
-        window.history.replaceState({}, document.title, "/?_task=" + (isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)));
-        if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+});
+
+metapage_frames.addEvent("changepage.before", (eClass) => {
+    if ($(".ui-dialog-titlebar-close").length > 0)
+        $(".ui-dialog-titlebar-close").click();
+    $("#taskmenu").find("a").each((i,e) => {
+        if (e.classList.contains(eClass))
         {
-            let btn = ArianeButton.default();
-            if (rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
-                btn.hide_button();
-            else {
-                btn.show_button();
-                btn.place_button(rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, rcmail.env.mel_metapage_ariane_button_config[eClass].right);
-            }
+            if (!e.classList.contains("selected"))
+                e.classList.add("selected");
         }
+        else
+            e.classList.remove("selected");
+    });
+});
+
+metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) => {
+    rcmail.env.current_frame_name = eClass;
+    $("."+mm_frame).each((i,e) => {
+        if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame"))
+            return;
+        e.style.display = "none";
+    });//.css("display", "none");
+    window.history.replaceState({}, document.title, "/?_task=" + (isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)));
+    if (isAriane || $("."+eClass+"-frame").length > 1)
+        $("#layout-frames").css("display", "none");
+    else 
+        $("#layout-frames").css("display", "");
+    if (isAriane)
+    {
+        if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+            mel_metapage.PopUp.ariane.hide();
+    }
+    if (isAriane)
+    {
+        let btn = ArianeButton.default();
+        btn.hide_button();
+    }
+    else if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+    {
+        let btn = ArianeButton.default();
+        if (rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
+            btn.hide_button();
         else {
-            let btn = ArianeButton.default();
             btn.show_button();
-            btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
+            btn.place_button(rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, rcmail.env.mel_metapage_ariane_button_config[eClass].right);
         }
-        if (isAriane || $("."+eClass+"-frame").length > 1)
-            $("#layout-frames").css("display", "none");
-        else 
-            $("#layout-frames").css("display", "");
-        if (isAriane)
-        {
-            if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
-                mel_metapage.PopUp.ariane.hide();
-        }
-    }   
-
-    if (querry.length == 0)
-    {
-        rcmail.env.frame_created = false;
-        let id = "fame-n-" + $("iframe").length;
-        rcmail.env.current_frame = id;
-        ( isAriane ? $("#layout") : $("#layout-frames")).append('<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>');
-
-        $("#"+id).css("display", "none");
-        rcmail.set_busy(true, "loading");
-        $("."+eClass+"-frame").on("load", () =>
-        {
-            $("."+eClass+"-frame").contents().find("#layout-menu").remove();
-            $("."+eClass+"-frame").contents().find(".barup").remove();
-            rcmail.set_busy(false);
-            rcmail.clear_messages();
-            rcmail.env.frame_created = true;
-            if (changepage)
-                $("#"+id).css("display", "");
-        });
-        if (changepage)
-            m_mp_ChangeLasteFrameInfo();
-        return id;
     }
     else {
-        rcmail.env.frame_created = true;
-       /* $("." + eClass + "-frame")*/querry.css("display", "");//.removeClass("hidden");
-        let id = querry[0].id;
-        rcmail.env.current_frame = querry.length > 1 ? "default" : id;
-        if (window.FrameUpdate === undefined)
-            Update();
-        else
-        {
-            if (FrameUpdate.exists(id))
-                FrameUpdate.start(id);
-        }
-        if (changepage)
-            m_mp_ChangeLasteFrameInfo();
-        return id;
+        let btn = ArianeButton.default();
+        btn.show_button();
+        btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
     }
+});
 
-} 
+metapage_frames.addEvent("rcmailconfig.no", (eClass, changepage, isAriane, querry, id) => {
+    rcmail.env.frame_created = false;
+    rcmail.env.current_frame = id;
+})
+
+metapage_frames.addEvent("rcmailconfig.yes", (eClass, changepage, isAriane, querry, id) => {
+    rcmail.env.frame_created = true;
+    rcmail.env.current_frame = querry.length > 1 ? "default" : id;
+})
+
+metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, result) => {
+    if (result)
+        return result;
+    else
+        return (isAriane ? $("#layout") : $("#layout-frames"));
+})
+
+metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result) => {
+    return (result ? result : "") + '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>';
+})
+
+metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
+    frame.css("display", "none");
+});
+
+metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {
+    $("."+eClass+"-frame").contents().find("#layout-menu").remove();
+    $("."+eClass+"-frame").contents().find(".barup").remove();
+    rcmail.set_busy(false);
+    rcmail.clear_messages();
+    rcmail.env.frame_created = true;
+    if (changepage)
+        $("#"+id).css("display", "");
+});
+
+metapage_frames.addEvent("changepage.after", () => {
+    m_mp_ChangeLasteFrameInfo();
+});
+
+metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
+    if (window.FrameUpdate === undefined)
+        Update();
+    else
+    {
+        if (FrameUpdate.exists(id))
+            FrameUpdate.start(id);
+    }
+    querry.css("display", "");
+});
 
 function m_mp_ChangeLasteFrameInfo()
 {
+    console.log("last", rcmail.env.last_frame_class);
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
@@ -259,7 +325,6 @@ function m_mp_CreateOrUpdateIcon(querry_selector)
     let font =    window.getComputedStyle(
         document.querySelector(querry_selector), ':before'
     ).getPropertyValue('font-family');
-    console.log("font",font);
     document.styleSheets[0].addRule('.menu-last-frame-item:before', 'content: "\\' + content + '"; font-family: "'+font+'"');
     document.styleSheets[0].addRule('.menu-last-frame-item:before', 'font-family: '+font+';');
 }

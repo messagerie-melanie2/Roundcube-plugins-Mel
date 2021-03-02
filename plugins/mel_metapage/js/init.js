@@ -219,22 +219,27 @@ if (rcmail)
                 ".mail", mel_metapage.Ids.menu.badge.mail, true, true);
         }
 
-        let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
-        let btn = ArianeButton.default();
-        console.log(parent.rcmail, rcmail);
-        if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
-        {
-            if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
-                btn.hide_button();
+        new Promise(async (a,b) => {
+            while (rcmail.env.last_frame_class === undefined) {
+                await delay(500);
+            }
+            let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
+            let btn = ArianeButton.default();
+            console.log(parent.rcmail, rcmail);
+            if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+            {
+                if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
+                    btn.hide_button();
+                else {
+                    btn.show_button();
+                    btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, parent.rcmail.env.mel_metapage_ariane_button_config[eClass].right);
+                }
+            }
             else {
                 btn.show_button();
-                btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, parent.rcmail.env.mel_metapage_ariane_button_config[eClass].right);
+                btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
             }
-        }
-        else {
-            btn.show_button();
-            btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
-        }
+        });
         
     });
 

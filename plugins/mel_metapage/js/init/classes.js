@@ -460,6 +460,20 @@ class MetapageFrames {
         this._events = {};
     }
 
+    open(key, changePage = true)
+    {
+        mm_st_OpenOrCreateFrame(key, changePage);
+    }
+
+    async openAsync(key, changePage = true, delay_ms = 500)
+    {
+        mm_st_OpenOrCreateFrame(key, changePage);
+        while (!rcmail.env.frame_created) {
+            await delay(delay_ms)
+        }
+        return true;
+    }
+
     addEvent(key, event)
     {
         if (this._events[key] === undefined)

@@ -97,6 +97,9 @@ const mel_metapage = {
                 tasks:"menu-badge-tasks",
                 mail:"menu-badge-mail",
             }
+        },
+        create:{
+            doc_input:"generated-document-input-mel-metapage"
         }
     },
     PopUp:{

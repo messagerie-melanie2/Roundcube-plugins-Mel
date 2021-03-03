@@ -193,7 +193,7 @@ iframe.mm-frame/*,
 #layout-sidebar,
 .task-mel_portal > #layout > #layout-content*/
 {
-    margin-left:60px;
+    padding-left:60px;
 }
 
 #layout-menu:hover{

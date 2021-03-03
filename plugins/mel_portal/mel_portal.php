@@ -99,7 +99,7 @@ class mel_portal extends rcube_plugin
     function setup_config()
     {
         $config = $this->rc->config->all();
-        $this->taskName = $config['task_name'];
+        $this->taskName = $this->rc->config->get('task_name', 'bureau');//$config['task_name'];
         $this->templateName = $config['template_name'];
         $this->sidebarName = $config['sidebar_name'];
         $this->cssName = $config['css_name'];

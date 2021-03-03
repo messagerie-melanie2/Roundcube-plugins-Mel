@@ -309,6 +309,7 @@ class ArianeFrame{
 
     enable()
     {
+        this.popUp.css("padding-left", "initial");
         this.popUp.addClass("ariane-popup");
         let height = $(window).height()-60 + "px";
         this.popUp.css("height", height);
@@ -332,6 +333,7 @@ class ArianeFrame{
 
     disable()
     {
+        this.popUp.css("padding-left", "");
         this.card.card.card.parent().css("margin", "");
         this.popUp.removeClass("ariane-popup");
         this.card.card.disable();
@@ -508,3 +510,63 @@ class MetapageFrames {
 }
 
 var metapage_frames = new MetapageFrames();
+
+class Nextcloud
+{
+    constructor()
+    {
+        this.isLogged = false;
+    }
+
+    login(user, pw)
+    {
+        var _this = this;
+        console.log(rcmail.env.nextcloud_url);
+        $.ajax({ // fonction permettant de faire de l'ajax
+           type: "POST", // methode de transmission des données au fichier php
+           url: rcmail.env.nextcloud_url, // url du fichier php
+           data: "user="+user+"&pwd="+pw+"", // données à transmettre
+           xhrFields: {
+               withCredentials: true
+            },
+           success: function (data) {
+               _this.isLogged = true;
+               console.log("logged");
+           },
+           error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+               _this.isLogged = false;
+               console.error(thrownError);
+           },
+        });
+    }
+
+    createDocument()
+    {
+        // fetch('http://localhost/nextcloud/remote.php/dav/files/tommy.delphin.i/RotoTest.txt', {withCredentials: true,method: 'PUT', credentials: "same-origin"})
+        // .then(function(response) {
+        //   return response.text();
+        // })
+        // .then(function(text) {
+        //   console.log('Request successful', text);
+        // })
+        // .catch(function(error) {
+        //   console.error('Request failed', error)
+        // });
+        const url = "http://localhost/nextcloud/remote.php/dav/files/tommy.delphin.i/RotoTest.txt";
+        var objHTTP = new XMLHttpRequest();
+        objHTTP.open('PUT', url, true);
+        objHTTP.setRequestHeader("OCS-APIRequest","true");
+        objHTTP.setRequestHeader("Authorization", "Basic " + Base64.encode("tommy.delphin.i:12002@lmLM"));
+        objHTTP.onreadystatechange = function() {
+            if (objHTTP.readyState == XMLHttpRequest.DONE) {
+                console.log(objHTTP.responseText);
+            }
+        }
+        objHTTP.send();
+    }
+
+    logout()
+    {
+
+    }
+}

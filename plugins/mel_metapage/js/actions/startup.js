@@ -289,12 +289,16 @@ metapage_frames.addEvent("changepage.after", () => {
 });
 
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
-    if (window.FrameUpdate === undefined)
-        Update();
-    else
-    {
-        if (FrameUpdate.exists(id))
-            FrameUpdate.start(id);
+    try {
+        if (window.FrameUpdate === undefined)
+            Update();
+        else
+        {
+            if (FrameUpdate.exists(id))
+                FrameUpdate.start(id);
+        }
+    } catch (error) {
+        
     }
     querry.css("display", "");
 });

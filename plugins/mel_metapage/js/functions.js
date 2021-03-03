@@ -21,7 +21,7 @@ function m_mp_Create()
         let tache = '<div class="col-3">' + button("Une tâche", "icofont-tasks block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), () => m_mp_action_from_storage('task_create', m_mp_OpenTask))") + "</div>";
         let reu = '<div class="col-3">' + button("Une réunion", "icofont-calendar block", 'm_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
         let viso = '<div class="col-3">' + button("Une visio-conférence", "icofont-slidshare block") + "</div>";
-        let document = '<div class="col-4">' + button("Un document", "icofont-file-document block") + "</div>";
+        let document = '<div class="col-4">' + button("Un document", "icofont-file-document block", "m_mp_InitializeDocument()") + "</div>";
         let blocnote = '<div class="col-4">' + button("Un bloc-note", "icofont-ui-note block") + "</div>";
         let pega = '<div class="col-4">' + button("Un sondage pégaze", "icofont-letter block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";
         html = '<div class="row">' + workspace + mail + tache + reu + viso + document + blocnote + pega + '</div>';
@@ -36,6 +36,157 @@ function m_mp_Help()
 {
     rcmail.mel_metapage_url_info = m_mp_DecodeUrl();
     rcmail.command("help_open_dialog");
+}
+
+function m_mp_InitializeDocument()
+{
+    //window.create_popUp = new GlobalModal("globalModal", config, true);
+    let html = "<div class=row><div class=col-12>";
+    html += "<label>Nom du nouveau document :</label>";
+    html += '<input class=form-control id="'+mel_metapage.Ids.create.doc_input+'" type=text placeholder="Nouveau document texte.txt" />';
+    html += '<button style=margin-top:5px class="btn btn-primary" onclick="m_mp_CreateDoc()">Créer un document</button>';
+    html += '<button style=margin-top:5px class="btn btn-warning" onclick="m_mp_CreateDocRetour()">Retour</button>'
+    html += "</div></div>";
+    create_popUp.contents.html(html);
+}
+
+function m_mp_CreateDocRetour()
+{
+    create_popUp = undefined;
+    m_mp_Create();
+}
+
+
+async function m_mp_CreateDoc()
+{
+    fetch('http://localhost/nextcloud/mdrive/remote.php/dav/files/tommy.delphin.i/RotoTest.txt', {method: 'PUT', credentials: "same-origin"})
+    .then(function(response) {
+      return response.text();
+    })
+    .then(function(text) {
+      console.log('Request successful', text);
+    })
+    .catch(function(error) {
+      console.error('Request failed', error)
+    });
+  
+
+    // $.ajax({
+    //     async: true,
+    //     type: 'PUT',
+    //     // data: JSON.stringify({filePath: "/wolololo.txt"}),
+    //     // contentType: "application/json; charset=utf-8",
+    //     // dataType: "json",
+    //     //https://mel.din.developpement-durable.gouv.fr/mdrive/remote.php/dav/files/thomas.payen/Test.txt
+    //     url: "http://localhost/nextcloud/mdrive/remote.php/dav/files/tommy.delphin.i/RotoTest.txt",
+    //     error: function(o, status, err) {
+    //       console.error(o, status, err);
+    //     },
+    //     success: function(data) {
+    //       console.log('oioioio', data);
+    //     }
+    //   });    
+    // if (rcmail.env.current_frame !== undefined && $("#" + rcmail.env.current_frame)[0].classList.contains("stockage-frame") && $("#" + rcmail.env.current_frame).contents()[0].location.href.includes("files"))
+    //     await m_mp_CreateDocCurrent();
+    // else
+    //     m_mp_CreateDocNotCurrent()
+}
+
+async function m_mp_CreateDocCurrent(val = null, close = true)
+{
+    let querry = $(".stockage-frame");
+    if (val === null)
+    {
+        if ($("#" + mel_metapage.Ids.create.doc_input).val() === "")
+            $("#" + mel_metapage.Ids.create.doc_input).val("Nouveau document texte.txt");
+        val = $("#" + mel_metapage.Ids.create.doc_input).val();
+    }
+    if (close)
+    {
+        window.create_popUp.close();
+        window.create_popUp = undefined;
+    }
+    rcmail.set_busy(true, "loading");
+    while(querry.contents().find(".button.new").length === 0)
+    {
+        await delay(500);
+    }
+    rcmail.set_busy(true, "loading");
+    console.log("2 click new");
+    querry.contents().find(".button.new")[0].click();
+    console.log("3 click doc");
+    querry.contents().find(".menuitem").each((i,e) => {
+        if (e.dataset.filetype !== undefined && e.dataset.filetype === "file")
+           e.click();
+    });
+    rcmail.set_busy(true, "loading");
+    while (!Enumerable.from(querry.contents().find("input")).select(x => x.id).where(x => x.includes("input-file")).any()) {
+        await delay(500);
+    }
+    console.log("4 change value");
+    let id = Enumerable.from(querry.contents().find("input")).select(x => x.id).where(x => x.includes("input-file")).first();
+    querry.contents().find("#" + id).val(val+ (val.includes(".") ? "" : ".txt"));
+    await delay(500);
+    rcmail.set_busy(true, "loading");
+    if (!Enumerable.from(querry.contents().find("div")).where(x => Enumerable.from(x.classList).where(s => s.includes("tooltip").any()) && x.innerHTML.includes(val) && $(x).parent().hasClass("tooltip")  ).any())
+        querry.contents().find("#" + id).parent().find(".icon-confirm").click();
+    //window.querry = querry;
+    console.log("5 click val");
+    let it = 2;
+    let bool = false;
+    let tmpval = val;
+    while (!Enumerable.from(querry.contents().find("input")).where(x => x.attributes.type !== undefined && x.attributes.type.value === "submit" && x.classList.contains("primary")).any()) {
+        await delay(500);
+        if (Enumerable.from(querry.contents().find("div")).where(x => Enumerable.from(x.classList).where(s => s.includes("tooltip").any()) && x.innerHTML.includes(val) && $(x).parent().hasClass("tooltip")  ).any())
+        {
+            console.log("["+(it-1)+"]abort, change text + new click");
+            // m_mp_Create();
+            // m_mp_InitializeDocument();
+            // $("#" + mel_metapage.Ids.create.doc_input).val(val).css("border-color", "red").parent().append("<br/><span style=color:red;>*Un fichier avec le même nom existe déjà !</span>");
+            // rcmail.set_busy(false);
+            // rcmail.clear_messages();
+            // return;
+            val = it + "-" + tmpval;
+            ++it;
+            querry.contents().find("#" + id).val(val);
+            bool = true;
+            //await delay(500);
+            //querry.contents().find("#" + id).parent().find(".icon-confirm").click();
+        } 
+        else if (bool)
+        {
+            querry.contents().find("#" + id).parent().find(".icon-confirm").click();
+            rcmail.display_message("Le nom " + tmpval + " existe déjà et sera remplacer par " + val);
+        }
+    }
+    console.log("6 click item");
+    Enumerable.from(querry.contents().find("input")).where(x => x.attributes.type !== undefined && x.attributes.type.value === "submit" && x.classList.contains("primary")).first().click();
+    rcmail.set_busy(true, "loading");
+    console.log("7 change page");
+    m_mp_CreateOrOpenFrame("stockage", () => {}, () => {
+        rcmail.set_busy(false);
+        rcmail.clear_messages();
+    });
+}
+
+function m_mp_CreateDocNotCurrent()
+{
+    if ($("#" + mel_metapage.Ids.create.doc_input).val() === "")
+        $("#" + mel_metapage.Ids.create.doc_input).val("Nouveau document texte.txt");
+    let val = $("#" + mel_metapage.Ids.create.doc_input).val();
+    create_popUp.contents.html('<center><span class=spinner-border></span></center>');
+    m_mp_CreateOrOpenFrame("stockage", () => {}, () => {
+        rcmail.set_busy(true, "loading");
+        $(".stockage-frame")[0].src = "http://localhost/nextcloud/index.php" + "/apps/files";
+        let querry = $(".stockage-frame");
+        window.create_popUp.close();
+        window.create_popUp = undefined;
+        querry.css("margin-top", "60px");
+        console.log("1 create-promise");
+        new Promise(async (a, b) => {
+            await m_mp_CreateDocCurrent(val, false);
+        });
+    }, false);
 }
 
 function m_mp_DecodeUrl()
@@ -90,10 +241,10 @@ function m_mp_DecodeUrl()
  * @param {function} funcBefore Fonction à appelé avant d'ouvrir.
  * @param {function} func Fonction à appelé une fois ouvert.
  */
-function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}){
+function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, changepage = true){
     if (funcBefore !== null)
         funcBefore();
-    mm_st_CreateOrOpenModal(frameClasse);
+    mm_st_CreateOrOpenModal(frameClasse, changepage);
     new Promise(async (a,b) => {
         while (parent.rcmail.env.frame_created === false) {
             await delay(1000);

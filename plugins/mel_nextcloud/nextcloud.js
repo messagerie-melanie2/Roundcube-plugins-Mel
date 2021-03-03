@@ -4,7 +4,7 @@ $(document).ready(function() {
 	   url: rcmail.env.nextcloud_url, // url du fichier php
 	   data: "rc_user="+rcmail.env.nextcloud_username+"&rc_pwd="+rcmail.env.nextcloud_password+"&from_roundcube=1", // données à transmettre
 	   xhrFields: {
-	       withCredentials: true
+	       withCredentials: false
 	    },
 	   success: function (data) {
 		   if (navigator.appName == "Microsoft Internet Explorer"){

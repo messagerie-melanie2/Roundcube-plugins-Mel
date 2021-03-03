@@ -316,6 +316,28 @@ abstract class driver_mel {
   }
 
   /**
+   * Generate workspace object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Workspace
+   */
+  public function workspace($params = []) {
+    return $this->object('Workspace', $params);
+  }
+
+  /**
+   * Generate workspace share object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Workspaces\Share
+   */
+  public function workspace_share($params = []) {
+    return $this->object('Workspaces\\Share', $params);
+  }
+
+  /**
    * Return the object share delimiter from ObjectShare ORM object
    * 
    * @return string DELIMITER

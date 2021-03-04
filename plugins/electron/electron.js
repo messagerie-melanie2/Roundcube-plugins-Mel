@@ -43,11 +43,9 @@ if (rcmail.env.iselectron) {
         window.api.receive('archive_folder', (folder) => {
           rcmail.env.local_archive_folder = folder;
           let users = []
-          $('#mailboxlist li.mailbox.local').each(function () {
-            if (!$(this).hasClass('virtual')) {
-              var user = atob($(this).attr('id').replace('rcmli', '')).replace('local-', '');
-              users.push(user);
-            }
+          $('#mailboxlist #mailboxlist li.virtual li.mailbox.local').each(function () {
+            var user = atob($(this).attr('id').replace('rcmli', '')).replace('local-', '');
+            users.push(user);
           });
 
           rcmail.env.local_users_list = users;

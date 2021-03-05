@@ -76,7 +76,7 @@ if (window.rcmail) {
                                 uid.flags.SEEN = false;
                             }
                             
-                            if (rcmail.env.mailbox.indexOf("Boitepartag&AOk-e") > -1) {
+                            if (rcmail.env.mailbox.indexOf("Boitepartag&AOk-e") === 0) {
                                 var path_folder = rcmail.env.mailbox.replace("Boitepartag&AOk-e/", "");
                             }
                             else {

@@ -1,0 +1,48 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+
+<head>
+    <title>
+        <roundcube:object name="pagetitle" />
+    </title>
+    <roundcube:include file="/includes/links.html" />
+</head>
+
+<body class="iframe envoidiffere">
+    <h1 class="boxtitle">
+        <roundcube:label name="mel_envoi_differe.title" />
+    </h1>
+    <div id="envoidiffere-details" class="boxcontent">
+        <roundcube:object name="mel_envoi_differe" />
+        <form name="valide" action="" method="get" class="propform" id="form_envoidiffere">
+            <fieldset>
+                <input type="hidden" value="mail" name="_task">
+                <input type="hidden" value="1" name="_framed">
+                <input type="hidden" value="plugin.mel_archivage_traitement_browser" name="_action" id="form_action">
+                <input type="hidden" value="<roundcube:var name=" env:mailbox" />" name="_mbox">
+                <input type="hidden" value="<roundcube:var name=" env:account" />" name="_account">
+                <div class="warning">
+                    <roundcube:label name="mel_envoi_differe.description" />
+                    <br>
+                    <roundcube:label name="mel_envoi_differe.description_warning" />
+                </div>
+                <div>
+                    <label for="envoidiffere_date">
+                        <roundcube:label name="mel_envoi_differe.date" />
+                    </label>
+                    <input type="text" name="envoidiffere_date" id="envoidiffere_date" required />
+                    <roundcube:label name="mel_envoi_differe.time" />
+                    <input type="text" name="envoidiffere_time" id="envoidiffere_time" required />
+                </div>
+            </fieldset>
+            <input type="submit" id="submit_envoidiffere" class="button mainaction" value="<roundcube:label name="mel_envoi_differe.save" />" />
+            <roundcube:if condition="env:help_url" />
+            <a class="help button" target="_blank" href="<roundcube:var name=" env:help_url" />">
+            <roundcube:label name="mel_envoi_differe.help" />
+            </a>
+            <roundcube:endif />
+        </form>
+    </div>
+</body>
+
+</html>

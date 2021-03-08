@@ -11,6 +11,43 @@ const wait = async function (func, waitTime = 500)
         await delay(waitTime);
     }
 }
+const ping = async function(url, useSSL = true)
+{
+
+    // //let ip = url;
+
+    // var _that = this;
+
+    // let img = new Image();
+
+    // img.onload = function() {_that.ok = true;};
+    // img.onerror = function(e) {_that.ok = false; console.error(e);};
+
+    // //let start = new Date().getTime();
+     let ssl = useSSL ? "https" : "http";
+    // img.src = !url.includes("https") && !url.includes("http") ? (ssl + "://" + url) : url;
+    // console.log(img.src);
+    // let timer = setTimeout(function() { _that.ok = false;}, waitTime*1000);
+    // await wait(() => _that.ok === undefined);
+    // clearTimeout(timer)
+    // return _that.ok;
+    let ok;
+    try {
+        await $.ajax({
+            url: !url.includes("https") && !url.includes("http") ? (ssl + "://" + url) : url,
+            success: function(result){
+            ok = true;
+            },     
+            error: function(result){
+                ok = false;
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        ok = false;
+    }
+    return ok;
+}
 /**
  * Lien du chargement des évènements d'un calendrier.
  */
@@ -130,7 +167,28 @@ const mel_metapage = {
             mel_metapage.PopUp.ariane.show();
         },
         ariane:null,
+    },
+    RCMAIL_Start:{
+        ping_nextcloud: async function ()
+        {
+            if (rcmail.env.nextcloud_url !== undefined && rcmail.env.nextcloud_url !== null && rcmail.env.nextcloud_url !== "")
+            {
+                rcmail.env.nextcloud_pinged = await ping(rcmail.env.nextcloud_url);
+                if (rcmail.env.nextcloud_pinged === false)
+                    rcmail.env.nextcloud_pinged = await ping(rcmail.env.nextcloud_url, true);
+            }
+        }
     }
-
 }; 
 window.mel_metapage = mel_metapage;
+if (mel_metapage.RCMAIL_Start !== undefined)
+{
+    rcmail.addEventListener("init", () => {
+        for (const key in mel_metapage.RCMAIL_Start) {
+            if (Object.hasOwnProperty.call(mel_metapage.RCMAIL_Start, key)) {
+                const element = mel_metapage.RCMAIL_Start[key];
+                element();
+            }
+        }
+    });
+}

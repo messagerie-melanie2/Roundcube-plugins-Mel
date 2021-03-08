@@ -3,8 +3,12 @@
  */
 function m_mp_Create()
 {
+    //Si problème de configuration, on gère.
     try {
-        window.mel_metapage_tmp = new Nextcloud(rcmail.env.nextcloud_username).getAllFolders();
+        if (rcmail.env.nextcloud_pinged === false || rcmail.env.nextcloud_username === undefined || rcmail.env.nextcloud_url === undefined || rcmail.env.nextcloud_url === "")
+            window.mel_metapage_tmp = null;
+        else
+            window.mel_metapage_tmp = new Nextcloud(rcmail.env.nextcloud_username).getAllFolders();
     } catch (error) {
         window.mel_metapage_tmp = null;
         console.error(rcmail.gettext("mel_metapage.nextcloud_connection_error"));
@@ -13,6 +17,10 @@ function m_mp_Create()
 
     if (window.create_popUp === undefined)
     {
+        let haveNextcloud = {
+            style:(window.mel_metapage_tmp===null?"display:none":""),
+            col:(window.mel_metapage_tmp===null)?"6":"4"
+        };
         let button = function (txt, font, click = "")
         {
             let disabled = click ==="" ? "disabled" : "";
@@ -24,9 +32,9 @@ function m_mp_Create()
         let tache = '<div class="col-3">' + button(rcmail.gettext("mel_metapage.a_task"), "icofont-tasks block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), () => m_mp_action_from_storage('task_create', m_mp_OpenTask))") + "</div>";
         let reu = '<div class="col-3">' + button(rcmail.gettext("mel_metapage.a_meeting"), "icofont-calendar block", 'm_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
         let viso = '<div class="col-3">' + button(rcmail.gettext("mel_metapage.a_web_conf"), "icofont-slidshare block") + "</div>";
-        let document = '<div class="col-4">' + button(rcmail.gettext("mel_metapage.a_document"), "icofont-file-document block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</div>";
-        let blocnote = '<div class="col-4">' + button(rcmail.gettext("mel_metapage.a_wordpad"), "icofont-ui-note block") + "</div>";
-        let pega = '<div class="col-4">' + button(rcmail.gettext("mel_metapage.a_survey"), "icofont-letter block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";
+        let document = '<div class="col-4" style="'+haveNextcloud.style+'">' + button(rcmail.gettext("mel_metapage.a_document"), "icofont-file-document block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</div>";
+        let blocnote = '<div class="col-'+haveNextcloud.col+'">' + button(rcmail.gettext("mel_metapage.a_wordpad"), "icofont-ui-note block") + "</div>";
+        let pega = '<div class="col-'+haveNextcloud.col+'">' + button(rcmail.gettext("mel_metapage.a_survey"), "icofont-letter block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";
         html = '<div class="row">' + workspace + mail + tache + reu + viso + document + blocnote + pega + '</div>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         create_popUp = new GlobalModal("globalModal", config, true);

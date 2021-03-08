@@ -41,7 +41,7 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
         $this->startup();
-        if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic')
+        if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template")
         {
             $this->add_texts('localization/', true);
             $this->load_config();
@@ -58,6 +58,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('search_contact', array($this, 'search_contact'));
             $this->register_action('contact', array($this, 'display_contact'));
             $this->register_action('chat', array($this, 'ariane'));
+            $this->register_action('create_document_template', array($this, 'get_create_document_template'));
             $this->add_hook('refresh', array($this, 'refresh'));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
@@ -68,6 +69,13 @@ class mel_metapage extends rcube_plugin
       // Include javascript files
             $this->include_script('js/actions/logout.js');
             $this->include_script('js/actions/login.js');
+        }
+        else if ($this->rc->action ==="create_document_template")
+        {
+            $this->add_texts('localization/', true);
+            $this->load_config();
+            $this->register_task("mel_metapage");
+            $this->register_action('create_document_template', array($this, 'get_create_document_template'));
         }
 
 
@@ -88,8 +96,25 @@ class mel_metapage extends rcube_plugin
      */
     function startup()
     {
+        $files = scandir(__DIR__."/js/init/classes");
+        $size = count($files);
+        for ($i=0; $i < $size; ++$i) {
+            if (strpos($files[$i], ".js") !== false)
+                $this->include_script('js/init/classes/'.$files[$i]);
+            else if ($files[$i] === "." || $files[$i] === ".." || strpos($files[$i], ".") !== false)
+                continue;
+            else {
+                $folderFiles = scandir(__DIR__."/js/init/classes/".$files[$i]);
+                $folderSize = count($folderFiles);
+                for ($j=0; $j < $folderSize; ++$j) { 
+                    if(strpos($folderFiles[$j], ".js") !== false)
+                        $this->include_script('js/init/classes/'.$files[$i]."/".$folderFiles[$j]);
+                }
+            }
+        }
         $this->include_script('js/init/classes.js');
         $this->include_script('js/init/constants.js');
+        $this->load_config_js();
     }
 
     function include_plugin()
@@ -200,6 +225,18 @@ class mel_metapage extends rcube_plugin
         $this->include_stylesheet($this->local_skin_path().'/user.css');
     }
 
+    function load_config_js()
+    {
+
+        //$this->include_script('js/search.js');
+        $files = scandir(__DIR__."/js/configs");
+        $size = count($files);
+        for ($i=0; $i < $size; ++$i) { 
+            if (strpos($files[$i], ".js") !== false)
+            $this->include_script('js/configs/'.$files[$i]);
+        }        
+    }
+
     /**
      * Récupère le js utile pour ce plugin.
      */
@@ -241,13 +278,13 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env('mm_search_config', $tmp);
         $this->rc->output->set_env('mel_metapage_ariane_button_config', $this->rc->config->get("pop_up_ariane"));
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);
-        
+        $this->rc->output->set_env('mel_metapage_templates_doc', $this->rc->config->get('documents_types'));
+
         foreach ($this->rc->user->list_emails() as $identity) {
             $emails[] = strtolower($identity['email']);
         }
 
         $this->rc->output->set_env('mel_metapage_user_emails', $emails);
-        
         //$this->rc->output->set_env('currentTask', $this->rc->task);
     }
 
@@ -376,6 +413,37 @@ class mel_metapage extends rcube_plugin
 
     }
 
+
+    function get_create_document_template()
+    {
+        $this->rc->output->add_handlers(array(
+            'document_type'    => array($this, 'get_docs_types'),
+        ));
+        echo $this->rc->output->parse("mel_metapage.create_document");
+        exit;
+        //$this->rc->output->send("mel_metapage.create_document");
+    }
+
+    function get_docs_types()
+    {
+        $templates = $this->rc->config->get('documents_types');
+        $html = "";
+        $size = count($templates);
+        for ($i=0; $i < $size; ++$i) { 
+            $html.= '<button class="btn btn-mel-block btn-secondary btn-mel" onclick="m_mp_UpdateCreateDocument({ext:`'+$templates[$i]['defautl_ext']+'`, type:`'+$templates[$i]['type']+'`})"><span class="'+$this->get_document_class_icon($templates[$i]["icon"])+'"></span>'+ $templates[$i]["name"] +'</button>';
+        }
+        return html::div([], $html);
+    }
+
+    function get_document_class_icon($icon)
+    {
+        switch ($icon) {
+            case 'txt':
+                return "icofont-file-document";         
+            default:
+                return $icon;
+        }
+    }
     // public function display_event()
     // {
     //     $source = rcube_utils::get_input_value('_source', rcube_utils::INPUT_GET);

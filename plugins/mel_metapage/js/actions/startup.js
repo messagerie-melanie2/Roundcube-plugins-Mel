@@ -8,7 +8,7 @@ $(document).ready(function() {
     $("#layout-content").addClass(mm_frame);
     $(".startup").addClass(rcmail.env.task + "-frame");
     $(".startup").addClass(mm_frame);
-    rcmail.addEventListener("init", () => {
+    rcmail.addEventListener("init", async () => {
         if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
         {
             mel_metapage.Storage.set("open_frame", "rocket");
@@ -22,6 +22,7 @@ $(document).ready(function() {
             mel_metapage.Storage.remove("open_frame");
             });
         }
+        await wait(() => $("#layout-menu a.selected").length === 0);
         rcmail.env.last_frame_class = mm_st_GetClass($("#layout-menu a.selected")[0].classList);//[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
         rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
         let querry = $(".menu-last-frame").find(".inner");
@@ -31,6 +32,7 @@ $(document).ready(function() {
             event.preventDefault();
             mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
           }); 
+        rcmail.env.can_backward = true;
     });
     //rcmail.env.last_frame_class = $("#layout-menu a.selected")[0].classList[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
     if (rcmail.env.task === "addressbook")
@@ -285,7 +287,8 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
 });
 
 metapage_frames.addEvent("changepage.after", () => {
-    m_mp_ChangeLasteFrameInfo();
+    if (rcmail.env.can_backward === true)
+        m_mp_ChangeLasteFrameInfo();
 });
 
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {

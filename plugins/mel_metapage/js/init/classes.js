@@ -78,8 +78,8 @@ class ArianePopUp{
         this.ariane.popUp.css("display", "initial");
         this.button.stop();
         this.is_show = true;
-        if ($("#pop-up-resizer").length === 0)
-            ArianePopUp.splitter_init(this.ariane.popUp);
+        // if ($("#pop-up-resizer").length === 0)
+        //     ArianePopUp.splitter_init(this.ariane.popUp);
         window.onresize();
     }
 
@@ -283,21 +283,21 @@ class ArianeFrame{
     {
         if (!this.is_anchor())
         {
-            //this.popUp.css("flex","1 0 "+this.popUp.css("width")+"px");
+            this.popUp.css("flex","0 0 400px");
             this.popUp.css("position", "initial");
-            this.popUp.css("width", "initial");
+            //this.popUp.css("width", "initial");
             this.popUp.css("margin-top", "60px");
             this.popUp.contents().find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
-            ArianePopUp.set_width(this.popUp);
+            //ArianePopUp.set_width(this.popUp);
         }
         else {
             // this.popUp.css("flex","1 0 auto");
             //this.popUp.css("height", '');
             this.popUp.css("position", "");
-            this.popUp.css("width", "");
+            //this.popUp.css("width", "");
             this.popUp.css("margin-top", "");
             this.popUp.contents().find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
-            ArianePopUp.set_width(this.popUp);
+            //ArianePopUp.set_width(this.popUp);
         }
 
     }
@@ -325,8 +325,8 @@ class ArianeFrame{
             {
                 let height = $(window).height();
                 mel_metapage.PopUp.ariane.ariane.popUp.css("height", height+ "px");
-                mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", height+ "px");
-                mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height-105)+ "px");
+                mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
+                mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
             }
         }
     }
@@ -511,62 +511,5 @@ class MetapageFrames {
 
 var metapage_frames = new MetapageFrames();
 
-class Nextcloud
-{
-    constructor()
-    {
-        this.isLogged = false;
-    }
 
-    login(user, pw)
-    {
-        var _this = this;
-        console.log(rcmail.env.nextcloud_url);
-        $.ajax({ // fonction permettant de faire de l'ajax
-           type: "POST", // methode de transmission des données au fichier php
-           url: rcmail.env.nextcloud_url, // url du fichier php
-           data: "user="+user+"&pwd="+pw+"", // données à transmettre
-           xhrFields: {
-               withCredentials: true
-            },
-           success: function (data) {
-               _this.isLogged = true;
-               console.log("logged");
-           },
-           error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-               _this.isLogged = false;
-               console.error(thrownError);
-           },
-        });
-    }
 
-    createDocument()
-    {
-        // fetch('http://localhost/nextcloud/remote.php/dav/files/tommy.delphin.i/RotoTest.txt', {withCredentials: true,method: 'PUT', credentials: "same-origin"})
-        // .then(function(response) {
-        //   return response.text();
-        // })
-        // .then(function(text) {
-        //   console.log('Request successful', text);
-        // })
-        // .catch(function(error) {
-        //   console.error('Request failed', error)
-        // });
-        const url = "http://localhost/nextcloud/remote.php/dav/files/tommy.delphin.i/RotoTest.txt";
-        var objHTTP = new XMLHttpRequest();
-        objHTTP.open('PUT', url, true);
-        objHTTP.setRequestHeader("OCS-APIRequest","true");
-        objHTTP.setRequestHeader("Authorization", "Basic " + Base64.encode("tommy.delphin.i:12002@lmLM"));
-        objHTTP.onreadystatechange = function() {
-            if (objHTTP.readyState == XMLHttpRequest.DONE) {
-                console.log(objHTTP.responseText);
-            }
-        }
-        objHTTP.send();
-    }
-
-    logout()
-    {
-
-    }
-}

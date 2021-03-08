@@ -8,12 +8,21 @@
 
 .btn.btn-block.btn-secondary.btn-mel:hover{
     background-color:rgba(0, 0, 0, 0.05);
+    color:inherit;
 }
 
 .btn.btn-block.btn-secondary.btn-mel.disabled{
     background-color: #d4d1d1;
     pointer-events: none;
     cursor: not-allowed;
+}
+
+.btn.btn-block.btn-secondary.btn-mel.active,
+.btn.btn-block.btn-secondary.btn-mel:focus
+{
+    background-color: #484d7a;
+    color:white;
+    border:none;
 }
 
 .btn.btn-block.btn-secondary.btn-mel > span

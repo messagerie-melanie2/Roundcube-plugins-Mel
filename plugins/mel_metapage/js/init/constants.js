@@ -1,4 +1,17 @@
 /**
+ * Met en pause une fonction asynchrone.
+ * @param {number} ms 
+ */
+const delay = ms => new Promise(res => setTimeout(res, ms));
+const isAsync = myFunction => myFunction.constructor.name === "AsyncFunction";
+const wait = async function (func, waitTime = 500)
+{
+    while ((isAsync(func) ? await func() : func()))
+    {
+        await delay(waitTime);
+    }
+}
+/**
  * Lien du chargement des évènements d'un calendrier.
  */
 const ev_calendar_url = '?_task=calendar&_action=load_events';
@@ -79,6 +92,10 @@ const mel_metapage = {
              * Symbole "Tâches", est utilisé pour savoir si il faut mettre à jours uniquement les tâches ou non.
              */
             tasks:Symbol("tasks")
+        },
+        nextcloud:{
+            folder:Symbol("folder"),
+            file:Symbol("file")
         }
     },
     /**
@@ -99,7 +116,10 @@ const mel_metapage = {
             }
         },
         create:{
-            doc_input:"generated-document-input-mel-metapage"
+            doc_input:"generated-document-input-mel-metapage",
+            doc_input_ext:"generated-document-input-mel-metapage-ext",
+            doc_input_hidden:"generated-document-input-mel-metapage-hidden",
+            doc_input_path:"generated-document-select-mel-metapage-path"
         }
     },
     PopUp:{

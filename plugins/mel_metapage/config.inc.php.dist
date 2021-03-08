@@ -54,3 +54,24 @@ $config["pop_up_ariane"] = [
     //Exception pour la page "Ariane", cache le bouton.
     "ariane" => ["hidden" => true]
 ];
+
+//Configuration des type de documents disponible à la création.
+/*
+    name => nom du type de document
+    icon => icon qui sera affiché
+    default_ext => extention par défaut du fichier
+    type => type de document, existe : 
+        raw => un fichier texte
+        text => un fichier text libre office
+        calc => une feuille de calcul libre office
+        presentation => un "power point" libre office
+    tags => Différents comportements,
+        "f" => "Féminin", le nom du type de document est féminin.
+        "l" => "libre", il est possible de changer l'extention à la création.
+*/
+$config["documents_types"] = [
+    ["name" => "Document texte", "icon" => "txt", "default_ext" => "md", "type" => "raw", "tags" => ["l"]],
+    ["name" => "Document office", "icon" => "word", "default_ext" => "odt", "type" => "text"],
+    ["name" => "Feuille de calcul", "icon" => "calc", "default_ext" => "ods", "type" => "calc", "tags" => ["f"]],
+    ["name" => "Document texte", "icon" => "pp", "default_ext" => "odp", "type" => "presentation"]
+];

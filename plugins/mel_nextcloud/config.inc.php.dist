@@ -4,6 +4,9 @@
 $rcmail_config['nextcloud_url'] = '';
 $rcmail_config['nextcloud_external_url'] = '';
 
+$rcmail_config['nextcloud_origin'] = '';
+$rcmail_config['nextcloud_nologin'] = false;
+
 // DES key for password
 $rcmail_config['roundcube_nextcloud_des_key'] = 'my_key_is_good_need_to24';
 

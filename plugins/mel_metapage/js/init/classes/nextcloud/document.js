@@ -1,5 +1,14 @@
 var nextcloud_document = (() => {
+    /**
+     * Représente l'icône de la configuration de Nextcloud.
+     */
     class Nextcloud_Icon {
+        /**
+         * 
+         * @param {string} templateIcon Icône générique
+         * @param {string} trueIcon Classe existante
+         * @param {string} type Type de document.
+         */
         constructor(templateIcon, trueIcon, type = null)
         {
             this.type = templateIcon;
@@ -8,6 +17,10 @@ var nextcloud_document = (() => {
                 this.init(type);
         }
 
+        /**
+         * Vérifie si on peux changer l'icône en classe.
+         * @param {string} icon Icône à vérifier.
+         */
         check(icon)
         {
             //console.log(icon.icon, this.type, icon.icon === this.type);
@@ -20,6 +33,10 @@ var nextcloud_document = (() => {
             return icon;
         }
 
+        /**
+         * Initialise la classe. Récupère la config depuis rcmail.
+         * @param {string} type Type du document.
+         */
         async init(type)
         {
             await wait(() => window.rcmail === undefined);
@@ -33,8 +50,20 @@ var nextcloud_document = (() => {
             }
         }
     }
+    /**
+     * Représente la configuration d"un document Nextcloud.
+     */
     class Nextcloud_Document_Config
     {
+        /**
+         * 
+         * @param {string} type Type du document.
+         * @param {string} icontTemplate Icône à changer en classe.
+         * @param {string} iconClass Classe qui représente le document.
+         * @param {string} href URL de la requête.
+         * @param {string} app Application dans le header.
+         * @param  {...function} config_modifier Les modifications de la config de la requête.
+         */
         constructor(type, icontTemplate, iconClass, href, app, ...config_modifier)
         {
             this.type = type;
@@ -44,22 +73,43 @@ var nextcloud_document = (() => {
             this.config_modifier = config_modifier;
         }
     }
+    /**
+     * Permet de configurer les types de documents Nextcloud.
+     */
     class Nextcloud_Document {
         constructor()
         {
             this.datas = [];
         }
 
+        /**
+         * Ajoute un type de document simple.
+         * @param {string} type Type du document.
+         * @param {string} iconClass Classe de l'icône.
+         * @param {string} href Url de la requête.
+         */
         addRaw(type,iconClass, href)
         {
             this.datas.push(new Nextcloud_Document_Config(type, null, iconClass, href, null));
         }
 
+        /**
+         * Ajoute une application.
+         * @param {*} type Type du document.
+         * @param {*} iconClass Classe de l'icône.
+         * @param {*} href Url de la requpete.
+         * @param {*} app Application dans le header.
+         * @param  {...any} config_modifier Les modifications de la config de la requête.
+         */
         addApp(type, iconClass, href, app, ...config_modifier)
         {
             this.datas.push(new Nextcloud_Document_Config(type, null,iconClass, href, app, ...config_modifier));
         }
 
+        /**
+         * Change une icône en classe.
+         * @param {string} icon Icône à changer en classe.
+         */
         getIcon(icon)
         {
             if (this.datas.length === 0)
@@ -77,6 +127,13 @@ var nextcloud_document = (() => {
             return icon;
         }
 
+        /**
+         * Créer un document si le type correspond.
+         * @param {string} type Type du document à créer.
+         * @param {Nextcloud} nextcloud Objet nextcloud.
+         * @param {*} embed_datas Données de création.
+         * @param {function} config_modifier_func function qui modifie la config pour les applications.
+         */
         async createDocument(type, nextcloud, embed_datas, config_modifier_func)
         {
             for (let index = 0; index < this.datas.length; index++) {

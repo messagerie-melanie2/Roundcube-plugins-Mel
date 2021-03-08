@@ -1,5 +1,14 @@
+/**
+ * @class
+ * Représentation d'un fichier xml retourné par Nextcloud.
+ * @param {*} xml Fichier xml récupérer depuis Nextcloud.
+ */
 function Nextcloud_File(xml)
 {
+    /**
+     * Récupère le chemin du fichier à partir de son url.
+     * @returns {string} Chemin du fichier.
+     */
     this.document_path = function()
     {
         let txt = "";
@@ -36,6 +45,7 @@ function Nextcloud_File(xml)
     }
     
     this.file = xml;
+    //Si c'est un fichier
     try {
         this.href = xml.getElementsByTagName("d:href")[0].innerHTML;
     } catch (error) {
@@ -95,10 +105,17 @@ function Nextcloud_File(xml)
         this.type = undefined;
     }
 
+    /**
+     * Renvoie vrai si il s'agit d'un fichier.
+     */
     this.is_file = function () {
         return this.type === mel_metapage.Symbols.nextcloud.file;
     };
 
+    /**
+     * Renvoie vrai si le dossier est celui de l'utilisateur.
+     * @param {string} user Utilisateur à tester.
+     */
     this.is_master_folder = function (user)
     {
         return !this.is_file() && this.filename === user;
@@ -106,6 +123,10 @@ function Nextcloud_File(xml)
 
 }
 
+/**
+ * Récupère le chemin d'une url.
+ * @param {string} path Url qui contient le chemin.
+ */
 Nextcloud_File.get_path = function(path)
 {
     let tmp = new Nextcloud_File(null);

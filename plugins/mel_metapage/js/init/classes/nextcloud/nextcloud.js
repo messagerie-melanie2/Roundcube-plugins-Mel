@@ -1,9 +1,20 @@
-
+/**
+ * Classe d'accès à Nextcloud.
+ * @param {string} user Utilisateur qui éffectue des actions sur son espace Nextcloud.
+ */
 function Nextcloud(user)
 {
   this.user = user;
 }
 
+/**
+ * @async
+ * Récupère tout les documents d'un dossier.
+ * @param {string} folder Dossier en particulier. null = dossier de l'utilisateur
+ * @param {boolean} getFolders Récupérer ou non les dossiers.
+ * @param {string} href URL de la requête.
+ * @returns {Promise<Nextcloud_Response>} Reponse de la requête.
+ */
 Nextcloud.prototype.getAllDocumentsFromFolder = async function(folder = null, getFolders = false, href = null)
 {
   href = href === null ? (Nextcloud.url() + '/remote.php/dav/files/'+this.user+'/'+(folder === null ? "" : folder)) : Nextcloud.origin + href;
@@ -39,6 +50,15 @@ Nextcloud.prototype.getAllDocumentsFromFolder = async function(folder = null, ge
   });
 }
 
+/**
+ * @async
+ * Créer un document dans un dossier.
+ * @param {string} filename Nom du fichier.
+ * @param {string} ext Extention du fichier (null si il est dans le filename).
+ * @param {string} href URL de la requête.
+ * @param {function} configModifier Fonction qui modifie la config de la requête.
+ * @param {string} folder Dossier où créer le document.
+ */
 Nextcloud.prototype.createDocument = async function(filename, ext = null, href = null, configModifier = null, folder = null)
 {
     if (href === "")
@@ -79,17 +99,32 @@ Nextcloud.prototype.createDocument = async function(filename, ext = null, href =
     // objHTTP.send();
 }
 
+/**
+ * Récupère un document.
+ * @param {string} filename Nom du fichier.
+ * @param {string} folder Dossier où chercher le fichier.
+ * @param {string} href URL de la requête.
+ * @returns {Promise<Nextcloud_File>} Document.
+ */
 Nextcloud.prototype.searchDocument = async function(filename, folder = null, href = null) {
   var tmp = await this.getAllDocumentsFromFolder(folder, false, href);
   console.log("¤¤¤$", tmp, filename, tmp.GetFile(filename));
   return (await this.getAllDocumentsFromFolder(folder, false, href)).GetFile(filename);
 }
 
+/**
+ * Récupère tout les dossiers.
+ */
 Nextcloud.prototype.getAllFolders = async function ()
 {
   return this._getAllFolders();
 }
 
+/**
+ * Récupère tout les dossiers.
+ * @param {string} folder Dossier de recherche
+ * @param {string} parent Dossier parents.
+ */
 Nextcloud.prototype._getAllFolders = async function(folder = null, parent = "")
 {
   let retour = [];
@@ -114,6 +149,11 @@ Nextcloud.prototype._getAllFolders = async function(folder = null, parent = "")
   return retour;
 }
 
+/**
+ * Permet d'ouvrir la frame Nextcloud.
+ * @param {*} data Données pour ouvrir la frame.
+ * @param {boolean} isFileData Si les données est un objet de type Nextcloud_File.
+ */
 Nextcloud.prototype.go = async function(data, isFileData = true)
 {
   console.log("data", data);
@@ -174,7 +214,14 @@ Nextcloud.prototype.go = async function(data, isFileData = true)
   rcmail.clear_messages();
 }
 
+/**
+ * Url de Nextcloud.
+ */
 Nextcloud.index_url = rcmail.env.nextcloud_url;
+/**
+ * Récupère l'url de nextcloud sans le index.php.
+ * @returns {string} Url.
+ */
 Nextcloud.url = function()
 {
   if (Nextcloud._url === undefined)
@@ -183,7 +230,13 @@ Nextcloud.url = function()
     Nextcloud._url = Nextcloud.index_url.replace("index.php", "");
   return Nextcloud._url;
 }
+/**
+ * Base de Nextcloud. (Ex: Nextcloud => http://localhost/nextcloud, origine => http://localhost).
+ */
 Nextcloud.origin = (rcmail.env.nextcloud_origin === undefined || rcmail.env.nextcloud_origin === null || rcmail.env.nextcloud_origin === "") ? window.location.origin : rcmail.env.nextcloud_origin;
+/**
+ * Récupère l'index, ex : /nextcloud/index.php
+ */
 Nextcloud.getIndex = function ()
 {
   return this.index_url.replace(Nextcloud.origin, "");

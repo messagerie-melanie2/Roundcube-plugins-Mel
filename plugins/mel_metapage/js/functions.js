@@ -14,7 +14,7 @@ function m_mp_Create()
         console.error(rcmail.gettext("mel_metapage.nextcloud_connection_error"));
     }
 
-
+    //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined)
     {
         let haveNextcloud = {
@@ -39,33 +39,34 @@ function m_mp_Create()
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         create_popUp = new GlobalModal("globalModal", config, true);
     }
-    else
+    else //Si elle existe, on l'affiche.
         window.create_popUp.show();
 }
 
+/**
+ * Ouvre la fenêtre d'aide.
+ */
 function m_mp_Help()
 {
     rcmail.mel_metapage_url_info = m_mp_DecodeUrl();
     rcmail.command("help_open_dialog");
 }
 
+/**
+ * Change l'icône en classe en fonction du type.
+ * @param {string} icon Icône à changer en classe.
+ * @param {string} type Type du document.
+ * @returns {string} Classe.
+ */
 function m_mp_CreateDocumentIconContract(icon, type)
 {
     return nextcloud_document.getIcon(icon, type);
-    // switch (icon) {
-    //     case "txt":
-    //         return "icofont-file-text";
-    //     case "word":
-    //         return "icofont-file-document";
-    //     case "calc":
-    //         return "icofont-file-spreadsheet";
-    //     case "pp":
-    //         return "icofont-file-presentation";
-    //     default:
-    //         return nextcloud_document.getIcon(icon);
-    // }
 }
 
+/**
+ * @async
+ * Affiche les données pour créer un document dans la modale de création.
+ */
 async function m_mp_InitializeDocument()
 {
     //window.create_popUp = new GlobalModal("globalModal", config, true);
@@ -114,6 +115,10 @@ dir	"/"
 */
 }
 
+/**
+ * Met à jours les boutons de la création d'un document.
+ * @param {string} json Données à traité.
+ */
 function m_mp_UpdateCreateDoc(json)
 {
     json = JSON.parse(json.replace(/¤¤¤/g, '"'));
@@ -473,6 +478,9 @@ rcmail.addEventListener('responseafter', function(props) {
 
 });
 
+/**
+ * Ferme ariane.
+ */
 function m_mp_close_ariane()
 {
     event.preventDefault();
@@ -480,12 +488,18 @@ function m_mp_close_ariane()
         parent.mel_metapage.PopUp.ariane.hide();
 }
 
+/**
+ * Ouvre la frame d'ariane.
+ */
 function m_mp_full_screen_ariane()
 {
     event.preventDefault();
     parent.mm_st_CreateOrOpenModal('rocket');
 }
 
+/**
+ * Ancre ariane.
+ */
 function m_mp_anchor_ariane()
 {
     event.preventDefault();

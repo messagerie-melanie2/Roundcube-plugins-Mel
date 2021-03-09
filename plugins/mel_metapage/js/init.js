@@ -61,12 +61,17 @@ if (rcmail)
                         let ids = [];
                         for (let index = 0; index < events.length; index++) {
                             const element = events[index];
-                            if (element._instance !== undefined)
-                            {
-                                for (let it = 0; it < events.length; it++) {
-                                    const event = events[it];
-                                    if (event.uid === element.uid && event._instance === undefined)
-                                        ids.push(event);
+                            //console.log(mceToRcId(rcmail.env.username) !== element._id, rcmail.env.username, mceToRcId(rcmail.env.username), element._id, element)
+                            if (mceToRcId(rcmail.env.username) !== element.calendar)
+                                ids.push(element);
+                            else {
+                                if (element._instance !== undefined)
+                                {
+                                    for (let it = 0; it < events.length; it++) {
+                                        const event = events[it];
+                                        if (event.uid === element.uid && event._instance === undefined)
+                                            ids.push(event);
+                                    }
                                 }
                             }
                         }
@@ -104,6 +109,8 @@ if (rcmail)
                         let element;
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
+                            if (element.list !== mceToRcId(rcmail.env.username))
+                                continue;
                             if (element.complete === 0)
                             {
                                 element.mel_metapage = {

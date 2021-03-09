@@ -497,5 +497,28 @@ a.roundbadge.link:hover{
 
 #button-back-adressbook2:hover{
     color:#484D7A !important;
-    background-color: transparent!important;;
+    background-color: transparent!important;
+}
+
+html.layout-small .floating-action-buttons
+{
+    top:0px;
+}
+
+html.layout-small .floating-action-buttons > a
+{
+    background-color: transparent;
+    box-shadow: none;
+    transition: all 0.1s ease-in;
+}
+
+html.layout-small .floating-action-buttons > a:hover
+{
+    color:#2C3054!important;
+    background-color: #484D7A !important;
+}
+
+body.task-mail .floating-action-buttons
+{
+    display: none;
 }

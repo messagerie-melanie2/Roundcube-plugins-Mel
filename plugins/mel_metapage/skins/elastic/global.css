@@ -37,9 +37,11 @@
     margin-right: 0px;
 }
 
-.task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable {
+html.layout-small .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable {
     /* top: 70px !important; */
-    z-index: 9999;
+    /* z-index: 9999; */
+    margin-left: 80px;
+    max-width: 400px;
 }
 
 html.layout-small #globalModal

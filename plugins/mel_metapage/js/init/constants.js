@@ -48,6 +48,10 @@ const ping = async function(url, useSSL = true)
     }
     return ok;
 }
+const mceToRcId = function (txt = "")
+{
+    return txt.replaceAll(".", '_-P-_').replaceAll("@", "'_-A-_'").replaceAll("%", '_-C-_');
+}
 /**
  * Lien du chargement des évènements d'un calendrier.
  */

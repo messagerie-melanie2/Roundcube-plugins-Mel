@@ -42,6 +42,18 @@
     z-index: 9999;
 }
 
+html.layout-small #globalModal
+{
+    padding-left:60px!important;
+}
+
+html.touch .square-body > h3
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
  /* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane
 {
     position: absolute;

@@ -306,7 +306,7 @@ html.touch .barup > .wrapper
     white-space: nowrap;
 }
 
-html.touch #layout-sidebar, html.touch #layout-content, html.touch #layout-list
+/* html.touch #layout-sidebar, html.touch #layout-content, html.touch #layout-list
 {
     margin-top: 0px;
     margin-left: 60px;
@@ -316,7 +316,41 @@ html.touch.iframe #layout-sidebar, html.touch.iframe #layout-content, html.touch
 {
     margin-top: 0px;
     margin-left: 0px;
+} */
+
+html.touch.layout-normal #layout-sidebar, html.touch.layout-normal #layout-list
+{
+    margin-top: 0px;
+    margin-left: 60px;
 }
+
+html.touch.layout-normal #layout-content
+{
+    margin-top: 0;
+}
+
+html.touch.layout-normal.iframe #layout-sidebar, html.touch.layout-normal.iframe #layout-content, html.touch.layout-normal.iframe #layout-list
+{
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+html.layout-normal.touch .task-bureau #layout-content{
+    margin-left: 60px;
+}
+
+html.layout-small #layout-sidebar, html.layout-small #layout-content, html.layout-small #layout-list
+{
+    margin-top: 0px;
+    margin-left: 60px;
+}
+
+html.layout-small.iframe #layout-sidebar, html.layout-small.iframe #layout-content, html.layout-small.iframe #layout-list
+{
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
 
 html.touch .mm-frame{
     padding-left:0px;

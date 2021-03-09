@@ -482,3 +482,20 @@ a.roundbadge.link:hover{
 .restore-font{
     font-family: Roboto,sans-serif;
 }
+
+#button-back-adressbook,
+#button-back-adressbook2
+{
+    position: absolute;
+    left: 5px;
+}
+
+#button-back-adressbook:hover
+{
+    color:#2C3054!important;
+}
+
+#button-back-adressbook2:hover{
+    color:#484D7A !important;
+    background-color: transparent!important;;
+}

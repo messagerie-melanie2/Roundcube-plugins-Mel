@@ -6,8 +6,8 @@
 <!-- sources/groups list -->
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="directorylist-header">
 	<div class="header">
-		<!-- <a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
-		<span id="directorylist-header" class="header-title"><roundcube:label name="groups" /></span>
+		 <a id="button-back-adressbook2" class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
+		<!--<span id="directorylist-header" class="header-title"><roundcube:label name="groups" /></span>
 		<roundcube:button name="groupoptions" type="link" title="arialabelabookgroupoptions" label="actions"
 			class="button icon sidebar-menu" innerClass="inner" data-popup="groupoptions-menu" /> -->
 			<div class="searchgroup" id="#mainscreen.annuaire">
@@ -29,10 +29,11 @@
 <!-- contacts list -->
 <div id="layout-list" class="listbox selected" aria-labelledby="aria-label-contactslist">
 	<div class="header">
-		<!-- <a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
-		<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="groups" /></span></a>
-		<roundcube:object name="addresslisttitle" label="contacts" tag="span" class="header-title" />
-		--><div class="toolbar menu hidden" role="toolbar">
+		<!-- <a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>-->
+		<a id="button-back-adressbook" class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="groups" /></span></a>
+		<!--<roundcube:object name="addresslisttitle" label="contacts" tag="span" class="header-title" />
+		-->
+		<div class="toolbar menu hidden" role="toolbar">
 			<a href="#select" class="button select disabled hidden" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="<roundcube:label name="select" />"><span class="inner"><roundcube:label name="select" /></span></a>
 			<roundcube:container name="listcontrols" id="listcontrols" />
 		</div>

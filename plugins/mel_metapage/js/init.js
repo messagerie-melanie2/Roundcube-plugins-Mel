@@ -34,43 +34,47 @@ if (rcmail)
                         let now = moment().startOf('day');
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
+                            // if (element.allDay)
+                            // {
+                            //     if (moment(element.start).date() === moment().date())
+                            //     {                                   
+                            //         element.start = moment(element.start).startOf('day').format("YYYY-MM-DDTHH:mm:ss");
+                            //         element.end = moment(element.start).startOf('day').add({
+                            //             hours:23,
+                            //             minutes:59,
+                            //             seconds:59
+                            //         }).format("YYYY-MM-DDTHH:mm:ss");
+                            //         //console.log(element);
+                            //         events.push(element);
+                            //     }
+                            // }
+                            // else
+                            // {
                             if (element.allDay)
-                            {
-                                if (moment(element.start).date() === moment().date())
-                                {                                   
-                                    element.start = moment(element.start).startOf('day').format("YYYY-MM-DDTHH:mm:ss");
-                                    element.end = moment(element.start).startOf('day').add({
-                                        hours:23,
-                                        minutes:59,
-                                        seconds:59
-                                    }).format("YYYY-MM-DDTHH:mm:ss");
-                                    //console.log(element);
-                                    events.push(element);
-                                }
-                            }
+                                element.order = 0;
                             else
-                            {
-                                startMoment = moment(element.start);
-                                endMoment = moment(element.end);
-                                if (startMoment < now)
-                                    element.start = now.format("YYYY-MM-DDTHH:mm:ss");
-                                if (endMoment > now.add({
-                                    hours:23,
-                                    minutes:59,
-                                    seconds:59
-                                }))
-                                    element.end = now.add({
-                                        hours:23,
-                                        minutes:59,
-                                        seconds:59
-                                    }).format("YYYY-MM-DDTHH:mm:ss");
-                                events.push(element);
-                            }
+                                element.order = 1;
+                            events.push(element);
+                            
                         }
                         data = null;
+                        let ids = [];
+                        for (let index = 0; index < events.length; index++) {
+                            const element = events[index];
+                            if (element._instance !== undefined)
+                            {
+                                for (let it = 0; it < events.length; it++) {
+                                    const event = events[it];
+                                    if (event.uid === element.uid && event._instance === undefined)
+                                        ids.push(event);
+                                }
+                            }
+                        }
+                        events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
                         try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
                         update_badge(events.length, mel_metapage.Ids.menu.badge.calendar);
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar, events);
+                        mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
                     } catch (ex) {
                         console.error(ex);
@@ -112,7 +116,7 @@ if (rcmail)
                         mel_metapage.Storage.set(mel_metapage.Storage.tasks, datas_to_save);
                         try_add_round(".tasklist", mel_metapage.Ids.menu.badge.tasks);
                         update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
-                        console.log(datas_to_save);
+                        mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
                     } catch (ex) {
                         console.error(ex);
@@ -230,8 +234,8 @@ if (rcmail)
         parent.rcmail.register_command("help-modal", () => {
             m_mp_Help();
         })
-        parent.rcmail.enable_command("search", true);
-        parent.rcmail.register_command("search", () => {
+        parent.rcmail.enable_command("mm-search", true);
+        parent.rcmail.register_command("mm-search", () => {
             $("#barup-buttons").css("display", "none");
             $("#barup-user").css("display", "none");
             $("#barup-search-input").css("max-width", "70%");

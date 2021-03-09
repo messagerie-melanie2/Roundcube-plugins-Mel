@@ -291,7 +291,8 @@ class ArianeFrame{
             this.popUp.css("flex","0 0 400px");
             this.popUp.css("position", "initial");
             //this.popUp.css("width", "initial");
-            this.popUp.css("margin-top", "60px");
+            if (!is_touch())
+                this.popUp.css("margin-top", "60px");
             this.popUp.contents().find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
             //ArianePopUp.set_width(this.popUp);
         }
@@ -300,7 +301,8 @@ class ArianeFrame{
             //this.popUp.css("height", '');
             this.popUp.css("position", "");
             //this.popUp.css("width", "");
-            this.popUp.css("margin-top", "");
+            if (!is_touch())
+                this.popUp.css("margin-top", "");
             this.popUp.contents().find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
             //ArianePopUp.set_width(this.popUp);
         }
@@ -316,10 +318,10 @@ class ArianeFrame{
     {
         this.popUp.css("padding-left", "initial");
         this.popUp.addClass("ariane-popup");
-        let height = $(window).height()-60 + "px";
-        this.popUp.css("height", height);
-        this.card.card.card.css("height", height);
-        this.card.body.card.css("height", height);
+        // let height = $(window).height()-60 + "px";
+        // this.popUp.css("height", height);
+        // this.card.card.card.css("height", height);
+        // this.card.body.card.css("height", height);
         this.card.card.enable();
         this.card.card.card.parent().css("margin", "0");
         this.card.body.enable();
@@ -329,36 +331,53 @@ class ArianeFrame{
             if (mel_metapage.PopUp.ariane !== undefined && mel_metapage.PopUp.ariane.is_show)
             {
                 let height = $(window).height();
+                //console.log("height 1", height);
                 mel_metapage.PopUp.ariane.ariane.popUp.css("height", height+ "px");
                 mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
                 mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
                 new Promise(async (a,b) => {
+                    const exec = function ()
+                    {
+                        if (is_touch())
+                        {
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("margin-top", "");
+                            //console.log("height",height);
+                            mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
+                        }
+                        else {
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
+                        }
+                    }
                     let stop = false;
-                    let prom_timeout = setTimeout(() => {
-                        stop = true;
-                    }, 5000);
+                    let tmp = 0;
+                    exec();
                     while ((this.is_touch ? is_touch() : !is_touch())) {
                         await delay(100);
-                        if (stop)
-                            stop = true;
+                        tmp += 100;
+                        if (tmp === 1000)
+                            break;
                     }
                     this.is_touch = is_touch();
-                    if (is_touch())
-                    {
-                        mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
-                        console.log("height",height);
-                        mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
-                        //mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
-                    }
-                    else
-                    {
-                        mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
-                        //mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
-                    }
-                    clearTimeout(prom_timeout);
+                    exec();
+                    // if (is_touch())
+                    // {
+                    //     mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
+                    //     mel_metapage.PopUp.ariane.ariane.popUp.css("margin-top", "");
+                    //     //console.log("height",height);
+                    //     mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
+                    //     //mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
+                    // }
+                    // else
+                    // {
+                    //     mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
+                    //     //mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
+                    // }
+                    //clearTimeout(prom_timeout);
                 });
             }
         }
+        window.onresize();
     }
 
     disable()

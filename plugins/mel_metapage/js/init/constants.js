@@ -112,6 +112,8 @@ const mel_metapage = {
          * Clé du nombre de mail non lus.
          */
         mail:"mel_metapage.mail.count",
+        last_calendar_update:"mel_metapage.calendar.last_update",
+        last_task_update:"mel_metapage.tasks.last_update"
     },
     /**
      * Liste des symboles.

@@ -309,6 +309,21 @@ html.touch .barup > .wrapper
 html.touch #layout-sidebar, html.touch #layout-content, html.touch #layout-list
 {
     margin-top: 0px;
+    margin-left: 60px;
+}
+
+html.touch.iframe #layout-sidebar, html.touch.iframe #layout-content, html.touch.iframe #layout-list
+{
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+html.touch .mm-frame{
+    padding-left:0px;
+}
+
+html.touch .discussion-frame{
+    padding-left:60px;
 }
 
 html.touch #rocket_chat_frame
@@ -316,3 +331,7 @@ html.touch #rocket_chat_frame
     padding-top: 0px;
 }
 
+html.touch #layout-menu:hover > div > a > span.inner, #layout-menu:hover > div > span > a > span.inner {
+    margin-top: -25px;
+    padding-top: 8px;
+}

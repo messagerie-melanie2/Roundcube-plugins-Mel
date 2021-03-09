@@ -291,6 +291,33 @@ metapage_frames.addEvent("changepage.after", () => {
         m_mp_ChangeLasteFrameInfo();
 });
 
+metapage_frames.addEvent("after", (eClass, changepage, isAriane, querry, id) => {
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    if (metapage_frames.onresize === undefined)
+    {
+        console.log("====> 1", eClass);
+        if (eClass === "discussion")
+        {
+            rcmail.env.current_frame_name = "discussion";
+            metapage_frames.onresize = setInterval(() => {
+                if (rcmail.env.current_frame_name === "discussion")
+                {
+                    if ($("html").hasClass("touch"))
+                    {
+                        if (!$(".discussion-frame").contents().find("html").hasClass("touch"))
+                        $(".discussion-frame").contents().find("html").addClass("touch")
+                    }
+                    else {
+                        if ($(".discussion-frame").contents().find("html").hasClass("touch"))
+                        $(".discussion-frame").contents().find("html").removeClass("touch")
+                    }
+                        
+                }
+            }, 100);
+        }
+    }
+});
+
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
     try {
         if (window.FrameUpdate === undefined)

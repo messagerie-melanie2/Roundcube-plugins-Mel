@@ -454,3 +454,31 @@ a.roundbadge.link:hover{
 .task-error-login > #layout > #layout-content{
     margin-top:60px;
 }
+
+.menu a.icofont-plus-circle:before
+{
+    content: "\efc0"!important;
+    font-family: "IcoFont"!important;
+}
+
+.menu a.icofont-question-circle:before
+{
+    content: "\efca"!important;
+    font-family: "IcoFont"!important;
+}
+
+.menu a.icofont-favourite:before
+{
+    content: "\ef25"!important;
+    font-family: "IcoFont"!important;
+}
+
+.menu a.icofont-search:before
+{
+    content: "\ed1b"!important;
+    font-family: "IcoFont"!important;
+}
+
+.restore-font{
+    font-family: Roboto,sans-serif;
+}

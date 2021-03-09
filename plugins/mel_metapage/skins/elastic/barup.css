@@ -289,3 +289,30 @@ iframe{
 {
     width: 100%;
 }
+
+html.layout-normal .hide-normal,
+html.touch .barup
+{
+    display:none;
+} 
+
+html.layout-normal .no-wrap-normal{
+    white-space: nowrap;
+    margin-left: 5px;
+} 
+
+html.touch .barup > .wrapper
+{
+    white-space: nowrap;
+}
+
+html.touch #layout-sidebar, html.touch #layout-content, html.touch #layout-list
+{
+    margin-top: 0px;
+}
+
+html.touch #rocket_chat_frame
+{
+    padding-top: 0px;
+}
+

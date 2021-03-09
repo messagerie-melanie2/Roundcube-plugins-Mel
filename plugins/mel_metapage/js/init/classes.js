@@ -1,3 +1,7 @@
+const is_touch = function(){
+    return $("html").hasClass("touch");
+}
+
 /**
  * String des différents listeners pour rcmail.
  */
@@ -240,6 +244,7 @@ ArianePopUp.show = function()
 class ArianeFrame{
     constructor()
     {
+        this.is_touch = is_touch();
         this.load_ended = false;
         if ($(".discussion-frame").length > 0)
         {
@@ -327,6 +332,31 @@ class ArianeFrame{
                 mel_metapage.PopUp.ariane.ariane.popUp.css("height", height+ "px");
                 mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
                 mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
+                new Promise(async (a,b) => {
+                    let stop = false;
+                    let prom_timeout = setTimeout(() => {
+                        stop = true;
+                    }, 5000);
+                    while ((this.is_touch ? is_touch() : !is_touch())) {
+                        await delay(100);
+                        if (stop)
+                            stop = true;
+                    }
+                    this.is_touch = is_touch();
+                    if (is_touch())
+                    {
+                        mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
+                        console.log("height",height);
+                        mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
+                        //mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
+                    }
+                    else
+                    {
+                        mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
+                        //mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
+                    }
+                    clearTimeout(prom_timeout);
+                });
             }
         }
     }

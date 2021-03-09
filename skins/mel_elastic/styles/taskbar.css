@@ -124,7 +124,7 @@
 }
 
 .popover-header{
-    display: none;
+    display: none!important;
 }
 
 span.menu-last-frame-item{
@@ -189,6 +189,12 @@ span.menu-last-frame-item{
     font-family: "IcoFont"!important;
 }
 
+a.menu-small.icofont-navigation-menu:before
+{
+    content:"\efa2";
+    font-family: "IcoFont"!important;
+}
+
 iframe.mm-frame/*,
 #layout-sidebar,
 .task-mel_portal > #layout > #layout-content*/
@@ -216,4 +222,16 @@ iframe.mm-frame/*,
     min-width: 100px;
     text-align: left;
     border-color: #363A5B;
+}
+
+html.layout-large .menu.toolbar a.menu-small,
+html.layout-normal .menu.toolbar a.menu-small
+{
+    display: none!important;
+}
+
+html.touch .menu.toolbar a.menu-small,
+html.layout-small .menu.toolbar a.menu-small
+{
+    display: initial!important;
 }

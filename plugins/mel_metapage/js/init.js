@@ -219,6 +219,37 @@ if (rcmail)
                 ".mail", mel_metapage.Ids.menu.badge.mail, true, true);
         }
 
+
+        $("#menu-small").appendTo("#taskmenu").css("display", "");
+        //create-modal
+        parent.rcmail.enable_command("create-modal", true);
+        parent.rcmail.register_command("create-modal", () => {
+            m_mp_Create();
+        })
+        parent.rcmail.enable_command("help-modal", true);
+        parent.rcmail.register_command("help-modal", () => {
+            m_mp_Help();
+        })
+        parent.rcmail.enable_command("search", true);
+        parent.rcmail.register_command("search", () => {
+            $("#barup-buttons").css("display", "none");
+            $("#barup-user").css("display", "none");
+            $("#barup-search-input").css("max-width", "70%");
+            $("#barup-search").css("left", 0);
+            if ($("#gbtniabsc").length === 0)
+                $("#barup-search-col").find(".input-group-append").append('<button onclick="rcmail.command(`stop-search`)" id="gbtniabsc" class="btn btn-danger"><span class="icofont-close"></button>')
+            $(".barup").css("display", "initial");
+        })
+        parent.rcmail.enable_command("stop-search", true);
+        parent.rcmail.register_command("stop-search", () => {
+            $("#barup-buttons").css("display", "");
+            $("#barup-user").css("display", "");
+            $("#barup-search-input").css("max-width", "");
+            $("#barup-search").css("left", "").addClass("hidden");
+            if ($("#gbtniabsc").length !== 0)
+                $("#gbtniabsc").remove();
+            $(".barup").css("display", "");
+        })
         new Promise(async (a,b) => {
             while (rcmail.env.last_frame_class === undefined) {
                 await delay(500);

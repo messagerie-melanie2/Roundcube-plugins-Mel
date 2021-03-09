@@ -6,9 +6,9 @@
 function my_day(symbol = null)
 {
 	if (symbol === null || symbol === mel_metapage.Symbols.my_day.calendar) //Si l'on charge tout ou uniquement les évènements du calendrier
-		current_day(mel_metapage.Storage.calendar, mel_metapage.EventListeners.calendar_updated.get, setupMyDay);
+		current_day(mel_metapage.Storage.calendar, mel_metapage.Storage.last_calendar_update, mel_metapage.EventListeners.calendar_updated.get, setupMyDay);
 	if (symbol === null || symbol === mel_metapage.Symbols.my_day.tasks) //Si l'on charge tout ou uniquement les tâches
-		current_day(mel_metapage.Storage.tasks, mel_metapage.EventListeners.tasks_updated.get, setup_tasks);
+		current_day(mel_metapage.Storage.tasks, mel_metapage.Storage.last_task_update, mel_metapage.EventListeners.tasks_updated.get, setup_tasks);
 
 }
 
@@ -20,13 +20,16 @@ function my_day(symbol = null)
  * @param {string} trigger Clé du trigger à appeller si il n'y a pas de données en local.
  * @param {function} setup_func Fonction à appeller si il y a des données en local.
  */
-function current_day(storage, trigger, setup_func = (local_storage) => { console.log(local_storage);})
+function current_day(storage, last_update_storage, trigger, setup_func = (local_storage) => { console.log(local_storage);})
 {
 	let local_storage = mel_metapage.Storage.get(storage);
-	console.log(storage, local_storage);
+	if (moment(mel_metapage.Storage.get(last_update_storage)).format("DD/MM/YYYY") !== moment().startOf('day').format("DD/MM/YYYY"))
+		local_storage = null;
+	//console.log(local_storage, moment(mel_metapage.Storage.get(last_update_storage)).format("DD/MM/YYYY"), moment().startOf('day').format("DD/MM/YYYY"));
 	if (local_storage !== null)
 	{
-		setup_func(local_storage)}
+		setup_func(local_storage)
+	}
 	else{
 		parent.rcmail.triggerEvent(trigger);
 		return true;
@@ -49,20 +52,47 @@ function setupMyDay(datas)
 		waiting:"icofont-hour-glass clear",
 		declined:"icofont-close danger"
 	}
+	const set_style = (event) => {
+		const now = {
+			now:moment(),
+			start:moment().startOf('day'),
+			end:moment().endOf('day')
+		}
+		const date = {
+			start:moment(event.start),
+			end:moment(event.end)
+		}
+		if (date.start < now.start || date.end > now.end)
+			return {
+				start:date.start.format("DD/MM/YYYY HH:mm"),
+				end:date.end.format("DD/MM/YYYY HH:mm"),
+			}
+		else
+			return {
+				start:date.start.format("HH:mm"),
+				end:date.end.format("HH:mm"),
+			}
+	};
 	let html = ''
-	datas.sort(function(a,b){
-		return moment(a.start) - moment(b.start);
-	});
+	// datas.sort(function(a,b){
+	// 	return moment(a.start) - moment(b.start);
+	// });
 	let style;
 	let bool;
 	let icon;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-        html += "<div class=col-md-8>" + moment(element.start).format('HH:mm') + " - " + moment(element.end).format('HH:mm') + "<br/>" + element.title +"</div>";
+		if (element.allDay)
+			html += "<div class=col-md-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+		else
+		{
+			const style_date = set_style(element);
+        	html += "<div class=col-md-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+		}
 		bool = element.attendees !== undefined && 
-			element.attendees.length > 0 && 
-			Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
+		element.attendees.length > 0 && 
+		Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
 		if (bool)
 		{
 			icon = null;

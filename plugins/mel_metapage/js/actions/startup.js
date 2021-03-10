@@ -279,6 +279,7 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {
     $("."+eClass+"-frame").contents().find("#layout-menu").remove();
     $("."+eClass+"-frame").contents().find(".barup").remove();
+    $("."+eClass+"-frame").contents().find("html").addClass("framed");
     rcmail.set_busy(false);
     rcmail.clear_messages();
     rcmail.env.frame_created = true;

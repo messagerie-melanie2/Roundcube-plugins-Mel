@@ -318,6 +318,13 @@ html.touch.iframe #layout-sidebar, html.touch.iframe #layout-content, html.touch
     margin-left: 0px;
 } */
 
+/*Gestion des compartiments*/
+
+html.layout-normal #layout-list
+{
+    margin-left: 60px;
+}
+
 html.touch.layout-normal #layout-sidebar, html.touch.layout-normal #layout-list
 {
     margin-top: 0px;
@@ -351,19 +358,39 @@ html.layout-small.iframe #layout-sidebar, html.layout-small.iframe #layout-conte
     margin-left: 0px;
 }
 
+html.framed div#layout-sidebar, 
+html.framed div#layout-list,
+html.framed div#layout-content{
+    margin-top:0px !important;
+    margin-left: 0px !important;
+}
 
-html.touch .mm-frame{
+/* html.layout-normal .mm-frame{
     padding-left:0px;
+} */
+/*Gestion des frames*/
+
+iframe.mm-frame{
+    padding-top:60px;
 }
 
-html.touch .discussion-frame{
-    padding-left:60px;
-}
-
-html.touch #rocket_chat_frame
-{
+html.touch iframe.mm-frame{
     padding-top: 0px;
 }
+
+/* html.touch .discussion-frame{
+    padding-left:60px;
+}*/
+
+html.layout-small #menu-overlay{
+    display: none;
+}
+
+#rocket_chat_frame
+{
+    padding-top: 0px;
+} 
+/*Autre*/
 
 html.touch #layout-menu:hover > div > a > span.inner, #layout-menu:hover > div > span > a > span.inner {
     margin-top: -25px;

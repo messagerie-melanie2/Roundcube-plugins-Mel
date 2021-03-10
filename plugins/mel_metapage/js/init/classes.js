@@ -80,6 +80,7 @@ class ArianePopUp{
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "0px");
         this.ariane.popUp.addClass("tiny-rocket-chat-card");
         this.ariane.popUp.css("display", "initial");
+        this.ariane.popUp.css("padding-top", "0");
         this.button.stop();
         this.is_show = true;
         // if ($("#pop-up-resizer").length === 0)
@@ -97,6 +98,7 @@ class ArianePopUp{
         this.ariane.popUp.css("flex", "1 0 auto");
         this.ariane.popUp.removeClass("tiny-rocket-chat-card");
         this.button.button.css("display", "initial");
+        this.ariane.popUp.css("padding-top", "");
         this.ariane.disable();
         this.is_show = false;
     }

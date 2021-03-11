@@ -532,7 +532,39 @@ body.task-mail .floating-action-buttons
     font-size: 0.9rem;
 }
 
+.folderlist li.boite > a::before {
+    content: "\f01c";
+    font-weight: 900;
+}
+
+.listing li > a.virtual.boite, 
+.listing li.virtual.boite > a {
+    opacity: .9;
+}
+
 html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
 html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
     border-left: 2px solid #80D5C6;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+    border-color: #80D5C6;
+    background-color: #80D5C6;
+}
+
+.form-control:focus {
+    border-color: #80D5C6;
+    box-shadow: 0 0 0 .2rem rgba(128, 213, 198,0.25);
+}
+
+.btn-primary {
+    color: #484D7A;
+    background: #80D5C6;
+    border-color: #80D5C6;
+}
+
+.btn-primary:hover {
+    color: #484D7A;
+    background: #8FE4D5;
+    border-color: #8FE4D5;
 }

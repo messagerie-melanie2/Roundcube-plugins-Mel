@@ -73,8 +73,11 @@ class mel_envoi_differe extends rcube_plugin
      */
     function message_before_send($args)
     {
+        $rcmail = rcmail::get_instance();
+        $timezone = $rcmail->config->get('timezone', null);
         $timestamp = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
         $date = new DateTime();
+        $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($timestamp / 1000);
         $dateFormat = $date->format('r');
         $args['message']->headers(array('X-DateEnvoiDiffere' => $timestamp, 'Date' => $dateFormat), true);

@@ -29,7 +29,10 @@ body{
     color:white !important;
 }
 
-#layout>div>.header a.button
+#layout>div>.header a.button,
+#layout>div>.header a.options,
+#layout>div>.header a.select,
+#layout>div>.header a.threads
 {
     color:white;
 }
@@ -521,4 +524,15 @@ html.layout-small .floating-action-buttons > a:hover
 body.task-mail .floating-action-buttons
 {
     display: none;
+}
+
+.folderlist li.mailbox .unreadcount {
+    background: #80D5C6;
+    color: #484D7A;
+    font-size: 0.9rem;
+}
+
+html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
+    border-left: 2px solid #80D5C6;
 }

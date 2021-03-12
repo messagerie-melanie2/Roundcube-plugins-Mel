@@ -7,9 +7,9 @@
  *
  * @author Philip Weir
  *
- * Copyright (C) 2009-2014 Philip Weir
+ * Copyright (C) Philip Weir
  *
- * This program is a Roundcube (http://www.roundcube.net) plugin.
+ * This program is a Roundcube (https://roundcube.net) plugin.
  * For more information see README.md.
  * See MANUAL.md for information about extending this plugin.
  *
@@ -24,82 +24,71 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Roundcube. If not, see http://www.gnu.org/licenses/.
+ * along with Roundcube. If not, see https://www.gnu.org/licenses/.
  */
 class contextmenu extends rcube_plugin
 {
-	public $task = 'mail|addressbook';
+    public $task = '^((?!login).)*$';
+    private $rcube;
 
-	function init()
-	{
-		$rcmail = rcube::get_instance();
-		
-		// MANTIS 0005152: Désactiver le plugin contextmenu en vue mobile
-		if ($rcmail->config->get('ismobile', false)) {
-		  return;
-		}
+    public function init()
+    {
+        $this->rcube = rcube::get_instance();
 
-		if ($rcmail->output->type == 'html') {
-			$this->include_script('contextmenu.js');
-			$this->include_stylesheet($this->local_skin_path() . '/contextmenu.css');
-			$this->include_script($this->local_skin_path() . '/functions.js');
-			$this->api->output->set_env('contextmenu', true);
-		}
+        if ($this->rcube->output->type == 'html') {
+            $this->include_script('contextmenu.js');
+            $this->include_stylesheet($this->local_skin_path() . '/contextmenu.css');
+            $this->include_script($this->local_skin_path() . '/functions.js');
+            $this->rcube->output->set_env('contextmenu', true);
+            $this->rcube->output->set_env('contextmenu_mouseover_timeout', $this->rcube->config->get('contextmenu_mouseover_timeout', 400));
+            $this->add_hook('render_page', [$this, 'additional_menus']);
+        }
 
-		if ($rcmail->task == 'mail') {
-			$this->register_action('plugin.contextmenu.messagecount', array($this, 'messagecount'));
+        $this->register_action('plugin.contextmenu.messagecount', [$this, 'messagecount']);
+    }
 
-			// on the mailbox screen only add some additional options for the folder menu
-			if ($rcmail->action == '') {
-				$this->addition_folder_options();
-			}
-		}
-		elseif ($rcmail->task == 'addressbook' && $rcmail->action == '') {
-			// give other plugins a change to add address books before checking if they exist for the menu
-			$this->add_hook('render_page', array($this, 'addition_addressbook_options'));
-		}
-	}
+    public function additional_menus($args)
+    {
+        // Other plugins may use template parsing method, this causes more than one render_page execution.
+        // We have to make sure the menu is added only once (when content is going to be written to client).
+        if (!$args['write']) {
+            return;
+        }
 
-	public function addition_folder_options()
-	{
-		$this->add_texts('localization/');
+        // add additional menus for current task from skins folder if they exist
+        if ($file_info = $this->_get_include_file($this->rcube->task . '.html')) {
+            $this->add_texts('localization/');
 
-		$li = '';
-		$li .= html::tag('li', array('role' => 'menuitem'), $this->api->output->button(array('command' => 'plugin.contextmenu.collapseall', 'type' => 'link', 'class' => 'collapseall rcm_active', 'label' => 'contextmenu.collapseall', 'tabindex' => '-1', 'aria-disabled' => 'true')));
-		$li .= html::tag('li', array('role' => 'menuitem'), $this->api->output->button(array('command' => 'plugin.contextmenu.expandall', 'type' => 'link', 'class' => 'expandall rcm_active', 'label' => 'contextmenu.expandall', 'tabindex' => '-1', 'aria-disabled' => 'true')));
-		$li .= html::tag('li', array('role' => 'menuitem'), $this->api->output->button(array('command' => 'plugin.contextmenu.openfolder', 'type' => 'link', 'class' => 'openfolder rcm_active', 'label' => 'openinextwin', 'tabindex' => '-1', 'aria-disabled' => 'true')));
+            list($path, $include_path) = $file_info;
+            $html = $this->rcube->output->just_parse("<roundcube:include file=\"/$path\" skinpath=\"$include_path\" />");
+            $this->rcube->output->add_footer($html);
+        }
+    }
 
-		$out = html::tag('ul', array('id' => 'rcmFolderMenu', 'role' => 'menu'), $li);
-		$this->api->output->add_footer(html::div(array('style' => 'display: none;', 'aria-hidden' => 'true'), $out));
-	}
+    public function messagecount()
+    {
+        $storage = $this->rcube->get_storage();
+        $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
 
-	public function addition_addressbook_options()
-	{
-		$this->add_texts('localization/');
+        // send output
+        header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+        echo json_encode(['messagecount' => $storage->count($mbox, 'EXISTS')]);
+        exit;
+    }
 
-		$li = '';
-		$li .= html::tag('li', array('role' => 'menuitem'), $this->api->output->button(array('command' => 'plugin.contextmenu.assigngroup', 'type' => 'link', 'class' => 'assigngroup disabled', 'classact' => 'assigngroup active', 'label' => 'contextmenu.assigngroup', 'tabindex' => '-1', 'aria-disabled' => 'true')));
+    private function _get_include_file($file)
+    {
+        $file_info = false;
 
-		if (count(rcube::get_instance()->get_address_sources(true)) > 1) {
-			// only show the move option if there are sources to move between
-			$li .= html::tag('li', array('role' => 'menuitem'), $this->api->output->button(array('command' => 'move', 'type' => 'link', 'class' => 'movecontact disabled', 'classact' => 'movecontact active', 'label' => 'moveto', 'tabindex' => '-1', 'aria-disabled' => 'true')));
-			$li .= html::tag('li', array('role' => 'menuitem'), $this->api->output->button(array('command' => 'copy', 'type' => 'link', 'class' => 'copycontact disabled', 'classact' => 'copycontact active', 'label' => 'copyto', 'tabindex' => '-1', 'aria-disabled' => 'true')));
-		}
+        $base_path = slashify($this->home);
+        $rel_path = $this->local_skin_path() . '/includes/' . $file;
+        // path to skin folder relative to Roundcube root for template engine
+        $template_include_path = 'plugins/' . $this->ID;
 
-		$out = html::tag('ul', array('id' => 'rcmAddressBookMenu', 'role' => 'menu'), $li);
-		$this->api->output->add_footer(html::div(array('style' => 'display: none;', 'aria-hidden' => 'true'), $out));
-	}
+        if (is_file($base_path . $rel_path) && is_readable($base_path . $rel_path)) {
+            $file_info = [$rel_path, $template_include_path];
+        }
 
-	public function messagecount()
-	{
-		$storage = rcube::get_instance()->storage;
-		$mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
-
-		// send output
-		header("Content-Type: application/json; charset=".RCUBE_CHARSET);
-		echo json_encode(array('messagecount' => $storage->count($mbox, 'EXISTS')));
-		exit;
-	}
+        return $file_info;
+    }
 }
-
-?>

@@ -2,9 +2,10 @@
  * ContextMenu plugin styles
  */
 
-.contextRow td,
-#mailboxlist li.contextRow,
-#directorylistbox li.contextRow
+.context-source td,
+#mailboxlist li.context-source,
+#directorylistbox li.context-source,
+#subscription-table li.context-source
 {
   background-color: #EEEEEE;
 }
@@ -38,12 +39,12 @@ div.contextmenu ul.iconized li a span.icon
   background: url(images/contexticons.png) no-repeat 0 20px;
 }
 
-div.contextmenu ul.iconized li.submenu a span.icon
+div.contextmenu ul.iconized li.rcm-submenu a span.icon
 {
   padding-right: 15px;
 }
 
-div.contextmenu ul.iconized li.submenu a span.right-arrow
+div.contextmenu ul.iconized li.rcm-submenu a span.sub-button
 {
   position: absolute;
   top: 0;
@@ -58,11 +59,7 @@ div.contextmenu ul.iconized li a.reply span.icon
   background-position: 7px -119px;
 }
 
-div.contextmenu ul.iconized li a.replyAll span.icon
-{
-  background-position: 7px -392px;
-}
-
+div.contextmenu ul.iconized li a.replyAll span.icon,
 div.contextmenu ul.iconized li a.replyalllink span.icon
 {
   background-position: 7px -392px;
@@ -73,11 +70,7 @@ div.contextmenu ul.iconized li a.replylistlink span.icon
   background-position: 7px -377px;
 }
 
-div.contextmenu ul.iconized li a.forward span.icon
-{
-  background-position: 7px -102px;
-}
-
+div.contextmenu ul.iconized li a.forward span.icon,
 div.contextmenu ul.iconized li a.forwardlink span.icon
 {
   background-position: 7px -102px;
@@ -88,9 +81,31 @@ div.contextmenu ul.iconized li a.forwardattachmentlink span.icon
   background-position: 7px -361px;
 }
 
-div.contextmenu ul.iconized li a.delete span.icon
+div.contextmenu ul.iconized li a.bouncelink span.icon
+{
+  background-position: 7px -561px;
+}
+
+div.contextmenu ul.iconized li a.delete span.icon,
+div.contextmenu ul.iconized li a.deletelink span.icon,
+div.contextmenu ul.iconized li a.delgroup span.icon,
+div.contextmenu ul.iconized li a.cmd_group-delete span.icon,
+div.contextmenu ul.iconized li a.cmd_search-delete span.icon,
+div.contextmenu ul.iconized li a.cmd_delete-folder span.icon,
+div.contextmenu ul.iconized li a.cmd_plugin-managesieve-del span.icon,
+div.contextmenu ul.iconized li a.cmd_plugin-managesieve-setdel span.icon
 {
   background-position: 7px -187px;
+}
+
+div.contextmenu ul.iconized li a.junk span.icon
+{
+  background-position: 7px -577px;
+}
+
+div.contextmenu ul.iconized li a.archive span.icon
+{
+  background-position: 7px -596px;
 }
 
 div.contextmenu ul.iconized li a.markmessage span.icon
@@ -117,7 +132,9 @@ div.contextmenu ul.iconized li a.unflaggedlink span.icon
   background-position: 7px -153px;
 }
 
-div.contextmenu ul.iconized li a.messagemenu span.icon
+div.contextmenu ul.iconized li a.messagemenu span.icon,
+div.contextmenu ul.iconized li a.contactmenu span.icon,
+div.contextmenu ul.iconized li a.keymenu span.icon
 {
   background-position: 7px -475px;
 }
@@ -139,11 +156,11 @@ div.contextmenu ul.iconized li a.cmd_mark-all-read span.icon
 
 div.contextmenu ul.iconized li a.collapseall span.icon
 {
-  background-position: 7px -203px;
+  background-position: 7px -219px;
 }
 div.contextmenu ul.iconized li a.expandall span.icon
 {
-  background-position: 7px -219px;
+  background-position: 7px -203px;
 }
 
 div.contextmenu ul.iconized li a.cmd_expunge span.icon
@@ -154,6 +171,11 @@ div.contextmenu ul.iconized li a.cmd_expunge span.icon
 div.contextmenu ul.iconized li a.cmd_purge span.icon
 {
   background-position: 7px -271px;
+}
+
+div.contextmenu ul.iconized li a.openinline span.icon
+{
+  background-position: 7px -618px;
 }
 
 div.contextmenu ul.iconized li a.openfolder span.icon
@@ -171,7 +193,9 @@ div.contextmenu ul.iconized li a.copycontact span.icon
   background: url(images/messageactions.png) no-repeat 5px -143px;
 }
 
-div.contextmenu ul.iconized li a.export span.icon
+div.contextmenu ul.iconized li a.export span.icon,
+div.contextmenu ul.iconized li a.exportsellink span.icon,
+div.contextmenu ul.iconized li a.cmd_plugin-managesieve-setget span.icon
 {
   background-position: 7px -510px;
 }
@@ -181,45 +205,25 @@ div.contextmenu ul.iconized li a.exportalllink span.icon
   background-position: 7px -527px;
 }
 
-div.contextmenu ul.iconized li a.exportsellink span.icon
-{
-  background-position: 7px -510px;
-}
-
 div.contextmenu ul.iconized li a.cmd_add-recipient span.icon
 {
   background-position: 8px -236px;
 }
 
-div.contextmenu ul.iconized li a.vcard span.icon
+div.contextmenu ul.iconized li a.vcard span.icon,
+#rcm_contactmenumenu ul.iconized li a.vcard span.icon
 {
-  background-position: 7px -546px;
+  background: url(images/contexticons.png) no-repeat 7px -546px;
 }
 
-div.contextmenu ul.iconized li a.cmd_group-create span.icon,
-div.contextmenu ul.iconized li a.assigngroup span.icon
+div.contextmenu ul.iconized li a.cmd_group-create span.icon
 {
   background-position: 7px -441px;
-}
-
-div.contextmenu ul.iconized li a.cmd_group-remove-selected span.icon
-{
-  background-position: 7px -492px;
 }
 
 div.contextmenu ul.iconized li a.cmd_group-rename span.icon
 {
   background-position: 7px -426px;
-}
-
-div.contextmenu ul.iconized li a.cmd_group-delete span.icon
-{
-  background-position: 7px -186px;
-}
-
-div.contextmenu ul.iconized li a.cmd_search-delete span.icon
-{
-  background-position: 7px -186px;
 }
 
 #rcm_messagemenumenu ul.iconized li a span.icon
@@ -262,40 +266,51 @@ div.contextmenu ul.iconized li a.cmd_search-delete span.icon
   background-position: 5px -52px;
 }
 
-/*** address book selector ***/
-
-#addressbook-selector li a,
-#addressgroup-selector li a
+#rcm_messagemenumenu ul.iconized li a.filterlink span.icon
 {
-  padding: 0;
+  background-position: 5px -178px;
 }
 
-#addressbook-selector li a span,
-#addressgroup-selector li a span
+#rcm_contactmenumenu ul.iconized li a span.icon
 {
-  background: url(images/contexticons.png) no-repeat 0 20px;
-  display: block;
-  height: 15px;
-  min-height: 14px;
-  padding: 2px 4px 2px 28px;
-  overflow: hidden;
-  max-width: 120px;
-  text-overflow: ellipsis;
+  background: url(images/contactactions.png) no-repeat 5px 20px;
 }
 
-#addressbook-selector li a.active:hover span,
-#addressgroup-selector li a.active:hover span
+#rcm_contactmenumenu ul.iconized li a.qrcode span.icon
 {
-  color: white;
+  background-position: 5px -40px;
 }
 
-#addressbook-selector li a.addressbook span
+#rcm_contactmenumenu ul.iconized li a.assigngroup span.icon
 {
-  background-position: 5px -306px;
+  background-position: 5px 0;
 }
 
-#addressbook-selector li a.contactgroup span,
-#addressgroup-selector li a.contactgroup span
+#rcm_contactmenumenu ul.iconized li a.removegroup span.icon
 {
-  background-position: 5px -343px;
+  background-position: 5px -19px;
+}
+
+#rcm_contactmenumenu ul.iconized li a.movelink span.icon
+{
+  background: url(images/messageactions.png) no-repeat 7px 0;
+  background-position: 5px -160px;
+}
+
+#rcm_contactmenumenu ul.iconized li a.copylink span.icon
+{
+  background: url(images/messageactions.png) no-repeat 7px 0;
+  background-position: 5px -142px;
+}
+
+div.contextmenu ul.iconized li a.cmd_plugin-managesieve-seteditraw span.icon
+{
+  background: url(images/messageactions.png) no-repeat 5px 20px;
+  background-position: 5px -70px;
+}
+
+div.contextmenu ul.iconized li a.cmd_plugin-managesieve-setact span.icon,
+div.contextmenu ul.iconized li a.cmd_plugin-managesieve-act span.icon
+{
+  background-position: 7px -640px;
 }

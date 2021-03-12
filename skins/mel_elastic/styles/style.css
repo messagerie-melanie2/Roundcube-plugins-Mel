@@ -29,7 +29,10 @@ body{
     color:white !important;
 }
 
-#layout>div>.header a.button
+#layout>div>.header a.button,
+#layout>div>.header a.options,
+#layout>div>.header a.select,
+#layout>div>.header a.threads
 {
     color:white;
 }
@@ -523,6 +526,7 @@ body.task-mail .floating-action-buttons
     display: none;
 }
 
+<<<<<<< HEAD
 .red-star::before,
 .red-star-after::after {
     content: "*";
@@ -569,4 +573,67 @@ img.menu-image {
     /* position: absolute; */
     /* top: 0; */
     /* left: 0; */
+=======
+.folderlist li.mailbox .unreadcount {
+    background: #80D5C6;
+    color: #484D7A;
+    font-size: 0.9rem;
+}
+
+.folderlist li.boite > a::before {
+    content: "\f01c";
+    font-weight: 900;
+}
+
+.listing li > a.virtual.boite, 
+.listing li.virtual.boite > a,
+.listing li > a.virtual.inbox, 
+.listing li.virtual.inbox > a,
+.listing li > a.virtual.drafts, 
+.listing li.virtual.drafts > a,
+.listing li > a.virtual.models, 
+.listing li.virtual.models > a,
+.listing li > a.virtual.sent, 
+.listing li.virtual.sent > a,
+.listing li > a.virtual.junk, 
+.listing li.virtual.junk > a,
+.listing li > a.virtual.trash, 
+.listing li.virtual.trash > a,
+.listing li > a.virtual.dossier, 
+.listing li.virtual.dossier > a {
+    opacity: .9;
+}
+
+html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
+html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
+    border-left: 2px solid #80D5C6;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+    border-color: #80D5C6;
+    background-color: #80D5C6;
+}
+
+.form-control:focus {
+    border-color: #80D5C6;
+    box-shadow: 0 0 0 .2rem rgba(128, 213, 198,0.25);
+}
+
+.btn-primary {
+    color: #484D7A;
+    background: #80D5C6;
+    border-color: #80D5C6;
+}
+
+.btn-primary:hover {
+    color: #484D7A;
+    background: #8FE4D5;
+    border-color: #8FE4D5;
+}
+
+table.listing td.subscribed {
+    width: 30px;
+    padding: 3px 12px 3px 3px;
+    text-align: right;
+>>>>>>> 783867f2dc8b2f2ef506abae909c5b8380c68757
 }

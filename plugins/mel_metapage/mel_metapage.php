@@ -41,7 +41,7 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
         $this->startup();
-        if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template")
+        if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && empty($_REQUEST['_extwin']))
         {
             $this->add_texts('localization/', true);
             $this->load_config();
@@ -65,12 +65,12 @@ class mel_metapage extends rcube_plugin
             $this->add_hook("send_page", array($this, "generate_html"));//$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         }
         else if ($this->rc->task == 'logout' 
-        || $this->rc->task == 'login') {
-      // Include javascript files
+                || $this->rc->task == 'login') {
+            // Include javascript files
             $this->include_script('js/actions/logout.js');
             $this->include_script('js/actions/login.js');
         }
-        else if ($this->rc->action ==="create_document_template")
+        else if ($this->rc->action === "create_document_template")
         {
             $this->add_texts('localization/', true);
             $this->load_config();

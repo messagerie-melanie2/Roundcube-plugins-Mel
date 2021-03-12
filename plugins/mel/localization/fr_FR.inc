@@ -135,3 +135,12 @@ $labels['unified_pref_text'] = "Dossiers unifiés";
 $labels['subfolders'] = 'Dossiers';
 $labels['welcome'] = 'Bienvenue';
 $labels['on_your_dwp'] = 'sur votre bureau numérique';
+
+$labels['inbox'] = 'Courrier entrant';
+$labels['drafts'] = 'Brouillons';
+$labels['models'] = 'Modèles';
+$labels['trash'] = 'Corbeille';
+$labels['junk'] = 'Indésirables';
+$labels['sent'] = 'Éléments envoyés';
+
+$labels['mailboxselector'] = 'Liste des boites';

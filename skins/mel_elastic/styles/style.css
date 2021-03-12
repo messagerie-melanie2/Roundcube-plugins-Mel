@@ -582,3 +582,9 @@ html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.select
     background: #8FE4D5;
     border-color: #8FE4D5;
 }
+
+table.listing td.subscribed {
+    width: 30px;
+    padding: 3px 12px 3px 3px;
+    text-align: right;
+}

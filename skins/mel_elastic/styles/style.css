@@ -538,7 +538,21 @@ body.task-mail .floating-action-buttons
 }
 
 .listing li > a.virtual.boite, 
-.listing li.virtual.boite > a {
+.listing li.virtual.boite > a,
+.listing li > a.virtual.inbox, 
+.listing li.virtual.inbox > a,
+.listing li > a.virtual.drafts, 
+.listing li.virtual.drafts > a,
+.listing li > a.virtual.models, 
+.listing li.virtual.models > a,
+.listing li > a.virtual.sent, 
+.listing li.virtual.sent > a,
+.listing li > a.virtual.junk, 
+.listing li.virtual.junk > a,
+.listing li > a.virtual.trash, 
+.listing li.virtual.trash > a,
+.listing li > a.virtual.dossier, 
+.listing li.virtual.dossier > a {
     opacity: .9;
 }
 

@@ -30,3 +30,4 @@ $labels['time'] = 'A : ';
 $labels['description'] = "Votre mail sera remis à la date et à l'horaire défini ci-dessous.";
 $labels['description_warning'] = "Attention : il est en revanche impossible de modifier et annuler ce mail une fois envoyé.";
 $labels['save'] = 'Enregistrer';
+$labels['cancel'] = 'Annuler la remise différée';

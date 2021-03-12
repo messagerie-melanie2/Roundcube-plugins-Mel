@@ -18,9 +18,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
+if (window.rcmail) {
+    rcmail.addEventListener('init', function (evt) {
+        if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
+            rcmail.enable_command('display_mel_envoi_differe', true);
+        };
+    });
+}
+
+
 /**
-       * Clone from fullcalendar.js
-       */
+ * Clone from fullcalendar.js
+ */
 var format_time = function (date, voice) {
     var zeroPad = function (n) { return (n < 10 ? '0' : '') + n; }
     var formatters = {
@@ -165,61 +175,71 @@ var init_time_autocomplete = function (elem, props) {
     };
 };
 
-if (window.rcmail) {
-    rcmail.addEventListener('init', function (evt) {
-        if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
-            rcmail.enable_command('display_mel_envoi_differe', true);
-        };
 
-        $('#envoidiffere_date').datepicker({ minDate: 0, dateFormat: 'dd/mm/yy' })
-            .change(function () {
-                changeInput(this.value);
-            });
 
-        init_time_autocomplete($('#envoidiffere_time'), {
-            container: '#envoidiffere-details'
-        });
 
-        $('#form_envoidiffere').submit(function (event) {
-            event.preventDefault();
-            let date = ($('#envoidiffere_date').val()).split("/");
-            let day = date[0];
-            let month = date[1];
-            let year = date[2];
 
-            let time = ($('#envoidiffere_time').val()).split(":");
-            let hour = time[0];
-            let min = time[1];
 
-            let DateJs = new Date(year, month - 1, day, hour, min);
-            let timestamp = DateJs.getTime();
-            $(window.parent.rcmail.gui_objects.messageform).append('<input type="hidden" name="envoi_differe" value="'+timestamp+'" /> ')
-            rcmail.command('send', '', this, event);
-        });
-    });
-}
 
 rcube_webmail.prototype.display_mel_envoi_differe = function () {
-    var frame = $('<iframe>').attr('id', 'envoidiffereframe')
-        .attr('src', rcmail.url('mail/plugin.mel_envoi_differe') + '&_framed=1')
-        .attr('frameborder', '0')
-        .appendTo(document.body);
 
-    var buttons = {};
+    let html = '<body class="iframe envoidiffere"><h1 class="boxtitle">' + rcmail.gettext('title', 'mel_envoi_differe') + '</h1><div id="envoidiffere-details" class="boxcontent"><form name="valide" action="" class="propform" id="form_envoidiffere"><fieldset><div class="warning">' + rcmail.gettext('description', 'mel_envoi_differe') + '<br>' + rcmail.gettext('description_warning', 'mel_envoi_differe') + '</div><div><label for="envoidiffere_date">' + rcmail.gettext('date', 'mel_envoi_differe') + '</label><input type="text" name="envoidiffere_date" id="envoidiffere_date" required>' + rcmail.gettext('time', 'mel_envoi_differe') + '<input type="text" name="envoidiffere_time" id="envoidiffere_time" required></div><div id="error_message"></div></fieldset></form></div></body>'
 
-    frame.dialog({
-        modal: true,
-        resizable: false,
-        closeOnEscape: true,
-        title: '',
-        closeText: rcmail.get_label('close'),
-        close: function () {
-            frame.dialog('destroy').remove();
-        },
-        buttons: buttons,
-        width: 400,
-        height: 450,
-        rcmail: rcmail
-    }).width(380);
+    buttons = [{
+        text: rcmail.gettext('save', 'mel_envoi_differe'),
+        'class': 'mainaction',
+        click: function () {
+            if ($('#envoidiffere_date').val() && $('#envoidiffere_time').val()) {
+
+                let date = ($('#envoidiffere_date').val()).split("/");
+                let day = date[0];
+                let month = date[1];
+                let year = date[2];
+
+                let time = ($('#envoidiffere_time').val()).split(":");
+                let hour = time[0];
+                let min = time[1];
+
+                let DateJs = new Date(year, month - 1, day, hour, min);
+                let timestamp = DateJs.getTime();
+
+                if (!$(window.parent.rcmail.gui_objects.messageform).find('input[name="envoi_differe"]').length) {
+                    $(window.parent.rcmail.gui_objects.messageform).append('<input id="envoi_differe" type="hidden" name="envoi_differe" value="' + timestamp + '" /> ')
+                }
+                else {
+                    parent.$('#envoi_differe').val(timestamp);
+                }
+
+                parent.$('#mel_envoi_differe').text($('#envoidiffere_date').val() + ' ' + $('#envoidiffere_time').val());
+                parent.$('#mel_envoi_differe').css({ width: '150px' });
+
+                $('.ui-dialog-content').dialog('destroy');
+            }
+            else {
+                $('#error_message').text("Merci de remplir les champs ci-dessus")
+            }
+        }
+    },
+    {
+        text: rcmail.gettext('cancel', 'mel_envoi_differe'),
+        click: function () {
+            if ($(window.parent.rcmail.gui_objects.messageform).find('input[name ="envoi_differe"]').length) {
+                parent.$('#envoi_differe').remove();
+            }
+            parent.$('#mel_envoi_differe').text("Remise différée");
+            parent.$('#mel_envoi_differe').css({ width: '125px' });
+            $('.ui-dialog-content').dialog('destroy');
+        }
+    }];
+
+    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 410 })
+
+    $('#envoidiffere_date').datepicker({ minDate: 0, dateFormat: 'dd/mm/yy' })
+        .change(function () {
+            changeInput(this.value);
+        });
+
+    init_time_autocomplete($('#envoidiffere_time'), {
+        container: '#envoidiffere-details'
+    });
 };
-

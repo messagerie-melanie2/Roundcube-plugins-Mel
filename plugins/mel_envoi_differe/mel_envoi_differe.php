@@ -31,7 +31,7 @@ class mel_envoi_differe extends rcube_plugin
 
         $this->load_config();
 
-        if ($rcmail->task == 'mail' && ($rcmail->action == 'compose' || $rcmail->action == 'plugin.mel_envoi_differe' || $rcmail->action == 'send')) {
+        if ($rcmail->task == 'mail' && $rcmail->action == 'compose') {
             if ($rcmail->config->get('ismobile', false)) {
                 $skin_path = 'skins/mel_larry_mobile';
             } else {
@@ -53,9 +53,9 @@ class mel_envoi_differe extends rcube_plugin
             ), 'toolbar');
 
             $this->register_action('plugin.mel_envoi_differe', array($this, 'request_action'));
-            if ($rcmail->action == 'send') {
-                $this->add_hook('message_before_send', array($this, 'message_before_send'));
-            }
+        } 
+        else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
+            $this->add_hook('message_before_send', array($this, 'message_before_send'));
         }
     }
 
@@ -69,18 +69,20 @@ class mel_envoi_differe extends rcube_plugin
     }
 
     /**
-     * Add timestamps in header
+     * Add timestamps and modify date in header
      */
     function message_before_send($args)
     {
-        $rcmail = rcmail::get_instance();
-        $timezone = $rcmail->config->get('timezone', null);
         $timestamp = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone($timezone));
-        $date->setTimestamp($timestamp / 1000);
-        $dateFormat = $date->format('r');
-        $args['message']->headers(array('X-DateEnvoiDiffere' => $timestamp, 'Date' => $dateFormat), true);
-        return $args;
+        if ($timestamp) {
+            $rcmail = rcmail::get_instance();
+            $timezone = $rcmail->config->get('timezone', null);
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($timestamp / 1000);
+            $dateFormat = $date->format('r');
+            $args['message']->headers(array('X-DateEnvoiDiffere' => $timestamp, 'Date' => $dateFormat), true);
+            return $args;
+        }
     }
 }

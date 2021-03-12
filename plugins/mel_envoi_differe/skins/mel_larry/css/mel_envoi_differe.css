@@ -13,29 +13,30 @@
 }
 
 #mel_envoi_differe {
-	max-width: 125px;
+	max-width: 150px;
 }
 
+
+
+/*Affichage du dialog*/
+body.envoidiffere {
+	background: #fff !important;
+	background: var(--main-content-bg-color) !important;
+}
 
 #envoidiffere_date {
     width: 140px;
     margin-right: 10px;
 }
 
+#error_message {
+    margin-top: 20px;
+    color: var(--settings-disconnect-text-color);
+}
+
 #envoidiffere_time {
     width: 110px;
 }
-
-/*Affichage de l'iframe*/
-body.envoidiffere {
-	background: #fff !important;
-	background: var(--main-content-bg-color) !important;
-}
-
-#submit_envoidiffere {
-    margin-top: 15px;
-}
-
 #envoidiffere-details .warning {
     margin-top: 5px;
     padding: 10px 15px;

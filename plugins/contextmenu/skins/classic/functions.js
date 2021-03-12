@@ -4,7 +4,7 @@
  * @licstart  The following is the entire license notice for the
  * JavaScript code in this file.
  *
- * Copyright (C) 2014 Philip Weir
+ * Copyright (C) Philip Weir
  *
  * The JavaScript code in this page is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License
@@ -15,75 +15,53 @@
  * for the JavaScript code in this file.
  */
 
-rcube_webmail.prototype.context_menu_popup_pattern = /rcmail_ui\.show_popup\(\'([^\']+)\'/;
-rcube_webmail.prototype.context_menu_button_active_class = new Array('active', 'button');
-rcube_webmail.prototype.context_menu_button_disabled_class = new Array('disabled', 'buttonPas');
+rcube_webmail.prototype.contextmenu.skin_funcs.compose_menu_text = function(p) {
+    if ($(p.item).children('a').hasClass('vcard')) {
+        $(p.item).children('a').children('span').text($('#abookactions a.vcard').attr('title'));
+    }
+};
 
-function add_menu_text(p) {
-	if ($(p.item).children('a').hasClass('vcard')) {
-		$(p.item).children('a').children('span').text($('#abookactions a.vcard').attr('title'));
-	}
-}
-
-function reorder_contact_menu(p) {
-	// put export link last
-	var ul = p.ref.container.find('ul:first');
-	$(p.ref.container).find('a.export').parent('li').appendTo(ul);
-}
-
-function reorder_abook_menu(p) {
-	// remove the remove from group option from the address book menu
-	p.ref.container.find('a.cmd_group-remove-selected').remove();
-}
+rcube_webmail.prototype.contextmenu.skin_funcs.reorder_addressbook_menu = function(p) {
+    // remove the remove from group option from the address book menu
+    p.ref.container.find('a.rcm_elem_groupmenulink').remove();
+    p.ref.container.find('a.cmd_group-remove-selected').remove();
+};
 
 $(document).ready(function() {
-	if (window.rcmail) {
-		if (rcmail.env.task == 'mail' && rcmail.env.action == '') {
-			rcmail.addEventListener('insertrow', function(props) { rcm_listmenu_init(props.row.id, {'menu_name': 'messagelist', 'menu_source': '#messagetoolbar'}); } );
-			rcmail.add_onload("rcm_foldermenu_init('#mailboxlist li', {'menu_source': ['#rcmFolderMenu', '#mailboxoptionsmenu ul']})");
-		}
-		else if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
-			rcmail.addEventListener('insertrow', function(props) { rcm_listmenu_init(props.row.id, {'menu_name': 'composeto', 'menu_source': '#abookactions', 'list_object': rcmail.contact_list}, {'insertitem': function(p) { add_menu_text(p); }}); } );
-		}
-		else if (rcmail.env.task == 'addressbook' && rcmail.env.action == '') {
-			rcmail.addEventListener('contextmenu_init', function(menu) {
-				if (menu.menu_name == 'contactlist') {
-					// copy the remove from group option in the contact menu
-					if (btn = $('#' + rcmail.buttons['group-remove-selected'][0].id).clone()) {
-						// remove the ID and add override class
-						btn.removeAttr('id').addClass('rcm_active');
-						btn = $('<li>').attr('role', 'menuitem').append(btn);
-						btn.insertAfter($('#rcmAddressBookMenu').find('a.assigngroup').parent('li'));
-					}
-				}
-			});
-			rcmail.addEventListener('insertrow', function(props) { rcm_listmenu_init(props.row.id, {'menu_name': 'contactlist', 'menu_source': ['#abooktoolbar', '#rcmAddressBookMenu'], 'list_object': rcmail.contact_list}, {
-				'init': function(p) { reorder_contact_menu(p); },
-				'afteractivate': function(p) {
-					p.ref.list_selection(false, rcmail.env.contextmenu_selection);
+    if (window.rcmail) {
+        $.extend(true, rcmail.contextmenu.settings, {
+            popup_pattern: /rcmail_ui\.show_popup\(\x27([^\x27]+)\x27/,
+            classes: {
+                button_active: 'active button',
+                button_disabled: 'disabled buttonPas'
+            }
+        });
 
-					// count the number of groups in the current addressbook
-					if (!rcmail.env.group || rcmail.env.readonly)
-						p.ref.container.find('a.cmd_group-remove-selected').removeClass('active').addClass('disabled');
-
-					// count the number of groups in the current addressbook
-					var groupcount = 0;
-					if (!rcmail.env.readonly && rcmail.env.address_sources[rcmail.env.source] && rcmail.env.address_sources[rcmail.env.source].groups)
-						$.each(rcmail.env.contactgroups, function(){ if (this.source === rcmail.env.source) groupcount++ });
-
-					if (groupcount > 0)
-						p.ref.container.find('a.assigngroup').removeClass('disabled').addClass('active');
-					else
-						p.ref.container.find('a.assigngroup').removeClass('active').addClass('disabled');
-				},
-				'aftercommand': function(p) {
-					if ($(p.el).hasClass('active') && p.command == 'group-remove-selected')
-						rcmail.command('listgroup', {'source': rcmail.env.source, 'id': rcmail.env.group}, p.el);
-				}
-			}); } );
-			rcmail.add_onload("rcm_abookmenu_init('#directorylist li, #savedsearchlist li', {'menu_source': ['#directorylist-footer', '#groupoptionsmenu ul']}, {'init': function(p) { reorder_abook_menu(p); }})");
-			rcmail.addEventListener('group_insert', function(props) { rcm_abookmenu_init(props.li, {'menu_source': ['#directorylist-footer', '#groupoptionsmenu ul']}); } );
-			rcmail.addEventListener('abook_search_insert', function(props) { rcm_abookmenu_init(rcmail.savedsearchlist.get_item('S' + props.id), {'menu_source': ['#directorylist-footer', '#groupoptionsmenu ul']}); } );
-		}
-	}
+        if (rcmail.env.task == 'mail' && rcmail.env.action == '') {
+            rcmail.addEventListener('insertrow', function(props) { rcmail.contextmenu.init_list(props.row.id, {'menu_name': 'messagelist', 'menu_source': '#messagetoolbar'}); } );
+            rcmail.add_onload("rcmail.contextmenu.init_folder('#mailboxlist li', {'menu_source': ['#rcmfoldermenu > ul', '#mailboxoptionsmenu ul']})");
+        }
+        else if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
+            rcmail.addEventListener('insertrow', function(props) { rcmail.contextmenu.init_list(props.row.id, {'menu_name': 'composeto', 'menu_source': '#abookactions', 'list_object': 'contact_list'}, {
+                'insertitem': function(p) { rcmail.contextmenu.skin_funcs.compose_menu_text(p); }
+            }); } );
+        }
+        else if (rcmail.env.task == 'addressbook' && rcmail.env.action == '') {
+            rcmail.addEventListener('insertrow', function(props) { rcmail.contextmenu.init_list(props.row.id, {'menu_name': 'contactlist', 'menu_source': ['#abooktoolbar'], 'list_object': 'contact_list'}); } );
+            rcmail.add_onload("rcmail.contextmenu.init_addressbook('#directorylist li, #savedsearchlist li', {'menu_source': ['#directorylist-footer', '#groupoptionsmenu ul']}, {'init': function(p) { rcmail.contextmenu.skin_funcs.reorder_addressbook_menu(p); }})");
+            rcmail.addEventListener('group_insert', function(props) { rcmail.contextmenu.init_addressbook(props.li, {'menu_source': ['#directorylist-footer', '#groupoptionsmenu ul']}); } );
+            rcmail.addEventListener('abook_search_insert', function(props) { rcmail.contextmenu.init_addressbook(rcmail.savedsearchlist.get_item('S' + props.id), {'menu_source': ['#directorylist-footer', '#groupoptionsmenu ul']}); } );
+        }
+        else if (rcmail.env.task == 'settings') {
+            rcmail.contextmenu.settings_menus([
+                {'obj': 'sections-table tr', 'props': {'menu_name': 'preferenceslist', 'menu_source': '#rcmsettingsmenu > ul', 'list_object': 'sections_list'}},
+                {'obj': 'subscription-table li', 'props': {'menu_name': 'folderlist', 'menu_source': ['#rcmfoldermenu > ul', '#rcmsettingsmenu > ul', '#mailboxoptionsmenu > ul'], 'list_object': 'subscription_list', 'init_func': 'init_settings'}},
+                {'obj': 'identities-table tr', 'props': {'menu_name': 'identiteslist', 'menu_source': ['#rcmsettingsmenu > ul', '#identities-list div.boxfooter'], 'list_object': 'identity_list'}},
+                {'obj': 'responses-table tr', 'props': {'menu_name': 'responseslist', 'menu_source': ['#rcmsettingsmenu > ul', '#responses-list div.boxfooter'], 'list_object': 'responses_list'}},
+                {'obj': 'filtersetslist tr', 'props': {'menu_name': 'managesievesetlist', 'menu_source': ['#rcmsettingsmenu > ul', '#filtersetmenu > ul'], 'list_object': 'filtersets_list'}},
+                {'obj': 'filterslist tr', 'props': {'menu_name': 'managesieverulelist', 'menu_source': ['#rcmsettingsmenu > ul', '#filtermenu > ul'], 'list_object': 'filters_list'}},
+                {'obj': 'keys-table tr', 'props': {'menu_name': 'enigmakeylist', 'menu_source': ['#rcmsettingsmenu > ul', '#keystoolbar'], 'list_object': 'keys_list', 'list_id': 'keys-table'}}
+            ]);
+        }
+    }
 });

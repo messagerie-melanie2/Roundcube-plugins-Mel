@@ -21,6 +21,10 @@ Install
 directory called contextmenu and place the files in there, ignoring the root
 directory in the downloaded archive.
 
-[rcplugrepo]: http://plugins.roundcube.net/packages/johndoh/contextmenu
-[releases]: http://github.com/JohnDoh/Roundcube-Plugin-Context-Menu/releases
-[gpl]: http://www.gnu.org/licenses/gpl.html
+ContextMenu manual
+------------------
+The MANUAL.md file shipped with this plugin contains information for plugin and
+skin developers. The ContextMenu plugin can be extended by other plugins; new
+menus can be created and existing menus manipulated.
+
+[gpl]: https://www.gnu.org/licenses/gpl.html

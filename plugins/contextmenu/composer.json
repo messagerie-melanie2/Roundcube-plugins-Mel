@@ -2,10 +2,10 @@
   "name": "johndoh/contextmenu",
   "description": "Adds context menus with common tasks to various parts of Roundcube",
   "keywords": ["context","menu","right-click"],
-  "homepage": "http://github.com/JohnDoh/Roundcube-Plugin-Context-Menu/",
+  "homepage": "https://github.com/johndoh/roundcube-contextmenu/",
   "license": "GPL-3.0",
   "type": "roundcube-plugin",
-  "version": "2.3",
+  "version": "3.2.1",
   "authors": [
     {
       "name": "Philip Weir",
@@ -13,19 +13,13 @@
       "role": "Developer"
     }
   ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "http://plugins.roundcube.net"
-    }
-  ],
   "require": {
-    "php": ">=5.2.1",
+    "php": ">=5.4.0",
     "roundcube/plugin-installer": ">=0.1.2"
   },
   "extra": {
     "roundcube": {
-      "min-version": "1.3"
+      "min-version": "1.4.4"
     }
   }
 }

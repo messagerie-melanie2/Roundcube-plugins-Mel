@@ -82,6 +82,14 @@ class rocket_chat extends rcube_plugin {
                 'type'=> 'link'
             ), 'taskbar');
           }
+          $this->register_action('create_chanel', array(
+            $this,
+            'create_chanel'
+        ));
+        $this->register_action('add_users', array(
+          $this,
+          'add_users'
+      ));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -381,5 +389,22 @@ EOF;
      */
     private function generateAuthToken() {
       return base64_encode(uniqid('roundcube_plugin_rocket_chat')); 
+    }
+
+    public function create_chanel()
+    {
+      require_once __DIR__ . '/lib/rocketchatclient.php';
+      $this->login();
+      $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
+      $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
+      $uid = $this->getUserId();
+      $token = $this->getAuthToken();
+      $user = $this->rc->get_user_name();
+      $rocketClient = new RocketChatClient($this->rc);
+      $rocketClient->setUserId($uid);
+      $rocketClient->setAuthToken($token);
+      $result = $rocketClient->create_chanel($room_name, $is_public);
+      echo json_encode($result);
+      exit;
     }
 }

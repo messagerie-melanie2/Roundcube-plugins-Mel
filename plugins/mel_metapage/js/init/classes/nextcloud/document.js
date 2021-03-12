@@ -106,6 +106,11 @@ var nextcloud_document = (() => {
             this.datas.push(new Nextcloud_Document_Config(type, null,iconClass, href, app, ...config_modifier));
         }
 
+        addIcon(template, _class)
+        {
+            this.datas.push(new Nextcloud_Document_Config(null, template,_class, null, null));
+        }
+
         /**
          * Change une icône en classe.
          * @param {string} icon Icône à changer en classe.

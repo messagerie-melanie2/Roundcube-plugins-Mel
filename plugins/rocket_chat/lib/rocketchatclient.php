@@ -93,6 +93,13 @@ class RocketChatClient {
    */
   const USER_INFO = 'users.info';
   /**
+   * New chanel
+   * 
+   * @var string
+   */
+  const CHANEL_CREATE = "channels.create";
+  const CHANEL_SET_TYPE = "channels.setType";
+  /**
    * Relative API URL
    *
    * @var string
@@ -416,6 +423,35 @@ class RocketChatClient {
     return trim($this->remove_accents(strtolower(str_replace(' ', '.', $name))));
   }
   
+  public function create_chanel($name, $is_public)
+  {
+    $params = array(
+      "name" => $name
+    );
+  
+    $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+    );
+    $result = $this->_post_url($this->_api_url.self::CHANEL_CREATE, $params, null, $headers);
+    if (!is_array($result['content'])) {
+      $result['content'] = json_decode($result['content'], true);
+    }
+    if ($result['content']["success"] === true)
+    {
+      if (!$is_public)
+      {
+        $params = ["roomId" => $result['content']["channel"]["_id"], "type" => "p"];
+        $result = $this->_post_url($this->_api_url.self::CHANEL_SET_TYPE, $params, null, $headers);
+        return $result;
+      }
+    }
+    else 
+    {}
+    return $result;
+  }
+
   /**
    * Permet de récupérer le contenu d'une page Web
    *

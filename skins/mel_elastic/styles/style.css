@@ -522,3 +522,51 @@ body.task-mail .floating-action-buttons
 {
     display: none;
 }
+
+.red-star::before,
+.red-star-after::after {
+    content: "*";
+    color:red;
+}
+
+.mel-return{
+    transition: all 0.1s ease-in;
+    cursor: pointer;
+}
+
+.mel-return:hover {
+    color:#ff5552;
+}
+
+.dwp-round{
+    width: 64px;
+    height: 64px;
+    background-color: #80D5C6;
+    display: block;
+    border-radius: 100%;
+    text-align: center;
+    color: inherit!important;
+    text-decoration: none!important;
+    -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
+}
+
+.dwp-round > span
+{
+    line-height: 64px;
+    font-size: x-large;
+}
+
+.dwp-round > img
+{
+    height: 100%;
+}
+
+img.menu-image {
+    width: 30px;
+    /* max-height: 30px; */
+    margin-left: -26px;
+    margin-right: 15px;
+    /* position: absolute; */
+    /* top: 0; */
+    /* left: 0; */
+}

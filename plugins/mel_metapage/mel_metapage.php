@@ -50,7 +50,7 @@ class mel_metapage extends rcube_plugin
             {
                 $this->include_script('js/actions/ariane.js');
             }
-            $this->include_plugin();
+            $this->mm_include_plugin();
             $this->rc->get_storage();
             $this->register_task("mel_metapage");
             $this->register_action('search_mail', array($this, 'search_mail'));
@@ -117,7 +117,7 @@ class mel_metapage extends rcube_plugin
         $this->load_config_js();
     }
 
-    function include_plugin()
+    function mm_include_plugin()
     {
         $this->add_button(array(
             'command' => 'last_frame',
@@ -279,6 +279,16 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env('mel_metapage_ariane_button_config', $this->rc->config->get("pop_up_ariane"));
         $this->rc->output->set_env('REPLACED_SEARCH', ASearch::REPLACED_SEARCH);
         $this->rc->output->set_env('mel_metapage_templates_doc', $this->rc->config->get('documents_types'));
+        $this->rc->output->set_env('mel_metapage_templates_services', $this->rc->config->get('workspace_services'));
+
+        $icons_files = scandir(__DIR__."/".$this->local_skin_path()."/pictures/dwp_icons");
+        $icons= [];
+        foreach ($icons_files as $key => $value) {
+            if ($value === "." || $value === "..")
+                continue;
+            $icons[] = ["name" => $value, "path" => "/plugins/mel_metapage/".$this->local_skin_path()."/pictures/dwp_icons/".$value];
+        }
+        $this->rc->output->set_env('mel_metapage_workspace_logos', $icons);
 
         foreach ($this->rc->user->list_emails() as $identity) {
             $emails[] = strtolower($identity['email']);
@@ -297,7 +307,7 @@ class mel_metapage extends rcube_plugin
         $size = count($msgs);
         $retour = 0;
         for ($i=0; $i < $size; ++$i) { 
-            if (count($msgs[$i]) == 0 || $msgs[$i]->flags["SEEN"] === null || !$msgs[$i]->flags["SEEN"] )
+            if (/*count($msgs[$i]) == 0 || */$msgs[$i]->flags["SEEN"] === null || !$msgs[$i]->flags["SEEN"] )
                 ++$retour;
         }
         echo $retour;

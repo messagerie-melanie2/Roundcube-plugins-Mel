@@ -1,3 +1,12 @@
+jQuery.fn.swap = function(b){ 
+    b = jQuery(b)[0]; 
+    var a = this[0]; 
+    var t = a.parentNode.insertBefore(document.createTextNode(''), a); 
+    b.parentNode.insertBefore(a, b); 
+    t.parentNode.insertBefore(b, t); 
+    t.parentNode.removeChild(t); 
+    return this; 
+};
 /**
  * Affiche la modale du bouton "créer".
  */
@@ -27,8 +36,8 @@ function m_mp_Create()
             return '<button class="btn btn-block btn-secondary btn-mel ' + disabled + '" onclick="'+click+'"'+disabled+'><span class="'+font+'"></span>'+ txt +'</button>';
         }
         let html = "";
-        let workspace = '<div class="col-12">' + button(rcmail.gettext("mel_metapage.a_worspace"), "icofont-monitor") + '</div>'
-        let mail = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_mail"), "icofont-email block", "rcmail.open_compose_step()") + "</div>";
+        let workspace = '<div class="col-12">' + button(rcmail.gettext("mel_metapage.a_worspace"), "icofont-monitor", "m_mp_createworkspace()") + '</div>'
+        let mail = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_mail"), "icofont-email block", "rcmail.command('compose','',this,event)") + "</div>";
         let tache = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_task"), "icofont-tasks block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), () => m_mp_action_from_storage('task_create', m_mp_OpenTask))") + "</div>";
         let reu = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_meeting"), "icofont-calendar block", 'm_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
         let viso = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_web_conf"), "icofont-slidshare block") + "</div>";
@@ -41,6 +50,299 @@ function m_mp_Create()
     }
     else //Si elle existe, on l'affiche.
         window.create_popUp.show();
+}
+
+function m_mp_createworskpace_steps()
+{
+    return {
+        init:()=>{
+            const tmp = (img) =>
+            {
+                img = img.split(".");
+                if (img.length > 1)
+                    img[img.length-1] = "";
+                img = img.join(".");
+                img = img.slice(0, img.length-1);
+                return img;
+            };
+            let html = "";
+            if (rcmail.env.mel_metapage_workspace_logos.length > 0)
+            {
+                html += `<li role="menuitem"><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
+                for (let index = 0; index < rcmail.env.mel_metapage_workspace_logos.length; index++) {
+                    const element = rcmail.env.mel_metapage_workspace_logos[index];
+                    html += `<li role="menuitem"><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
+                }
+            }
+            $("#ul-wsp").html(html);
+
+            return "";
+        },
+        step1:() => {
+            let html = "<div class=row>";
+            html += '<div class=col-2>';
+            html += "Avatar<br/>"
+            html += '<span id=tmpavatar></span>'
+            html += "</div><div class=col-10>"
+            html += "Titre<span class=red-star></span><br/>"
+            html += '<input oninput="m_mp_input(this)" id=workspace-title class="form-control required" placeholder="Titre de l\'espace"/>';
+            html += '</div></div>';
+            html += "<div class=row style=margin-top:5px><div class=col-12>";
+            html += '<span style=margin-top:5px>Description</span><br/>'
+            html += '<textarea id=workspace-desc class=form-control placeholder="Description de l\'espace"></textarea>';
+            html += "</div></div>"
+            html += "<div class=row style=margin-top:5px><div class=col-5>";
+            html += '<span style=margin-top:5px>Date de fin</span><br/>'
+            html += '<input class=form-control id=workspace-date-end type=datetime-local />';
+            html += "</div><div class=col-7>";
+            html += '<span style=margin-top:5px>Thématique</span><br/>'
+            html += '<input class=form-control id=workspace-hashtag type=text placeholder="Thématique de l\'espace." />';
+            html += "</div></div>";
+            html += '<div class=row style=margin-top:5px><div class=col-12>';
+            html += '<span class=red-star-after>Accès</span><br/>'
+            html += '<div class="custom-control custom-radio">';
+            html += '<input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required">';
+            html += '<label class="custom-control-label" for="workspace-private">Restreint</label>';
+            html += '</div>';
+            html += '<div class="custom-control custom-radio">'
+            html += '<input type="radio" id="workspace-public" name="customRadio" class="custom-control-input required">';
+            html += '<label class="custom-control-label" for="workspace-public">Public</label>';
+            html += '</div></div></div>';
+            html += '<div style=margin:15px></div>'
+            html += '<button style="float:left;display:none;" class="btn btn-warning btn-workspace-left" onclick=m_mp_reinitialize_popup()>Retour</button><button onclick="m_mp_check_w(1,`workspace-step2`)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
+            return html;
+        },
+        step2:() => {
+            let html = "Participants<span class=red-star></span>";
+            html += '<div class="input-group">';
+		    html += '<textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>';
+            html += '<ul id="wspf" class="form-control recipient-input ac-input rounded-left">'
+                                /* <li class="recipient">
+                                    <span class="name">delphin.tommy@gmail.com</span>
+                                    <span class="email">,</span>
+                                    <a class="button icon remove"></a></li> */
+            html += '<li class="input"><input id="workspace-user-list" onchange="m_mp_autocoplete()" oninput="m_mp_autocoplete()" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
+			html += '<span class="input-group-append">';
+		    html += `<a href="#add-contact" onclick="m_mp_openTo()" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
+			html +=	'			</span>';
+			html += '			</div>';
+            html += '<div style=margin:15px></div>'
+            html += '<button style="float:left" class="btn btn-warning btn-workspace-left" onclick=m_mp_switch_step(`workspace-step1`)>Retour</button><button onclick="m_mp_check_w(2, `workspace-step3`)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
+            return html;
+        },
+        step3:()=> {
+            let html = "";
+            html += "Services<span class=red-star></span>"
+            html += "<div class=row>";
+            const mel_metapage_templates_services = rcmail.env.mel_metapage_templates_services;
+            for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
+                const element = mel_metapage_templates_services[index];
+                html += "<div class=col-md-3>";
+                html += '<button type=button class="doc-'+element.type+' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `'+JSON.stringify(element).replace(/"/g, "¤¤¤")+'`)"><span style="display:block;margin-right:0px" class="'+m_mp_CreateDocumentIconContract(element.icon)+'"></span>'+ rcmail.gettext(element.name) +'</button>';
+                html += "</div>"
+            }
+            html += "</div>";
+            html += '<div style=margin:15px></div>'
+            html += '<div class="row"><div class="col-12" style="text-align: center;"><span id="wspsse" style="color: red;display:none;"></span></div></div>'
+            html += '<button style="float:left" class="btn btn-warning btn-workspace-left" onclick=m_mp_switch_step(`workspace-step2`)>Retour</button><button onclick="m_mp_check_w(3, null)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
+            return html;
+        }
+    }
+}
+
+function m_mp_createworkspace()
+{
+
+
+    let html = "";
+    const object = m_mp_createworskpace_steps();
+    for (const key in object) {
+        if (Object.hasOwnProperty.call(object, key)) {
+            const element = object[key];
+            if (key === "init")
+                html += element();
+            else
+                html += '<div style="display:none;" class=step id="workspace-' + key + '">' + element() + "</div>";
+        }
+    }
+    create_popUp.contents.html(html);
+    create_popUp.editTitle('<h2 class=""><span class="icofont-reply mel-return" onclick=m_mp_reinitialize_popup()></span>Création d\'un espace de travail</h2>');
+    if ($("#tmpavatar").find("a").length === 0)
+        $("#worspace-avatar-a").css("display", "").appendTo($("#tmpavatar"));
+    m_mp_switch_step("workspace-step1");
+    rcmail.init_address_input_events($("#workspace-user-list"));
+    $(".global-modal-body").css("height", "450px");
+    // $.ajax({ // fonction permettant de faire de l'ajax
+    //     type: "GET", // methode de transmission des données au fichier php
+    //     url: "/?_task=discussion&_action=chanel_create",
+    //     success: function (data) {
+    //         console.log("yeay", data);
+    //     },
+    //     error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+    //         console.error(xhr, ajaxOptions, thrownError);
+    //     },
+    // });//}); 
+}
+
+function m_mp_change_picture(img)
+{
+    console.log(img, $("#worspace-avatar-a"));
+    if (img === null)
+    {
+        $("#worspace-avatar-a").html("");
+        m_mp_input($("#workspace-title")[0]);
+    }
+    else
+        $("#worspace-avatar-a").html('<img src="' + img + '" />');
+}
+
+function m_mp_input(element)
+{
+    //a.slice(0,8)
+    if ($("#worspace-avatar-a").find("img").length === 0)
+        $("#worspace-avatar-a").html("<span>"+ element.value.slice(0,3).toUpperCase() + "</span>");
+}
+
+function m_mp_check_w(step, next)
+{
+    let stop = false;
+    switch (step) {
+        case 1:
+            if ($("#workspace-title").val() === "")
+            {
+                $("#workspace-title").css("border-color", "red");
+                if ($("#wspte").length === 0)
+                    $("#workspace-title").parent().append('<span id=wspte class=input-error-r style=color:red></span>');
+                $("#wspte").html("* L'espace de travail doit avoir un titre !");
+                $("#wspte").css("display", "");
+                stop = true;
+            } 
+            else
+            {
+                $("#wspte").css("display", "none");
+                $("#workspace-title").css("border-color", "");
+            }
+            if ($("#workspace-private")[0].checked === false && $("#workspace-public")[0].checked === false)
+            {
+                $("#workspace-private").parent().css("color", "red");
+                $("#workspace-public").parent().css("color", "red");
+                if ($("#wspae").length === 0)
+                    $("#workspace-private").parent().parent().append('<span id=wspae class=input-error-r style=color:red></span>');
+                $("#wspae").html("* L'espace de travail doit avoir un accès de défini !");
+                $("#wspae").css("display", "");
+                stop = true;
+            }
+            else {
+                $("#wspae").css("display", "none");
+                $("#workspace-private").parent().css("color", "");
+                $("#workspace-public").parent().css("color", "");
+            }
+            break;
+        case 2:
+            if ($("#wspf").children().length === 1)
+            {
+                $("#wspf").css("border-color", "red");
+                if ($("#wspfe").length === 0)   
+                    $("#wspf").parent().parent().append('<span id=wspfe class=input-error-r style=color:red></span>');
+                $("#wspfe").html("* Il faut avoir au moins un participant !")
+                $("#wspfe").css("display", "");
+                stop = true;
+            }
+            else
+            {
+                $("#wspf").css("border-color", "");
+                $("#wspfe").css("display", "none");
+            }
+            break;
+        case 3:
+            //wspsse
+            if ($(".btn-template-doc.active").length === 0)
+                $("#wspsse").css("display", "").html("* Il vous faut au moins un service !");
+            else
+                $("#wspsse").css("display", "none")
+            break;
+        default:
+            break;
+    }
+
+    if (!stop)
+    {
+        if (next !== null)
+            m_mp_switch_step(next);
+    }
+}
+
+function m_mp_UpdateWorkspace_type(event, element)
+{
+    //console.log("m_mp_UpdateWorkspace_type", event, element);
+    event = $(event);
+    console.log(event, event.hasClass("active"));
+    if (event.hasClass("active"))
+        event.removeClass("active");
+    else 
+        event.addClass("active");
+    document.activeElement.blur();
+}
+
+function m_mp_autocoplete()
+{//<span class="name">delphin.tommy@gmail.com</span>
+   let val = $("#workspace-user-list").val();
+   if (val.includes(',')) 
+   {
+       val = val.replace(",", "");
+       let html = '<li class="recipient workspace-recipient">';
+       if (val.includes("<") && val.includes(">"))
+       {
+           let _enum = Enumerable.from(val);
+           let index1 = val.indexOf("<");
+           let index2 = val.indexOf(">");
+           //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
+           html += '<span class="name">'+_enum.where((x, i) => index1<i && i < index2).toArray().join("")+'</span>';//.join("")
+           html += '<span class="email">'+_enum.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")+'</span>';
+
+        }
+        else {
+            html += '<span class="name">'+val+'</span>';
+            html += '<span class="email">'+val+'</span>'
+        }
+        html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
+    html += "</li>";
+    $("#wspf").append(html);
+    $("#workspace-user-list").val("");
+    //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $("#workspace-user-list").parent()[0].outerHTML);
+    html = $("#workspace-user-list").parent()[0].outerHTML;
+    $("#workspace-user-list").parent().remove();
+    $("#wspf").append(html);
+    rcmail.init_address_input_events($("#workspace-user-list"));
+    $("#workspace-user-list").focus();
+   }
+}
+
+function m_mp_remove_li(event)
+{
+    $(event).parent().remove();
+    $("#workspace-user-list").focus();
+}
+
+function m_mp_openTo()
+{
+    UI.recipient_selector('to');
+    $(".popup.ui-dialog-content").css("max-height", (window.innerHeight-120) + "px")
+    .parent().css("top", "60px");
+    
+}
+
+function m_mp_reinitialize_popup()
+{
+    delete window.create_popUp;// = undefined;
+    $(".global-modal-body").css("height", "");
+    m_mp_Create();
+}
+
+function m_mp_switch_step(id)
+{
+    $(".step").css("display", "none");
+    $("#" + id).css("display", "");
 }
 
 /**
@@ -506,3 +808,4 @@ function m_mp_anchor_ariane()
     if (parent.mel_metapage.PopUp.ariane !== undefined)
         parent.mel_metapage.PopUp.ariane.anchor();
 }
+

@@ -400,6 +400,7 @@ EOF;
       require_once __DIR__ . '/lib/rocketchatclient.php';
       $this->login();
       $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
+      $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
       $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
       if ($is_public === "false")
         $is_public = false;
@@ -411,7 +412,7 @@ EOF;
       $rocketClient = new RocketChatClient($this->rc);
       $rocketClient->setUserId($uid);
       $rocketClient->setAuthToken($token);
-      $result = $rocketClient->create_chanel($room_name, $is_public);
+      $result = $rocketClient->create_chanel($room_name, $users, $is_public);
       echo json_encode($result);
       exit;
     }
@@ -420,6 +421,22 @@ EOF;
     {
       $username = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST);
       echo json_encode($this->getUserInfos($username));
+      exit;
+    }
+
+    public function add_users()
+    {
+      $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
+      $channel_id = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
+      require_once __DIR__ . '/lib/rocketchatclient.php';
+      $this->login();
+      $uid = $this->getUserId();
+      $token = $this->getAuthToken();
+      $rocketClient = new RocketChatClient($this->rc);
+      $rocketClient->setUserId($uid);
+      $rocketClient->setAuthToken($token);
+      $results = $rocketClient->add_users($channel_id, $users);
+      echo json_encode($results);
       exit;
     }
 }

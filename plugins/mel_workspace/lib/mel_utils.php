@@ -1,594 +1,6 @@
 <?php
-/**
- * Plugin Rocket.Chat
- * Integration of Rocket.Chat as an iFrame in Roundcube
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
-/**
- * Classe cliente de gestion des API Rocket.Chat
- *
- * @author Thomas Payen <thomas.payen@i-carre.net>
- */
-class RocketChatClient {
-  /**
-   * User ID Rocket.Chat
-   *
-   * @var string
-   */
-  private $_user_id;
-  /**
-   * Auth Token Rocket.Chat
-   *
-   * @var string
-   */
-  private $_auth_token;
-  /**
-   * URL vers l'instance Rocket.Chat
-   *
-   * @var string
-   */
-  private $_api_url;
-  /**
-   *
-   * @var rcmail
-   */
-  private $rc;
-  /**
-   * User agent
-   *
-   * @var string
-   */
-  private $_user_agent = "Rocket.Chat Client";
-  /**
-   * Vérification peer SSL
-   *
-   * @var boolean
-   */
-  private $_ssl_verify_peer = true;
-  
-  /**
-   * API login
-   *
-   * @var string
-   */
-  const LOGIN = 'login';
-  /**
-   * API logout
-   *
-   * @var string
-   */
-  const LOGOUT = 'logout';
-  /**
-   * API user create
-   *
-   * @var string
-   */
-  const USER_CREATE = 'users.create';
-  /**
-   * API user update
-   *
-   * @var string
-   */
-  const USER_UPDATE = 'users.update';
-  /**
-   * API user create token
-   *
-   * @var string
-   */
-  const USER_CREATETOKEN = 'users.createToken';
-  /**
-   * API user info
-   *
-   * @var string
-   */
-  const USER_INFO = 'users.info';
-  /**
-   * New chanel
-   * 
-   * @var string
-   */
-  const CHANEL_CREATE = "channels.create";
-  const CHANEL_SET_TYPE = "channels.setType";
-  const CHANEL_INVITE = "channels.invite";
-  /**
-   * Relative API URL
-   *
-   * @var string
-   */
-  const API_URL = 'api/v1/';
-  
-  /**
-   * Constructeur par défaut
-   *
-   * @param rcmail $rc
-   *          Instance rcmail
-   * @param string $rocketChatUrl
-   *          URL vers l'instance Rocket.Chat
-   */
-  public function __construct($rc = null, $rocketChatUrl = null) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::__construct()");
-    $this->_user_id = null;
-    $this->_auth_token = null;
-    if (isset($rc)) {
-      $this->rc = $rc;
-      $this->_api_url = $this->rc->config->get('rocket_chat_url_api');
-      $rocketChatUrl = null;
-      $this->_user_agent = $this->rc->config->get('curl_user_agent');
-      $this->_ssl_verify_peer = $this->rc->config->get('curl_ssl_verifierpeer');
-    }
-    if (isset($rocketChatUrl)) {
-      $this->_api_url = $rocketChatUrl . self::API_URL;
-    }
-  }
-  
-  /**
-   * Authentification sur les API Rocket.Chat
-   *
-   * @param string $username
-   * @param string $password
-   * @param boolean $force_auth
-   * @return boolean true si Auth OK, false sinon
-   */
-  public function authentification($username = null, $password = null, $force_auth = false) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::authentification($username, $force_auth)");
-    
-    if ($force_auth) {
-      $this->setAuthToken(null);
-      $this->setUserId(null);
-    }
-    
-    if (!isset($username)) {
-      $username = $this->rc->get_user_name();
-    }
-    if (!isset($password)) {
-      $password = $this->rc->get_user_password();
-    }
-    
-    $auth_token = $this->getAuthToken();
-    $user_id = $this->getUserId();
-    if (!isset($auth_token)) {
-      $params = array(
-          "username" => $username,
-          "password" => $password
-      );
-      $result = $this->_post_url($this->_api_url . self::LOGIN, $params);
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::authentification() httpCode: " . $result['httpCode']);
-      if (isset($result['content'])) {
-        mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::authentification() content: " . $result['content']);
-        if (!is_array($result['content'])) {
-          $result['content'] = json_decode($result['content'], true);
-        }
-        if (isset($result['content']['status']) && $result['content']['status'] == "success" && isset($result['content']['data'])) {
-          $auth_token = $result['content']['data']['authToken'];
-          $user_id = $result['content']['data']['userId'];
-        }
-      }
-    }
-    $this->setAuthToken($auth_token);
-    $this->setUserId($user_id);
-    
-    return isset($auth_token);
-  }
-  /**
-   * Deconnexion des API Rocket.Chat
-   *
-   * @return boolean
-   */
-  public function logout() {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::logout()");
-    
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId()
-    );
-    
-    $result = $this->_get_url($this->_api_url . self::LOGOUT, $params, $headers);
-    $ret = false;
-    if (isset($result['content'])) {
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::logout() content: " . $result['content']);
-      if (!is_array($result['content'])) {
-        $result['content'] = json_decode($result['content'], true);
-      }
-      if (isset($result['content']['status']) && $result['content']['status'] == "success") {
-        $ret = true;
-      }
-    }
-    
-    return $ret;
-  }
-  /**
-   * Création d'un nouvel utilisateur Rocket.Chat
-   *
-   * @param string $username
-   * @param string $email
-   * @param string $password
-   * @param string $name
-   * @return boolean
-   */
-  public function createUser($username, $email, $password, $name) {
-    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatClient::createUser($username, $email, $name)");
-    
-    $params = array(
-        "username" => $username,
-        "password" => $password,
-        "email" => $email,
-        "name" => $name,
-        "verified" => true
-    );
-    
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId()
-    );
-    
-    $result = $this->_post_url($this->_api_url . self::USER_CREATE, $params, null, $headers);
-    
-    $ret = false;
-    $user_id = null;
-    $errorType = null;
-    $error = "";
-    if (isset($result['content'])) {
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::createUser() content: " . $result['content']);
-      if (!is_array($result['content'])) {
-        $result['content'] = json_decode($result['content'], true);
-      }
-      $ret = isset($result['content']['success']) ? $result['content']['success'] : false;
-      $user_id = isset($result['content']['user']['_id']) ? $result['content']['user']['_id'] : null;
-      $errorType = isset($result['content']['errorType']) ? $result['content']['errorType'] : null;
-      $error = isset($result['content']['error']) ? $result['content']['error'] : null;
-    }
-    
-    if (!$ret) {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "RocketChatClient::createUser() Error result: " . var_export($result, true));
-    }
-    
-    return array(
-        "success" => $ret,
-        "user_id" => $user_id,
-        "errorType" => $errorType,
-        "error" => $error
-    );
-  }
-  /**
-   * Mise à jour du mot de passe de l'utilisateur Rocket.Chat
-   *
-   * @param string $userId
-   * @param string $password
-   * @return boolean
-   */
-  public function updateUserPassword($userId, $password) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::updateUserPassword($userId)");
-    
-    $params = array(
-        "userId" => $userId,
-        "data" => array(
-            "password" => $password
-        )
-    );
-    
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId()
-    );
-    
-    $result = $this->_post_url($this->_api_url . self::USER_UPDATE, $params, null, $headers);
-    $ret = false;
-    if (isset($result['content'])) {
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::updateUserPassword() content: " . $result['content']);
-      if (!is_array($result['content'])) {
-        $result['content'] = json_decode($result['content'], true);
-      }
-      $ret = isset($result['content']['success']) ? $result['content']['success'] : false;
-    }
-    
-    return $ret;
-  }
-  /**
-   * Création d'un token pour l'utilisateur Rocket.Chat
-   *
-   * @param string $userId
-   * 
-   * @return boolean
-   */
-  public function createUserToken($userId) {
-    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatClient::createUserToken($userId)");
-    
-    $params = array(
-        "userId" => $userId
-    );
-    
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId()
-    );
-    
-    $result = $this->_post_url($this->_api_url . self::USER_CREATETOKEN, $params, null, $headers);
-    $ret = false;
-    $user_id = null;
-    $errorType = null;
-    if (isset($result['content'])) {
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::createUserToken() content: " . $result['content']);
-      if (!is_array($result['content'])) {
-        $result['content'] = json_decode($result['content'], true);
-      }
-      $ret = isset($result['content']['success']) ? $result['content']['success'] : false;
-      $authToken = isset($result['content']['data']['authToken']) ? $result['content']['data']['authToken'] : null;
-      $errorType = isset($result['content']['errorType']) ? $result['content']['errorType'] : null;
-    }
-    
-    return array(
-        "success" => $ret,
-        "authToken" => $authToken,
-        "errorType" => $errorType
-    );
-  }
-  /**
-   * Récupération des infos de l'utilisateur Rocket.Chat s'il existe
-   *
-   * @param string $username
-   * 
-   * @return array infos
-   */
-  public function userInfo($username) {
-    mel_logs::get_instance()->log(mel_logs::INFO, "RocketChatClient::userInfo($username)");
-    
-    $params = array(
-        "username" => $username
-    );
-    
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId()
-    );
-    
-    $result = $this->_get_url($this->_api_url . self::USER_INFO, $params, $headers);
-    $infos = null;
-    if (isset($result['content'])) {
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::userInfo() content: " . $result['content']);
-      if (!is_array($result['content'])) {
-        $result['content'] = json_decode($result['content'], true);
-      }
-      if (isset($result['content']['success']) && $result['content']['success'] == true && isset($result['content']['user'])) {
-        $infos = [
-          'id'        => $result['content']['user']['_id'],
-          'name'      => $result['content']['user']['name'],
-          'username'  => $username,
-          'fname'     => $result['content']['user']['name'],
-          'status'    => $result['content']['user']['status'],
-        ]; 
-      }
-    }
-    return $infos;
-  }
-  /**
-   * Getter Auth Token
-   *
-   * @return string
-   */
-  public function getAuthToken() {
-    return $this->_auth_token;
-  }
-  /**
-   * Setter Auth Token
-   *
-   * @param string $auth_token
-   */
-  public function setAuthToken($auth_token) {
-    $this->_auth_token = $auth_token;
-  }
-  /**
-   * Getter User Id
-   *
-   * @return string
-   */
-  public function getUserId() {
-    return $this->_user_id;
-  }
-  /**
-   * Setter User Id
-   *
-   * @param string $user_id
-   */
-  public function setUserId($user_id) {
-    $this->_user_id = $user_id;
-  }
-  /**
-   * Setter Rocket.Chat URL
-   *
-   * @param string $rocketChatUrl
-   */
-  public function setRocketChatUrl($rocketChatUrl) {
-    $this->_api_url = $rocketChatUrl . self::API_URL;
-  }
-  /**
-   * Génération du username en fonction du name
-   *
-   * @param string $name
-   * @return string
-   */
-  public function usernameFromName($name) {
-    return trim($this->remove_accents(strtolower(str_replace(' ', '.', $name))));
-  }
-  
-  public function create_chanel($name, $users, $is_public)
-  {
-    $params = array(
-      "name" => $name
-    );
-
-    if ($users !== null && count($users) > 0)
-      $params["members"] = $users;
-  
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId(),
-        "Content-type: application/json",
-    );
-    $result = $this->_post_url($this->_api_url.self::CHANEL_CREATE, $params, null, $headers);
-    if (!is_array($result['content'])) {
-      $result['content'] = json_decode($result['content'], true);
-    }
-    if ($result['content']["success"] === true)
-    {
-      if (!$is_public)
-      {
-        $params = ["roomId" => $result['content']["channel"]["_id"], "type" => "p"];
-        $result = $this->_post_url($this->_api_url.self::CHANEL_SET_TYPE, $params, null, $headers);
-        return $result;
-      }
-    }
-    else 
-    {}
-    return $result;
-  }
-
-  public function add_users($channel, $users)
-  {
-  
-    $headers = array(
-        "X-Auth-Token: " . $this->getAuthToken(),
-        "X-User-Id: " . $this->getUserId(),
-        "Content-type: application/json",
-    );
-    $size = count($users);
-    $results = [];
-    for ($i=0; $i < $size; ++$i) { 
-      $params = array(
-        "roomId" => $channel,
-        "userId" => $users[$i]
-      );
-      $results[] = $this->_post_url($this->_api_url.self::CHANEL_INVITE, $params, null, $headers);
-    }
-    return $results;
-
-  }
-
-  /**
-   * Permet de récupérer le contenu d'une page Web
-   *
-   * @param string $url
-   * @param array $params
-   *          [Optionnel]
-   * @param array $headers
-   *          [Optionnel]
-   * @return array('content', 'httpCode')
-   */
-  private function _get_url($url, $params = null, $headers = null) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::_get_url($url, $params, $headers)");
-    // Options list
-    $options = array(
-        CURLOPT_RETURNTRANSFER => true, // return web page
-        CURLOPT_HEADER => false, // don't return headers
-        CURLOPT_USERAGENT => $this->_user_agent, // name of client
-        CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
-        CURLOPT_TIMEOUT => 120, // time-out on response
-        CURLOPT_SSL_VERIFYPEER => $this->_ssl_verify_peer
-    );
-    if (isset($headers)) {
-      $options[CURLOPT_HTTPHEADER] = $headers;
-    }
-    // params
-    if (isset($params)) {
-      if (strpos($url, '?') === false) {
-        $url .= '?';
-      } else {
-        $url .= '&';
-      }
-      $url .= http_build_query($params);
-    }
-    // open connection
-    $ch = curl_init($url);
-    // Set the options
-    curl_setopt_array($ch, $options);
-    // Execute the request and get the content
-    $content = curl_exec($ch);
-    // Get the HTTP Code
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    // Close connection
-    curl_close($ch);
-    // Return the content
-    return array(
-        'httpCode' => $httpcode,
-        'content' => $content
-    );
-  }
-  
-  /**
-   * Permet de poster des paramètres vers une page web
-   *
-   * @param string $url
-   * @param array $params
-   *          [Optionnel]
-   * @param string $json
-   *          [Optionnel]
-   * @param array $headers
-   *          [Optionnel]
-   * @return array('content', 'httpCode')
-   */
-  private function _post_url($url, $params = null, $json = null, $headers = null) {
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::_post_url($url, $params, $json, $headers)");
-    // Génération du json en fonction des paramètres
-    if (isset($params)) {
-      $data_string = json_encode($params);
-    } else if (isset($json)) {
-      $data_string = $json;
-    } else {
-      $data_string = "";
-    }
-    
-    // Options list
-    $options = array(
-        CURLOPT_RETURNTRANSFER => true, // return web page
-        CURLOPT_HEADER => false, // don't return headers
-        CURLOPT_USERAGENT => $this->_user_agent, // name of client
-        CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
-        CURLOPT_TIMEOUT => 120, // time-out on response
-        CURLOPT_SSL_VERIFYPEER => $this->_ssl_verify_peer,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $data_string,
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/json; charset=utf-8',
-            'Content-Length: ' . strlen($data_string)
-        )
-    );
-    if (isset($headers)) {
-      $options[CURLOPT_HTTPHEADER] = array_merge($options[CURLOPT_HTTPHEADER], $headers);
-    }
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "RocketChatClient::_post_url() options: " . var_export($options, true));
-    // open connection
-    $ch = curl_init($url);
-    // Set the options
-    curl_setopt_array($ch, $options);
-    // Execute the request and get the content
-    $content = curl_exec($ch);
-    // Get the HTTP Code
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    // Close connection
-    curl_close($ch);
-    // Return the content
-    return array(
-        'httpCode' => $httpcode,
-        'content' => $content
-    );
-  }
-  
+class mel_utils
+{
   /**
    * Converts all accent characters to ASCII characters.
    * If there are no accent characters, then the string given is just returned.
@@ -955,7 +367,7 @@ class RocketChatClient {
    *          Text that might have accent characters
    * @return string Filtered string with replaced "nice" characters.
    */
-  private function remove_accents($string) {
+  public static function remove_accents($string) {
     if (!preg_match('/[\x80-\xff]/', $string))
       return $string;
     $chars = array(
@@ -1288,5 +700,60 @@ class RocketChatClient {
     );
     $string = strtr($string, $chars);
     return $string;
+  }
+
+
+  public static function replace_special_char($string)
+  { 
+    return preg_replace('/[^a-zA-Z0-9_ -]/s','',$string);
+      /*
+      $pattern = '/[\'"^£$%&*()}{@#~!?><>,|=_+¬-]/';
+      if (preg_match($pattern, $string))
+      {
+        $string = preg_replace($pattern, "", $string);
+      }
+      return $string;
+      */
+  }
+  public static function replace_determinants($string, $replace)
+  {
+    $dets = [
+        " le ",
+        " la ",
+        " les ",
+        " un ",
+        " une ",
+        " de ",
+        " des ",
+        " mon ",
+        " ma ",
+        " tes ",
+        " ton ",
+        " ta ",
+        " son ",
+        " sa ",
+        " ses ",
+        " notre ",
+        " nos ",
+        " vos ",
+        " votre ",
+        " leur ",
+        " leurs ",
+        " se ",
+        " ce ",
+        " cette ",
+        " cet ",
+        " ces ",
+        " a "
+    ];
+
+    $string = str_replace($dets, $replace, $string);
+
+    $dets = [
+        " l'"
+    ];
+
+    return str_replace($dets, $replace, $string);
+
   }
 }

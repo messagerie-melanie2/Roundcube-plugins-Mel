@@ -40,7 +40,8 @@ class mel_workspace extends rcube_plugin
     {
         $this->setup();
         $this->register_action('create', array($this, 'create'));
-
+        $this->register_action('get_uid', array($this, 'get_uid'));
+        $this->register_action('check_uid', array($this, 'check_uid'));
     }
 
     function setup()
@@ -66,10 +67,11 @@ class mel_workspace extends rcube_plugin
 
     function create()
     {
-        //rcube_utils::INPUT_POST
+        //rcube_utils::INPUT_POST custom_uid
         $datas = [
             "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
             "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
+            "uid" => rcube_utils::get_input_value("custom_uid", rcube_utils::INPUT_POST),
             "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
             "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
             "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
@@ -85,7 +87,7 @@ class mel_workspace extends rcube_plugin
 
         $user = driver_mel::gi()->getUser();
         $workspace = driver_mel::gi()->workspace([$user]);
-        $workspace->uid = uniqid(md5(time()), true);
+        $workspace->uid = $datas["uid"] === null || $datas["uid"] === "" ? self::generate_uid($datas["title"]) : $datas["uid"];//uniqid(md5(time()), true);
         $workspace->title = $datas["title"];
         $workspace->logo = $datas["avatar"];
         $workspace->description = $datas["desc"];
@@ -125,6 +127,61 @@ class mel_workspace extends rcube_plugin
 
         echo json_encode($retour);
         exit;
+    }
+
+    function get_uid()
+    {
+        $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_POST);
+        echo self::generate_uid($title);
+        exit;
+    }
+
+    function check_uid()
+    {
+        include_once "lib/mel_utils.php";
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        if ($uid === "" || $uid === null)
+        {
+            echo "ui_empty";
+            exit;
+        }
+        $workspace = driver_mel::gi()->workspace();
+        $workspace->uid = $uid;
+        if (mel_utils::replace_special_char($uid) === $uid && strtolower($uid) === $uid)
+        {
+            if ($workspace->exists())
+                echo "uid_exists";
+            else 
+                echo "uid_ok";
+        }
+        else
+            echo "uid_not_ok";
+        exit;
+    }
+
+    public static function generate_uid($title)
+    {
+        $max = 35;
+
+        include_once "lib/mel_utils.php";
+        $text = mel_utils::replace_determinants(mel_utils::remove_accents(mel_utils::replace_special_char(strtolower($title))), "-");
+        $text = str_replace(" ", "-", $text);
+        if (count($text) > $max)
+        {
+            $title = "";
+            for ($i=0; $i < count($text); $i++) { 
+                if ($i >= $max)
+                    break;
+                $title.= $text[$i];
+            }
+            $text = $title;
+        }
+        $it = 0;
+        do {
+            $workspace = driver_mel::gi()->workspace();
+            $workspace->uid = $text."-".(++$it);
+        } while ($workspace->exists());
+        return $text."-".$it;
     }
 
 }

@@ -1,3 +1,4 @@
+const enable_custom_uid = false;
 jQuery.fn.swap = function(b){ 
     b = jQuery(b)[0]; 
     var a = this[0]; 
@@ -83,10 +84,14 @@ function m_mp_createworskpace_steps()
             html += '<div class=col-2>';
             html += "Avatar<br/>"
             html += '<span id=tmpavatar></span>'
-            html += "</div><div class=col-10>"
+            html += "</div><div class=col-"+(enable_custom_uid ? "5" : "10")+">"
             html += "Titre<span class=red-star></span><br/>"
-            html += '<input oninput="m_mp_input(this)" id=workspace-title class="form-control required" placeholder="Titre de l\'espace"/>';
-            html += '</div></div>';
+            html += '<input oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control required" maxlength=40 placeholder="Titre de l\'espace"/>';
+            html += '</div>';
+            html += "<div class=col-5 "+(!enable_custom_uid ? 'style=display:none;' : "")+" >";
+            html += "Id<span class=red-star></span><br/>"
+            html += '<input maxlength=37 oninput="m_mp_input_uid_change(this)" id=workspace-uid class="form-control required" placeholder="Id unique de l\'espace"/>';
+            html += "</div></div>";
             html += "<div class=row style=margin-top:5px><div class=col-12>";
             html += '<span style=margin-top:5px>Description</span><br/>'
             html += '<textarea id=workspace-desc class=form-control placeholder="Description de l\'espace"></textarea>';
@@ -150,6 +155,42 @@ function m_mp_createworskpace_steps()
     }
 }
 
+function m_mp_input_change(event)
+{
+    if ($("#workspace-uid").data("edited") || !enable_custom_uid)
+        return;
+    if ($(".btn-workspace-right").find("span").length === 0)
+        $(".btn-workspace-right").html("<span>"+$(".btn-workspace-right").html()+"</span>");
+    const tmp_html = $(".btn-workspace-right").find("span").html();
+    $(".btn-workspace-right").addClass("disabled").find("span").addClass("spinner-border").html("");
+    $.ajax({ // fonction permettant de faire de l'ajax
+    type: "POST", // methode de transmission des données au fichier php
+    data: {
+        "_title":event.value,
+    },
+    url: "/?_task=workspace&_action=get_uid",
+    success: function (ariane) {
+        console.log("uid", ariane);
+        $("#workspace-uid").val(ariane);
+    },
+    error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+        console.error(xhr, ajaxOptions, thrownError);
+    },
+    }).always(() => {
+        $(".btn-workspace-right").removeClass("disabled").find("span").removeClass("spinner-border").html(tmp_html);
+    });
+}
+
+function m_mp_input_uid_change(params) {
+    if (params.value === "")
+    {
+        $(params).data("edited", false);
+        m_mp_input_change($("#workspace-title")[0]);
+    }
+    else
+        $(params).data("edited", true);
+}
+
 function m_mp_createworkspace()
 {
 
@@ -203,7 +244,7 @@ function m_mp_input(element)
         $("#worspace-avatar-a").html("<span>"+ element.value.slice(0,3).toUpperCase() + "</span>");
 }
 
-function m_mp_check_w(step, next)
+async function m_mp_check_w(step, next)
 {
     let stop = false;
     switch (step) {
@@ -237,9 +278,50 @@ function m_mp_check_w(step, next)
                 $("#workspace-private").parent().css("color", "");
                 $("#workspace-public").parent().css("color", "");
             }
+            if (enable_custom_uid)
+            {
+                if ($(".btn-workspace-right").find("span").length === 0)
+                $(".btn-workspace-right").html("<span>"+$(".btn-workspace-right").html()+"</span>");
+                const tmp_html = $(".btn-workspace-right").find("span").html();
+                $(".btn-workspace-right").addClass("disabled").find("span").addClass("spinner-border").html("");
+                await $.ajax({ // fonction permettant de faire de l'ajax
+                type: "POST", // methode de transmission des données au fichier php
+                data: {
+                    "_uid":$("#workspace-uid").val(),
+                },
+                url: "/?_task=workspace&_action=check_uid",
+                success: function (ariane) {
+                    if (ariane !== "uid_ok")
+                    {
+                        stop = true;
+                        $("#workspace-uid").css("border-color", "red");
+                        if ($("#wsptuid").length === 0)
+                            $("#workspace-uid").parent().append('<span id=wsptuid class=input-error-r style=color:red></span>');
+                        if (ariane === "uid_exists")
+                            $("#wsptuid").html("* L'id existe déjà !");
+                        else if (ariane === "uid_not_ok")
+                            $("#wsptuid").html("* L'id n'est pas valide !");
+                        else if (ariane === "ui_empty")
+                            $("#wsptuid").html("* L'id ne doit pas être vide !");
+                        else
+                            $("#wsptuid").html("* Erreur inconnue !");
+                        $("#wsptuid").css("display", "");
+                    }
+                    else
+                        $("#wsptuid").css("display", "none");
+                },
+                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                    console.error(xhr, ajaxOptions, thrownError);
+                },
+                }).always(() => {
+                    $("#workspace-uid").css("border-color", "");
+                    $(".btn-workspace-right").removeClass("disabled").find("span").removeClass("spinner-border").html(tmp_html);
+                });
+            }
+
             break;
         case 2:
-            if ($("#wspf").children().length === 1)
+            if ($("#wspf").children().length === 1  && $("#workspace-user-list").val() === "")
             {
                 $("#wspf").css("border-color", "red");
                 if ($("#wspfe").length === 0)   
@@ -252,6 +334,11 @@ function m_mp_check_w(step, next)
             {
                 $("#wspf").css("border-color", "");
                 $("#wspfe").css("display", "none");
+                if($("#workspace-user-list").val() !== "")
+                {
+                    $("#workspace-user-list").val($("#workspace-user-list").val() + ",");
+                    m_mp_autocoplete();
+                }
             }
             break;
         case 3:
@@ -289,6 +376,7 @@ function m_mp_CreateWorkSpace()
         end_date:$("#workspace-date-end").val(),
         hashtag:$("#workspace-hashtag").val(),
         visibility:$("#workspace-private")[0].checked ? "private" : "public",
+        custom_uid: enable_custom_uid ? $("#workspace-uid").val() : "",
         users:[],
         services:[]
     };
@@ -321,7 +409,8 @@ function m_mp_CreateWorkSpace()
                                 type: "POST", // methode de transmission des données au fichier php
                                 data: {
                                     "_roomname":data.workspace_uid,
-                                    "_public":(datas.visibility === "public" ? true:false)
+                                    "_public":(datas.visibility === "public" ? true:false),
+                                    "_users":data.existing_users
                                 },
                                 url: "/?_task=discussion&_action=create_chanel",
                                 success: function (ariane) {
@@ -331,41 +420,6 @@ function m_mp_CreateWorkSpace()
                                     ariane = JSON.parse(ariane);
                                     ariane.content = JSON.parse(ariane.content);
                                     console.log("all datas", ariane, data, datas);
-                                    new Promise(async (a,b) => {
-                                        let users = [];
-                                        for (let it = 0; it < data.existing_users.length; it++) {
-                                            const user = data.existing_users[it];
-                                            await $.ajax({ // fonction permettant de faire de l'ajax
-                                                type: "POST", // methode de transmission des données au fichier php
-                                                data: {
-                                                    _user:user
-                                                },
-                                                url: "/?_task=discussion&_action=get_user_info",
-                                                success: function (user_datas) {
-                                                    console.log("datas-", user, user_datas);
-                                                    user_datas = JSON.parse(user_datas);
-                                                    users.push(user_datas.id);
-                                                },
-                                                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-                                                    console.error(xhr, ajaxOptions, thrownError);
-                                                },
-                                            });
-                                        }
-                                    });
-                                    $.ajax({ // fonction permettant de faire de l'ajax
-                                                type: "POST", // methode de transmission des données au fichier php
-                                                data: {
-                                                    _users:users
-                                                },
-                                                url: "/?_task=discussion&_action=add_users",
-                                                success: function (users_infos) {
-                                                    console.log("datas-", users_infos, users_infos);
-                                                    users_infos = JSON.parse(users_infos);
-                                                },
-                                                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-                                                    console.error(xhr, ajaxOptions, thrownError);
-                                                },
-                                            });
                                 },
                                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
                                     console.error(xhr, ajaxOptions, thrownError);

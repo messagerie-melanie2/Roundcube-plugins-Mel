@@ -73,7 +73,8 @@ class mel_envoi_differe extends rcube_plugin
      */
     function message_before_send($args)
     {
-        $timestamp = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
+        $timestampMs = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
+        $timestamp = $timestampMs / 1000;
         if ($timestamp) {
             $rcmail = rcmail::get_instance();
             $timezone = $rcmail->config->get('timezone', null);

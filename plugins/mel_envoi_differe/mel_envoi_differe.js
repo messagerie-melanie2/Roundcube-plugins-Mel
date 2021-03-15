@@ -23,6 +23,7 @@ if (window.rcmail) {
     rcmail.addEventListener('init', function (evt) {
         if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
             rcmail.enable_command('display_mel_envoi_differe', true);
+            rcmail.env.compose_commands.push('display_mel_envoi_differe');
         };
     });
 }

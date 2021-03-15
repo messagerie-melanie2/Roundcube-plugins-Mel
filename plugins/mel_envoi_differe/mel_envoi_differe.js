@@ -92,7 +92,7 @@ var time_autocomplete_format = function (hour, minutes, start) {
 
 var time_autocomplete_list = function (p, callback) {
     // Time completions
-    var st, h, step = 5, result = [], now = new Date(),
+    var st, h, step = 15, result = [], now = new Date(),
         id = String(this.element.attr('id')),
         m = id.match(/^(.*)-(starttime|endtime)$/),
         start = (m && m[2] == 'endtime'

@@ -60,6 +60,7 @@ class ArianePopUp{
         return this.ariane.is_anchor();
     }
 
+
     show()
     {
         this.button.loading();
@@ -296,7 +297,7 @@ class ArianeFrame{
     {
         if (!this.is_anchor())
         {
-            //this.card.card.card.css("flex","0 0 400px");
+            this.card.card.card.css("flex","0 0 400px");
             this.card.card.card.css("position", "relative");
             //this.popUp.css("width", "initial");
             //if (!is_touch())
@@ -305,6 +306,7 @@ class ArianeFrame{
             //ArianePopUp.set_width(this.popUp);
         }
         else {
+            this.card.card.card.css("flex","");
             // this.popUp.css("flex","1 0 auto");
             //this.popUp.css("height", '');
             //this.popUp.css("position", "");
@@ -365,6 +367,8 @@ class ArianeFrame{
                     }
                     let stop = false;
                     let tmp = 0;
+                    if (window.location.href.includes("&_action=chat"))
+                        return;
                     exec();
                     while ((this.is_touch ? is_touch() : !is_touch())) {
                         await delay(100);
@@ -372,6 +376,8 @@ class ArianeFrame{
                         if (tmp === 1000)
                             break;
                     }
+                    if (window.location.href.includes("&_action=chat"))
+                        return;
                     this.is_touch = is_touch();
                     exec();
                     // if (is_touch())
@@ -406,7 +412,9 @@ class ArianeFrame{
         this.card.card.disable();
         this.card.body.disable();
         this.card.header.disable();
+        this.card.card.card.css("display", "none");
         window.onresize = null;
+        this.popUp.css("height", "100%");
     }
 
     is_loaded()

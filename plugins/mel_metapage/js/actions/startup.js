@@ -225,6 +225,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         $("#layout-frames").css("display", "none");
     else 
         $("#layout-frames").css("display", "");
+    let arianeIsOpen = mel_metapage.PopUp.ariane.is_show;
     if (isAriane)
     {
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
@@ -249,6 +250,12 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         let btn = ArianeButton.default();
         btn.show_button();
         btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
+    }
+    if (arianeIsOpen && !isAriane)
+    {
+        let btn = ArianeButton.default();
+        btn.hide_button();
+        $(".a-frame").css("display", "");
     }
 });
 
@@ -292,10 +299,8 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, res
 
 metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
     frame.css("display", "none");
-    if (!changepage)
-    {
+    if (!changepage && rcmail.env.task != "mel_metapage" && rcmail.env.action !== "chat")
         $(".a-frame").css("display", "none");
-    }
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {

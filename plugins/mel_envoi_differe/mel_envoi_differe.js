@@ -19,7 +19,7 @@
  */
 
 
-if (window.rcmail) {
+ if (window.rcmail) {
     rcmail.addEventListener('init', function (evt) {
         if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
             rcmail.enable_command('display_mel_envoi_differe', true);
@@ -183,8 +183,15 @@ var init_time_autocomplete = function (elem, props) {
 
 
 rcube_webmail.prototype.display_mel_envoi_differe = function () {
-
-    let html = '<h1 class="boxtitle">' + rcmail.gettext('title', 'mel_envoi_differe') + '</h1><div id="envoidiffere-details" class="boxcontent"><form name="valide" action="" class="propform" id="form_envoidiffere"><fieldset><div class="warning">' + rcmail.gettext('description', 'mel_envoi_differe') + '<br>' + rcmail.gettext('description_warning', 'mel_envoi_differe') + '</div><div><label for="envoidiffere_date">' + rcmail.gettext('date', 'mel_envoi_differe') + '</label><input type="text" name="envoidiffere_date" id="envoidiffere_date" required>' + rcmail.gettext('time', 'mel_envoi_differe') + '<input type="text" name="envoidiffere_time" id="envoidiffere_time" required></div><div id="error_message"></div></fieldset></form></div>'
+    let date = "";
+    let heure = "";
+    let value = parent.$('#mel_envoi_differe').text();
+    if (value != "Remise différée") {
+        let dateHeure = value.split(' ');
+        date = dateHeure[0];
+        heure = dateHeure[1];
+    }
+    let html = '<h1 class="boxtitle">' + rcmail.gettext('title', 'mel_envoi_differe') + '</h1><div id="envoidiffere-details" class="boxcontent"><form name="valide" action="" class="propform" id="form_envoidiffere"><fieldset><div class="warning">' + rcmail.gettext('description', 'mel_envoi_differe') + '<br>' + rcmail.gettext('description_warning', 'mel_envoi_differe') + '</div><div><label for="envoidiffere_date">' + rcmail.gettext('date', 'mel_envoi_differe') + '</label><input type="text" name="envoidiffere_date" id="envoidiffere_date" value="' + date + '" required>' + rcmail.gettext('time', 'mel_envoi_differe') + '<input type="text" name="envoidiffere_time" id="envoidiffere_time" value="' + heure + '" required></div><div id="error_message"></div></fieldset></form></div>'
 
     buttons = [{
         text: rcmail.gettext('save', 'mel_envoi_differe'),

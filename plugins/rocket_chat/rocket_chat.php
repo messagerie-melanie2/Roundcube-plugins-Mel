@@ -90,6 +90,10 @@ class rocket_chat extends rcube_plugin {
           $this,
           'add_users'
       ));
+      $this->register_action('get_user_info', array(
+        $this,
+        'get_user_info'
+    ));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -397,6 +401,10 @@ EOF;
       $this->login();
       $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
       $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
+      if ($is_public === "false")
+        $is_public = false;
+      else
+        $is_public = true;
       $uid = $this->getUserId();
       $token = $this->getAuthToken();
       $user = $this->rc->get_user_name();
@@ -405,6 +413,13 @@ EOF;
       $rocketClient->setAuthToken($token);
       $result = $rocketClient->create_chanel($room_name, $is_public);
       echo json_encode($result);
+      exit;
+    }
+
+    public function get_user_info()
+    {
+      $username = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST);
+      echo json_encode($this->getUserInfos($username));
       exit;
     }
 }

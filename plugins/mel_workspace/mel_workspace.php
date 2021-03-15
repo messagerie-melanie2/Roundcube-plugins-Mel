@@ -1,4 +1,5 @@
 <?php
+use LibMelanie\Api\Defaut\Workspaces\Share;
 /**
  * Plugin Mél Espace de travail
 *
@@ -61,6 +62,69 @@ class mel_workspace extends rcube_plugin
         //     'type'       => 'link',
         //     'domain' => "mel_portal"
         // ), $this->sidebarName);
+    }
+
+    function create()
+    {
+        //rcube_utils::INPUT_POST
+        $datas = [
+            "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
+            "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
+            "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
+            "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
+            "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
+            "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
+            "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
+            "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST),
+        ];
+
+        $retour = [
+            "errored_user" => [],
+            "existing_users" => []
+        ];
+
+        $user = driver_mel::gi()->getUser();
+        $workspace = driver_mel::gi()->workspace([$user]);
+        $workspace->uid = uniqid(md5(time()), true);
+        $workspace->title = $datas["title"];
+        $workspace->logo = $datas["avatar"];
+        $workspace->description = $datas["desc"];
+        $workspace->creator = $user->uid;
+        $workspace->created = new DateTime('now');
+        $workspace->modified = new DateTime('now');
+        $workspace->ispublic = (($datas["visibility"] === "private") ? false: true);
+        $workspace->hashtags = [$datas["hashtag"]];
+        $res = $workspace->save();
+        $workspace->load();
+        $shares = [];
+        $share = driver_mel::gi()->workspace_share([$workspace]);
+        $share->user = $user->uid;
+        $share->rights = Share::RIGHT_OWNER;
+        $shares[] = $share;
+
+        $count = count($datas["users"]);
+        for ($i=0; $i < $count; ++$i) { 
+            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid;
+            if ($tmp_user === null)
+                $retour["errored_user"][] = $datas["users"][$i];
+            else {
+                $retour["existing_users"][] = $tmp_user;
+                $share = driver_mel::gi()->workspace_share([$workspace]);
+                $share->user = $tmp_user;
+                $share->rights = Share::RIGHT_WRITE;
+                $shares[] = $share;                
+            }
+        }
+
+        $workspace->shares = $shares;
+
+        $res = $workspace->save();
+
+        $retour["workspace_uid"] = $workspace->uid;
+        $retour["uncreated_services"] = $datas["services"];
+
+        echo json_encode($retour);
+        exit;
     }
 
 }

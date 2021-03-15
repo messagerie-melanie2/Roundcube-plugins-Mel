@@ -452,6 +452,11 @@ class RocketChatClient {
     return $result;
   }
 
+  public function add_users($channel, $users)
+  {
+    
+  }
+
   /**
    * Permet de récupérer le contenu d'une page Web
    *

@@ -282,14 +282,16 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env('mel_metapage_templates_services', $this->rc->config->get('workspace_services'));
 
         $icons_files = scandir(__DIR__."/".$this->local_skin_path()."/pictures/dwp_icons");
-        $icons= [];
-        foreach ($icons_files as $key => $value) {
-            if ($value === "." || $value === "..")
-                continue;
-            $icons[] = ["name" => $value, "path" => "/plugins/mel_metapage/".$this->local_skin_path()."/pictures/dwp_icons/".$value];
+        if ($icons_files !== false)
+        {
+            $icons= [];
+            foreach ($icons_files as $key => $value) {
+                if ($value === "." || $value === "..")
+                    continue;
+                $icons[] = ["name" => $value, "path" => "/plugins/mel_metapage/".$this->local_skin_path()."/pictures/dwp_icons/".$value];
+            }
+            $this->rc->output->set_env('mel_metapage_workspace_logos', $icons);
         }
-        $this->rc->output->set_env('mel_metapage_workspace_logos', $icons);
-
         foreach ($this->rc->user->list_emails() as $identity) {
             $emails[] = strtolower($identity['email']);
         }

@@ -165,6 +165,10 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
     color: #fff;
 }
 
+.ui-datepicker .ui-state-highlight, .ui-datepicker.ui-widget-content .ui-state-highlight {
+    background-color: #266565 !important;
+}
+
 .listing li > div a.quickview::before {
     color: #80D5C6 !important;
 }

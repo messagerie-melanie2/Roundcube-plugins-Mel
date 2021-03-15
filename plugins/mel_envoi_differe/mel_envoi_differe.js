@@ -183,8 +183,12 @@ var init_time_autocomplete = function (elem, props) {
 
 
 rcube_webmail.prototype.display_mel_envoi_differe = function () {
-    let date = "";
-    let heure = "";
+
+    let currentDate = new Date();
+    currentDate = currentDate.toLocaleString("fr-FR", { timeZone: rcmail.env.timezone });
+
+    let date = displayDate(currentDate);
+    let heure = displayHour(currentDate);
     let value = parent.$('#mel_envoi_differe').text();
     if (value != "Remise différée") {
         let dateHeure = value.split(' ');
@@ -251,3 +255,15 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
         container: '#envoidiffere-details'
     });
 };
+
+
+function displayDate(currentDate) {    
+    date = currentDate.split(' ');
+    return date[0].slice(0,10);
+
+}
+
+function displayHour(currentDate) {
+    hour = currentDate.split(' ');
+    return hour[1].slice(0, 5);
+}

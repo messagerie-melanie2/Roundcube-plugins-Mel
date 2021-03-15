@@ -53,8 +53,8 @@ class mel_envoi_differe extends rcube_plugin
             ), 'toolbar');
 
             $this->register_action('plugin.mel_envoi_differe', array($this, 'request_action'));
-        } 
-        else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
+            $rcmail->output->set_env('timezone', $rcmail->config->get('timezone', null));
+        } else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
             $this->add_hook('message_before_send', array($this, 'message_before_send'));
         }
     }
@@ -68,7 +68,7 @@ class mel_envoi_differe extends rcube_plugin
         $rcmail->output->send('mel_envoi_differe.mel_envoi_differe');
     }
 
- /**
+    /**
      * Add timestamps and modify date in header
      */
     function message_before_send($args)

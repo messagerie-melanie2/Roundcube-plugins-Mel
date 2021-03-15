@@ -245,13 +245,28 @@ v_separate{
     height: 500px;
 }
 
+.ariane-card
+{
+    margin-top:60px;
+}
+
+html.touch .ariane-card
+{
+    margin-top:0;
+}
+
 iframe{
     border:none;
 }
 
 .ariane-card-body
 {
-    position: relative;
+     /* position: sticky;  */
+}
+
+html.touch .ariane-card-body
+{
+    /* position: relative; */
 }
 
 .card-close,

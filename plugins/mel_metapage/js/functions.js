@@ -138,7 +138,7 @@ function m_mp_createworskpace_steps()
             for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
                 const element = mel_metapage_templates_services[index];
                 html += "<div class=col-md-3>";
-                html += '<button type=button class="doc-'+element.type+' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `'+JSON.stringify(element).replace(/"/g, "¤¤¤")+'`)"><span style="display:block;margin-right:0px" class="'+m_mp_CreateDocumentIconContract(element.icon)+'"></span>'+ rcmail.gettext(element.name) +'</button>';
+                html += '<button type=button data-type="'+element.type+'" class="doc-'+element.type+' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `'+JSON.stringify(element).replace(/"/g, "¤¤¤")+'`)"><span style="display:block;margin-right:0px" class="'+m_mp_CreateDocumentIconContract(element.icon)+'"></span>'+ rcmail.gettext(element.name) +'</button>';
                 html += "</div>"
             }
             html += "</div>";
@@ -269,7 +269,143 @@ function m_mp_check_w(step, next)
     {
         if (next !== null)
             m_mp_switch_step(next);
+        else
+            m_mp_CreateWorkSpace()
     }
+}
+
+function m_mp_CreateWorkSpace()
+{
+    /* 
+                    rcmail.set_busy(false);
+                rcmail.clear_messages();
+    */
+    rcmail.set_busy(true);
+    rcmail.display_message("Création d'un espace de travail...", "loading");
+    let datas = {
+        avatar:($("#worspace-avatar-a").find("img").length === 0 ? false : $("#worspace-avatar-a").find("img")[0].src.replace(window.location.origin, "")),
+        title:$("#workspace-title").val(),
+        desc:$("#workspace-desc").val(),
+        end_date:$("#workspace-date-end").val(),
+        hashtag:$("#workspace-hashtag").val(),
+        visibility:$("#workspace-private")[0].checked ? "private" : "public",
+        users:[],
+        services:[]
+    };
+
+    $("#wspf").find("li.workspace-recipient").each((i,e) => {
+        datas.users.push($(e).find(".email").html());
+    });
+    $(".btn-template-doc.active").each((i,e) => {
+        datas.services.push($(e).data("type"));
+    });
+
+    $.ajax({ // fonction permettant de faire de l'ajax
+        type: "POST", // methode de transmission des données au fichier php
+        data: datas,
+        url: "/?_task=workspace&_action=create",
+        success: function (data) {
+            data = JSON.parse(data);
+            for (let it = 0; it < data.errored_user.length; it++) {
+                const element = data.errored_user[it];
+                rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
+            }
+            new Promise(async (i, e) => {
+                let finished_max = 1;
+                let finished = 0;
+                for (let index = 0; index < data.uncreated_services.length; index++) {
+                    const element = data.uncreated_services[index];
+                    switch (element) {
+                        case "channel":
+                            $.ajax({ // fonction permettant de faire de l'ajax
+                                type: "POST", // methode de transmission des données au fichier php
+                                data: {
+                                    "_roomname":data.workspace_uid,
+                                    "_public":(datas.visibility === "public" ? true:false)
+                                },
+                                url: "/?_task=discussion&_action=create_chanel",
+                                success: function (ariane) {
+                                    ++finished;
+                                    console.log("datas2", ariane);
+                                    console.log("datas2", JSON.parse(ariane));
+                                    ariane = JSON.parse(ariane);
+                                    ariane.content = JSON.parse(ariane.content);
+                                    console.log("all datas", ariane, data, datas);
+                                    new Promise(async (a,b) => {
+                                        let users = [];
+                                        for (let it = 0; it < data.existing_users.length; it++) {
+                                            const user = data.existing_users[it];
+                                            await $.ajax({ // fonction permettant de faire de l'ajax
+                                                type: "POST", // methode de transmission des données au fichier php
+                                                data: {
+                                                    _user:user
+                                                },
+                                                url: "/?_task=discussion&_action=get_user_info",
+                                                success: function (user_datas) {
+                                                    console.log("datas-", user, user_datas);
+                                                    user_datas = JSON.parse(user_datas);
+                                                    users.push(user_datas.id);
+                                                },
+                                                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                                                    console.error(xhr, ajaxOptions, thrownError);
+                                                },
+                                            });
+                                        }
+                                    });
+                                    $.ajax({ // fonction permettant de faire de l'ajax
+                                                type: "POST", // methode de transmission des données au fichier php
+                                                data: {
+                                                    _users:users
+                                                },
+                                                url: "/?_task=discussion&_action=add_users",
+                                                success: function (users_infos) {
+                                                    console.log("datas-", users_infos, users_infos);
+                                                    users_infos = JSON.parse(users_infos);
+                                                },
+                                                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                                                    console.error(xhr, ajaxOptions, thrownError);
+                                                },
+                                            });
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                                    console.error(xhr, ajaxOptions, thrownError);
+                                    ++finished;
+                                },
+                            });
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+
+                await wait(() => finished === finished_max);
+                rcmail.clear_messages();
+                rcmail.display_message("Espace de travail créer avec succès !", "confirmation")
+                rcmail.set_busy(false);
+            });
+            //rcmail.clear_messages();
+            // rcmail.display_message("Création d'un canal de discussion...", "loading");
+            // $.ajax({ // fonction permettant de faire de l'ajax
+            //     type: "POST", // methode de transmission des données au fichier php
+            //     data: datas,
+            //     url: "/?_task=discussion&_action=create_chanel",
+            //     success: function (data) {
+            //         console.log("datas2", data);
+            //         rcmail.clear_messages();
+            //     },
+            //     error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+            //         console.error(xhr, ajaxOptions, thrownError);
+            //     },
+            // });
+        },
+        error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+            console.error(xhr, ajaxOptions, thrownError);
+            rcmail.clear_messages();
+            rcmail.display_message(xhr, "error")
+        },
+    });
+    
 }
 
 function m_mp_UpdateWorkspace_type(event, element)
@@ -296,9 +432,10 @@ function m_mp_autocoplete()
            let _enum = Enumerable.from(val);
            let index1 = val.indexOf("<");
            let index2 = val.indexOf(">");
+           console.log(val, _enum);
            //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
-           html += '<span class="name">'+_enum.where((x, i) => index1<i && i < index2).toArray().join("")+'</span>';//.join("")
-           html += '<span class="email">'+_enum.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")+'</span>';
+           html += '<span class="email">'+_enum.where((x, i) => index1<i && i < index2).toArray().join("")+'</span>';//.join("")
+           html += '<span class="name">'+_enum.where((x, i) => i < index1).toArray().splice(1).join("").replace(",", "")+'</span>';
 
         }
         else {

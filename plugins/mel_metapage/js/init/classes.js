@@ -75,12 +75,16 @@ class ArianePopUp{
 
     _show()
     {
+        this.ariane.card.card.card.css("position", "absolute");
+        this.ariane.card.card.card.css("right", "0");
         this.button.button.css("display", "none");
         this.ariane.enable();
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "0px");
         this.ariane.popUp.addClass("tiny-rocket-chat-card");
         this.ariane.popUp.css("display", "initial");
+        this.ariane.popUp.css("width", "100%");
         this.ariane.popUp.css("padding-top", "0");
+        this.ariane.popUp.css("margin-top", "-1.25em");
         this.button.stop();
         this.is_show = true;
         // if ($("#pop-up-resizer").length === 0)
@@ -94,12 +98,13 @@ class ArianePopUp{
             this.anchor();
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "");
         this.ariane.popUp.css("display", "none");
-        this.ariane.popUp.css("height", "");
+        this.ariane.popUp.css("height", "100%");
         this.ariane.popUp.css("flex", "1 0 auto");
         this.ariane.popUp.removeClass("tiny-rocket-chat-card");
         this.button.button.css("display", "initial");
         this.ariane.popUp.css("padding-top", "");
         this.ariane.disable();
+        this.ariane.popUp.css("width", "100%");
         this.is_show = false;
     }
 }
@@ -246,15 +251,16 @@ ArianePopUp.show = function()
 class ArianeFrame{
     constructor()
     {
+        let context = $("body");
         this.is_touch = is_touch();
         this.load_ended = false;
         if ($(".discussion-frame").length > 0)
         {
             this.popUp = $(".discussion-frame");
             this.card = {
-                card:new ArianeCard(this.popUp.contents(),"card-disabled", "card","ariane-card"),
-                header:new ArianeCard(this.popUp.contents(),"card-header-disabled", "card-header", "ariane-card-header"),
-                body: new ArianeCard(this.popUp.contents(),"card-body-disabled", "card-body", "ariane-card-body")
+                card:new ArianeCard(context,"card-disabled", "card","ariane-card"),
+                header:new ArianeCard(context,"card-header-disabled", "card-header", "ariane-card-header"),
+                body: new ArianeCard(context,"card-body-disabled", "card-body", "ariane-card-body")
             };
             this.load_ended = true;
         }
@@ -262,9 +268,9 @@ class ArianeFrame{
         {
             this.popUp = $("#rocket_chat_frame");
             this.card = {
-                card:new ArianeCard(this.popUp.contents(),"card-disabled", "card","ariane-card"),
-                header:new ArianeCard(this.popUp.contents(),"card-header-disabled", "card-header", "ariane-card-header"),
-                body: new ArianeCard(this.popUp.contents(),"card-body-disabled", "card-body", "ariane-card-body")
+                card:new ArianeCard(context,"card-disabled", "card","ariane-card"),
+                header:new ArianeCard(context,"card-header-disabled", "card-header", "ariane-card-header"),
+                body: new ArianeCard(context,"card-body-disabled", "card-body", "ariane-card-body")
             };
             this.load_ended = true;
         }
@@ -277,9 +283,9 @@ class ArianeFrame{
                 }
                 this.popUp = $(".discussion-frame");
                 this.card = {
-                    card:new ArianeCard(this.popUp.contents(),"card-disabled", "card","ariane-card"),
-                    header:new ArianeCard(this.popUp.contents(), "card-header-disabled", "card-header", "ariane-card-header"),
-                    body: new ArianeCard(this.popUp.contents(), "card-body-disabled", "card-body", "ariane-card-body")
+                    card:new ArianeCard(context,"card-disabled", "card","ariane-card"),
+                    header:new ArianeCard(context, "card-header-disabled", "card-header", "ariane-card-header"),
+                    body: new ArianeCard(context, "card-body-disabled", "card-body", "ariane-card-body")
                 };
                 this.load_ended = true;
             });
@@ -290,22 +296,23 @@ class ArianeFrame{
     {
         if (!this.is_anchor())
         {
-            this.popUp.css("flex","0 0 400px");
-            this.popUp.css("position", "initial");
+            //this.card.card.card.css("flex","0 0 400px");
+            this.card.card.card.css("position", "relative");
             //this.popUp.css("width", "initial");
-            if (!is_touch())
-                this.popUp.css("margin-top", "60px");
-            this.popUp.contents().find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
+            //if (!is_touch())
+                //this.popUp.css("margin-top", "60px");
+            this.card.card.card.find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
             //ArianePopUp.set_width(this.popUp);
         }
         else {
             // this.popUp.css("flex","1 0 auto");
             //this.popUp.css("height", '');
-            this.popUp.css("position", "");
+            //this.popUp.css("position", "");
+            this.card.card.card.css("position", "absolute");
             //this.popUp.css("width", "");
-            if (!is_touch())
-                this.popUp.css("margin-top", "");
-            this.popUp.contents().find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
+            //if (!is_touch())
+                //this.popUp.css("margin-top", "");
+            this.card.card.card.find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
             //ArianePopUp.set_width(this.popUp);
         }
 
@@ -313,11 +320,14 @@ class ArianeFrame{
 
     is_anchor()
     {
-        return this.popUp.contents().find(".card-anchor").hasClass("icofont-external-link");
+        return this.card.card.card.find(".card-anchor").hasClass("icofont-external-link");
     }
 
     enable()
     {
+        this.card.body.card.css("height", "");
+        this.card.card.card.css("width", "");
+        this.card.card.card.css("height", "");
         this.popUp.css("padding-left", "initial");
         this.popUp.addClass("ariane-popup");
         // let height = $(window).height()-60 + "px";
@@ -334,7 +344,7 @@ class ArianeFrame{
             {
                 let height = $(window).height();
                 //console.log("height 1", height);
-                mel_metapage.PopUp.ariane.ariane.popUp.css("height", height+ "px");
+                mel_metapage.PopUp.ariane.ariane.popUp.css("height", (height-60-45)+ "px");
                 mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
                 mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
                 new Promise(async (a,b) => {
@@ -342,13 +352,15 @@ class ArianeFrame{
                     {
                         if (is_touch())
                         {
-                            mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
-                            mel_metapage.PopUp.ariane.ariane.popUp.css("margin-top", "");
+                            // mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
+                            // mel_metapage.PopUp.ariane.ariane.popUp.css("margin-top", "");
                             //console.log("height",height);
-                            mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
+                            //mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("height", (height-45)+ "px");
                         }
                         else {
-                            mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
+                            //mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("height", (height-60-45)+ "px");
                         }
                     }
                     let stop = false;
@@ -385,8 +397,12 @@ class ArianeFrame{
     disable()
     {
         this.popUp.css("padding-left", "");
+        this.popUp.css("margin-top", "");
         this.card.card.card.parent().css("margin", "");
         this.popUp.removeClass("ariane-popup");
+        this.card.body.card.css("height", "100%");
+        this.card.card.card.css("width", "100%");
+        this.card.card.card.css("height", "100%");
         this.card.card.disable();
         this.card.body.disable();
         this.card.header.disable();
@@ -411,7 +427,6 @@ class ArianeCard
 {
     constructor(context,classDisabled, ...classEnabled)
     {
-        console.log(context);
         this.disabled = classDisabled;
         this.enabled = classEnabled;
         if (context.find("." + this.disabled).length > 0)
@@ -436,13 +451,13 @@ class ArianeCard
     enable()
     {
         if (!this.is_enabled())
-            this.card.removeClass(this.disabled).addClass(this.enabled_string(false));
+            this.card.css("display", "").removeClass(this.disabled).addClass(this.enabled_string(false));
     }
 
     disable()
     {
         if (this.is_enabled())
-            this.card.removeClass(this.enabled_string(false)).addClass(this.disabled)
+            this.card.css("display", "").removeClass(this.enabled_string(false)).addClass(this.disabled)
     }
 
     enabled_string(addPoint = true)

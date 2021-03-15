@@ -526,7 +526,6 @@ body.task-mail .floating-action-buttons
     display: none;
 }
 
-<<<<<<< HEAD
 .red-star::before,
 .red-star-after::after {
     content: "*";
@@ -573,7 +572,7 @@ img.menu-image {
     /* position: absolute; */
     /* top: 0; */
     /* left: 0; */
-=======
+}
 .folderlist li.mailbox .unreadcount {
     background: #80D5C6;
     color: #484D7A;
@@ -635,5 +634,9 @@ table.listing td.subscribed {
     width: 30px;
     padding: 3px 12px 3px 3px;
     text-align: right;
->>>>>>> 783867f2dc8b2f2ef506abae909c5b8380c68757
+}
+
+.card-header-disabled
+{
+    display:none;
 }

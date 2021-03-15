@@ -219,6 +219,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
             return;
         e.style.display = "none";
     });//.css("display", "none");
+    $(".a-frame").css("display", "none");
     window.history.replaceState({}, document.title, "/?_task=" + (isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)));
     if (isAriane || $("."+eClass+"-frame").length > 1)
         $("#layout-frames").css("display", "none");
@@ -269,11 +270,32 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
 })
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result) => {
-    return (result ? result : "") + '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>';
+    const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>';
+    if (eClass !== "discussion")
+        return (result ? result : "") + frame;
+    else
+    {
+        let html = "";
+        html += '<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;">';
+        html += '<div class="card-header-disabled frame-header">';
+        html += '<span>Ariane</span>';
+        html += '<a href="close_ariane" onclick="m_mp_close_ariane()" class="icofont-close-squared-alt card-close"></a>';
+        html += '<a class="icofont-anchor card-anchor" href="anchor_ariane" onclick="m_mp_anchor_ariane()"></a>';
+        html += '<a class="icofont-expand card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>';
+        html += "</div>";
+        html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
+        html += frame;
+        html += "</div></div>";
+        return (result ? result : "") + html;
+    }
 })
 
 metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
     frame.css("display", "none");
+    if (!changepage)
+    {
+        $(".a-frame").css("display", "none");
+    }
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {
@@ -292,33 +314,6 @@ metapage_frames.addEvent("changepage.after", () => {
         m_mp_ChangeLasteFrameInfo();
 });
 
-metapage_frames.addEvent("after", (eClass, changepage, isAriane, querry, id) => {
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    if (metapage_frames.onresize === undefined)
-    {
-        console.log("====> 1", eClass);
-        if (eClass === "discussion")
-        {
-            rcmail.env.current_frame_name = "discussion";
-            metapage_frames.onresize = setInterval(() => {
-                if (rcmail.env.current_frame_name === "discussion")
-                {
-                    if ($("html").hasClass("touch"))
-                    {
-                        if (!$(".discussion-frame").contents().find("html").hasClass("touch"))
-                        $(".discussion-frame").contents().find("html").addClass("touch")
-                    }
-                    else {
-                        if ($(".discussion-frame").contents().find("html").hasClass("touch"))
-                        $(".discussion-frame").contents().find("html").removeClass("touch")
-                    }
-                        
-                }
-            }, 100);
-        }
-    }
-});
-
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
     try {
         if (window.FrameUpdate === undefined)
@@ -332,6 +327,9 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
         
     }
     querry.css("display", "");
+    //console.log("changepage", changepage	);
+    if (eClass === "discussion" && changepage)
+        $(".a-frame").css("display", "");
 });
 
 function m_mp_ChangeLasteFrameInfo()

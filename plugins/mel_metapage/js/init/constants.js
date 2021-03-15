@@ -169,7 +169,7 @@ const mel_metapage = {
         open_ariane: function () {
             if (mel_metapage.PopUp.ariane === null)
                 mel_metapage.PopUp.ariane = new ArianePopUp(ArianeButton.default());
-            console.log(mel_metapage, window == parent);
+            //console.log(mel_metapage, window == parent);
             mel_metapage.PopUp.ariane.show();
         },
         ariane:null,

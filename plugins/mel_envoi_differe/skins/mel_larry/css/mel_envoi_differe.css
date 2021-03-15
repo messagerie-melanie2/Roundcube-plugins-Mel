@@ -29,13 +29,18 @@ body.envoidiffere {
     margin-right: 10px;
 }
 
+#info_message {
+    position: absolute;
+    bottom: 20px;
+}
+
 #error_message {
     margin-top: 20px;
     color: var(--settings-disconnect-text-color);
 }
 
 #envoidiffere_time {
-    width: 110px;
+    width: 120px;
 }
 #envoidiffere-details .warning {
     margin-top: 5px;

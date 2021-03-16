@@ -156,6 +156,7 @@ const mel_metapage = {
                 calendar:"menu-badge-calendar",
                 tasks:"menu-badge-tasks",
                 mail:"menu-badge-mail",
+                ariane:"menu-badge-ariane"
             }
         },
         create:{

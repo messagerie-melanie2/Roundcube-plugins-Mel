@@ -47,3 +47,20 @@ div#user-status{
 .menu a.logout-color:not(.disabled):focus, .menu a.logout-color:not(.disabled):hover{
     background-color:#ff5552 !important
 }
+
+#user-dispo.ok{
+  background-color: #2DE0A5;  
+}
+
+#user-dispo.busy{
+    background-color: #F5455C;  
+}
+
+#user-dispo.nothere{
+    background-color: #F3BE08;  
+}
+
+#user-dispo.logout{
+    background-color: black;  
+}
+  

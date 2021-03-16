@@ -100,6 +100,7 @@ class RocketChatClient {
   const CHANEL_CREATE = "channels.create";
   const CHANEL_SET_TYPE = "channels.setType";
   const CHANEL_INVITE = "channels.invite";
+  const CHANEL_COUNT = "channels.counters";
   /**
    * Relative API URL
    *
@@ -474,6 +475,25 @@ class RocketChatClient {
       $results[] = $this->_post_url($this->_api_url.self::CHANEL_INVITE, $params, null, $headers);
     }
     return $results;
+
+  }
+
+  public function channel_count($channel)
+  {
+  
+    $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+    );
+
+    $params = [
+      "roomName" => $channel
+    ];
+
+    $result = $this->_get_url($this->_api_url.self::CHANEL_COUNT, $params, $headers);
+    
+    return $result;
 
   }
 

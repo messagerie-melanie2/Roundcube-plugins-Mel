@@ -10,6 +10,7 @@ nextcloud_document.addIcon("news", "icofont-newspaper");
 nextcloud_document.addIcon("survey", "icofont-letter");
 nextcloud_document.addIcon("start", "icofont-favourite");
 nextcloud_document.addIcon("nextcloud", "icofont-cloud");
+nextcloud_document.addIcon("tasks", "icofont-tasks");
 
 nextcloud_document.addIcon("txt", "icofont-file-text");
 nextcloud_document.addIcon("word", "icofont-file-document");

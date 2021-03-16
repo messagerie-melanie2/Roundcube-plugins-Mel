@@ -1,9 +1,10 @@
-<div class="workspace", id="<workspace-id/>">
+<div class="workspace" data-public="<workspace-public/>" id="<workspace-id/>">
     <div class="row">
-        <div class="col-3"><workspace-image/></div>
-        <div class="col-9">
+        <div class="col-4"><workspace-image/></div>
+        <div class="col-8">
             <span><workspace-#/></span>
-            <span><workspace-title/></span>
+            <br/>
+            <span class="wsp-title"><workspace-title/></span>
         </div>
     </div>
     <div class="row">
@@ -13,7 +14,9 @@
     </div>
     <div class="row">
         <div class="col-4">
-            <workspace-users/>
+            <div class=wsp-users>
+                <workspace-users/>
+            </div>
         </div>
         <div class="col-8">
             <workspace-misc/>
@@ -27,9 +30,9 @@
             <workspace-task-all/>
         </div>
     </div>
-    <div class="row">
-        <div class="col-12">
+    <div class="row" id="wsp-notifs-<workspace-id/>">
+        <!-- <div class="col-12" id="wsp-notifs-<workspace-id/>"> -->
             <workspace-notifications/>
-        </div>
+        <!-- </div> -->
     </div>
 </div>

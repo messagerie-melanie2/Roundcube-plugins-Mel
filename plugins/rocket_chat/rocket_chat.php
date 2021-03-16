@@ -94,6 +94,10 @@ class rocket_chat extends rcube_plugin {
         $this,
         'get_user_info'
     ));
+    $this->register_action('get_channel_unread_count', array(
+      $this,
+      'get_channel_unread_count'
+  ));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -436,6 +440,21 @@ EOF;
       $rocketClient->setUserId($uid);
       $rocketClient->setAuthToken($token);
       $results = $rocketClient->add_users($channel_id, $users);
+      echo json_encode($results);
+      exit;
+    }
+
+    public function get_channel_unread_count()
+    {
+      $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
+      require_once __DIR__ . '/lib/rocketchatclient.php';
+      $this->login();
+      $uid = $this->getUserId();
+      $token = $this->getAuthToken();
+      $rocketClient = new RocketChatClient($this->rc);
+      $rocketClient->setUserId($uid);
+      $rocketClient->setAuthToken($token);
+      $results = $rocketClient->channel_count($channel);
       echo json_encode($results);
       exit;
     }

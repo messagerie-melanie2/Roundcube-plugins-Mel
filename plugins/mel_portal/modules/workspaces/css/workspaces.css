@@ -1,0 +1,64 @@
+.workspace{
+    background-color: #F8F8F8;
+    padding: 15px;
+    border-radius: 5px;
+    width: 395px;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.wsp-title {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+.dwp-circle{
+    display: inline-block;
+    width: 42px;
+    height: 42px;
+    background-color: #80D5C6;
+    /* display: block; */
+    border-radius: 100%;
+    text-align: center;
+    color: inherit!important;
+    text-decoration: none!important;
+    -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
+    margin-left: -15px;
+    border-style: solid;
+    border-color: white
+}
+
+.dwp-circle > img
+{
+    height: 100%;
+}
+
+.dwp-circle > span
+{
+    line-height: 34px;
+    font-size: x-large;
+    /* font-stretch: unset; */
+    font-variant-caps: all-petite-caps;
+}
+
+.wsp-users {
+    margin-left: 15px;
+}
+
+.centered{
+    text-align: center;
+}
+
+.ariane-icon{
+    font-size: xxx-large;
+}
+
+.roundbadge.ariane-notif
+{
+    position: absolute;
+    right: 20px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    font-size: 8px;
+}

@@ -46,30 +46,44 @@ class Workspaces extends Module
 
         // $res = $workspace->save();
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
+        $it = 0;
         foreach ($this->workspaces as $key => $value) {
+             if ($it > 2)
+                 break;
             $this->workspaces[$key]->load();
+            ++$it;
         }
     }
 
-    function html()
+    function generate_html()
     {
-
+        $html = "";
+        $it = 0;
+        foreach ($this->workspaces as $key => $value) {
+            if ($it > 2)
+                break;
+            $html .= $this->create_block($value);
+            ++$it;
+        } 
+        return $html;
     }
 
     function create_block($workspace)
     {
         $html = $this->rc->output->parse("mel_portal.dwp_block", false, false);
+        $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
+        $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
         if ($workspace->logo !== null)
-            str_replace("<workspace-image/>", '<div class=dwp-circle><img src="'.$workspace->logo.'"></div>', $html);
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
         else
-            str_replace("<workspace-image/>", "<div class=dwp-circle></div>", $html);
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 3)."</span></div>", $html);
         if (count($workspace->hashtags) > 0)
-             str_replace("<workspace-#/>", $workspace->hashtags[0], $html);
+            $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else
-            str_replace("<workspace-#/>", "", $html);
+            $html = str_replace("<workspace-#/>", "", $html);
 
-        str_replace("<workspace-title/>", $workspace->title, $html);
-        str_replace("<workspace-avancement/>", "", $html);
+        $html = str_replace("<workspace-title/>", $workspace->title, $html);
+        $html = str_replace("<workspace-avancement/>", "<br/><br/><br/>", $html);
 
         if ($workspace->shares !== null)
         {
@@ -83,26 +97,36 @@ class Workspaces extends Module
                     $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp.= '<div class="dwp-circle dwp-user"><img src="https://ariane.din.developpement-durable.gouv.fr/avatar/'.$s->user.'" /></div>';
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="https://ariane.din.developpement-durable.gouv.fr/avatar/'.$s->user.'" /></div>';
                 ++$it;
             }
-            str_replace("<workspace-users/>", $html_tmp, $html);
+            $html = str_replace("<workspace-users/>", $html_tmp, $html);
         }
         else
-            str_replace("<workspace-users/>", "", $html);
+            $html = str_replace("<workspace-users/>", "", $html);
 
         if ($workspace->created === $workspace->modified)
-            str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
         else
         {
-            str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jours : ".$workspace->modified, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jours : ".$workspace->modified, $html);
         }
 
-        str_replace("<workspace-task-danger/>", "", $html);
-        str_replace("<workspace-task-all/>", "", $html);
+        $html = str_replace("<workspace-task-danger/>", "", $html);
+        $html = str_replace("<workspace-task-all/>", "", $html);
 
-        str_replace("<workspace-notifications/>", "", $html);
+        $html = str_replace("<workspace-notifications/>", "", $html);
+        return $html;
+    }
 
+    function include_css(){
+        $this->plugin->include_stylesheet('modules/workspaces/css/workspaces.css');
+    }
+
+    function include_js()
+    {
+        $this->plugin->include_script($this->folder().'/workspaces/js/init.js');
+        //$this->plugin->include_script($this->folder().'/flux_rss/js/main.js');
     }
 
     

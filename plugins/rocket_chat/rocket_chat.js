@@ -37,6 +37,7 @@ if (window.rcmail) {
 	});
 	
 	window.addEventListener('message', (e) => {
+		console.log("message", e.data);
 		if (e.data.eventName == 'login-error') {
 			rcmail.display_message(e.data.response, 'error');
 		}
@@ -57,6 +58,17 @@ if (window.rcmail) {
 			document.title = title;
 			refreshFavico();
 			//sessionStorage.setItem('rocket_chat_url', window.document.getElementById('rocket_chat_frame').contentWindow.location);
+		}
+		if (parent.ariane !== undefined)
+		{
+			if (e.data.eventName === "unread-changed-by-subscription" ||  e.data.eventName == 'unread-changed')
+			{
+					parent.ariane.update_channel(e);
+			}
+			else if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
+			{
+				parent.ariane.update_status(e.data.data);
+			}
 		}
 	});
 	

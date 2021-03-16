@@ -141,9 +141,36 @@ td.subject {
 }
 
 /******Calendrier*******/
+.calendar-datepicker .ui-datepicker-header,
+.calendar-datepicker .ui-datepicker,
 .listing li.selected>div>*
 {
     background-color: #484D7A !important;
+}
+
+.ui-datepicker a.ui-state-active {
+    background-color: #80D5C6 !important;
+    color: #000 !important;
+}
+
+body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
+    background-color: #488787 !important;
+}
+
+body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
+    color: #80D5C6 !important;
+}
+
+.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default {
+    color: #fff;
+}
+
+.ui-datepicker .ui-state-highlight, .ui-datepicker.ui-widget-content .ui-state-highlight {
+    background-color: #266565 !important;
+}
+
+.listing li > div a.quickview::before {
+    color: #80D5C6 !important;
 }
 /******Fin cal*******/
 

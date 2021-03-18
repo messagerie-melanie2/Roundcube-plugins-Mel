@@ -170,6 +170,10 @@ EOF;
           // Appel le script de gestion des link
           $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
           $this->include_script('rocket_chat_link.js');
+                        // Appel la lib pour la gestion du Favico
+                        $this->include_script('favico.js');
+                        // Appel le script de création du chat
+                        $this->include_script('rocket_chat.js');
           $this->rc->output->set_env('rocket_chat_params_url', $this->rc->url(array(
               "_task" => "discussion",
               "_params" => "%%other_params%%"

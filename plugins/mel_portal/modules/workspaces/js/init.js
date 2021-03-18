@@ -28,10 +28,10 @@
             };
          });
 
-         $(".workspace").each((i,e) => {
-            const id = e.id.replace("wsp-", "");
-            getUnread("apitech-1");
-         });
+        //  $(".workspace").each((i,e) => {
+        //     const id = e.id.replace("wsp-", "");
+        //     getUnread("apitech-1");
+        //  });
 
      })
 

@@ -118,6 +118,10 @@ function mm_st_ClassContract(_class)
             return "discussion";
         case "discussion":
             return "rocket";
+        case "wsp":
+            return "workspace"
+        case "workspace":
+            return "wsp";
         default:
             return _class;
     }
@@ -277,12 +281,14 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
 })
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result) => {
-    const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+rcmail.get_task_url(mm_st_CommandContract(eClass))+'&_from=iframe"></iframe>';
-    if (eClass !== "discussion")
-        return (result ? result : "") + frame;
-    else
+    let src = rcmail.get_task_url(mm_st_CommandContract(eClass)) + "&_from=iframe";
+    if (eClass === "discussion")
+        src = rcmail.env.rocket_chat_url + "home";
+    const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';
+    let html = frame;
+    if (eClass === "discussion")
     {
-        let html = "";
+        html = "";
         html += '<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;">';
         html += '<div class="card-header-disabled frame-header">';
         html += '<span>Ariane</span>';
@@ -293,14 +299,19 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, res
         html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
         html += frame;
         html += "</div></div>";
-        return (result ? result : "") + html;
     }
+
+    
+    return (result ? result : "") + html;
+    
 })
 
 metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
     frame.css("display", "none");
     if (!changepage && rcmail.env.task != "mel_metapage" && rcmail.env.action !== "chat")
         $(".a-frame").css("display", "none");
+    if (eClass === "discussion")
+        rcmail.triggerEvent("init_ariane", frame[0].id);
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {

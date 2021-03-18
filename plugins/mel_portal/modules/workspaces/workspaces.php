@@ -77,7 +77,7 @@ class Workspaces extends Module
             $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 3)."</span></div>", $html);
-        if (count($workspace->hashtags) > 0)
+        if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else
             $html = str_replace("<workspace-#/>", "", $html);
@@ -112,8 +112,8 @@ class Workspaces extends Module
             $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jours : ".$workspace->modified, $html);
         }
 
-        $html = str_replace("<workspace-task-danger/>", "", $html);
-        $html = str_replace("<workspace-task-all/>", "", $html);
+        $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
+        $html = str_replace("<workspace-task-all/>", "<br/>", $html);
 
         $html = str_replace("<workspace-notifications/>", "", $html);
         return $html;

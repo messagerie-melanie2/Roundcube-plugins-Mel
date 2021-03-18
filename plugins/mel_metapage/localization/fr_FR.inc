@@ -17,7 +17,7 @@ $labels["a_meeting"] = "Une réunion";
 $labels["a_web_conf"] = "Une visio-conférence";
 $labels["a_document"] = "Un document";
 $labels["a_wordpad"] = "Un bloc-note";
-$labels["a_survey"] = "Un sondage pégaze";
+$labels["a_survey"] = "Un sondage Pégase";
 
 $labels["what_do_you_want_create"] = "Que souhaitez-vous créer ?";
 $labels["choose_type_doc"] = "Choisissez le type de document :";

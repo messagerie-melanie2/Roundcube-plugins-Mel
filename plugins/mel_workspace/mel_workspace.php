@@ -31,6 +31,7 @@ class mel_workspace extends rcube_plugin
      */
     private $rc;
 
+    private $workspaces;
 
     /**
      * (non-PHPdoc)
@@ -42,6 +43,9 @@ class mel_workspace extends rcube_plugin
         $this->register_action('create', array($this, 'create'));
         $this->register_action('get_uid', array($this, 'get_uid'));
         $this->register_action('check_uid', array($this, 'check_uid'));
+        $this->register_action('save_objects', array($this, 'save_objects'));
+        if ($this->rc->task === "workspace")
+            $this->portal();
     }
 
     function setup()
@@ -53,16 +57,60 @@ class mel_workspace extends rcube_plugin
         $this->register_task("workspace");
 
         // Ajoute le bouton en fonction de la skin
-        // $this->add_button(array(
-        //     'command' => $this->taskName,
-        //     'class'	=> 'button-home order1 icofont-home',
-        //     'classsel' => 'button-home button-selected order1 icofont-home',
-        //     'innerclass' => 'button-inner',
-        //     'label'	=> 'portal',
-        //     'title' => '',
-        //     'type'       => 'link',
-        //     'domain' => "mel_portal"
-        // ), $this->sidebarName);
+        $this->add_button(array(
+            'command' => "workspace",
+            'class'	=> 'button-wsp icofont-monitor',
+            'classsel' => 'button-wsp button-selected icofont-monitor',
+            'innerclass' => 'button-inner',
+            'label'	=> 'Mes espaces de travails',
+            'title' => 'Mes espaces de travails',
+            'type'       => 'link',
+            //'domain' => ""
+        ), "taskbar");
+    }
+
+    function portal()
+    {
+        $this->load_workspaces();
+        $this->include_css();
+        $this->register_action('index', array($this, 'index'));
+    }
+
+    function load_workspaces()
+    {
+        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
+        foreach ($this->workspaces as $key => $value) {
+            $this->workspaces[$key]->load();
+        }
+    }
+
+    function index()
+    {
+        // $this->rc->output->add_handlers(array(
+        //     'epingle'    => array($this, 'show_epingle'),
+        // ));
+        $this->rc->output->add_handlers(array(
+            'joined'    => array($this, 'show_joined'),
+        ));
+        $this->rc->output->send('mel_workspace.workspaces');
+    }
+
+    function show_epingle()
+    {
+        return $this->generate_html(true);
+    }
+
+    function show_joined()
+    {
+        return $this->generate_html();
+    }
+        /**
+     * Récupère le css utile pour ce plugin.
+     */
+    function include_css()
+    {
+        // Ajout du css
+        $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
     }
 
     function create()
@@ -159,6 +207,11 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
+    function save_objects()
+    {
+        
+    }
+
     public static function generate_uid($title)
     {
         $max = 35;
@@ -182,6 +235,66 @@ class mel_workspace extends rcube_plugin
             $workspace->uid = $text."-".(++$it);
         } while ($workspace->exists());
         return $text."-".$it;
+    }
+
+    function generate_html($only_epingle = false)
+    {
+        $html = "";
+        foreach ($this->workspaces as $key => $value) {
+            $html .= $this->create_block($value);
+        } 
+        return $html;
+    }
+
+    function create_block($workspace)
+    {
+        $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
+        $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
+        $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
+        if ($workspace->logo !== null)
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
+        else
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 3)."</span></div>", $html);
+        if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
+            $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
+        else
+            $html = str_replace("<workspace-#/>", "", $html);
+
+        $html = str_replace("<workspace-title/>", $workspace->title, $html);
+        $html = str_replace("<workspace-avancement/>", "<br/><br/><br/>", $html);
+
+        if ($workspace->shares !== null)
+        {
+            //"https://ariane.din.developpement-durable.gouv.fr/avatar/$uid"
+            $it = 0;
+            $html_tmp = "";
+            foreach ($workspace->shares as $s)
+            {
+                if ($it == 2)
+                {
+                    $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
+                    break;
+                }
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="https://ariane.din.developpement-durable.gouv.fr/avatar/'.$s->user.'" /></div>';
+                ++$it;
+            }
+            $html = str_replace("<workspace-users/>", $html_tmp, $html);
+        }
+        else
+            $html = str_replace("<workspace-users/>", "", $html);
+
+        if ($workspace->created === $workspace->modified)
+            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
+        else
+        {
+            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jours : ".$workspace->modified, $html);
+        }
+
+        $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
+        $html = str_replace("<workspace-task-all/>", "<br/>", $html);
+
+        $html = str_replace("<workspace-notifications/>", "", $html);
+        return $html;
     }
 
 }

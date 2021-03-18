@@ -279,7 +279,7 @@ class ArianeFrame{
             rcmail.env.frame_created = false;
             mm_st_CreateOrOpenModal("rocket", false);
             new Promise(async (a, b ) => {
-                while (!rcmail.env.frame_created || $(".discussion-frame").length == 0 || $(".discussion-frame").contents().find("#rocket_chat_frame").length == 0) {
+                while (!rcmail.env.frame_created || $(".discussion-frame").length == 0/* || $(".discussion-frame").contents().find("#rocket_chat_frame").length == 0*/) {
                     await delay(500);
                 }
                 this.popUp = $(".discussion-frame");

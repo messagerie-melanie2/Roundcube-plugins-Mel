@@ -26,6 +26,13 @@
             this.unreads = (ariane === null ? {} : ariane.unreads);
         }
 
+        async post_message(datas)
+        {
+            $("iframe.mm-frame").each((i,e) => {
+                e.contentWindow.postMessage(datas);
+            });
+        }
+
         update_channel(event)
         {
             const datas = event.data.data;
@@ -68,7 +75,7 @@
             if (querry.find(".ariane").length === 0)
                 querry.append('<div class="col-3 centered"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icofont-chat ariane-icon"><span></span></div>')
             querry = querry.find(".ariane-notif");
-            if (this.unreads[channel] === 0)
+            if (false && this.unreads[channel] === 0)
                 querry.parent().parent().css("display", "none");
             else
                 querry.html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");
@@ -77,6 +84,10 @@
                 mel_metapage.Storage.set("ariane_datas",this);
                 this.update_menu();
             }
+            this.post_message({
+                ariane:this,
+                channel:channel
+            });
         }
 
         menu()
@@ -109,6 +120,20 @@
         }
     }
 
-    window.ariane = new Ariane(true);
+    if (parent === window)
+    {
+        window.ariane = new Ariane(true);
+    }
+    else {
+        window.ariane = new Ariane(true);
+        window.addEventListener("message", receiveMessage, false);
+        function receiveMessage(event)
+        {
+            const ariane = event.data.ariane;
+            window.ariane.init(ariane);
+            window.ariane.update(event.data.channel, false);
+        }
+
+    }
 
 })();

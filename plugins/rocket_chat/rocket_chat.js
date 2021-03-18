@@ -8,10 +8,11 @@ if (window.rcmail) {
 		animation: 'none'
 	});		
 	
-	rcmail.addEventListener('init', function(evt) {
-		window.document.getElementById('rocket_chat_frame').onload = function() {
+	rcmail.addEventListener('init_ariane', function(evt) {
+		window.ariane_id = evt === null ? "ariane_id" : evt;
+		window.document.getElementById(ariane_id).onload = function() {
 			setTimeout(function() {
-				window.document.getElementById('rocket_chat_frame').contentWindow.postMessage({
+				window.document.getElementById(ariane_id).contentWindow.postMessage({
 					event: 'login-with-token',
 					loginToken: rcmail.env.rocket_chat_auth_token,
 					userId: rcmail.env.rocket_chat_user_id
@@ -29,10 +30,10 @@ if (window.rcmail) {
 	    }
 		}
 		if (navigator.appName == "Microsoft Internet Explorer"){
-			window.document.getElementById('rocket_chat_frame').src = rocket_chat_url;
-			window.document.getElementById('rocket_chat_frame').contentWindow.location.reload(true);
+			window.document.getElementById(ariane_id).src = rocket_chat_url;
+			window.document.getElementById(ariane_id).contentWindow.location.reload(true);
 		} else {
-			window.document.getElementById('rocket_chat_frame').src = rocket_chat_url;
+			window.document.getElementById(ariane_id).src = rocket_chat_url;
 		}
 	});
 	
@@ -42,7 +43,7 @@ if (window.rcmail) {
 			rcmail.display_message(e.data.response, 'error');
 		}
 		else if (rcmail.env.rocket_chat_channel && e.data.eventName == 'startup' && e.data.data === true) {
-			window.document.getElementById('rocket_chat_frame').contentWindow.postMessage({
+			window.document.getElementById(window.ariane_id).contentWindow.postMessage({
 				externalCommand: 'go',
 				path: rcmail.env.rocket_chat_channel
 			}, rcmail.env.rocket_chat_url);

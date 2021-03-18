@@ -90,37 +90,41 @@
     order:6;
 }
 
-.space{
+.button-wsp{
     order:7;
 }
 
-.icofont-document-folder {
+.space{
     order:8;
+}
+
+.icofont-document-folder {
+    order:9;
 }
 
 .news
 {
-    order:9;
-}
-
-.tasklist{
     order:10;
 }
 
-.button-mel_sondage {
+.tasklist{
     order:11;
 }
 
-.contacts{
+.button-mel_sondage {
     order:12;
 }
 
-.settings{
+.contacts{
     order:13;
 }
 
-#taskmenu .special-buttons{
+.settings{
     order:14;
+}
+
+#taskmenu .special-buttons{
+    order:15;
 }
 
 .popover-header{
@@ -154,6 +158,12 @@ span.menu-last-frame-item{
     -webkit-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
     -o-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
     -ms-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
+}
+
+.menu.toolbar a.wsp.icofont-monitor:before
+{
+    content:"\ea48";
+    font-family: "IcoFont"!important;
 }
 
 .menu.toolbar a.home.icofont-home:before
@@ -222,6 +232,25 @@ iframe.mm-frame/*,
     min-width: 100px;
     text-align: left;
     border-color: #363A5B;
+}
+
+.menu.toolbar a.wsp.icofont-monitor > span
+{
+    white-space: break-spaces;
+    padding-top: 5px!important;
+}
+
+.menu-last-frame > span
+{
+overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+.menu-last-frame-inner-down
+{
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
 
 html.layout-large .menu.toolbar a.menu-small,

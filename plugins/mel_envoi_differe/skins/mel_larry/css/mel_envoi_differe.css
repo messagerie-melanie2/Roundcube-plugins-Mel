@@ -47,7 +47,10 @@ body.envoidiffere {
     padding: 10px 15px;
     border: 1px solid #d8cebc;
     background-color: #ffe1e0;
-    margin-bottom: 30px;
+}
+
+#envoidiffere-details .margin {
+    margin-top: 30px;
 }
 
 @media (prefers-color-scheme: dark) {

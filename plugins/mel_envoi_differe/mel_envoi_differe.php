@@ -81,14 +81,22 @@ class mel_envoi_differe extends rcube_plugin
             // On récupère la timezone de l'utilisateur
             $timezone = $rcmail->config->get('timezone', null);
 
+            $currentDate = new DateTime();
             $date = new DateTime("@$timestamp");
+
             $date->setTimeZone(new DateTimeZone($timezone));
             $dateFormat = $date->format('r');
             $date->setTimeZone(new DateTimeZone('UTC'));
+            $currentDate->setTimeZone(new DateTimeZone('UTC'));
+
+            $currentDateTimestamp = $currentDate->getTimestamp();
             $dateTimestamp = $date->getTimestamp();
 
-            $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
-            return $args;
+            //On vérifie que la date correspond bien à une date future
+            if ($dateTimestamp >  $currentDateTimestamp) {
+                $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
+                return $args;
+            }
         }
     }
 }

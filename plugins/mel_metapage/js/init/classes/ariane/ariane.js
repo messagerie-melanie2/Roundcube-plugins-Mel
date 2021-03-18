@@ -75,7 +75,7 @@
             if (querry.find(".ariane").length === 0)
                 querry.append('<div class="col-3 centered"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icofont-chat ariane-icon"><span></span></div>')
             querry = querry.find(".ariane-notif");
-            if (false && this.unreads[channel] === 0)
+            if (this.unreads[channel] === 0)
                 querry.parent().parent().css("display", "none");
             else
                 querry.html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");

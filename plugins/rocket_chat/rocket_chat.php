@@ -98,6 +98,10 @@ class rocket_chat extends rcube_plugin {
       $this,
       'get_channel_unread_count'
   ));
+   $this->register_action('login', array(
+     $this,
+     'get_log'
+ ));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -401,6 +405,17 @@ EOF;
      */
     private function generateAuthToken() {
       return base64_encode(uniqid('roundcube_plugin_rocket_chat')); 
+    }
+
+    function get_log()
+    {
+      $this->login();
+      $array = [
+        "uid" => $this->getUserId(),
+        "token" => $this->getAuthToken()
+      ];
+      echo json_encode($array);
+      exit;
     }
 
     public function create_chanel()

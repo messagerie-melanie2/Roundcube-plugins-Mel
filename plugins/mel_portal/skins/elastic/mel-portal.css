@@ -130,9 +130,15 @@
 {
   position: absolute;
   margin: 30px;
-  top: 60px;
+  top: 0px;
   left: 0px;
   max-width: 150px;
+}
+
+.logo-mel.startup.bureau-frame.mm-frame
+{
+  left:60px;
+  top:60px;
 }
 
 .square_tab > p
@@ -150,10 +156,6 @@
   max-width: 100%;
 }
 
-.logo-mel.startup.bureau-frame.mm-frame
-{
-  left:60px;
-}
 
 @media screen and (max-width: 1025px){
   .dwp{

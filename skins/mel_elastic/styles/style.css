@@ -671,3 +671,34 @@ table.listing td.subscribed {
 {
     display:none;
 }
+
+.mel-search-group > input,
+.mel-search
+{
+    border-right: none;
+    border-color: #424665;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+}
+
+.mel-search
+{
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;   
+}
+
+.mel-search-group > .input-group-append > .input-group-text{
+    background-color: white;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
+    border-color: #424665;
+}
+
+.mel-max-width-500
+{
+    max-width: 500px;
+}
+
+.mel-centered{
+    justify-content: center;
+}

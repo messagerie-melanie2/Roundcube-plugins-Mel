@@ -288,6 +288,9 @@ class ArianeFrame{
                     header:new ArianeCard(context, "card-header-disabled", "card-header", "ariane-card-header"),
                     body: new ArianeCard(context, "card-body-disabled", "card-body", "ariane-card-body")
                 };
+                while (rcmail.env.ariane_is_logged !== true) {
+                    await delay(500);
+                }
                 this.load_ended = true;
             });
         }

@@ -28,11 +28,48 @@
             };
          });
 
-        //  $(".workspace").each((i,e) => {
-        //     const id = e.id.replace("wsp-", "");
-        //     getUnread("apitech-1");
-        //  });
+         $("#wsp-search-input").on("input", (element) => {
+            const val = element.target.value.toUpperCase();
+            if (val === "")
+            {
+                $(".epingle").css("display", "");
+                $(".workspace").css("display", "");
+            }
+            else {
+                $(".epingle").css("display", "none");
+                $(".workspace").css("display", "");
+                $(".workspace").each((i,e) => {
+                    e = $(e);
+                    if (e.find(".wsp-title").length === 0 || !e.find(".wsp-title").html().toUpperCase().includes(val))
+                    {
+                        e.css("display", "none");
+                    }
+                });
+            }
+         });
 
      })
 
+
 })();
+
+function wsp_epingle(id)
+{
+    console.log("id", id);
+    if (id.includes("wsp-"))
+        id = id.replace("wsp-", "").replace("-epingle", "");
+    $.ajax({ // fonction permettant de faire de l'ajax
+    type: "POST", // methode de transmission des données au fichier php
+    url: "/?_task=workspace&_action=epingle",
+    data:{
+        _uid:id
+    },
+    success: function (data) {
+        data = JSON.parse(data);
+        console.log("epingle ok", data);
+    },
+    error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+        console.error(xhr, ajaxOptions, thrownError);
+    },
+    });  
+}

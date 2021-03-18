@@ -229,7 +229,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         $("#layout-frames").css("display", "none");
     else 
         $("#layout-frames").css("display", "");
-    let arianeIsOpen = mel_metapage.PopUp.ariane.is_show;
+    let arianeIsOpen = mel_metapage.PopUp.ariane === undefined || mel_metapage.PopUp.ariane === null ? false : mel_metapage.PopUp.ariane.is_show;
     if (isAriane)
     {
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)

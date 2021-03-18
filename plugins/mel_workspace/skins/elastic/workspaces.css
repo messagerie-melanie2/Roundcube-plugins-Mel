@@ -2,9 +2,19 @@
 {
   position: absolute;
   margin: 30px;
-  top: 60px;
-  left: 60px;
+  top: 0px;
+  left: 0px;
   max-width: 150px;
+}
+
+.logo-mel.startup.mm-frame
+{
+  left:60px;
+  top:60px;
+}
+
+html.touch .logo-mel{
+    display:none;
 }
 
 .wsp-content{
@@ -12,11 +22,18 @@
     padding-right: 200px;
 }
 
+html.touch .wsp-content{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 .title-wsp {
-    font-size: xx-large;
+    font-size: x-large;
+    font-weight: bold;
 }
 
 .workspace{
+    position: relative;
     background-color: #F8F8F8;
     padding: 15px;
     border-radius: 5px;
@@ -30,6 +47,7 @@
 }
 
 .dwp-circle{
+    position: relative;
     display: inline-block;
     width: 42px;
     height: 42px;
@@ -41,9 +59,23 @@
     text-decoration: none!important;
     -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
     margin-left: -15px;
-    border-style: solid;
-    border-color: white
+    /* border-style: solid;
+    border-color: white */
 }
+
+.dwp-circle.dwp-user:before {
+    content: " ";
+    border-style: solid;
+    width: 44px;
+    height: 44px;
+    display: block;
+    position: absolute;
+    border-radius: 100%;
+    top: -1px;
+    left: -1px;
+    color: white;
+    border-width: 5px;
+  }
 
 .dwp-circle > img
 {
@@ -85,4 +117,52 @@
     width: 16px;
     line-height: 16px;
     font-size: 8px;
+}
+
+.header-wsp{
+    font-size:xxx-large;
+}
+
+.header-wsp > .roundbadge
+{
+    font-size: xx-large;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+    line-height: 63px;
+    border-radius: 100%;
+    color:white;
+    background-color: #2C3054;
+}
+
+.header.wsp-header
+{
+    padding-bottom:20px!important;
+    margin-top:60px!important;
+}
+
+.tak{
+    position: absolute;
+    right: 15px;
+}
+
+.tak.roundbadge {
+    font-size: initial;
+    font-weight: normal;
+    height: 20px;
+    width: 20px;
+    text-decoration: none;
+    line-height: 20px;
+    color: #C2C4D1;
+    background-color: transparent;
+}
+
+.tak.roundbadge.active {
+    background-color: #FDCF42;
+    color:#2C3054;
+}
+
+.tak.roundbadge:hover{
+    background-color: white;
+    color:#2C3054;
 }

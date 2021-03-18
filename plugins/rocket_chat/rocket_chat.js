@@ -8,16 +8,39 @@ if (window.rcmail) {
 		animation: 'none'
 	});		
 	
+	function login()
+	{
+		return $.ajax({ // fonction permettant de faire de l'ajax
+			type: "GET", // methode de transmission des données au fichier php
+			url: "/?_task=discussion&_action=login",
+			success: function (data) {
+				data = JSON.parse(data);
+				console.log("yeay", data);
+				rcmail.env.rocket_chat_auth_token = data.token;
+				rcmail.env.rocket_chat_user_id = data.uid;
+			},
+			error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+				console.error(xhr, ajaxOptions, thrownError);
+			},
+		});
+	} 
+
 	rcmail.addEventListener('init_ariane', function(evt) {
 		window.ariane_id = evt === null ? "ariane_id" : evt;
 		window.document.getElementById(ariane_id).onload = function() {
+			new Promise(async (a,b) => {
+			if (rcmail.env.rocket_chat_auth_token === undefined && rcmail.env.rocket_chat_user_id === undefined)
+				await login();
 			setTimeout(function() {
+				//console.log('log', rcmail.env.rocket_chat_auth_token, rcmail.env.rocket_chat_user_id);
 				window.document.getElementById(ariane_id).contentWindow.postMessage({
 					event: 'login-with-token',
 					loginToken: rcmail.env.rocket_chat_auth_token,
 					userId: rcmail.env.rocket_chat_user_id
 				}, rcmail.env.rocket_chat_url);
+				rcmail.env.ariane_is_logged = true;
 			}, 50);
+		});
 		};
 		// Récupération de l'url rocket
 		if (rcmail.env.rocket_chat_gotourl) {

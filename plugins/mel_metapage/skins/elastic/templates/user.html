@@ -21,7 +21,13 @@ style="text-decoration: none;">
     </div>
 </div>
 </a>
-<div id="groupoptions-user" class="popupmenu">
+<style>
+    #groupoptions-user
+    {
+        z-index: 10000;
+    }
+</style>
+<div id="groupoptions-user" style="z-index: index 10000;" class="popupmenu">
 	<h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-user">
 		<roundcube:button type="link-menuitem" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="settings" classAct="" />

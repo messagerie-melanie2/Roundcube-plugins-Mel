@@ -233,7 +233,7 @@ v_separate{
     position: absolute;
     top:60px;
     right:0px;
-    z-index:9999;
+    z-index:999;
     display: none;
 }
 

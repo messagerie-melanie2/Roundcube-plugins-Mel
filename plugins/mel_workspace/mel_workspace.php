@@ -44,6 +44,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('get_uid', array($this, 'get_uid'));
         $this->register_action('check_uid', array($this, 'check_uid'));
         $this->register_action('save_objects', array($this, 'save_objects'));
+        $this->register_action('epingle', array($this, 'epingle'));
         if ($this->rc->task === "workspace")
             $this->portal();
     }
@@ -53,7 +54,7 @@ class mel_workspace extends rcube_plugin
         $this->rc = rcmail::get_instance();
         //$this->load_config();
         //$this->setup_config();
-        //$this->add_texts('localization/', true);
+        $this->add_texts('localization/', true);
         $this->register_task("workspace");
 
         // Ajoute le bouton en fonction de la skin
@@ -62,10 +63,10 @@ class mel_workspace extends rcube_plugin
             'class'	=> 'button-wsp icofont-monitor',
             'classsel' => 'button-wsp button-selected icofont-monitor',
             'innerclass' => 'button-inner',
-            'label'	=> 'Mes espaces de travails',
-            'title' => 'Mes espaces de travails',
+            'label'	=> 'my_workspaces',
+            'title' => 'my_workspaces',
             'type'       => 'link',
-            //'domain' => ""
+            'domain' => "mel_workspace"
         ), "taskbar");
     }
 
@@ -73,22 +74,23 @@ class mel_workspace extends rcube_plugin
     {
         $this->load_workspaces();
         $this->include_css();
+        $this->include_js();
         $this->register_action('index', array($this, 'index'));
     }
 
     function load_workspaces()
     {
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
-        foreach ($this->workspaces as $key => $value) {
-            $this->workspaces[$key]->load();
-        }
+        // foreach ($this->workspaces as $key => $value) {
+        //     $this->workspaces[$key]->load();
+        // }
     }
 
     function index()
     {
-        // $this->rc->output->add_handlers(array(
-        //     'epingle'    => array($this, 'show_epingle'),
-        // ));
+        $this->rc->output->add_handlers(array(
+            'epingle'    => array($this, 'show_epingle'),
+        ));
         $this->rc->output->add_handlers(array(
             'joined'    => array($this, 'show_joined'),
         ));
@@ -111,6 +113,11 @@ class mel_workspace extends rcube_plugin
     {
         // Ajout du css
         $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
+    }
+
+    function include_js()
+    {
+        $this->include_script('js/init.js');
     }
 
     function create()
@@ -237,20 +244,68 @@ class mel_workspace extends rcube_plugin
         return $text."-".$it;
     }
 
+    public static function is_epingle($loaded_workspace)
+    {
+        $settings = json_decode($loaded_workspace->settings);
+        if ($settings === null)
+            return false;
+        if ($settings->epingle === true)
+            return true;
+        return false;
+    }
+
+    function epingle()
+    {
+        try {
+            $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+            $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+            $workspace->uid = $uid;
+            $workspace->load();
+            if ($workspace->settings === null)
+            {
+                $settings = [];
+                $settings["epingle"] = true;
+            }
+            else {
+                $settings = json_decode($workspace->settings);
+                if ($settings->epingle === true)
+                    $settings->epingle = false;
+                else
+                    $settings->epingle = true;
+            }
+
+            $workspace->settings = json_encode($settings);
+            $ret = $workspace->save();
+            //driver_mel::gi()->getUser()->cleanWorkspaces();
+            echo json_encode(["is_epingle" => json_decode($workspace->settings)->epingle, "success" => true]);
+        } catch (\Throwable $th) {
+            echo son_encode(["is_epingle" => json_decode($workspace->settings)->epingle, "success" => false]);
+        }
+        exit;
+
+    }
+
     function generate_html($only_epingle = false)
     {
         $html = "";
         foreach ($this->workspaces as $key => $value) {
-            $html .= $this->create_block($value);
+            if (!self::is_epingle($value) && $only_epingle)
+                continue;
+            $html .= $this->create_block($value, $only_epingle);
         } 
         return $html;
     }
 
-    function create_block($workspace)
+    function create_block($workspace, $epingle = false)
     {
         $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
-        $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
+        $is_epingle = self::is_epingle($workspace);
+        $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid.($epingle ? "-epingle" : "") , $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
+        if ($is_epingle)
+            $html = str_replace("<workspace-epingle/>", "active", $html);
+        else
+        $html = str_replace("<workspace-epingle/>", "", $html);
         if ($workspace->logo !== null)
             $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
         else
@@ -275,7 +330,7 @@ class mel_workspace extends rcube_plugin
                     $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="https://ariane.din.developpement-durable.gouv.fr/avatar/'.$s->user.'" /></div>';
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
                 ++$it;
             }
             $html = str_replace("<workspace-users/>", $html_tmp, $html);

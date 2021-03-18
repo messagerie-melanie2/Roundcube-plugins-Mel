@@ -1,0 +1,88 @@
+.logo-mel
+{
+  position: absolute;
+  margin: 30px;
+  top: 60px;
+  left: 60px;
+  max-width: 150px;
+}
+
+.wsp-content{
+    padding-left: 200px;
+    padding-right: 200px;
+}
+
+.title-wsp {
+    font-size: xx-large;
+}
+
+.workspace{
+    background-color: #F8F8F8;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.wsp-title {
+    font-weight: bold;
+    font-size: x-large;
+    white-space: nowrap;
+}
+
+.dwp-circle{
+    display: inline-block;
+    width: 42px;
+    height: 42px;
+    background-color: #80D5C6;
+    /* display: block; */
+    border-radius: 100%;
+    text-align: center;
+    color: inherit!important;
+    text-decoration: none!important;
+    -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
+    margin-left: -15px;
+    border-style: solid;
+    border-color: white
+}
+
+.dwp-circle > img
+{
+    height: 100%;
+}
+
+.dwp-circle > span
+{
+    line-height: 34px;
+    font-size: x-large;
+    /* font-stretch: unset; */
+    font-variant-caps: all-petite-caps;
+}
+
+.wsp-users {
+    margin-left: 15px;
+
+}
+
+.wsp-infos
+{
+    position: absolute;
+    bottom: 0;
+}
+
+.centered{
+    text-align: center;
+}
+
+.ariane-icon{
+    font-size: xxx-large;
+}
+
+.roundbadge.ariane-notif
+{
+    position: absolute;
+    right: 20px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    font-size: 8px;
+}

@@ -1,0 +1,31 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+
+<h1 class="voice"><roundcube:label name="workspaces" /></h1>
+
+<!-- contact details frame -->
+<div id="layout-content" class="wsp-content" role="main">
+	<!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
+	<div class="header" role="toolbar" aria-labelledby="aria-label-toolbar">
+
+	</div> -->
+	<!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
+    <!-- <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" /> -->
+	<div class="body">
+		<div class="epingle">
+            <span class="title-wsp">
+                Mes espaces de travail épinglés
+            </span>
+            <roundcube:object name="epingle" />
+            <separate></separate>
+        </div>
+        <div class="joined">
+            <span class="title-wsp">
+                Tous mes espaces de travail
+            </span> 
+            <roundcube:object name="joined" />
+        </div>
+	</div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

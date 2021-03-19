@@ -166,25 +166,32 @@ class mel_metapage extends rcube_plugin
      * Ajoute le html à la page.
      */
     function add_html($content){
-        $var = '<ul id="directorylist"';
-        $tmp = explode($var, $content);
-        $size = strlen($tmp[1]);
-        $index = -1;
-        $text = "";
-        for ($i=0; $i < $size; ++$i) { 
-            if (strpos($text, "</ul></div>") !== false)
-            {
-                $index = $i-6;
-                unset($text);
-                break;
+        if (strpos($content, "<adressbook-options/>") !== false)
+        {
+            $content = str_replace('<adressbook-options/>', "", $content);
+            $var = '<ul id="directorylist"';
+            $tmp = explode($var, $content);
+            $size = strlen($tmp[1]);
+            $index = -1;
+            $text = "";
+            for ($i=0; $i < $size; ++$i) { 
+                if (strpos($text, "</ul></div>") !== false)
+                {
+                    $index = $i-6;
+                    unset($text);
+                    break;
+                }
+                if ($tmp[1][$i] == ' ' || $tmp[1][$i] == PHP_EOL || $tmp[1][$i] == "\t")
+                    continue;
+                $text .= $tmp[1][$i];
             }
-            if ($tmp[1][$i] == ' ' || $tmp[1][$i] == PHP_EOL || $tmp[1][$i] == "\t")
-                continue;
-            $text .= $tmp[1][$i];
+            $temp = substr_replace($tmp[1], $this->rc->output->parse("mel_metapage.contact_option", false, false), $index, 0);
+            $temp = str_replace('[|¤¤¤|]', $this->gettext("contacts_organization"), $temp);
+            $temp = str_replace('<adressbook-options/>', "", $temp);
+            return $tmp[0].$var.$temp;
         }
-        $temp = substr_replace($tmp[1], $this->rc->output->parse("mel_metapage.contact_option", false, false), $index, 0);
-        $temp = str_replace('[|¤¤¤|]', $this->gettext("contacts_organization"), $temp);
-        return $tmp[0].$var.$temp;
+        else
+            return $content;
     }
 
     /**

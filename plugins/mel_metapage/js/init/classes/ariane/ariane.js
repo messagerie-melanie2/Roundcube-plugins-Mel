@@ -129,6 +129,8 @@
         window.addEventListener("message", receiveMessage, false);
         function receiveMessage(event)
         {
+            if (event.data.ariane === undefined)
+                return;
             const ariane = event.data.ariane;
             window.ariane.init(ariane);
             window.ariane.update(event.data.channel, false);

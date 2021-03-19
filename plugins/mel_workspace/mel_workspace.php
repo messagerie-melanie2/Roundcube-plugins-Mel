@@ -45,6 +45,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('check_uid', array($this, 'check_uid'));
         $this->register_action('save_objects', array($this, 'save_objects'));
         $this->register_action('epingle', array($this, 'epingle'));
+        $this->include_script('js/epingle.js');
         if ($this->rc->task === "workspace")
             $this->portal();
     }
@@ -118,6 +119,8 @@ class mel_workspace extends rcube_plugin
     function include_js()
     {
         $this->include_script('js/init.js');
+        if ($this->rc->action === "index" || $this->rc->action === "")
+            $this->include_script('js/index.js');
     }
 
     function create()
@@ -305,7 +308,7 @@ class mel_workspace extends rcube_plugin
         if ($is_epingle)
             $html = str_replace("<workspace-epingle/>", "active", $html);
         else
-        $html = str_replace("<workspace-epingle/>", "", $html);
+            $html = str_replace("<workspace-epingle/>", "", $html);
         if ($workspace->logo !== null)
             $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
         else

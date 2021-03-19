@@ -76,6 +76,7 @@ class Flux_rss extends Module
      */
     function add_to_menu()
     {
+      return;
         $this->plugin->add_button(array(
           'command' => $this->plugin->taskName.".index",
           'prop' => '_data=news',

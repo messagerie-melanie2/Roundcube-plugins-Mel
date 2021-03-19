@@ -97,6 +97,16 @@ class M2tasks {
       return false;
     }
   }
+
+  /**
+   * Getter de l'objet taskslist
+   * 
+   * @return LibMelanie\Api\Defaut\Taskslist Liste de tâches Mél
+   */
+  public function getTaskslist() {
+    return $this->taskslist;
+  }
+
   /**
    * Récupération de l'acl
    *

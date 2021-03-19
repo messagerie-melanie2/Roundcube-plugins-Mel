@@ -101,6 +101,16 @@ class M2contacts {
       return false;
     }
   }
+
+  /**
+   * Getter de l'objet addressbook
+   * 
+   * @return LibMelanie\Api\Defaut\Addressbook Carnet d'adresses Mél
+   */
+  public function getAddressbook() {
+    return $this->addressbook;
+  }
+
   /**
    * Récupération de l'acl
    *

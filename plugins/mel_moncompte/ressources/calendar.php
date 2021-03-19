@@ -100,6 +100,16 @@ class M2calendar {
       return false;
     }
   }
+
+  /**
+   * Getter de l'objet calendar
+   * 
+   * @return LibMelanie\Api\Defaut\Calendar Calendrier Mél
+   */
+  public function getCalendar() {
+    return $this->calendar;
+  }
+
   /**
    * Récupération de l'acl
    *

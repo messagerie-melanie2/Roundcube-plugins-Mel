@@ -22,8 +22,17 @@
 if (window.rcmail) {
     rcmail.addEventListener('init', function (evt) {
         if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
+            rcmail.addEventListener('beforesend', function () {
+                if ($('#envoi_differe').val()) {
+                    if ($('#envoi_differe').val() < new Date().getTime()) {
+                        dateInférieurDialog();
+                        return false;
+                    }
+                }
+                return true;
+            });
             rcmail.enable_command('display_mel_envoi_differe', true);
-            rcmail.env.compose_commands.push('display_mel_envoi_differe');
+            rcmail.env.compose_commands.push('display_mel_envoi_differe'); 
         };
     });
 }
@@ -216,25 +225,25 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
 
                 //On vérifie que le timestamp courant n'est pas inférieur à la date choisi
                 if (timestamp > new Date().getTime()) {
-                    if (!$(window.parent.rcmail.gui_objects.messageform).find('input[name="envoi_differe"]').length) {
-                        $(window.parent.rcmail.gui_objects.messageform).append('<input id="envoi_differe" type="hidden" name="envoi_differe" value="' + timestamp + '" /> ')
-                    }
-                    else {
-                        parent.$('#envoi_differe').val(timestamp);
-                    }
-
-                    parent.$('#mel_envoi_differe').text($('#envoidiffere_date').val() + ' ' + $('#envoidiffere_time').val());
-                    parent.$('#mel_envoi_differe').css({ width: '150px' });
-
-                    $('.ui-dialog-content').dialog('destroy');
+                if (!$(window.parent.rcmail.gui_objects.messageform).find('input[name="envoi_differe"]').length) {
+                    $(window.parent.rcmail.gui_objects.messageform).append('<input id="envoi_differe" type="hidden" name="envoi_differe" value="' + timestamp + '" /> ')
                 }
                 else {
-                    dateInférieurDialog();
+                    parent.$('#envoi_differe').val(timestamp);
+                }
+
+                parent.$('#mel_envoi_differe').text($('#envoidiffere_date').val() + ' ' + $('#envoidiffere_time').val());
+                parent.$('#mel_envoi_differe').css({ width: '150px' });
+
+                $('.ui-dialog-content').dialog('destroy');
+                }
+                else {
+                    $('#error_message').text(rcmail.gettext('error_message', 'mel_envoi_differe'))
                 }
 
             }
             else {
-                $('#error_message').text("Merci de remplir les champs ci-dessus")
+                $('#error_message').text(rcmail.gettext('empty_message', 'mel_envoi_differe'))
             }
         }
     },
@@ -291,7 +300,7 @@ function dateInférieurDialog() {
         'class': 'mainaction',
         click: function () {
             $(this).dialog('destroy');
-
+            return rcmail.command('display_mel_envoi_differe', '', this, event);
         }
     },
     {
@@ -304,5 +313,5 @@ function dateInférieurDialog() {
         }
     }];
 
-    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 410, resizable: false, height: 250 })
+    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 410, resizable: false, height: 240 })
 }

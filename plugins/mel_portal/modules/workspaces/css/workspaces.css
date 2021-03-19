@@ -6,6 +6,7 @@
     display: inline-block;
     margin-left: 15px;
     margin-bottom: 15px;
+    position: relative;
 }
 
 .wsp-title {
@@ -14,6 +15,7 @@
 }
 
 .dwp-circle{
+    position: relative;
     display: inline-block;
     width: 42px;
     height: 42px;
@@ -26,8 +28,23 @@
     -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
     margin-left: -15px;
     border-style: solid;
-    border-color: white
+    border-color: white;
+    vertical-align:bottom;
 }
+
+.dwp-circle.dwp-user:before {
+    content: " ";
+    border-style: solid;
+    width: 44px;
+    height: 44px;
+    display: block;
+    position: absolute;
+    border-radius: 100%;
+    top: -4px;
+    left: -4px;
+    color: white;
+    border-width: 5px;
+  }
 
 .dwp-circle > img
 {
@@ -62,4 +79,44 @@
     width: 16px;
     line-height: 16px;
     font-size: 8px;
+}
+
+.tak{
+    position: absolute;
+    right: 15px;
+    top:15px;
+}
+
+.tak.roundbadge {
+    font-size: initial;
+    font-weight: normal;
+    height: 20px;
+    width: 20px;
+    text-decoration: none;
+    line-height: 20px;
+    color: #C2C4D1;
+    background-color: transparent;
+}
+
+.tak.roundbadge.active {
+    background-color: #FDCF42;
+    color:#2C3054;
+}
+
+.tak.roundbadge:hover{
+    background-color: white;
+    color:#2C3054;
+}
+
+.tak.roundbadge.unactive{
+    pointer-events: none;
+    color: #C2C4D1;
+    background-color: transparent;
+}
+
+.tak.roundbadge.disabled
+{
+    pointer-events: none;
+    color: red;
+    background-color: transparent;
 }

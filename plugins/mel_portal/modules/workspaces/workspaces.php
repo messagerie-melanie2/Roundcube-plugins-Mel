@@ -71,8 +71,13 @@ class Workspaces extends Module
     function create_block($workspace)
     {
         $html = $this->rc->output->parse("mel_portal.dwp_block", false, false);
+        $is_epingle = self::is_epingle($workspace);
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
+        if ($is_epingle)
+            $html = str_replace("<workspace-epingle/>", "active", $html);
+        else
+            $html = str_replace("<workspace-epingle/>", "", $html);
         if ($workspace->logo !== null)
             $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
         else
@@ -97,7 +102,7 @@ class Workspaces extends Module
                     $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="https://ariane.din.developpement-durable.gouv.fr/avatar/'.$s->user.'" /></div>';
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url').'avatar/'.$s->user.'" /></div>';
                 ++$it;
             }
             $html = str_replace("<workspace-users/>", $html_tmp, $html);
@@ -127,6 +132,16 @@ class Workspaces extends Module
     {
         $this->plugin->include_script($this->folder().'/workspaces/js/init.js');
         //$this->plugin->include_script($this->folder().'/flux_rss/js/main.js');
+    }
+
+    public static function is_epingle($loaded_workspace)
+    {
+        $settings = json_decode($loaded_workspace->settings);
+        if ($settings === null)
+            return false;
+        if ($settings->epingle === true)
+            return true;
+        return false;
     }
 
     

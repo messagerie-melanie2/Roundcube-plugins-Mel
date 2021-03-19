@@ -36,3 +36,33 @@
      })
 
 })();
+
+function desk_epingle(id)
+{
+    if (rcmail.busy)
+        return;
+    workspace_epingle(id, (initialId) => {       
+        workspaces.sync.PostToParent({
+            exec:"workspace_disable_epingle(`" + initialId + "`)"
+        });
+    },(data, initialId) => {
+        if (data.success)
+        {
+            if (data.is_epingle)
+                $("#tak-" + initialId).addClass("active");
+            else
+                $("#tak-" + initialId).removeClass("active");
+
+            workspaces.sync.PostToParent({
+                exec:"workspace_load_epingle(`" + JSON.stringify(data) + "`, `" + initialId + "`)"
+            });
+        }
+    }, null, (initialId) => {
+        $("#tak-" + initialId).removeClass("disabled");
+        $("#tak-" + initialId + "-epingle").removeClass("disabled");
+        workspaces.sync.PostToParent({
+            exec:"workspace_enable_epingle(`" + initialId + "`)"
+        });
+    });
+
+}

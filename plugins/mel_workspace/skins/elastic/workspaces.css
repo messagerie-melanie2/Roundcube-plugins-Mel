@@ -135,10 +135,10 @@ html.touch .wsp-content{
     background-color: #2C3054;
 }
 
-.header.wsp-header
+.wsp-header
 {
     padding-bottom:20px!important;
-    margin-top:60px!important;
+    margin-top:30px!important;
 }
 
 .tak{
@@ -165,4 +165,25 @@ html.touch .wsp-content{
 .tak.roundbadge:hover{
     background-color: white;
     color:#2C3054;
+}
+
+.tak.roundbadge.unactive{
+    pointer-events: none;
+    color: #C2C4D1;
+    background-color: transparent;
+}
+
+.tak.roundbadge.disabled
+{
+    pointer-events: none;
+    color: red;
+    background-color: transparent;
+}
+
+separate{
+    border-top-color: #E0E1E8;
+    border-top-style: solid;
+    border-top-width: thin;
+    margin: 20px 200px;
+    display:block;
 }

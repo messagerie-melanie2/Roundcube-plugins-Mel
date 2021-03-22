@@ -177,7 +177,7 @@ function add_task_to_completed(id)
 	if (rcmail.busy)
 		return;
 	rcmail.set_busy(true, "loading");
-	let local_storage = rcmail.local_storage_get_item(mel_metapage.Storage.tasks);
+	let local_storage = mel_metapage.Storage.get(mel_metapage.Storage.tasks);
 	if (local_storage != null)
 	{
 		let item = Enumerable.from(local_storage).firstOrDefault((x) => x.id === id, null);

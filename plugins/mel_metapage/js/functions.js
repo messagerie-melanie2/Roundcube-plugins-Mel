@@ -393,7 +393,9 @@ function m_mp_CreateWorkSpace()
     $(".btn-template-doc.active").each((i,e) => {
         datas.services.push($(e).data("type"));
     });
-
+    $(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));
+    create_popUp.contents.html('<span class=spinner-border></span>');
+    create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
     $.ajax({ // fonction permettant de faire de l'ajax
         type: "POST", // methode de transmission des données au fichier php
         data: datas,
@@ -469,6 +471,9 @@ function m_mp_CreateWorkSpace()
 
                 
 
+            }).always(() => {
+                window.create_popUp.close();
+                window.create_popUp = undefined;
             });
             //rcmail.clear_messages();
             // rcmail.display_message("Création d'un canal de discussion...", "loading");
@@ -489,6 +494,8 @@ function m_mp_CreateWorkSpace()
             console.error(xhr, ajaxOptions, thrownError);
             rcmail.clear_messages();
             rcmail.display_message(xhr, "error")
+            window.create_popUp.close();
+            window.create_popUp = undefined;
         },
     });
     

@@ -40,12 +40,6 @@ class mel_workspace extends rcube_plugin
     public function init()
     {
         $this->setup();
-        $this->register_action('create', array($this, 'create'));
-        $this->register_action('get_uid', array($this, 'get_uid'));
-        $this->register_action('check_uid', array($this, 'check_uid'));
-        $this->register_action('save_objects', array($this, 'save_objects'));
-        $this->register_action('epingle', array($this, 'epingle'));
-        $this->include_script('js/epingle.js');
         if ($this->rc->task === "workspace")
             $this->portal();
     }
@@ -57,7 +51,16 @@ class mel_workspace extends rcube_plugin
         //$this->setup_config();
         $this->add_texts('localization/', true);
         $this->register_task("workspace");
-
+        if (driver_mel::gi()->getUser() !== null)
+        {
+            $this->load_workspaces();
+            $this->register_action('create', array($this, 'create'));
+            $this->register_action('get_uid', array($this, 'get_uid'));
+            $this->register_action('check_uid', array($this, 'check_uid'));
+            $this->register_action('save_objects', array($this, 'save_objects'));
+            $this->register_action('epingle', array($this, 'epingle'));
+            $this->include_script('js/epingle.js');
+        }
         // Ajoute le bouton en fonction de la skin
         $this->add_button(array(
             'command' => "workspace",
@@ -73,7 +76,6 @@ class mel_workspace extends rcube_plugin
 
     function portal()
     {
-        $this->load_workspaces();
         $this->include_css();
         $this->include_js();
         $this->register_action('index', array($this, 'index'));
@@ -82,9 +84,20 @@ class mel_workspace extends rcube_plugin
     function load_workspaces()
     {
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
+        uasort($this->workspaces , [$this, "sort_workspaces"]);
         // foreach ($this->workspaces as $key => $value) {
-        //     $this->workspaces[$key]->load();
+        //     $this->workspaces[$key]->delete();
         // }
+        // driver_mel::gi()->getUser()->saveDefaultPreference("categories", null);
+        // driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", null);
+    }
+
+    public function sort_workspaces($a, $b)
+    {
+        if ($a->id == $b->id) {
+            return 0;
+        }
+        return ($a->id < $b->id) ? -1 : 1;
     }
 
     function index()
@@ -136,6 +149,7 @@ class mel_workspace extends rcube_plugin
             "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
             "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
             "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST),
+            "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
         ];
 
         $retour = [
@@ -154,6 +168,9 @@ class mel_workspace extends rcube_plugin
         $workspace->modified = new DateTime('now');
         $workspace->ispublic = (($datas["visibility"] === "private") ? false: true);
         $workspace->hashtags = [$datas["hashtag"]];
+        if ($datas["color"] === "" || $datas["color"] === null)
+            $datas["color"] = "#FFFFFF";
+        $this->add_setting($workspace, "color", $datas["color"]);
         $res = $workspace->save();
         $workspace->load();
         $shares = [];
@@ -178,13 +195,64 @@ class mel_workspace extends rcube_plugin
 
         $workspace->shares = $shares;
 
+        $datas["services"] = $this->create_services($workspace,$datas["services"]);
+
         $res = $workspace->save();
 
         $retour["workspace_uid"] = $workspace->uid;
+
         $retour["uncreated_services"] = $datas["services"];
 
         echo json_encode($retour);
         exit;
+    }
+
+    function create_services(&$workspace,$services)
+    {
+        $services = $this->create_tasklist($workspace,$services);
+        $services = $this->create_agenda($workspace, $services);
+        return $services;
+    }
+
+    function create_tasklist(&$workspace,$services)
+    {
+        $tasks = 'tasks';
+        if (array_search($tasks, $services) === false)
+            return $services;
+        include_once "../mel_moncompte/ressources/tasks.php";
+        $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
+        if ($mel->createTaskslist($workspace->title))
+        {
+            foreach ($workspace->shares as $s)
+            {
+                $mel->setAcl($s->user, ["w"]);
+            }
+            $taskslist = $mel->getTaskslist();
+            $this->save_object($workspace, $tasks, $taskslist);
+        }
+        
+        $key = array_search($tasks, $services);
+        unset($services[$key]);
+        return $services;
+    }
+
+    function create_agenda(&$workspace, $services)
+    {
+        $agenda = "calendar";
+        //if (array_search($agenda, $services) === false)
+            //return $services;
+        include_once "lib/mel_utils.php";
+        $color = $this->get_setting($workspace, "color");
+        $users = [];
+        foreach ($workspace->shares as $s)
+        {
+            mel_utils::cal_add_category($s->user, "ws#".$workspace->uid, $color);
+            $users[] = $s->user;
+        }
+        $this->save_object($workspace, $agenda, !(array_search($agenda, $services) === false));
+        $key = array_search($agenda, $services);
+        unset($services[$key]);
+        return $services;
     }
 
     function get_uid()
@@ -217,9 +285,42 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
+    function save_object(&$workspace, $key,$object)
+    {
+        if ($workspace->objects === null)
+        {
+            $workspace->objects = [$key => $object];
+        }
+        else
+        {
+            $workspace->objects = json_decode($workspace->objects);
+            $workspace->objects->$key = $object;
+        }
+        $workspace->objects = json_encode($workspace->objects);
+    }
+
+    function get_object(&$workspace, $key)
+    {
+
+    }
+
     function save_objects()
     {
-        
+        try {
+            $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+            $items = rcube_utils::get_input_value("_items", rcube_utils::INPUT_POST);
+            $workspace = driver_mel::gi()->workspace();
+            $workspace->uid = $uid;
+            $workspace->load();
+            foreach ($items as $key => $value) {
+                $this->save_object($workspace, $key, $value);
+            }
+            echo json_encode($workspace->save());
+        } catch (\Throwable $th) {
+            //throw $th;
+            echo json_encode($th);
+        }
+        exit;
     }
 
     public static function generate_uid($title)
@@ -286,6 +387,26 @@ class mel_workspace extends rcube_plugin
         }
         exit;
 
+    }
+
+    function add_setting(&$workspace,$key, $value)
+    {
+        if ($workspace->settings === null)
+            $workspace->settings = [$key => $value];
+        else {
+            $workspace->settings = json_decode($workspace->settings);
+            $workspace->settings->$key = $value;
+        }
+
+        $workspace->settings = json_encode($workspace->settings);
+    }
+
+    function get_setting(&$workspace, $key)
+    {
+        if ($workspace->settings === null)
+            return null;
+        else
+            return json_decode($workspace->settings)->$key;
     }
 
     function generate_html($only_epingle = false)

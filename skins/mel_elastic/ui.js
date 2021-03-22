@@ -8,4 +8,22 @@ $(document).ready(() => {
         else if ($("#layout-content").length > 0)
             $("#layout-content").css("margin-left", width);
     }
+
+    class Mel_Elastic {
+        constructor() {
+        }
+        getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    }
+    
+
+    window.MEL_ELASTIC_UI = new Mel_Elastic();
+
 });
+

@@ -96,13 +96,18 @@ function m_mp_createworskpace_steps()
             html += '<span style=margin-top:5px>Description</span><br/>'
             html += '<textarea id=workspace-desc class=form-control placeholder="Description de l\'espace"></textarea>';
             html += "</div></div>"
-            html += "<div class=row style=margin-top:5px><div class=col-5>";
+            html += "<div class=row style=margin-top:5px><div class=col-4>";
             html += '<span style=margin-top:5px>Date de fin</span><br/>'
             html += '<input class=form-control id=workspace-date-end type=datetime-local />';
-            html += "</div><div class=col-7>";
+            html += "</div><div class=col-5>";
             html += '<span style=margin-top:5px>Thématique</span><br/>'
             html += '<input class=form-control id=workspace-hashtag type=text placeholder="Thématique de l\'espace." />';
-            html += "</div></div>";
+            html += "</div>"
+            html += "<div class=col-3>";
+            html += '<span class=red-star-after style=margin-top:5px>Couleur</span><br/>'
+            html += '<input id="workspace-color" class=form-control type=color value='+MEL_ELASTIC_UI.getRandomColor()+" />"
+            html += "</div>"
+            html += "</div>";
             html += '<div class=row style=margin-top:5px><div class=col-12>';
             html += '<span class=red-star-after>Accès</span><br/>'
             html += '<div class="custom-control custom-radio">';
@@ -377,6 +382,7 @@ function m_mp_CreateWorkSpace()
         hashtag:$("#workspace-hashtag").val(),
         visibility:$("#workspace-private")[0].checked ? "private" : "public",
         custom_uid: enable_custom_uid ? $("#workspace-uid").val() : "",
+        color:$("#workspace-color").val(),
         users:[],
         services:[]
     };
@@ -401,10 +407,15 @@ function m_mp_CreateWorkSpace()
             new Promise(async (i, e) => {
                 let finished_max = 1;
                 let finished = 0;
+                let itemsToSave = {};
+                data.uncreated_services = Enumerable.from(data.uncreated_services).select( x => x.value).toArray();
+                console.log("data", data, "size",data.uncreated_services.length);
                 for (let index = 0; index < data.uncreated_services.length; index++) {
                     const element = data.uncreated_services[index];
+                    console.log("element", element);
                     switch (element) {
                         case "channel":
+                            console.log("lunched channel");
                             $.ajax({ // fonction permettant de faire de l'ajax
                                 type: "POST", // methode de transmission des données au fichier php
                                 data: {
@@ -414,12 +425,13 @@ function m_mp_CreateWorkSpace()
                                 },
                                 url: "/?_task=discussion&_action=create_chanel",
                                 success: function (ariane) {
-                                    ++finished;
                                     console.log("datas2", ariane);
                                     console.log("datas2", JSON.parse(ariane));
                                     ariane = JSON.parse(ariane);
                                     ariane.content = JSON.parse(ariane.content);
                                     console.log("all datas", ariane, data, datas);
+                                    itemsToSave["ariane"] = ariane.content.channel;
+                                    ++finished;
                                 },
                                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
                                     console.error(xhr, ajaxOptions, thrownError);
@@ -433,10 +445,30 @@ function m_mp_CreateWorkSpace()
                     }
                 }
 
-                await wait(() => finished === finished_max);
-                rcmail.clear_messages();
-                rcmail.display_message("Espace de travail créer avec succès !", "confirmation")
-                rcmail.set_busy(false);
+                await wait(() => { return finished !== finished_max;});
+                $.ajax({ // fonction permettant de faire de l'ajax
+                    type: "POST", // methode de transmission des données au fichier php
+                    data: {
+                        "_uid":data.workspace_uid,
+                        "_items":itemsToSave
+                    },
+                    url: "/?_task=workspace&_action=save_objects",
+                    success: function (savedStates) {
+                        savedStates = JSON.parse(savedStates);
+                        console.log("savedStates", savedStates);
+                        rcmail.set_busy(false);
+                        rcmail.clear_messages();
+                        rcmail.display_message("Espace de travail créer avec succès !", "confirmation")
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                        console.error(xhr, ajaxOptions, thrownError);
+                        rcmail.display_message("Error lors de la création d'un espace de travail !", "error");
+
+                    },
+                });
+
+                
+
             });
             //rcmail.clear_messages();
             // rcmail.display_message("Création d'un canal de discussion...", "loading");

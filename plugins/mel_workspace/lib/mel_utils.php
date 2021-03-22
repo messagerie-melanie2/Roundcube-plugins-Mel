@@ -756,4 +756,31 @@ class mel_utils
     return str_replace($dets, $replace, $string);
 
   }
+
+  public static function cal_add_category($username, $name, $color)
+  {
+    try {
+      // Récupère la liste des catégories
+      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");
+      $value = (isset($value) ? $value."|" : "") . "$name";
+      driver_mel::gi()->getUser($username)->saveDefaultPreference("categories", $value);
+
+      // Récupère la liste des couleurs des catégories (sic)
+      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors");
+      if (strpos($color, "#") === false)
+        $color = "#$color";
+      $value = (isset($value) ? $value."|" : "") . "$name:$color";
+      driver_mel::gi()->getUser($username)->saveDefaultPreference("category_colors", $value);
+    }
+    // catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
+    //   //mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_utils]cal_add_category() Melanie2DatabaseException");
+    //   return false;
+    // }
+    catch (\Exception $ex) {
+      return false;
+    }
+    return true;
+  }
+
+
 }

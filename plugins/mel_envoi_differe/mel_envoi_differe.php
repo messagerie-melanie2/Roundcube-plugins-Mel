@@ -96,7 +96,7 @@ class mel_envoi_differe extends rcube_plugin
             if ($dateTimestamp >  $currentDateTimestamp) {
                 $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
             }
-            return $args;
         }
+        return $args;
     }
 }

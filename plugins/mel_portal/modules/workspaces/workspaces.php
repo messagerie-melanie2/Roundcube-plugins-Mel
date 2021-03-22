@@ -65,7 +65,7 @@ class Workspaces extends Module
             $html .= $this->create_block($value);
             ++$it;
         } 
-        return $html;
+        return html::div(["class" => 'row'], $html);
     }
 
     function create_block($workspace)
@@ -121,7 +121,7 @@ class Workspaces extends Module
         $html = str_replace("<workspace-task-all/>", "<br/>", $html);
 
         $html = str_replace("<workspace-notifications/>", "", $html);
-        return $html;
+        return html::div(["class" => "col-md-4"], $html);
     }
 
     function include_css(){

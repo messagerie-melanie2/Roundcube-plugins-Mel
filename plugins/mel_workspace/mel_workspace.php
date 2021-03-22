@@ -228,7 +228,7 @@ class mel_workspace extends rcube_plugin
                 $mel->setAcl($s->user, ["w"]);
             }
             $taskslist = $mel->getTaskslist();
-            $this->save_object($workspace, $tasks, $taskslist);
+            $this->save_object($workspace, $tasks, $taskslist->id);
         }
         
         $key = array_search($tasks, $services);
@@ -253,6 +253,11 @@ class mel_workspace extends rcube_plugin
         $key = array_search($agenda, $services);
         unset($services[$key]);
         return $services;
+    }
+
+    function create_favorites(&$workspace, $services)
+    {
+
     }
 
     function get_uid()

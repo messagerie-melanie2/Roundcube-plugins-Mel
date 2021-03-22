@@ -409,13 +409,10 @@ function m_mp_CreateWorkSpace()
                 let finished = 0;
                 let itemsToSave = {};
                 data.uncreated_services = Enumerable.from(data.uncreated_services).select( x => x.value).toArray();
-                console.log("data", data, "size",data.uncreated_services.length);
                 for (let index = 0; index < data.uncreated_services.length; index++) {
                     const element = data.uncreated_services[index];
-                    console.log("element", element);
                     switch (element) {
                         case "channel":
-                            console.log("lunched channel");
                             $.ajax({ // fonction permettant de faire de l'ajax
                                 type: "POST", // methode de transmission des données au fichier php
                                 data: {
@@ -430,7 +427,7 @@ function m_mp_CreateWorkSpace()
                                     ariane = JSON.parse(ariane);
                                     ariane.content = JSON.parse(ariane.content);
                                     console.log("all datas", ariane, data, datas);
-                                    itemsToSave["ariane"] = ariane.content.channel;
+                                    itemsToSave["ariane"] = ariane.content.channel._id;
                                     ++finished;
                                 },
                                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
@@ -465,6 +462,9 @@ function m_mp_CreateWorkSpace()
                         rcmail.display_message("Error lors de la création d'un espace de travail !", "error");
 
                     },
+                }).always(() => {
+                    //Solution temporaire
+                    window.location.reload();
                 });
 
                 

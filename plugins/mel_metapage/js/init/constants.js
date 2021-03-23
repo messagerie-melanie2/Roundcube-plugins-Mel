@@ -112,12 +112,14 @@ const mel_metapage = {
          * Clé des données des tâches.
          */
         tasks:"mel_metapage.tasks",
+        other_tasks:"mel_metapage.tasks.others",
         /**
          * Clé du nombre de mail non lus.
          */
         mail:"mel_metapage.mail.count",
         last_calendar_update:"mel_metapage.calendar.last_update",
-        last_task_update:"mel_metapage.tasks.last_update"
+        last_task_update:"mel_metapage.tasks.last_update",
+        ariane:"ariane_datas"
     },
     /**
      * Liste des symboles.

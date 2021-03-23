@@ -64,3 +64,12 @@ div#user-status{
     background-color: black;  
 }
   
+#user-picture {
+    -webkit-mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
+    mask-image: linear-gradient(rgba(0, 0, 0, 1.0), white);
+}
+
+#user-picture > img
+{
+    height: 100%;
+}

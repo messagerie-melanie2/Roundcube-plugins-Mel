@@ -429,7 +429,10 @@ function m_mp_CreateWorkSpace()
                                     ariane = JSON.parse(ariane);
                                     ariane.content = JSON.parse(ariane.content);
                                     console.log("all datas", ariane, data, datas);
-                                    itemsToSave["ariane"] = ariane.content.channel._id;
+                                    itemsToSave["ariane"] = {
+                                        id:ariane.content.channel._id,
+                                        name:ariane.content.channel.name
+                                    };
                                     ++finished;
                                 },
                                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response

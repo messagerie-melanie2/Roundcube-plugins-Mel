@@ -106,21 +106,30 @@ if (rcmail)
                     try {
                         data=JSON.parse(data).callbacks[0][1].data;
                         let datas_to_save = [];
+                        let other_datas = {};
                         let element;
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
-                            if (element.list !== mceToRcId(rcmail.env.username))
-                                continue;
+                            // if ()
+                            //     continue;
                             if (element.complete === 0)
                             {
                                 element.mel_metapage = {
                                     order:(element._hasdate === 1 ? (moment(element.datetime*1000) <= moment() ? 0 : 1 ) : 1),
                                 };
-                                datas_to_save.push(element);
+                                if (element.list !== mceToRcId(rcmail.env.username))
+                                {
+                                    if (other_datas[element.list] === undefined)
+                                        other_datas[element.list] = [];
+                                    other_datas[element.list].push(element);
+                                }
+                                else
+                                    datas_to_save.push(element);
                             }
                         }
                         datas_to_save.sort((a,b) => a.mel_metapage.order - b.mel_metapage.order);
                         mel_metapage.Storage.set(mel_metapage.Storage.tasks, datas_to_save);
+                        mel_metapage.Storage.set(mel_metapage.Storage.other_tasks, other_datas);
                         try_add_round(".tasklist", mel_metapage.Ids.menu.badge.tasks);
                         update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
                         mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))
@@ -282,6 +291,21 @@ if (rcmail)
                 btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
             }
         });
+
+        window.addEventListener("message", receiveMessage, false);
+        function receiveMessage(event)
+        {
+            if (event.data.message === undefined)
+                return;
+            switch (event.data.message) {
+                case "update_calendar":
+                    rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+                    break;
+            
+                default:
+                    break;
+            }
+        }
         
     });
 
@@ -393,6 +417,18 @@ $(document).ready(() => {
             //$(".mm-frame").css("margin-top", "0");
             if ($("html.iframe").length > 0)
                 $(".mm-frame").css("margin-top", "0");
+            let querry = $("#user-picture");
+        });
+    }
+    else {
+        rcmail.addEventListener("init", async function() {
+            let querry = $("#user-picture");
+            // console.log("ping", _ping, rcmail.env.rocket_chat_url + "/avatar/" + rcmail.env.username);
+            querry.html('<img src='+rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
+            let image = querry.find("img")[0];
+            image.onerror = function(){
+                $("#user-picture").html("<span>" + $(e).data("user").slice(0,2) + "</span>");
+            };
         });
     }
 })

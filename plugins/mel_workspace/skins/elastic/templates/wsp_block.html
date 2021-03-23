@@ -1,5 +1,8 @@
-<div class="workspace" data-public="<workspace-public/>" id="<workspace-id/>">
+<div class="workspace" data-public="<workspace-public/>" id="<workspace-id/>" >
     <div class="row">
+        <span style="    display: contents;
+        cursor: pointer;
+    " onclick="rcmail.set_busy(true, 'loading');window.location.href= '?_task=workspace&_action=workspace&_uid=<workspace-uid/>' + (parent !== window ? '&_from=iframe' : '')">
         <div class="col-1">
             <workspace-image/>
         </div>
@@ -25,6 +28,7 @@
         <div class="col-5" id="wsp-notifs-<workspace-id/>">
             <workspace-notifications/>
         </div>
+    </span>
         <a href="#"  id="tak-<workspace-id/>" onclick="wsp_epingle('<workspace-id/>')" class="icofont-tack-pin tak <workspace-epingle/> roundbadge"></a>
     </div>
 </div>

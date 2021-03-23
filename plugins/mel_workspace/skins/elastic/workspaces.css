@@ -187,3 +187,66 @@ separate{
     margin: 20px 200px;
     display:block;
 }
+
+.wsp-toolbar{
+    display: flex;
+    background-color: #5870BF;
+    border-radius: 50px;
+    color: white;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin: auto;
+}
+
+.wsp-toolbar-item {
+    /*! display: inline-block; */
+    font-size: xx-large;
+    padding: 0 50px;
+    border-left-style: solid;
+    border-color: #7786BD;
+    border-left-width: 2px;
+    margin: 10px 0;
+    position: relative;
+}
+
+.wsp-toolbar-item.first{
+    border-left-style: none;
+}
+
+.wsp-toolbar-item:hover,
+.wsp-toolbar-item.active{
+    cursor: pointer;
+    background: radial-gradient(circle, #42548F 33%, rgba(255,255,255,0) 33%);
+}
+
+.wsp-toolbar-item.active
+{
+    cursor: initial;
+}
+
+.notif.roundbadge 
+{
+    position: absolute;
+    top: 7px;
+    right: 46px;
+    color: black;
+}
+
+.dwp-round.wsp-picture
+{
+    margin-top: 10px;
+}
+
+.row.wsp-head{
+    margin-top: 30px;
+margin-left: 75px;
+margin-bottom: 20px;
+}
+
+.wsp-description {
+    background-color: #484D7A;
+    color: white;
+    padding: 25px;
+    border-radius: 5px;
+    margin-top: 30px;
+  }

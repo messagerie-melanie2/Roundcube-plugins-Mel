@@ -23,6 +23,8 @@
      rcmail.addEventListener("init", () => {
         $(".dwp-user").each((i,e) => {
             var image = $(e).find("img")[0];
+            if (image === null || image === undefined)
+                return;
             image.onerror = function(){
                 $(e).html("<span>" + $(e).data("user").slice(0,2) + "</span>");
             };

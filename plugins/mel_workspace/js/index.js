@@ -6,6 +6,7 @@
 
 function wsp_epingle(id)
 {
+    event.preventDefault();
     if (rcmail.busy)
         return async () => {};
     rcmail.set_busy(true, "loading");

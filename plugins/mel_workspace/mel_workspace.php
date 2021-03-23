@@ -32,6 +32,7 @@ class mel_workspace extends rcube_plugin
     private $rc;
 
     private $workspaces;
+    private $currentWorkspace;
 
     /**
      * (non-PHPdoc)
@@ -79,6 +80,7 @@ class mel_workspace extends rcube_plugin
         $this->include_css();
         $this->include_js();
         $this->register_action('index', array($this, 'index'));
+        $this->register_action('workspace', array($this, 'show_workspace'));
     }
 
     function load_workspaces()
@@ -120,6 +122,94 @@ class mel_workspace extends rcube_plugin
     {
         return $this->generate_html();
     }
+
+    function show_workspace()
+    {
+        $tasks = 'tasks';
+        $workspace_id = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GPC);
+        $this->currentWorkspace = driver_mel::gi()->workspace();
+        $this->currentWorkspace->uid = $workspace_id;
+        $this->currentWorkspace->load();
+        $this->rc->output->add_handlers(array(
+            'wsp-picture'    => array($this, 'get_picture'),
+        ));
+        $this->rc->output->add_handlers(array(
+            'wsp-hashtag'    => array($this, 'get_hashtag'),
+        ));
+        $this->rc->output->add_handlers(array(
+            'wsp-title'    => array($this, 'get_title'),
+        ));
+        $this->rc->output->add_handlers(array(
+            'wsp-toolbar'    => array($this, 'get_toolbar'),
+        ));
+        $this->rc->output->add_handlers(array(
+            'wsp-desc'    => array($this, 'get_description'),
+        ));
+        $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
+        $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
+        $this->rc->output->send('mel_workspace.workspace');
+    }
+
+    function get_picture()
+    {
+        if ($this->currentWorkspace->logo !== null && $this->currentWorkspace->logo !== "")
+            $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><img src="'.$this->currentWorkspace->logo.'"></div>';
+        else
+            $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><span>'.substr($this->currentWorkspace->title, 3)."</span></div>";
+        return $html;
+    }
+
+    function get_hashtag()
+    {
+        if (count($this->currentWorkspace->hashtags) > 0 && $this->currentWorkspace->hashtags[0] !== "")
+            return "<span>#".$this->currentWorkspace->hashtags[0]."</span><br/>";
+        else
+            return "";
+    }
+    function get_title()
+    {
+        return html::tag("span", ["class" => "header-wsp"], $this->currentWorkspace->title);
+    }
+    function get_toolbar()
+    {
+        $icons = [
+            "home" => "icofont-home",
+            "discussion" => "icofont-chat",
+            "mail" => "icofont-email",
+            "agenda" => "icofont-calendar",
+            "documents" => "icofont-cloud",
+            "tasks" => "icofont-tasks",
+            "news" => "icofont-rss-feed",
+            "params" => "icofont-ui-settings"
+        ];
+        $channel = "ariane";
+        $agenda = "calendar";
+        $tasks = "tasks";
+        $cloud = "cloud";
+        $html = html::div(["class" => "wsp-toolbar-item first active"], "<span class=".$icons["home"]."></span>");
+        if ($this->get_object($this->currentWorkspace, $agenda) === true)
+            $html .= html::div(["class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span>");
+        if ($this->get_object($this->currentWorkspace, $channel) !== null)
+        {
+            $channel_datas = $this->get_object($this->currentWorkspace, $channel);
+            if ($channel_datas->name === null)
+                $html .= html::div(["data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");
+            else
+                $html .= html::div(["data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span>");
+        }
+        if ($this->get_object($this->currentWorkspace, $tasks) !== null)
+            $html .= html::div(["class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");
+        // if ($this->get_object($this->currentWorkspace, $cloud) !== null)
+        //     $html = "";
+        $html .= html::div(["class" => "wsp-toolbar-item"], "<span class=".$icons["params"]."></span>");
+        return $html;//html::div(["class" => "wsp-toolbar"], $html);
+    }
+
+    function get_description()
+    {
+        return $this->currentWorkspace->description;
+    }
+
         /**
      * Récupère le css utile pour ce plugin.
      */
@@ -134,6 +224,8 @@ class mel_workspace extends rcube_plugin
         $this->include_script('js/init.js');
         if ($this->rc->action === "index" || $this->rc->action === "")
             $this->include_script('js/index.js');
+        if ($this->rc->action === "workspace")
+            $this->include_script('js/workspace.js');
     }
 
     function create()
@@ -306,7 +398,10 @@ class mel_workspace extends rcube_plugin
 
     function get_object(&$workspace, $key)
     {
-
+        if ($workspace->objects === null)
+            return null;
+        else
+            return json_decode($workspace->objects)->$key;
     }
 
     function save_objects()
@@ -430,6 +525,7 @@ class mel_workspace extends rcube_plugin
         $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
         $is_epingle = self::is_epingle($workspace);
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid.($epingle ? "-epingle" : "") , $html);
+        $html = str_replace("<workspace-uid/>", $workspace->uid , $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
         if ($is_epingle)
             $html = str_replace("<workspace-epingle/>", "active", $html);

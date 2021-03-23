@@ -14,6 +14,7 @@
     {
         constructor(load, ariane = null)
         {
+            this.listeners = {};
             this.init(ariane);
             if (load && ariane === null)
             {
@@ -24,6 +25,24 @@
         init(ariane = null)
         {
             this.unreads = (ariane === null ? {} : ariane.unreads);
+        }
+
+        addEventListener(key, listener)
+        {
+            if (this.listeners[key] === undefined)
+                this.listeners[key] = [listener];
+            else
+                his.listeners[key].push(listener);
+        }
+
+        triggerEvent(key, ...args)
+        {
+            if (this.listeners[key] === null || this.listeners[key] === undefined)
+                return;
+            for (let index = 0; index < this.listeners[key].length; index++) {
+                const element = this.listeners[key][index];
+                element(...args);
+            }
         }
 
         async post_message(datas)
@@ -88,6 +107,7 @@
                 ariane:this,
                 channel:channel
             });
+            this.triggerEvent("update", channel, store, this.unreads[channel]);
         }
 
         menu()

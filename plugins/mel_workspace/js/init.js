@@ -23,9 +23,12 @@
      rcmail.addEventListener("init", () => {
         $(".dwp-user").each((i,e) => {
             var image = $(e).find("img")[0];
-            image.onerror = function(){
-                $(e).html("<span>" + $(e).data("user").slice(0,2) + "</span>");
-            };
+            if (image !== undefined && image !== null)
+            {
+                image.onerror = function(){
+                    $(e).html("<span>" + $(e).data("user").slice(0,2) + "</span>");
+                };
+            }
          });
          EpingleEmpty();
          $("#wsp-search-input").on("input", (element) => {

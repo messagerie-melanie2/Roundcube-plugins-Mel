@@ -145,6 +145,9 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'wsp-desc'    => array($this, 'get_description'),
         ));
+        $this->rc->output->add_handlers(array(
+            'wsp-users-infos'    => array($this, 'get_users_info'),
+        ));
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
         $this->rc->output->send('mel_workspace.workspace');
@@ -208,6 +211,61 @@ class mel_workspace extends rcube_plugin
     function get_description()
     {
         return $this->currentWorkspace->description;
+    }
+
+    function get_users_info()
+    {
+        $icon = "icofont-plus-circle plus";
+        $exists = false;
+        $html_tmp = "";
+        if ($this->currentWorkspace->shares !== null)
+        {
+            //"https://ariane.din.developpement-durable.gouv.fr/avatar/$uid"
+            $it = 0;
+            $stop = false;
+            foreach ($this->currentWorkspace->shares as $s)
+            {
+                if (!$exists && $s->user == $this->rc->user->get_username())
+                {
+                    $exists = true;
+                    if ($stop)
+                        break;
+                }
+                if ($stop)
+                {
+                    if ($exists)
+                        break;
+                    else
+                        continue;
+                }
+                if ($it == 2)
+                {
+                    $html_tmp.='<div class="dwp-circle dwp-user wsp-font-size-modifier smaller"><span>+'.(count($this->currentWorkspace->shares)-2).'</span></div>';
+                    $stop = true;
+                    if ($exists)
+                        break;
+                    else
+                        continue;
+                }
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
+                ++$it;
+            }
+        }
+
+        $html_tmp = html::div(["class" => "col-4"], $html_tmp)."<div class=col-8>";
+        if ($this->currentWorkspace->created === $this->currentWorkspace->modified)
+            $html_tmp .=  "Crée par ".$this->currentWorkspace->creator;
+        else
+        {
+            $html_tmp .= "Crée par ".$this->currentWorkspace->creator."<br/>Mise à jours : ".$this->currentWorkspace->modified;
+        }
+        $action = $exists ? "invite" : "join";
+        $text = $exists ? "Inviter" : "Rejoindre";
+        $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
+        $html_tmp.= "</div>";
+        return html::div(["class" => "row"], $html_tmp);
+
+            
     }
 
         /**

@@ -57,6 +57,7 @@ if (rcmail)
                             events.push(element);
                             
                         }
+                        mel_metapage.Storage.set("all_events", events);
                         data = null;
                         let ids = [];
                         for (let index = 0; index < events.length; index++) {

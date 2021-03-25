@@ -187,6 +187,50 @@ const mel_metapage = {
                     rcmail.env.nextcloud_pinged = await ping(rcmail.env.nextcloud_url, true);
             }
         }
+    },
+    Functions:{
+        update_calendar: function (start, end){
+            start = start.format("YYYY-MM-DDTHH:mm:ss");
+            end = end.format("YYYY-MM-DDTHH:mm:ss");
+            if (parent.rcmail.env.ev_calendar_url === undefined)
+                parent.rcmail.env.ev_calendar_url = ev_calendar_url;
+            return $.ajax({ // fonction permettant de faire de l'ajax
+            type: "POST", // methode de transmission des données au fichier php
+            url: rcmail.env.ev_calendar_url+'&start='+start+'&end='+end, // url du fichier php
+            success: function (data) {
+                try {
+                    let events = [];
+                    data = JSON.parse(data);
+                    return data;
+
+  
+                } catch (ex) {
+                    console.error(ex);
+                    rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+                console.error(xhr, ajaxOptions, thrownError);
+                rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+            },
+         });
+        },
+        check_if_calendar_valid:function(element, events)
+        {
+            if (mceToRcId(rcmail.env.username) !== element.calendar)
+                return false;
+            else {
+                if (element._instance !== undefined)
+                {
+                    for (let it = 0; it < events.length; it++) {
+                        const event = events[it];
+                        if (event.uid === element.uid && event._instance === undefined)
+                            return event;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }; 
 window.mel_metapage = mel_metapage;

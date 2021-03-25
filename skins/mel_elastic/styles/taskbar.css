@@ -158,6 +158,7 @@ span.menu-last-frame-item{
     -webkit-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
     -o-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
     -ms-transform: rotate(79deg) translateY(-12px) translateX(10px) scale(-1.5, 1.5);
+    color:#F28F5A;
 }
 
 .menu.toolbar a.wsp.icofont-monitor:before

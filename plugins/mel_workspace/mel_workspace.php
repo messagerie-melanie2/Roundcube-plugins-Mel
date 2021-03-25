@@ -33,6 +33,7 @@ class mel_workspace extends rcube_plugin
 
     private $workspaces;
     private $currentWorkspace;
+    private $folders = ["init", "lib", "addons"];
 
     /**
      * (non-PHPdoc)
@@ -147,6 +148,9 @@ class mel_workspace extends rcube_plugin
         ));
         $this->rc->output->add_handlers(array(
             'wsp-users-infos'    => array($this, 'get_users_info'),
+        ));
+        $this->rc->output->add_handlers(array(
+            'wsp-services'    => array($this, 'get_services'),
         ));
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
@@ -268,6 +272,70 @@ class mel_workspace extends rcube_plugin
             
     }
 
+    function get_services()
+    {
+        $uid = $this->currentWorkspace->uid;
+
+        $email = "unknown1";
+        $tasks = 'tasks';
+        $agenda = "calendar";
+        $channel = "ariane";
+
+        $services = [
+            $email => false,
+            $tasks => $this->get_object($this->currentWorkspace, $tasks) !== null,
+            $agenda => $this->get_object($this->currentWorkspace, $agenda) === true,
+            $channel =>$this->get_object($this->currentWorkspace, $channel) !== null
+        ];
+
+        $icons = [
+            $agenda => "icofont-calendar",
+            "arrow_left" => "icofont-arrow-left",
+            "arrow_right" => "icofont-arrow-right"
+        ];
+
+        $col = [
+            "left" => "",
+            "right" => ""
+        ];
+
+        if ($services[$agenda])
+        {
+            $arrow = [
+                "left" => '<span class="'.$icons["arrow_left"].' btn-arrow" onclick="change_date(-1)"></span>',
+                "right" => '<span class="'.$icons["arrow_right"].' btn-arrow" onclick="change_date(1)"></span>'
+            ];
+
+            $header = html::div(["class" => "row"], 
+                html::div(["class" => "col-2"], 
+                    html::tag("span", ["class" => $icons[$agenda]." wsp-agenda-icon"])).
+                html::div(["class" => "col-6"],
+                    html::tag("span", ["class" => "swp-agenda-date"])).
+                html::div(["class" => "col-4"],
+                    html::div(["class" => "row"], 
+                        html::div(["class" => "col-6"], $arrow["left"]).
+                        html::div(["class" => "col-6"], $arrow["right"])
+                ))
+            );
+
+            $body = "";
+
+            $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)");
+        }
+        $this->rc->output->set_env("current_workspace_constantes", [
+            "mail" => $email,
+            "agenda" => $agenda,
+            "tasks" => $tasks,
+            "ariane" => $channel
+        ]);
+        $this->rc->output->set_env("current_workspace_services", $services);
+        return html::div(["class" => "row"],
+            html::div(["class" => "col-8"], $col["left"]).
+            html::div(["class" => "col-4"], $col["right"])
+        );
+
+    }
+
         /**
      * Récupère le css utile pour ce plugin.
      */
@@ -279,11 +347,30 @@ class mel_workspace extends rcube_plugin
 
     function include_js()
     {
-        $this->include_script('js/init.js');
+        $count = count($this->folders);
+        for ($it=0; $it < $count; ++$it) { 
+            $files = scandir(__DIR__."/js/".$this->folders[$it]);
+            $size = count($files);
+            for ($i=0; $i < $size; ++$i) { 
+                if (strpos($files[$i], ".js") !== false)
+                    $this->include_script('js/'.$this->folders[$it]."/".$files[$i]);
+            }
+        }
         if ($this->rc->action === "index" || $this->rc->action === "")
             $this->include_script('js/index.js');
         if ($this->rc->action === "workspace")
             $this->include_script('js/workspace.js');
+    }
+
+    function block($id,$class, $header, $body, $onclick)
+    {
+        $html = $this->rc->output->parse("mel_workspace.block", false, false);
+        $html = str_replace("<id/>", $id, $html);
+        $html = str_replace("<class/>", $class, $html);
+        $html = str_replace("<header/>", $header, $html);
+        $html = str_replace("<body/>", $body, $html);
+        $html = str_replace("<onclick/>", $onclick, $html);
+        return $html;
     }
 
     function create()

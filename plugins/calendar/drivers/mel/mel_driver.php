@@ -165,7 +165,7 @@ class mel_driver extends calendar_driver {
    * @return array List of calendars
    */
   public function list_calendars($filter = 0, $tree = null, $calid = null) {
-    if ($this->rc->task != 'calendar' && $this->rc->task != 'settings' && $this->rc->task != 'login') {
+    if ($this->rc->task != 'calendar' && $this->rc->task != 'mel_metapage' && $this->rc->task != 'settings' && $this->rc->task != 'login') {
       return;
     }
     if (mel_logs::is(mel_logs::DEBUG))

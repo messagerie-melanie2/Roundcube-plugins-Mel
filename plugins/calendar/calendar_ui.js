@@ -818,6 +818,7 @@ function rcube_calendar_ui(settings)
       // init dialog buttons
       var buttons = [],
         save_func = function() {
+          console.log("save lunched");
           var start = allday.checked ? '12:00' : $.trim(starttime.val()),
             end = allday.checked ? '13:00' : $.trim(endtime.val()),
             re = /^((0?[0-9])|(1[0-9])|(2[0-3])):([0-5][0-9])(\s*[ap]\.?m\.?)?$/i;
@@ -916,7 +917,6 @@ function rcube_calendar_ui(settings)
           if (rcmail.env.action != 'dialog-ui')
             $dialog.dialog("close");
         };
-
       rcmail.env.event_save_func = save_func;
 
       // save action
@@ -4139,7 +4139,7 @@ function rcube_calendar_ui(settings)
       window.setTimeout(function() {
         event_edit_dialog('new', $.extend(event, rcmail.env.event_prop));
       }, exec_deferred);
-
+      console.log("test");
       rcmail.register_command('event-save', function() { rcmail.env.event_save_func(); }, true);
       rcmail.addEventListener('plugin.unlock_saving', function(status) {
         me.unlock_saving();
@@ -4159,7 +4159,14 @@ if (rcmail.env.devel_mode && window.less) {
 /* calendar plugin initialization */
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   // let's go
-  var cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+  var cal = null;
+  try {
+    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+  } catch (error) {
+    console.error(error);
+    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+  }
+  console.log("cal", cal);
   parent.child_cal = cal;
   if (rcmail.env.action == 'dialog-ui') {
     return;

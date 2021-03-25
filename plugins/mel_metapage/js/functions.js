@@ -919,12 +919,13 @@ function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, change
 /**
  * Action de créer un évènement.
  */
-function m_mp_CreateEvent()
+function m_mp_CreateEvent(_action = null)
 {
-    window.create_popUp.close();
-    const action = () => {
+    if (window.create_popUp !== undefined)
+        window.create_popUp.close();
+    const action = _action === null ? () => {
         m_mp_set_storage("calendar_create");
-    };
+    } : _action;
     const calendar = 'calendar';
     //console.log(window.rcube_calendar_ui, rcmail.env.current_frame_name, rcmail.env.task);
     if (parent.child_cal === undefined)
@@ -950,11 +951,17 @@ function m_mp_CreateEvent()
 function m_mp_CreateEvent_inpage()
 {
     let event = rcmail.local_storage_get_item("calendar_create");
+    let category = rcmail.local_storage_get_item("calendar_category");
     if(event !== null)
     {
+        config = {};
+        if (category != null)
+            config["categories"] = ["ws#apitech-1"];
+        
         if (event === true)
-            parent.child_cal.add_event("")
+            parent.child_cal.add_event(config)
         rcmail.local_storage_remove_item("calendar_create");
+        rcmail.local_storage_remove_item("calendar_category");
     }   
 }
 
@@ -967,7 +974,7 @@ function m_mp_CreateEvent_inpage()
 function m_mp_set_storage(key, item = true, close = true)
 {
     rcmail.local_storage_set_item(key, item);
-    if (close)
+    if (close && window.create_popUp !== undefined)
         window.create_popUp.close();
 }
 

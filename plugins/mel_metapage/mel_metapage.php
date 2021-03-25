@@ -58,6 +58,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('search_contact', array($this, 'search_contact'));
             $this->register_action('contact', array($this, 'display_contact'));
             $this->register_action('chat', array($this, 'ariane'));
+            $this->register_action('dialog-ui', array($this, 'create_calendar_event'));
             $this->register_action('create_document_template', array($this, 'get_create_document_template'));
             $this->add_hook('refresh', array($this, 'refresh'));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
@@ -260,6 +261,7 @@ class mel_metapage extends rcube_plugin
             $this->include_script('js/actions/calendar_event.js');
         if ($this->rc->task === "tasks")
             $this->include_script('js/actions/task_event.js');
+        //$this->rc->output->include_script('treelist.js');
     }
 
     /**
@@ -462,6 +464,41 @@ class mel_metapage extends rcube_plugin
             default:
                 return $icon;
         }
+    }
+
+
+    function create_calendar_event()
+    {
+        $calendar = $this->rc->plugins->get_plugin('calendar');
+        $calendar->ui->init();
+        $calendar->ui->addJS();
+        $calendar->ui->init_templates();
+        $calendar->ui->calendar_list(array(), true); 
+        if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) == true)
+        {
+            $event = [];
+            if (rcube_utils::get_input_value('_category', rcube_utils::INPUT_GET) !== null)
+                $event["categories"] = [rcube_utils::get_input_value('_category', rcube_utils::INPUT_GET)];
+            if (rcube_utils::get_input_value('_calendar_blocked', rcube_utils::INPUT_GET) !== null)//_calendar_blocked
+                $event["calendar_blocked"] = rcube_utils::get_input_value('_calendar_blocked', rcube_utils::INPUT_GET);
+            // if (rcube_utils::get_input_value('_startDate', rcube_utils::INPUT_GET) !== null)
+            //     $event["start"] = [rcube_utils::get_input_value('_startDate', rcube_utils::INPUT_GET)];
+            // else
+            //     $event["start"] = ["now"];
+            // if (rcube_utils::get_input_value('_endDate', rcube_utils::INPUT_GET) !== null)
+            //     $event["end"] = [rcube_utils::get_input_value('_endDate', rcube_utils::INPUT_GET)];
+            // else
+            //     $event["end"] = ["start+1h"];
+
+        }
+        else
+            $event = rcube_utils::get_input_value("_event", rcube_utils::INPUT_POST);
+        $event["calendar"] = driver_mel::gi()->mceToRcId(driver_mel::gi()->getUser()->uid);
+        $driver = $calendar->__get("driver");
+        $this->rc->output->set_env('event_prop', $event);
+        $this->include_script('../mel_workspace/js/setup_event.js');
+        //$this->include_script('../calendar/calendar_ui.js');
+        $this->rc->output->send('calendar.dialog');
     }
     // public function display_event()
     // {

@@ -5,7 +5,7 @@
     width: 100%;
     position: absolute;
     left:60px;
-    z-index: 999;
+    z-index: 80;
 }
 
 /* @media screen and (max-height: 640px) and (min-width: 769px){

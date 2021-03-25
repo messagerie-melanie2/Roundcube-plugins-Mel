@@ -241,8 +241,8 @@ separate{
 
 .row.wsp-head{
     margin-top: 30px;
-margin-left: 75px;
-margin-bottom: 20px;
+    margin-left: 75px;
+    margin-bottom: 20px;
 }
 
 .wsp-description {
@@ -291,3 +291,53 @@ margin-bottom: 20px;
     background-color: #2C3054;
     color: white;
 }
+
+.invite-button.create{
+    background-color: #363A5B;
+    color: white;
+}
+
+.invite-button.create:hover{
+    background-color: #484D7A;
+}
+
+.wsp-block {
+	background-color: #F0F0F0;
+	border-radius: 5px;
+	margin-top: 15px;
+    padding:20px;
+}
+
+.btn-arrow {
+	font-size: x-large;
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+}
+
+.btn-arrow:hover
+{
+    color:#484D7A;
+}
+
+.wsp-agenda-icon
+{
+    font-size: x-large;
+    position: relative;
+}
+
+.block-body
+{
+    margin: 15px 0;
+    max-height: 200px;
+    overflow: auto;
+}
+
+.roundbadge.notif.edited {
+    top: 0;
+    right: -3px;
+}
+
+/* .swp-agenda-date
+{
+    white-space: nowrap;
+} */

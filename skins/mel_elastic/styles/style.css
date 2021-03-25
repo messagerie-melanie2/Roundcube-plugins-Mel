@@ -162,7 +162,7 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
 }
 
 .ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default {
-    color: #fff;
+    /* color: #fff; */
 }
 
 .ui-datepicker .ui-state-highlight, .ui-datepicker.ui-widget-content .ui-state-highlight {

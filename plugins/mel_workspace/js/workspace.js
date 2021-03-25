@@ -1,18 +1,17 @@
 $(document).ready(async () => {
     const uid = rcmail.env.current_workspace_uid;
+    SetCalendarDate()
     //Récupération des données d'ariane
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
     console.log("Init()", datas, channel, datas[channel]);
     UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
-    UpdateCalendar();
-    UpdateTasks();
-    parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
-    parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
-    //parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, my_day_tasks);
-
     //Récupération des données de l'agenda
+    UpdateCalendar();
+    parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
     //Récupération des données des tâches
+    UpdateTasks();
+    parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
 
     await wait(() => window.ariane === undefined);
     window.ariane.addEventListener("update", UpdateAriane);
@@ -77,6 +76,7 @@ function UpdateSomething(data,_class, editor = null)
 function UpdateCalendar()
 {
     const uid = rcmail.env.current_workspace_uid;
+    let array;
     Update(mel_metapage.Storage.calendar, UpdateSomething, null, null, "wsp-agenda", (data) => {
         if (data === null || data === undefined)
         {
@@ -87,13 +87,117 @@ function UpdateCalendar()
         }
         const before = "ws#";
         const id = before + uid;
-        console.log("UpdateCalendar("+uid+")",uid, before, id);
         let tmp = Enumerable.from(data).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id));
+        array = tmp.toArray();
         if (tmp.any())
             return tmp.count();
         else
             return 0;
     });
+    console.log("array", array);
+    {
+        const agenda = rcmail.env.current_workspace_constantes.agenda;
+        const id = "wsp-block-" + agenda;
+        let querry = $("#" + id).find(".block-body");
+        if (array.length === 0)
+            querry.html("Pas de réunion aujourd'hui !");
+        else
+        {
+            setup_calendar(array, querry);
+            UpdateSomething(array.length, "wsp-agenda-icon");
+            $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");
+        }
+    }
+}
+
+/**
+ * Affiche les évènements.
+ * @param {array} datas Données des évènements.
+ */
+function setup_calendar(datas, querry, _date = moment())
+{
+	const classes = {
+		organizer:"icofont-royal royal",
+		tick:"icofont-check lightgreen",
+		waiting:"icofont-hour-glass clear",
+		declined:"icofont-close danger"
+	}
+	const set_style = (event) => {
+		const now = {
+			now:_date,
+			start:moment(_date).startOf('day'),
+			end:moment(_date).endOf('day')
+		}
+		const date = {
+			start:moment(event.start),
+			end:moment(event.end)
+		}
+		if (date.start < now.start || date.end > now.end)
+			return {
+				start:date.start.format("DD/MM/YYYY HH:mm"),
+				end:date.end.format("DD/MM/YYYY HH:mm"),
+			}
+		else
+			return {
+				start:date.start.format("HH:mm"),
+				end:date.end.format("HH:mm"),
+			}
+	};
+	let html = ''
+	// datas.sort(function(a,b){
+	// 	return moment(a.start) - moment(b.start);
+	// });
+	let style;
+	let bool;
+	let icon;
+    for (let index = 0; index < datas.length; index++) {
+        const element = datas[index];
+        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+		if (element.allDay)
+			html += "<div class=col-md-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+		else
+		{
+			const style_date = set_style(element);
+        	html += "<div class=col-md-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+		}
+		bool = element.attendees !== undefined && 
+		element.attendees.length > 0 && 
+		Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
+		if (bool)
+		{
+			icon = null;
+			for (let it = 0; it < rcmail.env.mel_metapage_user_emails.length; it++) {
+				const mail = rcmail.env.mel_metapage_user_emails[it];
+				for (let j = 0; j < element.attendees.length; j++) {
+					const attendee = element.attendees[j];
+					if (attendee.email == mail)
+					{
+						if (attendee.role === "ORGANIZER")
+							icon = classes.organizer;
+						else if (attendee.status.toUpperCase() === 'CONFIRMED')
+							icon = classes.tick;
+						else if (attendee.status.toUpperCase() === 'DECLINED')
+							icon = classes.declined;
+						else 
+							icon = classes.waiting;
+						break;
+					}
+				}
+				if (icon !== null)
+					break;
+			}
+		}
+        html += '<div class=col-md-2><a ' + (bool ? "" : 'style="display:none;') + ' class="roundbadge large ' + (icon !== null ? icon : "") + '"></a></div>';
+		if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
+			style = "";
+		else
+			style = "display:none;";
+		html += '<div class=col-md-2><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a></div>';
+        html += "</div>";
+    }
+	querry.html(html);
+
+		
 }
 
 function UpdateTasks()
@@ -112,4 +216,132 @@ function UpdateTasks()
         else
             return data[uid].length;
     });
+}
+
+function GetDate(momentObject)
+{
+    return GetDateFr(momentObject.format("dddd DD MMMM"));
+}
+
+function GetDateFr(date)
+{
+    const capitalize = (s) => {
+        if (typeof s !== 'string') return ''
+        s = s.toLowerCase();
+        return s.charAt(0).toUpperCase() + s.slice(1)
+      }
+    const arrayTransform = {
+        "MONDAY":"LUNDI",
+        "TUESDAY":"MARDI",
+        "WEDNESDAY":"MERCREDI",
+        "THURSDAY":"JEUDI",
+        "FRIDAY":"VENDREDI",
+        "SATURDAY":"SAMEDI",
+        "SUNDAY":"DIMANCHE",
+        "JANUARY":"JANVIER",
+        "FEBRUARY":"FÉVRIER",
+        "MARCH":"MARS",
+        "APRIL":"AVRIL",
+        "MAY":"MAI",
+        "JUNE":"JUIN",
+        "JULY":"JUILLET",
+        "AUGUST":"AOÛT",
+        "SEPTEMBER":"SEPTEMBRE",
+        "OCTOBER":"OCTOBRE",
+        "NOVEMBER":"NOVEMBRE",
+        "DECEMBER":"DECEMBRE"
+    }
+    date = date.toUpperCase();
+    for (const key in arrayTransform) {
+        if (Object.hasOwnProperty.call(arrayTransform, key)) {
+            const element = arrayTransform[key];
+            if (date.includes(key))
+                date = date.replace(key, element);
+        }
+    }
+    return capitalize(date);
+}
+
+function create_calendar(id, e)
+{
+    let event = {
+        categories:["ws#" + id],
+        calendar_blocked:true,
+        start:moment(),
+        end:moment().add(1, "h")
+    }
+    rcmail.local_storage_set_item("tmp_calendar_event", event);
+    return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
+    // m_mp_CreateOrOpenFrame(`calendar`, 
+    // () => {
+    //     m_mp_CreateEvent();
+    //     m_mp_CreateEvent(() => {
+    //         m_mp_set_storage("calendar_category", "ws#" + id, false);
+    //     })
+    // }
+    // , m_mp_CreateEvent_inpage)
+}
+
+function SetCalendarDate(date = null)
+{
+    const now = date === null ? moment() : date;
+    $(".swp-agenda-date").html(GetDate(now)).data("current-date", now);
+}
+
+function GetAgenda()
+{
+    const agenda = rcmail.env.current_workspace_constantes.agenda;
+    const id = "wsp-block-" + agenda;
+    return  $("#" + id).find(".block-body");
+}
+
+Array.prototype.AddIfExist = function(test, item)
+{
+    console.log("AddIfExist", !Enumerable.from(this).where(x => test(x, item)).any(), item);
+    if(!Enumerable.from(this).where(x => test(x, item)).any())
+        this.push(item);
+}
+
+async function change_date(add)
+{
+    const check = (x, item) => {x.uid === item.uid};
+    const before = "ws#";
+    const uid = rcmail.env.current_workspace_uid;
+    const id = before + uid;
+    const date = moment($(".swp-agenda-date").data("current-date")).add(add, "d").startOf("day");
+    SetCalendarDate(date);
+    let querry = GetAgenda().html('<center><span class="spinner-border"></span></center>');
+    const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
+    const events = Enumerable.from(JSON.parse(datas)).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).toArray();
+    console.log(events, JSON.parse(datas));
+    if (events === null || events.length === 0)
+    { 
+        if (date === moment().startOf("day"))
+            querry.html("Pas de réunion aujourd'hui !");
+        else
+            querry.html("Pas de réunion à cette date !");
+    }
+    else
+    {
+        let element;
+        let tmp;
+        let array = [];
+        let elementsToDelete = [];
+        for (let index = 0; index < events.length; index++) {
+            element = events[index];
+            if (element.allDay)
+                element.order = 0;
+            else
+                element.order = 1;
+            tmp = mel_metapage.Functions.check_if_calendar_valid(element, events);
+            console.log("tmp", tmp);
+            if (tmp === true)
+                array.AddIfExist(check, element);
+            else if (tmp !== false)
+                elementsToDelete.push(tmp);
+        }
+        console.log(array);
+        array = Enumerable.from(array).where(x => !elementsToDelete.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
+        setup_calendar(array, querry, date);
+    }
 }

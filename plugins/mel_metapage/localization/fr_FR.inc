@@ -6,7 +6,7 @@ $labels['create'] = "Créer";
 $labels['support'] = "Assistance";
 $labels['my_favorites'] = "Mes raccourcis";
 $labels["contacts_organization"] = "Gestion des Annuaires";
-$labels["last_frame_opened"] = "Dernier ouvert";
+$labels["last_frame_opened"] = "Revenir à";
 $labels["nothing"] = "Aucun";
 
 $labels["nextcloud_connection_error"] = "Impossible de récupérer les documents, l'authentification a échoué ou le plugin n'est pas bien configuré.";
@@ -32,3 +32,5 @@ $labels["presentation"] = "Présentation";
 
 $labels["new_n"] = "Nouveau";
 $labels["new_f"] = "Nouvelle";
+
+$labels["new_event"] = "Nouvel évènement";

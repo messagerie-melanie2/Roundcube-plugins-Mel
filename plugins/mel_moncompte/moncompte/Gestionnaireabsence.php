@@ -92,25 +92,12 @@ class Gestionnaireabsence extends Moncompteobject {
 			if (strpos($type, Outofoffice::TYPE_ALL) === 0 
 					&& isset($outofoffice->days)) {
 				$hasAbsence = true;
-				// Init hour start
-				if (isset($outofoffice->hour_start)) {
-					$hour_start = $outofoffice->hour_start;
-				}
-				else {
-					$hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
-				}
-				// Init hour end
-				if (isset($outofoffice->hour_end)) {
-					$hour_end = $outofoffice->hour_end;
-				}
-				else {
-					$hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
-				}
-				$all_day = $hour_start->format('H:i') == '00:00' 
-							&& $hour_end->format('H:i') == '00:00';
+
+				$all_day = !isset($outofoffice->hour_start) 
+							&& !isset($outofoffice->hour_end);
 				$html .= self::absence_template($i, $all_day, 
-						$hour_start->format('H:i'), 
-						$hour_end->format('H:i'),
+						isset($outofoffice->hour_start) ? $outofoffice->hour_start->format('H:i') : '00:00', 
+						isset($outofoffice->hour_end) ? $outofoffice->hour_end->format('H:i') : '00:00',
 						$outofoffice->days,
 						$outofoffice->message);
 				$i++;
@@ -263,7 +250,11 @@ class Gestionnaireabsence extends Moncompteobject {
 						$outofoffice->type = Outofoffice::TYPE_ALL;
 						$outofoffice->message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
 						$all_day = trim(rcube_utils::get_input_value("all_day$i", rcube_utils::INPUT_POST));
-						if (!$all_day) {
+						if ($all_day) {
+							$outofoffice->hour_start = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+							$outofoffice->hour_end = \DateTime::createFromFormat('H:i', '00:00', new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));
+						}
+						else {
 							$hour_start = trim(rcube_utils::get_input_value("hour_start$i", rcube_utils::INPUT_POST));
 							$hour_end = trim(rcube_utils::get_input_value("hour_end$i", rcube_utils::INPUT_POST));
 							$outofoffice->hour_start = \DateTime::createFromFormat('H:i', $hour_start, new \DateTimeZone(rcmail::get_instance()->config->get('timezone', 'GMT')));

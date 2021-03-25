@@ -686,19 +686,20 @@ class mel_driver extends calendar_driver {
         $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en exception Mél
         $exceptions = $_event->exceptions;
-        // Positionnement de la recurrenceId et de l'uid
+        // Positionnement de la recurrence_id et de l'uid
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
           $recid = explode('@DATE-', $event['id']);
           $recid = $recid[1];
-          $_exception->recurrenceId = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
+          $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
         }
         else if (strpos($id, self::RECURRENCE_ID) !== false) {
           $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
-          $_exception->recurrenceId = $recid;
+          $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
+          $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
         }
         else if ($event['start'] instanceof DateTime) {
-          $_exception->recurrenceId = $event['start']->format(self::SHORT_DB_DATE_FORMAT);
+          $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
         }
         $_exception->uid = $event['uid'];
         $_exception->deleted = false;
@@ -707,7 +708,7 @@ class mel_driver extends calendar_driver {
         $_event->exceptions = $exceptions;
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
-        // Positionnement de la recurrenceId et de l'uid
+        // Positionnement de la recurrence_id et de l'uid
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
           $date = explode('@DATE-', $event['id']);
@@ -909,19 +910,20 @@ class mel_driver extends calendar_driver {
           $e['end'] = $event['end'];
           if (! $resize)
             $e['allday'] = $event['allday'];
-            // Positionnement de la recurrenceId et de l'uid
+          // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
           if (strpos($id, '@DATE-') !== false) {
             $recid = explode('@DATE-', $event['id']);
             $recid = $recid[1];
-            $_exception->recurrenceId = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
           }
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
             $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
-            $_exception->recurrenceId = $recid;
+            $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
+            $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
           }
           else if ($event['start'] instanceof DateTime) {
-            $_exception->recurrenceId = $event['start']->format(self::SHORT_DB_DATE_FORMAT);
+            $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
           }
           $_exception->uid = $_event->uid;
           $_exception->deleted = false;
@@ -1208,28 +1210,29 @@ class mel_driver extends calendar_driver {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
-          // Positionnement de la recurrenceId et de l'uid
+          // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
           if (strpos($id, '@DATE-') !== false) {
             $recid = explode('@DATE-', $event['id']);
             $recid = $recid[1];
-            $_exception->recurrenceId = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
           }
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
             $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
-            $_exception->recurrenceId = $recid;
+            $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
+            $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
           }
           else if (isset($event['_instance'])) {
-            $_exception->recurrenceId = substr($event['_instance'], 0, 8);
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, $event['_instance']);
           }
           else if ($event['start'] instanceof DateTime) {
-            $_exception->recurrenceId = $event['start']->format(self::SHORT_DB_DATE_FORMAT);
+            $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
           }
           $_exception->uid = $_event->uid;
           $_exception->deleted = true;
           // Supprimer la récurrence si elle est dans la liste
           foreach ($exceptions as $key => $ex) {
-            if (date(self::SHORT_DB_DATE_FORMAT, strtotime($ex->recurrenceId)) == date(self::SHORT_DB_DATE_FORMAT, strtotime($_exception->recurrenceId))) {
+            if ($ex->recurrence_id == $_exception->recurrence_id) {
               $exceptions[$key]->delete();
               unset($exceptions[$key]);
             }
@@ -1242,7 +1245,7 @@ class mel_driver extends calendar_driver {
       }
       elseif ($event['_savemode'] == 'future') {
         if ($_event->load()) {
-          // Positionnement de la recurrenceId et de l'uid
+          // Positionnement de la recurrence_id et de l'uid
           $recid = explode('@DATE-', $event['id']);
           $recid = $recid[1];
           $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid) - 24 * 60 * 60);
@@ -1824,7 +1827,7 @@ class mel_driver extends calendar_driver {
     // Parcourir les exceptions
     foreach ($_exceptions as $_exception) {
       if ($_exception->deleted) {
-        $deleted_exceptions[] = new DateTime($_exception->recurrenceId);
+        $deleted_exceptions[] = new DateTime($_exception->recurrence_id);
       }
       else {
         // Génération de l'exception pour Roundcube
@@ -1833,10 +1836,10 @@ class mel_driver extends calendar_driver {
         $e['id'] = $_exception->realuid;
         $e['recurrence_id'] = $_exception->uid;
         //$e['recurrence'] = $recurrence;
-        $e['_instance'] = $_exception->recurrenceId;
+        $e['_instance'] = $_exception->recurrence_id;
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;
-        $deleted_exceptions[] = new DateTime($_exception->recurrenceId);
+        $deleted_exceptions[] = new DateTime($_exception->recurrence_id);
         $recurrence['EXCEPTIONS'][$e['id']] = $e;
       }
     }

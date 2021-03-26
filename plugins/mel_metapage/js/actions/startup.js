@@ -226,7 +226,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         e.style.display = "none";
     });//.css("display", "none");
     $(".a-frame").css("display", "none");
-    const url = rcmail.get_task_url((isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)), window.location.href); 
+    const url = rcmail.get_task_url((isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
     window.history.replaceState({}, document.title, url);
     if (isAriane || $("."+eClass+"-frame").length > 1)
         $("#layout-frames").css("display", "none");
@@ -284,7 +284,7 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
 })
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result) => {
-    let src = rcmail.get_task_url(mm_st_CommandContract(eClass), window.location.href) + "&_from=iframe";
+    let src = rcmail.get_task_url(mm_st_CommandContract(eClass), window.location.origin + window.location.pathname) + "&_from=iframe";
     if (eClass === "discussion")
         src = rcmail.env.rocket_chat_url + "home";
     const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';

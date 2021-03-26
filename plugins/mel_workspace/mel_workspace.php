@@ -291,7 +291,9 @@ class mel_workspace extends rcube_plugin
         $icons = [
             $agenda => "icofont-calendar",
             "arrow_left" => "icofont-arrow-left",
-            "arrow_right" => "icofont-arrow-right"
+            "arrow_right" => "icofont-arrow-right",
+            "warning" => "icofont-warning",
+            "waiting" => "icofont-hour-glass"
         ];
 
         $col = [
@@ -299,6 +301,7 @@ class mel_workspace extends rcube_plugin
             "right" => ""
         ];
 
+        //Service agenda/calendrier
         if ($services[$agenda])
         {
             $arrow = [
@@ -322,6 +325,96 @@ class mel_workspace extends rcube_plugin
 
             $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)");
         }
+
+        //Service tâches
+        if($services[$tasks])
+        {
+            $affiche_urgence = false;
+
+            $header = html::div(["class" => "row", "style" => "justify-content: center;"],
+                html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
+                    html::tag("span", [], "Tâches urgentes")
+                ).
+                html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : "")], 
+                    html::tag("span", [], "Tâches en cours")
+            ));
+            $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 
+            html::tag("span", ["class" => $icons["warning"]." roundbadge large warning"]).
+            html::tag("span", [], 
+                html::tag("span", ["class" => "danger-task"]).
+                '<span class="nb-danger-task nb font-size-large" tâches urgentes'
+            )                
+            ).           html::div(["id" => "nb-waiting-task","class" => "nb-task wsp-task-classik tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none")], 
+            html::tag("span", ["class" => $icons["waiting"]." roundbadge large clear"]).
+            html::tag("span", [], 
+                html::tag("span", ["class" => "waiting-task"]).
+                '<span class="nb-waiting-task nb font-size-large"></span> tâches en cours'
+            )
+            );
+            $body = html::div(["id" => "danger-task", "class" => "wsp-task-urgence tab-task mel-tab-content", "style" => ($affiche_urgence ? "" : "display:none;")]).
+                    html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
+
+            $col["right"].= $this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
+        }
+
+        if ($services[$email] || $services[$channel])
+        {
+            $src = $this->rc->config->get('rocket_chat_url');
+            if ($this->currentWorkspace->ispublic)
+                 $src.="channel/$uid?layout=embedded";
+            else
+                $src.="group/$uid?layout=embedded";  
+
+            $header_component = [];
+            if ($services[$email])
+                $header_component[] = html::div(["id" => "unreads-emails", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
+            if ($services[$channel])
+                $header_component[] = html::div(["id" => "unreads-ariane", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
+            
+            $tmp = "";
+            $count = count($header_component);
+            for ($i=0; $i < $count; ++$i) { 
+                if ($i === 0)
+                    $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
+                else
+                    $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);
+            }
+            $header_component = $tmp;
+
+            $header = //html::div([],
+                html::div(["class" => "row", "style"=> "padding-bottom:15px"], 
+                    $header_component
+        );
+            //);
+
+            $body_component = [];
+            if ($services[$email])
+                $body_component[] = html::div(["class" => "unreads-emails tab-unreads mel-tab-content", "style" => "¤¤¤"],
+
+                );
+            if ($services[$channel])
+                $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
+                html::tag("iframe", 
+                ["src" => $src, "style" => "width:100%;height:500px"]
+                )
+            );
+            $tmp = "";
+            $count = count($body_component);
+            for ($i=0; $i < $count; ++$i) { 
+                if ($i === 0)
+                    $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
+                else
+                    $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);
+            }
+            $body_component = $tmp;
+            $body = html::div(["class" => ""],
+                $body_component
+            );
+
+            $col["left"].= html::div(["class" => "wsp-block wsp-left"], $header.$body);
+        }
+
+
         $this->rc->output->set_env("current_workspace_constantes", [
             "mail" => $email,
             "agenda" => $agenda,
@@ -330,8 +423,8 @@ class mel_workspace extends rcube_plugin
         ]);
         $this->rc->output->set_env("current_workspace_services", $services);
         return html::div(["class" => "row"],
-            html::div(["class" => "col-8"], $col["left"]).
-            html::div(["class" => "col-4"], $col["right"])
+            html::div(["class" => "col-md-8"], $col["left"]).
+            html::div(["class" => "col-md-4"], $col["right"])
         );
 
     }

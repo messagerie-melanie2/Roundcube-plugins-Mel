@@ -28,6 +28,7 @@ if (rcmail)
                     try {
                         let events = [];
                         data = JSON.parse(data);
+                        data = Enumerable.from(data).where(x => mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
                         let startMoment;
                         let endMoment;
                         let element;

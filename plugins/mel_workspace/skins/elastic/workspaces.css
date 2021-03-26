@@ -302,7 +302,7 @@ separate{
 }
 
 .wsp-block {
-	background-color: #F0F0F0;
+	background-color: #F8F8F8;
 	border-radius: 5px;
 	margin-top: 15px;
     padding:20px;
@@ -336,6 +336,21 @@ separate{
     top: 0;
     right: -3px;
 }
+
+.font-size-large{
+    font-size: x-large;
+}
+
+.nb-task{
+    /* élément { */
+        justify-content: center;
+        display: flex;
+    /* } */
+}
+
+.nb-task > span > .nb {
+    margin-left: 5px;
+  }
 
 /* .swp-agenda-date
 {

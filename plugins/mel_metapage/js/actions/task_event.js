@@ -32,7 +32,21 @@ $(document).ready(
 
         });
     
-
+        if (rcmail.env.task === "tasks")
+        {
+            new Promise(async (i,e) => {
+                let event = rcmail.local_storage_get_item("task_id");
+                if (event === null || event === undefined)
+                    return;
+                else
+                {
+                    await wait(() => $("#taskedit").hasClass("hidden"));
+                    $("#taskedit-tasklist").val(event);
+                    console.log("task", event, $("#taskedit-tasklist").val(), $("#taskedit-tasklist"));
+                    rcmail.local_storage_remove_item("task_id");
+                }
+            });
+        }
 
     }  
 );

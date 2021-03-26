@@ -600,10 +600,6 @@ img.menu-image {
     /* top: 0; */
     /* left: 0; */
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 0ae20451feb213bc87c05f32f805f4604aceaab3
 .folderlist li.mailbox .unreadcount {
     background: #80D5C6;
     color: #484D7A;
@@ -701,4 +697,32 @@ table.listing td.subscribed {
 
 .mel-centered{
     justify-content: center;
+}
+
+.mel-tabheader{
+    font-size: larger;
+    white-space: nowrap;
+    border-right-style: solid;
+    border-width: 2px;
+    border-color: black;
+}
+
+.mel-tabheader.last
+{
+    border:none;
+}
+
+.mel-tab{
+    cursor: pointer;
+}
+
+.mel-tab:hover,
+.mel-tab.active
+{
+    color:#5069BC;
+    text-decoration: underline;
+}
+
+.mel-tab.active{
+    cursor: initial;
 }

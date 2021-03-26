@@ -201,6 +201,7 @@ const mel_metapage = {
                 try {
                     let events = [];
                     data = JSON.parse(data);
+                    data = Enumerable.from(data).where(x => mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, start) || mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, end)).toArray();
                     return data;
 
   
@@ -230,6 +231,42 @@ const mel_metapage = {
                 }
             }
             return true;
+        },
+        check_if_date_is_okay(sd, ed, date)
+        {
+            if (typeof sd === "string")
+                sd = moment(sd).startOf("day");
+            if (typeof ed === "string")
+                ed = moment(ed).endOf("day");
+            if (typeof date === "string")
+                date = moment(date);
+            startDate = moment(date).startOf("day");
+            endDate = moment(date).endOf("day");
+            //console.log(sd.format(), ed.format(), date.format(), startDate.format(), endDate.format());
+            //console.log(start)
+            if (startDate <= sd && sd <= endDate)
+                return true;
+            else if (startDate <= ed && ed <= endDate)
+                return true;
+            else
+                return false;
+            
+        },
+        url: function (task, action = "", args = null)
+        {
+            let url = task;
+            if (action !== null && action !== undefined && action !== "")
+                url += "&_action=" + action;
+            if (args !== null)
+            {
+                for (const key in args) {
+                    if (Object.hasOwnProperty.call(args, key)) {
+                        const element = args[key];
+                        url += "&" + key + "=" + element
+                    }
+                }
+            }
+            return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
         }
     }
 }; 

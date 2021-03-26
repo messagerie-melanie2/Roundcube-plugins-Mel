@@ -847,7 +847,7 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
 
@@ -902,13 +902,13 @@ class mel_driver extends calendar_driver {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
-          if (! is_array($exceptions))
+          if (!is_array($exceptions))
             $exceptions = array();
           $e = $this->_read_postprocess($_event);
           unset($e['recurrence']);
           $e['start'] = $event['start'];
           $e['end'] = $event['end'];
-          if (! $resize)
+          if (!$resize)
             $e['allday'] = $event['allday'];
           // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
@@ -954,6 +954,7 @@ class mel_driver extends calendar_driver {
           $_event->uid = $e['uid'];
         }
         else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
+          $e = $this->_read_postprocess($_event);
           // Génération de nouvel identifiant
           $e['uid'] = $e['id'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@rc_new';
           // Création de la nouvelle
@@ -971,7 +972,7 @@ class mel_driver extends calendar_driver {
           $_event = $this->_write_postprocess($_event, $event, false, true);
         }
         if ($_event->save() !== null) {
-          return $_event->uid;
+          return true;
         }
       }
     }
@@ -1318,7 +1319,7 @@ class mel_driver extends calendar_driver {
       $_comment = $event['_comment'] ?  : null;
 
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
 
@@ -1326,7 +1327,7 @@ class mel_driver extends calendar_driver {
         $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
       }
 
-      if (! isset($event['calendar'])) {
+      if (!isset($event['calendar'])) {
         $event['calendar'] = $this->user->uid;
       }
 
@@ -1335,7 +1336,7 @@ class mel_driver extends calendar_driver {
         if (isset($event['uid'])) {
           $_event->uid = $event['uid'];
           // Récupération d'une instance d'événement
-          if (isset($event['_instance']) && ! empty($event['_instance']) && (!isset($event['method']) || $event['method'] != 'CANCEL')) {
+          if (isset($event['_instance']) && !empty($event['_instance']) && (!isset($event['method']) || $event['method'] != 'CANCEL')) {
             $_event->uid .= '-' . substr($event['_instance'], 0, 8) . self::RECURRENCE_ID;
           }
         }
@@ -1835,7 +1836,7 @@ class mel_driver extends calendar_driver {
         $e = $this->_read_postprocess($_exception, null, true);
         $e['id'] = $_exception->realuid;
         $e['recurrence_id'] = $_exception->uid;
-        //$e['recurrence'] = $recurrence;
+        $e['recurrence'] = $recurrence;
         $e['_instance'] = $_exception->recurrence_id;
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;

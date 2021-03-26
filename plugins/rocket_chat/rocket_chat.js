@@ -7,12 +7,12 @@ if (window.rcmail) {
 		position: 'up',
 		animation: 'none'
 	});		
-	
+
 	function login()
 	{
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
-			url: "/?_task=discussion&_action=login",
+			url: MEL_ELASTIC_UI.url("disussion", "login"),//"/?_task=discussion&_action=login",
 			success: function (data) {
 				data = JSON.parse(data);
 				console.log("yeay", data);

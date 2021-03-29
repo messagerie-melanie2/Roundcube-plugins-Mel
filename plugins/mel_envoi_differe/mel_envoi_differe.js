@@ -185,12 +185,6 @@ var init_time_autocomplete = function (elem, props) {
     };
 };
 
-
-
-
-
-
-
 rcube_webmail.prototype.display_mel_envoi_differe = function () {
 
     let currentDate = new Date();

@@ -68,44 +68,28 @@ if (window.rcmail) {
 
   rcmail.addEventListener('responseafterplugin.test_melanissimo', function(
       event) {
-    // Réponse du serveur : envoie par Melanissimo ?
-    if (event.response.use_melanissimo) {
-      // Est-ce que le service Melanissimo est up ?
-      if (!event.response.melanissimo_up) {
-        alert(rcmail.labels['mel_melanissimo.Melanissimo service down'] + " Error [" + event.response.httpCode + "] : " + event.response.errorMessage);      
-      }
-      else {
-        var buttons = {};
-        buttons[rcmail.labels['mel_melanissimo.send_melanissimo']] = function () {
-          if (validate_message()) {
-            send_melanissimo_message();
+    // Tester si on est en remise différée
+    if (event.response.use_melanissimo && $('#envoi_differe').length && $('#envoi_differe').val()) {
+      rcmail.show_popup_dialog(
+        rcmail.labels['mel_melanissimo.Melanissimo remise differee error'], 
+        "",
+        [{
+          text: rcmail.labels['mel_melanissimo.button send now'],
+          'class': 'mainaction',
+          click: function() {
+            if (send_with_melanissimo(event))
+              $(this).dialog('close');
           }
-          $(this).dialog("close");
-        };
-        buttons[rcmail.labels['mel_melanissimo.cancel']] = function () {
-          $(this).dialog("close");
-        };
-        $(event.response.dialog_html).dialog({
-            modal: true, 
-            title: rcmail.labels['mel_melanissimo.Send Melanissimo title'], 
-            zIndex: 10000, 
-            autoOpen: true,
-            width: '450px', 
-            resizable: false,
-            buttons: buttons,
-            close: function (event, ui) {
-                $(this).remove();
-            }
-        });
-      }      
+        },
+        {
+          text: rcmail.get_label('cancel'),
+          click: function() {
+            $(this).dialog('close');
+          }
+        }]);
     }
-    // Est-ce qu'on dépasse la limite maximum du service Melanissimo ?
-    else if (event.response.over_size_melanissimo) {
-      alert(rcmail.labels['mel_melanissimo.Over size Melanissimo error'].replace('%%max_melanissimo_size%%', event.response.max_melanissimo_size).replace('%%size%%', event.response.size));
-    } 
-    // Envoi classique du message
     else {
-      return rcmail.command('send', '', this, event);
+      send_with_melanissimo(event);
     }
   });
   
@@ -142,6 +126,51 @@ if (window.rcmail) {
     $( "#send_melanissimo_dialog .progressbar" ).text(event.response.current_value + '%');
     $( "#send_melanissimo_dialog .current_action" ).text(event.response.current_action);
   });
+}
+
+/**
+ * Retour de l'event plugin.send_melanissimo
+ */
+function send_with_melanissimo(event) {
+  // Réponse du serveur : envoie par Melanissimo ?
+  if (event.response.use_melanissimo) {
+    // Est-ce que le service Melanissimo est up ?
+    if (!event.response.melanissimo_up) {
+      alert(rcmail.labels['mel_melanissimo.Melanissimo service down'] + " Error [" + event.response.httpCode + "] : " + event.response.errorMessage);      
+    }
+    else {
+      var buttons = {};
+      buttons[rcmail.labels['mel_melanissimo.send_melanissimo']] = function () {
+        if (validate_message()) {
+          send_melanissimo_message();
+        }
+        $(this).dialog("close");
+      };
+      buttons[rcmail.labels['mel_melanissimo.cancel']] = function () {
+        $(this).dialog("close");
+      };
+      $(event.response.dialog_html).dialog({
+          modal: true, 
+          title: rcmail.labels['mel_melanissimo.Send Melanissimo title'], 
+          zIndex: 10000, 
+          autoOpen: true,
+          width: '450px', 
+          resizable: false,
+          buttons: buttons,
+          close: function (event, ui) {
+              $(this).remove();
+          }
+      });
+    }      
+  }
+  // Est-ce qu'on dépasse la limite maximum du service Melanissimo ?
+  else if (event.response.over_size_melanissimo) {
+    alert(rcmail.labels['mel_melanissimo.Over size Melanissimo error'].replace('%%max_melanissimo_size%%', event.response.max_melanissimo_size).replace('%%size%%', event.response.size));
+  } 
+  // Envoi classique du message
+  else {
+    return rcmail.command('send', '', this, event);
+  }
 }
 
 /**

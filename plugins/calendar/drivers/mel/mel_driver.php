@@ -1621,8 +1621,8 @@ class mel_driver extends calendar_driver {
         $_events = array_merge($_events, $this->load_birthday_events($start, $end, $search, $modifiedsince));
       }
 
-      if (mel_logs::is(mel_logs::TRACE))
-        mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::load_events() events : " . var_export($_events, true));
+      // if (mel_logs::is(mel_logs::TRACE))
+      //   mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::load_events() events : " . var_export($_events, true));
       return $_events;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -1830,8 +1830,8 @@ class mel_driver extends calendar_driver {
       }
     }
     // Pb de memoire
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess() event : " . var_export($_event, true));
+    // if (mel_logs::is(mel_logs::TRACE))
+    //   mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess() event : " . var_export($_event, true));
     return $_event;
   }
 

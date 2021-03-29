@@ -193,16 +193,27 @@ class mel_workspace extends rcube_plugin
         $agenda = "calendar";
         $tasks = "tasks";
         $cloud = "cloud";
-        $html = html::div(["class" => "wsp-toolbar-item first active"], "<span class=".$icons["home"]."></span>");
+        $uid = $this->currentWorkspace->uid;
+        $html = html::div(["onclick" => "OpenHome()","class" => "wsp-toolbar-item first active"], "<span class=".$icons["home"]."></span>");
         if ($this->get_object($this->currentWorkspace, $agenda) === true)
-            $html .= html::div(["class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span>");
+        {
+            $onclick = "ChangeFramePosition('calendar', 0, 0)";
+            $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span>");
+        }
+        
         if ($this->get_object($this->currentWorkspace, $channel) !== null)
         {
+            $src = $this->rc->config->get('rocket_chat_url');
+            if ($this->currentWorkspace->ispublic)
+                 $src.="channel/$uid?layout=embedded";
+            else
+                $src.="group/$uid?layout=embedded";  
+            $click = "OpenAriane('ariane-wsp-frame', '$src')";
             $channel_datas = $this->get_object($this->currentWorkspace, $channel);
             if ($channel_datas->name === null)
-                $html .= html::div(["data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");
+                $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");
             else
-                $html .= html::div(["data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span>");
+                $html .= html::div(["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span>");
         }
         if ($this->get_object($this->currentWorkspace, $tasks) !== null)
             $html .= html::div(["class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");

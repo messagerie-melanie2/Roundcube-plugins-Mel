@@ -299,11 +299,21 @@ if (rcmail)
         {
             if (event.data.message === undefined)
                 return;
+            const datas = event.data.datas;
             switch (event.data.message) {
                 case "update_calendar":
                     rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
                     break;
-            
+                // case "ChangeMenu()":
+                //     rcmail.env.wsp_from_child = true;
+                //     ChangeMenu(datas.hide,datas.picture, datas.toolbar);
+                //     break;
+                // case "_ChangeFrameWorkspace()":
+                //     _ChangeFrameWorkspace(datas);
+                //     break;
+                // case "_OpenHome()":
+                //     _OpenHome();
+                // break;
                 default:
                     break;
             }

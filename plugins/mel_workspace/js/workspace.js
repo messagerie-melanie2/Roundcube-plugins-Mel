@@ -409,62 +409,11 @@ function OpenAriane(id, src)
         $("#layout-content").find(".body").append(frame);
         querry = $("#" + id);
         querry.css("width", "100%")
-        .css("height", "100%")
+        .css("height", "500px")
         .css("margin-top", "30px");
     }
     querry.css("display", "");
 }
 
-function OpenHome()
-{
-    $(".wsp-object").css("display", "none");
-    $(".wsp-home").css("display", "");
-    $(".wsp-toolbar-item").removeClass("active");
-    $(".wsp-toolbar-item.first").addClass("active");
-}
 
-async function ChangeFramePosition(_class, w = "1000px", h = "1000px", url = null, func = null)
-{
-    $(".wsp-toolbar-item").removeClass("active");
-    $(".wsp-toolbar-item.wsp-agenda").addClass("active");
-    const id = mm_st_OpenOrCreateFrame(_class, false);
-    await wait(() => rcmail.env.frame_created !== true);
-    rcmail.set_busy(true, "loading");
-    let querry = $("#" + id);
-    if (url !== null)
-        querry[0].src = url;
-    size = cumulativeOffset($(".wsp-description")[0]);
-    console.log("size", size, $(".wsp-description"));
-    querry.parent().css("position", "absolute")
-    .css("top", size.top + "px")
-    // .css("left", size.left + "px")
-    // .css("width", w)
-    .css("height", (window.innerHeight - size.top - 15) + "px")
-    .css("display", "")
-    .addClass("wsp-content");
-    querry.css("display", "").css("padding-top", "0px");
-    $(".wsp-object").css("display", "none");
-    // if ($("#wsp-tmp-" + _class).length === 0)
-    //     $("#layout-content").find(".body").append(`<div class=wsp-object id=wsp-tmp-`+_class+` style="height:500px; width:100%"></div>`);
-    // else
-    //     $("#wsp-tmp-" + _class).css("display", "");
-    if (_class === "rocket")
-        $(".a-frame").css("display", "");
-    rcmail.env.have_frame_positioned = true;
-    rcmail.set_busy(false);
-    rcmail.clear_messages();
-}
 
-var cumulativeOffset = function(element) {
-    var top = 0, left = 0;
-    do {
-        top += element.offsetTop  || 0;
-        left += element.offsetLeft || 0;
-        element = element.offsetParent;
-    } while(element);
-
-    return {
-        top: top,
-        left: left
-    };
-};

@@ -42,6 +42,7 @@ class mel_workspace extends rcube_plugin
     public function init()
     {
         $this->setup();
+        $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
         if ($this->rc->task === "workspace")
             $this->portal();
     }
@@ -194,10 +195,10 @@ class mel_workspace extends rcube_plugin
         $tasks = "tasks";
         $cloud = "cloud";
         $uid = $this->currentWorkspace->uid;
-        $html = html::div(["onclick" => "OpenHome()","class" => "wsp-toolbar-item first active"], "<span class=".$icons["home"]."></span>");
+        $html = html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item first active"], "<span class=".$icons["home"]."></span>");
         if ($this->get_object($this->currentWorkspace, $agenda) === true)
         {
-            $onclick = "ChangeFramePosition('calendar', 0, 0)";
+            $onclick = "ChangeToolbar('calendar', this)";
             $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span>");
         }
         
@@ -208,7 +209,7 @@ class mel_workspace extends rcube_plugin
                  $src.="channel/$uid?layout=embedded";
             else
                 $src.="group/$uid?layout=embedded";  
-            $click = "OpenAriane('ariane-wsp-frame', '$src')";
+            $click = "ChangeToolbar('rocket', this)";
             $channel_datas = $this->get_object($this->currentWorkspace, $channel);
             if ($channel_datas->name === null)
                 $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");

@@ -686,28 +686,42 @@ class mel_driver extends calendar_driver {
         $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en exception Mél
         $exceptions = $_event->exceptions;
-        // Positionnement de la recurrenceId et de l'uid
+        // Positionnement de la recurrence_id et de l'uid
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
           $recid = explode('@DATE-', $event['id']);
           $recid = $recid[1];
-          $_exception->recurrenceId = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
+          if (!$new && isset($exceptions[$recid])) {
+            $_exception = $exceptions[$recid];
+          }
+          else {
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
+          }
         }
         else if (strpos($id, self::RECURRENCE_ID) !== false) {
           $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
-          $_exception->recurrenceId = $recid;
+          if (!$new && isset($exceptions[$recid])) {
+            $_exception = $exceptions[$recid];
+          }
+          else {
+            $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
+            $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
+          }
         }
         else if ($event['start'] instanceof DateTime) {
-          $_exception->recurrenceId = $event['start']->format(self::SHORT_DB_DATE_FORMAT);
+          $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
         }
         $_exception->uid = $event['uid'];
         $_exception->deleted = false;
         $_event->deleted = $loaded ? false : true;
-        $exceptions[] = $this->_write_postprocess($_exception, $event, true);
+        if (!isset($recid)) {
+          $recid = date('Ymd', strtotime($_exception->recurrence_id));
+        }
+        $exceptions[$recid] = $this->_write_postprocess($_exception, $event, true);
         $_event->exceptions = $exceptions;
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
-        // Positionnement de la recurrenceId et de l'uid
+        // Positionnement de la recurrence_id et de l'uid
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
           $date = explode('@DATE-', $event['id']);
@@ -846,7 +860,7 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
 
@@ -901,27 +915,28 @@ class mel_driver extends calendar_driver {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
-          if (! is_array($exceptions))
+          if (!is_array($exceptions))
             $exceptions = array();
           $e = $this->_read_postprocess($_event);
           unset($e['recurrence']);
           $e['start'] = $event['start'];
           $e['end'] = $event['end'];
-          if (! $resize)
+          if (!$resize)
             $e['allday'] = $event['allday'];
-            // Positionnement de la recurrenceId et de l'uid
+          // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
           if (strpos($id, '@DATE-') !== false) {
             $recid = explode('@DATE-', $event['id']);
             $recid = $recid[1];
-            $_exception->recurrenceId = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
           }
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
             $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
-            $_exception->recurrenceId = $recid;
+            $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
+            $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
           }
           else if ($event['start'] instanceof DateTime) {
-            $_exception->recurrenceId = $event['start']->format(self::SHORT_DB_DATE_FORMAT);
+            $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
           }
           $_exception->uid = $_event->uid;
           $_exception->deleted = false;
@@ -952,6 +967,7 @@ class mel_driver extends calendar_driver {
           $_event->uid = $e['uid'];
         }
         else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
+          $e = $this->_read_postprocess($_event);
           // Génération de nouvel identifiant
           $e['uid'] = $e['id'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@rc_new';
           // Création de la nouvelle
@@ -969,7 +985,7 @@ class mel_driver extends calendar_driver {
           $_event = $this->_write_postprocess($_event, $event, false, true);
         }
         if ($_event->save() !== null) {
-          return $_event->uid;
+          return true;
         }
       }
     }
@@ -1155,7 +1171,7 @@ class mel_driver extends calendar_driver {
 
     try {
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
 
@@ -1208,28 +1224,38 @@ class mel_driver extends calendar_driver {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
           $exceptions = $_event->exceptions;
-          // Positionnement de la recurrenceId et de l'uid
+          // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
           if (strpos($id, '@DATE-') !== false) {
             $recid = explode('@DATE-', $event['id']);
             $recid = $recid[1];
-            $_exception->recurrenceId = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, intval($recid));
           }
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
             $recid = substr($id, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID) + 1, - strlen(self::RECURRENCE_ID));
-            $_exception->recurrenceId = $recid;
+            // si l'événement parent est supprimé on est dans un faked master
+            if ($_event->deleted && count($exceptions) === 1 && isset($exceptions[$recid])) {
+              return $_event->delete();
+            }
+            if (isset($event['start']) && $event['start'] instanceof DateTime) {
+              $recIdDT = DateTime::createFromFormat('Ymd His', $recid . ' ' . $event['start']->format('His'));
+              $_exception->recurrence_id = $recIdDT->format(self::DB_DATE_FORMAT);
+            }
+            else if (isset($exceptions[$recid])) {
+              $_exception = $exceptions[$recid];
+            }
           }
           else if (isset($event['_instance'])) {
-            $_exception->recurrenceId = substr($event['_instance'], 0, 8);
+            $_exception->recurrence_id = date(self::DB_DATE_FORMAT, $event['_instance']);
           }
           else if ($event['start'] instanceof DateTime) {
-            $_exception->recurrenceId = $event['start']->format(self::SHORT_DB_DATE_FORMAT);
+            $_exception->recurrence_id = $event['start']->format(self::DB_DATE_FORMAT);
           }
           $_exception->uid = $_event->uid;
           $_exception->deleted = true;
           // Supprimer la récurrence si elle est dans la liste
           foreach ($exceptions as $key => $ex) {
-            if (date(self::SHORT_DB_DATE_FORMAT, strtotime($ex->recurrenceId)) == date(self::SHORT_DB_DATE_FORMAT, strtotime($_exception->recurrenceId))) {
+            if ($ex->recurrence_id == $_exception->recurrence_id) {
               $exceptions[$key]->delete();
               unset($exceptions[$key]);
             }
@@ -1242,7 +1268,7 @@ class mel_driver extends calendar_driver {
       }
       elseif ($event['_savemode'] == 'future') {
         if ($_event->load()) {
-          // Positionnement de la recurrenceId et de l'uid
+          // Positionnement de la recurrence_id et de l'uid
           $recid = explode('@DATE-', $event['id']);
           $recid = $recid[1];
           $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid) - 24 * 60 * 60);
@@ -1315,7 +1341,7 @@ class mel_driver extends calendar_driver {
       $_comment = $event['_comment'] ?  : null;
 
       // Chargement des calendriers si besoin
-      if (! isset($this->calendars)) {
+      if (!isset($this->calendars)) {
         $this->_read_calendars();
       }
 
@@ -1323,7 +1349,7 @@ class mel_driver extends calendar_driver {
         $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
       }
 
-      if (! isset($event['calendar'])) {
+      if (!isset($event['calendar'])) {
         $event['calendar'] = $this->user->uid;
       }
 
@@ -1332,7 +1358,7 @@ class mel_driver extends calendar_driver {
         if (isset($event['uid'])) {
           $_event->uid = $event['uid'];
           // Récupération d'une instance d'événement
-          if (isset($event['_instance']) && ! empty($event['_instance']) && (!isset($event['method']) || $event['method'] != 'CANCEL')) {
+          if (isset($event['_instance']) && !empty($event['_instance']) && (!isset($event['method']) || $event['method'] != 'CANCEL')) {
             $_event->uid .= '-' . substr($event['_instance'], 0, 8) . self::RECURRENCE_ID;
           }
         }
@@ -1595,8 +1621,8 @@ class mel_driver extends calendar_driver {
         $_events = array_merge($_events, $this->load_birthday_events($start, $end, $search, $modifiedsince));
       }
 
-      if (mel_logs::is(mel_logs::TRACE))
-        mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::load_events() events : " . var_export($_events, true));
+      // if (mel_logs::is(mel_logs::TRACE))
+      //   mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::load_events() events : " . var_export($_events, true));
       return $_events;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
@@ -1804,8 +1830,8 @@ class mel_driver extends calendar_driver {
       }
     }
     // Pb de memoire
-    if (mel_logs::is(mel_logs::TRACE))
-      mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess() event : " . var_export($_event, true));
+    // if (mel_logs::is(mel_logs::TRACE))
+    //   mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess() event : " . var_export($_event, true));
     return $_event;
   }
 
@@ -1824,7 +1850,7 @@ class mel_driver extends calendar_driver {
     // Parcourir les exceptions
     foreach ($_exceptions as $_exception) {
       if ($_exception->deleted) {
-        $deleted_exceptions[] = new DateTime($_exception->recurrenceId);
+        $deleted_exceptions[] = new DateTime($_exception->recurrence_id);
       }
       else {
         // Génération de l'exception pour Roundcube
@@ -1832,11 +1858,11 @@ class mel_driver extends calendar_driver {
         $e = $this->_read_postprocess($_exception, null, true);
         $e['id'] = $_exception->realuid;
         $e['recurrence_id'] = $_exception->uid;
-        //$e['recurrence'] = $recurrence;
-        $e['_instance'] = $_exception->recurrenceId;
+        $e['recurrence'] = $recurrence;
+        $e['_instance'] = $_exception->recurrence_id;
         $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;
-        $deleted_exceptions[] = new DateTime($_exception->recurrenceId);
+        $deleted_exceptions[] = new DateTime($_exception->recurrence_id);
         $recurrence['EXCEPTIONS'][$e['id']] = $e;
       }
     }

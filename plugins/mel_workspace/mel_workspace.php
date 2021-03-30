@@ -83,6 +83,7 @@ class mel_workspace extends rcube_plugin
         $this->include_js();
         $this->register_action('index', array($this, 'index'));
         $this->register_action('workspace', array($this, 'show_workspace'));
+        $this->register_action('PARAM_Change_color', array($this, 'change_color'));
     }
 
     function load_workspaces()
@@ -488,7 +489,10 @@ class mel_workspace extends rcube_plugin
         if ($this->rc->action === "index" || $this->rc->action === "")
             $this->include_script('js/index.js');
         if ($this->rc->action === "workspace")
+        {
             $this->include_script('js/workspace.js');
+            $this->include_script('js/params.js');
+        }
     }
 
     function block($id,$class, $header, $body, $onclick)
@@ -798,6 +802,7 @@ class mel_workspace extends rcube_plugin
     {
         $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
         $is_epingle = self::is_epingle($workspace);
+        $color = $this->get_setting($workspace, "color");
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid.($epingle ? "-epingle" : "") , $html);
         $html = str_replace("<workspace-uid/>", $workspace->uid , $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
@@ -806,9 +811,9 @@ class mel_workspace extends rcube_plugin
         else
             $html = str_replace("<workspace-epingle/>", "", $html);
         if ($workspace->logo !== null)
-            $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img src="'.$workspace->logo.'"></div>', $html);
         else
-            $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 3)."</span></div>", $html);
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 3)."</span></div>", $html);
         if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else
@@ -849,6 +854,31 @@ class mel_workspace extends rcube_plugin
 
         $html = str_replace("<workspace-notifications/>", "", $html);
         return $html;
+    }
+
+    function change_color()
+    {
+        include_once "lib/mel_utils.php";
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_POST);
+        $workspace = $this->update_setting($uid, "color", $color);
+        foreach ($workspace->shares as $s)
+        {
+            mel_utils::cal_update_color($s->user, "ws#".$workspace->uid, $color);
+        }
+        echo "";
+        exit;
+    }
+
+    function update_setting($uid, $key, $value)
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+        $workspace->uid = $uid;
+        $workspace->load();
+        $this->add_setting($workspace, $key, $value);
+        $workspace->save();  
+        return $workspace; 
     }
 
 }

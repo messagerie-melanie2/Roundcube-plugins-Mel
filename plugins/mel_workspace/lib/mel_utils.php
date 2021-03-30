@@ -782,5 +782,30 @@ class mel_utils
     return true;
   }
 
+  public static function cal_update_color($username, $name, $color)
+  {
+    try {
+      $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
+      if (!isset($value))
+        return self::cal_add_category($username, $name, $color);
+      $_categories_color = explode('|', $value);
+      if (strpos($color, "#") === false)
+        $color = "#$color";
+      foreach ($_categories_color as $key => $_category_color) {
+        // Sépare les couleurs dans les paramètres de horde
+        $c = explode(':', $_category_color);
+        if (isset($c[0]) && $c[0] == $name && $_category_color != "$name:#$color") {
+          $_categories_color[$key] = "$name:#$color";
+          break;
+        }
+      }
+      $value = implode('|', $_categories_color);
+      driver_mel::gi()->getUser($username)->saveDefaultPreference("category_colors", $value);
+    } catch (\Throwable $th) {
+      return false;
+    }
+    return true;
+  }
+
 
 }

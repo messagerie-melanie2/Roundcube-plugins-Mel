@@ -2,7 +2,9 @@
     <div>
         <label>Couleur de l'espace : </label>
         <input type="color" value="<color/>" class="form-control" style="max-width: 50px;
-        display: inline-block;margin-left:5px"/>
+        display: inline-block;margin-left:5px"
+        onchange="rcmail.command('workspace.changeColor',this)"
+        />
     </div>
     <div class='row' style="margin-top:5px">
         <div class="col-6">

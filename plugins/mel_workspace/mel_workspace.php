@@ -393,16 +393,15 @@ class mel_workspace extends rcube_plugin
             }
             $header_component = $tmp;
 
-            $header = //html::div([],
+            $header = 
                 html::div(["class" => "row", "style"=> "padding-bottom:15px"], 
                     $header_component
         );
-            //);
 
             $body_component = [];
             if ($services[$email])
                 $body_component[] = html::div(["class" => "unreads-emails tab-unreads mel-tab-content", "style" => "¤¤¤"],
-
+                    ""
                 );
             if ($services[$channel])
                 $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],

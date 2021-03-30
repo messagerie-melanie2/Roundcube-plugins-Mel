@@ -153,6 +153,9 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'wsp-services'    => array($this, 'get_services'),
         ));
+        $this->rc->output->add_handlers(array(
+            'other-static-pages'    => array($this, 'get_pages'),
+        ));
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
         $this->rc->output->send('mel_workspace.workspace');
@@ -204,12 +207,12 @@ class mel_workspace extends rcube_plugin
         
         if ($this->get_object($this->currentWorkspace, $channel) !== null)
         {
-            $src = $this->rc->config->get('rocket_chat_url');
+            $src = "";//$this->rc->config->get('rocket_chat_url');
             if ($this->currentWorkspace->ispublic)
-                 $src.="channel/$uid?layout=embedded";
+                 $src="/channel/$uid";
             else
-                $src.="group/$uid?layout=embedded";  
-            $click = "ChangeToolbar('rocket', this)";
+                $src="/group/$uid";  
+            $click = "ChangeToolbar('rocket', this, `$src`)";
             $channel_datas = $this->get_object($this->currentWorkspace, $channel);
             if ($channel_datas->name === null)
                 $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");
@@ -217,10 +220,10 @@ class mel_workspace extends rcube_plugin
                 $html .= html::div(["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span>");
         }
         if ($this->get_object($this->currentWorkspace, $tasks) !== null)
-            $html .= html::div(["class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");
+            $html .= html::div(["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");
         // if ($this->get_object($this->currentWorkspace, $cloud) !== null)
         //     $html = "";
-        $html .= html::div(["class" => "wsp-toolbar-item"], "<span class=".$icons["params"]."></span>");
+        $html .= html::div(["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span>");
         return $html;//html::div(["class" => "wsp-toolbar"], $html);
     }
 
@@ -440,6 +443,28 @@ class mel_workspace extends rcube_plugin
 
     }
 
+    function get_pages()
+    {
+        $html = $this->setup_params_page();
+        return $html;
+    }
+
+    function setup_params_page()
+    {
+        $uid = $this->currentWorkspace->uid;
+        $user_rights = $this->currentWorkspace->shares[driver_mel::gi()->getUser()->uid]->rights;
+        $html = $this->rc->output->parse("mel_workspace.params", false, false);
+        if ($user_rights === "l")
+            $html = str_replace("<users-rights/>", "", $html);
+        else
+            $html = str_replace("<users-rights/>", "", $html); 
+        $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
+        if ($user_rights === Share::RIGHT_OWNER)
+            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px">Supprimer l\'espace de travail</button>', $html);
+        else
+            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px">Quitter l\'espace de travail</button>', $html);
+        return $html;
+    }
         /**
      * Récupère le css utile pour ce plugin.
      */

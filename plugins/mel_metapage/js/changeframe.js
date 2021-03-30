@@ -2,7 +2,7 @@
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(event)
     {
-        //console.log("exec_info", event, event.data, message, datas);
+        console.log("exec_info", event, event.data);
         if (event.data.exec_info === undefined)
             return;
         const message = event.data.exec_info;
@@ -13,7 +13,15 @@
                 UpdateMenu(datas.class, datas.picture, datas.toolbar);
                 break;
             case "ChangeFrame":
-                ChangeFrame(datas);
+                switch (datas) {
+                    case "rocket":
+                        ChangeFrame(datas, event.data.url);
+                        break;
+                
+                    default:
+                        ChangeFrame(datas);
+                        break;
+                }
                 break;
             case "ChangePage":
                 ChangePage(datas);
@@ -23,6 +31,7 @@
                 rcmail.env.wsp_datas.toolbar.current = datas;
                 break;
             case "ChangeToolbarPage":
+                console.log("here", datas);
                 ChangeToolbarPage(datas);
                 break;
             default:
@@ -65,20 +74,27 @@ function UpdateMenu(_class, _picture, _toolbar)
         rcmail.env.wsp_datas.toolbar.current = _class;
         if (rcmail.env.wsp_datas.toolbar.exists === true)
             return;
-        let right = "50px";
-        let bottom = "50px";
+        const basePx = "50px";
+        let right = basePx;
+        let bottom = basePx;
         let button = $(".tiny-rocket-chat");
         if (button.length > 0)
         {
             button.css("display", "none");
             right = button.css("right");
             bottom = button.css("bottom");
+            if (right === "auto")
+                right = basePx;
+            if (bottom === "auto")
+                bottom = basePx;
+
         }
+        console.log("button", button, right, bottom);
         button = $(".tiny-wsp-menu");
         if (button.length === 0)
         {
             let picture = $(".wsp-picture");
-            $("#layout").append(`<div class=tiny-wsp-menu></div>`)
+            $("#layout").append(`<div onclick=HideOrShowMenu(this) class="tiny-wsp-menu enabled"></div>`)
             button = $(".tiny-wsp-menu");
             button.css("position", "absolute");
             button.css("right", right)
@@ -104,7 +120,7 @@ function UpdateMenu(_class, _picture, _toolbar)
     }
 }
 
-async function ChangeToolbar(_class, event)
+async function ChangeToolbar(_class, event, otherDatas = null)
 {
     $(".wsp-toolbar-item").removeClass("active");
     $(event).addClass("active");
@@ -154,11 +170,11 @@ async function ChangeToolbar(_class, event)
             datas.push(
                 {
                     exec_info:"ChangeFrame",
-                    datas:"rocket"
+                    datas:"rocket",
+                    url:otherDatas
                 }
             );
             break;
-
         case "home":
             datas.push({
                 exec_info:"change_environnement",
@@ -182,6 +198,54 @@ async function ChangeToolbar(_class, event)
                 }
             );
             break;
+        case "tasklist":
+            //let picture = $(".wsp-picture");
+            datas.push({
+                exec_info:"change_environnement",
+                datas:_class
+            })
+            datas.push({
+                exec_info:"UpdateMenu",
+                datas:{
+                    class:_class,
+                    picture:{
+                        color:picture.css("background-color"),
+                        picture:picture.html()
+                    },
+                    toolbar:$(".wsp-toolbar")[0].outerHTML.replace("wsp-toolbar", "wsp-toolbar wsp-toolbar-edited")
+                }
+            });
+            datas.push(
+                {
+                    exec_info:"ChangeFrame",
+                    datas:_class
+                }
+            );
+            break;
+        case "params":
+            datas.push({
+                exec_info:"change_environnement",
+                datas:"inpage"
+            })
+            datas.push({
+                exec_info:"UpdateMenu",
+                datas:{
+                    class:"inpage",
+                    picture:{
+                        color:null,
+                        picture:null
+                    },
+                    toolbar:null
+                }
+            });
+            datas.push(
+                {
+                    exec_info:"ChangePage",
+                    datas:_class
+                }
+            );
+            break;
+            
         default:
             break;
     }
@@ -192,7 +256,7 @@ async function ChangeToolbar(_class, event)
     }
 }
 
-async function ChangeFrame(_class)
+async function ChangeFrame(_class, otherDatas = null)
 {
     $(".mm-frame").css("display", "none");
     $(".wsp-object").css("display", "none");
@@ -205,7 +269,13 @@ async function ChangeFrame(_class)
     (_class === "rocket" ? $("#" + id).css("display", "").parent().parent() : $("#" + id).css("display", "").parent()).css("display", "").css("position", "absolute").css("height", "100%");
 
     if (_class === "rocket")
+    {
         $(".a-frame").css("display", "");
+        $("#" + id)[0].contentWindow.postMessage({
+            externalCommand: 'go',
+            path: otherDatas
+        }, '*');
+    }
     else
         $(".a-frame").css("display", "none");
 
@@ -220,13 +290,17 @@ async function ChangePage(_class)
 {
     $(".mm-frame").css("display", "none");
     $(".a-frame").css("display", "none");
-    $("#layout-frames")
-    .css("display", "none")
+    let layout_frame = $("#layout-frames")
     .css("position", "")
     .css("height", "");
+    if (layout_frame.find(".workspace-frame").length >= 1)
+        layout_frame.css("display", "");
+    else
+        layout_frame.css("display", "none")
     $(".workspace-frame").css("display", "");
     let frame = $("iframe.workspace-frame");
-    if (frame.length >= 1 && Enumerable.from(frame.parent).any(x => x.id === "layout-frames"))
+    console.log(frame.length >= 1, Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
+    if (frame.length >= 1 && Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
         frame[0].contentWindow.postMessage({
             exec_info:"ChangeToolbarPage",
             datas:_class
@@ -238,14 +312,38 @@ async function ChangePage(_class)
 async function ChangeToolbarPage(_class)
 {
     $(".wsp-object").css("display", "none");
+    $(".wsp-toolbar-item").removeClass("active");
+    //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));
     switch (_class) {
         case "home":
             $(".wsp-toolbar-item.first").addClass("active");
             $(".wsp-home").css("display", "");
             break;
-    
+        case "params":
+            $(".wsp-toolbar-item.wsp-item-params").addClass("active");
+            $(".wsp-params").css("display", "");
+            break;
         default:
             break;
+    }
+}
+
+function HideOrShowMenu(element)
+{
+    const enabled = "enabled";
+    const disabled = "disabled";
+    element = $(element);
+    if (element.hasClass(enabled))
+    {
+        element.removeClass(enabled);
+        element.addClass(disabled);
+        $(".wsp-toolbar-edited").css("display", "none");
+    }
+    else
+    {
+        element.removeClass(disabled);
+        element.addClass(enabled);
+        $(".wsp-toolbar-edited").css("display", ""); 
     }
 }
 // function ChangeMenu(hide = true ,_picture = null, _toolbar = null)

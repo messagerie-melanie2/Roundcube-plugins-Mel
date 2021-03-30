@@ -352,6 +352,27 @@ separate{
     margin-left: 5px;
   }
 
+.tiny-wsp-menu
+{
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+}
+
+.tiny-wsp-menu:hover
+{
+    background-color:#42548F!important
+}
+
+.tiny-wsp-menu > img
+{
+    transition: all 0.1s ease-in;
+}
+
+.tiny-wsp-menu:hover > img
+{
+    filter: saturate(7);
+}
+
 /* .swp-agenda-date
 {
     white-space: nowrap;

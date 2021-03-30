@@ -122,6 +122,8 @@ function UpdateMenu(_class, _picture, _toolbar)
 
 async function ChangeToolbar(_class, event, otherDatas = null)
 {
+    if(rcmail.busy)
+        return;
     $(".wsp-toolbar-item").removeClass("active");
     $(event).addClass("active");
     let datas = [];

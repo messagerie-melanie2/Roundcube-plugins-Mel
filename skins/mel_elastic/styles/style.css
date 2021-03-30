@@ -726,3 +726,32 @@ table.listing td.subscribed {
 .mel-tab.active{
     cursor: initial;
 }
+
+div{
+
+    scrollbar-width: thin;
+    scrollbar-color: #363A5B #A3A7BC;
+
+}
+
+ /* width */
+ ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #A3A7BC;
+    border-radius: 15px;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #363A5B;
+    border-radius: 15px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #070B2D;
+  } 

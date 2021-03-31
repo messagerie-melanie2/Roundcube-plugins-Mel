@@ -63,6 +63,10 @@
   	
   	--subsublistitem-selected-text-color: var(--global-text-color);
   	--subsublistitem-selected-bg-color: #fafafa;
+
+	--box-warning-bg-color: #000;
+	--box-warning-border-color: #d8cebc;
+	--box-warning-text-color: #ffe1e0;
   	
   	--box-text-color: var(--global-text-color);
   	--box-bg-color: #f2f2f2;
@@ -336,6 +340,10 @@
 	 	
 	 	--subsublistitem-selected-text-color: var(--global-text-color);
 	 	--subsublistitem-selected-bg-color: #1d1d1d;
+
+		--box-warning-bg-color: #6e1010;
+		--box-warning-border-color: #604141;
+		--box-warning-text-color: #fff;
 	 	
 	 	--box-text-color: var(--global-text-color);
 	 	--box-bg-color: #1d1d1d;

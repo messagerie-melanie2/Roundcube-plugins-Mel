@@ -5,6 +5,7 @@
     border: solid 1px rgba(0, 0, 0, 0.2);
     text-indent: 0;
     color: #fff;
+    color: var(--inputs-mainaction-text-color);
     font-weight: bold;
     font-size: 13px;
     width: 125px;
@@ -15,8 +16,6 @@
 #mel_envoi_differe {
 	max-width: 150px;
 }
-
-
 
 /*Affichage du dialog*/
 body.envoidiffere {
@@ -45,17 +44,13 @@ body.envoidiffere {
 #envoidiffere-details .warning {
     margin-top: 5px;
     padding: 10px 15px;
+    color: var(--box-warning-text-color);
     border: 1px solid #d8cebc;
+    border-color: var(--box-warning-border-color);
     background-color: #ffe1e0;
+    background-color: var(--box-warning-bg-color);
 }
 
 #envoidiffere-details .margin {
     margin-top: 30px;
-}
-
-@media (prefers-color-scheme: dark) {
-    #envoidiffere-details .warning {
-        border: 1px solid #604141;
-        background-color: #6e1010;
-    }
 }

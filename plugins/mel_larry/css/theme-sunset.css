@@ -62,6 +62,10 @@ html {
     --content-bg-color: #303335;
     --main-content-bg-color: #3e4042;
     --content-border-color: var(--global-border-color);
+
+    --box-warning-bg-color: #6e1010;
+    --box-warning-border-color: #604141;
+    --box-warning-text-color: #fff;
     
     --listbox-text-color: var(--global-text-color);
     --listbox-bg-color: #303335;

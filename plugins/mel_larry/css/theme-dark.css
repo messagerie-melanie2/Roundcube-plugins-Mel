@@ -64,6 +64,10 @@
     --subsublistitem-selected-text-color: var(--global-text-color);
     --subsublistitem-selected-bg-color: #1d1d1d;
 
+    --box-warning-bg-color: #6e1010;
+    --box-warning-border-color: #604141;
+    --box-warning-text-color: #fff;
+
     --box-text-color: var(--global-text-color);
     --box-bg-color: #1d1d1d;
 

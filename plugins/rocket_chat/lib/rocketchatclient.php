@@ -100,6 +100,7 @@ class RocketChatClient {
   const CHANEL_CREATE = "channels.create";
   const CHANEL_SET_TYPE = "channels.setType";
   const CHANEL_INVITE = "channels.invite";
+  const GROUP_INVITE = "groups.invite";
   const CHANEL_COUNT = "channels.counters";
   /**
    * Relative API URL
@@ -396,9 +397,13 @@ class RocketChatClient {
    *
    * @return string
    */
-  public function getUserId() {
-    return $this->_user_id;
+  public function getUserId($username = null) {
+    if ($username === null)
+      return $this->_user_id;
+    else
+      return $this->userInfo($username)["id"];
   }
+
   /**
    * Setter User Id
    *
@@ -457,9 +462,9 @@ class RocketChatClient {
     return $result;
   }
 
-  public function add_users($channel, $users)
+  public function add_users($channel, $users, $private = false)
   {
-  
+    $private = $private ? $this->_api_url.self::GROUP_INVITE : $this->_api_url.self::CHANEL_INVITE;
     $headers = array(
         "X-Auth-Token: " . $this->getAuthToken(),
         "X-User-Id: " . $this->getUserId(),
@@ -470,9 +475,9 @@ class RocketChatClient {
     for ($i=0; $i < $size; ++$i) { 
       $params = array(
         "roomId" => $channel,
-        "userId" => $users[$i]
+        "userId" => $this->getUserId($users[$i])
       );
-      $results[] = $this->_post_url($this->_api_url.self::CHANEL_INVITE, $params, null, $headers);
+      $results[] = $this->_post_url($private, $params, null, $headers);
     }
     return $results;
 

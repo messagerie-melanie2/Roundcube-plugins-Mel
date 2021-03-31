@@ -70,6 +70,23 @@ $(document).ready(() => {
                 return rcmail.get_task_url((task + tmp), window.location.origin + window.location.pathname);
             }    
         }
+        get_input_mail_search(id = '')
+        {
+            let html = "Participants<span class=red-star></span>";
+            html += '<div class="input-group">';
+		    html += '<textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>';
+            html += '<ul id="wspf" class="form-control recipient-input ac-input rounded-left">'
+                                /* <li class="recipient">
+                                    <span class="name">delphin.tommy@gmail.com</span>
+                                    <span class="email">,</span>
+                                    <a class="button icon remove"></a></li> */
+            html += '<li class="input"><input id="'+id+'" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
+			html += '<span class="input-group-append">';
+		    html += `<a href="#add-contact" onclick="m_mp_openTo()" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
+			html +=	'			</span>';
+			html += '			</div>';
+            return html;
+        }
     }
     
 

@@ -36,9 +36,15 @@
                 rcmail.clear_messages();
             }
         }
+        is_busy()
+        {
+            return rcmail.is_busy;
+        }
 
         changeColor(element)
         {
+            if (this.is_busy())
+                return;
             this.busy();
             let color;
             if (typeof element === "string")
@@ -68,6 +74,54 @@
             });
         }
 
+        add_user()
+        {
+            if (this.is_busy())
+                return;
+            if (Workspace_Param.PopUp !== undefined)
+                delete Workspace_Param.PopUp;
+            const config = new GlobalModalConfig("Ajouter un utilisateur",
+            "default",
+            MEL_ELASTIC_UI.get_input_mail_search("tmp-id-wsp"),
+            null,
+            "default",
+            "default",
+                () => {
+                    let tmp = new Workspace_Param(rcmail.env.current_workspace_uid);
+                    tmp.save_users();
+                }
+            );
+            Workspace_Param.PopUp = new GlobalModal("globalModal", config, true);
+            Workspace_Param.PopUp.input = $("#tmp-id-wsp");
+            rcmail.init_address_input_events($("#tmp-id-wsp"));
+        }
+
+        save_users()
+        {
+            this.busy();
+            let users = [];
+            let input = Workspace_Param.PopUp.input;
+            //console.log("auto", input.val(), input);
+            if (input.val() !== "")
+            {
+                input.val(input.val() + ",");
+                m_mp_autocoplete(input[0]);
+            }
+            $(".workspace-recipient").each((i,e) => {
+                users.push($(e).find(".email").html());
+                //console.log("auto -rec",e, $(e), $(e).find(".email"), $(e).find(".email").html());
+            });
+            Workspace_Param.PopUp.close();
+            delete Workspace_Param.PopUp;
+            console.log("auto", users);
+            return this.ajax(this.url("PARAMS_add_users"), {
+                _users:users,
+                _uid:this.uid
+            }).always(() => {
+                this.busy(false);
+            });
+        }
+
 
 
     }
@@ -77,6 +131,7 @@
         rcmail.addEventListener("init", () => {
             rcmail.env.WSP_Param = new Workspace_Param(rcmail.env.current_workspace_uid);
             rcmail.register_command('workspace.changeColor', (x) => rcmail.env.WSP_Param.changeColor(x), true);
+            rcmail.register_command('workspace.add_users', () => rcmail.env.WSP_Param.add_user(), true);
         })
     })
 

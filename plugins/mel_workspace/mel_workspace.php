@@ -84,6 +84,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('index', array($this, 'index'));
         $this->register_action('workspace', array($this, 'show_workspace'));
         $this->register_action('PARAM_Change_color', array($this, 'change_color'));
+        $this->register_action('PARAMS_add_users', array($this, 'add_users'));
+        //add_users
     }
 
     function load_workspaces()
@@ -279,7 +281,7 @@ class mel_workspace extends rcube_plugin
         {
             $html_tmp .= "Crée par ".$this->currentWorkspace->creator."<br/>Mise à jours : ".$this->currentWorkspace->modified;
         }
-        $action = $exists ? "invite" : "join";
+        $action = $exists ? "rcmail.command('workspace.add_users')" : "join";
         $text = $exists ? "Inviter" : "Rejoindre";
         $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
         $html_tmp.= "</div>";
@@ -577,28 +579,38 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
-    function create_services(&$workspace,$services)
+    function create_services(&$workspace,$services, $users = null, $update_wsp = true)
     {
-        $services = $this->create_tasklist($workspace,$services);
-        $services = $this->create_agenda($workspace, $services);
+        if ($users === null)
+        {
+            $map = function($value) {
+                return $value->user;
+            };
+            $users = array_map($map, $workspace->shares);
+        }
+        $services = $this->create_tasklist($workspace,$services, $users, $update_wsp);
+        $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
         return $services;
     }
 
-    function create_tasklist(&$workspace,$services)
+    function create_tasklist(&$workspace,$services, $users, $update_wsp)
     {
         $tasks = 'tasks';
         if (array_search($tasks, $services) === false)
             return $services;
         include_once "../mel_moncompte/ressources/tasks.php";
         $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
-        if ($mel->createTaskslist($workspace->title))
+        if (!$update_wsp || $mel->createTaskslist($workspace->title))
         {
-            foreach ($workspace->shares as $s)
+            foreach ($users as $s)
             {
-                $mel->setAcl($s->user, ["w"]);
+                $mel->setAcl($s, ["w"]);
             }
-            $taskslist = $mel->getTaskslist();
-            $this->save_object($workspace, $tasks, $taskslist->id);
+            if ($update_wsp)
+            {
+                $taskslist = $mel->getTaskslist();
+                $this->save_object($workspace, $tasks, $taskslist->id);
+            }
         }
         
         $key = array_search($tasks, $services);
@@ -606,20 +618,19 @@ class mel_workspace extends rcube_plugin
         return $services;
     }
 
-    function create_agenda(&$workspace, $services)
+    function create_agenda(&$workspace, $services, $users, $update_wsp)
     {
         $agenda = "calendar";
         //if (array_search($agenda, $services) === false)
             //return $services;
         include_once "lib/mel_utils.php";
         $color = $this->get_setting($workspace, "color");
-        $users = [];
-        foreach ($workspace->shares as $s)
+        foreach ($users as $s)
         {
-            mel_utils::cal_add_category($s->user, "ws#".$workspace->uid, $color);
-            $users[] = $s->user;
+            mel_utils::cal_add_category($s, "ws#".$workspace->uid, $color);
         }
-        $this->save_object($workspace, $agenda, !(array_search($agenda, $services) === false));
+        if ($update_wsp)
+            $this->save_object($workspace, $agenda, !(array_search($agenda, $services) === false));
         $key = array_search($agenda, $services);
         unset($services[$key]);
         return $services;
@@ -872,13 +883,74 @@ class mel_workspace extends rcube_plugin
 
     function update_setting($uid, $key, $value)
     {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
         $workspace->uid = $uid;
         $workspace->load();
         $this->add_setting($workspace, $key, $value);
         $workspace->save();  
         return $workspace; 
+    }
+
+    function add_users()
+    {
+        //get input
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
+        //get users
+        $count = count($users);
+        $tmp_users = $users;
+        $users = [];
+        foreach ($tmp_users as $key => $value) {
+            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value)->uid;
+            if ($tmp_user !== null)
+                $users[] = $tmp_user;
+        }
+        if (count($users) === 0)
+        {
+            echo "no one was found";
+            exit;
+        }
+        else {
+            //get workspace
+            $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+            $workspace->uid = $uid;
+            $workspace->load();
+            //get services
+            $channel = "ariane";
+            $agenda = "calendar";
+            $tasks = "tasks";
+            $cloud = "cloud";
+            $services = [];
+            if ($this->get_object($workspace, $agenda) === true)
+                $exists[] = $agenda;
+            if ($this->get_object($workspace, $tasks) !== null)
+                $exists[] = $tasks;
+            if ($this->get_object($workspace, $channel) !== null)
+                $exists[] = $channel;
+            //update share
+            $shares = $workspace->shares;
+            $count = count($users);
+            for ($i=0; $i < $count; ++$i) { 
+                $share = driver_mel::gi()->workspace_share([$workspace]);
+                $share->user = $users[$i];
+                $share->rights = Share::RIGHT_WRITE;
+                $shares[] = $share;                              
+            }
+            $workspace->shares = $shares;
+            //update services
+            $this->create_services($workspace, $exists, $users, false);
+            //update channel
+            if (!(array_search($channel, $exists) === false))
+            {
+                $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                $rocket->add_users($users, $this->get_object($workspace, $channel)->id, $workspace->ispublic === 0 ? true : false);
+            }
+            //save
+            $workspace->save();
+            //end
+            echo "";
+            exit;
+        }
     }
 
 }

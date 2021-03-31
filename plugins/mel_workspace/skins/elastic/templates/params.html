@@ -6,14 +6,14 @@
         onchange="rcmail.command('workspace.changeColor',this)"
         />
     </div>
-    <div class='row' style="margin-top:5px">
-        <div class="col-6">
-            <button class="btn btn-primary btn-block">Ajouter un utilisateur</button>
-        </div>
+    <!-- <div class='row' style="margin-top:5px">
+        <div class="col-6"> -->
+            <button style="margin-top:5px" class="btn btn-primary " onclick="rcmail.command('workspace.add_users')">Ajouter un utilisateur</button>
+        <!-- </div>
         <div class="col-6">
             <button class="btn btn-warning btn-block">Supprimer un utilisateur</button>
         </div>
-    </div>
+    </div> -->
     <div>
         <users-rights/>
     </div>

@@ -131,7 +131,7 @@ function m_mp_createworskpace_steps()
                                     <span class="name">delphin.tommy@gmail.com</span>
                                     <span class="email">,</span>
                                     <a class="button icon remove"></a></li> */
-            html += '<li class="input"><input id="workspace-user-list" onchange="m_mp_autocoplete()" oninput="m_mp_autocoplete()" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
+            html += '<li class="input"><input id="workspace-user-list" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
 			html += '<span class="input-group-append">';
 		    html += `<a href="#add-contact" onclick="m_mp_openTo()" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
 			html +=	'			</span>';
@@ -342,7 +342,7 @@ async function m_mp_check_w(step, next)
                 if($("#workspace-user-list").val() !== "")
                 {
                     $("#workspace-user-list").val($("#workspace-user-list").val() + ",");
-                    m_mp_autocoplete();
+                    m_mp_autocoplete($("#workspace-user-list"));
                 }
             }
             break;
@@ -516,9 +516,11 @@ function m_mp_UpdateWorkspace_type(event, element)
     document.activeElement.blur();
 }
 
-function m_mp_autocoplete()
+function m_mp_autocoplete(element)
 {//<span class="name">delphin.tommy@gmail.com</span>
-   let val = $("#workspace-user-list").val();
+   element = "#" + element.id;
+   console.log("auto", element, $(element));
+   let val = $(element).val();
    if (val.includes(',')) 
    {
        val = val.replace(",", "");
@@ -541,13 +543,13 @@ function m_mp_autocoplete()
         html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
     html += "</li>";
     $("#wspf").append(html);
-    $("#workspace-user-list").val("");
-    //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $("#workspace-user-list").parent()[0].outerHTML);
-    html = $("#workspace-user-list").parent()[0].outerHTML;
-    $("#workspace-user-list").parent().remove();
+    $(element).val("");
+    //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
+    html = $(element).parent()[0].outerHTML;
+    $(element).parent().remove();
     $("#wspf").append(html);
-    rcmail.init_address_input_events($("#workspace-user-list"));
-    $("#workspace-user-list").focus();
+    rcmail.init_address_input_events($(element));
+    $(element).focus();
    }
 }
 

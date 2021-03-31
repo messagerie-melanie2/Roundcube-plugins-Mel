@@ -85,6 +85,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('workspace', array($this, 'show_workspace'));
         $this->register_action('PARAM_Change_color', array($this, 'change_color'));
         $this->register_action('PARAMS_add_users', array($this, 'add_users'));
+        $this->register_action('PARAMS_update_user_table_rights', array($this, 'update_user_table_rights'));
+        $this->register_action('PARAMS_update_user_rights', array($this, 'update_user_rights'));
         //add_users
     }
 
@@ -226,7 +228,8 @@ class mel_workspace extends rcube_plugin
             $html .= html::div(["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");
         // if ($this->get_object($this->currentWorkspace, $cloud) !== null)
         //     $html = "";
-        $html .= html::div(["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span>");
+        if (self::is_admin($this->currentWorkspace, driver_mel::gi()->getUser()->uid))
+            $html .= html::div(["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span>");
         return $html;//html::div(["class" => "wsp-toolbar"], $html);
     }
 
@@ -460,13 +463,51 @@ class mel_workspace extends rcube_plugin
         if ($user_rights === "l")
             $html = str_replace("<users-rights/>", "", $html);
         else
-            $html = str_replace("<users-rights/>", "", $html); 
+            $html = str_replace("<users-rights/>", $this->setup_params_rights($this->currentWorkspace), $html); 
         $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
         if ($user_rights === Share::RIGHT_OWNER)
             $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px">Supprimer l\'espace de travail</button>', $html);
         else
             $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px">Quitter l\'espace de travail</button>', $html);
         return $html;
+    }
+
+    function setup_params_rights($workspace)
+    {
+        $icons_rights = [
+            Share::RIGHT_OWNER => "icofont-crown",
+            Share::RIGHT_WRITE => "icofont-pencil-alt-2"
+        ];
+
+        $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
+        $html .= '<tr><td>Utilisateur</td><td>Droits d\'accès</td><td>Supprimer</td></tr>';
+        foreach ($workspace->shares as $key => $value) {
+            $html .= "<tr>";
+            $html .= "<td>".$value->user."</td>";
+            $html .= "<td>".$this->setup_params_value($icons_rights, $value->rights,$value->user)."</td>";
+            $html .= "<td>Supprimer</td>";
+            $html .= "</tr>";
+        }
+        $html .= "</table>";
+        return $html;
+    }
+
+    function setup_params_value($icons, $rights, $user)
+    {
+        $options = json_encode($icons);
+        $options = str_replace('"', "¤¤¤", $options);
+        $classes = [];
+        foreach ($icons as $key => $value) {
+            $classes[$key] = $key;
+        }
+        $classes = str_replace('"', "¤¤¤", json_encode($classes));
+        return '<button type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
+        // $html = '<select class=" pretty-select" >';
+        // foreach ($icons as $key => $value) {
+        //     $html .= '<option class=icofont-home value="'.$key.'" '.($key === $rights ? "selected" : "")." ></option>";
+        // }
+        // $html .= "</select>";
+        // return $html;
     }
         /**
      * Récupère le css utile pour ce plugin.
@@ -712,6 +753,20 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
+    public static function is_admin($workspace, $username)
+    {
+        $user = $workspace->shares[$username];
+        if ($user !== null)
+            return $user->rights === Share::RIGHT_OWNER;
+        else
+            return false;
+    }
+
+    public static function is_in_workspace($workspace, $username)
+    {
+        return isset($workspace->shares[$username]);
+    }
+
     public static function generate_uid($title)
     {
         $max = 35;
@@ -951,6 +1006,35 @@ class mel_workspace extends rcube_plugin
             echo "";
             exit;
         }
+    }
+
+    function update_user_rights()
+    {
+        try {
+            $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+            $user = rcube_utils::get_input_value("_id", rcube_utils::INPUT_POST);
+            $new_right = rcube_utils::get_input_value("_right", rcube_utils::INPUT_POST);
+            $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+            $workspace->uid = $uid;
+            $workspace->load();
+            $workspace->shares[$user]->rights = $new_right;
+            $workspace->save();
+            if ($user === driver_mel::gi()->getUser()->uid)
+                echo "reload";
+        } catch (\Throwable $th) {
+            echo "error";
+        }
+        exit;
+    }
+
+    function update_user_table_rights()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+        $workspace->uid = $uid;
+        $workspace->load();
+        echo $this->setup_params_rights($workspace);
+        exit;
     }
 
 }

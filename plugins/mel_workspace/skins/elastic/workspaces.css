@@ -373,6 +373,47 @@ separate{
     filter: saturate(7);
 }
 
+.btn.btn-primary.o,
+.btn.btn-primary.w
+{
+    background-color:white;
+    transition: all 0.1s ease-in;
+    border-color:#ced4da;
+}
+
+.btn.btn-primary.o:hover,
+.btn.btn-primary.w:hover
+{
+    background-color:#484D7A;
+    border-color: #363A5B;
+}
+
+.btn.btn-primary.o
+{
+    color:#FDCF42;
+}
+
+.btn.btn-primary.w
+{
+    color:initial;
+}
+
+.btn.btn-primary.w:hover
+{
+    color:white;
+}
+
+.btn.btn-primary.o.active{
+    color:#FDCF42;  
+}
+
+.btn.btn-primary.o.active,
+.btn.btn-primary.w.active
+{
+    background-color:#484D7A;
+    border-color: #363A5B;
+    pointer-events: none;
+}
 
 /* .swp-agenda-date
 {

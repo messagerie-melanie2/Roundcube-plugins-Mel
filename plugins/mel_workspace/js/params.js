@@ -118,7 +118,55 @@
                 _users:users,
                 _uid:this.uid
             }).always(() => {
+                return this.ajax(this.url("PARAMS_update_user_table_rights"), {
+                    _uid:this.uid
+                }, this.update_table).always(() => {
+                    this.busy(false);
+                    MEL_ELASTIC_UI.update();
+                });
+            });
+        }
+        update_table(html)
+        {
+            $("#wsp-user-rights").parent().html(html);
+        }
+        update_user_right(value)
+        {
+            this.busy();
+            $(".btn-u-r").addClass("disabled").attr("disabled", "disabled");
+            value = value.split(":");
+            const user = value[1];
+            value = value[0];
+            return this.ajax(this.url("PARAMS_update_user_rights"), {
+                _uid:this.uid,
+                _id:user,
+                _right:value
+            },
+            (datas) => {
+                switch (datas) {
+                    case "reload":
+                        window.location.reload();
+                        return;
+                    case "error":
+                        $(".btn-u-r").each((i,e) => {
+                            if ($(e).data("onchange").includes(user))
+                                MEL_ELASTIC_UI.setValue((value === "o" ? "w" : "o"), $(e));
+                        });
+                        return;
+                    default:
+                        break;
+                }
                 this.busy(false);
+                $(".btn-u-r").removeClass("disabled").removeAttr("disabled");
+            },
+            (a,b,c) => {
+                console.error("###[update_user_right]",a,b,c);
+                $(".btn-u-r").each((i,e) => {
+                    if ($(e).data("onchange").includes(user))
+                        MEL_ELASTIC_UI.setValue((value === "o" ? "w" : "o"), $(e));
+                });
+                this.busy(false);
+                $(".btn-u-r").removeClass("disabled").removeAttr("disabled");
             });
         }
 
@@ -132,6 +180,7 @@
             rcmail.env.WSP_Param = new Workspace_Param(rcmail.env.current_workspace_uid);
             rcmail.register_command('workspace.changeColor', (x) => rcmail.env.WSP_Param.changeColor(x), true);
             rcmail.register_command('workspace.add_users', () => rcmail.env.WSP_Param.add_user(), true);
+            rcmail.register_command('workspace.update_user', (x) => rcmail.env.WSP_Param.update_user_right(x), true);
         })
     })
 

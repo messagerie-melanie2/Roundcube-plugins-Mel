@@ -755,3 +755,9 @@ div{
   ::-webkit-scrollbar-thumb:hover {
     background: #070B2D;
   } 
+
+.mel-selected-content-button
+{
+    border-radius: 0;
+    min-width: 50px;
+}

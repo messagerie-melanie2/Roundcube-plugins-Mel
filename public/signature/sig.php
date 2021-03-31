@@ -123,12 +123,12 @@ function get_default_image($dn, $images) {
 function logo() {
   global $user, $rcmail_config, $sources;
   $html = '<select name="signaturelogo" class="browser-default" id="input-logo" onchange="onInputChange();">';
-  $default_image = str_replace('.gif', '.jpg', get_default_image($user->dn, $rcmail_config['signature_default_image']));
+  $default_image = str_replace('.gif', '.png', get_default_image($user->dn, $rcmail_config['signature_default_image']));
   foreach ($rcmail_config['signature_images'] as $name => $logo) {
     if (is_array($logo)) {
       $logo_html = "";
       foreach ($logo as $n => $l) {
-        $l = str_replace('.gif', '.jpg', $l);
+        $l = str_replace('.gif', '.png', $l);
         if ($default_image == $l) {
           $logo_html .= '<option value="'.$l.'" selected="selected">'.$n.'</option>';
         }
@@ -140,7 +140,7 @@ function logo() {
       $html .= '<optgroup label="'.$name.'">'.$logo_html.'</optgroup>';
     }
     else {
-      $logo = str_replace('.gif', '.jpg', $logo);
+      $logo = str_replace('.gif', '.png', $logo);
       if ($default_image == $logo) {
         $html .= '<option value="'.$logo.'" selected="selected">'.$name.'</option>';
       }
@@ -150,8 +150,8 @@ function logo() {
       $sources[$logo] = image_data($logo);
     }
   }
-  $sources[$rcmail_config['signature_image_marianne']] = image_data(str_replace('.gif', '.jpg', $rcmail_config['signature_image_marianne']));
-  $sources[$rcmail_config['signature_image_devise']] = image_data(str_replace('.gif', '.jpg', $rcmail_config['signature_image_devise']));
+  $sources[$rcmail_config['signature_image_marianne']] = image_data(str_replace('.gif', '.png', $rcmail_config['signature_image_marianne']));
+  $sources[$rcmail_config['signature_image_devise']] = image_data(str_replace('.gif', '.png', $rcmail_config['signature_image_devise']));
   $html .= '</select>';
   return $html;
 }
@@ -294,8 +294,8 @@ else {
             <div class="action">
               <button type="submit" class="waves-effect waves-light btn" id="modify-signature" title="Utilisez ce bouton pour éditer les champs de la signature" onclick="modify_signature();">Éditer la signature</button>
               <button type="submit" class="waves-effect waves-light btn" id="copy-to-clipboard" title="Utilisez ce bouton pour copier le code généré de la signature afin de le coller dans la configuration de votre outil de messagerie" onclick="copy_signature();">Copier la signature</button>
-              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook" onclick="download_signature_outlook_zip();">Télécharger la signature zip (Outlook)</button>
-              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook" onclick="download_signature_outlook_htm();">Télécharger la signature htm (Outlook)</button>
+              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook 2016 ou 2019" onclick="download_signature_outlook_htm();">Télécharger la signature pour Outlook 2016/2019</button>
+              <button type="submit" class="waves-effect waves-light btn" id="download-signature" title="Utilisez ce bouton pour télécharger le fichier de signature pour l'intégrer au client Outlook 2013" onclick="download_signature_outlook_zip();">Télécharger la signature pour Outlook 2013</button>
             </div>
           </div>
           <div class="userinfos">
@@ -350,22 +350,36 @@ else {
             </div>
           </div>
         </div>
-        <div class="row bloc_exp">
+        <div id="outlook2016" class="row bloc_exp">
           <div class="col s12">
-            <p>Pour ajouter une signature html dans Outlook :</p>
+            <p>Pour ajouter une signature html dans Outlook 2016/2019 :</p>
           </div>
           <div class="col s12">
             <ol>
-              <li>Cliquez sur le bouton "Télécharger la signature (Outlook)"</li>
+              <li>Cliquez sur le bouton "Télécharger la signature pour Outlook 2016/2019"</li>
               <li>Enregistrez le fichier sous : C:\Users\[votre utilisateur]\AppData\Roaming\Microsoft\Signatures\</li>
-              <li>Faites un clic droit sur le fichier signature.zip et "Extraire ici"</li>
               <li>Ouvrez Outlook et allez dans les Options puis cliquez sur le bouton Signatures</li>
               <li>Vous devez retrouver votre signature générée</li>
             </ol>
             <br />
           </div>
         </div>
-
+        <div id="outlook2013" class="row bloc_exp">
+          <div class="col s12">
+            <p>Pour ajouter une signature html dans Outlook 2013 :</p>
+          </div>
+          <div class="col s12">
+            <ol>
+              <li>Cliquez sur le bouton "Télécharger la signature pour Outlook 2013"</li>
+              <li>Enregistrez le fichier sous : C:\Users\[votre utilisateur]\AppData\Roaming\Microsoft\Signatures\</li>
+              <li>Faites un clic droit sur le fichier signature.zip et "Extraire ici"</li>
+              <li>Ouvrez Outlook et allez dans les Options puis cliquez sur le bouton Signatures</li>
+              <li>Vous devez retrouver votre signature générée</li>
+              <li>Attention: Si votre signature ne convient pas les images lors de l'envoi merci de suivre les instructions du <a target="_blank" href="https://support.microsoft.com/en-us/topic/inline-images-may-display-as-a-red-x-in-outlook-704ae8b5-b9b6-d784-2bdf-ffd96050dfd6" title="Support Microsoft">support Microsoft</a></li>
+            </ol>
+            <br />
+          </div>
+        </div>
         <div class="row">
           <div class="col s12">
             <div class="card-action">

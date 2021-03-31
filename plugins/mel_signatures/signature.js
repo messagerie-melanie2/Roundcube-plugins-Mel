@@ -118,6 +118,7 @@ function download_signature_outlook_htm() {
     html += '</body>';
     html += '</html>';
     download('signature.htm', html);
+    window.location.hash = "#outlook2016";
 }
 
 /**
@@ -154,6 +155,7 @@ function download_signature_outlook_zip() {
         .then(function(content) {
             download('signature.zip', content, 'data:application/zip;base64');
         });
+    window.location.hash = "#outlook2013";
 }
 
 /**
@@ -277,11 +279,11 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     let select = document.getElementById("input-logo");
     if (embeddedImage) {
         signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', 
-                createImage(rcmail.env.logo_sources[select.value], select.options[select.selectedIndex].text, isOutlook));
+                createImage(rcmail.env.logo_sources[select.value], select.options[select.selectedIndex].text, isOutlook, 'logo'));
     }
     else {
         signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', 
-                createImage(images_url + select.value, select.options[select.selectedIndex].text, isOutlook));
+                createImage(images_url + select.value, select.options[select.selectedIndex].text, isOutlook, 'logo'));
     }
 
     // Logo Marianne
@@ -289,14 +291,14 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     if (rcmail.env.logo_sources[logo_marianne]) {
         if (embeddedImage) {
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
-                    createImage(rcmail.env.logo_sources[logo_marianne], 'Marianne', isOutlook));
+                    createImage(rcmail.env.logo_sources[logo_marianne], 'Marianne', isOutlook, 'marianne'));
         }
         else {
             if (isOutlook) {
-                logo_marianne = 'images/marianne.jpg';
+                logo_marianne = 'images/marianne.png';
             }
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
-                    createImage(images_url + logo_marianne, 'Marianne', isOutlook));
+                    createImage(images_url + logo_marianne, 'Marianne', isOutlook, 'marianne'));
         }
     }
 
@@ -305,14 +307,14 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     if (rcmail.env.logo_sources[logo_devise]) {
         if (embeddedImage) {
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
-                    createImage(rcmail.env.logo_sources[logo_devise], 'Liberté, Égalité, Fraternité', isOutlook));
+                    createImage(rcmail.env.logo_sources[logo_devise], 'Liberté, Égalité, Fraternité', isOutlook, 'devise'));
         }
         else {
             if (isOutlook) {
-                logo_devise = 'images/devise.jpg';
+                logo_devise = 'images/devise.png';
             }
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
-                    createImage(images_url + logo_devise, 'Liberté, Égalité, Fraternité', isOutlook));
+                    createImage(images_url + logo_devise, 'Liberté, Égalité, Fraternité', isOutlook, 'devise'));
         }
     }
     
@@ -323,11 +325,19 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
  * Retour le HTML d'une image en fonction de la source et du alt
  * Pour Outlook fourni en plus du vml de l'image
  */
-function createImage(src, alt, isOutlook = false) {
+function createImage(src, alt, isOutlook = false, className = null) {
     let html = '';
     let img = document.createElement('img');
     img.src = src;
     img.alt = alt;
+    if (className) {
+        img.className = className;
+    }
+    // Pour outlook ajouter la taille des images
+    if (isOutlook && $('#signature .' + className).length) {
+        img.width = $('#signature .'+className).width();
+        img.height = $('#signature .'+className).height();
+    }
     
     // if (isOutlook) {
     //     // Pour Outlook ajouter des balise <v:image>

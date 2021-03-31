@@ -334,9 +334,10 @@ function createImage(src, alt, isOutlook = false, className = null) {
         img.className = className;
     }
     // Pour outlook ajouter la taille des images
-    if (isOutlook && $('#signature .' + className).length) {
-        img.width = $('#signature .'+className).width();
-        img.height = $('#signature .'+className).height();
+    document.querySelector('#signature .' + className)
+    if (isOutlook && document.querySelector('#signature .' + className) !== null) {
+        img.width = document.querySelector('#signature .' + className).clientWidth;
+        img.height = document.querySelector('#signature .' + className).clientHeight;
     }
     
     // if (isOutlook) {

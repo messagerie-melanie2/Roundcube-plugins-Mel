@@ -1382,7 +1382,7 @@ class mel_driver extends calendar_driver {
           // Pour une exception ne donner que l'exception
           if (isset($_recurrence_date)) {
             $master = $this->_read_postprocess($_event);
-            $recurrence_date = rcube_utils::anytodatetime("@$_recurrence_date", $master['start']->getTimezone());
+            $recurrence_date = new DateTime(date("Y-m-d H:i:s", $_recurrence_date), $master['start']->getTimezone());
             if (isset($master['recurrence']) 
                 && isset($master['recurrence']['EXCEPTIONS'])
                 && isset($master['recurrence']['EXCEPTIONS'][$event['id']])) {
@@ -1863,7 +1863,7 @@ class mel_driver extends calendar_driver {
     // Parcourir les exceptions
     foreach ($_exceptions as $_exception) {
       if ($_exception->deleted) {
-        $deleted_exceptions[] = new DateTime($_exception->recurrence_id);
+        $deleted_exceptions[] = new DateTime($_exception->recurrence_id, $e['start']->getTimezone());
       }
       else {
         // Génération de l'exception pour Roundcube
@@ -1873,9 +1873,9 @@ class mel_driver extends calendar_driver {
         $e['recurrence_id'] = $_exception->uid;
         $e['recurrence'] = $recurrence;
         $e['_instance'] = $_exception->recurrence_id;
-        $e['recurrence_date'] = rcube_utils::anytodatetime($e['_instance'], $e['start']->getTimezone());
+        $e['recurrence_date'] = new DateTime($e['_instance'], $e['start']->getTimezone());
         $e['isexception'] = 1;
-        $deleted_exceptions[] = new DateTime($_exception->recurrence_id);
+        $deleted_exceptions[] = $e['recurrence_date'];
         $recurrence['EXCEPTIONS'][$e['id']] = $e;
       }
     }

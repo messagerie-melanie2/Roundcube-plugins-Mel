@@ -375,7 +375,7 @@ else {
               <li>Faites un clic droit sur le fichier signature.zip et "Extraire ici"</li>
               <li>Ouvrez Outlook et allez dans les Options puis cliquez sur le bouton Signatures</li>
               <li>Vous devez retrouver votre signature générée</li>
-              <li>Attention: Si votre signature ne convient pas les images lors de l'envoi merci de suivre les instructions du <a target="_blank" href="https://support.microsoft.com/en-us/topic/inline-images-may-display-as-a-red-x-in-outlook-704ae8b5-b9b6-d784-2bdf-ffd96050dfd6" title="Support Microsoft">support Microsoft</a></li>
+              <li>Attention: Si votre signature ne contient pas les images lors de l'envoi merci de suivre les instructions du <a target="_blank" href="https://support.microsoft.com/en-us/topic/inline-images-may-display-as-a-red-x-in-outlook-704ae8b5-b9b6-d784-2bdf-ffd96050dfd6" title="Support Microsoft">support Microsoft</a></li>
             </ol>
             <br />
           </div>

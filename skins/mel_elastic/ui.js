@@ -11,10 +11,33 @@ $(document).ready(() => {
 
     class Mel_Elastic {
         constructor() {
+            Object.defineProperty(this, 'JSON_CHAR_REPLACE', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: '¤¤¤'
+              });
+        
+              Object.defineProperty(this, 'SELECT_VALUE_REPLACE', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: '<value/>'
+              });
+              this.update();
+        }
+        update()
+        {
+            $(".mel-tabheader").unbind('click');
             $(".mel-tabheader").on("click", (e) => {
                 //console.log("MEL_ELASTIC", this, e);
                 this.switchTab(e.currentTarget);
             })
+
+            $(".select-button-mel").unbind('click');
+            $(".select-button-mel").on("click", (e) => {
+                this.generateSelect(e.currentTarget);
+            });
         }
         getRandomColor() {
             var letters = '0123456789ABCDEF';
@@ -23,6 +46,136 @@ $(document).ready(() => {
                 color += letters[Math.floor(Math.random() * 16)];
             }
             return color;
+        }
+        getRect(rect1, rect2)
+        {
+            return {
+                top:rect1.top-rect2.top,
+                left:rect1.left-rect2.left,
+                right:rect1.right-rect2.right,
+                bottom:rect1.bottom-rect2.bottom,
+                rect1:rect1,
+                rect2:rect2
+            };
+        }
+        generateSelect(event)
+        {
+            event = $(event);
+            const rc = typeof event.data("rcmail") === "string" ? event.data("rcmail") === "true" : event.data("rcmail");
+            if (rc)
+            {
+                if (rcmail.is_busy)
+                    return;
+            }
+            //console.log("generateSelect", event.data("options"), typeof event.data("options"), event);
+            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
+            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
+            const update = event.data("event");
+            const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
+            const value = event.data("value");
+            const onchange = event.data("onchange");// = typeof event.data("on") === "string" ? JSON.parse(event.data("on").includes("¤¤¤") ? event.data("on").replaceAll('¤¤¤', '"') : event.data("on")) : event.data("on");
+            //Create selectbox
+            if (event.parent().css("position") !== "relative")
+                event.parent().css("position", "relative");
+            let html = '<div class="btn-group-vertical">';
+            for (const key in options) {
+                if (Object.hasOwnProperty.call(options, key)) {
+                    const element = options[key];
+                    const current_option_class = options_class !== null && options_class !== undefined && options_class[key] !== undefined ? options_class[key] : "";
+                    html += '<button onclick="MEL_ELASTIC_UI.updateSelectValue(`'+key+'`)" class="'+current_option_class+' mel-selected-content-button btn btn-primary '+(value === key ? "active" : "")+'">'+(is_icon ? ("<span class="+element+"></span>") : element)+'</button>'
+                }
+            }
+            html += "</div>";
+            const rect = this.getRect(event[0].getBoundingClientRect(), event.parent()[0].getBoundingClientRect() );
+            html = $(html)
+            .css("position", "absolute")
+            .css("top", rect.top+rect.rect1.height)
+            .css("left", rect.left)
+            .css("z-index", 50)
+            .addClass("mel-select-popup");
+            event.parent().append(html);
+            event.on("focusout", (e) => {
+                console.log("generateSelect",e);
+                if ($(e.relatedTarget).hasClass("mel-selected-content-button"))
+                {
+
+                    $(e.relatedTarget).click();
+                    event.focus();
+                }
+                else
+                    $(".mel-select-popup").remove();
+            });
+            this.tmp_popup = {
+                options:options,
+                options_class:options_class,
+                event:event,
+                is_icon:is_icon,
+                onchange:onchange
+            };
+            // $(document).on("click", (e) => {
+            //     console.log("generateSelect", e, event[0], e.currentTarget === event[0] || $(e.currentTarget).hasClass("mel-select-popup"));
+            //     if (e.currentTarget === event[0] || $(e.currentTarget).hasClass("mel-select-popup"))
+            //         return;
+            //     else {
+            //         $(".mel-select-popup").remove();
+            //     }
+            // });
+        }
+        updateSelectValue(value)
+        {
+            //console.log("generateSelect", value);
+            if (this.tmp_popup !== undefined)
+            {
+                if (this.tmp_popup.event.data("value") === value)
+                {
+                    $(".mel-select-popup").remove();
+                    delete this.tmp_popup;
+                    return;
+                }
+                this.tmp_popup.event.data("value", value).html((this.tmp_popup.is_icon ? ("<span class="+this.tmp_popup.options[value]+"></span>") : this.tmp_popup.options[value]));
+                const options_class = this.tmp_popup.options_class;
+                if (options_class !== null && options_class !== undefined)
+                {
+                    const current_option_class =  options_class[value] !== undefined ? options_class[value] : null;
+                    for (const key in options_class) {
+                        if (Object.hasOwnProperty.call(options_class, key)) {
+                            const element = options_class[key];
+                            this.tmp_popup.event.removeClass(element);
+                        }
+                    }
+                    if (current_option_class !== null)
+                        this.tmp_popup.event.addClass(current_option_class);
+                }
+                $(".mel-select-popup").remove();
+                if (this.tmp_popup.onchange !== null && this.tmp_popup.onchange !== undefined)
+                {
+                    if (this.tmp_popup.onchange.includes("<value/>"))
+                    this.tmp_popup.onchange = this.tmp_popup.onchange.replaceAll("<value/>", value);
+                    if (this.tmp_popup.onchange.includes("MEL_ELASTIC_UI.SELECT_VALUE_REPLACE"))
+                        this.tmp_popup.onchange = this.tmp_popup.onchange.replaceAll("MEL_ELASTIC_UI.SELECT_VALUE_REPLACE", "`" + value + "`");
+                    //console.log('generateSelect', this.tmp_popup.onchange);
+                    eval(this.tmp_popup.onchange);
+                }
+                delete this.tmp_popup;
+            }
+        }
+        setValue(new_value, event)
+        {
+            const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
+            const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
+            const update = event.data("event");
+            const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
+            const value = event.data("value");
+            const onchange = event.data("onchange");
+
+            this.tmp_popup = {
+                options:options,
+                options_class:options_class,
+                event:event,
+                is_icon:is_icon,
+                onchange:onchange
+            };
+            this.updateSelectValue(new_value);
         }
         switchTab(event)
         {
@@ -88,9 +241,9 @@ $(document).ready(() => {
             return html;
         }
     }
-    
 
     window.MEL_ELASTIC_UI = new Mel_Elastic();
+
 
 });
 

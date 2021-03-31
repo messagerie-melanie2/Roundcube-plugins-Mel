@@ -690,7 +690,7 @@ class mel_driver extends calendar_driver {
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
           $recid = explode('@DATE-', $event['id']);
-          $recid = $recid[1];
+          $recid = date('Ymd', $recid[1]);
           if (!$new && isset($exceptions[$recid])) {
             $_exception = $exceptions[$recid];
           }
@@ -1357,10 +1357,6 @@ class mel_driver extends calendar_driver {
         $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
         if (isset($event['uid'])) {
           $_event->uid = $event['uid'];
-          // Récupération d'une instance d'événement
-          if (isset($event['_instance']) && !empty($event['_instance']) && (!isset($event['method']) || $event['method'] != 'CANCEL')) {
-            $_event->uid .= '-' . substr($event['_instance'], 0, 8) . self::RECURRENCE_ID;
-          }
         }
         elseif (isset($event['id'])) {
           $id = $event['id'];
@@ -1374,33 +1370,50 @@ class mel_driver extends calendar_driver {
           else if (strpos($id, self::RECURRENCE_ID) !== false) {
             $id = substr($id, 0, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID));
           }
-          // Récupération d'une instance d'événement
-          if (isset($event['_instance']) && ! empty($event['_instance'])) {
-            $id .= '-' . substr($event['_instance'], 0, 8) . self::RECURRENCE_ID;
-          }
           $_event->uid = $id;
         }
         else {
           return false;
         }
         if ($_event->load()) {
-          $event = $this->_read_postprocess($_event);
+          if (!isset($_recurrence_date) && isset($event['_instance']) && $event['_savemode'] == 'current') {
+            $_recurrence_date = strtotime($event['_instance']);
+          }
+          // Pour une exception ne donner que l'exception
+          if (isset($_recurrence_date)) {
+            $master = $this->_read_postprocess($_event);
+            $recurrence_date = rcube_utils::anytodatetime("@$_recurrence_date", $master['start']->getTimezone());
+            if (isset($master['recurrence']) 
+                && isset($master['recurrence']['EXCEPTIONS'])
+                && isset($master['recurrence']['EXCEPTIONS'][$event['id']])) {
+              $result = $master['recurrence']['EXCEPTIONS'][$event['id']];
+              unset($result['recurrence']);
+            }
+            else {
+              $result = $master;
+              $result['id'] = $event['id'];
+              if (isset($event['_instance'])) {
+                $result['_instance'] = $event['_instance'];
+              }
+            }
+            $result['recurrence_date'] = $recurrence_date;
+          }
+          else {
+            $result = $this->_read_postprocess($_event);
+          }
 
           if (isset($_comment)) {
-            $event['_comment'] = $_comment;
+            $result['_comment'] = $_comment;
           }
           if (isset($_identity)) {
-            $event['_identity'] = $_identity;
-          }
-          if (isset($_recurrence_date)) {
-            $event['recurrence_date'] = rcube_utils::anytodatetime("@$_recurrence_date", $event['start']->getTimezone());
+            $result['_identity'] = $_identity;
           }
 
-          $attachments = ( array ) $this->list_attachments($_event);
+          $attachments = (array)$this->list_attachments($_event);
           if (count($attachments) > 0) {
-            $event['attachments'] = $attachments;
+            $result['attachments'] = $attachments;
           }
-          return $event;
+          return $result;
         }
       }
       else {
@@ -1856,7 +1869,7 @@ class mel_driver extends calendar_driver {
         // Génération de l'exception pour Roundcube
         // Ce tableau est ensuite dépilé pour être intégré a la liste des évènements
         $e = $this->_read_postprocess($_exception, null, true);
-        $e['id'] = $_exception->realuid;
+        $e['id'] = $_exception->uid . '@DATE-' . strtotime($_exception->recurrence_id);
         $e['recurrence_id'] = $_exception->uid;
         $e['recurrence'] = $recurrence;
         $e['_instance'] = $_exception->recurrence_id;

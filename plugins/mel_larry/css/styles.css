@@ -1841,7 +1841,7 @@ select.decorated option {
 	-webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: var(--popup-box-sahdow);
 	padding: 5px;
-	z-index: 90;
+	z-index: 1000;
 }
 
 #listselectmenu,

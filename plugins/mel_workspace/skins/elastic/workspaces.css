@@ -415,6 +415,16 @@ separate{
     pointer-events: none;
 }
 
+.wsp-toolbar-item:hover > .mel-return, 
+.wsp-toolbar-item.active > .mel-return
+{
+    color:white;
+}
+.wsp-toolbar-item:hover > .mel-return:hover, 
+.wsp-toolbar-item.active > .mel-return:hover
+{
+    color:white;
+}
 /* .swp-agenda-date
 {
     white-space: nowrap;

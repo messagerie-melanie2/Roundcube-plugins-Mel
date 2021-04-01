@@ -13,6 +13,43 @@
                 UpdateMenu(datas.class, datas.picture, datas.toolbar);
                 break;
             case "ChangeFrame":
+                if (metapage_frames.workspace === undefined)
+                {
+                    metapage_frames.workspace = false;
+                    metapage_frames.addEvent("changepage.before", (eClass) => {
+                        console.log("addEvent", $(".tiny-wsp-menu"));
+                        if ($(".tiny-wsp-menu").length > 0 && $(".tiny-wsp-menu").css("display") !== "none")
+                        {
+                            console.log("test");
+                            try {
+                                //$(".tiny-rocket-chat").css("display", "block");
+                                console.log("test", $(".wsp-toolbar-edited").css("display") !== "none");
+                                $(".tiny-wsp-menu").css("display", "none")
+                                .data("toolbaropen", $(".wsp-toolbar-edited").css("display") !== "none")
+                                .data("lastopenedframe", rcmail.env.wsp_datas.toolbar.current);
+                                $(".wsp-toolbar-edited").css("display", "none");               
+                            } catch (error) {
+                                console.error(error);
+                            }
+                            console.log("addEvent", $(".tiny-wsp-menu"));
+                            metapage_frames.workspace = true;
+                        }
+                    });
+                    metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
+                        if (metapage_frames.workspace === true && eClass === "workspace")
+                        {
+                            $(".tiny-wsp-menu").css("display", "");
+                            $(".tiny-rocket-chat").css("display", "none");
+                            const lastFrame = $(".tiny-wsp-menu").data("lastopenedframe");
+                            const toolbaropen = $(".tiny-wsp-menu").data("toolbaropen");
+                            console.log("test", toolbaropen, lastFrame);
+                            if (toolbaropen)
+                                $(".wsp-toolbar-edited").css("display", "");
+                            ChangeFrame(lastFrame);
+                            metapage_frames.workspace = false;
+                        }
+                    });
+                }
                 switch (datas) {
                     case "rocket":
                         ChangeFrame(datas, event.data.url);
@@ -247,7 +284,30 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                 }
             );
             break;
-            
+        case "back":
+            datas.push({
+                exec_info:"change_environnement",
+                datas:"inpage"
+            })
+            datas.push({
+                exec_info:"UpdateMenu",
+                datas:{
+                    class:"inpage",
+                    picture:{
+                        color:null,
+                        picture:null
+                    },
+                    toolbar:null
+                }
+            });
+            datas.push(
+                {
+                    exec_info:"ChangePage",
+                    datas:_class
+                }
+            );
+            break;
+                   
         default:
             break;
     }
@@ -318,13 +378,18 @@ async function ChangeToolbarPage(_class)
     //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));
     switch (_class) {
         case "home":
-            $(".wsp-toolbar-item.first").addClass("active");
+            $(".wsp-toolbar-item.wsp-home").addClass("active");
             $(".wsp-home").css("display", "");
             break;
         case "params":
             $(".wsp-toolbar-item.wsp-item-params").addClass("active");
             $(".wsp-params").css("display", "");
             break;
+        case "back":
+            rcmail.set_busy(false);
+            $(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
+            rcmail.command("workspace.go");
+        break;
         default:
             break;
     }

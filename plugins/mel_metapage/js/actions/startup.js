@@ -197,10 +197,13 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true)
 metapage_frames.addEvent("before", (eClass, changepage) => {
     if ($("#layout-frames").length === 0)
         $("#layout").append(`<div id="layout-frames" style="display:none;"></div>`)
-    if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
+    if (changepage)
     {
-        rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
-        rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+        if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
+        {
+            rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
+            rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+        }
     }
 });
 

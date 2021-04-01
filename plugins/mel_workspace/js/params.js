@@ -7,10 +7,14 @@
             this.uid = workspace_id;
         }
 
-        url(action)
+        url(action = null)
         {
-            return MEL_ELASTIC_UI.url("workspace", action);
+            if (action === null)
+                return MEL_ELASTIC_UI.url("workspace");
+            else
+                return MEL_ELASTIC_UI.url("workspace", action);
         }
+
 
         ajax(url, datas = Workspace_Param.data_null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)}, type = "POST")
         {
@@ -118,18 +122,23 @@
                 _users:users,
                 _uid:this.uid
             }).always(() => {
-                return this.ajax(this.url("PARAMS_update_user_table_rights"), {
-                    _uid:this.uid
-                }, this.update_table).always(() => {
-                    this.busy(false);
-                    MEL_ELASTIC_UI.update();
-                });
+                return this.update_user_table();
+            });
+        }
+        update_user_table(func = () => this.busy(false))
+        {
+            return this.ajax(this.url("PARAMS_update_user_table_rights"), {
+                _uid:this.uid
+            }, this.update_table).always(() => {
+                func();
+                MEL_ELASTIC_UI.update();
             });
         }
         update_table(html)
         {
             $("#wsp-user-rights").parent().html(html);
         }
+
         update_user_right(value)
         {
             this.busy();
@@ -170,6 +179,17 @@
             });
         }
 
+        delete_user(user)
+        {
+            this.busy();
+            return this.ajax(this.url("PARAMS_delete_user"), {
+                _uid:this.uid,
+                _user_to_delete:user
+            }).always(() => {
+                return this.update_user_table();
+            })
+        }
+
 
 
     }
@@ -181,6 +201,11 @@
             rcmail.register_command('workspace.changeColor', (x) => rcmail.env.WSP_Param.changeColor(x), true);
             rcmail.register_command('workspace.add_users', () => rcmail.env.WSP_Param.add_user(), true);
             rcmail.register_command('workspace.update_user', (x) => rcmail.env.WSP_Param.update_user_right(x), true);
+            rcmail.register_command('workspace.remove_user', (x) => rcmail.env.WSP_Param.delete_user(x), true);
+            rcmail.register_command('workspace.go', () => {
+                rcmail.env.WSP_Param.busy();
+                window.location.href = rcmail.env.WSP_Param.url()
+            } ,true);
         })
     })
 

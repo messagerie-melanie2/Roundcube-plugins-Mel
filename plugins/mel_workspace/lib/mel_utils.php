@@ -757,6 +757,29 @@ class mel_utils
 
   }
 
+
+  public static function string_to_number($string)
+  {
+    if ($string)
+    {
+      $value = 0;
+      foreach ($string as $key => $value) {
+        $value += char_to_number($value);
+      }
+      return $value;
+    }
+    else 
+      return 0;
+  }
+
+  public static function char_to_number($char)
+  {
+    if ($dest)
+        return ord(strtolower($dest)) - 96;
+    else
+        return 0;
+  }
+
   public static function cal_add_category($username, $name, $color)
   {
     try {

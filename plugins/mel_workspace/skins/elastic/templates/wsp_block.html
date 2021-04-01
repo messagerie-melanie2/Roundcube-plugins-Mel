@@ -2,7 +2,7 @@
     <div class="row">
         <span style="    display: contents;
         cursor: pointer;
-    " onclick="rcmail.set_busy(true, 'loading');window.location.href= '?_task=workspace&_action=workspace&_uid=<workspace-uid/>' + (parent !== window ? '&_from=iframe' : '')">
+    " onclick="rcmail.set_busy(true, 'loading');window.location.href= MEL_ELASTIC_UI.url('workspace','workspace') + '&_uid=<workspace-uid/>' + (parent !== window ? '&_from=iframe' : '')">
         <div class="col-1">
             <workspace-image/>
         </div>

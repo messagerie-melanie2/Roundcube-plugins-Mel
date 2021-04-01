@@ -35,10 +35,10 @@ if (window.rcmail) {
 				//console.log('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
 				try {
 					window.document.getElementById(ariane_id).contentWindow.postMessage({
-						event: 'login-with-token',
-						loginToken: rcmail.env.rocket_chat_auth_token,
+						externalCommand: 'login-with-token',
+						token: rcmail.env.rocket_chat_auth_token,
 						userId: rcmail.env.rocket_chat_user_id
-					}, rcmail.env.rocket_chat_url);
+					}, '*');
 				} catch (error) {
 					console.error(error);
 				}

@@ -87,6 +87,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('PARAMS_add_users', array($this, 'add_users'));
         $this->register_action('PARAMS_update_user_table_rights', array($this, 'update_user_table_rights'));
         $this->register_action('PARAMS_update_user_rights', array($this, 'update_user_rights'));
+        $this->register_action('PARAMS_delete_user', array($this, 'delete_user'));
         //add_users
     }
 
@@ -107,6 +108,23 @@ class mel_workspace extends rcube_plugin
             return 0;
         }
         return ($a->id < $b->id) ? -1 : 1;
+    }
+
+    public function array_sort_users($a, $b)
+    {
+        include_once 'lib/mel_utils.php';
+        if ($a->user == $b->user) {
+            return 0;
+        }
+        if ($a->rights === Share::RIGHT_OWNER)
+            return (mel_utils::string_to_number($a->user) < mel_utils::string_to_number($b->user)) ? -3 : -2;
+        else
+            return (mel_utils::string_to_number($a->user) < mel_utils::string_to_number($b->user)) ? -1 : 1;
+    }
+
+    public function sort_users(&$array)
+    {
+        uasort($array , [$this, "array_sort_users"]);
     }
 
     function index()
@@ -189,6 +207,7 @@ class mel_workspace extends rcube_plugin
     function get_toolbar()
     {
         $icons = [
+            "back" => "icofont-reply mel-return",
             "home" => "icofont-home",
             "discussion" => "icofont-chat",
             "mail" => "icofont-email",
@@ -203,7 +222,8 @@ class mel_workspace extends rcube_plugin
         $tasks = "tasks";
         $cloud = "cloud";
         $uid = $this->currentWorkspace->uid;
-        $html = html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item first active"], "<span class=".$icons["home"]."></span>");
+        $html = html::div(["onclick" => "ChangeToolbar('back', this)", "class" => "wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span>');
+        $html .= html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active"], "<span class=".$icons["home"]."></span>");
         if ($this->get_object($this->currentWorkspace, $agenda) === true)
         {
             $onclick = "ChangeToolbar('calendar', this)";
@@ -286,7 +306,8 @@ class mel_workspace extends rcube_plugin
         }
         $action = $exists ? "rcmail.command('workspace.add_users')" : "join";
         $text = $exists ? "Inviter" : "Rejoindre";
-        $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
+        if ($exists && self::is_admin($this->currentWorkspace))
+            $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
         $html_tmp.= "</div>";
         return html::div(["class" => "row"], $html_tmp);
 
@@ -466,9 +487,9 @@ class mel_workspace extends rcube_plugin
             $html = str_replace("<users-rights/>", $this->setup_params_rights($this->currentWorkspace), $html); 
         $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
         if ($user_rights === Share::RIGHT_OWNER)
-            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px">Supprimer l\'espace de travail</button>', $html);
+            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
         else
-            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px">Quitter l\'espace de travail</button>', $html);
+            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
         return $html;
     }
 
@@ -479,13 +500,19 @@ class mel_workspace extends rcube_plugin
             Share::RIGHT_WRITE => "icofont-pencil-alt-2"
         ];
 
+        $icon_delete = "icofont-trash";
+
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
-        $html .= '<tr><td>Utilisateur</td><td>Droits d\'accès</td><td>Supprimer</td></tr>';
-        foreach ($workspace->shares as $key => $value) {
+        $html .= "<thead>";
+        $html .= '<tr><td>Utilisateur</td><td class="mel-fit-content">Droits d\'accès</td><td class="mel-fit-content">Supprimer</td></tr>';
+        $html .= "</thead>";
+        $share = $workspace->shares;
+        $this->sort_users($share);
+        foreach ($share as $key => $value) {
             $html .= "<tr>";
             $html .= "<td>".$value->user."</td>";
             $html .= "<td>".$this->setup_params_value($icons_rights, $value->rights,$value->user)."</td>";
-            $html .= "<td>Supprimer</td>";
+            $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger"><span class='.$icon_delete.'></span></button></td>';
             $html .= "</tr>";
         }
         $html .= "</table>";
@@ -501,7 +528,7 @@ class mel_workspace extends rcube_plugin
             $classes[$key] = $key;
         }
         $classes = str_replace('"', "¤¤¤", json_encode($classes));
-        return '<button type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
+        return '<button style="float:right"  type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
         // $html = '<select class=" pretty-select" >';
         // foreach ($icons as $key => $value) {
         //     $html .= '<option class=icofont-home value="'.$key.'" '.($key === $rights ? "selected" : "")." ></option>";
@@ -753,18 +780,18 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
-    public static function is_admin($workspace, $username)
+    public static function is_admin($workspace, $username = null)
     {
-        $user = $workspace->shares[$username];
+        $user = $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid];
         if ($user !== null)
             return $user->rights === Share::RIGHT_OWNER;
         else
             return false;
     }
 
-    public static function is_in_workspace($workspace, $username)
+    public static function is_in_workspace($workspace, $username = null)
     {
-        return isset($workspace->shares[$username]);
+        return isset($workspace->shares[$username ?? driver_mel::gi()->getUser()->uid]);
     }
 
     public static function generate_uid($title)
@@ -928,19 +955,27 @@ class mel_workspace extends rcube_plugin
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_POST);
         $workspace = $this->update_setting($uid, "color", $color);
-        foreach ($workspace->shares as $s)
+        if (isset($workspace))
         {
-            mel_utils::cal_update_color($s->user, "ws#".$workspace->uid, $color);
+            foreach ($workspace->shares as $s)
+            {
+                mel_utils::cal_update_color($s->user, "ws#".$workspace->uid, $color);
+            }
+            echo "";
         }
-        echo "";
+        else
+            echo "denied";
         exit;
     }
 
-    function update_setting($uid, $key, $value)
+    function update_setting($uid, $key, $value, $check_if_user_is_admin = false)
     {
-        $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
-        $workspace->uid = $uid;
-        $workspace->load();
+        $workspace = self::get_workspace($uid);
+        if ($check_if_user_is_admin)
+        {
+            if (!self::is_admin($workspace))
+                return null;
+        }
         $this->add_setting($workspace, $key, $value);
         $workspace->save();  
         return $workspace; 
@@ -967,43 +1002,46 @@ class mel_workspace extends rcube_plugin
         }
         else {
             //get workspace
-            $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
-            $workspace->uid = $uid;
-            $workspace->load();
-            //get services
-            $channel = "ariane";
-            $agenda = "calendar";
-            $tasks = "tasks";
-            $cloud = "cloud";
-            $services = [];
-            if ($this->get_object($workspace, $agenda) === true)
-                $exists[] = $agenda;
-            if ($this->get_object($workspace, $tasks) !== null)
-                $exists[] = $tasks;
-            if ($this->get_object($workspace, $channel) !== null)
-                $exists[] = $channel;
-            //update share
-            $shares = $workspace->shares;
-            $count = count($users);
-            for ($i=0; $i < $count; ++$i) { 
-                $share = driver_mel::gi()->workspace_share([$workspace]);
-                $share->user = $users[$i];
-                $share->rights = Share::RIGHT_WRITE;
-                $shares[] = $share;                              
-            }
-            $workspace->shares = $shares;
-            //update services
-            $this->create_services($workspace, $exists, $users, false);
-            //update channel
-            if (!(array_search($channel, $exists) === false))
+            $workspace = self::get_workspace($uid);
+            if (self::is_admin($workspace))
             {
-                $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                $rocket->add_users($users, $this->get_object($workspace, $channel)->id, $workspace->ispublic === 0 ? true : false);
+                //get services
+                $channel = "ariane";
+                $agenda = "calendar";
+                $tasks = "tasks";
+                $cloud = "cloud";
+                $services = [];
+                if ($this->get_object($workspace, $agenda) === true)
+                    $exists[] = $agenda;
+                if ($this->get_object($workspace, $tasks) !== null)
+                    $exists[] = $tasks;
+                if ($this->get_object($workspace, $channel) !== null)
+                    $exists[] = $channel;
+                //update share
+                $shares = $workspace->shares;
+                $count = count($users);
+                for ($i=0; $i < $count; ++$i) { 
+                    $share = driver_mel::gi()->workspace_share([$workspace]);
+                    $share->user = $users[$i];
+                    $share->rights = Share::RIGHT_WRITE;
+                    $shares[] = $share;                              
+                }
+                $workspace->shares = $shares;
+                //update services
+                $this->create_services($workspace, $exists, $users, false);
+                //update channel
+                if (!(array_search($channel, $exists) === false))
+                {
+                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                    $rocket->add_users($users, $this->get_object($workspace, $channel)->id, $workspace->ispublic === 0 ? true : false);
+                }
+                //save
+                $workspace->save();
+                //end
+                echo "";
             }
-            //save
-            $workspace->save();
-            //end
-            echo "";
+            else
+                echo "denied";
             exit;
         }
     }
@@ -1014,26 +1052,65 @@ class mel_workspace extends rcube_plugin
             $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
             $user = rcube_utils::get_input_value("_id", rcube_utils::INPUT_POST);
             $new_right = rcube_utils::get_input_value("_right", rcube_utils::INPUT_POST);
-            $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
-            $workspace->uid = $uid;
-            $workspace->load();
-            $workspace->shares[$user]->rights = $new_right;
-            $workspace->save();
-            if ($user === driver_mel::gi()->getUser()->uid)
-                echo "reload";
+            $workspace = self::get_workspace($uid);
+            if (self::is_admin($workspace))
+            {
+                $workspace->shares[$user]->rights = $new_right;
+                $workspace->save();
+                if ($user === driver_mel::gi()->getUser()->uid)
+                    echo "reload";
+            }
+            else 
+                echo "denied";
         } catch (\Throwable $th) {
             echo "error";
         }
         exit;
     }
 
+    public static function get_workspace($uid)
+    {
+        $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+        $workspace->uid = $uid;
+        $workspace->load();
+        return $workspace;
+    }
+
     function update_user_table_rights()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
         $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
         $workspace->uid = $uid;
         $workspace->load();
         echo $this->setup_params_rights($workspace);
+        exit;
+    }
+
+    function delete_user()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        if(self::is_admin($workspace))
+        {
+            $user_find = false;
+            foreach ($workspace->shares as $key => $value) {
+                if ($value->user === $user_to_delete)
+                {
+                    $shares = $workspace->shares;
+                    unset($shares[$key]);
+                    $workspace->shares = $shares;
+                    $user_find = true;
+                    break;
+                }
+            }
+            if ($user_find)
+                $workspace->save();
+            echo "";
+        }
+        else
+            echo "denied";
         exit;
     }
 

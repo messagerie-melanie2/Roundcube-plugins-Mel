@@ -12,10 +12,10 @@ if (window.rcmail) {
 	{
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
-			url: MEL_ELASTIC_UI.url("disussion", "login"),//"/?_task=discussion&_action=login",
+			url: MEL_ELASTIC_UI.url("discussion", "login"),//"/?_task=discussion&_action=login",
 			success: function (data) {
+				console.log("RC", data);
 				data = JSON.parse(data);
-				console.log("yeay", data);
 				rcmail.env.rocket_chat_auth_token = data.token;
 				rcmail.env.rocket_chat_user_id = data.uid;
 			},
@@ -32,32 +32,40 @@ if (window.rcmail) {
 			if (rcmail.env.rocket_chat_auth_token === undefined && rcmail.env.rocket_chat_user_id === undefined)
 				await login();
 			setTimeout(function() {
-				//console.log('log', rcmail.env.rocket_chat_auth_token, rcmail.env.rocket_chat_user_id);
-				window.document.getElementById(ariane_id).contentWindow.postMessage({
-					event: 'login-with-token',
-					loginToken: rcmail.env.rocket_chat_auth_token,
-					userId: rcmail.env.rocket_chat_user_id
-				}, rcmail.env.rocket_chat_url);
+				//console.log('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
+				try {
+					window.document.getElementById(ariane_id).contentWindow.postMessage({
+						event: 'login-with-token',
+						loginToken: rcmail.env.rocket_chat_auth_token,
+						userId: rcmail.env.rocket_chat_user_id
+					}, rcmail.env.rocket_chat_url);
+				} catch (error) {
+					console.error(error);
+				}
 				rcmail.env.ariane_is_logged = true;
+
+				
 			}, 50);
 		});
 		};
-		// Récupération de l'url rocket
-		if (rcmail.env.rocket_chat_gotourl) {
-		  var rocket_chat_url = rcmail.env.rocket_chat_gotourl;
-		}
-		else {
-		  var rocket_chat_url = sessionStorage.getItem('rocket_chat_url');
-	    if (!rocket_chat_url) {
-	      rocket_chat_url = rcmail.env.rocket_chat_url;
-	    }
-		}
-		if (navigator.appName == "Microsoft Internet Explorer"){
-			window.document.getElementById(ariane_id).src = rocket_chat_url;
-			window.document.getElementById(ariane_id).contentWindow.location.reload(true);
-		} else {
-			window.document.getElementById(ariane_id).src = rocket_chat_url;
-		}
+
+				// // Récupération de l'url rocket
+				// if (rcmail.env.rocket_chat_gotourl) {
+				// 	var rocket_chat_url = rcmail.env.rocket_chat_gotourl;
+				//   }
+				//   else {
+				// 	var rocket_chat_url = sessionStorage.getItem('rocket_chat_url');
+				//   if (!rocket_chat_url) {
+				// 	rocket_chat_url = rcmail.env.rocket_chat_url;
+				//   }
+				//   }
+				//   if (navigator.appName == "Microsoft Internet Explorer"){
+				// 	  window.document.getElementById(ariane_id).src = rocket_chat_url;
+				// 	  window.document.getElementById(ariane_id).contentWindow.location.reload(true);
+				//   } else {
+				// 	  window.document.getElementById(ariane_id).src = rocket_chat_url;
+				//   }
+
 	});
 	
 	window.addEventListener('message', (e) => {

@@ -4,7 +4,31 @@
     {
         constructor(workspace_id)
         {
+            this.async(() => {
+                $(".wsp-change-icon").each((i,e) => {
+                    //e = $(e);
+                    let _class = null;
+                    for (let index = 0; index < e.classList.length; ++index) {
+                        const element = e.classList[index];
+                        if (element !== "wsp-change-icon" && !element.includes("text"))
+                        {
+                            _class = element;
+                            break;
+                        }
+                    }
+                    e = $(e);
+                    if (_class !== null)
+                        e.removeClass(_class).addClass(m_mp_CreateDocumentIconContract(_class));
+                    e.removeClass("wsp-change-icon");
+                  });
+            });
             this.uid = workspace_id;
+            Object.defineProperty(this, '_data_null', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: Workspace_Param.data_null
+              });
         }
 
         url(action = null)
@@ -15,6 +39,10 @@
                 return MEL_ELASTIC_UI.url("workspace", action);
         }
 
+        async(func)
+        {
+            return new Promise((a, b) => func());
+        }
 
         ajax(url, datas = Workspace_Param.data_null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)}, type = "POST")
         {
@@ -117,7 +145,7 @@
             });
             Workspace_Param.PopUp.close();
             delete Workspace_Param.PopUp;
-            console.log("auto", users);
+            //console.log("auto", users);
             return this.ajax(this.url("PARAMS_add_users"), {
                 _users:users,
                 _uid:this.uid
@@ -125,6 +153,17 @@
                 return this.update_user_table();
             });
         }
+
+        join()
+        {
+            this.busy();
+            return this.ajax(this.url("join_user"), {
+                _uid:this.uid
+            }).alway(() => {
+                wondow.location.reload();
+            });
+        }
+
         update_user_table(func = () => this.busy(false))
         {
             return this.ajax(this.url("PARAMS_update_user_table_rights"), {
@@ -134,9 +173,9 @@
                 MEL_ELASTIC_UI.update();
             });
         }
-        update_table(html)
+        update_table(html, id="#wsp-user-rights")
         {
-            $("#wsp-user-rights").parent().html(html);
+            $(id).parent().html(html);
         }
 
         update_user_right(value)
@@ -190,11 +229,94 @@
             })
         }
 
+        set_body_loading()
+        {
+            return $(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
+        }
 
+        leave()
+        {
+            this.busy();
+            return this.ajax(this.url("leave_workspace"),
+            {
+                _uid:this.uid
+            },
+            (msg) => {
+                this.busy(false);
+                switch (msg) {
+                    case "yourealone":
+                        rcmail.display_message("Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.", "error");
+                        break;
+                    case "youretheone":
+                        rcmail.display_message("Vous êtes le seul administrateur, si vous souhaitez quittez, ajoutez un autre administrateur avant.", "error");
+                    break;
+                    default:
+                        this.quit();
+                        break;
+                }
+            },
+            (a,b,c) => {
+                console.error(a,b,c);
+                this.busy(false);
+            }
+            );
+        }
+
+        update_app(app)
+        {
+            this.busy();
+            return this.ajax(this.url("PARAMS_update_app"),
+            {
+                _uid:this.uid,
+                _app:app
+            }).always(() => {
+                return this.update_app_table();
+            });
+        }
+
+        update_app_table(func = () => this.busy(false))
+        {
+            return this.ajax(this.url("PARAMS_update_app_table"), {
+                _uid:this.uid
+            }, (datas) => {
+                this.update_table(datas, "#table-apps");
+            }).always(() => {
+                func();
+                //MEL_ELASTIC_UI.update();
+            });
+        }
+
+        delete()
+        {
+            this.busy();
+            return this.ajax(this.url("delete_workspace"), {
+                _uid:this.uid
+            },
+            (datas) => {
+                this.quit();
+            },
+            (a,b,c) => {
+                this.busy(false);
+                console.error(a,b,c);
+                rcmail.display_message("Impossible de supprimer cet espace, regardez la console pour plus d'informations.", "error");
+            }
+            );
+        }
+
+        quit()
+        {
+            this.busy();
+            this.set_body_loading();
+            window.location.href = this.url();
+        }
 
     }
-
-    Workspace_Param.data_null = Symbol("null");
+    Object.defineProperty(Workspace_Param, 'data_null', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: Symbol("null")
+      });
     $(document).ready(() => {
         rcmail.addEventListener("init", () => {
             rcmail.env.WSP_Param = new Workspace_Param(rcmail.env.current_workspace_uid);
@@ -202,10 +324,12 @@
             rcmail.register_command('workspace.add_users', () => rcmail.env.WSP_Param.add_user(), true);
             rcmail.register_command('workspace.update_user', (x) => rcmail.env.WSP_Param.update_user_right(x), true);
             rcmail.register_command('workspace.remove_user', (x) => rcmail.env.WSP_Param.delete_user(x), true);
+            rcmail.register_command('workspace.leave', () => rcmail.env.WSP_Param.leave(), true);
+            rcmail.register_command('workspace.delete', () => rcmail.env.WSP_Param.delete(), true);
             rcmail.register_command('workspace.go', () => {
-                rcmail.env.WSP_Param.busy();
-                window.location.href = rcmail.env.WSP_Param.url()
+                rcmail.env.WSP_Param.quit();
             } ,true);
+            rcmail.register_command('workspace.update_app', (app) => rcmail.env.WSP_Param.update_app(app), true);
         })
     })
 

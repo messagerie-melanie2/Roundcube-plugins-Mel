@@ -31,7 +31,7 @@
 	</div> 
 	<!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
     <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
-	<div class="body" style="margin-bottom: 15px;">
+	<div class="body" style="padding-bottom: 15px;">
 		<div class="epingle">
             <span class="title-wsp">
                 Mes espaces de travail épinglés
@@ -47,6 +47,13 @@
                 Tous mes espaces de travail
             </span> 
             <roundcube:object name="joined" />
+        </div>
+        <div class=wsp-desc-block>
+            <center>
+                <h2>Vous cherchez à rejoindre un projet spécifique ?</h2>
+                <p>Accédez à la liste complète des projets ouverts</p>
+                <button onclick="rcmail.goto_url('action', '_event=list_public')" class="mel-button quit-button plus">Voir tout les projets ouverts<span class="icofont-arrow-right plus"></span></button>
+            </center>
         </div>
 	</div>
 </div>

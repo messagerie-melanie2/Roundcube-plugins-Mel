@@ -50,7 +50,7 @@ class mel_workspace extends rcube_plugin
     function setup()
     {
         $this->rc = rcmail::get_instance();
-        //$this->load_config();
+        $this->load_config();
         //$this->setup_config();
         $this->add_texts('localization/', true);
         $this->register_task("workspace");
@@ -82,12 +82,18 @@ class mel_workspace extends rcube_plugin
         $this->include_css();
         $this->include_js();
         $this->register_action('index', array($this, 'index'));
+        $this->register_action('action', array($this, 'show_actions'));
         $this->register_action('workspace', array($this, 'show_workspace'));
+        //$this->register_action('list', array($this, 'show_workspace'));
         $this->register_action('PARAM_Change_color', array($this, 'change_color'));
         $this->register_action('PARAMS_add_users', array($this, 'add_users'));
         $this->register_action('PARAMS_update_user_table_rights', array($this, 'update_user_table_rights'));
         $this->register_action('PARAMS_update_user_rights', array($this, 'update_user_rights'));
         $this->register_action('PARAMS_delete_user', array($this, 'delete_user'));
+        $this->register_action('PARAMS_update_app', array($this, 'update_app'));
+        $this->register_action('join_user', array($this, 'join_user'));
+        $this->register_action('delete_workspace', array($this, 'delete_workspace'));
+        //PARAMS_update_app
         //add_users
     }
 
@@ -146,6 +152,39 @@ class mel_workspace extends rcube_plugin
     function show_joined()
     {
         return $this->generate_html();
+    }
+
+    function show_publics()
+    {
+        $html = "";
+        foreach ($this->workspaces as $key => $value) {
+            $html .= $this->create_block($value, false);
+        } 
+        return $html;
+    }
+
+    function show_actions()
+    {
+        $event = rcube_utils::get_input_value('_event', rcube_utils::INPUT_GPC);
+        switch ($event) {
+            case 'list_public':
+                $this->rc->output->add_handlers(array(
+                    'joined'    => array($this, 'show_publics'),
+                ));
+                $label = function ()
+                {
+                    return "Liste des espaces de travail public";
+                };
+                $this->rc->output->add_handlers(array(
+                    'label'    => $label,
+                ));
+                $this->rc->output->send('mel_workspace.list_workspaces');
+                break;
+            
+            default:
+                # code...
+                break;
+        } 
     }
 
     function show_workspace()
@@ -217,20 +256,17 @@ class mel_workspace extends rcube_plugin
             "news" => "icofont-rss-feed",
             "params" => "icofont-ui-settings"
         ];
-        $channel = "ariane";
-        $agenda = "calendar";
-        $tasks = "tasks";
-        $cloud = "cloud";
+        $services = $this->get_worskpace_services($this->currentWorkspace);
         $uid = $this->currentWorkspace->uid;
         $html = html::div(["onclick" => "ChangeToolbar('back', this)", "class" => "wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span>');
         $html .= html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active"], "<span class=".$icons["home"]."></span>");
-        if ($this->get_object($this->currentWorkspace, $agenda) === true)
+        if ($services[self::AGENDA])
         {
             $onclick = "ChangeToolbar('calendar', this)";
             $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span>");
         }
         
-        if ($this->get_object($this->currentWorkspace, $channel) !== null)
+        if ($services[self::CHANNEL])
         {
             $src = "";//$this->rc->config->get('rocket_chat_url');
             if ($this->currentWorkspace->ispublic)
@@ -244,7 +280,7 @@ class mel_workspace extends rcube_plugin
             else
                 $html .= html::div(["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span>");
         }
-        if ($this->get_object($this->currentWorkspace, $tasks) !== null)
+        if ($services[self::TASKS])
             $html .= html::div(["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");
         // if ($this->get_object($this->currentWorkspace, $cloud) !== null)
         //     $html = "";
@@ -260,146 +296,161 @@ class mel_workspace extends rcube_plugin
 
     function get_users_info()
     {
+        // $icon = "icofont-plus-circle plus";
+        // $exists = self::is_in_workspace($this->currentWorkspace);
+        // $action = $exists ? "rcmail.command('workspace.add_users')" : "join";
+        // $text = $exists ? "Inviter" : "Rejoindre";
+        // if ($exists && self::is_admin($this->currentWorkspace))
+        //     $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
+        // $html_tmp.= "</div>";
+        // return html::div(["class" => "row"], $html_tmp);
         $icon = "icofont-plus-circle plus";
-        $exists = false;
-        $html_tmp = "";
-        if ($this->currentWorkspace->shares !== null)
-        {
-            //"https://ariane.din.developpement-durable.gouv.fr/avatar/$uid"
-            $it = 0;
-            $stop = false;
-            foreach ($this->currentWorkspace->shares as $s)
-            {
-                if (!$exists && $s->user == $this->rc->user->get_username())
-                {
-                    $exists = true;
-                    if ($stop)
-                        break;
-                }
-                if ($stop)
-                {
-                    if ($exists)
-                        break;
-                    else
-                        continue;
-                }
-                if ($it == 2)
-                {
-                    $html_tmp.='<div class="dwp-circle dwp-user wsp-font-size-modifier smaller"><span>+'.(count($this->currentWorkspace->shares)-2).'</span></div>';
-                    $stop = true;
-                    if ($exists)
-                        break;
-                    else
-                        continue;
-                }
-                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
-                ++$it;
-            }
-        }
-
-        $html_tmp = html::div(["class" => "col-4"], $html_tmp)."<div class=col-8>";
-        if ($this->currentWorkspace->created === $this->currentWorkspace->modified)
-            $html_tmp .=  "Crée par ".$this->currentWorkspace->creator;
+        $icon_quit = "icofont-close-line-circled plus";
+        $exists = self::is_in_workspace($this->currentWorkspace);
+        $admin = self::is_admin($this->currentWorkspace);
+        $html = "";
+        if ($exists && $admin)
+            $html.= html::div(["style" => "margin-right:15px", "class" => "mel-button invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], "Inviter un membre").html::tag("span", ["class" => $icon]));
+        if ($exists)
+            $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => "rcmail.command('workspace.leave')"], html::tag("span", [], "Quitter l'espace de travail").html::tag("span", ["class" => $icon_quit]));
         else
-        {
-            $html_tmp .= "Crée par ".$this->currentWorkspace->creator."<br/>Mise à jours : ".$this->currentWorkspace->modified;
-        }
-        $action = $exists ? "rcmail.command('workspace.add_users')" : "join";
-        $text = $exists ? "Inviter" : "Rejoindre";
-        if ($exists && self::is_admin($this->currentWorkspace))
-            $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
-        $html_tmp.= "</div>";
-        return html::div(["class" => "row"], $html_tmp);
+            $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => ""], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
+        return html::div([], $html);
+    }
 
-            
+
+    const CHANNEL = "channel";
+    const AGENDA = "calendar";
+    const TASKS = "tasks";
+    const EMAIL = "unknown1";
+    const CLOUD = "doc"; 
+    function get_worskpace_services($workspace, $services_to_remove = false)
+    {
+        $datas = [
+            self::CHANNEL => $this->get_object($workspace, self::CHANNEL) !== null,
+            self::AGENDA => $this->get_object($workspace, self::AGENDA) === true,
+            self::TASKS => $this->get_object($workspace, self::TASKS) !== null,
+            self::EMAIL => false,
+            self::CLOUD => false,
+        ];
+        if ($services_to_remove)
+        {
+            $services = [];
+            foreach ($datas as $key => $value) {
+                $services[] = $key;
+            }
+            return $services;
+        }
+        else
+            return $datas;
     }
 
     function get_services()
     {
         $uid = $this->currentWorkspace->uid;
 
-        $email = "unknown1";
-        $tasks = 'tasks';
-        $agenda = "calendar";
-        $channel = "ariane";
+        // $email = "unknown1";
+        // $tasks = 'tasks';
+        // $agenda = "calendar";
+        // $channel = "ariane";
 
-        $services = [
-            $email => false,
-            $tasks => $this->get_object($this->currentWorkspace, $tasks) !== null,
-            $agenda => $this->get_object($this->currentWorkspace, $agenda) === true,
-            $channel =>$this->get_object($this->currentWorkspace, $channel) !== null
-        ];
+        // $services = [
+        //     $email => false,
+        //     $tasks => $this->get_object($this->currentWorkspace, $tasks) !== null,
+        //     $agenda => $this->get_object($this->currentWorkspace, $agenda) === true,
+        //     $channel =>$this->get_object($this->currentWorkspace, $channel) !== null
+        // ];
+        $services = $this->get_worskpace_services($this->currentWorkspace);
+
+        // if ($this->get_object($this->currentWorkspace, self::CHANNEL) === null);
+        // {
+        //     $this->save_object($this->currentWorkspace, self::CHANNEL, $this->get_object($this->currentWorkspace, "ariane"));
+        //     $this->currentWorkspace->save();
+        // }
 
         $icons = [
-            $agenda => "icofont-calendar",
+            self::AGENDA => "icofont-calendar",
             "arrow_left" => "icofont-arrow-left",
             "arrow_right" => "icofont-arrow-right",
             "warning" => "icofont-warning",
-            "waiting" => "icofont-hour-glass"
+            "waiting" => "icofont-hour-glass",
+            "arrow_close" => "icofont-simple-right"
         ];
 
-        $col = [
-            "left" => "",
-            "right" => ""
-        ];
+        $html_return = "";
 
-        //Service agenda/calendrier
-        if ($services[$agenda])
+        if ($services[self::AGENDA] || $services[self::TASKS])
         {
-            $arrow = [
-                "left" => '<span class="'.$icons["arrow_left"].' btn-arrow" onclick="change_date(-1)"></span>',
-                "right" => '<span class="'.$icons["arrow_right"].' btn-arrow" onclick="change_date(1)"></span>'
+            $col = [
+                "left" => "",
+                "right" => ""
             ];
+    
+            //Service agenda/calendrier
+            if ($services[self::AGENDA])
+            {
+                $arrow = [
+                    "left" => '<span class="'.$icons["arrow_left"].' btn-arrow" onclick="change_date(-1)"></span>',
+                    "right" => '<span class="'.$icons["arrow_right"].' btn-arrow" onclick="change_date(1)"></span>'
+                ];
 
-            $header = html::div(["class" => "row"], 
-                html::div(["class" => "col-2"], 
-                    html::tag("span", ["class" => $icons[$agenda]." wsp-agenda-icon"])).
-                html::div(["class" => "col-6"],
-                    html::tag("span", ["class" => "swp-agenda-date"])).
-                html::div(["class" => "col-4"],
-                    html::div(["class" => "row"], 
-                        html::div(["class" => "col-6"], $arrow["left"]).
-                        html::div(["class" => "col-6"], $arrow["right"])
-                ))
+                $header = html::div(["class" => "row"], 
+                    html::div(["class" => "col-2"], 
+                        html::tag("span", ["class" => $icons[self::AGENDA]." wsp-agenda-icon"])).
+                    html::div(["class" => "col-6"],
+                        html::tag("span", ["class" => "swp-agenda-date"])).
+                    html::div(["class" => "col-4"],
+                        html::div(["class" => "row"], 
+                            html::div(["class" => "col-6"], $arrow["left"]).
+                            html::div(["class" => "col-6"], $arrow["right"])
+                    ))
+                );
+
+                $body = "";
+                $agenda = self::AGENDA;
+                $col["right"].= html::tag("h1", [], "Mes réunions");
+                $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)");
+            }
+
+            //Service tâches
+            if($services[self::TASKS])
+            {
+                $affiche_urgence = false;
+
+                $header = html::div(["class" => "row", "style" => "justify-content: center;"],
+                    html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
+                        html::tag("span", [], "Tâches urgentes")
+                    ).
+                    html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : "")], 
+                        html::tag("span", [], "Tâches en cours")
+                ));
+                $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 
+                html::tag("span", ["class" => $icons["warning"]." roundbadge large warning"]).
+                html::tag("span", [], 
+                    html::tag("span", ["class" => "danger-task"]).
+                    '<span class="nb-danger-task nb font-size-large" tâches urgentes'
+                )                
+                ).           html::div(["id" => "nb-waiting-task","class" => "nb-task wsp-task-classik tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none")], 
+                html::tag("span", ["class" => $icons["waiting"]." roundbadge large clear"]).
+                html::tag("span", [], 
+                    html::tag("span", ["class" => "waiting-task"]).
+                    '<span class="nb-waiting-task nb font-size-large"></span> tâches en cours'
+                )
+                );
+                $body = html::div(["id" => "danger-task", "class" => "wsp-task-urgence tab-task mel-tab-content", "style" => ($affiche_urgence ? "" : "display:none;")]).
+                        html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
+
+                $tasks = self::TASKS;
+                $col[($col["left"] === "" ? "left" : "right")].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
+            }
+
+            $html_return .= html::div(["class" => "row"], 
+                html::div(["class" => "col-md-6"], $col["left"]).
+                html::div(["class" => "col-md-6"], $col["right"])
             );
-
-            $body = "";
-
-            $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)");
         }
 
-        //Service tâches
-        if($services[$tasks])
-        {
-            $affiche_urgence = false;
-
-            $header = html::div(["class" => "row", "style" => "justify-content: center;"],
-                html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
-                    html::tag("span", [], "Tâches urgentes")
-                ).
-                html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : "")], 
-                    html::tag("span", [], "Tâches en cours")
-            ));
-            $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 
-            html::tag("span", ["class" => $icons["warning"]." roundbadge large warning"]).
-            html::tag("span", [], 
-                html::tag("span", ["class" => "danger-task"]).
-                '<span class="nb-danger-task nb font-size-large" tâches urgentes'
-            )                
-            ).           html::div(["id" => "nb-waiting-task","class" => "nb-task wsp-task-classik tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none")], 
-            html::tag("span", ["class" => $icons["waiting"]." roundbadge large clear"]).
-            html::tag("span", [], 
-                html::tag("span", ["class" => "waiting-task"]).
-                '<span class="nb-waiting-task nb font-size-large"></span> tâches en cours'
-            )
-            );
-            $body = html::div(["id" => "danger-task", "class" => "wsp-task-urgence tab-task mel-tab-content", "style" => ($affiche_urgence ? "" : "display:none;")]).
-                    html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
-
-            $col["right"].= $this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
-        }
-
-        if ($services[$email] || $services[$channel])
+        if ($services[self::EMAIL] || $services[self::CHANNEL])
         {
             $src = $this->rc->config->get('rocket_chat_url');
             if ($this->currentWorkspace->ispublic)
@@ -408,9 +459,9 @@ class mel_workspace extends rcube_plugin
                 $src.="group/$uid?layout=embedded";  
 
             $header_component = [];
-            if ($services[$email])
+            if ($services[self::EMAIL])
                 $header_component[] = html::div(["id" => "unreads-emails", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
-            if ($services[$channel])
+            if ($services[self::CHANNEL])
                 $header_component[] = html::div(["id" => "unreads-ariane", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
             
             $tmp = "";
@@ -426,19 +477,24 @@ class mel_workspace extends rcube_plugin
             $header = 
                 html::div(["class" => "row", "style"=> "padding-bottom:15px"], 
                     $header_component
-        );
+                );
 
             $body_component = [];
-            if ($services[$email])
+            if ($services[self::EMAIL])
                 $body_component[] = html::div(["class" => "unreads-emails tab-unreads mel-tab-content", "style" => "¤¤¤"],
                     ""
                 );
-            if ($services[$channel])
+            if ($services[self::CHANNEL]){
+                $body_component[] = html::div(["onclick" => "UpdateFrameAriane()","class" => "unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
+                    html::tag("span", ["style" => "position:relative"], "#".$this->currentWorkspace->uid.html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
+                    html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
+                );
                 $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
-                html::tag("iframe", 
-                ["src" => $src, "style" => "width:100%;height:500px"]
-                )
-            );
+                    html::tag("iframe", 
+                    ["src" => $src, "style" => "width:100%;height:500px;display:none;"]
+                    )
+                );
+            }
             $tmp = "";
             $count = count($body_component);
             for ($i=0; $i < $count; ++$i) { 
@@ -452,22 +508,21 @@ class mel_workspace extends rcube_plugin
                 $body_component
             );
 
-            $col["left"].= html::div(["class" => "wsp-block wsp-left"], $header.$body);
+            $html_return.= html::tag("h1", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
         }
 
 
         $this->rc->output->set_env("current_workspace_constantes", [
-            "mail" => $email,
-            "agenda" => $agenda,
-            "tasks" => $tasks,
-            "ariane" => $channel
+            "mail" => self::EMAIL,
+            "agenda" => self::AGENDA,
+            "tasks" => self::TASKS,
+            "ariane" => self::CHANNEL
         ]);
         $this->rc->output->set_env("current_workspace_services", $services);
-        return html::div(["class" => "row"],
-            html::div(["class" => "col-md-8"], $col["left"]).
-            html::div(["class" => "col-md-4"], $col["right"])
-        );
-
+        return $html_return;//$col["right"].$col["left"];
+        // html::div(["class" => "row"],
+        //     html::div(["class" => "col-md-8"], $col["left"]).
+        //     html::div(["class" => "col-md-4"], $col["right"])
     }
 
     function get_pages()
@@ -486,11 +541,53 @@ class mel_workspace extends rcube_plugin
         else
             $html = str_replace("<users-rights/>", $this->setup_params_rights($this->currentWorkspace), $html); 
         $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
+        $html = str_replace("<applications/>", $this->setup_params_apps($this->currentWorkspace), $html);
         if ($user_rights === Share::RIGHT_OWNER)
-            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
+            $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
         else
-            $html = str_replace("<button-delete/>", '<button class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
+            $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
         return $html;
+    }
+
+    function get_type_config($config, $type)
+    {
+        foreach ($config as $key => $value) {
+            if ($value["type"] === $type)
+                return $value;
+        }
+    }
+
+    function setup_params_apps($workspace)
+    {
+        $icons=["minus" => "icofont-minus", "plus" => "icofont-plus"];
+        $services = $this->get_worskpace_services($workspace);
+        $config = $this->rc->config->get("workspace_services");
+        $html = '<table id=table-apps class="table table-striped table-bordered">';
+        $html .= "<thead><tr><td>Applications</td></tr></thead>";
+        foreach ($services as $key => $value) {
+            if ($key === self::EMAIL)
+                continue;
+            $info = $this->get_type_config($config, $key);
+            $html.= '<tr><td>';
+            $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
+            if ($value)
+            {
+                $class = "btn btn-danger";
+                $span = $icons["minus"];               
+            }
+            else {
+                $class = "btn btn-success";
+                $span = $icons["plus"];    
+            }
+            $func = "window.command('workspace.update_app','$key')";
+            if ($info === null || $key === self::CLOUD)
+                $class.= " disabled";
+            $html.= "<button onclick=$func style=float:right; class=\"$class\" ><span class=$span></span></button>";
+            $html .= "</td></tr>";
+        }
+        $html .= "</table>";
+        return $html;
+
     }
 
     function setup_params_rights($workspace)
@@ -508,11 +605,15 @@ class mel_workspace extends rcube_plugin
         $html .= "</thead>";
         $share = $workspace->shares;
         $this->sort_users($share);
+        $current_user = driver_mel::gi()->getUser();
         foreach ($share as $key => $value) {
             $html .= "<tr>";
             $html .= "<td>".$value->user."</td>";
             $html .= "<td>".$this->setup_params_value($icons_rights, $value->rights,$value->user)."</td>";
-            $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger"><span class='.$icon_delete.'></span></button></td>';
+            if ($value->user === $current_user)
+                $html += '<td></td>';
+            else
+                $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger"><span class='.$icon_delete.'></span></button></td>';
             $html .= "</tr>";
         }
         $html .= "</table>";
@@ -655,15 +756,22 @@ class mel_workspace extends rcube_plugin
                 return $value->user;
             };
             $users = array_map($map, $workspace->shares);
+            $tmp_users = [];
+            foreach ($users as $key => $value) {
+                $tmp_users[] = $value;
+            }
+            $users = $tmp_users;
+            unset($tmp_user);
         }
         $services = $this->create_tasklist($workspace,$services, $users, $update_wsp);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
+        $services = $this->create_channel($workspace, $services, $users);
         return $services;
     }
 
     function create_tasklist(&$workspace,$services, $users, $update_wsp)
     {
-        $tasks = 'tasks';
+        $tasks = self::TASKS;
         if (array_search($tasks, $services) === false)
             return $services;
         include_once "../mel_moncompte/ressources/tasks.php";
@@ -688,7 +796,7 @@ class mel_workspace extends rcube_plugin
 
     function create_agenda(&$workspace, $services, $users, $update_wsp)
     {
-        $agenda = "calendar";
+        $agenda = self::AGENDA;
         //if (array_search($agenda, $services) === false)
             //return $services;
         include_once "lib/mel_utils.php";
@@ -700,6 +808,19 @@ class mel_workspace extends rcube_plugin
         if ($update_wsp)
             $this->save_object($workspace, $agenda, !(array_search($agenda, $services) === false));
         $key = array_search($agenda, $services);
+        unset($services[$key]);
+        return $services;
+    }
+
+    function create_channel(&$workspace, $services, $users)
+    {
+        $service = self::CHANNEL;
+        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+        $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
+        //$value = json_decode($value["content"]);
+        $value = $value["content"]["channel"];
+        $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
+        $key = array_search($service, $services);
         unset($services[$key]);
         return $services;
     }
@@ -791,7 +912,7 @@ class mel_workspace extends rcube_plugin
 
     public static function is_in_workspace($workspace, $username = null)
     {
-        return isset($workspace->shares[$username ?? driver_mel::gi()->getUser()->uid]);
+        return $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid] !== null;
     }
 
     public static function generate_uid($title)
@@ -1005,36 +1126,7 @@ class mel_workspace extends rcube_plugin
             $workspace = self::get_workspace($uid);
             if (self::is_admin($workspace))
             {
-                //get services
-                $channel = "ariane";
-                $agenda = "calendar";
-                $tasks = "tasks";
-                $cloud = "cloud";
-                $services = [];
-                if ($this->get_object($workspace, $agenda) === true)
-                    $exists[] = $agenda;
-                if ($this->get_object($workspace, $tasks) !== null)
-                    $exists[] = $tasks;
-                if ($this->get_object($workspace, $channel) !== null)
-                    $exists[] = $channel;
-                //update share
-                $shares = $workspace->shares;
-                $count = count($users);
-                for ($i=0; $i < $count; ++$i) { 
-                    $share = driver_mel::gi()->workspace_share([$workspace]);
-                    $share->user = $users[$i];
-                    $share->rights = Share::RIGHT_WRITE;
-                    $shares[] = $share;                              
-                }
-                $workspace->shares = $shares;
-                //update services
-                $this->create_services($workspace, $exists, $users, false);
-                //update channel
-                if (!(array_search($channel, $exists) === false))
-                {
-                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                    $rocket->add_users($users, $this->get_object($workspace, $channel)->id, $workspace->ispublic === 0 ? true : false);
-                }
+                $this->_add_users($workspace, $users);
                 //save
                 $workspace->save();
                 //end
@@ -1043,6 +1135,51 @@ class mel_workspace extends rcube_plugin
             else
                 echo "denied";
             exit;
+        }
+    }
+
+    function _add_users(&$workspace, $users)
+    {
+        //get services
+        $services = $this->get_worskpace_services($workspace, true);
+        //update share
+        $shares = $workspace->shares;
+        $count = count($users);
+        for ($i=0; $i < $count; ++$i) { 
+            $share = driver_mel::gi()->workspace_share([$workspace]);
+            $share->user = $users[$i];
+            $share->rights = Share::RIGHT_WRITE;
+            $shares[] = $share;                              
+        }
+        $workspace->shares = $shares;
+        //update services
+        $this->create_services($workspace, $exists, $users, false);
+        //update channel
+        if (!(array_search(self::CHANNEL, $exists) === false))
+        {
+            $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+            $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+        }
+    }
+
+    function get_ariane()
+    {
+        return $this->rc->plugins->get_plugin('rocket_chat');;
+    }
+
+    function delete_services_for_user($workspace, $user, $services_to_delete)
+    {
+        foreach ($services_to_delete as $key => $value) {
+            switch ($value) {
+                case self::CHANNEL:
+                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                    $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $users, $workspace->ispublic === 0 ? true : false);
+                    break;
+                case self::TASKS:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -1057,6 +1194,7 @@ class mel_workspace extends rcube_plugin
             {
                 $workspace->shares[$user]->rights = $new_right;
                 $workspace->save();
+                $this->get_ariane()->update_owner($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);
                 if ($user === driver_mel::gi()->getUser()->uid)
                     echo "reload";
             }
@@ -1087,10 +1225,12 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
-    function delete_user()
+    function delete_user($uid = null, $user_to_delete = null, $exit = true)
     {
-        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-        $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
+        if ($uid === null)
+            $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        if ($user_to_delete === null)
+            $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
         $workspace = self::get_workspace($uid);
         if(self::is_admin($workspace))
         {
@@ -1102,12 +1242,127 @@ class mel_workspace extends rcube_plugin
                     unset($shares[$key]);
                     $workspace->shares = $shares;
                     $user_find = true;
+                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true));
                     break;
                 }
             }
             if ($user_find)
                 $workspace->save();
             echo "";
+        }
+        else
+            echo "denied";
+        if ($exit)
+            exit;
+    }
+
+    function leave_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        $shares = $workspace->shares;
+        if (count($shares) === 1)
+            echo "yourealone";
+        else
+        {
+            $nb_admin = 0;
+            foreach ($shares as $key => $value) {
+                if (self::is_admin($workspace, $value->user))
+                    ++$nb_admin;
+            }
+            if ($nb_admin === 1)
+                echo 'youretheone';
+            else {
+                $this->delete_user($uid, driver_mel::gi()->getUser()->uid, false);
+                echo '';
+            }
+        }
+        exit;
+    }
+
+    function delete_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        if (self::is_admin($workspace))
+        {
+            $shares = $workspace->shares;
+            foreach ($shares as $key => $value) {
+                $this->delete_user($uid, $value->user, false);
+            }
+            $workspace->save();
+            $workspace->delete();
+        }
+        else
+            echo "denied";
+        exit;
+    }
+
+    function update_app()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $app = rcube_utils::get_input_value("_app", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        if (self::is_admin($workspace))
+        {
+            if (!$this->get_worskpace_services($workspace)[$app])
+            {
+                switch ($app) {
+                    case self::CHANNEL:
+                        $map = function($value) {
+                            return $value->user;
+                        };
+                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                        $value = $rocket->_create_channel($workspace->uid, array_map($map, $workspace->shares),$workspace->ispublic === 0 ? true : false);
+                        $value = json_decode($value["content"]);
+                        $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
+                        break;
+                    
+                    default:
+                    $this->create_services($workspace, [$app]);
+                        break;
+                }
+            }
+            else
+            {
+                switch ($app) {
+                    case self::CHANNEL:
+                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                        $rocket->delete_channel($this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
+                        break;
+                    case self::AGENDA:
+                        break;
+                    default:
+                        $shares = $workspace->shares;
+                        foreach ($shares as $key => $value) {
+                            $this->delete_services_for_user($workspace, $user, [$app]);
+                        }
+                        break;
+                }
+                switch ($app) {
+                    case self::AGENDA:
+                        $this->save_object($workspace, self::AGENDA, false);
+                        break;
+                    default:
+                        $this->save_object($workspace, $app, null);
+                        break;
+                }
+            }
+            $workspace->save();
+        }
+        else
+            echo "denied";
+        exit;  
+    }
+
+    function join_user()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        if ($workspace->ispublic === 1)
+        {
+            $this->_add_users($workspace, [driver_mel::gi()->getUser()->uid]);
+            $workspace->save();
         }
         else
             echo "denied";

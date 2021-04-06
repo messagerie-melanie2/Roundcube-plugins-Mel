@@ -766,3 +766,27 @@ td.mel-fit-content{
     max-width: min-content;
     max-width: -moz-min-content;
 }
+
+.mel-button{
+    color: white;
+    background-color: #363A5B;
+    display: inline-block;
+    width: -moz-fit-content;
+    width: fit-content;
+    border-radius: 50px;
+    padding: 5px 10px;
+    margin-top: 15px;
+    transition: all 0.1s ease-in;
+    cursor: pointer;
+    font-size: small;
+}
+
+.mel-button:hover
+{
+    background-color: #484D7A;
+}
+
+.mel-button:hover > .mel-return
+{
+    color:#ff5552;
+}

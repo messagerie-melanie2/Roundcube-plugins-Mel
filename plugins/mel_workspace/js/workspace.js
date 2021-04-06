@@ -3,21 +3,29 @@ $(document).ready(async () => {
     SetCalendarDate()
     //Récupération des données d'ariane
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
-    let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
-    console.log("Init()", datas, channel, datas[channel]);
-    UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
+    const hasAriane = $(".wsp-ariane").length > 0;
+    if (hasAriane)
+    {
+        let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
+        //console.log("Init()", datas, channel, datas[channel]);
+        UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
+    }
     //Récupération des données de l'agenda
     UpdateCalendar();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
     //Récupération des données des tâches
     UpdateTasks();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
-
-    await wait(() => window.ariane === undefined);
-    window.ariane.addEventListener("update", UpdateAriane);
+    
+    if (hasAriane)
+    {
+        await wait(() => window.ariane === undefined);
+        window.ariane.addEventListener("update", UpdateAriane);
+    }
 });
 
 var UpdateAriane = (channel, store, unread) => {
+    $(".ariane-count").html(unread > 99 ? "+99" : unread);
     let querry = $("#ariane-" + channel);
     if (querry.length === 0)
         return;
@@ -417,3 +425,18 @@ function OpenAriane(id, src)
 
 
 
+function UpdateFrameAriane()
+{
+    //unreads-ariane
+    let arrow = $(".wsp-ariane-header").find(".arrow");
+    if (arrow.hasClass("icofont-simple-right"))
+    {
+        arrow.removeClass("icofont-simple-right").addClass("icofont-simple-down");
+        $(".unreads-ariane").find("iframe").css("display", "").parent().css("display", "");
+    }
+    else
+    {
+        arrow.removeClass("icofont-simple-down").addClass("icofont-simple-right");
+        $(".unreads-ariane").find("iframe").css("display", "none").parent().css("display", "none");;
+    }
+}

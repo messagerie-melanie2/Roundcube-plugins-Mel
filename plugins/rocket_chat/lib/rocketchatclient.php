@@ -102,6 +102,18 @@ class RocketChatClient {
   const CHANEL_INVITE = "channels.invite";
   const GROUP_INVITE = "groups.invite";
   const CHANEL_COUNT = "channels.counters";
+  const CHANNEL_ADD_OWNER = "channels.addOwner";
+  const CHANNEL_REMOVE_OWNER = "channels.removeOwner";
+  const CHANNEL_KICK = "channels.kick";
+  const CHANNEL_LEAVE = "channels.leave";
+  const CHANNEL_MEMBERS = "channels.members";
+  const CHANNEl_DELETE = "channels.delete";
+  const GROUP_ADD_OWNER = "groups.addOwner";
+  const GROUP_REMOVE_OWNER = "groups.removeOwner";
+  const GROUP_KICK = "groups.kick";
+  const GROUP_LEAVE = "groups.leave";
+  const GROUP_MEMBERS = "groups.members";
+  const GROUP_DELETE = "groups.delete";
   /**
    * Relative API URL
    *
@@ -483,6 +495,127 @@ class RocketChatClient {
 
   }
 
+  public function kick_user($channel_id, $user, $private = false, $is_user_id = false)
+  {
+    if (!$is_user_id)
+      $user = $this->getUserId($user);
+    if ($user === $this->getUserId())
+      return $this->leave($channel_id, $user, $private, true);
+    else {
+      $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+    );
+
+    $params = array(
+      "roomId" => $channel_id,
+      "userId" => $user
+    );
+
+    $private = $private ? $this->_api_url.self::GROUP_KICK : $this->_api_url.self::CHANNEL_KICK;
+    return $this->_post_url($private, $params, null, $headers);
+    }
+  }
+
+  public function leave($channel_id, $user, $private = false, $is_user_id = false)
+  {
+    if (!$is_user_id)
+      $user = $this->getUserId($user);
+    if ($user !== $this->getUserId())   
+      return false;
+    else {
+      if ($this->get_members($channel_id, $private)->count === 1)
+        return false;
+      else {
+          $headers = array(
+            "X-Auth-Token: " . $this->getAuthToken(),
+            "X-User-Id: " . $this->getUserId(),
+            "Content-type: application/json",
+        );
+    
+        $params = array(
+          "roomId" => $channel_id,
+          "userId" => $user
+        );
+    
+        $private = $private ? $this->_api_url.self::GROUP_LEAVE : $this->_api_url.self::CHANNEL_LEAVE;
+        return $this->_post_url($private, $params, null, $headers);  
+      }
+    }
+  }
+
+  public function get_members($channel_id, $private = false)
+  {
+      $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+    );
+
+    $params = array(
+      "roomId" => $channel_id,
+    );
+
+    $private = $private ? $this->_api_url.self::GROUP_MEMBERS : $this->_api_url.self::CHANNEL_MEMBERS;
+    $members = $this->_get_url($private, $params, $headers);  
+    return json_decode($members["content"]);
+  }
+
+  public function delete($channel_id, $private)
+  {
+      $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+      );
+
+    $params = array(
+      "roomId" => $channel_id,
+    );
+
+    $private = $private ? $this->_api_url.self::GROUP_DELETE : $this->_api_url.self::CHANNEl_DELETE;
+    return $this->_post_url($private, $params, null, $headers);  
+
+  }
+
+  public function add_owner($channel_id, $user, $private = false, $is_user_id = false)
+  {
+    $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+    );
+
+    $params = array(
+      "roomId" => $channel_id,
+      "userId" => $is_user_id ? $user : $this->getUserId($user)
+    );
+
+    $private = $private ? $this->_api_url.self::GROUP_ADD_OWNER : $this->_api_url.self::CHANNEL_ADD_OWNER;
+    return $this->_post_url($private, $params, null, $headers);
+
+  }
+
+  public function remove_owner($channel_id, $user, $private = false, $is_user_id = false)
+  {
+    $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        "Content-type: application/json",
+    );
+
+    $params = array(
+      "roomId" => $channel_id,
+      "userId" => $is_user_id ? $user : $this->getUserId($user)
+    );
+
+    $private = $private ? $this->_api_url.self::GROUP_REMOVE_OWNER : $this->_api_url.self::CHANNEL_REMOVE_OWNER;
+    return $this->_post_url($private, $params, null, $headers);
+
+  }
+
+
   public function channel_count($channel)
   {
   
@@ -501,6 +634,7 @@ class RocketChatClient {
     return $result;
 
   }
+
 
   /**
    * Permet de récupérer le contenu d'une page Web

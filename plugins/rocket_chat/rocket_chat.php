@@ -418,10 +418,23 @@ EOF;
       exit;
     }
 
-    public function create_chanel()
+    private function get_rc_client()
     {
       require_once __DIR__ . '/lib/rocketchatclient.php';
       $this->login();
+      $uid = $this->getUserId();
+      $token = $this->getAuthToken();
+
+      $rocketClient = new RocketChatClient($this->rc);
+      $rocketClient->setUserId($uid);
+      $rocketClient->setAuthToken($token);
+      return $rocketClient;
+    }
+
+    public function create_chanel()
+    {
+      // require_once __DIR__ . '/lib/rocketchatclient.php';
+      // $this->login();
       $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
       $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
       $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
@@ -429,15 +442,16 @@ EOF;
         $is_public = false;
       else
         $is_public = true;
-      $uid = $this->getUserId();
-      $token = $this->getAuthToken();
-      $user = $this->rc->get_user_name();
-      $rocketClient = new RocketChatClient($this->rc);
-      $rocketClient->setUserId($uid);
-      $rocketClient->setAuthToken($token);
-      $result = $rocketClient->create_chanel($room_name, $users, $is_public);
+      $result = $this->_create_channel($room_name, $users, $is_public);
       echo json_encode($result);
       exit;
+    }
+
+    public function _create_channel($room_name, $users, $is_public)
+    {
+      $user = $this->rc->get_user_name();
+      $rocketClient = $this->get_rc_client();
+      return $rocketClient->create_chanel($room_name, $users, $is_public);
     }
 
     public function get_user_info()
@@ -456,13 +470,14 @@ EOF;
         $channel_id = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
       if ($private === null)
         $private = rcube_utils::get_input_value('_private', rcube_utils::INPUT_POST);
-      require_once __DIR__ . '/lib/rocketchatclient.php';
-      $this->login();
-      $uid = $this->getUserId();
-      $token = $this->getAuthToken();
-      $rocketClient = new RocketChatClient($this->rc);
-      $rocketClient->setUserId($uid);
-      $rocketClient->setAuthToken($token);
+      // require_once __DIR__ . '/lib/rocketchatclient.php';
+      // $this->login();
+      // $uid = $this->getUserId();
+      // $token = $this->getAuthToken();
+      // $rocketClient = new RocketChatClient($this->rc);
+      // $rocketClient->setUserId($uid);
+      // $rocketClient->setAuthToken($token);
+      $rocketClient = $this->get_rc_client();
       $results = $rocketClient->add_users($channel_id, $users, $private);
       if (!$ajax)
         return $results;
@@ -470,16 +485,35 @@ EOF;
       exit;
     }
 
+    public function update_owner($user, $channel_id, $private, $remove = false)
+    {
+      $rocketClient = $this->get_rc_client();
+      return $remove ? $rocketClient->remove_owner($channel_id, $user, $private) : $rocketClient->add_owner($channel_id, $user, $private);
+    }
+
+    public function kick_user($channel_id, $user, $private)
+    {
+      $rocketClient = $this->get_rc_client();
+      return $rocketClient->kick_user($channel_id, $user, $private);
+    }
+
+    public function delete_channel($channel_id, $private)
+    {
+      $rocketClient = $this->get_rc_client();
+      return $rocketClient->delete($channel_id, $private);      
+    }
+
     public function get_channel_unread_count()
     {
       $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
-      require_once __DIR__ . '/lib/rocketchatclient.php';
-      $this->login();
-      $uid = $this->getUserId();
-      $token = $this->getAuthToken();
-      $rocketClient = new RocketChatClient($this->rc);
-      $rocketClient->setUserId($uid);
-      $rocketClient->setAuthToken($token);
+      // require_once __DIR__ . '/lib/rocketchatclient.php';
+      // $this->login();
+      // $uid = $this->getUserId();
+      // $token = $this->getAuthToken();
+      // $rocketClient = new RocketChatClient($this->rc);
+      // $rocketClient->setUserId($uid);
+      // $rocketClient->setAuthToken($token);
+      $rocketClient = $this->get_rc_client();
       $results = $rocketClient->channel_count($channel);
       echo json_encode($results);
       exit;

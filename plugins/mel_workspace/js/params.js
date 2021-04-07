@@ -5,22 +5,7 @@
         constructor(workspace_id)
         {
             this.async(() => {
-                $(".wsp-change-icon").each((i,e) => {
-                    //e = $(e);
-                    let _class = null;
-                    for (let index = 0; index < e.classList.length; ++index) {
-                        const element = e.classList[index];
-                        if (element !== "wsp-change-icon" && !element.includes("text"))
-                        {
-                            _class = element;
-                            break;
-                        }
-                    }
-                    e = $(e);
-                    if (_class !== null)
-                        e.removeClass(_class).addClass(m_mp_CreateDocumentIconContract(_class));
-                    e.removeClass("wsp-change-icon");
-                  });
+                this.change_icons();
             });
             this.uid = workspace_id;
             Object.defineProperty(this, '_data_null', {
@@ -28,6 +13,26 @@
                 configurable: false,
                 writable: false,
                 value: Workspace_Param.data_null
+              });
+        }
+
+        change_icons()
+        {
+            $(".wsp-change-icon").each((i,e) => {
+                //e = $(e);
+                let _class = null;
+                for (let index = 0; index < e.classList.length; ++index) {
+                    const element = e.classList[index];
+                    if (element !== "wsp-change-icon" && !element.includes("text"))
+                    {
+                        _class = element;
+                        break;
+                    }
+                }
+                e = $(e);
+                if (_class !== null)
+                    e.removeClass(_class).addClass(m_mp_CreateDocumentIconContract(_class));
+                e.removeClass("wsp-change-icon");
               });
         }
 
@@ -270,7 +275,33 @@
                 _uid:this.uid,
                 _app:app
             }).always(() => {
-                return this.update_app_table();
+                return this.update_app_table(() => {
+                    this.change_icons();
+                });
+            }).always(async () => {
+                await this.ajax(this.url("PARAMS_update_services"), {
+                    _uid:this.uid
+                },
+                (datas) => {
+                    $(".wsp-services").html(datas);
+                    WSPReady();
+                }
+                );
+                await this.update_toolbar().always(() => {
+                    this.busy(false);
+                });
+            });
+        }
+
+        update_toolbar()
+        {
+            return this.ajax(this.url("PARAMS_update_toolbar"), {
+                _uid:this.uid
+            }, (datas) => {
+                console.log("toolbar", datas, $("#wsp-toolbar"));
+               $(".wsp-toolbar").html(datas);
+               $(".wsp-home.active").removeClass("active");
+               $(".wsp-item-params").addClass("active");
             });
         }
 

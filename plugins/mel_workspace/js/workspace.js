@@ -1,28 +1,43 @@
 $(document).ready(async () => {
+    WSPReady();
+});
+
+async function WSPReady()
+{
+    console.log("a");
     const uid = rcmail.env.current_workspace_uid;
     SetCalendarDate()
+    console.log("b");
     //Récupération des données d'ariane
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     const hasAriane = $(".wsp-ariane").length > 0;
     if (hasAriane)
     {
+        console.log("c");
         let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
         //console.log("Init()", datas, channel, datas[channel]);
         UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
     }
+    console.log("d");
     //Récupération des données de l'agenda
     UpdateCalendar();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
     //Récupération des données des tâches
+    console.log("e");
     UpdateTasks();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
-    
+    console.log("f");
     if (hasAriane)
     {
-        await wait(() => window.ariane === undefined);
+        console.log("g");
+        await wait(() => {
+            console.log(window.ariane === undefined);
+             return window.ariane === undefined
+        });
+        console.log("h");
         window.ariane.addEventListener("update", UpdateAriane);
     }
-});
+}
 
 var UpdateAriane = (channel, store, unread) => {
     $(".ariane-count").html(unread > 99 ? "+99" : unread);

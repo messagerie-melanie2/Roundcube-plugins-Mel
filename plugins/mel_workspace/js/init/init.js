@@ -1,26 +1,90 @@
 (() => {
-    function getUnread(channel)
+    class WSPNotification
     {
-        $.ajax({ // fonction permettant de faire de l'ajax
-        type: "POST", // methode de transmission des données au fichier php
-        url: "/?_task=discussion&_action=get_channel_unread_count",
-        data:{
-            _channel:channel
-        },
-        success: function (data) {
-            data = JSON.parse(data);
-            data.content = JSON.parse(data.content);
-            // if (data.content.success)
-            //     $("#wsp-notifs");
-            console.log("yeay", data);
-        },
-        error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-            console.error(xhr, ajaxOptions, thrownError);
-        },
-        });
+        constructor(notifClass, key, post, classToReplace,funcCount, date_key = null)
+        {
+            this.notif = $("." + notifClass);//.addClass("");
+            //console.log('update', this.notif, notifClass,  $("." + notifClass), "." + notifClass);
+            this.notif.update = function (item, func)
+            {
+                //console.log("update", this, item, func);
+                this.each((i,e) => {
+                    e = $(e);
+                    const id = e.parent().parent().parent().parent()[0].id.replace("wsp-notifs-wsp-", "").replace("-epingle", "");
+                    const value = func(item, id);
+                    //console.log("update", id, value);
+                    if (value === 0)
+                        e.parent().parent().css("display", "none");
+                    else
+                    {
+                        e.html(value);
+                        e.parent().parent().css("display", "");
+                    }
+                });
+                return this;
+            };
+            // this.icon = notif.parent();
+            // this.parent = icon.parent();
+            this.key = key;
+            this.post = post;
+            this.date_key = date_key;
+            this.count = funcCount;
+            this.notif.parent().find(".replacedClass").removeClass("replacedClass").addClass(classToReplace).addClass("ariane-icon");
+        }
+
+        async update()
+        {
+            let item = mel_metapage.Storage.get(this.key);
+            if (item === null || this.check_date())
+                item = await this.update_value();
+            this.notif.update(item, this.count);
+            // if(item === 0)
+            //     this.parent.css("display", "none");
+            // else
+            // {
+            //     this.parent.css("display", "");
+            //     this.notif.html(item);
+            // }
+        }
+
+        check_date()
+        {
+            if (this.date_key !== null)
+                return moment().startOf("day").format() !== moment(mel_metapage.Storage.get(this.date_key)).startOf("day").format();
+            else
+                return false;
+        }
+
+        async update_value()
+        {
+            mel_metapage.Storage.remove(this.key);
+            window.workspaces.sync.PostToParent({
+                exec:this.post
+            });
+            await wait(() => mel_metapage.Storage.get(this.key) === null);
+            return mel_metapage.Storage.get(this.key);
+        }
+    }
+
+    WSPNotification.tasks = function ()
+    {
+        return new WSPNotification("tasks-notif", mel_metapage.Storage.other_tasks, "rcmail.mel_metapage_fn.tasks_updated()", "icofont-tasks", (tasks, id) => {
+            return tasks[id].length;
+        }, mel_metapage.Storage.last_task_update);
+    }
+
+    WSPNotification.agenda = function ()
+    {
+        return new WSPNotification("calendar-notif", "all_events", "rcmail.mel_metapage_fn.calendar_updated()", "icofont-calendar", (cal, id) => {
+            //console.log("update-func",cal, id, Enumerable.from(cal));
+            id = "ws#" + id;
+            return  Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).count();
+        }, mel_metapage.Storage.last_calendar_update);
     }
 
      rcmail.addEventListener("init", () => {
+        WSPNotification.agenda().update();
+        WSPNotification.tasks().update();
         $(".dwp-user").each((i,e) => {
             var image = $(e).find("img")[0];
             if (image !== undefined && image !== null)
@@ -51,7 +115,8 @@
             }
          });
 
-     })
+     });
+
 
 
 })();

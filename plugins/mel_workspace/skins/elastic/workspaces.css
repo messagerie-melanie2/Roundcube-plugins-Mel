@@ -108,13 +108,15 @@ html.touch .wsp-content{
 }
 
 .ariane-icon{
-    font-size: xxx-large;
+    font-size: x-large;
 }
 
-.roundbadge.ariane-notif
+.roundbadge.ariane-notif,
+.wsp-notif
 {
     position: absolute;
-    right: 20px;
+    right: 16px;
+    top:-4px;
     height: 16px;
     width: 16px;
     line-height: 16px;

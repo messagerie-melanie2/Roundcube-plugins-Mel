@@ -161,6 +161,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 {
     if(rcmail.busy)
         return;
+    $(".wsp-toolbar").css("z-index", "0");
     $(".wsp-toolbar-item").removeClass("active");
     $(event).addClass("active");
     let datas = [];
@@ -373,6 +374,7 @@ async function ChangePage(_class)
 
 async function ChangeToolbarPage(_class)
 {
+    $(".wsp-toolbar").css("z-index", "");
     $(".wsp-object").css("display", "none");
     $(".wsp-toolbar-item").removeClass("active");
     //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));

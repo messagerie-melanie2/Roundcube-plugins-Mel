@@ -27,6 +27,10 @@ html.touch .wsp-content{
     padding-right: 15px;
 }
 
+html.layout-small .wsp-content{
+  padding: 0px;
+}
+
 .title-wsp {
     font-size: x-large;
     font-weight: bold;
@@ -200,6 +204,18 @@ separate{
     width: fit-content;
     width: -moz-fit-content;
     margin: auto;
+    position: sticky;
+    top: 0px;
+    z-index: 5;
+}
+
+
+
+html.layout-small .wsp-toolbar{
+    border-radius: 0px;
+    width: 100%;
+    margin: 0;
+    justify-content: center;
 }
 
 .wsp-toolbar-item {
@@ -213,6 +229,23 @@ separate{
     position: relative;
 }
 
+html.layout-normal .wsp-toolbar-item{
+    font-size:27px;
+    padding: 0 40px;
+}
+
+html.touch .wsp-toolbar-item{
+    font-size:30px;
+    padding: 0 25px;
+}
+
+html.layout-small .wsp-toolbar-item
+{
+    margin: 10px auto;
+    border: none;
+    /* background: linear-gradient(90deg, rgba(2,0,36,1) 2%, rgba(255,0,0,1) 2%, rgba(255,0,0,1) 98%, rgba(0,0,0,1) 98%); */
+}
+
 .wsp-toolbar-item.first{
     border-left-style: none;
 }
@@ -221,6 +254,16 @@ separate{
 .wsp-toolbar-item.active{
     cursor: pointer;
     background: radial-gradient(circle, #42548F 33%, rgba(255,255,255,0) 33%);
+}
+
+html.layout-normal .wsp-toolbar-item:hover,
+html.layout-normal .wsp-toolbar-item.active{
+    background:radial-gradient(circle, #42548F 35%, rgba(255,255,255,0) 35%)
+}
+
+html.touch .wsp-toolbar-item:hover,
+html.touch .wsp-toolbar-item.active{
+    background:radial-gradient(circle, #42548F 48%, rgba(255,255,255,0) 48%)
 }
 
 .wsp-toolbar-item.active
@@ -234,6 +277,17 @@ separate{
     top: 7px;
     right: 46px;
     color: black;
+}
+
+html.layout-normal .wsp-toolbar .notif.roundbadge
+{
+    right:35px;
+}
+
+html.touch .wsp-toolbar .notif.roundbadge
+{
+    right:23px;
+    top:6px;
 }
 
 .dwp-round.wsp-picture
@@ -464,4 +518,22 @@ separate.wsp {
     border-radius: 5px;
     margin-top: 30px;
     padding: 25px;
+}
+
+html.layout-small .wsp-object ,
+html.layout-small .wsp-toolbar-title
+{
+    margin-right:15px;
+    margin-left:15px;
+}
+
+html.layout-small .wsp-toolbar-edited {
+	/* font-size: small; */
+	width: 80% !important;
+	border-radius: 60px !important;
+	bottom: 49px !important;
+}
+
+.wsp-toolbar-edited {
+    top:unset;
 }

@@ -918,7 +918,7 @@ class mel extends rcube_plugin {
    * Définition des propriétées de l'utilisateur
    */
   private function set_user_properties() {
-    if (!empty($this->get_account)) {
+    if (!empty($this->get_account) && $this->get_account != $this->rc->get_user_name()) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);

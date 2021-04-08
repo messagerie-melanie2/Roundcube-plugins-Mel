@@ -39,7 +39,7 @@
         url(action = null)
         {
             if (action === null)
-                return MEL_ELASTIC_UI.url("workspace");
+                return MEL_ELASTIC_UI.url("workspace", "", (window.location.href.includes("iframe") ? {"_from":"iframe"} : null));
             else
                 return MEL_ELASTIC_UI.url("workspace", action);
         }

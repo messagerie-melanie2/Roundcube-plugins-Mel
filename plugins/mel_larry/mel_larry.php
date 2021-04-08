@@ -107,6 +107,8 @@ class mel_larry extends rcube_plugin
       $this->add_hook('preferences_list',             array($this, 'prefs_list'));
       $this->add_hook('preferences_save',             array($this, 'prefs_save'));
       $this->add_hook('preferences_sections_list',    array($this, 'sections_list'));
+      // register message hook
+      $this->add_hook('message_headers_output', array($this, 'mail_headers'));
 
       // // Folders list handler
       if ($rcmail->task == 'mail' && empty($rcmail->action)
@@ -215,6 +217,149 @@ class mel_larry extends rcube_plugin
       }
     }
     return $args;
+  }
+
+  /**
+   * Change From message header
+   */
+  function mail_headers($args) {
+    if (isset($args['output']['from']) 
+        && $args['output']['from']['html']) {
+      $args['output']['from']['value'] = $this->rcmail_address_string($args['output']['from']['raw'], null, true, "/images/addcontact.png");
+    }
+        
+    return $args;
+  }
+
+  /**
+   * Decode address string and re-format it as HTML links
+   */
+  private function rcmail_address_string($input, $max=null, $linked=false, $addicon=null, $default_charset=null, $title=null)
+  {
+    global $PRINT_MODE;
+    
+    $rcmail = rcmail::get_instance();
+    $a_parts = rcube_mime::decode_address_list($input, null, true, $default_charset);
+    
+    if (!count($a_parts)) {
+      return $input;
+    }
+    
+    $c   = count($a_parts);
+    $j   = 0;
+    $out = '';
+    $allvalues  = array();
+    $show_email = $rcmail->config->get('message_show_email');
+    
+    if ($addicon && !isset($_SESSION['writeable_abook'])) {
+      $_SESSION['writeable_abook'] = $rcmail->get_address_sources(true) ? true : false;
+    }
+    
+    foreach ($a_parts as $part) {
+      $j++;
+      
+      $name   = $part['name'];
+      $mailto = $part['mailto'];
+      $string = $part['string'];
+      $valid  = rcube_utils::check_email($mailto, false);
+      
+      // IDNA ASCII to Unicode
+      if ($name == $mailto)
+        $name = rcube_utils::idn_to_utf8($name);
+        if ($string == $mailto)
+          $string = rcube_utils::idn_to_utf8($string);
+          $mailto = rcube_utils::idn_to_utf8($mailto);
+          
+          if ($PRINT_MODE) {
+            $address = sprintf('%s &lt;%s&gt;', rcube::Q($name), rcube::Q($mailto));
+          }
+          else if ($valid) {
+            if ($linked) {
+              $attrs = array(
+                  'href'    => 'mailto:' . $mailto,
+                  'class'   => 'rcmContactAddress',
+                  'onclick' => sprintf("return %s.command('compose','%s',this)",
+                    rcmail_output::JS_OBJECT_NAME, rcube::JQ(format_email_recipient($mailto, $name))),
+              );
+              
+              $attrs['title'] = $mailto;
+              if (!$name) {
+                $name = explode('@', $mailto, 2);
+                $name = ucfirst(str_replace('.', ' ', $name[0])) . ' (' . $name[1] . ')';
+              }
+              $content =  html::tag('span', 'name', rcube::Q($name)) . html::tag('span', 'mailto', rcube::Q($mailto));
+              
+              $address = html::a($attrs, $content);
+            }
+            else {
+              $address = html::span(array('title' => $mailto, 'class' => "rcmContactAddress"),
+                rcube::Q($name ?: $mailto));
+            }
+            
+            if ($addicon && $_SESSION['writeable_abook']) {
+              $address .= html::a(array(
+                  'href'    => "#add",
+                  'title'   => $rcmail->gettext('addtoaddressbook'),
+                  'class'   => 'rcmaddcontact',
+                  'onclick' => sprintf("return %s.command('add-contact','%s',this)",
+                    rcmail_output::JS_OBJECT_NAME, rcube::JQ($string)),
+              ),
+                html::img(array(
+                    'src'   => $rcmail->output->abs_url($addicon, true),
+                    'alt'   => "Add contact",
+                    'class' => 'noselect',
+                )));
+            }
+          }
+          else {
+            $address = $name ? rcube::Q($name) : '';
+            if ($mailto) {
+              $address = trim($address . ' ' . rcube::Q($name ? sprintf('<%s>', $mailto) : $mailto));
+            }
+          }
+          
+          $address = html::span('adr', $address);
+          $allvalues[] = $address;
+          
+          if (!$moreadrs) {
+            $out .= ($out ? ', ' : '') . $address;
+          }
+          
+          if ($max && $j == $max && $c > $j) {
+            if ($linked) {
+              $moreadrs = $c - $j;
+            }
+            else {
+              $out .= '...';
+              break;
+            }
+          }
+    }
+    
+    if ($moreadrs) {
+      $label = rcube::Q($rcmail->gettext(array('name' => 'andnmore', 'vars' => array('nr' => $moreadrs))));
+      
+      if ($PRINT_MODE) {
+        $out .= ' ' . html::a(array(
+            'href'    => '#more',
+            'class'   => 'morelink',
+            'onclick' => '$(this).hide().next().show()',
+        ), $label)
+        . html::span(array('style' => 'display:none'), join(', ', $allvalues));
+      }
+      else {
+        $out .= ' ' . html::a(array(
+            'href'    => '#more',
+            'class'   => 'morelink',
+            'onclick' => sprintf("return %s.show_popup_dialog('%s','%s')",
+              rcmail_output::JS_OBJECT_NAME,
+              rcube::JQ(join(', ', $allvalues)),
+              rcube::JQ($title))
+        ), $label);
+      }
+    }
+    
+    return $out;
   }
 
   /**

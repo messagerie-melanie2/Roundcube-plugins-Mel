@@ -3,29 +3,29 @@
         <span style="    display: contents;
         cursor: pointer;
     " onclick="rcmail.command('workspaces.go', '<workspace-uid/>')">
-        <div class="col-1">
+        <div class="col-1 wsp-block-col" style="min-width: 64px;">
             <workspace-image/>
         </div>
-        <div class="col-2">
+        <div class="col-2 wsp-block-col">
             <span><workspace-#/></span>
             <br/>
             <span class="wsp-title"><workspace-title/></span>
             <br/>
             <br/>
         </div>
-        <div class="col-4">
+        <div class="col-4 wsp-block-col">
             <div class="row wsp-infos">
-                <div class="col-6">
+                <div class="col-5" style="white-space: nowrap;">
                     <div class=wsp-users>
                         <workspace-users/>
                     </div>
                 </div>
-                <div class="col-6" style="white-space: nowrap;">
+                <div class="col-7" style="white-space: nowrap;">
                     <workspace-misc/>
                 </div>
             </div>
         </div>
-        <div class="col-5" id="wsp-notifs-<workspace-id/>">
+        <div class="col-md-5 wsp-block-col" id="wsp-notifs-<workspace-id/>">
             <div class="row" style=flex-direction:row-reverse;>
                 <workspace-notifications/>
             </div>

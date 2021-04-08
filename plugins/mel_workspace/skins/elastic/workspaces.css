@@ -31,6 +31,11 @@ html.layout-small .wsp-content{
   padding: 0px;
 }
 
+html.layout-small .wsp-index{
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 .title-wsp {
     font-size: x-large;
     font-weight: bold;
@@ -48,6 +53,8 @@ html.layout-small .wsp-content{
     font-weight: bold;
     font-size: x-large;
     white-space: nowrap;
+    display: block;
+    /* width: 100%; */
 }
 
 .dwp-circle{
@@ -309,6 +316,17 @@ html.touch .wsp-toolbar .notif.roundbadge
     left:0;
     top:0px;
 } 
+
+.wsp-picture > span{
+    position: absolute;
+    top: 50%;
+left: 50%;
+right:0;
+bottom: 0;
+transform: translate(-50%, -50%);
+line-height: 200%;
+font-size: 2vw;
+}
 
 .row.wsp-head{
     margin-top: 30px;

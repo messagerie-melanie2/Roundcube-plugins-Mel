@@ -1,0 +1,4 @@
+<?php
+
+// URLs vers la roadmap publique
+$rcmail_config['roadmap_url'] = '';

@@ -238,12 +238,13 @@ class mel_workspace extends rcube_plugin
         ));
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
+        $this->rc->output->set_env("current_workspace_back", rcube_utils::get_input_value('_last_location', rcube_utils::INPUT_GPC));
         $this->rc->output->send('mel_workspace.workspace');
     }
 
     function get_picture()
     {
-        if ($this->currentWorkspace->logo !== null && $this->currentWorkspace->logo !== "")
+        if ($this->currentWorkspace->logo !== null && $this->currentWorkspace->logo !== "false" && $this->currentWorkspace->logo !== "")
             $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><img src="'.$this->currentWorkspace->logo.'"></div>';
         else
             $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><span>'.substr($this->currentWorkspace->title, 3)."</span></div>";

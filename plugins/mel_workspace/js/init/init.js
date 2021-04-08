@@ -69,7 +69,10 @@
     WSPNotification.tasks = function ()
     {
         return new WSPNotification("tasks-notif", mel_metapage.Storage.other_tasks, "rcmail.mel_metapage_fn.tasks_updated()", "icofont-tasks", (tasks, id) => {
-            return tasks[id].length;
+            if (tasks[id] === undefined)
+                return 0;
+            else
+                return tasks[id].length;
         }, mel_metapage.Storage.last_task_update);
     }
 

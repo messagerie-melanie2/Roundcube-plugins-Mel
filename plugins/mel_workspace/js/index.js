@@ -86,4 +86,17 @@ $(document).ready(() => {
             console.log("here");
             window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {"_event":"list_public", "_page":page});
         }, true);
+        //<workspace-uid/>
+    rcmail.register_command("workspaces.go", (uid) => {
+        rcmail.set_busy(true, 'loading');
+        let config = {
+            _uid:uid
+        };
+        if (rcmail.env.action === "action")
+            config["_last_location"] = encodeURIComponent(window.location.href);
+        if (window.location.href.includes('iframe'))
+            config["_from"] = "iframe";
+        console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
+        window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
+    }, true);
 });

@@ -126,7 +126,7 @@ function UpdateMenu(_class, _picture, _toolbar)
                 bottom = basePx;
 
         }
-        console.log("button", button, right, bottom);
+        //console.log("button", button, right, bottom);
         button = $(".tiny-wsp-menu");
         if (button.length === 0)
         {

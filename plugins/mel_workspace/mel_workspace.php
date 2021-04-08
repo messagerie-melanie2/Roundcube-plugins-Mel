@@ -247,7 +247,7 @@ class mel_workspace extends rcube_plugin
         if ($this->currentWorkspace->logo !== null && $this->currentWorkspace->logo !== "false" && $this->currentWorkspace->logo !== "")
             $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><img src="'.$this->currentWorkspace->logo.'"></div>';
         else
-            $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><span>'.substr($this->currentWorkspace->title, 3)."</span></div>";
+            $html = '<div style="background-color:'.$this->get_setting($this->currentWorkspace,"color").'" class="dwp-round wsp-picture"><span>'.substr($this->currentWorkspace->title, 0, 3)."</span></div>";
         return $html;
     }
 
@@ -460,11 +460,16 @@ class mel_workspace extends rcube_plugin
                         html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
 
                 $tasks = self::TASKS;
-                $col[($col["left"] === "" ? "left" : "right")].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
+                $col["left"].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
+            }
+            if ($col["left"] === "")
+            {
+                $col["left"] = $col["right"];
+                $col["right"] = "";
             }
             $html_return .= html::div(["class" => "row"], 
-                html::div(["class" => "col-md-6 "], $col["left"]).
-                html::div(["class" => "col-md-6"], $col["right"])
+                html::div(["class" => "col-md-6"], $col["left"]).
+                ($col["right"] === "" ? "" : html::div(["class" => "col-md-6"], $col["right"]))
             );
         }
 

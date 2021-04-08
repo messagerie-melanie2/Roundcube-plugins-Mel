@@ -23,7 +23,7 @@ class mel_roadmap extends rcube_plugin {
    *
    * @var string
    */
-  public $task = '?(?!login).*';
+  public $task = 'settings';
 
   /**
    * (non-PHPdoc)
@@ -32,12 +32,8 @@ class mel_roadmap extends rcube_plugin {
    */
   function init() {
     $rcmail = rcmail::get_instance();
-
-    // Chargement de la conf
-    $this->load_config();
-    $this->add_texts('localization/', false);
-    
     if ($rcmail->task == 'settings' && !$rcmail->config->get('ismobile', false)) {
+        $this->add_texts('localization/', false);
         $this->add_hook('settings_actions', array($this, 'settings_actions'));
         $this->api->register_action('plugin.mel_roadmap', $this->ID, array(
             $this,
@@ -63,6 +59,8 @@ class mel_roadmap extends rcube_plugin {
 
   function settings() {
     $rcmail = rcmail::get_instance();
+    // Chargement de la conf
+    $this->load_config();
     // Ajout du css
     $this->include_stylesheet($this->local_skin_path() . '/mel_frame.css');
     // register UI objects

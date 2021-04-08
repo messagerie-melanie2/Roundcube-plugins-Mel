@@ -87,7 +87,7 @@ if (window.rcmail) {
 			}
 			localStorage.setItem('rocket_chat_title', title);
 			$('.button-rocket_chat .button-inner').text(title);
-			document.title = title;
+			//document.title = title;
 			refreshFavico();
 			//sessionStorage.setItem('rocket_chat_url', window.document.getElementById('rocket_chat_frame').contentWindow.location);
 		}

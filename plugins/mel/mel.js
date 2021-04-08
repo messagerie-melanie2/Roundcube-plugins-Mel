@@ -244,11 +244,11 @@ if (window.rcmail) {
   // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
   rcmail.addEventListener('change_identity', function(evt) {
     if (window.identity && window.identity != rcmail.env.identity) {
-      rcmail.http_request('mail/plugin.refresh_store_target_selection', 
-      {
-        "_account": rcmail.env.identities_to_bal[rcmail.env.identity],
+      var params = {};
+      if (rcmail.env.identities_to_bal[rcmail.env.identity]) {
+        params['_account'] = rcmail.env.identities_to_bal[rcmail.env.identity];
       }
-      , rcmail.set_busy(true, 'loading'));
+      rcmail.http_request('mail/plugin.refresh_store_target_selection', params, rcmail.set_busy(true, 'loading'));
     }
     window.identity = rcmail.env.identity;
   });

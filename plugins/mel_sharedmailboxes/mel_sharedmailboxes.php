@@ -519,7 +519,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         $result = array();
         $identities = $this->rc->user->list_identities();
         // Lister les boites auxquelles l'utilisateur a accés
-        $mailboxes = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsSharedEmission());
+        $mailboxes = driver_mel::gi()->getUser()->getObjectsSharedEmission();
 
         foreach ($identities as $id) {
             foreach ($mailboxes as $mailbox) {

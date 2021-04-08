@@ -79,10 +79,10 @@ class Workspaces extends Module
             $html = str_replace("<workspace-epingle/>", "active", $html);
         else
             $html = str_replace("<workspace-epingle/>", "", $html);
-        if ($workspace->logo !== null)
+        if ($workspace->logo !== null && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
         else
-            $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 3)."</span></div>", $html);
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
         if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else

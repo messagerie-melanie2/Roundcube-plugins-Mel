@@ -640,3 +640,11 @@ html.layout-small .wsp-toolbar-edited {
     font-size: larger;
     margin-left: 5px;
 }
+
+.task-bureau .wsp-title
+{
+    max-width: 100%;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: break-spaces;
+}

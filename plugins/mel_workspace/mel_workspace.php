@@ -1097,7 +1097,7 @@ class mel_workspace extends rcube_plugin
         if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img src="'.$workspace->logo.'"></div>', $html);
         else
-            $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 3)."</span></div>", $html);
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
         if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else

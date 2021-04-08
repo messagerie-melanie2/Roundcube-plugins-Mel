@@ -1,0 +1,36 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="settings-right">
+    <div class="iframebox">
+    	<roundcube:object name="mel_roadmap_frame" id="mel_roadmap_frame" />
+  	</div>
+  	<div id="wait_box"><div id="img_wait_box"></div></div>
+</div>
+
+</div>
+
+
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+ new rcube_splitter({ id:'melsplitter', p1:'#settings-sections', p2:'#settings-right',
+	orientation:'v', relative:true, start:180, min:42, size:1 }).init();
+  new rcube_splitter({ id:'melmoncomptesplitter2', p1:'#mel_moncompte_options_listbox', p2:'#mel_moncompte_option_box',
+          orientation:'v', relative:true, start:180, min:120, size:1 }).init();
+</script>
+
+</body>
+</html>

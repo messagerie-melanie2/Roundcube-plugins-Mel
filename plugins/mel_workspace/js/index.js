@@ -77,3 +77,13 @@ function wsp_epingle(id)
         workspace_enable_epingle(initialId);
      });  
 }
+
+$(document).ready(() => {
+    console.log("ready", rcmail.env.action, rcmail.env.action === "action");
+    if (rcmail.env.action === "action")
+        rcmail.register_command("workspaces.page", (page) => {
+            rcmail.set_busy(true, "loading");
+            console.log("here");
+            window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {"_event":"list_public", "_page":page});
+        }, true);
+});

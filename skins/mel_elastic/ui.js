@@ -24,6 +24,13 @@ $(document).ready(() => {
                 writable: false,
                 value: '<value/>'
               });
+
+              Object.defineProperty(this, '_integer', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: 8
+              });
               this.update();
         }
         update()
@@ -37,6 +44,12 @@ $(document).ready(() => {
             $(".select-button-mel").unbind('click');
             $(".select-button-mel").on("click", (e) => {
                 this.generateSelect(e.currentTarget);
+            });
+            console.log("pagination", $(".pagination"));
+            $(".pagination").each((i,e) => {
+                e = $(e);
+                this.set_pagination(e, e.data("count"), e.data("current") === undefined ? null : e.data("current"));
+                return this;
             });
         }
         getRandomColor() {
@@ -240,6 +253,120 @@ $(document).ready(() => {
 			html += '			</div>';
             return html;
         }
+        create_number(number, isClickable = true, active = false) {
+            return `<span class="pagination-number pagination-number-`+number.toString().replaceAll(".", "a")+(active ? " active " : "")+(isClickable ? "" : "disabled")+`" onclick="MEL_ELASTIC_UI.pagination_page(this, `+number+`)">` + number + '</span>';
+        };
+        set_pagination(e,count, current = null)
+        {
+            const _integer = this._integer;
+            console.log("count", count);
+            count = Math.ceil(count/7.0);
+            e.html('<button class="pagination_prev pagination-button" onclick="MEL_ELASTIC_UI.pagination_prev(this)">Précédent</button>')
+            e.append("<div class=pagination-elements></div>");
+            let pagination_elements = e.find(".pagination-elements");
+            for (let index = 0; index < count; ++index) {
+                if (index === _integer){
+                    pagination_elements.append(this.create_number("...", false));
+                    pagination_elements.append(this.create_number(count));
+                    break;
+                }
+                else
+                pagination_elements.append(this.create_number(index+1, true, (index === 0)));            
+            }          
+            e.append('<button class="pagination_next pagination-button" onclick="MEL_ELASTIC_UI.pagination_next(this)">Suivant</button>')
+            console.log("current", current);
+            if (current !== null)
+                this.pagination_page($(".pagination-number-" + current)[0],current, false);
+        }
+        pagination_page(e, number, doAction = true){
+            const _integer = this._integer;
+            e = $(e).parent();
+            const count = Math.ceil(e.parent().data("count")/7.0);
+            let html = "";
+            if (count > _integer)
+            {
+                let before = false;
+                let after = false;
+                for (let index = 0; index < count; ++index) {
+                    //affichage du premier
+                    if (index === 0)
+                        html += this.create_number(index+1, true, (index+1 === number));
+                    //affichage du dernier
+                    else if (index === count - 1)
+                    html += this.create_number(count, true, number === count)
+                    //si loin premier et loin dernier
+                    else if (number  > _integer && number < (count - _integer))
+                    {
+                        if (index < number - _integer / 2.0)// || index > number + _integer / 2.0)
+                        {
+                            if (!before){
+                                html += this.create_number("...", false);
+                                before = true;
+                            }
+                        }
+                        else if (index > number + _integer / 2.0)
+                        {
+                            if (!after)
+                            {
+                                html += this.create_number("...", false);
+                                after = true;
+                            }
+                        }
+                        else
+                            html += this.create_number(index + 1, true, (index+1 === number));
+                    }
+                    //si proche premier
+                    else if (number < _integer)
+                    {
+                        if (index === _integer){
+                            html += this.create_number("...", false);
+                            html += this.create_number(count);
+                            break;
+                        }
+                        else 
+                            html += this.create_number(index + 1);
+                    }
+                    //si proche dernier
+                    else
+                    {
+                        if (index > count - _integer)
+                            html += this.create_number(index + 1);
+                        else{
+                            if (!before)
+                            {
+                                html += this.create_number("...", false);
+                                before = true;
+                            }
+                        }
+                    }
+                }    
+            }
+            else
+            {
+                for (let index = 0; index < count; ++index) {
+                    console.log("test", index+1 === number);
+                    html += this.create_number(index+1, true, (index+1 === number));
+                }
+            }
+            e.html(html);
+            e.parent().data("current", number);
+            //console.log((e.parent().data("page").replaceAll("¤page¤", number)));
+            if (doAction)
+                eval(e.parent().data("page").replaceAll("¤page¤", number));
+        }
+        pagination_next(e) {
+            const count = $(e).parent().data("count");
+            let current = $(e).parent().data("current");
+            current = (current === null || current === undefined ? 2 : current + 1);
+            if (count+1 != current)
+                this.pagination_page($(".pagination-number-" + current)[0], current)
+        }
+        pagination_prev(e) {
+            const current = $(e).parent().data("current");
+            if (current !== undefined || current !== 1)
+                this.pagination_page($(".pagination-number-" + (current-1))[0], current - 1);
+        }
+
     }
 
     window.MEL_ELASTIC_UI = new Mel_Elastic();

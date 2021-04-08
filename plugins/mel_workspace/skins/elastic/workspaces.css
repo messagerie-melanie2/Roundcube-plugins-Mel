@@ -537,3 +537,66 @@ html.layout-small .wsp-toolbar-edited {
 .wsp-toolbar-edited {
     top:unset;
 }
+
+.pagination.mel-pagination{
+    margin: 0 auto;
+    margin-top:30px;
+    max-width: min-content;
+}
+
+.pagination-elements {
+	width: 100%;
+	display: flex;
+}
+
+.pagination-number
+{
+    transition: all 0.1s ease-in;
+    margin: 0 auto;
+    font-size: large;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.pagination-number.active{
+    cursor: none;
+    pointer-events: none;
+}
+
+.pagination-number.active,
+.pagination-number:hover{
+    background: radial-gradient(circle, #42548F 48%, rgba(255,255,255,0) 48%);
+    color:white;
+}
+
+.pagination-button
+{
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: large;
+    transition: all 0.1s ease-in;
+}
+
+.pagination-button:hover
+{
+    background-color:#42548F;
+    color:white;
+    border-radius: 60px;
+}
+
+.pagination_prev::before
+{
+    font-family: 'IcoFont';
+    content: "\ea9d";
+    font-size: larger;
+    margin-right: 5px;
+}
+
+.pagination_next::after
+{
+    font-family: 'IcoFont';
+    content: "\eaa0";
+    font-size: larger;
+    margin-left: 5px;
+}

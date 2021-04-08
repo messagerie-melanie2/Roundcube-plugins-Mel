@@ -159,8 +159,10 @@ class mel_workspace extends rcube_plugin
 
     function show_publics()
     {
+        $page = rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC);
         $html = "";
-        foreach ($this->workspaces as $key => $value) {
+        $workspaces = (driver_mel::gi()->workspace())->listPublicsWorkspaces('modified', true, 7, (($page ?? 1) - 1)*7);
+        foreach ($workspaces as $key => $value) {
             $html .= $this->create_block($value, false);
         } 
         return $html;
@@ -180,6 +182,19 @@ class mel_workspace extends rcube_plugin
                 };
                 $this->rc->output->add_handlers(array(
                     'label'    => $label,
+                ));
+                $pagination = function() {
+                    $page = rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC);
+                    $config = ["class" => "pagination mel-pagination",
+                    "data-count" => count((driver_mel::gi()->workspace())->listPublicsWorkspaces()),
+                    "data-page" => "rcmail.command('workspaces.page', ¤page¤)"
+                    ];
+                    if ($page !== null)
+                        $config["data-current"] = $page;
+                    return html::div($config);
+                };
+                $this->rc->output->add_handlers(array(
+                    'pagination'    => $pagination,
                 ));
                 $this->rc->output->send('mel_workspace.list_workspaces');
                 break;
@@ -667,7 +682,7 @@ class mel_workspace extends rcube_plugin
                     $this->include_script('js/'.$this->folders[$it]."/".$files[$i]);
             }
         }
-        if ($this->rc->action === "index" || $this->rc->action === "")
+        if ($this->rc->action === "index" || $this->rc->action === "" || $this->rc->action === "action")
             $this->include_script('js/index.js');
         if ($this->rc->action === "workspace")
         {
@@ -1078,7 +1093,7 @@ class mel_workspace extends rcube_plugin
             $html = str_replace("<workspace-epingle/>", "active", $html);
         else
             $html = str_replace("<workspace-epingle/>", "", $html);
-        if ($workspace->logo !== null)
+        if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img src="'.$workspace->logo.'"></div>', $html);
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 3)."</span></div>", $html);
@@ -1381,6 +1396,7 @@ class mel_workspace extends rcube_plugin
             foreach ($shares as $key => $value) {
                 $this->delete_user($uid, $value->user, false);
             }
+            $workspace->hashtags = [];
             $workspace->save();
             $workspace->delete();
         }

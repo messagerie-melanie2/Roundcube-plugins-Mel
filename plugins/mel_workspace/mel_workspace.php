@@ -330,11 +330,11 @@ class mel_workspace extends rcube_plugin
         $admin = self::is_admin($this->currentWorkspace);
         $html = "";
         if ($exists && $admin)
-            $html.= html::div(["style" => "margin-right:15px", "class" => "mel-button invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], "Inviter un membre").html::tag("span", ["class" => $icon]));
+            $html.= html::div(["style" => "margin-right:15px", "class" => "mel-button invite-button plus", "onclick" => "rcmail.command(`workspace.add_users`)"], html::tag("span", [], "Inviter un membre").html::tag("span", ["class" => $icon]));
         if ($exists)
             $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => "rcmail.command('workspace.leave')"], html::tag("span", [], "Quitter l'espace de travail").html::tag("span", ["class" => $icon_quit]));
         else
-            $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => ""], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
+            $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
         return html::div([], $html);
     }
 

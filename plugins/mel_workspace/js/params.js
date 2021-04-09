@@ -360,6 +360,7 @@
             rcmail.register_command('workspace.remove_user', (x) => rcmail.env.WSP_Param.delete_user(x), true);
             rcmail.register_command('workspace.leave', () => rcmail.env.WSP_Param.leave(), true);
             rcmail.register_command('workspace.delete', () => rcmail.env.WSP_Param.delete(), true);
+            rcmail.register_command('workspace.join', () => rcmail.env.WSP_Param.join(), true);
             rcmail.register_command('workspace.go', () => {
                 rcmail.env.WSP_Param.quit();
             } ,true);

@@ -148,6 +148,17 @@ html.layout-small .--row{
     width: 353px;
 }
 
+.--col > .workspace
+{
+    min-height: 300px;
+}
+
+html.layout-small .--col > .workspace
+{
+    min-height: unset;
+}
+
+
 .--col-m
 {
     margin: 0 15px;

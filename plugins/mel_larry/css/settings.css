@@ -131,3 +131,8 @@ img.themethumbnail
   background: #fff;
   border-radius: 4px;
 }
+
+#filter-form .listelement input {
+	background-color: #fff;
+	background-color: var(--inputs-bg-color);
+}

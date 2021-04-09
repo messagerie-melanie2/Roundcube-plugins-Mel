@@ -1243,7 +1243,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             $account = $tmp[1];
         }
         // Lister les boites auxquelles l'utilisateur a accés
-        $mailboxes = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsSharedEmission());
+        $mailboxes = driver_mel::gi()->getUser()->getObjectsSharedEmission();
 
         foreach ($identities as $id) {
             foreach ($mailboxes as $mailbox) {

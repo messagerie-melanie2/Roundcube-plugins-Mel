@@ -912,3 +912,7 @@ body.light #messagepreview div a.button,
 	white-space: break-spaces;
 }
 
+#filter-form .listelement input {
+	background-color: #fff;
+	background-color: var(--inputs-bg-color);
+}

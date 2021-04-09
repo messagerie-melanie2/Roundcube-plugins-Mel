@@ -428,7 +428,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
                     if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
                         $mailbox = $_object->mailbox;
                         // Récupération de la configuration de la boite pour l'affichage
-                        $args['user'] = $_object->uid;
+                        $args['user'] = $mailbox->uid;
                         $args['host'] = driver_mel::gi()->getRoutage($mailbox);
                     }
                 }

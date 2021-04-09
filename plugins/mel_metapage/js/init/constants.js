@@ -119,7 +119,10 @@ const mel_metapage = {
         mail:"mel_metapage.mail.count",
         last_calendar_update:"mel_metapage.calendar.last_update",
         last_task_update:"mel_metapage.tasks.last_update",
-        ariane:"ariane_datas"
+        ariane:"ariane_datas",
+        wait_frame_loading:"mel_metapage.wait_frame_loading",
+        wait_frame_waiting:"waiting...",
+        wait_frame_loaded:"loaded"
     },
     /**
      * Liste des symboles.
@@ -267,6 +270,20 @@ const mel_metapage = {
                 }
             }
             return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
+        },
+        change_frame: async function(frame, changepage = true, waiting = false)
+        {
+            if (waiting)
+                mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
+            workspaces.sync.PostToParent({
+                exec:"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+")",
+                child:false
+            });
+            if (waiting)
+            {
+                await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
+                mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
+            }
         }
     }
 }; 

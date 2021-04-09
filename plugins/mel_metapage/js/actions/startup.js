@@ -329,6 +329,8 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
     rcmail.env.frame_created = true;
     if (changepage)
         $("#"+id).css("display", "");
+    if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
+        mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 });
 
 metapage_frames.addEvent("changepage.after", () => {
@@ -352,6 +354,8 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
     //console.log("changepage", changepage	);
     if (eClass === "discussion" && changepage)
         $(".a-frame").css("display", "");
+    if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
+        mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 });
 
 function m_mp_ChangeLasteFrameInfo()

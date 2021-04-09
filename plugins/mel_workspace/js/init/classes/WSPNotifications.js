@@ -75,16 +75,24 @@ class WSPNotification
 WSPNotification.add_to_refresh = function(listener, func)
 {
     window.workspaces.sync.PostToParent({
-        exec:"rcmail.addEventListener('"+listener+"', "+func+");",
+        exec:"WSPNotification.AddEventListener('"+listener+"', "+func+");",
         child:false,
     });
 }
 
+WSPNotification.AddEventListener = function(listener, func)
+{
+    //console.log("WSPNotification.AddEventListener", listener, func, rcmail._events[listener], Enumerable.from(rcmail._events[listener]).where(x => "" + x.func === "" + func).count());
+    if (!Enumerable.from(rcmail._events[listener]).where(x => "" + x.func === "" + func).any())
+        rcmail.addEventListener(listener, func);
+}
+
 WSPNotification.update_notifications = function (trigger)
 {
-    console.log("update_notifications", "rcmail.triggerEvent(`trigger`);");
+    //console.log("update_notifications", "rcmail.triggerEvent(`trigger`);");
     window.workspaces.sync.PostToParent({
         exec:'rcmail.triggerEvent(`'+trigger+'`);',
+        eval:"always"
     });
 }
 

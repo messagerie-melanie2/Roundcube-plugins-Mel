@@ -20,6 +20,7 @@ SynchroniseWorkspaces.PostToParent = function (data)
 SynchroniseWorkspaces.PostToChilds = function (datas)
 {
     $("iframe.mm-frame").each((i,e) => {
+        console.log("SynchroniseWorkspaces.PostToChilds", e)
         SynchroniseWorkspaces.Post(e.contentWindow, datas)
     });
 }
@@ -54,12 +55,14 @@ else {
         if (SynchroniseWorkspaces.im_who_have_lunched_this)
         {
             SynchroniseWorkspaces.im_who_have_lunched_this = false;
-            return;
+            if (datas.eval !== "always")
+                return;
         }
         const datas = event.data;
         if (datas.exec === undefined)
             return;
         try {
+            console.log("eval", datas, datas.exec, window);
             eval(datas.exec);
         } catch (error) {
             console.error(error);

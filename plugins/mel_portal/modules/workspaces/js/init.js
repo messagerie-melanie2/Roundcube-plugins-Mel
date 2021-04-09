@@ -40,6 +40,25 @@ try {
             };
          });
 
+         rcmail.register_command("portal.go.workspace", async (uid) => {
+            if ($(".workspace-frame").length === 0)
+                await mel_metapage.Functions.change_frame("wsp", false, true);
+            rcmail.set_busy(true, 'loading');
+            let config = {
+                _uid:uid.replace("wsp-", "")
+            };
+            if ($("iframe.workspace-frame").length > 0)
+                config["_from"] = "iframe";
+             mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
+            $(".workspace-frame")[0].src = MEL_ELASTIC_UI.url('workspace','workspace', config);
+            await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
+            rcmail.set_busy(false);
+            rcmail.clear_messages();
+            await mel_metapage.Functions.change_frame("wsp", true, true);
+            rcmail.set_busy(false);
+            rcmail.clear_messages();
+         }, true);
+
         //  $(".workspace").each((i,e) => {
         //     const id = e.id.replace("wsp-", "");
         //     getUnread("apitech-1");

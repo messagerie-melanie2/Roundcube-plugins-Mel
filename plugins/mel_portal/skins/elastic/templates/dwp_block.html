@@ -1,39 +1,41 @@
 <div class="workspace" data-public="<workspace-public/>" id="<workspace-id/>">
-    <div class="row">
-        <div class="col-4"><workspace-image/></div>
-        <div class="col-8">
-            <span><workspace-#/></span>
-            <br/>
-            <span class="wsp-title"><workspace-title/></span>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <workspace-avancement/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-4">
-            <div class=wsp-users>
-                <workspace-users/>
+    <div style="width: 100%;cursor: pointer;" onclick="rcmail.command('portal.go.workspace', '<workspace-id/>')">
+        <div class="row">
+            <div class="col-4"><workspace-image/></div>
+            <div class="col-8">
+                <span><workspace-#/></span>
+                <br/>
+                <span class="wsp-title"><workspace-title/></span>
             </div>
         </div>
-        <div class="col-8">
-            <workspace-misc/>
+        <div class="row">
+            <div class="col-12">
+                <workspace-avancement/>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
-            <workspace-task-danger/>
+        <div class="row">
+            <div class="col-4">
+                <div class=wsp-users>
+                    <workspace-users/>
+                </div>
+            </div>
+            <div class="col-8">
+                <workspace-misc/>
+            </div>
         </div>
-        <div class="col-6">
-            <workspace-task-all/>
+        <div class="row">
+            <div class="col-6">
+                <workspace-task-danger/>
+            </div>
+            <div class="col-6">
+                <workspace-task-all/>
+            </div>
         </div>
-    </div>
-    <div class="row" id="wsp-notifs-<workspace-id/>">
-        <!-- <div class="col-12" id="wsp-notifs-<workspace-id/>"> -->
-            <workspace-notifications/>
-        <!-- </div> -->
+        <div class="row" id="wsp-notifs-<workspace-id/>">
+            <!-- <div class="col-12" id="wsp-notifs-<workspace-id/>"> -->
+                <workspace-notifications/>
+            <!-- </div> -->
+        </div>
     </div>
     <a href="#" id="tak-<workspace-id/>" onclick="desk_epingle('<workspace-id/>')" class="icofont-tack-pin tak <workspace-epingle/> roundbadge"></a>
 </div>

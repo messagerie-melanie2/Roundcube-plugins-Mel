@@ -63,13 +63,18 @@ class Workspaces extends Module
         foreach ($this->workspaces as $key => $value) {
             if ($it > 2)
                 break;
-            $html .= $this->create_block($value);
+            $html .= $this->create_block($value, $it, count($this->workspaces) > 3 ? 3 : count($this->workspaces));
             ++$it;
         } 
-        return html::tag("span", ["style" => "font-size: x-large;font-weight: bold;"], $this->text("workspaces")).html::div(["class" => 'row'], $html);
+        $title = html::div([],
+            html::tag("span", ["style" => "font-size: x-large;font-weight: bold;"], $this->text("workspaces")).
+            html::tag("span", ["class" => "mel-button", "style" => "float:right;", "onclick" => "mel_metapage.Functions.change_frame('wsp')"], html::tag("span", [], "Voir tout").html::tag("span", ["class" => "icofont-arrow-right plus"]))
+        );
+
+        return $title.html::div(["class" => '--row'], $html);
     }
 
-    function create_block($workspace)
+    function create_block($workspace, $_it, $count)
     {
         $html = $this->rc->output->parse("mel_portal.dwp_block", false, false);
         $is_epingle = self::is_epingle($workspace);
@@ -138,7 +143,7 @@ class Workspaces extends Module
             }
         }
         $html = str_replace("<workspace-notifications/>", $tmp_html, $html);
-        return html::div(["class" => "col-md-4"], $html);
+        return html::div(["class" => "--col ".($_it > 0 ? ($_it === 1 && $count === 2 ? "--col-l" : ($_it != $count-1 ? "--col-m" : "")) : "")], $html);
     }
 
     function include_css(){

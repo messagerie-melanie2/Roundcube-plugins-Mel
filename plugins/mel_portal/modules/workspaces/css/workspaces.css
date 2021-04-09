@@ -4,7 +4,7 @@
     border-radius: 5px;
     width: 100%;
     display: inline-block;
-    margin-left: 15px;
+    /* margin-left: 15px; */
     margin-bottom: 15px;
     position: relative;
 }
@@ -120,4 +120,15 @@
     pointer-events: none;
     color: red;
     background-color: transparent;
+}
+
+body.task-bureau .wsp-notif-block{
+    margin-top: 0px;
+    float: none;
+}
+
+body.task-bureau .wsp-notif-block .roundbadge.ariane-notif
+{
+    right: -5px;
+    top: -5px;
 }

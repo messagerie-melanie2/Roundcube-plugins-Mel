@@ -43,6 +43,7 @@ class mel_workspace extends rcube_plugin
     {
         $this->setup();
         $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
+        $this->include_script('js/init/classes/WSPNotifications.js');
         if ($this->rc->task === "workspace")
             $this->portal();
     }
@@ -343,7 +344,7 @@ class mel_workspace extends rcube_plugin
     const TASKS = "tasks";
     const EMAIL = "unknown1";
     const CLOUD = "doc"; 
-    function get_worskpace_services($workspace, $services_to_remove = false)
+    public function get_worskpace_services($workspace, $services_to_remove = false)
     {
         $datas = [
             self::CHANNEL => $this->get_object($workspace, self::CHANNEL) !== null,
@@ -1151,7 +1152,7 @@ class mel_workspace extends rcube_plugin
                         break;
                     
                     default:
-                        $tmp_html .= '<div class="col-2 centered" style=display:none;margin-top:40px;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
+                        $tmp_html .= '<div class="wsp-notif-block" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
                     break;
                 }
             }
@@ -1248,7 +1249,10 @@ class mel_workspace extends rcube_plugin
         if (!(array_search(self::CHANNEL, $exists) === false))
         {
             $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-            $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+            if ($workspace->uid === "apitech-1")
+                $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
+            else
+                $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
         }
     }
 

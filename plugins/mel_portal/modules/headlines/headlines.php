@@ -13,7 +13,7 @@ class Headlines extends Module
             array("class" => "row"),
             html::div(
                 array("class" => "col-md-8"),
-                $this->html_square_hbf("A la une", "he1", "be1", "fe1", null, 'headlines_contents')
+                $this->html_square_hbf($this->text("headline"), "he1", "be1", "fe1", null, 'headlines_contents')
                 ).html::div(
                     array("class" => "col-md-4"),
                     $this->html_square_hbf('Flash info', "he2", "be2", "fe2", 'headlines_fi_block', 'headlines_fi_contents')

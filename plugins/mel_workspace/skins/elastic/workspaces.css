@@ -648,3 +648,21 @@ overflow: hidden;
 text-overflow: ellipsis;
 white-space: break-spaces;
 }
+
+.wsp-notif-block {
+	display: inline-block;
+	position: relative;
+	/* justify-content: left; */
+	/* text-align: left; */
+	/* align-items: normal; */
+	/* align-self: first baseline; */
+	float: right;
+	margin-top: 62px;
+	margin-left: 5px;
+}
+
+.wsp-notif-block .roundbadge
+{
+    top: -5px;
+    right: -5px;
+}

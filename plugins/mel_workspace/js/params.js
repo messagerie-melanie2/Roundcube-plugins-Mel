@@ -173,13 +173,16 @@
         {
             return this.ajax(this.url("PARAMS_update_user_table_rights"), {
                 _uid:this.uid
-            }, this.update_table).always(() => {
+            }, (datas) => {
+                this.update_table(datas);
+            }).always(() => {
                 func();
                 MEL_ELASTIC_UI.update();
             });
         }
         update_table(html, id="#wsp-user-rights")
         {
+            console.log("id", id);
             $(id).parent().html(html);
         }
 

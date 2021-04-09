@@ -21,6 +21,16 @@
     }
 
      rcmail.addEventListener("init", () => {
+try {
+    WSPNotification.tasks().update();
+} catch (error) {
+    console.error("###[WSPNotification.tasks().update()]", error);
+}
+try {
+    WSPNotification.agenda().update();
+} catch (error) {
+    console.error("###[WSPNotification.agenda().update()]", error);
+}
         $(".dwp-user").each((i,e) => {
             var image = $(e).find("img")[0];
             if (image === null || image === undefined)

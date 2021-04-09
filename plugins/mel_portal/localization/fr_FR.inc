@@ -21,13 +21,14 @@ $labels['dark_background'] = "Fond sombre";
 
 //Left_Menu
 $labels['index'] = "Tableau de bord ";
-$labels['news'] = "S'informer";
+$labels['news'] = "Informations";
 $labels['config'] = "Configuration";
 
 //My Day
 $labels['agenda'] = "Agenda ";
 $labels['tasks'] = "Tâches";
 $labels['my_day'] = "Ma journée";
-$labels['headline'] = "A la une";
+$labels['headline'] = "Informations";
 $labels['thematic_1'] = "Thématique 1";
 $labels['thematic_2'] = "Thématique 2";
+$labels['workspaces'] = "Mes espaces de travail";

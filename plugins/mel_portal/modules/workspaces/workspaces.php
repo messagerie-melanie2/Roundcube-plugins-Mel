@@ -66,7 +66,7 @@ class Workspaces extends Module
             $html .= $this->create_block($value);
             ++$it;
         } 
-        return html::div(["class" => 'row'], $html);
+        return html::tag("span", ["style" => "font-size: x-large;font-weight: bold;"], $this->text("workspaces")).html::div(["class" => 'row'], $html);
     }
 
     function create_block($workspace)
@@ -121,7 +121,23 @@ class Workspaces extends Module
         $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
         $html = str_replace("<workspace-task-all/>", "<br/>", $html);
 
-        $html = str_replace("<workspace-notifications/>", "", $html);
+        $ws = $this->rc->plugins->get_plugin('mel_workspace');
+        $services = $ws->get_worskpace_services($workspace);
+        $tmp_html = "";
+        foreach ($services as $key => $value) {
+            if ($value)
+            {
+                switch ($key) {
+                    case mel_workspace::CHANNEL:
+                        break;
+                    
+                    default:
+                        $tmp_html .= '<div class="wsp-notif-block" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
+                    break;
+                }
+            }
+        }
+        $html = str_replace("<workspace-notifications/>", $tmp_html, $html);
         return html::div(["class" => "col-md-4"], $html);
     }
 

@@ -14,7 +14,7 @@
   height: 18px;
 }
 
-.button-mel_sondage.selected 
+.button-mel_sondage.selected
 {
   background: url(images/taskbar_icon_sel.png) 3px 0px no-repeat !important;
   height: 18px;
@@ -56,6 +56,7 @@
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
   border:0px;
+  width: 50%;
 }
 
 .tablinks:hover
@@ -102,8 +103,8 @@
 }
 
 .module_parent{
-  margin-left: 15px;
-  margin-right: 15px;
+  /* margin-left: 7.5px;
+  margin-right: 7.5px; */
   margin-bottom: 38px;
 }
 
@@ -156,11 +157,28 @@
   max-width: 100%;
 }
 
+.webconf-myday {
+	float: right;
+  text-align: center;
+}
 
-@media screen and (max-width: 1025px){
+.span-webconf {
+	font-size: 10px;
+	display: block;
+  padding-right: 3px;
+}
+
+.roundbadge.webconf-myday
+{
+  margin-right: 5px;
+}
+
+
+
+/* @media screen and (max-width: 1025px){
   .dwp{
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
   .logo-mel
@@ -171,4 +189,108 @@
   max-width: 150px;
 }
 
+} */
+
+html.touch .dwp{
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+html.touch .logo-mel
+{
+  position: initial;
+  margin: 30px;
+  display: none;
+  max-width: 150px;
+}
+
+
+.--col-dwp
+{
+  padding: 0 7.5px;
+}
+
+/* .--col.--col-dwp-item {
+	/* display: inline-block; *
+	margin: 0 7.5px;
+} */
+.--col-dwp-1
+{
+  flex: 0 0 33.333333%;
+  max-width: 33.33%;
+  /* max-width: 353px; */
+}
+
+/* .--col-dwp-1 > div
+{
+  width: 353px;
+} */
+
+.--col-dwp-2
+{
+  flex: 0 0 66.6%;
+  max-width: 66.6%;
+}
+
+.--under-col-first{
+  padding-left: 0;
+}
+
+
+
+.--col-dwp-half
+{
+  flex: 0 0 50%;
+  max-width: 50%;
+  /* max-width: 353px; */
+}
+
+/* .--under-col-first{
+  margin-left: 0;
+} */
+
+html.layout-small .--col-dwp
+{
+  margin: 0;
+  padding: 0 15px;
+}
+
+html.layout-small .--col-dwp--under
+{
+  margin: 0;
+  padding: 0;
+}
+
+html.layout-small .--row-dwp--under
+{
+display: block;
+}
+
+html.layout-small .--col-dwp-1
+{
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+html.layout-small .--col-dwp-2
+{
+  flex: 0 0 100%;
+  max-width: 100%;
+  
+}
+
+html.layout-small .--col-dwp-half
+{
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.--col-dwp-3
+{
+  width: 100%;
+} 
+
+html.layout-small .--row
+{
+  display:block;
 }

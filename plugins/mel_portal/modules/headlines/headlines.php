@@ -4,18 +4,18 @@ class Headlines extends Module
 {
     function init()
     {
-        $this->edit_row_size(8);
+        $this->edit_row_size(2);
     }
 
     function generate_html()
     {
         return html::div(
-            array("class" => "row"),
+            array("class" => "--row --row-dwp--under"),
             html::div(
-                array("class" => "col-md-8"),
+                array("class" => "--col-dwp--under --under-col-first --col-dwp-half --col-dwp "),
                 $this->html_square_hbf($this->text("headline"), "he1", "be1", "fe1", null, 'headlines_contents')
                 ).html::div(
-                    array("class" => "col-md-4"),
+                    array("class" => "--col-dwp--under --col-dwp-half --col-dwp "),
                     $this->html_square_hbf('Flash info', "he2", "be2", "fe2", 'headlines_fi_block', 'headlines_fi_contents')
                     ));
     }

@@ -78,51 +78,51 @@ function setupMyDay(datas)
 	// 	return moment(a.start) - moment(b.start);
 	// });
 	let style;
-	let bool;
+	let bool = false;
 	let icon;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 		if (element.allDay)
-			html += "<div class=col-md-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+			html += "<div class=col-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
 		else
 		{
 			const style_date = set_style(element);
-        	html += "<div class=col-md-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+        	html += "<div class=col-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
 		}
-		bool = element.attendees !== undefined && 
-		element.attendees.length > 0 && 
-		Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
-		if (bool)
-		{
-			icon = null;
-			for (let it = 0; it < rcmail.env.mel_metapage_user_emails.length; it++) {
-				const mail = rcmail.env.mel_metapage_user_emails[it];
-				for (let j = 0; j < element.attendees.length; j++) {
-					const attendee = element.attendees[j];
-					if (attendee.email == mail)
-					{
-						if (attendee.role === "ORGANIZER")
-							icon = classes.organizer;
-						else if (attendee.status.toUpperCase() === 'CONFIRMED')
-							icon = classes.tick;
-						else if (attendee.status.toUpperCase() === 'DECLINED')
-							icon = classes.declined;
-						else 
-							icon = classes.waiting;
-						break;
-					}
-				}
-				if (icon !== null)
-					break;
-			}
-		}
-        html += '<div class=col-md-2><a ' + (bool ? "" : 'style="display:none;') + ' class="roundbadge large ' + (icon !== null ? icon : "") + '"></a></div>';
+		// bool = element.attendees !== undefined && 
+		// element.attendees.length > 0 && 
+		// Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
+		// if (bool) //Affichage d'information lié aux participants
+		// {
+		// 	icon = null;
+		// 	for (let it = 0; it < rcmail.env.mel_metapage_user_emails.length; it++) {
+		// 		const mail = rcmail.env.mel_metapage_user_emails[it];
+		// 		for (let j = 0; j < element.attendees.length; j++) {
+		// 			const attendee = element.attendees[j];
+		// 			if (attendee.email == mail)
+		// 			{
+		// 				if (attendee.role === "ORGANIZER")
+		// 					icon = classes.organizer;
+		// 				else if (attendee.status.toUpperCase() === 'CONFIRMED')
+		// 					icon = classes.tick;
+		// 				else if (attendee.status.toUpperCase() === 'DECLINED')
+		// 					icon = classes.declined;
+		// 				else 
+		// 					icon = classes.waiting;
+		// 				break;
+		// 			}
+		// 		}
+		// 		if (icon !== null)
+		// 			break;
+		// 	}
+		// }
+        // html += '<div class=col-md-2><a ' + (bool ? "" : 'style="display:none;') + ' class="roundbadge large ' + (icon !== null ? icon : "") + '"></a></div>';
 		if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
 			style = "";
 		else
 			style = "display:none;";
-		html += '<div class=col-md-2><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a></div>';
+		html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
         html += "</div>";
     }
     html += ""
@@ -153,8 +153,11 @@ function setup_tasks(datas)
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-        html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
-        html += '<div class=col-md-2><a onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
+		if (date._isValid)
+        	html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
+        else
+			html += "<div class=col-md-10></div>";
+		html += '<div class=col-md-2><a onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
     }
     html += ""

@@ -246,6 +246,7 @@ class Module implements iModule {
         $html_contents = "";
         for ($i=0; $i < $count; ++$i) { 
             $html_tabs = $html_tabs.$this->html_tab($array[$i]["name"], $array[$i]["id"], $i==0, $array[$i]["deco"]);
+            $html_tabs = substr($html_tabs, 0, strlen($html_tabs)-1);
             $html_contents = $html_contents.$this->html_tab_content($array[$i]["id"], $i!=0);
         }
         return html::div(

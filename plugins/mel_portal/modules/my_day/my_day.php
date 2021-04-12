@@ -32,7 +32,7 @@ class My_day extends Module
     {
         $this->config[$this::CALENDAR_EVENT_URL] = "?_task=calendar&_action=load_events";
         $this->config[$this::CALENDAR_REMOVE_EVENT_URL] = "?_task=calendar&_action=event";
-        $this->edit_row_size(4);
+        $this->edit_row_size(1);
     }
 
     /**

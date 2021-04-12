@@ -45,7 +45,7 @@ class Workspaces extends Module
         // $workspace->shares = $shares;
 
         // $res = $workspace->save();
-        $this->edit_row_size(12);
+        $this->edit_row_size(3);
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
         $it = 0;
         foreach ($this->workspaces as $key => $value) {

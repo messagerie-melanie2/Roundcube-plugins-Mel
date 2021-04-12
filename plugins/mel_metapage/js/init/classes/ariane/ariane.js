@@ -88,9 +88,13 @@
             }
         }
 
-        update(channel, store = true)
+        update(channel, store = true, epingle = false)
         {
-            let querry = $("#wsp-notifs-wsp-" + channel);
+            let querry;// = $("#wsp-notifs-wsp-" + channel);
+            if (epingle)
+                querry = $("#wsp-notifs-wsp-" + channel + "-epingle");
+            else
+                querry = $("#wsp-notifs-wsp-" + channel);
             if (querry.find(".ariane").length === 0)
                 querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icofont-chat ariane-icon"><span></span></div>')
             querry = querry.find(".ariane-notif");
@@ -107,7 +111,10 @@
                 ariane:this,
                 channel:channel
             });
-            this.triggerEvent("update", channel, store, this.unreads[channel]);
+            if (!epingle)
+                this.triggerEvent("update", channel, store, this.unreads[channel]);
+            if (!epingle)
+                this.update(channel, false, true);
         }
 
         menu()

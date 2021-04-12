@@ -260,7 +260,10 @@ function SetupTasks(datas, id, where = null)
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-        html += "<div class=col-md-10>" + element.title + (element.created === undefined ? "" : "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )+"</div>";
+        if (date._isValid)
+            html += "<div class=col-md-10>" + element.title + (element.created === undefined ? "" : "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )+"</div>";
+        else
+            html += "<div class=col-md-10></div>";
         html += '<div class=col-md-2><a onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
     }

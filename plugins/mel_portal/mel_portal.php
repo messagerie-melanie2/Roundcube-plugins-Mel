@@ -282,7 +282,7 @@ class mel_portal extends rcube_plugin
     {
         if ($this->modules_html == null)
             $this->modules_html = "";
-        $this->modules_html = $this->modules_html.html::div(array("class" => "col-md-".$size),
+        $this->modules_html = $this->modules_html.html::div(array("class" => "--col-dwp --col-dwp-".$size),
             html::div(array("class" => $name." module_parent"), $html)
         );
     }

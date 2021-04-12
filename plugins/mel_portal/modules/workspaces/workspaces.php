@@ -76,6 +76,7 @@ class Workspaces extends Module
 
     function create_block($workspace, $_it, $count)
     {
+        $ws = $this->rc->plugins->get_plugin('mel_workspace');
         $html = $this->rc->output->parse("mel_portal.dwp_block", false, false);
         $is_epingle = self::is_epingle($workspace);
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
@@ -94,7 +95,7 @@ class Workspaces extends Module
             $html = str_replace("<workspace-#/>", "", $html);
 
         $html = str_replace("<workspace-title/>", $workspace->title, $html);
-        $html = str_replace("<workspace-avancement/>", "<br/><br/><br/>", $html);
+        //$html = str_replace("<workspace-avancement/>", "<br/><br/><br/>", $html);
 
         if ($workspace->shares !== null)
         {
@@ -124,9 +125,12 @@ class Workspaces extends Module
         }
 
         $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
-        $html = str_replace("<workspace-task-all/>", "<br/>", $html);
 
-        $ws = $this->rc->plugins->get_plugin('mel_workspace');
+        $nb_tasks = 0;
+        $html = $ws->get_tasks($workspace, $html, "<workspace-avancement/>", $nb_tasks);
+        if ($nb_tasks > 0)
+            $html = str_replace("<workspace-task-all/>", html::div(["class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>$nb_tasks</span><br/>tâches au total"), $html);
+
         $services = $ws->get_worskpace_services($workspace);
         $tmp_html = "";
         foreach ($services as $key => $value) {

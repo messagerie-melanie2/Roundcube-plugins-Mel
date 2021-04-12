@@ -150,7 +150,9 @@ html.layout-small .--row{
 
 .--col > .workspace
 {
-    min-height: 300px;
+    min-height: 425px;
+    max-height: 425px;
+    overflow-y: auto;
 }
 
 html.layout-small .--col > .workspace
@@ -172,4 +174,24 @@ html.layout-small .--col{
     display: block;
     width: 100%;
     margin: 0;
+}
+
+.task-bureau .wsp-title
+{
+    margin-bottom: 0;
+}
+
+.wsp-tasks-all{
+    font-size: larger!important;
+    margin-top: -25px!important;
+}
+
+.wsp-tasks-all > span{
+    font-size: x-large!important;
+}
+
+.wsp-task-all-number {
+	font-size: xxx-large;
+	display: block;
+    margin-bottom: -30px;
 }

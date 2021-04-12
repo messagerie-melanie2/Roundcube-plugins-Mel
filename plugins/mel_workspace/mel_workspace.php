@@ -1140,7 +1140,7 @@ class mel_workspace extends rcube_plugin
         }
 
         $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
-        $html = str_replace("<workspace-task-all/>", "<br/>", $html);
+        $html = $this->get_tasks($workspace, $html);
 
         $services = $this->get_worskpace_services($workspace);
         $tmp_html = "";
@@ -1158,6 +1158,35 @@ class mel_workspace extends rcube_plugin
             }
         }
         $html = str_replace("<workspace-notifications/>", $tmp_html, $html);
+        return $html;
+    }
+
+    public static function get_completed_task($task)
+    {
+        return $task["complete"] === 1;
+    }
+
+    public function get_tasks($workspace, $html, $replace = "<workspace-task-all/>", &$total = 0)
+    {
+        $task_id = $this->get_object($workspace, self::TASKS);
+        if ($task_id !== null)
+        {  
+            $tasks = $this->rc->plugins->get_plugin('tasklist')->__get("driver")->list_tasks(["mask" => 0, "search" => null], $task_id);
+            $total = count($tasks);
+            if ($total !== 0)
+            {
+                $completed = count(array_filter($tasks, function ($task)
+                {
+                    return $task["complete"] === 1;
+                }));
+                //$taskslist = $task->get_lists()
+                $div = html::div(["class" => "wsp-tasks-all", "style" => "font-size:smaller;margin-top: -25px;"],
+                    html::tag("span", ["style" => "font-size:large"], $completed).
+                    " tâches réalisées sur $total"
+                );
+                $html = str_replace($replace, $div, $html);
+            }
+        }
         return $html;
     }
 

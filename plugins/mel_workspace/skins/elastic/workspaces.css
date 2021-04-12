@@ -54,6 +54,7 @@ html.layout-small .wsp-index{
     font-size: x-large;
     white-space: nowrap;
     display: block;
+    margin-bottom: 20px;
     /* width: 100%; */
 }
 

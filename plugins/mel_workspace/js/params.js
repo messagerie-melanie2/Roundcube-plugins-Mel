@@ -73,6 +73,18 @@
                 rcmail.clear_messages();
             }
         }
+
+        async busyAsync(is_busy = true)
+        {
+            if (is_busy)
+                rcmail.set_busy(true, "loading");
+            else
+            {
+                rcmail.set_busy(false);
+                rcmail.clear_messages();
+            }
+        }
+
         is_busy()
         {
             return rcmail.is_busy;
@@ -245,29 +257,34 @@
         leave()
         {
             this.busy();
-            return this.ajax(this.url("leave_workspace"),
+            if (confirm("Êtes vous-sûr de vouloir quitter cet espace de travail ?"))
             {
-                _uid:this.uid
-            },
-            (msg) => {
-                this.busy(false);
-                switch (msg) {
-                    case "yourealone":
-                        rcmail.display_message("Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.", "error");
+                return this.ajax(this.url("leave_workspace"),
+                {
+                    _uid:this.uid
+                },
+                (msg) => {
+                    this.busy(false);
+                    switch (msg) {
+                        case "yourealone":
+                            rcmail.display_message("Vous êtes la seule personne de cet espace, si vous souhaitez le quitter, supprimer le.", "error");
+                            break;
+                        case "youretheone":
+                            rcmail.display_message("Vous êtes le seul administrateur, si vous souhaitez quittez, ajoutez un autre administrateur avant.", "error");
                         break;
-                    case "youretheone":
-                        rcmail.display_message("Vous êtes le seul administrateur, si vous souhaitez quittez, ajoutez un autre administrateur avant.", "error");
-                    break;
-                    default:
-                        this.quit();
-                        break;
+                        default:
+                            this.quit();
+                            break;
+                    }
+                },
+                (a,b,c) => {
+                    console.error(a,b,c);
+                    this.busy(false);
                 }
-            },
-            (a,b,c) => {
-                console.error(a,b,c);
-                this.busy(false);
+                );
             }
-            );
+            else
+                return this.busyAsync(false);
         }
 
         update_app(app)
@@ -323,18 +340,53 @@
         delete()
         {
             this.busy();
-            return this.ajax(this.url("delete_workspace"), {
-                _uid:this.uid
-            },
-            (datas) => {
-                this.quit();
-            },
-            (a,b,c) => {
-                this.busy(false);
-                console.error(a,b,c);
-                rcmail.display_message("Impossible de supprimer cet espace, regardez la console pour plus d'informations.", "error");
+            if (confirm("Êtes-vous sûr de vouloir supprimer cet espace de travail ?\r\nAttention, cette action sera irréversible !"))
+            {
+                return this.ajax(this.url("delete_workspace"), {
+                    _uid:this.uid
+                },
+                (datas) => {
+                    this.quit();
+                },
+                (a,b,c) => {
+                    this.busy(false);
+                    console.error(a,b,c);
+                    rcmail.display_message("Impossible de supprimer cet espace, regardez la console pour plus d'informations.", "error");
+                }
+                );
             }
-            );
+            else
+                return this.busyAsync(false);
+        }
+
+        archive(archive = true)
+        {
+            this.busy();
+            let bool;
+            if (archive)
+                bool = confirm("Êtes-vous sûr de vouloir archiver cet espace de travail ?");
+            else
+                bool = confirm("Êtes-vous sûr de vouloir désarchiver cet espace de travail ?");
+            if (bool)
+            {
+                return this.ajax(this.url("archive_workspace"), {
+                    _uid:this.uid
+                },
+                (datas) => {
+                    if (archive)
+                        this.quit();
+                    else
+                        window.location.reload();
+                },
+                (a,b,c) => {
+                    this.busy(false);
+                    console.error(a,b,c);
+                    rcmail.display_message("Impossible d'archiver cet espace, regardez la console pour plus d'informations.", "error");
+                }
+                );
+            }
+            else
+                return this.busyAsync(false);
         }
 
         quit()
@@ -364,7 +416,8 @@
             rcmail.register_command('workspace.go', () => {
                 rcmail.env.WSP_Param.quit();
             } ,true);
-            rcmail.register_command('workspace.update_app', (app) => rcmail.env.WSP_Param.update_app(app), true);
+            rcmail.register_command('workspace.archive', () => rcmail.env.WSP_Param.archive(), true);
+            rcmail.register_command('workspace.unarchive', () => rcmail.env.WSP_Param.archive(false), true);
         })
     })
 

@@ -32,7 +32,7 @@
 	<!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
     <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
 	<div class="body" style="padding-bottom: 15px;">
-		<div class="epingle">
+        <div class="epingle">
             <span class="title-wsp">
                 Mes espaces de travail épinglés
             </span>
@@ -46,8 +46,18 @@
             <span class="title-wsp">
                 Tous mes espaces de travail
             </span> 
-            <roundcube:object name="joined" />
+            <div style="width: 100%;">
+                <div id="not-archive" class="tab-archive mel-tab mel-tabheader active">En cours</div>
+                <div id="wsp-archive-items" data-delete-after-click="true" data-onclick="load_archives(this)" class="tab-archive mel-tab mel-tabheader last">Archivés</div>
+            </div>
+            <div class="not-archive tab-archive mel-tab-content">
+                <roundcube:object name="joined" />
+            </div>
+            <div class="wsp-archive-items tab-archive mel-tab-content">
+
+            </div>
         </div>
+
         <div class=wsp-desc-block>
             <center>
                 <h2>Vous cherchez à rejoindre un projet spécifique ?</h2>

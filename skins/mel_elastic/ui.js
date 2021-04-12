@@ -215,6 +215,20 @@ $(document).ready(() => {
             $(event).addClass("active");
             //activation des objets lié à la tab
             $("." + id + "." + namespace).css("display", "");
+            const onclick = $(event).data("onclick");
+            if (onclick !== null && onclick !== undefined && onclick !== "")
+            {
+                new Promise((a,b) => {
+                    try {
+                        eval(onclick);
+                    } catch (error) {
+                        console.error(error);
+                    }
+                    //console.log("fdmfd,fdmkmfdfd", $(event).data("delete-after-click"), $(event).data("onclick"), event, $(event));
+                    if ($(event).data("delete-after-click") === true)
+                        $(event).data("onclick", "");
+                });
+            }
 
         }
         url(task, action = "", args = null)

@@ -100,3 +100,21 @@ $(document).ready(() => {
         window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
     }, true);
 });
+
+function load_archives(e)
+{
+    rcmail.set_busy(true, "loading");
+    let config = { // fonction permettant de faire de l'ajax
+        type: "GET", // methode de transmission des données au fichier php
+        url: MEL_ELASTIC_UI.url("workspace", "archived"),//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
+        success: (html) => {
+            $(".wsp-archive-items").html(html);
+        },
+        error: () => {}
+    };
+
+    return $.ajax(config).always(() => {
+        rcmail.set_busy(false);
+        rcmail.clear_messages();
+    });
+}

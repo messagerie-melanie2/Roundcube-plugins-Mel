@@ -63,6 +63,8 @@ class Workspaces extends Module
         foreach ($this->workspaces as $key => $value) {
             if ($it > 2)
                 break;
+            if ($value->isarchived)
+                continue;
             $html .= $this->create_block($value, $it, count($this->workspaces) > 3 ? 3 : count($this->workspaces));
             ++$it;
         } 

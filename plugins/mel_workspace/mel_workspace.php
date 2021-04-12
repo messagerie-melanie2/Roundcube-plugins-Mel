@@ -85,6 +85,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('index', array($this, 'index'));
         $this->register_action('action', array($this, 'show_actions'));
         $this->register_action('workspace', array($this, 'show_workspace'));
+        $this->register_action('archived', array($this, 'show_workspace_archived'));
         //$this->register_action('list', array($this, 'show_workspace'));
         $this->register_action('PARAM_Change_color', array($this, 'change_color'));
         $this->register_action('PARAMS_add_users', array($this, 'add_users'));
@@ -97,7 +98,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('PARAMS_update_services', array($this, 'update_services'));
         $this->register_action('join_user', array($this, 'join_user'));
         $this->register_action('delete_workspace', array($this, 'delete_workspace'));
-        //PARAMS_update_services
+        $this->register_action('archive_workspace', array($this, 'archive_workspace'));
+        //archive_workspace
         //add_users
     }
 
@@ -135,6 +137,12 @@ class mel_workspace extends rcube_plugin
     public function sort_users(&$array)
     {
         uasort($array , [$this, "array_sort_users"]);
+    }
+
+    function show_workspace_archived()
+    {
+        echo $this->generate_html(false, true);
+        exit;
     }
 
     function index()
@@ -570,6 +578,10 @@ class mel_workspace extends rcube_plugin
             $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
         else
             $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
+        if (!$this->currentWorkspace->isarchived) //<button class="btn btn-danger" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command('workspace.archive', '<workspace-uid/>')">Archiver</button>
+            $html = str_replace("<button-archive/>", '<button class="btn btn-danger" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>', $html);
+        else
+            $html = str_replace("<button-archive/>", '<button class="btn btn-success" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>', $html);
         return $html;
     }
 
@@ -1077,12 +1089,22 @@ class mel_workspace extends rcube_plugin
             return json_decode($workspace->settings)->$key;
     }
 
-    function generate_html($only_epingle = false)
+    function generate_html($only_epingle = false, $only_archived = false)
     {
         $html = "";
         foreach ($this->workspaces as $key => $value) {
             if (!self::is_epingle($value) && $only_epingle)
                 continue;
+            if ($only_archived)
+            {
+                if (!$value->isarchived)
+                    continue;
+            }
+            else
+            {
+                if ($value->isarchived)
+                    continue;
+            }
             $html .= $this->create_block($value, $only_epingle);
         } 
         return $html;
@@ -1547,6 +1569,21 @@ class mel_workspace extends rcube_plugin
         $workspace = self::get_workspace($uid);
         $this->currentWorkspace = $workspace;
         echo $this->get_services();
+        exit;
+    }
+
+    function archive_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        if (self::is_admin($workspace))
+        {
+            $workspace->isarchived = !$workspace->isarchived;
+            $workspace->save();
+            echo "";
+        }
+        else
+            echo "denied";
         exit;
     }
 

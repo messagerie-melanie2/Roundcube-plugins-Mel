@@ -703,7 +703,7 @@ table.listing td.subscribed {
     font-size: larger;
     white-space: nowrap;
     border-right-style: solid;
-    border-width: 2px;
+    border-width: 1px;
     border-color: black;
 }
 
@@ -714,6 +714,8 @@ table.listing td.subscribed {
 
 .mel-tab{
     cursor: pointer;
+    padding: 0 15px;
+    display: inline-block;
 }
 
 .mel-tab:hover,

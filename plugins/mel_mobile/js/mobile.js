@@ -370,7 +370,7 @@ $(document).ready(function() {
   });
 
   // Quick search box
-  $('#quicksearchbox').attr('placeholder', 'Search...');
+  $('#quicksearchbox').attr('placeholder', rcmail.get_label('mel_mobile.search_in_calendars'));
   $('#quicksearchbox').attr('data-type', 'search');
 
   // Directory contact list

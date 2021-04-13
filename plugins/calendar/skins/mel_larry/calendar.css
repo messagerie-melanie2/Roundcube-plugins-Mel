@@ -1653,7 +1653,7 @@ td.topalign {
 
 #attendees-freebusy-table div.timesheader,
 #schedule-freebusy-times tr.times td {
-	min-width: 30px;
+	min-width: 45px;
 	font-size: 9px;
 	padding: 5px 2px 6px 2px;
 	text-align: center;
@@ -1662,7 +1662,7 @@ td.topalign {
 }
 
 #schedule-freebusy-times tr.times td.allday {
-	min-width: 60px;
+	min-width: 75px;
 }
 
 #schedule-freebusy-times tr.times td {

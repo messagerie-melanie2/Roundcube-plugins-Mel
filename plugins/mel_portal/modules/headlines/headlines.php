@@ -5,6 +5,7 @@ class Headlines extends Module
     function init()
     {
         $this->edit_row_size(2);
+        $this->load_config();
     }
 
     function generate_html()
@@ -27,12 +28,13 @@ class Headlines extends Module
 
     function set_js_vars()
     {
-        $headlines = array( "news" => array(), "fi" => array() );
-        $headlines["news"][0] = array("header" => "Info service",
-        "body" => "Publication du référentiel des outils et services",
-        "footer" => "#Numerique");
-        $headlines["fi"]["header"] = "Flash info";
-        $headlines["fi"]["body"] = "<h3>Avis de travaux</h3><br/>Jeudi 19 novembre 2020 de 21h à 1h.<br/>Vérification des groupes électrogènes pouvant conduire à des coupures électriques.";
+        // $headlines = array( "news" => array(), "fi" => array() );
+        // $headlines["news"][0] = array("header" => "Info service",
+        // "body" => "Publication du référentiel des outils et services",
+        // "footer" => "#Numerique");
+        // $headlines["fi"]["header"] = "Flash info";
+        // $headlines["fi"]["body"] = "<h3>Avis de travaux</h3><br/>Jeudi 19 novembre 2020 de 21h à 1h.<br/>Vérification des groupes électrogènes pouvant conduire à des coupures électriques.";
+        $headlines = $this->config;
         $this->rc->output->set_env('mp_headlines', $headlines);
     }
 

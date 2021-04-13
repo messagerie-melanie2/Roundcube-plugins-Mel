@@ -48,7 +48,6 @@ class My_day extends Module
         html::tag("span", array("id" => "agendanew", "class" => "hidden roundbadge setalign lightgreen")))
         )
         );
-        //tab tâches
         $tasks = array("name" => $this->text('tasks'), 
                 "id" => "tasks",
             "deco" => html::tag('span', array("class" => 'icofont-checked marginright'),

@@ -147,6 +147,8 @@ function setupMyDay(datas)
 function setup_tasks(datas)
 {
 	let html = ''
+	// html = '<div id=dwp-tadk-urg class="tab-task-dwp mel-tab mel-tabheader">Tâches urgentes</div>';
+	// html += '<div id=dwp-tadk-all class="tab-task-dwp mel-tab mel-tabheader">Toute les tâches</div>';
 	datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
 	let date;
     for (let index = 0; index < datas.length; index++) {
@@ -157,7 +159,7 @@ function setup_tasks(datas)
         	html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
         else
 			html += "<div class=col-md-10></div>";
-		html += '<div class=col-md-2><a onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
+		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
     }
     html += ""

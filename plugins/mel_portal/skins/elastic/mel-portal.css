@@ -45,8 +45,8 @@
 }
 #headlines_fi_contents
 {
-  background-color:#FC945A;
-  color: initial;
+  /* background-color:#FC945A;*/
+  color: initial; 
 }
 .tablinks
 {
@@ -80,7 +80,7 @@
 .tabs-contents
 {
   background-color:#F8F8F8;
-  height:200px;
+  height: 301px;
   overflow-y: auto;
   overflow-x: hidden;
   border-bottom-left-radius: 5px;

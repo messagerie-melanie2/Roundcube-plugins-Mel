@@ -1058,3 +1058,28 @@ function m_mp_anchor_ariane()
         parent.mel_metapage.PopUp.ariane.anchor();
 }
 
+async function m_mp_shortcuts()
+{
+    if (window.shortcuts === undefined)
+    {
+        const tab_tasks = {
+            left:"",
+            right:"Toute les tâches"
+        };
+        const config = {
+            add_day_navigation:true,
+            add_create:true,
+            add_see_all:true
+        };
+        let shortcuts = new FullscreenItem("body", true);
+        shortcuts.generate_flex();
+        html = "<div class=mm-shortcuts>";
+        html += html_helper(html_helper.options.block, await html_helper.TasksAsync(tab_tasks, null, null, "Toutes mes tâches"), "shortcut-task");
+        html += html_helper(html_helper.options.block, await html_helper.CalendarsAsync(config), "shortcut-task shorcut-calendar");
+        html += "</div>";
+        shortcuts.add_app("items", html);
+        window.shortcuts = shortcuts;
+    }
+    else
+        window.shortcuts.open();
+}

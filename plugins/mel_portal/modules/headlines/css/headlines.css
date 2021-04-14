@@ -19,11 +19,6 @@
     overflow-y: auto;
 }
 
-.square-contents
-{
-    padding:30px;
-}
-
 .roundbadge.signet
 {
   position: absolute;

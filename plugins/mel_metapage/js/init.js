@@ -109,22 +109,27 @@ if (rcmail)
                         data=JSON.parse(data).callbacks[0][1].data;
                         let datas_to_save = [];
                         let other_datas = {};
+                        let other_datas_count = {};
                         let element;
+                        let username = mceToRcId(rcmail.env.username);
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
                             // if ()
                             //     continue;
+                            if (element.list !== username && other_datas[element.list] === undefined)
+                            {
+                                other_datas[element.list] = [];
+                                other_datas_count[element.list] = 1;
+                            }
+                            else if (element.list !== username)
+                                ++other_datas_count[element.list];
                             if (element.complete === 0)
                             {
                                 element.mel_metapage = {
                                     order:(element._hasdate === 1 ? (moment(element.datetime*1000) <= moment() ? 0 : 1 ) : 1),
                                 };
-                                if (element.list !== mceToRcId(rcmail.env.username))
-                                {
-                                    if (other_datas[element.list] === undefined)
-                                        other_datas[element.list] = [];
+                                if (element.list !== username)
                                     other_datas[element.list].push(element);
-                                }
                                 else
                                     datas_to_save.push(element);
                             }
@@ -132,6 +137,7 @@ if (rcmail)
                         datas_to_save.sort((a,b) => a.mel_metapage.order - b.mel_metapage.order);
                         mel_metapage.Storage.set(mel_metapage.Storage.tasks, datas_to_save);
                         mel_metapage.Storage.set(mel_metapage.Storage.other_tasks, other_datas);
+                        mel_metapage.Storage.set(mel_metapage.Storage.other_tasks_count, other_datas_count);
                         try_add_round(".tasklist", mel_metapage.Ids.menu.badge.tasks);
                         update_badge(datas_to_save.length, mel_metapage.Ids.menu.badge.tasks);
                         mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))

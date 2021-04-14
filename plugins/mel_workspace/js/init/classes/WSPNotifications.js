@@ -31,7 +31,7 @@ class WSPNotification
         this.notif.parent().find(".replacedClass").removeClass("replacedClass").addClass(classToReplace).addClass("ariane-icon");
         const listener = "WSPNotification.Update." + notifClass;
         rcmail.addEventListener(listener, () => {
-            console.log(listener, this);
+            //console.log(listener, this);
             this.update();
         });
         WSPNotification.add_to_refresh((eventListener === null ? "WSPNotification." + notifClass : eventListener), 

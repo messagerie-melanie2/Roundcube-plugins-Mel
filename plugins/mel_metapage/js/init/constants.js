@@ -104,6 +104,67 @@ const mel_metapage = {
         remove: function (key){
             window.localStorage.removeItem(key);
         },
+        check(storage = null)
+        {
+            if (storage === null)
+            {
+                let items = [];
+                for (const key in mel_metapage.Storage) {
+                    const element = mel_metapage.Storage[key];
+                    if (element !== undefined) {
+                       items.push(mel_metapage.Storage.check_day(key));
+                    }                  
+                }
+
+                return {
+                    items:items,
+                    wait:async function()
+                    {
+                        for (let index = 0; index < this.items.length; ++index) {
+                            const element = this.items[index];
+                            if (element.wait !== undefined)
+                                await element.wait();
+                        }
+                    }
+                }
+            }
+            else {
+                const update_element = (update_key, day_key) => {
+                    let item = {
+                        wait:async () => {return mel_metapage.Storage.get(update_key);}
+                    }
+                    let update = false;
+                    if (!update && moment(mel_metapage.Storage.get(day_key)).format("DD/MM/YYYY") !== moment().format("DD/MM/YYYY"))
+                        update = true;
+                    if (!update && mel_metapage.Storage.get(update_key) === null)  
+                        update = true;
+                    if (update)
+                    {
+                        mel_metapage.Storage.remove(update_key);
+                        workspaces.sync.PostToParent({
+                            exec:"rcmail.mel_metapage_fn.tasks_updated()",
+                            child:false
+                        })
+                        item.wait = async () => {
+                            await wait(() => mel_metapage.Storage.get(update_key) === null);
+                            return mel_metapage.Storage.get(update_key);
+                        };        
+                    }
+                    return item;
+                };
+
+                switch (storage) {
+                    case mel_metapage.Storage.other_tasks:
+                    case mel_metapage.Storage.tasks:
+                        return update_element(storage, mel_metapage.Storage.last_task_update);
+                    case "all_events":
+                    case mel_metapage.Storage.calendar:
+                        return update_element(storage, mel_metapage.Storage.last_calendar_update);
+                    default:
+                        return item;
+                }
+            }
+        },
         /**
          * Clé des données du calendrier.
          */
@@ -113,6 +174,7 @@ const mel_metapage = {
          */
         tasks:"mel_metapage.tasks",
         other_tasks:"mel_metapage.tasks.others",
+        other_tasks_count:"mel_metapage.tasks.others.count",
         /**
          * Clé du nombre de mail non lus.
          */
@@ -219,12 +281,12 @@ const mel_metapage = {
             },
          });
         },
-        check_if_calendar_valid:function(element, events)
+        check_if_calendar_valid:function(element, events, test=true)
         {
             if (mceToRcId(rcmail.env.username) !== element.calendar)
                 return false;
             else {
-                if (element._instance !== undefined)
+                if (element._instance !== undefined && test)
                 {
                     for (let it = 0; it < events.length; it++) {
                         const event = events[it];
@@ -284,7 +346,7 @@ const mel_metapage = {
                 await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
                 mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
             }
-        }
+        },
     }
 }; 
 window.mel_metapage = mel_metapage;

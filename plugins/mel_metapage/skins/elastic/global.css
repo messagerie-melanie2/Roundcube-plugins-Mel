@@ -62,6 +62,33 @@ html.touch .square-body > h3
     white-space: nowrap;
 }
 
+.shortcut-task{
+    max-width: 350px;
+    /* margin: 50px auto; */
+    display: inline-block;
+    margin-left: 7.5px;
+    margin-right: 7.5px;
+}
+
+.mm-shortcuts{
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+.task-title{
+    padding-bottom: 20px;
+}
+
+.task-title > span
+{
+    font-size: larger;
+    font-weight: bold;
+}
+
+.shortcut-task.square_div > .contents{
+    height: unset;
+}
+
  /* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane
 {
     position: absolute;

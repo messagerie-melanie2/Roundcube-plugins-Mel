@@ -47,4 +47,165 @@ $(document).ready(() => {
     // sheet.insertRule('.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default { color: black!important; }', sheet.cssRules.length);
      };
 
+     rcube_calendar.change_calendar_date = async function (jquery_element, add, where = null)
+     {
+         if (rcmail.busy)
+            return;
+         const config = {
+            add_day_navigation:false,
+            add_create:false,
+            add_see_all:false
+        };
+         rcmail.set_busy(true, "loading");
+         let date = moment(jquery_element.data("current-date"));
+         console.log("change_calendar_date", "date", date);
+         if (date === null || date === undefined || date === "")
+            date = moment();
+         date = date.add(add, "d").startOf("day");
+         rcube_calendar.mel_metapage_misc.SetCalendarDate(jquery_element, date);
+         console.log("change_calendar_date", "date-edited", date);
+         const array = await rcube_calendar.block_change_date(jquery_element, add, where, date);
+         if (array !== false)
+         {
+            console.log("change_calendar_date", "array", array);
+            const html = html_helper.Calendars(array,config, null, null, date, true);
+            console.log("change_calendar_date", "html", html);
+            console.log("change_calendar_date", "rcube_calendar.mel_metapage_misc.GetAgenda", rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element));
+            rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);
+            jquery_element.data("current-date", date.format());
+            console.log("change_calendar_date", "jquery_element", jquery_element);
+         }
+         rcmail.set_busy(false);
+         rcmail.clear_messages();
+
+     }
+
+     rcube_calendar.block_change_date = async function (jquery_element, add, where = null, _date = null)
+     {
+        //const SetCalendarDate = rcube_calendar.mel_metapage_misc.SetCalendarDate;
+        const GetAgenda = rcube_calendar.mel_metapage_misc.GetAgenda;
+        const check = (x, item) => {x.uid === item.uid};
+        //  const before = "ws#";
+        //  const uid = rcmail.env.current_workspace_uid;
+        //  const id = before + uid;
+         const date = _date === null ? moment(jquery_element.data("current-date")).add(add, "d").startOf("day") : _date;
+         //SetCalendarDate(jquery_element, date);
+         if (jquery_element !== null)
+            var querry = GetAgenda(jquery_element).html('<center><span class="spinner-border"></span></center>');
+         const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
+         let events = where === null || where === undefined ? JSON.parse(datas) : Enumerable.from(JSON.parse(datas)).where(where).toArray();
+         //console.log("change_calendar_date",events, JSON.parse(datas));
+         if (events !== null || events.length !== 0)
+         {
+             let element;
+             let tmp;
+             let array = [];
+             let elementsToDelete = [];
+             for (let index = 0; index < events.length; index++) {
+                 element = events[index];
+                 if (element.allDay)
+                     element.order = 0;
+                 else
+                     element.order = 1;
+                 tmp = mel_metapage.Functions.check_if_calendar_valid(element, events, false);
+                 if (tmp === true)
+                 {
+                     const s = moment(element.start);
+                     const e = moment(element.end);
+                     const tmp_bool = (element.recurrence !== undefined || element.recurrence !== null) &&
+                     s < date && e < date && element._instance === undefined
+                     //console.log("block_change_date", index, element, (element.recurrence !== undefined || element.recurrence !== null), s < date, e < date, element._instance === undefined, "tmp_bool", tmp_bool);
+                     if (tmp_bool)
+                        tmp = element;
+                 }
+
+                 if (tmp === true)
+                     array.AddIfExist(check, element);
+                 else if (tmp !== false)
+                     elementsToDelete.push(tmp);
+             }
+             //console.log(array);
+             events = Enumerable.from(array).where(x => !elementsToDelete.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
+             //setup_calendar(array, querry, date);
+         }
+         if (events === null || events.length === 0)
+         {
+            let _html;
+            if (date === moment().startOf("day"))
+                _html = "Pas de réunion aujourd'hui !";
+            else
+                _html = "Pas de réunion à cette date !";
+            if (jquery_element !== null)
+            {
+                querry.html(_html);
+                return false;
+            }
+            else
+                return _html;
+         }
+         else
+            return events;
+     }
+
+     rcube_calendar.mel_metapage_misc = {
+        SetCalendarDate: function (jquery_element,date = null)
+        {
+            const now = date === null ? moment() : date;
+            jquery_element.html(rcube_calendar.mel_metapage_misc.GetDate(now)).data("current-date", now);
+        },
+        GetParent: function(jquery_element)
+        {
+            return rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).parent();
+        },
+        GetAgenda : function (jquery_element)
+        {
+            return  jquery_element.parent().parent().parent().find(".block-body");
+        },
+        GetDate: function (momentObject)
+        {
+            return rcube_calendar.mel_metapage_misc.GetDateFr(momentObject.format("dddd DD MMMM"));
+        },
+        GetDateFr:function (date)
+        {
+            const capitalize = (s) => {
+                if (typeof s !== 'string') return ''
+                s = s.toLowerCase();
+                return s.charAt(0).toUpperCase() + s.slice(1)
+            }
+            const arrayTransform = {
+                "MONDAY":"LUNDI",
+                "TUESDAY":"MARDI",
+                "WEDNESDAY":"MERCREDI",
+                "THURSDAY":"JEUDI",
+                "FRIDAY":"VENDREDI",
+                "SATURDAY":"SAMEDI",
+                "SUNDAY":"DIMANCHE",
+                "JANUARY":"JANVIER",
+                "FEBRUARY":"FÉVRIER",
+                "MARCH":"MARS",
+                "APRIL":"AVRIL",
+                "MAY":"MAI",
+                "JUNE":"JUIN",
+                "JULY":"JUILLET",
+                "AUGUST":"AOÛT",
+                "SEPTEMBER":"SEPTEMBRE",
+                "OCTOBER":"OCTOBRE",
+                "NOVEMBER":"NOVEMBRE",
+                "DECEMBER":"DECEMBRE"
+            }
+            date = date.toUpperCase();
+            for (const key in arrayTransform) {
+                if (Object.hasOwnProperty.call(arrayTransform, key)) {
+                    const element = arrayTransform[key];
+                    if (date.includes(key))
+                        date = date.replace(key, element);
+                }
+            }
+            return capitalize(date);
+        }
+
+     }
+
+
+
 });

@@ -23,6 +23,7 @@
      rcmail.addEventListener("init", () => {
 try {
     WSPNotification.tasks().update();
+    new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
 } catch (error) {
     console.error("###[WSPNotification.tasks().update()]", error);
 }
@@ -94,6 +95,23 @@ function desk_epingle(id)
         workspaces.sync.PostToParent({
             exec:"workspace_enable_epingle(`" + initialId + "`)"
         });
+    });
+
+}
+
+function update_tasks()
+{
+    console.log("update_tasks()")
+    $(".workspace").each((i,e) => {
+        const id = e.id.replace("wsp-", "").replace("-epingle", "");
+        const datas = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks)[id];
+        const count = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks_count)[id];
+        console.log("update_tasks()", id, datas, count);
+        if (datas !== undefined && count !== undefined)
+        {
+            $(e).find(".wsp-tasks-all").html('<span style="font-size:large">'+(count-datas.length)+'</span> tâches réalisées sur '+count+'</div>');
+            $(e).find(".wsp-task-all-number").html(count);
+        }
     });
 
 }

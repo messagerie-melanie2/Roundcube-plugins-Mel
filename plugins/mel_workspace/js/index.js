@@ -99,6 +99,7 @@ $(document).ready(() => {
         console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
         window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
     }, true);
+    new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
 });
 
 function load_archives(e)
@@ -116,5 +117,18 @@ function load_archives(e)
     return $.ajax(config).always(() => {
         rcmail.set_busy(false);
         rcmail.clear_messages();
+    });
+}
+
+function update_tasks()
+{
+    console.log("here", "update_tasks()");
+    $(".workspace").each((i,e) => {
+        const id = e.id.replace("wsp-", "").replace("-epingle", "");
+        const datas = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks)[id];
+        const count = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks_count)[id];
+        console.log("update_tasks()", id, datas, count);
+        if (datas !== undefined && count !== undefined)
+            $(e).find(".wsp-tasks-all").html('<span style="font-size:large">'+(count-datas.length)+'</span> tâches réalisées sur '+count+'</div>');
     });
 }

@@ -792,3 +792,26 @@ td.mel-fit-content{
 {
     color:#ff5552;
 }
+
+.square_div > .contents
+{
+  background-color:#F8F8F8;
+  height:230px;
+  border-radius: 5px;
+}
+
+.square_div > .contents.DARK
+{
+  background-color:#484D7A;
+  color:#E6E7ED;
+}
+
+.square-contents
+{
+    padding:30px;
+}
+.mm-agenda-icon
+{
+    font-size: x-large;
+    position: relative;
+}

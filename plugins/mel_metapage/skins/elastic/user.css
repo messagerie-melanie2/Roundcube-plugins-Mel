@@ -44,8 +44,17 @@ div#user-status{
     color:#ff5552 !important
 }
 
+
+/* .fav-color:hover{
+
+} */
+
 .menu a.logout-color:not(.disabled):focus, .menu a.logout-color:not(.disabled):hover{
     background-color:#ff5552 !important
+}
+
+.menu a.fav-color:not(.disabled):focus, .menu a.fav-color:not(.disabled):hover{
+    color:#FDCF42 !important
 }
 
 #user-dispo.ok{

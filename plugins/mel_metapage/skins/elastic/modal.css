@@ -44,6 +44,17 @@
 
 /**********************************************************/
 
+.mm-shortcuts{
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+html.touch .mm-shortcuts{
+    margin: 0;
+    margin-top: 100px;
+    width: 100%;
+}
+
 .fullscreen-item {
 	position: absolute;
 	width: calc(100% - 60px);
@@ -56,6 +67,10 @@
     z-index: 9999999999
 }
 
+html.touch .fullscreen-item {
+	top: 0px;
+}
+
 .fullscreen-close {
 	position: absolute;
 	top: 20px;
@@ -64,11 +79,25 @@
     color:white;
 }
 
+html.touch .fullscreen-close {
+	right: 20px;
+}
+
 .fullscreen-item-flex,
 .mm-shortcuts
 {
     display:flex;
 }
+
+html.touch .mm-shortcuts
+{
+    flex-direction: column-reverse;
+}
+
+html.touch .mm-shortcuts > .square_div {
+    margin-top:15px;
+}
+
 
 
 

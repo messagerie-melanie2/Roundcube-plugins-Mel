@@ -254,6 +254,9 @@ if (rcmail)
         parent.rcmail.register_command("create-modal", () => {
             m_mp_Create();
         })
+        rcmail.register_command("fav-modal", () => {
+            m_mp_shortcuts();
+        }, true);
         parent.rcmail.enable_command("help-modal", true);
         parent.rcmail.register_command("help-modal", () => {
             m_mp_Help();

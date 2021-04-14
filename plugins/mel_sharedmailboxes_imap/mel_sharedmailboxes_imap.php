@@ -731,6 +731,34 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
     }
 
     /**
+     * Retourne la liste des boites partagées de l'utilisateur
+     * 
+     * @param ObjectShare[] $_objects Liste des boites partagées
+     * @param array $hidden_mailboxes Liste des boites masquées par l'utilisateur
+     * 
+     * @return $_objects Liste des boites partagées sans les masquées
+     */
+    public function get_user_sharedmailboxes_list($_objects = null, $hidden_mailboxes = null) {
+        // Récupération des préférences de l'utilisateur
+        if (!isset($hidden_mailboxes)) {
+            $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
+        }
+        // Récupération de la liste des boites de l'utilisateur
+        if (!isset($_objects)) {
+            $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+        }
+        // Parcourir les objets partagés et enlever ceux qui sont cachés
+        if (count($_objects) >= 1) {
+            foreach ($_objects as $key => $_object) {
+                if (isset($hidden_mailboxes[$_object->uid])) {
+                    unset($_objects[$key]);
+                }
+            }
+        }
+        return $_objects;
+    }
+
+    /**
      * Render mailboxlist
      *
      * @param array $args
@@ -769,12 +797,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         $folders = [];
         $env_mailboxes = [];
         $_SESSION['trash_folders'] = [];
-        $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+        $_objects = $this->get_user_sharedmailboxes_list(null, $hidden_mailboxes);
         if (count($_objects) >= 1) {
             foreach ($_objects as $_object) {
-                if (isset($hidden_mailboxes[$_object->uid])) {
-                    continue;
-                }
                 // Gestion du order
                 $order = array_search(driver_mel::gi()->mceToRcId($_object->uid), $sort_bal);
                 if ($order === false) {

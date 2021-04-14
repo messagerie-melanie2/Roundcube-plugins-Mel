@@ -9,6 +9,44 @@
 // global variable for contextmenu actions
 rcmail.tb_label = '';
 
+if (window.rcmail) {
+	rcmail.addEventListener('init', function(evt) {
+		if (rcmail.task == 'mail') {
+			if (rcmail.env.action == 'show') {
+				$('#tb_label_popup .toolbarmenu li.labels').show();
+			}
+			rcmail.addEventListener('responseafterlist', function (evt) {
+				var key = '';
+				if (rcmail.env.balp_label) {
+					$('#tb_label_popup .toolbarmenu li.labels').hide();
+					$('#messagessearchfilter option.labels').hide();
+					if (rcmail.env.mailbox.indexOf(rcmail.env.balp_label) === 0) {
+						key = rcmail.env.mailbox.split(rcmail.env.delimiter)[1];
+						key = rcmail_tb_labels_key_to_css(key);
+					}
+					else {
+						key = rcmail_tb_labels_key_to_css(rcmail.env.username);
+					}
+				}
+				else {
+					key = rcmail_tb_labels_key_to_css(rcmail.env.username);
+				}
+				$('#tb_label_popup .toolbarmenu li.labels.'+key).show();
+				$('#messagessearchfilter option.labels.'+key).show();		
+			});
+		}
+	});
+}
+
+function rcmail_tb_labels_key_to_css(key) {
+	return key
+		.replace(/\./g, '_-p-_')
+		.replace(/\$/g, '_-s-_')
+		.replace(/&/g, '_-e-_')
+		.replace(/~/g, '_-t-_')
+		.replace(/\\/g, '_-q-_');
+}
+
 function rcmail_tb_label_menu(p)
 {
 	if (typeof rcmail_ui == "undefined")
@@ -224,7 +262,7 @@ function rcm_tb_label_init_onclick()
 			// TODO check if click event is defined instead of unbinding?
 			$(this).unbind('click');
 			$(this).click(function() {
-				var toggle_label = $(this).parent().attr('id');
+				var toggle_label = $(this).parent().attr('id').split('_b_')[0];
 				var selection = rcm_tb_label_get_selection();
 				
 				var unset_all = false;

@@ -84,3 +84,8 @@
     background-color: #FFFFE0;
     background-color:var(--settings-warn-bg-color);
 }
+
+#tb_label_popup .toolbarmenu li.labels,
+#messagessearchfilter option.labels {
+	display: none;
+}

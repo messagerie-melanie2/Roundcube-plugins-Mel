@@ -32,6 +32,29 @@ class mel_labels_sync extends rcube_plugin {
           'recent',
           'redirected'
   );
+
+  /**
+   * Conversion des caractères pour le css/html
+   * 
+   * @var array
+   */
+  private $convert_chars = [
+    'forbidden' => [
+      '.',
+      '$',
+      '&',
+      '~',
+      '\''
+    ],
+    'replacement' => [
+      '_-p-_',
+      '_-s-_',
+      '_-e-_',
+      '_-t-_',
+      '_-q-_'
+    ]
+  ];
+
   /**
    * Variable de mapping
    *
@@ -244,7 +267,7 @@ class mel_labels_sync extends rcube_plugin {
       $html = '';
       // Add labels in filter select
       foreach ($this->_get_bal_labels() as $label) {
-        $html .= html::tag('option', ['value' => 'KEYWORD ' . strtoupper($label->key)], $this->gettext('labels').': '.$label->tag);
+        $html .= html::tag('option', ['value' => 'KEYWORD ' . strtoupper($label->key), 'class' => 'labels '.$this->_convert_key_to_css($label->mailbox)], $this->gettext('labels').': '.$label->tag);
       }
       $html .= '</select>';
 
@@ -264,9 +287,10 @@ class mel_labels_sync extends rcube_plugin {
     $i = 0;
     foreach ($this->_get_bal_labels() as $label) {
       $key = $this->_convert_key_to_css($label->key);
+      $box = $this->_convert_key_to_css($label->mailbox);
       $separator = ($i == 0) ? ' separator_below' : '';
-      $class = 'label_' . $key;
-      $out .= '<li id="' . $this->_convert_key_to_css($label->key) . '" class="' . $class . $separator . ' ctxm_tb_label"><a href="#ctxm_tb_label" class="active" onclick="rcmail_ctxm_label_set(' . $key . ')">' . $label->tag . '</a></li>';
+      $class = 'labels label_' . $key . ' ' . $box;
+      $out .= '<li id="'.$key.'_b_'.$box.'" class="'.$class.$separator.' ctxm_tb_label"><a href="#ctxm_tb_label" class="active" onclick="rcmail_ctxm_label_set('.$key.')">'.$label->tag.'</a></li>';
       $i ++;
     }
     $out = html::tag('ul', array(
@@ -282,7 +306,7 @@ class mel_labels_sync extends rcube_plugin {
    * @param array $args
    */
   public function read_single_flags($args) {
-    if (! $this->rc->config->get('show_labels', false) || ! isset($args['object']))
+    if (!$this->rc->config->get('show_labels', false) || ! isset($args['object']))
       return;
 
     if (is_array($args['object']->headers->flags)) {
@@ -324,7 +348,7 @@ class mel_labels_sync extends rcube_plugin {
    */
   public function read_flags($args) {
     // dont loop over all messages if we dont have any highlights or no msgs
-    if (! $this->rc->config->get('show_labels', false) || ! isset($args['messages']) || ! is_array($args['messages']))
+    if (!$this->rc->config->get('show_labels', false) || !isset($args['messages']) || !is_array($args['messages']))
       return $args;
 
     $labels = $this->_get_bal_labels();
@@ -386,7 +410,7 @@ class mel_labels_sync extends rcube_plugin {
               '$imap->conn->flags' => $imap->conn->flags
       ), true));
 
-    if (! is_array($unflag_uids) || ! is_array($flag_uids))
+    if (!is_array($unflag_uids) || !is_array($flag_uids))
       return false;
 
     $imap->set_flag($flag_uids, $toggle_label, $mbox);
@@ -426,31 +450,34 @@ class mel_labels_sync extends rcube_plugin {
   private function get_tb_label_popup() {
     $out = '';
     // Ajoute le menu si on n'est pas en mobile
-    if (! $this->rc->config->get('ismobile', false)) {
-      if ($this->_is_gestionnaire($this->rc->plugins->get_plugin('mel')->get_user_bal())) {
-        $out .= html::div('tb_label_div_manage_labels', '<a href="#" id="rcube_manage_labels" onclick="show_rcube_manage_labels()" class="active">' . $this->gettext('manage_labels') . '</a>');
-      }
-      else {
-        $out .= html::div('tb_label_div_manage_labels', '<a href="#" id="rcube_manage_labels" class="desactive">' . $this->gettext('manage_labels') . '</a>');
-      }
+    if (!$this->rc->config->get('ismobile', false)) {
+      // if ($this->_is_gestionnaire($this->rc->plugins->get_plugin('mel')->get_user_bal())) {
+      $out .= html::div('tb_label_div_manage_labels', '<a href="#" id="rcube_manage_labels" onclick="show_rcube_manage_labels()" class="active">' . $this->gettext('manage_labels') . '</a>');
+      // }
+      // else {
+      // $out .= html::div('tb_label_div_manage_labels', '<a href="#" id="rcube_manage_labels" class="desactive">' . $this->gettext('manage_labels') . '</a>');
+      // }
     }
 
     $out .= '<ul class="toolbarmenu">';
     $out .= '<li id="label0" class="label0 click0"><a href="#">0 ' . $this->gettext('label0') . '</a></li>';
-    $i = 0;
+    $i = [];
     foreach ($this->_get_bal_labels() as $label) {
       $key = $this->_convert_key_to_css($label->key);
-      $separator = ($i == 0) ? ' separator_below' : '';
-      $class = 'label_' . $key;
-      if ($i < 9) {
-        $i ++;
-        $text = $i . ' ' . $label->tag;
-        $class .= ($class == "" ? "" : " ") . "click$i";
+      $box = $this->_convert_key_to_css($label->mailbox);
+      $class = 'labels label_'.$key.' '.$box;
+      if (!isset($i[$box])) {
+        $i[$box] = 0;
+      }
+      if ($i[$box] < 9) {
+        $i[$box]++;
+        $text = $i[$box] . ' ' . $label->tag;
+        $class .= ' click'.$i[$box];
       }
       else {
         $text = $label->tag;
       }
-      $out .= '<li id="' . $this->_convert_key_to_css($label->key) . '" class="' . $class . ' separator_below"><a href="#">' . $text . '</a></li>';
+      $out .= '<li id="'.$key.'_b_'.$box.'" class="'.$class.' separator_below"><a href="#">'.$text.'</a></li>';
     }
 
     $out .= '</ul>';
@@ -570,7 +597,7 @@ class mel_labels_sync extends rcube_plugin {
       // Parcours des labels retournés par le post
       foreach ($_post_labels as $key => $label_name) {
         $old_label = Driver::find_label_by_key($key, $old_labels);
-        if (! isset($old_label)) {
+        if (!isset($old_label)) {
           $label_key = strtolower(rcube_charset::convert($key, 'UTF-8', 'UTF7-IMAP'));
         }
         else {
@@ -613,21 +640,7 @@ class mel_labels_sync extends rcube_plugin {
    * @return string
    */
   private function _convert_key_to_css($key) {
-    $_forbidden_char = array(
-            '$',
-            '&',
-            '~',
-            '\''
-    );
-    $_replacement_char = array(
-            '_-s-_',
-            '_-e-_',
-            '_-t-_',
-            '_-q-_'
-    );
-    $key = strtolower($key);
-    $key = str_replace($_forbidden_char, $_replacement_char, $key);
-    return $key;
+    return str_replace($this->convert_chars['forbidden'], $this->convert_chars['replacement'], strtolower($key));
   }
   /**
    * Permet de convertir la clé des étiquettes en valeur normale depuis le css
@@ -636,38 +649,71 @@ class mel_labels_sync extends rcube_plugin {
    * @return string
    */
   private function _convert_key_from_css($key) {
-    $_forbidden_char = array(
-            '$',
-            '&',
-            '~',
-            '\''
-    );
-    $_replacement_char = array(
-            '_-s-_',
-            '_-e-_',
-            '_-t-_',
-            '_-q-_'
-    );
-    $key = strtolower($key);
-    $key = str_replace($_replacement_char, $_forbidden_char, $key);
-    return $key;
+    return str_replace($this->convert_chars['replacement'], $this->convert_chars['forbidden'], strtolower($key));
   }
   /**
    * Reourne la liste des étiquettes pour la boite courante
    * Pour les BALP on retourne aussi celles de la BALI
    *
-   * @return array Liste des étiquettes
+   * @return Label[] Liste des étiquettes
    */
   private function _get_bal_labels() {
-    // MANTIS 0004420: Toujours lister les étiquettes de la BALI
-    $_labels_list = $this->driver->get_user_labels($this->rc->user->get_username());
-    if ($this->rc->plugins->get_plugin('mel')->get_user_bal() != $this->rc->user->get_username()) {
-      $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($this->rc->plugins->get_plugin('mel')->get_user_bal()));
-      $_labels_list = array_unique($_labels_list);
-      $_labels_list = $this->driver->order_labels($_labels_list);
+    $this->rc->output->set_env('username', $this->rc->user->get_username());
+    if (in_array('mel_sharedmailboxes_imap', $this->rc->plugins->active_plugins) && $this->rc->task == 'mail') {
+      if (empty($this->rc->action)) {
+        // MANTIS 0004420: Toujours lister les étiquettes de la BALI
+        $_labels_list = $this->driver->get_user_labels($this->rc->user->get_username());
+        $objects = $this->rc->plugins->get_plugin('mel_sharedmailboxes_imap')->get_user_sharedmailboxes_list();
+        foreach ($objects as $object) {
+          $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($object->mailbox->uid));
+        }
+      }
+      else {
+        $username = $this->get_user_from_folder(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
+        if (isset($username)) {
+          $_labels_list = $this->driver->get_user_labels($username);
+        }
+      }
     }
+    else {
+      // MANTIS 0004420: Toujours lister les étiquettes de la BALI
+      $_labels_list = $this->driver->get_user_labels($this->rc->user->get_username());
+      if ($this->rc->plugins->get_plugin('mel')->get_user_bal() != $this->rc->user->get_username()) {
+        $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($this->rc->plugins->get_plugin('mel')->get_user_bal()));
+        $_labels_list = array_unique($_labels_list);
+      }
+    }
+    $_labels_list = $this->driver->order_labels($_labels_list);
     return $_labels_list;
-  } 
+  }
+
+  /**
+   * Récupère la configuration user/host en fonction du folder
+   * 
+   * @param string $folder Nom du folder
+   * 
+   * @return null|string null si pas de configuration, user sinon 
+   */
+  private function get_user_from_folder($folder) {
+    $ret = null;
+    $balp_label = driver_mel::gi()->getBalpLabel();
+    if (isset($balp_label) && strpos($folder, $balp_label) === 0) {
+        $delimiter = $_SESSION['imap_delimiter'];
+        $osDelim = driver_mel::gi()->objectShareDelimiter();
+        $data = explode($delimiter, $folder, 3);
+        $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+        if (count($_objects) >= 1 && isset($_objects[$this->rc->get_user_name() . $osDelim . $data[1]])) {
+            $_object = $_objects[$this->rc->get_user_name() . $osDelim . $data[1]];
+            if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
+                $ret = $_object->mailbox->uid;
+            }
+        }
+    }
+    else {
+      $ret = $this->rc->user->get_username();
+    }
+    return $ret;
+  }
   
   /**
    * Génération de la liste des balp pour l'utilisateur courant

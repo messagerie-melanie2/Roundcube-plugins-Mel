@@ -89,7 +89,9 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
         }
 
         // Chargement de l'account passé en Get
-        $this->get_account = mel::get_account();
+        if ($this->rc->task != 'mail') {
+            $this->get_account = mel::get_account();
+        }
         // Gestion de la connexion pour les dossiers
         if ($this->rc->task == 'settings' && $this->rc->action == 'edit-folder') {
             $this->get_user_from_folder(rcube_utils::get_input_value('_path', rcube_utils::INPUT_GET));

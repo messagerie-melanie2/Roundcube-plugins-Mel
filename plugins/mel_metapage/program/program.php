@@ -1,0 +1,75 @@
+<?php
+
+abstract class Program{
+    
+    protected $rc;
+    protected $plugin;
+    protected $config;
+
+    protected $task;
+    protected $action;
+
+    public function __construct($rc, $plugin) {
+        $this->rc = $rc;
+        $this->plugin = $plugin;
+        $this->config = $this->rc->config;
+        $this->task = $this->rc->task;
+        $this->action = $this->rc->action;
+    }  
+
+    abstract public function init();
+
+    protected function send($html, $plugin = "mel_metapage")
+    {
+        $this->rc->output->send("$plugin.$html");
+    }
+
+    protected function include_js($path)
+    {
+        $this->plugin->include_script("js/program/$path");
+    }
+
+    protected function set_env_var($key, $item)
+    {
+        $this->rc->output->set_env($key, $item);
+    }
+
+    protected function include_css($path, $local = false)
+    {
+        if ($local)
+            $this->plugin->include_stylesheet(__DIR__."/css/$path");
+        else
+            $this->plugin->include_stylesheet($this->plugin->local_skin_path()."/$path");
+    }
+
+    protected function register_action($action, $callback)
+    {
+        $this->plugin->register_action('index', $callback);
+    }
+
+    protected function get_config($key, $default = null)
+    {
+        if ($default === null)
+            return $this->config->get($key);
+        else
+            return $this->config->get($key, $default);
+    }
+
+    protected function add_handler($name, $callback)
+    {
+        $this->rc->output->add_handlers(array(
+            $name    => $callback,
+        ));
+    }
+
+    protected function get_input($arg, $type = rcube_utils::INPUT_GPC)
+    {
+        return rcube_utils::get_input_value($arg, $type);
+    }
+
+    protected function parse($html, $plugin = "mel_metapage")
+    {
+        return $this->rc->output->parse("$plugin.$html", false, false);
+    }
+
+}

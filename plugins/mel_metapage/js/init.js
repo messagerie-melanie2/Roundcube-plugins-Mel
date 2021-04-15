@@ -14,6 +14,8 @@ if (rcmail)
     if (parent.rcmail.mel_metapage_fn !== undefined)
         return;
     parent.rcmail.addEventListener("init", function() {
+        if (rcmail.env.username === "tommy.delphin.i" || rcmail.env.username === "thomas.payen")
+            $(".rotomeca-debug").removeClass("rotomeca-debug");
         //Definition des functions
         parent.rcmail.mel_metapage_fn = {
             calendar_updated: function () {

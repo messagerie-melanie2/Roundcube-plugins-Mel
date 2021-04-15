@@ -33,6 +33,12 @@ class mel_metapage extends rcube_plugin
     function init()
     {
         $this->setup();
+        if ($this->rc->task === "webconf")
+        {
+            include_once "program/webconf/webconf.php";
+            $conf = new Webconf($this->rc, $this);
+            $conf->init();
+        }
 
     }
 
@@ -52,7 +58,10 @@ class mel_metapage extends rcube_plugin
             }
             $this->mm_include_plugin();
             $this->rc->get_storage();
-            $this->register_task("mel_metapage");
+            if ($this->rc->task !== "webconf")
+                $this->register_task("mel_metapage");
+            else
+                $this->register_task("webconf");
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
             $this->register_action('search_contact', array($this, 'search_contact'));

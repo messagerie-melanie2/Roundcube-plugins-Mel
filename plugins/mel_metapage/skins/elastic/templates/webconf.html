@@ -1,0 +1,26 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+
+<h1 class="voice"><roundcube:label name="webconf" /></h1>
+
+<div id="layout-content" class="webconf-content"  role="main">
+    <div id="room-selector" style="display: none;">
+        <div class="square_div absolute-center">
+            <div class="contents">
+                <div class="square-contents">
+                    <div>Salon : <roundcube:object name="roomkey" /></div>
+                    <div>
+                        <roundcube:object name="selectrooms" />
+                    </div>
+                    <button class="btn btn-success" onclick="rcmail.env.webconf.apply()">Entrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class=webconf-frame id=mm-webconf style="display: none;"></div>
+        <iframe class=webconf-frame id=mm-ariane style="display: none;"></iframe>
+    </div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

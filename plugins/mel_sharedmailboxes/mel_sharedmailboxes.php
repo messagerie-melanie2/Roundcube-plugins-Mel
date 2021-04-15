@@ -67,7 +67,9 @@ class mel_sharedmailboxes extends rcube_plugin {
         }
 
         // Chargement de l'account passé en Get
-        $this->get_account = mel::get_account();
+        if ($this->rc->task != 'mail') {
+            $this->get_account = mel::get_account();
+        }
         // Chargement de l'ui
         $this->init_ui();
     }

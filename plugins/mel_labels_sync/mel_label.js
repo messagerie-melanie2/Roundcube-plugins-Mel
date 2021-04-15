@@ -13,13 +13,13 @@ if (window.rcmail) {
 	rcmail.addEventListener('init', function(evt) {
 		if (rcmail.task == 'mail') {
 			if (rcmail.env.action == 'show') {
-				$('#tb_label_popup .toolbarmenu li.labels').show();
+				$('#tb_label_popup .toolbarmenu li.labels').addClass('show');
 			}
 			rcmail.addEventListener('responseafterlist', function (evt) {
 				var key = '';
 				if (rcmail.env.balp_label) {
-					$('#tb_label_popup .toolbarmenu li.labels').hide();
-					$('#messagessearchfilter option.labels').hide();
+					$('#tb_label_popup .toolbarmenu li.labels').removeClass('show');
+					$('#messagessearchfilter option.labels').removeClass('show');
 					if (rcmail.env.mailbox.indexOf(rcmail.env.balp_label) === 0) {
 						key = rcmail.env.mailbox.split(rcmail.env.delimiter)[1];
 						key = rcmail_tb_labels_key_to_css(key);
@@ -31,8 +31,8 @@ if (window.rcmail) {
 				else {
 					key = rcmail_tb_labels_key_to_css(rcmail.env.username);
 				}
-				$('#tb_label_popup .toolbarmenu li.labels.'+key).show();
-				$('#messagessearchfilter option.labels.'+key).show();		
+				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
+				$('#messagessearchfilter option.labels.'+key).addClass('show');	
 			});
 		}
 	});
@@ -423,7 +423,7 @@ $(document).ready(function() {
 			if ((k > 47 && k < 58) || (k > 95 && k < 106))
 			{
 				var label_no = k % 48;
-				var cur_a = $('#tb_label_popup').find('li.click' + label_no + ' a').click();
+				var cur_a = $('#tb_label_popup').find('li.show.click' + label_no + ' a').click();
 			}
 		}
 	});

@@ -93,6 +93,7 @@ class mel extends rcube_plugin {
     $this->add_hook('preferences_save',     array($this, 'prefs_save'));
     $this->add_hook('identity_form',        array($this, 'identity_form'));
     $this->add_hook('identities_list',      array($this, 'identities_list'));
+    $this->add_hook('identity_update',      array($this, 'identity_update'));
 
     // Template
     $this->add_hook('template_object_loginform',  array($this, 'login_form'));
@@ -365,8 +366,9 @@ class mel extends rcube_plugin {
     foreach ($rc_identities as $rc_i) {
       if (isset($m2_identities[strtolower($rc_i['email'])])) {
         $m2_i = $m2_identities[strtolower($rc_i['email'])];
-        if ($rc_i['email'] != $m2_i['email'] || $rc_i['realname'] != $m2_i['realname'] || $rc_i['uid'] != $m2_i['uid']) {
+        if ($rc_i['standard'] != $m2_i['standard'] || $rc_i['email'] != $m2_i['email'] || $rc_i['realname'] != $m2_i['realname'] || $rc_i['uid'] != $m2_i['uid']) {
           $rc_i['email'] = $m2_i['email'];
+          $rc_i['standard'] = $m2_i['standard'];
           // Test si le nom n'a pas été modifié par l'utilisateur
           if ($this->m2_identity_shortname($rc_i['realname']) == $rc_i['name'])
             $rc_i['name'] = $m2_i['name'];
@@ -528,6 +530,17 @@ class mel extends rcube_plugin {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identities_list() args : " . var_export($args, true));
     }
     $args['cols'][0] = 'name';
+    return $args;
+  }
+
+  /**
+   * Handler for user identity update
+   */
+  public function identity_update($args) {
+    if (mel_logs::is(mel_logs::TRACE)) {
+      mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identity_update() args : " . var_export($args, true));
+    }
+    $args['record']['standard'] = strtolower(driver_mel::gi()->getUser()->email_send) == strtolower($args['record']['email']) ? 1 : 0;
     return $args;
   }
   
@@ -968,6 +981,7 @@ class mel extends rcube_plugin {
         $identity['realname'] = $_object->fullname;
         $identity['email'] = $email;
         $identity['uid'] = $_object->uid;
+        $identity['standard'] = 0;
         $identities[strtolower($email)] = $identity;
       }
     }
@@ -990,6 +1004,7 @@ class mel extends rcube_plugin {
       $identity['realname'] = $user->fullname;
       $identity['email'] = $email;
       $identity['uid'] = $user->uid;
+      $identity['standard'] = $email == $user->email_send ? 1 : 0;
       $identities[strtolower($email)] = $identity;
     }
     // retourne la liste des identities

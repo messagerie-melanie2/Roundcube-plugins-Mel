@@ -12,6 +12,10 @@
 	cursor: pointer;
 }
 
+#annuaire-list > li.object {
+	padding-right: 75px;
+}
+
 #annuaire-list li.addressbook,
 #annuaire-list li.annuaire {
 	padding: 10px 0px 8px 20px;
@@ -47,23 +51,23 @@
 
 #annuaire-list li > .gototree {
 	position: absolute;
-	display: none;
-	background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
-	background-image: var(--image-gototree);
+	background: #fff;
 	background-color: var(--sublistitem-bg-color);
 	right: 0;
 	top: 0;
-	height: 33px;
-	width: 33px;
+	height: 20px;
+	width: 65px;
+	line-height: 20px;
+	border: 1px solid #000;
+	border-color: var(--buttons-border-color);
+	text-align: center;
+	margin: 5px;
+	border-radius: 6px;
 }
 
 #annuaire-list li.selected > .gototree {
 	background-color: #dee9f6;
 	background-color: var(--sublistitem-selected-bg-color);
-}
-
-#annuaire-list li:hover > .gototree {
-	display: inline-block;
 }
 
 #annuaire-list .added > .name,

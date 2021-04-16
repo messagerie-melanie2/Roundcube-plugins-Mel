@@ -375,10 +375,15 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 	// Scoll to find element
 	if (evt.response.find) {
 		rcmail.annuaire_list.reset(true);
-		$('#addresslist .scroller').scrollTop(
-				$('#annuaire-list li#' + 'rcmrow' + evt.response.find)
-						.position().top);
-		//$('#annuaire-list li#' + 'rcmrow' + evt.response.find).click();
+		document.getElementById('rcmrow' + evt.response.find).scrollIntoView({
+			behavior: 'smooth'
+		});
+		// $('#addresslist .scroller').scrollTop(
+		// 		$('#annuaire-list li#' + 'rcmrow' + evt.response.find)
+		// 				.position().top);
+		if (rcmail.env.task == 'addressbook') {
+			$('#annuaire-list li#' + 'rcmrow' + evt.response.find).click();
+		}
 	}
 });
 

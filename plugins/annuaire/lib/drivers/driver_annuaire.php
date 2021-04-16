@@ -226,7 +226,7 @@ class driver_annuaire {
           'class' => 'gototree button',
           'title' => $this->rc->gettext('gototree', 'annuaire'),
           'onclick' => rcmail_output::JS_OBJECT_NAME . '.annuaire_gototree(this, event); return false'
-      ], '&nbsp;');
+      ], $this->rc->gettext('gototreename', 'annuaire'));
     }
     return $content;
   }

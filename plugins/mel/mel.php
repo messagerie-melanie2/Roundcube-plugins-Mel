@@ -101,10 +101,11 @@ class mel extends rcube_plugin {
 
     // Command
     $this->register_action('plugin.set_current_page',       array($this, 'set_current_page'));
-    $this->register_action('plugin.get_mbox_unread_count',  array($this, 'get_unread_count'));
 
     // Chargement de l'account passé en Get
-    $this->get_account = self::get_account();
+    if ($this->rc->task != 'mail') {
+      $this->get_account = self::get_account();
+    }
     // Chargement de l'ui
     $this->init_ui();
 
@@ -542,28 +543,6 @@ class mel extends rcube_plugin {
     }
     $args['record']['standard'] = strtolower(driver_mel::gi()->getUser()->email_send) == strtolower($args['record']['email']) ? 1 : 0;
     return $args;
-  }
-  
-  /**
-   * Récupérer le nombre de mails non lus de l'utilisateur
-   */
-  public function get_unread_count() {
-    $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
-    if (!isset($mbox)) {
-      $mbox = 'INBOX';
-    }
-    // Récupérer le nombre de mails non lus pour l'INBOX
-    $unseen_count = $this->rc->storage->count($mbox, 'UNSEEN', true);
-    // Gestion de l'account
-    $account = mel::get_account();
-    if (!isset($account) || empty($account)) {
-      $account = $this->rc->get_user_name();
-    }
-    // send output
-    header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
-    // Return the result to the ajax command
-    echo json_encode(['unseen_count' => $unseen_count, '_account' => $account, '_mbox' => $mbox]);
-    exit;
   }
 
   /**

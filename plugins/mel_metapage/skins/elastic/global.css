@@ -90,6 +90,99 @@ html.touch .shortcut-task{
     height: unset;
 }
 
+/*******/
+.wsp-toolbar.webconf-toolbar{
+	 
+	position: absolute;
+	bottom: 20px;
+	top: unset;
+	left:calc(50% + 60px);
+	transform: translateX(-50%);
+}
+
+.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item
+{
+	font-size: 20px;
+	padding: 0 15px;
+    margin-bottom: 25px;
+	border: none;
+}
+
+.wsp-toolbar.webconf-toolbar > .conf-call-stop
+{
+    background: radial-gradient(circle, #BD2217 52%, rgba(255,255,255,0) 52%);
+}
+
+.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item.active{
+    background: radial-gradient(circle, #363A5B 52%, rgba(255,255,255,0) 52%);
+}
+
+.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item:hover
+{
+    background: radial-gradient(circle, #42548F 52%, rgba(255,255,255,0) 52%);
+}
+
+.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item.active
+{
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.wsp-toolbar.webconf-toolbar > .first
+{
+	margin-left:15px;
+	pointer-events: none;
+}
+
+.tiny-webconf-menu {
+	position: absolute;
+	top: 0px;
+	left: -1px;
+	z-index: 50;
+}
+
+.tiny-webconf-menu
+{
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+}
+
+.tiny-webconf-menu:hover
+{
+    background-color:#42548F!important
+}
+
+.tiny-webconf-menu > img
+{
+    transition: all 0.1s ease-in;
+}
+
+.tiny-webconf-menu:hover > img
+{
+    filter: saturate(7);
+}
+
+.conf-call-stop
+{
+	transform: rotateZ(118deg);
+}
+
+.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item > .text-item {
+	position: absolute;
+	font-size: 8px;
+	left: 50%;
+	bottom: -14px;
+	transform: translateX(-50%);
+}
+
+.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item.conf-call-stop > .text-item
+{
+    transform: rotateZ(-118deg);
+bottom: 21px;
+}
+
+/***************/
+
  /* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane
 {
     position: absolute;

@@ -38,6 +38,7 @@ if (parent === window)
         try {
             if (SynchroniseWorkspaces.im_who_have_lunched_this)
                 SynchroniseWorkspaces.im_who_have_lunched_this = false;
+            //console.error("post", datas);
             if (datas.this !== false)
                 eval(datas.exec);
         } catch (error) {
@@ -51,18 +52,18 @@ else {
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(event)
     {
-        console.log("event", event, SynchroniseWorkspaces.im_who_have_lunched_this, event.data.exec);
+        //console.log("event", event, SynchroniseWorkspaces.im_who_have_lunched_this, event.data.exec);
         if (SynchroniseWorkspaces.im_who_have_lunched_this)
         {
             SynchroniseWorkspaces.im_who_have_lunched_this = false;
-            if (datas.eval !== "always")
+            if (event.data.eval !== "always")
                 return;
         }
         const datas = event.data;
         if (datas.exec === undefined)
             return;
         try {
-            console.log("eval", datas, datas.exec, window);
+            //console.log("eval", datas, datas.exec, window);
             eval(datas.exec);
         } catch (error) {
             console.error(error);

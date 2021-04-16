@@ -335,6 +335,11 @@ const mel_metapage = {
         },
         change_frame: async function(frame, changepage = true, waiting = false)
         {
+            if (frame === "webconf")
+            {
+                var initial_change_page = changepage;
+                changepage = false;
+            }
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
             workspaces.sync.PostToParent({
@@ -345,6 +350,16 @@ const mel_metapage = {
             {
                 await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
                 mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
+            }
+            if (frame === "webconf")
+            {
+                if (initial_change_page)
+                {
+                    workspaces.sync.PostToParent({
+                        exec:"$('#layout-frames').css('display', '');$('.mm-frame').css('display', 'none');$('.webconf-frame').css('display', '')",
+                        child:false
+                    });
+                }
             }
         },
     }

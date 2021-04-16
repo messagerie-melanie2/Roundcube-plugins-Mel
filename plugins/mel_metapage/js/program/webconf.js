@@ -1,10 +1,18 @@
 
-function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340)
+function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 {
-    this.master_bar = `window.webconf_master_bar = new MasterWebconfBar('${frameconf_id}', '${framechat_id}', '${ask_id}', '${key}', ${ariane === undefined ? "undefined" : `'${ariane}'`}, '${html_helper.JSON.stringify(wsp)}', ${ariane_size})`;
+    if (is_framed === null && parent !== window)
+        this._is_framed = true;
+    else if (is_framed === null)
+        this._is_framed = false;
+    else
+        this._is_framed = is_framed
+    console.error("yolo",is_framed === null,parent !== window , this._is_framed);
+    this.master_bar = `window.webconf_master_bar = new MasterWebconfBar('${frameconf_id}', '${framechat_id}', '${ask_id}', '${key}', ${ariane === undefined ? "undefined" : `'${ariane}'`}, '${html_helper.JSON.stringify(wsp)}', ${ariane_size}, ${this._is_framed})`;
 
     this.conf = $("#" + frameconf_id);
     this.chat = $("#" + framechat_id);
+    this.chat.css("max-width", `${ariane_size}px`);
     this.window_selector = $("#" + ask_id);
     this.key = key;
     if ((ariane === null  || ariane === undefined))
@@ -30,6 +38,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
     this.is_framed = $("#layout-content.mm-frame").length >= 1;
+    this._is_minimized = false;
     this.jitsii = undefined;
 
     this.ariane_is_allowed = function ()
@@ -109,6 +118,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 TOOLBAR_TIMEOUT:-1,
                 HIDE_INVITE_MORE_HEADER:true,
                 TOOLBAR_BUTTONS : [""]
+            },
+            userInfo: {
+                email: rcmail.env["webconf.user_datas"].email,
+                displayName: rcmail.env["webconf.user_datas"].name
             }
         };
         await wait(() => window.JitsiMeetExternalAPI === undefined);
@@ -121,8 +134,21 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         if (this.have_ariane())
             $("#mm-ariane").css("display", "");
         this.jitsii.executeCommand('avatarUrl', `${rcmail.env.rocket_chat_url}avatar/${rcmail.env.username}`);
+        // this.jitsii.executeCommand("hangup");
         this.busy(false);
         MasterWebconfBar.start(this.master_bar);
+    }
+
+    this.minimize = function()
+    {
+        this._is_minimized = true;
+        this.update();
+    }
+
+    this.full_screen = function()
+    {
+        this._is_minimized = false;
+        this.update();
     }
 
     this.update = function ()
@@ -139,6 +165,48 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             {
                 this.chat.css("display", "");
                 this.conf.css("width", "calc(100% - "+(pixel_correction + this.ariane.size)+"px)");
+            }
+        }
+
+        if (this._is_minimized)
+        {
+            this.conf.css("max-width", `${this.ariane.size}px`)
+            .css("top", `${pixel_correction}px`)
+            .css("right", '0')
+            .css("left", "unset");
+            if (this.have_ariane())
+            {
+                this.chat.css("max-height", `calc(100% - ${pixel_correction}px - 225px)`);
+                if (!this.ariane_is_hide())
+                    this.conf.css("max-height", "225px")
+                else
+                    this.conf.css("max-height", "")
+            }
+            else
+                this.conf.css("max-height", "")
+
+            if (this._is_framed)
+            {
+                this.conf.css("width", "100%");
+                // this.chat.css("max-width", "100%");
+                this.chat.css("width", "100%");
+            }
+        }
+        else
+        {
+            this.conf.css("max-width", "")
+            .css("top", "")
+            .css("right", "")  
+            .css("left", "") 
+            .css("max-height", ""); 
+
+            if (this.have_ariane())
+                this.chat.css("max-height", "");
+
+            if (this._is_framed)
+            {
+                // this.chat.css("max-width", "");
+                this.chat.css("width", "");
             }
         }
     }
@@ -183,8 +251,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 }
 
 class MasterWebconfBar {
-    constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340) {
-        this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size);
+    constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
+        this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
         if (!this.webconf.have_ariane()) 
             this.ariane.css("display", "none");
@@ -196,6 +264,16 @@ class MasterWebconfBar {
                 this.show_ariane(false);
         }
 
+        if (MasterWebconfBar.micro === undefined)
+        {
+            MasterWebconfBar.micro = Symbol("micro");
+            MasterWebconfBar.video = Symbol("video");
+        }
+        $(".tiny-rocket-chat").css("display", "");
+        if (this.webconf.wsp.datas.logo === "")
+        {}
+        else       
+            this.logo.html(`<img src="${this.webconf.wsp.datas.logo}" />`).css("background-color", this.webconf.wsp.datas.color);
     }
     create_bar() {
         const element = function ($class) {
@@ -227,9 +305,43 @@ class MasterWebconfBar {
         if (MasterWebconfBar.isFirefox())
         {
             this.broadcast.css("display", "none");
-            element("separate-right").css("display", "none");
         }
         this.hand = element("conf-participate");
+        this.logo = element("tiny-webconf-menu");
+        this.mozaik = element("conf-mozaique");
+        this.toolbar_item = element;
+    }
+
+    update_toolbar()
+    {
+        if (this.logo.hasClass("hidden-toolbar"))
+        {
+            this.toolbar_item("wsp-toolbar-item").css("display", "");
+            this.logo.removeClass("hidden-toolbar");
+            $(".webconf-toolbar").css("background-color", "").find("v_separate").css("display", "");
+            if (MasterWebconfBar.isFirefox())
+            {
+                this.broadcast.css("display", "none");
+            }
+        }
+        else {
+            this.toolbar_item("wsp-toolbar-item").css("display", "none");  
+            $(".webconf-toolbar").css("background-color", "transparent").find("v_separate").css("display", "none");
+            this.toolbar_item("empty").css("display", "");
+            this.logo.addClass("hidden-toolbar");     
+        }
+
+    }
+
+    toogle_film_strip(send = true)
+    {
+        // if (this.mozaik.hasClass("active"))
+        //     this.mozaik.removeClass("active");
+        // else
+        //     this.mozaik.addClass("active");
+        if (send)
+            this.send("toggle_film_strip");
+        
     }
 
     switch_ariane(send = true)
@@ -296,6 +408,77 @@ class MasterWebconfBar {
             this.send("share_screen");
     }
 
+    async nextcloud(send = true)
+    {
+        const show = () => {
+            //console.error("show time", $("iframe.stockage-frame").length);
+            $(".stockage-frame").css("display", "");
+            if ($("iframe.stockage-frame").length > 0)
+            {
+                $("iframe.stockage-frame").css("padding-right", `${this.webconf.ariane.size}px`);
+            }
+            else
+            {
+                $("#layout-frames").css("width", "auto");
+                $("#layout-content").css("padding-right", `${this.webconf.ariane.size}px`);
+            }
+            return true;
+        };
+        const active = this.document.hasClass("active");
+        this.update_screen(active);
+        if (active)
+        {
+            if (send)
+                this.send("nextcloud_close");
+            this.document.removeClass("active");
+            $(".stockage-frame").css("display", "none");
+            if ($("iframe.stockage-frame").length === 0)
+            {
+                $("#layout-frames").css("width", "");
+                $("#layout-content").css("padding-right", "");
+            }
+        }
+        else
+        {
+            if (send)
+                this.send("nextcloud_open");
+            this.document.addClass("active");
+            console.error("length", $("iframe.stockage-frame").length === 0 , $(".stockage-frame").length !== 0, $("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
+            let already_shown = false;
+            if ($("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
+                already_shown = show();
+            await mel_metapage.Functions.change_frame("stockage", false, true);
+            await wait(() => $(".stockage-frame").length === 0);
+            if (!already_shown)
+                show();
+
+        }
+    }
+
+    update_screen(active)
+    {
+        if (this.webconf._is_framed)
+        {
+            let frame = $(".webconf-frame");
+            if (!active)
+            {
+                frame.css("position", "absolute")
+                .css("right", "0")
+                .css("max-width", `${this.webconf.ariane.size+1}px`)
+                .css("padding-left", "0")
+                ;
+            }
+            else
+            {
+                frame.css("position", "")
+                .css("right", "")
+                .css("max-width", ``)
+                .css("padding-left", "")
+                ;               
+            }
+        }
+    }
+
     send(func)
     {
         workspaces.sync.PostToParent({
@@ -305,6 +488,18 @@ class MasterWebconfBar {
     }
 
     static start(bar) {
+        workspaces.sync.PostToParent({
+            exec: `window.rcmail.env['webconf.bar'] = \`${rcmail.env['webconf.bar']}\``,
+            child: false
+        });
+        workspaces.sync.PostToParent({
+            exec: Webconf+';window.Webconf = Webconf;',
+            child: false
+        });
+        workspaces.sync.PostToParent({
+            exec: MasterWebconfBar+';window.MasterWebconfBar = MasterWebconfBar;',
+            child: false
+        });
         workspaces.sync.PostToParent({
             exec: bar,
             child: false
@@ -319,9 +514,6 @@ class MasterWebconfBar {
         return  typeof InstallTrigger !== 'undefined';
     }
 }
-
-MasterWebconfBar.micro = Symbol("micro");
-MasterWebconfBar.video = Symbol("video");
 
 class ListenerWebConfBar
 {
@@ -356,20 +548,57 @@ class ListenerWebConfBar
     {
         this.webconf.jitsii.executeCommand('toggleShareScreen');
     }
+
+    toggle_film_strip()
+    {
+        this.webconf.jitsii.executeCommand('toggleTileView');
+    }
+
+    nextcloud_open()
+    {
+        this.minimize();
+    }
+
+    nextcloud_close()
+    {
+        this.webconf.full_screen();
+    }
+
+    minimize()
+    {
+        this.webconf.minimize();
+    }
 }
 
 $(document).ready(() => {
-    rcmail.addEventListener("init", async () => {
-        $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
-        let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
-        if (webconf.have_ariane())
-        {
-            await webconf.go();
-            webconf.remove_selector();
+    const tmp = async () => {
+        try {
+            console.error("here 1");
+            $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
+            let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
+            if (webconf.have_ariane())
+            {
+                console.error("here 2");
+                await webconf.go();
+                webconf.remove_selector();
+            }
+            else
+                webconf.show_selector();
+                console.error("here 3");
+            rcmail.env.webconf = webconf;
+            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);            
+        } catch (error) {
+            console.error(error);
         }
-        else
-            webconf.show_selector();
-        rcmail.env.webconf = webconf;
-        rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);
-    });
+    };
+    // console.error(rcmail._events);
+    // for (const key in rcmail._events.init) {
+    //     if (Object.hasOwnProperty.call(rcmail._events.init, key)) {
+    //         const element = rcmail._events.init[key];
+    //         console.error(element.func);
+    //     }
+    // }
+    //rcmail.addEventListener("init", async () => {
+    tmp();
+    //});
 });

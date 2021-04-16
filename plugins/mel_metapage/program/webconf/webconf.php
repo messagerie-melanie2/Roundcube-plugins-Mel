@@ -21,7 +21,7 @@ class Webconf extends Program
 
     public function index()
     {
-        $key = $this->get_input("_key");
+        $key = $this->get_input("_key") ?? "A5LMKJPOIUI9POI4KL";
         if ($key === null)
             $key = $this->generate_key();
         $this->tmp_key = $key;
@@ -37,9 +37,20 @@ class Webconf extends Program
         else
         {
             $workspace = $this->workspace($wsp);
-            $wsp = ["objects" => json_decode($workspace->objects), "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $wsp, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)]];
+            $wsp = [
+            "objects" => json_decode($workspace->objects), 
+            "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $wsp, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
+                ,"title" => $workspace->title,
+                "color" => json_decode($workspace->settings)->color
+                ]
+            ];
             $this->set_env_var("webconf.wsp", $wsp);
         }
+        $user = driver_mel::gi()->getUser();
+        $this->set_env_var("webconf.user_datas", [
+            "name" => $user->fullname,
+            "email" => $user->email
+        ]);
         $this->set_env_var("webconf.bar", $this->parse("webconf_bar"));
         $this->add_handler("roomkey", [$this, "get_key"]);
         $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);

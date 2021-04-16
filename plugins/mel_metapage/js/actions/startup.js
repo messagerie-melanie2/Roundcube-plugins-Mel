@@ -224,7 +224,7 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
 metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) => {
     rcmail.env.current_frame_name = eClass;
     $("."+mm_frame).each((i,e) => {
-        if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame"))
+        if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || e.classList.contains("webconf-frame"))
             return;
         e.style.display = "none";
     });//.css("display", "none");

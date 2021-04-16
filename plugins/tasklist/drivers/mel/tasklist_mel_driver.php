@@ -110,13 +110,11 @@ class tasklist_mel_driver extends tasklist_driver {
 
     // attempt to create a default list for this user
     if (empty($this->lists)) {
-      $this->create_list(
-        array(
-          'name' => $this->rc->config->get('default_taskslist_name', null),
-          'color' => $this->_random_color()
-        ),
-        true
+      $prop = array(
+        'name' => $this->rc->config->get('default_taskslist_name', null),
+        'color' => $this->_random_color()
       );
+      $this->create_list($prop, true);
       $this->_read_lists(true);
     }
     $default_tasklist = $this->user->getDefaultTaskslist();

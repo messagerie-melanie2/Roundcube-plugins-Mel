@@ -20,8 +20,9 @@
     <textarea id="signature_html" readonly="readonly" type="text"></textarea>
     <div class="action">
       <input type="button" class="action-button" id="modify-signature" title="<roundcube:label name="mel_signatures.modifytitle" />" value="<roundcube:label name="mel_signatures.modify" />" onclick="modify_signature();">
-      <input type="button" class="action-button" id="use-signature" title="<roundcube:label name="mel_signatures.usesignaturetitle" />" value="<roundcube:label name="mel_signatures.usesignature" />" onclick="use_signature();">
-      <input type="button" class="action-button" id="download-signature-thunderbird" title="<roundcube:label name="mel_signatures.downloadsignaturethunderbirdtitle" />" value="<roundcube:label name="mel_signatures.downloadsignaturethunderbird" />" onclick="download_signature_thunderbird();">
+      <input type="button" class="action-button nocourrielleur" id="use-signature" title="<roundcube:label name="mel_signatures.usesignaturetitle" />" value="<roundcube:label name="mel_signatures.usesignature" />" onclick="use_signature();">
+      <input type="button" class="action-button nocourrielleur" id="download-signature-thunderbird" title="<roundcube:label name="mel_signatures.downloadsignaturethunderbirdtitle" />" value="<roundcube:label name="mel_signatures.downloadsignaturethunderbird" />" onclick="download_signature_thunderbird();">
+      <input type="button" class="action-button courrielleur" id="copy-to-clipboard" title="<roundcube:label name="mel_signatures.clictocopytitle" />" value="<roundcube:label name="mel_signatures.clictocopy" />" onclick="copy_signature();">
     </div>
   </div>
   <div class="userinfos">
@@ -82,7 +83,7 @@
 </div>
 </div>
 <div class="notice-container">
-  <div class="texte">
+  <div class="texte nocourrielleur">
       <div>
           <h2 class="emploi">Mode d'emploi (Courrielleur Mél)</h2>
           <p>- Cliquez sur "Télécharger la signature" pour enregistrer le fichier signature</p>
@@ -94,6 +95,19 @@
           <p>Votre signature est en place. Faites un test rapide en essayant de rédiger un nouveau courriel.</p>
       </div>
   </div>
+  <div class="texte courrielleur">
+    <div>
+        <h2 class="emploi">Mode d'emploi</h2>
+        <p>- Cliquez sur "Copier la signature" pour copier la signature générée</p>
+        <p>- Cliquez sur "Outils", puis "Paramètres des comptes"</p>
+        <p>- Sélectionnez votre compte</p>
+        <p>- IMPORTANT : Si coché, décocher l'option "Apposer la signature à partir d'un fichier"</p>
+        <p>- Dans la partie "Texte de signature", cocher "Utiliser HTML"</p>
+        <p>- Coller le code de la signature dans le cadre sous "Text de signature" (Ctrl + C)</p>
+        <p>- Cliquer sur OK</p>
+        <p>Votre signature est en place. Faites un test rapide en essayant de rédiger un nouveau courriel.</p>
+    </div>
+</div>
 </div>
 
 </div>

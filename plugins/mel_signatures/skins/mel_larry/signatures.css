@@ -215,3 +215,8 @@ label {
 .dropdown-check-list.visible .items {
     display: block;
 }
+
+.notice-container .courrielleur,
+.usersignature .courrielleur {
+    display: none;
+}

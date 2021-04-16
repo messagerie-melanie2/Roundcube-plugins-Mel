@@ -212,8 +212,13 @@ class mel_contacts extends rcube_plugin {
         unset($p['sources']['amande_group']);
         $p['sources'] = [$sources[driver_mel::gi()->mceToRcId($this->user->uid)]] + $p['sources'];
       }
+      else if ($this->rc->task == 'addressbook') {
+        $p['sources'] = $all_source + $p['sources'] + $sources;
+      }
       else {
-        $p['sources'] = $all_source + $sources + $p['sources'];
+        $annuaire = $p['sources']['annuaire'];
+        unset($p['sources']['annuaire']);
+        $p['sources'] = $all_source + $p['sources'] + $sources + [$annuaire];
       }
       return $p;
     }

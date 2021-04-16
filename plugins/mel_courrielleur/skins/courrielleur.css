@@ -31,6 +31,14 @@
 	display: none;
 }
 
+#settingstabpluginmelnextcloud {
+	display: none;
+}
+
+#settingstabpluginmelroadmap {
+	display: none;
+}
+
 #mel_resources_elements_listbox .boxtitle span {
 	display: none;
 }

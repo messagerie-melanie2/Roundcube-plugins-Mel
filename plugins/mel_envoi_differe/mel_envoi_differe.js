@@ -18,7 +18,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 if (window.rcmail) {
     rcmail.addEventListener('init', function (evt) {
         if (rcmail.env.task == 'mail' && rcmail.env.action == 'compose') {
@@ -36,7 +35,6 @@ if (window.rcmail) {
         };
     });
 }
-
 
 /**
  * Clone from fullcalendar.js
@@ -131,8 +129,8 @@ var time_autocomplete_list = function (p, callback) {
 var time_autocomplete_open = function (event, ui) {
     // scroll to current time
     var $this = $(this),
-        widget = $this.autocomplete('widget')
-    menu = $this.data('ui-autocomplete').menu,
+        widget = $this.autocomplete('widget'),
+        menu = $this.data('ui-autocomplete').menu,
         amregex = /^(.+)(a[.m]*)/i,
         pmregex = /^(.+)(a[.m]*)/i,
         val = $(this).val().replace(amregex, '0:$1').replace(pmregex, '1:$1');
@@ -186,25 +184,24 @@ var init_time_autocomplete = function (elem, props) {
 };
 
 rcube_webmail.prototype.display_mel_envoi_differe = function () {
-
     let currentDate = new Date();
-
     let date = displayDate(currentDate);
     let heure = displayHour(currentDate);
-    let value = parent.$('#mel_envoi_differe').text();
-    if (value != "Remise différée") {
+    let value = $('#mel_envoi_differe').text();
+    let description = rcmail.gettext('description_disable', 'mel_envoi_differe');
+    if (value != rcmail.get_label('mel_envoi_differe.buttontext')) {
         let dateHeure = value.split(' ');
         date = dateHeure[0];
         heure = dateHeure[1];
+        description = rcmail.gettext('description_enable', 'mel_envoi_differe').replace(/%%date%%/, dateHeure);
     }
-    let html = '<h1 class="boxtitle">' + rcmail.gettext('title', 'mel_envoi_differe') + '</h1><div id="envoidiffere-details" class="boxcontent"><form name="valide" action="" class="propform" id="form_envoidiffere"><fieldset><div class="warning">' + rcmail.gettext('description', 'mel_envoi_differe') + '<br>' + rcmail.gettext('description_warning', 'mel_envoi_differe') + '</div><div class="margin"><label for="envoidiffere_date">' + rcmail.gettext('date', 'mel_envoi_differe') + '</label><input type="text" name="envoidiffere_date" id="envoidiffere_date" value="' + date + '" required>' + rcmail.gettext('time', 'mel_envoi_differe') + '<input type="text" name="envoidiffere_time" id="envoidiffere_time" value="' + heure + '" required></div><div id="error_message"></div></fieldset></form></div>'
+    let html = '<h1 class="boxtitle">' + rcmail.gettext('title', 'mel_envoi_differe') + '</h1><div id="envoidiffere-details" class="boxcontent"><form name="valide" action="" class="propform" id="form_envoidiffere"><fieldset><div class="description">' + description + '</div><div class="margin"><label for="envoidiffere_date">' + rcmail.gettext('date', 'mel_envoi_differe') + '</label><input type="text" name="envoidiffere_date" id="envoidiffere_date" value="' + date + '" required>' + rcmail.gettext('time', 'mel_envoi_differe') + '<input type="text" name="envoidiffere_time" id="envoidiffere_time" value="' + heure + '" required></div><div class="warning">' + rcmail.gettext('description_warning', 'mel_envoi_differe') + '</div><div id="error_message"></div></fieldset></form></div>'
 
     buttons = [{
-        text: rcmail.gettext('save', 'mel_envoi_differe'),
+        text: value == rcmail.get_label('mel_envoi_differe.buttontext') ? rcmail.gettext('enable', 'mel_envoi_differe') : rcmail.gettext('modify', 'mel_envoi_differe'),
         'class': 'mainaction',
         click: function () {
             if ($('#envoidiffere_date').val() && $('#envoidiffere_time').val()) {
-
                 let date = ($('#envoidiffere_date').val()).split("/");
                 let day = date[0];
                 let month = date[1];
@@ -217,24 +214,23 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
                 let DateJs = new Date(year, month - 1, day, hour, min);
                 let timestamp = DateJs.getTime();
 
-                //On vérifie que le timestamp courant n'est pas inférieur à la date choisi
+                // On vérifie que le timestamp courant n'est pas inférieur à la date choisi
                 if (timestamp > new Date().getTime()) {
-                if (!$(window.parent.rcmail.gui_objects.messageform).find('input[name="envoi_differe"]').length) {
-                    $(window.parent.rcmail.gui_objects.messageform).append('<input id="envoi_differe" type="hidden" name="envoi_differe" value="' + timestamp + '" /> ')
-                }
-                else {
-                    parent.$('#envoi_differe').val(timestamp);
-                }
+                    if (!$(rcmail.gui_objects.messageform).find('input[name="envoi_differe"]').length) {
+                        $(rcmail.gui_objects.messageform).append('<input id="envoi_differe" type="hidden" name="envoi_differe" value="' + timestamp + '" /> ')
+                    }
+                    else {
+                        $('#envoi_differe').val(timestamp);
+                    }
 
-                parent.$('#mel_envoi_differe').text($('#envoidiffere_date').val() + ' ' + $('#envoidiffere_time').val());
-                parent.$('#mel_envoi_differe').css({ width: '150px' });
-
-                $('.ui-dialog-content').dialog('destroy');
+                    $('#mel_envoi_differe').text($('#envoidiffere_date').val() + ' ' + $('#envoidiffere_time').val());
+                    $('#mel_envoi_differe').css({ 'min-width': '120px' });
+                    $('#mel_envoi_differe').addClass('enable');
+                    $('.ui-dialog-content').dialog('destroy');
                 }
                 else {
                     $('#error_message').text(rcmail.gettext('error_message', 'mel_envoi_differe'))
                 }
-
             }
             else {
                 $('#error_message').text(rcmail.gettext('empty_message', 'mel_envoi_differe'))
@@ -245,15 +241,16 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
         text: rcmail.gettext('cancel', 'mel_envoi_differe'),
         click: function () {
             if ($(window.parent.rcmail.gui_objects.messageform).find('input[name ="envoi_differe"]').length) {
-                parent.$('#envoi_differe').remove();
+                $('#envoi_differe').remove();
             }
-            parent.$('#mel_envoi_differe').text("Remise différée");
-            parent.$('#mel_envoi_differe').css({ width: '125px' });
+            $('#mel_envoi_differe').text(rcmail.get_label('mel_envoi_differe.buttontext'));
+            $('#mel_envoi_differe').css({ 'min-width': 'auto' });
+            $('#mel_envoi_differe').removeClass('enable');
             $(this).dialog('destroy');
         }
     }];
 
-    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 420 })
+    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 400 })
 
     $('#envoidiffere_date').datepicker({ minDate: 0, dateFormat: 'dd/mm/yy' })
         .change(function () {
@@ -265,12 +262,10 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
     });
 };
 
-
 function displayDate(currentDate) {
     currentDate = currentDate.toLocaleString("fr-FR", { timeZone: rcmail.env.timezone });
     date = currentDate.split(' ');
     return date[0].slice(0, 10);
-
 }
 
 function displayHour(currentDate) {
@@ -300,12 +295,11 @@ function dateInférieurDialog() {
     {
         text: rcmail.gettext('send_normally', 'mel_envoi_differe'),
         click: function () {
-            if ($(window.parent.rcmail.gui_objects.messageform).find('input[name ="envoi_differe"]').length) {
-                parent.$('#envoi_differe').remove();
+            if ($(rcmail.gui_objects.messageform).find('input[name ="envoi_differe"]').length) {
+                $('#envoi_differe').remove();
             }
             return rcmail.command('send', '', this, event)
         }
     }];
-
-    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 410, resizable: false, height: 240 })
+    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 410, resizable: false, height: 270 })
 }

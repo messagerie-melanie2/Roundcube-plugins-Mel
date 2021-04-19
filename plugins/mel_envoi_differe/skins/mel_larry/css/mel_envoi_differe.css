@@ -1,11 +1,8 @@
 /*Affichage du bouton*/
 .toolbar a.button.mel_envoi_differe {
-    background: url(../images/envoi-differe-dark.png?v=e784.5000) 10px center no-repeat #f50059;
-    background-color: var(--inputs-mainaction-bg-color);
-    border: solid 1px rgba(0, 0, 0, 0.2);
+    background-position: 10px center !important;
+    color: var(--labels-text-color);
     text-indent: 0;
-    color: #fff;
-    color: var(--inputs-mainaction-text-color);
     font-weight: bold;
     font-size: 13px;
     width: 125px;
@@ -13,9 +10,14 @@
     padding-left: 30px;
 }
 
-#mel_envoi_differe {
-	max-width: 150px;
+.toolbar a.button.mel_envoi_differe.enable {
+    border-color: #3ec400;
 }
+
+/* 
+#mel_envoi_differe {
+	max-width: 120px;
+} */
 
 /*Affichage du dialog*/
 body.envoidiffere {
@@ -52,5 +54,5 @@ body.envoidiffere {
 }
 
 #envoidiffere-details .margin {
-    margin-top: 30px;
+    margin: 30px 0;
 }

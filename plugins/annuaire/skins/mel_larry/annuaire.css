@@ -12,7 +12,7 @@
 	cursor: pointer;
 }
 
-#annuaire-list > li.object {
+#annuaire-list li.search {
 	padding-right: 75px;
 }
 
@@ -52,7 +52,7 @@
 #annuaire-list li > .gototree {
 	position: absolute;
 	background: #fff;
-	background-color: var(--sublistitem-bg-color);
+	background-color: var(--listbox-bg-color);
 	right: 0;
 	top: 0;
 	height: 20px;

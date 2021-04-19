@@ -167,6 +167,10 @@ class default_driver_annuaire extends driver_annuaire {
                 'title' => $title,
                 'gototree' => $search
             ]);
+            // Ajout de la class search si le bouton goto tree est présent
+            if ($search) {
+              $class .= ' search';
+            }
             $elements[] = array(
                 'id' => $id,
                 'dn' => $info['dn'],
@@ -200,10 +204,13 @@ class default_driver_annuaire extends driver_annuaire {
                 'title' => $title,
                 'gototree' => $search
             ]);
+            // Ajout de la class search si le bouton goto tree est présent
+            if ($search) {
+              $class .= ' search';
+            }
             $elements[] = array(
                 'id' => $id,
                 'dn' => $info['dn'],
-                'email' => $email,
                 'classes' => [
                     $class
                 ],
@@ -228,11 +235,6 @@ class default_driver_annuaire extends driver_annuaire {
             $title = $name;
             $order = $name;
             $class = 'person nophoto';
-            $classes = [
-                'person',
-                'nophoto',
-                'object'
-            ];
             $html = $this->get_html([
                 'name' => $name,
                 'description' => $description,
@@ -240,13 +242,20 @@ class default_driver_annuaire extends driver_annuaire {
                 'title' => $title,
                 'gototree' => $search
             ]);
+            // Ajout de la class search si le bouton goto tree est présent
+            if ($search) {
+              $class .= ' search';
+            }
             $elements[] = array(
                 'id' => $id,
                 'uid' => $uid,
                 'dn' => $info['dn'],
                 'email' => $email,
                 'mail' => format_email_recipient($email, $name),
-                'classes' => $classes,
+                'classes' => [
+                  $class,
+                  'object'
+                ],
                 'order' => $order,
                 'html' => $html
             );

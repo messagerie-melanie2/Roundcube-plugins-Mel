@@ -64,9 +64,9 @@
   	--subsublistitem-selected-text-color: var(--global-text-color);
   	--subsublistitem-selected-bg-color: #fafafa;
 
-	--box-warning-bg-color: #000;
+	--box-warning-bg-color: #ffe1e0;
 	--box-warning-border-color: #d8cebc;
-	--box-warning-text-color: #ffe1e0;
+	--box-warning-text-color: #000;
   	
   	--box-text-color: var(--global-text-color);
   	--box-bg-color: #f2f2f2;
@@ -234,6 +234,7 @@
 	--image-send-format-texte: url("../images/envoyer/format-texte.png?v=e784.5000");
 	--image-send-orthographe: url("../images/envoyer/orthographe.png?v=e784.5000");
 	--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre.png?v=e784.5000");
+	--image-send-remise_differee: url("../images/envoyer/envoi-differe.png?v=e784.5000");
 
 	--image-background: url("../images/background.png?v=e784.5000");
 	--image-icons: url("../images/icons.png?v=e784.5000");
@@ -511,6 +512,7 @@
 		--image-send-format-texte: url("../images/envoyer/format-texte-dark.png?v=e784.5000");
 		--image-send-orthographe: url("../images/envoyer/orthographe-dark.png?v=e784.5000");
 		--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000");
+		--image-send-remise_differee: url("../images/envoyer/envoi-differe-dark.png?v=e784.5000");
 
 		--image-background: url("../images/background_dark.png?v=e784.5000");
 		--image-icons: url("../images/icons-dark.png?v=e784.5000");

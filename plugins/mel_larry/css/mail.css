@@ -875,6 +875,13 @@ td span.adr:hover .rcmaddcontact {
 	min-width: auto;
 }
 
+.toolbar a.button.mel_envoi_differe {
+	background: url(../images/envoyer/envoi-differe-dark.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-remise_differee);
+	background-color: var(--buttons-bg-color);
+	min-width: auto;
+}
+
 .toolbar a.button.extwin {
 	position: absolute;
 	top: 0;

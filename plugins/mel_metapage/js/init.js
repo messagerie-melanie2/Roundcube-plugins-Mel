@@ -282,7 +282,7 @@ if (rcmail)
             if ($("#gbtniabsc").length !== 0)
                 $("#gbtniabsc").remove();
             $(".barup").css("display", "");
-        })
+        });
         new Promise(async (a,b) => {
             while (rcmail.env.last_frame_class === undefined) {
                 await delay(500);

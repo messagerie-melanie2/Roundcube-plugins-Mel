@@ -29,7 +29,11 @@ $(document).ready(function() {
         querry.html(`<span class=menu-last-frame-inner-up>`+rcmail.gettext('last_frame_opened', "mel_metapage")+` :</span><span class=menu-last-frame-inner-down>`+rcmail.gettext('nothing', "mel_metapage")+`</span>`); 
         rcmail.enable_command('last_frame', true);
         rcmail.register_command('last_frame', function() {
-            event.preventDefault();
+            try {
+                event.preventDefault();
+            } catch (error) {
+                
+            }
             mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
           }); 
         rcmail.env.can_backward = true;
@@ -139,7 +143,7 @@ function mm_st_CommandContract(_class)
 
 function mm_st_CreateOrOpenModal(eClass, changepage = true)
 {
-    mm_st_OpenOrCreateFrame(eClass, changepage);
+    return mm_st_OpenOrCreateFrame(eClass, changepage);
 } 
 
 function mm_st_OpenOrCreateFrame(eClass, changepage = true)
@@ -153,12 +157,15 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true)
     eClass = mm_st_ClassContract(eClass);
     let querry = $("." + eClass + "-frame");
     let isAriane = eClass === "discussion" || eClass === "ariane";
+    console.error("class to open", eClass, querry);
     if (changepage)//Actions à faire si on change de page.
         metapage_frames.triggerEvent("changepage", eClass, changepage, isAriane, querry);
 
     if (querry.length == 0) //Si on doit créer la frame
     {
-        let id = "fame-n-" + $("iframe").length;
+        if (rcmail.nb_frames === undefined)
+            rcmail.nb_frames = 0;
+        let id = "fame-n-" + (++rcmail.nb_frames);//$(`iframe.${mm_frame}`).length;
         //Mise en place de diverses configurations lorque l'on doit créer une frame.
         metapage_frames.triggerEvent("rcmailconfig.no", eClass, changepage, isAriane, querry, id);
         metapage_frames.triggerEvent("node", eClass, changepage, isAriane, querry, id) //Récupération de la node
@@ -185,6 +192,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true)
         metapage_frames.triggerEvent("rcmailconfig.yes", eClass, changepage, isAriane, querry, id);
         //Ouverture d'une frame.
         metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id);
+        metapage_frames.triggerEvent("open.after", eClass, changepage, isAriane, querry, id);
         if (changepage)//Action à faire après avoir ouvert la frame, si on change de page.
             metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
         //Action à faire avant de terminer la fonction.
@@ -329,6 +337,7 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
     rcmail.env.frame_created = true;
     if (changepage)
         $("#"+id).css("display", "");
+    console.error("onload", querry, id);
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 });

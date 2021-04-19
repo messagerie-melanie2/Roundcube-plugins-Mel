@@ -21,7 +21,7 @@ class Webconf extends Program
 
     public function index()
     {
-        $key = $this->get_input("_key") ?? "A5LMKJPOIUI9POI4KL";
+        $key = $this->get_input("_key") ?? "B5LMKJPOIUI9POI4KL";
         if ($key === null)
             $key = $this->generate_key();
         $this->tmp_key = $key;

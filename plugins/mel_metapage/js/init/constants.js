@@ -81,12 +81,17 @@ const mel_metapage = {
      * Différents clés de stockage local.
      */
     Storage: {
+        unexist:Symbol("unexist"),
         /**
          * Récupère une donnée depuis le stockage local.
          * @param {string} key Clé de la donnée à récupérer.
          */
         get:function(key) {
-            return JSON.parse(window.localStorage.getItem(key));
+            try {
+                return JSON.parse(window.localStorage.getItem(key));
+            } catch (error) {
+                return this.unexist;
+            }
         },
         /**
          * Ajoute ou modifie une donnée dans le stockage local.
@@ -235,6 +240,8 @@ const mel_metapage = {
     },
     PopUp:{
         open_ariane: function () {
+            if (rcmail.busy)
+                return;
             if (mel_metapage.PopUp.ariane === null)
                 mel_metapage.PopUp.ariane = new ArianePopUp(ArianeButton.default());
             //console.log(mel_metapage, window == parent);
@@ -346,6 +353,7 @@ const mel_metapage = {
                 exec:"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+")",
                 child:false
             });
+            console.error("change_frame", frame, changepage, waiting);
             if (waiting)
             {
                 await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
@@ -362,6 +370,84 @@ const mel_metapage = {
                 }
             }
         },
+        frame_back:async function(wait = true, default_frame = null)
+        {
+            let last = await this.ask("rcmail.env.last_frame_class");
+            console.error("last", last, default_frame);
+            if (last === null || last === undefined || last === mel_metapage.Storage.unexist)
+            {
+                if (default_frame !== null)
+                    last = default_frame;
+                else
+                    return;
+            }
+            await this.change_frame(last, true, wait);
+        },
+        call:function(exec, child = false, ...args)
+        {
+            let config = {
+                exec:exec,
+                child:child
+            };
+            if (args.length > 0)
+            {
+                for (const key in args) {
+                    if (Object.hasOwnProperty.call(args, key)) {
+                        const element = args[key];
+                        config[key] = element;
+                    }
+                }
+            }
+            workspaces.sync.PostToParent(config);          
+        },
+        title:function (url)
+        {
+            mel_metapage.Functions.call(`window.history.replaceState({}, document.title, '${url}')`);
+        },
+        busy:function (busy = true)
+        {
+            const framed = window !== parent;
+            mel_metapage.Storage.set("mel.busy", busy);
+            if (busy)
+            {
+                this.call("rcmail.set_busy(true, 'loading')");
+                if (framed)
+                    rcmail.set_busy(true, 'loading')
+            }
+            else {
+                this.call("rcmail.set_busy(false);rcmail.clear_messages();");
+                if (framed)
+                {
+                    rcmail.set_busy(false);
+                    rcmail.clear_messages();
+                }
+            }
+
+        },
+        is_busy:function ()
+        {
+            const framed = window !== parent && rcmail.busy != undefined;
+            if (framed)
+                return mel_metapage.Storage.get("mel.busy") === true || rcmail.busy;
+            else
+            {
+                if (rcmail.busy === undefined)
+                    return mel_metapage.Storage.get("mel.busy") === true;
+                else
+                    return rcmail.busy || mel_metapage.Storage.get("mel.busy") === true;
+            }
+        },
+        ask:async function(props)
+        {
+            this.call(`mel_metapage.Storage.set("mel.ask", ${props})`);
+            await wait(() => mel_metapage.Storage.get("mel.ask") === null);
+            props = mel_metapage.Storage.get("mel.ask");
+            mel_metapage.Storage.remove("mel.ask");
+            return props;
+        }
+
+
+
     }
 }; 
 window.mel_metapage = mel_metapage;

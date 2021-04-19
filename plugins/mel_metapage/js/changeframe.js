@@ -47,6 +47,23 @@
                                 $(".wsp-toolbar-edited").css("display", "");
                             ChangeFrame(lastFrame);
                             metapage_frames.workspace = false;
+                            if (rcmail.env.wsp_datas.toolbar.exists === true && (window.webconf_master_bar !== undefined))
+                            {
+                                let toolbar_conf = $(".webconf-toolbar");
+                                if (!toolbar_conf.hasClass("switched-toolbar"))
+                                    window.webconf_master_bar.switch_toolbar();
+                                toolbar_conf.find(".conf-switch-toolbar").css("display", "");
+                            }
+                        }
+                        else
+                        {
+                            if (rcmail.env.wsp_datas.toolbar.exists === true && (window.webconf_master_bar !== undefined))
+                            {
+                                let toolbar_conf = $(".webconf-toolbar");
+                                if (toolbar_conf.hasClass("switched-toolbar"))
+                                    window.webconf_master_bar.switch_toolbar();
+                                toolbar_conf.find(".conf-switch-toolbar").css("display", "none");
+                            }
                         }
                     });
                 }
@@ -91,69 +108,103 @@ function UpdateMenu(_class, _picture, _toolbar)
     InitialiseDatas();
     if (rcmail.env.wsp_datas.toolbar.current === "inpage")
     {
-        let button = $(".tiny-rocket-chat");
-        if (button.length > 0)
-            button.css("display", "block");
-        $(".tiny-wsp-menu").remove();
-        if ($(".wsp-toolbar-edited").length > 0)
-            $(".wsp-toolbar-edited").remove();
+        if (window.webconf_master_bar === undefined)
+        {
+            let button = $(".tiny-rocket-chat");
+            if (button.length > 0)
+                button.css("display", "block");
+            $(".tiny-wsp-menu").remove();
+            if ($(".wsp-toolbar-edited").length > 0)
+                $(".wsp-toolbar-edited").remove();
+            else
+                $(".wsp-toolbar") 
+                .css("margin", "")
+                .css("position", "")
+                .css("bottom", "")
+                .css("right", "")
+                .css("z-index", "");
+                $(".added-wsp-item").remove();
+        }
         else
-            $(".wsp-toolbar") 
-            .css("margin", "")
-            .css("position", "")
-            .css("bottom", "")
-            .css("right", "")
-            .css("z-index", "");
-            $(".added-wsp-item").remove();
+        {
+            let toolbar_conf = $(".webconf-toolbar");
+            if (toolbar_conf.hasClass("switched-toolbar"))
+                window.webconf_master_bar.switch_toolbar();
+            toolbar_conf.find(".conf-switch-toolbar").remove();
+            toolbar_conf.find(".wsp-toolbar-item-wsp").remove();
+        }
             rcmail.env.wsp_datas.toolbar.exists = false;
+        
     }
     else {
-        rcmail.env.wsp_datas.toolbar.current = _class;
-        if (rcmail.env.wsp_datas.toolbar.exists === true)
-            return;
-        const basePx = "50px";
-        let right = basePx;
-        let bottom = basePx;
-        let button = $(".tiny-rocket-chat");
-        if (button.length > 0)
+        if (window.webconf_master_bar === undefined)
         {
-            button.css("display", "none");
-            right = button.css("right");
-            bottom = button.css("bottom");
-            if (right === "auto")
-                right = basePx;
-            if (bottom === "auto")
-                bottom = basePx;
+            rcmail.env.wsp_datas.toolbar.current = _class;
+            if (rcmail.env.wsp_datas.toolbar.exists === true)
+                return;
+            const basePx = "50px";
+            let right = basePx;
+            let bottom = basePx;
+            let button = $(".tiny-rocket-chat");
+            if (button.length > 0)
+            {
+                button.css("display", "none");
+                right = button.css("right");
+                bottom = button.css("bottom");
+                if (right === "auto")
+                    right = basePx;
+                if (bottom === "auto")
+                    bottom = basePx;
 
-        }
-        //console.log("button", button, right, bottom);
-        button = $(".tiny-wsp-menu");
-        if (button.length === 0)
-        {
-            let picture = $(".wsp-picture");
-            $("#layout").append(`<div onclick=HideOrShowMenu(this) class="tiny-wsp-menu enabled"></div>`)
+            }
+            //console.log("button", button, right, bottom);
             button = $(".tiny-wsp-menu");
-            button.css("position", "absolute");
-            button.css("right", right)
-            .css("bottom", bottom)
-            .css("background-color", _picture === null ? picture.css("background-color") : _picture.color)
-            .css("z-index", 999)
-            .addClass("dwp-round")
-            .append(_picture === null ? picture.html() : _picture.picture);
+            if (button.length === 0)
+            {
+                let picture = $(".wsp-picture");
+                $("#layout").append(`<div onclick=HideOrShowMenu(this) class="tiny-wsp-menu enabled"></div>`)
+                button = $(".tiny-wsp-menu");
+                button.css("position", "absolute");
+                button.css("right", right)
+                .css("bottom", bottom)
+                .css("background-color", _picture === null ? picture.css("background-color") : _picture.color)
+                .css("z-index", 999)
+                .addClass("dwp-round")
+                .append(_picture === null ? picture.html() : _picture.picture);
+            }
+            button.css("display", "");
+            //console.log("ShowToolbar", $(".wsp-toolbar"));
+            (_toolbar !== null && $(".wsp-toolbar-edited").length === 0 ? $("#layout").append(_toolbar).find(".wsp-toolbar-edited") : $(".wsp-toolbar-edited") )
+            .css("margin", "initial")
+            .css("position", "fixed")
+            .css("bottom", (parseInt(bottom.replace("px", "")) - 3) + "px")
+            .css("right", right)
+            .css("z-index", 99)
+            .append('<div class="wsp-toolbar-item added-wsp-item" style="pointer-events:none"></div>');
+            rcmail.env.wsp_datas.toolbar = {
+                current: _class,
+                exists: true
+            };
         }
-        button.css("display", "");
-        //console.log("ShowToolbar", $(".wsp-toolbar"));
-        (_toolbar !== null && $(".wsp-toolbar-edited").length === 0 ? $("#layout").append(_toolbar).find(".wsp-toolbar-edited") : $(".wsp-toolbar-edited") )
-        .css("margin", "initial")
-        .css("position", "fixed")
-        .css("bottom", (parseInt(bottom.replace("px", "")) - 3) + "px")
-        .css("right", right)
-        .css("z-index", 99)
-        .append('<div class="wsp-toolbar-item added-wsp-item" style="pointer-events:none"></div>');
-        rcmail.env.wsp_datas.toolbar = {
-            current: _class,
-            exists: true
-        };
+        else
+        {
+            if (rcmail.env.wsp_datas.toolbar.exists === true)
+                return;
+            let toolbar_conf = $(".webconf-toolbar");
+            const toolbar_wsp = $(_toolbar);
+            toolbar_wsp.find(".wsp-toolbar-item").each((i,e) => {
+                toolbar_conf.append(($(e).hasClass("first") ? $(e).css("margin-left","60px").css("pointer-events", "all") : $(e)).addClass("wsp-toolbar-item-wsp").css("display", "none"));
+            });
+            toolbar_conf.append(`<div onclick="window.webconf_master_bar.switch_toolbar()" class="wsp-toolbar-item conf-switch-toolbar"><span class="icofont-exchange"></span><span class="text-item">Espace</span></div>`);
+            rcmail.env.wsp_datas.toolbar = {
+                current: _class,
+                exists: true
+            };
+            window.webconf_master_bar.switch_toolbar();
+        }
+
+
+
     }
 }
 
@@ -321,7 +372,13 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
-    $(".mm-frame").css("display", "none");
+    if (window.webconf_master_bar === undefined)
+        $(".mm-frame").css("display", "none");
+    else
+        $(".mm-frame").each((i,e) => {
+            if (!$(e).hasClass("webconf-frame"))
+                $(e).css("display", "none");
+        });
     $(".wsp-object").css("display", "none");
 
     $(".workspace-frame").css("display", "none");
@@ -329,7 +386,8 @@ async function ChangeFrame(_class, otherDatas = null)
      const id = mm_st_OpenOrCreateFrame(_class, false);
      await wait(() => rcmail.env.frame_created !== true);
 
-    (_class === "rocket" ? $("#" + id).css("display", "").parent().parent() : $("#" + id).css("display", "").parent()).css("display", "").css("position", "absolute").css("height", "100%");
+     if (window.webconf_master_bar === undefined)
+        (_class === "rocket" ? $("#" + id).css("display", "").parent().parent() : $("#" + id).css("display", "").parent()).css("display", "").css("position", "absolute").css("height", "100%");
 
     if (_class === "rocket")
     {
@@ -344,6 +402,7 @@ async function ChangeFrame(_class, otherDatas = null)
 
     if ($("#layout-content").hasClass("workspace-frame"))
         $("#layout-content").css("display", "");
+    $(`#${id}`).css("display", "");
      rcmail.env.have_frame_positioned = true;
      rcmail.set_busy(false);
      rcmail.clear_messages();
@@ -351,15 +410,24 @@ async function ChangeFrame(_class, otherDatas = null)
 
 async function ChangePage(_class)
 {
-    $(".mm-frame").css("display", "none");
-    $(".a-frame").css("display", "none");
-    let layout_frame = $("#layout-frames")
-    .css("position", "")
-    .css("height", "");
-    if (layout_frame.find(".workspace-frame").length >= 1)
-        layout_frame.css("display", "");
+    if (window.webconf_master_bar === undefined)
+        $(".mm-frame").css("display", "none");
     else
-        layout_frame.css("display", "none")
+        $(".mm-frame").each((i,e) => {
+            if (!$(e).hasClass("webconf-frame"))
+                $(e).css("display", "none");
+        });
+    $(".a-frame").css("display", "none");
+    let layout_frame = $("#layout-frames");
+    if (window.webconf_master_bar === undefined)
+    {
+        layout_frame.css("position", "")
+        .css("height", "");
+        if (layout_frame.find(".workspace-frame").length >= 1)
+            layout_frame.css("display", "");
+        else
+            layout_frame.css("display", "none")
+    }
     $(".workspace-frame").css("display", "");
     let frame = $("iframe.workspace-frame");
     console.log(frame.length >= 1, Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))

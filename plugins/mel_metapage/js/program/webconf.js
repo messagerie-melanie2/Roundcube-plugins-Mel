@@ -37,7 +37,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this.ariane = ariane;
     this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
-    this.is_framed = $("#layout-content.mm-frame").length >= 1;
+    // console.error(window.location.href, window.location.href.includes("_from=iframe"));
+    this.is_framed = () => this._is_framed;
     this._is_minimized = false;
     this.jitsii = undefined;
 
@@ -56,7 +57,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         else if (this.have_ariane())
             config["_ariane"] = encodeURIComponent(JSON.stringify(this.ariane));
         const url = MEL_ELASTIC_UI.url("webconf", "", config);
-        window.history.replaceState({}, document.title, url);
+        //window.history.replaceState({}, document.title, url);
+        mel_metapage.Functions.title(url);
     }
 
     this.get_room = async function ()
@@ -153,7 +155,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
     this.update = function ()
     {
-        const pixel_correction = this.is_framed ? 60 : 0;
+        const pixel_correction = !this.is_framed() ? 60 : 0;
         if (this.have_ariane())
         {
             if (this.ariane.is_hide)
@@ -213,18 +215,12 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
     this.busy = function(is_busy = true)
     {
-        if (is_busy)
-            rcmail.set_busy(true, "loading");
-        else
-        {
-            rcmail.set_busy(false);
-            rcmail.clear_messages();
-        }
+        mel_metapage.Functions.busy(is_busy);
     }
 
     this.is_busy = function ()
     {
-        return rcmail.is_busy;
+        return mel_metapage.Functions.is_busy();
     }
 
     this.show_selector = function()
@@ -333,6 +329,47 @@ class MasterWebconfBar {
 
     }
 
+    switch_toolbar()
+    {
+        let _toolbar = $(".webconf-toolbar");
+        let _switch = $(".conf-switch-toolbar");
+        if (_toolbar.hasClass("switched-toolbar"))
+        {
+            _toolbar.find("v_separate").css("display", "");
+            _toolbar.find(".wsp-toolbar-item").css("display", "");
+            _toolbar.find(".wsp-toolbar-item-wsp").css("display", "none");
+            _switch.css("display", "").find(".text-item").html("Espace");
+            _toolbar.removeClass("switched-toolbar");
+        }
+        else {
+            _toolbar.find("v_separate").css("display", "none");
+            _toolbar.find(".wsp-toolbar-item").css("display", "none");
+            _toolbar.find(".wsp-toolbar-item-wsp").css("display", "");
+            _switch.css("display", "").find(".text-item").html("Webconf");
+            _toolbar.addClass("switched-toolbar");
+            // const tmp = _switch.css("display", "")[0].outerHTML;
+            // _switch.remove();
+            // _toolbar.append(tmp);
+        }
+    }
+
+    async hangup()
+    {
+        window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank').focus();
+        delete window.webconf_master_bar;
+        $(".webconf-toolbar").remove();
+        this.send("hangup");
+        //await wait(() => mel_metapage.Storage.get("webconf.hangup") !== true); 
+        if (!this.webconf._is_minimized)
+        {
+            if (rcmail.env.last_frame_class === undefined)
+                await mel_metapage.Functions.change_frame("home");
+            else
+                rcmail.command("last_frame");
+        }          
+        $(".webconf-frame").remove();
+    }
+
     toogle_film_strip(send = true)
     {
         // if (this.mozaik.hasClass("active"))
@@ -346,6 +383,8 @@ class MasterWebconfBar {
 
     switch_ariane(send = true)
     {
+        if (mel_metapage.Functions.is_busy())
+            return;
         if (this.ariane.hasClass("active"))
             this.hide_ariane(send);
         else
@@ -410,6 +449,8 @@ class MasterWebconfBar {
 
     async nextcloud(send = true)
     {
+        if (mel_metapage.Functions.is_busy())
+            return;
         const show = () => {
             //console.error("show time", $("iframe.stockage-frame").length);
             $(".stockage-frame").css("display", "");
@@ -442,17 +483,27 @@ class MasterWebconfBar {
         {
             if (send)
                 this.send("nextcloud_open");
-            this.document.addClass("active");
-            console.error("length", $("iframe.stockage-frame").length === 0 , $(".stockage-frame").length !== 0, $("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
-            let already_shown = false;
-            if ($("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
-                already_shown = show();
-            await mel_metapage.Functions.change_frame("stockage", false, true);
-            await wait(() => $(".stockage-frame").length === 0);
-            if (!already_shown)
-                show();
+            await mel_metapage.Functions.change_frame("stockage", true, true);
+            //this.document.addClass("active");
+            // console.error("length", $("iframe.stockage-frame").length === 0 , $(".stockage-frame").length !== 0, $("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
+            // let already_shown = false;
+            // if ($("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
+            //     already_shown = show();
+            // await mel_metapage.Functions.change_frame("stockage", false, true);
+            // await wait(() => $(".stockage-frame").length === 0);
+            // if (!already_shown)
+            //     show();
 
         }
+    }
+
+    change_frame(active)
+    {
+        this.update_screen(active);
+        if (!active)
+            this.send("minimize");
+        else
+            this.send("full_screen");
     }
 
     update_screen(active)
@@ -566,12 +617,21 @@ class ListenerWebConfBar
 
     minimize()
     {
+        console.error("minimze", "minimize !");
         this.webconf.minimize();
+    }
+
+    async hangup()
+    {
+        this.webconf.jitsii.executeCommand('hangup');
+        // mel_metapage.Storage.set("webconf.hangup", true);
+        this.webconf.jitsii.dispose();
     }
 }
 
 $(document).ready(() => {
     const tmp = async () => {
+        await wait(() => rcmail !== undefined && rcmail.busy !== undefined);
         try {
             console.error("here 1");
             $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
@@ -586,7 +646,58 @@ $(document).ready(() => {
                 webconf.show_selector();
                 console.error("here 3");
             rcmail.env.webconf = webconf;
-            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);            
+            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);  
+            if (await mel_metapage.Functions.ask("window.webconf_added") === mel_metapage.Storage.unexist)
+            {
+                mel_metapage.Functions.call("window.webconf_added = 'a'");
+                const donothide = function () {
+                    if (window.webconf_master_bar === undefined)
+                        return;
+                    if (window.webconf_master_bar.webconf.is_framed())
+                        $(".webconf-frame").removeClass("mm-frame").css("padding-top", "60px");
+                    else
+                        $(".webconf-frame.mm-frame").addClass("webconf-mm-frame").removeClass("mm-frame");
+                    // if (window.webconf_master_bar !== undefined)
+                    // {
+                    //     console.error('window.webconf_master_bar.send("minimize");', "" + window.webconf_master_bar.send);
+                    // }
+                };
+                const updateframe = (eClass, changepage, isAriane, querry, id) => {
+                    if (window.webconf_master_bar === undefined)
+                        return;
+                    if (window.webconf_master_bar.webconf.is_framed())
+                    {
+                        $(".webconf-frame").addClass("mm-frame").css("padding-top", "");
+                        if ($(`iframe#${id}`).length > 0)
+                        {
+                            $(`iframe#${id}`).css("padding-right", `${window.webconf_master_bar.webconf.ariane.size}px`);
+                            $("#layout-frames").css("width", "");
+                        }
+                        else
+                        {
+                            $("#layout-frames").css("width", `${window.webconf_master_bar.webconf.ariane.size}px`).css("display", "");
+                            //$("#layout-content").css("padding-right", `${window.webconf_master_bar.webconf.ariane.size}px`);
+                        }
+                    }
+                    else
+                    {
+                        $(".webconf-frame.webconf-mm-frame").addClass("mm-frame").removeClass("webconf-mm-frame");
+                        $("iframe.mm-frame").css("padding-left", 0);
+                        $(`iframe#${id}`).css("padding-right", `${window.webconf_master_bar.webconf.ariane.size}px`);
+                    }
+                    window.webconf_master_bar.change_frame(false);
+                    window.webconf_master_bar.webconf.set_title();
+                    $(".tiny-rocket-chat").css("display", "none");
+                    if (eClass !== "stockage")
+                        window.webconf_master_bar.document.removeClass("active");
+                    else
+                        window.webconf_master_bar.document.addClass("active");
+                }
+                console.error(`metapage_frames.addEvent("changepage.before", ${donothide})`);
+                mel_metapage.Functions.call(`metapage_frames.addEvent("changepage.before", ${donothide})`);
+                mel_metapage.Functions.call(`metapage_frames.addEvent("onload.after", ${updateframe})`);
+                mel_metapage.Functions.call(`metapage_frames.addEvent("open.after", ${updateframe})`);
+            }     
         } catch (error) {
             console.error(error);
         }
@@ -600,5 +711,6 @@ $(document).ready(() => {
     // }
     //rcmail.addEventListener("init", async () => {
     tmp();
+    $(".footer").css("display", "none");
     //});
 });

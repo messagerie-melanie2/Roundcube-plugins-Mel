@@ -157,6 +157,12 @@ class annuaire extends rcube_plugin
                 )
             ));
         }
+        // Chargement de la conf
+        $this->load_config();
+
+        $this->rc->output->set_env('annuaire_source', $this->rc->config->get('annuaire_source'));
+        // Modifier la toolbar
+        $this->include_script('taskbar.js');
     }
 
     /**

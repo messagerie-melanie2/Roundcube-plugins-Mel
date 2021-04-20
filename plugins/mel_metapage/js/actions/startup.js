@@ -148,6 +148,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
 
 function mm_st_OpenOrCreateFrame(eClass, changepage = true)
 {
+    metapage_frames.unbreak();
     if (rcmail.busy)
         return;
     //Actions à faire avant de traiter la classe.

@@ -7,7 +7,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this._is_framed = false;
     else
         this._is_framed = is_framed
-    console.error("yolo",is_framed === null,parent !== window , this._is_framed);
+    //console.error("yolo",is_framed === null,parent !== window , this._is_framed);
     this.master_bar = `window.webconf_master_bar = new MasterWebconfBar('${frameconf_id}', '${framechat_id}', '${ask_id}', '${key}', ${ariane === undefined ? "undefined" : `'${ariane}'`}, '${html_helper.JSON.stringify(wsp)}', ${ariane_size}, ${this._is_framed})`;
 
     this.conf = $("#" + frameconf_id);
@@ -37,7 +37,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this.ariane = ariane;
     this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
-    // console.error(window.location.href, window.location.href.includes("_from=iframe"));
+    // //console.error(window.location.href, window.location.href.includes("_from=iframe"));
     this.is_framed = () => this._is_framed;
     this._is_minimized = false;
     this.jitsii = undefined;
@@ -170,6 +170,9 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             }
         }
 
+        if (this.ariane.is_full === true)
+            this._is_minimized = true;
+
         if (this._is_minimized)
         {
             this.conf.css("max-width", `${this.ariane.size}px`)
@@ -211,6 +214,35 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 this.chat.css("width", "");
             }
         }
+        console.error("sdddd", this.ariane.is_full, !this.ariane.is_hide);
+        if (this.ariane.is_full === true)
+        {
+            console.error("sdddd ===> 2", this.ariane.is_full, !this.ariane.is_hide);
+            if (this.ariane.is_hide === false)
+            {
+                this.chat.css("width", "calc(100% - "+(pixel_correction + this.ariane.size)+"px)");
+                this.chat.css("max-width", "");
+                this.chat.css("max-height", `calc(100% - ${pixel_correction}px)`)
+                .css("right", "unset")
+                .css("bottom", "unset")
+                .css("top", `${pixel_correction}px`)
+                .css("left", `${pixel_correction}px`);
+                this.conf.css("max-height", "");
+            }
+            else {
+                if (this._is_framed)
+                    this.conf.css("width", "100%");
+                this.conf.css("max-width", "100%");
+            }
+        }
+        else
+            this.chat.css("max-width", this.ariane.size + "px")
+            .css("right", "")
+            .css("bottom", "")
+            .css("top", "")
+            .css("left", "");
+
+
     }
 
     this.busy = function(is_busy = true)
@@ -312,13 +344,25 @@ class MasterWebconfBar {
     {
         if (this.logo.hasClass("hidden-toolbar"))
         {
-            this.toolbar_item("wsp-toolbar-item").css("display", "");
+            if ($(".webconf-toolbar").hasClass("switched-toolbar"))
+            {
+                this.toolbar_item("wsp-toolbar-item").css("display", "none");
+                this.toolbar_item("wsp-toolbar-item-wsp").css("display", "");
+                this.toolbar_item("conf-switch-toolbar").css("display", "");
+                $(".webconf-toolbar").css("background-color", "").find("v_separate").css("display", "none");
+            }
+            else
+            {
+                this.toolbar_item("wsp-toolbar-item").css("display", "");
+                this.toolbar_item("wsp-toolbar-item-wsp").css("display", "none");
+                $(".webconf-toolbar").css("background-color", "").find("v_separate").css("display", "");
+            }
             this.logo.removeClass("hidden-toolbar");
-            $(".webconf-toolbar").css("background-color", "").find("v_separate").css("display", "");
             if (MasterWebconfBar.isFirefox())
             {
                 this.broadcast.css("display", "none");
             }
+
         }
         else {
             this.toolbar_item("wsp-toolbar-item").css("display", "none");  
@@ -356,6 +400,19 @@ class MasterWebconfBar {
     async hangup()
     {
         //window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank');//.focus();
+        if (this.toolbar_item("wsp-toolbar-item-wsp").length > 0)
+        {
+            if (this.toolbar_item("conf-switch-toolbar").length === 0 || this.toolbar_item("conf-switch-toolbar").css("display") === "none")
+            {
+
+            }
+            else
+            {
+                await ChangeToolbar("home");
+                if ($("iframe.workspace-frame").length > 0)
+                    $("iframe.workspace-frame").css("padding-right", "");
+            }
+        }
         delete window.webconf_master_bar;
         $(".webconf-toolbar").remove();
         this.send("hangup");
@@ -373,15 +430,46 @@ class MasterWebconfBar {
             if (querry.length > 0)
                 querry.css("padding-right", "");
             else
-                $("#layout-frame").css("width", "");
-            //console.error("########", this.webconf.is_framed(), querry);
+                $("#layout-frames").css("width", "");
+            ////console.error("########", this.webconf.is_framed(), querry);
             if (!this.webconf.is_framed())
             {
                 if (querry.length > 0)
                     querry.css("padding-left", "");
             }
         }
+        $(".webconf-frame").css("display", "none");
+        if ($("#layout-frames").css("width") !== undefined)
+        {
+            $("#layout-frames").css("width", "");
+            let haveFrameOpen = false;
+            $("#layout-frames").find("iframe").each((i,e) => {
+                if (!haveFrameOpen && $(e).css("display") !== "none")
+                    haveFrameOpen = true;
+            });
+            if ($("#layout-frames").find("iframe").length > 0 && haveFrameOpen)
+                $("#layout-frames").css("display", "");
+            else
+                $("#layout-frames").css("display", "none");
+        }
         $(".webconf-frame").remove();
+        $(".tiny-rocket-chat").css("display", "block");
+    }
+
+    change_ariane()
+    {
+        $(".mm-frame").css("display", "none");
+        $(".webconf-frame").css("display", "");
+        if (this.webconf._is_framed)
+        {
+            $("#layout-frames").css("width", "");
+            $(".webconf-frame").addClass("mm-frame");
+        }
+        this.update_screen(true);
+        if (!this.ariane.hasClass("active"))
+            this.show_ariane(true);
+        this.send("full_screen_ariane");
+        this.webconf.ariane.is_full = true;
     }
 
     toogle_film_strip(send = true)
@@ -466,7 +554,7 @@ class MasterWebconfBar {
         if (mel_metapage.Functions.is_busy())
             return;
         const show = () => {
-            //console.error("show time", $("iframe.stockage-frame").length);
+            ////console.error("show time", $("iframe.stockage-frame").length);
             $(".stockage-frame").css("display", "");
             if ($("iframe.stockage-frame").length > 0)
             {
@@ -501,7 +589,7 @@ class MasterWebconfBar {
             this.webconf._is_minimized = true;    
             await mel_metapage.Functions.change_frame("stockage", true, true);
             //this.document.addClass("active");
-            // console.error("length", $("iframe.stockage-frame").length === 0 , $(".stockage-frame").length !== 0, $("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
+            // //console.error("length", $("iframe.stockage-frame").length === 0 , $(".stockage-frame").length !== 0, $("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
             // let already_shown = false;
             // if ($("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
             //     already_shown = show();
@@ -554,8 +642,10 @@ class MasterWebconfBar {
 
     send(func)
     {
+        console.error("send", func);
         workspaces.sync.PostToParent({
             exec: `rcmail.env.wb_listener.${func}()`,
+            eval:"always"
             // child: false
         });
     }
@@ -639,8 +729,21 @@ class ListenerWebConfBar
 
     minimize()
     {
-        console.error("minimze", "minimize !");
+        //console.error("minimze", "minimize !");
         this.webconf.minimize();
+    }
+
+    full_screen_ariane()
+    {
+        console.error("fsariane");
+        this.webconf.ariane.is_full = true;
+        this.webconf.update();
+    }
+
+    stop_full_screen_ariane()
+    {
+        this.webconf.ariane.is_full = false;
+        this.webconf.update();
     }
 
     async hangup()
@@ -653,35 +756,42 @@ class ListenerWebConfBar
 
 $(document).ready(() => {
     const tmp = async () => {
-        await wait(() => rcmail !== undefined && rcmail.busy !== undefined);
+        //await wait(() => rcmail === undefined || rcmail.busy === undefined);
         try {
-            console.error("here 1");
-            $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
-            let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
-            if (webconf.have_ariane())
+            let isAdded = await mel_metapage.Functions.ask("window.webconf_added");
+            console.error("isAdded", isAdded);
+            if (isAdded === mel_metapage.Storage.unexist)
             {
-                console.error("here 2");
-                await webconf.go();
-                webconf.remove_selector();
-            }
-            else
-                webconf.show_selector();
-                console.error("here 3");
-            rcmail.env.webconf = webconf;
-            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);  
-            if (await mel_metapage.Functions.ask("window.webconf_added") === mel_metapage.Storage.unexist)
-            {
+                console.error("here ================");
                 mel_metapage.Functions.call("window.webconf_added = 'a'");
-                const donothide = function () {
+                const donothide = function (eClass) {
                     if (window.webconf_master_bar === undefined)
                         return;
                     if (window.webconf_master_bar.webconf.is_framed())
                         $(".webconf-frame").removeClass("mm-frame").css("padding-top", "60px");
                     else
                         $(".webconf-frame.mm-frame").addClass("webconf-mm-frame").removeClass("mm-frame");
+                    console.error(eClass, window.webconf_master_bar, "wolololololo", eClass === "ariane" || eClass === "rocket" || eClass === "discussion" || eClass === "chat");
+                    if (eClass === "ariane" || eClass === "rocket" || eClass === "discussion" || eClass === "chat")
+                    {
+                        if (window.webconf_master_bar.webconf.have_ariane() && window.webconf_master_bar.webconf.ariane.is_full !== true)
+                        {
+                            $(".mm-frame").css("display", "none");
+                            window.webconf_master_bar.change_ariane();
+                            console.error("return break");
+                            return 'break';
+                        }
+                        else
+                            return "break";
+                    }
+                    else if (window.webconf_master_bar.webconf.have_ariane() && window.webconf_master_bar.webconf.ariane.is_full === true)
+                    {
+                        window.webconf_master_bar.send("stop_full_screen_ariane");
+                        window.webconf_master_bar.webconf.ariane.is_full = false;
+                    }
                     // if (window.webconf_master_bar !== undefined)
                     // {
-                    //     console.error('window.webconf_master_bar.send("minimize");', "" + window.webconf_master_bar.send);
+                    //     //console.error('window.webconf_master_bar.send("minimize");', "" + window.webconf_master_bar.send);
                     // }
                 };
                 const updateframe = (eClass, changepage, isAriane, querry, id) => {
@@ -715,20 +825,35 @@ $(document).ready(() => {
                     else
                         window.webconf_master_bar.document.addClass("active");
                 }
-                console.error(`metapage_frames.addEvent("changepage.before", ${donothide})`);
+                //console.error(`metapage_frames.addEvent("changepage.before", ${donothide})`);
                 mel_metapage.Functions.call(`metapage_frames.addEvent("changepage.before", ${donothide})`);
                 mel_metapage.Functions.call(`metapage_frames.addEvent("onload.after", ${updateframe})`);
                 mel_metapage.Functions.call(`metapage_frames.addEvent("open.after", ${updateframe})`);
-            }     
+            }   
+
+            //console.error("here 1");
+            $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
+            let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
+            if (webconf.have_ariane())
+            {
+                //console.error("here 2");
+                await webconf.go();
+                webconf.remove_selector();
+            }
+            else
+                webconf.show_selector();
+                //console.error("here 3");
+            rcmail.env.webconf = webconf;
+            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);    
         } catch (error) {
-            console.error(error);
+            //console.error(error);
         }
     };
-    // console.error(rcmail._events);
+    // //console.error(rcmail._events);
     // for (const key in rcmail._events.init) {
     //     if (Object.hasOwnProperty.call(rcmail._events.init, key)) {
     //         const element = rcmail._events.init[key];
-    //         console.error(element.func);
+    //         //console.error(element.func);
     //     }
     // }
     //rcmail.addEventListener("init", async () => {

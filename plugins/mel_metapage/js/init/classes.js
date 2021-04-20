@@ -537,11 +537,22 @@ class MetapageFrames {
     constructor()
     {
         this._events = {};
+        this._break = false;
     }
 
     open(key, changePage = true)
     {
         mm_st_OpenOrCreateFrame(key, changePage);
+    }
+
+    break()
+    {
+        this._break = true;
+    }
+
+    unbreak()
+    {
+        this._break = false;
     }
 
     async openAsync(key, changePage = true, delay_ms = 500)
@@ -562,7 +573,7 @@ class MetapageFrames {
 
     triggerEvent(key, ...args)
     {
-        if (this._events[key] === undefined)
+        if (this._events[key] === undefined || this._break)
             return;
         else {
             let result = null;
@@ -579,6 +590,11 @@ class MetapageFrames {
                     }  
                 } catch (error) {
                     console.error(error);
+                }
+                if (result === "break")
+                {
+                    this.break();
+                    break;
                 }
             }
             return result;

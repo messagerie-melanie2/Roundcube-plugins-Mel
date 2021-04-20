@@ -7,6 +7,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this._is_framed = false;
     else
         this._is_framed = is_framed
+    if (this._is_framed)
+    $(".webconf-fullscreen").css("top", "5px");
     //console.error("yolo",is_framed === null,parent !== window , this._is_framed);
     this.master_bar = `window.webconf_master_bar = new MasterWebconfBar('${frameconf_id}', '${framechat_id}', '${ask_id}', '${key}', ${ariane === undefined ? "undefined" : `'${ariane}'`}, '${html_helper.JSON.stringify(wsp)}', ${ariane_size}, ${this._is_framed})`;
 
@@ -107,6 +109,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 hideLobbyButton: true,
                 startWithAudioMuted: true,
                 startWithVideoMuted:true,
+                prejoinPageEnabled: false,
                 toolbarButtons: [''
                 // 'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
                 // 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
@@ -175,6 +178,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
         if (this._is_minimized)
         {
+            $(".webconf-fullscreen").css("display", "");
             this.conf.css("max-width", `${this.ariane.size}px`)
             .css("top", `${pixel_correction}px`)
             .css("right", '0')
@@ -199,6 +203,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         }
         else
         {
+            $(".webconf-fullscreen").css("display", "none");
             this.conf.css("max-width", "")
             .css("top", "")
             .css("right", "")  
@@ -240,7 +245,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             .css("right", "")
             .css("bottom", "")
             .css("top", "")
-            .css("left", "");
+            .css("left", "");//.css("max-height", `calc(100% - ${pixel_correction}px)`);
 
 
     }
@@ -438,6 +443,7 @@ class MasterWebconfBar {
                     querry.css("padding-left", "");
             }
         }
+        $("#layout-frames").find("iframe").css("padding-left", "");
         $(".webconf-frame").css("display", "none");
         if ($("#layout-frames").css("width") !== undefined)
         {
@@ -676,6 +682,40 @@ class MasterWebconfBar {
     {
         return  typeof InstallTrigger !== 'undefined';
     }
+
+    _fullscreen()
+    {
+        this.update_screen(true);
+        this.document.removeClass("active");
+        this.webconf._is_minimized = false;
+        this.webconf.ariane.is_full = false;
+        $(".mm-frame").css("display", "none");
+        $(".mm-frame").each((i, e) => {
+            e = $(e);
+            if (e.hasClass("webconf-frame"))
+                return;
+            else
+            {
+                if ($(e)[0].nodeName === "IFRAME")
+                    $(e).css("padding-right", "");
+            }
+        })
+        if (!this.webconf._is_framed)
+            $("#layout-frames").css("display", "none");
+        else
+            $("#layout-frames").find("iframe").css("padding-left", "");
+        $(".webconf-frame").css("display", "");
+
+        this.send("fullscreen");
+    }
+
+    static fullscreen()
+    {
+        workspaces.sync.PostToParent({
+            exec: "window.webconf_master_bar._fullscreen()",
+            child: false
+        });
+    }
 }
 
 class ListenerWebConfBar
@@ -746,6 +786,12 @@ class ListenerWebConfBar
         this.webconf.update();
     }
 
+    fullscreen()
+    {
+        this.webconf.ariane.is_full = false;
+        this.webconf.full_screen();
+    }
+
     async hangup()
     {
         this.webconf.jitsii.executeCommand('hangup');
@@ -757,6 +803,10 @@ class ListenerWebConfBar
 $(document).ready(() => {
     const tmp = async () => {
         //await wait(() => rcmail === undefined || rcmail.busy === undefined);
+        workspaces.sync.PostToParent({
+            exec:"window.have_webconf = true",
+            child:false
+        });
         try {
             let isAdded = await mel_metapage.Functions.ask("window.webconf_added");
             console.error("isAdded", isAdded);

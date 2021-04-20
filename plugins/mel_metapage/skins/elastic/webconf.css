@@ -31,4 +31,18 @@
 .mm-frame #mm-ariane {
 	height: calc(100% - 60px);
 }
+.webconf-fullscreen {
+	position: absolute;
+	right: 5px;
+	top: 65px;
+	color: white;
+	/* font-size: x-large; */
+	cursor: pointer;
+	background-color: #5870BF;
+	transition: all 0.1s ease-in;
+}
+
+.webconf-fullscreen:hover {
+	background-color: #363A5B;
+}
 

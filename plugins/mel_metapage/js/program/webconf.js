@@ -404,7 +404,7 @@ class MasterWebconfBar {
 
     async hangup()
     {
-        //window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank');//.focus();
+        window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank');//.focus();
         if (this.toolbar_item("wsp-toolbar-item-wsp").length > 0)
         {
             if (this.toolbar_item("conf-switch-toolbar").length === 0 || this.toolbar_item("conf-switch-toolbar").css("display") === "none")
@@ -705,7 +705,7 @@ class MasterWebconfBar {
         else
             $("#layout-frames").find("iframe").css("padding-left", "");
         $(".webconf-frame").css("display", "");
-
+        $("#layout-frames").css("width", "");
         this.send("fullscreen");
     }
 

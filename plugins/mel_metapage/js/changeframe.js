@@ -17,36 +17,52 @@
                 {
                     metapage_frames.workspace = false;
                     metapage_frames.addEvent("changepage.before", (eClass) => {
-                        console.log("addEvent", $(".tiny-wsp-menu"));
-                        if ($(".tiny-wsp-menu").length > 0 && $(".tiny-wsp-menu").css("display") !== "none")
+                        //console.log("addEvent", $(".tiny-wsp-menu"));
+                        if (rcmail.env.wsp_datas.toolbar.exists === true && metapage_frames.workspace === false)//($(".tiny-wsp-menu").length > 0 && $(".tiny-wsp-menu").css("display") !== "none")
                         {
-                            console.log("test");
+                            //console.log("test");
                             try {
-                                //$(".tiny-rocket-chat").css("display", "block");
-                                console.log("test", $(".wsp-toolbar-edited").css("display") !== "none");
-                                $(".tiny-wsp-menu").css("display", "none")
-                                .data("toolbaropen", $(".wsp-toolbar-edited").css("display") !== "none")
-                                .data("lastopenedframe", rcmail.env.wsp_datas.toolbar.current);
-                                $(".wsp-toolbar-edited").css("display", "none");               
+                                //console.log("test", $(".wsp-toolbar-edited").css("display") !== "none");
+                                if (window.webconf_master_bar === undefined)
+                                {
+                                    $(".tiny-rocket-chat").css("display", "block");
+                                    $(".tiny-wsp-menu").css("display", "none")
+                                    .data("toolbaropen", $(".wsp-toolbar-edited").css("display") !== "none")
+                                    .data("lastopenedframe", rcmail.env.wsp_datas.toolbar.current);
+                                    $(".wsp-toolbar-edited").css("display", "none");     
+                                }      
+                                else
+                                {
+                                    $(".wsp-toolbar ")
+                                    .data("lastopenedframe", rcmail.env.wsp_datas.toolbar.current);
+                                }
                             } catch (error) {
                                 console.error(error);
                             }
-                            console.log("addEvent", $(".tiny-wsp-menu"));
+                            //console.log("addEvent", $(".tiny-wsp-menu"));
                             metapage_frames.workspace = true;
                         }
                     });
                     metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
                         if (metapage_frames.workspace === true && eClass === "workspace")
                         {
-                            $(".tiny-wsp-menu").css("display", "");
-                            $(".tiny-rocket-chat").css("display", "none");
-                            const lastFrame = $(".tiny-wsp-menu").data("lastopenedframe");
-                            const toolbaropen = $(".tiny-wsp-menu").data("toolbaropen");
-                            console.log("test", toolbaropen, lastFrame);
-                            if (toolbaropen)
-                                $(".wsp-toolbar-edited").css("display", "");
-                            ChangeFrame(lastFrame);
+                            if (window.webconf_master_bar === undefined)
+                            {
+                                $(".tiny-wsp-menu").css("display", "");
+                                $(".tiny-rocket-chat").css("display", "none");
+                                const lastFrame = $(".tiny-wsp-menu").data("lastopenedframe");
+                                const toolbaropen = $(".tiny-wsp-menu").data("toolbaropen");
+                                //console.log("test", toolbaropen, lastFrame, $(".tiny-wsp-menu").data("toolbaropen"));
+                                if (toolbaropen)
+                                    $(".wsp-toolbar-edited").css("display", "");
+                                ChangeFrame(lastFrame);
+                            }
+                            else {
+                                const lastFrame = $(".wsp-toolbar").data("lastopenedframe");
+                                ChangeFrame(lastFrame);
+                            }
                             metapage_frames.workspace = false;
+                            
                             if (rcmail.env.wsp_datas.toolbar.exists === true && (window.webconf_master_bar !== undefined))
                             {
                                 let toolbar_conf = $(".webconf-toolbar");

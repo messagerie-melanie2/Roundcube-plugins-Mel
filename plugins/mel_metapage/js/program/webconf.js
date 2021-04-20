@@ -355,7 +355,7 @@ class MasterWebconfBar {
 
     async hangup()
     {
-        window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank').focus();
+        //window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank');//.focus();
         delete window.webconf_master_bar;
         $(".webconf-toolbar").remove();
         this.send("hangup");
@@ -367,6 +367,20 @@ class MasterWebconfBar {
             else
                 rcmail.command("last_frame");
         }          
+        else
+        {
+            let querry = $(`#${rcmail.env.current_frame}`);
+            if (querry.length > 0)
+                querry.css("padding-right", "");
+            else
+                $("#layout-frame").css("width", "");
+            //console.error("########", this.webconf.is_framed(), querry);
+            if (!this.webconf.is_framed())
+            {
+                if (querry.length > 0)
+                    querry.css("padding-left", "");
+            }
+        }
         $(".webconf-frame").remove();
     }
 
@@ -472,6 +486,7 @@ class MasterWebconfBar {
             if (send)
                 this.send("nextcloud_close");
             this.document.removeClass("active");
+            this.webconf._is_minimized = false;
             $(".stockage-frame").css("display", "none");
             if ($("iframe.stockage-frame").length === 0)
             {
@@ -483,6 +498,7 @@ class MasterWebconfBar {
         {
             if (send)
                 this.send("nextcloud_open");
+            this.webconf._is_minimized = true;    
             await mel_metapage.Functions.change_frame("stockage", true, true);
             //this.document.addClass("active");
             // console.error("length", $("iframe.stockage-frame").length === 0 , $(".stockage-frame").length !== 0, $("iframe.stockage-frame").length === 0 && $(".stockage-frame").length !== 0)
@@ -501,9 +517,15 @@ class MasterWebconfBar {
     {
         this.update_screen(active);
         if (!active)
+        {
             this.send("minimize");
+            this.webconf._is_minimized = true;
+        }
         else
+        {
             this.send("full_screen");
+            this.webconf._is_minimized = false;
+        }
     }
 
     update_screen(active)

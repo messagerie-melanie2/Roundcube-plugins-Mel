@@ -224,7 +224,7 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
                     }
 
                     $('#mel_envoi_differe').text($('#envoidiffere_date').val() + ' ' + $('#envoidiffere_time').val());
-                    $('#mel_envoi_differe').css({ 'min-width': '120px' });
+                    $('#mel_envoi_differe').css({ 'min-width': '150px' });
                     $('#mel_envoi_differe').addClass('enable');
                     $('.ui-dialog-content').dialog('destroy');
                 }
@@ -250,7 +250,7 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
         }
     }];
 
-    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 400 })
+    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 420, resizable: false, height: 400 })
 
     $('#envoidiffere_date').datepicker({ minDate: 0, dateFormat: 'dd/mm/yy' })
         .change(function () {

@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-class mel_sharedmailboxes_imap extends rcube_plugin {
+class mel_sharedmailboxes extends rcube_plugin {
     /**
      *
      * @var string

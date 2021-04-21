@@ -72,4 +72,9 @@ abstract class Program{
         return $this->rc->output->parse("$plugin.$html", false, false);
     }
 
+    protected function get_plugin($name)
+    {
+        return $this->rc->plugins->get_plugin($name);
+    }
+
 }

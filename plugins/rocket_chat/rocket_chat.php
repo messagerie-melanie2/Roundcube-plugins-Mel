@@ -518,4 +518,10 @@ EOF;
       echo json_encode($results);
       exit;
     }
+
+    public function get_joined()
+    {
+      $rocketClient = $this->get_rc_client();
+      return $rocketClient->get_all_joined();
+    }
 }

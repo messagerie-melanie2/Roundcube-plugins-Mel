@@ -340,7 +340,7 @@ const mel_metapage = {
             }
             return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
         },
-        change_frame: async function(frame, changepage = true, waiting = false)
+        change_frame: async function(frame, changepage = true, waiting = false, args = null)
         {
             if (frame === "webconf")
             {
@@ -350,7 +350,7 @@ const mel_metapage = {
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
             workspaces.sync.PostToParent({
-                exec:"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+")",
+                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse(${JSON.stringify(args)}))`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
                 child:false
             });
             console.error("change_frame", frame, changepage, waiting);
@@ -385,6 +385,19 @@ const mel_metapage = {
         },
         call:function(exec, child = false, ...args)
         {
+            if (typeof exec !== "string")
+            {
+                const tmp_exec = JSON.stringify(exec);
+                if (tmp_exec === undefined)
+                {
+                    if (typeof exec === "function")
+                        exec = `(${exec.toString()})()`;
+                    else
+                        exec = exec.toString();
+                }
+                else
+                    exec = tmp_exec;
+            }
             let config = {
                 exec:exec,
                 child:child

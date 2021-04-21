@@ -41,7 +41,7 @@ function m_mp_Create()
         let mail = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_mail"), "icofont-email block", "rcmail.command('compose','',this,event)") + "</div>";
         let tache = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_task"), "icofont-tasks block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), () => m_mp_action_from_storage('task_create', m_mp_OpenTask))") + "</div>";
         let reu = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_meeting"), "icofont-calendar block", 'm_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
-        let viso = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_web_conf"), "icofont-slidshare block") + "</div>";
+        let viso = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_web_conf"), "icofont-slidshare block", `window.webconf_helper.go()`) + "</div>";
         let document = '<div class="col-4" style="'+haveNextcloud.style+'">' + button(rcmail.gettext("mel_metapage.a_document"), "icofont-file-document block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</div>";
         let blocnote = '<div class="col-'+haveNextcloud.col+'">' + button(rcmail.gettext("mel_metapage.a_wordpad"), "icofont-ui-note block") + "</div>";
         let pega = '<div class="col-'+haveNextcloud.col+'">' + button(rcmail.gettext("mel_metapage.a_survey"), "icofont-letter block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";

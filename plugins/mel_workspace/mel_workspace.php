@@ -31,7 +31,7 @@ class mel_workspace extends rcube_plugin
      */
     private $rc;
 
-    private $workspaces;
+    public $workspaces;
     private $currentWorkspace;
     private $folders = ["init", "lib", "addons"];
 

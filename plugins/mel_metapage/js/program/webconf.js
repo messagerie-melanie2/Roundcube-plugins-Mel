@@ -9,8 +9,24 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this._is_framed = is_framed
     if (this._is_framed)
     $(".webconf-fullscreen").css("top", "5px");
-    //console.error("yolo",is_framed === null,parent !== window , this._is_framed);
-    this.master_bar = `window.webconf_master_bar = new MasterWebconfBar('${frameconf_id}', '${framechat_id}', '${ask_id}', '${key}', ${ariane === undefined ? "undefined" : `'${ariane}'`}, '${html_helper.JSON.stringify(wsp)}', ${ariane_size}, ${this._is_framed})`;
+    //console.error("yolo",html_helper, ariane);
+    this.master_bar = function()
+    {
+        const master_bar_config = this.master_bar_config;
+        console.error("ariane", html_helper.JSON.stringify(master_bar_config.ariane), master_bar_config.ariane);
+        return  `window.webconf_master_bar = new MasterWebconfBar('${master_bar_config.frameconf_id}', '${master_bar_config.framechat_id}', '${master_bar_config.ask_id}', '${master_bar_config.key}', ${master_bar_config.ariane === undefined || master_bar_config.ariane === null ? "undefined" : `'${html_helper.JSON.stringify(master_bar_config.ariane)}'`}, '${html_helper.JSON.stringify(master_bar_config.wsp)}', ${master_bar_config.ariane_size}, ${master_bar_config.is_framed})`;
+    }
+
+    this.master_bar_config = {
+        framechat_id:frameconf_id,
+        framechat_id:framechat_id,
+        ask_id:ask_id,
+        key:key,
+        ariane: (typeof ariane === "string" ? JSON.parse(ariane) : ariane),
+        wsp:wsp,
+        ariane_size:ariane_size,
+        is_framed:this._is_framed
+    };
 
     this.conf = $("#" + frameconf_id);
     this.chat = $("#" + framechat_id);
@@ -34,9 +50,13 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 this.ariane = {};
             this.ariane.ispublic = this.wsp.datas.ispublic === 0 ? false: true;
         }
+        else
+            this.ariane = {};
     }
     else
         this.ariane = ariane;
+    if (typeof this.ariane === "string")
+        this.ariane = JSON.parse(this.ariane);
     this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
     // //console.error(window.location.href, window.location.href.includes("_from=iframe"));
@@ -98,6 +118,13 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 }, '*')
             }
         }
+        else {
+            this.chat[0].src = rcmail.env.rocket_chat_url;// + await this.get_room();
+            this.ariane.is_hide = true;
+            this.ariane.room_name = "home";
+            this.ariane._is_allowed = "true";
+            this.update();
+        }
         //this.conf[0].src = rcmail.env["webconf.base_url"] + "/" + this.key; 
         const domain = rcmail.env["webconf.base_url"].replace("http://", "").replace("https://", "");
         const options = {
@@ -141,7 +168,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this.jitsii.executeCommand('avatarUrl', `${rcmail.env.rocket_chat_url}avatar/${rcmail.env.username}`);
         // this.jitsii.executeCommand("hangup");
         this.busy(false);
-        MasterWebconfBar.start(this.master_bar);
+        MasterWebconfBar.start(this.master_bar());
     }
 
     this.minimize = function()
@@ -283,8 +310,70 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
 }
 
+Webconf.set_webconf = function()
+{
+    const is_wsp = $("#wsp-yes")[0].checked;
+    if (is_wsp)
+    {
+        let _wsp = rcmail.env.webconf.window_selector.find(".wsp_select");
+        const wsp = html_helper.JSON.parse(_wsp.val());
+        rcmail.env.webconf.wsp = wsp;
+        if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane)
+        {
+            if (typeof wsp.objects.channel === "string")
+                rcmail.env.webconf.ariane = {room_id:wsp.objects.channel};
+            else
+                rcmail.env.webconf.ariane = {room_name:wsp.objects.channel.name};
+            rcmail.env.webconf.ariane._is_allowed = wsp.datas.allow_ariane;
+        } 
+        else
+            rcmail.env.webconf.ariane = {};
+        rcmail.env.webconf.ariane.ispublic = rcmail.env.webconf.wsp.datas.ispublic === 0 ? false: true;
+        rcmail.env.webconf.master_bar_config.wsp = wsp;
+        //rcmail.env.webconf.master_bar_config.ariane = rcmail.env.webconf.ariane;
+    }
+    else {
+        let ariane = rcmail.env.webconf.window_selector.find(".ariane_select");
+        let raw_val = ariane.val();
+        if (raw_val === "home")
+        {}
+        else
+        {
+            raw_val = raw_val.split(":");
+            const val = {
+                is_public:raw_val[0] === "true" ? true: false,
+                room:raw_val[1]
+            };
+            rcmail.env.webconf.ariane.room_name = val.room;
+            rcmail.env.webconf.ariane.ispublic = val.is_public;
+            rcmail.env.webconf.ariane._is_allowed = true;
+            rcmail.env.webconf.master_bar_config.ariane = rcmail.env.webconf.ariane;
+
+        }
+    }
+    console.error("go", rcmail.env.webconf);
+    rcmail.env.webconf.go();
+    rcmail.env.webconf.remove_selector();
+}
+
+Webconf.update_radio = function()
+{
+    const is_yes = $("#wsp-yes")[0].checked;
+    if (is_yes)
+    {
+        $(".webconf-ariane").css("display", "none");
+        $(".webconf-wsp").css("display", "");
+    }
+    else {
+        $(".webconf-ariane").css("display", "");
+        $(".webconf-wsp").css("display", "none");
+    }
+}
+
 class MasterWebconfBar {
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
+        // console.error("MasterWebconfBar", ariane);
+        ariane = html_helper.JSON.parse(ariane);
         this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
         if (!this.webconf.have_ariane()) 
@@ -303,7 +392,7 @@ class MasterWebconfBar {
             MasterWebconfBar.video = Symbol("video");
         }
         $(".tiny-rocket-chat").css("display", "");
-        if (this.webconf.wsp.datas.logo === "")
+        if ((this.webconf.wsp === undefined || this.webconf.wsp === null) || this.webconf.wsp.datas.logo === "")
         {}
         else       
             this.logo.html(`<img src="${this.webconf.wsp.datas.logo}" />`).css("background-color", this.webconf.wsp.datas.color);
@@ -881,22 +970,27 @@ $(document).ready(() => {
                 mel_metapage.Functions.call(`metapage_frames.addEvent("open.after", ${updateframe})`);
             }   
 
-            //console.error("here 1");
+            console.error("here 1");
             $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
             let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
+            webconf.set_title();
             if (webconf.have_ariane())
             {
-                //console.error("here 2");
+                console.error("here 2");
                 await webconf.go();
                 webconf.remove_selector();
             }
             else
+            {
+                webconf.set_title();
                 webconf.show_selector();
+            }
                 //console.error("here 3");
             rcmail.env.webconf = webconf;
-            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);    
+            rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);   
+            console.error("webconf", rcmail.env.webconf);
         } catch (error) {
-            //console.error(error);
+            console.error(error);
         }
     };
     // //console.error(rcmail._events);

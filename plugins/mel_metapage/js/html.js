@@ -23,9 +23,15 @@ html_helper.is_null_or_empty = function(string)
 
 html_helper.JSON = {
 	parse:(string) => {
+		if (string === null || string === undefined)
+			return string;
 		return JSON.parse(string.replaceAll('¤¤¤¤¤¤¤¤', '"'));
 	},
 	stringify:(item) => {
+		if (item === null)
+			item = "null";
+		else if (item === undefined)
+			item = "undefined";
 		return JSON.stringify(item).replaceAll('"', "¤¤¤¤¤¤¤¤");
 	}
 }

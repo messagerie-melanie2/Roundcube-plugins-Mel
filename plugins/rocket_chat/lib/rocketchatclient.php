@@ -108,12 +108,14 @@ class RocketChatClient {
   const CHANNEL_LEAVE = "channels.leave";
   const CHANNEL_MEMBERS = "channels.members";
   const CHANNEl_DELETE = "channels.delete";
+  const CHANNEL_LIST_JOINED = "channels.list.joined";
   const GROUP_ADD_OWNER = "groups.addOwner";
   const GROUP_REMOVE_OWNER = "groups.removeOwner";
   const GROUP_KICK = "groups.kick";
   const GROUP_LEAVE = "groups.leave";
   const GROUP_MEMBERS = "groups.members";
   const GROUP_DELETE = "groups.delete";
+  const GROUP_LIST_JOINED = "groups.list";
   /**
    * Relative API URL
    *
@@ -613,6 +615,22 @@ class RocketChatClient {
     $private = $private ? $this->_api_url.self::GROUP_REMOVE_OWNER : $this->_api_url.self::CHANNEL_REMOVE_OWNER;
     return $this->_post_url($private, $params, null, $headers);
 
+  }
+
+  public function get_all_joined()
+  {
+    $headers = array(
+      "X-Auth-Token: " . $this->getAuthToken(),
+      "X-User-Id: " . $this->getUserId(),
+      "Content-type: application/json",
+    );
+
+    $params = [];
+
+    $list = [];
+    $list["channel"] = $this->_get_url($this->_api_url.self::CHANNEL_LIST_JOINED, $params, $headers);
+    $list["group"] = $this->_get_url($this->_api_url.self::GROUP_LIST_JOINED, $params, $headers);
+    return $list;
   }
 
 

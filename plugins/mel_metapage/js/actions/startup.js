@@ -146,7 +146,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     return mm_st_OpenOrCreateFrame(eClass, changepage);
 } 
 
-function mm_st_OpenOrCreateFrame(eClass, changepage = true)
+function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
 {
     metapage_frames.unbreak();
     if (rcmail.busy)
@@ -170,7 +170,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true)
         //Mise en place de diverses configurations lorque l'on doit créer une frame.
         metapage_frames.triggerEvent("rcmailconfig.no", eClass, changepage, isAriane, querry, id);
         metapage_frames.triggerEvent("node", eClass, changepage, isAriane, querry, id) //Récupération de la node
-        .append(metapage_frames.triggerEvent("frame", eClass, changepage, isAriane, querry, id) /* Récupération de la frame */);
+        .append(metapage_frames.triggerEvent("frame", eClass, changepage, isAriane, querry, id, args) /* Récupération de la frame */);
         //Mise à jours de la frame
         metapage_frames.triggerEvent("editFrame", eClass, changepage, isAriane, $("#"+id));
         rcmail.set_busy(true, "loading");
@@ -295,8 +295,12 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
         return (isAriane ? $("#layout") : $("#layout-frames"));
 })
 
-metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result) => {
-    let src = rcmail.get_task_url(mm_st_CommandContract(eClass), window.location.origin + window.location.pathname) + "&_from=iframe";
+metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result, args) => {
+    //let src = rcmail.get_task_url(mm_st_CommandContract(eClass), window.location.origin + window.location.pathname) + "&_from=iframe";
+    if (args === null || args === undefined)
+        args = {};
+    args["_from"] = "iframe";
+    let src = mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
     if (eClass === "discussion")
         src = rcmail.env.rocket_chat_url + "home";
     const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';

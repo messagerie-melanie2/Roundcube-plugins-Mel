@@ -57,7 +57,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this.ariane = ariane;
     if (typeof this.ariane === "string")
         this.ariane = JSON.parse(this.ariane);
-    this.ariane.is_hide = false;
+    if (this.ariane.is_hide === undefined)
+        this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
     // //console.error(window.location.href, window.location.href.includes("_from=iframe"));
     this.is_framed = () => this._is_framed;
@@ -102,11 +103,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     {
         this.busy();
         mel_metapage.Storage.remove("webconf_token");
-        this.set_title();
         this.update();
         $("#mm-webconf").css("display", "");
         $("#mm-ariane").css("display", "none");
-        if (this.have_ariane())
+        if (this.have_ariane() && this.ariane.room_name !== "@home")
         {
             if (changeSrc)
                 this.chat[0].src = rcmail.env.rocket_chat_url + await this.get_room();
@@ -121,10 +121,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         else {
             this.chat[0].src = rcmail.env.rocket_chat_url;// + await this.get_room();
             this.ariane.is_hide = true;
-            this.ariane.room_name = "home";
+            this.ariane.room_name = "@home";
             this.ariane._is_allowed = "true";
-            this.update();
         }
+        this.set_title();
         //this.conf[0].src = rcmail.env["webconf.base_url"] + "/" + this.key; 
         const domain = rcmail.env["webconf.base_url"].replace("http://", "").replace("https://", "");
         const options = {
@@ -165,6 +165,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         mel_metapage.Storage.remove("webconf_token");
         if (this.have_ariane())
             $("#mm-ariane").css("display", "");
+        this.update();
         this.jitsii.executeCommand('avatarUrl', `${rcmail.env.rocket_chat_url}avatar/${rcmail.env.username}`);
         // this.jitsii.executeCommand("hangup");
         this.busy(false);
@@ -186,6 +187,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.update = function ()
     {
         const pixel_correction = !this.is_framed() ? 60 : 0;
+        console.error("update", this.have_ariane(), this.ariane.is_hide);
         if (this.have_ariane())
         {
             if (this.ariane.is_hide)
@@ -245,6 +247,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 // this.chat.css("max-width", "");
                 this.chat.css("width", "");
             }
+            else
+                this.chat.css("max-height", `calc(100% - ${pixel_correction}px)`);
         }
         console.error("sdddd", this.ariane.is_full, !this.ariane.is_hide);
         if (this.ariane.is_full === true)
@@ -335,8 +339,12 @@ Webconf.set_webconf = function()
     else {
         let ariane = rcmail.env.webconf.window_selector.find(".ariane_select");
         let raw_val = ariane.val();
-        if (raw_val === "home")
-        {}
+        if (raw_val === "@home")
+        {
+            rcmail.env.webconf.ariane._is_allowed = false;
+            rcmail.env.webconf.ariane.is_hide = true;
+            rcmail.env.webconf.master_bar_config.ariane = rcmail.env.webconf.ariane;
+        }
         else
         {
             raw_val = raw_val.split(":");
@@ -348,7 +356,6 @@ Webconf.set_webconf = function()
             rcmail.env.webconf.ariane.ispublic = val.is_public;
             rcmail.env.webconf.ariane._is_allowed = true;
             rcmail.env.webconf.master_bar_config.ariane = rcmail.env.webconf.ariane;
-
         }
     }
     console.error("go", rcmail.env.webconf);
@@ -372,7 +379,6 @@ Webconf.update_radio = function()
 
 class MasterWebconfBar {
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
-        // console.error("MasterWebconfBar", ariane);
         ariane = html_helper.JSON.parse(ariane);
         this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
@@ -380,7 +386,7 @@ class MasterWebconfBar {
             this.ariane.css("display", "none");
         else 
         {
-            if (this.webconf.ariane_is_hide())
+            if (this.webconf.ariane.is_hide)
                 this.hide_ariane(false);
             else
                 this.show_ariane(false);

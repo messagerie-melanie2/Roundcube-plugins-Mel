@@ -103,7 +103,7 @@ class Webconf extends Program
         $list["channel"] = json_decode($list["channel"]["content"]);
         $list["group"] = json_decode($list["group"]["content"]);
         $html = "<select class=ariane_select>";
-        // $html .= "<option value=home>Home</option>";
+        $html .= "<option value=home>Aucun</option>";
         foreach ($list["channel"]->channels as $key => $value) {
             $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';
         } 

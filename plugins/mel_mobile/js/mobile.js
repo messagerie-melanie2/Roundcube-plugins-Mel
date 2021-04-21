@@ -360,9 +360,9 @@ $(document).ready(function() {
   // Mailboxlist
   $('#mailboxlist').attr('data-role', 'listview');
   $('#mailboxlist ul').attr('data-role', 'listview');
-  $('#mailboxlist ul').show();
+  // $('#mailboxlist ul').show();
   $('#mailboxlist li').attr('data-icon', 'false');
-  $('#mailboxlist div.treetoggle').hide();
+  // $('#mailboxlist div.treetoggle').hide();
 
   // add roundcube events
   rcmail.addEventListener('insertrow', function(event) {
@@ -376,10 +376,10 @@ $(document).ready(function() {
   // Directory contact list
   $('#directorylist_mobile').attr('data-role', 'listview');
   $('#directorylist_mobile ul').attr('data-role', 'listview');
-  $('#directorylist_mobile ul').show();
+  // $('#directorylist_mobile ul').show();
   $('#directorylist_mobile > li').attr('data-icon', 'user');
   $('#directorylist_mobile li li').attr('data-icon', 'false');
-  $('#directorylist_mobile div.treetoggle').hide();
+  // $('#directorylist_mobile div.treetoggle').hide();
 
   // Calendar list
   $('#calendarslist').attr('data-role', 'listview');
@@ -390,17 +390,17 @@ $(document).ready(function() {
   $('#settingslist_mobile').attr('data-role', 'listview');
   $('#settingslist_mobile a').attr('data-ajax', 'false');
   $('#settingslist_mobile ul').attr('data-role', 'listview');
-  $('#settingslist_mobile ul').show();
+  // $('#settingslist_mobile ul').show();
   $('#settingslist_mobile > li').attr('data-icon', 'user');
   $('#settingslist_mobile li li').attr('data-icon', 'false');
-  $('#settingslist_mobile div.treetoggle').hide();
+  // $('#settingslist_mobile div.treetoggle').hide();
 
   // Folder subscription list
   $('#subscription-table').attr('data-role', 'listview');
   $('#subscription-table ul').attr('data-role', 'listview');
-  $('#subscription-table ul').show();
+  // $('#subscription-table ul').show();
   $('#subscription-table li').attr('data-icon', 'carat-r');
-  $('#subscription-table div.treetoggle').hide();
+  // $('#subscription-table div.treetoggle').hide();
 
   if ($("#eventedit").length) {
     $("#eventedit .edit-alarm-type").selectmenu();

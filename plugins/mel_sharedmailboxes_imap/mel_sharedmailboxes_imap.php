@@ -126,7 +126,7 @@ class mel_sharedmailboxes_imap extends rcube_plugin {
             $this->set_compose_sent_folder();
         }
         // Folders list handler
-        else if ($this->rc->task == 'mail' && empty($this->rc->action)) {
+        else if ($this->rc->task == 'mail' && empty($this->rc->action) && !$this->rc->config->get('ismobile', false)) {
             $this->include_stylesheet('../mel_larry/css/sharedmailboxes.css');
         }
         // ajouter les boites partagées

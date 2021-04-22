@@ -298,23 +298,6 @@ class M2mailbox {
 
     return $table->show($attrib);
   }
-  /**
-   * Génération du nom court de l'identité en fonction du nom
-   *
-   * @param string $name
-   * @return string
-   */
-  private function m2_mailbox_shortname($name) {
-    if (strpos($name, ' emis par ') !== false) {
-      $name = explode(' emis par ', $name);
-      $name = $name[0] . " (partagée)";
-    }
-    elseif (strpos($name, ' - ') !== false) {
-      $name = explode(' - ', $name);
-      $name = $name[0];
-    }
-    return $name;
-  }
 
   /**
    * Handler to render ACL form for a calendar folder

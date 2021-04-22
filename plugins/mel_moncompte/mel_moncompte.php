@@ -286,7 +286,7 @@ class mel_moncompte extends rcube_plugin {
         // Si on est gestionnaire
         $acl = $this->gettext('gestionnaire');
         // Les boites individuelles et applicatives ne sont pas des vrais partages, le repartage est donc bloqué. A voir si on passe ça en Driver
-        $shared = $currentUser == $user->uid || ($user->is_individuelle && $user->is_applicative);
+        $shared = $currentUser == $user->uid || (!$user->is_individuelle && !$user->is_applicative);
       }
       else {
         // Si pas gestionnaire on cherche le bon droit a afficher

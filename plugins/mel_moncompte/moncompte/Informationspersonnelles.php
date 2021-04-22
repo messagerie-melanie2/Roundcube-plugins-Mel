@@ -114,8 +114,7 @@ class Informationspersonnelles extends Moncompteobject {
 			}
 			// Gestion de la photo
 			rcmail::get_instance()->output->set_env('moncompte_data_publication_photo', 
-				//$user->is_individuelle || $user->is_personne);
-				$user->type == Type::INDIVIDUELLE || $user->type == Type::PERSONNE);
+				$user->is_individuelle || $user->is_personne);
 		}
 		else {
 			// Erreur d'auth

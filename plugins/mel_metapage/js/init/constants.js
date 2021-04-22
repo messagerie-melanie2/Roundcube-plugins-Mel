@@ -211,7 +211,8 @@ const mel_metapage = {
         nextcloud:{
             folder:Symbol("folder"),
             file:Symbol("file")
-        }
+        },
+        null:Symbol("null")
     },
     /**
      * Les différents Identifiants
@@ -261,6 +262,11 @@ const mel_metapage = {
         }
     },
     Functions:{
+        /**
+         * 
+         * @param {moment} start (moment) Début des évènements à récupérer
+         * @param {moment} end (moment) Fin des évènements à récupérer
+         */
         update_calendar: function (start, end){
             start = start.format("YYYY-MM-DDTHH:mm:ss");
             end = end.format("YYYY-MM-DDTHH:mm:ss");
@@ -324,6 +330,12 @@ const mel_metapage = {
                 return false;
             
         },
+        /**
+         * Récupère une URL conforme.
+         * @param {string} task Tâche 
+         * @param {string} action Action
+         * @param {JSON} args divers arguments ex {_eventType:1}
+         */
         url: function (task, action = "", args = null)
         {
             let url = task;
@@ -340,6 +352,13 @@ const mel_metapage = {
             }
             return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
         },
+        /**
+         * Change de frame, même si l'on est pas depuis "TOP"
+         * @param {*} frame Frame à ouvrir
+         * @param {*} changepage Si vrai, on change de page, sinon la page ouverte sera caché.
+         * @param {*} waiting Si l'on veux attendre que la frame sois ouverte ou non.
+         * @param {*} args Arguments à ajouter dans l'url de la frame.
+         */
         change_frame: async function(frame, changepage = true, waiting = false, args = null)
         {
             if (frame === "webconf")
@@ -383,7 +402,13 @@ const mel_metapage = {
             }
             await this.change_frame(last, true, wait);
         },
-        call:function(exec, child = false, ...args)
+        /**
+         * Execute un string depuis "TOP"
+         * @param {string} exec String à éxécuter
+         * @param {string} child Exécuter aussi dans le fenetre fille ?
+         * @param  {JSON} args Autres arguments (eval etc....)
+         */
+        call:function(exec, child = false, args = {})
         {
             if (typeof exec !== "string")
             {
@@ -413,6 +438,10 @@ const mel_metapage = {
             }
             workspaces.sync.PostToParent(config);          
         },
+        /**
+         * Modifie l'url du navigateur
+         * @param {string} url URL à afficher 
+         */
         title:function (url)
         {
             mel_metapage.Functions.call(`window.history.replaceState({}, document.title, '${url}')`);
@@ -450,6 +479,12 @@ const mel_metapage = {
                     return rcmail.busy || mel_metapage.Storage.get("mel.busy") === true;
             }
         },
+        /**
+         * @async
+         * Récupère une variable globale parente.
+         * @param {string} props Variable à récupérer
+         * @returns {Promise<any>} Valeur de la variable
+         */
         ask:async function(props)
         {
             this.call(`mel_metapage.Storage.set("mel.ask", ${props})`);
@@ -457,7 +492,44 @@ const mel_metapage = {
             props = mel_metapage.Storage.get("mel.ask");
             mel_metapage.Storage.remove("mel.ask");
             return props;
+        },
+        /**
+         * Faire facilement une requête ajax
+         * @param {string} url 
+         * @param {JSON} datas 
+         * @param {function} success 
+         * @param {function} failed 
+         * @param {string} type 
+         * @returns {Promise<any>} Appel ajax
+         */
+        ajax:function(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)}, type = "POST")
+        {
+            let config = { // fonction permettant de faire de l'ajax
+                type: type, // methode de transmission des données au fichier php
+                url: url,//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
+                success: success,
+                error: failed
+            };
+            if (datas !== mel_metapage.Symbols.null)
+                config["data"] = datas;
+
+            return $.ajax(config);
+        },
+        get:function(url, datas = {}, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
+        {
+            for (const key in datas) {
+                if (Object.hasOwnProperty.call(datas, key)) {
+                    const element = datas[key];
+                    url += `${(url.includes("?") ? "&" : "?")}${key}=${encodeURIComponent(element)}`;
+                }
+            }
+            return this.ajax(url, mel_metapage.Symbols.null, success, failed, "GET");
+        },
+        post:function(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
+        {
+            return this.ajax(url, datas, success, failed);
         }
+
 
 
 

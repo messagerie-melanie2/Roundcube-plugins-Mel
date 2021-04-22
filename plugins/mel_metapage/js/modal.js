@@ -57,6 +57,13 @@ class GlobalModal
     }, show = false)
     {
         this.modal = $("#" + idModal);
+        if (this.modal.length === 0 && rcmail.env.mmp_modal !== undefined)
+        {
+            $("body").append(rcmail.env.mmp_modal);
+            this.modal = $("#" + idModal);
+            rcmail.env.mmp_modal = undefined;
+        }
+
         this.header = {
             querry: $(".global-modal-header"),
             title: $(".global-modal-title")
@@ -115,6 +122,15 @@ class GlobalModal
     editTitle(title)
     {
         this.header.title.html(title);
+    }
+
+    /**
+     * Modifie le contenu de la modale.
+     * @param {string} html Html qui remplacera le contenu de la modale.
+     */
+    editBody(html)
+    {
+        this.contents.html(html);
     }
 
     /**

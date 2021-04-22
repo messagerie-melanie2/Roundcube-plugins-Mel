@@ -32,7 +32,7 @@ class mel_elastic extends rcube_plugin
     /**
      * Liste des fichiers css à charger.
      */
-    private $css = ["icofont.css"];
+    private $css = ["icofont.css", "jquery.datetimepicker.min.css"];
 
     function init()
     {
@@ -43,6 +43,7 @@ class mel_elastic extends rcube_plugin
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
+            $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->load_folders();
             $this->add_texts('localization/', true);
             $this->rc->output->set_env("button_add", 

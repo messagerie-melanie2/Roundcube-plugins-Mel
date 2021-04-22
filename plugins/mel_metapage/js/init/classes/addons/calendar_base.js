@@ -206,6 +206,65 @@ $(document).ready(() => {
 
      }
 
+     /**
+      * Ouvre la fenêtre qui permet de créer un évènement.
+      */
+     rcube_calendar.mel_create_event = function()
+     {
+        const format = "DD/MM/YYYY HH:mm";
+        const getDate = function(string)
+        {
+            string = string.split(" ");
+            const date = string[0].split("/");
+            const time = string[1].split(":");
 
+            return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
+        }
+
+        var create_popUp = new GlobalModal();
+
+        create_popUp = window.create_popUp;
+         if (create_popUp === undefined)
+            create_popUp = new GlobalModal();
+        create_popUp.editTitle("Créer une réunion (étape 1/2)");
+        create_popUp.editBody("<center><span class=spinner-border></span></center>");
+        mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_event_html"), mel_metapage.Symbols.null, (datas) => {
+            create_popUp.editBody(datas);
+            create_popUp.contents.find(".input-mel-datetime").datetimepicker({
+                format: 'd/m/Y H:i',//'Y/m/d H:i',
+                onChangeDateTime:() => {
+                    let querry = $(".input-mel-datetime.end");
+                    const end_val = getDate(querry.val());
+                    const start_val = getDate($(".input-mel-datetime.start").val());
+                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
+                    querry.val(getDate($(".input-mel-datetime.start").val()).add(1,"h").format(format) );
+                }
+                    });
+            create_popUp.contents.find(".input-mel-datetime.start").val(moment().format(format));
+            create_popUp.contents.find(".input-mel-datetime.end").val(moment().add(1,"h").format(format));
+            create_popUp.contents.find(".input-mel-datetime.audio").val(moment().add(30,"m").format(format));
+            create_popUp.contents.find(".form-check-input.event-mode").on("click", (e) => {
+                e = e.target;
+                create_popUp.contents.find(".content.event-mode").css("display", "none");
+                create_popUp.contents.find(`.${e.id}`).css("display", "");
+            });
+            create_popUp.contents.find("#eb-mm-all-day").on("click", (e) => {
+                e = e.target;
+                if (e.checked)
+                {
+                    create_popUp.contents.find(".input-mel-datetime.start").addClass("disabled").attr("disabled", "disabled"); 
+                    create_popUp.contents.find(".input-mel-datetime.end").addClass("disabled").attr("disabled", "disabled"); 
+                    create_popUp.contents.find(".input-mel-datetime.start").val(moment().startOf("day").format(format));
+                    create_popUp.contents.find(".input-mel-datetime.end").val(moment().endOf("day").format(format));
+                }
+                else
+                {
+                    create_popUp.contents.find(".input-mel-datetime.start").removeClass("disabled").removeAttr("disabled"); 
+                    create_popUp.contents.find(".input-mel-datetime.end").removeClass("disabled").removeAttr("disabled"); 
+                }
+            })
+            create_popUp.show();
+        });
+     }
 
 });

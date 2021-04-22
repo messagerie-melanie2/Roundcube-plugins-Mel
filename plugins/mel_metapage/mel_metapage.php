@@ -47,7 +47,7 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
         $this->startup();
-        if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && empty($_REQUEST['_extwin']))
+        if ($this->rc->task !== "login" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
         {
             $this->add_texts('localization/', true);
             $this->load_config();
@@ -69,9 +69,12 @@ class mel_metapage extends rcube_plugin
             $this->register_action('chat', array($this, 'ariane'));
             $this->register_action('dialog-ui', array($this, 'create_calendar_event'));
             $this->register_action('create_document_template', array($this, 'get_create_document_template'));
+            $this->register_action('get_event_html', array($this, 'get_event_html'));
             $this->add_hook('refresh', array($this, 'refresh'));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
+            else
+                $this->rc->output->set_env("mmp_modal",$this->rc->output->parse("mel_metapage.mel_modal", false, false));
             $this->add_hook("send_page", array($this, "generate_html"));//$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         }
         else if ($this->rc->task == 'logout' 
@@ -86,6 +89,13 @@ class mel_metapage extends rcube_plugin
             $this->load_config();
             $this->register_task("mel_metapage");
             $this->register_action('create_document_template', array($this, 'get_create_document_template'));
+        }
+        else if ($this->rc->action === "get_event_html")
+        {
+            $this->add_texts('localization/', true);
+            $this->load_config();
+            $this->register_task("mel_metapage");
+            $this->register_action('get_event_html', array($this, 'get_event_html'));
         }
 
 
@@ -459,6 +469,23 @@ class mel_metapage extends rcube_plugin
         //$this->rc->output->send("mel_metapage.create_document");
     }
 
+    function get_event_html()
+    {
+        $w = function ()
+        {
+            $wsp = $this->rc->plugins->get_plugin("mel_workplace");
+            $workpaces = $plugin->workspaces;
+            $html = '<select class=';
+            return "";
+        };
+        $this->rc->output->add_handlers(array(
+            'event-wsp'    => $w,
+        ));
+        echo $this->rc->output->parse("mel_metapage.event_body", false, false);
+        exit;
+    }
+
+    
     function get_docs_types()
     {
         $templates = $this->rc->config->get('documents_types');

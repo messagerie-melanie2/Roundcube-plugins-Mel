@@ -187,7 +187,6 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.update = function ()
     {
         const pixel_correction = !this.is_framed() ? 60 : 0;
-        console.error("update", this.have_ariane(), this.ariane.is_hide);
         if (this.have_ariane())
         {
             if (this.ariane.is_hide)
@@ -250,10 +249,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             else
                 this.chat.css("max-height", `calc(100% - ${pixel_correction}px)`);
         }
-        console.error("sdddd", this.ariane.is_full, !this.ariane.is_hide);
         if (this.ariane.is_full === true)
         {
-            console.error("sdddd ===> 2", this.ariane.is_full, !this.ariane.is_hide);
             if (this.ariane.is_hide === false)
             {
                 this.chat.css("width", "calc(100% - "+(pixel_correction + this.ariane.size)+"px)");

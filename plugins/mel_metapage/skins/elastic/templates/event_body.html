@@ -1,0 +1,99 @@
+<span class="red-star">Champs obligatoires</span>
+<br/>
+<span class="red-star-after span-mel t1 first">Nom de l'évènement</span>
+<input class="form-control input-mel" type="text" placeholder="Nom de l'espace d'évènement" />
+<span class="red-star-after span-mel t1">Choix de la période</span>
+<div class="row">
+    <div class="col-6">
+        <span class="span-mel t2">Début de l'évènement</span>
+        <input class="form-control input-mel input-mel-datetime start" type="text"  />
+    </div>
+    <div class="col-6">
+        <span class="span-mel t2">Fin de l'évènement</span>
+        <input class="form-control input-mel input-mel-datetime end" type="text"  />
+    </div>
+</div>
+<div class="form-check mel-radio-1" style="margin-top:15px">
+    <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day">
+    <label class="form-check-label" for="eb-mm-all-day">
+        <span></span><text>Toute la journée</text>
+    </label>
+</div>
+<div class="row">
+    <div class="col-6">
+        <span class="red-star-after span-mel t1">Réccurence</span>
+        <select class="form-control input-mel">
+                <option value="" selected="">Jamais</option>
+                <option value="DAILY">Quotidienne</option>
+                <option value="WEEKLY">Hebdomadaire</option>
+                <option value="MONTHLY">Mensuelle</option>
+                <option value="YEARLY">Annuelle</option>
+        </select>
+    </div>
+    <div class="col-6">
+        <span class="red-star-after span-mel t1">Alerte</span>
+        <select class="form-control">
+            <option value="" selected="">Aucun</option>
+            <option value="DISPLAY">Message</option>
+        </select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <span class="red-star-after span-mel t1">Mode d'évènement</span>
+        <div class="form-check"> <!--Présentiel-->
+            <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-p" value="0" checked>
+            <label class="form-check-label" for="eb-mm-em-p">
+              En présentiel
+            </label>
+        </div>
+        <div class="form-check"> <!--webconf-->
+            <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-v" value="1">
+            <label class="form-check-label" for="eb-mm-em-v">
+              Par visioconférence
+            </label>
+        </div>
+        <div class="form-check"> <!--Audio-->
+            <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-a" value="2">
+            <label class="form-check-label" for="eb-mm-em-a">
+              Par audio
+            </label>
+        </div>
+    </div>
+    <div class="col-6">
+        <!--Présentiel-->
+        <div class="eb-mm-em-p content event-mode">
+            <span class="span-mel t2 margin">Choisir un lieu</span>
+            <input type="text" class="form-control mel-input" placeholder="Nom du lieu" />
+        </div>    
+        <!--Par visioconférence-->
+        <div class="eb-mm-em-v content event-mode" style="display:none">
+            <span class="red-star-after span-mel t2 margin">Choisir l'outil de visioconférence</span>
+            <div class="form-check"> <!--webconf état-->
+                <input class="form-check-input" type="radio" name="webconf-mode" id="eb-mm-wm-e" value="1" checked>
+                <label class="form-check-label" for="eb-mm-wm-e">
+                  Webconférence de l'état
+                </label>
+            </div>
+            <div class="form-check"> <!--autre-->
+                <input class="form-check-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">
+                <label class="form-check-label" for="eb-mm-wm-a">
+                  Un autre outil de visioconférence
+                </label>
+            </div>
+            <input type="text" class="form-control mel-input disabled" disabled placeholder="Saisir l'url de visioconférence" />
+        </div>    
+        <!--Audio-->
+        <div class="eb-mm-em-a content event-mode" style="display: none;">
+            <span class="red-star-after span-mel t2 margin">Réserver un créneau</span>
+            <input type="text" class="form-control mel-input input-mel-datetime audio" />
+        </div>    
+    </div>
+</div>
+<span class="span-mel t1">Ajouter une pièce jointe</span>
+<input class="form-control mel-input file" type="file" />
+<span>La taille de fichier maximum autorisée est de 4,0 GO</span>
+<span class="span-mel t1">Ordre du jour</span>
+<textarea class="form-control input-mel"></textarea>
+<span class="red-star-after span-mel t1">Rattacher l'évènement à un espace de travail</span>
+<roundcube:object name="event-wsp"/>

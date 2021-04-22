@@ -94,7 +94,8 @@ class mel_envoi_differe extends rcube_plugin
 
             //On vérifie que la date correspond bien à une date future
             if ($dateTimestamp >  $currentDateTimestamp) {
-                $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'X-StatusEnvoiDiffere' => 'true', 'Date' => $dateFormat), true);
+                // $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'X-StatusEnvoiDiffere' => 'true', 'Date' => $dateFormat), true);
+                $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
             }
         }
         return $args;

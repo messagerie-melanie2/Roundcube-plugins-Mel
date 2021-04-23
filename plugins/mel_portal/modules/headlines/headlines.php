@@ -5,7 +5,7 @@ class Headlines extends Module
     function init()
     {
         $this->edit_row_size(2);
-        $this->load_config();
+        //$this->load_config();
     }
 
     function generate_html()

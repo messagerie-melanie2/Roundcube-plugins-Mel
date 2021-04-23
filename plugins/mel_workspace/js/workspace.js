@@ -406,7 +406,7 @@ async function change_date(add)
             tmp = mel_metapage.Functions.check_if_calendar_valid(element, events);
             console.log("tmp", tmp);
             if (tmp === true)
-                array.AddIfExist(check, element);
+                array = Array.AddIfExist(array,check, element);
             else if (tmp !== false)
                 elementsToDelete.push(tmp);
         }

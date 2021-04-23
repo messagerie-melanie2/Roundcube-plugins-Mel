@@ -260,7 +260,7 @@ $(document).ready(() => {
                  }
 
                  if (tmp === true)
-                     array.AddIfExist(check, element);
+                     array = Array.AddIfExist(array, check, element);
                  else if (tmp !== false)
                      elementsToDelete.push(tmp);
              }

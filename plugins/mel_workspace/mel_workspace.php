@@ -304,7 +304,7 @@ class mel_workspace extends rcube_plugin
             else
                 $src="/group/$uid";  
             $click = "ChangeToolbar('rocket', this, `$src`)";
-            $channel_datas = $this->get_object($this->currentWorkspace, $channel);
+            $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
             if ($channel_datas->name === null)
                 $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");
             else
@@ -882,10 +882,13 @@ class mel_workspace extends rcube_plugin
     function create_channel(&$workspace, $services, $users)
     {
         $service = self::CHANNEL;
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Services : ".json_encode($service)." => $service");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Can enter : ".($this->get_object($workspace,$service) === null && array_search($service, $services) !== false));
         if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
             $rocket = $this->rc->plugins->get_plugin('rocket_chat');
             $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? true : false);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Valeur : ".json_encode($value));
             if (is_string($value["content"]))
             {
                 $value = json_decode($value["content"]);

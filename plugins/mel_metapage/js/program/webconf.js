@@ -1,6 +1,7 @@
 
 function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 {
+    const private_key = ":";
     if (is_framed === null && parent !== window)
         this._is_framed = true;
     else if (is_framed === null)
@@ -13,7 +14,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.master_bar = function()
     {
         const master_bar_config = this.master_bar_config;
-        console.error("ariane", html_helper.JSON.stringify(master_bar_config.ariane), master_bar_config.ariane);
+        //console.error("ariane", html_helper.JSON.stringify(master_bar_config.ariane), master_bar_config.ariane);
         return  `window.webconf_master_bar = new MasterWebconfBar('${master_bar_config.frameconf_id}', '${master_bar_config.framechat_id}', '${master_bar_config.ask_id}', '${master_bar_config.key}', ${master_bar_config.ariane === undefined || master_bar_config.ariane === null ? "undefined" : `'${html_helper.JSON.stringify(master_bar_config.ariane)}'`}, '${html_helper.JSON.stringify(master_bar_config.wsp)}', ${master_bar_config.ariane_size}, ${master_bar_config.is_framed})`;
     }
 
@@ -22,7 +23,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         framechat_id:framechat_id,
         ask_id:ask_id,
         key:key,
-        ariane: (typeof ariane === "string" ? JSON.parse(ariane) : ariane),
+        ariane: (typeof ariane === "string" ? {
+            ispublic:ariane.includes(private_key),
+            room_name:ariane.replaceAll(private_key, "")
+        } : ariane),
         wsp:wsp,
         ariane_size:ariane_size,
         is_framed:this._is_framed
@@ -56,7 +60,12 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     else
         this.ariane = ariane;
     if (typeof this.ariane === "string")
-        this.ariane = JSON.parse(this.ariane);
+    {
+        this.ariane = {
+            ispublic:this.ariane.includes(private_key),
+            room_name:this.ariane.replaceAll(private_key, "")
+        };
+    }
     if (this.ariane.is_hide === undefined)
         this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
@@ -78,7 +87,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         if (this.wsp !== undefined)
             config["_wsp"] = this.wsp.datas.uid;
         else if (this.have_ariane())
-            config["_ariane"] = encodeURIComponent(JSON.stringify(this.ariane));
+            config["_ariane"] = encodeURIComponent(`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
         const url = MEL_ELASTIC_UI.url("webconf", "", config);
         //window.history.replaceState({}, document.title, url);
         mel_metapage.Functions.title(url);

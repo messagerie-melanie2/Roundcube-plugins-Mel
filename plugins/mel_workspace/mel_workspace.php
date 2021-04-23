@@ -887,7 +887,7 @@ class mel_workspace extends rcube_plugin
         if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
             $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-            $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? true : false);
+            $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Valeur : ".json_encode($value));
             if (is_string($value["content"]))
             {

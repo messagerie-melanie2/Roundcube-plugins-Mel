@@ -400,7 +400,7 @@ function m_mp_CreateWorkSpace()
     $.ajax({ // fonction permettant de faire de l'ajax
         type: "POST", // methode de transmission des données au fichier php
         data: datas,
-        url: "/?_task=workspace&_action=create",
+        url: mel_metapage.Functions.url("workspace", "create"),//"/?_task=workspace&_action=create",
         success: function (data) {
             data = JSON.parse(data);
             for (let it = 0; it < data.errored_user.length; it++) {

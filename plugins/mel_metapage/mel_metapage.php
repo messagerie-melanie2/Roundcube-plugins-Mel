@@ -227,6 +227,7 @@ class mel_metapage extends rcube_plugin
                 $w = function ()
                 {
                     $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                    $wsp->load_workspaces();
                     $workpaces = $wsp->workspaces;
                     $html = '<select id=wsp-event-all-cal-mm class="form-control mel-input">';
                     $html .= "<option value=\"#none>\"Aucun</option>";
@@ -533,6 +534,7 @@ class mel_metapage extends rcube_plugin
         $w = function ()
         {
             $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+            $wsp->load_workspaces();
             $workpaces = $wsp->workspaces;
             $html = '<select class="form-control mel-input">';
             $html .= "<option value=none>Aucun</option>";

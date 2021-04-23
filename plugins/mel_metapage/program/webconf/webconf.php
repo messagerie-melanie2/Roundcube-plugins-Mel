@@ -69,6 +69,7 @@ class Webconf extends Program
         $replace = "¤¤¤¤¤¤¤¤";
 
         $plugin = $this->get_plugin("mel_workspace");
+        $plugin->load_workspaces();
         $workspaces = $plugin->workspaces;
         $html = "<select class=wsp_select>";
 

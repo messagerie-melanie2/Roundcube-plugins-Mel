@@ -122,9 +122,12 @@ class Module implements iModule {
      */
     public function set_config($config, $includes)
     {
-        foreach ($includes as $key => $value) {
-            include_once $value;
-        }        
+        if ($includes !== null && is_iterable($includes))
+        {
+            foreach ($includes as $key => $value) {
+                include_once $value;
+            }       
+        } 
         $this->config = unserialize($config);
         $this->after_set_config();
     }

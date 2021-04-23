@@ -24,7 +24,6 @@ class Webconf extends Program
         $key = $this->get_input("_key") ?? $this->generate_key();// ?? "B5LMKJPOIUI9POI4KL";
         $this->tmp_key = $key;
         $this->set_env_var("webconf.key", $key);
-        $this->set_env_var("webconf.base_url", $this->webconf_base_url());
         $wsp = $this->get_input("_wsp");// ?? "webconf-1";
         $ariane = null;
         if ($wsp === null)

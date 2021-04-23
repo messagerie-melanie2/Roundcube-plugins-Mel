@@ -1,6 +1,7 @@
 
 function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 {
+    const private_key = "~";
     if (is_framed === null && parent !== window)
         this._is_framed = true;
     else if (is_framed === null)
@@ -13,7 +14,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.master_bar = function()
     {
         const master_bar_config = this.master_bar_config;
-        console.error("ariane", html_helper.JSON.stringify(master_bar_config.ariane), master_bar_config.ariane);
+        //console.error("ariane", html_helper.JSON.stringify(master_bar_config.ariane), master_bar_config.ariane);
         return  `window.webconf_master_bar = new MasterWebconfBar('${master_bar_config.frameconf_id}', '${master_bar_config.framechat_id}', '${master_bar_config.ask_id}', '${master_bar_config.key}', ${master_bar_config.ariane === undefined || master_bar_config.ariane === null ? "undefined" : `'${html_helper.JSON.stringify(master_bar_config.ariane)}'`}, '${html_helper.JSON.stringify(master_bar_config.wsp)}', ${master_bar_config.ariane_size}, ${master_bar_config.is_framed})`;
     }
 
@@ -22,7 +23,11 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         framechat_id:framechat_id,
         ask_id:ask_id,
         key:key,
-        ariane: (typeof ariane === "string" ? JSON.parse(ariane) : ariane),
+        ariane: (typeof ariane === "string" ? {
+            ispublic:ariane.includes(private_key),
+            room_name:(' ' + ariane).slice(1).replaceAll(private_key, ""),
+            is_hide:ariane.includes("@")
+        } : ariane),
         wsp:wsp,
         ariane_size:ariane_size,
         is_framed:this._is_framed
@@ -56,7 +61,13 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     else
         this.ariane = ariane;
     if (typeof this.ariane === "string")
-        this.ariane = JSON.parse(this.ariane);
+    {
+        console.error("ariane", this.ariane, this.ariane.includes(private_key));
+        this.ariane = {
+            ispublic:this.ariane.includes(private_key),
+            room_name:this.ariane.replaceAll(private_key, "")
+        };
+    }
     if (this.ariane.is_hide === undefined)
         this.ariane.is_hide = false;
     this.ariane.size = ariane_size;
@@ -78,7 +89,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         if (this.wsp !== undefined)
             config["_wsp"] = this.wsp.datas.uid;
         else if (this.have_ariane())
-            config["_ariane"] = encodeURIComponent(JSON.stringify(this.ariane));
+            config["_ariane"] = encodeURIComponent(`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
         const url = MEL_ELASTIC_UI.url("webconf", "", config);
         //window.history.replaceState({}, document.title, url);
         mel_metapage.Functions.title(url);
@@ -187,7 +198,6 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.update = function ()
     {
         const pixel_correction = !this.is_framed() ? 60 : 0;
-        console.error("update", this.have_ariane(), this.ariane.is_hide);
         if (this.have_ariane())
         {
             if (this.ariane.is_hide)
@@ -250,10 +260,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             else
                 this.chat.css("max-height", `calc(100% - ${pixel_correction}px)`);
         }
-        console.error("sdddd", this.ariane.is_full, !this.ariane.is_hide);
         if (this.ariane.is_full === true)
         {
-            console.error("sdddd ===> 2", this.ariane.is_full, !this.ariane.is_hide);
             if (this.ariane.is_hide === false)
             {
                 this.chat.css("width", "calc(100% - "+(pixel_correction + this.ariane.size)+"px)");
@@ -377,6 +385,25 @@ Webconf.update_radio = function()
     }
 }
 
+Webconf.update_room_name = function()
+{
+    let querry = $("#webconf-room-name");
+    querry.val(querry.val().toUpperCase());
+    const val = querry.val();
+    const url = MEL_ELASTIC_UI.url("webconf", "", {_key:val});
+    mel_metapage.Functions.title(url);
+    if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3)
+    {
+        $("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
+        $(".webconf-error-text").css("display", "").css("color", "red");
+    }
+    else
+    {
+        $("#webconf-enter").removeClass("disalbled").removeAttr("disabled", "disabled");
+        $(".webconf-error-text").css("display", "none").css("color", "black");
+    }
+}
+
 class MasterWebconfBar {
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
         ariane = html_helper.JSON.parse(ariane);
@@ -471,6 +498,20 @@ class MasterWebconfBar {
             this.logo.addClass("hidden-toolbar");     
         }
 
+    }
+
+    copy()
+    {
+        function copyOnClick (val) {
+            var tempInput = document.createElement ("input"); 
+            tempInput.value = val;
+             document.body.appendChild (tempInput); 
+             tempInput.select (); 
+             document.execCommand ("copy"); 
+             document.body.removeChild (tempInput); 
+             }
+             copyOnClick(rcmail.env["webconf.base_url"] + "/" + this.webconf.key);
+             rcmail.display_message(`${rcmail.env["webconf.base_url"] + "/" + this.webconf.key} copier dans le presse-papier.`, "confirmation")
     }
 
     switch_toolbar()
@@ -976,13 +1017,13 @@ $(document).ready(() => {
                 mel_metapage.Functions.call(`metapage_frames.addEvent("open.after", ${updateframe})`);
             }   
 
-            console.error("here 1");
+            //console.error("here 1");
             $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
             let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
             webconf.set_title();
             if (webconf.have_ariane())
             {
-                console.error("here 2");
+                //console.error("here 2");
                 await webconf.go();
                 webconf.remove_selector();
             }
@@ -1011,6 +1052,8 @@ $(document).ready(() => {
     $(".footer").css("display", "none");
     //});
 });
+
+
 // function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 // {
 //     if (is_framed === null && parent !== window)

@@ -71,6 +71,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('create_document_template', array($this, 'get_create_document_template'));
             $this->register_action('get_event_html', array($this, 'get_event_html'));
             $this->add_hook('refresh', array($this, 'refresh'));
+            $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
             else

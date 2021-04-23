@@ -1,0 +1,303 @@
+<div id="eventedit" class="<roundcube:exp expression="env:framed ? '' : 'popupmenu '">formcontent" aria-hidden="true" data-notabs="true">
+    <form class="tabbed" action="#" method="post" enctype="multipart/form-data">
+		<!-- basic info -->
+		<fieldset id="event-panel-summary">
+            <span class="red-star">Champs obligatoires</span>
+            <br/>
+			<legend>Nom de l'évènement</legend> <!--Evènement-->
+			<div class="form-group">
+				<label for="edit-title" class="red-star-after span-mel t1 first">Nom de l'évènement</label>
+				<input type="text" placeholder="Nom de l'espace d'évènement" class="form-control" name="title" id="edit-title" size="40" required="true" />
+			</div>
+            <span class="red-star-after span-mel t1">Choix de la période</span>
+            <!-- <div class="row">
+                <div class="col-sm-6">
+                    <span class="span-mel t2">Début de l'évènement</span>
+                </div>
+                <div class="col-sm-6">
+                    <span class="span-mel t2">Fin de l'évènement</span>
+                </div>
+            </div> -->
+            <div class="row">
+				<!-- <label for="edit-startdate" class="col-sm-2 col-form-label"><roundcube:label name="calendar.start" /></label> -->
+				<div class="col-6 datetime">
+                    <span class="span-mel t2">Début de l'évènement</span>
+                    <input class="form-control input-mel input-mel-datetime start" type="text"  />
+					<input style="display:none" type="text" name="startdate" size="11" id="edit-startdate" class="hidden form-control" required="true" /> &nbsp;
+					<input style="display:none" type="text" name="starttime" size="6" id="edit-starttime" class="hidden form-control" aria-label="<roundcube:label name='calendar.starttime' />" />
+				</div>
+                <div class="col-6 datetime">
+                    <span class="span-mel t2">Fin de l'évènement</span>
+                    <input class="form-control input-mel input-mel-datetime end" type="text"  />
+					<input style="display:none" type="text" name="enddate" size="11" id="edit-enddate" class="hidden form-control" required="true" /> &nbsp;
+					<input style="display:none" type="text" name="endtime" size="6" id="edit-endtime" class="hidden form-control" aria-label="<roundcube:label name='calendar.endtime' />" />
+				</div>
+			</div>
+            <!-- <label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.all-day" /></label> -->
+			<div class="form-check mel-radio-1" style="margin-top:15px">
+                <input type="checkbox" name="allday" id="edit-allday" value="1" class="form-check-input custom-control-input" /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
+                <label class="form-check-label" for="edit-allday">
+                    <span></span><text><roundcube:label name="calendar.all-day" /></text>
+                </label>
+            </div>
+            
+            <div class="row">
+                <div class="col-6"><!--Réccurence-->
+                    <span class="red-star-after span-mel t1">Réccurence</span>
+                    <div class="form-group row border-after">
+                        <roundcube:object name="plugin.recurrence_form" part="frequency" />
+                    </div>
+                    <div class="recurrence-form border-after" id="recurrence-form-daily">
+                        <roundcube:object name="plugin.recurrence_form" part="daily" class="form-group row" />
+                    </div>
+                    <div class="recurrence-form border-after" id="recurrence-form-weekly">
+                        <roundcube:object name="plugin.recurrence_form" part="weekly" class="form-group row" />
+                    </div>
+                    <div class="recurrence-form border-after" id="recurrence-form-monthly">
+                        <roundcube:object name="plugin.recurrence_form" part="monthly" class="form-group row" />
+                    </div>
+                    <div class="recurrence-form border-after" id="recurrence-form-yearly">
+                        <roundcube:object name="plugin.recurrence_form" part="yearly" class="form-group row" />
+                    </div>
+                    <div class="recurrence-form" id="recurrence-form-until">
+                        <roundcube:object name="plugin.recurrence_form" part="until" class="form-group row" />
+                    </div>
+                    <div class="recurrence-form" id="recurrence-form-rdate">
+                        <roundcube:object name="plugin.recurrence_form" part="rdate" class="form-group row" />
+                    </div>
+                </div>
+                <div class="col-6"> <!--Alerte-->
+                    <div class="form-group row" id="edit-alarms">
+                        <!-- <label for="edit-alarm-item" class="col-sm-2 col-form-label"><roundcube:label name="calendar.alarms" /></label> -->
+                        <span class="red-star-after span-mel t1">Alerte</span>
+                        <div class="col-sm-10 alarms-input">
+                            <div class="edit-alarm-item input-group first">
+                                <roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
+                                <span class="edit-alarm-buttons input-group-append">
+                                    <a href="#add" class="icon button btn add add-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.addalarm" /></span></a>
+                                    <a href="#delete" class="icon button btn delete delete-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.removealarm" /></span></a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="form-group row">
+				<label for="edit-enddate" class="col-sm-2 col-form-label"><roundcube:label name="calendar.end" /></label>
+				<div class="col-sm-10 datetime">
+					<input type="text" name="enddate" size="11" id="edit-enddate" class="form-control" required="true" /> &nbsp;
+					<input type="text" name="endtime" size="6" id="edit-endtime" class="form-control" aria-label="<roundcube:label name='calendar.endtime' />" />
+				</div>
+			</div> -->
+            <div class="row">
+                <div class="col-6">
+                    <span class="red-star-after span-mel t1">Mode d'évènement</span>
+                    <div class="form-check"> <!--Présentiel-->
+                        <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-p" value="0" checked>
+                        <label class="form-check-label" for="eb-mm-em-p">
+                          En présentiel
+                        </label>
+                    </div>
+                    <div class="form-check"> <!--webconf-->
+                        <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-v" value="1">
+                        <label class="form-check-label" for="eb-mm-em-v">
+                          Par visioconférence
+                        </label>
+                    </div>
+                    <div class="form-check"> <!--Audio-->
+                        <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-a" value="2">
+                        <label class="form-check-label" for="eb-mm-em-a">
+                          Par audio
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <!--Présentiel-->
+                    <div class="eb-mm-em-p content event-mode">
+                        <span class="span-mel t2 margin">Choisir un lieu</span>
+                        <input type="text" id="presential-cal-location" class="form-control mel-input" placeholder="Nom du lieu" />
+                    </div>    
+                    <!--Par visioconférence-->
+                    <div class="eb-mm-em-v content event-mode" style="display:none">
+                        <span class="red-star-after span-mel t2 margin">Choisir l'outil de visioconférence</span>
+                        <div class="form-check"> <!--webconf état-->
+                            <input class="form-check-input" type="radio" name="webconf-mode" id="eb-mm-wm-e" value="1" checked>
+                            <label class="form-check-label" for="eb-mm-wm-e">
+                              Webconférence de l'état
+                            </label>
+                        </div>
+                        <div class="form-check"> <!--autre-->
+                            <input class="form-check-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">
+                            <label class="form-check-label" for="eb-mm-wm-a">
+                              Un autre outil de visioconférence
+                            </label>
+                        </div>
+                        <input type="text" id="url-visio-cal" class="form-control mel-input disabled" disabled placeholder="Saisir l'url de visioconférence" />
+                    </div>    
+                    <!--Audio-->
+                    <div class="eb-mm-em-a content event-mode" style="display: none;">
+                        <span class="red-star-after span-mel t2 margin" style="margin-bottom: 5px;">Réserver un créneau</span>
+                        <center><div style="margin-top:0" class="mel-button invite-button create" onclick="window.open('https://audio.mtes.fr/', '_blank').focus();">
+                            <span>Réserver</span>
+                            <span class="icofont-hand-right  plus" style="margin-left: 15px;"></span>
+                        </div></center>
+                        <span class="red-star-after span-mel t2">Téléphone de l'audio</span>
+                        <input type="tel" id="tel-input-cal-location" class="form-control mel-input" />
+                        <span class="red-star-after span-mel t2">Numéro de l'audio</span>
+                        <input type="text" id="num-audio-input-cal-location" class="form-control mel-input"/>
+                    </div>    
+                </div>
+            </div>
+
+            <!--Pièce jointe-->
+            <span class="span-mel t1">Ajouter une pièce jointe</span>
+            <input class="form-control mel-input file" type="file" />
+			<div id="edit-attachments-droparea" class="file-upload hidden">
+				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
+				<div id="edit-attachments-form" class="upload-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
+					<roundcube:object name="plugin.attachments_form" mode="hint" />
+					<button type="button" class="btn btn-secondary attach" onclick="rcmail.upload_input('event-attachment-form'); return false"><roundcube:label name="addattachment" /></button>
+				</div>
+				<div id="edit-attachments">
+					<roundcube:object name="plugin.attachments_list" id="attachmentlist" class="attachmentslist" />
+				</div>
+			</div>
+
+			 <div class="form-group hidden">
+				<label for="edit-location"><roundcube:label name="calendar.location" /></label>
+				<input type="text" class="form-control" name="location" id="edit-location" size="40" />
+			</div>
+			<div class="form-group">
+                <span class="span-mel t1">Ordre du jour</span>
+				<!-- <label for="edit-description"><roundcube:label name="calendar.description" /></label> -->
+				<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control" rows="3" cols="40"></textarea>
+			</div> 
+            <span class="red-star-after span-mel t1">Rattacher l'évènement à un espace de travail</span>
+            <roundcube:object name="event-wsp"/>
+			<!-- <div class="form-group row" id="edit-alarms">
+				<label for="edit-alarm-item" class="col-sm-2 col-form-label"><roundcube:label name="calendar.alarms" /></label>
+				<div class="col-sm-10 alarms-input">
+					<div class="edit-alarm-item input-group first">
+						<roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
+						<span class="edit-alarm-buttons input-group-append">
+							<a href="#add" class="icon button btn add add-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.addalarm" /></span></a>
+							<a href="#delete" class="icon button btn delete delete-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.removealarm" /></span></a>
+						</span>
+					</div>
+				</div>
+			</div> -->
+
+			<div class="form-group row hidden" id="calendar-select">
+				<label for="edit-calendar" class="col-sm-2 col-form-label"><roundcube:label name="calendar.calendar" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.calendar_select" id="edit-calendar" class="form-control" />
+				</div>
+			</div>
+			<div class="form-group row hidden">
+				<label for="edit-categories" class="col-sm-2 col-form-label"><roundcube:label name="calendar.category" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.category_select" id="edit-categories" class="form-control" />
+				</div>
+			</div>
+			<div class="form-group row hidden">
+				<label for="edit-event-status" class="col-sm-2 col-form-label"><roundcube:label name="calendar.status" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control" />
+				</div>
+			</div>
+			<div class="form-group row" style="display: none;">
+				<label for="edit-free-busy" class="col-sm-2 col-form-label"><roundcube:label name="calendar.freebusy" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.freebusy_select" id="edit-free-busy" class="form-control" />
+				</div>
+			</div>
+			<div class="form-group row" style="display: none;">
+				<label for="edit-priority" class="col-sm-2 col-form-label"><roundcube:label name="calendar.priority" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.priority_select" id="edit-priority" class="form-control" />
+				</div>
+			</div>
+			<div class="form-group row hidden">
+				<label for="edit-sensitivity" class="col-sm-2 col-form-label"><roundcube:label name="calendar.sensitivity" /></label>
+				<div class="col-sm-10">
+					<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control" />
+				</div>
+			</div>
+			<div class="form-group row" style="display: none;">
+				<label for="edit-url" class="col-sm-2 col-form-label"><roundcube:label name="calendar.url" /></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" name="vurl" id="edit-url" size="40" />
+				</div>
+			</div>
+			<div class="form-group row hidden" id="edit-event-links">
+				<label class="col-sm-2 col-form-label"><roundcube:label name="calendar.links" /></label>
+				<div class="col-sm-10">
+					<div class="event-text"></div>
+				</div>
+			</div>
+		</fieldset>
+		<!-- recurrence settings -->
+		<!-- <fieldset id="event-panel-recurrence">
+			<legend><roundcube:label name="calendar.tabrecurrence" /></legend>
+			<div class="form-group row border-after">
+				<roundcube:object name="plugin.recurrence_form" part="frequency" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-daily">
+				<roundcube:object name="plugin.recurrence_form" part="daily" class="form-group row" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-weekly">
+				<roundcube:object name="plugin.recurrence_form" part="weekly" class="form-group row" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-monthly">
+				<roundcube:object name="plugin.recurrence_form" part="monthly" class="form-group row" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-yearly">
+				<roundcube:object name="plugin.recurrence_form" part="yearly" class="form-group row" />
+			</div>
+			<div class="recurrence-form" id="recurrence-form-until">
+				<roundcube:object name="plugin.recurrence_form" part="until" class="form-group row" />
+			</div>
+			<div class="recurrence-form" id="recurrence-form-rdate">
+				<roundcube:object name="plugin.recurrence_form" part="rdate" class="form-group row" />
+			</div>
+		</fieldset> -->
+		<!-- attendees list -->
+		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees">
+			<legend><roundcube:label name="calendar.tabattendees" /></legend>
+			<h3 id="aria-label-attendeestable" class="voice"><roundcube:label name="calendar.arialabeleventattendees" /></h3>
+			<roundcube:object name="plugin.attendees_list" id="edit-attendees-table" class="edit-attendees-table no-img table table-sm"
+				coltitle="attendee" aria-labelledby="aria-label-attendeestable" />
+			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" />
+			<roundcube:include file="/templates/freebusylegend.html" />
+		</fieldset>
+		<!-- resources list -->
+		<fieldset id="event-panel-resources" data-navlink-class="nav-icon resources">
+			<legend><roundcube:label name="calendar.tabresources" /></legend>
+			<h3 id="aria-label-resourcestable" class="voice"><roundcube:label name="calendar.arialabeleventresources" /></h3>
+			<roundcube:object name="plugin.attendees_list" id="edit-resources-table" class="edit-attendees-table no-img table table-sm"
+				coltitle="resource" aria-labelledby="aria-label-resourcestable" />
+			<roundcube:object name="plugin.resources_form" id="edit-resources-form" />
+			<roundcube:include file="/templates/freebusylegend.html" />
+		</fieldset>
+		<!-- attachments list (with upload form) -->
+		<!-- <fieldset id="event-panel-attachments" data-navlink-class="nav-icon attachments">
+			<legend><roundcube:label name="calendar.tabattachments" /></legend>
+			<div id="edit-attachments-droparea" class="file-upload">
+				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
+				<div id="edit-attachments-form" class="upload-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
+					<roundcube:object name="plugin.attachments_form" mode="hint" />
+					<button type="button" class="btn btn-secondary attach" onclick="rcmail.upload_input('event-attachment-form'); return false"><roundcube:label name="addattachment" /></button>
+				</div>
+				<div id="edit-attachments">
+					<roundcube:object name="plugin.attachments_list" id="attachmentlist" class="attachmentslist" />
+				</div>
+			</div>
+			<roundcube:object name="plugin.filedroparea" id="edit-attachments-droparea" />
+		</fieldset> -->
+	</form>
+	<roundcube:object name="plugin.edit_recurrence_sync" id="edit-recurrence-syncstart" class="dialog-message" style="display:none" />
+	<roundcube:object name="plugin.edit_attendees_notify" id="edit-attendees-notify" class="dialog-message" style="display:none" />
+	<roundcube:object name="plugin.edit_recurring_warning" class="dialog-message edit-recurring-warning" style="display:none" />
+	<roundcube:object name="plugin.attachments_form" id="event-attachment-form" mode="smart" />
+	<div id="edit-localchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.localchangeswarning" /></div>
+</div>

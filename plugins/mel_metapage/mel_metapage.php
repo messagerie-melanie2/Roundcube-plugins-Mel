@@ -23,7 +23,7 @@ class mel_metapage extends rcube_plugin
      * Contient l'instance de rcmail
      * @var rcmail
      */
-    private $rc;
+    public $rc;
     /**
      * Contient la task associé au plugin
      * @var string
@@ -97,7 +97,10 @@ class mel_metapage extends rcube_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_event_html', array($this, 'get_event_html'));
         }
-
+        // if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
+        // {
+        //     $this->add_hook("send_page", array($this, "parasite_calendar"));
+        // }
 
         //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
@@ -183,6 +186,62 @@ class mel_metapage extends rcube_plugin
                 $args["content"] = str_replace("<user/>", $this->rc->output->parse("mel_metapage.user", false, false), $args["content"]);
             }
             $args["content"] = $this->add_html($args["content"]);
+        }
+        return $args;
+    }
+
+    function parasite_calendar($args)
+    {
+        $content = $args["content"];
+        $pos = strpos($content,'<div id="eventedit"');
+        if ($pos !== false)
+        {
+            include_once "../calendar/calendar_ui.php";
+            $size = strlen($content);
+            $textToReplace = "";
+            $final_start = false;
+            $tmp = "";
+            $final_div = 0;
+            for ($i=$pos; $i < $size; ++$i) { 
+                if ($final_div >= 2)
+                    break;
+                $textToReplace.=$content[$i];
+                if (!$final_start && strpos($textToReplace,'<div id="edit-localchanges-warning"') !== false)
+                {
+                    $final_start = true;
+                }
+                if ($final_start)
+                {
+                    $tmp.=$content[$i];
+                    if (strpos($tmp,'</div>') !== false)
+                    {
+                        $tmp = "";
+                        ++$final_div;
+                    }
+                }
+            }
+            if ($textToReplace !== "")
+            {
+                $ui = new calendar_ui($this);
+                $ui->init_templates();
+                $w = function ()
+                {
+                    $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+                    $workpaces = $wsp->workspaces;
+                    $html = '<select id=wsp-event-all-cal-mm class="form-control mel-input">';
+                    $html .= "<option value=\"#none>\"Aucun</option>";
+                    foreach ($workpaces as $key => $value) {
+                        $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
+                    }
+                    $html .= "</select>";
+                    return $html;
+                };
+                $this->rc->output->add_handlers(array(
+                    'event-wsp'    => $w,
+                ));
+                $args["content"] = str_replace($textToReplace, $this->rc->output->parse("mel_metapage.event_modal", false, false), $content);
+            }
+//<div id="edit-localchanges-warning"
         }
         return $args;
     }
@@ -473,10 +532,15 @@ class mel_metapage extends rcube_plugin
     {
         $w = function ()
         {
-            $wsp = $this->rc->plugins->get_plugin("mel_workplace");
-            $workpaces = $plugin->workspaces;
-            $html = '<select class=';
-            return "";
+            $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+            $workpaces = $wsp->workspaces;
+            $html = '<select class="form-control mel-input">';
+            $html .= "<option value=none>Aucun</option>";
+            foreach ($workpaces as $key => $value) {
+                $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
+            }
+            $html .= "</select>";
+            return $html;
         };
         $this->rc->output->add_handlers(array(
             'event-wsp'    => $w,

@@ -541,6 +541,7 @@ function rcube_calendar_ui(settings)
           'class': 'edit mainaction',
           click: function() {
             event_edit_dialog('edit', event);
+            rcmail.triggerEvent('edit-event', event);
           }
         });
       }
@@ -991,6 +992,8 @@ function rcube_calendar_ui(settings)
         window.setTimeout(load_attachments_tab, exec_deferred);
 
       title.select();
+      if (action === "new")
+        rcmail.triggerEvent("edit-event", "");
     };
 
     // show event changelog in a dialog
@@ -4167,6 +4170,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
   }
   console.log("cal", cal);
+  window.cal_ui = cal;
   parent.child_cal = cal;
   if (rcmail.env.action == 'dialog-ui') {
     return;

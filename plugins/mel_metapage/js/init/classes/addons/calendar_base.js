@@ -1,4 +1,143 @@
 $(document).ready(() => {
+
+    console.log("parasitage", window.rcube_calendar_ui);
+    if (window.rcube_calendar_ui === undefined)
+    window.rcube_calendar_ui = () => {};
+        window.rcube_calendar_ui.edit = function(event)
+    {
+        const getDate = function(string)
+        {
+            string = string.split(" ");
+            const date = string[0].split("/");
+            const time = string[1].split(":");
+
+            return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
+        }
+        const update_location = function()
+        {
+            if ($("#eb-mm-em-p")[0].checked)
+            {
+                //Si présentiel
+                $("#edit-location").val($("#presential-cal-location").val());
+
+            }
+            else if ($("#eb-mm-em-v")[0].checked)
+            {
+                //Visio
+                if ($("#eb-mm-wm-e")[0].checked)
+                {
+                    let config = {
+                        _key:"",
+                    };
+                    if ($("#wsp-event-all-cal-mm").val() !== "#none")
+                        config["_wsp"] = $("#wsp-event-all-cal-mm").val();
+                    else
+                        config["_ariane"] = "home";
+                    $("#edit-location").val(`#visio:${mel_metapage.Functions.url("webconf", "", config)}`);
+                }
+                else
+                    $("#edit-location").val(`#visio:${$("#url-visio-cal").val()}`);
+            }
+            else {
+                //Audio
+                $("#edit-location").val(`https://audio.mtes.fr/ : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
+            }
+        }
+        const format = "DD/MM/YYYY HH:mm";
+        console.log("parasitage", event, event === "");
+        if (event === "") //nouvel event
+        {
+            $(".input-mel-datetime.start").datetimepicker({
+                format: 'd/m/Y H:i',
+                onChangeDateTime:() => {
+                    let querry = $(".input-mel-datetime.end");
+                    const end_val = getDate(querry.val());
+                    const start_val = getDate($(".input-mel-datetime.start").val());
+                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
+                    querry.val(getDate($(".input-mel-datetime.start").val()).add(1,"h").format(format) );
+                }
+            });
+            $(".input-mel-datetime.end").datetimepicker({
+                format: 'd/m/Y H:i',
+                onChangeDateTime:() => {
+                    let querry = $(".input-mel-datetime.end");
+                    const end_val = getDate(querry.val());
+                    const start_val = getDate($(".input-mel-datetime.start").val());
+                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
+                    querry.val(getDate($(".input-mel-datetime.start").val()).add(1,"h").format(format) );
+                }
+            });
+            $(".input-mel-datetime.start").on("change", () => {
+                const val = $(".input-mel-datetime.start").val().split(" ");
+                $("#edit-startdate").val(val[0]);
+                $("#edit-starttime").val(val[1]);
+            });
+            $(".input-mel-datetime.start").val(moment().format(format));
+            $(".input-mel-datetime.end").on("change", () => {
+                const val = $(".input-mel-datetime.end").val().split(" ");
+                $("#edit-enddate").val(val[0]);
+                $("#edit-endtime").val(val[1]);
+            });
+            $(".input-mel-datetime.end").val(moment().add(1, 'h').format(format));
+        }
+        else{ //ancien event
+
+        }
+        $("#edit-allday").on("click", (e) => {
+            e = e.target;
+            if (e.checked)
+            {
+                $(".input-mel-datetime.start").addClass("disabled").attr("disabled", "disabled"); 
+                $(".input-mel-datetime.end").addClass("disabled").attr("disabled", "disabled"); 
+                $(".input-mel-datetime.start").val(moment().startOf("day").format(format));
+                $(".input-mel-datetime.end").val(moment().endOf("day").format(format));
+            }
+            else
+            {
+                $(".input-mel-datetime.start").removeClass("disabled").removeAttr("disabled"); 
+                $(".input-mel-datetime.end").removeClass("disabled").removeAttr("disabled"); 
+            }
+        })
+        $(".form-check-input.event-mode").on("click", (e) => {
+            e = e.target;
+            $(".content.event-mode").css("display", "none");
+            $(`.${e.id}`).css("display", "");
+            switch (e.id) {
+                case "eb-mm-em-v":
+                    update_location();
+                    break;
+            
+                default:
+                    break;
+            }
+        });
+        $("#eventedit").find(".nav.nav-tabs").css("display", "none");
+        $("#edit-recurrence-frequency").parent().parent().find("label").css("display", "none");
+    }
+        rcmail.addEventListener("edit-event", (event) =>{
+            window.rcube_calendar_ui.edit(event);
+        });   
+
+        // return;
+        // new Promise(async (a,b) => {
+        //     await wait(() => {
+        //         console.log("para", rcube_calendar_ui.prototype.calendar_edit_dialog, window.calendar_edit_dialog);
+        //         return rcube_calendar_ui.prototype.calendar_edit_dialog === undefined;
+        //     });
+        //     console.log("here", rcube_calendar_ui.prototype.calendar_edit_dialog);
+        //     rcube_calendar_ui.prototype._calendar_edit_dialog = rcube_calendar_ui.prototype.calendar_edit_dialog;
+        //     rcube_calendar_ui.prototype.calendar_edit_dialog = function(calendar)
+        //     {
+        //         console.log("parasite", calendar);
+        //         this._calendar_edit_dialog(calendar);
+        //         $(".input-mel-datetime").datetimepicker({
+        //             format: 'd/m/Y H:i',
+        //         });
+    
+        //     }
+        // });
+    
+
     rcube_calendar.prototype.create_event_from_somewhere = function(event = null)
     {
         if (event === null)
@@ -43,6 +182,7 @@ $(document).ready(() => {
             width: 600,
             height: 600
         });
+
     // var sheet = window.document.styleSheets[0];
     // sheet.insertRule('.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default { color: black!important; }', sheet.cssRules.length);
      };
@@ -263,8 +403,103 @@ $(document).ready(() => {
                     create_popUp.contents.find(".input-mel-datetime.end").removeClass("disabled").removeAttr("disabled"); 
                 }
             })
+            create_popUp.footer.querry.html(`
+            <div style="margin-top:0" class="mel-button invite-button create" onclick="">
+                <span>Continuer</span>
+                <span class="icofont-arrow-right  plus" style="margin-left: 15px;"></span>
+            </div>
+            `)
             create_popUp.show();
         });
      }
 
 });
+
+
+
+
+/*
+
+
+
+    class CalendarEvent
+    {
+        constructor()
+        {
+            this._id = "";
+            this.id = "";
+            this.uid = "";
+
+            this.start = "";
+            this.end = "";
+            this.changed = '';
+            this.created = "";
+
+            this.title = "";
+            this.description = "";
+            this.location = "";
+
+            this["calendar-name"] = "";
+            this.calendar = "";
+
+            this.free_busy = "";
+            this.status = "";
+            this.sensitivity = "";
+
+            this.attachments = []
+
+            this.vurl = null;
+            this.allDay = false;
+
+            this.className = [];
+
+        }
+
+        // add_attachments(...a)
+        // {
+        //     this.attachments = a;
+        // }
+
+        daily(interval, until)
+        {
+            this.recurrence = {
+                FREQ:"DAILY",
+                INTERVAL:interval,
+                //UNTIL:until,
+                EXTDATE:[]
+            };
+        }
+
+        weekly(interval, byday, until)
+        {
+            this.recurrence = {
+                FREQ:"DAILY",
+                INTERVAL:interval,
+                BYDAY:byday,
+                EXTDATE:[]
+            };  
+        }
+
+        monthly(interval, byday, until)
+        {
+            this.recurrence = {
+                FREQ:"MONTHLY",
+                INTERVAL:interval,
+                BYMONTHDAY:byday,
+                EXTDATE:[]
+            };  
+        }
+
+        yearly(interval, BYmonth, until)
+        {
+            this.recurrence = {
+                FREQ:"YEARLY",
+                INTERVAL:interval,
+                BYMONTH:BYmonth,
+                EXTDATE:[]
+            };  
+        }
+    }
+
+
+*/

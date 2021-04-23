@@ -57,7 +57,8 @@ class mel_workspace extends rcube_plugin
         $this->register_task("workspace");
         if (driver_mel::gi()->getUser() !== null)
         {
-            $this->load_workspaces();
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->setup]User trouvé !");
+            //$this->load_workspaces();
             $this->register_action('create', array($this, 'create'));
             $this->register_action('get_uid', array($this, 'get_uid'));
             $this->register_action('check_uid', array($this, 'check_uid'));
@@ -103,10 +104,11 @@ class mel_workspace extends rcube_plugin
         //add_users
     }
 
-    function load_workspaces()
+    public function load_workspaces()
     {
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
-        uasort($this->workspaces , [$this, "sort_workspaces"]);
+        if (count($this->workspaces) > 0)
+            uasort($this->workspaces , [$this, "sort_workspaces"]);
         // foreach ($this->workspaces as $key => $value) {
         //     $this->workspaces[$key]->delete();
         // }
@@ -724,6 +726,7 @@ class mel_workspace extends rcube_plugin
     function create()
     {
         //rcube_utils::INPUT_POST custom_uid
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Récupération des inputs....");
         $datas = [
             "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
             "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
@@ -736,6 +739,8 @@ class mel_workspace extends rcube_plugin
             "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST),
             "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
         ];
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs ok");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs : ".json_encode($datas));
 
         $retour = [
             "errored_user" => [],
@@ -744,6 +749,7 @@ class mel_workspace extends rcube_plugin
 
         $user = driver_mel::gi()->getUser();
         $workspace = driver_mel::gi()->workspace([$user]);
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création d'un espace...");
         $workspace->uid = $datas["uid"] === null || $datas["uid"] === "" ? self::generate_uid($datas["title"]) : $datas["uid"];//uniqid(md5(time()), true);
         $workspace->title = $datas["title"];
         $workspace->logo = $datas["avatar"];
@@ -756,8 +762,11 @@ class mel_workspace extends rcube_plugin
         if ($datas["color"] === "" || $datas["color"] === null)
             $datas["color"] = "#FFFFFF";
         $this->add_setting($workspace, "color", $datas["color"]);
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Première sauvegarde...");
         $res = $workspace->save();
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Premier chargement...");
         $workspace->load();
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Ajout des utilisateurs...");
         $shares = [];
         $share = driver_mel::gi()->workspace_share([$workspace]);
         $share->user = $user->uid;
@@ -780,14 +789,15 @@ class mel_workspace extends rcube_plugin
 
         $workspace->shares = $shares;
 
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
         $datas["services"] = $this->create_services($workspace,$datas["services"]);
-
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
         $res = $workspace->save();
 
         $retour["workspace_uid"] = $workspace->uid;
 
         $retour["uncreated_services"] = $datas["services"];
-
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Retour...");
         echo json_encode($retour);
         exit;
     }
@@ -1092,6 +1102,7 @@ class mel_workspace extends rcube_plugin
     function generate_html($only_epingle = false, $only_archived = false)
     {
         $html = "";
+        $this->load_workspaces();
         foreach ($this->workspaces as $key => $value) {
             if (!self::is_epingle($value) && $only_epingle)
                 continue;

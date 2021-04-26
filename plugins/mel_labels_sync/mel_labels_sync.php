@@ -659,11 +659,11 @@ class mel_labels_sync extends rcube_plugin {
    */
   private function _get_bal_labels() {
     $this->rc->output->set_env('username', $this->rc->user->get_username());
-    if (in_array('mel_sharedmailboxes_imap', $this->rc->plugins->active_plugins) && $this->rc->task == 'mail') {
+    if (in_array('mel_sharedmailboxes', $this->rc->plugins->active_plugins) && $this->rc->task == 'mail') {
       if (empty($this->rc->action)) {
         // MANTIS 0004420: Toujours lister les étiquettes de la BALI
         $_labels_list = $this->driver->get_user_labels($this->rc->user->get_username());
-        $objects = $this->rc->plugins->get_plugin('mel_sharedmailboxes_imap')->get_user_sharedmailboxes_list();
+        $objects = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
         foreach ($objects as $object) {
           $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($object->mailbox->uid));
         }

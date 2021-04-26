@@ -109,13 +109,6 @@ class mel_larry extends rcube_plugin
       $this->add_hook('preferences_sections_list',    array($this, 'sections_list'));
       // register message hook
       $this->add_hook('message_headers_output', array($this, 'mail_headers'));
-
-      // // Folders list handler
-      if ($rcmail->task == 'mail' && empty($rcmail->action)
-         && !in_array('mel_sharedmailboxes_imap', $rcmail->config->get('plugins', []))
-         && !in_array('mel_sharedmailboxes', $rcmail->config->get('plugins', []))) {
-        $rcmail->output->add_handler('mailboxlist_mel', array($rcmail, 'folder_list'));
-      }
     }
   }
 

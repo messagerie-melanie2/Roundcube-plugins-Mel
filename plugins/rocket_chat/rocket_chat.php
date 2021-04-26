@@ -327,11 +327,38 @@ EOF;
         
         $attrib['name'] = $attrib['id'];
         
-        $this->rc->output->set_env('contentframe', $attrib['name']);
-        $this->rc->output->set_env('blankpage', $attrib['src'] ? $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
-        
-        return $this->rc->output->frame($attrib);
+        return $this->frame($attrib, true);
     }
+
+    /**
+     * Returns iframe object, registers some related env variables
+     *
+     * @param array   $attrib          HTML attributes
+     * @param boolean $is_contentframe Register this iframe as the 'contentframe' gui object
+     *
+     * @return string IFRAME element
+     */
+    private function frame($attrib, $is_contentframe = false)
+    {
+        static $idcount = 0;
+
+        if (!$attrib['id']) {
+            $attrib['id'] = 'rcmframe' . ++$idcount;
+        }
+
+        $attrib['name'] = $attrib['id'];
+        $attrib['src']  = $attrib['src'] ? $this->rc->output->abs_url($attrib['src'], true) : 'program/resources/blank.gif';
+
+        // register as 'contentframe' object
+        if ($is_contentframe || $attrib['contentframe']) {
+            $this->rc->output->set_env('contentframe', $attrib['contentframe'] ? $attrib['contentframe'] : $attrib['name']);
+            $this->rc->output->set_env('blankpage', $this->rc->output->asset_url($attrib['src']));
+        }
+
+        return html::tag('iframe', $attrib, null, array_merge(html::$common_attrib,
+            array('src','name','width','height','border','frameborder','onload','allow','allowfullscreen')));
+    }
+
     /**
      * Retourne l'auth token en session
      * 

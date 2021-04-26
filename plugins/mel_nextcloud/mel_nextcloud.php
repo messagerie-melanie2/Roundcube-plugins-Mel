@@ -196,11 +196,40 @@ class mel_nextcloud extends rcube_plugin {
 
     $attrib['name'] = $attrib['id'];
 
-    $rcmail->output->set_env('contentframe', $attrib['name']);
-    $rcmail->output->set_env('blankpage', $attrib['src'] ? $rcmail->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
-
-    return $rcmail->output->frame($attrib);
+    return $this->frame($attrib, true);
   }
+
+  /**
+   * Returns iframe object, registers some related env variables
+   *
+   * @param array   $attrib          HTML attributes
+   * @param boolean $is_contentframe Register this iframe as the 'contentframe' gui object
+   *
+   * @return string IFRAME element
+   */
+  private function frame($attrib, $is_contentframe = false)
+  {
+      static $idcount = 0;
+
+      $rcmail = rcmail::get_instance();
+
+      if (!$attrib['id']) {
+          $attrib['id'] = 'rcmframe' . ++$idcount;
+      }
+
+      $attrib['name'] = $attrib['id'];
+      $attrib['src']  = $attrib['src'] ? $rcmail->output->abs_url($attrib['src'], true) : 'program/resources/blank.gif';
+
+      // register as 'contentframe' object
+      if ($is_contentframe || $attrib['contentframe']) {
+        $rcmail->output->set_env('contentframe', $attrib['contentframe'] ? $attrib['contentframe'] : $attrib['name']);
+        $rcmail->output->set_env('blankpage', $rcmail->output->asset_url($attrib['src']));
+      }
+
+      return html::tag('iframe', $attrib, null, array_merge(html::$common_attrib,
+          array('src','name','width','height','border','frameborder','onload','allow','allowfullscreen')));
+  }
+
   /**
    * Méthode pour se logger dans l'application de nextcloud
    */

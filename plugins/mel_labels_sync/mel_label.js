@@ -118,13 +118,13 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 	{
 		tb_labels_for_message = preview_frame.get(0).contentWindow.tb_labels_for_message;
 		headers_table = preview_frame.contents().find('table.headers-table');
-		// if (rcmail.env.action == 'show') {
-		// 	header_preview_all_table = preview_frame.contents().find('table.headers-table');
-		// } else {
-		// 	header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
-		// }
-		// Reload cache
-		preview_frame.get(0).contentWindow.location.reload(true);
+		if (rcmail.env.action == 'show') {
+			header_preview_all_table = preview_frame.contents().find('table.headers-table');
+		} else {
+			header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
+		}
+		// // Reload cache
+		// preview_frame.get(0).contentWindow.location.reload(true);
 	}
 	
 	if (!rcmail.message_list
@@ -270,10 +270,10 @@ function rcm_tb_label_init_onclick()
 				// special case flag 0 means remove all flags
 				if (toggle_label == 'label0') {
 					unset_all = true;
-					$('#tb_label_popup li a').each(function() {
+					$('#tb_label_popup li.show a').each(function() {
 						if ($(this).parent().attr('id') != 'label0' 
 								&& $(this).attr('id') != 'rcube_manage_labels') {
-							labels_list.push($(this).parent().attr('id'));
+							labels_list.push($(this).parent().attr('id').split('_b_')[0]);
 						}
 					});
 				} else {

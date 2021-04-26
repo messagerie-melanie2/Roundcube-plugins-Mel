@@ -460,7 +460,7 @@ class mel_labels_sync extends rcube_plugin {
     }
 
     $out .= '<ul class="toolbarmenu">';
-    $out .= '<li id="label0" class="label0 click0"><a href="#">0 ' . $this->gettext('label0') . '</a></li>';
+    $out .= '<li id="label0" class="label0 click0 show"><a href="#">0 ' . $this->gettext('label0') . '</a></li>';
     $i = [];
     foreach ($this->_get_bal_labels() as $label) {
       $key = $this->_convert_key_to_css($label->key);

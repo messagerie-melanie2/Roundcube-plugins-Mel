@@ -591,6 +591,7 @@ class mel_metapage extends rcube_plugin
     function create_calendar_event()
     {
         $calendar = $this->rc->plugins->get_plugin('calendar');
+        $calendar->add_texts('localization/', true);
         $calendar->ui->init();
         $calendar->ui->addJS();
         $calendar->ui->init_templates();

@@ -418,110 +418,178 @@ EOF;
       exit;
     }
 
+  /**
+   * Récupère un objet de classe RocketChatClient.
+   *
+   * @return RocketChatClient
+   */
     private function get_rc_client()
     {
       require_once __DIR__ . '/lib/rocketchatclient.php';
+
       $this->login();
+
       $uid = $this->getUserId();
       $token = $this->getAuthToken();
 
       $rocketClient = new RocketChatClient($this->rc);
       $rocketClient->setUserId($uid);
       $rocketClient->setAuthToken($token);
+
       return $rocketClient;
     }
 
+  /**
+   * Créer un canal ou un groupe via un appel ajax.
+   */
     public function create_chanel()
     {
-      // require_once __DIR__ . '/lib/rocketchatclient.php';
-      // $this->login();
       $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
       $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
       $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
+
       if ($is_public === "false")
         $is_public = false;
       else
         $is_public = true;
+
       $result = $this->_create_channel($room_name, $users, $is_public);
+
       echo json_encode($result);
+
       exit;
     }
 
+   /**
+   * Créer un canal ou un groupe.
+   *
+   * @param string $room_name
+   * @param array $users
+   * @param bool $is_public
+   * @return array
+   */
     public function _create_channel($room_name, $users, $is_public)
     {
       $user = $this->rc->get_user_name();
       $rocketClient = $this->get_rc_client();
+
       return $rocketClient->create_chanel($room_name, $users, $is_public);
     }
 
+    /**
+     * Récupère les infos de l'utilisateur.
+     */
     public function get_user_info()
     {
       $username = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST);
+
       echo json_encode($this->getUserInfos($username));
+
       exit;
     }
 
+    /**
+     * Ajoute des utilisateurs à un canal ou à un groupe.
+     * 
+     * @param array $users
+     * @param string $channel_id
+     * @param bool $private
+     * 
+     * @return array
+     */
     public function add_users($users = null, $channel_id = null, $private = null)
     {
       $ajax = $users === null && $channel_id === null && $private === null;
+
       if ($users === null)
         $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
+
       if ($channel_id === null)
         $channel_id = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
+
       if ($private === null)
         $private = rcube_utils::get_input_value('_private', rcube_utils::INPUT_POST);
-      // require_once __DIR__ . '/lib/rocketchatclient.php';
-      // $this->login();
-      // $uid = $this->getUserId();
-      // $token = $this->getAuthToken();
-      // $rocketClient = new RocketChatClient($this->rc);
-      // $rocketClient->setUserId($uid);
-      // $rocketClient->setAuthToken($token);
+
       $rocketClient = $this->get_rc_client();
       $results = $rocketClient->add_users($channel_id, $users, $private);
+
       if (!$ajax)
         return $results;
+
       echo json_encode($results);
       exit;
     }
 
+    /**
+     * Ajoute ou retire le rôle "Owner" à un utilisateur
+     * 
+     * @param string $user
+     * @param string $channel_id
+     * @param bool $private
+     * @param bool $remove
+     * 
+     * @return array
+     */
     public function update_owner($user, $channel_id, $private, $remove = false)
     {
       $rocketClient = $this->get_rc_client();
+
       return $remove ? $rocketClient->remove_owner($channel_id, $user, $private) : $rocketClient->add_owner($channel_id, $user, $private);
     }
 
+    /**
+     * Supprime un utilisateur d'un groupe ou d'un canal.
+     * 
+     * @param string $user
+     * @param string $channel_id
+     * @param bool $private
+     * 
+     * @return array
+     */
     public function kick_user($channel_id, $user, $private)
     {
       $rocketClient = $this->get_rc_client();
+
       return $rocketClient->kick_user($channel_id, $user, $private);
     }
 
+    /**
+     * Supprime un groupe ou un canal.
+     * 
+     * @param string $channel_id
+     * @param bool $private
+     * 
+     * @return array
+     */
     public function delete_channel($channel_id, $private)
     {
       $rocketClient = $this->get_rc_client();
+
       return $rocketClient->delete($channel_id, $private);      
     }
 
+    /**
+     * Récupère le nombre de messages non-lus d'un canal.
+     */
     public function get_channel_unread_count()
     {
       $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
-      // require_once __DIR__ . '/lib/rocketchatclient.php';
-      // $this->login();
-      // $uid = $this->getUserId();
-      // $token = $this->getAuthToken();
-      // $rocketClient = new RocketChatClient($this->rc);
-      // $rocketClient->setUserId($uid);
-      // $rocketClient->setAuthToken($token);
+
       $rocketClient = $this->get_rc_client();
       $results = $rocketClient->channel_count($channel);
+
       echo json_encode($results);
+
       exit;
     }
 
+    /**
+     * Récupère la liste des groupes ou des canaux rejoins.
+     */
     public function get_joined()
     {
       $rocketClient = $this->get_rc_client();
+
       return $rocketClient->get_all_joined();
     }
 }

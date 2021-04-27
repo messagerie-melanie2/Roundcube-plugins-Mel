@@ -242,6 +242,19 @@ class mel_metapage extends rcube_plugin
                     'event-wsp'    => $w,
                 ));
                 $args["content"] = str_replace($textToReplace, $this->rc->output->parse("mel_metapage.event_modal", false, false), $content);
+                
+                // $textes = [
+                //     'roleorganizer',
+                //     'rolerequired',
+                //     'roleoptional',
+                //     'rolechair',
+                //     'rolenonparticipant'
+                // ];
+                // foreach ($textes as $key => $value) {
+                //     $args["content"] = str_replace("calendar.$value", $this->gettext($value), $args["content"]);
+                // }
+
+            
             }
 //<div id="edit-localchanges-warning"
         }

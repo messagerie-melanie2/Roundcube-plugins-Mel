@@ -355,28 +355,35 @@ $(document).ready(() => {
                 id: 'kolabcalendarinlinegui',
                 name: 'kolabcalendardialog',
                 src: rcmail.url('mel_metapage/dialog-ui', url)
-            });
+            }).css("width", "100%").css("height", "100%");
 
-        // dialog buttons
-        buttons[rcmail.gettext('save')] = function() {
-            var frame = rcmail.get_frame_window('kolabcalendarinlinegui');
-            frame.rcmail.command('event-save');
-            parent.postMessage({
-                message:"update_calendar"
-            });
+        // // dialog buttons
+        // buttons[rcmail.gettext('save')] = function() {
+        //     var frame = rcmail.get_frame_window('kolabcalendarinlinegui');
+        //     frame.rcmail.command('event-save');
+        //     parent.postMessage({
+        //         message:"update_calendar"
+        //     });
 
-        };
+        // };
 
-        buttons[rcmail.gettext('cancel')] = function() {
-            dialog.dialog('destroy');
-        };
+        // buttons[rcmail.gettext('cancel')] = function() {
+        //     dialog.dialog('destroy');
+        // };
 
         // open jquery UI dialog
-        window.kolab_event_dialog_element = dialog = rcmail.show_popup_dialog(dialog, title, buttons, {
-            button_classes: button_classes,
-            minWidth: 500,
-            width: 600,
-            height: 600
+        // window.kolab_event_dialog_element = dialog = rcmail.show_popup_dialog(dialog, title, buttons, {
+        //     button_classes: button_classes,
+        //     minWidth: 500,
+        //     width: 600,
+        //     height: 600
+        // });
+        rcmail.lock_frame(dialog);
+        const config = new GlobalModalConfig(`${event.from === "barup" ? '<span class="icofont-reply mel-return" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();})"></span>' : ""}Créer un évènement`, "default", dialog, "");
+        window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
+        window.kolab_event_dialog_element.autoHeight();
+        window.kolab_event_dialog_element.onDestroy((globalModal) => {
+            globalModal.contents.find("iframe").remove();
         });
 
     // var sheet = window.document.styleSheets[0];

@@ -165,3 +165,8 @@ textarea.input-mel{
 #eventedit .form-check.mel-radio-1 {
 	margin-left: 5px;
 }
+
+#eventedit
+{
+	margin: 0 30px;
+}

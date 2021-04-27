@@ -142,6 +142,31 @@ class GlobalModal
         this.modal.css("top", pos);
     }
 
+    editHeight(height, unit = "px")
+    {
+        $(`#${this.modal[0].id} .modal-content`).css("height", `${height}${unit}`);
+    }
+
+    autoHeight()
+    {
+        this.editHeight(window.innerHeight-60);
+    }
+
+    onDestroy(func)
+    {
+        this.ondestroy = func;
+    }
+
+    dialog(txt)
+    {
+        if (txt === "destroy")
+        {
+            if (this.ondestroy !== undefined)
+                this.ondestroy(this);
+            this.close();
+        }
+    }
+
     /**
      * Ferme la modale.
      */

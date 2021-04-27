@@ -34,3 +34,9 @@ $labels["new_n"] = "Nouveau";
 $labels["new_f"] = "Nouvelle";
 
 $labels["new_event"] = "Nouvel évènement";
+
+$labels['roleorganizer'] = 'Organisateur';
+$labels['rolerequired'] = 'Requis';
+$labels['roleoptional'] = 'Optionnel';
+$labels['rolechair'] = 'Présidence';
+$labels['rolenonparticipant'] = 'Absent';

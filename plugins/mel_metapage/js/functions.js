@@ -40,7 +40,7 @@ function m_mp_Create()
         let workspace = '<div class="col-12">' + button(rcmail.gettext("mel_metapage.a_worspace"), "icofont-monitor", "m_mp_createworkspace()") + '</div>'
         let mail = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_mail"), "icofont-email block", "rcmail.command('compose','',this,event)") + "</div>";
         let tache = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_task"), "icofont-tasks block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), () => m_mp_action_from_storage('task_create', m_mp_OpenTask))") + "</div>";
-        let reu = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_meeting"), "icofont-calendar block", 'rcube_calendar.mel_create_event()//m_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
+        let reu = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_meeting"), "icofont-calendar block", 'mm_create_calendar(this);//rcube_calendar.mel_create_event()//m_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
         let viso = '<div class="col-sd-3 col-md-3">' + button(rcmail.gettext("mel_metapage.a_web_conf"), "icofont-slidshare block", `window.webconf_helper.go()`) + "</div>";
         let document = '<div class="col-4" style="'+haveNextcloud.style+'">' + button(rcmail.gettext("mel_metapage.a_document"), "icofont-file-document block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</div>";
         let blocnote = '<div class="col-'+haveNextcloud.col+'">' + button(rcmail.gettext("mel_metapage.a_wordpad"), "icofont-ui-note block") + "</div>";
@@ -1082,4 +1082,31 @@ async function m_mp_shortcuts()
     }
     else
         window.shortcuts.open();
+}
+
+function mm_create_calendar(e)
+{
+    if (window.create_popUp !== undefined)
+    {
+        //window.create_popUp.close();
+        window.create_popUp = undefined;
+    }
+
+    let event = {
+        // categories:["ws#" + id],
+        // calendar_blocked:true,
+        start:moment(),
+        end:moment().add(1, "h"),
+        from:"barup"
+    }
+    rcmail.local_storage_set_item("tmp_calendar_event", event);
+    return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
+    // m_mp_CreateOrOpenFrame(`calendar`, 
+    // () => {
+    //     m_mp_CreateEvent();
+    //     m_mp_CreateEvent(() => {
+    //         m_mp_set_storage("calendar_category", "ws#" + id, false);
+    //     })
+    // }
+    // , m_mp_CreateEvent_inpage)
 }

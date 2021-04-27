@@ -1,7 +1,7 @@
 
 function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 {
-    const private_key = "~";
+    const private_key = "/group";
     if (is_framed === null && parent !== window)
         this._is_framed = true;
     else if (is_framed === null)
@@ -64,9 +64,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     {
         console.error("ariane", this.ariane, this.ariane.includes(private_key));
         this.ariane = {
-            ispublic:this.ariane.includes(private_key),
+            ispublic:!this.ariane.includes(private_key),
             room_name:this.ariane.replaceAll(private_key, "")
         };
+        console.error("ariane", this.ariane);
     }
     if (this.ariane.is_hide === undefined)
         this.ariane.is_hide = false;

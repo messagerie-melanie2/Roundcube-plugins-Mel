@@ -1,7 +1,7 @@
 
 function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 {
-    const private_key = "/group";
+    const private_key = "/group"; 
     if (is_framed === null && parent !== window)
         this._is_framed = true;
     else if (is_framed === null)
@@ -90,7 +90,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         if (this.wsp !== undefined)
             config["_wsp"] = this.wsp.datas.uid;
         else if (this.have_ariane())
-            config["_ariane"] = encodeURIComponent(`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
+            config["_ariane"] = (`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
         const url = MEL_ELASTIC_UI.url("webconf", "", config);
         //window.history.replaceState({}, document.title, url);
         mel_metapage.Functions.title(url);

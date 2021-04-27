@@ -783,6 +783,17 @@ td.mel-fit-content{
     font-size: small;
 }
 
+.mel-button.white{
+    background-color: white;
+    color: unset;
+    border-style: solid;
+    border-width: thin;
+    border-color: #363A5B;
+}
+.mel-button.white:hover{
+    color: white;
+}
+
 .mel-button:hover
 {
     background-color: #484D7A;

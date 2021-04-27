@@ -64,6 +64,7 @@ class mel_workspace extends rcube_plugin
             $this->register_action('check_uid', array($this, 'check_uid'));
             $this->register_action('save_objects', array($this, 'save_objects'));
             $this->register_action('epingle', array($this, 'epingle'));
+            $this->register_action('get_email_from_ws', array($this, 'get_email_from_workspace'));
             $this->include_script('js/epingle.js');
         }
         // Ajoute le bouton en fonction de la skin
@@ -1602,6 +1603,21 @@ class mel_workspace extends rcube_plugin
         }
         else
             echo "denied";
+        exit;
+    }
+
+    function get_email_from_workspace()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+        $shares = $workspace->shares;
+        $array = [];
+        $user = driver_mel::gi()->getUser()->uid;
+        foreach ($shares as $key => $value) {
+            if ($value->user !== $user)
+                $array[] = driver_mel::gi()->getUser($value->user)->email;
+        }
+        echo json_encode($array);
         exit;
     }
 

@@ -11,6 +11,12 @@
 	margin-top: 15px;
 }
 
+.span-mel.t1.low-margins {
+	margin-top: 5px;
+	display: block;
+	margin-bottom: 10px;
+}
+
 .span-mel.t2 {
 	font-size: medium;
 	display: block;
@@ -77,4 +83,85 @@
 	vertical-align: top;
 	margin-top: 6px;
 	display: inline-block;
+}
+#edit-attendees-comment,
+#edit-attendee-name,
+#edit-identities-list,
+.edit-attendee-role,
+textarea.input-mel,
+select.input-mel,
+input.input-mel {
+	border-radius: 60px;
+	background-color: #F0F0F0;
+	border-color: #F0F0F0;
+}
+#edit-attendees-comment:focus,
+#edit-attendee-name:focus,
+#edit-identities-list:focus,
+.edit-attendee-role:focus,
+textarea.input-mel:focus,
+select.input-mel:focus,
+input.input-mel:focus {
+	background-color: #F0F0F0;
+	border-color: #484D7A;
+	box-shadow: 0 0 0 .2rem #C8CDFC59;
+}
+.input-mel.custom-file-input + .custom-file-label {
+	border-radius: 60px;
+	background-color: white;
+	border-color: #4A4D6B;
+	padding-right: 0px;
+	width: 30%;
+}
+.input-mel.custom-file-input + .custom-file-label::after {
+	background-color: white; 
+	border-left: none;
+}
+.input-mel.custom-file-input:focus ~ .custom-file-label {
+	border-color: #484D7A;
+	box-shadow: 0 0 0 .2rem #C8CDFC59;
+}
+.input-mel.custom-file-input ~ .custom-file-label[data-browse]::after {
+	content: "\f01c";
+	font-family: "IcoFont";
+}
+#edit-attendees-comment,
+textarea.input-mel{
+	border-radius: 5px;
+}
+#eventedit .alarms-input .edit-alarm-type
+{
+	border-radius: 60px;
+}
+
+.datetime .input-mel {
+	width: 90% !important;
+}
+
+/* .input-mel.input-mel-datetime::after {
+	content: "\eecd";
+} */
+
+.input-mel-datetime
+{
+	position: relative;
+}
+
+.input-mel-datetime::after {
+	content: "\eecd";
+	font-family: "IcoFont";
+	font-size: 22px;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.datetime .input-mel-datetime::after
+{
+	top: 0;
+	right: 45px;
+}
+
+#eventedit .form-check.mel-radio-1 {
+	margin-left: 5px;
 }

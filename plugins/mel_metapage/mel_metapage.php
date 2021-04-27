@@ -98,10 +98,10 @@ class mel_metapage extends rcube_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_event_html', array($this, 'get_event_html'));
         }
-        // if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
-        // {
-        //     $this->add_hook("send_page", array($this, "parasite_calendar"));
-        // }
+        if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
+        {
+            $this->add_hook("send_page", array($this, "parasite_calendar"));
+        }
 
         //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
           //  $this->rc->output->redirect(array("_task" => "mel_portal"));
@@ -230,8 +230,8 @@ class mel_metapage extends rcube_plugin
                     $wsp = $this->rc->plugins->get_plugin("mel_workspace");
                     $wsp->load_workspaces();
                     $workpaces = $wsp->workspaces;
-                    $html = '<select id=wsp-event-all-cal-mm class="form-control mel-input">';
-                    $html .= "<option value=\"#none>\"Aucun</option>";
+                    $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
+                    $html .= "<option value=\"#none\">Aucun</option>";
                     foreach ($workpaces as $key => $value) {
                         $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
                     }
@@ -537,7 +537,7 @@ class mel_metapage extends rcube_plugin
             $wsp = $this->rc->plugins->get_plugin("mel_workspace");
             $wsp->load_workspaces();
             $workpaces = $wsp->workspaces;
-            $html = '<select class="form-control mel-input">';
+            $html = '<select class="form-control input-mel">';
             $html .= "<option value=none>Aucun</option>";
             foreach ($workpaces as $key => $value) {
                 $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
@@ -601,8 +601,26 @@ class mel_metapage extends rcube_plugin
         }
         else
             $event = rcube_utils::get_input_value("_event", rcube_utils::INPUT_POST);
-        $event["calendar"] = driver_mel::gi()->mceToRcId(driver_mel::gi()->getUser()->uid);
+        $user = driver_mel::gi()->getUser();
+        $event["calendar"] = driver_mel::gi()->mceToRcId($user->uid);
+        $event["attendees"] = [
+            ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
+        ];
+        foreach ($this->rc->user->list_emails() as $rec) {
+            if (!$identity)
+                $identity = $rec;
+            $identity['emails'][] = $rec['email'];
+            $settings['identities'][$rec['identity_id']] = $rec['email'];
+            }
+        $identity['emails'][] = $this->rc->user->get_username();
+        $settings['identity'] = array('name' => $identity['name'], 'email' => strtolower($identity['email']), 'emails' => ';' . strtolower(join(';', $identity['emails'])));
         $driver = $calendar->__get("driver");
+        $this->rc->output->set_env('calendar_settings', $settings);
+        $this->rc->output->set_env('identities-selector', $calendar->ui->identity_select(array(
+            'id'         => 'edit-identities-list',
+            'aria-label' => $this->gettext('roleorganizer'),
+            'class'      => 'form-control custom-select',
+        )));
         $this->rc->output->set_env('event_prop', $event);
         $this->include_script('../mel_workspace/js/setup_event.js');
         //$this->include_script('../calendar/calendar_ui.js');

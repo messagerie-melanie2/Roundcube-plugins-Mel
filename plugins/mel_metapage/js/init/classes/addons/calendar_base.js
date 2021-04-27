@@ -1,10 +1,68 @@
 $(document).ready(() => {
 
+
     console.log("parasitage", window.rcube_calendar_ui);
     if (window.rcube_calendar_ui === undefined)
     window.rcube_calendar_ui = () => {};
-        window.rcube_calendar_ui.edit = function(event)
+    window.rcube_calendar_ui.continue = function()
     {
+        // $("#event-panel-summary").css("display", "none");
+        // $("#event-panel-attendees").css("display", "");
+        $(".nav-link.nav-icon.attendees").click();
+        if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
+            $(".have-workspace").css("display", "");
+        else
+            $(".have-workspace").css("display", "none");
+    }
+    window.rcube_calendar_ui.back = function()
+    {
+        $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
+    }
+    rcube_calendar_ui.save = function()
+    {
+        let querry = $("#eventedit").parent().parent().find(".ui-dialog-buttonset").find(".save.mainaction");
+        if (querry.length > 0)
+            querry.click();
+        else
+            rcmail.command('event-save');
+    }
+    window.rcube_calendar_ui.edit = function(event)
+    {
+        if (event === "" && rcmail.env.event_prop !== undefined)
+        {
+            event = rcmail.env.event_prop;
+            if (typeof event.start === "string")
+                event.start = moment(event.start);
+            else if (event.start === undefined)
+                event.start = moment();
+            if (typeof event.end === "string")
+                event.end = moment(event.end);
+            else if (event.end === undefined)
+                event.end = moment().add(30, "m");
+        }
+        //Shuffle array elements
+        function shuffle(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+            return array;
+        };
+        function generateRoomName() {
+            var charArray= ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+            var digitArray= ["0","1","2","3","4","5","6","7","8","9"];
+            var roomName = shuffle(digitArray).join("").substring(0,3) + shuffle(charArray).join("").substring(0,7);
+            return shuffle(roomName.split("")).join("");
+        };
         const getDate = function(string)
         {
             string = string.split(" ");
@@ -12,7 +70,7 @@ $(document).ready(() => {
             const time = string[1].split(":");
 
             return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
-        }
+        };
         const update_location = function()
         {
             if ($("#eb-mm-em-p")[0].checked)
@@ -27,7 +85,7 @@ $(document).ready(() => {
                 if ($("#eb-mm-wm-e")[0].checked)
                 {
                     let config = {
-                        _key:"",
+                        _key:generateRoomName(),
                     };
                     if ($("#wsp-event-all-cal-mm").val() !== "#none")
                         config["_wsp"] = $("#wsp-event-all-cal-mm").val();
@@ -36,87 +94,225 @@ $(document).ready(() => {
                     $("#edit-location").val(`#visio:${mel_metapage.Functions.url("webconf", "", config)}`);
                 }
                 else
-                    $("#edit-location").val(`#visio:${$("#url-visio-cal").val()}`);
+                    $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
             }
             else {
                 //Audio
                 $("#edit-location").val(`https://audio.mtes.fr/ : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
             }
-        }
+        };
         const format = "DD/MM/YYYY HH:mm";
-        console.log("parasitage", event, event === "");
-        if (event === "") //nouvel event
+        const have_created_callback = $("#eventedit").data("callbacks") === "ok";
+        if (!have_created_callback)
         {
-            $(".input-mel-datetime.start").datetimepicker({
+            //Update datetime
+            $(".input-mel-datetime .input-mel.start").datetimepicker({
                 format: 'd/m/Y H:i',
                 onChangeDateTime:() => {
-                    let querry = $(".input-mel-datetime.end");
+                    let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
-                    const start_val = getDate($(".input-mel-datetime.start").val());
+                    const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
                     if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    querry.val(getDate($(".input-mel-datetime.start").val()).add(1,"h").format(format) );
+                    querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
                 }
             });
-            $(".input-mel-datetime.end").datetimepicker({
+            $(".input-mel-datetime .input-mel.end").datetimepicker({
                 format: 'd/m/Y H:i',
                 onChangeDateTime:() => {
-                    let querry = $(".input-mel-datetime.end");
+                    let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
-                    const start_val = getDate($(".input-mel-datetime.start").val());
+                    const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
                     if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    querry.val(getDate($(".input-mel-datetime.start").val()).add(1,"h").format(format) );
+                    querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
                 }
             });
-            $(".input-mel-datetime.start").on("change", () => {
-                const val = $(".input-mel-datetime.start").val().split(" ");
+            $(".input-mel-datetime .input-mel.start").on("change", () => {
+                const val = $(".input-mel-datetime .input-mel.start").val().split(" ");
                 $("#edit-startdate").val(val[0]);
                 $("#edit-starttime").val(val[1]);
             });
-            $(".input-mel-datetime.start").val(moment().format(format));
-            $(".input-mel-datetime.end").on("change", () => {
-                const val = $(".input-mel-datetime.end").val().split(" ");
+            $(".input-mel-datetime .input-mel.end").on("change", () => {
+                const val = $(".input-mel-datetime .input-mel.end").val().split(" ");
                 $("#edit-enddate").val(val[0]);
                 $("#edit-endtime").val(val[1]);
             });
-            $(".input-mel-datetime.end").val(moment().add(1, 'h').format(format));
-        }
-        else{ //ancien event
+            $("#edit-allday").on("click", (e) => {
+                e = e.target;
+                if (e.checked)
+                {
+                    $(".input-mel-datetime .input-mel.start").addClass("disabled").attr("disabled", "disabled"); 
+                    $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
+                    $(".input-mel-datetime .input-mel.start").val(moment().startOf("day").format(format));
+                    $(".input-mel-datetime .input-mel.end").val(moment().endOf("day").format(format));
+                }
+                else
+                {
+                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                }
+            })
+            //update locations
+            $(".form-check-input.event-mode").on("click", (e) => {
+                e = e.target;
+                $(".content.event-mode").css("display", "none");
+                $(`.${e.id}`).css("display", "");
+                update_location();
+            });
+            $("#edit-location").on("change", () => {
+                update_location();
+            });
+            $("#eb-mm-wm-e").on("change", () => {
+                update_location();
+                console.log($("#eb-mm-wm-e")[0].checked, "checked");
+                if (!$("#eb-mm-wm-e")[0].checked)
+                    $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
+                else
+                    $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
+            });
+            $("#eb-mm-wm-a").on("change", () => {
+                update_location();
+                console.log($("#eb-mm-wm-e")[0].checked, "checked");
+                if (!$("#eb-mm-wm-e")[0].checked)
+                    $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
+                else
+                    $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
+            });
+            $("#url-visio-cal").on("change", () => {
+                update_location();
+            });
+            $("#presential-cal-location").on("change", () => {
+                update_location();
+            });
+            $("#tel-input-cal-location").on("change", () => {
+                update_location();
+            });
+            $("#tel-input-cal-location").on("change", () => {
+                update_location();
+            });
+            $("#num-audio-input-cal-location").on("change", () => {
+                update_location();
+            });
+            $("#wsp-event-all-cal-mm").on("change", () => {
+                const val = $("#wsp-event-all-cal-mm").val();
+                if (val !== "#none")
+                    $("#edit-categories").val(`ws#${val}`)
+                else
+                    $("#edit-categories").val("");
+                    update_location();
+            });
+            //Update visu
+            $("#edit-recurrence-frequency").addClass("input-mel");
+            $("#edit-alarm-item").addClass("input-mel");
+            $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
+            $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
+            $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
+            //ok
+            $("#eventedit").data("callbacks", "ok");
 
         }
-        $("#edit-allday").on("click", (e) => {
-            e = e.target;
-            if (e.checked)
+        console.log("event", event);
+        setTimeout(() => {
+            if (event === "") //nouvel event
             {
-                $(".input-mel-datetime.start").addClass("disabled").attr("disabled", "disabled"); 
-                $(".input-mel-datetime.end").addClass("disabled").attr("disabled", "disabled"); 
-                $(".input-mel-datetime.start").val(moment().startOf("day").format(format));
-                $(".input-mel-datetime.end").val(moment().endOf("day").format(format));
+                $(".input-mel-datetime .input-mel.start").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).format(format));
+                $(".input-mel-datetime .input-mel.end").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).add(30, 'm').format(format));
             }
-            else
-            {
-                $(".input-mel-datetime.start").removeClass("disabled").removeAttr("disabled"); 
-                $(".input-mel-datetime.end").removeClass("disabled").removeAttr("disabled"); 
+            else{ //ancien event
+                $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
+                $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
+                const description = event.location;
+                if (description !== undefined)
+                {
+                    if (description.includes("https://audio.mtes.fr/ : "))
+                    {
+                        $("#eb-mm-em-a")[0].click();
+                        const audio = description.replace("https://audio.mtes.fr/ : ", "").split(" - ");
+                        $("#tel-input-cal-location").val(audio[0]);
+                        $("#num-audio-input-cal-location").val(audio[1]);
+                    }
+                    else if (description.includes("#visio") || description.includes("@visio") )
+                    {
+                        const isRc = description.includes("#visio");
+                        $("#eb-mm-em-v").click();
+                        if (isRc)
+                            $("#eb-mm-wm-e").click();
+                        else
+                        {
+                            $("#eb-mm-wm-a").click();
+                            $("#url-visio-cal").removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
+                        }
+                    }
+                    else {
+                        $("#eb-mm-em-p").click();
+                        $("#presential-cal-location").val(description);
+                    }
+                }
+                if (event.categories !== undefined && event.categories.length > 0)
+                {
+                    if (event.categories[0].includes("ws#"))
+                    {
+                        $("#wsp-event-all-cal-mm").val(event.categories[0].replace("ws#", ""));
+                        if (event.calendar_blocked === "true")
+                        {
+                            $("#wsp-event-all-cal-mm").addClass("disabled").attr("disabled", "disabled");
+                        }
+                    }
+                }
             }
-        })
-        $(".form-check-input.event-mode").on("click", (e) => {
-            e = e.target;
-            $(".content.event-mode").css("display", "none");
-            $(`.${e.id}`).css("display", "");
-            switch (e.id) {
-                case "eb-mm-em-v":
-                    update_location();
-                    break;
-            
-                default:
-                    break;
-            }
-        });
+        }, 10);
+        //Suppression text
         $("#eventedit").find(".nav.nav-tabs").css("display", "none");
+        $("#eventedit").find(".create_poll_link").css("display", "none");
         $("#edit-recurrence-frequency").parent().parent().find("label").css("display", "none");
+        //maj des boutons
+        let button_toolbar = $("#eventedit").parent().parent().find(".ui-dialog-buttonset");
+        if (button_toolbar.length > 0)
+        {
+            button_toolbar.find(".btn").css("display", "none");
+            // if (button_toolbar.find(".continue").length > 0)
+            //     button_toolbar.find(".continue").css("display", "");
+            // else
+            // {
+            //     button_toolbar.append(`<button class="btn btn-primary continue" onclick="rcube_calendar_ui.continue()">Continuer</button>`);
+            //     button_toolbar.append(`<button style="display:none;" class="btn btn secondary back" onclick="rcube_calendar_ui.back()">Retour</button>`);
+            // }
+        }
     }
         rcmail.addEventListener("edit-event", (event) =>{
             window.rcube_calendar_ui.edit(event);
         });   
+
+        rcmail.addEventListener("dialog-attendees-save", (datetimes) => {
+            const getDate = function(string)
+            {
+                string = string.split(" ");
+                const date = string[0].split("/");
+                const time = string[1].split(":");
+    
+                return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
+            };
+            const format = "DD/MM/YYYY HH:mm";
+            $(".input-mel-datetime .input-mel.start").val(getDate(`${datetimes.start.date} ${datetimes.start.time}`).format(format));
+            $(".input-mel-datetime .input-mel.end").val(getDate(`${datetimes.end.date} ${datetimes.end.time}`).format(format));
+        });
+
+        rcmail.addEventListener("init", () => {
+            rcmail.register_command('calendar-workspace-add-all', () => {
+                mel_metapage.Functions.busy();
+                mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_email_from_ws"), {
+                    _uid:$("#wsp-event-all-cal-mm").val()
+                }, (datas) => {
+                    datas = JSON.parse(datas);
+                    for (let index = 0; index < datas.length; ++index) {
+                        const element = datas[index];
+                        $("#edit-attendee-name").val(element);
+                        $("#edit-attendee-add").click();
+                    }
+                }).always(() => {
+                    mel_metapage.Functions.busy(false);
+                });
+            }, true);
+        })
 
         // return;
         // new Promise(async (a,b) => {

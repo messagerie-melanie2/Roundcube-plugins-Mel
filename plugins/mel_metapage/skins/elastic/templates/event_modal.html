@@ -7,7 +7,7 @@
 			<legend>Nom de l'évènement</legend> <!--Evènement-->
 			<div class="form-group">
 				<label for="edit-title" class="red-star-after span-mel t1 first">Nom de l'évènement</label>
-				<input type="text" placeholder="Nom de l'espace d'évènement" class="form-control" name="title" id="edit-title" size="40" required="true" />
+				<input type="text" placeholder="Nom de l'espace d'évènement" class="form-control input-mel" name="title" id="edit-title" size="40" required="true" />
 			</div>
             <span class="red-star-after span-mel t1">Choix de la période</span>
             <!-- <div class="row">
@@ -22,13 +22,17 @@
 				<!-- <label for="edit-startdate" class="col-sm-2 col-form-label"><roundcube:label name="calendar.start" /></label> -->
 				<div class="col-6 datetime">
                     <span class="span-mel t2">Début de l'évènement</span>
-                    <input class="form-control input-mel input-mel-datetime start" type="text"  />
+					<div class="input-mel-datetime">
+                    	<input class="form-control input-mel start" type="text"  />
+					</div>
 					<input style="display:none" type="text" name="startdate" size="11" id="edit-startdate" class="hidden form-control" required="true" /> &nbsp;
 					<input style="display:none" type="text" name="starttime" size="6" id="edit-starttime" class="hidden form-control" aria-label="<roundcube:label name='calendar.starttime' />" />
 				</div>
                 <div class="col-6 datetime">
                     <span class="span-mel t2">Fin de l'évènement</span>
-                    <input class="form-control input-mel input-mel-datetime end" type="text"  />
+					<div class="input-mel-datetime">
+						<input class="form-control input-mel end" type="text"  />
+					</div>
 					<input style="display:none" type="text" name="enddate" size="11" id="edit-enddate" class="hidden form-control" required="true" /> &nbsp;
 					<input style="display:none" type="text" name="endtime" size="6" id="edit-endtime" class="hidden form-control" aria-label="<roundcube:label name='calendar.endtime' />" />
 				</div>
@@ -93,19 +97,19 @@
                 <div class="col-6">
                     <span class="red-star-after span-mel t1">Mode d'évènement</span>
                     <div class="form-check"> <!--Présentiel-->
-                        <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-p" value="0" checked>
+                        <input class="form-check-input event-mode custom-control-input" type="radio" name="event-mode" id="eb-mm-em-p" value="0" checked>
                         <label class="form-check-label" for="eb-mm-em-p">
                           En présentiel
                         </label>
                     </div>
                     <div class="form-check"> <!--webconf-->
-                        <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-v" value="1">
+                        <input class="form-check-input event-mode custom-control-input" type="radio" name="event-mode" id="eb-mm-em-v" value="1">
                         <label class="form-check-label" for="eb-mm-em-v">
                           Par visioconférence
                         </label>
                     </div>
                     <div class="form-check"> <!--Audio-->
-                        <input class="form-check-input event-mode" type="radio" name="event-mode" id="eb-mm-em-a" value="2">
+                        <input class="form-check-input event-mode custom-control-input" type="radio" name="event-mode" id="eb-mm-em-a" value="2">
                         <label class="form-check-label" for="eb-mm-em-a">
                           Par audio
                         </label>
@@ -115,24 +119,24 @@
                     <!--Présentiel-->
                     <div class="eb-mm-em-p content event-mode">
                         <span class="span-mel t2 margin">Choisir un lieu</span>
-                        <input type="text" id="presential-cal-location" class="form-control mel-input" placeholder="Nom du lieu" />
+                        <input type="text" id="presential-cal-location" class="form-control input-mel" placeholder="Nom du lieu" />
                     </div>    
                     <!--Par visioconférence-->
                     <div class="eb-mm-em-v content event-mode" style="display:none">
                         <span class="red-star-after span-mel t2 margin">Choisir l'outil de visioconférence</span>
                         <div class="form-check"> <!--webconf état-->
-                            <input class="form-check-input" type="radio" name="webconf-mode" id="eb-mm-wm-e" value="1" checked>
+                            <input class="form-check-input custom-control-input" type="radio" name="webconf-mode" id="eb-mm-wm-e" value="1" checked>
                             <label class="form-check-label" for="eb-mm-wm-e">
                               Webconférence de l'état
                             </label>
                         </div>
                         <div class="form-check"> <!--autre-->
-                            <input class="form-check-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">
+                            <input class="form-check-input custom-control-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">
                             <label class="form-check-label" for="eb-mm-wm-a">
                               Un autre outil de visioconférence
                             </label>
                         </div>
-                        <input type="text" id="url-visio-cal" class="form-control mel-input disabled" disabled placeholder="Saisir l'url de visioconférence" />
+                        <input type="text" id="url-visio-cal" class="form-control input-mel disabled" disabled placeholder="Saisir l'url de visioconférence" />
                     </div>    
                     <!--Audio-->
                     <div class="eb-mm-em-a content event-mode" style="display: none;">
@@ -142,16 +146,16 @@
                             <span class="icofont-hand-right  plus" style="margin-left: 15px;"></span>
                         </div></center>
                         <span class="red-star-after span-mel t2">Téléphone de l'audio</span>
-                        <input type="tel" id="tel-input-cal-location" class="form-control mel-input" />
+                        <input type="tel" id="tel-input-cal-location" class="form-control input-mel" />
                         <span class="red-star-after span-mel t2">Numéro de l'audio</span>
-                        <input type="text" id="num-audio-input-cal-location" class="form-control mel-input"/>
+                        <input type="text" id="num-audio-input-cal-location" class="form-control input-mel"/>
                     </div>    
                 </div>
             </div>
 
             <!--Pièce jointe-->
             <span class="span-mel t1">Ajouter une pièce jointe</span>
-            <input class="form-control mel-input file" type="file" />
+            <input class="form-control input-mel file" type="file" />
 			<div id="edit-attachments-droparea" class="file-upload hidden">
 				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
 				<div id="edit-attachments-form" class="upload-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
@@ -170,7 +174,7 @@
 			<div class="form-group">
                 <span class="span-mel t1">Ordre du jour</span>
 				<!-- <label for="edit-description"><roundcube:label name="calendar.description" /></label> -->
-				<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control" rows="3" cols="40"></textarea>
+				<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control input-mel" rows="3" cols="40"></textarea>
 			</div> 
             <span class="red-star-after span-mel t1">Rattacher l'évènement à un espace de travail</span>
             <roundcube:object name="event-wsp"/>
@@ -235,6 +239,11 @@
 					<div class="event-text"></div>
 				</div>
 			</div>
+			<!-- <button type="button" class="btn btn-primary mel" onclick="window.rcube_calendar_ui.continue()">Continuer</button> -->
+			<div style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="window.rcube_calendar_ui.continue()">
+				<span>Continuer</span>
+				<span class="icofont-arrow-right  plus" style="margin-left: 15px;"></span>
+			</div>
 		</fieldset>
 		<!-- recurrence settings -->
 		<!-- <fieldset id="event-panel-recurrence">
@@ -263,12 +272,28 @@
 		</fieldset> -->
 		<!-- attendees list -->
 		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees">
+			<span class="have-workspace span-mel t1 low-margins">Ajouter tout les membres de l'espace de travail</span>
+			<div class="have-workspace mel-button invite-button create" style="margin-top:0;margin-bottom:15px" onclick="return rcmail.command('calendar-workspace-add-all')">
+				<span>Ajouter tout</span>
+				<span class="icofont-plus-circle plus"></span>
+			</div>
+			<span class="span-mel t1 low-margins">Sélectionner les participants</span>
 			<legend><roundcube:label name="calendar.tabattendees" /></legend>
 			<h3 id="aria-label-attendeestable" class="voice"><roundcube:label name="calendar.arialabeleventattendees" /></h3>
 			<roundcube:object name="plugin.attendees_list" id="edit-attendees-table" class="edit-attendees-table no-img table table-sm"
 				coltitle="attendee" aria-labelledby="aria-label-attendeestable" />
 			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" />
 			<roundcube:include file="/templates/freebusylegend.html" />
+			<!-- <button type="button" class="btn btn-secondary mel" onclick="window.rcube_calendar_ui.back()">Retour</button> -->
+			<div style="margin-top: 30px;float: left;" class="mel-button invite-button white" onclick="window.rcube_calendar_ui.back()">
+				<span>Retour</span>
+				<span class="icofont-reply  plus" style="margin-left: 15px;"></span>
+			</div>
+			<div style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="window.rcube_calendar_ui.save()">
+				<span>Sauvegarder l'évènement</span>
+				<span class="icofont-arrow-right  plus" style="margin-left: 15px;"></span>
+			</div>
+			<!-- <button type="button" class="btn btn-primary mel" onclick="window.rcube_calendar_ui.save()">Créer l'évènement</button> -->
 		</fieldset>
 		<!-- resources list -->
 		<fieldset id="event-panel-resources" data-navlink-class="nav-icon resources">

@@ -51,9 +51,7 @@ $(document).ready(() => {
                 this.set_pagination(e, e.data("count"), e.data("current") === undefined ? null : e.data("current"));
                 return this;
             });
-            // $(".input-mel-datetime").datetimepicker({
-            //     format: 'd/m/Y H:i',
-            // });
+            //$(".input-mel-datetime").after("")
             
         }
         getRandomColor() {

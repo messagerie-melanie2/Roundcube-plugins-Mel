@@ -1314,6 +1314,16 @@ function rcube_calendar_ui(settings)
               update_freebusy_status(me.selected_event);
             freebusy_ui.needsupdate = false;
             $dialog.dialog("close");
+            rcmail.triggerEvent("dialog-attendees-save", {
+              start:{
+                date:freebusy_ui.startdate.val(),
+                time:freebusy_ui.starttime.val()
+              },
+              end:{
+                date:freebusy_ui.enddate.val(),
+                time:freebusy_ui.endtime.val()
+              }
+            });
           }
         },
         {
@@ -1322,7 +1332,6 @@ function rcube_calendar_ui(settings)
           click: function() { $dialog.dialog("close"); }
         }
       ];
-
       $dialog.dialog({
         modal: true,
         resizable: true,
@@ -1343,6 +1352,29 @@ function rcube_calendar_ui(settings)
         minWidth: 640,
         width: 850
       }).show();
+      //PAMELA
+      setTimeout(() => {
+        $dialog.dialog({
+          modal: true,
+          resizable: true,
+          closeOnEscape: true,
+          title: rcmail.gettext('scheduletime', 'calendar'),
+          open: function() {
+            rcmail.ksearch_blur();
+            $dialog.attr('aria-hidden', 'false').find('#schedule-find-next, #schedule-find-prev').not(':disabled').first().focus();
+          },
+          close: function() {
+            $dialog.dialog("destroy").attr('aria-hidden', 'true').hide();
+            // TODO: focus opener button
+          },
+          resizeStop: function() {
+            render_freebusy_overlay();
+          },
+          buttons: buttons,
+          minWidth: 640,
+          width: 850
+        }).show();
+      }, 50);
       
       // adjust dialog size to fit grid without scrolling
       var gridw = $('#schedule-freebusy-times').width();
@@ -1503,7 +1535,6 @@ function rcube_calendar_ui(settings)
 
         if (!width)
           width = table.width() - pos.left;
-
         // overlay is visible
         if (width > 0) {
           overlay.css({
@@ -1512,7 +1543,6 @@ function rcube_calendar_ui(settings)
             left: pos.left + 'px',
             top: pos.top + 'px'
           }).show();
-
           // configure draggable
           if (!overlay.data('isdraggable')) {
             overlay.draggable({
@@ -1550,7 +1580,10 @@ function rcube_calendar_ui(settings)
             overlay.draggable('enable');
         }
         else
+        {
           overlay.draggable('disable').hide();
+
+        }
       }
     };
 
@@ -1923,7 +1956,7 @@ function rcube_calendar_ui(settings)
 
       var dispname = Q(data.name || data.email);
       dispname = '<span' + ((data.email && data.email != dispname) ? ' title="' + Q(data.email) + '"' : '') + '>' + dispname + '</span>';
-
+      console.log("datas", data, dispname);
       // role selection
       var organizer = data.role == 'ORGANIZER';
       var opts = {};
@@ -4169,7 +4202,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     console.error(error);
     cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
   }
-  console.log("cal", cal);
+  console.log("ui_cal", cal, rcmail.env.calendar_settings, rcmail.env.libcal_settings);
   window.cal_ui = cal;
   parent.child_cal = cal;
   if (rcmail.env.action == 'dialog-ui') {

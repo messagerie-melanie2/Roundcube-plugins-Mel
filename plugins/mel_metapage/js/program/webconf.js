@@ -171,6 +171,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
+        rcmail.triggerEvent("init_ariane", "mm-ariane");
         this.busy(); //loading
         mel_metapage.Storage.remove("webconf_token");
         this.update(); //Maj1
@@ -220,8 +221,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 ],
              },
              interfaceConfigOverwrite:{
-                INITIAL_TOOLBAR_TIMEOUT:1,
-                TOOLBAR_TIMEOUT:-1,
+                // INITIAL_TOOLBAR_TIMEOUT:1,
+                // TOOLBAR_TIMEOUT:-1,
                 HIDE_INVITE_MORE_HEADER:true,
                 TOOLBAR_BUTTONS : [""]
             },
@@ -622,6 +623,11 @@ class MasterWebconfBar {
         this.logo = element("tiny-webconf-menu");
         this.mozaik = element("conf-mozaique");
         this.toolbar_item = element;
+        this.popup = element("toolbar-popup");
+        this.chevrons = {
+            micro:element("wsp-icon-micro"),
+            video:element("wsp-icon-video")
+        }
     }
 
     /**
@@ -980,6 +986,105 @@ class MasterWebconfBar {
         //     this.toogle_film_strip();
     }
 
+    switch_popup_micro(checkVideo = true)
+    {
+
+
+        if (this.chevrons.micro.hasClass("stop-rotate"))
+        {
+            this.popup.css("display", "none");
+            this.chevrons.micro.removeClass("stop-rotate")
+        }
+        else
+        {
+            if(checkVideo)
+            {
+                if (this.chevrons.video.hasClass("stop-rotate"))
+                    this.switch_popup_video(false);
+            }
+
+            this.send("get_micro_and_audio_devices");
+            this.popup.css("display", "");
+            this.chevrons.micro.addClass("stop-rotate")
+        }
+    }
+
+    add_to_popup(devices)
+    {
+        devices = html_helper.JSON.parse(devices);
+        let devices_by_kind = {};
+
+        for (let index = 0; index < devices.length; ++index) {
+            const element = devices[index];
+            if (devices_by_kind[element.kind] === undefined)
+                devices_by_kind[element.kind] = [];
+            devices_by_kind[element.kind].push(element);
+        }
+
+        let html = "";
+
+        for (const key in devices_by_kind) {
+            if (Object.hasOwnProperty.call(devices_by_kind, key)) {
+                const array = devices_by_kind[key];
+                html += `<span>${key}</span><div class="btn-group-vertical" style=width:100% role="group" aria-label="groupe des ${key}">`;
+                for (let index = 0; index < array.length; ++index) {
+                    const element = array[index];
+                    const disabled = element.isCurrent === true ? "disabled" : "";
+                    html += `<button onclick="window.webconf_master_bar.set_device('${html_helper.JSON.stringify(element)}')" class="btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`;
+                }
+                html += "</div>";
+            }
+        }
+
+        this.popup.html(html);
+    }
+
+    set_device(device)
+    {
+        device = html_helper.JSON.parse(device);
+
+        switch (device.kind) {
+            case "audioinput":
+                this.send("set_micro_device", `'${device.label}', '${device.deviceId}'`);
+                break;
+            case "audiooutput":
+                this.send("set_audio_device", `'${device.label}', '${device.deviceId}'`);
+                break;
+            case "videoinput":
+                this.send("set_video_device", `'${device.label}', '${device.deviceId}'`);
+                break;
+            default:
+                break;
+        } 
+
+        if (this.chevrons.video.hasClass("stop-rotate"))
+            this.switch_popup_video(false);
+
+        if (this.chevrons.micro.hasClass("stop-rotate"))
+            this.switch_popup_micro(false);
+    }
+
+    switch_popup_video(checkMicro = true)
+    {
+        if (this.chevrons.video.hasClass("stop-rotate"))
+        {
+            this.popup.css("display", "none");
+            this.chevrons.video.removeClass("stop-rotate")
+        }
+        else
+        {
+            if(checkMicro)
+            {
+                if (this.chevrons.micro.hasClass("stop-rotate"))
+                    this.switch_popup_micro(false);
+            }
+
+            this.send("get_video_devices");
+            this.popup.css("display", "");
+            this.chevrons.video.addClass("stop-rotate")
+        }        
+    }
+
     /**
      * Met à jour les frames si la webconf est sous forme de frame
      * @param {boolean} active 
@@ -1013,10 +1118,10 @@ class MasterWebconfBar {
      * Envoie un appel au listener
      * @param {string} func Function exécuter par le listener
      */
-    send(func)
+    send(func, args = "")
     {
         workspaces.sync.PostToParent({
-            exec: `rcmail.env.wb_listener.${func}()`,
+            exec: `rcmail.env.wb_listener.${func}(${args})`,
             eval:"always"
         });
     }
@@ -1190,6 +1295,82 @@ class ListenerWebConfBar
         this.webconf.jitsii.executeCommand('hangup');
         this.webconf.jitsii.dispose();
     }
+
+    async get_micro_and_audio_devices()
+    {
+        var devices = await this.webconf.jitsii.getAvailableDevices();
+
+        devices = Enumerable.from(devices.audioOutput).union(devices.audioInput).toArray();
+        
+        var current_devices = await this.webconf.jitsii.getCurrentDevices();
+
+        for (const key in current_devices) {
+            if (key === "videoInput")
+                continue;
+            if (Object.hasOwnProperty.call(current_devices, key)) {
+                const device = current_devices[key];
+
+                for (const _key in devices) {
+                    if (Object.hasOwnProperty.call(devices, _key)) {
+                        const element = devices[_key];
+                        if (element.deviceId === device.deviceId)
+                            devices[_key].isCurrent = true;
+                        else
+                            devices[_key].isCurrent = false;
+                    }
+                }
+
+            }
+        }
+
+        this.send("add_to_popup", `'${html_helper.JSON.stringify(devices)}'`)
+    }
+
+    async get_video_devices()
+    {
+        var devices = await this.webconf.jitsii.getAvailableDevices();
+
+        devices = devices.videoInput;
+
+        var current_devices = await this.webconf.jitsii.getCurrentDevices();
+
+        if (current_devices.videoInput !== undefined)
+        {
+            for (const key in devices) {
+                if (Object.hasOwnProperty.call(devices, key)) {
+                    const element = devices[key];
+                    if (element.deviceId === current_devices.videoInput.deviceId)
+                        devices[key].isCurrent = true;
+                    else
+                        devices[key].isCurrent = false;
+                }
+            }
+        }
+
+        this.send("add_to_popup", `'${html_helper.JSON.stringify(devices)}'`)
+    }
+
+    set_micro_device(label, id)
+    {
+        this.webconf.jitsii.setAudioInputDevice(label, id);
+    }
+
+    set_audio_device(label, id)
+    {
+        this.webconf.jitsii.setAudioOutputDevice(label, id);
+    }
+
+
+    set_video_device(label, id)
+    {
+        this.webconf.jitsii.setVideoInputDevice(label, id);
+    }
+
+
+    send(func, args = "")
+    {
+        mel_metapage.Functions.call(`window.webconf_master_bar.${func}(${args})`);
+    }
 }
 
 $(document).ready(() => {
@@ -1238,7 +1419,7 @@ $(document).ready(() => {
                 };
 
                 const updateframe = (eClass, changepage, isAriane, querry, id) => {
-                    
+
                     if (window.webconf_master_bar === undefined)
                         return;
 

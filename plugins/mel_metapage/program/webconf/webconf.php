@@ -14,6 +14,8 @@ class Webconf extends Program
         $this->register_action("index", [$this, "index"]);
         if ($this->action === "" || $this->action === "index")
         {
+            $this->include_js("../../../rocket_chat/favico.js");
+            $this->include_js("../../../rocket_chat/rocket_chat.js");
             $this->include_js("webconf.js");
             $this->include_css("webconf.css");
         }

@@ -100,7 +100,7 @@ html.touch .shortcut-task{
 	transform: translateX(-50%);
 }
 
-.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item
 {
 	font-size: 20px;
 	padding: 0 15px;
@@ -108,27 +108,27 @@ html.touch .shortcut-task{
 	border: none;
 }
 
-.wsp-toolbar.webconf-toolbar > .conf-call-stop
+.wsp-toolbar.webconf-toolbar .conf-call-stop
 {
     background: radial-gradient(circle, #BD2217 52%, rgba(255,255,255,0) 52%);
 }
 
-.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item.active{
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active{
     background: radial-gradient(circle, #363A5B 52%, rgba(255,255,255,0) 52%);
 }
 
-.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item:hover
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item:hover
 {
     background: radial-gradient(circle, #42548F 52%, rgba(255,255,255,0) 52%);
 }
 
-.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item.active
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active
 {
 	cursor: pointer;
 	pointer-events: all;
 }
 
-.wsp-toolbar.webconf-toolbar > .first
+.wsp-toolbar.webconf-toolbar .first
 {
 	margin-left:15px;
 	pointer-events: none;
@@ -167,7 +167,7 @@ html.touch .shortcut-task{
 	transform: rotateZ(118deg);
 }
 
-.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item > .text-item {
+.wsp-toolbar.webconf-toolbar  .wsp-toolbar-item > .text-item {
 	position: absolute;
 	font-size: 8px;
 	left: 50%;
@@ -175,12 +175,46 @@ html.touch .shortcut-task{
 	transform: translateX(-50%);
 }
 
-.wsp-toolbar.webconf-toolbar > .wsp-toolbar-item.conf-call-stop > .text-item
+.wsp-toolbar.webconf-toolbar  .wsp-toolbar-item.conf-call-stop > .text-item
 {
     transform: rotateZ(-118deg);
 bottom: 21px;
 }
 
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select {
+    cursor: pointer;
+	position: absolute;
+	top: -10px;
+	right: 16px;
+	height: 18px;
+	width: 18px;
+    background-color: white;
+    border-color: #424564;
+    border-style: solid;
+    border-width: 1px;
+    transition: all 0.1s ease-in;
+    transform: rotateZ(180deg);
+}
+
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select.stop-rotate
+{
+    transform: rotateZ(0deg);
+}
+
+.wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select:hover {
+    background-color: #484D7A;
+    border-color: #484D7A;
+}
+
+.toolbar-popup {
+	position: absolute;
+	height: 200px;
+	width: 181px;
+	background-color: #5870BF;
+	top: -200px;
+	right: 115px;
+    padding: 15px;
+}
 /***************/
 
  /* .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable > .ui-dialog-buttonpane

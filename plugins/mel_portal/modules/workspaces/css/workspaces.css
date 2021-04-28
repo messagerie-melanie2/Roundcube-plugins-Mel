@@ -146,6 +146,7 @@ html.layout-small .--row{
 .--col
 {
     /* width: 353px; */
+    width: 100%;
 }
 
 .--col > .workspace

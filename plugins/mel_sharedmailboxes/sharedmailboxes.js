@@ -39,8 +39,8 @@ if (window.rcmail) {
             } else {
                 var count = 0;
                 $('#mailboxlist > .mailbox.boite.virtual').each(function() {
+                    var node_id = rcmail.html_identifier_decode($(this).attr('id').replace(/rcmli/, ''));
                     if ($(this).find('> div.treetoggle').hasClass('collapsed')) {
-                        var node_id = rcmail.html_identifier_decode($(this).attr('id').replace(/rcmli/, ''));
                         res = folder_collapse(node_id);
                         if (res) {
                             count += res;

@@ -14,7 +14,6 @@ if (window.rcmail) {
 			type: "GET", // methode de transmission des données au fichier php
 			url: MEL_ELASTIC_UI.url("discussion", "login"),//"/?_task=discussion&_action=login",
 			success: function (data) {
-				console.log("RC", data);
 				data = JSON.parse(data);
 				rcmail.env.rocket_chat_auth_token = data.token;
 				rcmail.env.rocket_chat_user_id = data.uid;
@@ -27,12 +26,13 @@ if (window.rcmail) {
 
 	rcmail.addEventListener('init_ariane', function(evt) {
 		window.ariane_id = evt === null ? "ariane_id" : evt;
+		
 		window.document.getElementById(ariane_id).onload = function() {
 			new Promise(async (a,b) => {
 			if (rcmail.env.rocket_chat_auth_token === undefined && rcmail.env.rocket_chat_user_id === undefined)
 				await login();
 			setTimeout(function() {
-				//console.log('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
+				//console.error('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
 				try {
 					window.document.getElementById(ariane_id).contentWindow.postMessage({
 						externalCommand: 'login-with-token',
@@ -69,7 +69,7 @@ if (window.rcmail) {
 	});
 	
 	window.addEventListener('message', (e) => {
-		console.log("message", e.data);
+		//console.log("message", e.data);
 		if (e.data.eventName == 'login-error') {
 			rcmail.display_message(e.data.response, 'error');
 		}

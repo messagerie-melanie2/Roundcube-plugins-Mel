@@ -78,6 +78,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         
         if ($this->rc->task == 'mail' && empty($this->rc->action)) {
             $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
+            $this->include_script('sharedmailboxes.js');
         }
         
         $this->add_hook('preferences_list',     array($this, 'prefs_list'));
@@ -85,7 +86,7 @@ class mel_sharedmailboxes extends rcube_plugin {
 
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
-            $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
+            $this->register_action('plugin.refresh_store_target_selection', array($this, 'refresh_store_target_selection'));
         }
 
         // Chargement de l'account passé en Get
@@ -295,6 +296,82 @@ class mel_sharedmailboxes extends rcube_plugin {
             }
         }
         $this->ui_initialized = true;
+    }
+
+    /**
+     * Récupération des unread pour toutes les boites
+     */
+    private function getunread() {
+        // get current folder
+        $storage   = $this->rc->get_storage();
+
+        // Récupération des préférences de l'utilisateur
+        $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
+
+        $_objects = $this->get_user_sharedmailboxes_list(null, $hidden_mailboxes);
+        if (count($_objects) >= 1) {
+            foreach ($_objects as $_object) {
+                $mailbox = $_object;
+                if (isset($_object->mailbox)) {
+                    $mailbox = $_object->mailbox;
+                    // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                    $mailbox->load(['internet_access_enable']);
+                    if (!mel::is_internal() && !$mailbox->internet_access_enable) {
+                        continue;
+                    }
+                    // Récupération de la configuration de la boite pour l'affichage
+                    $hostname = driver_mel::gi()->getRoutage($mailbox);
+                    // Environnement
+                    $env_mailboxes[$mailbox->uid] = $_object->uid . '@' . $hostname;
+                }
+
+                if ($storage->connect($hostname, 
+                            $_object->uid, 
+                            $this->rc->decrypt($_SESSION['password']), 
+                            $_SESSION['storage_port'], 
+                            $_SESSION['storage_ssl'])) {
+                    // Gestion du cache des folders
+                    $this->mel->set_account(urlencode($_object->uid) . '@' . $hostname);
+
+                    // Récupération des dossiers
+                    $a_folders = $storage->list_folders_subscribed('', '*', 'mail');
+
+                    if (!empty($a_folders)) {
+                        $current   = $this->rc->storage->get_folder();
+
+                        $trash     = $this->rc->config->get('trash_mbox');
+                        $check_all = (bool)$this->rc->config->get('check_all_folders');
+
+                        foreach ($a_folders as $mbox) {
+                            $unseen_old = rcmail_get_unseen_count($mbox);
+
+                            if (!$check_all && $unseen_old !== null && $mbox != $current) {
+                                $unseen = $unseen_old;
+                            }
+                            else {
+                                $unseen = $storage->count($mbox, 'UNSEEN', $unseen_old === null);
+                            }
+
+                            // call it always for current folder, so it can update counter
+                            // after possible message status change when opening a message
+                            // not in preview frame
+                            if ($unseen || $unseen_old === null || $mbox == $current) {
+                                // PAMELA - Change the IMAP folder name with a plugin (change INBOX for shared mailboxes)
+                                $this->rc->output->command('set_unread_count', $mbox, $unseen, $mbox_row == $data['folder']);
+                            }
+
+                            rcmail_set_unseen_count($mbox, $unseen);
+
+                            // set trash folder state
+                            if ($mbox === $trash) {
+                                $this->rc->output->command('set_trash_count', $storage->count($mbox, 'EXISTS'));
+                            }
+                        }
+                    }
+                }
+            }
+            $this->mel->get_account = mel::get_account();
+        }
     }
 
     /**
@@ -614,6 +691,9 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $args['isInbox'] = $args['mbox'] != $this->rc->config->get('sent_mbox') && $args['mbox'] != $this->rc->config->get('drafts_mbox');
             }
         }
+        if ($this->rc->task == 'mail' && $this->rc->action == 'getunread') {
+            $this->getunread();
+        } 
         return $args;
     }
 
@@ -1214,6 +1294,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                 'folders'   => $folders,
             ];
         }
+        $this->rc->output->set_env('folders_display', $display);
         return $_folders;
     }
 

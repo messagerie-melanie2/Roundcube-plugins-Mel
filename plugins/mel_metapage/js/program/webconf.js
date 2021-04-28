@@ -1238,6 +1238,7 @@ $(document).ready(() => {
                 };
 
                 const updateframe = (eClass, changepage, isAriane, querry, id) => {
+                    
                     if (window.webconf_master_bar === undefined)
                         return;
 

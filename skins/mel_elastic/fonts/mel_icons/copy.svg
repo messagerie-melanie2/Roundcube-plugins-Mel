@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="75px" height="88px" viewBox="0 0 75 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Atoms / Icons / copy</title>
+    <g id="STYLEGUIDE" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Styleguide" transform="translate(-879.000000, -1084.000000)" fill="#2C3054">
+            <g id="Combined-Shape" transform="translate(866.000000, 1078.000000)">
+                <path d="M72.375,18.5 C74.1016,18.5 75.5,19.8984 75.5,21.625 L75.5,90.375 C75.5,92.1016 74.1016,93.5 72.375,93.5 L16.125,93.5 C14.3984,93.5 13,92.1016 13,90.375 L13,21.625 C13,19.8984 14.3984,18.5 16.125,18.5 L72.375,18.5 Z M69.25,24.75 L19.25,24.75 L19.25,87.25 L69.25,87.25 L69.25,24.75 Z M84.875,6 C86.6016,6 88,7.3984 88,9.125 L88,77.875 C88,79.6016 86.6016,81 84.875,81 C83.1484,81 81.75,79.6016 81.75,77.875 L81.75,12.25 L28.625,12.25 C26.8984,12.25 25.5,10.8516 25.5,9.125 C25.5,7.3984 26.8984,6 28.625,6 L84.875,6 Z"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="16px" viewBox="0 0 64 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Atoms / Icons / Dots</title>
+    <g id="STYLEGUIDE" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Styleguide" transform="translate(-1019.000000, -1120.000000)" fill="#363A5B">
+            <g id="Shape" transform="translate(1001.000000, 1078.000000)">
+                <path d="M58,50 C58,54.48128 54.31872,58 50,58 C45.68128,58 42,54.31872 42,50 C42,45.68128 45.68128,42 50,42 C54.31872,42 58,45.68128 58,50 Z M74,42 C69.51872,42 66,45.68128 66,50 C66,54.31872 69.51872,58 74,58 C78.48128,58 82,54.31872 82,50 C82,45.68128 78.48128,42 74,42 Z M26,42 C21.51872,42 18,45.68128 18,50 C18,54.31872 21.68128,58 26,58 C30.31872,58 34,54.31872 34,50 C34,45.68128 30.48128,42 26,42 Z"></path>
+            </g>
+        </g>
+    </g>
+</svg>

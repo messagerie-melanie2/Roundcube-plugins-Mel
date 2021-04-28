@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="58px" height="45px" viewBox="0 0 58 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Atoms / Icons / Undo</title>
+    <g id="STYLEGUIDE" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Styleguide" transform="translate(-752.000000, -836.000000)" fill="#363A5B">
+            <g id="Path" transform="translate(731.000000, 808.000000)">
+                <path d="M38,28.762 L21.879,44.879 C20.711,46.0509 20.711,47.9493 21.879,49.1212 L38,65.2382 L42.2383,60.9999 L31.2383,49.9999 L56.0003,49.9999 C60.5081,49.9999 64.8323,51.7929 68.0203,54.9804 C71.2083,58.1679 73.0008,62.4921 73.0008,67.0004 L73.0008,73.0004 L79.0008,73.0004 L79.0008,67.0004 C79.0008,60.8988 76.5789,55.0514 72.2625,50.7384 C67.95,46.422 62.1025,44.0001 56.0005,44.0001 L31.2385,44.0001 L42.2385,33.0001 L38,28.762 Z"></path>
+            </g>
+        </g>
+    </g>
+</svg>

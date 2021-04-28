@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="68px" height="69px" viewBox="0 0 68 69" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Atoms / Icons / Paragraph extend</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.211765 0 0 0 0 0.227451 0 0 0 0 0.356863 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="STYLEGUIDE" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Styleguide" transform="translate(-1149.000000, -955.000000)">
+            <g id="Group-5" transform="translate(1136.000000, 943.000000)" filter="url(#filter-1)">
+                <g transform="translate(49.668000, 49.500050) rotate(-45.000000) translate(-49.668000, -49.500050) translate(8.000000, 37.000000)">
+                    <path d="M4.168,8.336 L79.168,8.336 C81.4688,8.336 83.336,6.4688 83.336,4.168 C83.336,1.8672 81.4688,-7.10542736e-15 79.168,-7.10542736e-15 L4.168,-7.10542736e-15 C1.8672,-7.10542736e-15 0,1.8672 0,4.168 C0,6.4688 1.8672,8.336 4.168,8.336 Z" id="Fill-1" fill="#000000"></path>
+                    <path d="M12.5,16.668 C10.1992,16.668 8.3359,18.5352 8.3359,20.836 C8.3359,23.1368 10.1992,25.0001 12.5,25.0001 L70.836,25.0001 C73.1368,25.0001 75.0001,23.1368 75.0001,20.836 C75.0001,18.5352 73.1368,16.668 70.836,16.668 L12.5,16.668 Z" id="Fill-2" fill="#000000"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

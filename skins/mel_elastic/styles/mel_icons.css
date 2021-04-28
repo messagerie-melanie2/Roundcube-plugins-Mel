@@ -1,0 +1,50 @@
+.mel-icon::before
+{
+    content: "";
+    /* background: url("../fonts/mel_icons/Dashboard.svg"); */
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: block;
+    width: 18px;
+    height: 17px;
+    position: absolute;
+    top: 0;
+    right: 0; 
+    transition: all 0.1s ease-in;
+}
+
+.mel-icon.mel-white::before,
+.mel-hoverable-icon:hover .mel-icon::before,
+.mel-hoverable-icon.mel-icon:hover::before
+{
+    filter: brightness(10);
+}
+
+.mel-hoverable-icon.mel-yellow:hover .mel-icon::before,
+.mel-hoverable-icon.mel-yellow.mel-icon:hover::before
+{
+    filter:brightness(3.5) hue-rotate(160deg)
+}
+
+.mel-icon.icon-align::before
+{
+    /* top: -1px; */
+    right: -16px;
+}
+
+.jitsi-select .mel-icon::before
+{
+    width: 12px;
+    top: 5px;
+    right: 2px;
+}
+
+.mel-icon.icon-favorite::before
+{
+    background-image: url("../fonts/mel_icons/Dashboard.svg");
+}
+
+.mel-icon.icon-chevron-down::before
+{
+    background-image: url("../fonts/mel_icons/Chevron_down.svg");
+}

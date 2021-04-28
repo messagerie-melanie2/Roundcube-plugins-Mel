@@ -71,7 +71,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 if (typeof wsp.objects.channel === "string")
                     this.ariane = {room_id:wsp.objects.channel};
                 else
-                    this.ariane = {room_name:wsp.objects.channel.name};
+                    this.ariane = {room_name:wsp.objects.channel.name, is_hide:false};
 
                 this.ariane._is_allowed = wsp.datas.allow_ariane;
             } 
@@ -128,12 +128,13 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         let config = {
             _key:this.key
         };
+
         if (this.wsp !== undefined)
             config["_wsp"] = this.wsp.datas.uid;
         else if (this.have_ariane())
             config["_ariane"] = (`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
+        
         const url = MEL_ELASTIC_UI.url("webconf", "", config);
-        //window.history.replaceState({}, document.title, url);
         mel_metapage.Functions.title(url);
     }
 
@@ -289,7 +290,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             else
             {
                 this.chat.css("display", "");
-                this.conf.css("width", "calc(100% - "+(pixel_correction + this.ariane.size)+"px)");
+                this.conf.css("width", "calc(100% - "+(pixel_correction + this.ariane.size)+"px)");;
             }
         }
 
@@ -344,6 +345,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 this.chat.css("max-height", `calc(100% - ${pixel_correction}px)`);
 
         }
+
         if (this.ariane.is_full === true)
         {
             if (this.ariane.is_hide === false)
@@ -442,14 +444,14 @@ Webconf.set_webconf = function()
         {
 
             if (typeof wsp.objects.channel === "string")
-                rcmail.env.webconf.ariane = {room_id:wsp.objects.channel};
+                rcmail.env.webconf.ariane.room_id= wsp.objects.channel;
             else
-                rcmail.env.webconf.ariane = {room_name:wsp.objects.channel.name};
+                rcmail.env.webconf.ariane.room_name=wsp.objects.channel.name;
 
             rcmail.env.webconf.ariane._is_allowed = wsp.datas.allow_ariane;
         } 
-        else
-            rcmail.env.webconf.ariane = {};
+        // else
+        //     rcmail.env.webconf.ariane = {};
 
         rcmail.env.webconf.ariane.ispublic = rcmail.env.webconf.wsp.datas.ispublic === 0 ? false: true;
         rcmail.env.webconf.master_bar_config.wsp = wsp;

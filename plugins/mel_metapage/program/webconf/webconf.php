@@ -70,7 +70,7 @@ class Webconf extends Program
         $plugin = $this->get_plugin("mel_workspace");
         $plugin->load_workspaces();
         $workspaces = $plugin->workspaces;
-        $html = "<select class=wsp_select>";
+        $html = '<select class="wsp_select input-mel">';
 
         foreach ($workspaces as $key => $workspace) {
             $wsp = [
@@ -102,7 +102,7 @@ class Webconf extends Program
         $list = $chat->get_joined();
         $list["channel"] = json_decode($list["channel"]["content"]);
         $list["group"] = json_decode($list["group"]["content"]);
-        $html = "<select class=ariane_select>";
+        $html = '<select class="ariane_select input-mel">';
         $html .= "<option value=home>Aucun</option>";
         foreach ($list["channel"]->channels as $key => $value) {
             $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';

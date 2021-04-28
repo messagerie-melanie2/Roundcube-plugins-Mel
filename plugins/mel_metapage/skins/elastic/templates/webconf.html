@@ -6,23 +6,31 @@
 <div id="layout-content" class="webconf-content"  role="main">
     <div id="room-selector" style="display: none;">
         <div class="square_div absolute-center">
-            <div class="contents" style="height: unset;">
+            <div class="contents" style="height: unset;background-color: white;">
                 <div class="square-contents" style="width: 451px;">
                     <div style="text-align: left;">
                         <span class="title-conf-item">Salon</span>
                         <br/>
                         <!-- <center><roundcube:object name="roomkey" /></center> -->
-                        <input oninput="Webconf.update_room_name()" id="webconf-room-name" type="text" class="form-control" value=<roundcube:object name="roomkey" />>
+                        <input oninput="Webconf.update_room_name()" id="webconf-room-name" type="text" style="background-clip: unset" class="form-control input-mel" value=<roundcube:object name="roomkey" />>
                         <div class="webconf-error-text" style=display:none>Le nom du salon doit faire au moins 10 caractères avec au moins 3 chiffres. Alphanumérique seulement.</div>
                     </div>
                     <div class="form-conf">
                         <!-- <span class="title-conf-item red-star-after">Rattacher à un espace de travail</span></span> -->
-                        <div class="form-check">
+                    
+                        <div class="form-check mel-radio-1" style="margin-top:15px">
+                            <input onchange="Webconf.update_radio()" type="checkbox" name="wsp-attach" id="wsp-yes" value="1" class="form-check-input custom-control-input"  value="yes" checked /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
+                            <label class="form-check-label" for="wsp-yes">
+                                <span></span><text class="title-conf-item red-star-after">Rattacher à un espace de travail</text>
+                            </label>
+                        </div>
+
+                        <!-- <div class="form-check">
                             <input onchange="Webconf.update_radio()" class="form-check-input" type="checkbox" name="wsp-attach" id="wsp-yes" value="yes" checked>
                             <label class="form-check-label" for="wsp-yes">
-                              <!-- Oui --><span class="title-conf-item red-star-after">Rattacher à un espace de travail</span></span>
+                              <!-- Oui --<span class="title-conf-item red-star-after">Rattacher à un espace de travail</span></span>
                             </label>
-                          </div>
+                          </div> -->
                         <!-- <div class="form-check">
                         <input onchange="Webconf.update_radio()" class="form-check-input" type="radio" name="wsp-attach" id="wsp-no" value="no">
                         <label class="form-check-label" for="wsp-no">
@@ -38,7 +46,11 @@
                         <span class="title-conf-item red-star-after">Choisissez un espace de travail</span>
                         <roundcube:object name="selectwsp" />
                     </div>
-                    <button id=webconf-enter class="btn btn-success" style="margin-top:15px" onclick="Webconf.set_webconf()">Entrer</button>
+                    <!-- <button id=webconf-enter class="btn btn-success" style="margin-top:15px" onclick="Webconf.set_webconf()">Entrer</button> -->
+                    <div id=webconf-enter style="margin-top: 15px;" class="mel-button invite-button create" onclick="Webconf.set_webconf()">
+                        <span>Entrer</span>
+                        <span class="icofont-arrow-right  plus" style="margin-left: 15px;"></span>
+                    </div>
                 </div>
             </div>
         </div>

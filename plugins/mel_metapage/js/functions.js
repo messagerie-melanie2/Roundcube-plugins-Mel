@@ -212,7 +212,7 @@ function m_mp_createworkspace()
         }
     }
     create_popUp.contents.html(html);
-    create_popUp.editTitle('<h2 class=""><span class="icofont-reply mel-return" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"></span>Création d\'un espace de travail</h2>');
+    create_popUp.editTitle('<h2 class=""><span class="icon-mel-undo mel-return" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"></span>Création d\'un espace de travail</h2>');
     if ($("#tmpavatar").find("a").length === 0)
         $("#worspace-avatar-a").css("display", "").appendTo($("#tmpavatar"));
     m_mp_switch_step("workspace-step1");

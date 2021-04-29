@@ -402,7 +402,7 @@ $(document).ready(() => {
         //     height: 600
         // });
         rcmail.lock_frame(dialog);
-        const config = new GlobalModalConfig(`${event.from === "barup" ? '<span class="icofont-reply mel-return" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();})"></span>' : ""}Créer un évènement`, "default", dialog, "");
+        const config = new GlobalModalConfig(`${event.from === "barup" ? '<span class="icon-mel-undo mel-return" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();})"></span>' : ""}Créer un évènement`, "default", dialog, "");
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
         window.kolab_event_dialog_element.autoHeight();
         window.kolab_event_dialog_element.onDestroy((globalModal) => {

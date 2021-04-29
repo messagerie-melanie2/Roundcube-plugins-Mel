@@ -277,7 +277,7 @@ class mel_workspace extends rcube_plugin
     function get_toolbar()
     {
         $icons = [
-            "back" => "icofont-reply mel-return",
+            "back" => "icon-mel-undo mel-return",
             "home" => "icon-mel-home
             ",
             "discussion" => "icon-mel-message",

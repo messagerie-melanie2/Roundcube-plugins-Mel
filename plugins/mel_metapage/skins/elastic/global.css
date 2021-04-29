@@ -41,6 +41,8 @@
 {
     display: block;
     margin-right: 0px;
+    font-size: 60px;
+    margin-bottom: 20px;
 }
 
 html.layout-small .task-calendar > .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable {

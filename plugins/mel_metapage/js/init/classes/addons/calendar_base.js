@@ -231,7 +231,7 @@ $(document).ready(() => {
             $("#eventedit").data("callbacks", "ok");
 
         }
-        console.log("event", event);
+        
         setTimeout(() => {
             if (event === "") //nouvel event
             {

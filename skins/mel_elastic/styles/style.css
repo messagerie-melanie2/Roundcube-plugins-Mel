@@ -834,4 +834,24 @@ td.mel-fit-content{
     left: 50%;
     -ms-transform: translateY(-50%) translateX(-50%);
     transform: translateY(-50%) translateX(-50%);
-  }
+}
+
+.btn.mel-ui-button
+{
+    background-color: #363a5b;
+    color: white;
+    border-color: #363a5b;
+}
+
+
+.btn.mel-ui-button:hover
+{
+    background-color: #484D7A;
+    border-color: #484D7A;
+}
+
+.btn.mel-ui-button.disabled
+{
+    background-color: #a3a7bc;
+    border-color: #a3a7bc;
+}

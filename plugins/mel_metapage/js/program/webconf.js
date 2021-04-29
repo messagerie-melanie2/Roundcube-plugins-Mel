@@ -187,7 +187,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             {
                 this.chat[0].contentWindow.postMessage({
                     externalCommand: 'go',
-                    path: '/' + await this.get_room()
+                    path: `/${await this.get_room()}`
                 }, '*')
             }
         }
@@ -631,7 +631,7 @@ class MasterWebconfBar {
     }
 
     /**
-     * Met à jour la toolbar si il y a plusieurs toolbars
+     * Affiche ou cache la toolbar
      */
     update_toolbar()
     {
@@ -649,6 +649,7 @@ class MasterWebconfBar {
                 this.toolbar_item("wsp-toolbar-item").css("display", "");
                 this.toolbar_item("wsp-toolbar-item-wsp").css("display", "none");
                 $(".webconf-toolbar").css("background-color", "").find("v_separate").css("display", "");
+                this.toolbar_item("jitsi-select").css("display", "");  
             }
             this.logo.removeClass("hidden-toolbar");
             if (MasterWebconfBar.isFirefox())
@@ -661,8 +662,15 @@ class MasterWebconfBar {
             this.toolbar_item("wsp-toolbar-item").css("display", "none");  
             $(".webconf-toolbar").css("background-color", "transparent").find("v_separate").css("display", "none");
             this.toolbar_item("empty").css("display", "");
-            this.logo.addClass("hidden-toolbar");     
+            this.logo.addClass("hidden-toolbar");   
+            this.toolbar_item("jitsi-select").css("display", "none");  
         }
+
+        if (this.chevrons.video.hasClass("stop-rotate"))
+            this.switch_popup_video(false);
+
+        if (this.chevrons.micro.hasClass("stop-rotate"))
+            this.switch_popup_micro(false);
 
     }
 
@@ -697,6 +705,7 @@ class MasterWebconfBar {
             _toolbar.find(".wsp-toolbar-item-wsp").css("display", "none");
             _switch.css("display", "").find(".text-item").html("Espace");
             _toolbar.removeClass("switched-toolbar");
+            this.toolbar_item("jitsi-select").css("display", "");  
         }
         else {
             _toolbar.find("v_separate").css("display", "none");
@@ -704,9 +713,7 @@ class MasterWebconfBar {
             _toolbar.find(".wsp-toolbar-item-wsp").css("display", "");
             _switch.css("display", "").find(".text-item").html("Webconf");
             _toolbar.addClass("switched-toolbar");
-            // const tmp = _switch.css("display", "")[0].outerHTML;
-            // _switch.remove();
-            // _toolbar.append(tmp);
+            this.toolbar_item("jitsi-select").css("display", "none");  
         }
     }
 
@@ -994,6 +1001,7 @@ class MasterWebconfBar {
         {
             this.popup.css("display", "none");
             this.chevrons.micro.removeClass("stop-rotate")
+            this._empty_popup();
         }
         else
         {
@@ -1026,17 +1034,22 @@ class MasterWebconfBar {
         for (const key in devices_by_kind) {
             if (Object.hasOwnProperty.call(devices_by_kind, key)) {
                 const array = devices_by_kind[key];
-                html += `<span>${key}</span><div class="btn-group-vertical" style=width:100% role="group" aria-label="groupe des ${key}">`;
+                html += `<span class=toolbar-title>${rcmail.gettext(key, "mel_metapage")}</span><div class="btn-group-vertical" style=width:100% role="group" aria-label="groupe des ${key}">`;
                 for (let index = 0; index < array.length; ++index) {
                     const element = array[index];
                     const disabled = element.isCurrent === true ? "disabled" : "";
-                    html += `<button onclick="window.webconf_master_bar.set_device('${html_helper.JSON.stringify(element)}')" class="btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`;
+                    html += `<button onclick="window.webconf_master_bar.set_device('${html_helper.JSON.stringify(element)}')" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`;
                 }
                 html += "</div>";
             }
         }
 
-        this.popup.html(html);
+        this.popup.find(".toolbar-datas").html(html);
+    }
+
+    _empty_popup()
+    {
+        this.popup.find(".toolbar-datas").html('<span class="spinner-border" style="position: absolute;top: 82px;left: 76px;"></span>');
     }
 
     set_device(device)
@@ -1070,6 +1083,7 @@ class MasterWebconfBar {
         {
             this.popup.css("display", "none");
             this.chevrons.video.removeClass("stop-rotate")
+            this._empty_popup();
         }
         else
         {

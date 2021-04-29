@@ -207,13 +207,21 @@ bottom: 21px;
 }
 
 .toolbar-popup {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 	position: absolute;
+    top: -200px;
+	right: 115px;
 	height: 200px;
 	width: 181px;
-	background-color: #5870BF;
-	top: -200px;
-	right: 115px;
     padding: 15px;
+    background-color: #5870BF;
+}
+
+.toolbar-popup > .toolbar-datas
+{
+    height: 100%;
+    overflow-y: auto;
 }
 /***************/
 

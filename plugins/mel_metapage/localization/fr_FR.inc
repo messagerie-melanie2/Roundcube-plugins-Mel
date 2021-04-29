@@ -40,3 +40,7 @@ $labels['rolerequired'] = 'Requis';
 $labels['roleoptional'] = 'Optionnel';
 $labels['rolechair'] = 'Présidence';
 $labels['rolenonparticipant'] = 'Absent';
+
+$labels['audioinput'] = 'Micro';
+$labels['audiooutput'] = 'Audio';
+$labels['videoinput'] = 'Caméra';

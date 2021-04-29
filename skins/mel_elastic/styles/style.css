@@ -79,6 +79,12 @@ a.button.icon:not(.disabled):focus, .header a.button.icon:not(.disabled):hover
 .messagelist td.subject span.fromto
 {
     color:lightgray;
+    font-style: italic;
+}
+
+.messagelist .unread  td.subject span.fromto
+{
+    color:white;
 }
 
 td.subject {
@@ -88,6 +94,11 @@ td.subject {
 .messagelist td.subject span.date
 {
     color:lightgray;
+}
+
+.messagelist .unread td.subject span.date
+{
+    color:white;
 }
 
 .messagelist td.subject a

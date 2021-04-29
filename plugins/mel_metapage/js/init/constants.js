@@ -366,18 +366,21 @@ const mel_metapage = {
                 var initial_change_page = changepage;
                 changepage = false;
             }
+
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
+            
             workspaces.sync.PostToParent({
-                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse(${JSON.stringify(args)}))`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
+                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'))`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
                 child:false
             });
-            console.error("change_frame", frame, changepage, waiting);
+            
             if (waiting)
             {
                 await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
                 mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
             }
+
             if (frame === "webconf")
             {
                 if (initial_change_page)
@@ -388,6 +391,7 @@ const mel_metapage = {
                     });
                 }
             }
+            
         },
         frame_back:async function(wait = true, default_frame = null)
         {

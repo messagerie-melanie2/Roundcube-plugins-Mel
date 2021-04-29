@@ -295,7 +295,7 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
         return (isAriane ? $("#layout") : $("#layout-frames"));
 })
 
-metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, result, args) => {
+metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
     //let src = rcmail.get_task_url(mm_st_CommandContract(eClass), window.location.origin + window.location.pathname) + "&_from=iframe";
     if (args === null || args === undefined)
         args = {};

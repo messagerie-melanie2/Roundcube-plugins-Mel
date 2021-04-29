@@ -430,8 +430,8 @@ framed_item > .framed_item{
 
 .roundbadge.setalign
 {
-  top: 1px;
-  left: -8px;
+  top: -1px;
+  left: -6px;
   position: absolute;
 }
 

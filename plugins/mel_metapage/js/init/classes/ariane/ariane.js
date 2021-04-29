@@ -96,7 +96,7 @@
             else
                 querry = $("#wsp-notifs-wsp-" + channel);
             if (querry.find(".ariane").length === 0)
-                querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icofont-chat ariane-icon"><span></span></div>')
+                querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>')
             querry = querry.find(".ariane-notif");
             if (this.unreads[channel] === 0)
                 querry.parent().parent().css("display", "none");

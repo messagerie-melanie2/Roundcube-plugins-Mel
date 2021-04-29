@@ -141,14 +141,14 @@ html_helper.CalendarsAsync = async function(config = {
 			});
 		});
 	}
-    return html_helper.Calendars(storage, config, e, e_number, _date);
+    return html_helper.Calendars({datas:storage, config:config, e:e, e_number:e_number, _date:_date});
 }
 
-html_helper.Calendars = function(datas, config = {
+html_helper.Calendars = function({datas, config = {
     add_day_navigation:false,
     add_create:false,
     add_see_all:false
-}, e = null, e_number = null, _date = moment(), get_only_body = false)
+}, e = null, e_number = null, _date = moment(), get_only_body = false} = {})
 {
 	const classes = {
 		organizer:"icofont-royal royal",
@@ -184,7 +184,7 @@ html_helper.Calendars = function(datas, config = {
     {
         let nav_click = "rcube_calendar.change_calendar_date($('.mm-agenda-date'), ¤¤¤)";
         html += '<div class="row">';
-        html += '<div class="col-2"><span class="icofont-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || datas.length === 0 ? "style=display:none;" : "")+'>'+datas.length+'</span></span></div>';
+        html += '<div class="col-2"><span class="icon-mel-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || datas.length === 0 ? "style=display:none;" : "")+'>'+datas.length+'</span></span></div>';
         html += '<div class="col-6"><span class="mm-agenda-date">'+rcube_calendar.mel_metapage_misc.GetDate(_date)+'</span></div>';
         html += '<div class="col-4"><div class="row">';
         html += '<div class="col-6"><span class="icofont-arrow-left btn-arrow" onclick="'+nav_click.replace("¤¤¤", "-1")+'"></span></div>';
@@ -240,7 +240,7 @@ html_helper.Calendars = function(datas, config = {
 				style = "";
 			else
 				style = "display:none;";
-			html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+			html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 			html += "</div>";
 		}
 	}

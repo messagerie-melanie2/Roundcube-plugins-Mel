@@ -478,6 +478,7 @@ framed_item > .framed_item{
 a.roundbadge.link{
     color:white;
     text-decoration: none;
+    font-weight: normal;
 }
 
 a.roundbadge.link:hover{
@@ -865,4 +866,16 @@ td.mel-fit-content{
 {
     background-color: #a3a7bc;
     border-color: #a3a7bc;
+}
+
+.webconf-myday
+{
+    text-align: center;
+}
+
+span.span-webconf
+{
+    display:block;
+    font-size: 10px;
+/* padding-right: 3px; */
 }

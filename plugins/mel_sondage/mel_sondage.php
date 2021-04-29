@@ -59,8 +59,8 @@ class mel_sondage extends rcube_plugin
             $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
             $this->add_button(array(
                 'command' => 'sondage',
-                'class'	=> 'button-mel_sondage icofont-letter sondage',
-                'classsel' => 'button-mel_sondage button-selected icofont-letter sondage',
+                'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
+                'classsel' => 'button-mel_sondage button-selected icon-mel-sondage sondage',
                 'innerclass' => 'button-inner',
                 'label'	=> 'mel_sondage.task',
                 'title' => 'mel_sondage.sondages_title',

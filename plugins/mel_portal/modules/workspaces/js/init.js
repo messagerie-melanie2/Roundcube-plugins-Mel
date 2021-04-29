@@ -22,7 +22,7 @@
 
      rcmail.addEventListener("init", () => {
 try {
-    WSPNotification.tasks().update();
+    //WSPNotification.tasks().update();
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
 } catch (error) {
     console.error("###[WSPNotification.tasks().update()]", error);

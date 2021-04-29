@@ -81,9 +81,25 @@
     order:4;
 }
 
+.menu.toolbar a.mail:before
+{
+    content:"\e91e";
+    font-family: "DWP"!important;
+    font-weight: normal;
+}
+
+
 .button-calendar, .calendar
 {
     order:5;
+}
+
+.menu.toolbar a.button-calendar:before,
+.menu.toolbar a.calendar:before
+{
+    content:"\e901";
+    font-family: "DWP"!important;
+    font-weight: normal;
 }
 
 .button-rocket_chat {
@@ -98,7 +114,7 @@
     order:8;
 }
 
-.icofont-document-folder {
+.icon-mel-folder {
     order:9;
 }
 
@@ -111,6 +127,13 @@
     order:11;
 }
 
+.menu.toolbar  a.tasklist::before
+{
+    content:"\e932";
+    font-family: "DWP"!important;
+    font-weight: normal;
+}
+
 .button-mel_sondage {
     order:12;
 }
@@ -119,8 +142,22 @@
     order:13;
 }
 
+.menu.toolbar  a.contacts::before
+{
+    content:"\e937";
+    font-family: "DWP"!important;
+    font-weight: normal;
+}
+
 .settings{
     order:14;
+}
+
+.menu.toolbar  a.settings::before
+{
+    content:"\e925";
+    font-family: "DWP"!important;
+    font-weight: normal;
 }
 
 #taskmenu .special-buttons{
@@ -138,9 +175,9 @@ span.menu-last-frame-item{
     margin-top: -8px;
 }
 
-.menu-last-frame-item::before{
+/* .menu-last-frame-item::before{
     font-weight: 900;
-}
+} */
 
 .menu-last-frame-inner-up
 {
@@ -161,36 +198,38 @@ span.menu-last-frame-item{
     color:#F28F5A;
 }
 
-.menu.toolbar a.wsp.icofont-monitor:before
+.menu.toolbar a.wsp.icon-mel-workplace:before
 {
-    content:"\ea48";
-    font-family: "IcoFont"!important;
+    content:"\e93a";
+    font-family: "DWP"!important;
+    font-weight: normal;
 }
 
-.menu.toolbar a.home.icofont-home:before
+.menu.toolbar a.home.icon-mel-home:before
 {
-    content:"\ef47";
-    font-family: "IcoFont"!important;
+    content:"\e918";
+    font-family: "DWP"!important;
+    font-weight: normal;
 }
 
-.menu.toolbar a.mel.icofont-letter:before
+.menu.toolbar a.mel.icon-mel-sondage:before
 {
-    content:"\ef63";
-    font-family: "IcoFont"!important;
+    content:"\e930";
+    font-family: "DWP"!important;
     font-weight: inherit;
 }
 
-.menu.toolbar a.icofont-chat:before
+.menu.toolbar a.icon-mel-message:before
 {
-    content:"\eed5";
-    font-family: "IcoFont"!important;
+    content:"\e920";
+    font-family: "DWP"!important;
     font-weight: inherit;
 }
 
-.menu.toolbar a.icofont-document-folder:before
+.menu.toolbar a.icon-mel-folder:before
 {
-    content:"\ef06";
-    font-family: "IcoFont"!important;
+    content:"\e915";
+    font-family: "DWP"!important;
     font-weight: inherit;
 }
 
@@ -235,7 +274,7 @@ iframe.mm-frame/*,
     border-color: #363A5B;
 }
 
-.menu.toolbar a.wsp.icofont-monitor > span
+.menu.toolbar a.wsp > span
 {
     white-space: break-spaces;
     padding-top: 5px!important;

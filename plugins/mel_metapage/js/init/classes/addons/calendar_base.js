@@ -434,7 +434,7 @@ $(document).ready(() => {
          if (array !== false)
          {
             console.log("change_calendar_date", "array", array);
-            const html = html_helper.Calendars(array,config, null, null, date, true);
+            const html = html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
             console.log("change_calendar_date", "html", html);
             console.log("change_calendar_date", "rcube_calendar.mel_metapage_misc.GetAgenda", rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element));
             rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);

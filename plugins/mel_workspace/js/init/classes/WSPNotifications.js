@@ -108,7 +108,7 @@ WSPNotification.tasks = function ()
 
 WSPNotification.agenda = function ()
 {
-    return new WSPNotification("calendar-notif", "all_events", "rcmail.mel_metapage_fn.calendar_updated()", "icofont-calendar", (cal, id) => {
+    return new WSPNotification("calendar-notif", "all_events", "rcmail.mel_metapage_fn.calendar_updated()", "icon-mel-calendar", (cal, id) => {
         //console.log("update-func",cal, id, Enumerable.from(cal));
         id = "ws#" + id;
         return  Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).count();

@@ -1,7 +1,7 @@
 (() => {
      rcmail.addEventListener("init", () => {
         WSPNotification.agenda().update();
-        WSPNotification.tasks().update();
+        //WSPNotification.tasks().update();
         $(".dwp-user").each((i,e) => {
             var image = $(e).find("img")[0];
             if (image !== undefined && image !== null)

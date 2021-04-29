@@ -57,7 +57,7 @@ function mm_st_GetClass(classlist)
 {
     for (let index = 0; index < classlist.length; index++) {
         const element = classlist[index];
-        if (element.includes("button") || element.includes("order") || element.includes("selected")  || element.includes("icofont"))
+        if (element.includes("button") || element.includes("order") || element.includes("selected")  || element.includes("icofont") || element.includes("icon-mel-"))
             continue;
         return element;
     }
@@ -385,6 +385,9 @@ function m_mp_ChangeLasteFrameInfo()
 
 function m_mp_CreateOrUpdateIcon(querry_selector)
 {
+
+    //console.error("querry-selector", querry_selector);
+
     if ($(".menu-last-frame").find(".menu-last-frame-item").length == 0)
         $(".menu-last-frame").append(`<span class="menu-last-frame-item"></span>`);
     else
@@ -398,6 +401,13 @@ function m_mp_CreateOrUpdateIcon(querry_selector)
     let font =    window.getComputedStyle(
         document.querySelector(querry_selector), ':before'
     ).getPropertyValue('font-family');
+
+    if (querry_selector === ".settings")
+    {
+        content = "e926";
+        font = "DWP";
+    }
+
     document.styleSheets[0].addRule('.menu-last-frame-item:before', 'content: "\\' + content + '"; font-family: "'+font+'"');
     document.styleSheets[0].addRule('.menu-last-frame-item:before', 'font-family: '+font+';');
 }

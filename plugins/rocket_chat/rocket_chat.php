@@ -75,8 +75,8 @@ class rocket_chat extends rcube_plugin {
           } else {
             $this->add_button(array(
                 'href' => './?_task=mel_metapage&_action=chat',
-                'class' => 'icofont-chat button-rocket_chat',
-                'classsel' => 'icofont-chat button-rocket_chat button-selected',
+                'class' => 'icon-mel-message button-rocket_chat',
+                'classsel' => 'icon-mel-message button-rocket_chat button-selected',
                 'innerclass' => 'button-inner',
                 'label' => 'rocket_chat.task',
                 'type'=> 'link'

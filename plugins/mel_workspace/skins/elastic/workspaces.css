@@ -282,8 +282,8 @@ html.touch .wsp-toolbar-item.active{
 .notif.roundbadge 
 {
     position: absolute;
-    top: 7px;
-    right: 46px;
+    top: 3px;
+    right: 45px;
     color: black;
 }
 

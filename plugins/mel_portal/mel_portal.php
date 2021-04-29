@@ -82,8 +82,8 @@ class mel_portal extends rcube_plugin
         // Ajoute le bouton en fonction de la skin
         $this->add_button(array(
             'command' => $this->taskName,
-            'class'	=> 'button-home order1 icofont-home',
-            'classsel' => 'button-home button-selected order1 icofont-home',
+            'class'	=> 'button-home order1 icon-mel-home',
+            'classsel' => 'button-home button-selected order1 icon-mel-home',
             'innerclass' => 'button-inner',
             'label'	=> 'portal',
             'title' => '',

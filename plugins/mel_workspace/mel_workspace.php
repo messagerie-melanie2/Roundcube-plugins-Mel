@@ -70,8 +70,8 @@ class mel_workspace extends rcube_plugin
         // Ajoute le bouton en fonction de la skin
         $this->add_button(array(
             'command' => "workspace",
-            'class'	=> 'button-wsp icofont-monitor',
-            'classsel' => 'button-wsp button-selected icofont-monitor',
+            'class'	=> 'button-wsp icon-mel-workplace',
+            'classsel' => 'button-wsp button-selected icon-mel-workplace',
             'innerclass' => 'button-inner',
             'label'	=> 'my_workspaces',
             'title' => 'my_workspaces',
@@ -278,14 +278,15 @@ class mel_workspace extends rcube_plugin
     {
         $icons = [
             "back" => "icofont-reply mel-return",
-            "home" => "icofont-home",
-            "discussion" => "icofont-chat",
-            "mail" => "icofont-email",
-            "agenda" => "icofont-calendar",
-            "documents" => "icofont-cloud",
-            "tasks" => "icofont-tasks",
+            "home" => "icon-mel-home
+            ",
+            "discussion" => "icon-mel-message",
+            "mail" => "icon-mel-mail",
+            "agenda" => "icon-mel-calendar",
+            "documents" => "icon-mel-folder",
+            "tasks" => "icon-mel-task",
             "news" => "icofont-rss-feed",
-            "params" => "icofont-ui-settings"
+            "params" => "icon-mel-parameters"
         ];
         $services = $this->get_worskpace_services($this->currentWorkspace);
         $uid = $this->currentWorkspace->uid;
@@ -404,7 +405,7 @@ class mel_workspace extends rcube_plugin
         // }
 
         $icons = [
-            self::AGENDA => "icofont-calendar",
+            self::AGENDA => "icon-mel-calendar",
             "arrow_left" => "icofont-arrow-left",
             "arrow_right" => "icofont-arrow-right",
             "warning" => "icofont-warning",

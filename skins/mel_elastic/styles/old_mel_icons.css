@@ -17,8 +17,14 @@
 .mel-hoverable-icon:hover .mel-icon::before,
 .mel-hoverable-icon.mel-icon:hover::before
 {
-    filter: brightness(10);
+    filter: brightness(6);
 }
+
+/* .mel-hoverable-icon:hover .mel-icon.mel-white::before,
+.mel-hoverable-icon.mel-icon.mel-white:hover:before
+{
+    filter:unset;
+} */
 
 .mel-hoverable-icon.mel-yellow:hover .mel-icon::before,
 .mel-hoverable-icon.mel-yellow.mel-icon:hover::before
@@ -39,6 +45,16 @@
     right: 2px;
 }
 
+.mel-icon.mel-icon-inline::before {
+	content: "YO";
+	position: relative;
+	display: inline-block;
+	width: unset;
+	height: unset;
+	color: transparent;
+	background-size: contain;
+}
+
 .mel-icon.icon-favorite::before
 {
     background-image: url("../fonts/mel_icons/Dashboard.svg");
@@ -47,4 +63,29 @@
 .mel-icon.icon-chevron-down::before
 {
     background-image: url("../fonts/mel_icons/Chevron_down.svg");
+}
+
+.mel-icon.icon-help::before
+{
+    background-image: url("../fonts/mel_icons/Help.svg");
+}
+
+.mel-icon.icon-plus::before
+{
+    background-image: url("../fonts/mel_icons/Plus.svg");
+}
+
+.mel-icon.icon-plus::before
+{
+    background-image: url("../fonts/mel_icons/Plus.svg");
+}
+
+.mel-icon.icon-workspace::before
+{
+    background-image: url("../fonts/mel_icons/Workplace.svg");
+}
+
+.mel-icon.icon-email::before
+{
+    background-image: url("../fonts/mel_icons/Workplace.svg");
 }

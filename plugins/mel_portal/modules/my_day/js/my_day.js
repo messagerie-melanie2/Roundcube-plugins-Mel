@@ -78,6 +78,7 @@ function setupMyDay(datas)
 	// 	return moment(a.start) - moment(b.start);
 	// });
 	let style;
+	let link;
 	let bool = false;
 	let icon;
     for (let index = 0; index < datas.length; index++) {
@@ -118,15 +119,27 @@ function setupMyDay(datas)
 		// 	}
 		// }
         // html += '<div class=col-md-2><a ' + (bool ? "" : 'style="display:none;') + ' class="roundbadge large ' + (icon !== null ? icon : "") + '"></a></div>';
-		if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
+		if (element.location.includes("@visio") || element.location.includes("#visio"))
+		{
 			style = "";
+			if (element.location.includes("@visio"))
+				link = `target="_blank href="${element.location.replace("@visio:", "")}"`;
+			else
+			{
+				var tmp_link = new WebconfLink(element.location);
+				link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+			}
+		}
 		else
 			style = "display:none;";
-		html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+
+		html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icofont-network"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
         html += "</div>";
     }
+
     html += ""
 	$("#agenda").html(html);
+
 	if (datas.length > 0)
 	{
 		$("#agendanew").html(datas.length);

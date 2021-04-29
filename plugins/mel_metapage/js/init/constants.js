@@ -532,6 +532,13 @@ const mel_metapage = {
         post:function(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
         {
             return this.ajax(url, datas, success, failed);
+        },
+        update :{
+            calendar:function ()
+            {
+                console.log("have parent", window !== parent);
+                mel_metapage.Functions.call("console.log('wololololoLOLOLOLOL',rcmail.mel_metapage_fn);rcmail.mel_metapage_fn.calendar_updated();");
+            }
         }
 
 

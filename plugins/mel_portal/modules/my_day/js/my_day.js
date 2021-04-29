@@ -123,7 +123,7 @@ function setupMyDay(datas)
 		{
 			style = "";
 			if (element.location.includes("@visio"))
-				link = `target="_blank href="${element.location.replace("@visio:", "")}"`;
+				link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
 			else
 			{
 				var tmp_link = new WebconfLink(element.location);

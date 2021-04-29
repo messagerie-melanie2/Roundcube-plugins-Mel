@@ -21,10 +21,13 @@ $(document).ready(() => {
     rcube_calendar_ui.save = function()
     {
         let querry = $("#eventedit").parent().parent().find(".ui-dialog-buttonset").find(".save.mainaction");
+        
         if (querry.length > 0)
             querry.click();
         else
+        {
             rcmail.command('event-save');
+        }
     }
     window.rcube_calendar_ui.edit = function(event)
     {
@@ -101,6 +104,14 @@ $(document).ready(() => {
                 $("#edit-location").val(`https://audio.mtes.fr/ : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
             }
         };
+        const update_date = () => {
+            let val = $(".input-mel-datetime .input-mel.start").val().split(" ");
+            $("#edit-startdate").val(val[0]);
+            $("#edit-starttime").val(val[1]);
+            val = $(".input-mel-datetime .input-mel.end").val().split(" ");
+            $("#edit-enddate").val(val[0]);
+            $("#edit-endtime").val(val[1]);
+        }
         const format = "DD/MM/YYYY HH:mm";
         const have_created_callback = $("#eventedit").data("callbacks") === "ok";
         if (!have_created_callback)
@@ -112,8 +123,12 @@ $(document).ready(() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
                     const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
+
                     if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
+                    {
+                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
+                        update_date();
+                    }
                 }
             });
             $(".input-mel-datetime .input-mel.end").datetimepicker({
@@ -122,8 +137,12 @@ $(document).ready(() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
                     const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
+
                     if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
+                    {
+                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
+                        update_date();
+                    }
                 }
             });
             $(".input-mel-datetime .input-mel.start").on("change", () => {
@@ -144,11 +163,13 @@ $(document).ready(() => {
                     $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
                     $(".input-mel-datetime .input-mel.start").val(moment().startOf("day").format(format));
                     $(".input-mel-datetime .input-mel.end").val(moment().endOf("day").format(format));
+                    update_date();
                 }
                 else
                 {
                     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
                     $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                    update_date();
                 }
             })
             //update locations
@@ -163,7 +184,7 @@ $(document).ready(() => {
             });
             $("#eb-mm-wm-e").on("change", () => {
                 update_location();
-                console.log($("#eb-mm-wm-e")[0].checked, "checked");
+                //console.log($("#eb-mm-wm-e")[0].checked, "checked");
                 if (!$("#eb-mm-wm-e")[0].checked)
                     $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
                 else
@@ -171,7 +192,7 @@ $(document).ready(() => {
             });
             $("#eb-mm-wm-a").on("change", () => {
                 update_location();
-                console.log($("#eb-mm-wm-e")[0].checked, "checked");
+                //console.log($("#eb-mm-wm-e")[0].checked, "checked");
                 if (!$("#eb-mm-wm-e")[0].checked)
                     $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
                 else
@@ -216,10 +237,12 @@ $(document).ready(() => {
             {
                 $(".input-mel-datetime .input-mel.start").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).format(format));
                 $(".input-mel-datetime .input-mel.end").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).add(30, 'm').format(format));
+                update_date();
             }
             else{ //ancien event
                 $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
                 $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
+                update_date();
                 const description = event.location;
                 if (description !== undefined)
                 {

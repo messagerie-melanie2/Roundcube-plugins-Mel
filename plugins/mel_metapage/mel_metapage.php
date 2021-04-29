@@ -355,8 +355,9 @@ class mel_metapage extends rcube_plugin
             if (strpos($files[$i], ".js") !== false)
             $this->include_script('js/'.$files[$i]);
         }
-        if ($this->rc->task === "calendar")
-            $this->include_script('js/actions/calendar_event.js');
+        //if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
+        $this->include_script('js/actions/calendar_event.js');
+
         if ($this->rc->task === "tasks")
             $this->include_script('js/actions/task_event.js');
         //$this->rc->output->include_script('treelist.js');

@@ -157,7 +157,7 @@ class mel_labels_sync extends rcube_plugin {
       $labels_color = array();
       foreach ($this->_get_bal_labels() as $label) {
         $key = strtolower($label->key);
-        if (isset($this->add_tb_flags[$key])) {
+        if (isset($this->add_tb_flags[$key]) && $label->mailbox != $this->rc->get_user_name()) {
           continue;
         }
         $this->add_tb_flags[$key] = $label->tag;
@@ -661,17 +661,26 @@ class mel_labels_sync extends rcube_plugin {
     $this->rc->output->set_env('username', $this->rc->user->get_username());
     if (in_array('mel_sharedmailboxes', $this->rc->plugins->active_plugins) && $this->rc->task == 'mail') {
       if (empty($this->rc->action)) {
-        // MANTIS 0004420: Toujours lister les étiquettes de la BALI
-        $_labels_list = $this->driver->get_user_labels($this->rc->user->get_username());
+        $_labels_list = [];
         $objects = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
         foreach ($objects as $object) {
           $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($object->mailbox->uid));
         }
+        // Lister les étiquettes BALI en dernier pour prendre le dessus en css
+        $_labels_list = array_merge($_labels_list, $this->driver->get_user_labels($this->rc->user->get_username()));
       }
       else {
         $username = $this->get_user_from_folder(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
         if (isset($username)) {
           $_labels_list = $this->driver->get_user_labels($username);
+        }
+        // Appliquer les couleurs de la BALI
+        $_tmp_list = $this->driver->get_user_labels($this->rc->user->get_username());
+        foreach ($_labels_list as $key => $label) {
+          $find = $this->driver->find_label_by_key($label->key, $_tmp_list);
+          if (isset($find)) {
+            $_labels_list[$key]->color = $find->color;
+          }
         }
       }
     }

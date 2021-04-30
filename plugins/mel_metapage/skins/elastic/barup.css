@@ -321,10 +321,8 @@ html.touch .ariane-card-body
 	border: none;
 	border-bottom-left-radius: 15px !important;
 	border-top-left-radius: 0px !important;
-	/* z-index: 999; */
 	box-shadow: -2px 0px 3px #00000030;
     background-color:#F0F0F0;
-	/* shadow: l; */
 }
 
 /* .icofont-spinner-alt-6

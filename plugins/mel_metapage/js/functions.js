@@ -147,7 +147,7 @@ function m_mp_createworskpace_steps()
             const mel_metapage_templates_services = rcmail.env.mel_metapage_templates_services;
             for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
                 const element = mel_metapage_templates_services[index];
-                html += "<div class=col-md-3>";
+                html += "<div class=col-md-4>";
                 html += '<button type=button data-type="'+element.type+'" class="doc-'+element.type+' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `'+JSON.stringify(element).replace(/"/g, "¤¤¤")+'`)"><span style="display:block;margin-right:0px" class="'+m_mp_CreateDocumentIconContract(element.icon)+'"></span>'+ rcmail.gettext(element.name) +'</button>';
                 html += "</div>"
             }

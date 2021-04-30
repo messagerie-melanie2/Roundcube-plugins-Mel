@@ -622,7 +622,7 @@ class mel_workspace extends rcube_plugin
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
         foreach ($services as $key => $value) {
-            if ($key === self::EMAIL)
+            if ($key === self::EMAIL || $key === self::CLOUD)
                 continue;
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';

@@ -306,7 +306,7 @@ class ArianeFrame{
             //this.popUp.css("width", "initial");
             //if (!is_touch())
                 //this.popUp.css("margin-top", "60px");
-            this.card.card.card.find(".card-anchor").addClass("icofont-external-link").removeClass("icofont-anchor");
+            this.card.card.card.find(".card-anchor").addClass(ArianeFrame.unanchor).removeClass(ArianeFrame.anchor);
             //ArianePopUp.set_width(this.popUp);
         }
         else {
@@ -318,7 +318,7 @@ class ArianeFrame{
             //this.popUp.css("width", "");
             //if (!is_touch())
                 //this.popUp.css("margin-top", "");
-            this.card.card.card.find(".card-anchor").removeClass("icofont-external-link").addClass("icofont-anchor");      
+            this.card.card.card.find(".card-anchor").removeClass(ArianeFrame.unanchor).addClass(ArianeFrame.anchor);      
             //ArianePopUp.set_width(this.popUp);
         }
 
@@ -326,7 +326,7 @@ class ArianeFrame{
 
     is_anchor()
     {
-        return this.card.card.card.find(".card-anchor").hasClass("icofont-external-link");
+        return this.card.card.card.find(".card-anchor").hasClass(ArianeFrame.unanchor);
     }
 
     enable()
@@ -434,6 +434,9 @@ class ArianeFrame{
         return this.is_loaded(); 
     }
 }
+
+ArianeFrame.unanchor = "icon-mel-external";
+ArianeFrame.anchor = "icofont-anchor";
 
 class ArianeCard
 {

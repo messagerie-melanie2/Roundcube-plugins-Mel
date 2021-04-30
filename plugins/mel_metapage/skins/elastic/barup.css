@@ -294,7 +294,7 @@ html.touch .ariane-card-body
     /* float: right; */
     color: inherit;
     transition: all 0.1s ease-in;
-    margin-top:5px;
+    margin-top:10px;
     display: block;
 }
 
@@ -316,7 +316,7 @@ html.touch .ariane-card-body
 
 .frame-header {
 	position: absolute;
-	top: -1px;
+	top: -9px;
 	left: -52px;
 	border: none;
 	border-bottom-left-radius: 15px !important;

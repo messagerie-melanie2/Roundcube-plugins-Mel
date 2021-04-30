@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?t7tqk') format('truetype'),
-    url('fonts/DWP.woff?t7tqk') format('woff'),
-    url('fonts/DWP.svg?t7tqk#DWP') format('svg');
+    url('fonts/DWP.ttf?sg37nt') format('truetype'),
+    url('fonts/DWP.woff?sg37nt') format('woff'),
+    url('fonts/DWP.svg?sg37nt#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -26,235 +26,181 @@
 
 .icon-mel-arrow-right:before {
   content: "\e900";
-  /*color: #363a5b;*/
 }
 .icon-mel-calendar:before {
   content: "\e901";
-  /*color: #363a5b;*/
 }
 .icon-mel-camera:before {
   content: "\e902";
-/*  color: #2c3054;*/
 }
 .icon-mel-check:before {
   content: "\e903";
-  /*color: #363a5b;*/
 }
 .icon-mel-chevron-right:before {
   content: "\e904";
-  /*color: #363a5b;*/
 }
 .icon-mel-chevron-left:before {
   content: "\e905";
-  /*color: #363a5b;*/
 }
 .icon-mel-chevron-up:before {
   content: "\e906";
-  /*color: #363a5b;*/
 }
 .icon-mel-chevron-down:before {
   content: "\e907";
-  /*color: #363a5b;*/
 }
 .icon-mel-close:before {
   content: "\e908";
-  /*color: #363a5b;*/
 }
 .icon-mel-coffee:before {
   content: "\e909";
-  /*color: #363a5b;*/
 }
 .icon-mel-copy:before {
   content: "\e90a";
-/*  color: #2c3054;*/
 }
 .icon-mel-favorite:before {
   content: "\e90b";
 }
 .icon-mel-dots:before {
   content: "\e90c";
-  /*color: #363a5b;*/
 }
 .icon-mel-download:before {
   content: "\e90d";
-  /*color: #363a5b;*/
 }
 .icon-mel-edit:before {
   content: "\e90e";
-  /*color: #363a5b;*/
 }
 .icon-mel-expand:before {
   content: "\e90f";
-/*  color: #2c3054;*/
 }
 .icon-mel-external:before {
   content: "\e910";
-  /*color: #363a5b;*/
 }
 .icon-mel-heart:before {
   content: "\e911";
-  /*color: #363a5b;*/
 }
 .icon-mel-file-pdf:before {
   content: "\e912";
-  /*color: #363a5b;*/
 }
 .icon-mel-file-word:before {
   content: "\e913";
-  /*color: #363a5b;*/
 }
 .icon-mel-file-excel:before {
   content: "\e914";
-  /*color: #363a5b;*/
 }
 .icon-mel-folder:before {
   content: "\e915";
-  /*color: #363a5b;*/
 }
 .icon-mel-hand:before {
   content: "\e916";
-  /*color: #363a5b;*/
 }
 .icon-mel-help:before {
   content: "\e917";
-  /*color: #363a5b;*/
 }
 .icon-mel-home:before {
   content: "\e918";
-  /*color: #363a5b;*/
 }
 .icon-mel-intranet:before {
   content: "\e919";
-  /*color: #363a5b;*/
 }
 .icon-mel-newspaper:before {
   content: "\e91a";
-/*  color: #2c3054;*/
 }
 .icon-mel-life:before {
   content: "\e91b";
-  /*color: #363a5b;*/
 }
 .icon-mel-link:before {
   content: "\e91c";
-/*  color: #2c3054;*/
 }
 .icon-mel-arrow-down:before {
   content: "\e91d";
-  /*color: #363a5b;*/
 }
 .icon-mel-mail:before {
   content: "\e91e";
-  /*color: #363a5b;*/
 }
 .icon-mel-menu:before {
   content: "\e91f";
-  /*color: #363a5b;*/
 }
 .icon-mel-message:before {
   content: "\e920";
-  /*color: #363a5b;*/
 }
 .icon-mel-micro:before {
   content: "\e921";
-/*  color: #2c3054;*/
 }
 .icon-mel-minus:before {
   content: "\e922";
-  /*color: #363a5b;*/
 }
 .icon-mel-notes:before {
   content: "\e923";
-/*  color: #2c3054;*/
 }
 .icon-mel-paragraph-extend:before {
   content: "\e924";
 }
 .icon-mel-parameters-invert:before {
   content: "\e925";
-/*  color: #2c3054;*/
 }
 .icon-mel-parameters:before {
   content: "\e926";
-  /*color: #363a5b;*/
 }
 .icon-mel-phone:before {
   content: "\e927";
-/*  color: #2c3054;*/
 }
 .icon-mel-pin:before {
   content: "\e928";
-  /*color: #363a5b;*/
 }
 .icon-mel-plus:before {
   content: "\e929";
-  /*color: #363a5b;*/
 }
 .icon-mel-reply:before {
   content: "\e92a";
-  /*color: #363a5b;*/
 }
 .icon-mel-rss:before {
   content: "\e92b";
-  /*color: #363a5b;*/
 }
 .icon-mel-screen-share:before {
   content: "\e92c";
-/*  color: #2c3054;*/
 }
 .icon-mel-search:before {
   content: "\e92d";
-  /*color: #363a5b;*/
 }
 .icon-mel-share-info:before {
   content: "\e92e";
-/*  color: #2c3054;*/
 }
 .icon-mel-share:before {
   content: "\e92f";
-  /*color: #363a5b;*/
 }
 .icon-mel-sondage:before {
   content: "\e930";
-  /*color: #363a5b;*/
 }
 .icon-mel-survey:before {
   content: "\e931";
-  /*color: #363a5b;*/
 }
 .icon-mel-task:before {
   content: "\e932";
-  /*color: #363a5b;*/
 }
 .icon-mel-time:before {
   content: "\e933";
-  /*color: #363a5b;*/
 }
 .icon-mel-trash:before {
   content: "\e934";
-  /*color: #363a5b;*/
 }
 .icon-mel-twitter:before {
   content: "\e935";
-  /*color: #363a5b;*/
 }
 .icon-mel-undo:before {
   content: "\e936";
-  /*color: #363a5b;*/
 }
 .icon-mel-user:before {
   content: "\e937";
-  /*color: #363a5b;*/
 }
 .icon-mel-videoconference:before {
   content: "\e938";
-  /*color: #363a5b;*/
 }
 .icon-mel-warning:before {
   content: "\e939";
-  /*color: #363a5b;*/
 }
 .icon-mel-workplace:before {
   content: "\e93a";
-  /*color: #363a5b;*/
+}
+.icon-mel-arrow-left:before {
+  content: "\e93b";
 }

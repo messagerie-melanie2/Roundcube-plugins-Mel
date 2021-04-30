@@ -85,7 +85,8 @@ class ArianePopUp{
         this.ariane.popUp.css("display", "initial");
         this.ariane.popUp.css("width", "100%");
         this.ariane.popUp.css("padding-top", "0");
-        this.ariane.popUp.css("margin-top", "-1.25em");
+        this.ariane.popUp.css("margin-top", "0");
+        //this.ariane.popUp.css("margin-top", "-1.25em");
         this.button.stop();
         this.is_show = true;
         // if ($("#pop-up-resizer").length === 0)
@@ -300,7 +301,7 @@ class ArianeFrame{
     {
         if (!this.is_anchor())
         {
-            this.card.card.card.css("flex","0 0 400px");
+            this.card.card.card.css("flex","0 0 calc(25% - 60px)");
             this.card.card.card.css("position", "relative");
             //this.popUp.css("width", "initial");
             //if (!is_touch())
@@ -331,7 +332,7 @@ class ArianeFrame{
     enable()
     {
         this.card.body.card.css("height", "");
-        this.card.card.card.css("width", "");
+        this.card.card.card.css("width", "calc(25% - 60px)");
         this.card.card.card.css("height", "");
         this.popUp.css("padding-left", "initial");
         this.popUp.addClass("ariane-popup");
@@ -350,7 +351,7 @@ class ArianeFrame{
                 let height = $(window).height();
                 //console.log("height 1", height);
                 mel_metapage.PopUp.ariane.ariane.popUp.css("height", (height-60-45)+ "px");
-                mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height-60)+ "px");
+                mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", "100%");
                 mel_metapage.PopUp.ariane.ariane.card.body.card.css("height", (height)+ "px");
                 new Promise(async (a,b) => {
                     const exec = function ()
@@ -361,11 +362,11 @@ class ArianeFrame{
                             // mel_metapage.PopUp.ariane.ariane.popUp.css("margin-top", "");
                             //console.log("height",height);
                             //mel_metapage.PopUp.ariane.ariane.card.card.card.css("height", (height)+ "px");
-                            mel_metapage.PopUp.ariane.ariane.popUp.css("height", (height-45)+ "px");
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("height", "100%");
                         }
                         else {
                             //mel_metapage.PopUp.ariane.ariane.popUp.css("top", "60px");
-                            mel_metapage.PopUp.ariane.ariane.popUp.css("height", (height-60-45)+ "px");
+                            mel_metapage.PopUp.ariane.ariane.popUp.css("height", "calc(100% - 58px)");
                         }
                     }
                     let stop = false;
@@ -530,7 +531,7 @@ class ArianeButton
 }
 
 ArianeButton.default = function () {
-    return new ArianeButton(".tiny-rocket-chat", "icofont-chat");
+    return new ArianeButton(".tiny-rocket-chat", "icon-mel-message");
 }
 
 class MetapageFrames {

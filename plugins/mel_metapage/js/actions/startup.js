@@ -309,11 +309,11 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     {
         html = "";
         html += '<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;">';
-        html += '<div class="card-header-disabled frame-header">';
-        html += '<span>Ariane</span>';
-        html += '<a href="close_ariane" onclick="m_mp_close_ariane()" class="icofont-close-squared-alt card-close"></a>';
+        html += '<div class="card-header-disabled frame-header" >';
+        // html += '<span>Ariane</span>';
+        html += '<a href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-close card-close"></a>';
         html += '<a class="icofont-anchor card-anchor" href="anchor_ariane" onclick="m_mp_anchor_ariane()"></a>';
-        html += '<a class="icofont-expand card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>';
+        html += '<a class="icon-mel-expand card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>';
         html += "</div>";
         html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
         html += frame;

@@ -237,7 +237,7 @@ v_separate{
 
 .tiny-rocket-chat-card{
     position: absolute;
-    top:60px;
+    top:0px;
     right:0px;
     z-index:999;
     display: none;
@@ -251,9 +251,21 @@ v_separate{
     height: 500px;
 }
 
+html.touch .ariane-card
+{
+    min-width: 400px;
+}
+
+html.layout-small .ariane-card
+{
+    min-width: 280px;
+}
+
 .ariane-card
 {
-    margin-top:60px;
+    margin-top:59px;
+    border-top: none;
+    border-right: none;
 }
 
 html.touch .ariane-card
@@ -278,10 +290,12 @@ html.touch .ariane-card-body
 .card-close,
 .card-expand,
 .card-anchor{
-    font-size: x-large;
-    float: right;
+    font-size: 25px;
+    /* float: right; */
     color: inherit;
     transition: all 0.1s ease-in;
+    margin-top:5px;
+    display: block;
 }
 
 .card-expand,
@@ -298,6 +312,19 @@ html.touch .ariane-card-body
 .card-close:hover{
     text-decoration: none;
     color:#ff5552;
+}
+
+.frame-header {
+	position: absolute;
+	top: -1px;
+	left: -52px;
+	border: none;
+	border-bottom-left-radius: 15px !important;
+	border-top-left-radius: 0px !important;
+	/* z-index: 999; */
+	box-shadow: -2px 0px 3px #00000030;
+    background-color:#F0F0F0;
+	/* shadow: l; */
 }
 
 /* .icofont-spinner-alt-6

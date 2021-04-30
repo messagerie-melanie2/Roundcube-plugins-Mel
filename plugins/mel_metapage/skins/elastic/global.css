@@ -138,7 +138,7 @@ html.touch .shortcut-task{
 
 .tiny-webconf-menu {
 	position: absolute;
-	top: 0px;
+	top: 4px;
 	left: -1px;
 	z-index: 50;
 }
@@ -166,7 +166,7 @@ html.touch .shortcut-task{
 
 .conf-call-stop
 {
-	transform: rotateZ(118deg);
+	/* transform: rotateZ(118deg); */
 }
 
 .wsp-toolbar.webconf-toolbar  .wsp-toolbar-item > .text-item {
@@ -179,8 +179,18 @@ html.touch .shortcut-task{
 
 .wsp-toolbar.webconf-toolbar  .wsp-toolbar-item.conf-call-stop > .text-item
 {
-    transform: rotateZ(-118deg);
-bottom: 21px;
+    /* transform: rotateZ(-118deg);
+bottom: 21px; */
+}
+
+.wsp-toolbar.webconf-toolbar  .wsp-toolbar-item > .icon-item
+{
+    margin-top: 8px!important;
+    display: inline-block;
+}
+
+.wsp-toolbar.webconf-toolbar .wsp-toolbar-item > .icon-item.stop {
+	margin-top: 7px!important;
 }
 
 .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select {

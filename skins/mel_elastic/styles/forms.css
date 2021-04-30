@@ -125,8 +125,8 @@ select.input-mel{
 	box-shadow: 0 0 0 .2rem #C8CDFC59;
 }
 .input-mel.custom-file-input ~ .custom-file-label[data-browse]::after {
-	content: "\f01c";
-	font-family: "IcoFont";
+	content: "\e90d";
+	font-family: "DWP";
 }
 #edit-attendees-comment,
 textarea.input-mel{
@@ -151,8 +151,8 @@ textarea.input-mel{
 }
 
 .input-mel-datetime::after {
-	content: "\eecd";
-	font-family: "IcoFont";
+	content: "\e901";
+	font-family: "DWP";
 	font-size: 22px;
 	position: absolute;
 	top: 0;
@@ -243,4 +243,27 @@ textarea.input-mel{
 
 #eventedit .edit-attendee-role.form-control.custom-select.pretty-select[disabled="true"] {
 	cursor: unset;
+}
+
+select.input-mel.custom-select
+{
+	background-image: url("../fonts/mel_icons/Chevron_down.svg");
+}
+
+a.button.icon.discard::before, button.btn.discard::before, a.button.icon.delete::before, button.btn.delete::before
+{
+	font-family: "DWP";
+	content: "\e934";
+}
+
+.alarms-input .edit-alarm-buttons a.add::before
+{
+	font-family: "DWP";
+	content: "\e929"!important;	
+}
+
+.edit-attendees-table th.invite label::before
+{
+	content: "\e91e"!important;
+	font-family: "DWP"!important;
 }

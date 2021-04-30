@@ -264,6 +264,11 @@ html.layout-small .wsp-toolbar-item
     background: radial-gradient(circle, #42548F 33%, rgba(255,255,255,0) 33%);
 }
 
+.wsp-toolbar-item > span {
+	display: inline-block;
+	margin-top: 10px;
+}
+
 html.layout-normal .wsp-toolbar-item:hover,
 html.layout-normal .wsp-toolbar-item.active{
     background:radial-gradient(circle, #42548F 35%, rgba(255,255,255,0) 35%)
@@ -364,6 +369,12 @@ font-size: 2vw;
     margin-left: 40px;
 }
 
+.mel-button > span.plus::before {
+	font-size: 15px;
+	display: inline-block;
+	vertical-align: sub;
+}
+
 .invite-button.create{
     background-color: #363A5B;
     color: white;
@@ -381,7 +392,7 @@ font-size: 2vw;
 }
 
 .btn-arrow {
-	font-size: x-large;
+	/* font-size: x-large; */
     cursor: pointer;
     transition: all 0.1s ease-in;
 }
@@ -538,7 +549,7 @@ separate.wsp {
 }
 .wsp-ariane-header> .arrow {
     transition: all 0.1s ease-in;
-
+    font-size: large;
 }
 
 .wsp-ariane-header:hover > .arrow {

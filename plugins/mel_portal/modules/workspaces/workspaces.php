@@ -70,7 +70,7 @@ class Workspaces extends Module
         } 
         $title = html::div([],
             html::tag("span", ["style" => "font-size: x-large;font-weight: bold;"], $this->text("workspaces")).
-            html::tag("span", ["class" => "mel-button", "style" => "float:right;", "onclick" => "mel_metapage.Functions.change_frame('wsp')"], html::tag("span", [], "Voir tout").html::tag("span", ["class" => "icofont-arrow-right plus"]))
+            html::tag("span", ["class" => "mel-button", "style" => "float:right;", "onclick" => "mel_metapage.Functions.change_frame('wsp')"], html::tag("span", [], "Voir tout").html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
         );
 
         return $title.html::div(["class" => '--row'], $html);

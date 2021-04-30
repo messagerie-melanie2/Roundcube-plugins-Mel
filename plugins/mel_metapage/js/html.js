@@ -70,7 +70,6 @@ html_helper.TasksAsync = async function (tabs, e = null,  e_news = null,title = 
  */
 html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null)
 {
-	console.log("title", title);
     let html = ''
 	html += '<div class="html-tasks" data-task-tabs="'+html_helper.JSON.stringify(tabs)+'" data-task-title="'+title+'">';
     if (!html_helper.is_null_or_empty(title))
@@ -82,24 +81,29 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
 	// html = '<div id=dwp-tadk-urg class="tab-task-dwp mel-tab mel-tabheader">Tâches urgentes</div>';
 	html += '<center><div id=dwp-tadk-all class="tab-task-dwp mel-tab mel-tabheader active last">'+tabs["right"]+'</div></center>';
 	
-    html += '<div style="margin:10px 0;"><div id="nb-waiting-task" class="nb-task wsp-task-classik tab-task mel-tab-content" style=""><span class="icofont-hour-glass roundbadge large clear"></span><span><span class="waiting-task"></span><span class="nb-waiting-task nb font-size-large">'+datas.length+'</span> tâches en cours</span></div></div>';
+    html += '<div style="margin:10px 0;"><div id="nb-waiting-task" class="nb-task wsp-task-classik tab-task mel-tab-content" style=""><span class="icon-mel-time roundbadge large clear"></span><span><span class="waiting-task"></span><span class="nb-waiting-task nb font-size-large">'+datas.length+'</span> tâches en cours</span></div></div>';
 
     datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
 	let date;
+
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+
 		if (date._isValid)
         	html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
         else
 			html += "<div class=col-md-10></div>";
-		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
+
+		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icon-mel-warning warning" : "icon-mel-time clear") + '"></a></div>'
         html += "</div>";
     }
     html += "</div>";
+	
     if (e !== null)
 	    e.html(html);
+
     if (e_news !== null)
     {
         if (datas.length > 0)
@@ -110,6 +114,7 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
         else
             e_news.addClass("hidden");
     }
+
     return html;
 }
 
@@ -187,8 +192,8 @@ html_helper.Calendars = function({datas, config = {
         html += '<div class="col-2"><span class="icon-mel-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || datas.length === 0 ? "style=display:none;" : "")+'>'+datas.length+'</span></span></div>';
         html += '<div class="col-6"><span class="mm-agenda-date">'+rcube_calendar.mel_metapage_misc.GetDate(_date)+'</span></div>';
         html += '<div class="col-4"><div class="row">';
-        html += '<div class="col-6"><span class="icofont-arrow-left btn-arrow" onclick="'+nav_click.replace("¤¤¤", "-1")+'"></span></div>';
-        html += '<div class="col-6"><span class="icofont-arrow-right btn-arrow" onclick="'+nav_click.replace("¤¤¤", "1")+'"></span></div>';
+        html += '<div class="col-6"><span class="icon-mel-arrow-left btn-arrow" onclick="'+nav_click.replace("¤¤¤", "-1")+'"></span></div>';
+        html += '<div class="col-6"><span class="icon-mel-arrow-right btn-arrow" onclick="'+nav_click.replace("¤¤¤", "1")+'"></span></div>';
         html += "</div></div></div>"
     }
 	if (!get_only_body)

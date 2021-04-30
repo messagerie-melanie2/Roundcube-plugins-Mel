@@ -410,6 +410,10 @@ framed_item > .framed_item{
     font-size: 6px;
 }
 
+.roundbadge.no-weight{
+    font-weight: normal;
+}
+
 .roundbadge.large
 {
   height: 30px;

@@ -340,8 +340,8 @@ class mel_workspace extends rcube_plugin
         //     $html_tmp.= html::div(["class" => "invite-button plus", "onclick" => "$action(`".$this->currentWorkspace->uid."`)"], html::tag("span", [], $text).html::tag("span", ["class" => $icon]));
         // $html_tmp.= "</div>";
         // return html::div(["class" => "row"], $html_tmp);
-        $icon = "icofont-plus-circle plus";
-        $icon_quit = "icofont-close-line-circled plus";
+        $icon = "icon-mel-plus plus";
+        $icon_quit = "icon-mel-close plus";
         $exists = self::is_in_workspace($this->currentWorkspace);
         $admin = self::is_admin($this->currentWorkspace);
         $html = "";
@@ -406,11 +406,11 @@ class mel_workspace extends rcube_plugin
 
         $icons = [
             self::AGENDA => "icon-mel-calendar",
-            "arrow_left" => "icofont-arrow-left",
-            "arrow_right" => "icofont-arrow-right",
-            "warning" => "icofont-warning",
-            "waiting" => "icofont-hour-glass",
-            "arrow_close" => "icofont-simple-right"
+            "arrow_left" => "icon-mel-arrow-left",
+            "arrow_right" => "icon-mel-arrow-right",
+            "warning" => "icon-mel-warning",
+            "waiting" => "icon-mel-time",
+            "arrow_close" => "icon-mel-chevron-right"
         ];
 
         $html_return = "";
@@ -426,8 +426,8 @@ class mel_workspace extends rcube_plugin
             if ($services[self::AGENDA])
             {
                 $arrow = [
-                    "left" => '<span class="'.$icons["arrow_left"].' btn-arrow" onclick="change_date(-1)"></span>',
-                    "right" => '<span class="'.$icons["arrow_right"].' btn-arrow" onclick="change_date(1)"></span>'
+                    "left" => '<span class="'.$icons["arrow_left"].' btn-arrow" style="float:right" onclick="change_date(-1)"></span>',
+                    "right" => '<span class="'.$icons["arrow_right"].' btn-arrow" style="float:left" onclick="change_date(1)"></span>'
                 ];
 
                 $header = html::div(["class" => "row"], 
@@ -479,6 +479,11 @@ class mel_workspace extends rcube_plugin
                 $tasks = self::TASKS;
                 $col["left"].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
             }
+            
+            $tmp = $col["left"];
+            $col["left"] = $col["right"];
+            $col["right"] = $tmp;
+
             if ($col["left"] === "")
             {
                 $col["left"] = $col["right"];
@@ -611,7 +616,7 @@ class mel_workspace extends rcube_plugin
 
     function setup_params_apps($workspace)
     {
-        $icons=["minus" => "icofont-minus", "plus" => "icofont-plus"];
+        $icons=["minus" => "icon-mel-minus", "plus" => "icon-mel-plus"];
         $services = $this->get_worskpace_services($workspace);
         $config = $this->rc->config->get("workspace_services");
         $html = '<table id=table-apps class="table table-striped table-bordered">';
@@ -649,7 +654,7 @@ class mel_workspace extends rcube_plugin
             Share::RIGHT_WRITE => "icofont-pencil-alt-2"
         ];
 
-        $icon_delete = "icofont-trash";
+        $icon_delete = "icon-mel-trash";
 
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
         $html .= "<thead>";

@@ -40,7 +40,7 @@ async function WSPReady()
 }
 
 var UpdateAriane = (channel, store, unread) => {
-    $(".ariane-count").html(unread > 99 ? "+99" : unread);
+    $(".ariane-count").html(unread > 99 ? "+99" : unread).css("display", (unread === 0 ? "none" : ""));
     let querry = $("#ariane-" + channel);
     if (querry.length === 0)
         return;
@@ -457,16 +457,19 @@ function OpenAriane(id, src)
 
 function UpdateFrameAriane()
 {
-    //unreads-ariane
+    const down = "icon-mel-chevron-down";
+    const right = "icon-mel-chevron-right";
+
     let arrow = $(".wsp-ariane-header").find(".arrow");
-    if (arrow.hasClass("icofont-simple-right"))
+
+    if (arrow.hasClass(right))
     {
-        arrow.removeClass("icofont-simple-right").addClass("icofont-simple-down");
+        arrow.removeClass(right).addClass(down);
         $(".unreads-ariane").find("iframe").css("display", "").parent().css("display", "");
     }
     else
     {
-        arrow.removeClass("icofont-simple-down").addClass("icofont-simple-right");
+        arrow.removeClass(down).addClass(right);
         $(".unreads-ariane").find("iframe").css("display", "none").parent().css("display", "none");;
     }
 }

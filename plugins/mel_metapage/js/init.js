@@ -165,7 +165,7 @@ if (rcmail)
                 url: '?_task=mel_metapage&_action=get_unread_mail_count',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
                     try {
-                        console.log("datas", data);
+                        console.log("mail_updated", data);
                         mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);
@@ -400,8 +400,11 @@ function try_add_round(selector, idBadge)
 function update_badge(size, idBadge)
 {
     let querry = $("#" + idBadge);
-    if (size === 0)
+    if (size == 0)
+    {
+        console.log("heeeeere", querry);
         querry.css("display", "none");
+    }
     else
     {
         if (size > 999)

@@ -70,6 +70,8 @@ class mel_metapage extends rcube_plugin
             $this->register_action('dialog-ui', array($this, 'create_calendar_event'));
             $this->register_action('create_document_template', array($this, 'get_create_document_template'));
             $this->register_action('get_event_html', array($this, 'get_event_html'));
+            $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
+            $this->register_action('check_users', array($this, 'check_users'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
@@ -97,6 +99,13 @@ class mel_metapage extends rcube_plugin
             $this->load_config();
             $this->register_task("mel_metapage");
             $this->register_action('get_event_html', array($this, 'get_event_html'));
+        }
+        else if ($this->rc->action === "get_create_workspace")
+        {
+            $this->add_texts('localization/', true);
+            $this->load_config();
+            $this->register_task("mel_metapage");
+            $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
         }
         if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
         {
@@ -314,9 +323,37 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->send("mel_metapage.contact");
     }
 
+    function check_users()
+    {
+        $users = rcube_utils::get_input_value("_users", rcube_utils::INPUT_POST);
+        $unexisting_users = [];
+        $added_users = [];
+        foreach ($users as $key => $value) {
+            $tmp = driver_mel::gi()->getUser(null, true, false, null, $value);
+            if ($tmp->uid === null)
+                $unexisting_users[] = $value;
+            else{
+                $added_users[] = [
+                    "name" => $tmp->name,
+                    "uid" => $tmp->uid,
+                    "email" => $value
+                ];
+            }
+        }
+        echo json_encode(["unexist" => $unexisting_users, "added" => $added_users]);
+        exit;
+        //driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid
+    }
+
     function ariane()
     {
         $this->rc->output->send("mel_metapage.ariane");
+    }
+
+    function create_workspace_html()
+    {
+        echo $this->rc->output->parse("mel_metapage.create_workspace", false, false);
+        exit;
     }
 
     /**

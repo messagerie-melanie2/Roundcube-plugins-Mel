@@ -1,0 +1,81 @@
+<div class="step" id="workspace-step1">
+    <span class="red-star">Champs obligatoires</span>
+    <span class="red-star-after span-mel t1 first">Nom de l'espace de travail</span>
+    <input oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=40 placeholder="Nom de l'espace"/>
+    <span class="span-mel t1">Sélectionner un avatar</span>
+    <div class="row">
+        <div class="col-2">    
+            <span id=tmpavatar></span>
+        </div>
+        <div class="col-10">
+            <div class="custom-file hidden" style="margin-top: 15px;">
+                <input class="form-control input-mel larger file custom-file-input" type="file">
+                <label class="custom-file-label" data-browse="Parcourir">Importer une photo</label>
+            </div>
+        </div>
+    </div>
+    <span class="span-mel t1">Description</span>
+    <textarea id=workspace-desc class="form-control input-mel" placeholder="Description de l'espace de travail"></textarea>
+    <span class="span-mel t1">Sélectionner une thématique</span>
+    <input class="form-control input-mel" id=workspace-hashtag type=text placeholder="Thématique de l'espace." />
+    <div class="row">
+        <div class="col-md-4 datetime">
+            <span class="span-mel t1">Définir une date de fin</span>
+            <div class="input-mel-datetime">
+                <input class="form-control input-mel" id=workspace-date-end type=text />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <span class="red-star-after span-mel t1">Autorisé l'accès</span>
+            <div class="custom-control custom-radio">
+                <input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required" checked>
+                <label class="custom-control-label" for="workspace-private">Restreint</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input type="radio" checked id="workspace-public" name="customRadio" class="custom-control-input required">
+                <label class="custom-control-label" for="workspace-public">Public</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <span class="red-star-after span-mel t1">Couleur</span>
+            <input id="workspace-color" class="form-control input-mel" type=color value="#FFFFFF" />
+        </div>
+    </div>
+    <div style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="m_mp_check_w(1,`workspace-step2`)">
+        <span>Continuer</span>
+        <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
+    </div>
+</div>
+
+<div class="step" id="workspace-step2" style="display:none;">
+    <span class="span-mel t1 first">Sélectionner des participants</span>
+    <div class="input-group">
+        <textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>
+        <ul id="wspf" class="form-control input-mel recipient-input ac-input rounded-left">
+            <li class="input">
+                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox">
+            </li>
+        </ul>
+        <span class="input-group-append">
+            <a href="#add-contact" onclick="m_mp_openTo()" class="input-group-text mel-text-center icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>
+            <span onclick="m_mp_add_users()" class="input-group-text mel-text"><span class="icon-mel-plus"></span></span>
+        </span>
+    </div>
+    <span class="span-mel t1">Liste des participants</span>
+    <div id="mm-wsp-loading" style="display:none">
+        <center>
+            <span class="spinner-border"></span>
+        </center>
+    </div>
+    <div id="mm-cw-participants">
+
+    </div>
+    <div style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step1`)">
+        <span>Retour</span>
+        <span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
+    </div>
+    <div style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(2, `workspace-step3`)">
+        <span>Continuer</span>
+        <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
+    </div>
+</div>

@@ -95,6 +95,46 @@ input.input-mel {
 	background-color: #F0F0F0;
 	border-color: #F0F0F0;
 }
+
+#wspf.form-control.input-mel
+{
+	border-color: #F0F0F0;
+	background-color: #F0F0F0;
+	border-top-left-radius: 60px !important;
+	border-bottom-left-radius: 60px !important;
+}
+
+.input-group-append > .input-group-text.mel-text,
+.input-group-append > .input-group-text.mel-text-center
+{
+	cursor: pointer;
+}
+
+.input-group-append > .input-group-text.mel-text-center {
+	background-color: #F0F0F0;
+	border-color: #F0F0F0;
+	border-bottom-right-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.input-group-append > .input-group-text.mel-text
+{
+	background-color: #F0F0F0;
+	border-color: #F0F0F0;
+	border-bottom-right-radius: 60px;
+	border-top-right-radius: 60px;
+}
+
+.input-group-append > .input-group-text.mel-text-center:hover,
+.input-group-append > .input-group-text.mel-text:hover
+{
+	background-color: #484D7A;
+	border-color: #484D7A;
+	color:white;
+}
+
+
+
 #edit-attendees-comment:focus,
 #edit-attendee-name:focus,
 #edit-identities-list:focus,
@@ -116,6 +156,13 @@ select.input-mel{
 	padding-right: 0px;
 	width: 30%;
 }
+
+.input-mel.larger.custom-file-input + .custom-file-label
+{
+	padding-right: 56px;
+	width: 44%;
+}
+
 .input-mel.custom-file-input + .custom-file-label::after {
 	background-color: white; 
 	border-left: none;

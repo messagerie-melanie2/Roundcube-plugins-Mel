@@ -155,8 +155,8 @@ class mel_metapage extends rcube_plugin
         $this->add_button(array(
             'command' => 'last_frame',
             'href' => '?_task=last_frame',
-            'class'	=> 'disabled icofont-spinner-alt-5 menu-last-frame',
-            'classsel' => 'icofont-spinner-alt-5 menu-last-frame menu-last-frame-selected',
+            'class'	=> 'disabled icon-mel-last-frame menu-last-frame',
+            'classsel' => 'icon-mel-last-frame menu-last-frame menu-last-frame-selected',
             'innerclass' => 'inner',
             'label'	=> 'mel_metapage.last_frame_opened',
             'title' => '',

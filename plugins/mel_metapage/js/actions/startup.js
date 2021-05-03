@@ -82,6 +82,8 @@ function mm_st_ChangeClicks()
             }
             if (a.includes("icofont"))
                 return;
+            if (a.includes("icon-mel-"))
+                return;
             if (a.includes("button"))
                 return;
             cClass = a;

@@ -539,6 +539,12 @@ const mel_metapage = {
                 console.log("have parent", window !== parent);
                 mel_metapage.Functions.call("console.log('wololololoLOLOLOLOL',rcmail.mel_metapage_fn);rcmail.mel_metapage_fn.calendar_updated();");
             }
+        },
+        handlerExist:function (element, handler, type = "click")
+        {
+            if (element.val !== undefined)
+                element = element[0];
+            return Enumerable.from(jQuery._data(element, 'events')[type]).where(x => x.handler + "" === handler + "").any();
         }
 
 

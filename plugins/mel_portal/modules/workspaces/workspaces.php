@@ -46,20 +46,20 @@ class Workspaces extends Module
 
         // $res = $workspace->save();
         $this->edit_row_size(3);
-        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
-        $it = 0;
-        foreach ($this->workspaces as $key => $value) {
-             if ($it > 2)
-                 break;
-            $this->workspaces[$key]->load();
-            ++$it;
-        }
+        // $it = 0;
+        // foreach ($this->workspaces as $key => $value) {
+        //      if ($it > 2)
+        //          break;
+        //     $this->workspaces[$key]->load();
+        //     ++$it;
+        // }
     }
 
     function generate_html()
     {
         $html = "";
         $it = 0;
+        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
         foreach ($this->workspaces as $key => $value) {
             if ($it > 2)
                 break;

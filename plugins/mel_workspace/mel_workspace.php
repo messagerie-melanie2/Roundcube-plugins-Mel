@@ -65,6 +65,7 @@ class mel_workspace extends rcube_plugin
             $this->register_action('save_objects', array($this, 'save_objects'));
             $this->register_action('epingle', array($this, 'epingle'));
             $this->register_action('get_email_from_ws', array($this, 'get_email_from_workspace'));
+            $this->register_action('hashtag', array($this, 'get_hashtags'));
             $this->include_script('js/epingle.js');
         }
         // Ajoute le bouton en fonction de la skin
@@ -1624,6 +1625,23 @@ class mel_workspace extends rcube_plugin
                 $array[] = driver_mel::gi()->getUser($value->user)->email;
         }
         echo json_encode($array);
+        exit;
+    }
+
+    function get_hashtags()
+    {
+        $hashtag_label = rcube_utils::get_input_value("_hashtag", rcube_utils::INPUT_GPC);
+        $hashtag = driver_mel::gi()->workspace_hashtag();
+        $hashtag->label = "$hashtag_label%";
+        $operators = ["label" => \LibMelanie\Config\MappingMce::like];
+        $hashtags_raw = $hashtag->getList(null, null, $operators, "label", true);
+        $hashtags = [];
+
+        foreach ($hashtags_raw as $key => $value) {
+            $hashtags[] = $value->hashtag;
+        }
+
+        echo json_encode($hashtags);
         exit;
     }
 

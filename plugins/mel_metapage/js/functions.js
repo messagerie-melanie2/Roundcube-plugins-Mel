@@ -545,6 +545,80 @@ function m_mp_UpdateWorkspace_type(event, element)
     document.activeElement.blur();
 }
 
+function m_mp_affiche_hashtag_if_exists()
+{
+    let querry = $("#list-of-all-hashtag");
+    if (querry.find("button").length > 0)
+        querry.css("display", "");
+}
+
+async function m_mp_get_all_hashtag()
+{
+    const val = $("#workspace-hashtag").val();
+    if (val.length > 0)
+    {
+        let querry = $("#list-of-all-hashtag").css("display", "");
+        querry.html("<center><span class=spinner-border></span></center>");
+
+        await mel_metapage.Functions.get(
+            mel_metapage.Functions.url("workspace", "hashtag"), {
+                _hashtag:val
+            },(datas) => {
+                try {
+                    datas = JSON.parse(datas);
+                    if (datas.length > 0)
+                    {
+                        html = "<div class=btn-group-vertical style=width:100%>";
+                        
+                        for (let index = 0; index < datas.length; ++index) {
+                            const element = datas[index];
+                            html += `<button onclick=m_mp_hashtag_select(this) class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
+                        }
+
+                        html += "</div>";
+                        querry.html(html);
+                    }
+                    else
+                        querry.html(`La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`);
+                    
+                } catch (error) {
+                    
+                }
+            }
+        );
+    }
+    else
+        $("#list-of-all-hashtag").css("display", "none");
+
+    if (!mel_metapage.Functions.handlerExist($("body"), m_mp_hashtag_on_click))
+        $("body").click(m_mp_hashtag_on_click);
+}
+
+function m_mp_hashtag_select(e)
+{
+    $("#workspace-hashtag").val($(e).find("text").html());
+    $("#list-of-all-hashtag").css("display", "none");
+}
+
+function m_mp_hashtag_on_click(event)
+{
+    const id = "list-of-all-hashtag";
+    querry = $("#list-of-all-hashtag");
+    if (querry.css("display") !== "none" && querry.find(".spinner-border").length === 0)
+    {
+        console.log("m_mp_hashtag_on_click" , event);
+        let target = event.target;
+        while (target.nodeName !== "BODY") {
+            console.log("target",target.id, target,target.id === id,target.nodeName);
+            if (target.id === id || target.id === "workspace-hashtag")
+                return;
+            else
+                target = target.parentElement;
+        }
+        querry.css("display", "none");
+    }
+}
+
 function m_mp_autocoplete(element)
 {
     // element = element.val === undefined ? $("#" + element.id) : $("#"+element[0].id);

@@ -58,7 +58,7 @@ function mm_s_Action(e)
         },
      });//});
     }
-    if (jQuery._data($("body")[0], 'events')["click"] === undefined)
+    if (!Enumerable.from(jQuery._data($("body")[0], 'events')["click"]).where(x => x.handler + "" === mm_s_bodyClick + "").any())//jQuery._data($("body")[0], 'events')["click"] === undefined)
         $("body").click(mm_s_bodyClick);
 }
 
@@ -72,7 +72,6 @@ function mm_s_bodyClick(event)
     if (querry.hasClass("hidden"))
         return;
     let target = event.target;
-    //console.log(target.id);
     while (target.id !== "layout") {
         //console.log("target",target.id, target,target.id === "barup-search",target.id === "barup" );
         if (target.id === "barup-search" || target.classList.contains("barup"))

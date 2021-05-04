@@ -25,7 +25,7 @@ $(document).ready(
 
         rcmail.addEventListener('responseafter', function(props) {
             if (props.response && props.response.action == 'task') {
-                console.log("rc", parent.rcmail);
+                //console.log("rc", parent.rcmail);
                 //let navigator = window != parent ? parent : window;
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
             }
@@ -42,7 +42,7 @@ $(document).ready(
                 {
                     await wait(() => $("#taskedit").hasClass("hidden"));
                     $("#taskedit-tasklist").val(event);
-                    console.log("task", event, $("#taskedit-tasklist").val(), $("#taskedit-tasklist"));
+                    //onsole.log("task", event, $("#taskedit-tasklist").val(), $("#taskedit-tasklist"));
                     rcmail.local_storage_remove_item("task_id");
                 }
             });

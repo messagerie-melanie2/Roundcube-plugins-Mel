@@ -84,6 +84,6 @@ ParentUpdate.prototype.exists = function (key){
 }
 
 ParentUpdate.prototype.start = function (key) {
-    console.log(this, this.func, key);
+    //console.log(this, this.func, key);
     return this.funcs[key]();
 }

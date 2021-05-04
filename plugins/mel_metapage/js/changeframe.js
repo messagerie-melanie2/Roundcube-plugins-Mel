@@ -2,14 +2,14 @@
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(event)
     {
-        console.log("exec_info", event, event.data);
+       // console.log("exec_info", event, event.data);
         if (event.data.exec_info === undefined)
             return;
         const message = event.data.exec_info;
         const datas = event.data.datas;
         switch (message) {
             case "UpdateMenu":
-                console.log("UpdateMenu", UpdateMenu, datas);
+                //console.log("UpdateMenu", UpdateMenu, datas);
                 UpdateMenu(datas.class, datas.picture, datas.toolbar);
                 break;
             case "ChangeFrame":
@@ -101,7 +101,7 @@
                 rcmail.env.wsp_datas.toolbar.current = datas;
                 break;
             case "ChangeToolbarPage":
-                console.log("here", datas);
+                //console.log("here", datas);
                 ChangeToolbarPage(datas);
                 break;
             default:
@@ -446,7 +446,7 @@ async function ChangePage(_class)
     }
     $(".workspace-frame").css("display", "");
     let frame = $("iframe.workspace-frame");
-    console.log(frame.length >= 1, Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
+    //console.log(frame.length >= 1, Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
     if (frame.length >= 1 && Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
         frame[0].contentWindow.postMessage({
             exec_info:"ChangeToolbarPage",

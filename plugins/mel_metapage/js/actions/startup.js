@@ -235,7 +235,9 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
 metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) => {
     rcmail.env.current_frame_name = eClass;
     $("."+mm_frame).each((i,e) => {
-        if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || e.classList.contains("webconf-frame"))
+        console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
+        e.classList.contains("webconf-frame") , window.webconf_helper.already());
+        if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already()))
             return;
         e.style.display = "none";
     });//.css("display", "none");
@@ -376,19 +378,30 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
 
 function m_mp_ChangeLasteFrameInfo()
 {
-    console.log("last", rcmail.env.last_frame_class);
+    //console.log("last", rcmail.env.last_frame_class);
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
+    const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
+    if (isUndefined)
+        rcmail.env.last_frame_name = rcmail.gettext('nothing', "mel_metapage");
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
     window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
-    m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
-    $(".menu-last-frame").removeClass("disabled");
+    if (!isUndefined)
+    {
+        m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
+        $(".menu-last-frame").removeClass("disabled");
+    }
+    else
+    {
+        m_mp_CreateOrUpdateIcon(null, "");
+        $(".menu-last-frame").addClass("disabled");
+    }
 }
 
-function m_mp_CreateOrUpdateIcon(querry_selector)
+function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
 {
 
-    //console.error("querry-selector", querry_selector);
+    //console.error("querry-selector", querry_selector, default_content);
 
     if ($(".menu-last-frame").find(".menu-last-frame-item").length == 0)
         $(".menu-last-frame").append(`<span class="menu-last-frame-item"></span>`);
@@ -397,16 +410,26 @@ function m_mp_CreateOrUpdateIcon(querry_selector)
         document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
         document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
     }
-    let content =    window.getComputedStyle(
-            document.querySelector(querry_selector), ':before'
-        ).getPropertyValue('content').replace(/"/g, '').charCodeAt(0).toString(16);
-    let font =    window.getComputedStyle(
-        document.querySelector(querry_selector), ':before'
-    ).getPropertyValue('font-family');
-
-    if (querry_selector === ".settings")
+    var font;
+    var content;
+    if (default_content === null)
     {
-        content = "e926";
+        content =    window.getComputedStyle(
+                document.querySelector(querry_selector), ':before'
+            ).getPropertyValue('content').replace(/"/g, '').charCodeAt(0).toString(16);
+        font =    window.getComputedStyle(
+            document.querySelector(querry_selector), ':before'
+        ).getPropertyValue('font-family');
+
+        if (querry_selector === ".settings")
+        {
+            content = "e926";
+            font = "DWP";
+        }
+    }
+    else
+    {
+        content = default_content;
         font = "DWP";
     }
 

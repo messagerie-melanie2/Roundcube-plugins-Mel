@@ -90,31 +90,35 @@
 
         update(channel, store = true, epingle = false)
         {
-            let querry;// = $("#wsp-notifs-wsp-" + channel);
-            if (epingle)
-                querry = $("#wsp-notifs-wsp-" + channel + "-epingle");
-            else
-                querry = $("#wsp-notifs-wsp-" + channel);
-            if (querry.find(".ariane").length === 0)
-                querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>')
-            querry = querry.find(".ariane-notif");
-            if (this.unreads[channel] === 0)
-                querry.parent().parent().css("display", "none");
-            else
-                querry.html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");
-            if (store)
-            {
-                mel_metapage.Storage.set("ariane_datas",this);
-                this.update_menu();
+            try {
+                let querry;// = $("#wsp-notifs-wsp-" + channel);
+                if (epingle)
+                    querry = $("#wsp-notifs-wsp-" + channel + "-epingle");
+                else
+                    querry = $("#wsp-notifs-wsp-" + channel);
+                if (querry.find(".ariane").length === 0)
+                    querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>')
+                querry = querry.find(".ariane-notif");
+                if (this.unreads[channel] === 0)
+                    querry.parent().parent().css("display", "none");
+                else
+                    querry.html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");
+                if (store)
+                {
+                    mel_metapage.Storage.set("ariane_datas",this);
+                    this.update_menu();
+                }
+                this.post_message({
+                    ariane:this,
+                    channel:channel
+                });
+                if (!epingle)
+                    this.triggerEvent("update", channel, store, this.unreads[channel]);
+                if (!epingle)
+                    this.update(channel, false, true);
+            } catch (error) {
+                
             }
-            this.post_message({
-                ariane:this,
-                channel:channel
-            });
-            if (!epingle)
-                this.triggerEvent("update", channel, store, this.unreads[channel]);
-            if (!epingle)
-                this.update(channel, false, true);
         }
 
         menu()

@@ -12,7 +12,7 @@
             data.content = JSON.parse(data.content);
             // if (data.content.success)
             //     $("#wsp-notifs");
-            console.log("yeay", data);
+            //console.log("yeay", data);
         },
         error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
             console.error(xhr, ajaxOptions, thrownError);
@@ -101,12 +101,12 @@ function desk_epingle(id)
 
 function update_tasks()
 {
-    console.log("update_tasks()")
+    //console.log("update_tasks()")
     $(".workspace").each((i,e) => {
         const id = e.id.replace("wsp-", "").replace("-epingle", "");
         const datas = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks)[id];
         const count = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks_count)[id];
-        console.log("update_tasks()", id, datas, count);
+        //console.log("update_tasks()", id, datas, count);
         if (datas !== undefined && count !== undefined)
         {
             $(e).find(".wsp-tasks-all").html('<span style="font-size:large">'+(count-datas.length)+'</span> tâches réalisées sur '+count+'</div>');

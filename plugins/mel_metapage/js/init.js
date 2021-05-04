@@ -10,7 +10,7 @@ if (rcmail)
                 refresh:() => {}
             };
     }
-    console.log(parent, window, parent === window);
+    //console.log(parent, window, parent === window);
     if (parent.rcmail.mel_metapage_fn !== undefined)
         return;
     parent.rcmail.addEventListener("init", function() {
@@ -165,7 +165,7 @@ if (rcmail)
                 url: '?_task=mel_metapage&_action=get_unread_mail_count',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
                     try {
-                        console.log("mail_updated", data);
+                        //console.log("mail_updated", data);
                         mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);
@@ -289,7 +289,7 @@ if (rcmail)
             }
             let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
             let btn = ArianeButton.default();
-            console.log(parent.rcmail, rcmail);
+            //console.log(parent.rcmail, rcmail);
             if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
             {
                 if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
@@ -402,7 +402,7 @@ function update_badge(size, idBadge)
     let querry = $("#" + idBadge);
     if (size == 0)
     {
-        console.log("heeeeere", querry);
+        //console.log("heeeeere", querry);
         querry.css("display", "none");
     }
     else

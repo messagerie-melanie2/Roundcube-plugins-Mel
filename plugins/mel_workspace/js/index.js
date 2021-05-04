@@ -79,7 +79,7 @@ function wsp_epingle(id)
 }
 
 $(document).ready(() => {
-    console.log("ready", rcmail.env.action, rcmail.env.action === "action");
+    //console.log("ready", rcmail.env.action, rcmail.env.action === "action");
     if (rcmail.env.action === "action")
         rcmail.register_command("workspaces.page", (page) => {
             rcmail.set_busy(true, "loading");

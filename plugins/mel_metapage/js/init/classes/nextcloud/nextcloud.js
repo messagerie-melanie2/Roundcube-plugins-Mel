@@ -77,11 +77,11 @@ Nextcloud.prototype.createDocument = async function(filename, ext = null, href =
       config = configModifier(config);
     return fetch(href, config)
     .then(function(response) {
-      console.log(response);
+      //console.log(response);
       return response.text();
     })
     .then(function(text) {
-      console.log('Request successful', text);
+      //console.log('Request successful', text);
     })
     .catch(function(error) {
       console.error('Request failed', error)
@@ -108,7 +108,7 @@ Nextcloud.prototype.createDocument = async function(filename, ext = null, href =
  */
 Nextcloud.prototype.searchDocument = async function(filename, folder = null, href = null) {
   var tmp = await this.getAllDocumentsFromFolder(folder, false, href);
-  console.log("¤¤¤$", tmp, filename, tmp.GetFile(filename));
+  //console.log("¤¤¤$", tmp, filename, tmp.GetFile(filename));
   return (await this.getAllDocumentsFromFolder(folder, false, href)).GetFile(filename);
 }
 
@@ -156,7 +156,7 @@ Nextcloud.prototype._getAllFolders = async function(folder = null, parent = "")
  */
 Nextcloud.prototype.go = async function(data, isFileData = true)
 {
-  console.log("data", data);
+  //console.log("data", data);
   async function open()
   {
     mm_st_OpenOrCreateFrame("stockage", false);
@@ -170,12 +170,12 @@ Nextcloud.prototype.go = async function(data, isFileData = true)
   rcmail.set_busy(true, "loading");
   let frameToUpdate = null;
   let needToOpen = false;
-  console.log(rcmail.env.current_frame, $("#" + rcmail.env.current_frame).hasClass("stockage-frame"), $(".stockage-frame").length === 0);
+  //console.log(rcmail.env.current_frame, $("#" + rcmail.env.current_frame).hasClass("stockage-frame"), $(".stockage-frame").length === 0);
   if (rcmail.env.current_frame === undefined && rcmail.env.task === "stockage")
     frameToUpdate = $("#mel_nextcloud_frame");
   else if (!$("#" + rcmail.env.current_frame).hasClass("stockage-frame"))
   {
-    console.log("zbra", $(".stockage-frame").length);
+    //console.log("zbra", $(".stockage-frame").length);
     if ($(".stockage-frame").length === 0){
       frameToUpdate = open(); 
     }
@@ -199,7 +199,7 @@ Nextcloud.prototype.go = async function(data, isFileData = true)
     else 
       data = Nextcloud.index_url + "/apps/files?dir=/"+data.document_path()+"&openfile=" + data.id;
   }
-  console.log("src", data);
+  //console.log("src", data);
   //console.log('fu', frameToUpdate, typeof frameToUpdate !== "function");
   rcmail.set_busy(true, "loading");
   if (frameToUpdate.then === undefined)

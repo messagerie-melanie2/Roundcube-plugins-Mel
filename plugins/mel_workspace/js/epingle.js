@@ -38,7 +38,7 @@ function workspace_load_epingle(data, initialId)
 {
     if (typeof data === "string")
         data = JSON.parse(data);
-    console.log("datas", data, initialId);
+    //console.log("datas", data, initialId);
     if (data.success)
     {
         if (data.is_epingle)

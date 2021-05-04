@@ -115,10 +115,10 @@ SearchResultCalendar.CreateOrOpen= function (json)
 SearchResultCalendar.after_loading = function (event)
 {
     event = JSON.parse(event.replace(/£¤£/g, '"'))
-    console.log("event", event, parent.child_cal);
+    //console.log("event", event, parent.child_cal);
     if (event !== null)
     {
         parent.child_cal.event_show_dialog(event);
-        console.log(event);
+        //console.log(event);
     }
 }

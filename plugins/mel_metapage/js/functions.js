@@ -177,7 +177,7 @@ function m_mp_input_change(event)
     },
     url: "/?_task=workspace&_action=get_uid",
     success: function (ariane) {
-        console.log("uid", ariane);
+        //console.log("uid", ariane);
         $("#workspace-uid").val(ariane);
     },
     error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
@@ -246,7 +246,7 @@ function m_mp_createworkspace()
 
 function m_mp_change_picture(img)
 {
-    console.log(img, $("#worspace-avatar-a"));
+    //console.log(img, $("#worspace-avatar-a"));
     if (img === null)
     {
         $("#worspace-avatar-a").html("");
@@ -606,10 +606,8 @@ function m_mp_hashtag_on_click(event)
     querry = $("#list-of-all-hashtag");
     if (querry.css("display") !== "none" && querry.find(".spinner-border").length === 0)
     {
-        console.log("m_mp_hashtag_on_click" , event);
         let target = event.target;
         while (target.nodeName !== "BODY") {
-            console.log("target",target.id, target,target.id === id,target.nodeName);
             if (target.id === id || target.id === "workspace-hashtag")
                 return;
             else
@@ -900,7 +898,7 @@ async function m_mp_CreateDoc()
     let val = $("#" + mel_metapage.Ids.create.doc_input).val() + "." + $("#" + mel_metapage.Ids.create.doc_input_ext).val();
     let href = $("#" + mel_metapage.Ids.create.doc_input_path).val();
     if (href === "default") href = null;
-    console.log("vall", val, href,$("#" + mel_metapage.Ids.create.doc_input_path).val());
+    //console.log("vall", val, href,$("#" + mel_metapage.Ids.create.doc_input_path).val());
     let nextcloud = new Nextcloud(rcmail.env.nextcloud_username);
     if ((await nextcloud.searchDocument(val, null, href)) === undefined)
     {
@@ -922,7 +920,7 @@ async function m_mp_CreateDoc()
         let doc = await nextcloud.searchDocument(val, null, href);
         window.create_popUp.close();
         window.create_popUp = undefined;
-        console.log(doc, "doc");
+        //console.log(doc, "doc");
         await nextcloud.go(doc);
     }
     else {
@@ -953,9 +951,9 @@ async function m_mp_CreateDocCurrent(val = null, close = true)
         await delay(500);
     }
     rcmail.set_busy(true, "loading");
-    console.log("2 click new");
+
     querry.contents().find(".button.new")[0].click();
-    console.log("3 click doc");
+
     querry.contents().find(".menuitem").each((i,e) => {
         if (e.dataset.filetype !== undefined && e.dataset.filetype === "file")
            e.click();
@@ -964,7 +962,7 @@ async function m_mp_CreateDocCurrent(val = null, close = true)
     while (!Enumerable.from(querry.contents().find("input")).select(x => x.id).where(x => x.includes("input-file")).any()) {
         await delay(500);
     }
-    console.log("4 change value");
+
     let id = Enumerable.from(querry.contents().find("input")).select(x => x.id).where(x => x.includes("input-file")).first();
     querry.contents().find("#" + id).val(val+ (val.includes(".") ? "" : ".txt"));
     await delay(500);
@@ -972,7 +970,7 @@ async function m_mp_CreateDocCurrent(val = null, close = true)
     if (!Enumerable.from(querry.contents().find("div")).where(x => Enumerable.from(x.classList).where(s => s.includes("tooltip").any()) && x.innerHTML.includes(val) && $(x).parent().hasClass("tooltip")  ).any())
         querry.contents().find("#" + id).parent().find(".icon-confirm").click();
     //window.querry = querry;
-    console.log("5 click val");
+
     let it = 2;
     let bool = false;
     let tmpval = val;
@@ -980,7 +978,7 @@ async function m_mp_CreateDocCurrent(val = null, close = true)
         await delay(500);
         if (Enumerable.from(querry.contents().find("div")).where(x => Enumerable.from(x.classList).where(s => s.includes("tooltip").any()) && x.innerHTML.includes(val) && $(x).parent().hasClass("tooltip")  ).any())
         {
-            console.log("["+(it-1)+"]abort, change text + new click");
+
             // m_mp_Create();
             // m_mp_InitializeDocument();
             // $("#" + mel_metapage.Ids.create.doc_input).val(val).css("border-color", "red").parent().append("<br/><span style=color:red;>*Un fichier avec le même nom existe déjà !</span>");
@@ -1000,9 +998,8 @@ async function m_mp_CreateDocCurrent(val = null, close = true)
             rcmail.display_message("Le nom " + tmpval + " existe déjà et sera remplacer par " + val);
         }
     }
-    console.log("6 click item");
     Enumerable.from(querry.contents().find("input")).where(x => x.attributes.type !== undefined && x.attributes.type.value === "submit" && x.classList.contains("primary")).first().click();
-    rcmail.set_busy(true, "loading");
+
     console.log("7 change page");
     m_mp_CreateOrOpenFrame("stockage", () => {}, () => {
         rcmail.set_busy(false);
@@ -1023,7 +1020,7 @@ function m_mp_CreateDocNotCurrent()
         window.create_popUp.close();
         window.create_popUp = undefined;
         querry.css("margin-top", "60px");
-        console.log("1 create-promise");
+
         new Promise(async (a, b) => {
             await m_mp_CreateDocCurrent(val, false);
         });
@@ -1066,10 +1063,10 @@ function m_mp_DecodeUrl()
         else
             text += element;
     }
-    console.log("url decode", {
-        task:task,
-        action:action
-    });
+    // console.log("url decode", {
+    //     task:task,
+    //     action:action
+    // });
     return {
         task:task,
         action:action

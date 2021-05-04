@@ -385,10 +385,11 @@ const mel_metapage = {
             {
                 if (initial_change_page)
                 {
-                    workspaces.sync.PostToParent({
-                        exec:"$('#layout-frames').css('display', '');$('.mm-frame').css('display', 'none');$('.webconf-frame').css('display', '')",
-                        child:false
-                    });
+                    mel_metapage.Functions.call(`mm_st_OpenOrCreateFrame('webconf', true, JSON.parse('${JSON.stringify(args)}'))`);
+                    // workspaces.sync.PostToParent({
+                    //     exec:"$('#layout-frames').css('display', '');$('.mm-frame').css('display', 'none');$('.webconf-frame').css('display', '')",
+                    //     child:false
+                    // });
                 }
             }
             
@@ -396,7 +397,6 @@ const mel_metapage = {
         frame_back:async function(wait = true, default_frame = null)
         {
             let last = await this.ask("rcmail.env.last_frame_class");
-            console.error("last", last, default_frame);
             if (last === null || last === undefined || last === mel_metapage.Storage.unexist)
             {
                 if (default_frame !== null)
@@ -536,8 +536,8 @@ const mel_metapage = {
         update :{
             calendar:function ()
             {
-                console.log("have parent", window !== parent);
-                mel_metapage.Functions.call("console.log('wololololoLOLOLOLOL',rcmail.mel_metapage_fn);rcmail.mel_metapage_fn.calendar_updated();");
+               // console.log("have parent", window !== parent);
+                mel_metapage.Functions.call("rcmail.mel_metapage_fn.calendar_updated();");
             }
         },
         handlerExist:function (element, handler, type = "click")

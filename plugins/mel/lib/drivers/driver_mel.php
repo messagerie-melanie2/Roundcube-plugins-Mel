@@ -337,6 +337,10 @@ abstract class driver_mel {
     return $this->object('Workspaces\\Share', $params);
   }
 
+  public function workspace_hashtag($params = []) {
+    return $this->object('Workspaces\\Hashtag', $params);
+  }
+
   /**
    * Return the object share delimiter from ObjectShare ORM object
    * 

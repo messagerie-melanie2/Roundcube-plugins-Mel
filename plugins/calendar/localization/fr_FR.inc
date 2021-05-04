@@ -151,15 +151,17 @@ $labels['showalarms'] = 'Afficher les rappels';
 $labels['defaultalarmtype'] = 'Paramètre de rappel par défaut';
 $labels['defaultalarmoffset'] = 'Durée de rappel par défaut';
 $labels['attendee'] = 'Participant';
-$labels['role'] = 'Rôle';
+// MANTIS 0006106: Harmonisation des termes utilisés
+$labels['role'] = 'Participation';
 $labels['availability'] = 'Dispo.';
 $labels['confirmstate'] = 'Statut';
 $labels['addattendee'] = 'Ajouter participant';
 $labels['roleorganizer'] = 'Organisateur';
-$labels['rolerequired'] = 'Requis';
-$labels['roleoptional'] = 'Optionnel';
-$labels['rolechair'] = 'Présidence';
-$labels['rolenonparticipant'] = 'Absent';
+// MANTIS 0006106: Harmonisation des termes utilisés
+$labels['rolerequired'] = 'Obligatoire';
+$labels['roleoptional'] = 'Facultative';
+$labels['rolechair'] = 'Animateur';
+$labels['rolenonparticipant'] = 'Non participant';
 $labels['cutypeindividual'] = 'Individuel';
 $labels['cutypegroup'] = 'Groupe';
 $labels['cutyperesource'] = 'Ressource';

@@ -719,6 +719,7 @@ class mel_driver extends calendar_driver {
         }
         $exceptions[$recid] = $this->_write_postprocess($_exception, $event, true);
         $_event->exceptions = $exceptions;
+        $_event->modified = time();
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
         // Positionnement de la recurrence_id et de l'uid
@@ -944,6 +945,7 @@ class mel_driver extends calendar_driver {
           $_exception = $this->_write_postprocess($_exception, $e, true);
           $exceptions[] = $_exception;
           $_event->exceptions = $exceptions;
+          $_event->modified = time();
         }
         else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
           $e = $this->_read_postprocess($_event);
@@ -1262,6 +1264,7 @@ class mel_driver extends calendar_driver {
           }
           $exceptions[] = $_exception;
           $_event->exceptions = $exceptions;
+          $_event->modified = time();
           $ret = $_event->save();
           return ! is_null($ret);
         }

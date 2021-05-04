@@ -106,6 +106,9 @@ class mel_sharedmailboxes extends rcube_plugin {
         else if ($this->rc->task == 'settings' && $this->rc->action == 'rename-folder') {
             $this->get_user_from_folder(rcube_utils::get_input_value('_folder_oldname', rcube_utils::INPUT_POST));
         }
+        else if ($this->rc->task == 'mail' && $this->rc->action == 'mark') {
+            $this->get_user_from_folder(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
+        }
         // Chargement de l'ui
         $this->init_ui();
     }

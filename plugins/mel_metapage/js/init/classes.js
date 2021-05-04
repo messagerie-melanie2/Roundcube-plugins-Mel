@@ -48,6 +48,9 @@ class ArianePopUp{
         this.ariane = new ArianeFrame();
         this.button = arianeButton;
         this.is_show = false;
+        // $(function () {
+        //     $('[data-toggle="tooltip"]').tooltip()
+        //   })
     }
 
     anchor()

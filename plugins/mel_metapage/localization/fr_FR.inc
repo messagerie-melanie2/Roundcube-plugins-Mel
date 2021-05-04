@@ -44,3 +44,25 @@ $labels['rolenonparticipant'] = 'Absent';
 $labels['audioinput'] = 'Micro';
 $labels['audiooutput'] = 'Audio';
 $labels['videoinput'] = 'Caméra';
+
+$labels["fullscreen"] = "Afficher la discussion instantanée en plein écran";
+$labels["anchor"] = "Ancrer la discussion instantanée à droite";
+$labels["close"] = "Fermer la discussion instantanée";
+
+$labels["create_help"] = "Ouvre la fenêtre de création (email, espaces de travail, etc...)";
+$labels["help_help"] = "Ouvre la fenêtre d'aide";
+$labels["shortcuts_help"] = "Affiche les raccourcis";
+$labels["user_help"] = "Permet de se déconnecter ou d'accéder aux options de compte";
+$labels["ariane_help"] = "Ouvre la fenêtre de discussion instantanée";
+$labels["webconf_enter_help"] = "Ouvre la visioconférence";
+$labels["webconf_close_help"] = "Ferme et ouvre la dernière page ouverte";
+
+$labels["webconf_hangup_help"] = "Met fin à la visioconférence";
+$labels["webconf_copy_help"] = "Copie le lien de la visioconférence";
+$labels["webconf_share_screen_help"] = "Commence ou termine un partage d'écran";
+$labels["webconf_nextcloud_help"] = "Ouvre ou ferme la fenêtre des documents partagés";
+$labels["webconf_rocket_chat_help"] = "Ouvre ou ferme la discussion instantanée";
+$labels["webconf_mic_help"] = "Active ou désactive le micro";
+$labels["webconf_vid_help"] = "Active ou désactive la caméra";
+$labels["webconf_tile_help"] = "Active ou désactive le mode de vue \"Tuile\"";
+$labels["webconf_round_help"] = "Affiche ou cache la barre d'outil";

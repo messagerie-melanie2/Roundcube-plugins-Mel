@@ -1,0 +1,716 @@
+#filelist tbody td.filename._css_sh span {
+  background: url(_css.sh) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_illustrator span {
+  background: url(application_illustrator.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_octet_stream span {
+  background: url(application_octet_stream.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_pgp_encrypted span {
+  background: url(application_pgp_encrypted.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_pgp_keys span,
+#filelist tbody td.filename.application_pkcs7_mime span {
+  background: url(application_pgp_keys.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_pgp_signature span,
+#filelist tbody td.filename.application_pkcs7_signature span {
+  background: url(application_pgp_signature.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_relaxng span {
+  background: url(application_relaxng.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_rss_xml span {
+  background: url(application_rss+xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_rtf span {
+  background: url(application_rtf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_ms_excel span {
+  background: url(application_vnd.ms_excel.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_ms_powerpoint span {
+  background: url(application_vnd.ms_powerpoint.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_ms_word span,
+#filelist tbody td.filename.application_msword span {
+  background: url(application_vnd.ms_word.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_chart span {
+  background: url(application_vnd.oasis.opendocument.chart.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_database span {
+  background: url(application_vnd.oasis.opendocument.database.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_formula span {
+  background: url(application_vnd.oasis.opendocument.formula.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_graphics span {
+  background: url(application_vnd.oasis.opendocument.graphics.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_image span {
+  background: url(application_vnd.oasis.opendocument.image.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_presentation span {
+  background: url(application_vnd.oasis.opendocument.presentation.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_presentation_template span {
+  background: url(application_vnd.oasis.opendocument.presentation_template.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_spreadsheet span {
+  background: url(application_vnd.oasis.opendocument.spreadsheet.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_spreadsheet_template span {
+  background: url(application_vnd.oasis.opendocument.spreadsheet_template.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_oasis_opendocument_text span {
+  background: url(application_vnd.oasis.opendocument.text.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_rn_realmedia span {
+  background: url(application_vnd.rn_realmedia.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_stardivision_calc span {
+  background: url(application_vnd.stardivision.calc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_sun_xml_calc span {
+  background: url(application_vnd.sun.xml.calc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_vnd_sun_xml_calc_template span {
+  background: url(application_vnd.sun.xml.calc.template.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_applix_spreadsheet span {
+  background: url(application_x_applix_spreadsheet.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_archive span,
+#filelist tbody td.filename.application_x_ar span,
+#filelist tbody td.filename.application_x_cpio span {
+  background: url(application_x_archive.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_awk span {
+  background: url(application_x_awk.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_bittorrent span {
+  background: url(application_x_bittorrent.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_bzdvi span {
+  background: url(application_x_bzdvi.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_bzip span {
+  background: url(application_x_bzip.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_cd_image span {
+  background: url(application_x_cd_image.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_cda span {
+  background: url(application_x_cda.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_compress span {
+  background: url(application_x_compress.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_compressed_tar span {
+  background: url(application_x_compressed_tar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_cue span {
+  background: url(application_x_cue.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_deb span {
+  background: url(application_x_deb.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_designer span {
+  background: url(application_x_designer.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_desktop span {
+  background: url(application_x_desktop.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_egon span {
+  background: url(application_x_egon.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_executable span {
+  background: url(application_x_executable.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_executable_script span {
+  background: url(application_x_executable_script.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_afm span {
+  background: url(application_x_font_afm.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_bdf span {
+  background: url(application_x_font_bdf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_otf span {
+  background: url(application_x_font_otf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_pcf span {
+  background: url(application_x_font_pcf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_snf span {
+  background: url(application_x_font_snf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_ttf span {
+  background: url(application_x_font_ttf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_font_type1 span {
+  background: url(application_x_font_type1.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_gnumeric span {
+  background: url(application_x_gnumeric.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_gzdvi span {
+  background: url(application_x_gzdvi.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_gzip span {
+  background: url(application_x_gzip.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_gzpostscript span {
+  background: url(application_x_gzpostscript.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_java span {
+  background: url(application_x_java.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_java_applet span {
+  background: url(application_x_java_applet.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_java_archive span {
+  background: url(application_x_java_archive.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_javascript span {
+  background: url(application_x_javascript.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_kcsrc span {
+  background: url(application_x_kcsrc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_kgetlist span {
+  background: url(application_x_kgetlist.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_kontour span {
+  background: url(application_x_kontour.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_krita span {
+  background: url(application_x_krita.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_lzop span {
+  background: url(application_x_lzop.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_marble span {
+  background: url(application_x_marble.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_mimearchive span {
+  background: url(application_x_mimearchive.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_mplayer2 span {
+  background: url(application_x_mplayer2.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_ms_dos_executable span {
+  background: url(application_x_ms_dos_executable.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_mswinurl span {
+  background: url(application_x_mswinurl.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_mswrite span {
+  background: url(application_x_mswrite.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_nzb span {
+  background: url(application_x_nzb.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_object span {
+  background: url(application_x_object.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_pak span {
+  background: url(application_x_pak.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_perl span {
+  background: url(application_x_perl.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_php span {
+  background: url(application_x_php.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_plasma span {
+  background: url(application_x_plasma.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_python_bytecode span {
+  background: url(application_x_python_bytecode.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_quattropro span {
+  background: url(application_x_quattropro.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_rpm span {
+  background: url(application_x_rpm.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_ruby span {
+  background: url(application_x_ruby.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_sharedlib span {
+  background: url(application_x_sharedlib.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_shellscript span {
+  background: url(application_x_shellscript.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_siag span {
+  background: url(application_x_siag.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_tar span {
+  background: url(application_x_tar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_tgif span {
+  background: url(application_x_tgif.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_trash span {
+  background: url(application_x_trash.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_troff_man span {
+  background: url(application_x_troff_man.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_wmf span {
+  background: url(application_x_wmf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_x_zerosize span {
+  background: url(application_x_zerosize.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_xhtml_xml span {
+  background: url(application_xhtml+xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_xml span {
+  background: url(application_xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_xsd span {
+  background: url(application_xsd.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_xslt_xml span {
+  background: url(application_xslt+xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.application_zip span,
+#filelist tbody td.filename.application_x_7z_compressed span,
+#filelist tbody td.filename.application_x_ace span,
+#filelist tbody td.filename.application_x_arc span,
+#filelist tbody td.filename.application_x_arj span,
+#filelist tbody td.filename.application_x_bzip_compressed_tar span,
+#filelist tbody td.filename.application_x_lha span,
+#filelist tbody td.filename.application_x_rar span,
+#filelist tbody td.filename.application_x_tarz span,
+#filelist tbody td.filename.application_x_tzo span,
+#filelist tbody td.filename.application_x_zip span,
+#filelist tbody td.filename.application_x_zoo span {
+  background: url(application_zip.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.ascii span {
+  background: url(ascii.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio span {
+  background: url(audio.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio_ac3 span {
+  background: url(audio_ac3.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio_midi span,
+#filelist tbody td.filename.audio_prs_sid span {
+  background: url(audio_midi.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio_x_flac span {
+  background: url(audio_x_flac.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio_x_monkey span {
+  background: url(audio_x_monkey.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio_x_speex_ogg span {
+  background: url(audio_x_speex+ogg.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.audio_x_wav span,
+#filelist tbody td.filename.audio_x_aiff span {
+  background: url(audio_x_wav.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.binary span {
+  background: url(binary.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.bt span {
+  background: url(bt.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.cdbo_list span {
+  background: url(cdbo_list.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.cdimage span {
+  background: url(cdimage.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.cdtrack span {
+  background: url(cdtrack.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.colorscm span {
+  background: url(colorscm.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.deb span {
+  background: url(deb.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.document span {
+  background: url(document.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.drawing span {
+  background: url(drawing.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.empty span {
+  background: url(empty.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.encrypted span {
+  background: url(encrypted.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.exe span {
+  background: url(exe.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.exec span {
+  background: url(exec.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.flv span {
+  background: url(flv.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.folder span {
+  background: url(folder.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.font_bitmap span {
+  background: url(font_bitmap.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.font_truetype span {
+  background: url(font_truetype.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.font_type1 span {
+  background: url(font_type1.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.formula span {
+  background: url(formula.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.html span {
+  background: url(html.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image span,
+#filelist tbody td.filename.application_vnd_stardivision_draw span,
+#filelist tbody td.filename.application_vnd_sun_xml_draw span,
+#filelist tbody td.filename.application_vnd_sun_xml_draw_template span {
+  background: url(image.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_jpeg span,
+#filelist tbody td.filename.image_jpeg2000 span {
+  background: url(image_jpeg2000.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_png span {
+  background: url(image_png.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_svg_xml span {
+  background: url(image_svg+xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_svg_xml_compressed span {
+  background: url(image_svg+xml_compressed.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_x_eps span {
+  background: url(image_x_eps.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_x_vnd_trolltech_qpicture span {
+  background: url(image_x_vnd.trolltech.qpicture.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.image_x_xfig span {
+  background: url(image_x_xfig.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.info span {
+  background: url(info.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.inode_directory span {
+  background: url(inode_directory.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.jar span {
+  background: url(jar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.java_jar span {
+  background: url(java_jar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.kchart_chrt span {
+  background: url(kchart_chrt.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.kdeprint_addprinter span {
+  background: url(kdeprint_addprinter.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.kget_list span {
+  background: url(kget_list.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.krita_kra span {
+  background: url(krita_kra.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.kwordquiz_do span {
+  background: url(kwordquiz_do.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.make span {
+  background: url(make.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.man span {
+  background: url(man.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.message span {
+  background: url(message.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.message_news span {
+  background: url(message_news.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.message_rfc822 span {
+  background: url(message_rfc822.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.midi span {
+  background: url(midi.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.msi span {
+  background: url(msi.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.news span {
+  background: url(news.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.odf span {
+  background: url(odf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.package_x_generic span {
+  background: url(package_x_generic.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.pdf span,
+#filelist tbody td.filename.application_pdf span {
+  background: url(pdf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.plasmoid span {
+  background: url(plasmoid.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.postscript span {
+  background: url(postscript.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.presentation span {
+  background: url(presentation.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.recycled span {
+  background: url(recycled.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.rpm span {
+  background: url(rpm.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.shellscript span {
+  background: url(shellscript.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.sound span {
+  background: url(sound.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source span {
+  background: url(source.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_c span {
+  background: url(source_c.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_cpp span {
+  background: url(source_cpp.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_h span {
+  background: url(source_h.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_java span {
+  background: url(source_java.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_p span {
+  background: url(source_p.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_php span {
+  background: url(source_php.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_pl span {
+  background: url(source_pl.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.source_py span {
+  background: url(source_py.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.spreadsheet span {
+  background: url(spreadsheet.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.style_css span {
+  background: url(style.css) 0 0 no-repeat;
+}
+#filelist tbody td.filename.tar span {
+  background: url(tar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.tex span {
+  background: url(tex.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text span {
+  background: url(text.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_calendar span {
+  background: url(text_calendar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_css span {
+  background: url(text_css.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_csv span {
+  background: url(text_csv.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_directory span {
+  background: url(text_directory.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_enriched span,
+#filelist tbody td.filename.text_rtf span {
+  background: url(text_enriched.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_html span {
+  background: url(text_html.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_mathml span {
+  background: url(text_mathml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_plain span {
+  background: url(text_plain.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_rdf span {
+  background: url(text_rdf.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_sgml span {
+  background: url(text_sgml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_troff span {
+  background: url(text_troff.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_vcalendar span {
+  background: url(text_vcalendar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_vnd_abc span {
+  background: url(text_vnd.abc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_vnd_wap_wml span {
+  background: url(text_vnd.wap.wml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_adasrc span {
+  background: url(text_x_adasrc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_bibtex span {
+  background: url(text_x_bibtex.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_c__hdr span {
+  background: url(text_x_c++hdr.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_c__src span {
+  background: url(text_x_c++src.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_chdr span {
+  background: url(text_x_chdr.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_csharp span {
+  background: url(text_x_csharp.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_csrc span {
+  background: url(text_x_csrc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_dtd span {
+  background: url(text_x_dtd.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_generic span {
+  background: url(text_x_generic.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_hex span {
+  background: url(text_x_hex.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_java span {
+  background: url(text_x_java.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_katefilelist span {
+  background: url(text_x_katefilelist.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_ldif span {
+  background: url(text_x_ldif.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_makefile span {
+  background: url(text_x_makefile.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_objchdr span {
+  background: url(text_x_objchdr.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_objcsrc span {
+  background: url(text_x_objcsrc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_pascal span {
+  background: url(text_x_pascal.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_patch span {
+  background: url(text_x_patch.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_python span {
+  background: url(text_x_python.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_script span {
+  background: url(text_x_script.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_tcl span {
+  background: url(text_x_tcl.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_tex span {
+  background: url(text_x_tex.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_texinfo span {
+  background: url(text_x_texinfo.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_vcard span {
+  background: url(text_x_vcard.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_x_xslfo span {
+  background: url(text_x_xslfo.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_xmcd span {
+  background: url(text_xmcd.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.text_xml span {
+  background: url(text_xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.tgz span {
+  background: url(tgz.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.txt span {
+  background: url(txt.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.unknown span {
+  background: url(unknown.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.uri_mms span,
+#filelist tbody td.filename.uri_mmst span,
+#filelist tbody td.filename.uri_mmsu span,
+#filelist tbody td.filename.uri_pnm span,
+#filelist tbody td.filename.uri_rtspt span,
+#filelist tbody td.filename.uri_rtspu span {
+  background: url(uri_mms.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.vcalendar span {
+  background: url(vcalendar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.vcard span {
+  background: url(vcard.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.vectorgfx span {
+  background: url(vectorgfx.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.video span {
+  background: url(video.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.widget_doc span {
+  background: url(widget_doc.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.wordprocessing span {
+  background: url(wordprocessing.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.x_media_podcast span {
+  background: url(x_media_podcast.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.x_office_address_book span {
+  background: url(x_office_address_book.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.x_office_calendar span {
+  background: url(x_office_calendar.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.x_office_contact span {
+  background: url(x_office_contact.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.x_office_document span {
+  background: url(x_office_document.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.x_office_spreadsheet span {
+  background: url(x_office_spreadsheet.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.xml span {
+  background: url(xml.png) 0 0 no-repeat;
+}
+#filelist tbody td.filename.zip span {
+  background: url(zip.png) 0 0 no-repeat;
+}

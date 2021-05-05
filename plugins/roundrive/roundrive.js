@@ -29,6 +29,17 @@ window.rcmail && window.files_api && rcmail.addEventListener('init', function() 
   if (rcmail.task == 'mail') {
     // mail compose
     if (rcmail.env.action == 'compose') {
+
+      rcmail.register_command("roundrive.header.folder", () => {
+        $("#files-compose-dialog #layout-list").removeClass("hidden");
+        $("#files-compose-dialog #layout-content").addClass("hidden");
+      }, true);
+
+      rcmail.register_command("roundrive.header.back", () => {
+        $("#files-compose-dialog #layout-list").addClass("hidden");
+        $("#files-compose-dialog #layout-content").removeClass("hidden");
+      }, true);
+
       var elem = $('#compose-attachments > div'),
         input = $('<input class="button" type="button">')
           .attr('tabindex', $('input', elem).attr('tabindex') || 0)
@@ -105,6 +116,7 @@ window.rcmail && window.files_api && rcmail.addEventListener('init', function() 
       rcmail.file_list.init();
       roundrive_list_coltypes();
       roundrive_drag_drop_init($(rcmail.gui_objects.filelist).parents('.droptarget'));
+
     }
 
     // "one file only" commands
@@ -282,7 +294,8 @@ function roundrive_selector_dialog()
     minWidth: 500,
     minHeight: 300,
     width: 700,
-    height: 500
+    height: 500,
+    dialogClass:"mel-dialog"
   });
 
   if (!rcmail.env.files_loaded) {

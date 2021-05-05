@@ -104,7 +104,14 @@ function files_api()
 
     return $.ajax({
       type: 'GET', url: rcmail.url('roundrive/file_api'), data: data, dataType: 'json',
-      success: function(response) { ref[func](response); },
+      success: function(response) { 
+        ref[func](response); 
+        if (data.method != "folder_list" && $("html").hasClass("layout-small") && $("#files-compose-dialog #layout-content").hasClass("hidden"))
+        {
+          $("#files-compose-dialog #layout-list").addClass("hidden");
+          $("#files-compose-dialog #layout-content").removeClass("hidden");
+        }
+      },
       error: function(o, status, err) { ref.http_error(o, status, err); },
       cache: false,
     });

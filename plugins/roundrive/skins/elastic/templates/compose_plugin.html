@@ -1,4 +1,4 @@
-<div id="files-compose-dialog" class="uidialog" role="dialog" aria-labelledby="aria-label-fileselect" aria-hidden="true">
+<div id="files-compose-dialog" style="display: flex;height: 100%" class="uidialog" role="dialog" aria-labelledby="aria-label-fileselect" aria-hidden="true">
     <h2 id="aria-label-fileselect" class="voice"><roundcube:label name="roundrive.arialabelfileselectdialog" /></h2>
     <!-- <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
         <h3 id="aria-label-searchform" class="voice"><roundcube:label name="roundrive.arialabelsearchform" /></h3>
@@ -8,12 +8,18 @@
         <roundcube:button command="files-search-reset" id="searchreset" class="iconbutton reset" title="resetsearch" content=" " />
     </div> -->
 
-    <div id="folderlistbox" class="uibox listbox" role="navigation" aria-labelledby="aria-label-folderlist">
+    <div id="layout-list" class="uibox listbox" role="navigation" aria-labelledby="aria-label-folderlist">
+        <div class="header">
+            <button onclick="rcmail.command('roundrive.header.back')" style="margin-top: 0;margin-bottom:10px" id="button-back-roundrive2" title="<roundcube:label name='back' />" class="mel-button" href="#back"><span class="icon-mel-undo"></span></button>
+        </div>
         <h3 id="aria-label-folderlist" class="voice"><roundcube:label name="roundrive.arialabelfolderlist" /></h3>
         <div id="files-folder-list" class="scroller"></div>
     </div>
 
-    <div id="filelistcontainer" class="boxlistcontent uibox">
+    <div id="layout-content" class="boxlistcontent uibox">
+        <div class="header">
+            <button onclick="rcmail.command('roundrive.header.folder')" style="margin-top: 0;margin-bottom:10px" id="button-back-roundrive" title="<roundcube:label name='groups' />" class="mel-button" href="#back"><span class="icon-mel-folder"></span></button>
+        </div>
         <h3 id="aria-label-filelist" class="voice"><roundcube:label name="arialabelfilelist" /></h3>
         <roundcube:object name="filelist" id="filelist" class="records-table filelist sortheader fixedheader" aria-labelledby="aria-label-filelist" />
     </div>

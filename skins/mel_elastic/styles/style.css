@@ -788,6 +788,7 @@ td.mel-fit-content{
 .mel-button{
     color: white;
     background-color: #363A5B;
+    border-color: #363A5B;
     display: inline-block;
     width: -moz-fit-content;
     width: fit-content;
@@ -813,6 +814,7 @@ td.mel-fit-content{
 .mel-button:hover
 {
     background-color: #484D7A;
+    border-color: #484D7A;
 }
 
 .mel-button:hover > .mel-return
@@ -883,3 +885,14 @@ span.span-webconf
     font-size: 10px;
 /* padding-right: 3px; */
 }
+
+.task-mail.action-compose #layout-sidebar
+{
+    margin-left: 0px!important;
+}
+
+.task-mail.action-compose #layout-content
+{
+    margin-left: 60px!important;
+}
+

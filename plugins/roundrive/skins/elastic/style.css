@@ -104,6 +104,17 @@ body.roundrive #filestoolbar form {
   border: 0;
 }
 
+/* ul.treelist li:hover > .name
+{
+	background-color: #484D7A !important;
+	color: white !important;
+}
+
+ul.treelist li:hover > .treetoggle
+{
+  color:white;
+} */
+
 ul.listing li {
   outline: 0;
 }
@@ -395,4 +406,61 @@ table.propform td.source table.propform td {
 .auth-options input,
 .auth-options label {
   vertical-align: middle;
+}
+
+#files-compose-dialog #layout-list,
+#files-compose-dialog #layout-content
+{
+    margin-left: 0px!important;
+    margin-top: 0px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* #files-compose-dialog #layout-content
+{
+    margin-top: 0px;
+    margin-left: 0px!important;
+} */
+
+table#filelist tr{
+  transition: all 0.1s ease-in;
+  cursor: pointer;
+}
+
+table#filelist tr:hover {
+	background-color: #484D7A;
+  color:white;
+}
+
+table#filelist tr.selected
+{
+  background-color: #363A5B;
+  color:white;
+}
+
+ul.treelist li.mailbox.child.selected {
+	background-color: #363A5B;
+}
+
+ul.treelist li.mailbox.selected > .name {
+	text-decoration: underline;
+}
+
+html.layout-small .mel-dialog {
+	left: unset !important;
+	right: 5px;
+	/* padding-left: 60px; */
+	width: calc(100% - 70px) !important;
+}
+
+#files-compose-dialog .header
+{
+  display: none;
+}
+
+html.layout-small #files-compose-dialog .header
+{
+  display: block;
 }

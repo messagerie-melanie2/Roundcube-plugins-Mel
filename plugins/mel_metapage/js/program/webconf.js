@@ -165,6 +165,20 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         return !this.have_ariane() || this.ariane.is_hide
     }
 
+    this.jwt = async function()
+    {
+        if (this._jwt === undefined)
+        {
+            rcmail.http_get('webconf/jwt', {
+				_room : this.key,
+			}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
+            while (this._jwt === undefined) {
+                await delay(500);
+            }
+        }
+        return this._jwt;
+    }
+
     /**
      * Lance la webconférence ainsi que Rocket.Chat
      * @param {bool} changeSrc Si faux, utilise une commande Rocket.Chat, si vrai, modifie la source de l'iframe rc
@@ -203,6 +217,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         //Init jitsi
         const domain = rcmail.env["webconf.base_url"].replace("http://", "").replace("https://", "");
         const options = {
+            jwt:await this.jwt(),
             roomName: this.key,
             width: "100%",
             height: "100%",
@@ -1475,21 +1490,31 @@ $(document).ready(() => {
 
 
             $("head").append(`<script src='${rcmail.env["webconf.base_url"]}/external_api.js'></script>`);
-            let webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
-            webconf.set_title();
+            if (window.rcmail) {
+                // Call refresh panel
+                rcmail.addEventListener('responseafterjwt', function(evt) {
+                    console.log("rcmail.addEventListener('responseafterwebconf_jwt')", evt);
+                    if (evt.response.id) {
+                        rcmail.env.webconf._jwt = evt.response.jwt;
+                        //rcmail.portail_open_url(evt.response.id, rcmail.env.portail_items[evt.response.id].url + evt.response.room + '?jwt=' + evt.response.jwt);
+                    }
+                });
+            }
+            rcmail.env.webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
+            rcmail.env.webconf.set_title();
 
-            if (webconf.have_ariane())
+            if (rcmail.env.webconf.have_ariane())
             {
-                await webconf.go();
+                await rcmail.env.webconf.go();
 
-                webconf.remove_selector();
+                rcmail.env.webconf.remove_selector();
             }
             else
             {
-                webconf.set_title();
-                webconf.show_selector();
+                rcmail.env.webconf.set_title();
+                rcmail.env.webconf.show_selector();
             }
-            rcmail.env.webconf = webconf;
+            //rcmail.env.webconf = webconf;
             rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);   
 
         } catch (error) {
@@ -1497,7 +1522,9 @@ $(document).ready(() => {
         }
     };
 
-    tmp();
+    rcmail.addEventListener("init", () => {
+        tmp();
+    });
     $(".footer").css("display", "none");
 
 });

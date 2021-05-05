@@ -36,7 +36,6 @@ class Webconf extends Module {
   public static function jwt() {
     $rcmail = rcmail::get_instance();
     $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
-    $id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
     $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
     $payload = $rcmail->config->get('webconf_jwt_payload', null);
     if (isset($payload)) {
@@ -46,8 +45,8 @@ class Webconf extends Module {
 
       $jwt = JWT::encode($payload, $key);
       $result = array(
-        'action'  => 'webconf_jwt',
-        'id'      => $id,
+        'action'  => 'jwt',
+        'id'      => "webconf",
         'room'    => $room,
         'jwt'     => $jwt,
         'unlock'  => $unlock,

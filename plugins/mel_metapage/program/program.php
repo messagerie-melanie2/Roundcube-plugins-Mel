@@ -44,7 +44,7 @@ abstract class Program{
 
     protected function register_action($action, $callback)
     {
-        $this->plugin->register_action('index', $callback);
+        $this->plugin->register_action($action, $callback);
     }
 
     protected function get_config($key, $default = null)

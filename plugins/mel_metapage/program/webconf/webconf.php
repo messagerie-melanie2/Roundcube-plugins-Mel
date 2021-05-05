@@ -1,4 +1,6 @@
 <?php
+use \Firebase\JWT\JWT;
+require_once __DIR__ . '/vendor/autoload.php';
 include_once __DIR__."/../program.php";
 
 class Webconf extends Program
@@ -12,6 +14,7 @@ class Webconf extends Program
     public function init()
     {
         $this->register_action("index", [$this, "index"]);
+        $this->register_action("jwt", [$this, "get_jwt"]);
         if ($this->action === "" || $this->action === "index")
         {
             $this->include_js("../../../rocket_chat/favico.js");
@@ -164,5 +167,42 @@ class Webconf extends Program
         return $this->get_config("web_conf");
     }
 
+    public function get_jwt()
+    {
+        header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+        echo json_encode(self::jwt());
+        exit;
+    }
+  /**
+   * Génère le code jwt
+   */
+  public static function jwt() {
+    $rcmail = rcmail::get_instance();
+    $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
+    //$id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
+    $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
+    $payload = $rcmail->config->get('webconf_jwt_payload', null);
 
+    $result = null;
+    if (isset($payload)) {
+        $payload['room'] = $room;
+        $payload['exp'] = time() + 12*60*60; // Expiration dans 12h
+        $key = $rcmail->config->get('webconf_jwt_key', null);
+
+        $jwt = JWT::encode($payload, $key);
+        $result = array(
+            'action'  => 'jwt',
+            'id'      => "webconf",
+            'room'    => $room,
+            'jwt'     => $jwt,
+            'unlock'  => $unlock,
+        );
+    }
+    return $result;
+    //   // send output
+    //   header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
+    //   echo json_encode($result);
+    // //}
+    // exit();
+  }
 }

@@ -822,6 +822,11 @@ td.mel-fit-content{
     color:#ff5552;
 }
 
+.mel-button.button-white:hover
+{
+    color:white;
+}
+
 .square_div > .contents
 {
   background-color:#F8F8F8;
@@ -896,3 +901,9 @@ span.span-webconf
     margin-left: 60px!important;
 }
 
+a.button.icon.attach::before, button.btn.attach::before {
+	content: "\e91c";
+	font-family: DWP;
+	font-weight: normal;
+	font-size: unset;
+}

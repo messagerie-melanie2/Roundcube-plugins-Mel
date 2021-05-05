@@ -41,10 +41,11 @@ window.rcmail && window.files_api && rcmail.addEventListener('init', function() 
       }, true);
 
       var elem = $('#compose-attachments > div'),
-        input = $('<input class="button" type="button">')
+        input = $('<button class="button" type="button"></button>')
           .attr('tabindex', $('input', elem).attr('tabindex') || 0)
-          .val(rcmail.gettext('roundrive.fromcloud'))
+          .html(`<span class="icon-mel-link"></span> ${rcmail.gettext('roundrive.fromcloud')}`)
           .click(function() { roundrive_selector_dialog(); })
+          .addClass("btn btn-secondary")
           .appendTo(elem);
 
       if (rcmail.gui_objects.filelist) {
@@ -290,7 +291,7 @@ function roundrive_selector_dialog()
   roundrive_dialog_show(dialog, {
     title: rcmail.gettext('roundrive.selectfiles'),
     buttons: buttons,
-    button_classes: ['mainaction'],
+    button_classes: ['mainaction mel-button button-white float-right icon-mel-arrow-right-after', 'mel-button button-white float-left icon-mel-undo-after'],
     minWidth: 500,
     minHeight: 300,
     width: 700,

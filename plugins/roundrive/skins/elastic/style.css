@@ -464,3 +464,34 @@ html.layout-small #files-compose-dialog .header
 {
   display: block;
 }
+
+.mel-dialog .ui-dialog-buttonset
+{
+  display: block!important;
+}
+
+.icon-mel-undo-after,
+.icon-mel-arrow-right-after
+{
+  font-family: unset!important;
+}
+
+.icon-mel-undo-after:after {
+  content: "\e936";
+}
+
+.icon-mel-arrow-right-after:after {
+  content: "\e900";
+}
+
+.icon-mel-undo-after:after,
+.icon-mel-arrow-right-after:after
+{
+  font-family: "DWP";
+}
+
+.mel-button.icon-mel-undo-after:after,
+.mel-button.icon-mel-arrow-right-after:after
+{
+  margin-left: 15px;
+}

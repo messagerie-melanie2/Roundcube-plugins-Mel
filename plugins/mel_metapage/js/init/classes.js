@@ -438,8 +438,8 @@ class ArianeFrame{
     }
 }
 
-ArianeFrame.unanchor = "icon-mel-external";
-ArianeFrame.anchor = "icofont-anchor";
+ArianeFrame.unanchor = "icon-mel-popup-external";
+ArianeFrame.anchor = "icon-mel-popup-anchor";
 
 class ArianeCard
 {

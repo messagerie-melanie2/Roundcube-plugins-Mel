@@ -296,7 +296,7 @@ class mel_workspace extends rcube_plugin
         if ($services[self::AGENDA])
         {
             $onclick = "ChangeToolbar('calendar', this)";
-            $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span>");
+            $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>Agenda</span>");
         }
         
         if ($services[self::CHANNEL])

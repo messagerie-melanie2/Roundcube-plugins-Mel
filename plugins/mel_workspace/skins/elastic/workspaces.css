@@ -227,7 +227,6 @@ html.layout-small .wsp-toolbar{
 }
 
 .wsp-toolbar-item {
-    /*! display: inline-block; */
     font-size: xx-large;
     padding: 0 50px;
     border-left-style: solid;
@@ -235,6 +234,26 @@ html.layout-small .wsp-toolbar{
     border-left-width: 2px;
     margin: 10px 0;
     position: relative;
+}
+
+
+/* .wsp-toolbar-item {
+    font-size: 20px;
+    padding: 0 50px;
+    border-left-style: solid;
+    border-color: #7786BD;
+    border-left-width: 2px;
+    margin: 10px 0;
+    position: relative;
+    margin-bottom:25px;
+} */
+
+.wsp-toolbar-item > .text-item {
+	position: absolute;
+	font-size: 13px;
+	top: 22px;
+	right: 37px;
+    display:none;
 }
 
 html.layout-normal .wsp-toolbar-item{
@@ -261,7 +280,7 @@ html.layout-small .wsp-toolbar-item
 .wsp-toolbar-item:hover,
 .wsp-toolbar-item.active{
     cursor: pointer;
-    background: radial-gradient(circle, #42548F 33%, rgba(255,255,255,0) 33%);
+    background: radial-gradient(circle, #42548F 33%, rgba(255,255,255,0) 33%); /*29*/
 }
 
 .wsp-toolbar-item > span {

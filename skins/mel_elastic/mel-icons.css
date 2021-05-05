@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?z8w8z1') format('truetype'),
-    url('fonts/DWP.woff?z8w8z1') format('woff'),
-    url('fonts/DWP.svg?z8w8z1#DWP') format('svg');
+    url('fonts/DWP.ttf?gpq79d') format('truetype'),
+    url('fonts/DWP.woff?gpq79d') format('woff'),
+    url('fonts/DWP.svg?gpq79d#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,14 +24,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-mel-arrow-left:before {
+  content: "\e93b";
+}
 .icon-mel-arrow-right:before {
   content: "\e900";
 }
+.icon-mel-arrow-down:before {
+  content: "\e91d";
+}
 .icon-mel-calendar:before {
   content: "\e901";
-}
-.icon-mel-camera:before {
-  content: "\e902";
 }
 .icon-mel-check:before {
   content: "\e903";
@@ -50,6 +53,9 @@
 }
 .icon-mel-close:before {
   content: "\e908";
+}
+.icon-mel-popup-cose:before {
+  content: "\e93f";
 }
 .icon-mel-coffee:before {
   content: "\e909";
@@ -72,11 +78,20 @@
 .icon-mel-expand:before {
   content: "\e90f";
 }
+.icon-mel-popup-expand:before {
+  content: "\e940";
+}
 .icon-mel-external:before {
   content: "\e910";
 }
+.icon-mel-popup-external:before {
+  content: "\e941";
+}
 .icon-mel-heart:before {
   content: "\e911";
+}
+.icon-mel-file-empty:before {
+  content: "\e93c";
 }
 .icon-mel-file-pdf:before {
   content: "\e912";
@@ -111,9 +126,6 @@
 .icon-mel-link:before {
   content: "\e91c";
 }
-.icon-mel-arrow-down:before {
-  content: "\e91d";
-}
 .icon-mel-mail:before {
   content: "\e91e";
 }
@@ -126,8 +138,11 @@
 .icon-mel-micro:before {
   content: "\e921";
 }
-.icon-mel-minus:before {
-  content: "\e922";
+.icon-mel-phone:before {
+  content: "\e927";
+}
+.icon-mel-camera:before {
+  content: "\e902";
 }
 .icon-mel-notes:before {
   content: "\e923";
@@ -141,11 +156,11 @@
 .icon-mel-parameters:before {
   content: "\e926";
 }
-.icon-mel-phone:before {
-  content: "\e927";
-}
 .icon-mel-pin:before {
   content: "\e928";
+}
+.icon-mel-minus:before {
+  content: "\e922";
 }
 .icon-mel-plus:before {
   content: "\e929";
@@ -201,12 +216,9 @@
 .icon-mel-workplace:before {
   content: "\e93a";
 }
-.icon-mel-arrow-left:before {
-  content: "\e93b";
-}
-.icon-mel-file-empty:before {
-  content: "\e93c";
-}
 .icon-mel-last-frame:before {
   content: "\e93d";
+}
+.icon-mel-popup-anchor:before {
+  content: "\e93e";
 }

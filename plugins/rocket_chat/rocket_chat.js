@@ -69,7 +69,7 @@ if (window.rcmail) {
 	});
 	
 	window.addEventListener('message', (e) => {
-		//console.log("message", e.data);
+		console.log("message ariane", e.data);
 		if (e.data.eventName == 'login-error') {
 			rcmail.display_message(e.data.response, 'error');
 		}
@@ -95,7 +95,12 @@ if (window.rcmail) {
 		{
 			if (e.data.eventName === "unread-changed-by-subscription" ||  e.data.eventName == 'unread-changed')
 			{
-					parent.ariane.update_channel(e);
+				if (e.data.eventName == 'unread-changed')
+				{
+					parent.ariane.update_unread_change(e);
+					parent.ariane.update_menu();
+				}
+				parent.ariane.update_channel(e);
 			}
 			else if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")
 			{

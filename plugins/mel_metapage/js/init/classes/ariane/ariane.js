@@ -25,6 +25,7 @@
         init(ariane = null)
         {
             this.unreads = (ariane === null ? {} : ariane.unreads);
+            this._some_unreads = ariane === null ? undefined : ariane._some_unreads;
         }
 
         addEventListener(key, listener)
@@ -61,6 +62,17 @@
                 this.update(datas.name);
             }
 
+        }
+
+        update_unread_change(event)
+        {
+            const datas = event.data.data;
+            this._some_unreads = datas === "•";
+        }
+
+        have_unreads()
+        {
+            return this._some_unreads === true;
         }
 
         update_status(status)
@@ -134,7 +146,11 @@
             querry = $("#" + mel_metapage.Ids.menu.badge.ariane);
             const menu = this.menu();
             if (menu === 0)
+            {
                 querry.css("display", "none");
+                if (this.have_unreads())
+                    querry.html(`<span class="icon-mel-unreads"></span>`).css("display", ""); 
+            }
             else
                 querry.html(menu).css("display", ""); 
         }

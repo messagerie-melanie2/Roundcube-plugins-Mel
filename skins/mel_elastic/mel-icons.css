@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?gpq79d') format('truetype'),
-    url('fonts/DWP.woff?gpq79d') format('woff'),
-    url('fonts/DWP.svg?gpq79d#DWP') format('svg');
+    url('fonts/DWP.ttf?sxuo12') format('truetype'),
+    url('fonts/DWP.woff?sxuo12') format('woff'),
+    url('fonts/DWP.svg?sxuo12#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -102,6 +102,9 @@
 .icon-mel-file-excel:before {
   content: "\e914";
 }
+.icon-mel-file-ppt:before {
+  content: "\e942";
+}
 .icon-mel-folder:before {
   content: "\e915";
 }
@@ -134,6 +137,9 @@
 }
 .icon-mel-message:before {
   content: "\e920";
+}
+.icon-mel-unreads:before {
+  content: "\e943";
 }
 .icon-mel-micro:before {
   content: "\e921";
@@ -212,6 +218,9 @@
 }
 .icon-mel-warning:before {
   content: "\e939";
+}
+.icon-mel-round-warning:before {
+  content: "\e944";
 }
 .icon-mel-workplace:before {
   content: "\e93a";

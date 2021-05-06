@@ -785,6 +785,26 @@ function m_mp_CreateDocumentIconContract(icon, type)
  */
 async function m_mp_InitializeDocument()
 {
+    create_popUp.editTitle('<h2 class=""><span class="icon-mel-undo mel-return" onclick="m_mp_reinitialize_popup(() => {})"></span>Création d\'un nouveau document</h2>');
+    create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
+    $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", {
+        "_send":true,
+        "_from":"iframe"
+    })}"></iframe>`).on("load", () => {
+        create_popUp.contents.find(".spinner-border").parent().remove();
+        create_popUp.contents.find("iframe").css("display", "");
+        $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+    }).appendTo(create_popUp.contents);
+    // mel_metapage.Functions.get(
+    //     mel_metapage.Functions.url("roundrive", "files_create"),
+    //     {
+    //         _send:false
+    //     },(datas) => {
+    //         create_popUp.contents.html(datas);
+    //     }
+    // )
+
+    return;
     //window.create_popUp = new GlobalModal("globalModal", config, true);
     //$this->rc->config->get('documents_types');
     let html = "<form>";

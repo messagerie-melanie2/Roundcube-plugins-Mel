@@ -6,6 +6,7 @@ $(document).ready(function() {
 	   xhrFields: {
 	       withCredentials: false
 	    },
+		crossDomain: true,
 	   success: function (data) {
 		   if (navigator.appName == "Microsoft Internet Explorer"){
 			    window.document.getElementById('mel_nextcloud_frame').src = rcmail.env.nextcloud_gotourl;

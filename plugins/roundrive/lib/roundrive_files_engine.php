@@ -30,6 +30,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\WebDAV\WebDAVAdapter;
 
 include_once(__DIR__.'/vendor/autoload.php');
+include_once "roundrive_collabora.php";
 
 class roundrive_files_engine
 {
@@ -49,6 +50,7 @@ class roundrive_files_engine
      * @var Filesystem
      */
     protected $filesystem;
+    protected $collabora;
 
     const API_VERSION = 2;
 
@@ -73,6 +75,7 @@ class roundrive_files_engine
         $client = new Client($settings);
         $adapter = new WebDAVAdapter($client, str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_prefix')));
         $this->filesystem = new Filesystem($adapter);
+        $this->collabora = new roundrive_collabora($plugin, $this->filesystem);
     }
 
     /**
@@ -1117,6 +1120,19 @@ class roundrive_files_engine
       catch (Exception $e) {
       }
   		exit;
+    }
+
+    protected function action_files_create()
+    {
+        $send = rcube_utils::get_input_value('_send', rcube_utils::INPUT_GET);
+
+        if ($send === true || $send === "true")
+            $this->rc->output->send("roundrive.create");
+        else
+        {
+            echo $this->rc->output->parse("roundrive.create", false, false);
+            exit;
+        }
     }
 
     /**

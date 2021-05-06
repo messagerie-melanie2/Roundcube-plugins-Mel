@@ -65,20 +65,32 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         if (wsp !== undefined && wsp !== null) //Si il n'y a pas de bugs
         {
             this.wsp = wsp;
-
-            if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane) //Si il y a une room ariane
+            if (this.wsp.objects !== null)
             {
-                if (typeof wsp.objects.channel === "string")
-                    this.ariane = {room_id:wsp.objects.channel};
+                if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane) //Si il y a une room ariane
+                {
+                    if (typeof wsp.objects.channel === "string")
+                        this.ariane = {room_id:wsp.objects.channel};
+                    else
+                        this.ariane = {room_name:wsp.objects.channel.name, is_hide:false};
+
+                    this.ariane._is_allowed = wsp.datas.allow_ariane;
+                } 
                 else
-                    this.ariane = {room_name:wsp.objects.channel.name, is_hide:false};
-
-                this.ariane._is_allowed = wsp.datas.allow_ariane;
-            } 
+                    this.ariane = {};
+            }
             else
-                this.ariane = {};
+            {
+                console.warn("/!\\ [Webconf]wsp.objects est nul, cela peux entrainer des disfonctionnements.", this.wsp);
+                this.ariane._is_allowed = false;
+            }
 
-            this.ariane.ispublic = this.wsp.datas.ispublic === 0 ? false: true;
+            if (this.wsp.datas !== null)
+                this.ariane.ispublic = this.wsp.datas.ispublic === 0 ? false: true;
+            else{
+                console.warn("/!\\ [Webconf]wsp.datas est nul, cela peux entrainer des disfonctionnements.", this.wsp);
+                this.ariane.ispublic = true;
+            }
         }
         else
             this.ariane = {};

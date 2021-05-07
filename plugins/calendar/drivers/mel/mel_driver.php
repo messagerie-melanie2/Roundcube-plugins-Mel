@@ -1266,7 +1266,7 @@ class mel_driver extends calendar_driver {
           $_event->exceptions = $exceptions;
           $_event->modified = time();
           $ret = $_event->save();
-          return ! is_null($ret);
+          return !is_null($ret);
         }
       }
       elseif ($event['_savemode'] == 'future') {

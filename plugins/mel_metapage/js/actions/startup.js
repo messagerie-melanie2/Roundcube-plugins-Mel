@@ -333,8 +333,6 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
     frame.css("display", "none");
     if (!changepage && rcmail.env.task != "mel_metapage" && rcmail.env.action !== "chat")
         $(".a-frame").css("display", "none");
-    if (eClass === "discussion")
-        rcmail.triggerEvent("init_ariane", frame[0].id);
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {
@@ -346,9 +344,12 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
     rcmail.env.frame_created = true;
     if (changepage)
         $("#"+id).css("display", "");
-    console.error("onload", querry, id);
+    
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
+
+    if (eClass === "discussion")
+        rcmail.triggerEvent("init_ariane", id);
 });
 
 metapage_frames.addEvent("changepage.after", () => {

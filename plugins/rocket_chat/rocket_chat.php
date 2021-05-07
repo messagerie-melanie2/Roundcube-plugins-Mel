@@ -102,6 +102,10 @@ class rocket_chat extends rcube_plugin {
      $this,
      'get_log'
  ));
+ $this->register_action('logout', array(
+  $this,
+  'logout'
+));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -337,6 +341,7 @@ EOF;
         $rocketClient->setUserId($userId);
         // Appel la deconnexion par les APIs
         $rocketClient->logout();
+        $this->setAuthToken(null);
       }
     }
     

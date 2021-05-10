@@ -247,8 +247,24 @@ class mel_metapage extends rcube_plugin
                     $html .= "</select>";
                     return $html;
                 };
+                $categories = function()
+                {
+                    $values = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");
+                    $values = (isset($values) ? explode("|" ,$values) : []);
+
+                    $html = '<select id=categories-event-all-cal-mm class="form-control input-mel">';
+                    $html .= "<option value=\"#none\">Aucune</option>";
+                    foreach ($values as $key => $value) {
+                        if ($value[0] === "w" && $value[1] === "s" && $value[2] === "#")
+                            continue;
+                        $html .= '<option value="'.$value.'">'.$value.'</option>';
+                    }
+                    $html .= "</select>";
+                    return $html;
+                };
                 $this->rc->output->add_handlers(array(
                     'event-wsp'    => $w,
+                    'categories-wsp'    => $categories,
                 ));
                 $args["content"] = str_replace($textToReplace, $this->rc->output->parse("mel_metapage.event_modal", false, false), $content);
                 

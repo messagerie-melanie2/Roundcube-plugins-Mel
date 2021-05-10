@@ -213,6 +213,18 @@ $(document).ready(() => {
             $("#num-audio-input-cal-location").on("change", () => {
                 update_location();
             });
+            $("#edit-wsp").on("click", (e) => {
+                e = e.target;
+                if (e.checked)
+                {
+                    $("#div-events-wsp").css("display", "");
+                    $("#div-events-category").css("display", "none");
+                }
+                else {
+                    $("#div-events-wsp").css("display", "none");
+                    $("#div-events-category").css("display", "");
+                }
+            });
             $("#wsp-event-all-cal-mm").on("change", () => {
                 const val = $("#wsp-event-all-cal-mm").val();
                 if (val !== "#none")
@@ -220,6 +232,15 @@ $(document).ready(() => {
                 else
                     $("#edit-categories").val("");
                     update_location();
+            });
+            $("#categories-event-all-cal-mm").on("change", () => {
+                const val = $("#categories-event-all-cal-mm").val();
+                if (val !== "#none")
+                    $("#edit-categories").val(val)
+                else
+                    $("#edit-categories").val("");
+                $("#wsp-event-all-cal-mm").val("#none");
+                update_location();
             });
             //Update visu
             $("#edit-recurrence-frequency").addClass("input-mel");
@@ -238,6 +259,15 @@ $(document).ready(() => {
                 $(".input-mel-datetime .input-mel.start").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).format(format));
                 $(".input-mel-datetime .input-mel.end").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).add(30, 'm').format(format));
                 update_date();
+                if ($("#edit-wsp")[0].checked)
+                {
+                    $("#div-events-wsp").css("display", "");
+                    $("#div-events-category").css("display", "none");
+                }
+                else {
+                    $("#div-events-wsp").css("display", "none");
+                    $("#div-events-category").css("display", "");
+                }
             }
             else{ //ancien event
                 $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
@@ -274,11 +304,25 @@ $(document).ready(() => {
                 {
                     if (event.categories[0].includes("ws#"))
                     {
+                        $("#edit-wsp")[0].checked = true;
+                        $("#div-events-wsp").css("display", "");
+                        $("#div-events-category").css("display", "none");
                         $("#wsp-event-all-cal-mm").val(event.categories[0].replace("ws#", ""));
                         if (event.calendar_blocked === "true")
                         {
                             $("#wsp-event-all-cal-mm").addClass("disabled").attr("disabled", "disabled");
+                            $("#edit-wsp").addClass("disabled").attr("disabled", "disabled");
                         }
+                    }
+                    else
+                    {
+                        if ($("#edit-wsp")[0].checked)
+                            $("#edit-wsp").click();
+                        else {
+                            $("#div-events-wsp").css("display", "none");
+                            $("#div-events-category").css("display", "");
+                        }
+                        $("#categories-event-all-cal-mm").val(event.categories[0]);
                     }
                 }
             }

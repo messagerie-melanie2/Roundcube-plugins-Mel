@@ -568,14 +568,14 @@ const mel_metapage = {
     }
 }; 
 window.mel_metapage = mel_metapage;
-if (mel_metapage.RCMAIL_Start !== undefined)
-{
-    rcmail.addEventListener("init", () => {
-        for (const key in mel_metapage.RCMAIL_Start) {
-            if (Object.hasOwnProperty.call(mel_metapage.RCMAIL_Start, key)) {
-                const element = mel_metapage.RCMAIL_Start[key];
-                element();
-            }
-        }
-    });
-}
+// if (mel_metapage.RCMAIL_Start !== undefined)
+// {
+//     rcmail.addEventListener("init", () => {
+//         for (const key in mel_metapage.RCMAIL_Start) {
+//             if (Object.hasOwnProperty.call(mel_metapage.RCMAIL_Start, key)) {
+//                 const element = mel_metapage.RCMAIL_Start[key];
+//                 element();
+//             }
+//         }
+//     });
+// }

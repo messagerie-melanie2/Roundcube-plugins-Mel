@@ -1192,7 +1192,7 @@ class roundrive_files_engine
         switch ($doc) {
             case 'raw':
                 $ext = "txt";
-                $handler = [$this->filesystem, "put", "$path/$name.$ext", ""];
+                $handler = [$this->filesystem, "put"];
                 //$return["success"] = $this->filesystem->put("$path/$name.$ext", "");
                 break;
             case 'text':
@@ -1224,14 +1224,16 @@ class roundrive_files_engine
 
         if ($return["success"] !== false)
         {
+            $return["file"] = "$name.$ext";
+
+            $name = rawurlencode($name);
+
             $func = $handler[1];
             if ($handler[1] === "put")
-                $return["success"] = $handler[0]->$func($handler[2], $handler[3]);
+                $return["success"] = $handler[0]->$func("$path/$name.$ext", "");
             else
                 $return["success"] = $handler[0]->$func($path, $name);
 
-
-            $return["file"] = "$name.$ext";
         }
 
         echo json_encode($return);

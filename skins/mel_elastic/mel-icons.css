@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?sxuo12') format('truetype'),
-    url('fonts/DWP.woff?sxuo12') format('woff'),
-    url('fonts/DWP.svg?sxuo12#DWP') format('svg');
+    url('fonts/DWP.ttf?dmhyy5') format('truetype'),
+    url('fonts/DWP.woff?dmhyy5') format('woff'),
+    url('fonts/DWP.svg?dmhyy5#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -165,11 +165,14 @@
 .icon-mel-pin:before {
   content: "\e928";
 }
+.icon-mel-plus:before {
+  content: "\e929";
+}
 .icon-mel-minus:before {
   content: "\e922";
 }
-.icon-mel-plus:before {
-  content: "\e929";
+.icon-mel-minus-roundless:before {
+  content: "\e945";
 }
 .icon-mel-reply:before {
   content: "\e92a";

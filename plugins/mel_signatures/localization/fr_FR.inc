@@ -34,6 +34,7 @@ $labels['logo'] = "Choix du logo";
 $labels['links'] = "Choix des liens";
 $labels['linksselection'] = "Liens";
 $labels['customlink'] = "Lien personnalisé";
+$labels['customlogo'] = "Logo personnalisé";
 $labels['allmailboxes'] = "Toutes les boîtes";
 $labels['identitiesdescription'] = "Vous avez la possibilité d'utiliser des signatures différentes en fonction de vos boîtes aux lettres. Cochez ci-desous la ou les boîtes pour lesquelles la signature générée sera utilisée.";
 $labels['identitiesdialogtitle'] = "Choix des boîtes aux lettres";

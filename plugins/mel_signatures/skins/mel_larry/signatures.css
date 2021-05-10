@@ -123,6 +123,7 @@ label {
     margin-top: 20px;
 }
 
+.grid-form .custom-logo,
 .grid-form .custom-link {
     display: none;
 }

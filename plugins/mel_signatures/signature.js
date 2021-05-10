@@ -267,7 +267,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     for (const checkbox of checkboxes) {
         if (checkbox.checked && checkbox.id != 'checkbox-custom-link') {
             let a = document.createElement('a');
-            a.style = "color:#000000;font-size:8pt;font-family: Arial,sans-serif; font-weight : bold;";
+            a.style = "color:#000000;font-size:8pt;font-family:Marianne,arial,sans-serif;font-weight:bold;text-decoration:none;";
             a.href = checkbox.value;
             a.innerText = rcmail.env.signature_links[checkbox.value];
             links += a.outerHTML + '<br>';
@@ -277,14 +277,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
 
     // Logo de la signature
     let select = document.getElementById("input-logo");
-    if (embeddedImage) {
-        signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', 
-                createImage(rcmail.env.logo_sources[select.value], select.options[select.selectedIndex].text, isOutlook, 'logo'));
-    }
-    else {
-        signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', 
-                createImage(images_url + select.value, select.options[select.selectedIndex].text, isOutlook, 'logo'));
-    }
+    signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', createLogo(select.options[select.selectedIndex].value));
 
     // Logo Marianne
     let logo_marianne = 'images/marianne.gif';
@@ -326,7 +319,6 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
  * Pour Outlook fourni en plus du vml de l'image
  */
 function createImage(src, alt, isOutlook = false, className = null) {
-    let html = '';
     let img = document.createElement('img');
     img.src = src;
     img.alt = alt;
@@ -339,20 +331,25 @@ function createImage(src, alt, isOutlook = false, className = null) {
         img.width = document.querySelector('#signature .' + className).clientWidth;
         img.height = document.querySelector('#signature .' + className).clientHeight;
     }
-    
-    // if (isOutlook) {
-    //     // Pour Outlook ajouter des balise <v:image>
-    //     html += '<!--[if gte vml 1]>';
-    //     html += '<v:imagedata src="'+src+'" o:title="'+escape(alt)+'"/>';
-    //     html += '<![endif]-->';
-    //     html += '<![if !vml]>';
-    //     html += img.outerHTML;
-    //     html += '<![endif]>';
-    // }
-    // else {
-    html = img.outerHTML;
-    // }
-    return html;
+    return img.outerHTML;
+}
+
+/**
+ * Retourne le logo en html
+ */
+function createLogo(htmlLogo) {
+    if (htmlLogo == 'custom') {
+        document.querySelector(".grid-form .custom-logo").style.display = 'block';
+        htmlLogo = document.querySelector("#input-custom-logo").value.toUpperCase().replace(/\r?\n/g, '<br>');
+    }
+    else {
+        document.querySelector(".grid-form .custom-logo").style.display = 'none';
+        document.querySelector("#input-custom-logo").value = htmlLogo.replace(/<br>/gi, "\r\n");
+    }
+    let span = document.createElement('span');
+    span.style = "font-family:Marianne,arial,sans-serif;font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
+    span.innerHTML = htmlLogo;
+    return span.outerHTML;
 }
 
 /**

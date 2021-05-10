@@ -203,26 +203,24 @@ class mel_signatures extends rcube_plugin
             if (is_array($logo)) {
                 $logo_html = "";
                 foreach ($logo as $n => $l) {
-                    if ($default_image == $l) {
+                    if ($default_image == $n) {
                         $params = ['value' => $l, 'selected' => 'selected'];
                     }
                     else {
                         $params = ['value' => $l];
                     }
                     $logo_html .= html::tag('option', $params, $n);
-                    $sources[$l] = $this->image_data($l);
                 }
                 $content .= html::tag('optgroup', ['label' => $name], $logo_html);
             }
             else {
-                if ($default_image == $logo) {
+                if ($default_image == $name) {
                     $params = ['value' => $logo, 'selected' => 'selected'];
                 }
                 else {
                     $params = ['value' => $logo];
                 }
                 $content .= html::tag('option', $params, $name);
-                $sources[$logo] = $this->image_data($logo);
             }
         }
         $this->rc->output->set_env('logo_sources', $sources);
@@ -245,11 +243,12 @@ class mel_signatures extends rcube_plugin
 
         $default_url = $this->get_default_url();
         $links .= html::tag('li', [], $checkbox->show("", ['value' => 'custom-link', 'id' => "checkbox-custom-link", 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-custom-link"], $this->gettext('customlink')));
-        foreach ($this->rc->config->get('signature_links', []) as $name => $link) {
+        $signature_links = $this->rc->config->get('signature_links', []);
+        foreach ($signature_links as $name => $link) {
             $id = "signature_links_$i";
             $i++;
             $env_links[$link] = $name;
-            $links .= html::tag('li', ['title' => $name], $checkbox->show($default_url, ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
+            $links .= html::tag('li', ['title' => $name], $checkbox->show($signature_links[$default_url], ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
         }
         $this->rc->output->set_env('signature_links', $env_links);
         return html::div($attrib,

@@ -123,35 +123,31 @@ function get_default_image($dn, $images) {
 function logo() {
   global $user, $rcmail_config, $sources;
   $html = '<select name="signaturelogo" class="browser-default" id="input-logo" onchange="onInputChange();">';
-  $default_image = str_replace('.gif', '.png', get_default_image($user->dn, $rcmail_config['signature_default_image']));
+  $default_image = get_default_image($user->dn, $rcmail_config['signature_default_image']);
   foreach ($rcmail_config['signature_images'] as $name => $logo) {
     if (is_array($logo)) {
       $logo_html = "";
       foreach ($logo as $n => $l) {
-        $l = str_replace('.gif', '.png', $l);
-        if ($default_image == $l) {
+        if ($default_image == $n) {
           $logo_html .= '<option value="'.$l.'" selected="selected">'.$n.'</option>';
         }
         else {
           $logo_html .= '<option value="'.$l.'">'.$n.'</option>';
         }
-        $sources[$l] = image_data($l);
       }
       $html .= '<optgroup label="'.$name.'">'.$logo_html.'</optgroup>';
     }
     else {
-      $logo = str_replace('.gif', '.png', $logo);
-      if ($default_image == $logo) {
+      if ($default_image == $name) {
         $html .= '<option value="'.$logo.'" selected="selected">'.$name.'</option>';
       }
       else {
         $html .= '<option value="'.$logo.'">'.$name.'</option>';
       }
-      $sources[$logo] = image_data($logo);
     }
   }
-  $sources[$rcmail_config['signature_image_marianne']] = image_data(str_replace('.gif', '.png', $rcmail_config['signature_image_marianne']));
-  $sources[$rcmail_config['signature_image_devise']] = image_data(str_replace('.gif', '.png', $rcmail_config['signature_image_devise']));
+  $sources[$rcmail_config['signature_image_marianne']] = image_data($rcmail_config['signature_image_marianne_outlook']);
+  $sources[$rcmail_config['signature_image_devise']] = image_data($rcmail_config['signature_image_devise_outlook']);
   $html .= '</select>';
   return $html;
 }
@@ -170,7 +166,7 @@ function links() {
   foreach ($rcmail_config['signature_links'] as $name => $link) {
       $id = "signature_links_$i";
       $i++;
-      if ($link == $default_url) {
+      if ($name == $default_url) {
         $html .= '<label for="'.$id.'"><input value="'.$link.'" id="'.$id.'" onchange="onInputChange();" type="checkbox" checked="checked">'.$name.'<span class="" style="float: right; font-size: 12px;"></label>';
       }
       else {
@@ -346,6 +342,10 @@ else {
                       <label for="input-logo">Choix du logo</label>
                       <?= logo() ?>
                     </div>
+                    <div class="form-section custom-logo">
+                      <label for="input-custom-logo">Logo personnalisé</label>
+                      <textarea type="text" id="input-custom-logo" onkeyup="onInputChange();" value=""></textarea>
+                    </div>
                 </div>
             </div>
           </div>
@@ -383,7 +383,7 @@ else {
         <div class="row">
           <div class="col s12">
             <div class="card-action">
-              <a href="javascript:window.history.go(-1);">
+              <a href="index.php">
                 <button type="submit" class="waves-effect waves-light btn">Retour</button>
               </a>
             </div>

@@ -83,7 +83,7 @@ class roundrive_files_engine
      */
     public function ui()
     {
-        $this->plugin->add_texts('localization/');
+        $this->plugin->add_texts('localization/', true);
 
         // set templates of Files UI and widgets
         if ($this->rc->task == 'mail') {
@@ -190,7 +190,7 @@ class roundrive_files_engine
         $method = 'action_' . str_replace('-', '_', $action);
 
         if (method_exists($this, $method)) {
-            $this->plugin->add_texts('localization/');
+            $this->plugin->add_texts('localization/', true);
             $this->{$method}();
         }
     }
@@ -1126,6 +1126,10 @@ class roundrive_files_engine
     {
         $send = rcube_utils::get_input_value('_send', rcube_utils::INPUT_GET);
 
+        $this->rc->output->add_handlers([
+            "initfolders" => [$this, "init_folder"]
+        ]);
+
         if ($send === true || $send === "true")
             $this->rc->output->send("roundrive.create");
         else
@@ -1133,6 +1137,105 @@ class roundrive_files_engine
             echo $this->rc->output->parse("roundrive.create", false, false);
             exit;
         }
+    }
+
+    public function init_folder()
+    {
+        $folders = $this->get_folders();
+        $html = "<ul class=\"list-group list-group-flush mel-list mel-tree\">";
+        $html .= "<li data-path=\"".$this->plugin->gettext('files')."\" class=\"list-group-item mel-list-item \"><span onclick=RoundriveCreate.folder_click(this) class=\"mel-item-icon icon-mel-chevron-right mel-clickable\"></span><span class=mel-text onclick=rcmail.env.roundrive.select(this)>".$this->plugin->gettext('files')."</span>";
+        $html .= "<ul class=\"list-group list-group-flush \" style=display:none>";
+        foreach ($folders as $key => $value) {
+            $path = $this->plugin->gettext('files')."/".urldecode($value["path"]);
+            $html .= "<li data-path=\"".str_replace('"', "¤¤¤", $path)."\" class=\"list-group-item mel-list-item \"><span onclick=RoundriveCreate.folder_click(this) class=\"mel-item-icon icon-mel-chevron-right mel-clickable\"></span><span class=mel-text onclick=rcmail.env.roundrive.select(this)>".urldecode($value["filename"])."</span></li>";
+        }
+        $html.= "</ul></li></ul>";
+        return $html;
+    }
+
+    public function get_folders($folder = "")
+    {
+        $fsdirs = $this->filesystem->listContents($folder, false);
+        $folders = [];
+        foreach ($fsdirs as $key => $value) {
+            if ($value["type"] === "dir")
+                $folders[] = $value;
+        }
+        return $folders;
+    }
+
+    protected function action_folder_list_items()
+    {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_GET);
+        $folder = str_replace($this->plugin->gettext('files'), '/', $folder);
+        $folder = $this->encoderawpath($folder);
+        echo json_encode($this->get_folders($folder));
+        exit;
+    }
+
+    protected function action_create_file()
+    {
+        $doc = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);
+        $name = rcube_utils::get_input_value('_name', rcube_utils::INPUT_POST);
+        $path = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST);
+
+        $path = str_replace($this->plugin->gettext('files'), '/', $path);
+        $path = $this->encoderawpath($path);
+
+        $ext = "";
+        $handler = [];
+
+        $return = [
+            "path" => $path
+        ];
+
+        switch ($doc) {
+            case 'raw':
+                $ext = "txt";
+                $handler = [$this->filesystem, "put", "$path/$name.$ext", ""];
+                //$return["success"] = $this->filesystem->put("$path/$name.$ext", "");
+                break;
+            case 'text':
+                $ext = "odt";
+                $handler = [$this->collabora, "create_text_document"];
+                //$return = $this->collabora->create_text_document($path, $name);
+                break;
+            case 'calc':
+                $ext = "ods";
+                $handler = [$this->collabora, "create_spreadsheet_document"];
+                //$return["success"] = $this->collabora->create_spreadsheet_document($path, $name);
+                break;
+            case "presentation":
+                $ext = "odp";
+                $handler = [$this->collabora, "create_powerpoint_document"];
+                //$return["success"] = $this->collabora->create_powerpoint_document($path, $name);
+                break;
+            default:
+                $return["success"] = false;
+                $return["error"] = "Type de document inconnu.";
+                break;
+        }
+        
+        if ($this->filesystem->has("$path/$name.$ext"))
+        {
+            $return["success"] = false;
+            $return["error"] = "Le document existe déjà.";
+        }
+
+        if ($return["success"] !== false)
+        {
+            $func = $handler[1];
+            if ($handler[1] === "put")
+                $return["success"] = $handler[0]->$func($handler[2], $handler[3]);
+            else
+                $return["success"] = $handler[0]->$func($path, $name);
+
+
+            $return["file"] = "$name.$ext";
+        }
+
+        echo json_encode($return);
+        exit;
     }
 
     /**

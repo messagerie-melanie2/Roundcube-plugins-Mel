@@ -194,7 +194,7 @@ Nextcloud.prototype.go = async function(data, isFileData = true)
     data = await this.searchDocument(data.file, data.folder, data.href);
     if (data === null || data.is_valid_file === false || data.type === mel_metapage.Symbols.nextcloud.folder)
     {  
-      return;
+      return false;
     }
     else 
       data = Nextcloud.index_url + "/apps/files?dir=/"+data.document_path()+"&openfile=" + data.id;
@@ -212,6 +212,7 @@ Nextcloud.prototype.go = async function(data, isFileData = true)
     mm_st_OpenOrCreateFrame("stockage", true);
   rcmail.set_busy(false);
   rcmail.clear_messages();
+  return true;
 }
 
 /**

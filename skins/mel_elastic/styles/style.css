@@ -7,6 +7,10 @@ body{
     color:#363A5B;
 }
 
+.mel-clickable{
+    cursor: pointer;
+}
+
 #layout>div>.header
 {
     border:none;
@@ -907,3 +911,55 @@ a.button.icon.attach::before, button.btn.attach::before {
 	font-weight: normal;
 	font-size: unset;
 }
+.mel-list
+{
+    background-color:#363A5B;
+}
+.mel-list li{
+    background-color: transparent;
+	color: white;
+    padding: 0 1.25rem;
+}
+
+.mel-list .mel-list-item.mel-item-7 {
+	background-color: #363A5B;
+}
+
+.mel-list .mel-list-item:hover {
+	background-color: #A1AAFF30;
+}
+
+.mel-list li.selected
+{
+    background-color: #484D7A!important;
+}
+
+.mel-list li .mel-text {
+	margin-left: 15px;
+	width: 100%;
+	display: inline-block;
+    padding: .75rem 0;
+}
+
+.mel-list li .mel-item-icon{
+    position: absolute;
+    top: 14px;
+    left: 10px;
+}
+
+.mel-list.mel-tree .mel-list-item:hover > .mel-text
+{
+    text-decoration: underline;
+}
+
+.mel-loading {
+	animation: spin 0.75s linear infinite;
+	display: inline-block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+  }
+
+

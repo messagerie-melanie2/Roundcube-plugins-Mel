@@ -29,7 +29,8 @@ function Nextcloud_Response(xml, func_class, includeFolder = false, includeInval
  */
 Nextcloud_Response.prototype.GetFile = function(filename)
 {
-    return Enumerable.from(this.files).where(x => x.name.includes(filename)).firstOrDefault(null);
+    var tmp = Enumerable.from(this.files).where(x => x.name.includes(filename)).firstOrDefault(null);
+    return tmp === undefined ? null : tmp;
 }
 
 /**

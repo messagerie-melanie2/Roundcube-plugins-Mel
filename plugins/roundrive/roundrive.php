@@ -79,6 +79,8 @@ class roundrive extends rcube_plugin
         $this->register_action('open',  array($this, 'actions'));
         $this->register_action('file_api', array($this, 'actions'));
         $this->register_action('files_create', array($this, 'actions'));
+        $this->register_action('create_file', array($this, 'actions'));
+        $this->register_action('folder_list_items', array($this, 'actions'));
 
         // Load UI from startup hook
         $this->add_hook('startup', array($this, 'startup'));

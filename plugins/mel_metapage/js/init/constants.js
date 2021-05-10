@@ -545,6 +545,21 @@ const mel_metapage = {
             if (element.val !== undefined)
                 element = element[0];
             return Enumerable.from(jQuery._data(element, 'events')[type]).where(x => x.handler + "" === handler + "").any();
+        },
+        stockage:{
+            go:function(datas, isfiledatas, thenFunc = null)
+            {
+                let init = 'new Nextcloud("rcmail.env.nextcloud_username")';
+                let go = `.go(${JSON.stringify(datas)}, ${isfiledatas})`;
+                let then = "";
+
+                if (thenFunc !== null)
+                {
+                    then = `.then((a) => { (${thenFunc + ""})(a) })`;
+                }
+
+                mel_metapage.Functions.call(init + go + then);
+            }
         }
 
 

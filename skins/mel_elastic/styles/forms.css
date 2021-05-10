@@ -314,3 +314,14 @@ a.button.icon.discard::before, button.btn.discard::before, a.button.icon.delete:
 	content: "\e91e"!important;
 	font-family: "DWP"!important;
 }
+
+textarea.input-mel.error,
+select.input-mel.error,
+input.input-mel.error {
+	border-color: red;
+}
+
+.span-mel.t1.error
+{
+	color:red;
+}

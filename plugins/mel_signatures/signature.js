@@ -267,7 +267,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     for (const checkbox of checkboxes) {
         if (checkbox.checked && checkbox.id != 'checkbox-custom-link') {
             let a = document.createElement('a');
-            a.style = "color:#000000;font-size:8pt;font-family:Marianne,arial,sans-serif;font-weight:bold;text-decoration:none;";
+            a.style = "color:#000000;font-size:8pt;font-family:arial,sans-serif;font-weight:bold;text-decoration:none;";
             a.href = checkbox.value;
             a.innerText = rcmail.env.signature_links[checkbox.value];
             links += a.outerHTML + '<br>';
@@ -347,7 +347,7 @@ function createLogo(htmlLogo) {
         document.querySelector("#input-custom-logo").value = htmlLogo.replace(/<br>/gi, "\r\n");
     }
     let span = document.createElement('span');
-    span.style = "font-family:Marianne,arial,sans-serif;font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
+    span.style = "font-family:arial,sans-serif;font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
     span.innerHTML = htmlLogo;
     return span.outerHTML;
 }

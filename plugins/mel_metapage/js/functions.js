@@ -15,10 +15,10 @@ function m_mp_Create()
 {
     //Si problème de configuration, on gère.
     try {
-        if (rcmail.env.nextcloud_pinged === false || rcmail.env.nextcloud_username === undefined || rcmail.env.nextcloud_url === undefined || rcmail.env.nextcloud_url === "")
-            window.mel_metapage_tmp = null;
-        else
-            window.mel_metapage_tmp = new Nextcloud(rcmail.env.nextcloud_username).getAllFolders();
+        // if (rcmail.env.nextcloud_pinged === false || rcmail.env.nextcloud_username === undefined || rcmail.env.nextcloud_url === undefined || rcmail.env.nextcloud_url === "")
+        //     window.mel_metapage_tmp = null;
+        // else
+            window.mel_metapage_tmp = true;//new Nextcloud(rcmail.env.nextcloud_username).getAllFolders();
     } catch (error) {
         window.mel_metapage_tmp = null;
         console.error(rcmail.gettext("mel_metapage.nextcloud_connection_error"));

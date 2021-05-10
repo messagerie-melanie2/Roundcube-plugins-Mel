@@ -325,3 +325,8 @@ input.input-mel.error {
 {
 	color:red;
 }
+
+.custom-select:disabled
+{
+	pointer-events: none;
+}

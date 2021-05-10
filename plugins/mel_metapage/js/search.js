@@ -49,8 +49,7 @@ function mm_s_Action(e)
             //console.log(Array.isArray(data), data.length > 0 , data[0].calendar !== undefined);
              if (Array.isArray(data) && data.length > 0 && data[0].calendar !== undefined)
                 data = SearchResultCalendar.from_array(data);
-            //console.log("datas", data);
-            if (data.datas.length > 0)
+            if (data.datas !== undefined && data.datas.length > 0)
                 mm_s_AfficheResults(data);
         },
         error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response

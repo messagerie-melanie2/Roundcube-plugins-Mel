@@ -1,8 +1,15 @@
+/**
+ * Gère la création d'un document
+ * @param  {...any} args 
+ */
 function RoundriveCreate(...args)
 {
     this.init(...args);
 }
 
+/**
+ * Initialise l'objet
+ */
 RoundriveCreate.prototype.init = function()
 {
     this.item = $("#roundrive-create");
@@ -19,6 +26,9 @@ RoundriveCreate.prototype.init = function()
     this.create_buttons();
 }
 
+/**
+ * Créer les boutons pour choisir un type de document
+ */
 RoundriveCreate.prototype.create_buttons = function()
 {
     let html = "";
@@ -38,27 +48,40 @@ RoundriveCreate.prototype.create_buttons = function()
 
 }
 
+/**
+ * Selectionne un dossier.
+ * @param {DOMElement} event Dossier à séléctionner. 
+ */
 RoundriveCreate.prototype.select = function(event)
 {
-    //console.log(event);
     event = $(event).parent();
     this.folders.find(".selected").removeClass("selected");
     event.addClass("selected");
     $("input.roundrive-folder").val(event.data("path"));
 }
 
+/**
+ * Affiche la fenêtre de choix des documents
+ */
 RoundriveCreate.prototype.choose_document = function()
 {
     this.item.css("display", "none");
     this.folders.css("display", "");
 }
 
+/**
+ * Ferme le fenêtre de choix des documents 
+ */
 RoundriveCreate.prototype.accept_document = function()
 {
     this.item.css("display", "");
     this.folders.css("display", "none");
 }
 
+/**
+ * Créer le document.
+ * @returns {Promise<void>} 
+ */
 RoundriveCreate.prototype.create_document = function()
 {
     const values = {
@@ -156,6 +179,10 @@ RoundriveCreate.chevrons = {
     loading:"icon-mel-last-frame",
 };
 
+/**
+ * Affiche les dossiers fils
+ * @param {DomElement} event 
+ */
 RoundriveCreate.expand_folder = function(event)
 {
     var returns = RoundriveCreate.CompletedPromise();
@@ -216,6 +243,10 @@ RoundriveCreate.expand_folder = function(event)
 
 }
 
+/**
+ * Cache les dossiers fils
+ * @param {DomElement} event 
+ */
 RoundriveCreate.minimize_folder = function(event)
 {
     var returns = RoundriveCreate.CompletedPromise();
@@ -234,6 +265,10 @@ RoundriveCreate.minimize_folder = function(event)
 
 }
 
+/**
+ * Affiche ou cache les dossiers fils
+ * @param {DomElement} event 
+ */
 RoundriveCreate.folder_click = function (event)
 {
     var returns = RoundriveCreate.CompletedPromise();

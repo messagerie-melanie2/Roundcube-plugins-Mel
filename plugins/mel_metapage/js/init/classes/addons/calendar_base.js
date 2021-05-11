@@ -242,6 +242,10 @@ $(document).ready(() => {
                 $("#wsp-event-all-cal-mm").val("#none");
                 update_location();
             });
+            $("#fake-event-rec").on("change", (e) => {
+                $("#edit-recurrence-frequency").val(e.target.value);
+                $("#edit-recurrence-frequency").change();
+            });
             //Update visu
             $("#edit-recurrence-frequency").addClass("input-mel");
             $("#edit-alarm-item").addClass("input-mel");
@@ -268,11 +272,19 @@ $(document).ready(() => {
                     $("#div-events-wsp").css("display", "none");
                     $("#div-events-category").css("display", "");
                 }
+                $("#fake-event-rec").val("")
             }
             else{ //ancien event
                 $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
                 $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
                 update_date();
+
+                const req = event.recurrence;
+                if (req !== undefined && req !== null)
+                {
+                    $("#fake-event-rec").val(req.FREQ);
+                }
+
                 const description = event.location;
                 if (description !== undefined)
                 {

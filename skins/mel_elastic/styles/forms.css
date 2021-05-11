@@ -330,3 +330,8 @@ input.input-mel.error {
 {
 	pointer-events: none;
 }
+
+#edit-recurrence-frequency
+{
+	display: none;
+}

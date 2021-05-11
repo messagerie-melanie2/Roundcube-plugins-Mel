@@ -47,7 +47,34 @@
             
             <div class="row">
                 <div class="col-6"><!--Réccurence-->
-                    <span class="red-star-after span-mel t1">Réccurence</span>
+					<span class="red-star-after span-mel t1">Réccurence</span>
+					<select id="fake-event-rec" class="form-control input-mel">
+						<option value="" selected="">jamais</option>
+						<option value="DAILY">quotidienne</option>
+						<option value="WEEKLY">hebdomadaire</option>
+						<option value="MONTHLY">mensuelle</option>
+						<option value="YEARLY">annuelle</option>
+					</select>
+                </div>
+                <div class="col-6"> <!--Alerte-->
+                    <div class="form-group row" id="edit-alarms">
+                        <!-- <label for="edit-alarm-item" class="col-sm-2 col-form-label"><roundcube:label name="calendar.alarms" /></label> -->
+                        <span class="red-star-after span-mel t1">Alerte</span>
+                        <div class="col-sm-12 alarms-input">
+                            <div class="edit-alarm-item input-group first">
+                                <roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
+                                <span class="edit-alarm-buttons input-group-append">
+                                    <a href="#add" class="icon button btn add add-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.addalarm" /></span></a>
+                                    <a href="#delete" class="icon button btn delete delete-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.removealarm" /></span></a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+			<div class="row event-real-recs">
+				<div class="col-12">
                     <div class="form-group row border-after">
                         <roundcube:object name="plugin.recurrence_form" part="frequency" />
                     </div>
@@ -69,23 +96,8 @@
                     <div class="recurrence-form" id="recurrence-form-rdate">
                         <roundcube:object name="plugin.recurrence_form" part="rdate" class="form-group row" />
                     </div>
-                </div>
-                <div class="col-6"> <!--Alerte-->
-                    <div class="form-group row" id="edit-alarms">
-                        <!-- <label for="edit-alarm-item" class="col-sm-2 col-form-label"><roundcube:label name="calendar.alarms" /></label> -->
-                        <span class="red-star-after span-mel t1">Alerte</span>
-                        <div class="col-sm-12 alarms-input">
-                            <div class="edit-alarm-item input-group first">
-                                <roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
-                                <span class="edit-alarm-buttons input-group-append">
-                                    <a href="#add" class="icon button btn add add-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.addalarm" /></span></a>
-                                    <a href="#delete" class="icon button btn delete delete-alarm input-group-text"><span class="inner"><roundcube:label name="libcalendaring.removealarm" /></span></a>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+				</div>
+			</div>
             <!-- <div class="form-group row">
 				<label for="edit-enddate" class="col-sm-2 col-form-label"><roundcube:label name="calendar.end" /></label>
 				<div class="col-sm-10 datetime">
@@ -206,10 +218,11 @@
 				</div>
 			</div> -->
 
-			<div class="form-group row hidden" id="calendar-select">
-				<label for="edit-calendar" class="col-sm-2 col-form-label"><roundcube:label name="calendar.calendar" /></label>
-				<div class="col-sm-10">
-					<roundcube:object name="plugin.calendar_select" id="edit-calendar" class="form-control" />
+			<div class="form-group row" id="calendar-select">
+				<!-- <label for="edit-calendar" class="col-sm-2 col-form-label"><roundcube:label name="calendar.calendar" /></label> -->
+				<label for="edit-title" class="red-star-after span-mel t1">Choisissez un calendrier</label>
+				<div class="col-sm-12">
+					<roundcube:object name="plugin.calendar_select" id="edit-calendar" class="form-control input-mel" />
 				</div>
 			</div>
 			<div class="form-group row hidden">
@@ -218,10 +231,11 @@
 					<roundcube:object name="plugin.category_select" id="edit-categories" class="form-control" />
 				</div>
 			</div>
-			<div class="form-group row hidden">
-				<label for="edit-event-status" class="col-sm-2 col-form-label"><roundcube:label name="calendar.status" /></label>
-				<div class="col-sm-10">
-					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control" />
+			<div class="form-group row">
+				<label for="edit-title" class="span-mel t1">Choisissez le status de l'évènement</label>
+				<!-- <label for="edit-event-status" class="col-sm-2 col-form-label"><roundcube:label name="calendar.status" /></label> -->
+				<div class="col-sm-12">
+					<roundcube:object name="plugin.status_select" id="edit-event-status" class="form-control input-mel" />
 				</div>
 			</div>
 			<div class="form-group row" style="display: none;">
@@ -236,10 +250,11 @@
 					<roundcube:object name="plugin.priority_select" id="edit-priority" class="form-control" />
 				</div>
 			</div>
-			<div class="form-group row hidden">
-				<label for="edit-sensitivity" class="col-sm-2 col-form-label"><roundcube:label name="calendar.sensitivity" /></label>
-				<div class="col-sm-10">
-					<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control" />
+			<div class="form-group row">
+				<label for="edit-title" class="span-mel t1">Choisissez la sensibilitée de l'évènement</label>
+				<!-- <label for="edit-sensitivity" class="col-sm-2 col-form-label"><roundcube:label name="calendar.sensitivity" /></label> -->
+				<div class="col-sm-12">
+					<roundcube:object name="plugin.sensitivity_select" id="edit-sensitivity" class="form-control input-mel" />
 				</div>
 			</div>
 			<div class="form-group row" style="display: none;">

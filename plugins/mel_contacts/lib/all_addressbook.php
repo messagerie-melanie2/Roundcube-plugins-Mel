@@ -56,7 +56,7 @@ class all_addressbook extends rcube_addressbook
      * Returns addressbook name (e.g. for addressbooks listing)
      */
     function get_name() {
-        return $this->rc->gettext('allcontacts', 'mel_larry');
+        return $this->rc->gettext('allcontacts', 'mel_elastic');
     }
 
     /**

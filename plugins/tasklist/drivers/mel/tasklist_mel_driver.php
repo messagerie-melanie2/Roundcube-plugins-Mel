@@ -173,7 +173,7 @@ class tasklist_mel_driver extends tasklist_driver {
           'id' => $rcId,
           'order' => $order,
           'name' => $list->name,
-          'listname' => $list->id == $this->user->uid ? $this->rc->gettext('personaltasks', 'mel_larry') : ($list->owner == $this->user->uid ? $list->name : "[" . $list->owner . "] " . $list->name),
+          'listname' => $list->id == $this->user->uid ? $this->rc->gettext('personaltasks', 'mel_elastic') : ($list->owner == $this->user->uid ? $list->name : "[" . $list->owner . "] " . $list->name),
           'editname' => $list->name,
           'showalarms' => $alarm,
           'owner' => $list->owner,

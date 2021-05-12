@@ -226,7 +226,7 @@ RoundriveCreate.expand_folder = function(event)
                             const path = `${rcmail.gettext("files", "roundrive")}/${decodeURIComponent(element.path)}`.replaceAll('"', "¤¤¤");
                             const length = path.split("/").length%8;
                             html += `<li data-path="${path}" class="list-group-item mel-list-item mel-item-${length}">`;
-                            html += `<span onclick=RoundriveCreate.folder_click(this) class="mel-item-icon icon-mel-chevron-right mel-clickable"></span><span onclick=rcmail.env.roundrive.select(this) class=mel-text>${decodeURIComponent(element.filename)}</span>`;
+                            html += `<a href=# onclick=RoundriveCreate.folder_click(this) class="mel-not-link color-white mel-item-icon icon-mel-chevron-right mel-clickable"></a><a href=# onclick=rcmail.env.roundrive.select(this) class="mel-text mel-focus mel-not-link link-like-hover color-white">${decodeURIComponent(element.filename)}</a>`;
                             html += "</li>";
                         }
                         html += "</ul>";

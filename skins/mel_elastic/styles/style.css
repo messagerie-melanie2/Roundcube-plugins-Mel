@@ -982,3 +982,33 @@ a.button.icon.attach::before, button.btn.attach::before {
 	border-color: #484D7A;
 	/* color: #484D7A; */
 }
+
+.mel-focus.focus-text:focus
+{
+    box-shadow: none;
+    text-shadow: 0 0 .2rem #484D7A;
+}
+
+.mel-not-link{
+    color:#363A5B
+}
+
+.mel-not-link.color-white
+{
+     color:white;
+}
+
+.mel-not-link:hover
+{
+    text-decoration: none;
+}
+
+.mel-not-link.color-white:hover
+{
+    color:white;
+}
+
+.mel-not-link.link-like-hover:hover
+{
+    text-decoration: underline;
+}

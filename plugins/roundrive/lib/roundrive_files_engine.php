@@ -1143,11 +1143,11 @@ class roundrive_files_engine
     {
         $folders = $this->get_folders();
         $html = "<ul class=\"list-group list-group-flush mel-list mel-tree\">";
-        $html .= "<li data-path=\"".$this->plugin->gettext('files')."\" class=\"list-group-item mel-list-item \"><span onclick=RoundriveCreate.folder_click(this) class=\"mel-item-icon icon-mel-chevron-right mel-clickable\"></span><span class=mel-text onclick=rcmail.env.roundrive.select(this)>".$this->plugin->gettext('files')."</span>";
+        $html .= "<li data-path=\"".$this->plugin->gettext('files')."\" class=\"list-group-item mel-list-item \"><a href=# onclick=RoundriveCreate.folder_click(this) class=\"mel-not-link color-white mel-item-icon icon-mel-chevron-right mel-clickable\"></a><a href=# class=\"mel-text mel-focus mel-not-link link-like-hover color-white\" onclick=rcmail.env.roundrive.select(this)>".$this->plugin->gettext('files')."</a>";
         $html .= "<ul class=\"list-group list-group-flush \" style=display:none>";
         foreach ($folders as $key => $value) {
             $path = $this->plugin->gettext('files')."/".urldecode($value["path"]);
-            $html .= "<li data-path=\"".str_replace('"', "¤¤¤", $path)."\" class=\"list-group-item mel-list-item \"><span onclick=RoundriveCreate.folder_click(this) class=\"mel-item-icon icon-mel-chevron-right mel-clickable\"></span><span class=mel-text onclick=rcmail.env.roundrive.select(this)>".urldecode($value["filename"])."</span></li>";
+            $html .= "<li data-path=\"".str_replace('"', "¤¤¤", $path)."\" class=\"list-group-item mel-list-item \"><a href=# onclick=RoundriveCreate.folder_click(this) class=\"mel-not-link color-white mel-item-icon icon-mel-chevron-right mel-clickable\"></a><a href=# class=\"mel-text mel-focus mel-not-link link-like-hover color-white\" onclick=rcmail.env.roundrive.select(this)>".urldecode($value["filename"])."</a></li>";
         }
         $html.= "</ul></li></ul>";
         return $html;

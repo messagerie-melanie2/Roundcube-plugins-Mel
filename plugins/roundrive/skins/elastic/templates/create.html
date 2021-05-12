@@ -7,17 +7,17 @@
     <span class="red-star-after span-mel t1 first">Choisissez un type de document</span>
     <div id="roundrive-elements"></div>
 
-    <span style="margin-top:0" class="red-star-after span-mel t1">Choisissez le nom du document</span>
+    <label for="generated-document-input-mel-metapage" style="margin-top:0" class="red-star-after span-mel t1">Choisissez le nom du document</label>
     <input type="text" id=generated-document-input-mel-metapage
      class="form-control input-mel" placeholder="Choisissez le nom du document" />
 
-     <span class="red-star-after span-mel t1">Choisissez un dossier</span>
+     <label for="roundrive-folder-input" class="red-star-after span-mel t1">Choisissez un dossier</label>
      <div class="row">
          <div class="col-3">
             <button onclick=rcmail.env.roundrive.choose_document() style="margin-top: 0; margin-bottom: 5px;" class="btn btn-secondary mel-button icon-mel-arrow-right-after ">Choisir un dossier</button>
         </div>
         <div class="col-9">
-        <input id=roundrive-folder-input type="text" class="form-control input-mel disabled roundrive-folder" disabled placeholder="<roundcube:label name='roundrive.files' />" />
+        <input id=roundrive-folder-input type="text" aria-disabled="true" class="form-control input-mel disabled roundrive-folder" disabled placeholder="<roundcube:label name='roundrive.files' />" />
         </div>
     </div>
     <!-- <center> -->
@@ -26,8 +26,8 @@
 
 </div>
 <div id="roundrive-folders" style="width:100%;overflow-y: auto;overflow-x: hidden;display:none;">
-    <span class="red-star-after span-mel t1">Choisissez un dossier</span>
-    <input style="margin-bottom: 25px;" type="text" class="form-control input-mel disabled roundrive-folder" placeholder="<roundcube:label name='roundrive.files' />" />
+    <label for="fake-input-folder" class="red-star-after span-mel t1">Choisissez un dossier</label>
+    <input aria-disabled="true" id="fake-input-folder" style="margin-bottom: 25px;" type="text" class="form-control input-mel disabled roundrive-folder" disabled placeholder="<roundcube:label name='roundrive.files' />" />
     <roundcube:object name="initfolders" />
     <!-- <centker> -->
         <button onclick=rcmail.env.roundrive.accept_document() class="float-right btn btn-secondary mel-button"><span>Choisir ce dossier</span><span class="plus icon-mel-arrow-right"></span></button>

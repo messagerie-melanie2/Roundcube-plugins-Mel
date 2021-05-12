@@ -13,7 +13,7 @@ $labels["nextcloud_connection_error"] = "Impossible de récupérer les documents
 $labels["a_worspace"] = "Un espace de travail";
 $labels["a_mail"] = "Un email";
 $labels["a_task"] = "Une tâche";
-$labels["a_meeting"] = "Une évènement";
+$labels["a_meeting"] = "Un évènement";
 $labels["a_web_conf"] = "Une web-conférence";
 $labels["a_document"] = "Un document";
 $labels["a_wordpad"] = "Un bloc-note";
@@ -48,6 +48,8 @@ $labels['videoinput'] = 'Caméra';
 $labels["fullscreen"] = "Afficher la discussion instantanée en plein écran";
 $labels["anchor"] = "Ancrer la discussion instantanée à droite";
 $labels["close"] = "Fermer la discussion instantanée";
+
+$labels["close_modal"] = "Fermer la modale";
 
 $labels["create_help"] = "Ouvre la fenêtre de création (email, espaces de travail, etc...)";
 $labels["help_help"] = "Ouvre la fenêtre d'aide";
@@ -137,3 +139,12 @@ $labels["define_end_date"] = "Définir une date de fin";
 $labels["select_attendees2"] = "Sélectionner des participants";
 
 $labels["attendees_list"] = "Liste des participants";
+
+$labels["menu_create_help_workspace"] = "Créer un nouvel espace de travail";
+$labels["menu_create_help_email"] = "Ouvre la fenêtre de création d'un e-mail";
+$labels["menu_create_help_event"] = "Créer un nouvel évènement";
+$labels["menu_create_help_webconf"] = "Créer une webconférence qui sera ouverte dans le WebMel";
+$labels["menu_create_help_task"] = "Créer une nouvelle tâche";
+$labels["menu_create_help_doc"] = "Créer un nouveau document";
+$labels["menu_create_help_note"] = "Créer une nouvelle note";
+$labels["menu_create_help_survey"] = "Créer un nouveau sondage";

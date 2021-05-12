@@ -17,6 +17,18 @@
     font-size: xx-large;
     cursor: pointer;
     transition: all 0.1s ease-in;
+    background-color: transparent;
+    border-color: transparent;
+    color: #363A5B;
+}
+
+.modal-header > .modal-close:focus,
+.fullscreen-close:focus
+{
+    box-shadow: none;
+    text-shadow: 0px 0px .2rem #484D7A;
+    /* text-shadow: 0 0 0 .2rem #484D7A69; */
+    color: #484D7A;
 }
 
 .modal-header > .modal-close:hover,
@@ -24,6 +36,17 @@
 {
     text-shadow: 0px 0px 2px black;
     color: white;
+}
+
+.modal-header > .modal-close:active,
+.fullscreen-close:active
+{
+    box-shadow: none!important;
+    text-shadow: 0px 0px .2rem #c30000;
+    /* text-shadow: 0 0 0 .2rem #484D7A69; */
+    color: #c30000!important;
+    background-color: transparent!important;
+    border-color: transparent!important;
 }
 
 .modal-title{

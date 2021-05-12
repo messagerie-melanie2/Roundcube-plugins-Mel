@@ -15,7 +15,7 @@ class FullscreenItem
             else
                 this.generate_flex();
         }
-        this.close_button = $('<span class="fullscreen-close icofont-close-line-circled"></span>').appendTo(this.item);
+        this.close_button = $('<button class="fullscreen-close"><span class="icofont-close-line-circled"></span><span class="sr-only">Fermer les raccourcis</span></button>').appendTo(this.item);
         this.close_button.on("click", () => {
             this.close();
         });

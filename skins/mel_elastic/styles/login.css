@@ -37,6 +37,9 @@
     background-color: #363A5B;
     border-color: #363A5B;
     border-radius: 60px;
+    width: unset !important;
+    font-size: small;
+    text-transform: none !important;
 }
 
 #rcmloginsubmit:hover{
@@ -45,8 +48,8 @@
 }
 
 #rcmloginsubmit::after{
-    font-family: 'IcoFont'!important;
-    content: "\ea5d";
+    font-family: 'DWP'!important;
+    content: "\e900";
     padding-left: 30px;
 }
 

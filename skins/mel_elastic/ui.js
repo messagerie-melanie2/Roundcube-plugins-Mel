@@ -32,6 +32,8 @@ $(document).ready(() => {
                 value: 8
               });
               this.update();
+              if (rcmail.env.task == 'login' || rcmail.env.task == 'logout') 
+                $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
         }
         update()
         {

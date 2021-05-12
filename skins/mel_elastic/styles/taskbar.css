@@ -32,7 +32,15 @@
 
 #taskmenu span.inner, #taskmenu span.button-inner
 {
-    display:none;
+    /* display:none; */
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
 }
 
 #layout-menu, #taskmenu a
@@ -274,6 +282,17 @@ iframe.mm-frame/*,
     min-width: 100px;
     text-align: left;
     border-color: #363A5B;
+
+
+
+    /* border: 0; */
+    clip: initial;
+    height: initial;
+    /* margin: -1px; */
+    /* overflow: initial; */
+    /* padding: 0; */
+    /* position: absolute; */
+    width: initial;
 }
 
 .menu.toolbar a.wsp > span

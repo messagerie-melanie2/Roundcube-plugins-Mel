@@ -21,7 +21,7 @@
     width: 136px;
     height: 32px;
     border-radius: 50px;
-    /* background-color: #363A5B; */
+    background-color: transparent;
     color: #424564;
     padding: 5px 10px;
     padding-top: 5px;
@@ -33,6 +33,7 @@
     border-color: #424564;
     border-width: thin;
     transition: all 0.1s ease-in;
+    text-align: initial;
 }
 
 .help:hover
@@ -56,6 +57,8 @@
     display: inline-block;
     margin-right: 15px;
     transition: all 0.1s ease-in;
+    text-align: initial;
+    border:none;
 }
 
 .barup>.wrapper>div>.create:hover
@@ -175,6 +178,7 @@
     border-radius: 50px;
     /* background-color: #363A5B; */
     background-color: #FDCF42;
+    color:#363A5B;
     padding: 5px 10px;
     padding-top: 5px;
     padding-right: 10px;
@@ -216,6 +220,13 @@ v_separate{
     cursor: pointer;
     transition: all 0.1s ease-in;
     display: none;
+    border:none;
+    color: #363A5B;
+}
+
+.tiny-rocket-chat:focus {
+	/* border-style: solid; */
+	box-shadow: 0 0 0 .2rem #484D7A69;
 }
 
 .tiny-rocket-chat:hover{
@@ -226,6 +237,7 @@ v_separate{
 .tiny-rocket-chat.disabled{
     pointer-events: none;
     color: #484D7A;
+    background-color: #ddb438;
 }
 
 .tiny-rocket-chat-icon{

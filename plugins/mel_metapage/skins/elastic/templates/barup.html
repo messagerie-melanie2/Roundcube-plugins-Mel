@@ -1,16 +1,16 @@
 <div class="barup">
     <div id="barup-wrapper-row" class="wrapper row">
         <div id="barup-buttons" class="col-lg-6">
-            <div class="create" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
+            <button class="create mel-focus mel-before-remover" onclick="m_mp_Create()" title="<roundcube:label name='mel_metapage.create_help' />">
                 <span style="position:relative"><roundcube:label name="mel_metapage.create" /><span class="icon-mel-plus plus"></span></span>
-            </div>
-            <div class="help" onclick="m_mp_Help()" title="<roundcube:label name='mel_metapage.help_help' />">
+            </button>
+            <button class="help mel-before-remover mel-focus" onclick="m_mp_Help()" title="<roundcube:label name='mel_metapage.help_help' />">
                 <span style="position:relative"><roundcube:label name="mel_metapage.support" /><span class="icon-mel-help question"></span></span>
-            </div>
+            </button>
             <v_separate></v_separate>
-            <div class="my_favorites mel-hoverable-icon mel-yellow" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
+            <button class="my_favorites mel-focus mel-hoverable-icon mel-yellow" onclick="m_mp_shortcuts()" title="<roundcube:label name='mel_metapage.shortcuts_help' />">
                 <span style="position:relative"><roundcube:label name="mel_metapage.my_favorites" /><span class="icon-mel-favorite mel_metapage_favourite"></span></span>
-            </div>
+            </button>
         </div>
         <!-- <div class="col-lg-0"></div> -->
         <div id="barup-search-col" class="col-lg-3">
@@ -31,9 +31,9 @@
         <div class="search-container"></div>
     </div> 
 </div>
-<div title="<roundcube:label name='mel_metapage.ariane_help' />" class="tiny-rocket-chat" style="    z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
+<button title="<roundcube:label name='mel_metapage.ariane_help' />" class="tiny-rocket-chat" style="    z-index: 999;" onclick="mel_metapage.PopUp.open_ariane()">
     <span class="tiny-rocket-chat-icon icon-mel-message"></span>
-</div>
+</button>
 
 <a style="display: none;"  aria-expanded="false"  aria-haspopup="true" id="menu-small" data-popup="groupoptions-smallmenu" class="menu-small icofont-navigation-menu" label="actions" role=button href="#"><span class="button-inner inner">Autres actions</span></a>
 <div id="groupoptions-smallmenu" class="popupmenu">

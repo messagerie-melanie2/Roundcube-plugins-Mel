@@ -963,3 +963,12 @@ a.button.icon.attach::before, button.btn.attach::before {
   }
 
 
+.mel-before-remover::before
+{
+    content: none!important;
+}
+
+.mel-focus:focus
+{
+    box-shadow: 0 0 0 .2rem #484D7A69;
+}

@@ -317,7 +317,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         // html += '<span>Ariane</span>';
         html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close"></a>`;
         html += `<a class="icon-mel-popup-anchor card-anchor" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()"></a>`;
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="icon-mel-popup-expand card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="icon-mel-fullscreen-interface card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>`;
         html += "</div>";
         html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
         html += frame;

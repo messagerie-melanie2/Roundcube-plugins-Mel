@@ -237,7 +237,7 @@ html.layout-small .wsp-toolbar{
 }
 
 
-/* .wsp-toolbar-item {
+body.task-workspace  .wsp-toolbar-item {
     font-size: 20px;
     padding: 0 50px;
     border-left-style: solid;
@@ -246,15 +246,20 @@ html.layout-small .wsp-toolbar{
     margin: 10px 0;
     position: relative;
     margin-bottom:25px;
-} */
+} 
 
-/* .wsp-toolbar-item > .text-item {
-	position: absolute;
-	font-size: 13px;
-	top: 22px;
-	right: 37px;
-    display:none;
-} */
+body.task-workspace .wsp-toolbar-item > .text-item {
+    position: absolute;
+    font-size: 13px;
+    top: 22px;
+    right: 0;
+    text-align: center;
+    width: 100%;
+} 
+
+html.layout-small body.task-workspace .wsp-toolbar-item > .text-item {
+    display: none;
+} 
 
 html.layout-normal .wsp-toolbar-item{
     font-size:27px;
@@ -262,8 +267,8 @@ html.layout-normal .wsp-toolbar-item{
 }
 
 html.touch .wsp-toolbar-item{
-    font-size:30px;
-    padding: 0 25px;
+    font-size:20px;
+    padding: 0 32px;
 }
 
 html.layout-small .wsp-toolbar-item
@@ -274,18 +279,23 @@ html.layout-small .wsp-toolbar-item
 }
 
 .wsp-toolbar-item.first{
-    border-left-style: none;
+    border-left-style: none!important;
 }
 
 .wsp-toolbar-item:hover,
 .wsp-toolbar-item.active{
     cursor: pointer;
-    background: radial-gradient(circle, #42548F 33%, rgba(255,255,255,0) 33%); /*29*/
+    background: radial-gradient(circle, #42548F 26%, rgba(255,255,255,0) 26%); /*29*/
 }
 
 .wsp-toolbar-item > span {
 	display: inline-block;
 	margin-top: 10px;
+}
+
+body.task-workspace .wsp-toolbar-item > span {
+	display: inline-block;
+	margin-top: 7px;
 }
 
 html.layout-normal .wsp-toolbar-item:hover,
@@ -295,7 +305,7 @@ html.layout-normal .wsp-toolbar-item.active{
 
 html.touch .wsp-toolbar-item:hover,
 html.touch .wsp-toolbar-item.active{
-    background:radial-gradient(circle, #42548F 48%, rgba(255,255,255,0) 48%)
+    background:radial-gradient(circle, #42548F 35%, rgba(255,255,255,0) 35%)
 }
 
 .wsp-toolbar-item.active
@@ -306,7 +316,7 @@ html.touch .wsp-toolbar-item.active{
 .notif.roundbadge 
 {
     position: absolute;
-    top: 3px;
+    top: -4px;
     right: 45px;
     color: black;
 }
@@ -318,8 +328,8 @@ html.layout-normal .wsp-toolbar .notif.roundbadge
 
 html.touch .wsp-toolbar .notif.roundbadge
 {
-    right:23px;
-    top:6px;
+    right:26px;
+    top:-4px;
 }
 
 .dwp-round.wsp-picture

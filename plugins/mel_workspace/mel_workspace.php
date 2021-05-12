@@ -291,12 +291,12 @@ class mel_workspace extends rcube_plugin
         ];
         $services = $this->get_worskpace_services($this->currentWorkspace);
         $uid = $this->currentWorkspace->uid;
-        $html = html::div(["onclick" => "ChangeToolbar('back', this)", "class" => "wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span>');
-        $html .= html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active"], "<span class=".$icons["home"]."></span>");
+        $html = html::div(["onclick" => "ChangeToolbar('back', this)", "class" => "wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
+        $html .= html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active"], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
         if ($services[self::AGENDA])
         {
             $onclick = "ChangeToolbar('calendar', this)";
-            $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>Agenda</span>");
+            $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
         }
         
         if ($services[self::CHANNEL])
@@ -310,19 +310,19 @@ class mel_workspace extends rcube_plugin
             $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
             try {
                 if ($channel_datas->name === null)
-                    $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span>");
+                    $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
                 else
-                    $html .= html::div(["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span>");
+                    $html .= html::div(["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
             } catch (\Throwable $th) {
-                $html .= html::div(["onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span>");
+                $html .= html::div(["onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
             }
         }
         if ($services[self::TASKS])
-            $html .= html::div(["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span>");
+            $html .= html::div(["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
         // if ($this->get_object($this->currentWorkspace, $cloud) !== null)
         //     $html = "";
         if (self::is_admin($this->currentWorkspace, driver_mel::gi()->getUser()->uid))
-            $html .= html::div(["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span>");
+            $html .= html::div(["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
         return $html;//html::div(["class" => "wsp-toolbar"], $html);
     }
 

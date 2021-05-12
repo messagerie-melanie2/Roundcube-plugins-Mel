@@ -968,7 +968,17 @@ a.button.icon.attach::before, button.btn.attach::before {
     content: none!important;
 }
 
-.mel-focus:focus
+.mel-focus:focus,
+.mel-button:focus
 {
     box-shadow: 0 0 0 .2rem #484D7A69;
+}
+
+.mel-focus.focus-bordered:focus {
+	/* box-shadow: 0 0 0px 80px #484D7A69; */
+	border: solid;
+	box-shadow: none;
+	border-width: thin;
+	border-color: #484D7A;
+	/* color: #484D7A; */
 }

@@ -150,3 +150,23 @@
         padding: 30px 15px;
     } 
 }
+
+#formlogintable {
+	color: #363A5B;
+}
+
+#formlogintable label {
+	font-weight: bold;
+}
+
+#formlogintable label[for="rcmloginuser"],
+#formlogintable label[for="rcmloginpwd"]
+{
+	font-weight: bold;
+}
+
+#formlogintable label[for="rcmloginuser"]::after {
+	content: "Adresse email";
+	display: block;
+	font-weight: normal;
+}

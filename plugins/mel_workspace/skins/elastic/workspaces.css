@@ -248,13 +248,13 @@ html.layout-small .wsp-toolbar{
     margin-bottom:25px;
 } */
 
-.wsp-toolbar-item > .text-item {
+/* .wsp-toolbar-item > .text-item {
 	position: absolute;
 	font-size: 13px;
 	top: 22px;
 	right: 37px;
     display:none;
-}
+} */
 
 html.layout-normal .wsp-toolbar-item{
     font-size:27px;

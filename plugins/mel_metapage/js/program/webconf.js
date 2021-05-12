@@ -508,6 +508,7 @@ Webconf.set_webconf = function()
         }
     }
 
+    rcmail.env.webconf.key = $("#webconf-room-name").val();
     rcmail.env.webconf.go();
     rcmail.env.webconf.remove_selector();
 }

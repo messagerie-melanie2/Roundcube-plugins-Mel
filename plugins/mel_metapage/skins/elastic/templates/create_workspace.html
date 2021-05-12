@@ -1,10 +1,10 @@
 <div class="step" id="workspace-step1"> <!--Etape 1-->
-    <span class="red-star">Champs obligatoires</span>
+    <span class="red-star"><roundcube:label name='mel_metapage.required_fields' /></span>
 
-    <span class="red-star-after span-mel t1 first">Nom de l'espace de travail</span>
+    <span class="red-star-after span-mel t1 first"><roundcube:label name='mel_metapage.worskpace_name' /></span>
     <input oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=40 placeholder="Nom de l'espace"/>
     
-    <span class="span-mel t1">Sélectionner un avatar</span>
+    <span class="span-mel t1"><roundcube:label name='mel_metapage.choose_avatar' /></span>
     <div class="row">
         <div class="col-2">    
             <span id=tmpavatar></span>
@@ -12,15 +12,15 @@
         <div class="col-10">
             <div class="custom-file hidden" style="margin-top: 15px;">
                 <input class="form-control input-mel larger file custom-file-input" type="file">
-                <label class="custom-file-label" data-browse="Parcourir">Importer une photo</label>
+                <label class="custom-file-label" data-browse="Parcourir"><roundcube:label name='mel_metapage.import_picture' /></label>
             </div>
         </div>
     </div>
 
-    <span class="span-mel t1">Description</span>
+    <span class="span-mel t1"><roundcube:label name='mel_metapage.description' /></span>
     <textarea id=workspace-desc class="form-control input-mel" placeholder="Description de l'espace de travail"></textarea>
     
-    <span class="span-mel t1">Sélectionner une thématique</span>
+    <span class="span-mel t1"><roundcube:label name='mel_metapage.choose_hashtag' /></span>
     <div style="position: relative;">
         <input onclick="m_mp_affiche_hashtag_if_exists()" onchange="m_mp_get_all_hashtag()" class="form-control input-mel" id=workspace-hashtag type=text placeholder="Thématique de l'espace." />
         <div id="list-of-all-hashtag" style="display:none">
@@ -29,36 +29,36 @@
     </div>
     <div class="row">
         <div class="col-md-4 datetime">
-            <span class="span-mel t1">Définir une date de fin</span>
+            <span class="span-mel t1"><roundcube:label name='mel_metapage.define_end_date' /></span>
             <div class="input-mel-datetime">
                 <input class="form-control input-mel" id=workspace-date-end type=text />
             </div>
         </div>
         <div class="col-md-4">
-            <span class="red-star-after span-mel t1">Autorisé l'accès</span>
+            <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.authorized_access' /></span>
             <div class="custom-control custom-radio">
                 <input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required" checked>
-                <label class="custom-control-label" for="workspace-private">Restreint</label>
+                <label class="custom-control-label" for="workspace-private"><roundcube:label name='mel_metapage.restricted' /></label>
             </div>
             <div class="custom-control custom-radio">
                 <input type="radio" checked id="workspace-public" name="customRadio" class="custom-control-input required">
-                <label class="custom-control-label" for="workspace-public">Public</label>
+                <label class="custom-control-label" for="workspace-public"><roundcube:label name='mel_metapage.public' /></label>
             </div>
         </div>
         <div class="col-md-4">
-            <span class="red-star-after span-mel t1">Couleur</span>
+            <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.color' /></span>
             <input id="workspace-color" class="form-control input-mel" type=color value="#FFFFFF" />
         </div>
     </div>
  
     <div style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="m_mp_check_w(1,`workspace-step2`)">
-        <span>Continuer</span>
+        <span><roundcube:label name='mel_metapage.continue' /></span>
         <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
     </div>
 </div>
 
 <div class="step" id="workspace-step2" style="display:none;"> <!--Etape 2-->
-    <span class="span-mel t1 first">Sélectionner des participants</span>
+    <span class="span-mel t1 first"><roundcube:label name='mel_metapage.select_attendees2' /></span>
     <div class="input-group">
         <textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>
         <ul id="wspf" class="form-control input-mel recipient-input ac-input rounded-left">
@@ -72,7 +72,7 @@
         </span>
     </div>
 
-    <span class="span-mel t1">Liste des participants</span>
+    <span class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></span>
     <div id="mm-wsp-loading" style="display:none">
         <center>
             <span class="spinner-border"></span>
@@ -82,11 +82,11 @@
 
     </div>
     <div style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step1`)">
-        <span>Retour</span>
+        <span><roundcube:label name='mel_metapage.back' /></span>
         <span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
     </div>
     <div style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(2, `workspace-step3`)">
-        <span>Continuer</span>
+        <span><roundcube:label name='mel_metapage.continue' /></span>
         <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
     </div>
 </div>

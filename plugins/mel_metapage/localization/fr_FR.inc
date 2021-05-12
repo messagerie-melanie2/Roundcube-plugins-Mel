@@ -66,3 +66,74 @@ $labels["webconf_mic_help"] = "Active ou désactive le micro";
 $labels["webconf_vid_help"] = "Active ou désactive la caméra";
 $labels["webconf_tile_help"] = "Active ou désactive le mode de vue \"Tuile\"";
 $labels["webconf_round_help"] = "Affiche ou cache la barre d'outil";
+
+$labels["saloon"] = "Salon";
+$labels["webconf_saloon_name_error"] = "Le nom du salon doit faire au moins 10 caractères avec au moins 3 chiffres. Alphanumérique seulement.";
+$labels["attach_to"] = "Rattacher à";
+$labels["a_workspace"] = "un espace de travail";
+$labels["choose"] = "Choisissez";
+$labels["an_ariane_space"] = "un salon Ariane";
+$labels["enter"] = "Entrer";
+
+$labels["documents"] = "Documents";
+$labels["ariane"] = "Ariane";
+$labels["hangup"] = "Raccrocher";
+$labels["diffuse"] = "Diffuser";
+$labels["mosaik"] = "Mosaïque";
+$labels["url"] = "Url";
+
+$labels["required_fields"] = "Champs obligatoires";
+$labels["event_name"] = "Nom de l'évènement";
+$labels["date_choice"] = "Choix de la période";
+$labels["event_start"] = "Début de l'évènement";
+$labels["event_end"] = "Fin de l'évènement";
+$labels["reccurence"] = "Réccurence";
+$labels["never"] = "jamais";
+$labels["DAILY"] = "quotidienne";
+$labels["WEEKLY"] = "hebdomadaire";
+$labels["MONTHLY"] = "mensuelle";
+$labels["YEARLY"] = "annuelle";
+$labels["alert"] = "Alerte";
+$labels["event_mode"] = "Mode d'évènement";
+$labels["face_to_face"] = "En présentiel";
+$labels["by_visio"] = "Par visioconférence";
+$labels["by_audio"] = "Par audio";
+$labels["choose_location"] = "Choisir un lieu";
+$labels["choose_visio_tool"] = "Choisir l'outil de visioconférence";
+
+$labels["state_tool_conf"] = "Webconférence de l'état";
+$labels["other_tool_conf"] = "Un autre outil de visioconférence";
+$labels["a_niche"] = "un créneau";
+$labels["reserve"] = "Réserver";
+$labels["audio_phone"] = "Téléphone de l'audio";
+$labels["audio_num"] = "Numéro de l'audio";
+$labels["add_file"] = "Ajouter une pièce jointe";
+$labels["day_order"] = "Ordre du jour";
+
+$labels["attach_the_event_to"] = "Rattacher l'évènement à";
+$labels["choose_calendar"] = "Choisissez un calendrier";
+$labels["choose_event_state"] = "Choisissez le status de l'évènement";
+$labels["choose_sensivity"] = "Choisissez la sensibilitée de l'évènement";
+
+$labels["continue"] = "Continuer";
+$labels["add_all_member_from_a_workspace"] = "Ajouter tout les membres de l'espace de travail";
+$labels["add_all"] = "Ajouter tout";
+$labels["select_attendees"] = "Sélectionner les participants";
+$labels["back"] = "Retour";
+$labels["save_event"] = "Sauvegarder l'évènement";
+
+$labels["worskpace_name"] = "Nom de l'espace de travail";
+$labels["choose_avatar"] = "Sélectionner un avatar";
+$labels["import_picture"] = "Importer une photo";
+$labels["description"] = "Description";
+$labels["choose_hashtag"] = "Sélectionner une thématique";
+$labels["define_end_date"] = "Définir une date de fin";
+
+$labels["authorized_access"] = "Autorisé l'accès";
+$labels["restricted"] = "Restreint";
+$labels["public"] = "public";
+$labels["color"] = "Couleur";
+$labels["define_end_date"] = "Définir une date de fin";
+$labels["select_attendees2"] = "Sélectionner des participants";
+
+$labels["attendees_list"] = "Liste des participants";

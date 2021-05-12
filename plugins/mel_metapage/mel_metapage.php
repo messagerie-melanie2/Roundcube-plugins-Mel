@@ -253,7 +253,7 @@ class mel_metapage extends rcube_plugin
                     $values = (isset($values) ? explode("|" ,$values) : []);
 
                     $html = '<select id=categories-event-all-cal-mm class="form-control input-mel">';
-                    $html .= "<option value=\"#none\">Aucune</option>";
+                    $html .= "<option value=\"#none\">".$this->rc->gettext("nothing")."</option>";
                     foreach ($values as $key => $value) {
                         if ($value[0] === "w" && $value[1] === "s" && $value[2] === "#")
                             continue;

@@ -108,7 +108,7 @@ class Webconf extends Program
         $list["channel"] = json_decode($list["channel"]["content"]);
         $list["group"] = json_decode($list["group"]["content"]);
         $html = '<select class="ariane_select input-mel">';
-        $html .= "<option value=home>Aucun</option>";
+        $html .= "<option value=home>".$this->rc->gettext("nothing", "mel_metapage")."</option>";
         foreach ($list["channel"]->channels as $key => $value) {
             $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';
         } 

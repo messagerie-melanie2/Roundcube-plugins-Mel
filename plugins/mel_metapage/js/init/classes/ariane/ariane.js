@@ -149,7 +149,7 @@
             {
                 querry.css("display", "none");
                 if (this.have_unreads())
-                    querry.html(`<span class="icon-mel-unreads"></span>`).css("display", ""); 
+                    querry.html(`<span class="">•</span>`).css("display", ""); 
             }
             else
                 querry.html(menu).css("display", ""); 

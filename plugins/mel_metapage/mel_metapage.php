@@ -159,7 +159,7 @@ class mel_metapage extends rcube_plugin
             'classsel' => 'icon-mel-last-frame menu-last-frame menu-last-frame-selected',
             'innerclass' => 'inner',
             'label'	=> 'mel_metapage.last_frame_opened',
-            'title' => '',
+            'title' => 'Retour à la page précédente',
             'type'       => 'link',
         ), "taskbar");
         $this->include_depedencies();

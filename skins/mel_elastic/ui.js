@@ -34,11 +34,17 @@ $(document).ready(() => {
               this.update();
               if (rcmail.env.task == 'login' || rcmail.env.task == 'logout') 
                 $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
-              $("#taskmenu").find("a").removeAttr("title").each((i,e) => {
-                $(e).keypress((event) => {
+              $("#taskmenu").find("a").each(async (i,e) => {
+                e = $(e);
+                if (e.parent().hasClass("special-buttons"))
+                    return;
+                const tmp = e.removeAttr("title")[0].outerHTML;
+                e.remove();
+                e = null;
+                $(tmp).keypress((event) => {
                     if (event.originalEvent.keyCode === 32)
                         $(event.currentTarget).click();
-                });
+                }).appendTo($("#taskmenu"));
               });
         }
         update()

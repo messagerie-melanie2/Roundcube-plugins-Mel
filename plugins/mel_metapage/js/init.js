@@ -14,6 +14,7 @@ if (rcmail)
     if (parent.rcmail.mel_metapage_fn !== undefined)
         return;
     parent.rcmail.addEventListener("init", function() {
+        $(`<p id="sr-document-title-focusable" tabindex="-1" class="sr-only">${window.document.title}</p>`).prependTo("body");
         if (rcmail.env.username === "tommy.delphin.i" || rcmail.env.username === "thomas.payen")
             $(".rotomeca-debug").removeClass("rotomeca-debug");
         //Definition des functions
@@ -170,6 +171,7 @@ if (rcmail)
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
+                        Title.update($(".mail-frame")[0].id);
                     } catch (ex) {
                         console.error(ex);
                         rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")

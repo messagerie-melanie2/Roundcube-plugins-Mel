@@ -350,6 +350,9 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
 
     if (eClass === "discussion")
         rcmail.triggerEvent("init_ariane", id);
+
+    if (changepage)
+        Title.update(id, true);
 });
 
 metapage_frames.addEvent("changepage.after", () => {
@@ -370,11 +373,16 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
         
     }
     querry.css("display", "");
-    //console.log("changepage", changepage	);
+    //console.log("open", changepage, id);
     if (eClass === "discussion" && changepage)
         $(".a-frame").css("display", "");
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
+
+    if ($(`iframe#${id}`).length === 0)
+        Title.set(Title.defaultTitle, true);
+    else
+        Title.update(id, true);
 });
 
 function m_mp_ChangeLasteFrameInfo()

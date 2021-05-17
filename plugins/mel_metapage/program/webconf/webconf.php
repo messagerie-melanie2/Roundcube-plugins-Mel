@@ -60,6 +60,7 @@ class Webconf extends Program
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->add_handler("selectwsp", [$this, "get_all_workspaces"]);
         }
+        $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");
     }
 

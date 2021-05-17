@@ -271,8 +271,32 @@ iframe.mm-frame/*,
     width: 200px!important;
 }
 
+#taskmenu .wsp:focus > span {
+	font-size: 14px;
+}
+
+#layout-menu > div > a:focus > span.inner,
+#layout-menu > div > span > a:focus > span.inner
+{
+	background-color: #484D7A;
+	height: inherit!important;
+	margin-left: -5px;
+    white-space: normal;
+    padding-left:10px;
+	/* box-shadow: 0 0 0 .2rem #484D7AB5; */
+	/* margin-top: -31px; */
+}
+
 #layout-menu:hover > div > a > span.inner,
-#layout-menu:hover > div > span > a > span.inner {
+#layout-menu:hover > div > span > a > span.inner
+{
+    font-size: initial;
+}
+
+#layout-menu:hover > div > a > span.inner,
+#layout-menu:hover > div > span > a > span.inner,
+#layout-menu > div > a:focus > span.inner,
+#layout-menu > div > span > a:focus > span.inner {
     display: block;
     position: absolute;
     left: 65px;
@@ -287,7 +311,6 @@ iframe.mm-frame/*,
     min-width: 100px;
     text-align: left;
     border-color: #363A5B;
-
 
 
     /* border: 0; */

@@ -1,8 +1,9 @@
 <a data-popup="groupoptions-user" role="button"
 title="<roundcube:label name='mel_metapage.user_help' />"
 href="#" 
-aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-user" 
+aria-haspopup="true" aria-owns="groupoptions-user" 
 data-original-title=""
+id="user-up-panel"
 style="text-decoration: none;">
 <div class="user-child">
     <div class="row">
@@ -30,8 +31,8 @@ style="text-decoration: none;">
     }
 </style>
 <div id="groupoptions-user" style="z-index: index 10000;" class="popupmenu">
-	<h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3>
-	<ul class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-user">
+	<!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
+	<ul class="menu listing" role="menu" aria-labelledby="user-up-panel">
 		<roundcube:button type="link-menuitem" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="settings" classAct="" />
 		<roundcube:button type="link-menuitem" command="logout" label="logout" class="logout logout-color" classAct="" />
 		<roundcube:container name="groupoptions" id="groupoptionsmenu" />

@@ -34,6 +34,12 @@ $(document).ready(() => {
               this.update();
               if (rcmail.env.task == 'login' || rcmail.env.task == 'logout') 
                 $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
+              $("#taskmenu").find("a").removeAttr("title").each((i,e) => {
+                $(e).keypress((event) => {
+                    if (event.originalEvent.keyCode === 32)
+                        $(event.currentTarget).click();
+                });
+              });
         }
         update()
         {

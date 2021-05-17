@@ -68,6 +68,7 @@
         {
             const datas = event.data.data;
             this._some_unreads = datas === "•";
+            mel_metapage.Storage.set("ariane_datas",this);
         }
 
         have_unreads()

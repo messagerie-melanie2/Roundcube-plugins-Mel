@@ -406,6 +406,7 @@ $(document).ready(() => {
         {
             let querry = $('#formlogintable label[for="rcmloginuser"]');
             querry.html(`${querry.html()}<br/><span style=font-weight:normal>Adresse email</span>`).addClass("mel-after-remover");
+            $("#formlogintable").attr("role", "presentation");
         }
     });
 

@@ -171,7 +171,8 @@ if (rcmail)
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
-                        Title.update($(".mail-frame")[0].id);
+                        if ($(".mail-frame").length > 0)
+                            Title.update($(".mail-frame")[0].id);
                     } catch (ex) {
                         console.error(ex);
                         rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -452,10 +453,10 @@ $(document).ready(() => {
         rcmail.addEventListener("init", async function() {
             let querry = $("#user-picture");
             // console.log("ping", _ping, rcmail.env.rocket_chat_url + "/avatar/" + rcmail.env.username);
-            querry.html('<img src='+rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
+            querry.html('<img alt="avatar" src='+rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
             let image = querry.find("img")[0];
             image.onerror = function(){
-                $("#user-picture").html("<span>" + $(e).data("user").slice(0,2) + "</span>");
+                $("#user-picture").html("<span>" + rcmail.env.username.slice(0,2) + "</span>");
             };
         });
     }

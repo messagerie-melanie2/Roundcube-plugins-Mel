@@ -1,38 +1,40 @@
 <roundcube:include file="includes/layout.html" />
 
-<h1 class="voice"><roundcube:object name="productname" /> <roundcube:label name="login" /></h1>
+<header role="banner">
+	<h1 class="voice"><roundcube:object name="productname" /> <roundcube:label name="login" /></h1>
+	<img class="mel-logo" name="Ministères Transition Ecologique, Cohésion des Territoires, Mer - Liberté, Egalité, Fraternité" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="" alt="Logo" />
+</header>
 
-<div class="background-image"></div>
-<img class="mel-logo" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="" alt="Logo" />
-<div id="mel-login-form">
-	<div class="login-title"><center>
-		<h1>
-			<roundcube:label name="mel.welcome" /><br>
-			<roundcube:label name="mel.on_your_dwp" />
-		</h1></center>
-	</div>
-	<div class="card clear" role="main">
-		<!-- <div class="box-left">
-			<div class="productname"><roundcube:label name="productname" /></div>
-			<div class="productioninformation"><roundcube:label name="mel.login_productioninformation" /></div>
-			<div class="footerbox">
-				<div><roundcube:label name="mel.login_footerbox" /></div>
-				<div class="info"><roundcube:label name="mel.login_footerbox_info" /></div>
+<main role="main">
+	<div id="mel-login-form">
+		<div class="login-title"><center>
+			<h1>
+				<roundcube:label name="mel.welcome" /><br>
+				<roundcube:label name="mel.on_your_dwp" />
+			</h1></center>
+		</div>
+		<div class="card clear" role="main">
+			<!-- <div class="box-left">
+				<div class="productname"><roundcube:label name="productname" /></div>
+				<div class="productioninformation"><roundcube:label name="mel.login_productioninformation" /></div>
+				<div class="footerbox">
+					<div><roundcube:label name="mel.login_footerbox" /></div>
+					<div class="info"><roundcube:label name="mel.login_footerbox_info" /></div>
+				</div>
+			</div> -->
+			<div class="card-body mel_correction">
+				<roundcube:form name="form" method="post">
+				<roundcube:object name="loginform" form="form" size="40" submit=true />
+				<roundcube:object name="message" id="message" />
+				</form>
+				<div class="footerbox"><roundcube:label name="mel.login_warning" /></div>
 			</div>
-		</div> -->
-		<div class="card-body mel_correction">
-			<roundcube:form name="form" method="post">
-			<roundcube:object name="loginform" form="form" size="40" submit=true />
-			<roundcube:object name="message" id="message" />
-			</form>
-			<div class="footerbox"><roundcube:label name="mel.login_warning" /></div>
 		</div>
 	</div>
-</div>
+</main>
 
-
-<img class="login-logo-footer-right" name="logo" src="skins/mel_elastic/images/meuf.svg"  data-src-small="0" id="" alt="Logo" />
-<img class="login-logo-footer-left" name="logo" src="skins/mel_elastic/images/gars.svg"  data-src-small="0" id="" alt="Logo" />
+<img class="login-logo-footer-right" name="logo" src="skins/mel_elastic/images/meuf.svg"  data-src-small="0" id="" alt="" />
+<img class="login-logo-footer-left" name="logo" src="skins/mel_elastic/images/gars.svg"  data-src-small="0" id="" alt="" />
 <!-- <div id="loginfooter">
 	<span><roundcube:label name="mel.login_footer1" /></span>
 	<span><roundcube:label name="mel.login_footer2" /></span>

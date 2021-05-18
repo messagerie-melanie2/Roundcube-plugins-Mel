@@ -33,10 +33,10 @@ body{
     color:white !important;
 }
 
-#layout>div>.header a.button,
-#layout>div>.header a.options,
-#layout>div>.header a.select,
-#layout>div>.header a.threads
+#layout .header a.button,
+#layout .header a.options,
+#layout .header a.select,
+#layout .header a.threads
 {
     color:white;
 }
@@ -151,7 +151,7 @@ td.subject {
     background-color: #484D7A;
 }
 
-#layout>#layout-content>.header a.button {
+#layout #layout-content > .header a.button {
     color: black;
 }
 
@@ -248,8 +248,8 @@ separate {
 
 
 /*************************/
-.task-addressbook>#layout>#layout-sidebar>.header,
-.task-addressbook>#layout>#layout-list>.header
+.task-addressbook>#layout #layout-sidebar>.header,
+.task-addressbook>#layout #layout-list>.header
 {
 	height: 120px;
 }
@@ -967,6 +967,10 @@ a.button.icon.attach::before, button.btn.attach::before {
 {
     content: none!important;
 }
+.mel-after-remover::after
+{
+    content: none!important;
+}
 
 .mel-focus:focus,
 .mel-button:focus
@@ -1011,4 +1015,10 @@ a.button.icon.attach::before, button.btn.attach::before {
 .mel-not-link.link-like-hover:hover
 {
     text-decoration: underline;
+}
+
+main {
+	display: flex;
+	height: 100%;
+	width: 100%;
 }

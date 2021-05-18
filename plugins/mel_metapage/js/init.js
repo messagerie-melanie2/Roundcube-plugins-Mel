@@ -453,7 +453,7 @@ $(document).ready(() => {
         rcmail.addEventListener("init", async function() {
             let querry = $("#user-picture");
             // console.log("ping", _ping, rcmail.env.rocket_chat_url + "/avatar/" + rcmail.env.username);
-            querry.html('<img alt="avatar" src='+rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
+            querry.html('<img alt="" src='+rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
             let image = querry.find("img")[0];
             image.onerror = function(){
                 $("#user-picture").html("<span>" + rcmail.env.username.slice(0,2) + "</span>");

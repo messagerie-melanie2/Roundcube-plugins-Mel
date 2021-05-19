@@ -124,7 +124,7 @@ class Module implements iModule {
     {
         try {
             try {
-                if ($includes !== null && is_iterable($includes))
+                if ($includes !== null && is_array($includes))
                 {
                     foreach ($includes as $key => $value) {
                         include_once $value;

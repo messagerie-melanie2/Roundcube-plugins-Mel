@@ -1036,12 +1036,12 @@ class mel_driver extends calendar_driver {
     $_event->all_day = isset($event['allday']) && $event['allday'] == 1;
     if (isset($event['start'])) {
       if ($_event->all_day) {
-        $_event->start = $event['start']->format(self::SHORT_DB_DATE_FORMAT) . ' 00:00:00';        
+        $_event->start = $event['start']->format(self::SHORT_DB_DATE_FORMAT) . ' 00:00:00';
       }
       else {
         $_event->start = $event['start'];
-        $_event->timezone = $event['start']->getTimezone()->getName();
       }
+      $_event->timezone = $event['start']->getTimezone()->getName();
     }
     if (isset($event['end'])) {
       if ($_event->all_day) {

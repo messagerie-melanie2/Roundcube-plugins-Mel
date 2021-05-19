@@ -210,7 +210,7 @@ class Module implements iModule {
             $arrayContent["id"] = $idContent;
         return html::div(
             $arraySquare,
-            (($title == "") ? "" : html::p(array(), $title)).html::div($arrayContent, $content));
+            (($title == "") ? "" : html::tag("h2",array(), $title)).html::div($arrayContent, $content));
     }
 
     /**
@@ -252,24 +252,63 @@ class Module implements iModule {
      */
     function html_square_tab($array, $title="", $id="")
     {
+        $dir = __DIR__;
+        include_once "$dir/../program/html_helper/HTMLTab.php";
+        // $count = count($array);
+        // $html_tabs = "";
+        // $html_contents = "";
+        // for ($i=0; $i < $count; ++$i) { 
+        //     $html_tabs = $html_tabs.$this->html_tab($array[$i]["name"], $array[$i]["id"], $i==0, $array[$i]["deco"]);
+        //     $html_tabs = substr($html_tabs, 0, strlen($html_tabs)-1);
+        //     $html_contents = $html_contents.$this->html_tab_content($array[$i]["id"], $i!=0);
+        // }
+        // return html::div(
+        //     array("class" => "square_tab", "id" => $id),
+        //     html::p(array(), $title).html::div(
+        //         array("class" => "tabs"),
+        //         $html_tabs
+        //     ).html::div(
+        //         array("class" => "tabs-contents"),
+        //         html::div(array("class" => "middlew"), $html_contents)
+        //     )
+        // );
+        $tabs = new HTMLDivTab(null, [
+            aHTMLElement::ARG_CLASSES => ["tabs"],
+        ]);
+
+        if ($title !== "")
+            $tabs->arias[] = "aria-label=\"$title\"";
+
+        $tabs->base->classes = ["tabs-contents"];
         $count = count($array);
-        $html_tabs = "";
-        $html_contents = "";
+
         for ($i=0; $i < $count; ++$i) { 
-            $html_tabs = $html_tabs.$this->html_tab($array[$i]["name"], $array[$i]["id"], $i==0, $array[$i]["deco"]);
-            $html_tabs = substr($html_tabs, 0, strlen($html_tabs)-1);
-            $html_contents = $html_contents.$this->html_tab_content($array[$i]["id"], $i!=0);
+
+            $tab = new HTMLTab(($array[$i]["tab-id"] === "" ? null : $array[$i]["tab-id"]), null, [
+                aHTMLElement::ARG_CLASSES => ["tablinks".($i === 0 ? " selected" : "")],
+                aHTMLElement::ARG_ATTRIBUTES => ['onclick="selectTab(`'.$array[$i]["id"].'`, this)"'],
+            ]);
+
+            $tab->html(($array[$i]["deco"] === null ? "" : $array[$i]["deco"])." ".($array[$i]["name"] === null ? "" : $array[$i]["name"]));
+            $tab->content->id = $array[$i]["id"];
+            $tab->content->classes = ["tabcontent"];
+
+            if ($array[$i]["content-attributes"] != null)
+                $tab->content->attributes = $array[$i]["content-attributes"];
+
+            $tabs->addTab($tab);
+            unset($tab);
+
         }
-        return html::div(
-            array("class" => "square_tab", "id" => $id),
-            html::p(array(), $title).html::div(
-                array("class" => "tabs"),
-                $html_tabs
-            ).html::div(
-                array("class" => "tabs-contents"),
-                html::div(array("class" => "middlew"), $html_contents)
-            )
-        );
+
+        $parent = new HTMLBaseElement($id === "" ? null : $id, [
+            aHTMLElement::ARG_CLASSES => ["square_tab"]
+        ]);
+        if ($title !== "" && $title !== null)
+            $parent->append("<h2>$title</h2>");
+        $parent->append($tabs);
+
+        return $parent->toHtml();
     }
 
 

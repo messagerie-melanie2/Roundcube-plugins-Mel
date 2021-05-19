@@ -69,7 +69,7 @@ class Workspaces extends Module
             ++$it;
         } 
         $title = html::div([],
-            html::tag("span", ["style" => "font-size: x-large;font-weight: bold;"], $this->text("workspaces")).
+            html::tag("h2", ["style" => "float:left;margin-top:15px;margin-bottom: -5px;"], $this->text("workspaces")).
             html::tag("button", ["title" => "Afficher la liste des espaces de travail", "class" => "mel-button", "style" => "float:right;", "onclick" => "mel_metapage.Functions.change_frame('wsp')"], html::tag("span", [], "Voir tout").html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
         );
 
@@ -88,7 +88,7 @@ class Workspaces extends Module
         else
             $html = str_replace("<workspace-epingle/>", "", $html);
         if ($workspace->logo !== null && $workspace->logo !== "false")
-            $html = str_replace("<workspace-image/>", '<div class=dwp-round><img src="'.$workspace->logo.'"></div>', $html);
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round><img alt="" src="'.$workspace->logo.'"></div>', $html);
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
         if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
@@ -111,7 +111,7 @@ class Workspaces extends Module
                     $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url').'avatar/'.$s->user.'" /></div>';
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img alt="" src="'.$this->rc->config->get('rocket_chat_url').'avatar/'.$s->user.'" /></div>';
                 ++$it;
             }
             $html = str_replace("<workspace-users/>", $html_tmp, $html);

@@ -83,7 +83,7 @@ function setupMyDay(datas)
 	let icon;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
-        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+        html += "<div class=row style=margin-bottom:15px;margin-right:15px; role=listitem>";
 		if (element.allDay)
 			html += "<div class=col-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
 		else
@@ -137,7 +137,7 @@ function setupMyDay(datas)
         html += "</div>";
     }
 
-    html += ""
+    html = `<section role="list">${html}</section>`;
 	$("#agenda").html(html);
 
 	if (datas.length > 0)
@@ -167,7 +167,7 @@ function setup_tasks(datas)
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
-        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+        html += "<div class=row style=margin-bottom:15px;margin-right:15px; role=listitem>";
 		if (date._isValid)
         	html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
         else
@@ -175,7 +175,9 @@ function setup_tasks(datas)
 		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
     }
-    html += ""
+
+    html = `<section role="list">${html}</section>`;
+
 	$("#tasks").html(html);
 	if (datas.length > 0)
 	{
@@ -272,13 +274,18 @@ function add_task_to_completed(id)
   {
 	  $(".tablinks").each((i,e) => {
 		e.classList.remove("selected");
+		$(e).attr("aria-selected", false);
 	  });
+	  
 	  $(".tabcontent").each((i,e) => {
 		e.classList.add("hidden");
+		$(e).attr('hidden=""');
 	  });
 
 	  element.classList.add("selected");
-	  $("#" + id).removeClass("hidden");
+	  $(element).attr("aria-selected", true);
+	  $("#" + id).removeClass("hidden").removeAttr("hidden");
+
 	  setTimeout(() => {
 		document.activeElement.blur();
 	  }, 100);

@@ -43,17 +43,20 @@ class My_day extends Module
         //tab agenda
         $agenda = array("name" => $this->text('agenda'), 
         "id" => "agenda",
+        "tab-id" => "tab-for-agenda-content",
         "deco" => html::tag('span', array("class" => 'icon-mel-calendar marginright'),
         html::tag("sup", array(),
         html::tag("span", array("id" => "agendanew", "class" => "hidden roundbadge setalign lightgreen")))
-        )
+    ),
         );
         $tasks = array("name" => $this->text('tasks'), 
                 "id" => "tasks",
+                "tab-id" => "tab-for-tasks-contents",
             "deco" => html::tag('span', array("class" => 'icon-mel-task marginright'),
             html::tag("sup", array(),
             html::tag("span", array("id" => "tasksnew", "class" => "hidden roundbadge setalign lightgreen")))
             ));
+
         return $this->html_square_tab(array($agenda, $tasks), $this->text("my_day"), "myday");
     }
 

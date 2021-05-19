@@ -45,7 +45,7 @@ if (window.rcmail) {
 		if (rcmail.env.rocket_chat_auth_token === undefined && rcmail.env.rocket_chat_user_id === undefined)
 			await login();
 		setTimeout(function() {
-			console.error('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
+			//console.error('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
 			try {
 				window.document.getElementById(ariane_id).contentWindow.postMessage({
 					externalCommand: 'login-with-token',
@@ -55,7 +55,7 @@ if (window.rcmail) {
 			} catch (error) {
 				console.error(error);
 			}
-			//rcmail.env.ariane_is_logged = true;
+			rcmail.env.ariane_is_logged = true;
 
 			
 		}, 50);
@@ -109,44 +109,44 @@ if (window.rcmail) {
 			//document.title = title;
 			refreshFavico();
 
-			if (rcmail.env.ariane_is_logged !== true)
-			{
-				//Gère si l'on est connecté ou non.
-				setTimeout(async () => {
-					if (rcmail.env.ariane_have_calls !== true) //Si on a pas d'appels (changements de status/unreads)
-					{
-						rcmail.env.ariane_is_logged = false
-						logout(() => {
-							rcmail.triggerEvent("init_ariane", $(".discussion-frame")[0].id);
-						})
-						rcmail.env.ariane_interval_number = 0;
-						rcmail.env.ariane_interval = setInterval(() => {
-							if (rcmail.env.ariane_have_calls === true) //On est logué
-							{
-								rcmail.env.ariane_is_logged = true;
-								clearInterval(rcmail.env.ariane_interval);
-								delete rcmail.env.ariane_interval;
-								delete rcmail.env.ariane_interval_number;
-							}
-							else
-							{
-								if (rcmail.env.ariane_interval_number++ >= 4) //On ne parvient pas à ce loguer.
-								{
-									console.warn("/!\\impossible de se connecter automatiquement !");
-									rcmail.display_message("Impossible de se connecter automatiquement.", "error")
-									rcmail.env.ariane_is_logged = true;
-									clearInterval(rcmail.env.ariane_interval);
-									delete rcmail.env.ariane_interval;
-									delete rcmail.env.ariane_interval_number;
-								}
-							}
-						}, 500);
-						// rcmail.env.ariane_is_logged = true;
-					}
-					else
-						rcmail.env.ariane_is_logged = true;
-				}, 1111);
-			}
+			// if (rcmail.env.ariane_is_logged !== true)
+			// {
+			// 	//Gère si l'on est connecté ou non.
+			// 	setTimeout(async () => {
+			// 		if (rcmail.env.ariane_have_calls !== true) //Si on a pas d'appels (changements de status/unreads)
+			// 		{
+			// 			rcmail.env.ariane_is_logged = false
+			// 			logout(() => {
+			// 				rcmail.triggerEvent("init_ariane", $(".discussion-frame")[0].id);
+			// 			})
+			// 			rcmail.env.ariane_interval_number = 0;
+			// 			rcmail.env.ariane_interval = setInterval(() => {
+			// 				if (rcmail.env.ariane_have_calls === true) //On est logué
+			// 				{
+			// 					rcmail.env.ariane_is_logged = true;
+			// 					clearInterval(rcmail.env.ariane_interval);
+			// 					delete rcmail.env.ariane_interval;
+			// 					delete rcmail.env.ariane_interval_number;
+			// 				}
+			// 				else
+			// 				{
+			// 					if (rcmail.env.ariane_interval_number++ >= 4) //On ne parvient pas à ce loguer.
+			// 					{
+			// 						console.warn("/!\\impossible de se connecter automatiquement !");
+			// 						rcmail.display_message("Impossible de se connecter automatiquement.", "error")
+			// 						rcmail.env.ariane_is_logged = true;
+			// 						clearInterval(rcmail.env.ariane_interval);
+			// 						delete rcmail.env.ariane_interval;
+			// 						delete rcmail.env.ariane_interval_number;
+			// 					}
+			// 				}
+			// 			}, 500);
+			// 			// rcmail.env.ariane_is_logged = true;
+			// 		}
+			// 		else
+			// 			rcmail.env.ariane_is_logged = true;
+			// 	}, 1111);
+			// }
 			//sessionStorage.setItem('rocket_chat_url', window.document.getElementById('rocket_chat_frame').contentWindow.location);
 		}
 		if (parent.ariane !== undefined)

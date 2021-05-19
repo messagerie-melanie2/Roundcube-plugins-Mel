@@ -128,7 +128,7 @@ class mel_portal extends rcube_plugin
               $object->init();
               $confModule = $this->rc->config->get($config[$pageName]["modules"][$i]);
               if ($confModule !== null) //Si il existe une config, on fait quelque chose.
-                $object->set_config($confModule, $this->rc->config->get($config[$pageName]["modules"][$i])."_classes");
+                $object->set_config($confModule, $this->rc->config->get($config[$pageName]["modules"][$i]."_classes"));
               if ($existing[$config[$pageName]["modules"][$i]] == null) //Ca ne sert à rien de charger le module plusieurs fois.
               {
                 $object->include_module();

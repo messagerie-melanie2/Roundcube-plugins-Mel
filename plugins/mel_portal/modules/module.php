@@ -122,14 +122,22 @@ class Module implements iModule {
      */
     public function set_config($config, $includes)
     {
-        if ($includes !== null && is_iterable($includes))
-        {
-            foreach ($includes as $key => $value) {
-                include_once $value;
-            }       
-        } 
-        $this->config = unserialize($config);
-        $this->after_set_config();
+        try {
+            try {
+                if ($includes !== null && is_iterable($includes))
+                {
+                    foreach ($includes as $key => $value) {
+                        include_once $value;
+                    }       
+                } 
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            $this->config = unserialize($config);
+            $this->after_set_config();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**

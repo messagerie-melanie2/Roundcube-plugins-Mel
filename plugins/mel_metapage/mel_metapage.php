@@ -85,7 +85,14 @@ class mel_metapage extends rcube_plugin
             if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
                 $this->include_script('js/actions/startup.js');
             else
-                $this->rc->output->set_env("mmp_modal",$this->rc->output->parse("mel_metapage.mel_modal", false, false));
+            {
+                try {
+                    $this->rc->output->set_env("mmp_modal",$this->rc->output->parse("mel_metapage.mel_modal", false, false));
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+            }
+            
             $this->add_hook("send_page", array($this, "generate_html"));//$this->rc->output->add_header($this->rc->output->parse("mel_metapage.barup", false, false));
         }
         else if ($this->rc->task == 'logout' 

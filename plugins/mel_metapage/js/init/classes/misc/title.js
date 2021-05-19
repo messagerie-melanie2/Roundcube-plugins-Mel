@@ -19,24 +19,28 @@ window.Title = (() => {
 
         update(id = null, focus = false)
         {
-            if (id !== null)
-            {
-                if (this.is_framed)
-                    mel_metapage.Functions.call(`Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
+            try {
+
+                if (id !== null)
+                {
+                    if (this.is_framed)
+                        mel_metapage.Functions.call(`Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
+                    else
+                        this.set($(`iframe#${id}`)[0].contentWindow.document.title, focus);
+                }
+                else if (this.is_framed)
+                    this.set(window.document.title, focus);
                 else
-                    this.set($(`iframe#${id}`)[0].contentWindow.document.title, focus);
-            }
-            else if (this.is_framed)
-                this.set(window.document.title, focus);
-            else
-            {
-                $(`#${Title.idQuery}`).html(window.document.title);
-                if (focus)
-                    this.focusHidden();
+                {
+                    $(`#${Title.idQuery}`).html(window.document.title);
+                }
+
+            } catch (error) {
+                //console.error("###[Title.update]",error, this);
             }
 
-
-            
+            if (focus)
+                this.focusHidden();
         }
 
         set(title, focus = false)

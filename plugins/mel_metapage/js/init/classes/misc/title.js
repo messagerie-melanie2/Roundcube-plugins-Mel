@@ -1,4 +1,7 @@
 window.Title = (() => {
+    /**
+     * Gère le titre de la page.
+     */
     class Title
     {
         constructor()
@@ -17,6 +20,13 @@ window.Title = (() => {
               });
         }
 
+        /**
+         * Met à jours le titre de la page.
+         * @param {string} id Si il ne vaut pas nul, il met à jours le titre de la page via le titre d'une frame. 
+         * Sinon, il met à jours le titre html ou le titre de la page en fonction de si on est appelé via une frame ou non.
+         * @param {boolean} focus si vrai, focus le titre html de la page après avoir mis à jours le titre.
+         * @returns {void}
+         */
         update(id = null, focus = false)
         {
             let doFocus = false;
@@ -46,15 +56,24 @@ window.Title = (() => {
                 this.focusHidden();
         }
 
+        /**
+         * Met à jours le titre du navigateur ainsi que le titre html.
+         * @async
+         * @param {string} title Nouveau titre.
+         * @param {boolean} focus Si vrai, le titre html est focus après le changement de titre.
+         */
         async set(title, focus = false)
         {
             await mel_metapage.Functions.callAsync(`window.document.title = '${title}'`);
             await mel_metapage.Functions.callAsync(`$('#${Title.idQuery}').html('${title}')`);
-            
+
             if (focus)
                 this.focusHidden();
         }
 
+        /**
+         * Focus le titre html caché.
+         */
         focusHidden()
         {
             if (this.is_framed)

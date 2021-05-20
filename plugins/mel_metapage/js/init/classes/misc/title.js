@@ -19,6 +19,8 @@ window.Title = (() => {
 
         update(id = null, focus = false)
         {
+            let doFocus = false;
+
             try {
 
                 if (id !== null)
@@ -33,20 +35,22 @@ window.Title = (() => {
                 else
                 {
                     $(`#${Title.idQuery}`).html(window.document.title);
+                    doFocus = true;
                 }
 
             } catch (error) {
                 //console.error("###[Title.update]",error, this);
             }
 
-            if (focus)
+            if (focus && doFocus)
                 this.focusHidden();
         }
 
-        set(title, focus = false)
+        async set(title, focus = false)
         {
-            mel_metapage.Functions.call(`window.document.title = '${title}'`);
-            mel_metapage.Functions.call(`$('#${Title.idQuery}').html('${title}')`);
+            await mel_metapage.Functions.callAsync(`window.document.title = '${title}'`);
+            await mel_metapage.Functions.callAsync(`$('#${Title.idQuery}').html('${title}')`);
+            
             if (focus)
                 this.focusHidden();
         }
@@ -56,9 +60,8 @@ window.Title = (() => {
             if (this.is_framed)
                 mel_metapage.Functions.call('Title.focusHidden()');
             else
-            {
                 $(`#${Title.idQuery}`).focus();
-            }
+            
         }
     }
 

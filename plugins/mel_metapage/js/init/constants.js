@@ -189,7 +189,8 @@ const mel_metapage = {
         ariane:"ariane_datas",
         wait_frame_loading:"mel_metapage.wait_frame_loading",
         wait_frame_waiting:"waiting...",
-        wait_frame_loaded:"loaded"
+        wait_frame_loaded:"loaded",
+        wait_call_loading:"mel_metapage.call.loading",
     },
     /**
      * Liste des symboles.
@@ -441,6 +442,16 @@ const mel_metapage = {
                 }
             }
             workspaces.sync.PostToParent(config);          
+        },
+        callAsync:async function(exec, child = false, args = {})
+        {
+            mel_metapage.Storage.set(mel_metapage.Storage.wait_call_loading, mel_metapage.Storage.wait_frame_waiting);
+            this.call(exec, child, args);
+            await wait(() => {
+                var get = mel_metapage.Storage.get(mel_metapage.Storage.wait_call_loading);
+                console.log("wait", get, get === mel_metapage.Storage.wait_frame_waiting);
+                return get === mel_metapage.Storage.wait_frame_waiting;
+            });
         },
         /**
          * Modifie l'url du navigateur

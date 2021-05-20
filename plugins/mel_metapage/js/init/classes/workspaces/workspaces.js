@@ -47,6 +47,9 @@ if (parent === window)
         //console.error("parent", datas, datas.child !== false);
         if (datas.child !== false)
             SynchroniseWorkspaces.PostToChilds(datas);
+            
+        if (mel_metapage.Storage.get(mel_metapage.Storage.wait_call_loading) === mel_metapage.Storage.wait_frame_waiting)
+            mel_metapage.Storage.remove(mel_metapage.Storage.wait_call_loading)
     }
 }
 else {

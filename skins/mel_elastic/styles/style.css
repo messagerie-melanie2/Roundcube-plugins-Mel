@@ -1033,3 +1033,7 @@ main {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
+
+/* #sr-document-title-focusable:focus{
+    background-color: red;
+} */

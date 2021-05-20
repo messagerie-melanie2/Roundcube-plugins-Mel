@@ -31,22 +31,58 @@ $(document).ready(() => {
                 writable: false,
                 value: 8
               });
+
               this.update();
+
               if (rcmail.env.task == 'login' || rcmail.env.task == 'logout') 
                 $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
-              $("#taskmenu").find("a").each(async (i,e) => {
-                e = $(e);
-                if (e.parent().hasClass("special-buttons"))
-                    return;
-                const tmp = e.removeAttr("title")[0].outerHTML;
-                e.remove();
-                e = null;
-                $(tmp).keypress((event) => {
-                    if (event.originalEvent.keyCode === 32)
-                        $(event.currentTarget).click();
-                }).appendTo($("#taskmenu"));
-              });
+
+                this.init();
+              
         }
+
+        async init()
+        {
+            
+            let array = [];
+
+            $("#taskmenu").find("a").each((i,e) => {
+              e = $(e);
+
+              if (e.parent().hasClass("special-buttons"))
+                  return;
+
+              const order = e.css("order");
+              const tmp = e.removeAttr("title")[0].outerHTML;
+              e.remove();
+              e = null;
+              array.push({
+                  order:order,
+                  item:$(tmp).keypress((event) => {
+
+                      if (event.originalEvent.keyCode === 32)
+                          $(event.currentTarget).click();
+
+                  })
+              });
+              
+            });
+
+            $("#taskmenu").append("<ul class=list-unstyled></ul>");
+
+            Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
+                let li = $("<li style=display:block></li>")
+                e = e.item;
+                if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
+                  li.css("display", "none");
+
+                e.appendTo(li);
+                li.appendTo($("#taskmenu ul"));
+            });
+
+            $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
+        }
+
         update()
         {
             $(".mel-tabheader").unbind('click');

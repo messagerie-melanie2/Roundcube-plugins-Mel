@@ -275,8 +275,8 @@ iframe.mm-frame/*,
 	font-size: 14px;
 }
 
-#layout-menu > div > a:focus > span.inner,
-#layout-menu > div > span > a:focus > span.inner
+#layout-menu  a:focus > span.inner,
+#layout-menu  span > a:focus > span.inner
 {
 	background-color: #484D7A;
 	height: inherit!important;
@@ -287,16 +287,16 @@ iframe.mm-frame/*,
 	/* margin-top: -31px; */
 }
 
-#layout-menu:hover > div > a > span.inner,
-#layout-menu:hover > div > span > a > span.inner
+#layout-menu:hover  a > span.inner,
+#layout-menu:hover  span > a > span.inner
 {
     font-size: initial;
 }
 
-#layout-menu:hover > div > a > span.inner,
-#layout-menu:hover > div > span > a > span.inner,
-#layout-menu > div > a:focus > span.inner,
-#layout-menu > div > span > a:focus > span.inner {
+#layout-menu:hover  a > span.inner,
+#layout-menu:hover  span > a > span.inner,
+#layout-menu  a:focus > span.inner,
+#layout-menu  span > a:focus > span.inner {
     display: block;
     position: absolute;
     left: 65px;

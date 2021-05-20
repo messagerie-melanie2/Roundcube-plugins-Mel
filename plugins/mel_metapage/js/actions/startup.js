@@ -34,7 +34,15 @@ $(document).ready(function() {
             } catch (error) {
                 
             }
-            mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
+
+            if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
+            {
+                rcmail.display_message("Vous ne pouvez pas revenir en arrière si vous n'avez pas déjà changer de page.");
+                $("#taskmenu .menu-last-frame").attr("disabled", "disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            }
+            else
+                mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
+
           }); 
         rcmail.env.can_backward = true;
     });
@@ -151,16 +159,20 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
 function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
 {
     metapage_frames.unbreak();
+
     if (rcmail.busy)
         return;
+
     //Actions à faire avant de traiter la classe.
     metapage_frames.triggerEvent("before", eClass, changepage);
+
     if (changepage) //Actions à faire si on change de page, avant d'avoir traité la classe.
         metapage_frames.triggerEvent("changepage.before", eClass);
+
     eClass = mm_st_ClassContract(eClass);
     let querry = $("." + eClass + "-frame");
     let isAriane = eClass === "discussion" || eClass === "ariane";
-    console.error("class to open", eClass, querry);
+
     if (changepage)//Actions à faire si on change de page.
         metapage_frames.triggerEvent("changepage", eClass, changepage, isAriane, querry);
 
@@ -168,6 +180,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
     {
         if (rcmail.nb_frames === undefined)
             rcmail.nb_frames = 0;
+
         let id = "fame-n-" + (++rcmail.nb_frames);//$(`iframe.${mm_frame}`).length;
         //Mise en place de diverses configurations lorque l'on doit créer une frame.
         metapage_frames.triggerEvent("rcmailconfig.no", eClass, changepage, isAriane, querry, id);
@@ -176,6 +189,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
         //Mise à jours de la frame
         metapage_frames.triggerEvent("editFrame", eClass, changepage, isAriane, $("#"+id));
         rcmail.set_busy(true, "loading");
+
         $("."+eClass+"-frame").on("load", () =>
         {
             //Action à faire une fois que la frame est chargée.
@@ -183,10 +197,13 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
             //Actions à faire une fois que l'évènement "onload" est fini.
             metapage_frames.triggerEvent("onload.after", eClass, changepage, isAriane, querry, id);
         });
+
         if (changepage) //Action à faire après avoir créer la frame, si on change de page.
             metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
+
         //Action à faire avant de terminer la fonction.
         metapage_frames.triggerEvent("after", eClass, changepage, isAriane, querry, id);
+
         return id;
     }
     else {
@@ -196,10 +213,13 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
         //Ouverture d'une frame.
         metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id);
         metapage_frames.triggerEvent("open.after", eClass, changepage, isAriane, querry, id);
+
         if (changepage)//Action à faire après avoir ouvert la frame, si on change de page.
             metapage_frames.triggerEvent("changepage.after", eClass, changepage, isAriane, querry, id);
+
         //Action à faire avant de terminer la fonction.
         metapage_frames.triggerEvent("after", eClass, changepage, isAriane, querry, id);
+
         return id;
     }
 
@@ -208,6 +228,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
 metapage_frames.addEvent("before", (eClass, changepage) => {
     if ($("#layout-frames").length === 0)
         $("#layout").append(`<div id="layout-frames" style="display:none;"></div>`)
+
     if (changepage)
     {
         if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
@@ -221,39 +242,55 @@ metapage_frames.addEvent("before", (eClass, changepage) => {
 metapage_frames.addEvent("changepage.before", (eClass) => {
     if ($(".ui-dialog-titlebar-close").length > 0)
         $(".ui-dialog-titlebar-close").click();
+
     $("#taskmenu").find("a").each((i,e) => {
         if (e.classList.contains(eClass))
         {
             if (!e.classList.contains("selected"))
                 e.classList.add("selected");
+            
+            $(e).attr("aria-disabled", true).attr("tabIndex", "-1");
         }
         else
+        {
             e.classList.remove("selected");
+            $(e).attr("aria-disabled", false).attr("tabIndex", "0");
+        }
     });
+
 });
 
 metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) => {
+
     rcmail.env.current_frame_name = eClass;
+
     $("."+mm_frame).each((i,e) => {
         console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
         e.classList.contains("webconf-frame") , window.webconf_helper.already());
+
         if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already()))
             return;
+
         e.style.display = "none";
     });//.css("display", "none");
+
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "mel_metapage&_action=chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
     window.history.replaceState({}, document.title, url);
+
     if (isAriane || $("."+eClass+"-frame").length > 1)
         $("#layout-frames").css("display", "none");
     else 
         $("#layout-frames").css("display", "");
+    
     let arianeIsOpen = mel_metapage.PopUp.ariane === undefined || mel_metapage.PopUp.ariane === null ? false : mel_metapage.PopUp.ariane.is_show;
+    
     if (isAriane)
     {
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
             mel_metapage.PopUp.ariane.hide();
     }
+    
     if (isAriane)
     {
         let btn = ArianeButton.default();
@@ -262,6 +299,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     else if (rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
     {
         let btn = ArianeButton.default();
+
         if (rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
             btn.hide_button();
         else {
@@ -274,6 +312,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         btn.show_button();
         btn.place_button(rcmail.env.mel_metapage_ariane_button_config["all"].bottom, rcmail.env.mel_metapage_ariane_button_config["all"].right);
     }
+
     if (arianeIsOpen && !isAriane)
     {
         let btn = ArianeButton.default();
@@ -398,12 +437,12 @@ function m_mp_ChangeLasteFrameInfo()
     if (!isUndefined)
     {
         m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
-        $(".menu-last-frame").removeClass("disabled");
+        $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
     }
     else
     {
         m_mp_CreateOrUpdateIcon(null, "");
-        $(".menu-last-frame").addClass("disabled");
+        $(".menu-last-frame").addClass("disabled").attr("disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
     }
 }
 

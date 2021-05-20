@@ -1,10 +1,10 @@
 <div id="layout-menu" role="navigation" >
 	<h2 id="aria-label-tasknav" class="voice"><roundcube:label name="arialabeltasknav" /></h2>
-	<div class="popover-header">
+	<!-- <div class="popover-header">
 		<roundcube:object name="logo" src="/images/logo.svg" data-src-small="0" id="logo" alt="Logo" />
 		<a class="button icon cancel"><span class="inner"><roundcube:label name="close" /></span></a>
-	</div>
-	<div id="taskmenu" class="menu toolbar" role="navigation" aria-labelledby="aria-label-tasknav">
+	</div> -->
+	<nav id="taskmenu" class="menu toolbar" role="navigation" aria-labelledby="aria-label-tasknav">
 		<span class="action-buttons">
 			<roundcube:if condition="env:action == 'compose' and env:task == 'mail'" />
 				<roundcube:button command="compose" type="link" class="compose selected"
@@ -33,6 +33,6 @@
 			<roundcube:button command="logout" label="logout" type="link"
 				class="logout" innerClass="inner" />
 		</span>
-	</div>
+	</nav>
 </div>
 </header>

@@ -81,6 +81,8 @@ $(document).ready(() => {
             });
 
             $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
+
+            $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
         }
 
         update()

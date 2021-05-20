@@ -157,6 +157,7 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'joined'    => array($this, 'show_joined'),
         ));
+        $this->rc->output->set_pagetitle("Mes espaces de travail");
         $this->rc->output->send('mel_workspace.workspaces');
     }
 
@@ -209,6 +210,7 @@ class mel_workspace extends rcube_plugin
                 $this->rc->output->add_handlers(array(
                     'pagination'    => $pagination,
                 ));
+                $this->rc->output->set_pagetitle("Espaces publics");
                 $this->rc->output->send('mel_workspace.list_workspaces');
                 break;
             
@@ -252,6 +254,7 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
         $this->rc->output->set_env("current_workspace_back", rcube_utils::get_input_value('_last_location', rcube_utils::INPUT_GPC));
+        $this->rc->output->set_pagetitle("Espace de travail \"".$this->currentWorkspace->title."\"");
         $this->rc->output->send('mel_workspace.workspace');
     }
 

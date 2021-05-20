@@ -446,3 +446,43 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
     document.styleSheets[0].addRule('.menu-last-frame-item:before', 'font-family: '+font+';');
 }
 
+function m_mp_focus_current_frame($this)
+{
+    event.preventDefault();
+    const current = rcmail.env.current_frame;
+    let focus;
+    if (current === undefined || current === null || current === "default")
+    {
+        let tmp = $("#layout").children();
+        for (let index = 0; index < tmp.length; ++index) {
+            const element = tmp[index];
+            if (element.id !== null && element.id !== undefined && element.id !== "")
+            {
+                if (element.id.includes("layout"))
+                {
+                    focus = element.id;
+                    break;
+                }
+            }
+        }
+        if (focus === undefined || focus === null)
+            focus = "layout";
+
+        $($this).parent().append(`<a class="sr-only" id=mel-created-link href="#${focus}">Contenu principal</a>`).find("#mel-created-link");//.click();//.remove();
+        setTimeout(() => {
+            $("#mel-created-link")[0].click();//.remove();
+            $("#mel-created-link").remove();
+        }, 10);
+    }
+    else
+    {
+        focus = $(`#${current}`);
+        if (focus.attr("tabindex") !== -1)
+            focus.attr("tabindex", -1);
+        setTimeout(() => {
+            focus[0].focus();
+        }, 10);
+    }
+
+
+}

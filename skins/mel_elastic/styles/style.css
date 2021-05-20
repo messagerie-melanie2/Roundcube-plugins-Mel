@@ -1022,3 +1022,14 @@ main {
 	height: 100%;
 	width: 100%;
 }
+
+.sr-only-focusable.mel-rapid-link:focus
+{
+    position: absolute;
+    top:0;
+    z-index: 9999999;
+    background-color: #F8F8F8;
+    padding: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}

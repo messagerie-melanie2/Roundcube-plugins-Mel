@@ -37,7 +37,7 @@
 
 #taskmenu span.inner, #taskmenu span.button-inner
 {
-    /* display:none; */
+    display:block!important;
     border: 0;
     clip: rect(0, 0, 0, 0);
     height: 1px;
@@ -297,7 +297,7 @@ iframe.mm-frame/*,
 #layout-menu:hover  span > a > span.inner,
 #layout-menu  a:focus > span.inner,
 #layout-menu  span > a:focus > span.inner {
-    display: block;
+    display: block!important;
     position: absolute;
     left: 65px;
     margin-top: -32px;

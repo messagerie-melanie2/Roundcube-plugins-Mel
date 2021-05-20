@@ -157,12 +157,13 @@ $(document).ready(() => {
             });
             $("#edit-allday").on("click", (e) => {
                 e = e.target;
+                let moment = getDate($(".input-mel-datetime .input-mel.start").val());
                 if (e.checked)
                 {
                     $(".input-mel-datetime .input-mel.start").addClass("disabled").attr("disabled", "disabled"); 
                     $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
-                    $(".input-mel-datetime .input-mel.start").val(moment().startOf("day").format(format));
-                    $(".input-mel-datetime .input-mel.end").val(moment().endOf("day").format(format));
+                    $(".input-mel-datetime .input-mel.start").val(moment.startOf("day").format(format));
+                    $(".input-mel-datetime .input-mel.end").val(moment.endOf("day").format(format));
                     update_date();
                 }
                 else
@@ -263,6 +264,7 @@ $(document).ready(() => {
                 $(".input-mel-datetime .input-mel.start").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).format(format));
                 $(".input-mel-datetime .input-mel.end").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).add(30, 'm').format(format));
                 update_date();
+                
                 if ($("#edit-wsp")[0].checked)
                 {
                     $("#div-events-wsp").css("display", "");
@@ -272,12 +274,30 @@ $(document).ready(() => {
                     $("#div-events-wsp").css("display", "none");
                     $("#div-events-category").css("display", "");
                 }
+
                 $("#fake-event-rec").val("")
+
+                if ($("#edit-allday")[0].checked)
+                    $("#edit-allday").click().click();
+                else
+                {
+                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                }
             }
             else{ //ancien event
+
                 $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
                 $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
                 update_date();
+
+                if ($("#edit-allday")[0].checked)
+                    $("#edit-allday").click().click();
+                else
+                {
+                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                }
 
                 const req = event.recurrence;
                 if (req !== undefined && req !== null)

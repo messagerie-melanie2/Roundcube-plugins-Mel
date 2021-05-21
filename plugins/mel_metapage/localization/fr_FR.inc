@@ -131,7 +131,7 @@ $labels["description"] = "Description";
 $labels["choose_hashtag"] = "Sélectionner une thématique";
 $labels["define_end_date"] = "Définir une date de fin";
 
-$labels["authorized_access"] = "Autorisé l'accès";
+$labels["authorized_access"] = "Autoriser l'accès";
 $labels["restricted"] = "Restreint";
 $labels["public"] = "public";
 $labels["color"] = "Couleur";

@@ -97,15 +97,35 @@ $(document).ready(() => {
             $(".select-button-mel").on("click", (e) => {
                 this.generateSelect(e.currentTarget);
             });
-            console.log("pagination", $(".pagination"));
+            
             $(".pagination").each((i,e) => {
                 e = $(e);
                 this.set_pagination(e, e.data("count"), e.data("current") === undefined ? null : e.data("current"));
                 return this;
             });
             //$(".input-mel-datetime").after("")
-            
+            this.redStars();
         }
+
+        redStars()
+        {
+            $(".red-star-after").each((i,e) => {
+                e = $(e);
+
+                if (!e.hasClass("mel-after-remover"))
+                    e.append('<span class="red-star mel-before-remover">*</span>').addClass("mel-after-remover");
+
+            });
+
+            $(".red-star").each((i,e) => {
+                e = $(e);
+
+                if (!e.hasClass("mel-before-remover"))
+                    e.prepend('<span class="red-star mel-before-remover">*</span>').removeClass("red-star").addClass("red-star-removed");
+
+            });
+        }
+
         getRandomColor() {
             var letters = '0123456789ABCDEF';
             var color = '#';

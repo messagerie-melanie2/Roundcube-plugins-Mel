@@ -1,8 +1,9 @@
 <div class="step" id="workspace-step1"> <!--Etape 1-->
-    <span class="red-star"><roundcube:label name='mel_metapage.required_fields' /></span>
+    <p class="red-star"><roundcube:label name='mel_metapage.required_fields' /></p>
 
+    <!--Titre de l'espace-->
     <label for="workspace-title" class="red-star-after span-mel t1 first"><roundcube:label name='mel_metapage.worskpace_name' /></label>
-    <input oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=40 placeholder="Nom de l'espace"/>
+    <input aria-required="true" required oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=40 placeholder="Nom de l'espace"/>
     
     <span class="span-mel t1"><roundcube:label name='mel_metapage.choose_avatar' /></span>
     <div class="row">
@@ -17,9 +18,11 @@
         </div>
     </div>
 
+    <!--Description de l'espace de travail-->
     <label for="workspace-desc" class="span-mel t1"><roundcube:label name='mel_metapage.description' /></label>
     <textarea id=workspace-desc class="form-control input-mel" placeholder="Description de l'espace de travail"></textarea>
     
+    <!--Catégorie (#) de l'espace-->
     <label for="workspace-hashtag" class="span-mel t1"><roundcube:label name='mel_metapage.choose_hashtag' /></label>
     <div style="position: relative;">
         <input onclick="m_mp_affiche_hashtag_if_exists()" onchange="m_mp_get_all_hashtag()" class="form-control input-mel" id=workspace-hashtag type=text placeholder="Thématique de l'espace." />
@@ -28,33 +31,42 @@
         </div>
     </div>
     <div class="row">
+        <!--Date de fin de l'espace-->
         <div class="col-md-4 datetime">
-            <label for="workspace-date-end" class="span-mel t1"><roundcube:label name='mel_metapage.define_end_date' /></label>
+            <label for="workspace-date-end" class="span-mel t1"><roundcube:label name='mel_metapage.define_end_date' /> <span class="sr-only">(format jj/mm/aaaa)</span></label>
             <div class="input-mel-datetime">
-                <input class="form-control input-mel" id=workspace-date-end type=text />
+                <input class="form-control input-mel" id=workspace-date-end type=text placeholder="jj/mm/aaaa" aria-placeholder="jj/mm/aaaa" />
             </div>
         </div>
+
+        <!--Accessibilité de l'espace-->
         <div class="col-md-4">
-            <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.authorized_access' /></span>
-            <div class="custom-control custom-radio">
-                <input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required" checked>
-                <label class="custom-control-label" for="workspace-private"><roundcube:label name='mel_metapage.restricted' /></label>
-            </div>
-            <div class="custom-control custom-radio">
-                <input type="radio" checked id="workspace-public" name="customRadio" class="custom-control-input required">
-                <label class="custom-control-label" for="workspace-public"><roundcube:label name='mel_metapage.public' /></label>
-            </div>
+            <fieldset>
+                <legend class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.authorized_access' /></legend>
+                <div class="custom-control custom-radio">
+                    <input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required" checked>
+                    <label class="custom-control-label" for="workspace-private"><roundcube:label name='mel_metapage.restricted' /></label>
+                </div>
+
+                <div class="custom-control custom-radio">
+                    <input type="radio" checked id="workspace-public" name="customRadio" class="custom-control-input required">
+                    <label class="custom-control-label" for="workspace-public"><roundcube:label name='mel_metapage.public' /></label>
+                </div>
+            </fieldset>
         </div>
+
+        <!--Couleur de l'espace-->
         <div class="col-md-4">
             <label for="workspace-color" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.color' /></label>
-            <input id="workspace-color" class="form-control input-mel" type=color value="#FFFFFF" />
+            <input aria-required="true" required id="workspace-color" class="form-control input-mel" type=color value="#FFFFFF" />
         </div>
     </div>
  
-    <div style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="m_mp_check_w(1,`workspace-step2`)">
+    <!--Bouton continuer-->
+    <button style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="m_mp_check_w(1,`workspace-step2`)">
         <span><roundcube:label name='mel_metapage.continue' /></span>
         <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
-    </div>
+    </button>
 </div>
 
 <div class="step" id="workspace-step2" style="display:none;"> <!--Etape 2-->
@@ -63,15 +75,19 @@
         <textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>
         <ul id="wspf" class="form-control input-mel recipient-input ac-input rounded-left">
             <li class="input">
-                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox">
+                <!--Participants à ajouter-->
+                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" autocomplete="on" aria-autocomplete="list" aria-expanded="false" role="combobox">
             </li>
         </ul>
         <span class="input-group-append">
-            <a href="#add-contact" onclick="m_mp_openTo()" class="input-group-text mel-text-center icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>
-            <span onclick="m_mp_add_users()" class="input-group-text mel-text"><span class="icon-mel-plus"></span></span>
+            <!--Ouvre l'annuaire-->
+            <a href="#add-contact" onclick="m_mp_openTo()" class="mel-focus input-group-text mel-text-center icon add recipient" title="Ajouter un contact" ><span class="inner">Ajouter un contact</span></a>
+            <!--Ajoute les contacts de l'input-->
+            <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="input-group-text mel-focus mel-text"><span class="icon-mel-plus"></span></button>
         </span>
     </div>
 
+    <!--Liste des participants-->
     <span class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></span>
     <div id="mm-wsp-loading" style="display:none">
         <center>
@@ -81,12 +97,16 @@
     <div id="mm-cw-participants">
 
     </div>
-    <div style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step1`)">
+
+    <!--Retour-->
+    <button style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step1`)">
         <span><roundcube:label name='mel_metapage.back' /></span>
         <span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
-    </div>
-    <div style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(2, `workspace-step3`)">
+    </button>
+
+    <!--Sauvegarder-->
+    <button style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(2, `workspace-step3`)">
         <span><roundcube:label name='mel_metapage.continue' /></span>
         <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
-    </div>
+    </button>
 </div>

@@ -122,5 +122,19 @@ html.touch .mm-shortcuts > .square_div {
 }
 
 
+.modal #created-modal-title-div-auto a,
+.modal #created-modal-title-div-auto h2
+{
+    display: inline-block;
+}
 
+.modal #created-modal-title-div-auto a.mel-return 
+{
+    font-size: 2rem;
+    margin-left: 30px;
+}
 
+.modal #created-modal-title-div-auto a.mel-return+h2
+{
+    margin-left: 0px;
+}

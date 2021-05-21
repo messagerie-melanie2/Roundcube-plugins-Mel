@@ -124,6 +124,30 @@ class GlobalModal
         this.header.title.html(title);
     }
 
+    setBeforeTitle(back)
+    {
+        const id = "created-modal-title-div-auto";
+        this.editHeader(`<div id="${id}"></div>${this.header.querry.html()}`);
+        $(back).appendTo($(`#${id}`));
+        this.header.title = $(".global-modal-title");
+        this.header.title.appendTo($(`#${id}`));
+    }
+
+    editTitleAndSetBeforeTitle(before, title)
+    {
+        this.editTitle(title);
+        this.setBeforeTitle(before);
+    }
+
+    removeBeforeTitle()
+    {
+        const id = "created-modal-title-div-auto";
+        const title = this.header.title[0].outerHTML;
+        $(`#${id}`).remove();
+        this.header.title = $(title).prependTo(this.header.querry);
+        
+    }
+
     /**
      * Modifie le contenu de la modale.
      * @param {string} html Html qui remplacera le contenu de la modale.

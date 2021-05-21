@@ -478,8 +478,11 @@ $(document).ready(() => {
         //     height: 600
         // });
         rcmail.lock_frame(dialog);
-        const config = new GlobalModalConfig(`${event.from === "barup" ? '<a title="Retour" href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();})"><span class=sr-only>Retour à la modale de création</span></a>' : ""}Créer un évènement`, "default", dialog, "");
+        const config = new GlobalModalConfig(`Créer un évènement`, "default", dialog, "");
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
+        // ${event.from === "barup" ? '' : ""}
+        if (event.from === "barup")
+            window.kolab_event_dialog_element.setBeforeTitle('<a title="Retour" href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>Retour à la modale de création</span></a>');
         window.kolab_event_dialog_element.autoHeight();
         window.kolab_event_dialog_element.onDestroy((globalModal) => {
             globalModal.contents.find("iframe").remove();

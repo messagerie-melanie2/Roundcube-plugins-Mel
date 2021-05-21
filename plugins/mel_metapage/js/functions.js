@@ -226,12 +226,14 @@ function m_mp_createworkspace()
             $('#workspace-color').val(MEL_ELASTIC_UI.getRandomColor()); 
             $("#workspace-date-end").datetimepicker({
                 format: 'd/m/Y H:i'});
+            MEL_ELASTIC_UI.redStars();
         }, 10);
 });
 
     //create_popUp.contents.html(html);
-    create_popUp.editTitle('<h2 class=""><a title="Retour" href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>Création d\'un espace de travail</h2>');
-
+    //create_popUp.editTitle();
+    create_popUp.editTitleAndSetBeforeTitle('<a title="Retour" href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
+    'Création d\'un espace de travail');
     // $.ajax({ // fonction permettant de faire de l'ajax
     //     type: "GET", // methode de transmission des données au fichier php
     //     url: "/?_task=discussion&_action=chanel_create",
@@ -253,7 +255,7 @@ function m_mp_change_picture(img)
         m_mp_input($("#workspace-title")[0]);
     }
     else
-        $("#worspace-avatar-a").html('<img src="' + img + '" />');
+        $("#worspace-avatar-a").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
 }
 
 function m_mp_input(element)
@@ -746,6 +748,8 @@ function m_mp_reinitialize_popup(funcBefore = null, funcAfter = null)
 {
     if (funcBefore !== null)
         funcBefore();
+    if (window.create_popUp !== undefined)
+        window.create_popUp.removeBeforeTitle()
     delete window.create_popUp;// = undefined;
     $(".global-modal-body").css("height", "");
     m_mp_Create();
@@ -785,7 +789,7 @@ function m_mp_CreateDocumentIconContract(icon, type)
  */
 async function m_mp_InitializeDocument()
 {
-    create_popUp.editTitle('<h2 class=""><a title="Retour" href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>Création d\'un nouveau document</h2>');
+    create_popUp.editTitleAndSetBeforeTitle('<a title="Retour" href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>','Création d\'un nouveau document');
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
     $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", {
         "_send":true,

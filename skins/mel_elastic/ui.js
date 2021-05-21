@@ -113,7 +113,7 @@ $(document).ready(() => {
                 e = $(e);
 
                 if (!e.hasClass("mel-after-remover"))
-                    e.append('<span class="red-star mel-before-remover">*</span>').addClass("mel-after-remover");
+                    e.append('<star class="red-star mel-before-remover">*</star>').addClass("mel-after-remover");
 
             });
 
@@ -121,7 +121,7 @@ $(document).ready(() => {
                 e = $(e);
 
                 if (!e.hasClass("mel-before-remover"))
-                    e.prepend('<span class="red-star mel-before-remover">*</span>').removeClass("red-star").addClass("red-star-removed");
+                    e.prepend('<star class="red-star mel-before-remover">*</star>').removeClass("red-star").addClass("red-star-removed");
 
             });
         }

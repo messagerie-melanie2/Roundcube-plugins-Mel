@@ -131,6 +131,9 @@ class GlobalModal
         $(back).appendTo($(`#${id}`));
         this.header.title = $(".global-modal-title");
         this.header.title.appendTo($(`#${id}`));
+        $(".modal-close").click(() => {
+            this.close();
+        });
     }
 
     editTitleAndSetBeforeTitle(before, title)

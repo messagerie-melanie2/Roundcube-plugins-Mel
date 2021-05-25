@@ -468,7 +468,7 @@ const mel_metapage = {
             mel_metapage.Storage.set(mel_metapage.Storage.wait_call_loading, mel_metapage.Storage.wait_frame_waiting);
             this.call(exec, child, args);
             await wait(() => {
-                return get === mel_metapage.Storage.wait_frame_waiting;
+                return mel_metapage.Storage.get(mel_metapage.Storage.wait_call_loading) === mel_metapage.Storage.wait_frame_waiting;
             });
         },
 

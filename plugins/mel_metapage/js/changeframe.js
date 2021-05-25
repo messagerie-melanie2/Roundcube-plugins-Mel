@@ -388,6 +388,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
+    console.log(".mm-frame", $(".mm-frame"));
     if (window.webconf_master_bar === undefined)
         $(".mm-frame").css("display", "none");
     else
@@ -416,8 +417,9 @@ async function ChangeFrame(_class, otherDatas = null)
     else
         $(".a-frame").css("display", "none");
 
-    if ($("#layout-content").hasClass("workspace-frame"))
-        $("#layout-content").css("display", "");
+    // if ($("#layout-content").hasClass("workspace-frame"))
+    //     $("#layout-content").css("display", "");
+
     $(`#${id}`).css("display", "");
      rcmail.env.have_frame_positioned = true;
      rcmail.set_busy(false);
@@ -439,11 +441,15 @@ async function ChangePage(_class)
     {
         layout_frame.css("position", "")
         .css("height", "");
+
         if (layout_frame.find(".workspace-frame").length >= 1)
             layout_frame.css("display", "");
         else
             layout_frame.css("display", "none")
     }
+    else
+        layout_frame.css("width", `${window.webconf_master_bar.webconf.ariane.size}px`);
+
     $(".workspace-frame").css("display", "");
     let frame = $("iframe.workspace-frame");
     //console.log(frame.length >= 1, Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))

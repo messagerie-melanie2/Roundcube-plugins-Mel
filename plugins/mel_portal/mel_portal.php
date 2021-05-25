@@ -138,6 +138,7 @@ class mel_portal extends rcube_plugin
               $this->add_module($config[$pageName]["modules"][$i], $object->item_html(), $object->row_size());
           } catch (\Throwable $th) { //$th->getMessage()
               mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_portal->load_modules] Un erreur est survenue pour le module ".$config[$pageName]["modules"][$i]." !");
+              mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getTraceAsString());
               mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_portal->load_modules]".$th->getMessage());
             }
       }

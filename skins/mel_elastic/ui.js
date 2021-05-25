@@ -68,15 +68,15 @@ $(document).ready(() => {
               
             });
 
-            $("#taskmenu").append("<ul class=list-unstyled></ul>");
+            $("#taskmenu").append('<ul class="list-unstyled" role="menubar" aria-label="Navigation principale"></ul>');
 
             Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
-                let li = $("<li style=display:block></li>")
+                let li = $("<li style=display:block role=none></li>")
                 e = e.item;
                 if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
                   li.css("display", "none");
 
-                e.appendTo(li);
+                e.attr('role', "menuitem").appendTo(li);
                 li.appendTo($("#taskmenu ul"));
             });
 

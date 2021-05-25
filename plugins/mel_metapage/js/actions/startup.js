@@ -265,8 +265,8 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     rcmail.env.current_frame_name = eClass;
 
     $("."+mm_frame).each((i,e) => {
-        console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
-        e.classList.contains("webconf-frame") , window.webconf_helper.already());
+        //console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
+        //e.classList.contains("webconf-frame") , window.webconf_helper.already());
 
         if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already()))
             return;
@@ -392,14 +392,28 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
 
     if (changepage)
         Title.update(id, true);
+
 });
 
-metapage_frames.addEvent("changepage.after", () => {
+metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
     if (rcmail.env.can_backward === true)
         m_mp_ChangeLasteFrameInfo();
+
+        if (isAriane)
+        {
+            setTimeout(() => {
+                Title.update(id, true);
+            }, 10);
+        }
 });
 
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
+
+    if ($(`iframe#${id}`).length === 0)
+        Title.set(Title.defaultTitle, true);
+    else
+        Title.update(id, true);
+
     try {
         if (window.FrameUpdate === undefined)
             Update();
@@ -414,14 +428,20 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
     querry.css("display", "");
     //console.log("open", changepage, id);
     if (eClass === "discussion" && changepage)
+    {
         $(".a-frame").css("display", "");
+        setTimeout(async () => {
+            if ($(`iframe#${id}`).length === 0)
+                await Title.set(Title.defaultTitle, true);
+            else
+                await Title.updateAsync(id, true);
+            Title.focusHidden();
+        }, 10);
+    }
+
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 
-    if ($(`iframe#${id}`).length === 0)
-        Title.set(Title.defaultTitle, true);
-    else
-        Title.update(id, true);
 });
 
 function m_mp_ChangeLasteFrameInfo()

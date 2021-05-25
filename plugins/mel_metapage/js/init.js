@@ -58,6 +58,10 @@ if (rcmail)
                                 element.order = 0;
                             else
                                 element.order = 1;
+
+                            if (moment(element.end) < now || (moment(element.start) < now && element.allDay))
+                                continue;
+
                             events.push(element);
                             
                         }
@@ -226,20 +230,30 @@ if (rcmail)
             tasks:mel_metapage.Storage.get(mel_metapage.Storage.tasks),
             mails:{
                 unread_count:mel_metapage.Storage.get(mel_metapage.Storage.mail),
+            },
+            last_update:{
+                calendar:moment(mel_metapage.Storage.get("mel_metapage.calendar.last_update")),
+                tasks:moment(mel_metapage.Storage.get("mel_metapage.tasks.last_update"))
             }
         }
-        if (local_storage.calendar != null && local_storage.calendar.length > 0)
-        {
-            let startMoment = moment(local_storage.calendar[0].start);
-            let startDate = startMoment.date();
-            let endMoment = moment(local_storage.calendar[0].end);
-            let endDate = endMoment.date();
-            let now = moment();
-            let date = now.date();
-            //console.log(startDate != date, endDate != date, startMoment, now, endMoment);
-            if (startDate != date)
-                parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-        }
+
+        if (local_storage.last_update.calendar.format() !== moment().startOf("day").format())
+            parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+        
+        if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
+            parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
+        // if (local_storage.calendar != null && local_storage.calendar.length > 0)
+        // {
+        //     let startMoment = moment(local_storage.calendar[0].start);
+        //     let startDate = startMoment.date();
+        //     let endMoment = moment(local_storage.calendar[0].end);
+        //     let endDate = endMoment.date();
+        //     let now = moment();
+        //     let date = now.date();
+        //     console.log(startDate != date, endDate != date, startMoment, now, endMoment);
+        //     if (startDate != date)
+        //         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+        // }
 
         // //add
         if (parent === window) //Si on est pas dans une frame

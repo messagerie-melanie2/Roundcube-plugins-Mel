@@ -56,6 +56,35 @@ window.Title = (() => {
                 this.focusHidden();
         }
 
+        async updateAsync(id = null, focus = false)
+        {
+            let doFocus = false;
+
+            try {
+
+                if (id !== null)
+                {
+                    if (this.is_framed)
+                        await mel_metapage.Functions.callAsync(`await Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
+                    else
+                        await this.set($(`iframe#${id}`)[0].contentWindow.document.title, focus);
+                }
+                else if (this.is_framed)
+                    await this.set(window.document.title, focus);
+                else
+                {
+                    $(`#${Title.idQuery}`).html(window.document.title);
+                    doFocus = true;
+                }
+
+            } catch (error) {
+                //console.error("###[Title.update]",error, this);
+            }
+
+            if (focus && doFocus)
+                this.focusHidden();
+        }
+
         /**
          * Met à jours le titre du navigateur ainsi que le titre html.
          * @async
@@ -64,8 +93,7 @@ window.Title = (() => {
          */
         async set(title, focus = false)
         {
-            await mel_metapage.Functions.callAsync(`window.document.title = '${title}'`);
-            await mel_metapage.Functions.callAsync(`$('#${Title.idQuery}').html('${title}')`);
+            await mel_metapage.Functions.callAsync(`window.document.title = '${title}';$('#${Title.idQuery}').html('${title}');`);
 
             if (focus)
                 this.focusHidden();

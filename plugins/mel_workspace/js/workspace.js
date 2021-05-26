@@ -269,7 +269,7 @@ function SetupTasks(datas, id, where = null)
             html += "<div class=col-md-10>" + element.title + (element.created === undefined ? "" : "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )+"</div>";
         else
             html += "<div class=col-md-10></div>";
-        html += '<div class=col-md-2><a onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
+        html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
     }
     html += ""
@@ -464,12 +464,12 @@ function UpdateFrameAriane()
 
     if (arrow.hasClass(right))
     {
-        arrow.removeClass(right).addClass(down);
+        arrow.removeClass(right).addClass(down).parent().attr("title", rcmail.gettext("close_ariane", "mel_workspace"));
         $(".unreads-ariane").find("iframe").css("display", "").parent().css("display", "");
     }
     else
     {
-        arrow.removeClass(down).addClass(right);
+        arrow.removeClass(down).addClass(right).parent().attr("title", rcmail.gettext("open_ariane", "mel_workspace"));
         $(".unreads-ariane").find("iframe").css("display", "none").parent().css("display", "none");;
     }
 }

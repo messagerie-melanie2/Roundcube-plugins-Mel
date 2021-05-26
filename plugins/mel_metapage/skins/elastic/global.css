@@ -108,20 +108,40 @@ html.touch .shortcut-task{
 	padding: 0 15px;
     margin-bottom: 25px;
 	border: none;
+    background: none!important;
+    color:white;
 }
 
 .wsp-toolbar.webconf-toolbar .conf-call-stop
 {
-    background: radial-gradient(circle, #BD2217 52%, rgba(255,255,255,0) 52%);
+    background: radial-gradient(circle, #BD2217 52%, rgba(255,255,255,0) 52%)!important;
 }
 
 .wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active{
-    background: radial-gradient(circle, #363A5B 52%, rgba(255,255,255,0) 52%);
+    background: radial-gradient(circle, #363A5B 52%, rgba(255,255,255,0) 52%)!important;
 }
 
 .wsp-toolbar.webconf-toolbar .wsp-toolbar-item:hover
 {
-    background: radial-gradient(circle, #42548F 52%, rgba(255,255,255,0) 52%);
+    background: radial-gradient(circle, #42548F 52%, rgba(255,255,255,0) 52%)!important;
+}
+
+.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item:focus
+{
+    box-shadow: none;
+    background: radial-gradient(circle, transparent 20%, #484D7A4F 52%, rgba(255,255,255,0) 52%)!important;
+}
+
+.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item.active:focus
+{
+    box-shadow: none;
+    background: radial-gradient(circle, #363A5B 40%, #484D7A4F 52%, rgba(255,255,255,0) 52%)!important;
+}
+
+.wsp-toolbar.webconf-toolbar button.wsp-toolbar-item:focus:hover
+{
+    box-shadow: none;
+    background: radial-gradient(circle, #42548F 40%, #484D7A4F 52%, rgba(255,255,255,0) 52%)!important;
 }
 
 .wsp-toolbar.webconf-toolbar .wsp-toolbar-item.active
@@ -162,6 +182,16 @@ html.touch .shortcut-task{
 .tiny-webconf-menu:hover > img
 {
     filter: saturate(7);
+}
+
+.tiny-webconf-menu:focus > img
+{
+    filter: contrast(1000%);
+}
+
+.tiny-webconf-menu:focus:hover > img
+{
+    filter: contrast(1000%) saturate(7);
 }
 
 .conf-call-stop

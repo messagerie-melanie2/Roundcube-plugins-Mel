@@ -228,11 +228,16 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 {
     if(rcmail.busy)
         return;
+
     $(".wsp-toolbar").css("z-index", "0");
-    $(".wsp-toolbar-item").removeClass("active");
-    $(event).addClass("active");
+    $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");;
+    $(event).addClass("active")            
+    .attr("disabled", "disabled")
+    .attr("aria-disabled", "true");
+
     let datas = [];
     let picture = $(".wsp-picture");
+
     switch (_class) {
         case "calendar":
             //let picture = $(".wsp-picture");
@@ -388,7 +393,6 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
-    console.log(".mm-frame", $(".mm-frame"));
     if (window.webconf_master_bar === undefined)
         $(".mm-frame").css("display", "none");
     else
@@ -396,6 +400,7 @@ async function ChangeFrame(_class, otherDatas = null)
             if (!$(e).hasClass("webconf-frame"))
                 $(e).css("display", "none");
         });
+
     $(".wsp-object").css("display", "none");
 
     $(".workspace-frame").css("display", "none");
@@ -436,7 +441,9 @@ async function ChangePage(_class)
                 $(e).css("display", "none");
         });
     $(".a-frame").css("display", "none");
+
     let layout_frame = $("#layout-frames");
+
     if (window.webconf_master_bar === undefined)
     {
         layout_frame.css("position", "")
@@ -448,11 +455,16 @@ async function ChangePage(_class)
             layout_frame.css("display", "none")
     }
     else
-        layout_frame.css("width", `${window.webconf_master_bar.webconf.ariane.size}px`);
+    {
+        if ($("iframe.workspace-frame").length > 0)
+            layout_frame.css("width", ``);
+        else
+            layout_frame.css("width", `${window.webconf_master_bar.webconf.ariane.size}px`);
+    }
 
     $(".workspace-frame").css("display", "");
     let frame = $("iframe.workspace-frame");
-    //console.log(frame.length >= 1, Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
+
     if (frame.length >= 1 && Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
         frame[0].contentWindow.postMessage({
             exec_info:"ChangeToolbarPage",
@@ -466,15 +478,19 @@ async function ChangeToolbarPage(_class)
 {
     $(".wsp-toolbar").css("z-index", "");
     $(".wsp-object").css("display", "none");
-    $(".wsp-toolbar-item").removeClass("active");
+    $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");
     //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));
     switch (_class) {
         case "home":
-            $(".wsp-toolbar-item.wsp-home").addClass("active");
+            $(".wsp-toolbar-item.wsp-home").addClass("active")
+            .attr("disabled", "disabled")
+            .attr("aria-disabled", "true");
             $(".wsp-home").css("display", "");
             break;
         case "params":
-            $(".wsp-toolbar-item.wsp-item-params").addClass("active");
+            $(".wsp-toolbar-item.wsp-item-params").addClass("active")
+            .attr("disabled", "disabled")
+            .attr("aria-disabled", "true");
             $(".wsp-params").css("display", "");
             break;
         case "back":

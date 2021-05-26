@@ -270,6 +270,7 @@ $(document).ready(() => {
             const id = event.id;
             //get namespace (tab-)
             let namespace = null;
+
             $(event).each((i, e) => {
                 for (let index = 0; index < e.classList.length; ++index) {
                     const element = e.classList[index];
@@ -280,16 +281,21 @@ $(document).ready(() => {
                     }
                 }
             });
+
             if (namespace === null)
                 return;
+
             //Désactivation des autres tabs et objets
-            $("."+namespace+".mel-tab").removeClass("active");
+            $("."+namespace+".mel-tab").removeClass("active").attr("aria-selected", false);
             $("."+namespace+".mel-tab-content").css("display", "none");
+
             //Activation de la tab
-            $(event).addClass("active");
+            $(event).addClass("active").attr("aria-selected", true);
+            
             //activation des objets lié à la tab
             $("." + id + "." + namespace).css("display", "");
             const onclick = $(event).data("onclick");
+
             if (onclick !== null && onclick !== undefined && onclick !== "")
             {
                 new Promise((a,b) => {
@@ -298,13 +304,14 @@ $(document).ready(() => {
                     } catch (error) {
                         console.error(error);
                     }
-                    //console.log("fdmfd,fdmkmfdfd", $(event).data("delete-after-click"), $(event).data("onclick"), event, $(event));
+                    
                     if ($(event).data("delete-after-click") === true)
                         $(event).data("onclick", "");
                 });
             }
 
         }
+
         url(task, action = "", args = null)
         {
             if (mel_metapage !== undefined)

@@ -727,14 +727,16 @@ table.listing td.subscribed {
 .mel-tabheader{
     font-size: larger;
     white-space: nowrap;
-    border-right-style: solid;
-    border-width: 1px;
-    border-color: black;
+    border-color:transparent!important;
+    border-right-style: solid!important;
+    border-width: 1px!important;
+    border-right-color: black!important;
+    border-radius: 0px!important;
 }
 
 .mel-tabheader.last
 {
-    border:none;
+    border: none!important;
 }
 
 .mel-tab{
@@ -743,10 +745,20 @@ table.listing td.subscribed {
     display: inline-block;
 }
 
-.mel-tab:hover,
-.mel-tab.active
+button.btn.mel-tab
 {
-    color:#5069BC;
+    background-color: transparent!important;
+    /* border-color:transparent!important; */
+    color:#363A5B!important;
+}
+
+.mel-tab:hover,
+.mel-tab.active,
+button.btn.mel-tab:hover,
+button.btn.mel-tab.active,
+button.btn.mel-tab:active
+{
+    color:#5069BC!important;
     text-decoration: underline;
 }
 
@@ -983,6 +995,11 @@ a.button.icon.attach::before, button.btn.attach::before {
     box-shadow: 0 0 0 .2rem #484D7A69;
 }
 
+.mel-focus.light-focus:focus
+{
+    box-shadow: 0 0 0 .2rem #FFFFFF69;
+}
+
 .mel-focus.focus-bordered:focus {
 	/* box-shadow: 0 0 0px 80px #484D7A69; */
 	border: solid;
@@ -996,6 +1013,13 @@ a.button.icon.attach::before, button.btn.attach::before {
 {
     box-shadow: none;
     text-shadow: 0 0 .2rem #484D7A;
+}
+
+.mel-focus.focus-background:focus
+{
+    box-shadow: none;
+    background: radial-gradient(circle, transparent 20%, #484D7A4F 26%, rgba(255,255,255,0) 28%);
+    background-repeat: no-repeat;
 }
 
 .mel-not-link{
@@ -1039,6 +1063,46 @@ main {
     border-bottom-right-radius: 5px;
 }
 
+.btn-arrow {
+	/* font-size: x-large; */
+    cursor: pointer;
+    transition: all 0.1s ease-in;
+}
+
+button.btn.btn-arrow
+{
+    background-color: transparent !important;
+    color: #363A5B;
+    border-color: transparent !important;
+}
+
+
+.btn-arrow:hover,
+button.btn.btn-arrow:hover
+{
+    color:#484D7A;
+}
 /* #sr-document-title-focusable:focus{
     background-color: red;
 } */
+
+button.btn.no-style{
+    color: #363A5B;
+    text-align: left;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+button.btn.no-style.full-width{
+    width: 100%;
+}
+
+button.btn.no-style:hover{
+    color: #484D7A;
+}
+
+button.btn.no-style:active{
+    color: white!important;
+    background-color: #484D7A!important;
+    border-color: transparent!important;
+}

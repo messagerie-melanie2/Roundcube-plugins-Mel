@@ -237,7 +237,18 @@ html.layout-small .wsp-toolbar{
 }
 
 
-body.task-workspace  .wsp-toolbar-item {
+body.task-workspace  button.wsp-toolbar-item,
+.wsp-toolbar-edited button.wsp-toolbar-item
+{
+    background-color: transparent;
+    border-color: transparent!important;
+    border-radius: 100%;
+    background-repeat: no-repeat!important;
+    box-shadow: none!important;
+}
+
+body.task-workspace  .wsp-toolbar-item,
+.wsp-toolbar-edited button.wsp-toolbar-item {
     font-size: 20px;
     padding: 0 50px;
     border-left-style: solid;
@@ -248,7 +259,8 @@ body.task-workspace  .wsp-toolbar-item {
     margin-bottom:25px;
 } 
 
-body.task-workspace .wsp-toolbar-item > .text-item {
+body.task-workspace .wsp-toolbar-item > .text-item,
+.wsp-toolbar-edited button.wsp-toolbar-item > .text-item {
     position: absolute;
     font-size: 13px;
     top: 22px;
@@ -257,7 +269,8 @@ body.task-workspace .wsp-toolbar-item > .text-item {
     width: 100%;
 } 
 
-html.layout-small body.task-workspace .wsp-toolbar-item > .text-item {
+html.layout-small body.task-workspace .wsp-toolbar-item > .text-item,
+html.layout-small .wsp-toolbar-edited button.wsp-toolbar-item > .text-item {
     display: none;
 } 
 
@@ -286,6 +299,24 @@ html.layout-small .wsp-toolbar-item
 .wsp-toolbar-item.active{
     cursor: pointer;
     background: radial-gradient(circle, #42548F 26%, rgba(255,255,255,0) 26%); /*29*/
+}
+
+button.wsp-toolbar-item:focus
+{
+    box-shadow: none;
+    background: radial-gradient(circle, transparent 20%, #484D7A4F 26%, rgba(255,255,255,0) 28%);
+}
+
+button.wsp-toolbar-item:focus:hover
+{
+    box-shadow: none;
+    background: radial-gradient(circle, #42548F 20%, #484D7A4F 26%, rgba(255,255,255,0) 28%);
+}
+
+.wsp-toolbar-item.active,
+.wsp-toolbar-item:active
+{
+    background: radial-gradient(circle, #42548F 26%, rgba(255,255,255,0) 26%)!important;
 }
 
 .wsp-toolbar-item > span {
@@ -420,16 +451,7 @@ font-size: 2vw;
     padding:20px;
 }
 
-.btn-arrow {
-	/* font-size: x-large; */
-    cursor: pointer;
-    transition: all 0.1s ease-in;
-}
 
-.btn-arrow:hover
-{
-    color:#484D7A;
-}
 
 .wsp-agenda-icon
 {
@@ -706,4 +728,9 @@ white-space: break-spaces;
 {
     top: -5px;
     right: -5px;
+}
+
+body.task-workspace .wsp-toolbar v_separate{
+    border-color: #647CCB;
+    margin: 15px 0;
 }

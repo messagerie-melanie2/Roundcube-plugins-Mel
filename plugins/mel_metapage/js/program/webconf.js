@@ -792,7 +792,7 @@ class MasterWebconfBar {
             }
         }
 
-        $("#layout-frames").find("iframe").css("padding-left", "");
+        $("#layout-frames").find("iframe").css("padding-left", "").css("padding-right", "");
         $(".webconf-frame").css("display", "none");
 
         if ($("#layout-frames").css("width") !== undefined)

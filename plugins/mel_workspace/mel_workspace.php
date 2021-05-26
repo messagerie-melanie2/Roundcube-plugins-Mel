@@ -292,41 +292,66 @@ class mel_workspace extends rcube_plugin
             "news" => "icofont-rss-feed",
             "params" => "icon-mel-parameters"
         ];
+
+        $vseparate = "<v_separate></v_separate>";
+
+        $is_admin = self::is_admin($this->currentWorkspace, driver_mel::gi()->getUser()->uid);
         $services = $this->get_worskpace_services($this->currentWorkspace);
         $uid = $this->currentWorkspace->uid;
-        $html = html::div(["onclick" => "ChangeToolbar('back', this)", "class" => "wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
-        $html .= html::div(["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active"], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
+        $html = html::tag("button",["onclick" => "ChangeToolbar('back', this)", "class" => " wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
+        $html .= $vseparate;
+        $html .= html::tag("button",["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active", "disabled" => "disabled", "aria-disabled" => true], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
+        
+        if ($services[self::AGENDA] || $services[self::CHANNEL]
+        || $services[self::TASKS] || $is_admin)
+            $html .= $vseparate;
+
         if ($services[self::AGENDA])
         {
             $onclick = "ChangeToolbar('calendar', this)";
-            $html .= html::div(["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
+            $html .= html::tag("button",["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
+            
+            if ($services[self::CHANNEL] || $services[self::TASKS] || $is_admin)
+                $html .= $vseparate;
         }
         
         if ($services[self::CHANNEL])
         {
-            $src = "";//$this->rc->config->get('rocket_chat_url');
+            $src = "";
+
             if ($this->currentWorkspace->ispublic)
                  $src="/channel/$uid";
             else
                 $src="/group/$uid";  
+
             $click = "ChangeToolbar('rocket', this, `$src`)";
             $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
+
             try {
                 if ($channel_datas->name === null)
-                    $html .= html::div(["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
                 else
-                    $html .= html::div(["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
             } catch (\Throwable $th) {
-                $html .= html::div(["onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                $html .= html::tag("button",["onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
             }
+
+            if ($services[self::TASKS] || $is_admin)
+                $html .= $vseparate;
         }
+
         if ($services[self::TASKS])
-            $html .= html::div(["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
-        // if ($this->get_object($this->currentWorkspace, $cloud) !== null)
-        //     $html = "";
-        if (self::is_admin($this->currentWorkspace, driver_mel::gi()->getUser()->uid))
-            $html .= html::div(["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
-        return $html;//html::div(["class" => "wsp-toolbar"], $html);
+        {
+            $html .= html::tag("button",["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
+            
+            if ($is_admin)
+                $html .= $vseparate;
+        }
+
+        if ($is_admin)
+            $html .= html::tag("button",["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
+        
+            return $html;
     }
 
     function get_description()
@@ -350,11 +375,11 @@ class mel_workspace extends rcube_plugin
         $admin = self::is_admin($this->currentWorkspace);
         $html = "";
         if ($exists && $admin)
-            $html.= html::div(["style" => "margin-right:15px", "class" => "mel-button invite-button plus", "onclick" => "rcmail.command(`workspace.add_users`)"], html::tag("span", [], "Inviter un membre").html::tag("span", ["class" => $icon]));
+            $html.= html::tag("button",["style" => "margin-right:15px", "class" => "mel-button invite-button plus", "onclick" => "rcmail.command(`workspace.add_users`)"], html::tag("span", [], "Inviter un membre").html::tag("span", ["class" => $icon]));
         if ($exists)
-            $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => "rcmail.command('workspace.leave')"], html::tag("span", [], "Quitter l'espace de travail").html::tag("span", ["class" => $icon_quit]));
+            $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command('workspace.leave')"], html::tag("span", [], "Quitter l'espace de travail").html::tag("span", ["class" => $icon_quit]));
         else
-            $html.= html::div(["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
+            $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
         return html::div([], $html);
     }
 
@@ -430,8 +455,8 @@ class mel_workspace extends rcube_plugin
             if ($services[self::AGENDA])
             {
                 $arrow = [
-                    "left" => '<span class="'.$icons["arrow_left"].' btn-arrow" style="float:right" onclick="change_date(-1)"></span>',
-                    "right" => '<span class="'.$icons["arrow_right"].' btn-arrow" style="float:left" onclick="change_date(1)"></span>'
+                    "left" => '<button class="btn-mel-invisible btn-arrow" style="float:right" onclick="change_date(-1)"><span class="'.$icons["arrow_left"].'"></span></button>',
+                    "right" => '<button class="btn-mel-invisible btn-arrow" style="float:left" onclick="change_date(1)"><span class="'.$icons["arrow_right"].'"></span></button>'
                 ];
 
                 $header = html::div(["class" => "row"], 
@@ -449,7 +474,7 @@ class mel_workspace extends rcube_plugin
                 $body = "";
                 $agenda = self::AGENDA;
                 $col["right"].= html::tag("h1", [], "Mes réunions");
-                $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)");
+                $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)", $this->rc->gettext("create_event", "mel_workspace"));
             }
 
             //Service tâches
@@ -481,7 +506,7 @@ class mel_workspace extends rcube_plugin
                         html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
 
                 $tasks = self::TASKS;
-                $col["left"].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)");
+                $col["left"].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
             }
             
             $tmp = $col["left"];
@@ -534,7 +559,7 @@ class mel_workspace extends rcube_plugin
                     ""
                 );
             if ($services[self::CHANNEL]){
-                $body_component[] = html::div(["onclick" => "UpdateFrameAriane()","class" => "unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
+                $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
                     html::tag("span", ["style" => "position:relative"], "#".$this->currentWorkspace->uid.html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
                     html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
                 );
@@ -727,7 +752,7 @@ class mel_workspace extends rcube_plugin
         }
     }
 
-    function block($id,$class, $header, $body, $onclick)
+    function block($id,$class, $header, $body, $onclick, $title_button)
     {
         $html = $this->rc->output->parse("mel_workspace.block", false, false);
         $html = str_replace("<id/>", $id, $html);
@@ -735,6 +760,7 @@ class mel_workspace extends rcube_plugin
         $html = str_replace("<header/>", $header, $html);
         $html = str_replace("<body/>", $body, $html);
         $html = str_replace("<onclick/>", $onclick, $html);
+        $html = str_replace("<title-button/>", $title_button, $html);
         return $html;
     }
 

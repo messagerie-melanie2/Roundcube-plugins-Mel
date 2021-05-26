@@ -351,6 +351,7 @@ $(document).ready(() => {
         create_number(number, isClickable = true, active = false) {
             return `<span class="pagination-number pagination-number-`+number.toString().replaceAll(".", "a")+(active ? " active " : "")+(isClickable ? "" : "disabled")+`" onclick="MEL_ELASTIC_UI.pagination_page(this, `+number+`)">` + number + '</span>';
         };
+
         set_pagination(e,count, current = null)
         {
             const _integer = this._integer;
@@ -373,6 +374,7 @@ $(document).ready(() => {
             if (current !== null)
                 this.pagination_page($(".pagination-number-" + current)[0],current, false);
         }
+        
         pagination_page(e, number, doAction = true){
             const _integer = this._integer;
             e = $(e).parent();

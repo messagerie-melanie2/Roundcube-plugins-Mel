@@ -211,6 +211,7 @@ class mel_workspace extends rcube_plugin
                     'pagination'    => $pagination,
                 ));
                 $this->rc->output->set_pagetitle("Espaces publics");
+                $this->rc->output->set_env("wsp_action_event", $event);
                 $this->rc->output->send('mel_workspace.list_workspaces');
                 break;
             
@@ -1169,6 +1170,7 @@ class mel_workspace extends rcube_plugin
         foreach ($this->workspaces as $key => $value) {
             if (!self::is_epingle($value) && $only_epingle)
                 continue;
+
             if ($only_archived)
             {
                 if (!$value->isarchived)
@@ -1179,6 +1181,7 @@ class mel_workspace extends rcube_plugin
                 if ($value->isarchived)
                     continue;
             }
+            
             $html .= $this->create_block($value, $only_epingle);
         } 
         return $html;
@@ -1192,15 +1195,18 @@ class mel_workspace extends rcube_plugin
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid.($epingle ? "-epingle" : "") , $html);
         $html = str_replace("<workspace-uid/>", $workspace->uid , $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
+
         if ($is_epingle)
             $html = str_replace("<workspace-epingle/>", "active", $html);
         else
             $html = str_replace("<workspace-epingle/>", "", $html);
+
         if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img src="'.$workspace->logo.'"></div>', $html);
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
-        if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
+        
+            if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else
             $html = str_replace("<workspace-#/>", "", $html);
@@ -1213,6 +1219,7 @@ class mel_workspace extends rcube_plugin
             //"https://ariane.din.developpement-durable.gouv.fr/avatar/$uid"
             $it = 0;
             $html_tmp = "";
+
             foreach ($workspace->shares as $s)
             {
                 if ($it == 2)
@@ -1223,16 +1230,17 @@ class mel_workspace extends rcube_plugin
                 $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
                 ++$it;
             }
+
             $html = str_replace("<workspace-users/>", $html_tmp, $html);
         }
         else
             $html = str_replace("<workspace-users/>", "", $html);
 
         if ($workspace->created === $workspace->modified)
-            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jour : ".$workspace->created, $html);// $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
         else
         {
-            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jours : ".$workspace->modified, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jour : ".$workspace->modified, $html);
         }
 
         $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
@@ -1240,6 +1248,7 @@ class mel_workspace extends rcube_plugin
 
         $services = $this->get_worskpace_services($workspace);
         $tmp_html = "";
+
         foreach ($services as $key => $value) {
             if ($value)
             {
@@ -1253,7 +1262,9 @@ class mel_workspace extends rcube_plugin
                 }
             }
         }
+
         $html = str_replace("<workspace-notifications/>", $tmp_html, $html);
+
         return $html;
     }
 

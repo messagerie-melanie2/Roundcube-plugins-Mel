@@ -47,6 +47,9 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
 
+        if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1")
+            return;
+
         if ($this->rc->task !== "login" && $this->rc->task !== "logout")
             $this->startup();
         else

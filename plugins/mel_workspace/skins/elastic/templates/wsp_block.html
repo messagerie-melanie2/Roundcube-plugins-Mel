@@ -1,8 +1,9 @@
 <div class="workspace" data-public="<workspace-public/>" id="<workspace-id/>" >
     <div class="row">
-        <button class="btn btn-secondary no-style mel-focus full-width" style="    display: flex;
+        <button class="btn btn-secondary no-style mel-focus full-width" style="    display: block;
         cursor: pointer;
     " onclick="rcmail.command('workspaces.go', '<workspace-uid/>')">
+    <div class="row">
         <div class="col-1 wsp-block-col" style="min-width: 64px;">
             <workspace-image/>
         </div>
@@ -30,6 +31,7 @@
                 <workspace-notifications/>
             <!-- </div> -->
         </div>
+    </div>
     </button>
         <a href="#"  id="tak-<workspace-id/>" onclick="wsp_epingle('<workspace-id/>')" class="icon-mel-pin focus-bordered mel-focus tak <workspace-epingle/> roundbadge"></a>
     </div>

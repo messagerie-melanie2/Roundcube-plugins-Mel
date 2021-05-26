@@ -1,14 +1,17 @@
 .btn.btn-block.btn-secondary.btn-mel{
     margin-bottom: 20px;
     min-height: 160px;
-    background-color: #F8F8F8;
+    background-color: #F0F0F0;
     border:none;
     color:inherit;
 }
 
 .btn.btn-block.btn-secondary.btn-mel:hover{
-    background-color:rgba(0, 0, 0, 0.05);
-    color:inherit;
+    /* background-color:rgba(0, 0, 0, 0.05);
+    color:inherit; */
+    background-color: #484d7a;
+    color:white;
+    border:none;
 }
 
 .btn.btn-block.btn-secondary.btn-mel.disabled{

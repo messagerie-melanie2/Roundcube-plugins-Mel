@@ -38,7 +38,7 @@
 .tablinks
 {
   font-size: 18px;
-  background-color:#F0F0F0;
+  background-color:#DBDBDB;
   color:#3A3E5E;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -48,7 +48,7 @@
 
 .tablinks:hover
 {
-  background-color:#F8F8F8;
+  background-color:#F0F0F0;
   color:#3A3E5E;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -57,7 +57,7 @@
 
 .tablinks.selected
 {
-  background-color:#F8F8F8;
+  background-color:#F0F0F0;
   color:#3A3E5E;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -66,7 +66,7 @@
 
 .tabs-contents
 {
-  background-color:#F8F8F8;
+  background-color:#F0F0F0;
   height: 301px;
   overflow-y: auto;
   overflow-x: hidden;

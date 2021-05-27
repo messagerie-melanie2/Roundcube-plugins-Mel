@@ -116,7 +116,7 @@ class Driver {
     else {
       // Récupère la liste des étiquettes
       $value = driver_mel::gi()->getUser($username)->getPreference(self::PREF_SCOPE, self::PREF_NAME);
-      $labels = isset($value) ? $this->_m2_to_rc($value) : [];
+      $labels = isset($value) ? $this->_m2_to_rc($value, $username) : [];
 
       if (!$this->_add_defaults_labels($username, $labels)) {
         return [];
@@ -217,13 +217,15 @@ class Driver {
   /**
    * Méthode de conversion des étiquettes Mél vers Roundcube
    * @param array $m2_labels
+   * @param string $mailbox
    * @return Label[]
    */
-  protected function _m2_to_rc($m2_labels) {
+  protected function _m2_to_rc($m2_labels, $mailbox) {
     $_rc_labels = array();
     $_ex_m2_labels = json_decode($m2_labels);
 
     foreach ($_ex_m2_labels as $_m2_label) {
+      $_m2_label->mailbox = $mailbox;
       $_rc_label = Label::withArray($_m2_label);
 
       if (isset($_rc_label->ordinal) && !empty($_rc_label->ordinal)) {
@@ -250,6 +252,7 @@ class Driver {
     
     foreach ($default_labels as $default_label) {
       if (!$label = $this->find_label_by_key($default_label['key'], $current_labels)) {
+        $default_label['mailbox'] = $username;
         $label = Label::withArray($default_label);
         if (isset($label->ordinal) && !empty($label->ordinal)) {
           $current_labels[$label->ordinal] = $label;

@@ -37,7 +37,7 @@ class Informationspersonnelles extends Moncompteobject {
 	/**
 	 * Chargement des données de l'utilisateur depuis l'annuaire
 	 */
-    public static function load() {
+    public static function load($plugin = null) {
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
 		// Liste des attributs à charger
@@ -114,7 +114,7 @@ class Informationspersonnelles extends Moncompteobject {
 			}
 			// Gestion de la photo
 			rcmail::get_instance()->output->set_env('moncompte_data_publication_photo', 
-				$user->type == Type::INDIVIDUELLE || $user->type == Type::PERSONNE);
+				$user->is_individuelle || $user->is_personne);
 		}
 		else {
 			// Erreur d'auth

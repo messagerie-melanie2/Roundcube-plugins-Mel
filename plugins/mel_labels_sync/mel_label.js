@@ -9,6 +9,44 @@
 // global variable for contextmenu actions
 rcmail.tb_label = '';
 
+if (window.rcmail) {
+	rcmail.addEventListener('init', function(evt) {
+		if (rcmail.task == 'mail') {
+			if (rcmail.env.action == 'show') {
+				$('#tb_label_popup .toolbarmenu li.labels').addClass('show');
+			}
+			rcmail.addEventListener('responseafterlist', function (evt) {
+				var key = '';
+				if (rcmail.env.balp_label) {
+					$('#tb_label_popup .toolbarmenu li.labels').removeClass('show');
+					$('#messagessearchfilter option.labels').removeClass('show');
+					if (rcmail.env.mailbox.indexOf(rcmail.env.balp_label) === 0) {
+						key = rcmail.env.mailbox.split(rcmail.env.delimiter)[1];
+						key = rcmail_tb_labels_key_to_css(key);
+					}
+					else {
+						key = rcmail_tb_labels_key_to_css(rcmail.env.username);
+					}
+				}
+				else {
+					key = rcmail_tb_labels_key_to_css(rcmail.env.username);
+				}
+				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
+				$('#messagessearchfilter option.labels.'+key).addClass('show');	
+			});
+		}
+	});
+}
+
+function rcmail_tb_labels_key_to_css(key) {
+	return key
+		.replace(/\./g, '_-p-_')
+		.replace(/\$/g, '_-s-_')
+		.replace(/&/g, '_-e-_')
+		.replace(/~/g, '_-t-_')
+		.replace(/\\/g, '_-q-_');
+}
+
 function rcmail_tb_label_menu(p)
 {
 	if (typeof rcmail_ui == "undefined")
@@ -80,13 +118,13 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 	{
 		tb_labels_for_message = preview_frame.get(0).contentWindow.tb_labels_for_message;
 		headers_table = preview_frame.contents().find('table.headers-table');
-		// if (rcmail.env.action == 'show') {
-		// 	header_preview_all_table = preview_frame.contents().find('table.headers-table');
-		// } else {
-		// 	header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
-		// }
-		// Reload cache
-		preview_frame.get(0).contentWindow.location.reload(true);
+		if (rcmail.env.action == 'show') {
+			header_preview_all_table = preview_frame.contents().find('table.headers-table');
+		} else {
+			header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
+		}
+		// // Reload cache
+		// preview_frame.get(0).contentWindow.location.reload(true);
 	}
 	
 	if (!rcmail.message_list
@@ -224,7 +262,7 @@ function rcm_tb_label_init_onclick()
 			// TODO check if click event is defined instead of unbinding?
 			$(this).unbind('click');
 			$(this).click(function() {
-				var toggle_label = $(this).parent().attr('id');
+				var toggle_label = $(this).parent().attr('id').split('_b_')[0];
 				var selection = rcm_tb_label_get_selection();
 				
 				var unset_all = false;
@@ -232,10 +270,10 @@ function rcm_tb_label_init_onclick()
 				// special case flag 0 means remove all flags
 				if (toggle_label == 'label0') {
 					unset_all = true;
-					$('#tb_label_popup li a').each(function() {
+					$('#tb_label_popup li.show a').each(function() {
 						if ($(this).parent().attr('id') != 'label0' 
 								&& $(this).attr('id') != 'rcube_manage_labels') {
-							labels_list.push($(this).parent().attr('id'));
+							labels_list.push($(this).parent().attr('id').split('_b_')[0]);
 						}
 					});
 				} else {
@@ -366,11 +404,10 @@ function show_rcube_manage_labels()
     },
     buttons: buttons,
     width: 660,
-	height: 500,
+    height: 500,
     rcmail: rcmail
   }).width(640);
-  frame.css("max-width","640px");
-//   frame.css("max-height","85%");
+
   // Fermer le pop up au click
   rcmail.hide_menu('tb_label_popup');
 }
@@ -386,7 +423,7 @@ $(document).ready(function() {
 			if ((k > 47 && k < 58) || (k > 95 && k < 106))
 			{
 				var label_no = k % 48;
-				var cur_a = $('#tb_label_popup').find('li.click' + label_no + ' a').click();
+				var cur_a = $('#tb_label_popup').find('li.show.click' + label_no + ' a').click();
 			}
 		}
 	});

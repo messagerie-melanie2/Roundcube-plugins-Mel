@@ -245,10 +245,14 @@ class mel_contacts extends rcube_plugin {
         unset($p['sources']['amande_group']);
         $p['sources'] = [$sources[driver_mel::gi()->mceToRcId($this->user->uid)]] + $p['sources'];
       }
-      else {
-        $p['sources'] = $all_source + $sources + $p['sources'];
+      else if ($this->rc->task == 'addressbook') {
+        $p['sources'] = $all_source + $p['sources'] + $sources;
       }
-      
+      else {
+        $annuaire = $p['sources']['annuaire'];
+        unset($p['sources']['annuaire']);
+        $p['sources'] = $all_source + $p['sources'] + $sources + [$annuaire];
+      }
       return $p;
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

@@ -77,7 +77,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
     foreach ($infos as $info) {
       if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '00')) {
         continue;
-      } else if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '20')) {
+      } else if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '20') && isset($_SESSION['annuaire_user_service'])) {
         if (strpos($info['dn'], $_SESSION['annuaire_user_service']) === false) {
           continue;
         }
@@ -107,7 +107,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
             $email = $info['mailpr'][0];
             $title = $name;
             $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-            $class = 'list contactslist';
+            $class = 'list';
             // 0005526: Dans la gestion des droits agendas/carnets se limiter aux posixGroup
             if (in_array('posixGroup', $info['objectclass'])) {
               $class .= ' group';
@@ -119,6 +119,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                 'title' => $title,
                 'gototree' => $search
             ]);
+            // Ajout de la class search si le bouton goto tree est présent
+            if ($search) {
+              $class .= ' search';
+            }
             $lists[] = array(
                 'id' => $id,
                 'dn' => $info['dn'],
@@ -144,7 +148,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
               $name = $name[0];
             }
             $order = isset($info['mineqordreaffichage'][0]) ? $info['mineqordreaffichage'][0] . $name : $name;
-            $class = 'folder icofont-ui-folder';
+            $class = 'folder';
             $html = $this->get_html([
                 'name' => $name,
                 'description' => $description,
@@ -152,10 +156,13 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                 'title' => $title,
                 'gototree' => $search
             ]);
+            // Ajout de la class search si le bouton goto tree est présent
+            if ($search) {
+              $class .= ' search';
+            }
             $folders[] = array(
                 'id' => $id,
                 'dn' => $info['dn'],
-                'email' => $email,
                 'classes' => [
                     $class
                 ],
@@ -185,17 +192,8 @@ class mtes_driver_annuaire extends default_driver_annuaire {
               default :
                 if (isset($info['mineqpublicationphotointranet'][0]) && $info['mineqpublicationphotointranet'][0]) {
                   $class = 'person';
-                  $classes = [
-                      $class,
-                      'object'
-                  ];
                 } else {
                   $class = 'person nophoto';
-                  $classes = [
-                      'person',
-                      'nophoto',
-                      'object'
-                  ];
                 }
                 $html = $this->get_html([
                     'name' => $name,
@@ -204,13 +202,20 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                     'title' => $title,
                     'gototree' => $search
                 ]);
+                // Ajout de la class search si le bouton goto tree est présent
+                if ($search) {
+                  $class .= ' search';
+                }
                 $persons[] = array(
                     'id' => $id,
                     'uid' => $uid,
                     'dn' => $info['dn'],
                     'email' => $email,
                     'mail' => format_email_recipient($email, $name),
-                    'classes' => $classes,
+                    'classes' => [
+                      $class,
+                      'object'
+                    ],
                     'order' => $order,
                     'html' => $html
                 );
@@ -224,6 +229,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                     'title' => $title,
                     'gototree' => $search
                 ]);
+                // Ajout de la class search si le bouton goto tree est présent
+                if ($search) {
+                  $class .= ' search';
+                }
                 $applications[] = array(
                     'id' => $id,
                     'uid' => $uid,
@@ -247,6 +256,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                     'title' => $title,
                     'gototree' => $search
                 ]);
+                // Ajout de la class search si le bouton goto tree est présent
+                if ($search) {
+                  $class .= ' search';
+                }
                 $services[] = array(
                     'id' => $id,
                     'uid' => $uid,
@@ -270,6 +283,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                     'title' => $title,
                     'gototree' => $search
                 ]);
+                // Ajout de la class search si le bouton goto tree est présent
+                if ($search) {
+                  $class .= ' search';
+                }
                 $functions[] = array(
                     'id' => $id,
                     'uid' => $uid,
@@ -293,6 +310,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                     'title' => $title,
                     'gototree' => $search
                 ]);
+                // Ajout de la class search si le bouton goto tree est présent
+                if ($search) {
+                  $class .= ' search';
+                }
                 $units[] = array(
                     'id' => $id,
                     'uid' => $uid,
@@ -316,6 +337,10 @@ class mtes_driver_annuaire extends default_driver_annuaire {
                     'title' => $title,
                     'gototree' => $search
                 ]);
+                // Ajout de la class search si le bouton goto tree est présent
+                if ($search) {
+                  $class .= ' search';
+                }
                 $resources[] = array(
                     'id' => $id,
                     'uid' => $uid,

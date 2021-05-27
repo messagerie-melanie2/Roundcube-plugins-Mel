@@ -175,6 +175,15 @@ abstract class calendar_driver
   abstract function delete_calendar($prop);
 
   /**
+   * Delete all the events in the given calendar
+   *
+   * @param array Hash array with calendar properties
+   *      id: Calendar Identifier
+   * @return boolean True on success, Fales on failure
+   */
+  abstract function delete_all_events($prop);
+
+  /**
    * Search for shared or otherwise not listed calendars the user has access
    *
    * @param string Search string
@@ -453,6 +462,26 @@ abstract class calendar_driver
   {
     return false;
   }
+
+  /**
+   * Récupération de la clé de partage pour le calendrier
+   * @param string $calendar
+   * @return string|NULL
+   */
+  public function get_calendar_public_key($calendar) { }
+
+  /**
+   * Création de la clé pour le calendrier pour le partage public
+   * @param string $calendar
+   * @param string $key
+   */
+  public function add_calendar_public_key($calendar, $key) { }
+
+  /**
+   * Suppression de la clé pour le calendrier pour le partage public
+   * @param string $calendar
+   */
+  public function delete_calendar_public_key($calendar) { }
 
   /**
    * Create instances of a recurring event

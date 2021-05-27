@@ -24,13 +24,17 @@
 // Compose field for annuaire
 var field = null;
 
+// Conserver la liste des nodes
+var nodes = {};
+
 // On click gototree element list
-$(document).on("submit", '#quicksearchbar form', function(e) {
+$(document).on("submit", '#mainscreen.annuaire #quicksearchbar form', function(e) {
 	e.preventDefault();
-	rcmail.http_get('addressbook/plugin.annuaire', {
-		_source : rcmail.env.source,
-		_q : $('#quicksearchbar input#quicksearchbox').val()
-	}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
+	var params = { 
+		_source: rcmail.env.source,
+		_q: $('#quicksearchbar input#quicksearchbox').val()
+	};
+	rcmail.http_get('addressbook/plugin.annuaire', params, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 });
 
 // Search submit in compose contacts list
@@ -54,22 +58,25 @@ $(document).on("submit", '.contactslist .listsearchbox form', function(e) {
 				else {
 					var source = $(this).attr('id').split('-').pop();
 				}
-				rcmail.http_get('mail/plugin.annuaire', {
-					_source : source,
-					_q : $('input#contactsearchbox').val()
-				}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
+				var params = {
+					_source: source,
+					_q: $('input#contactsearchbox').val()
+				};
+				rcmail.http_get('mail/plugin.annuaire', params, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 			}
 		});
 	}
 	else {
 		$('#annuaire-list').empty();
+		var params = {};
+		if ($('input#contactsearchbox').val()) {
+			params['_source'] = rcmail.env.annuaire_source;
+			params['_q'] = $('input#contactsearchbox').val();
+		}
 		// Search for current container
-		rcmail.http_get('mail/plugin.annuaire', {
-			_source : rcmail.env.annuaire_source,
-			_q : $('input#contactsearchbox').val()
-		}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
+		rcmail.http_get('mail/plugin.annuaire', params, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 	}
-	
+	window.nodes = {};
 	rcmail.annuaire_list.reset(true);
 });
 
@@ -96,18 +103,16 @@ $(document).on("keyup", 'input#contactsearchbox', function(e) {
 });
 
 // register event handlers for UI elements
-$(document).on("change", '#annuaireselector', function(e) {
-	// if (!$(this).parent().hasClass('inactive')
-	// 		&& !$(this).parent().hasClass('selected')) {
-	// 	window.annuaireSelector = this.href.replace(/^.*#/, '');
-	// 	$('#annuaireselector li.selected').removeClass('selected')
-	// 			.attr('aria-checked', 'false');
-	// 	$(this).parent().addClass('selected').attr('aria-checked',
-	// 			'true');
-	// 	rcmail.annuaire_filter_list();
-	// }
-	window.annuaireSelector = e.currentTarget.value;
-	rcmail.annuaire_filter_list();
+$(document).on("click", '#annuaireselector a', function(e) {
+	if (!$(this).parent().hasClass('inactive')
+			&& !$(this).parent().hasClass('selected')) {
+		window.annuaireSelector = this.href.replace(/^.*#/, '');
+		$('#annuaireselector li.selected').removeClass('selected')
+				.attr('aria-checked', 'false');
+		$(this).parent().addClass('selected').attr('aria-checked',
+				'true');
+		rcmail.annuaire_filter_list();
+	}
 	return false;
 });
 
@@ -246,6 +251,11 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 	    	window.field = $(this.env.focused_field).filter(':visible');
 	    	window.field = window.field.length ? window.field.attr('id').replace('_', '') : 'to';
 	    }
+
+		// Utiliser le node en mémoire
+		if (window.nodes[node.id]) {
+			node = window.nodes[node.id];
+		}
 	    
 	    var recipients = [], input = $('#_'+field), delim = this.env.recipients_delimiter;
 	    
@@ -267,7 +277,6 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 	          oldval += delim + ' ';
 	        input.val(oldval + recipients.join(delim + ' ') + delim + ' ').change();
 	    }
-	    
 	    $('#rcmrow' + node_id).addClass('added');
 	}
 	else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.mel_moncompte') {
@@ -356,6 +365,7 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 			}
 		}
 	} else {
+		window.nodes = {};
 		rcmail.annuaire_list.reset();
 		rcmail.annuaire_list_fill_list(null, evt.response.elements);
 		if (window.annuaireSelector) {
@@ -365,21 +375,41 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 	// Scoll to find element
 	if (evt.response.find) {
 		rcmail.annuaire_list.reset(true);
-		$('#addresslist .scroller').scrollTop(
-				$('#annuaire-list li#' + 'rcmrow' + evt.response.find)
-						.position().top);
-		$('#annuaire-list li#' + 'rcmrow' + evt.response.find).click();
+		document.getElementById('rcmrow' + evt.response.find).scrollIntoView({
+			behavior: 'smooth'
+		});
+		// $('#addresslist .scroller').scrollTop(
+		// 		$('#annuaire-list li#' + 'rcmrow' + evt.response.find)
+		// 				.position().top);
+		if (rcmail.env.task == 'addressbook') {
+			$('#annuaire-list li#' + 'rcmrow' + evt.response.find).click();
+		}
 	}
 });
+
 // Fill list with elements
 rcube_webmail.prototype.annuaire_list_fill_list = function(parent_id, elements) {
 	for (var i = 0; i < elements.length; i++) {
+		// Gestion des children
+		var children = null;
+		if (elements[i].children && elements[i].children.length && elements[i].children[0]['html'] != "<span></span>") {
+			children = elements[i].children;
+			elements[i].children = null;
+		}
+		// Enregistrer le node
+		window.nodes[elements[i].id] = elements[i];
+		// Insert le parent
 		rcmail.annuaire_list.insert(elements[i], parent_id);
+		// Gestion des enfants
+		if (children) {
+			this.annuaire_list_fill_list(elements[i].id, children);
+		}
 	}
 	if (parent_id) {
 		$('#rcmrow' + parent_id).find('> ul > li.child').remove();
 	}
 };
+
 // Filter list with annuaireSelector
 rcube_webmail.prototype.annuaire_filter_list = function() {
 	if (window.annuaireSelector == 'all') {

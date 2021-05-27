@@ -157,6 +157,12 @@ class annuaire extends rcube_plugin
                 )
             ));
         }
+        // Chargement de la conf
+        $this->load_config();
+
+        $this->rc->output->set_env('annuaire_source', $this->rc->config->get('annuaire_source'));
+        // Modifier la toolbar
+        $this->include_script('taskbar.js');
     }
 
     /**
@@ -172,6 +178,9 @@ class annuaire extends rcube_plugin
      */
     function annuaire_actions()
     {
+        // Chargement de la conf
+        $this->load_config();
+        
         driver_annuaire::get_instance()->setBaseDn(rcube_utils::get_input_value('_base', rcube_utils::INPUT_GPC));
         driver_annuaire::get_instance()->setSource(rcube_utils::get_input_value('_source', rcube_utils::INPUT_GPC));
         driver_annuaire::get_instance()->setAlias(rcube_utils::get_input_value('_alias', rcube_utils::INPUT_GPC));
@@ -190,9 +199,6 @@ class annuaire extends rcube_plugin
 
         // load localization
         $this->add_texts('localization/', true);
-
-        // Chargement de la conf
-        $this->load_config();
 
         // Set the filter
         driver_annuaire::get_instance()->get_filter_from_search($search);

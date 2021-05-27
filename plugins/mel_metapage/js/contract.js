@@ -56,7 +56,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
     cal = JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
     // mm_create_calendar(this, cal);
     // return;
-    m_mp_set_storage('calendar_redirect', json, false)
+    m_mp_set_storage('calendar_redirect', json.replaceAll("µ¤¤µ", "'"), false)
     if (parent === window && rcmail.env.task === "calendar")
     {
         rcmail.set_busy(true, "loading");

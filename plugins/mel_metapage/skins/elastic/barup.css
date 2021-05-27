@@ -139,6 +139,7 @@
 {
     margin:15px;
     overflow-y: auto;
+    overflow-x: hidden;
     max-height: 300px;
     width: 500px;
     border: solid;

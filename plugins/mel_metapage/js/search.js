@@ -34,7 +34,7 @@ function mm_s_Action(e)
                 if (search_icon.children().hasClass("text-success"))
                 {
                     rcmail.display_message("Recherche effectué avec succès !", "confirmation");
-                    
+
                     if ($("#barup-search").hasClass("hidden"))
                     {
                         $("#barup-search").removeClass("hidden");
@@ -203,6 +203,7 @@ function mm_s_CreateOrUpdateFrame(action, url)
 {
     event.preventDefault();
     $("#barup-search").addClass("hidden");
+    $("#barup-search-background").addClass("hidden");
     console.log("url", url, action);
     return mel_metapage.Functions.change_frame(action, true, true, {"iframe.src":url}).then(() => {
         

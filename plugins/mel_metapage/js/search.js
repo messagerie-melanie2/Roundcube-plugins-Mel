@@ -4,39 +4,63 @@
  */
 function mm_s_Action(e)
 {
-    rcmail.set_busy(true, "loading");
     const replaced = rcmail.env.REPLACED_SEARCH;
-    //console.log(e);
     let val = e.value;
     let config = rcmail.env.mm_search_config;
     $(".search-container").html("");
+
     if (val === "")
     {
         $("#barup-search").addClass("hidden");
         $("body").unbind("click");
-        rcmail.set_busy(false);
-        rcmail.clear_messages();
         return;
     }
+
+    let search_icon = $("#barup-search-col .icofont-search").removeClass("icofont-search").html('<span class="spinner-grow spinner-grow-sm" role="status"><span class="sr-only">Chargement des informations...</span></span>');
+
+
     rcmail.env.mel_metapage_search = {
         size:config.length,
         finished:[],
         timeout: function () {
+
             if (rcmail.env.mel_metapage_search.size === rcmail.env.mel_metapage_search.finished.length)
             {
                 rcmail.env.mel_metapage_search = null;
                 delete rcmail.env.mel_metapage_search
-                rcmail.set_busy(false);
+
                 rcmail.clear_messages();
+
+                if (search_icon.children().hasClass("text-success"))
+                {
+                    rcmail.display_message("Recherche effectué avec succès !", "confirmation");
+                    
+                    if ($("#barup-search").hasClass("hidden"))
+                    {
+                        $("#barup-search").removeClass("hidden");
+                        $("#barup-search-background").removeClass("hidden");
+                    }
+                }
+                else
+                    rcmail.display_message("Aucun résultat lié à la recherche...");
+
+                search_icon.addClass("icofont-search").html("");
+
+
+
             }
             else 
                 setTimeout(() => {
                     rcmail.env.mel_metapage_search.timeout(); 
-                }, 1000);
+                }, 100);
         }
     };
-    setTimeout(rcmail.env.mel_metapage_search.timeout, 1000);
+
+    setTimeout(rcmail.env.mel_metapage_search.timeout, 100);
     //rcmail.display_message("Recherche en cours....", "loading")
+
+    rcmail.display_message(`Recherche de contenus lié au mot clé "${val}"`, "loading");
+
     for (let index = 0; index < config.length; ++index) {
         const element = config[index];
        // mm_s_array.push({index:index,ajax:
@@ -45,18 +69,29 @@ function mm_s_Action(e)
         url: element.replace(replaced, val), // url du fichier php
         dataType: 'json',
         success: function (data) {
-            rcmail.env.mel_metapage_search.finished.push(null);
-            //console.log(Array.isArray(data), data.length > 0 , data[0].calendar !== undefined);
-             if (Array.isArray(data) && data.length > 0 && data[0].calendar !== undefined)
-                data = SearchResultCalendar.from_array(data);
-            if (data.datas !== undefined && data.datas.length > 0)
-                mm_s_AfficheResults(data);
+            try {
+                rcmail.env.mel_metapage_search.finished.push(null);
+
+                if (Array.isArray(data) && data.length > 0 && data[0].calendar !== undefined)
+                    data = SearchResultCalendar.from_array(data);
+
+                if (data.datas !== undefined && data.datas.length > 0)
+                {
+                    mm_s_AfficheResults(data);
+                    search_icon.children().addClass("text-success");
+                }
+
+            } catch (error) {
+                
+            }
         },
         error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
  
         },
      });//});
+
     }
+
     if (!Enumerable.from(jQuery._data($("body")[0], 'events')["click"]).where(x => x.handler + "" === mm_s_bodyClick + "").any())//jQuery._data($("body")[0], 'events')["click"] === undefined)
         $("body").click(mm_s_bodyClick);
 }
@@ -68,18 +103,26 @@ function mm_s_Action(e)
 function mm_s_bodyClick(event)
 {
     let querry = $("#barup-search");
+
     if (querry.hasClass("hidden"))
         return;
+
     let target = event.target;
+    
     while (target.id !== "layout") {
         //console.log("target",target.id, target,target.id === "barup-search",target.id === "barup" );
-        if (target.id === "barup-search" || target.classList.contains("barup"))
+        if (target.id === "barup-search" || target.id === "barup-search-input")
             return;
         else
             target = target.parentElement;
     }
     if (!querry.hasClass("hidden"))
+    {
         querry.addClass("hidden");
+        $("#barup-search-background").addClass("hidden");
+    }
+
+    
 
 }
 
@@ -93,7 +136,10 @@ function mm_s_OnClick()
     {
         let querry = $("#barup-search");
         if (querry.hasClass("hidden"))
+        {
             querry.removeClass("hidden");
+            $("#barup-search-background").removeClass("hidden");
+        }
     }
 }
 
@@ -105,17 +151,18 @@ function mm_s_AfficheResults(datas)
 {
 
     let querry = $("#barup-search");
-    if (querry.hasClass("hidden"))
-        querry.removeClass("hidden");
+
     html = '<div class=search-parent><div class=search-label onclick="mm_s_extend(this)"><span class="icofont-rounded-down"></span><span class=result-label>' + datas.label + '</span></div><div>';
     html += '<table class="table table-striped">'
     let isa;
+
     for (let index = 0; index < datas.datas.length; index++) {
         const element = datas.datas[index];
         //console.log(element.sub_header);
         isa = element.link === "" ? "span" : "a";
         html += '<tr><td><' + isa + ' href="'+ element.link + '"' + (element.onclick !== undefined ? (' onclick="' + element.onclick + '" ') : "") +' class="result-link"><div class="result-header">' + element.header + '</div><div class="result-desc">' + element.sub_header + '</div></' + isa + '></td></tr>'
     }
+
     html += "</table></div></div>";
     $(".search-container").append(html);
 }
@@ -156,49 +203,57 @@ function mm_s_CreateOrUpdateFrame(action, url)
 {
     event.preventDefault();
     $("#barup-search").addClass("hidden");
-    rcmail.set_busy(true, "loading");
-    let querry = $("." + action + "-frame");
-    let changePage;
-    if (querry.length > 0)
-    {
-        querry[0].src = url;
-        if (!rcmail.busy)
-            rcmail.set_busy(true, "loading");
-        rcmail.env.frame_created = false;
-        mm_st_CreateOrOpenModal(action, true);
-        new Promise(async (a, b) => {
-            while (rcmail.env.frame_created === false) {
-                await delay(1000);
-                if (!rcmail.busy)
-                    rcmail.set_busy(true, "loading");
-            }
-            rcmail.set_busy(false);
-            rcmail.clear_messages();}
-        );
-    }
-    else {
-        let id = mm_st_CreateOrOpenModal(action, false);
-        if (!rcmail.busy)
-            rcmail.set_busy(true, "loading");
-        querry = $("#" + id);
-        new Promise(async (a, b) => {
-            while (rcmail.env.frame_created === false) {
-                await delay(1000);
-                if (!rcmail.busy)
-                    rcmail.set_busy(true, "loading");
-            }
-            rcmail.env.frame_created = false;
-            if (!rcmail.busy)
-                rcmail.set_busy(true, "loading");
-            querry[0].src = url;
-            while (rcmail.env.frame_created === false) {
-                await delay(1000);
-            }
-            mm_st_CreateOrOpenModal(action);
-            rcmail.set_busy(false);
-            rcmail.clear_messages();
-        });
-    }
+    console.log("url", url, action);
+    return mel_metapage.Functions.change_frame(action, true, true, {"iframe.src":url}).then(() => {
+        
+    });
+
+    // rcmail.set_busy(true, "loading");
+    // let querry = $("." + action + "-frame");
+    // let changePage;
+    // if (querry.length > 0)
+    // {
+    //     querry[0].src = url;
+    //     if (!rcmail.busy)
+    //         rcmail.set_busy(true, "loading");
+    //     rcmail.env.frame_created = false;
+    //     mm_st_CreateOrOpenModal(action, true);
+    //     new Promise(async (a, b) => {
+    //         while (rcmail.env.frame_created === false) {
+    //             await delay(1000);
+    //             if (!rcmail.busy)
+    //                 rcmail.set_busy(true, "loading");
+    //         }
+    //         rcmail.set_busy(false);
+    //         rcmail.clear_messages();}
+    //     );
+    // }
+    // else {
+    //     rcmail.set_busy(false);
+    //     return
+        // let id = mm_st_CreateOrOpenModal(action, false);
+        // if (!rcmail.busy)
+        //     rcmail.set_busy(true, "loading");
+        // console.log("id", id, action);
+        // querry = $("#" + id);
+        // new Promise(async (a, b) => {
+        //     while (rcmail.env.frame_created === false) {
+        //         await delay(100);
+        //         if (!rcmail.busy)
+        //             rcmail.set_busy(true, "loading");
+        //     }
+        //     rcmail.env.frame_created = false;
+        //     if (!rcmail.busy)
+        //         rcmail.set_busy(true, "loading");
+        //     querry[0].src = url;
+        //     while (rcmail.env.frame_created === false) {
+        //         await delay(1000);
+        //     }
+        //     mm_st_CreateOrOpenModal(action);
+        //     rcmail.set_busy(false);
+        //     rcmail.clear_messages();
+        // });
+    //}
 }
 
 /*

@@ -584,11 +584,13 @@ class MetapageFrames {
             return;
         else {
             let result = null;
+
             for (let index = 0; index < this._events[key].length; index++) {
                 const element = this._events[key][index];
                 try {
+
                     if (index === 0)
-                    result = element(...args);
+                        result = element(...args);
                     else {
                         if (result !== null && result !== undefined)    
                             result = element(...[...args, result]);
@@ -598,12 +600,14 @@ class MetapageFrames {
                 } catch (error) {
                     console.error(error);
                 }
+
                 if (result === "break")
                 {
                     this.break();
                     break;
                 }
             }
+            
             return result;
         }
     }

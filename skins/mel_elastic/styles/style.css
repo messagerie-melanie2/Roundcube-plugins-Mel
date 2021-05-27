@@ -1124,3 +1124,9 @@ html.layout-normal body.task-mail.action-compose #layout-sidebar
 {
     display: block!important;
 } */
+
+#toolbar-menu a.icon-mel-undo::before 
+{
+    content: "\e936" !important;
+    font-family: DWP !important;
+}

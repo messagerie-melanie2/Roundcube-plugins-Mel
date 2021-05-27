@@ -37,11 +37,14 @@ $(document).ready(() => {
               if (rcmail.env.task == 'login' || rcmail.env.task == 'logout') 
                 $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
 
-            //   if (rcmail.env.task === "mail" && rcmail.env.action === "show")
-            //   {
-            //       $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span class="">Retour</span></a></li>`)
-            //       .prependTo($("#toolbar-menu"))
-            //   }
+              if (rcmail.env.task === "mail" && rcmail.env.action === "show")
+              {
+                  $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
+                  .on("click", () => {
+                      window.location.href = this.url("mail");
+                  })
+                  .prependTo($("#toolbar-menu"))
+              }
             
               this.init();
               

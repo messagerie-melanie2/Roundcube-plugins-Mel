@@ -160,8 +160,11 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
 {
     metapage_frames.unbreak();
 
+    if (args === null || args === undefined)
+        args = {};
+
     if (rcmail.busy)
-        return;
+        return "busy";
 
     //Actions à faire avant de traiter la classe.
     metapage_frames.triggerEvent("before", eClass, changepage);
@@ -339,15 +342,26 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
 })
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
-    //let src = rcmail.get_task_url(mm_st_CommandContract(eClass), window.location.origin + window.location.pathname) + "&_from=iframe";
+    const empty = "";
+
+    console.log("args", args, args["iframe.src"]);
+
     if (args === null || args === undefined)
         args = {};
+
     args["_from"] = "iframe";
-    let src = mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
-    if (eClass === "discussion")
+    let src = empty;//mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
+
+    if (args["iframe.src"] !== undefined)
+        src = args["iframe.src"];
+    else if (eClass === "discussion")
         src = rcmail.env.rocket_chat_url + "home";
+    else
+        src = mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
+
     const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';
     let html = frame;
+
     if (eClass === "discussion")
     {
         html = "";

@@ -484,3 +484,11 @@ html.touch.layout-small .btn.btn-block.btn-secondary.btn-mel > span
 .rotomeca-debug{
     display: none;
 }
+
+#barup-search-background {
+	height: 100%;
+	background-color: #0000004d;
+	width: 100%;
+	position: absolute;
+	z-index: 1;
+}

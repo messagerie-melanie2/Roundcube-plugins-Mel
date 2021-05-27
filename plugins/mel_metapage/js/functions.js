@@ -1279,7 +1279,7 @@ async function m_mp_shortcuts()
         window.shortcuts.open();
 }
 
-function mm_create_calendar(e)
+function mm_create_calendar(e, existingEvent = null)
 {
     if (window.create_popUp !== undefined)
     {
@@ -1287,13 +1287,22 @@ function mm_create_calendar(e)
         window.create_popUp = undefined;
     }
 
-    let event = {
-        // categories:["ws#" + id],
-        // calendar_blocked:true,
-        start:moment(),
-        end:moment().add(1, "h"),
-        from:"barup"
+    let event;
+
+    if (existingEvent === null || existingEvent === undefined)
+        event = {
+            // categories:["ws#" + id],
+            // calendar_blocked:true,
+            start:moment(),
+            end:moment().add(1, "h"),
+            from:"barup"
+        }
+    else
+    {
+        event = existingEvent;
+        event.completeEvent = true;
     }
+
     rcmail.local_storage_set_item("tmp_calendar_event", event);
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
     // m_mp_CreateOrOpenFrame(`calendar`, 

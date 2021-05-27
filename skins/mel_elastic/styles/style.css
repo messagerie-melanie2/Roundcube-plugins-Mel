@@ -917,11 +917,6 @@ span.span-webconf
     margin-left: 0px!important;
 }
 
-.task-mail.action-compose #layout-content
-{
-    margin-left: 60px!important;
-}
-
 a.button.icon.attach::before, button.btn.attach::before {
 	content: "\e91c";
 	font-family: DWP;
@@ -980,7 +975,8 @@ a.button.icon.attach::before, button.btn.attach::before {
   }
 
 
-.mel-before-remover::before
+.mel-before-remover::before,
+.mel-child-form-before-remover > form:before
 {
     content: none!important;
 }
@@ -990,6 +986,8 @@ a.button.icon.attach::before, button.btn.attach::before {
 }
 
 .mel-focus:focus,
+.input-child-mel-focus input:focus,
+.a-child-mel-focus a:focus,
 .mel-button:focus
 {
     box-shadow: 0 0 0 .2rem #484D7A69;
@@ -1105,4 +1103,14 @@ button.btn.no-style:active{
     color: white!important;
     background-color: #484D7A!important;
     border-color: transparent!important;
+}
+
+.mel-invisible-background
+{
+    background-color: transparent!important;
+}
+
+body.task-mail #toolbar-menu li > .compose
+{
+    display: block !important;
 }

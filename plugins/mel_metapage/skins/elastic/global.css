@@ -369,3 +369,8 @@ font-family: 'IcoFont'!important;
     width: inherit!important;
     height: inherit!important; *
 } */
+
+.task-mail.action-compose #layout-content
+{
+    margin-left: 60px!important;
+}

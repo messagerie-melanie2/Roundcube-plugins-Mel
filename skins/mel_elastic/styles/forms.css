@@ -96,12 +96,34 @@ input.input-mel {
 	border-color: #F0F0F0;
 }
 
-#wspf.form-control.input-mel
+#wspf.form-control.input-mel,
+.mel-input-container.form-control.input-mel
 {
 	border-color: #F0F0F0;
 	background-color: #F0F0F0;
 	border-top-left-radius: 60px !important;
 	border-bottom-left-radius: 60px !important;
+}
+
+.mel-input-container.form-control.input-mel
+{
+	border-radius: 60px;
+    border-top-left-radius: 60px;
+    border-bottom-left-radius: 60px;
+	height: 51px;
+	background-color: #fbfbfb;
+}
+
+.mel-input-container.form-control.input-mel input,
+.mel-input-container.form-control.input-mel .menu
+{
+	border:none;
+}
+
+.mel-input-container.form-control.input-mel input
+{
+	border-radius: 60px;
+	margin: 0 5px;
 }
 
 .input-group-append > .input-group-text.mel-text,

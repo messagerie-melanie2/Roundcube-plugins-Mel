@@ -196,7 +196,7 @@ html.layout-small .wsp-index{
     background-color: transparent;
 }
 
-separate{
+body.task-workspace separate{
     border-top-color: #E0E1E8;
     border-top-style: solid;
     border-top-width: thin;

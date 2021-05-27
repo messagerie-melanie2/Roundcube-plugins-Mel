@@ -131,10 +131,6 @@ if (window.rcmail) {
     // Gestion des mails count pour toutes les boites
     rcmail.mel_refresh_mails_count();
     
-    rcmail.addEventListener('responseafterrefresh', function(props) {
-      // Refresh mails count
-      rcmail.mel_get_mails_count();
-    });
     rcmail.addEventListener('responseaftergetunread', function(props) {
       // Refresh current mail count
       rcmail.mel_refresh_current_mail_count();
@@ -147,12 +143,6 @@ if (window.rcmail) {
       // Refresh current mail count
       if ($('#mailboxlist > li:first-child').hasClass('selected')) {
         rcmail.mel_refresh_current_mail_count();
-      }
-    });
-    rcmail.addEventListener('actionafter', function(props) {
-      if (props.action == 'checkmail') {
-        // Refresh mails count
-        rcmail.mel_get_mails_count();
       }
     });
     
@@ -238,17 +228,15 @@ if (window.rcmail) {
       $("#edit-sensitivity option[value='confidential']").remove();
       $("#edit-recurrence-frequency option[value='RDATE']").remove();
     }
-    // Refresh mails count
-    rcmail.mel_get_mails_count();
   });
   // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
   rcmail.addEventListener('change_identity', function(evt) {
     if (window.identity && window.identity != rcmail.env.identity) {
-      rcmail.http_request('mail/plugin.refresh_store_target_selection', 
-      {
-        "_account": rcmail.env.identities_to_bal[rcmail.env.identity],
+      var params = {};
+      if (rcmail.env.identities_to_bal[rcmail.env.identity]) {
+        params['_account'] = rcmail.env.identities_to_bal[rcmail.env.identity];
       }
-      , rcmail.set_busy(true, 'loading'));
+      rcmail.http_request('mail/plugin.refresh_store_target_selection', params, rcmail.set_busy(true, 'loading'));
     }
     window.identity = rcmail.env.identity;
   });
@@ -289,49 +277,6 @@ rcube_webmail.prototype.window_edit_folder = function() {
       $('#managemailboxfolder').dialog('close');
     }
   });
-};
-
-// Get mails count
-rcube_webmail.prototype.mel_get_mails_count = function() {
-  if (rcmail.env.task == 'mail' 
-  && $('.sharesmailboxesul').length) {
-    $('.sharesmailboxesul li').each(function() {
-      if (!$(this).hasClass('current') || !$(this).find('> a > div.treetoggle').hasClass('expanded')) {
-        var _this = $(this);
-        var res = rcmail.mel_storage_get('seen.' + _this.attr('id'), true);
-        var load_data = true;
-        if (res) {
-          load_data = !_this.hasClass('current') && (Date.now() > (res.timestamp + window.UNSEEN_COUNT_REFRESH));
-        }
-        if (load_data) {
-          var url = _this.find('> a').attr('href') == '#' ? rcmail.url('mail/plugin.get_mbox_unread_count') : _this.find('> a').attr('href') + '&_action=plugin.get_mbox_unread_count';
-          $.ajax({
-            method: "GET",
-            url: url,
-          }).done(function(json) {
-            if (json) {
-              rcmail.mel_refresh_unseen_count(_this, json.unseen_count);
-              rcmail.mel_storage_set('seen.' + _this.attr('id'), {unseen_count: json.unseen_count, timestamp: Date.now()}, true);
-            }
-          });
-        }
-        else {
-          if (_this.hasClass('current')) {
-            var unread = parseInt($('#mailboxlist > li:first-child > a > span.unreadcount').text());
-            if (unread) {
-              res.unseen_count = unread;
-            }
-            else {
-              res.unseen_count = 0;
-            }
-            res.timestamp = Date.now();
-            rcmail.mel_storage_set('seen.' + _this.attr('id'), res, true);
-          }
-          rcmail.mel_refresh_unseen_count(_this, res.unseen_count);
-        }
-      }
-    });
-  }
 };
 
 // Refresh current mails count

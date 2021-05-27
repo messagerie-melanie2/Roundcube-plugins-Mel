@@ -93,8 +93,7 @@ class mel extends rcube_plugin {
     $this->add_hook('preferences_save',     array($this, 'prefs_save'));
     $this->add_hook('identity_form',        array($this, 'identity_form'));
     $this->add_hook('identities_list',      array($this, 'identities_list'));
-    // register message hook
-    $this->add_hook('message_headers_output', array($this, 'mail_headers'));
+    $this->add_hook('identity_update',      array($this, 'identity_update'));
 
     // Template
     $this->add_hook('template_object_loginform',  array($this, 'login_form'));
@@ -102,10 +101,11 @@ class mel extends rcube_plugin {
 
     // Command
     $this->register_action('plugin.set_current_page',       array($this, 'set_current_page'));
-    $this->register_action('plugin.get_mbox_unread_count',  array($this, 'get_unread_count'));
 
     // Chargement de l'account passé en Get
-    $this->get_account = self::get_account();
+    if ($this->rc->task != 'mail') {
+      $this->get_account = self::get_account();
+    }
     // Chargement de l'ui
     $this->init_ui();
 
@@ -367,8 +367,9 @@ class mel extends rcube_plugin {
     foreach ($rc_identities as $rc_i) {
       if (isset($m2_identities[strtolower($rc_i['email'])])) {
         $m2_i = $m2_identities[strtolower($rc_i['email'])];
-        if ($rc_i['email'] != $m2_i['email'] || $rc_i['realname'] != $m2_i['realname'] || $rc_i['uid'] != $m2_i['uid']) {
+        if ($rc_i['standard'] != $m2_i['standard'] || $rc_i['email'] != $m2_i['email'] || $rc_i['realname'] != $m2_i['realname'] || $rc_i['uid'] != $m2_i['uid']) {
           $rc_i['email'] = $m2_i['email'];
+          $rc_i['standard'] = $m2_i['standard'];
           // Test si le nom n'a pas été modifié par l'utilisateur
           if ($this->m2_identity_shortname($rc_i['realname']) == $rc_i['name'])
             $rc_i['name'] = $m2_i['name'];
@@ -532,169 +533,16 @@ class mel extends rcube_plugin {
     $args['cols'][0] = 'name';
     return $args;
   }
-  
+
   /**
-   * Change From message header
+   * Handler for user identity update
    */
-  function mail_headers($args) {
-    if (isset($args['output']['from']) 
-        && $args['output']['from']['html']) {
-      $args['output']['from']['value'] = $this->rcmail_address_string($args['output']['from']['raw'], null, true, "/images/addcontact.png");
+  public function identity_update($args) {
+    if (mel_logs::is(mel_logs::TRACE)) {
+      mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identity_update() args : " . var_export($args, true));
     }
-        
+    $args['record']['standard'] = strtolower(driver_mel::gi()->getUser()->email_send) == strtolower($args['record']['email']) ? 1 : 0;
     return $args;
-  }
-  
-  /**
-   * Decode address string and re-format it as HTML links
-   */
-  private function rcmail_address_string($input, $max=null, $linked=false, $addicon=null, $default_charset=null, $title=null)
-  {
-    global $PRINT_MODE;
-    
-    $a_parts = rcube_mime::decode_address_list($input, null, true, $default_charset);
-    
-    if (!count($a_parts)) {
-      return $input;
-    }
-    
-    $c   = count($a_parts);
-    $j   = 0;
-    $out = '';
-    $allvalues  = array();
-    $show_email = $this->rc->config->get('message_show_email');
-    
-    if ($addicon && !isset($_SESSION['writeable_abook'])) {
-      $_SESSION['writeable_abook'] = $this->rc->get_address_sources(true) ? true : false;
-    }
-    
-    foreach ($a_parts as $part) {
-      $j++;
-      
-      $name   = $part['name'];
-      $mailto = $part['mailto'];
-      $string = $part['string'];
-      $valid  = rcube_utils::check_email($mailto, false);
-      
-      // IDNA ASCII to Unicode
-      if ($name == $mailto)
-        $name = rcube_utils::idn_to_utf8($name);
-        if ($string == $mailto)
-          $string = rcube_utils::idn_to_utf8($string);
-          $mailto = rcube_utils::idn_to_utf8($mailto);
-          
-          if ($PRINT_MODE) {
-            $address = sprintf('%s &lt;%s&gt;', rcube::Q($name), rcube::Q($mailto));
-          }
-          else if ($valid) {
-            if ($linked) {
-              $attrs = array(
-                  'href'    => 'mailto:' . $mailto,
-                  'class'   => 'rcmContactAddress',
-                  'onclick' => sprintf("return %s.command('compose','%s',this)",
-                    rcmail_output::JS_OBJECT_NAME, rcube::JQ(format_email_recipient($mailto, $name))),
-              );
-              
-              $attrs['title'] = $mailto;
-              if (!$name) {
-                $name = explode('@', $mailto, 2);
-                $name = ucfirst(str_replace('.', ' ', $name[0])) . ' (' . $name[1] . ')';
-              }
-              $content =  html::tag('span', 'name', rcube::Q($name)) . html::tag('span', 'mailto', rcube::Q($mailto));
-              
-              $address = html::a($attrs, $content);
-            }
-            else {
-              $address = html::span(array('title' => $mailto, 'class' => "rcmContactAddress"),
-                rcube::Q($name ?: $mailto));
-            }
-            
-            if ($addicon && $_SESSION['writeable_abook']) {
-              $address .= html::a(array(
-                  'href'    => "#add",
-                  'title'   => $this->rc->gettext('addtoaddressbook'),
-                  'class'   => 'rcmaddcontact',
-                  'onclick' => sprintf("return %s.command('add-contact','%s',this)",
-                    rcmail_output::JS_OBJECT_NAME, rcube::JQ($string)),
-              ),
-                html::img(array(
-                    'src'   => $this->rc->output->abs_url($addicon, true),
-                    'alt'   => "Add contact",
-                    'class' => 'noselect',
-                )));
-            }
-          }
-          else {
-            $address = $name ? rcube::Q($name) : '';
-            if ($mailto) {
-              $address = trim($address . ' ' . rcube::Q($name ? sprintf('<%s>', $mailto) : $mailto));
-            }
-          }
-          
-          $address = html::span('adr', $address);
-          $allvalues[] = $address;
-          
-          if (!$moreadrs) {
-            $out .= ($out ? ', ' : '') . $address;
-          }
-          
-          if ($max && $j == $max && $c > $j) {
-            if ($linked) {
-              $moreadrs = $c - $j;
-            }
-            else {
-              $out .= '...';
-              break;
-            }
-          }
-    }
-    
-    if ($moreadrs) {
-      $label = rcube::Q($this->rc->gettext(array('name' => 'andnmore', 'vars' => array('nr' => $moreadrs))));
-      
-      if ($PRINT_MODE) {
-        $out .= ' ' . html::a(array(
-            'href'    => '#more',
-            'class'   => 'morelink',
-            'onclick' => '$(this).hide().next().show()',
-        ), $label)
-        . html::span(array('style' => 'display:none'), join(', ', $allvalues));
-      }
-      else {
-        $out .= ' ' . html::a(array(
-            'href'    => '#more',
-            'class'   => 'morelink',
-            'onclick' => sprintf("return %s.show_popup_dialog('%s','%s')",
-              rcmail_output::JS_OBJECT_NAME,
-              rcube::JQ(join(', ', $allvalues)),
-              rcube::JQ($title))
-        ), $label);
-      }
-    }
-    
-    return $out;
-  }
-  
-  /**
-   * Récupérer le nombre de mails non lus de l'utilisateur
-   */
-  public function get_unread_count() {
-    $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
-    if (!isset($mbox)) {
-      $mbox = 'INBOX';
-    }
-    // Récupérer le nombre de mails non lus pour l'INBOX
-    $unseen_count = $this->rc->storage->count($mbox, 'UNSEEN', true);
-    // Gestion de l'account
-    $account = mel::get_account();
-    if (!isset($account) || empty($account)) {
-      $account = $this->rc->get_user_name();
-    }
-    // send output
-    header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
-    // Return the result to the ajax command
-    echo json_encode(['unseen_count' => $unseen_count, '_account' => $account, '_mbox' => $mbox]);
-    exit;
   }
 
   /**
@@ -1065,7 +913,7 @@ class mel extends rcube_plugin {
    * Définition des propriétées de l'utilisateur
    */
   private function set_user_properties() {
-    if (!empty($this->get_account)) {
+    if (!empty($this->get_account) && $this->get_account != $this->rc->get_user_name()) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
       $inf = explode('@', $this->user_name);
@@ -1115,6 +963,7 @@ class mel extends rcube_plugin {
         $identity['realname'] = $_object->fullname;
         $identity['email'] = $email;
         $identity['uid'] = $_object->uid;
+        $identity['standard'] = 0;
         $identities[strtolower($email)] = $identity;
       }
     }
@@ -1137,6 +986,7 @@ class mel extends rcube_plugin {
       $identity['realname'] = $user->fullname;
       $identity['email'] = $email;
       $identity['uid'] = $user->uid;
+      $identity['standard'] = $email == $user->email_send ? 1 : 0;
       $identities[strtolower($email)] = $identity;
     }
     // retourne la liste des identities

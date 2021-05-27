@@ -28,5 +28,6 @@ $labels['units'] = 'Unités';
 $labels['resources'] = 'Ressources';
 $labels['applications'] = 'Applicatives';
 $labels['gototree'] = 'Afficher l\'objet dans l\'arborescence';
+$labels['gototreename'] = 'Atteindre';
 
 

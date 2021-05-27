@@ -344,7 +344,6 @@ if (window.rcmail) {
           // register commands
           rcmail
               .register_command('plugin.mel_moncompte_add_resource', function() {
-                //console.log('yolo');
                 rcmail.add_resource()
               });
           rcmail

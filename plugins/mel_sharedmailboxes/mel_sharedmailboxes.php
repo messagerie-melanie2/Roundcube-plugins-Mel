@@ -78,6 +78,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         
         if ($this->rc->task == 'mail' && empty($this->rc->action)) {
             $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
+            $this->include_script('sharedmailboxes.js');
         }
         
         $this->add_hook('preferences_list',     array($this, 'prefs_list'));
@@ -85,17 +86,28 @@ class mel_sharedmailboxes extends rcube_plugin {
 
         // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser
         if ($this->rc->task == 'mail') {
-            $this->register_action('plugin.refresh_store_target_selection', array($this,'refresh_store_target_selection'));
+            $this->register_action('plugin.refresh_store_target_selection', array($this, 'refresh_store_target_selection'));
         }
 
         // Chargement de l'account passé en Get
-        $this->get_account = mel::get_account();
+        if ($this->rc->task != 'mail') {
+            $this->get_account = mel::get_account();
+        }
         // Gestion de la connexion pour les dossiers
         if ($this->rc->task == 'settings' && $this->rc->action == 'edit-folder') {
             $this->get_user_from_folder(rcube_utils::get_input_value('_path', rcube_utils::INPUT_GET));
         }
         else if ($this->rc->task == 'settings' && $this->rc->action == 'save-folder') {
             $this->get_user_from_folder(rcube_utils::get_input_value('_parent', rcube_utils::INPUT_POST));
+        }
+        else if ($this->rc->task == 'settings' && $this->rc->action == 'delete-folder') {
+            $this->get_user_from_folder(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
+        }
+        else if ($this->rc->task == 'settings' && $this->rc->action == 'rename-folder') {
+            $this->get_user_from_folder(rcube_utils::get_input_value('_folder_oldname', rcube_utils::INPUT_POST));
+        }
+        else if ($this->rc->task == 'mail' && $this->rc->action == 'mark') {
+            $this->get_user_from_folder(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
         }
         // Chargement de l'ui
         $this->init_ui();
@@ -305,6 +317,82 @@ class mel_sharedmailboxes extends rcube_plugin {
     }
 
     /**
+     * Récupération des unread pour toutes les boites
+     */
+    private function getunread() {
+        // get current folder
+        $storage   = $this->rc->get_storage();
+
+        // Récupération des préférences de l'utilisateur
+        $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
+
+        $_objects = $this->get_user_sharedmailboxes_list(null, $hidden_mailboxes);
+        if (count($_objects) >= 1) {
+            foreach ($_objects as $_object) {
+                $mailbox = $_object;
+                if (isset($_object->mailbox)) {
+                    $mailbox = $_object->mailbox;
+                    // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                    $mailbox->load(['internet_access_enable']);
+                    if (!mel::is_internal() && !$mailbox->internet_access_enable) {
+                        continue;
+                    }
+                    // Récupération de la configuration de la boite pour l'affichage
+                    $hostname = driver_mel::gi()->getRoutage($mailbox);
+                    // Environnement
+                    $env_mailboxes[$mailbox->uid] = $_object->uid . '@' . $hostname;
+                }
+
+                if ($storage->connect($hostname, 
+                            $_object->uid, 
+                            $this->rc->decrypt($_SESSION['password']), 
+                            $_SESSION['storage_port'], 
+                            $_SESSION['storage_ssl'])) {
+                    // Gestion du cache des folders
+                    $this->mel->set_account(urlencode($_object->uid) . '@' . $hostname);
+
+                    // Récupération des dossiers
+                    $a_folders = $storage->list_folders_subscribed('', '*', 'mail');
+
+                    if (!empty($a_folders)) {
+                        $current   = $this->rc->storage->get_folder();
+
+                        $trash     = $this->rc->config->get('trash_mbox');
+                        $check_all = (bool)$this->rc->config->get('check_all_folders');
+
+                        foreach ($a_folders as $mbox) {
+                            $unseen_old = rcmail_get_unseen_count($mbox);
+
+                            if (!$check_all && $unseen_old !== null && $mbox != $current) {
+                                $unseen = $unseen_old;
+                            }
+                            else {
+                                $unseen = $storage->count($mbox, 'UNSEEN', $unseen_old === null);
+                            }
+
+                            // call it always for current folder, so it can update counter
+                            // after possible message status change when opening a message
+                            // not in preview frame
+                            if ($unseen || $unseen_old === null || $mbox == $current) {
+                                // PAMELA - Change the IMAP folder name with a plugin (change INBOX for shared mailboxes)
+                                $this->rc->output->command('set_unread_count', $mbox, $unseen, $mbox_row == $data['folder']);
+                            }
+
+                            rcmail_set_unseen_count($mbox, $unseen);
+
+                            // set trash folder state
+                            if ($mbox === $trash) {
+                                $this->rc->output->command('set_trash_count', $storage->count($mbox, 'EXISTS'));
+                            }
+                        }
+                    }
+                }
+            }
+            $this->mel->get_account = mel::get_account();
+        }
+    }
+
+    /**
      * Rafraichissement de la liste des dossiers dans la page compose
      */
     public function refresh_store_target_selection() {
@@ -436,7 +524,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                     if (isset($_object->mailbox) && $_object->mailbox->uid == $data[1]) {
                         $mailbox = $_object->mailbox;
                         // Récupération de la configuration de la boite pour l'affichage
-                        $args['user'] = $_object->uid;
+                        $args['user'] = $mailbox->uid;
                         $args['host'] = driver_mel::gi()->getRoutage($mailbox);
                     }
                 }
@@ -531,15 +619,17 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param array $args
      */
     public function messages_list($args) {
-        if ($this->rc->storage->get_folder() == driver_mel::gi()->getMboxTrash()) {
+        if (strpos($this->rc->storage->get_folder(), driver_mel::gi()->getMboxTrash()) === 0) {
             $trash_mbox = $this->rc->config->get('trash_mbox');
             if ($trash_mbox != driver_mel::gi()->getMboxTrash()) {
                 foreach ($args['messages'] as $key => $message) {
-                    if ($args['messages'][$key]->folder == driver_mel::gi()->getMboxTrash()) {
-                        $args['messages'][$key]->folder = $trash_mbox;
+                    if (strpos($args['messages'][$key]->folder, driver_mel::gi()->getMboxTrash()) === 0) {
+                        $args['messages'][$key]->folder = str_replace(driver_mel::gi()->getMboxTrash(), $trash_mbox, $message->folder);
                     }
                 }
-                $this->rc->output->set_env('mailbox', $trash_mbox);
+                $mailbox = $this->rc->output->get_env('mailbox');
+                $mailbox = str_replace(driver_mel::gi()->getMboxTrash(), $trash_mbox, $mailbox);
+                $this->rc->output->set_env('mailbox', $mailbox);
             }
         }
         return $args;
@@ -587,8 +677,8 @@ class mel_sharedmailboxes extends rcube_plugin {
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
                     $trash_mbox = $_SESSION['trash_folders'][$this->mel->get_user_bal()];
                 }
-                else if (!empty($args['result']) && isset($_POST['_mbox']) && strpos($_POST['_mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
-                    $tmp = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST));
+                else if (!empty($args['result']) && isset($_REQUEST['_mbox']) && strpos($_REQUEST['_mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
+                    $tmp = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
                     if (isset($_SESSION['trash_folders'][$tmp[1]])) {
                         $trash_mbox = $_SESSION['trash_folders'][$tmp[1]];
                     }
@@ -619,6 +709,9 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $args['isInbox'] = $args['mbox'] != $this->rc->config->get('sent_mbox') && $args['mbox'] != $this->rc->config->get('drafts_mbox');
             }
         }
+        if ($this->rc->task == 'mail' && $this->rc->action == 'getunread') {
+            $this->getunread();
+        } 
         return $args;
     }
 
@@ -642,8 +735,16 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $messages = [];
                 $storages = [];
                 $args['success'] = false;
+                // Gestion de la corbeille individuelle pour la target
+                if ($this->is_individual_trash($args['target'])) {
+                    $args['target'] = $this->get_trash_folder_name($args['target']);
+                }
+                // Gestion de la corbeille individuelle pour la mbox
+                if ($this->is_individual_trash($mbox)) {
+                    $mbox = $this->get_trash_folder_name($mbox);
+                }
                 // Move from mailboxe to mailboxe
-                foreach (rcmail::get_uids(null, null, $multifolder, rcube_utils::INPUT_POST) as $mbox => $uids) {
+                foreach (rcmail::get_uids(null, $mbox, $multifolder, rcube_utils::INPUT_POST) as $mbox => $uids) {
                     if ($mbox === $args['target']) {
                         $args['count'] += is_array($uids) ? count($uids) : 1;
                     }
@@ -679,8 +780,14 @@ class mel_sharedmailboxes extends rcube_plugin {
                 unset($messages);
             }
         }
-        if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
-            $args['target'] = driver_mel::gi()->getMboxTrash();
+        // Gestion de la corbeille individuelle pour la target
+        if ($this->is_individual_trash($args['target'])) {
+            $args['target'] = $this->get_trash_folder_name($args['target']);
+        }
+        // Gestion de la corbeille individuelle pour la mbox
+        if ($this->is_individual_trash($mbox)) {
+            $this->get_user_from_folder($mbox);
+            $_POST['_mbox'] = $this->get_trash_folder_name($mbox);
         }
         return $args;
     }
@@ -703,8 +810,16 @@ class mel_sharedmailboxes extends rcube_plugin {
             }
             if (!$args['continue']) {
                 $messages = [];
+                // Gestion de la corbeille individuelle pour la target
+                if ($this->is_individual_trash($args['target'])) {
+                    $args['target'] = $this->get_trash_folder_name($args['target']);
+                }
+                // Gestion de la corbeille individuelle pour la mbox
+                if ($this->is_individual_trash($mbox)) {
+                    $mbox = $this->get_trash_folder_name($mbox);
+                }
                 // Copy from mailboxe to mailboxe
-                foreach (rcmail::get_uids(null, null, $multifolder, rcube_utils::INPUT_POST) as $mbox => $uids) {
+                foreach (rcmail::get_uids(null, $mbox, $multifolder, rcube_utils::INPUT_POST) as $mbox => $uids) {
                     if ($mbox === $args['target']) {
                         $args['copied']++;
                     }
@@ -733,10 +848,44 @@ class mel_sharedmailboxes extends rcube_plugin {
                 unset($messages);
             }
         }
-        if (strpos($args['target'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['target'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
-            $args['target'] = driver_mel::gi()->getMboxTrash();
+        // Gestion de la corbeille individuelle pour la target
+        if ($this->is_individual_trash($args['target'])) {
+            $args['target'] = $this->get_trash_folder_name($args['target']);
+        }
+        // Gestion de la corbeille individuelle pour la mbox
+        if ($this->is_individual_trash($mbox)) {
+            $this->get_user_from_folder($mbox);
+            $_POST['_mbox'] = $this->get_trash_folder_name($mbox);
         }
         return $args;
+    }
+
+    /**
+     * Retourne la liste des boites partagées de l'utilisateur
+     * 
+     * @param ObjectShare[] $_objects Liste des boites partagées
+     * @param array $hidden_mailboxes Liste des boites masquées par l'utilisateur
+     * 
+     * @return $_objects Liste des boites partagées sans les masquées
+     */
+    public function get_user_sharedmailboxes_list($_objects = null, $hidden_mailboxes = null) {
+        // Récupération des préférences de l'utilisateur
+        if (!isset($hidden_mailboxes)) {
+            $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
+        }
+        // Récupération de la liste des boites de l'utilisateur
+        if (!isset($_objects)) {
+            $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+        }
+        // Parcourir les objets partagés et enlever ceux qui sont cachés
+        if (count($_objects) >= 1) {
+            foreach ($_objects as $key => $_object) {
+                if (isset($hidden_mailboxes[$_object->uid])) {
+                    unset($_objects[$key]);
+                }
+            }
+        }
+        return $_objects;
     }
 
     /**
@@ -778,12 +927,9 @@ class mel_sharedmailboxes extends rcube_plugin {
         $folders = [];
         $env_mailboxes = [];
         $_SESSION['trash_folders'] = [];
-        $_objects = driver_mel::gi()->getUser()->getObjectsShared();
+        $_objects = $this->get_user_sharedmailboxes_list(null, $hidden_mailboxes);
         if (count($_objects) >= 1) {
             foreach ($_objects as $_object) {
-                if (isset($hidden_mailboxes[$_object->uid])) {
-                    continue;
-                }
                 // Gestion du order
                 $order = array_search(driver_mel::gi()->mceToRcId($_object->uid), $sort_bal);
                 if ($order === false) {
@@ -852,14 +998,24 @@ class mel_sharedmailboxes extends rcube_plugin {
         $display = $this->rc->config->get('mailboxes_display', 'default');
         if ($display == 'unified') {
             $_folders = [];
-            foreach ($this->rc->config->get('default_folders', 
-                    [   'INBOX',
-                        'sent',
-                        'drafts',
-                        'models',
-                        'junk',
-                        'trash']) as $default_folder) {
-                $folder_mbox = $this->rc->config->get($default_folder.'_mbox');
+            $defaults_folders = $this->rc->config->get('default_folders', 
+                        [   'INBOX',
+                            'sent',
+                            'drafts',
+                            'models',
+                            'junk',
+                            'trash']);
+            // Ajouter les archives locales pour Electron
+            if ($this->rc->output->get_env('iselectron') === true) {
+                $defaults_folders[] = 'local';
+            }
+            foreach ($defaults_folders as $default_folder) {
+                if ($default_folder == 'local') {
+                    $folder_mbox = $this->rc->gettext('local');
+                }
+                else {
+                    $folder_mbox = $this->rc->config->get($default_folder.'_mbox');
+                }
                 if ($folder_mbox == 'INBOX' && $default_folder != 'INBOX') {
                     continue;
                 }
@@ -964,8 +1120,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param array $args
      */
     public function set_folder_name($args) {
-        if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($args['folder'], driver_mel::gi()->getMboxTrash() . '-individuelle') !== false) {
-            $args['folder'] = driver_mel::gi()->getMboxTrash();
+        if ($this->is_individual_trash($args['folder'])) {
+            $args['folder'] = $this->get_trash_folder_name($args['folder']);
         }
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
@@ -1063,6 +1219,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $folders[$mailbox]['class'] = 'inbox';
                 $subfolders = $folders[$mailbox]['folders'];
                 $folders[$mailbox]['folders'] = [];
+                // Problème si un sous dossier a le nom de la boite
+                if (isset($subfolders[$mailbox])) {
+                    $subfolders[$mailbox.'_subfolder'] = $subfolders[$mailbox];
+                    unset($subfolders[$mailbox]);
+                }
                 // Merge les subfolders directement à la racine
                 $folders = array_merge($folders, $subfolders);
             }
@@ -1073,13 +1234,18 @@ class mel_sharedmailboxes extends rcube_plugin {
         }
 
         $_folders = [];
-        foreach ($this->rc->config->get('default_folders', 
-                [   'INBOX',
-                    'sent',
-                    'drafts',
-                    'models',
-                    'junk',
-                    'trash']) as $default_folder) {
+        $defaults_folders = $this->rc->config->get('default_folders', 
+                        [   'INBOX',
+                            'sent',
+                            'drafts',
+                            'models',
+                            'junk',
+                            'trash']);
+        // Ajouter les archives locales pour Electron
+        if ($this->rc->output->get_env('iselectron') === true) {
+            $defaults_folders[] = 'local';
+        }
+        foreach ($defaults_folders as $default_folder) {
             if ($default_folder == 'INBOX') {
                 if ($is_balp) {
                     $folder = $mailbox;
@@ -1095,6 +1261,10 @@ class mel_sharedmailboxes extends rcube_plugin {
                     $folders[$trash_mbox_indiv] = $list[$folder];
                     $folders[$trash_mbox_indiv]['id'] = $balp_label . $delimiter . $mailbox . $delimiter . $trash_mbox_indiv;
                     $folders[$trash_mbox_indiv]['class'] = strtolower($default_folder);
+                    // Parcourir les sous dossiers
+                    if (is_array($folders[$trash_mbox_indiv]['folders'])) {
+                        $folders[$trash_mbox_indiv]['folders'] = $this->trash_folders($folders[$trash_mbox_indiv]['folders'], $folder, $balp_label, $delimiter, $mailbox, $trash_mbox_indiv);
+                    }
                     $_folders[$trash_mbox_indiv] = $folders[$trash_mbox_indiv];
                     unset($folders[$trash_mbox_indiv]);
                     $_SESSION['trash_folders'][$mailbox] = $balp_label . $delimiter . $mailbox . $delimiter . $trash_mbox_indiv;
@@ -1106,6 +1276,14 @@ class mel_sharedmailboxes extends rcube_plugin {
                     $_SESSION['trash_folders'][$mailbox] = $balp_label . $delimiter . $mailbox . $delimiter . $folder;
                 }
                 continue;
+            }
+            else if ($default_folder == 'local') {
+                $folder = $this->rc->gettext('local');
+                $folders[$folder]['id'] = $default_folder.'-'.$mailbox;
+                $folders[$folder]['virtual'] = true;
+                $folders[$folder]['class'] = 'local';
+                $folders[$folder]['name'] = $folder;
+                $folders[$folder]['folders'] = [];
             }
             else {
                 $folder = $this->rc->config->get($default_folder.'_mbox');
@@ -1134,7 +1312,64 @@ class mel_sharedmailboxes extends rcube_plugin {
                 'folders'   => $folders,
             ];
         }
+        $this->rc->output->set_env('folders_display', $display);
         return $_folders;
+    }
+
+    /**
+     * Modification récursive des noms de dossiers pour la Corbeille partagée
+     * 
+     * @param array $folders Liste des dossiers a updater
+     * @param string $foldername Nom du dossier Corbeille
+     * @param string $balp_label Label pour les balp
+     * @param string $delimiter délimiteur imap
+     * @param string $mailbox identifiant de la boite
+     * @param string $trash_mbox_indiv nom du dossier de corbeille individuelle
+     * 
+     * @return array Liste des dossiers à jour
+     */
+    private function trash_folders($folders, $foldername, $balp_label, $delimiter, $mailbox, $trash_mbox_indiv) {
+        foreach ($folders as $key => $folder) {
+            // Modification de l'id pour utiliser corbeille-individuelle
+            $id = str_replace($foldername, $balp_label . $delimiter . $mailbox . $delimiter . $trash_mbox_indiv, $folder['id']);
+            $folders[$key]['id'] = $id;
+            // Update des sous dossiers
+            if (is_array($folder['folders'])) {
+                $folders[$key]['folders'] = $this->trash_folders($folder['folders'], $foldername, $balp_label, $delimiter, $mailbox, $trash_mbox_indiv);
+            }
+        }
+        return $folders;
+    }
+
+    /**
+     * Retourne si le dossier et une corbeille individuelle pour les boites partagées
+     * 
+     * @param string $folder Dossier
+     * 
+     * @return boolean true si c'est une corbeille individuelle, false sinon
+     */
+    private function is_individual_trash($folder) {
+        return strpos($folder, driver_mel::gi()->getBalpLabel()) === 0 
+            && strpos($folder, driver_mel::gi()->getMboxTrash() . '-individuelle') !== false;
+    }
+
+    /**
+     * Transforme le nom de dossier de corbeille individuelle en nom réel du dossier sur le serveur
+     * 
+     * @param string $folder Dossier
+     * 
+     * @return string Nom du dossier sur le serveur
+     */
+    private function get_trash_folder_name($folder) {
+        // Gérer les sous dossiers
+        $target = explode(driver_mel::gi()->getMboxTrash() . '-individuelle', $folder, 2);
+        if (isset($target[1])) {
+            $folder = driver_mel::gi()->getMboxTrash() . $target[1];
+        }
+        else {
+            $folder = driver_mel::gi()->getMboxTrash();
+        }
+        return $folder;
     }
 
     /**
@@ -1150,7 +1385,7 @@ class mel_sharedmailboxes extends rcube_plugin {
             $account = $tmp[1];
         }
         // Lister les boites auxquelles l'utilisateur a accés
-        $mailboxes = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsSharedEmission());
+        $mailboxes = driver_mel::gi()->getUser()->getObjectsSharedEmission();
 
         foreach ($identities as $id) {
             foreach ($mailboxes as $mailbox) {

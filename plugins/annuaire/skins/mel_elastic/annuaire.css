@@ -334,6 +334,7 @@ li.object{
     margin-bottom: -15px;
     display:block;
     color:white !important;
+	padding-left: 18px;
 }
 
 #annuaire-list [aria-expanded="true"]

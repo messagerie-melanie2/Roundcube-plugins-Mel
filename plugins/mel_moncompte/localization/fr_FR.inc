@@ -252,16 +252,25 @@ $labels['acces_internet_doubleauth_link'] = "Accéder a la configuration de la d
 // Gestionnaire d'absence
 $labels['gestionnaireabsence'] = 'Gestionnaire d\'absence';
 
+$labels['tababsences'] = 'Absence ponctuelle';
+$labels['tabrecurrence'] = 'Absences hebdomadaires';
 $labels['absence_date'] = 'Dates de début et de fin';
 $labels['absence_date_debut'] = 'À partir du : ';
 $labels['absence_date_fin'] = "Jusqu'au : ";
 $labels['absence_interne_legende'] = "Réponse interne";
 $labels['absence_texte_interne'] = "Activer la réponse automatique pour les correspondants internes (déclarés dans l'annuaire).";
 $labels['absence_externe_legende'] = "Réponse externe";
+$labels['absence_hebdomadaire_legende'] = "Liste des absences hebdomadaires";
 $labels['absence_texte_externe'] = "Activer la réponse automatique pour les correspondants externes (interministériel, internet ...)";
 $labels['absence_texte_interne_different'] = "Message spécifique pour les correspondants externes";
 $labels['absence_texte_interne_identique'] = "Envoyer le même message qu'en interne";
 $labels['absence_texte_mot_cle'] = 'En tapant les mots clés "jusqu\'au 01/01/1970" dans le texte, la date sera automatiquement modifiée en changeant la date de fin.';
+$labels['add_new_absence'] = "Ajouter une nouvelle absence";
+$labels['noabsence'] = "Pas d'absence enregistrée";
+$labels['hourstart'] = "Heure de début";
+$labels['hourend'] = "Heure de fin";
+$labels['allday'] = "Journée entière";
+$labels['deleteabsence'] = "Supprimer cette absence";
 
 $labels['absence_ok'] = "Votre message d'absence a bien été enregistré";
 $labels['absence_nok'] = "Une erreur s'est produite lors de l'enregistrement de votre message d'absence, veuillez contacter votre service informatique.";

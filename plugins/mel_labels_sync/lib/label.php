@@ -25,6 +25,7 @@
  * @property string $tag Libellé de l'étiquette
  * @property string $color Code couleur de l'étiquette
  * @property string $ordinal Classement de l'étiquette
+ * @property string $mailbox Boite associée au label
  *
  */
 class Label {
@@ -48,10 +49,15 @@ class Label {
    * @var string
    */
   private $ordinal;
+  /**
+   * Boite associée au label
+   * @var string
+   */
+  private $mailbox;
 
   /**
    * Setter des propriétés
-   * @param string $prop Nom de la prop : key | tag | color | ordinal
+   * @param string $prop Nom de la prop : key | tag | color | ordinal | mailbox
    * @param mixed $value
    */
   function __set($prop, $value) {
@@ -59,7 +65,7 @@ class Label {
   }
   /**
    * Getter des propriétés
-   * @param string $prop Nom de la prop : key | tag | color | ordinal
+   * @param string $prop Nom de la prop : key | tag | color | ordinal | mailbox
    * @return mixed
    */
   function __get($prop) {
@@ -67,7 +73,7 @@ class Label {
   }
   /**
    * Isset pour une propriété
-   * @param string $prop Nom de la prop : key | tag | color | ordinal
+   * @param string $prop Nom de la prop : key | tag | color | ordinal | mailbox
    */
   function __isset($prop) {
     return isset($this->$prop);
@@ -97,11 +103,12 @@ class Label {
    * @param string $tag
    * @param string $color
    * @param string $ordinal
+   * @param string $mailbox
    * @return Label
    */
-  public static function withProp($key = '', $tag = '', $color = '', $ordinal = '') {
+  public static function withProp($key = '', $tag = '', $color = '', $ordinal = '', $mailbox = '') {
     $instance = new self();
-    $instance->initFromArray(['key' => $key, 'tag' => $tag, 'color' => $color, 'ordinal' => $ordinal]);
+    $instance->initFromArray(['key' => $key, 'tag' => $tag, 'color' => $color, 'ordinal' => $ordinal, 'mailbox' => $mailbox]);
     return $instance;
   }
 
@@ -115,12 +122,14 @@ class Label {
       $this->tag = $label['tag'] ?: '';
       $this->color = $label['color'] ?: '';
       $this->ordinal = $label['ordinal'] ?: '';
+      $this->mailbox = $label['mailbox'] ?: '';
     }
     else {
       $this->key = $label->key ?: '';
       $this->tag = $label->tag ?: '';
       $this->color = $label->color ?: '';
       $this->ordinal = $label->ordinal ?: '';
+      $this->mailbox = $label->mailbox ?: '';
     }
   }
   

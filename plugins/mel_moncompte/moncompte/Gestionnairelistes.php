@@ -35,7 +35,7 @@ class Gestionnairelistes extends Moncompteobject {
 	/**
 	 * Chargement des données de l'utilisateur depuis l'annuaire
 	 */
-	public static function load() {
+	public static function load($plugin = null) {
 		rcmail::get_instance()->output->add_handlers(array(
 			'liste_listes' 		=> array(__CLASS__, 'readUserListes'),
 			'listes_upload_csv' => array(__CLASS__, 'rcmail_upload_csv_form'),
@@ -62,8 +62,6 @@ class Gestionnairelistes extends Moncompteobject {
 	 * @return string HTML
 	 */
 	public static function readUserListes($attrib) {
-		$attrib["class"] = "form-control";
-		$attrib["style"] = "max-".$attrib["style"];
 		$select_listes = new html_select($attrib);
 		// Récupération de l'utilisateur
 		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());

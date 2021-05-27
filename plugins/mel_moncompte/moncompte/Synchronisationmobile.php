@@ -35,7 +35,7 @@ class Synchronisationmobile extends Moncompteobject {
 	/**
 	* Chargement des données de l'utilisateur depuis l'annuaire
 	*/
-	public static function load() {
+	public static function load($plugin = null) {
 		rcmail::get_instance()->output->add_handlers([
 			'validecgumobile' => array(__CLASS__, 'valideCGUmobile'),
 		]);

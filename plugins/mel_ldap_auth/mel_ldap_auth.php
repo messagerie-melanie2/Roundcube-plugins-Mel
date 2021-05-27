@@ -158,6 +158,8 @@ class mel_ldap_auth extends rcube_plugin {
               rcube_utils::setcookie('roundcube_login', null, -1);
               $_SESSION['_keeplogin'] = false;
             }
+            // Toujours valider la connexion pour éviter les erreurs csrf sur l'auth
+            $args['valid'] = true;
           } else {
             $args['abort'] = true;
             $args['error'] = 49;

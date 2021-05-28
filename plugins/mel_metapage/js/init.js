@@ -4,26 +4,33 @@ if (rcmail)
 {
     if (rcmail.env.task === "tasks")
         parent.child_rcmail = rcmail;
+
     if (parent != window && rcmail.mel_metapage_fn === undefined)
     {
             rcmail.mel_metapage_fn = {
                 refresh:() => {}
             };
     }
+
     //console.log(parent, window, parent === window);
     if (parent.rcmail.mel_metapage_fn !== undefined)
         return;
+
     parent.rcmail.addEventListener("init", function() {
         $(`<p id="sr-document-title-focusable" tabindex="-1" class="sr-only">${window.document.title}</p>`).prependTo("body");
+        
         if (rcmail.env.username === "tommy.delphin.i" || rcmail.env.username === "thomas.payen")
             $(".rotomeca-debug").removeClass("rotomeca-debug");
+
         //Definition des functions
         parent.rcmail.mel_metapage_fn = {
             calendar_updated: function () {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
                 rcmail.set_busy(true, "loading");
+
                 if (parent.rcmail.env.ev_calendar_url === undefined)
                     parent.rcmail.env.ev_calendar_url = ev_calendar_url;
+
                 return $.ajax({ // fonction permettant de faire de l'ajax
                 type: "POST", // methode de transmission des données au fichier php
                 url: parent.rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
@@ -36,24 +43,10 @@ if (rcmail)
                         let endMoment;
                         let element;
                         let now = moment().startOf('day');
+
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
-                            // if (element.allDay)
-                            // {
-                            //     if (moment(element.start).date() === moment().date())
-                            //     {                                   
-                            //         element.start = moment(element.start).startOf('day').format("YYYY-MM-DDTHH:mm:ss");
-                            //         element.end = moment(element.start).startOf('day').add({
-                            //             hours:23,
-                            //             minutes:59,
-                            //             seconds:59
-                            //         }).format("YYYY-MM-DDTHH:mm:ss");
-                            //         //console.log(element);
-                            //         events.push(element);
-                            //     }
-                            // }
-                            // else
-                            // {
+
                             if (element.allDay)
                                 element.order = 0;
                             else
@@ -68,16 +61,20 @@ if (rcmail)
                         mel_metapage.Storage.set("all_events", events);
                         data = null;
                         let ids = [];
+
                         for (let index = 0; index < events.length; index++) {
                             const element = events[index];
                             //console.log(mceToRcId(rcmail.env.username) !== element._id, rcmail.env.username, mceToRcId(rcmail.env.username), element._id, element)
                             if (mceToRcId(rcmail.env.username) !== element.calendar)
                                 ids.push(element);
                             else {
+
                                 if (element._instance !== undefined)
                                 {
+                                    
                                     for (let it = 0; it < events.length; it++) {
                                         const event = events[it];
+
                                         if (event.uid === element.uid && event._instance === undefined)
                                             ids.push(event);
                                     }
@@ -90,6 +87,7 @@ if (rcmail)
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar, events);
                         mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
+                    
                     } catch (ex) {
                         console.error(ex);
                         rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -242,18 +240,6 @@ if (rcmail)
         
         if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
             parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
-        // if (local_storage.calendar != null && local_storage.calendar.length > 0)
-        // {
-        //     let startMoment = moment(local_storage.calendar[0].start);
-        //     let startDate = startMoment.date();
-        //     let endMoment = moment(local_storage.calendar[0].end);
-        //     let endDate = endMoment.date();
-        //     let now = moment();
-        //     let date = now.date();
-        //     console.log(startDate != date, endDate != date, startMoment, now, endMoment);
-        //     if (startDate != date)
-        //         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-        // }
 
         // //add
         if (parent === window) //Si on est pas dans une frame

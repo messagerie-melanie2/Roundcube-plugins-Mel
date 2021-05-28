@@ -123,6 +123,11 @@
     margin-top: 60px;
 }
 
+body.task-mail.action-preview #layout-content
+{
+    margin-top:0px;
+}
+
 #barup-search
 {
     background-color: #F0F0F0;

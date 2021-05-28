@@ -1,7 +1,5 @@
 $(document).ready(() => {
 
-
-    console.log("parasitage", window.rcube_calendar_ui);
     if (window.rcube_calendar_ui === undefined)
     window.rcube_calendar_ui = () => {};
     window.rcube_calendar_ui.continue = function()
@@ -496,30 +494,30 @@ $(document).ready(() => {
      {
          if (rcmail.busy)
             return;
+
          const config = {
             add_day_navigation:false,
             add_create:false,
             add_see_all:false
         };
+
          rcmail.set_busy(true, "loading");
          let date = moment(jquery_element.data("current-date"));
-         console.log("change_calendar_date", "date", date);
+
          if (date === null || date === undefined || date === "")
             date = moment();
+
          date = date.add(add, "d").startOf("day");
          rcube_calendar.mel_metapage_misc.SetCalendarDate(jquery_element, date);
-         console.log("change_calendar_date", "date-edited", date);
          const array = await rcube_calendar.block_change_date(jquery_element, add, where, date);
+
          if (array !== false)
          {
-            console.log("change_calendar_date", "array", array);
             const html = html_helper.Calendars({datas:array,config:config, _date:date, get_only_body:true});
-            console.log("change_calendar_date", "html", html);
-            console.log("change_calendar_date", "rcube_calendar.mel_metapage_misc.GetAgenda", rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element));
             rcube_calendar.mel_metapage_misc.GetAgenda(jquery_element).html(html);
             jquery_element.data("current-date", date.format());
-            console.log("change_calendar_date", "jquery_element", jquery_element);
          }
+
          rcmail.set_busy(false);
          rcmail.clear_messages();
 

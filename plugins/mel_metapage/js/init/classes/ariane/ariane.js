@@ -40,6 +40,7 @@
         {
             if (this.listeners[key] === null || this.listeners[key] === undefined)
                 return;
+
             for (let index = 0; index < this.listeners[key].length; index++) {
                 const element = this.listeners[key][index];
                 element(...args);
@@ -83,6 +84,7 @@
             .removeClass("ok")
             .removeClass("busy")
             .removeClass("nothere")
+
             switch (status) {
                 case "online":
                     querry.addClass("ok");
@@ -105,28 +107,36 @@
         {
             try {
                 let querry;// = $("#wsp-notifs-wsp-" + channel);
+
                 if (epingle)
                     querry = $("#wsp-notifs-wsp-" + channel + "-epingle");
                 else
                     querry = $("#wsp-notifs-wsp-" + channel);
+
                 if (querry.find(".ariane").length === 0)
                     querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>')
+                
                 querry = querry.find(".ariane-notif");
+
                 if (this.unreads[channel] === 0)
                     querry.parent().parent().css("display", "none");
                 else
                     querry.html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");
+                
                 if (store)
                 {
                     mel_metapage.Storage.set("ariane_datas",this);
                     this.update_menu();
                 }
+
                 this.post_message({
                     ariane:this,
                     channel:channel
                 });
+
                 if (!epingle)
                     this.triggerEvent("update", channel, store, this.unreads[channel]);
+
                 if (!epingle)
                     this.update(channel, false, true);
             } catch (error) {
@@ -142,13 +152,17 @@
         update_menu()
         {
             let querry = $("a.rocket");
+
             if (querry.find("sup").length === 0)
                 querry.append(`<sup><span id="`+mel_metapage.Ids.menu.badge.ariane+`" class="roundbadge menu lightgreen" style="">?</span></sup>`);
+            
             querry = $("#" + mel_metapage.Ids.menu.badge.ariane);
             const menu = this.menu();
+
             if (menu === 0)
             {
                 querry.css("display", "none");
+
                 if (this.have_unreads())
                     querry.html(`<span class="">•</span>`).css("display", ""); 
             }
@@ -159,11 +173,13 @@
         load()
         {
             this.init(mel_metapage.Storage.get("ariane_datas"));
+
             for (const key in this.unreads) {
                 if (Object.hasOwnProperty.call(this.unreads, key)) {
                     this.update(key, false);
                 }
             }
+
             this.update_menu();
         }
     }
@@ -175,10 +191,12 @@
     else {
         window.ariane = new Ariane(true);
         window.addEventListener("message", receiveMessage, false);
+
         function receiveMessage(event)
         {
             if (event.data.ariane === undefined)
                 return;
+                
             const ariane = event.data.ariane;
             window.ariane.init(ariane);
             window.ariane.update(event.data.channel, false);

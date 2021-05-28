@@ -347,6 +347,15 @@ const mel_metapage = {
             let url = task;
             if (action !== null && action !== undefined && action !== "")
                 url += "&_action=" + action;
+
+            if (window.location.href.includes("_from=iframe") || window !== parent)
+            {
+                if (args === null || args === undefined)
+                    args = {_from:"iframe"};
+                else if (args["_from"] === undefined)
+                    args["_from"] = "iframe";
+            }
+
             if (args !== null)
             {
                 for (const key in args) {

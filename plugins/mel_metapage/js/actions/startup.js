@@ -1,5 +1,6 @@
 const mm_frame = "mm-frame";
 $(document).ready(function() {
+
     $("#layout-list").addClass(rcmail.env.task + "-frame");
     $("#layout-list").addClass(mm_frame);
     $("#layout-sidebar").addClass(rcmail.env.task + "-frame");
@@ -8,7 +9,9 @@ $(document).ready(function() {
     $("#layout-content").addClass(mm_frame);
     $(".startup").addClass(rcmail.env.task + "-frame");
     $(".startup").addClass(mm_frame);
+
     rcmail.addEventListener("init", async () => {
+
         if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
         {
             mel_metapage.Storage.set("open_frame", "rocket");
@@ -22,12 +25,15 @@ $(document).ready(function() {
             mel_metapage.Storage.remove("open_frame");
             });
         }
+
         await wait(() => $("#layout-menu a.selected").length === 0);
+
         rcmail.env.last_frame_class = mm_st_GetClass($("#layout-menu a.selected")[0].classList);//[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
         rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
         let querry = $(".menu-last-frame").find(".inner");
         querry.html(`<span class=menu-last-frame-inner-up>`+rcmail.gettext('last_frame_opened', "mel_metapage")+` :</span><span class=menu-last-frame-inner-down>`+rcmail.gettext('nothing', "mel_metapage")+`</span>`); 
         rcmail.enable_command('last_frame', true);
+
         rcmail.register_command('last_frame', function() {
             try {
                 event.preventDefault();
@@ -44,20 +50,26 @@ $(document).ready(function() {
                 mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
 
           }); 
+
         rcmail.env.can_backward = true;
     });
-    //rcmail.env.last_frame_class = $("#layout-menu a.selected")[0].classList[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
+
+    
     if (rcmail.env.task === "addressbook")
     {
         $(".task-addressbook").children().each((i,e) => {
+
             if (e.classList.contains("modal"))
                 return;
+
             if (e.id == "layout")
                 return;
+
             e.classList.add(rcmail.env.task + "-frame");
             e.classList.add(mm_frame);
         });
     }
+
     mm_st_ChangeClicks();
 });
 
@@ -65,10 +77,13 @@ function mm_st_GetClass(classlist)
 {
     for (let index = 0; index < classlist.length; index++) {
         const element = classlist[index];
+
         if (element.includes("button") || element.includes("order") || element.includes("selected")  || element.includes("icofont") || element.includes("icon-mel-"))
             continue;
+
         return element;
     }
+    
     return "";
 }
 

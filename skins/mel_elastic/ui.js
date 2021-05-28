@@ -1,13 +1,4 @@
 $(document).ready(() => {
-    if (parent === window)
-    {
-        //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
-        const width = "60px";
-        if ($("#layout-sidebar").length > 0)
-            $("#layout-sidebar").css("margin-left", width);
-        else if ($("#layout-content").length > 0)
-            $("#layout-content").css("margin-left", width);
-    }
 
     class Mel_Elastic {
         constructor() {
@@ -17,7 +8,7 @@ $(document).ready(() => {
                 writable: false,
                 value: '¤¤¤'
               });
-        
+
               Object.defineProperty(this, 'SELECT_VALUE_REPLACE', {
                 enumerable: false,
                 configurable: false,
@@ -32,12 +23,30 @@ $(document).ready(() => {
                 value: 8
               });
 
+              Object.defineProperty(this, 'IS_EXTERNE', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: window.location.href.includes("_extwin")
+              });
+
+              if (parent === window)
+              {
+                  //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
+                  const width = "60px";
+
+                  if (!this.IS_EXTERNE && $("#layout-sidebar").length > 0)
+                      $("#layout-sidebar").css("margin-left", width);
+                  else if (!this.IS_EXTERNE && $("#layout-content").length > 0)
+                      $("#layout-content").css("margin-left", width);
+              }
+
               this.update();
 
-              if (rcmail.env.task == 'login' || rcmail.env.task == 'logout') 
+              if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
                 $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
 
-              if (rcmail.env.task === "mail" && rcmail.env.action === "show")
+              if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
               {
                   $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
                   .on("click", () => {
@@ -45,94 +54,124 @@ $(document).ready(() => {
                   })
                   .prependTo($("#toolbar-menu"))
               }
-            
+            //   else if (rcmail.env.task === "mail" && rcmail.env.action === "show" && window.location.href.includes("_extwin"))
+            //     $("#layout-content").css("margin-left", 0);
+
               this.init();
-              
+
         }
 
         async init()
         {
+            if ($("#taskmenu").length > 0)
+            {
+                let array = [];
+
+                $("#taskmenu").find("a").each((i,e) => {
+                e = $(e);
+
+                if (e.parent().hasClass("special-buttons"))
+                    return;
+
+                const order = e.css("order");
+                const tmp = e.removeAttr("title")[0].outerHTML;
+                e.remove();
+                e = null;
+                array.push({
+                    order:order,
+                    item:$(tmp).keypress((event) => {
+
+                        if (event.originalEvent.keyCode === 32)
+                            $(event.currentTarget).click();
+
+                    })
+                });
+
+                });
+
+                $("#taskmenu").append('<ul class="list-unstyled" role="menubar" aria-label="Navigation principale"></ul>');
+
+                Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
+                    let li = $("<li style=display:block role=none></li>")
+                    e = e.item;
+                    if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
+                    li.css("display", "none");
+
+                    e.attr('role', "menuitem").appendTo(li);
+                    li.appendTo($("#taskmenu ul"));
+                });
+
+                $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
+            }
             
-            let array = [];
-
-            $("#taskmenu").find("a").each((i,e) => {
-              e = $(e);
-
-              if (e.parent().hasClass("special-buttons"))
-                  return;
-
-              const order = e.css("order");
-              const tmp = e.removeAttr("title")[0].outerHTML;
-              e.remove();
-              e = null;
-              array.push({
-                  order:order,
-                  item:$(tmp).keypress((event) => {
-
-                      if (event.originalEvent.keyCode === 32)
-                          $(event.currentTarget).click();
-
-                  })
-              });
-              
-            });
-
-            $("#taskmenu").append('<ul class="list-unstyled" role="menubar" aria-label="Navigation principale"></ul>');
-
-            Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
-                let li = $("<li style=display:block role=none></li>")
-                e = e.item;
-                if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
-                  li.css("display", "none");
-
-                e.attr('role', "menuitem").appendTo(li);
-                li.appendTo($("#taskmenu ul"));
-            });
-
-            $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
-
             $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
         }
 
         update()
         {
-            $(".mel-tabheader").unbind('click');
-            $(".mel-tabheader").on("click", (e) => {
-                //console.log("MEL_ELASTIC", this, e);
-                this.switchTab(e.currentTarget);
-            })
+            let querry = $(".mel-tabheader");
 
-            $(".select-button-mel").unbind('click');
-            $(".select-button-mel").on("click", (e) => {
-                this.generateSelect(e.currentTarget);
-            });
-            
-            $(".pagination").each((i,e) => {
-                e = $(e);
-                this.set_pagination(e, e.data("count"), e.data("current") === undefined ? null : e.data("current"));
-                return this;
-            });
-            //$(".input-mel-datetime").after("")
+            if (querry.length > 0)
+            {
+                querry.unbind('click');
+                querry.on("click", (e) => {
+                    //console.log("MEL_ELASTIC", this, e);
+                    this.switchTab(e.currentTarget);
+                })
+            }
+
+            querry = $(".select-button-mel");
+
+            if (querry.length > 0)
+            {
+                querry.unbind('click');
+                querry.on("click", (e) => {
+                    this.generateSelect(e.currentTarget);
+                });
+            }
+
+
+            querry = $(".pagination");
+
+            if (querry.length > 0)
+            {
+                querry.each((i,e) => {
+                    e = $(e);
+                    this.set_pagination(e, e.data("count"), e.data("current") === undefined ? null : e.data("current"));
+                    return this;
+                });
+            }
+
             this.redStars();
         }
 
         redStars()
         {
-            $(".red-star-after").each((i,e) => {
-                e = $(e);
+            let querry = $(".red-star-after");
+            
+            if (querry.length > 0)
+            {
+                $(".red-star-after").each((i,e) => {
+                    e = $(e);
 
-                if (!e.hasClass("mel-after-remover"))
-                    e.append('<star class="red-star mel-before-remover">*</star>').addClass("mel-after-remover");
+                    if (!e.hasClass("mel-after-remover"))
+                        e.append('<star class="red-star mel-before-remover">*</star>').addClass("mel-after-remover");
 
-            });
+                });
+            }
 
-            $(".red-star").each((i,e) => {
-                e = $(e);
+            querry = $(".red-star");
 
-                if (!e.hasClass("mel-before-remover"))
-                    e.prepend('<star class="red-star mel-before-remover">*</star>').removeClass("red-star").addClass("red-star-removed");
+            if (querry.length > 0)
+            {
+                querry.each((i,e) => {
+                    e = $(e);
 
-            });
+                    if (!e.hasClass("mel-before-remover"))
+                        e.prepend('<star class="red-star mel-before-remover">*</star>').removeClass("red-star").addClass("red-star-removed");
+
+                });
+            }
         }
 
         getRandomColor() {
@@ -300,7 +339,7 @@ $(document).ready(() => {
 
             //Activation de la tab
             $(event).addClass("active").attr("aria-selected", true);
-            
+
             //activation des objets lié à la tab
             $("." + id + "." + namespace).css("display", "");
             const onclick = $(event).data("onclick");
@@ -313,7 +352,7 @@ $(document).ready(() => {
                     } catch (error) {
                         console.error(error);
                     }
-                    
+
                     if ($(event).data("delete-after-click") === true)
                         $(event).data("onclick", "");
                 });
@@ -338,7 +377,7 @@ $(document).ready(() => {
                     }
                 }
                 return rcmail.get_task_url((task + tmp), window.location.origin + window.location.pathname);
-            }    
+            }
         }
         get_input_mail_search(id = '')
         {
@@ -376,14 +415,14 @@ $(document).ready(() => {
                     break;
                 }
                 else
-                pagination_elements.append(this.create_number(index+1, true, (index === 0)));            
-            }          
+                pagination_elements.append(this.create_number(index+1, true, (index === 0)));
+            }
             e.append('<button class="pagination_next pagination-button" onclick="MEL_ELASTIC_UI.pagination_next(this)">Suivant</button>')
             console.log("current", current);
             if (current !== null)
                 this.pagination_page($(".pagination-number-" + current)[0],current, false);
         }
-        
+
         pagination_page(e, number, doAction = true){
             const _integer = this._integer;
             e = $(e).parent();
@@ -429,7 +468,7 @@ $(document).ready(() => {
                             html += this.create_number(count);
                             break;
                         }
-                        else 
+                        else
                             html += this.create_number(index + 1);
                     }
                     //si proche dernier
@@ -445,7 +484,7 @@ $(document).ready(() => {
                             }
                         }
                     }
-                }    
+                }
             }
             else
             {

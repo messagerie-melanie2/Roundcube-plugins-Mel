@@ -172,6 +172,7 @@
 
         load()
         {
+            this.lastRoom = mel_metapage.Storage.get("ariane.lastRoom");
             this.init(mel_metapage.Storage.get("ariane_datas"));
 
             for (const key in this.unreads) {
@@ -181,6 +182,67 @@
             }
 
             this.update_menu();
+        }
+
+        setLastRoom(event, save = true)
+        {
+            let lastRoom;
+
+            if (event.name === undefined || event.name === null)
+                lastRoom = {
+                    name:"private_conv",
+                    public:false,
+                    isNull:true
+                }
+            else
+            {
+
+                lastRoom = {
+                    name:event.name,
+                    isNull:false
+                };
+
+                switch (event.t) {
+                    case "c":
+                        lastRoom.public = true;
+                        break;
+                    case "p":
+                        lastRoom.public = false;
+                        break;
+                    default:
+                        lastRoom.public = false;
+                        lastRoom.isNull = true;
+                        break;
+                }
+            }
+
+            if (save)   
+                mel_metapage.Storage.set("ariane.lastRoom", lastRoom);
+
+            this.lastRoom = lastRoom;
+
+            return lastRoom;
+        }
+
+        getLastRoom()
+        {
+            if (this.lastRoom === null || this.lastRoom === undefined)
+                this.lastRoom = mel_metapage.Storage.get("ariane.lastRoom");
+
+            return this.lastRoom;
+        }
+
+        goLastRoom(frame)
+        {
+            const lastRoom = this.getLastRoom();
+
+            if (lastRoom !== null && lastRoom !== undefined && !lastRoom.isNull)
+            {
+                (frame.val !== undefined ? frame[0] : frame).contentWindow.postMessage({
+                    externalCommand: 'go',
+                    path: `/${(lastRoom.public ? "channel" : "group")}/${lastRoom.name}`
+                  }, '*');
+            }
         }
     }
 

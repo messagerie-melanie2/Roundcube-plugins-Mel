@@ -386,9 +386,9 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         html += '<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;">';
         html += '<div class="card-header-disabled frame-header" >';
         // html += '<span>Ariane</span>';
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close"></a>`;
-        html += `<a class="icon-mel-popup-anchor card-anchor" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()"></a>`;
-        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="icon-mel-fullscreen-interface card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close mel-focus"></a>`;
+        html += `<a class="mel-focus icon-mel-popup-anchor card-anchor" href="anchor_ariane" data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("anchor", "mel_metapage")}" onclick="m_mp_anchor_ariane()"></a>`;
+        html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("fullscreen", "mel_metapage")}" class="mel-focus icon-mel-fullscreen-interface card-expand" href="full_screen_ariane" onclick="m_mp_full_screen_ariane()"></a>`;
         html += "</div>";
         html += '<div class="card-body-disabled frame-body a-frame" style="height:100%;width:100%;">'
         html += frame;
@@ -420,7 +420,10 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 
     if (eClass === "discussion")
+    {
         rcmail.triggerEvent("init_ariane", id);
+        window.ariane.goLastRoom($("#"+id));
+    }
 
     if (changepage)
         Title.update(id, true);

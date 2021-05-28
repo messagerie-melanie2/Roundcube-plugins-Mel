@@ -107,7 +107,7 @@ if (window.rcmail) {
 			localStorage.setItem('rocket_chat_title', title);
 			$('.button-rocket_chat .button-inner').text(title);
 			//document.title = title;
-			refreshFavico();
+			//refreshFavico();
 
 			// if (rcmail.env.ariane_is_logged !== true)
 			// {
@@ -149,6 +149,10 @@ if (window.rcmail) {
 			// }
 			//sessionStorage.setItem('rocket_chat_url', window.document.getElementById('rocket_chat_frame').contentWindow.location);
 		}
+
+		if (e.data.eventName === "room-opened")
+			window.ariane.setLastRoom(e.data.data, true);
+
 		if (parent.ariane !== undefined)
 		{
 			if (e.data.eventName === "unread-changed-by-subscription" ||  e.data.eventName == 'unread-changed')

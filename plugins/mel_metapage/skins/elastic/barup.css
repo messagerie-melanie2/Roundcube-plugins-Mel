@@ -341,6 +341,22 @@ html.touch .ariane-card-body
 	border-top-left-radius: 0px !important;
 	box-shadow: -2px 0px 3px #00000030;
     background-color:#F0F0F0;
+
+    transition: all 0.1s ease-in;
+    opacity: 0;
+    /* border: 0; */
+    clip: rect(0, 0, 0, 0);
+    /* height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    width: 1px; */
+}
+
+.frame-card:hover >  .frame-header
+{
+    opacity: initial;
+    clip:initial;
 }
 
 /* .icofont-spinner-alt-6

@@ -109,8 +109,8 @@ class mel_workspace extends rcube_plugin
     public function load_workspaces()
     {
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
-        if (count($this->workspaces) > 0)
-            uasort($this->workspaces , [$this, "sort_workspaces"]);
+        // if (count($this->workspaces) > 0)
+        //     uasort($this->workspaces , [$this, "sort_workspaces"]);
         // foreach ($this->workspaces as $key => $value) {
         //     $this->workspaces[$key]->delete();
         // }

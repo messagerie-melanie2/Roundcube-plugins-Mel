@@ -541,6 +541,7 @@ function rcube_calendar_ui(settings)
           'class': 'edit mainaction',
           click: function() {
             event_edit_dialog('edit', event);
+            //Pamela - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
             rcmail.triggerEvent('edit-event', event);
           }
         });
@@ -991,6 +992,7 @@ function rcube_calendar_ui(settings)
         window.setTimeout(load_attachments_tab, exec_deferred);
 
       title.select();
+      //Pamela - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
       if (action === "new")
         rcmail.triggerEvent("edit-event", "");
     };
@@ -1313,6 +1315,7 @@ function rcube_calendar_ui(settings)
               update_freebusy_status(me.selected_event);
             freebusy_ui.needsupdate = false;
             $dialog.dialog("close");
+            //Pamela - met à jour la date après la sauvegarde des disponibilités
             rcmail.triggerEvent("dialog-attendees-save", {
               start:{
                 date:freebusy_ui.startdate.val(),
@@ -1351,7 +1354,7 @@ function rcube_calendar_ui(settings)
         minWidth: 640,
         width: 850
       }).show();
-      //PAMELA
+      //PAMELA - correction (ne pas mettre si corriger lors d'une nouvelle version)
       setTimeout(() => {
         $dialog.dialog({
           modal: true,

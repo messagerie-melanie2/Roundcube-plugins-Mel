@@ -145,8 +145,22 @@
         }
 
         menu()
-        {
-            return Enumerable.from(this.unreads).select(x => x.value).sum();
+        {            
+            let val = 0;
+
+            if (this.unreads !== null && this.unreads !== undefined)
+            {     
+                for (const key in this.unreads) {
+                    if (Object.hasOwnProperty.call(this.unreads, key)) {
+                        const element = this.unreads[key];
+                        val += element;
+                    }
+                }
+            }
+
+            return val;
+
+            //return Enumerable.from(this.unreads).select(x => x.value).sum();
         }
 
         update_menu()

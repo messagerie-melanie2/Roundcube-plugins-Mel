@@ -108,7 +108,7 @@ class mel_workspace extends rcube_plugin
 
     public function load_workspaces()
     {
-        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
+        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
         if (count($this->workspaces) > 0)
             uasort($this->workspaces , [$this, "sort_workspaces"]);
         // foreach ($this->workspaces as $key => $value) {
@@ -1278,20 +1278,27 @@ class mel_workspace extends rcube_plugin
         $task_id = $this->get_object($workspace, self::TASKS);
         if ($task_id !== null)
         {  
-            $tasks = $this->rc->plugins->get_plugin('tasklist')->__get("driver")->list_tasks(["mask" => 0, "search" => null], $task_id);
-            $total = count($tasks);
-            if ($total !== 0)
-            {
-                $completed = count(array_filter($tasks, function ($task)
+            try {
+                $tasks = $this->rc->plugins->get_plugin('tasklist')->__get("driver")->list_tasks(["mask" => 0, "search" => null], $task_id);
+                $total = count($tasks);
+
+                if ($total !== 0)
                 {
-                    return $task["complete"] === 1;
-                }));
-                //$taskslist = $task->get_lists()
-                $div = html::div(["class" => "wsp-tasks-all", "style" => "font-size:smaller;margin-top: -25px;"],
-                    html::tag("span", ["style" => "font-size:large"], $completed).
-                    " tâches réalisées sur $total"
-                );
-                $html = str_replace($replace, $div, $html);
+                    $completed = count(array_filter($tasks, function ($task)
+                    {
+                        return $task["complete"] === 1;
+                    }));
+                    //$taskslist = $task->get_lists()
+                    $div = html::div(["class" => "wsp-tasks-all", "style" => "font-size:smaller;margin-top: -25px;"],
+                        html::tag("span", ["style" => "font-size:large"], $completed).
+                        " tâches réalisées sur $total"
+                    );
+                    $html = str_replace($replace, $div, $html);
+                }
+            } catch (\Throwable $th) {
+                mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->get_tasks] Un erreur est survenue lors de la récupération des tâches pour l'espace de travail '".$workspace->title."'");
+                mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->get_tasks]".$th->getTraceAsString());
+                mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->get_tasks]".$th->getMessage());
             }
         }
         return $html;

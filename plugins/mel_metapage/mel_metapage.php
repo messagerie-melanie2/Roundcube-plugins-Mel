@@ -276,7 +276,7 @@ class mel_metapage extends rcube_plugin
                     $values = (isset($values) ? explode("|" ,$values) : []);
 
                     $html = '<select id=categories-event-all-cal-mm class="form-control input-mel">';
-                    $html .= "<option value=\"#none\">".$this->rc->gettext("nothing")."</option>";
+                    $html .= "<option value=\"#none\">".$this->rc->gettext("nothing", "mel_metapage")."</option>";
                     foreach ($values as $key => $value) {
                         if ($value[0] === "w" && $value[1] === "s" && $value[2] === "#")
                             continue;
@@ -580,7 +580,7 @@ class mel_metapage extends rcube_plugin
     
             // reset page
             $source->set_page(1);
-            $source->set_pagesize(9999);
+            $source->set_pagesize(5);
     
             // get contacts count
             $result = $source->search($fields, $search, $mode, false);

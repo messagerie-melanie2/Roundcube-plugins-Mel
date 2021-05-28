@@ -45,7 +45,7 @@ abstract class aHTMLElement implements iHTML
      * @param string $args - Dictionnaire qui contient la liste des attributs ainsi que des classes.
      */
     public function __construct($id, $args = null) {
-        $this->$id;
+        $this->id = $id;
         $this->arias = [];
         $this->attributes = [];
         $this->classes = [];

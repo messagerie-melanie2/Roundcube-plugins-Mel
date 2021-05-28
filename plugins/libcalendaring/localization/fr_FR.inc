@@ -160,3 +160,5 @@ $labels['expandattendeegroup'] = 'Remplacement par les membres du groupe';
 $labels['expandattendeegroupnodata'] = 'Impossible de substituer ce groupe, il ne contient aucun membre.';
 $labels['expandattendeegrouperror'] = 'Impossible de substituer ce groupe, il contient trop de membres.';
 $labels['expandattendeegroupsizelimit'] = 'Ce groupe contient trop de membres pour être substitué.';
+$labels["for"] = "pour";
+$labels['ntimes'] = '$n fois';

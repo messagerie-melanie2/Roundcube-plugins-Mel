@@ -114,8 +114,8 @@ $labels["day_order"] = "Ordre du jour";
 
 $labels["attach_the_event_to"] = "Rattacher l'évènement à";
 $labels["choose_calendar"] = "Choisissez un calendrier";
-$labels["choose_event_state"] = "Choisissez le status de l'évènement";
-$labels["choose_sensivity"] = "Choisissez la sensibilitée de l'évènement";
+$labels["choose_event_state"] = "Choisissez le statut de l'évènement";
+$labels["choose_sensivity"] = "Choisissez la sensibilité de l'évènement";
 
 $labels["continue"] = "Continuer";
 $labels["add_all_member_from_a_workspace"] = "Ajouter tout les membres de l'espace de travail";

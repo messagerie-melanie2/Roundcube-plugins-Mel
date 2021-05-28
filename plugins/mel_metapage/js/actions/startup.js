@@ -359,12 +359,14 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
     const empty = "";
 
-    console.log("args", args, args["iframe.src"]);
-
     if (args === null || args === undefined)
         args = {};
 
     args["_from"] = "iframe";
+
+    if (eClass === "addressbook")
+        args["_action"] = "plugin.annuaire";
+
     let src = empty;//mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
 
     if (args["iframe.src"] !== undefined)
@@ -374,6 +376,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     else
         src = mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
 
+    // window.history.replaceState({}, document.title, src.replaceAll("&_from=iframe", ""));
     const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';
     let html = frame;
 

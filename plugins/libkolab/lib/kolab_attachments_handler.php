@@ -48,7 +48,7 @@ class kolab_attachments_handler
      */
     public function files_list($attrib = array())
     {
-        if (!$attrib['id']) {
+        if (empty($attrib['id'])) {
             $attrib['id'] = 'kolabattachmentlist';
         }
 
@@ -67,7 +67,7 @@ class kolab_attachments_handler
     public function files_form($attrib = array())
     {
         // add ID if not given
-        if (!$attrib['id']) {
+        if (empty($attrib['id'])) {
             $attrib['id'] = 'kolabuploadform';
         }
 
@@ -80,7 +80,7 @@ class kolab_attachments_handler
     public function files_drop_area($attrib = array())
     {
         // add ID if not given
-        if (!$attrib['id']) {
+        if (empty($attrib['id'])) {
             $attrib['id'] = 'kolabfiledroparea';
         }
 
@@ -117,7 +117,7 @@ class kolab_attachments_handler
         $recid    = $id_prefix . rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
         $uploadid = rcube_utils::get_input_value('_uploadid', rcube_utils::INPUT_GPC);
 
-        if (!is_array($_SESSION[$session_key]) || $_SESSION[$session_key]['id'] != $recid) {
+        if (empty($_SESSION[$session_key]) || $_SESSION[$session_key]['id'] != $recid) {
             $_SESSION[$session_key] = array();
             $_SESSION[$session_key]['id'] = $recid;
             $_SESSION[$session_key]['attachments'] = array();
@@ -151,13 +151,16 @@ class kolab_attachments_handler
                     unset($attachment['status'], $attachment['abort']);
                     $this->rc->session->append($session_key . '.attachments', $id, $attachment);
 
-                    if (($icon = $_SESSION[$session_key . '_deleteicon']) && is_file($icon)) {
+                    if (!empty($_SESSION[$session_key . '_deleteicon'])
+                        && ($icon = $_SESSION[$session_key . '_deleteicon'])
+                        && is_file($icon)
+                    ) {
                         $button = html::img(array(
                             'src' => $icon,
                             'alt' => $this->rc->gettext('delete')
                         ));
                     }
-                    else if ($_SESSION[$session_key . '_textbuttons']) {
+                    else if (!empty($_SESSION[$session_key . '_textbuttons'])) {
                         $button = rcube::Q($this->rc->gettext('delete'));
                     }
                     else {
@@ -181,7 +184,8 @@ class kolab_attachments_handler
                             'onclick' => 'return false', // sprintf("return %s.command('load-attachment','rcmfile%s', this, event)", rcmail_output::JS_OBJECT_NAME, $id),
                          ), $link_content);
 
-                    $content .= $_SESSION[$session_key . '_icon_pos'] == 'left' ? $delete_link.$content_link : $content_link.$delete_link;
+                    $left = !empty($_SESSION[$session_key . '_icon_pos']) && $_SESSION[$session_key . '_icon_pos'] == 'left';
+                    $content = $left ? $delete_link.$content_link : $content_link.$delete_link;
 
                     $this->rc->output->command('add2attachment_list', "rcmfile$id", array(
                             'html'      => $content,
@@ -196,7 +200,7 @@ class kolab_attachments_handler
                         $msg = $this->rc->gettext(array('name' => 'filesizeerror', 'vars' => array(
                             'size' => $this->rc->show_bytes(parse_bytes(ini_get('upload_max_filesize'))))));
                     }
-                    else if ($attachment['error']) {
+                    else if (!empty($attachment['error'])) {
                         $msg = $attachment['error'];
                     }
                     else {
@@ -211,11 +215,13 @@ class kolab_attachments_handler
         else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // if filesize exceeds post_max_size then $_FILES array is empty,
             // show filesizeerror instead of fileuploaderror
-            if ($maxsize = ini_get('post_max_size'))
+            if ($maxsize = ini_get('post_max_size')) {
                 $msg = $this->rc->gettext(array('name' => 'filesizeerror', 'vars' => array(
                     'size' => $this->rc->show_bytes(parse_bytes($maxsize)))));
-            else
+            }
+            else {
                 $msg = $this->rc->gettext('fileuploaderror');
+            }
 
             $this->rc->output->command('display_message', $msg, 'error');
             $this->rc->output->command('remove_from_attachment_list', $uploadid);
@@ -233,7 +239,7 @@ class kolab_attachments_handler
     {
         ob_end_clean();
 
-        if ($attachment && $attachment['body']) {
+        if ($attachment && !empty($attachment['body'])) {
             // allow post-processing of the attachment body
             $part = new rcube_message_part;
             $part->filename  = $attachment['name'];

@@ -5,10 +5,6 @@
 // Enable caching of Kolab objects in local database
 $config['kolab_cache'] = true;
 
-// Cache refresh interval (default is 12 hours)
-// after this period, cache is forced to synchronize with IMAP
-$config['kolab_cache_refresh'] = '12h';
-
 // Specify format version to write Kolab objects (must be a string value!)
 $config['kolab_format_version']  = '3.0';
 

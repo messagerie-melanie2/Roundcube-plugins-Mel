@@ -359,7 +359,6 @@ function rcube_calendar_ui(settings)
     // event details dialog (show only)
     var event_show_dialog = function(event, ev, temp)
     {
-      console.log(event, ev, temp);
       var $dialog = $("#eventshow");
       var calendar = event.calendar && me.calendars[event.calendar] ? me.calendars[event.calendar] : { editable:false, rights:'lrs' };
 
@@ -541,7 +540,7 @@ function rcube_calendar_ui(settings)
           'class': 'edit mainaction',
           click: function() {
             event_edit_dialog('edit', event);
-            //Pamela - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
+            // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
             rcmail.triggerEvent('edit-event', event);
           }
         });
@@ -566,6 +565,11 @@ function rcube_calendar_ui(settings)
         }
       });
 
+      var close_func = function(e) {
+          rcmail.command('menu-close', 'eventoptionsmenu', null, e);
+          $('.libcal-rsvp-replymode').hide();
+        };
+
       // open jquery UI dialog
       $dialog.dialog({
         modal: true,
@@ -578,21 +582,12 @@ function rcube_calendar_ui(settings)
             $dialog.parent().find('button:not(.ui-dialog-titlebar-close,.delete)').first().focus();
           }, 5);
         },
-        beforeClose: function(e) {
-          rcmail.command('menu-close', 'eventoptionsmenu', null, e);
-        },
         close: function(e) {
-          $dialog.dialog('destroy').attr('aria-hidden', 'true').hide();
-          $('.libcal-rsvp-replymode').hide();
+          close_func(e);
+          $dialog.dialog('close');
         },
-        dragStart: function(e) {
-          rcmail.command('menu-close', 'eventoptionsmenu', null, e);
-          $('.libcal-rsvp-replymode').hide();
-        },
-        resizeStart: function(e) {
-          rcmail.command('menu-close', 'eventoptionsmenu', null, e);
-          $('.libcal-rsvp-replymode').hide();
-        },
+        dragStart: close_func,
+        resizeStart: close_func,
         buttons: buttons,
         minWidth: 320,
         width: 420
@@ -614,12 +609,12 @@ function rcube_calendar_ui(settings)
           .attr({href: '#', 'class': 'dropdown-link btn btn-link options', 'data-popup-pos': 'top'})
           .text(rcmail.gettext('eventoptions','calendar'))
           .click(function(e) {
-            return rcmail.command('menu-open','eventoptionsmenu', this, e)
+            return rcmail.command('menu-open','eventoptionsmenu', this, e);
           })
           .appendTo($dialog.parent().find('.ui-dialog-buttonset'));
       }
 
-      rcmail.enable_command('event-history', calendar.history)
+      rcmail.enable_command('event-history', calendar.history);
 
       rcmail.triggerEvent('calendar-event-dialog', {dialog: $dialog});
     };
@@ -629,12 +624,14 @@ function rcube_calendar_ui(settings)
     {
       var cutype = $(this).attr('data-cutype'),
         mailto = this.href.substr(7);
+
       if (rcmail.env.calendar_resources && cutype == 'RESOURCE') {
         event_resources_dialog(mailto);
       }
       else {
         rcmail.command('compose', mailto, e ? e.target : null, e);
       }
+
       return false;
     };
 
@@ -894,8 +891,9 @@ function rcube_calendar_ui(settings)
               }
             });
           }
+
           // tell server to send notifications
-          if ((data.attendees.length || (event.id && event.attendees && event.attendees.length)) && allow_invitations && (notify.checked || invite.checked || need_invitation)) {
+          if ((data.attendees.length || (event.id && event.attendees.length)) && allow_invitations && (notify.checked || invite.checked || need_invitation)) {
             data._notify = settings.itip_notify;
             data._comment = comment.val();
           }
@@ -918,6 +916,7 @@ function rcube_calendar_ui(settings)
           if (rcmail.env.action != 'dialog-ui')
             $dialog.dialog("close");
         };
+
       rcmail.env.event_save_func = save_func;
 
       // save action
@@ -992,7 +991,7 @@ function rcube_calendar_ui(settings)
         window.setTimeout(load_attachments_tab, exec_deferred);
 
       title.select();
-      //Pamela - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
+      // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
       if (action === "new")
         rcmail.triggerEvent("edit-event", "");
     };
@@ -1315,7 +1314,7 @@ function rcube_calendar_ui(settings)
               update_freebusy_status(me.selected_event);
             freebusy_ui.needsupdate = false;
             $dialog.dialog("close");
-            //Pamela - met à jour la date après la sauvegarde des disponibilités
+            // PAMELA - met à jour la date après la sauvegarde des disponibilités
             rcmail.triggerEvent("dialog-attendees-save", {
               start:{
                 date:freebusy_ui.startdate.val(),
@@ -1334,6 +1333,7 @@ function rcube_calendar_ui(settings)
           click: function() { $dialog.dialog("close"); }
         }
       ];
+
       $dialog.dialog({
         modal: true,
         resizable: true,
@@ -1354,7 +1354,7 @@ function rcube_calendar_ui(settings)
         minWidth: 640,
         width: 850
       }).show();
-      //PAMELA - correction (ne pas mettre si corriger lors d'une nouvelle version)
+      // PAMELA - correction (ne pas mettre si corriger lors d'une nouvelle version)
       setTimeout(() => {
         $dialog.dialog({
           modal: true,
@@ -1537,6 +1537,7 @@ function rcube_calendar_ui(settings)
 
         if (!width)
           width = table.width() - pos.left;
+
         // overlay is visible
         if (width > 0) {
           overlay.css({
@@ -1545,6 +1546,7 @@ function rcube_calendar_ui(settings)
             left: pos.left + 'px',
             top: pos.top + 'px'
           }).show();
+
           // configure draggable
           if (!overlay.data('isdraggable')) {
             overlay.draggable({
@@ -1582,10 +1584,7 @@ function rcube_calendar_ui(settings)
             overlay.draggable('enable');
         }
         else
-        {
           overlay.draggable('disable').hide();
-
-        }
       }
     };
 
@@ -1958,7 +1957,7 @@ function rcube_calendar_ui(settings)
 
       var dispname = Q(data.name || data.email);
       dispname = '<span' + ((data.email && data.email != dispname) ? ' title="' + Q(data.email) + '"' : '') + '>' + dispname + '</span>';
-      console.log("datas", data, dispname);
+
       // role selection
       var organizer = data.role == 'ORGANIZER';
       var opts = {};
@@ -3217,9 +3216,9 @@ function rcube_calendar_ui(settings)
           if (v.role != 'ORGANIZER') {
             v.status = 'NEEDS-ACTION';
           }
-        })
+        });
 
-        event_edit_dialog('new', copy);
+        setTimeout(function() { event_edit_dialog('new', copy); }, 50);
       }
     };
 
@@ -4177,7 +4176,7 @@ function rcube_calendar_ui(settings)
       window.setTimeout(function() {
         event_edit_dialog('new', $.extend(event, rcmail.env.event_prop));
       }, exec_deferred);
-      console.log("test");
+
       rcmail.register_command('event-save', function() { rcmail.env.event_save_func(); }, true);
       rcmail.addEventListener('plugin.unlock_saving', function(status) {
         me.unlock_saving();
@@ -4197,16 +4196,8 @@ if (rcmail.env.devel_mode && window.less) {
 /* calendar plugin initialization */
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   // let's go
-  var cal = null;
-  try {
-    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
-  } catch (error) {
-    console.error(error);
-    cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
-  }
-  console.log("ui_cal", cal, rcmail.env.calendar_settings, rcmail.env.libcal_settings);
-  window.cal_ui = cal;
-  parent.child_cal = cal;
+  var cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
+
   if (rcmail.env.action == 'dialog-ui') {
     return;
   }

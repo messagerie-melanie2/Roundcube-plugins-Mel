@@ -151,5 +151,4 @@ class kolab_format_task extends kolab_format_xcal
 
         return array_unique($tags);
     }
-
 }

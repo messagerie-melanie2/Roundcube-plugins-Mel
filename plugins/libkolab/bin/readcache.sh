@@ -22,12 +22,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('INSTALL_PATH', realpath('.') . '/' );
+define('INSTALL_PATH', __DIR__ . '/../../../');
 ini_set('display_errors', 1);
 libxml_use_internal_errors(true);
-
-if (!file_exists(INSTALL_PATH . 'program/include/clisetup.php'))
-    die("Execute this from the Roundcube installation dir!\n\n");
 
 require_once INSTALL_PATH . 'program/include/clisetup.php';
 
@@ -51,17 +48,7 @@ $imap_host = $opts['host'];
 $rcmail = rcube::get_instance(rcube::INIT_WITH_DB | rcube::INIT_WITH_PLUGINS);
 
 if (empty($imap_host)) {
-    $default_host = $rcmail->config->get('default_host');
-    if (is_array($default_host)) {
-        list($k,$v) = each($default_host);
-        $imap_host = is_numeric($k) ? $v : $k;
-    }
-    else {
-        $imap_host = $default_host;
-    }
-
-    // strip protocol prefix
-    $imap_host = preg_replace('!^[a-z]+://!', '', $imap_host);
+    $imap_host = imap_host();
 }
 
 if (empty($folder) || empty($imap_host)) {
@@ -72,8 +59,9 @@ if (empty($folder) || empty($imap_host)) {
 // connect to database
 $db = $rcmail->get_dbh();
 $db->db_connect('r');
-if (!$db->is_connected() || $db->is_error())
+if (!$db->is_connected() || $db->is_error()) {
     die("No DB connection\n");
+}
 
 
 // resolve folder_id
@@ -118,11 +106,13 @@ $cache_table = $db->table_name('kolab_cache_' . $folder_data['type']);
 $extra_cols_ = $extra_cols[$folder_data['type']] ?: array();
 $sql_arr = $db->fetch_assoc($db->query("SELECT COUNT(*) as cnt FROM `$cache_table` WHERE `folder_id`=?", intval($folder_id)));
 
-print "CTag  = " . $folder_data['ctag'] . "\n";
-print "Lock  = " . $folder_data['synclock'] . "\n";
-print "Count = " . $sql_arr['cnt'] . "\n";
+print "CTag     = " . $folder_data['ctag'] . "\n";
+print "Lock     = " . $folder_data['synclock'] . "\n";
+print "Changed  = " . $folder_data['changed'] . "\n";
+print "ObjCount = " . $folder_data['objectcount'] . "\n";
+print "Count    = " . $sql_arr['cnt'] . "\n";
 print "----------------------------------------------------------------------------------\n";
-print "<MSG>\t<UUID>\t<CHANGED>\t<DATA>\t<XML>\t";
+print "<MSG>\t<UUID>\t<CHANGED>\t<DATA>\t";
 print join("\t", array_map(function($c) { return '<' . strtoupper($c) . '>'; }, $extra_cols_));
 print "\n----------------------------------------------------------------------------------\n";
 
@@ -131,12 +121,8 @@ while ($result && ($sql_arr = $db->fetch_assoc($result))) {
     print $sql_arr['msguid'] . "\t" . $sql_arr['uid'] . "\t" . $sql_arr['changed'];
 
     // try to unserialize data block
-    $object = @unserialize(@base64_decode($sql_arr['data']));
-    print "\t" . ($object === false ? 'FAIL!' : ($object['uid'] == $sql_arr['uid'] ? 'OK' : '!!!'));
-
-    // check XML validity
-    $xml = simplexml_load_string($sql_arr['xml']);
-    print "\t" . ($xml === false ? 'FAIL!' : 'OK');
+    $object = json_decode($sql_arr['data']);
+    print "\t" . ($object === false ? 'FAIL!' : 'OK');
 
     // print extra cols
     array_walk($extra_cols_, function($c) use ($sql_arr) {
@@ -148,3 +134,25 @@ while ($result && ($sql_arr = $db->fetch_assoc($result))) {
 
 print "----------------------------------------------------------------------------------\n";
 echo "Done.\n";
+
+
+function imap_host()
+{
+    global $rcmail;
+
+    $default_host = $rcmail->config->get('default_host');
+
+    if (is_array($default_host)) {
+        $key = key($default_host);
+        $imap_host = is_numeric($key) ? $default_host[$key] : $key;
+    }
+    else {
+        $imap_host = $default_host;
+    }
+
+    // strip protocol prefix
+    $uri = parse_url($imap_host);
+    if (!empty($uri['host'])) {
+        return $uri['host'];
+    }
+}

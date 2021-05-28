@@ -4,7 +4,7 @@
     "description": "Plugin to setup a basic environment for the interaction with a Kolab server.",
     "homepage": "https://git.kolab.org/diffusion/RPK/",
     "license": "AGPLv3",
-    "version": "3.5.2",
+    "version": "3.5.6",
     "authors": [
         {
             "name": "Thomas Bruederli",

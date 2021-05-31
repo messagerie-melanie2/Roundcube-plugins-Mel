@@ -993,7 +993,8 @@ a.button.icon.attach::before, button.btn.attach::before {
     box-shadow: 0 0 0 .2rem #484D7A69;
 }
 
-.mel-focus.light-focus:focus
+.mel-focus.light-focus:focus,
+a.filename:focus
 {
     box-shadow: 0 0 0 .2rem #FFFFFF69;
 }
@@ -1130,3 +1131,12 @@ html.layout-normal body.task-mail.action-compose #layout-sidebar
     content: "\e936" !important;
     font-family: DWP !important;
 }
+
+a.filename .attachment-name {
+	color: white;
+}
+
+a.filename:hover .attachment-name {
+	text-decoration: underline;
+}
+

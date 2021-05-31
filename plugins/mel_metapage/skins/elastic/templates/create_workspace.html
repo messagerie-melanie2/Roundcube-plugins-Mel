@@ -81,11 +81,12 @@
         </ul>
         <span class="input-group-append">
             <!--Ouvre l'annuaire-->
-            <a href="#add-contact" onclick="m_mp_openTo()" class="mel-focus input-group-text mel-text-center icon add recipient" title="Ajouter un contact" ><span class="inner">Ajouter un contact</span></a>
+            <a href="#add-contact" onclick="m_mp_openTo()" class="mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact" ><span class="inner">Ajouter un contact</span></a>
             <!--Ajoute les contacts de l'input-->
-            <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="input-group-text mel-focus mel-text"><span class="icon-mel-plus"></span></button>
         </span>
     </div>
+
+    <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="mel-button create mel-before-remover">Ajouter <span class="icon-mel-plus plus"></span></button>
 
     <!--Liste des participants-->
     <span class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></span>

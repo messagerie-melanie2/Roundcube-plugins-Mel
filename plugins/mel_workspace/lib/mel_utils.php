@@ -785,13 +785,19 @@ class mel_utils
     try {
       // Récupère la liste des catégories
       $value = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");
+
+      if (isset($value) && strpos($value, $name) !== false)
+        return true;
+
       $value = (isset($value) ? $value."|" : "") . "$name";
       driver_mel::gi()->getUser($username)->saveDefaultPreference("categories", $value);
 
       // Récupère la liste des couleurs des catégories (sic)
       $value = driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors");
+
       if (strpos($color, "#") === false)
         $color = "#$color";
+
       $value = (isset($value) ? $value."|" : "") . "$name:$color";
       driver_mel::gi()->getUser($username)->saveDefaultPreference("category_colors", $value);
     }

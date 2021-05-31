@@ -878,9 +878,11 @@ class mel_workspace extends rcube_plugin
             $users = $tmp_users;
             unset($tmp_user);
         }
+
         $services = $this->create_tasklist($workspace,$services, $users, $update_wsp);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
         $services = $this->create_channel($workspace, $services, $users);
+
         return $services;
     }
 
@@ -925,18 +927,22 @@ class mel_workspace extends rcube_plugin
     function create_agenda(&$workspace, $services, $users, $update_wsp)
     {
         $agenda = self::AGENDA;
-        if (array_search($agenda, $services) === false)
-            return $services;
+
+        // if (array_search($agenda, $services) === false)
+        //     return $services;
+
         include_once "lib/mel_utils.php";
         $color = $this->get_setting($workspace, "color");
+
         foreach ($users as $s)
-        {
             mel_utils::cal_add_category($s, "ws#".$workspace->uid, $color);
-        }
+
         if ($update_wsp)
-            $this->save_object($workspace, $agenda, !(array_search($agenda, $services) === false));
-        $key = array_search($agenda, $services);
-        unset($services[$key]);
+            $this->save_object($workspace, $agenda, true);//!(array_search($agenda, $services) === false));
+
+        // $key = array_search($agenda, $services);
+        // unset($services[$key]);
+
         return $services;
     }
 

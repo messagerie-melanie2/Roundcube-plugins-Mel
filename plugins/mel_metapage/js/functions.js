@@ -371,7 +371,11 @@ async function m_mp_check_w(step, next)
                 users.push(input.val());
             if (users.length > 0)
             {
-                if (!confirm("Vous avez entrer des utilisateurs mais ils n'ont pas été ajouté, continuer quand même ?"))
+                if (confirm("Ajouter les utilisateurs qui n'ont pas été ajouter ?"))
+                {
+                    await m_mp_add_users();
+                }
+                else
                     stop = true;
             }
             break;

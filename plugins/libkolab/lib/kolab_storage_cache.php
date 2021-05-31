@@ -27,8 +27,6 @@ class kolab_storage_cache
     const DB_DATE_FORMAT = 'Y-m-d H:i:s';
     const MAX_RECORDS    = 500;
 
-    public $sync_complete = false;
-
     protected $db;
     protected $imap;
     protected $folder;
@@ -42,7 +40,6 @@ class kolab_storage_cache
     protected $synclock = false;
     protected $ready = false;
     protected $cache_table;
-    protected $cache_refresh = 3600;
     protected $folders_table;
     protected $max_sql_packet;
     protected $max_sync_lock_time = 600;
@@ -85,7 +82,6 @@ class kolab_storage_cache
         $this->imap = $rcmail->get_storage();
         $this->enabled = $rcmail->config->get('kolab_cache', false);
         $this->folders_table = $this->db->table_name('kolab_folders');
-        $this->cache_refresh = get_offset_sec($rcmail->config->get('kolab_cache_refresh', '12h'));
         $this->server_timezone = new DateTimeZone(date_default_timezone_get());
 
         if ($this->enabled) {
@@ -174,16 +170,6 @@ class kolab_storage_cache
         if ($this->synched)
             return;
 
-        // increase time limit
-        @set_time_limit($this->max_sync_lock_time - 60);
-
-        // get effective time limit we have for synchronization (~70% of the execution time)
-        $time_limit = ini_get('max_execution_time') * 0.7;
-        $sync_start = time();
-
-        // assume sync will be completed
-        $this->sync_complete = true;
-
         if (!$this->ready) {
             // kolab cache is disabled, synchronize IMAP mailbox cache only
             $this->imap_mode(true);
@@ -191,113 +177,45 @@ class kolab_storage_cache
             $this->imap_mode(false);
         }
         else {
+            $this->sync_start = time();
+
             // read cached folder metadata
             $this->_read_folder_data();
 
+            // Read folder data from IMAP
+            $ctag = $this->folder->get_ctag();
+
+            // Validate current ctag
+            list($uidvalidity, $highestmodseq, $uidnext) = explode('-', $ctag);
+
+            if (empty($uidvalidity) || empty($highestmodseq)) {
+                rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (Invalid ctag)"
+                ), true);
+            }
             // check cache status ($this->metadata is set in _read_folder_data())
-            if (  empty($this->metadata['ctag']) ||
-                  empty($this->metadata['changed']) ||
-                  $this->metadata['objectcount'] === null ||
-                  $this->metadata['changed'] < date(self::DB_DATE_FORMAT, time() - $this->cache_refresh) ||
-                  $this->metadata['ctag'] != $this->folder->get_ctag() ||
-                  intval($this->metadata['objectcount']) !== $this->count()
+            else if (
+                empty($this->metadata['ctag'])
+                || empty($this->metadata['changed'])
+                || $this->metadata['ctag'] !== $ctag
             ) {
                 // lock synchronization for this folder or wait if locked
                 $this->_sync_lock();
 
-                // disable messages cache if configured to do so
-                $this->imap_mode(true);
+                // Run a full-sync (initial sync or continue the aborted sync)
+                if (empty($this->metadata['changed']) || empty($this->metadata['ctag'])) {
+                    $result = $this->synchronize_full();
+                }
+                // Synchronize only the changes since last sync
+                else {
+                    $result = $this->synchronize_update($ctag);
+                }
 
-                // synchronize IMAP mailbox cache
-                $this->imap->folder_sync($this->folder->name);
-
-                // compare IMAP index with object cache index
-                $imap_index = $this->imap->index($this->folder->name, null, null, true, true);
-
-                $this->imap_mode(false);
-
-                // determine objects to fetch or to invalidate
-                if (!$imap_index->is_error()) {
-                    $imap_index = $imap_index->get();
-                    $old_index  = array();
-                    $del_index  = array();
-
-                    // read cache index
-                    $sql_result = $this->db->query(
-                        "SELECT `msguid`, `uid` FROM `{$this->cache_table}` WHERE `folder_id` = ?"
-                            . " ORDER BY `msguid` DESC", $this->folder_id
-                    );
-
-                    while ($sql_arr = $this->db->fetch_assoc($sql_result)) {
-                        // Mark all duplicates for removal (note sorting order above)
-                        // Duplicates here should not happen, but they do sometimes
-                        if (isset($old_index[$sql_arr['uid']])) {
-                            $del_index[] = $sql_arr['msguid'];
-                        }
-                        else {
-                            $old_index[$sql_arr['uid']] = $sql_arr['msguid'];
-                        }
-                    }
-
-                    // fetch new objects from imap
-                    $i = 0;
-                    foreach (array_diff($imap_index, $old_index) as $msguid) {
-                        // Note: We'll store only objects matching the folder type
-                        // anything else will be silently ignored
-                        if ($object = $this->folder->read_object($msguid)) {
-                            // Deduplication: remove older objects with the same UID
-                            // Here we do not resolve conflicts, we just make sure
-                            // the most recent version of the object will be used
-                            if ($old_msguid = $old_index[$object['uid']]) {
-                                if ($old_msguid < $msguid) {
-                                    $del_index[] = $old_msguid;
-                                }
-                                else {
-                                    $del_index[] = $msguid;
-                                    continue;
-                                }
-                            }
-
-                            $old_index[$object['uid']] = $msguid;
-
-                            $this->_extended_insert($msguid, $object);
-
-                            // check time limit and abort sync if running too long
-                            if (++$i % 50 == 0 && time() - $sync_start > $time_limit) {
-                                $this->sync_complete = false;
-                                break;
-                            }
-                        }
-                    }
-                    $this->_extended_insert(0, null);
-
-                    $del_index = array_unique($del_index);
-
-                    // delete duplicate entries from IMAP
-                    $rem_index = array_intersect($del_index, $imap_index);
-                    if (!empty($rem_index)) {
-                        $this->imap_mode(true);
-                        $this->imap->delete_message($rem_index, $this->folder->name);
-                        $this->imap_mode(false);
-                    }
-
-                    // delete old/invalid entries from the cache
-                    $del_index += array_diff($old_index, $imap_index);
-                    if (!empty($del_index)) {
-                        $quoted_ids = join(',', array_map(array($this->db, 'quote'), $del_index));
-                        $this->db->query(
-                            "DELETE FROM `{$this->cache_table}` WHERE `folder_id` = ? AND `msguid` IN ($quoted_ids)",
-                            $this->folder_id
-                        );
-                    }
-
-                    // update ctag value (will be written to database in _sync_unlock())
-                    if ($this->sync_complete) {
-                        $this->metadata['ctag'] = $this->folder->get_ctag();
-                        $this->metadata['changed'] = date(self::DB_DATE_FORMAT, time());
-                        // remember the number of cache entries linked to this folder
-                        $this->metadata['objectcount'] = $this->count();
-                    }
+                // update ctag value (will be written to database in _sync_unlock())
+                if ($result) {
+                    $this->metadata['ctag']    = $ctag;
+                    $this->metadata['changed'] = date(self::DB_DATE_FORMAT, time());
                 }
 
                 // remove lock
@@ -309,6 +227,262 @@ class kolab_storage_cache
         $this->synched = time();
     }
 
+    /**
+     * Perform full cache synchronization
+     */
+    protected function synchronize_full()
+    {
+        // get effective time limit we have for synchronization (~70% of the execution time)
+        $time_limit = $this->_max_sync_lock_time() * 0.7;
+
+        if (time() - $this->sync_start > $time_limit) {
+            return false;
+        }
+
+        // disable messages cache if configured to do so
+        $this->imap_mode(true);
+
+        // synchronize IMAP mailbox cache, does nothing if messages cache is disabled
+        $this->imap->folder_sync($this->folder->name);
+
+        // compare IMAP index with object cache index
+        $imap_index = $this->imap->index($this->folder->name, null, null, true, true);
+
+        $this->imap_mode(false);
+
+        if ($imap_index->is_error()) {
+            rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (SEARCH failed)"
+                ), true);
+            return false;
+        }
+
+        // determine objects to fetch or to invalidate
+        $imap_index = $imap_index->get();
+        $del_index  = array();
+        $old_index  = $this->current_index($del_index);
+
+        // Fetch objects and store in DB
+        $result = $this->synchronize_fetch($imap_index, $old_index, $del_index);
+
+        if ($result) {
+            // Remove redundant entries from IMAP and cache
+            $rem_index = array_intersect($del_index, $imap_index);
+            $del_index = array_merge(array_unique($del_index), array_diff($old_index, $imap_index));
+
+            $this->synchronize_delete($rem_index, $del_index);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Perform partial cache synchronization, based on QRESYNC
+     */
+    protected function synchronize_update()
+    {
+        if (!$this->imap->get_capability('QRESYNC')) {
+            rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (no QRESYNC capability)"
+                ), true);
+
+            return $this->synchronize_full();
+        }
+
+        // Handle the previous ctag
+        list($uidvalidity, $highestmodseq, $uidnext) = explode('-', $this->metadata['ctag']);
+
+        if (empty($uidvalidity) || empty($highestmodseq)) {
+            rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (Invalid old ctag)"
+                ), true);
+            return false;
+        }
+
+        // Enable QRESYNC
+        $res = $this->imap->conn->enable('QRESYNC');
+        if ($res === false) {
+            rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (failed to enable QRESYNC/CONDSTORE)"
+                ), true);
+
+            return false;
+        }
+
+        $mbox_data = $this->imap->folder_data($this->folder->name);
+        if (empty($mbox_data)) {
+            rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (failed to get folder state)"
+                ), true);
+
+             return false;
+        }
+
+        // Check UIDVALIDITY
+        if ($uidvalidity != $mbox_data['UIDVALIDITY']) {
+            return $this->synchronize_full();
+        }
+
+        // QRESYNC not supported on specified mailbox
+        if (!empty($mbox_data['NOMODSEQ']) || empty($mbox_data['HIGHESTMODSEQ'])) {
+            rcube::raise_error(array(
+                    'code' => 900,
+                    'message' => "Failed to sync the kolab cache (QRESYNC not supported on the folder)"
+                ), true);
+
+             return $this->synchronize_full();
+        }
+
+        // Get modified flags and vanished messages
+        // UID FETCH 1:* (FLAGS) (CHANGEDSINCE 0123456789 VANISHED)
+        $result = $this->imap->conn->fetch(
+            $this->folder->name, '1:*', true, array('FLAGS'), $highestmodseq, true
+        );
+
+        $removed  = array();
+        $modified = array();
+        $existing = $this->current_index($removed);
+
+        if (!empty($result)) {
+            foreach ($result as $msg) {
+                $uid = $msg->uid;
+
+                // Message marked as deleted
+                if (!empty($msg->flags['DELETED'])) {
+                    $removed[] = $uid;
+                    continue;
+                }
+
+                // Flags changed or new
+                $modified[] = $uid;
+            }
+        }
+
+        $new    = array_diff($modified, $existing, $removed);
+        $result = true;
+
+        if (!empty($new)) {
+            $result = $this->synchronize_fetch($new, $existing, $removed);
+
+            if (!$result) {
+                return false;
+            }
+        }
+
+        // VANISHED found?
+        $mbox_data = $this->imap->folder_data($this->folder->name);
+
+        // Removed vanished messages from the database
+        $vanished = (array) rcube_imap_generic::uncompressMessageSet($mbox_data['VANISHED']);
+
+        // Remove redundant entries from IMAP and DB
+        $vanished = array_merge($removed, array_intersect($vanished, $existing));
+        $this->synchronize_delete($removed, $vanished);
+
+        return $result;
+    }
+
+    /**
+     * Fetch objects from IMAP and save into the database
+     */
+    protected function synchronize_fetch($new_index, &$old_index, &$del_index)
+    {
+        // get effective time limit we have for synchronization (~70% of the execution time)
+        $time_limit = $this->_max_sync_lock_time() * 0.7;
+
+        if (time() - $this->sync_start > $time_limit) {
+            return false;
+        }
+
+        $i = 0;
+        $aborted = false;
+
+        // fetch new objects from imap
+        foreach (array_diff($new_index, $old_index) as $msguid) {
+            // Note: We'll store only objects matching the folder type
+            // anything else will be silently ignored
+            if ($object = $this->folder->read_object($msguid)) {
+                // Deduplication: remove older objects with the same UID
+                // Here we do not resolve conflicts, we just make sure
+                // the most recent version of the object will be used
+                if ($old_msguid = $old_index[$object['uid']]) {
+                    if ($old_msguid < $msguid) {
+                        $del_index[] = $old_msguid;
+                    }
+                    else {
+                        $del_index[] = $msguid;
+                        continue;
+                    }
+                }
+
+                $old_index[$object['uid']] = $msguid;
+
+                $this->_extended_insert($msguid, $object);
+
+                // check time limit and abort sync if running too long
+                if (++$i % 50 == 0 && time() - $this->sync_start > $time_limit) {
+                    $aborted = true;
+                    break;
+                }
+            }
+        }
+
+        $this->_extended_insert(0, null);
+
+        return $aborted === false;
+    }
+
+    /**
+     * Remove specified objects from the database and IMAP
+     */
+    protected function synchronize_delete($imap_delete, $db_delete)
+    {
+        if (!empty($imap_delete)) {
+            $this->imap_mode(true);
+            $this->imap->delete_message($imap_delete, $this->folder->name);
+            $this->imap_mode(false);
+        }
+
+        if (!empty($db_delete)) {
+            $quoted_ids = join(',', array_map(array($this->db, 'quote'), $db_delete));
+            $this->db->query(
+                "DELETE FROM `{$this->cache_table}` WHERE `folder_id` = ? AND `msguid` IN ($quoted_ids)",
+                $this->folder_id
+            );
+        }
+    }
+
+    /**
+     * Return current use->msguid index
+     */
+    protected function current_index(&$duplicates = array())
+    {
+        // read cache index
+        $sql_result = $this->db->query(
+            "SELECT `msguid`, `uid` FROM `{$this->cache_table}` WHERE `folder_id` = ?"
+                . " ORDER BY `msguid` DESC", $this->folder_id
+        );
+
+        $index = $del_index = array();
+
+        while ($sql_arr = $this->db->fetch_assoc($sql_result)) {
+            // Mark all duplicates for removal (note sorting order above)
+            // Duplicates here should not happen, but they do sometimes
+            if (isset($index[$sql_arr['uid']])) {
+                $duplicates[] = $sql_arr['msguid'];
+            }
+            else {
+                $index[$sql_arr['uid']] = $sql_arr['msguid'];
+            }
+        }
+
+        return $index;
+    }
 
     /**
      * Read a single entry from cache or from IMAP directly
@@ -1044,7 +1218,7 @@ class kolab_storage_cache
             return;
 
         $sql_arr = $this->db->fetch_assoc($this->db->query(
-                "SELECT `folder_id`, `synclock`, `ctag`, `changed`, `objectcount`"
+                "SELECT `folder_id`, `synclock`, `ctag`, `changed`"
                 . " FROM `{$this->folders_table}` WHERE `resource` = ?",
                 $this->resource_uri
         ));
@@ -1082,10 +1256,12 @@ class kolab_storage_cache
         $read_query  = "SELECT `synclock`, `ctag` FROM `{$this->folders_table}` WHERE `folder_id` = ?";
         $write_query = "UPDATE `{$this->folders_table}` SET `synclock` = ? WHERE `folder_id` = ? AND `synclock` = ?";
 
+        $max_lock_time = $this->_max_sync_lock_time();
+
         // wait if locked (expire locks after 10 minutes) ...
         // ... or if setting lock fails (another process meanwhile set it)
         while (
-            (intval($this->metadata['synclock']) + $this->max_sync_lock_time > time()) ||
+            (intval($this->metadata['synclock']) + $max_lock_time > time()) ||
             (($res = $this->db->query($write_query, time(), $this->folder_id, intval($this->metadata['synclock']))) &&
                 !($affected = $this->db->affected_rows($res)))
         ) {
@@ -1105,14 +1281,24 @@ class kolab_storage_cache
             return;
 
         $this->db->query(
-            "UPDATE `{$this->folders_table}` SET `synclock` = 0, `ctag` = ?, `changed` = ?, `objectcount` = ? WHERE `folder_id` = ?",
+            "UPDATE `{$this->folders_table}` SET `synclock` = 0, `ctag` = ?, `changed` = ? WHERE `folder_id` = ?",
             $this->metadata['ctag'],
             $this->metadata['changed'],
-            $this->metadata['objectcount'],
             $this->folder_id
         );
 
         $this->synclock = false;
+    }
+
+    protected function _max_sync_lock_time()
+    {
+        $limit = get_offset_sec(ini_get('max_execution_time'));
+
+        if ($limit <= 0 || $limit > $this->max_sync_lock_time) {
+            $limit = $this->max_sync_lock_time;
+        }
+
+        return $limit;
     }
 
     /**

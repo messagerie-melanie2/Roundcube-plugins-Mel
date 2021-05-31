@@ -60,7 +60,7 @@ class libkolab extends rcube_plugin
 
         $this->add_texts('localization/', false);
 
-        if ($rcmail->output->type == 'html') {
+        if (!empty($rcmail->output->type) && $rcmail->output->type == 'html') {
             $rcmail->output->add_handler('libkolab.folder_search_form', array($this, 'folder_search_form'));
             $this->include_stylesheet($this->local_skin_path() . '/libkolab.css');
         }
@@ -93,7 +93,15 @@ class libkolab extends rcube_plugin
      */
     function storage_init($p)
     {
-        $p['fetch_headers'] = trim($p['fetch_headers'] .' X-KOLAB-TYPE X-KOLAB-MIME-VERSION MESSAGE-ID');
+        $kolab_headers = 'X-KOLAB-TYPE X-KOLAB-MIME-VERSION MESSAGE-ID';
+
+        if (!empty($p['fetch_headers'])) {
+            $p['fetch_headers'] .= ' ' . $kolab_headers;
+        }
+        else {
+            $p['fetch_headers'] = $kolab_headers;
+        }
+
         return $p;
     }
 

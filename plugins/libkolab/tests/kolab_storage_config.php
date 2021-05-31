@@ -1,6 +1,6 @@
 <?php
 
-class kolab_storage_config_test extends PHPUnit_Framework_TestCase
+class kolab_storage_config_test extends PHPUnit\Framework\TestCase
 {
     private $params_personal = array(
         'folder'     => 'Archive',

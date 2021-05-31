@@ -203,7 +203,7 @@ abstract class kolab_format_xcal extends kolab_format
                 for ($i=0; $i < $byday->size(); $i++) {
                     $daypos = $byday->get($i);
                     $prefix = $daypos->occurence();
-                    $weekdays[] = ($prefix ? $prefix : '') . $weekday_map[$daypos->weekday()];
+                    $weekdays[] = ($prefix ?: '') . $weekday_map[$daypos->weekday()];
                 }
                 $object['recurrence']['BYDAY'] = join(',', $weekdays);
             }
@@ -382,8 +382,8 @@ abstract class kolab_format_xcal extends kolab_format
                 $att = new Attendee;
                 $att->setContact($cr);
                 $att->setPartStat($this->part_status_map[$attendee['status']]);
-                $att->setRole($this->role_map[$attendee['role']] ? $this->role_map[$attendee['role']] : kolabformat::Required);
-                $att->setCutype($this->cutype_map[$attendee['cutype']] ? $this->cutype_map[$attendee['cutype']] : kolabformat::CutypeIndividual);
+                $att->setRole($this->role_map[$attendee['role']] ?: kolabformat::Required);
+                $att->setCutype($this->cutype_map[$attendee['cutype']] ?: kolabformat::CutypeIndividual);
                 $att->setRSVP((bool)$attendee['rsvp']);
 
                 if (!empty($attendee['delegated-from'])) {

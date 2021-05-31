@@ -93,5 +93,4 @@ class kolab_bonnie_api
     {
         return $this->client->execute($method, $params);
     }
-
 }

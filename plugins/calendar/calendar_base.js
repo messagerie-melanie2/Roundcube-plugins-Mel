@@ -33,9 +33,6 @@ function rcube_calendar(settings)
     // extend base class
     rcube_libcalendaring.call(this, settings);
 
-    // private vars
-    var me = this;
-
     // create new event from current mail message
     this.create_from_mail = function(uid)
     {
@@ -85,33 +82,6 @@ function rcube_calendar(settings)
           }, rcmail.set_busy(true, 'itip.savingdata'));
       }
     };
-
-    // // // PAMELA - Add event function
-    // this.add_event_from_shortcut = function() {
-    //   // load calendar UI (scripts and edit dialog template)
-    //   console.log("cal", this, this.ui_loaded);
-    //   if (!this.ui_loaded) {
-    //     $.when(
-    //         $.getScript(rcmail.assets_path('plugins/calendar/calendar_ui.js')),
-    //         $.getScript(rcmail.assets_path('plugins/calendar/lib/js/fullcalendar.js')),
-    //         //$.getScript(rcmail.assets_path("/program/js/treelist.js")),
-    //         $.get(rcmail.url('calendar/inlineui'), function(html){ $(document.body).append(html); }, 'html')
-    //       ).then(function() {           
-    //         me.ui_loaded = true;
-    //         me.ui = new rcube_calendar_ui(me.settings);
-    //         me.add_event_from_shortcut();  // start over
-    //       });
-    //     return;
-    //   }
-    //   else {
-    //     setTimeout(function() {
-    //       const event = {};
-    //       me.ui.add_event(event);
-    //       if (rcmail.message_list)
-    //         rcmail.message_list.blur();
-    //     }, 200);
-    //   }
-    // }
 }
 
 
@@ -152,6 +122,4 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     p.action = p.event = null;
     new Image().src = rcmail.url(action, p);
   });
-
-  
 });

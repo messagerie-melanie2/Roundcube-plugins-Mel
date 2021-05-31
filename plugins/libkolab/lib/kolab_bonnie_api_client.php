@@ -235,5 +235,4 @@ class kolab_bonnie_api_client
 
         rcube::write_log('bonnie', join(";\n", $msg));
     }
-
 }

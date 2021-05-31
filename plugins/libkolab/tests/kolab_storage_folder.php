@@ -21,7 +21,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class kolab_storage_folder_test extends PHPUnit_Framework_TestCase
+class kolab_storage_folder_test extends PHPUnit\Framework\TestCase
 {
     public static function setUpBeforeClass()
     {

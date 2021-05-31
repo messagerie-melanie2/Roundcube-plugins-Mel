@@ -23,11 +23,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('INSTALL_PATH', realpath('.') . '/' );
+define('INSTALL_PATH', __DIR__ . '/../../../');
 ini_set('display_errors', 1);
-
-if (!file_exists(INSTALL_PATH . 'program/include/clisetup.php'))
-    die("Execute this from the Roundcube installation dir!\n\n");
 
 require_once INSTALL_PATH . 'program/include/clisetup.php';
 
@@ -58,6 +55,10 @@ $action = $opts[0];
 
 $rcmail = rcube::get_instance(rcube::INIT_WITH_DB | rcube::INIT_WITH_PLUGINS);
 
+// Make --host argument optional where the default_host is a simple string
+if (empty($opts['host'])) {
+    $opts['host'] = imap_host();
+}
 
 // connect to database
 $db = $rcmail->get_dbh();
@@ -236,3 +237,23 @@ function authenticate(&$opts)
     return $auth['valid'];
 }
 
+function imap_host()
+{
+    global $rcmail;
+
+    $default_host = $rcmail->config->get('default_host');
+
+    if (is_array($default_host)) {
+        $key = key($default_host);
+        $imap_host = is_numeric($key) ? $default_host[$key] : $key;
+    }
+    else {
+        $imap_host = $default_host;
+    }
+
+    // strip protocol prefix
+    $uri = parse_url($imap_host);
+    if (!empty($uri['host'])) {
+        return $uri['host'];
+    }
+}

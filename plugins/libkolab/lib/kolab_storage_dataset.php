@@ -150,5 +150,4 @@ class kolab_storage_dataset implements Iterator, ArrayAccess, Countable
     {
         return !empty($this->index[$this->iteratorkey]);
     }
-
 }

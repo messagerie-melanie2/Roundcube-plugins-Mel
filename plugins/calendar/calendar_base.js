@@ -120,6 +120,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
   if (rcmail.task != 'calendar') {
     var cal = new rcube_calendar($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
     window.cal = cal;
+    //PAMELA - Add custom events
     rcmail.register_command("add-event-from-shortcut", function() { cal.create_event_from_somewhere(); });
     rcmail.enable_command('add-event-from-shortcut', true);
     // register create-from-mail command to message_commands array

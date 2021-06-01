@@ -148,3 +148,5 @@ $labels["menu_create_help_task"] = "Créer une nouvelle tâche";
 $labels["menu_create_help_doc"] = "Créer un nouveau document";
 $labels["menu_create_help_note"] = "Créer une nouvelle note";
 $labels["menu_create_help_survey"] = "Créer un nouveau sondage";
+
+$labels["change_avatar"] = "Changer d'avatar";

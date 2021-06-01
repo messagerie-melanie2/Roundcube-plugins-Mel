@@ -217,10 +217,42 @@ if (rcmail)
         parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.get, parent.rcmail.mel_metapage_fn.calendar_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.get, parent.rcmail.mel_metapage_fn.tasks_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.mails_updated.get, parent.rcmail.mel_metapage_fn.mail_updated);
+        
         parent.rcmail.enable_command("my_account", true);
         parent.rcmail.register_command("my_account", () => {
             window.location.href = "./?_task=settings&_action=plugin.mel_moncompte";
         })
+
+        parent.rcmail.enable_command("change_avatar", true);
+        parent.rcmail.register_command("change_avatar", () => {
+            const func = function () {
+                document.querySelector("iframe.discussion-frame").contentWindow.postMessage({
+                    externalCommand: 'go',
+                    path: '/account/profile'
+                  }, '*')
+            };
+
+            if (rcmail.env.current_frame_name === "discussion")
+                func();
+            else
+                mel_metapage.Functions.change_frame("rocket", true, true).then(func);
+        });
+
+        $(".barup").on("click", (e) => {
+            let target = $(e.target);
+
+            let isFav = false;
+
+            while (!isFav && !target.hasClass("barup")) {
+                if (target.hasClass("my_favorites"))
+                    isFav = true;
+                else
+                    target = target.parent();
+            }
+
+            if (!isFav)
+                FullscreenItem.close_if_exist();
+        });
 
         // //checks
         let local_storage = {
@@ -259,13 +291,16 @@ if (rcmail)
         parent.rcmail.register_command("create-modal", () => {
             m_mp_Create();
         })
+
         rcmail.register_command("fav-modal", () => {
             m_mp_shortcuts();
         }, true);
+
         parent.rcmail.enable_command("help-modal", true);
         parent.rcmail.register_command("help-modal", () => {
             m_mp_Help();
         })
+
         parent.rcmail.enable_command("mm-search", true);
         parent.rcmail.register_command("mm-search", () => {
             $("#barup-buttons").css("display", "none");
@@ -276,6 +311,7 @@ if (rcmail)
                 $("#barup-search-col").find(".input-group-append").append('<button onclick="rcmail.command(`stop-search`)" id="gbtniabsc" class="btn btn-danger"><span class="icofont-close"></button>')
             $(".barup").css("display", "initial");
         })
+
         parent.rcmail.enable_command("stop-search", true);
         parent.rcmail.register_command("stop-search", () => {
             $("#barup-buttons").css("display", "");
@@ -286,27 +322,28 @@ if (rcmail)
                 $("#gbtniabsc").remove();
             $(".barup").css("display", "");
         });
-        new Promise(async (a,b) => {
-            while (rcmail.env.last_frame_class === undefined) {
-                await delay(500);
-            }
-            let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
-            let btn = ArianeButton.default();
-            //console.log(parent.rcmail, rcmail);
-            if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
-            {
-                if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
-                    btn.hide_button();
-                else {
-                    btn.show_button();
-                    btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, parent.rcmail.env.mel_metapage_ariane_button_config[eClass].right);
-                }
-            }
-            else {
-                btn.show_button();
-                btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
-            }
-        });
+        
+        // new Promise(async (a,b) => {
+        //     while (rcmail.env.last_frame_class === undefined) {
+        //         await delay(500);
+        //     }
+        //     let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
+        //     let btn = ArianeButton.default();
+        //     //console.log(parent.rcmail, rcmail);
+        //     if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
+        //     {
+        //         if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
+        //             btn.hide_button();
+        //         else {
+        //             btn.show_button();
+        //             btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, parent.rcmail.env.mel_metapage_ariane_button_config[eClass].right);
+        //         }
+        //     }
+        //     else {
+        //         btn.show_button();
+        //         btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
+        //     }
+        // });
 
         window.addEventListener("message", receiveMessage, false);
         function receiveMessage(event)

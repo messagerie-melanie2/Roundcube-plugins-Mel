@@ -43,7 +43,7 @@ function m_mp_Create()
         let mail = `<div role="listitem" class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + button(rcmail.gettext("mel_metapage.a_mail"), "icon-mel-mail block", "window.create_popUp.close();rcmail.command('compose','',this,event)") + "</div>";
         let reu = `<div role="listitem" class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + button(rcmail.gettext("mel_metapage.a_meeting"), "icon-mel-calendar block", 'mm_create_calendar(this);//rcube_calendar.mel_create_event()//m_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
         let viso = `<div role="listitem" class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + button(rcmail.gettext("mel_metapage.a_web_conf"), "icon-mel-videoconference block", `window.webconf_helper.go()`) + "</div>";
-        let tache = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + button(rcmail.gettext("mel_metapage.a_task"), "icon-mel-survey block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), () => m_mp_action_from_storage('task_create', m_mp_OpenTask))") + "</div>";
+        let tache = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + button(rcmail.gettext("mel_metapage.a_task"), "icon-mel-survey block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)") + "</div>";
         let document = `<div role="listitem" class="col-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + button(rcmail.gettext("mel_metapage.a_document"), "icon-mel-folder block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</div>";
         let blocnote = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</div>";
         let pega = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + button(rcmail.gettext("mel_metapage.a_survey"), "icon-mel-sondage block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";
@@ -1127,17 +1127,22 @@ function m_mp_DecodeUrl()
  * @param {function} funcBefore Fonction à appelé avant d'ouvrir.
  * @param {function} func Fonction à appelé une fois ouvert.
  */
-function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, changepage = true){
+async function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, changepage = true){
     if (funcBefore !== null)
         funcBefore();
-    mm_st_CreateOrOpenModal(frameClasse, changepage);
-    new Promise(async (a,b) => {
-        while (parent.rcmail.env.frame_created === false) {
-            await delay(1000);
-        }
-        if (func !== null)
-            func();
-    });
+
+    //mm_st_CreateOrOpenModal(frameClasse, changepage);
+    await mel_metapage.Functions.change_frame(frameClasse, changepage, true);
+
+    if (func !== null)
+        func();
+    // new Promise(async (a,b) => {
+    //     while (parent.rcmail.env.frame_created === false) {
+    //         await delay(1000);
+    //     }
+    //     if (func !== null)
+    //         func();
+    // });
 }
 
 /**
@@ -1342,4 +1347,16 @@ function mm_create_calendar(e, existingEvent = null)
     //     })
     // }
     // , m_mp_CreateEvent_inpage)
+}
+
+function m_mp_NewTask()
+{
+    let func = () => {
+
+        if (rcmail._events["pamella.tasks.afterinit"] !== undefined)
+            rcmail.triggerEvent("pamella.tasks.afterinit", undefined);
+
+    };
+
+    mel_metapage.Functions.call(func, true);
 }

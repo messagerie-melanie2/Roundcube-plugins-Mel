@@ -656,6 +656,7 @@ const mel_metapage = {
     }
 }; 
 window.mel_metapage = mel_metapage;
+
 // if (mel_metapage.RCMAIL_Start !== undefined)
 // {
 //     rcmail.addEventListener("init", () => {

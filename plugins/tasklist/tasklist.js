@@ -2729,6 +2729,8 @@ function rcube_tasklist_ui(settings)
 
         // show nav buttons on mobile (elastic)
         $('.content-frame-navigation > .buttons > :not(.disabled)').show();
+
+    
     }
 
     /**
@@ -3465,4 +3467,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
     rcmail.register_command('collapse-all', function(){ rctasks.expand_collapse(false); }, true);
 
     rctasks.init();
+
+    //Pamela
+    rcmail.triggerEvent("pamella.tasks.afterinit", rctasks);
 });

@@ -353,7 +353,16 @@ function create_tasks(id, e)
         m_mp_set_storage('task_id', id);
     }
     , () => {
-        m_mp_action_from_storage('task_create', m_mp_OpenTask);
+        //m_mp_action_from_storage('task_create', m_mp_OpenTask);
+        let func = () => {
+
+            if (rcmail._events["pamella.tasks.afterinit"] !== undefined)
+                rcmail.triggerEvent("pamella.tasks.afterinit", undefined);
+
+            // if (rcmail._events["pamella.editTask.after"] !== undefined)
+            //     rcmail.triggerEvent("pamella.editTask.after", undefined);
+        };
+        mel_metapage.Functions.call(func, true);
     })
 }
 

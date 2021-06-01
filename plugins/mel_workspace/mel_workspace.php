@@ -100,6 +100,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('PARAMS_update_toolbar', array($this, 'update_toolbar'));
         $this->register_action('PARAMS_update_services', array($this, 'update_services'));
         $this->register_action('join_user', array($this, 'join_user'));
+        $this->register_action('leave_workspace', array($this, 'leave_workspace'));
         $this->register_action('delete_workspace', array($this, 'delete_workspace'));
         $this->register_action('archive_workspace', array($this, 'archive_workspace'));
         //archive_workspace
@@ -1497,7 +1498,7 @@ class mel_workspace extends rcube_plugin
         if ($user_to_delete === null)
             $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
         $workspace = self::get_workspace($uid);
-        if(self::is_admin($workspace))
+        if(self::is_admin($workspace) || $user_to_delete === driver_mel::gi()->getUser()->uid)
         {
             $user_find = false;
             foreach ($workspace->shares as $key => $value) {
@@ -1535,7 +1536,7 @@ class mel_workspace extends rcube_plugin
                 if (self::is_admin($workspace, $value->user))
                     ++$nb_admin;
             }
-            if ($nb_admin === 1)
+            if ($nb_admin === 1 && self::is_admin($workspace))
                 echo 'youretheone';
             else {
                 $this->delete_user($uid, driver_mel::gi()->getUser()->uid, false);

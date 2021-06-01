@@ -560,6 +560,8 @@ $(document).ready(() => {
                      //console.log("block_change_date", index, element, (element.recurrence !== undefined || element.recurrence !== null), s < date, e < date, element._instance === undefined, "tmp_bool", tmp_bool);
                      if (tmp_bool)
                         tmp = element;
+                     else if (e < date)
+                        tmp = element;
                  }
 
                  if (tmp === true)

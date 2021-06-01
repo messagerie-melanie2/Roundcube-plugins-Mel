@@ -393,7 +393,7 @@
         {
             this.busy();
             this.set_body_loading();
-            window.location.href = rcmail.env.current_workspace_back === undefined || rcmail.env.current_workspace_back === null ? this.url() : rcmail.env.current_workspace_back;s
+            window.location.href = rcmail.env.current_workspace_back === undefined || rcmail.env.current_workspace_back === null ? this.url() : rcmail.env.current_workspace_back;
         }
 
     }

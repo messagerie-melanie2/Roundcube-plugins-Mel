@@ -2,12 +2,17 @@ class FullscreenItem
 {
     constructor(parentSelector, open = true)
     {
+        this.is_open = false;
+
         const _class = "fullscreen-item";
+
         let parent = $(parentSelector);
-        //console.log(parent, parent.find("." + _class).length);
+
         if (parent.find("." + _class).length === 0)
             parent.append("<div style=display:none; class="+_class+">");
+
         this.item = parent.find("." + _class);
+
         if (this.item.data("is-flex"))
         {
             if (this.item.find(".fullscreen-item-flex").length === 0)
@@ -15,11 +20,15 @@ class FullscreenItem
             else
                 this.generate_flex();
         }
+
         this.close_button = $('<button class="fullscreen-close"><span class="icofont-close-line-circled"></span><span class="sr-only">Fermer les raccourcis</span></button>').appendTo(this.item);
+        
         this.close_button.on("click", () => {
             this.close();
         });
+
         this.apps = {};
+
         this.item.find(".apps").each((i,e) => {
             this.apps[$(e).data("app-id")] = $(e);
         });
@@ -47,6 +56,7 @@ class FullscreenItem
     {
         if (typeof querry === "string")
             querry = $(querry);
+
         this.apps[key] = querry.addClass("apps").data("app-id", key).appendTo(this.item);
     }
 
@@ -62,7 +72,8 @@ class FullscreenItem
             this.item.parent().css("display", "");
         else
             this.item.css("display", "");
-        //$(".tiny-rocket-chat").css("display", "none");
+
+        this.is_open = true;
     }
 
     close()
@@ -71,8 +82,13 @@ class FullscreenItem
             this.item.parent().css("display", "none");
         else
             this.item.css("display", "none");
-        //$(".tiny-rocket-chat").css("display", "block");
+
+        this.is_open = false;
     }
 
-
+    static close_if_exist()
+    {
+        if (window.shortcuts !== undefined && window.shortcuts !== null && window.shortcuts.is_open)
+            window.shortcuts.close();
+    }
 }

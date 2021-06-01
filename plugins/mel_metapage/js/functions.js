@@ -13,6 +13,8 @@ jQuery.fn.swap = function(b){
  */
 function m_mp_Create()
 {
+    FullscreenItem.close_if_exist();
+
     //Si problème de configuration, on gère.
     try {
         // if (rcmail.env.nextcloud_pinged === false || rcmail.env.nextcloud_username === undefined || rcmail.env.nextcloud_url === undefined || rcmail.env.nextcloud_url === "")
@@ -772,8 +774,26 @@ function m_mp_switch_step(id)
  */
 function m_mp_Help()
 {
+    FullscreenItem.close_if_exist();
+    
     rcmail.mel_metapage_url_info = m_mp_DecodeUrl();
     rcmail.command("help_open_dialog");
+
+    setTimeout(async () => {
+        let it = 0;
+
+        await wait(() => 
+        {
+            return $(".ui-widget-overlay.ui-front").length === 0 && it++ < 5; // ~2,5s
+        });
+
+        if ($(".ui-widget-overlay.ui-front").length > 0)
+        {
+            $(".ui-widget-overlay.ui-front").on("click", () => {
+                $(".ui-dialog-titlebar-close ").click();
+            });
+        }
+    }, 10);
 }
 
 /**
@@ -1058,7 +1078,7 @@ function m_mp_CreateDocNotCurrent()
 function m_mp_DecodeUrl()
 {
     let url;// = $("#" + rcmail.env.current_frame)[0].contentDocument.location.href;
-    if (rcmail.env.current_frame === undefined || rcmail.env.current_frame == "default")
+    if (rcmail.env.current_frame === undefined || rcmail.env.current_frame == "default" || rcmail.env.current_frame_name === "discussion")
         url = window.location.href;
     else
         url = $("#" + rcmail.env.current_frame)[0].contentDocument.location.href;
@@ -1280,7 +1300,12 @@ async function m_mp_shortcuts()
         window.shortcuts = shortcuts;
     }
     else
-        window.shortcuts.open();
+    {
+        if (window.shortcuts.is_open)
+            window.shortcuts.close();
+        else
+            window.shortcuts.open();
+    }
 }
 
 function mm_create_calendar(e, existingEvent = null)

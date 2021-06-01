@@ -39,6 +39,8 @@ class mel_metapage extends rcube_plugin
             $conf = new Webconf($this->rc, $this);
             $conf->init();
         }
+        else if ($this->rc->task === "chat")
+            $this->register_action('index', array($this, 'ariane'));
 
     }
 
@@ -64,16 +66,20 @@ class mel_metapage extends rcube_plugin
             $this->add_texts('localization/', true);
             $this->load_config();
             //$this->include_depedencies();
-            if ($this->rc->action === "chat")
+            if ($this->rc->action === "chat" || $this->rc->task === "chat")
             {
                 $this->include_script('js/actions/ariane.js');
             }
             $this->mm_include_plugin();
             $this->rc->get_storage();
-            if ($this->rc->task !== "webconf")
-                $this->register_task("mel_metapage");
-            else
+            if ($this->rc->task === "webconf")
                 $this->register_task("webconf");
+            else if ($this->rc->task === "chat")
+                $this->register_task("chat");
+            else
+                $this->register_task("mel_metapage");
+
+            
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
             $this->register_action('search_contact', array($this, 'search_contact'));
@@ -166,6 +172,7 @@ class mel_metapage extends rcube_plugin
         }
         $this->include_script('js/init/classes.js');
         $this->include_script('js/init/constants.js');
+        $this->include_script('js/init/events.js');
         $this->load_config_js();
     }
 

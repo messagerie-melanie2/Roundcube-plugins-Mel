@@ -1140,3 +1140,12 @@ a.filename:hover .attachment-name {
 	text-decoration: underline;
 }
 
+ul.treelist li.droptarget > a
+{
+    background-color: #a39bff2e;
+}
+
+ul.treelist li.context-source:not(.selected) > a
+{
+    color:#424564;
+}

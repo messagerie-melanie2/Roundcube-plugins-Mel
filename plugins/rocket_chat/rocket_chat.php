@@ -74,7 +74,7 @@ class rocket_chat extends rcube_plugin {
             ), 'taskbar_mobile');
           } else {
             $this->add_button(array(
-                'href' => './?_task=mel_metapage&_action=chat',
+                'href' => './?_task=chat',
                 'class' => 'icon-mel-message button-rocket_chat',
                 'classsel' => 'icon-mel-message button-rocket_chat button-selected',
                 'innerclass' => 'button-inner',

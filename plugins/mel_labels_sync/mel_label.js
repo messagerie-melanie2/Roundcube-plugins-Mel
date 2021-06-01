@@ -494,12 +494,12 @@ $(document).ready(function() {
 	rcmail.addEventListener('init', function(evt) {
 		rcmail.register_command('plugin.thunderbird_labels.rcm_tb_label_submenu', rcm_tb_label_submenu, true);
 		if (rcmail.message_list) {
-			rcmail.message_list.addEventListener('select', function() {
+			rcmail.message_list.addEventListener('select', function(list) {
+				// Ne récupérer la selection qu'une seule fois (problème de perf)
+				var selection = list.get_selection();
 				$('div#tb_label_popup li a').each(function() {
 					if ($(this).attr('id') != "rcube_manage_labels") {
 						// add/remove active class
-						var selection = rcm_tb_label_get_selection();
-						
 						if (selection.length == 0)
 							$(this).removeClass('active');
 						else
@@ -509,11 +509,11 @@ $(document).ready(function() {
 			});
 		}
 		if (rcmail.env.action == 'show') {
+			// Ne récupérer la selection qu'une seule fois (problème de perf)
+			var selection = rcm_tb_label_get_selection();
 			$('div#tb_label_popup li a').each(function() {
 				if ($(this).attr('id') != "rcube_manage_labels") {
 					// add/remove active class
-					var selection = rcm_tb_label_get_selection();
-					
 					if (selection.length == 0)
 						$(this).removeClass('active');
 					else
@@ -529,11 +529,13 @@ $(document).ready(function() {
 	});
 	rcmail.addEventListener('responseafterplugin.thunderbird_labels.update_list_labels', function(evt) {
 		if ($('div#tb_label_popup').length > 0) {
+			// Ne récupérer la selection qu'une seule fois (problème de perf)
+			var selection = rcm_tb_label_get_selection();
+			
 			$('div#tb_label_popup').html(evt.response.html);
 			$('div#tb_label_popup li a').each(function() {
 				if ($(this).attr('id') != "rcube_manage_labels") {
 					// add/remove active class
-					var selection = rcm_tb_label_get_selection();
 					if (selection.length == 0)
 						$(this).removeClass('active');
 					else

@@ -104,7 +104,22 @@ $(document).ready(() => {
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
             }
             
+            try {
+                
+            } catch (error) {
+                
+            }
             $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
+        
+            if (rcmail.env.task === "mail" && $("#mailsearchform").length > 0)
+            {
+                $("#mailsearchform").parent().parent().find(".unread").on("click",(e) => {
+                    if (!$(e.target).hasClass("selected"))
+                        $(e.target).attr("title", "Afficher tout les courriels");
+                    else
+                        $(e.target).attr("title", rcmail.gettext('showunread'));
+                });
+            }
         }
 
         update()

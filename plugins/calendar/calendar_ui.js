@@ -2078,7 +2078,8 @@ function rcube_calendar_ui(settings)
       $.ajax({
         type: 'GET',
         dataType: 'html',
-        url: rcmail.url('freebusy-status'),
+        //Pamela - correction de l'url
+        url: rcmail.get_task_url("calendar&_action=freebusy-status", window.location.origin + window.location.pathname),//rcmail.url('freebusy-status'),
         data: { email:email, start:date2servertime(clone_date(event.start, event.allDay?1:0)), end:date2servertime(clone_date(event.end, event.allDay?2:0)), _remote: 1 },
         success: function(status){
           var avail = String(status).toLowerCase();

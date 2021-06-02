@@ -28,7 +28,7 @@ var field = null;
 var nodes = {};
 
 // On click gototree element list
-$(document).on("submit", '#mainscreen.annuaire #quicksearchbar form', function(e) {
+$(document).on("submit", '#mainscreen-annuaire #quicksearchbar form', function(e) {
 	e.preventDefault();
 	var params = { 
 		_source: rcmail.env.source,
@@ -126,7 +126,7 @@ window.rcmail
 			if (rcmail.env.action == 'plugin.annuaire') {
 				rcmail.register_command('reset-search', function(props) {
 					rcmail.reset_qsearch();
-					$('#mainscreen.annuaire #quicksearchbar form').submit();
+					$('#mainscreen-annuaire #quicksearchbar form').submit();
 				}, true);
 				rcmail.register_command('export', function() {
 					rcmail.annuaire_export();
@@ -136,7 +136,7 @@ window.rcmail
 				$('#directorylist li a[rel=' + rcmail.env.annuaire_source + ']').parent().click(function(event) {
 					event.preventDefault();
 					rcmail.reset_qsearch();
-					$('#mainscreen.annuaire #quicksearchbar form').submit();
+					$('#mainscreen-annuaire #quicksearchbar form').submit();
 				});
 			}
 			
@@ -497,5 +497,5 @@ rcube_webmail.prototype.annuaire_remove_search_item = function(id)
 	this.enable_command('search-delete', 'search-create', false);
 
 	this.reset_qsearch();
-	$('#mainscreen.annuaire #quicksearchbar form').submit();
+	$('#mainscreen-annuaire #quicksearchbar form').submit();
 };

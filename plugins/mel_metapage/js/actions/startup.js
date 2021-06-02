@@ -36,7 +36,6 @@ $(document).ready(function() {
     else
         rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
 
-    console.log("trigger", event_keys.init.chat_button);
     event_keys.init.chat_button.trigger();
 
     let querry = $(".menu-last-frame").find(".inner");

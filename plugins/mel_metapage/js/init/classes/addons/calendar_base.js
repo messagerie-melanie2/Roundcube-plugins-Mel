@@ -4,13 +4,25 @@ $(document).ready(() => {
     window.rcube_calendar_ui = () => {};
     window.rcube_calendar_ui.continue = function()
     {
-        // $("#event-panel-summary").css("display", "none");
-        // $("#event-panel-attendees").css("display", "");
-        $(".nav-link.nav-icon.attendees").click();
-        if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
-            $(".have-workspace").css("display", "");
-        else
-            $(".have-workspace").css("display", "none");
+        if ($("#edit-title").val() === "")
+        {
+            $("#edit-title").focus();
+            if ($("#edit-title").parent().find(".required-text").length > 0)
+                $("#edit-title").parent().find(".required-text").css("display", "");
+            else
+                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>`);
+        }
+        else {
+
+            $(".nav-link.nav-icon.attendees").click();
+            if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
+                $(".have-workspace").css("display", "");
+            else
+                $(".have-workspace").css("display", "none");
+        
+            if ($("#edit-title").parent().find(".required-text").length > 0)
+                $("#edit-title").parent().find(".required-text").remove();
+        }
     }
     window.rcube_calendar_ui.back = function()
     {

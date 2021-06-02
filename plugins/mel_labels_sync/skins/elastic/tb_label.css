@@ -35,57 +35,16 @@
 .tb_label_div_manage_labels a:hover {
 	color: #fff;
 }
-/* 
-#tb_label_popup
-{
-  width: 250px;
-  position: absolute;
-  padding: 0;
+
+#tb_label_popup .toolbarmenu li.labels,
+.task-mail #searchfilter option.labels {
+	display: none;
 }
 
-#tb_label_popup ul.toolbarmenu {
-	overflow-y: auto;
-	max-height: 220px;
+.task-mail #searchfilter option.labels.show {
+	display: block;
 }
 
-#tb_label_popup a.active
-{
-  color: inherit; /* fix for firefox * /
+#tb_label_popup .toolbarmenu li.labels.show {
+	display: block;
 }
-
-#tb_label_popup ul.toolbarmenu li a.active:hover {
-	font-weight: normal;
-	background-color: #ececec;
-}
-
-.toolbarmenu li.label0,
-.toolbarmenu li.label0 a.active
-{
-  color: #757575;
-}
-
-.messagelist tr th.labels,
-.messagelist tr td.labels {
-    width: 90px;
-}
-
-#messagelist tr td.labels {
-	cursor: pointer;
-}
-
-#sections-table #rcmrowlabels td.section {
-	background-image: url('images/labels_prefs.png?v=0.1');
-    background-position: 6px 0px;
-}
-
-#sections-table #rcmrowlabels.selected td.section {
-   background-position: 6px -24px;
-}
-
-.texte_explic {
-    padding: 3px;
-    border: 1px solid #FFFFE0;
-	border-color: var(--settings-warn-border-color);
-    background-color: #FFFFE0;
-    background-color:var(--settings-warn-bg-color);
-} */

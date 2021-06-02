@@ -104,27 +104,16 @@ function rcm_tb_label_submenu(p)
 
 function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 {
-	var headers_table = $('table.headers-table');
+	var headers_table = $('.message-partheaders table.headers-table');
 	var preview_frame = $('#messagecontframe');
-	
-	if (rcmail.env.action == 'show') {
-		var header_preview_all_table = $('table.headers-table');
-	} else {
-		var header_preview_all_table = $('table#preview-allheaders');
-	}
+	var header_preview_all_table = $('.message-partheaders table.headers-table');
 	
 	// preview frame exists, simulate environment of single message view
 	if (preview_frame.length)
 	{
 		tb_labels_for_message = preview_frame.get(0).contentWindow.tb_labels_for_message;
-		headers_table = preview_frame.contents().find('table.headers-table');
-		if (rcmail.env.action == 'show') {
-			header_preview_all_table = preview_frame.contents().find('table.headers-table');
-		} else {
-			header_preview_all_table = preview_frame.contents().find('table#preview-allheaders');
-		}
-		// // Reload cache
-		// preview_frame.get(0).contentWindow.location.reload(true);
+		headers_table = preview_frame.contents().find('.message-partheaders table.headers-table');
+		header_preview_all_table = preview_frame.contents().find('.message-partheaders table.headers-table');
 	}
 	
 	if (!rcmail.message_list

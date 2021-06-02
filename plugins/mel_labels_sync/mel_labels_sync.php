@@ -333,7 +333,7 @@ class mel_labels_sync extends rcube_plugin {
    * @param array $p
    */
   public function color_headers($p) {
-    if ($p['valueof'] == 'from' && !$this->header_loaded) {
+    if ($p['valueof'] == 'subject' && !$this->header_loaded) {
       // always write array, even when empty
       $p['content'] .= '<script type="text/javascript">
         		var tb_labels_for_message = [' . join(',', $this->message_tb_labels) . '];
@@ -462,7 +462,7 @@ class mel_labels_sync extends rcube_plugin {
       // }
     }
 
-    $out .= '<ul class="toolbarmenu">';
+    $out .= '<ul class="toolbarmenu menu listing">';
     $out .= '<li id="label0" class="label0 click0 show"><a href="#">0 ' . $this->gettext('label0') . '</a></li>';
     $i = [];
     foreach ($this->_get_bal_labels() as $label) {

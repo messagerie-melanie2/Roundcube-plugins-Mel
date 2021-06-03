@@ -318,7 +318,7 @@ const mel_metapage = {
         {
             if (typeof sd === "string")
                 sd = moment(sd).startOf("day");
-                
+
             if (typeof ed === "string")
                 ed = moment(ed).endOf("day");
 
@@ -354,12 +354,15 @@ const mel_metapage = {
             if (action !== null && action !== undefined && action !== "")
                 url += "&_action=" + action;
 
-            if (window.location.href.includes("_from=iframe") || window !== parent)
+            if (window.location.href.includes(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`) || window !== parent)
             {
                 if (args === null || args === undefined)
-                    args = {_from:"iframe"};
-                else if (args["_from"] === undefined)
-                    args["_from"] = "iframe";
+                {
+                    args = {};
+                    args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+                }
+                else if (args[rcmail.env.mel_metapage_const.key] === undefined)
+                    args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
             }
 
             if (args !== null)

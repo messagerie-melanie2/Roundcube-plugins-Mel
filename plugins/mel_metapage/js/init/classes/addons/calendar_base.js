@@ -568,11 +568,11 @@ $(document).ready(() => {
                      const s = moment(element.start);
                      const e = moment(element.end);
                      const tmp_bool = (element.recurrence !== undefined || element.recurrence !== null) &&
-                     s < date && e < date && element._instance === undefined
-                     //console.log("block_change_date", index, element, (element.recurrence !== undefined || element.recurrence !== null), s < date, e < date, element._instance === undefined, "tmp_bool", tmp_bool);
+                     s < date && e < date && element._instance === undefined;
+
                      if (tmp_bool)
                         tmp = element;
-                     else if (e < date)
+                     else if (e < date || s.startOf("day") > date.startOf("day"))
                         tmp = element;
                  }
 

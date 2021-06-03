@@ -166,24 +166,24 @@ $(document).ready(() => {
                 $("#edit-enddate").val(val[0]);
                 $("#edit-endtime").val(val[1]);
             });
-            $("#edit-allday").on("click", (e) => {
-                e = e.target;
-                let moment = getDate($(".input-mel-datetime .input-mel.start").val());
-                if (e.checked)
-                {
-                    $(".input-mel-datetime .input-mel.start").addClass("disabled").attr("disabled", "disabled"); 
-                    $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
-                    $(".input-mel-datetime .input-mel.start").val(moment.startOf("day").format(format));
-                    $(".input-mel-datetime .input-mel.end").val(moment.endOf("day").format(format));
-                    update_date();
-                }
-                else
-                {
-                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                    update_date();
-                }
-            })
+            // $("#edit-allday").on("click", (e) => {
+            //     e = e.target;
+            //     let moment = getDate($(".input-mel-datetime .input-mel.start").val());
+            //     if (e.checked)
+            //     {
+            //         $(".input-mel-datetime .input-mel.start").addClass("disabled").attr("disabled", "disabled"); 
+            //         $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
+            //         $(".input-mel-datetime .input-mel.start").val(moment.startOf("day").format(format));
+            //         $(".input-mel-datetime .input-mel.end").val(moment.endOf("day").format(format));
+            //         update_date();
+            //     }
+            //     else
+            //     {
+            //         $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+            //         $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+            //         update_date();
+            //     }
+            // })
             //update locations
             $(".form-check-input.event-mode").on("click", (e) => {
                 e = e.target;
@@ -321,13 +321,13 @@ $(document).ready(() => {
 
                 $("#fake-event-rec").val("")
 
-                if ($("#edit-allday")[0].checked)
-                    $("#edit-allday").click().click();
-                else
-                {
-                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                }
+                // if ($("#edit-allday")[0].checked)
+                //     $("#edit-allday").click().click();
+                // else
+                // {
+                //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                //     $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                // }
 
                 //Si des données sont déjà présentes
                 if ($("#edit-categories").val() !== "")
@@ -358,13 +358,13 @@ $(document).ready(() => {
                 $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
                 update_date();
 
-                if ($("#edit-allday")[0].checked)
-                    $("#edit-allday").click().click();
-                else
-                {
-                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                }
+                // if ($("#edit-allday")[0].checked)
+                //     $("#edit-allday").click().click();
+                // else
+                // {
+                //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                //     $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                // }
 
                 const req = event.recurrence;
                 if (req !== undefined && req !== null)

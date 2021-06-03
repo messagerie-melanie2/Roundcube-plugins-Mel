@@ -318,17 +318,23 @@ const mel_metapage = {
         {
             if (typeof sd === "string")
                 sd = moment(sd).startOf("day");
+                
             if (typeof ed === "string")
                 ed = moment(ed).endOf("day");
+
             if (typeof date === "string")
                 date = moment(date);
+
             startDate = moment(date).startOf("day");
             endDate = moment(date).endOf("day");
-            //console.log(sd.format(), ed.format(), date.format(), startDate.format(), endDate.format());
-            //console.log(start)
+            //  console.log("event sd", sd.format(), "event ed",ed.format(), "date", date.format(), "sd", startDate.format(), "ed", endDate.format());
+            //  console.log(startDate <= sd && sd <= endDate, startDate <= sd, sd <= endDate)
+            //  console.log(startDate <= ed && ed <= endDate, startDate <= ed , ed <= endDate)
             if (startDate <= sd && sd <= endDate)
                 return true;
             else if (startDate <= ed && ed <= endDate)
+                return true;
+            else if (sd <= startDate && startDate <= ed && sd <= endDate && endDate <= ed)
                 return true;
             else
                 return false;

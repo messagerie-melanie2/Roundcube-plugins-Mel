@@ -167,13 +167,14 @@
             </div>
 
             <!--Pièce jointe-->
-            <label for="mel_metapage_added_add_file" class="span-mel t1"><roundcube:label name='mel_metapage.add_file' /></label>
-            <input id="mel_metapage_added_add_file" class="form-control input-mel file" type="file" />
-			<div id="edit-attachments-droparea" class="file-upload hidden">
+            <!-- <label for="mel_metapage_added_add_file" class="span-mel t1"><roundcube:label name='mel_metapage.add_file' /></label>
+            <input id="mel_metapage_added_add_file" class="form-control input-mel file" type="file" /> -->
+
+			<div id="edit-attachments-droparea" class="file-upload">
 				<h3 id="aria-label-attachmentuploadform" class="voice"><roundcube:label name="arialabelattachmentuploadform" /></h3>
 				<div id="edit-attachments-form" class="upload-form" role="region" aria-labelledby="aria-label-attachmentuploadform">
 					<roundcube:object name="plugin.attachments_form" mode="hint" />
-					<button type="button" class="btn btn-secondary attach" onclick="rcmail.upload_input('event-attachment-form'); return false"><roundcube:label name="addattachment" /></button>
+					<button style="width:unset" type="button" class="btn btn-secondary attach mel-before-remover mel-button help" onclick="rcmail.upload_input('event-attachment-form'); return false"><roundcube:label name="addattachment" /><span class="icon-mel-download plus"></span></button>
 				</div>
 				<div id="edit-attachments">
 					<roundcube:object name="plugin.attachments_list" id="attachmentlist" class="attachmentslist" />

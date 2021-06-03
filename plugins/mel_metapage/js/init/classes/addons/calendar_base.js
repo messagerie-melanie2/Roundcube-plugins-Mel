@@ -1,5 +1,5 @@
 $(document).ready(() => {
-
+    
     if (window.rcube_calendar_ui === undefined)
     window.rcube_calendar_ui = () => {};
     window.rcube_calendar_ui.continue = function()

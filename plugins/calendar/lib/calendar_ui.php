@@ -488,9 +488,12 @@ class calendar_ui
 
         $select = new html_select($attrib);
         $select->add('---', '');
-        $select->add($this->cal->gettext('status-confirmed'), 'CONFIRMED');
+        //Pamela - Texte
+        $select->add($this->cal->gettext('busy'), 'CONFIRMED'); //fin Pamela
         $select->add($this->cal->gettext('status-cancelled'), 'CANCELLED');
         $select->add($this->cal->gettext('status-tentative'), 'TENTATIVE');
+        //Pamela - Ajout de l'option "Libre"
+        $select->add($this->cal->gettext('free'), 'FREE'); //fin pamela
 
         return $select->show(null);
     }

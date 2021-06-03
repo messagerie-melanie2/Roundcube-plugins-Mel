@@ -1,8 +1,9 @@
-#layout-menu{
+#layout-menu {
     background-color:#2C3054;
     position: absolute;
     height: 100%;
-    z-index:999;
+    z-index: 999;
+    overflow-y: auto;
 }
 
 #taskmenu{
@@ -50,8 +51,12 @@
 
 #layout-menu, #taskmenu a
 {
-    width: 60px!important;;
-    font-size: 1.3rem;
+    width: 60px !important;
+    font-size: 1.3rem !important;
+}
+
+#taskmenu a {
+    height: 58px !important;
 }
 
 #taskmenu a:before
@@ -308,7 +313,6 @@ iframe.mm-frame/*,
     border-width: thin;
     padding-top: 17px;
     /* padding-bottom: 8px; */
-    min-width: 100px;
     text-align: left;
     border-color: #363A5B;
 
@@ -320,7 +324,7 @@ iframe.mm-frame/*,
     /* overflow: initial; */
     /* padding: 0; */
     /* position: absolute; */
-    width: initial;
+    width: 120px;
 }
 
 .menu.toolbar a.wsp > span

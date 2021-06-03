@@ -157,7 +157,12 @@ class mel extends rcube_plugin {
     }
 
     // Default task
-    $this->rc->output->set_env('default_task', $this->rc->config->get('default_task', 'mail'));
+    $default_task = $this->rc->config->get('default_task', 'bureau');
+    if ($default_task == 'portail') {
+      // Problème avec le passage portail Mél web vers Bureau
+      $default_task = 'bureau';
+    }
+    $this->rc->output->set_env('default_task', $default_task);
 
     // Use infinite scroll ?
     $this->rc->output->set_env('use_infinite_scroll', $this->rc->config->get('use_infinite_scroll', true));
@@ -355,7 +360,11 @@ class mel extends rcube_plugin {
       $args['_task'] = trim(rcube_utils::get_input_value('_goto_task', rcube_utils::INPUT_GET));
     }
     else if ($args['_task'] == 'mail')  {
-      $args['_task'] = $this->rc->config->get('default_task', 'mail');
+      $args['_task'] = $this->rc->config->get('default_task', 'bureau');
+      if ($args['_task'] == 'portail') {
+        // Problème avec le passage portail Mél web vers Bureau
+        $args['_task'] = 'bureau';
+      }
     }
     // Gestion des identities de l'utilisateur
     $rc_identities = $this->rc->user->list_identities();

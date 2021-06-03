@@ -30,39 +30,40 @@ body{
 #layout-list, #layout-list>.header
 {
     background-color: #484D7A !important;
-    color:white !important;
+    color:#fff !important;
 }
 
 #layout .header a.button,
 #layout .header a.options,
 #layout .header a.select,
-#layout .header a.threads
-{
-    color:white;
+#layout .header a.threads,
+#layout > div > .header a.button {
+    color:#fff;
 }
 
-ul.treelist li.selected>div>a, ul.treelist li.selected>a
-{
+ul.treelist li.selected > div > a, 
+ul.treelist li.selected > a {
     background-color: #484D7A;
-    color:white;
+    color:#fff;
 } 
 
-.listing li.selected, .listing tr.selected td
-{
+.listing li.selected, .listing tr.selected td {
     background-color: #2C3054;
-    color:white; 
+    color:#fff; 
 }
 
-a.button.icon:not(.disabled):focus, .header a.button.icon:not(.disabled):hover
-{
+a.button.icon:not(.disabled):focus, 
+.header a.button.icon:not(.disabled):hover {
     background-color: #484D7A !important;
-    color:white;   
+    color:#fff;   
 }
 
-.menu a:not(.disabled):focus, .menu a:not(.disabled):hover
-{
-    background-color: #2C3054!important;
-    color:white!important;
+.header a.toolbar-button.button.icon:not(.disabled):hover,
+.header a.toolbar-button:hover,
+.menu a:not(.disabled):focus, 
+.menu a:not(.disabled):hover {
+    background-color: #2C3054 !important;
+    color: #fff !important;
 }
 
 .listing tbody td, .scroller>.listing li a
@@ -70,54 +71,83 @@ a.button.icon:not(.disabled):focus, .header a.button.icon:not(.disabled):hover
     color:white;
 }
 
- .listing tbody td, .listing li
-{
-    border:none;
-}  
-
-.listing tbody td a
-{
-    color:white;
+.listing tbody td, 
+.listing li {
+    border: none;
 }
 
-.messagelist td.subject span.fromto
-{
-    color:lightgray;
+ul.listing li ul {
+    border-top: none;
+}
+
+.listing tbody tr.context-source:not(.selected) > td, 
+.listing:not(.treelist) li.context-source:not(.selected), 
+body > #layout > div.sidebar .listing tbody tr.context-source:not(.selected) > td, 
+body > #layout > div.sidebar .listing:not(.treelist) li.context-source:not(.selected), 
+body > #layout > div.sidebar ul.treelist li.context-source:not(.selected) > a, 
+body > #layout > div.sidebar ul.treelist li.context-source:not(.selected) > div > a, 
+ul.treelist li.context-source:not(.selected) > a, 
+ul.treelist li.context-source:not(.selected) > div > a {
+    background-color: #2C3054 !important;
+}
+
+.listing tbody td a {
+    color:#fff;
+}
+
+.messagelist tr.unread > td:first-child,
+.messagelist:not(.withselection) tr.unread > td.selection + td {
+    border-left: 2px solid #fff !important;
+}
+
+.messagelist tr.message td {
+    border-bottom: 1px solid #5C5F7B;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.messagelist td.subject span.date,
+.messagelist td.subject a,
+.messagelist td.subject span.fromto {
+    color:#cacfd2;
+}
+
+.messagelist td.subject span.msgicon.status::before {
+    color:#909497;
+}
+
+.messagelist td.subject span.fromto {
     font-style: italic;
 }
 
-.messagelist .unread  td.subject span.fromto
-{
-    color:white;
+.messagelist td.subject span.date {
+    font-size: 85%;
 }
 
-td.subject {
-    border-bottom: 1px solid #363a5b !important;
+.messagelist .unread td.subject span.date,
+.messagelist tr.unread td.subject a,
+.messagelist .unread td.subject span.fromto,
+.messagelist td.subject span.msgicon.status.unread::before {
+    font-weight: bold;
+    color:#fff;
 }
 
-.messagelist td.subject span.date
-{
-    color:lightgray;
+.messagelist span.attachment span::before {
+    font-size: 80%;
+    color:#909497;
 }
 
-.messagelist .unread td.subject span.date
-{
-    color:white;
+.messagelist span.flagged::before,
+.messagelist tr:hover span.unflagged::before {
+    font-size: 90%;
 }
 
-.messagelist td.subject a
-{
-    color:lightgray;
+.messagelist td.subject span {
+    line-height: 1.8em;
 }
 
-.messagelist tr.unread td.subject a
-{
-    color:white;
-}
-
-.listing-info
-{
-    color:white;
+.listing-info {
+    color:#fff;
 }
 
 .popup > div >div #directorylist > li
@@ -657,7 +687,7 @@ img.menu-image {
 
 html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
 html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
-    border-left: 2px solid #80D5C6;
+    border-left: 2px solid #80D5C6 !important;
 }
 
 .custom-switch .custom-control-input:checked ~ .custom-control-label::before {

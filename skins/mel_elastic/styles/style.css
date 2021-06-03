@@ -30,7 +30,7 @@ body{
 #layout-list, #layout-list>.header
 {
     background-color: #484D7A !important;
-    color:white !important;
+    color:#fff !important;
 }
 
 #layout .header a.button,
@@ -41,28 +41,29 @@ body{
     color:#fff;
 }
 
-ul.treelist li.selected>div>a, ul.treelist li.selected>a
-{
+ul.treelist li.selected > div > a, 
+ul.treelist li.selected > a {
     background-color: #484D7A;
-    color:white;
+    color:#fff;
 } 
 
-.listing li.selected, .listing tr.selected td
-{
+.listing li.selected, .listing tr.selected td {
     background-color: #2C3054;
-    color:white; 
+    color:#fff; 
 }
 
-a.button.icon:not(.disabled):focus, .header a.button.icon:not(.disabled):hover
-{
+a.button.icon:not(.disabled):focus, 
+.header a.button.icon:not(.disabled):hover {
     background-color: #484D7A !important;
-    color:white;   
+    color:#fff;   
 }
 
-.menu a:not(.disabled):focus, .menu a:not(.disabled):hover
-{
-    background-color: #2C3054!important;
-    color:white!important;
+.header a.toolbar-button.button.icon:not(.disabled):hover,
+.header a.toolbar-button:hover,
+.menu a:not(.disabled):focus, 
+.menu a:not(.disabled):hover {
+    background-color: #2C3054 !important;
+    color: #fff !important;
 }
 
 .listing tbody td, .scroller>.listing li a
@@ -73,6 +74,10 @@ a.button.icon:not(.disabled):focus, .header a.button.icon:not(.disabled):hover
 .listing tbody td, 
 .listing li {
     border: none;
+}
+
+ul.listing li ul {
+    border-top: none;
 }
 
 .listing tbody tr.context-source:not(.selected) > td, 

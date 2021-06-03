@@ -36,9 +36,9 @@ body{
 #layout .header a.button,
 #layout .header a.options,
 #layout .header a.select,
-#layout .header a.threads
-{
-    color:white;
+#layout .header a.threads,
+#layout > div > .header a.button {
+    color:#fff;
 }
 
 ul.treelist li.selected>div>a, ul.treelist li.selected>a

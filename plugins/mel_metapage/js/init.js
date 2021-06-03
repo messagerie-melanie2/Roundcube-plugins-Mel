@@ -38,7 +38,7 @@ if (rcmail)
                     try {
                         let events = [];
                         data = JSON.parse(data);
-                        data = Enumerable.from(data).where(x => mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
+                        data = Enumerable.from(data).where(x =>  mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
                         let startMoment;
                         let endMoment;
                         let element;
@@ -52,12 +52,13 @@ if (rcmail)
                             else
                                 element.order = 1;
 
-                            if (moment(element.end) < now || (moment(element.start) < now && element.allDay))
-                                continue;
+                            if (moment(element.end) < now)
+                                    continue;
 
                             events.push(element);
                             
                         }
+
                         mel_metapage.Storage.set("all_events", events);
                         data = null;
                         let ids = [];
@@ -68,7 +69,6 @@ if (rcmail)
                             if (mceToRcId(rcmail.env.username) !== element.calendar)
                                 ids.push(element);
                             else {
-
                                 if (element._instance !== undefined)
                                 {
                                     
@@ -81,6 +81,7 @@ if (rcmail)
                                 }
                             }
                         }
+
                         events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
                         try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
                         update_badge(events.length, mel_metapage.Ids.menu.badge.calendar);

@@ -815,10 +815,14 @@ async function m_mp_InitializeDocument()
 {
     create_popUp.editTitleAndSetBeforeTitle('<a title="Retour" href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>','Création d\'un nouveau document');
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
-    $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", {
-        "_send":true,
-        "_from":"iframe"
-    })}"></iframe>`).on("load", () => {
+
+    let url_config ={
+        "_send":true
+    };
+    url_config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+
+    $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", 
+    )}"></iframe>`).on("load", () => {
         create_popUp.contents.find(".spinner-border").parent().remove();
         create_popUp.contents.find("iframe").css("display", "");
         $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");

@@ -94,9 +94,11 @@ $(document).ready(() => {
         };
         if (rcmail.env.action === "action")
             config["_last_location"] = encodeURIComponent(window.location.href);
-        if (window.location.href.includes('iframe'))
-            config["_from"] = "iframe";
-        console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
+
+        if (window.location.href.includes(rcmail.env.mel_metapage_const.value))
+            config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+
+        //console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
         window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
     }, true);
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);

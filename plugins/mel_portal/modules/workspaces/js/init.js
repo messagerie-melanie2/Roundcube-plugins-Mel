@@ -49,7 +49,7 @@ try {
                 _uid:uid.replace("wsp-", "")
             };
             if ($("iframe.workspace-frame").length > 0)
-                config["_from"] = "iframe";
+                config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
              mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
             $(".workspace-frame")[0].src = MEL_ELASTIC_UI.url('workspace','workspace', config);
             await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);

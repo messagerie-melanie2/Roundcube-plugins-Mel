@@ -19,6 +19,9 @@
  */
 class mel_metapage extends rcube_plugin
 {
+    public const FROM_KEY = "_is_from";
+    public const FROM_VALUE = "iframe";
+
     /**
      * Contient l'instance de rcmail
      * @var rcmail
@@ -48,6 +51,11 @@ class mel_metapage extends rcube_plugin
     {
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
+
+        $this->rc->output->set_env('mel_metapage_const', [
+            "key" => self::FROM_KEY,
+            "value" => self::FROM_VALUE    
+        ]);
 
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
@@ -92,7 +100,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('check_users', array($this, 'check_users'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
-            if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
+            if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
                 $this->include_script('js/actions/startup.js');
             else
             {
@@ -136,9 +144,6 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_hook("send_page", array($this, "parasite_calendar"));
         }
-
-        //else if ($this->rc->task === "addressbook" && rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) !== "iframe")
-          //  $this->rc->output->redirect(array("_task" => "mel_portal"));
     }
 
     /**
@@ -209,7 +214,7 @@ class mel_metapage extends rcube_plugin
             $args["content"] = $this->from_iframe($args["content"]);
             return $args;
         }
-        if (rcube_utils::get_input_value('_from', rcube_utils::INPUT_GET) === "iframe")
+        if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) === self::FROM_VALUE)
         {
             $args["content"] = $this->from_iframe($args["content"]);
         }
@@ -488,6 +493,7 @@ class mel_metapage extends rcube_plugin
         }
 
         $this->rc->output->set_env('mel_metapage_user_emails', $emails);
+
         //$this->rc->output->set_env('currentTask', $this->rc->task);
     }
 

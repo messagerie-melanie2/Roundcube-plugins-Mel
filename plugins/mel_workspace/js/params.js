@@ -39,7 +39,17 @@
         url(action = null)
         {
             if (action === null)
-                return MEL_ELASTIC_UI.url("workspace", "", (window.location.href.includes("iframe") ? {"_from":"iframe"} : null));
+            {
+                let default_config = null;
+
+                if (window.location.href.includes(rcmail.env.mel_metapage_const.value))
+                {
+                    default_config = {};
+                    default_config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+                }
+
+                return MEL_ELASTIC_UI.url("workspace", "", default_config);
+            }
             else
                 return MEL_ELASTIC_UI.url("workspace", action);
         }

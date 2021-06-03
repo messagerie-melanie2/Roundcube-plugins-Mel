@@ -3,22 +3,28 @@
     border: none;
 } */
 
-body{
+body {
     color:#363A5B;
 }
 
-.mel-clickable{
+body, 
+button, 
+input, 
+optgroup, 
+select, 
+textarea, 
+.popover {
+    font-family: Marianne,Roboto,sans-serif;
+}
+
+.mel-clickable {
     cursor: pointer;
 }
 
-#layout>div>.header
-{
-    border:none;
-}
-
-#layout-sidebar, #layout-list
-{
-    border:none;
+#layout > div > .header,
+#layout-sidebar, 
+#layout-list {
+    border: none;
 }
 
 #layout-sidebar, #layout-sidebar>.header

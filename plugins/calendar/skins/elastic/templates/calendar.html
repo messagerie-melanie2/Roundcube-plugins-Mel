@@ -30,6 +30,10 @@
 		<span class="header-title"></span>
 		<!-- toolbar -->
 		<div id="calendartoolbar" class="toolbar menu">
+			<!-- PAMELA - MANTIS 0004466: Ajouter un bouton pour rafraichir l'agenda -->
+			<roundcube:button command="refreshcalendar" type="link" 
+			class="button refreshcalendar" classAct="button refreshcalendar" 
+			classSel="button refreshcalendar pressed" label="refresh" title="refresh" innerClass="inner" />		
 			<roundcube:button command="addevent" type="link"
 				class="button create disabled" classAct="button create"
 				label="create" title="calendar.new_event" innerClass="inner" />

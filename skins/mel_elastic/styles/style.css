@@ -1157,16 +1157,6 @@ html.layout-normal body.task-mail.action-compose #layout-sidebar
     font-family: DWP !important;
 }
 
-a.filename .attachment-name {
-	color: white;
-}
-
-#event-attachments a.filename .attachment-name,
-#edit-attachments a.filename .attachment-name{
-	color: black;
-}
-
-
 a.filename:hover .attachment-name {
 	text-decoration: underline;
 }

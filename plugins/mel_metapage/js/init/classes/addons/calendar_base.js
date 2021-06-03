@@ -53,6 +53,7 @@ $(document).ready(() => {
             else if (event.end === undefined)
                 event.end = moment().add(30, "m");
         }
+        console.log("copy event", event, rcmail.env.event_prop);
         //Shuffle array elements
         function shuffle(array) {
             var currentIndex = array.length, temporaryValue, randomIndex;
@@ -269,54 +270,10 @@ $(document).ready(() => {
         }
         
         setTimeout(() => {
-            if (event === "") //nouvel event
+
+            const update_desc = function (description) 
             {
-                $(".input-mel-datetime .input-mel.start").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).format(format));
-                $(".input-mel-datetime .input-mel.end").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).add(30, 'm').format(format));
-                update_date();
-                
-                if ($("#edit-wsp")[0].checked)
-                {
-                    $("#div-events-wsp").css("display", "");
-                    $("#div-events-category").css("display", "none");
-                }
-                else {
-                    $("#div-events-wsp").css("display", "none");
-                    $("#div-events-category").css("display", "");
-                }
-
-                $("#fake-event-rec").val("")
-
-                if ($("#edit-allday")[0].checked)
-                    $("#edit-allday").click().click();
-                else
-                {
-                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                }
-            }
-            else{ //ancien event
-
-                $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
-                $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
-                update_date();
-
-                if ($("#edit-allday")[0].checked)
-                    $("#edit-allday").click().click();
-                else
-                {
-                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                }
-
-                const req = event.recurrence;
-                if (req !== undefined && req !== null)
-                {
-                    $("#fake-event-rec").val(req.FREQ);
-                }
-
-                const description = event.location;
-                if (description !== undefined)
+                if (description !== undefined && description !== "")
                 {
                     if (description.includes("https://audio.mtes.fr/ : "))
                     {
@@ -342,6 +299,107 @@ $(document).ready(() => {
                         $("#presential-cal-location").val(description);
                     }
                 }
+            };
+
+            if (event === "") //nouvel event
+            {
+                
+
+                $(".input-mel-datetime .input-mel.start").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-starttime").val()}`).format(format));
+                $(".input-mel-datetime .input-mel.end").val(getDate(`${$("#edit-startdate").val()} ${$("#edit-endtime").val()}`).format(format));
+                update_date();
+                
+                if ($("#edit-wsp")[0].checked)
+                {
+                    $("#div-events-wsp").css("display", "");
+                    $("#div-events-category").css("display", "none");
+                }
+                else {
+                    $("#div-events-wsp").css("display", "none");
+                    $("#div-events-category").css("display", "");
+                }
+
+                $("#fake-event-rec").val("")
+
+                if ($("#edit-allday")[0].checked)
+                    $("#edit-allday").click().click();
+                else
+                {
+                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                }
+
+                //Si des données sont déjà présentes
+                if ($("#edit-categories").val() !== "")
+                {
+                    const val = $("#edit-categories").val();
+                    
+                    if (val.includes("ws#"))
+                    {
+                        $("#categories-event-all-cal-mm").parent().css("display", "none");
+                        $("#wsp-event-all-cal-mm").val(val.replace("ws#", "")).parent().css("display", "");
+                        $("#edit-wsp")[0].checked = true;
+                    }
+                    else
+                    {
+                        $("#wsp-event-all-cal-mm").parent().css("display", "none");
+                        $("#categories-event-all-cal-mm").val(val).parent().css("display", "");
+                        $("#edit-wsp")[0].checked = false;
+                    }
+                }
+
+                update_desc($("#edit-location").val());
+
+                $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
+
+            }
+            else{ //ancien event
+                $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
+                $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
+                update_date();
+
+                if ($("#edit-allday")[0].checked)
+                    $("#edit-allday").click().click();
+                else
+                {
+                    $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
+                    $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
+                }
+
+                const req = event.recurrence;
+                if (req !== undefined && req !== null)
+                {
+                    $("#fake-event-rec").val(req.FREQ);
+                }
+
+                const description = event.location;
+                update_desc(description);
+                // if (description !== undefined)
+                // {
+                //     if (description.includes("https://audio.mtes.fr/ : "))
+                //     {
+                //         $("#eb-mm-em-a")[0].click();
+                //         const audio = description.replace("https://audio.mtes.fr/ : ", "").split(" - ");
+                //         $("#tel-input-cal-location").val(audio[0]);
+                //         $("#num-audio-input-cal-location").val(audio[1]);
+                //     }
+                //     else if (description.includes("#visio") || description.includes("@visio") )
+                //     {
+                //         const isRc = description.includes("#visio");
+                //         $("#eb-mm-em-v").click();
+                //         if (isRc)
+                //             $("#eb-mm-wm-e").click();
+                //         else
+                //         {
+                //             $("#eb-mm-wm-a").click();
+                //             $("#url-visio-cal").removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
+                //         }
+                //     }
+                //     else {
+                //         $("#eb-mm-em-p").click();
+                //         $("#presential-cal-location").val(description);
+                //     }
+                // }
                 if (event.categories !== undefined && event.categories.length > 0)
                 {
                     if (event.categories[0].includes("ws#"))

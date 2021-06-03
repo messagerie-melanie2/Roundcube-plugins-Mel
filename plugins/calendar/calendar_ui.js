@@ -409,9 +409,11 @@ function rcube_calendar_ui(settings)
 
       if (event.status) {
         var status_lc = String(event.status).toLowerCase();
-        $('#event-status').show().find('.event-text').text(rcmail.gettext('status-'+status_lc,'calendar'));
-        $('#event-status-badge > span').text(rcmail.gettext('status-'+status_lc,'calendar'));
-        $dialog.addClass('status-'+status_lc);
+        //Pamela - Modification du texte
+        const status = status_lc === "confirmed" ? "busy" : status_lc === "free" ? "free" : `status-${status_lc}`;
+        $('#event-status').show().find('.event-text').text(rcmail.gettext(status,'calendar'));
+        $('#event-status-badge > span').text(rcmail.gettext(status,'calendar'));
+        $dialog.addClass(status);//fin pamela
       }
       if (event.sensitivity && event.sensitivity != 'public') {
         $('#event-sensitivity').show().find('.event-text').text(sensitivitylabels[event.sensitivity]);

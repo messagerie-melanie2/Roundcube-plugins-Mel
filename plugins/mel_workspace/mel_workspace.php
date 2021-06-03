@@ -55,19 +55,19 @@ class mel_workspace extends rcube_plugin
         //$this->setup_config();
         $this->add_texts('localization/', true);
         $this->register_task("workspace");
-        if (driver_mel::gi()->getUser() !== null)
-        {
+        // if (driver_mel::gi()->getUser() !== null)
+        // {
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->setup]User trouvé !");
             //$this->load_workspaces();
-            $this->register_action('create', array($this, 'create'));
-            $this->register_action('get_uid', array($this, 'get_uid'));
-            $this->register_action('check_uid', array($this, 'check_uid'));
-            $this->register_action('save_objects', array($this, 'save_objects'));
-            $this->register_action('epingle', array($this, 'epingle'));
-            $this->register_action('get_email_from_ws', array($this, 'get_email_from_workspace'));
-            $this->register_action('hashtag', array($this, 'get_hashtags'));
-            $this->include_script('js/epingle.js');
-        }
+        $this->register_action('create', array($this, 'create'));
+        $this->register_action('get_uid', array($this, 'get_uid'));
+        $this->register_action('check_uid', array($this, 'check_uid'));
+        $this->register_action('save_objects', array($this, 'save_objects'));
+        $this->register_action('epingle', array($this, 'epingle'));
+        $this->register_action('get_email_from_ws', array($this, 'get_email_from_workspace'));
+        $this->register_action('hashtag', array($this, 'get_hashtags'));
+        $this->include_script('js/epingle.js');
+        //}
         // Ajoute le bouton en fonction de la skin
         $this->add_button(array(
             'command' => "workspace",
@@ -1145,6 +1145,9 @@ class mel_workspace extends rcube_plugin
             echo json_encode(["is_epingle" => json_decode($workspace->settings)->epingle, "success" => true]);
         } catch (\Throwable $th) {
             echo son_encode(["is_epingle" => json_decode($workspace->settings)->epingle, "success" => false]);
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->epingle] Un erreur est survenue lors de l'epinglage de l'espace de travail '".$workspace->title."'");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->epingle]".$th->getTraceAsString());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->epingle]".$th->getMessage());
         }
         exit;
 

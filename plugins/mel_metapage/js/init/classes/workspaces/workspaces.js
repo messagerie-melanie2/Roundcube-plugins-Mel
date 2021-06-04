@@ -27,6 +27,23 @@ SynchroniseWorkspaces.PostToChilds = function (datas)
 
 SynchroniseWorkspaces.im_who_have_lunched_this = false;
 
+SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
+
+    switch (func_name) {
+        case "update_workspaces":
+
+        throw "Not implemented";
+            if (window.update_workspaces !== undefined && window.update_workspaces !== null)
+                window.update_workspaces();
+
+            break;
+
+        default:
+            break;
+    }
+
+};
+
 if (parent === window)
 {
     window.addEventListener("message", receiveMessage, false);
@@ -39,8 +56,12 @@ if (parent === window)
             if (SynchroniseWorkspaces.im_who_have_lunched_this)
                 SynchroniseWorkspaces.im_who_have_lunched_this = false;
             ////console.error("post", datas);
-            if (datas.this !== false)
-                eval(datas.exec);
+            if (datas._integrated === true && datas.this !== false)
+                SynchroniseWorkspaces.integrated_functions(datas.exec, datas);
+            else {
+                if (datas.this !== false)
+                    eval(datas.exec);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -67,9 +88,13 @@ else {
             if (event.data.eval !== "always")
                 return;
         }
+
         try {
             //console.error("eval", datas, datas.exec, window);
-            eval(datas.exec);
+            if (datas._integrated === true)
+                SynchroniseWorkspaces.integrated_functions(datas.exec, datas);
+            else
+                eval(datas.exec);
         } catch (error) {
             console.error(error);
         }

@@ -310,6 +310,11 @@ class ArianeFrame{
             //if (!is_touch())
                 //this.popUp.css("margin-top", "60px");
             this.card.card.card.find(".card-anchor").addClass(ArianeFrame.unanchor).removeClass(ArianeFrame.anchor);
+
+            if (rcmail.env.task === "mail")
+            {
+                $("#layout-content").css("overflow", "hidden").find(".header").css("overflow-x", "auto").css("overflow-y", "hidden");
+            }
             //ArianePopUp.set_width(this.popUp);
         }
         else {
@@ -321,7 +326,12 @@ class ArianeFrame{
             //this.popUp.css("width", "");
             //if (!is_touch())
                 //this.popUp.css("margin-top", "");
-            this.card.card.card.find(".card-anchor").removeClass(ArianeFrame.unanchor).addClass(ArianeFrame.anchor);      
+            this.card.card.card.find(".card-anchor").removeClass(ArianeFrame.unanchor).addClass(ArianeFrame.anchor);   
+            
+            if (rcmail.env.task === "mail")
+            {
+                $("#layout-content").css("overflow", "").find(".header").css("overflow-x", "").css("overflow-y", "");
+            }
             //ArianePopUp.set_width(this.popUp);
         }
 

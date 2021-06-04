@@ -437,10 +437,61 @@ function m_mp_CreateWorkSpace()
         url: mel_metapage.Functions.url("workspace", "create"),//"/?_task=workspace&_action=create",
         success: function (data) {
             data = JSON.parse(data);
+
+            rcmail.set_busy(false);
+            rcmail.clear_messages();
+
             for (let it = 0; it < data.errored_user.length; it++) {
                 const element = data.errored_user[it];
                 rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
             }
+
+
+            const action = {
+                func:mel_metapage.Functions.call,
+                args:[true, {
+                    _uid:data.workspace_uid,
+                   _integrated:true 
+                }],
+                url:mel_metapage.Functions.url("workspace", "workspace", {
+                    "_uid":data.workspace_uid
+                })
+            };
+
+            window.create_popUp.close();
+            delete window.create_popUp;
+
+            if ($(".workspace-frame").length > 0 && $("iframe.workspace-frame").length === 0)
+                window.location.href = action.url;
+            else if ($("iframe.workspace-frame").length === 0)
+            {
+                mel_metapage.Functions.change_frame("wsp", true, true, {
+                    _action:"workspace",
+                    _uid:data.workspace_uid,
+
+                });
+            }
+            else if ($("iframe.workspace-frame").length === 1) {
+                mel_metapage.Functions.change_frame("wsp", true, true).then(() => {
+                    let config = {
+                        "_uid":data.workspace_uid
+                    };
+                    config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+
+                    $("iframe.workspace-frame")[0].src = mel_metapage.Functions.url("workspace", "workspace", config);
+                });
+            }
+            else
+                window.location.href = action.url;
+
+            // if ($(".bureau-frame").length > 0)
+            // {
+            //     mel_metapage.Functions.call("update_workspaces", true, {
+            //         _uid:workspace_uid,
+            //         _integrated:true 
+            //     });
+            // }
+
             // new Promise(async (i, e) => {
             //     let finished_max = 1;
             //     let finished = 0;
@@ -535,8 +586,6 @@ function m_mp_CreateWorkSpace()
             window.create_popUp.close();
             window.create_popUp = undefined;
         },
-    }).always(() => {
-        window.location.reload();
     });
     
 }

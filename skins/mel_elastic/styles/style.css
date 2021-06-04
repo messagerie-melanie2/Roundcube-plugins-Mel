@@ -298,6 +298,16 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
 /*** Full Calendar ***/
 .fc-event {
 	border: none !important;
+    border-radius: 0 !important;
+}
+
+.fc .fc-event .fc-title {
+    font-weight: 400 !important;
+    padding: 3px;
+}
+
+.fc .fc-event .fc-bg {
+    opacity: 0 !important;
 }
 
 .fc-event-location {
@@ -308,11 +318,11 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
 	height: 0 !important;
 }
 
-.fc-event-vert {
+.fc-time-grid-event {
 	opacity: 0.8;
 }
 
-.fc-event-vert .fc-event-time {
+.fc-time-grid-event .fc-time {
 	text-align: center;
 }
 

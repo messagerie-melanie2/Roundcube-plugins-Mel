@@ -192,37 +192,130 @@ ul.treelist li.context-source:not(.selected) > div > a {
 }
 
 /******Calendrier*******/
-.calendar-datepicker .ui-datepicker-header,
-.calendar-datepicker .ui-datepicker,
-.listing li.selected>div>*
-{
-    background-color: #484D7A !important;
+.listing li > div.folder .listname::before, 
+.listing li > div span.subscribed::before, 
+.listing li > div.readonly a:first-child::after, 
+.listing li.readonly:not(.virtual) > div a:first-child::after, 
+.listing li > div.calendar .calname::before, 
+fieldset.categories .input-group a.button.create::before, 
+.fc button.prev::before, 
+.fc button.next::before, 
+.fc .fc-time i::before, 
+#eventshow .event-partstat .changersvp::before, 
+.availability span::before, 
+.calendar-scheduler .schedule-buttons .next-slot::after, 
+.resources-dialog .listing li.resource > a::before, 
+#devices-table td:not(.selection)::before, 
+#delegate-table td::before, 
+a.btn.fromcloud::before, 
+li > a.icon.saveas::before, 
+a.button.filesaveall::before, 
+a.button.saveas::before, 
+.folderlist li.mailbox a.subscription.subscribed::before, 
+.filelist tr.session > td.name::after, 
+.filelist tbody td.filename span::before, 
+.document-editor-header #collaborators a.button.add::before, 
+.editors-dialog table td.options a.delete::before, 
+#kolabnoteslist td.title::before, 
+#taglist li::before, 
+#tagsform option::before, 
+.rsvp-status.loading::before, 
+.rsvp-status.declined::before, 
+.rsvp-status.tentative::before, 
+.rsvp-status.accepted::before, 
+.rsvp-status.delegated::before, 
+.rsvp-status.needs-action::before, 
+.attendee::before, 
+.edit-attendees-table th.invite label::before, 
+#event-status-badge span::before, 
+#alarm-display h3::before, 
+#alarm-display .alarm-actions a::before, 
+.listing li > div.tasklist .listname::before, 
+#tasklist .childtoggle::before, 
+#tasklist .taskhead:not(.flagged):hover span.flagged::before, 
+#tasklist .taskhead.flagged span.flagged::before, 
+#taskshow.status-flagged h2::before {
+    font-size: 1em !important;
 }
 
+.listing li > div.calendar .calname::before {
+    opacity: 0.7;
+}
+
+.listing li > div.readonly a:first-child::after, 
+.listing li.readonly:not(.virtual) > div a:first-child::after {
+    font-size: .8em !important;
+    background-color: transparent !important;
+    color: #80D5C6 !important;
+}
+
+.ui-datepicker select.ui-datepicker-year {
+    width: 5em !important;
+    margin-left: 15px;
+}
+
+.calendar-datepicker .ui-datepicker-header,
+.calendar-datepicker .ui-datepicker,
+.listing li.selected > div > * {
+    background-color: #484D7A !important;
+    border: none !important;
+}
+
+body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
+    background-color: #363A5B !important;
+}
+
+body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
+    color: #b3b6b7  !important;
+}
+
+#layout-sidebar .ui-datepicker .ui-state-default, 
+#layout-sidebar .ui-datepicker.ui-widget-content .ui-state-default {
+    color: #fff;
+}
+
+.ui-datepicker .ui-state-highlight, 
+.ui-datepicker.ui-widget-content .ui-state-highlight {
+    background-color: #2C3054 !important;
+    color: #fff !important;
+}
+
+.ui-datepicker a.ui-state-active.ui-state-highlight, 
+.ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight,
 .ui-datepicker a.ui-state-active {
     background-color: #80D5C6 !important;
     color: #000 !important;
 }
 
-body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
-    background-color: #488787 !important;
-}
-
-body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
-    color: #80D5C6 !important;
-}
-
-.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default {
-    /* color: #fff; */
-}
-
-.ui-datepicker .ui-state-highlight, .ui-datepicker.ui-widget-content .ui-state-highlight {
-    background-color: #266565 !important;
+.ui-datepicker th {
+    padding: .7em 0 !important;
 }
 
 .listing li > div a.quickview::before {
     color: #80D5C6 !important;
 }
+
+/*** Full Calendar ***/
+.fc-event {
+	border: none !important;
+}
+
+.fc-event-location {
+	padding: 1px 3px;
+}
+
+.fc-agenda-divider-inner {
+	height: 0 !important;
+}
+
+.fc-event-vert {
+	opacity: 0.8;
+}
+
+.fc-event-vert .fc-event-time {
+	text-align: center;
+}
+
 /******Fin cal*******/
 
 .mel-add{

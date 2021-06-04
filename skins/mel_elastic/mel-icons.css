@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?c07q03') format('truetype'),
-    url('fonts/DWP.woff?c07q03') format('woff'),
-    url('fonts/DWP.svg?c07q03#DWP') format('svg');
+    url('fonts/DWP.ttf?mv36k7') format('truetype'),
+    url('fonts/DWP.woff?mv36k7') format('woff'),
+    url('fonts/DWP.svg?mv36k7#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -147,11 +147,23 @@
 .icon-mel-micro:before {
   content: "\e921";
 }
+.icon-mel-micro2:before {
+  content: "\e948";
+}
+.icon-mel-micro-off:before {
+  content: "\e949";
+}
 .icon-mel-phone:before {
   content: "\e927";
 }
 .icon-mel-camera:before {
   content: "\e902";
+}
+.icon-mel-camera2:before {
+  content: "\e94a";
+}
+.icon-mel-camera-off:before {
+  content: "\e94b";
 }
 .icon-mel-notes:before {
   content: "\e923";

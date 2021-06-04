@@ -303,7 +303,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
-    window.history.replaceState({}, document.title, url);
+    window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
 
     if (isAriane || $("."+eClass+"-frame").length > 1)
         $("#layout-frames").css("display", "none");

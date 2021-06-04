@@ -147,7 +147,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             config["_ariane"] = (`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
         
         const url = MEL_ELASTIC_UI.url("webconf", "", config);
-        mel_metapage.Functions.title(url);
+        mel_metapage.Functions.title(url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
     }
 
     /**
@@ -621,12 +621,12 @@ class MasterWebconfBar {
 
         this.micro.mute = function()
         {
-            return MasterWebconfBar.mute(this, "icofont-mic", "icofont-mic-mute");
+            return MasterWebconfBar.mute(this, "icon-mel-micro2", "icon-mel-micro-off");
         };
 
         this.micro.demute = function()
         {
-            return MasterWebconfBar.mute(this, "icofont-mic-mute", "icofont-mic");
+            return MasterWebconfBar.mute(this, "icon-mel-micro-off", "icon-mel-micro2");
         };
 
         this.call = element("conf-call-stop");
@@ -634,12 +634,12 @@ class MasterWebconfBar {
 
         this.video.mute = function()
         {
-            return MasterWebconfBar.mute(this, "icofont-video-cam", "icofont-video");
+            return MasterWebconfBar.mute(this, "icon-mel-camera2", "icon-mel-camera-off");
         };
 
         this.video.demute = function()
         {
-            return MasterWebconfBar.mute(this, "icofont-video", "icofont-video-cam");
+            return MasterWebconfBar.mute(this, "icon-mel-camera-off", "icon-mel-camera2");
         };
 
         this.broadcast = element("conf-diffuser");
@@ -1203,7 +1203,7 @@ class MasterWebconfBar {
      */
     static mute(e,old, $new)
     {
-        return e.find("span").removeClass(old).addClass($new);
+        return e.find("span.icon-item").removeClass(old).addClass($new);
     }
 
     /**

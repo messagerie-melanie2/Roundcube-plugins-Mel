@@ -1195,3 +1195,12 @@ ul.treelist li.context-source:not(.selected) > a
 {
     color:#424564;
 }
+
+.ui-dialog {
+    border-radius: 1em;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    border-radius: 1em;
+    border-bottom: none;
+}

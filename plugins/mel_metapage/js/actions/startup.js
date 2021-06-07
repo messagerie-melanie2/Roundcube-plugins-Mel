@@ -179,7 +179,7 @@ function mm_st_CreateOrOpenModal(eClass, changepage = true)
     return mm_st_OpenOrCreateFrame(eClass, changepage);
 } 
 
-function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
+function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions = [])
 {
     FullscreenItem.close_if_exist();
     metapage_frames.unbreak();
@@ -220,7 +220,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
         $("."+eClass+"-frame").on("load", () =>
         {
             //Action à faire une fois que la frame est chargée.
-            metapage_frames.triggerEvent("onload", eClass, changepage, isAriane, querry, id);
+            metapage_frames.triggerEvent("onload", eClass, changepage, isAriane, querry, id, actions);
             //Actions à faire une fois que l'évènement "onload" est fini.
             metapage_frames.triggerEvent("onload.after", eClass, changepage, isAriane, querry, id);
         });
@@ -238,7 +238,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null)
         //Mise en place de diverses configurations lorque l'on doit ouvrir une frame.
         metapage_frames.triggerEvent("rcmailconfig.yes", eClass, changepage, isAriane, querry, id);
         //Ouverture d'une frame.
-        metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id);
+        metapage_frames.triggerEvent("open", eClass, changepage, isAriane, querry, id, actions);
         metapage_frames.triggerEvent("open.after", eClass, changepage, isAriane, querry, id);
 
         if (changepage)//Action à faire après avoir ouvert la frame, si on change de page.
@@ -373,8 +373,11 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
 
     args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
 
-    if (eClass === "addressbook")
+    if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null))
+    {
         args["_action"] = "plugin.annuaire";
+        args["_source"] = rcmail.env.annuaire_source;
+    }
 
     let src = empty;//mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
 
@@ -383,7 +386,19 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     else if (eClass === "discussion")
         src = rcmail.env.rocket_chat_url + "home";
     else
-        src = mel_metapage.Functions.url(mm_st_CommandContract(eClass), "", args);
+    {
+        let task;
+
+        if (args._task !== undefined && args._task !== null)
+        {
+            task = args._task;
+            delete args._task;
+        }
+        else
+            task = mm_st_CommandContract(eClass);
+
+        src = mel_metapage.Functions.url(task, "", args);
+    }
 
     const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';
     let html = frame;
@@ -414,7 +429,7 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
         $(".a-frame").css("display", "none");
 });
 
-metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) => {
+metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
     $("."+eClass+"-frame").contents().find("#layout-menu").remove();
     $("."+eClass+"-frame").contents().find(".barup").remove();
     $("."+eClass+"-frame").contents().find("html").addClass("framed");
@@ -435,6 +450,18 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id) =>
 
     if (changepage)
         Title.update(id, true);
+
+    if (actions != null && actions !== undefined && actions.length > 0)
+    {
+        for (let index = 0; index < actions.length; ++index) {
+            const element = actions[index];
+            $("#"+id)[0].contentWindow.postMessage({
+                exec:element,
+                child:false,
+                _integrated:true
+            }, '*');
+        }
+    }
 
 });
 

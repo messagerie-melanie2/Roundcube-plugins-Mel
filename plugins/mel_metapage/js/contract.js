@@ -53,6 +53,7 @@ SearchResultCalendar.from_array = function (cals)
 SearchResultCalendar.CreateOrOpen= function (json)
 {
     event.preventDefault();
+
     cal = JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
     // mm_create_calendar(this, cal);
     // return;
@@ -76,11 +77,14 @@ SearchResultCalendar.CreateOrOpen= function (json)
                 new Promise(async (a, b) => {
                     while (rcmail.env.frame_created === false) {
                         //console.log("waiting....");
-                        await delay(1000);
+                        await delay(100);
                         // if (!rcmail.busy)
                         //     rcmail.set_busy(true, "loading");
                     }
                     mm_st_CreateOrOpenModal('calendar', true);
+
+                    $("#barup-search").addClass("hidden");
+                    $("#barup-search-background").addClass("hidden");
                     // console.log("opening....");
                     // //m_mp_action_from_storage('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid")
                     rcmail.set_busy(false);
@@ -98,7 +102,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
             querry[0].src = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
             new Promise(async (a, b) => {
                 while (rcmail.env.frame_created === false) {
-                    await delay(1000);
+                    await delay(100);
                     if (!rcmail.busy)
                         rcmail.set_busy(true, "loading");
                 }
@@ -106,7 +110,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
                 rcmail.clear_messages();
                 $("#barup-search-background").addClass("hidden");
                 mm_st_CreateOrOpenModal("calendar");
-                m_mp_action_from_storage('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid")
+               // m_mp_action_from_storage('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid")
 
             });
         }
@@ -119,10 +123,12 @@ SearchResultCalendar.CreateOrOpen= function (json)
 SearchResultCalendar.after_loading = function (event)
 {
     event = JSON.parse(event.replace(/£¤£/g, '"'))
-    //console.log("event", event, parent.child_cal);
-    if (event !== null)
+    console.log("event", event, window.ui_cal);
+    if (event !== null && window.ui_cal !== undefined)
     {
-        parent.child_cal.event_show_dialog(event);
+        setTimeout(() => {
+            window.ui_cal.event_show_dialog(event);
+        }, 111);
         //console.log(event);
     }
 }

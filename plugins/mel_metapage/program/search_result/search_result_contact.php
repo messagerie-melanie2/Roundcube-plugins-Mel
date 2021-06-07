@@ -29,6 +29,7 @@ class SearchResultContact extends ASearchResult
         $mail = $this->mail($contact["email"], $search);
         $vcard = (new rcube_vcard($contact["vcard"]))->get_assoc();
         $tel = "";
+
         foreach ($vcard as $key => $value) {
             if (strpos($key, "phone") !== false)
             {
@@ -36,6 +37,7 @@ class SearchResultContact extends ASearchResult
                 break;
             }
         }
+
         parent::__construct($this->up($nom, $prenom, $contact), $this->down($mail, $tel), "");
     }  
 
@@ -44,7 +46,19 @@ class SearchResultContact extends ASearchResult
      */
     function up($nom, $prenom, $contact)
     {
-        return '<a href="?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'" onclick="mm_s_CreateOrUpdateFrame(`searchmail`, `?_task=mel_metapage&_action=contact&_cid='.$contact['contact_id'].'&_source='.$contact['sourceid'].'`)">'.$prenom." ".$nom."</a>";
+        $id = $contact['contact_id'] === null ? $contact['ID'] : $contact['contact_id'];
+
+        $args = [
+            "_task" => "mel_metapage",
+            "_action" => "contact",
+            "_cid" => $id,
+            "_source" => $contact['sourceid']
+        ];
+
+        $function = "mm_s_CreateOrUpdateFrame('contacts', ".str_replace('"', "'", json_encode($args)).")";
+        //$old = "mm_s_CreateOrUpdateFrame(`searchmail`, `?_task=mel_metapage&'.mel_metapage::FROM_KEY.'='.mel_metapage::FROM_VALUE.'&_action=contact&_cid='.$id.'&_source='.$contact['sourceid'].'`)";
+
+        return '<a href="#" title="Ouvrir les informations du contact : \'\''.$prenom.' '.$nom.'\'\'" onclick="'.$function.'">'.$prenom." ".$nom."</a>";
     }
 
     /**
@@ -67,15 +81,22 @@ class SearchResultContact extends ASearchResult
      */
     function mail($mails, $search)
     {
-        $size = count($mails);
-        if ($size > 0)
+        if (is_array($mails))
         {
-            foreach ($mails as $key => $mail) {
-                if (strpos(strtoupper($mail), strtoupper($search)) !== false)
-                    return $mail;
+            $size = count($mails);
+            if ($size > 0)
+            {
+                foreach ($mails as $key => $mail) {
+                    if (strpos(strtoupper($mail), strtoupper($search)) !== false)
+                        return $mail;
+                }
+                return $mails[0];
             }
-            return $mails[0];
+            else
+                return "";
         }
+        else if ($mails !== "" && $mails !== null)
+            return $mails;
         else
             return "";
     }

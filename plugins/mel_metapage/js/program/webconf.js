@@ -11,6 +11,7 @@
  */
 function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 323, is_framed=null)
 {
+    ///console.log("webconf", key);
     //String qui differencie un groupe privé d'un groupe public
     const private_key = "/group"; 
 
@@ -197,6 +198,9 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
+
+        //console.log("webconf go", this.key);
+
         rcmail.triggerEvent("init_ariane", "mm-ariane");
         this.busy(); //loading
         mel_metapage.Storage.remove("webconf_token");
@@ -509,6 +513,7 @@ Webconf.set_webconf = function()
     }
 
     rcmail.env.webconf.key = $("#webconf-room-name").val();
+    rcmail.env.webconf.master_bar_config.key = rcmail.env.webconf.key;
     rcmail.env.webconf.go();
     rcmail.env.webconf.remove_selector();
 }
@@ -570,6 +575,7 @@ class MasterWebconfBar {
     * @param {boolean} is_framed Si la webconf est dans une frame ou non 
      */
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
+       // console.log("Master Webconf", key);
         ariane = html_helper.JSON.parse(ariane);
         this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
@@ -1506,7 +1512,7 @@ $(document).ready(() => {
             if (window.rcmail) {
                 // Call refresh panel
                 rcmail.addEventListener('responseafterjwt', function(evt) {
-                    console.log("rcmail.addEventListener('responseafterwebconf_jwt')", evt);
+                    //console.log("rcmail.addEventListener('responseafterwebconf_jwt')", evt);
                     if (evt.response.id) {
                         rcmail.env.webconf._jwt = evt.response.jwt;
                         //rcmail.portail_open_url(evt.response.id, rcmail.env.portail_items[evt.response.id].url + evt.response.room + '?jwt=' + evt.response.jwt);

@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $("#contact-frame").attr("src", rcmail.env.contact_url);
+    $("#contact-frame").attr("src", rcmail.env.contact_url + "&_accept_back=true" + (window !== parent ? `&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}` : ""));
 
     if (!$(".button-calendar ").hasClass("calendar"))
         $(".button-calendar ").addClass("calendar")

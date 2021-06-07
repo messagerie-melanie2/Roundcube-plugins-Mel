@@ -1,7 +1,8 @@
 $(document).ready(() => {
     
     if (window.rcube_calendar_ui === undefined)
-    window.rcube_calendar_ui = () => {};
+        window.rcube_calendar_ui = () => {};
+        
     window.rcube_calendar_ui.continue = function()
     {
         if ($("#edit-title").val() === "")
@@ -464,6 +465,7 @@ $(document).ready(() => {
         });
 
         rcmail.addEventListener("init", () => {
+            m_mp_action_from_storage('calendar_redirect', SearchResultCalendar.after_loading, true, "¤avoid");
             rcmail.register_command('calendar-workspace-add-all', () => {
                 mel_metapage.Functions.busy();
                 mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_email_from_ws"), {

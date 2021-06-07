@@ -39,7 +39,16 @@ class SearchResultMail extends ASearchResult
         parent::__construct( $up
         , $down,
          "#");
-         $this->onclick = "mm_s_CreateOrUpdateFrame('mail', '?_task=mail&_mbox=INBOX&_uid=".$msg->uid."&_action=show')";
+
+         $args = [
+            "_action" => "show",
+            "_uid" => $msg->uid,
+            "_mbox" => "INBOX"
+        ];
+
+        $function = "mm_s_CreateOrUpdateFrame('mail', ".str_replace('"', "'", json_encode($args)).")";
+
+         $this->onclick = $function;//"mm_s_CreateOrUpdateFrame('mail', '?_task=mail&_mbox=INBOX&_uid=".$msg->uid."&_action=show')";
     }  
 
     /**

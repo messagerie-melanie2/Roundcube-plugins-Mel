@@ -30,6 +30,16 @@ $(document).ready(() => {
                 value: window.location.href.includes("_extwin")
               });
 
+              Object.defineProperty(this, 'FROM_INFOS', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: {
+                    key:"_is_from",
+                    value:"iframe"
+                }
+              });
+
               if (parent === window)
               {
                   //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
@@ -104,11 +114,6 @@ $(document).ready(() => {
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
             }
             
-            try {
-                
-            } catch (error) {
-                
-            }
             $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
         
             if (rcmail.env.task === "mail" && $("#mailsearchform").length > 0)
@@ -119,6 +124,28 @@ $(document).ready(() => {
                     else
                         $(e.target).attr("title", rcmail.gettext('showunread'));
                 });
+            }
+
+            if (rcmail.env.task === "addressbook" && rcmail.env.action === "show" && window != parent && rcmail.env.accept_back === true)
+            {
+                let $tmp = $(`<button type="button" class="btn btn-secondary mel-button create mel-before-remover">Retour <span class="plus icon-mel-undo "></span></button>`)
+                .on("click", () => {
+                    let $args = {
+                        _source:rcmail.env.annuaire_source
+                    };
+
+                    parent.postMessage({
+                        exec:"searchToAddressbook",
+                        _integrated:true,
+                        child:false
+                    }, '*');
+
+                    rcmail.set_busy(true, "loading");
+                    window.location.href = this.url("addressbook", "plugin.annuaire", $args);
+
+
+                });
+                $("#contacthead").append($tmp);
             }
         }
 
@@ -245,7 +272,6 @@ $(document).ready(() => {
             .addClass("mel-select-popup");
             event.parent().append(html);
             event.on("focusout", (e) => {
-                console.log("generateSelect",e);
                 if ($(e.relatedTarget).hasClass("mel-selected-content-button"))
                 {
 
@@ -377,17 +403,27 @@ $(document).ready(() => {
 
         url(task, action = "", args = null)
         {
-            if (mel_metapage !== undefined)
+            if (window.mel_metapage !== undefined)
                 return mel_metapage.Functions.url(task, action, args);
             else
             {
 
                 let tmp = "";
+
                 if (action !== "")
                     tmp += "&_action=" + action;
+
+                if (window.location.href.includes(this.FROM_INFOS.key) && window.location.href.includes(this.FROM_INFOS.value))
+                {
+                    if (args === null || args === undefined)
+                        args = {};
+                    
+                    args[this.FROM_INFOS.key] =  this.FROM_INFOS.value;
+                }
+
                 for (const key in args) {
                     if (Object.hasOwnProperty.call(args, key)) {
-                        const element = object[key];
+                        const element = args[key];
                         tmp += "&" + key + "=" + element;
                     }
                 }

@@ -12,13 +12,31 @@
 			class="button icon sidebar-menu" innerClass="inner" data-popup="groupoptions-menu" /> -->
 			<div class="searchgroup" id="#mainscreen.annuaire">
 				<center><span>Rechercher un contact</span></center>
-				<div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
-				<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
-				label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
-				</div>
+				<!-- <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
+					<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
+					label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
+				</div> -->
+				<roundcube:object name="searchform" id="searchform" wrapper="searchbar menu"
+				label="contactsearchform" buttontitle="findcontacts" options="searchmenu" ariatag="h2" />
 			</div>
+			
 	</div>
 	<separate></separate>
+	<div id="searchmenu" class="hidden searchoptions scroller propform formcontainer" aria-labelledby="aria-label-search-menu">
+		<h3 id="aria-label-search-menu" class="voice"><roundcube:label name="searchmod" /></h3>
+		<div class="formcontent">
+			<ul class="proplist">
+				<li><label><input type="checkbox" name="s_mods[]" value="name" /><roundcube:label name="name" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="firstname" /><roundcube:label name="firstname" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="surname" /><roundcube:label name="surname" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="email" /><roundcube:label name="email" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="*" /><roundcube:label name="allfields" /></label></li>
+			</ul>
+		</div>
+		<div class="formbuttons">
+			<button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')"><roundcube:label name="search" /></button>
+		</div>
+	</div>
 	<div class="scroller">
 		<roundcube:object name="directorylist" id="directorylist" class="treelist listing iconized" />
 		<h3 class="voice"><roundcube:label name="savedsearches" /></h3>

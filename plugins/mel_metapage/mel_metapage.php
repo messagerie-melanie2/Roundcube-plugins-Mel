@@ -57,6 +57,9 @@ class mel_metapage extends rcube_plugin
             "value" => self::FROM_VALUE    
         ]);
 
+        if (rcube_utils::get_input_value('_accept_back', rcube_utils::INPUT_GET) === "true" || rcube_utils::get_input_value('_accept_back', rcube_utils::INPUT_GET) === true)
+            $this->rc->output->set_env("accept_back", true);
+
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
             return;

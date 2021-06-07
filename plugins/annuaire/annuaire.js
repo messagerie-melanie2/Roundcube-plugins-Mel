@@ -138,6 +138,13 @@ window.rcmail
 					rcmail.reset_qsearch();
 					$('#mainscreen-annuaire #quicksearchbar form').submit();
 				});
+
+				$(".button.reset").on("click", () =>{
+					event.preventDefault();
+					rcmail.reset_qsearch();
+					$('#mainscreen-annuaire #quicksearchbar form').submit();
+				});
+
 			}
 			
 			// init treelist widget

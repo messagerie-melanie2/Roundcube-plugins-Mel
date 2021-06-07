@@ -12,6 +12,7 @@ function mm_s_Action(e)
     if (val === "")
     {
         $("#barup-search").addClass("hidden");
+        $("#barup-search-background").addClass("hidden");
         $("body").unbind("click");
         return;
     }
@@ -199,15 +200,28 @@ function mm_s_Calendar(cal)
  * @param {string} action Frame à ouvrir.
  * @param {string} url Url de la frame.
  */
-function mm_s_CreateOrUpdateFrame(action, url)
+function mm_s_CreateOrUpdateFrame(action, args)
 {
     event.preventDefault();
     $("#barup-search").addClass("hidden");
     $("#barup-search-background").addClass("hidden");
-    console.log("url", url, action);
-    return mel_metapage.Functions.change_frame(action, true, true, {"iframe.src":url}).then(() => {
-        
-    });
+
+    switch (action) {
+        case "mail":
+            if ($(".mail-frame").length > 0)
+                $(".mail-frame").remove();
+            break;
+        case "contacts":
+            if ($(".addressbook-frame").length > 0)
+                $(".addressbook-frame").remove();
+            break;
+        default:
+            break;
+    }
+
+
+    //console.log("url", url, action);
+    mm_st_OpenOrCreateFrame(action, true, args);
 
     // rcmail.set_busy(true, "loading");
     // let querry = $("." + action + "-frame");

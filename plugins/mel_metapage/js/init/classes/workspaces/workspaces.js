@@ -30,14 +30,19 @@ SynchroniseWorkspaces.im_who_have_lunched_this = false;
 SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
 
     switch (func_name) {
-        case "update_workspaces":
+        case "searchToAddressbook":
+            $("#contact-frame").css("padding", "");
 
-        throw "Not implemented";
-            if (window.update_workspaces !== undefined && window.update_workspaces !== null)
-                window.update_workspaces();
+            SynchroniseWorkspaces.PostToParent({
+                exec:"searchToAddressbookParent",
+                _integrated:true,
+                child:false
+            });
 
             break;
-
+            case "searchToAddressbookParent":
+                $(".addressbook-frame").css("padding-top", "0");
+            break;
         default:
             break;
     }

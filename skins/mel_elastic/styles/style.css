@@ -405,7 +405,16 @@ separate {
 }
 
 
-.task-addressbook .searchbar form:after {
+.task-addressbook.action-plugin-annuaire .searchbar form:after
+{
+    content: none!important;
+}
+
+.task-addressbook .searchbar{
+    border:none!important;
+}
+
+.task-addressbook .searchbar:after {
     content: "\f002";
     height: 36px;
     color: #363A5B;
@@ -441,8 +450,25 @@ separate {
 
 .task-addressbook .button.reset
 {
-	display:none!important;
+	display:block!important;
+    color: #363A5B!important;
 }
+
+.task-addressbook .button.reset:hover
+{
+    color: white!important;
+}
+
+.task-addressbook .button.options
+{
+    color: #363A5B!important;
+}
+
+.task-addressbook .button.options:hover
+{
+    color: white!important;
+}
+
 #tasklist li.taskitem div.taskhead.selected
 {
     background-color:#2C3054!important;

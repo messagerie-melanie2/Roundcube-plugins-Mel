@@ -1333,3 +1333,8 @@ ul.treelist li.context-source:not(.selected) > a
     border-radius: 1em;
     border-bottom: none;
 }
+
+#mainscreen.box.mel_help-box
+{
+    display: block !important;
+}

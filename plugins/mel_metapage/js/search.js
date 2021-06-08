@@ -150,6 +150,7 @@ function mm_s_OnClick()
  */
 function mm_s_AfficheResults(datas, searchVal)
 {
+    const max = 5
 
     let querry = $("#barup-search");
 
@@ -158,8 +159,12 @@ function mm_s_AfficheResults(datas, searchVal)
     let isa;
 
     for (let index = 0; index < datas.datas.length; index++) {
+
+        if (index >= max)
+            break;
+
         const element = datas.datas[index];
-        //console.log(element.sub_header);
+
         isa = element.link === "" ? "span" : "a";
         html += '<tr><td><' + isa + ' href="'+ element.link + '"' + (element.onclick !== undefined ? (' onclick="' + element.onclick + '" ') : "") +' class="result-link"><div class="result-header">' + element.header + '</div><div class="result-desc">' + element.sub_header + '</div></' + isa + '></td></tr>'
     }

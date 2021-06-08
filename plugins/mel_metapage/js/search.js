@@ -173,6 +173,9 @@ function mm_s_AfficheResults(datas, searchVal)
         case rcmail.gettext('agenda', 'mel_portal'):
             action = `mm_st_OpenOrCreateFrame('calendar', true, {}, [{action:'search', args:['${searchVal}']}])`;
             break;
+        case rcmail.gettext('contacts', "mel_metapage"):
+            action = `mm_st_OpenOrCreateFrame('contacts', true, {}, [{action:'search', args:['${searchVal}']}])`;
+            break;
         default:
             break;
     }

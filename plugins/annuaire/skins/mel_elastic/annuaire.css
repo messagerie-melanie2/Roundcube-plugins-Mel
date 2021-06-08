@@ -51,7 +51,7 @@
 	background: url(images/goto.png?v=e784.5000) center center no-repeat #fff;
 	background-image: var(--image-gototree);
 	background-color: var(--sublistitem-bg-color);
-	right: 0;
+	left: 0;
 	top: 0;
 	height: 33px;
 	width: 33px;

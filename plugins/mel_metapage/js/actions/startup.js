@@ -451,19 +451,33 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     if (changepage)
         Title.update(id, true);
 
-    if (actions != null && actions !== undefined && actions.length > 0)
-    {
-        for (let index = 0; index < actions.length; ++index) {
-            const element = actions[index];
-            $("#"+id)[0].contentWindow.postMessage({
-                exec:element,
-                child:false,
-                _integrated:true
-            }, '*');
-        }
-    }
+    metapage_frame_actions(actions, id);
 
 });
+
+function metapage_frame_actions(actions, id) {
+    if (actions != null && actions !== undefined && actions.length > 0)
+    {
+        let config;
+        for (let index = 0; index < actions.length; ++index) {
+            const element = actions[index];
+
+            config = {
+                child:false,
+                _integrated:true,
+            };
+
+            if (typeof element === "string")
+                config["exec"] = element;
+            else {
+                config["exec"] = element.action;
+                config["args"] = element.args;
+            }
+
+            $("#"+id)[0].contentWindow.postMessage(config, '*');
+        }
+    }
+}
 
 metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
     if (rcmail.env.can_backward === true)
@@ -477,7 +491,7 @@ metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, quer
         }
 });
 
-metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
+metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, actions) => {
 
     if ($(`iframe#${id}`).length === 0)
         Title.set(Title.defaultTitle, true);
@@ -508,6 +522,8 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id) => {
             Title.focusHidden();
         }, 10);
     }
+
+    metapage_frame_actions(actions, id);
 
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);

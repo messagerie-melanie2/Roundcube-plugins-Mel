@@ -451,6 +451,8 @@ class mel_metapage extends rcube_plugin
 
         if ($this->rc->task === "tasks")
             $this->include_script('js/actions/task_event.js');
+        else if ($this->rc->task === "mail")
+            $this->include_script('js/actions/mail_search.js');
         //$this->rc->output->include_script('treelist.js');
     }
 

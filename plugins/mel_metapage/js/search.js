@@ -78,7 +78,7 @@ function mm_s_Action(e)
 
                 if (data.datas !== undefined && data.datas.length > 0)
                 {
-                    mm_s_AfficheResults(data);
+                    mm_s_AfficheResults(data, val);
                     search_icon.children().addClass("text-success");
                 }
 
@@ -148,7 +148,7 @@ function mm_s_OnClick()
  * Affiche les résultats de la recherche.
  * @param {*} datas Résultats de la recherche.
  */
-function mm_s_AfficheResults(datas)
+function mm_s_AfficheResults(datas, searchVal)
 {
 
     let querry = $("#barup-search");
@@ -162,6 +162,27 @@ function mm_s_AfficheResults(datas)
         //console.log(element.sub_header);
         isa = element.link === "" ? "span" : "a";
         html += '<tr><td><' + isa + ' href="'+ element.link + '"' + (element.onclick !== undefined ? (' onclick="' + element.onclick + '" ') : "") +' class="result-link"><div class="result-header">' + element.header + '</div><div class="result-desc">' + element.sub_header + '</div></' + isa + '></td></tr>'
+    }
+
+    let action = "";
+
+    switch (datas.label) {
+        case rcmail.gettext("mails", "mel_metapage"):          
+            action = `mm_st_OpenOrCreateFrame('mail', true, {}, [{action:'search', args:['${searchVal}']}])`;
+            break;
+        case rcmail.gettext('agenda', 'mel_portal'):
+            action = `mm_st_OpenOrCreateFrame('calendar', true, {}, [{action:'search', args:['${searchVal}']}])`;
+            break;
+        default:
+            break;
+    }
+
+    if (action !== "")
+    {
+        html += "<tr>";
+        html += "<td>";
+        html += `<a href=# onclick="mm_s_HideSearch();${action};"><span class="icon-mel-plus"></span> Voir plus </a>`;
+        html += "</td></tr>";
     }
 
     html += "</table></div></div>";
@@ -193,6 +214,12 @@ function mm_s_Calendar(cal)
     cal = JSON.parse(cal.replace(/£¤£/g, '"'));
     rcmail.local_storage_set_item("calendar_redirect", cal);
     window.location.href = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
+}
+
+function mm_s_HideSearch()
+{
+    $("#barup-search").addClass("hidden");
+    $("#barup-search-background").addClass("hidden");
 }
 
 /**

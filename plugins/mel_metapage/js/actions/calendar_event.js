@@ -27,3 +27,12 @@ $(document).ready(
 
     }  
 );
+
+function search_action(searchValue)
+{
+    const timeoutValue = 111;
+    setTimeout(async () => {
+        await wait(() => rcmail.busy);
+        $("#searchform").val(searchValue).parent().submit();
+    }, timeoutValue);
+}

@@ -40,9 +40,14 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
             });
 
             break;
-            case "searchToAddressbookParent":
-                $(".addressbook-frame").css("padding-top", "0");
+        case "searchToAddressbookParent":
+            $(".addressbook-frame").css("padding-top", "0");
+        break;
+        case "search":
+            if (window.search_action !== undefined)
+                search_action(...args.args);
             break;
+        
         default:
             break;
     }
@@ -95,7 +100,7 @@ else {
         }
 
         try {
-            //console.error("eval", datas, datas.exec, window);
+            console.log("eval", datas, datas.exec);
             if (datas._integrated === true)
                 SynchroniseWorkspaces.integrated_functions(datas.exec, datas);
             else

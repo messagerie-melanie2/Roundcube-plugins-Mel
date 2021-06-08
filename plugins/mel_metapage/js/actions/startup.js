@@ -459,6 +459,7 @@ function metapage_frame_actions(actions, id) {
     if (actions != null && actions !== undefined && actions.length > 0)
     {
         let config;
+        let querry = $(`iframe#${id}`);
         for (let index = 0; index < actions.length; ++index) {
             const element = actions[index];
 
@@ -474,7 +475,19 @@ function metapage_frame_actions(actions, id) {
                 config["args"] = element.args;
             }
 
-            $("#"+id)[0].contentWindow.postMessage(config, '*');
+            if (querry.length === 0 || querry.length > 1 || $(`#${id}`).length > 1)
+            {
+                try {
+                    if (element.args !== undefined && element.args != null)
+                        window.workspaces.sync.integrated_functions(config["exec"], config);
+                    else
+                        window.workspaces.sync.integrated_functions(config["exec"])
+                } catch (error) {
+                    console.error("###[metapage_frame_actions]", error, actions, id);
+                }
+            }
+            else
+                querry[0].contentWindow.postMessage(config, '*');
         }
     }
 }

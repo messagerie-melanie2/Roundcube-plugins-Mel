@@ -218,7 +218,7 @@ if (rcmail)
         
         parent.rcmail.enable_command("my_account", true);
         parent.rcmail.register_command("my_account", () => {
-            //window.location.href = "./?_task=settings&_action=plugin.mel_moncompte";
+
             if($(".settings-frame").length > 1 && $("iframe.settings-frame").length === 0)
                 window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
             else {
@@ -292,6 +292,12 @@ if (rcmail)
         
         if (local_storage.last_update.tasks.format() !== moment().startOf("day").format())
             parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);
+
+        if (window.alarm_managment !== undefined)
+        {
+            window.alarm_managment.clearTimeouts();
+            window.alarm_managment.generate(local_storage.calendar);
+        }
 
         // //add
         if (parent === window) //Si on est pas dans une frame

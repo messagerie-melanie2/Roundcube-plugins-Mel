@@ -54,7 +54,7 @@ $(document).ready(() => {
             else if (event.end === undefined)
                 event.end = moment().add(30, "m");
         }
-        console.log("copy event", event, rcmail.env.event_prop);
+        //console.log("copy event", event, rcmail.env.event_prop);
         //Shuffle array elements
         function shuffle(array) {
             var currentIndex = array.length, temporaryValue, randomIndex;
@@ -401,6 +401,55 @@ $(document).ready(() => {
                 //         $("#presential-cal-location").val(description);
                 //     }
                 // }
+
+                if (event.alarms !== undefined && event.alarms !== null)
+                {
+
+                    try
+                    {
+                        const alarm = new Alarm(event.alarms);
+
+                        switch (alarm.mode) {
+                            case Alarm.enums.mode.display:
+
+                                let time;
+                                let value;
+
+                                switch (alarm.timeMode) {
+                                    case Alarm.enums.time_type.day:
+                                        time = alarm.time / 24 / 60;
+                                        value = "D"
+                                        break;
+                                    case Alarm.enums.time_type.hour:
+                                        time = alarm.time / 60;
+                                        value = "H"
+                                        break;
+                                    default:
+                                        time = alarm.time;
+                                        value = "M"
+                                        break;
+                                }
+
+                                if (alarm.type === Alarm.enums.type.before)
+                                    value = `-${value}`;
+                                else
+                                    value = `+${value}`;
+
+                                $("#edit-alarm-item").val("DISPLAY");
+                                $(".edit-alarm-values").css("display", "");
+                                $(".edit-alarm-value").val(time);
+                                $(".edit-alarm-offset").val(value);
+                                break;
+                        
+                            default:
+                                $("#edit-alarm-item").val("");
+                                break;
+                        }
+                    }
+                    catch(error)
+                    {}
+                }
+
                 if (event.categories !== undefined && event.categories.length > 0)
                 {
                     if (event.categories[0].includes("ws#"))

@@ -995,7 +995,7 @@ function rcube_calendar_ui(settings)
       title.select();
       // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
       if (action === "new")
-        rcmail.triggerEvent("edit-event", "");
+        rcmail.triggerEvent("edit-event", event);
     };
 
     // show event changelog in a dialog

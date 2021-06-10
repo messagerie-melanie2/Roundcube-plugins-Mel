@@ -18,15 +18,12 @@ if (rcmail)
 
     parent.rcmail.addEventListener("init", function() {
         $(`<p id="sr-document-title-focusable" tabindex="-1" class="sr-only">${window.document.title}</p>`).prependTo("body");
-        
-        if (rcmail.env.username === "tommy.delphin.i" || rcmail.env.username === "thomas.payen")
-            $(".rotomeca-debug").removeClass("rotomeca-debug");
 
         //Definition des functions
         parent.rcmail.mel_metapage_fn = {
             calendar_updated: function () {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
-                rcmail.set_busy(true, "loading");
+                //rcmail.set_busy(true, "loading");
 
                 if (parent.rcmail.env.ev_calendar_url === undefined)
                     parent.rcmail.env.ev_calendar_url = ev_calendar_url;
@@ -99,12 +96,12 @@ if (rcmail)
                     rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                 },
              }).always(() => {
-                rcmail.set_busy(false);
-                rcmail.clear_messages();
+                // rcmail.set_busy(false);
+                // rcmail.clear_messages();
              });
             },
             tasks_updated: function(){
-                rcmail.set_busy(true, "loading");
+                //rcmail.set_busy(true, "loading");
                 //?_task=tasks&_action=fetch&filter=0&lists=tommy_-P-_delphin_-P-_i&_remote=1&_unlock=true&_=1613118450180
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
                 return $.ajax({ // fonction permettant de faire de l'ajax
@@ -158,8 +155,8 @@ if (rcmail)
                     rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                 },
              }).always(() => {
-                rcmail.set_busy(false);
-                rcmail.clear_messages();
+                // rcmail.set_busy(false);
+                // rcmail.clear_messages();
              });
             },
             mail_updated: function() {

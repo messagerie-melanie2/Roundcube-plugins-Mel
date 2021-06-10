@@ -60,6 +60,9 @@ class mel_metapage extends rcube_plugin
         if (rcube_utils::get_input_value('_accept_back', rcube_utils::INPUT_GET) === "true" || rcube_utils::get_input_value('_accept_back', rcube_utils::INPUT_GET) === true)
             $this->rc->output->set_env("accept_back", true);
 
+        if ($this->rc->task !== "login" && $this->rc->task !== "logout")
+            $this->include_script('js/actions/calendar_event.js');
+
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
             return;
@@ -447,7 +450,6 @@ class mel_metapage extends rcube_plugin
             $this->include_script('js/'.$files[$i]);
         }
         //if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
-        $this->include_script('js/actions/calendar_event.js');
 
         if ($this->rc->task === "tasks")
             $this->include_script('js/actions/task_event.js');

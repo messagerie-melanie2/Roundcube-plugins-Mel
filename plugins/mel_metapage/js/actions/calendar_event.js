@@ -4,17 +4,38 @@ $(document).ready(
         rcmail.addEventListener("init", () => {
 
             rcmail.addEventListener('responsebefore', function(props) {
+                const action = "update_cal";
+
                 if (props.response && props.response.action == 'event') {
-                    let navigator = window != parent ? parent : window;
-                    navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-                    
-                    if (rcmail.env.task === "calendar")
-                    {
-                        if (rcmail.busy)
-                        {
-                            rcmail.set_busy(false);
-                            $(".loading").remove();
+                    mel_metapage.Functions.call(action, false, {
+                        _integrated:true,
+                        eval:"always",
+                        args:{
+                            child:true,
+                            goToTop:true
                         }
+                    });
+                    
+                }
+                else if (props.response && (props.response.action === "mailimportitip" || props.response.action === "itip-delegate" || props.response.action === "itip-remove"))
+                {
+                    let config = {
+                        _integrated:true,
+                        eval:"always",
+                        args:{
+                            refresh:true,
+                            child:true,
+                            goToTop:true
+                        }
+                    };
+
+                    if (window.mel_metapage !== undefined)
+                        mel_metapage.Functions.call(action, false, config);
+                    else
+                    {
+                        config["exec"] = action;
+                        config["child"] = false;
+                        parent.postMessage(config);
                     }
                     
                 }

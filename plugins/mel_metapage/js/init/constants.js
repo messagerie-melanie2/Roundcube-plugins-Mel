@@ -463,7 +463,8 @@ const mel_metapage = {
                 exec:exec,
                 child:child
             };
-            if (args.length > 0)
+            
+            if (args != null && args !== undefined)
             {
                 for (const key in args) {
                     if (Object.hasOwnProperty.call(args, key)) {
@@ -472,7 +473,12 @@ const mel_metapage = {
                     }
                 }
             }
-            workspaces.sync.PostToParent(config);          
+
+            if (window.workspaces !== undefined && window.workspaces.sync !== undefined)
+                workspaces.sync.PostToParent(config);    
+            else {
+                parent.postMessage(config);
+            }      
         },
 
         /**

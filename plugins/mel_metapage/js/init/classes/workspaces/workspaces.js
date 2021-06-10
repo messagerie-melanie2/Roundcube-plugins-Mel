@@ -47,7 +47,36 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
             if (window.search_action !== undefined)
                 search_action(...args.args);
             break;
-        
+        case "update_cal":
+            rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+
+            if (args.args !== undefined)
+            {
+                const arguments = args.args;
+
+                if (arguments.refresh === true && rcmail.commands["refreshcalendar"] === true)
+                {
+                    wait(() => rcmail.busy).then((() => {
+                        rcmail.command("refreshcalendar");
+                    }));
+                }
+
+                
+                if (arguments.goToTop === true && window !== parent)
+                {
+                    args.child = false;
+                    SynchroniseWorkspaces.PostToParent(args);
+                }
+                else if (window === parent && arguments.child === true)
+                {
+                    args.args.goToTop = false;
+                    SynchroniseWorkspaces.PostToChilds(args);
+                }
+            }
+
+
+
+            break;
         default:
             break;
     }
@@ -73,7 +102,7 @@ if (parent === window)
                     eval(datas.exec);
             }
         } catch (error) {
-            console.error(error);
+            console.error(error, datas);
         }
         //console.error("parent", datas, datas.child !== false);
         if (datas.child !== false)
@@ -100,13 +129,13 @@ else {
         }
 
         try {
-            console.log("eval", datas, datas.exec);
+            //console.log("eval", datas, datas.exec);
             if (datas._integrated === true)
                 SynchroniseWorkspaces.integrated_functions(datas.exec, datas);
             else
                 eval(datas.exec);
         } catch (error) {
-            console.error(error);
+            console.error(error, datas);
         }
     }  
 }

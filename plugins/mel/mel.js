@@ -241,7 +241,8 @@ if (window.rcmail) {
     window.identity = rcmail.env.identity;
   });
   rcmail.addEventListener('responseafterplugin.refresh_store_target_selection', function(evt) {
-    $("#composeoptions .composeoption select[name=\"_store_target\"]").replaceWith(evt.response.select_html);
+    // @rotomeca
+    $("#compose-options select[name=\"_store_target\"]").replaceWith(evt.response.select_html);
     $('#_compose_hidden_account').val(rcmail.env.identities_to_bal[rcmail.env.identity]);
   });
 }

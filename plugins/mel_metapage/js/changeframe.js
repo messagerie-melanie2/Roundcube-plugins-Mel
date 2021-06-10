@@ -87,7 +87,6 @@
                     case "rocket":
                         ChangeFrame(datas, event.data.url);
                         break;
-                
                     default:
                         ChangeFrame(datas);
                         break;
@@ -405,10 +404,17 @@ async function ChangeFrame(_class, otherDatas = null)
 
     $(".workspace-frame").css("display", "none");
 
-     const id = mm_st_OpenOrCreateFrame(_class, false);
-     await wait(() => rcmail.env.frame_created !== true);
+    let config = null;
 
-     if (window.webconf_master_bar === undefined)
+    if (_class === "tasklist" && rcmail.env.current_workspace_tasklist_uid !== undefined && rcmail.env.current_workspace_tasklist_uid !== null)
+        config = {
+            source:rcmail.env.current_workspace_tasklist_uid
+        }
+    
+    const id = mm_st_OpenOrCreateFrame(_class, false, config);
+    await wait(() => rcmail.env.frame_created !== true);
+
+    if (window.webconf_master_bar === undefined)
         (_class === "rocket" ? $("#" + id).css("display", "").parent().parent() : $("#" + id).css("display", "").parent()).css("display", "").css("position", "absolute").css("height", "100%");
 
     if (_class === "rocket")
@@ -426,10 +432,10 @@ async function ChangeFrame(_class, otherDatas = null)
     //     $("#layout-content").css("display", "");
 
     $(`#${id}`).css("display", "");
-     rcmail.env.have_frame_positioned = true;
-     rcmail.set_busy(false);
-     rcmail.clear_messages();
-}
+        rcmail.env.have_frame_positioned = true;
+        rcmail.set_busy(false);
+        rcmail.clear_messages();
+    }
 
 async function ChangePage(_class)
 {

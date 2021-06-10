@@ -348,22 +348,27 @@ function create_calendar(id, e)
 
 function create_tasks(id, e)
 {
-    m_mp_CreateOrOpenFrame('tasklist', () => {
-        m_mp_set_storage('task_create');
-        m_mp_set_storage('task_id', id);
-    }
-    , () => {
-        //m_mp_action_from_storage('task_create', m_mp_OpenTask);
-        let func = () => {
+    m_mp_set_storage('task_create');
+    m_mp_set_storage('task_id', id);
 
-            if (rcmail._events["pamella.tasks.afterinit"] !== undefined)
-                rcmail.triggerEvent("pamella.tasks.afterinit", undefined);
+    return mel_metapage.Functions.change_frame("tasklist", true, false, rcmail.env.current_workspace_tasklist_uid !== undefined && rcmail.env.current_workspace_tasklist_uid !== null ? {source:rcmail.env.current_workspace_tasklist_uid} : null);
 
-            // if (rcmail._events["pamella.editTask.after"] !== undefined)
-            //     rcmail.triggerEvent("pamella.editTask.after", undefined);
-        };
-        mel_metapage.Functions.call(func, true);
-    })
+    // m_mp_CreateOrOpenFrame('tasklist', () => {
+    //     m_mp_set_storage('task_create');
+    //     m_mp_set_storage('task_id', id);
+    // }
+    // , () => {
+    //     //m_mp_action_from_storage('task_create', m_mp_OpenTask);
+    //     let func = () => {
+
+    //         if (rcmail._events["pamella.tasks.afterinit"] !== undefined)
+    //             rcmail.triggerEvent("pamella.tasks.afterinit", undefined);
+
+    //         // if (rcmail._events["pamella.editTask.after"] !== undefined)
+    //         //     rcmail.triggerEvent("pamella.editTask.after", undefined);
+    //     };
+    //     mel_metapage.Functions.call(func, true);
+    // })
 }
 
 function SetCalendarDate(date = null)

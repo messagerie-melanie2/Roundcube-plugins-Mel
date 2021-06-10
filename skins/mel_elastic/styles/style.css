@@ -1338,3 +1338,9 @@ ul.treelist li.context-source:not(.selected) > a
 {
     display: block !important;
 }
+
+.mailbox.elementmoveup > td{
+    border-top-style: dotted;
+    border-top-color: black;
+    /* border-top-width: thin; */
+}

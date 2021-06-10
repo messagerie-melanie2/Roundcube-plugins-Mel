@@ -77,6 +77,14 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
 
 
             break;
+
+        case "update_location":
+            try {
+                window.location.href = args.args[0];
+            } catch (error) {
+                
+            }
+            break;
         default:
             break;
     }

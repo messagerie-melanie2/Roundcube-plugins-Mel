@@ -451,11 +451,11 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     if (changepage)
         Title.update(id, true);
 
-    metapage_frame_actions(actions, id);
+    metapage_frame_actions(actions, id, true);
 
 });
 
-function metapage_frame_actions(actions, id) {
+function metapage_frame_actions(actions, id, after_load) {
     if (actions != null && actions !== undefined && actions.length > 0)
     {
         let config;
@@ -473,6 +473,10 @@ function metapage_frame_actions(actions, id) {
             else {
                 config["exec"] = element.action;
                 config["args"] = element.args;
+               
+                if (element.onlyExist === true && after_load)
+                    continue;
+
             }
 
             if (querry.length === 0 || querry.length > 1 || $(`#${id}`).length > 1)
@@ -536,7 +540,7 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
         }, 10);
     }
 
-    metapage_frame_actions(actions, id);
+    metapage_frame_actions(actions, id, false);
 
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);

@@ -181,20 +181,26 @@ class mel extends rcube_plugin {
         ), $this->api->output->button(array(
                 'label' => 'mel.menumanage_create_mailbox_folder',
                 'type' => 'link',
-                'classact' => 'active',
+                'class' => "create",
+                'classact' => 'create active',
                 'command' => 'window-edit-folder'
         )));
         $this->api->add_content($content, 'mailboxoptions');
           // Link to Settings/Folders
+          $button_array = [                  
+            'label' => 'mel.menumanageresources_mailboxes',
+          'type' => 'link',
+          "class" => "settings",
+          'classact' => 'settings active',
+          'command' => 'plugin.mel_resources_bal'];
+          if ($this->rc->plugins->get_plugin('mel_metapage') !== null)
+            $button_array["command"] = "mel_metapage_manage_mail_box";
+          else
+            $button_array["task"] = "settings";
+
           $content = html::tag('li', array(
                   'role' => 'menuitem'
-          ), $this->api->output->button(array(
-                  'label' => 'mel.menumanageresources_mailboxes',
-                  'type' => 'link',
-                  'classact' => 'active',
-                  'command' => 'plugin.mel_resources_bal',
-                  'task' => 'settings'
-        )));
+          ), $this->api->output->button($button_array));
         $this->api->add_content($content, 'mailboxoptions');
       }
       else if ($this->rc->task == 'calendar') {

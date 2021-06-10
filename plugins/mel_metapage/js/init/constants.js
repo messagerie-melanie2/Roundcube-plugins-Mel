@@ -384,7 +384,7 @@ const mel_metapage = {
          * @param {boolean} waiting Si l'on veux attendre que la frame sois ouverte ou non.
          * @param {JSON} args Arguments à ajouter dans l'url de la frame.
          */
-        change_frame: async function(frame, changepage = true, waiting = false, args = null)
+        change_frame: async function(frame, changepage = true, waiting = false, args = null, actions = [])
         {
             if (frame === "webconf")
             {
@@ -396,7 +396,7 @@ const mel_metapage = {
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
             
             workspaces.sync.PostToParent({
-                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'))`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
+                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'), ${JSON.stringify(actions)})`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
                 child:false
             });
             

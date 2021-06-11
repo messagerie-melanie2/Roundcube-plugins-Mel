@@ -76,7 +76,7 @@
         <ul id="wspf" class="form-control input-mel recipient-input ac-input rounded-left">
             <li class="input">
                 <!--Participants à ajouter-->
-                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" autocomplete="on" aria-autocomplete="list" aria-expanded="false" role="combobox">
+                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this, m_mp_add_users)" oninput="m_mp_autocoplete(this, m_mp_add_users)" type="text" autocomplete="on" aria-autocomplete="list" aria-expanded="false" role="combobox">
             </li>
         </ul>
         <span class="input-group-append">
@@ -86,7 +86,7 @@
         </span>
     </div>
 
-    <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="mel-button create mel-before-remover">Ajouter <span class="icon-mel-plus plus"></span></button>
+    <!-- <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="mel-button create mel-before-remover">Ajouter <span class="icon-mel-plus plus"></span></button> -->
 
     <!--Liste des participants-->
     <span class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></span>

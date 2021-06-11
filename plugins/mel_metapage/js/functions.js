@@ -674,7 +674,7 @@ function m_mp_hashtag_on_click(event)
     }
 }
 
-function m_mp_autocoplete(element)
+function m_mp_autocoplete(element, action_after = null)
 {
     // element = element.val === undefined ? $("#" + element.id) : $("#"+element[0].id);
     // const val = element.val();
@@ -724,6 +724,12 @@ function m_mp_autocoplete(element)
     $("#wspf").append(html);
     rcmail.init_address_input_events($(element));
     $(element).focus();
+
+        if (action_after !== null)
+        {
+            action_after();
+        }
+
    }
 }
 

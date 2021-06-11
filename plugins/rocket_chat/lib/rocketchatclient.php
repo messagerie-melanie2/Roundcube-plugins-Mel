@@ -116,6 +116,7 @@ class RocketChatClient {
   const GROUP_MEMBERS = "groups.members";
   const GROUP_DELETE = "groups.delete";
   const GROUP_LIST_JOINED = "groups.list";
+  const POST_MESSAGE = "chat.sendMessage";
   /**
    * Relative API URL
    *
@@ -665,6 +666,31 @@ class RocketChatClient {
     $private = $private ? $this->_api_url.self::GROUP_ADD_OWNER : $this->_api_url.self::CHANNEL_ADD_OWNER;
     
     return $this->_post_url($private, $params, null, $headers);
+
+  }
+
+  public function post_message($room_id, $text, $alias, $avatarUrl = null)
+  {
+    $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        //"Content-type: application/json",
+    );
+
+    $params = array(
+      "rid" => $room_id,
+      "msg" => $text,
+      "alias" => $alias,
+      "emoji" => ":robot:"
+    );
+
+    if ($avatarUrl !== null)
+      $params["avatar"] = $avatarUrl;
+
+    $tmp = ["message" => $params];
+    //$private = $private ? $this->_api_url.self::GROUP_ADD_OWNER : $this->_api_url.self::CHANNEL_ADD_OWNER;
+    
+    return $this->_post_url($this->_api_url.self::POST_MESSAGE, $tmp, null, $headers);
 
   }
 

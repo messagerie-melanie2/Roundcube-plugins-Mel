@@ -198,9 +198,6 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
-
-        //console.log("webconf go", this.key);
-
         rcmail.triggerEvent("init_ariane", "mm-ariane");
         this.busy(); //loading
         mel_metapage.Storage.remove("webconf_token");
@@ -457,6 +454,21 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this.go();
     }
 
+    this.notify = function()
+    {
+        return mel_metapage.Functions.post(
+            mel_metapage.Functions.url("workspace", "notify_chat"),
+            {
+                _uid:this.wsp.datas.uid,
+                _text:`@all\r\nUne webconference a débuté :\r\n- WebMail => ${mel_metapage.Functions.url("webconf", "", {
+                    _key:this.key,
+                    _wsp:this.wsp.datas.uid
+                }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '')}\r\n- Lien Classique => ${rcmail.env["webconf.base_url"] + "/" + this.key}`,
+                _path:(window.location.origin + window.location.pathname).slice(0, (window.location.origin + window.location.pathname).length-1)
+            }
+        );
+    }
+
 }
 
 /**
@@ -516,6 +528,10 @@ Webconf.set_webconf = function()
     rcmail.env.webconf.master_bar_config.key = rcmail.env.webconf.key;
     rcmail.env.webconf.go();
     rcmail.env.webconf.remove_selector();
+
+    if (is_wsp)
+        rcmail.env.webconf.notify();
+
 }
 
 /**

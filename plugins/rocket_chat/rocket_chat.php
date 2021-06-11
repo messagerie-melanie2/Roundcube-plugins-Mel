@@ -465,6 +465,15 @@ EOF;
       exit;
     }
 
+    public function post_message($room_id, $text, $alias, $avatar = null)
+    {
+      $rocketClient = $this->get_rc_client();
+
+      return $rocketClient->post_message($room_id, $text, $alias
+      //, $avatar
+    );
+    }
+
    /**
    * Créer un canal ou un groupe.
    *

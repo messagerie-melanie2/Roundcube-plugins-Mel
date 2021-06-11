@@ -66,6 +66,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('epingle', array($this, 'epingle'));
         $this->register_action('get_email_from_ws', array($this, 'get_email_from_workspace'));
         $this->register_action('hashtag', array($this, 'get_hashtags'));
+        $this->register_action('notify_chat', array($this, 'notify_chat'));
         $this->include_script('js/epingle.js');
         //}
         // Ajoute le bouton en fonction de la skin
@@ -1719,6 +1720,35 @@ class mel_workspace extends rcube_plugin
 
         echo json_encode($hashtags);
         exit;
+    }
+
+    function notify_chat()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $text = rcube_utils::get_input_value("_text", rcube_utils::INPUT_POST);
+        //$path = rcube_utils::get_input_value("_path", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+
+        $logo = $workspace->logo;
+        if ($logo === "")
+            $logo = null;
+        // else
+        //     $logo = $path.$logo;
+
+        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+        try {
+
+            echo json_encode($rocket->post_message($this->get_object($workspace, self::CHANNEL)->id, $text, $workspace->title, $logo));
+        } catch (\Throwable $th) {
+            echo "error";
+            $func = "notify_chat";
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la notification RocketChat pour l'espace de travail ''".$workspace->title."'' !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
+        }
+
+        exit;
+
     }
 
     function log_error($func, $text, $th)

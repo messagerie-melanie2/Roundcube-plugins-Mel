@@ -5,8 +5,11 @@ $(document).ready(() => {
         
     window.rcube_calendar_ui.continue = function()
     {
+        let canContinue = true;
+
         if ($("#edit-title").val() === "")
         {
+            canContinue = false;
             $("#edit-title").focus();
             if ($("#edit-title").parent().find(".required-text").length > 0)
                 $("#edit-title").parent().find(".required-text").css("display", "");
@@ -14,8 +17,6 @@ $(document).ready(() => {
                 $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>`);
         }
         else {
-
-            $(".nav-link.nav-icon.attendees").click();
             if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
                 $(".have-workspace").css("display", "");
             else
@@ -24,22 +25,89 @@ $(document).ready(() => {
             if ($("#edit-title").parent().find(".required-text").length > 0)
                 $("#edit-title").parent().find(".required-text").remove();
         }
+
+        let date = {
+            start:{
+                querry:$("#mel-metapage-added-input-mel-start-datetime"),
+                val:null,
+                text_id:"edit-start-error-text"
+            },
+            end:{
+                querry:$("#mel-metapage-added-input-mel-end-datetime"),
+                val:null,
+                text_id:"edit-end-error-text"
+            }
+        }
+
+        date.start.val = date.start.querry.val();
+        date.end.val = date.end.querry.val();
+
+        if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
+        {
+            canContinue = false;
+            date.start.querry.focus();
+
+            const text_id = date.start.text_id;
+            let parent = date.start.querry.parent();
+            if ($(`#${text_id}`).length > 0)
+                $(`#${text_id}`).remove();
+
+            const text = date.start.val === "" ? "Vous devez mettre une date de début !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
+            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+
+        }
+        else if ($(`#${date.start.text_id}`).length > 0)
+            $(`#${date.start.text_id}`).remove();
+
+        if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
+        {
+            canContinue = false;
+            date.end.querry.focus();
+
+            const text_id = date.end.text_id;
+            let parent = date.end.querry.parent();
+            if ($(`#${text_id}`).length > 0)
+                $(`#${text_id}`).remove();
+
+            const text = date.end.val === "" ? "Vous devez mettre une date de fin !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
+            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+
+        }
+        else if ($(`#${date.end.text_id}`).length > 0)
+            $(`#${date.end.text_id}`).remove();
+
+        if (canContinue)
+            $(".nav-link.nav-icon.attendees").click();
     }
+
     window.rcube_calendar_ui.back = function()
     {
         $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
     }
+
     rcube_calendar_ui.save = function()
     {
         let querry = $("#eventedit").parent().parent().find(".ui-dialog-buttonset").find(".save.mainaction");
         
+        //console.log("[rcube_calendar_ui.save]",querry);
+
         if (querry.length > 0)
             querry.click();
         else
         {
             rcmail.command('event-save');
+            mel_metapage.Functions.call("update_cal", false, {
+                _integrated:true,
+                eval:"always",
+                args:{
+                    refresh:true,
+                    child:true,
+                    goToTop:true
+                }
+            });
         }
     }
+
     window.rcube_calendar_ui.edit = function(event)
     {
         if (event === "" && rcmail.env.event_prop !== undefined)
@@ -355,8 +423,8 @@ $(document).ready(() => {
 
             }
             else{ //ancien event
-                $(".input-mel-datetime .input-mel.start").val(event.start.format(format));
-                $(".input-mel-datetime .input-mel.end").val(event.end.format(format));
+                $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
+                $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
                 update_date();
 
                 // if ($("#edit-allday")[0].checked)
@@ -495,6 +563,7 @@ $(document).ready(() => {
             // }
         }
     }
+
         rcmail.addEventListener("edit-event", (event) =>{
             window.rcube_calendar_ui.edit(event);
         });   

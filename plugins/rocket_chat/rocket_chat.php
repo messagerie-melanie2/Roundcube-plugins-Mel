@@ -613,4 +613,9 @@ EOF;
     {
       return $this->get_rc_client()->room_exist($room_id);
     }
+
+    public function check_if_room_exist_by_name($room_name)
+    {
+      return $this->get_rc_client()->room_exist($room_name, false);
+    }
 }

@@ -670,16 +670,16 @@ class RocketChatClient {
 
   }
 
-  public function room_info($room_id)
+  public function room_info($room_id, $isId = true)
   {
     return $this->_do_connected_action(self::ROOM_INFO, [
-      "roomId" => $room_id
+      ($isId ? "roomId" : "roomName") => $room_id
     ], false);
   }
 
-  public function room_exist($room_id)
+  public function room_exist($room_id, $isId = true)
   {
-    $infos = json_decode($this->room_info($room_id)["content"]);
+    $infos = json_decode($this->room_info($room_id, $isId)["content"]);
     return $infos->success;
   }
 

@@ -400,7 +400,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         src = mel_metapage.Functions.url(task, "", args);
     }
 
-    const frame = '<iframe id="'+id+'" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';
+    const frame = '<iframe id="'+id+'" allow="clipboard-read; clipboard-write" style="' + (isAriane ? "flex: 1 0 auto;width:100%;height:100%;" : "width:100%;height:100%;") + ' border:none;" class="'+eClass+'-frame '+mm_frame+'" src="'+src+'"></iframe>';
     let html = frame;
 
     if (eClass === "discussion")

@@ -4,37 +4,37 @@ $(document).ready(async () => {
 
 async function WSPReady()
 {
-    console.log("a");
+    //console.log("a");
     const uid = rcmail.env.current_workspace_uid;
     SetCalendarDate()
-    console.log("b");
+    //console.log("b");
     //Récupération des données d'ariane
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     const hasAriane = $(".wsp-ariane").length > 0;
     if (hasAriane)
     {
-        console.log("c");
+        //console.log("c");
         let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
         //console.log("Init()", datas, channel, datas[channel]);
         UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
     }
-    console.log("d");
+    //console.log("d");
     //Récupération des données de l'agenda
     UpdateCalendar();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
     //Récupération des données des tâches
-    console.log("e");
+    //console.log("e");
     UpdateTasks();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
-    console.log("f");
+    //console.log("f");
     if (hasAriane)
     {
-        console.log("g");
+        //console.log("g");
         await wait(() => {
             console.log(window.ariane === undefined);
              return window.ariane === undefined
         });
-        console.log("h");
+        //console.log("h");
         window.ariane.addEventListener("update", UpdateAriane);
     }
 }
@@ -78,10 +78,10 @@ function Update(key, func, funcBefore = null, funcAfter = null, ...args)
 
 function UpdateSomething(data,_class, editor = null)
 {
-    console.log("UpdateSomething()", data, _class);
+    //console.log("UpdateSomething()", data, _class);
     if (editor !== null)
         data = editor(data);
-    console.log("UpdateSomething()", data);
+    //console.log("UpdateSomething()", data);
     let querry = $("." + _class);
     const unread = data === null ? 0 : data;
     if (querry.find(".roundbadge").length === 0)
@@ -117,7 +117,7 @@ function UpdateCalendar()
         else
             return 0;
     });
-    console.log("array", array);
+    //console.log("array", array);
     {
         const agenda = rcmail.env.current_workspace_constantes.agenda;
         const id = "wsp-block-" + agenda;

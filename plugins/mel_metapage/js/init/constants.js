@@ -420,6 +420,15 @@ const mel_metapage = {
             
         },
 
+        update_frame:function (frame)
+        {
+            mel_metapage.Functions.call("reload_frame", false, {
+                _integrated:true,
+                always:true,
+                args:[`${frame}-frame`]
+            });
+        },
+
         /**
          * Reviens à la frame d'avant.
          * @param {boolean} wait Si l'on doit attendre le changement de frame ou non.

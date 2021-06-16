@@ -355,14 +355,15 @@ class mel_workspace extends rcube_plugin
                 if ($services[self::CHANNEL])
                 {
                     $src = "";
+                    $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
+                    $channel_name = $channel_datas->name;
         
                     if ($this->currentWorkspace->ispublic)
-                        $src="/channel/$uid";
+                        $src="/channel/$channel_name";
                     else
-                        $src="/group/$uid";  
+                        $src="/group/$channel_name";  
         
                     $click = "ChangeToolbar('rocket', this, `$src`)";
-                    $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
         
                     try {
                         if ($channel_datas->name === null)
@@ -551,11 +552,12 @@ class mel_workspace extends rcube_plugin
                 if ($is_in_wsp)
                 {
                     $src = $this->rc->config->get('rocket_chat_url');
+                    $channel_name = $this->get_object($this->currentWorkspace, self::CHANNEL)->name;
                     
                     if ($this->currentWorkspace->ispublic)
-                        $src.="channel/$uid?layout=embedded";
+                        $src.="channel/$channel_name?layout=embedded";
                     else
-                        $src.="group/$uid?layout=embedded";  
+                        $src.="group/$channel_name?layout=embedded";  
         
                     $header_component = [];
                     if ($services[self::EMAIL])
@@ -588,7 +590,7 @@ class mel_workspace extends rcube_plugin
 
                     if ($services[self::CHANNEL]){
                         $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
-                            html::tag("span", ["style" => "position:relative"], "#".$this->currentWorkspace->uid.html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
+                            html::tag("span", ["style" => "position:relative"], "#$channel_name".html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
                             html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
                         );
                         $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
@@ -1236,9 +1238,15 @@ class mel_workspace extends rcube_plugin
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
 
         if ($is_epingle)
+        {
             $html = str_replace("<workspace-epingle/>", "active", $html);
+            $html = str_replace("<epingle-title>", "Désépingler", $html);
+        }
         else
+        {
             $html = str_replace("<workspace-epingle/>", "", $html);
+            $html = str_replace("<epingle-title>", "Épingler", $html);
+        }
 
         if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img src="'.$workspace->logo.'"></div>', $html);

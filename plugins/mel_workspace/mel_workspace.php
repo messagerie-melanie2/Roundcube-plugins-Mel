@@ -918,7 +918,7 @@ class mel_workspace extends rcube_plugin
             return $services;
         include_once "../mel_moncompte/ressources/tasks.php";
         $tasklist = $this->get_object($workspace,$tasks);
-        if ($tasklist !== null)
+        if ($tasklist !== null) //Si la liste de tâche existe déjà
         {
             $mel = new M2tasks(null, $tasklist);
             if ($mel != null)
@@ -929,7 +929,7 @@ class mel_workspace extends rcube_plugin
                 }
             }
         }
-        else {
+        else {//Sinon
             $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
             if (!$update_wsp || $mel->createTaskslist($workspace->title))
             {
@@ -976,11 +976,14 @@ class mel_workspace extends rcube_plugin
         $service = self::CHANNEL;
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Services : ".json_encode($service)." => $service");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Can enter : ".($this->get_object($workspace,$service) === null && array_search($service, $services) !== false));
+        
         if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
+            $uid = $this->generate_channel_id_via_uid($workspace->uid);
             $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-            $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
+            $value = $rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Valeur : ".json_encode($value));
+
             if (is_string($value["content"]))
             {
                 $value = json_decode($value["content"]);
@@ -991,7 +994,9 @@ class mel_workspace extends rcube_plugin
                 $value = $value["content"]["channel"];
                 $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
             }
+
         }
+        
         $key = array_search($service, $services);
         unset($services[$key]);
         return $services;
@@ -1852,6 +1857,27 @@ class mel_workspace extends rcube_plugin
         return $this->get_ariane()->check_if_room_exist($channel_id);
     }
 
+    function check_channel_name($channel_name)
+    {
+        return $this->get_ariane()->check_if_room_exist_by_name($channel_name);
+    }
+
+    function generate_channel_id_via_uid($uid)
+    {
+        if ($this->check_channel_name($uid))
+        {
+            $it = 2;
+            while($this->check_channel_name("$uid-$it"))
+            {
+                ++$it;
+            }
+            
+            $uid = "$uid-$it";
+        }
+
+        return $uid;
+    }
+
     function check_agenda($category)
     {
         return mel_utils::cal_check_category($category);
@@ -1881,7 +1907,8 @@ class mel_workspace extends rcube_plugin
                                 $tmp_users[] = $key;
                             }
         
-                            $value = $this->get_ariane()->_create_channel($workspace->uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
+                            $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                            $value = $this->get_ariane()->_create_channel($uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
                             
                             if (is_string($value["content"]))
                             {

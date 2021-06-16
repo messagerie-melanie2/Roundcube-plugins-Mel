@@ -1344,3 +1344,16 @@ tr.elementmoveup > td{
     border-top-color: black;
     /* border-top-width: thin; */
 }
+
+body.task-settings.action-plugin-mel_resources_bal #layout-content .header,
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-content .header .toolbar-menu-button,
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-list .floating-action-buttons .create.button 
+{
+    display: none!important;
+}
+
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-content .header
+{
+    display: initial!important;
+}
+

@@ -47,7 +47,7 @@ if (rcmail)
         }
     });
 
-    //Response afer
+    //Response after
     rcmail.addEventListener("responseafter", (props) => {
         if (props.response && props.response.action == 'plugin.alarms')
             rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
@@ -64,6 +64,33 @@ if (rcmail)
             if (storage !== null && storage !== undefined)
                 window.alarm_managment.generate(storage);
         }
+    });
+
+    rcmail.addEventListener("mel_update", (args) => {
+
+        if (args.type !== undefined)
+        {
+            let type = args.type;
+
+            switch (type) {
+                case "agendas":
+                    type = "calendar";
+                    break;
+                case "contacts":
+                    type = "addressbook";
+                    break;
+                case "tasks":
+                    type = "tasks";
+                default:
+                    type = null;
+                    break;
+            }
+        
+            if (type !== null)
+                mel_metapage.Functions.update_frame(type);
+            
+        }
+
     });
 
 }

@@ -496,7 +496,7 @@ class mel_metapage extends rcube_plugin
             foreach ($icons_files as $key => $value) {
                 if ($value === "." || $value === "..")
                     continue;
-                $icons[] = ["name" => $value, "path" => "/plugins/mel_metapage/skins/elastic/pictures/dwp_icons/".$value];
+                $icons[] = ["name" => $value, "path" => "plugins/mel_metapage/skins/elastic/pictures/dwp_icons/".$value];
             }
             $this->rc->output->set_env('mel_metapage_workspace_logos', $icons);
         }

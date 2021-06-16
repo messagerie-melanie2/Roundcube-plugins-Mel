@@ -85,6 +85,30 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
                 
             }
             break;
+
+        case "reload_location":
+            window.location.reload();
+            break;
+
+        case "reload_frame":
+            let querry = $(`iframe.${args.args[0]}`);
+
+            if (querry.length > 0)
+            {
+                //delete jQuery._data($(`.${args.args[0]}`)[0], 'events').load;
+                // querry[0].contentWindow.postMessage({
+                //     exec:"reload_location",
+                //     child:false,
+                //     always:true,
+                //     _integrated:true
+                // });
+                querry.remove();
+                //mel_metapage.Functions.change_frame(mm_st_ClassContract(args.args[0]), false, false);
+            }
+            else if ($(`.${args.args[0]}`).length > 0)
+                SynchroniseWorkspaces.integrated_functions("reload_location");
+            break;
+
         default:
             break;
     }

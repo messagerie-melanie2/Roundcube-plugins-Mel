@@ -797,7 +797,9 @@ rcube_webmail.prototype.add_resource = function() {
       rcmail
           .addEventListener('plugin.mel_add_resource_success', function(p) {
             setTimeout(function() {
+              rcmail.triggerEvent("mel_update", {type:type});
               window.location.reload();
+
               var iframe = document
                   .getElementById('mel_resources_type_frame');
               iframe.src = 'skins/mel_larry/watermark.html';
@@ -824,7 +826,9 @@ rcube_webmail.prototype.delete_resource = function() {
           .addEventListener('plugin.mel_delete_resource_success', function(
               p) {
             setTimeout(function() {
+              rcmail.triggerEvent("mel_update", {type:type});
               window.location.reload();
+              
               var iframe = document
                   .getElementById('mel_resources_type_frame');
               iframe.src = 'skins/mel_larry/watermark.html';

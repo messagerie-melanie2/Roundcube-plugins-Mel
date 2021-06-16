@@ -117,6 +117,7 @@ class RocketChatClient {
   const GROUP_DELETE = "groups.delete";
   const GROUP_LIST_JOINED = "groups.list";
   const POST_MESSAGE = "chat.sendMessage";
+  const ROOM_INFO = "rooms.info";
   /**
    * Relative API URL
    *
@@ -669,6 +670,19 @@ class RocketChatClient {
 
   }
 
+  public function room_info($room_id)
+  {
+    return $this->_do_connected_action(self::ROOM_INFO, [
+      "roomId" => $room_id
+    ], false);
+  }
+
+  public function room_exist($room_id)
+  {
+    $infos = json_decode($this->room_info($room_id)["content"]);
+    return $infos->success;
+  }
+
   public function post_message($room_id, $text, $alias, $avatarUrl = null)
   {
     $headers = array(
@@ -768,6 +782,25 @@ class RocketChatClient {
 
   }
 
+  protected function _do_connected_action($url, $params, $post = true, $additionalHeaders = null)
+  {
+    $retour;
+
+    $headers = array(
+      "X-Auth-Token: " . $this->getAuthToken(),
+      "X-User-Id: " . $this->getUserId(),
+    );
+
+    if (isset($additionalHeaders))
+      $headers = array_merge($headers, $additionalHeaders);
+
+    if ($post)
+      $retour = $this->_post_url($this->_api_url.$url, $params, null, $headers);
+    else
+      $retour = $this->_get_url($this->_api_url.$url, $params, $headers);  
+
+    return $retour;
+  }
 
   /**
    * Permet de récupérer le contenu d'une page Web

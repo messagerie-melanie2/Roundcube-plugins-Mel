@@ -55,10 +55,6 @@ class mel_workspace extends rcube_plugin
         //$this->setup_config();
         $this->add_texts('localization/', true);
         $this->register_task("workspace");
-        // if (driver_mel::gi()->getUser() !== null)
-        // {
-            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->setup]User trouvé !");
-            //$this->load_workspaces();
         $this->register_action('create', array($this, 'create'));
         $this->register_action('get_uid', array($this, 'get_uid'));
         $this->register_action('check_uid', array($this, 'check_uid'));
@@ -68,7 +64,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('hashtag', array($this, 'get_hashtags'));
         $this->register_action('notify_chat', array($this, 'notify_chat'));
         $this->include_script('js/epingle.js');
-        //}
+
         // Ajoute le bouton en fonction de la skin
         $this->add_button(array(
             'command' => "workspace",
@@ -230,6 +226,13 @@ class mel_workspace extends rcube_plugin
         $this->currentWorkspace = driver_mel::gi()->workspace();
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
+        
+        if ($this->services_action_errors($this->currentWorkspace))
+        {
+            $this->currentWorkspace->save();        
+            $this->currentWorkspace->load();
+        }
+
         $this->rc->output->add_handlers(array(
             'wsp-picture'    => array($this, 'get_picture'),
         ));
@@ -257,6 +260,10 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->set_env("current_workspace_uid", $this->currentWorkspace->uid);
         $this->rc->output->set_env("current_workspace_tasklist_uid", $this->get_object($this->currentWorkspace, $tasks));
         $this->rc->output->set_env("current_workspace_back", rcube_utils::get_input_value('_last_location', rcube_utils::INPUT_GPC));
+        
+        if (self::is_in_workspace($this->currentWorkspace))
+            $this->rc->output->set_env("wsp_is_in", "yes");
+
         $this->rc->output->set_pagetitle("Espace de travail \"".$this->currentWorkspace->title."\"");
         $this->rc->output->send('mel_workspace.workspace');
     }
@@ -322,61 +329,66 @@ class mel_workspace extends rcube_plugin
 
         try {
             $is_admin = self::is_admin($this->currentWorkspace, driver_mel::gi()->getUser()->uid);
+            $is_in_wsp = self::is_in_workspace($this->currentWorkspace);
             $services = $this->get_worskpace_services($this->currentWorkspace);
             $uid = $this->currentWorkspace->uid;
             $html = html::tag("button",["onclick" => "ChangeToolbar('back', this)", "class" => " wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
             $html .= $vseparate;
             $html .= html::tag("button",["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active", "disabled" => "disabled", "aria-disabled" => true], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
             
-            if ($services[self::AGENDA] || $services[self::CHANNEL]
-            || $services[self::TASKS] || $is_admin)
-                $html .= $vseparate;
-    
-            if ($services[self::AGENDA])
+            if ($is_in_wsp)
             {
-                $onclick = "ChangeToolbar('calendar', this)";
-                $html .= html::tag("button",["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
-                
-                if ($services[self::CHANNEL] || $services[self::TASKS] || $is_admin)
+
+                if ($services[self::AGENDA] || $services[self::CHANNEL]
+                || $services[self::TASKS] || $is_admin)
                     $html .= $vseparate;
-            }
-            
-            if ($services[self::CHANNEL])
-            {
-                $src = "";
-    
-                if ($this->currentWorkspace->ispublic)
-                     $src="/channel/$uid";
-                else
-                    $src="/group/$uid";  
-    
-                $click = "ChangeToolbar('rocket', this, `$src`)";
-                $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
-    
-                try {
-                    if ($channel_datas->name === null)
-                        $html .= html::tag("button",["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
-                    else
-                        $html .= html::tag("button",["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
-                } catch (\Throwable $th) {
-                    $html .= html::tag("button",["onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
-                }
-    
-                if ($services[self::TASKS] || $is_admin)
-                    $html .= $vseparate;
-            }
-    
-            if ($services[self::TASKS])
-            {
-                $html .= html::tag("button",["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
-                
-                if ($is_admin)
-                    $html .= $vseparate;
-            }
-    
-            if ($is_admin)
-                $html .= html::tag("button",["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
         
+                if ($services[self::AGENDA])
+                {
+                    $onclick = "ChangeToolbar('calendar', this)";
+                    $html .= html::tag("button",["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
+                    
+                    if ($services[self::CHANNEL] || $services[self::TASKS] || $is_admin)
+                        $html .= $vseparate;
+                }
+                
+                if ($services[self::CHANNEL])
+                {
+                    $src = "";
+        
+                    if ($this->currentWorkspace->ispublic)
+                        $src="/channel/$uid";
+                    else
+                        $src="/group/$uid";  
+        
+                    $click = "ChangeToolbar('rocket', this, `$src`)";
+                    $channel_datas = $this->get_object($this->currentWorkspace, self::CHANNEL);
+        
+                    try {
+                        if ($channel_datas->name === null)
+                            $html .= html::tag("button",["onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                        else
+                            $html .= html::tag("button",["onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                    } catch (\Throwable $th) {
+                        $html .= html::tag("button",["onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                    }
+        
+                    if ($services[self::TASKS] || $is_admin)
+                        $html .= $vseparate;
+                }
+        
+                if ($services[self::TASKS])
+                {
+                    $html .= html::tag("button",["onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
+                    
+                    if ($is_admin)
+                        $html .= $vseparate;
+                }
+        
+                if ($is_admin)
+                    $html .= html::tag("button",["onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
+            
+            }
         } catch (\Throwable $th) {
             $html = "";
             $this->log_error("get_toolbar", "des éléments de la toolbar de", $th);
@@ -440,6 +452,7 @@ class mel_workspace extends rcube_plugin
         $uid = $this->currentWorkspace->uid;
 
         $services = $this->get_worskpace_services($this->currentWorkspace);
+        $is_in_wsp = self::is_in_workspace($this->currentWorkspace);
 
         $icons = [
             self::AGENDA => "icon-mel-calendar",
@@ -535,64 +548,74 @@ class mel_workspace extends rcube_plugin
     
             if ($services[self::EMAIL] || $services[self::CHANNEL])
             {
-                $src = $this->rc->config->get('rocket_chat_url');
-                if ($this->currentWorkspace->ispublic)
-                     $src.="channel/$uid?layout=embedded";
-                else
-                    $src.="group/$uid?layout=embedded";  
-    
-                $header_component = [];
-                if ($services[self::EMAIL])
-                    $header_component[] = html::div(["id" => "unreads-emails", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
-                if ($services[self::CHANNEL])
-                    $header_component[] = html::div(["id" => "unreads-ariane", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
-                
-                $tmp = "";
-                $count = count($header_component);
-                for ($i=0; $i < $count; ++$i) { 
-                    if ($i === 0)
-                        $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
+                if ($is_in_wsp)
+                {
+                    $src = $this->rc->config->get('rocket_chat_url');
+                    
+                    if ($this->currentWorkspace->ispublic)
+                        $src.="channel/$uid?layout=embedded";
                     else
-                        $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);
+                        $src.="group/$uid?layout=embedded";  
+        
+                    $header_component = [];
+                    if ($services[self::EMAIL])
+                        $header_component[] = html::div(["id" => "unreads-emails", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
+                    if ($services[self::CHANNEL])
+                        $header_component[] = html::div(["id" => "unreads-ariane", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
+                    
+                    $tmp = "";
+                    $count = count($header_component);
+
+                    for ($i=0; $i < $count; ++$i) { 
+                        if ($i === 0)
+                            $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
+                        else
+                            $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);
+                    }
+
+                    $header_component = $tmp;
+        
+                    $header = 
+                        html::div(["class" => "row", "style"=> "padding-bottom:15px"], 
+                            $header_component
+                        );
+        
+                    $body_component = [];
+                    if ($services[self::EMAIL])
+                        $body_component[] = html::div(["class" => "unreads-emails tab-unreads mel-tab-content", "style" => "¤¤¤"],
+                            ""
+                        );
+
+                    if ($services[self::CHANNEL]){
+                        $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
+                            html::tag("span", ["style" => "position:relative"], "#".$this->currentWorkspace->uid.html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
+                            html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
+                        );
+                        $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
+                            html::tag("iframe", 
+                            ["src" => $src, "style" => "width:100%;height:500px;display:none;"]
+                            )
+                        );
+                    }
+
+                    $tmp = "";
+                    $count = count($body_component);
+
+                    for ($i=0; $i < $count; ++$i) { 
+                        if ($i === 0)
+                            $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
+                        else
+                            $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);
+                    }
+
+                    $body_component = $tmp;
+                    $body = html::div(["class" => ""],
+                        $body_component
+                    );
+        
+                    $html_return.= html::tag("h1", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
                 }
-                $header_component = $tmp;
-    
-                $header = 
-                    html::div(["class" => "row", "style"=> "padding-bottom:15px"], 
-                        $header_component
-                    );
-    
-                $body_component = [];
-                if ($services[self::EMAIL])
-                    $body_component[] = html::div(["class" => "unreads-emails tab-unreads mel-tab-content", "style" => "¤¤¤"],
-                        ""
-                    );
-                if ($services[self::CHANNEL]){
-                    $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
-                        html::tag("span", ["style" => "position:relative"], "#".$this->currentWorkspace->uid.html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
-                        html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
-                    );
-                    $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
-                        html::tag("iframe", 
-                        ["src" => $src, "style" => "width:100%;height:500px;display:none;"]
-                        )
-                    );
-                }
-                $tmp = "";
-                $count = count($body_component);
-                for ($i=0; $i < $count; ++$i) { 
-                    if ($i === 0)
-                        $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
-                    else
-                        $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);
-                }
-                $body_component = $tmp;
-                $body = html::div(["class" => ""],
-                    $body_component
-                );
-    
-                $html_return.= html::tag("h1", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
-            }
+        }
     
     
             $this->rc->output->set_env("current_workspace_constantes", [
@@ -673,7 +696,7 @@ class mel_workspace extends rcube_plugin
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
         foreach ($services as $key => $value) {
-            if ($key === self::EMAIL || $key === self::CLOUD)
+            if ($key === self::EMAIL || $key === self::CLOUD || $key === self::AGENDA)
                 continue;
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
@@ -1412,7 +1435,7 @@ class mel_workspace extends rcube_plugin
 
     function get_ariane()
     {
-        return $this->rc->plugins->get_plugin('rocket_chat');;
+        return $this->rc->plugins->get_plugin('rocket_chat');
     }
 
     function delete_services_for_user(&$workspace, $user, $services_to_delete)
@@ -1592,7 +1615,7 @@ class mel_workspace extends rcube_plugin
                         $users = $tmp_users;
                         unset($tmp_user);
                         $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                        $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? true : false);
+                        $value = $rocket->_create_channel($workspace->uid, $users,$workspace->ispublic === 0 ? false : true);
                         if (is_string($value["content"]))
                         {
                             $value = json_decode($value["content"]);
@@ -1750,6 +1773,160 @@ class mel_workspace extends rcube_plugin
         exit;
 
     }
+
+    /**
+     * Si vrai, tout va bien, si faux, le service existe mais l'élement associé, non.
+     *
+     * @param string $service
+     * @param Workspace $workspace
+     * @return boolean
+     */
+    function check_services($service, $workspace)
+    {
+        $value = true;
+        $all_services = $this->get_worskpace_services($workspace);
+
+        switch ($service) {
+            case 'all':               
+                $value = [
+                    self::AGENDA => $this->check_services(self::AGENDA, $workspace),
+                    self::CHANNEL => $this->check_services(self::CHANNEL, $workspace),
+                    self::TASKS => $this->check_services(self::TASKS, $workspace)
+                ];
+                break;
+
+            case self::AGENDA:
+                include_once 'lib/mel_utils.php';
+
+                if($all_services[self::AGENDA])
+                    $value = $this->check_agenda('ws#'.$workspace->uid); 
+                    //mel_utils::cal_check_category('ws#'.$workspace->uid);
+                else
+                    $value = true;
+                break;
+
+            case self::CHANNEL:
+                if ($all_services[self::CHANNEL])
+                {
+                    try {
+                        $value = $this->check_channel($this->get_object($workspace, self::CHANNEL)->id);
+                        //$this->get_ariane()->check_if_room_exist($this->get_object($workspace, self::CHANNEL)->id);
+                    } catch (\Throwable $th) {
+                        $value = false;
+                    }
+                }
+                else
+                    $value = true;
+                break;
+
+            case self::TASKS:
+                if ($all_services[self::TASKS])
+                {
+                    // $mel = new M2tasks(null, $this->get_object($workspace,self::TASKS));
+                    // $tasklist = $mel->getTaskslist();
+                    
+                    // $value = $tasklist !== null;
+                    $value = $this->check_tasks($this->get_object($workspace,self::TASKS));
+                }
+                else
+                    $value = true;
+                break;
+
+            default:
+                break;
+        }
+
+        return $value;
+    }
+
+    function check_tasks($task_id)
+    {
+        $mel = new M2tasks(null, $task_id);
+        $tasklist = $mel->getTaskslist();
+        
+        return $tasklist !== null;
+    }
+
+    function check_channel($channel_id)
+    {
+        return $this->get_ariane()->check_if_room_exist($channel_id);
+    }
+
+    function check_agenda($category)
+    {
+        return mel_utils::cal_check_category($category);
+    }
+
+    function services_action_errors(&$workspace)
+    {
+        try {
+            $needUpdate = false;
+            $services = $this->check_services("all", $workspace);
+
+            foreach ($services as $key => $value) {
+                if (!$services[$key])
+                {
+                    switch ($key) {
+                        case self::AGENDA:
+                            include_once 'lib/mel_utils.php';
+                            mel_utils::cal_add_category(driver_mel::gi()->getUser()->uid, "ws#".$workspace->uid, $this->get_setting($workspace, "color"));
+                            $needUpdate = true;
+                            break;
+        
+                        case self::CHANNEL:      
+                            $users = array_map($map, $workspace->shares);
+                            $tmp_users = [];
+        
+                            foreach ($users as $key => $value) {
+                                $tmp_users[] = $key;
+                            }
+        
+                            $value = $this->get_ariane()->_create_channel($workspace->uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
+                            
+                            if (is_string($value["content"]))
+                            {
+                                $value = json_decode($value["content"]);
+                                $value = $value->channel;//$value["content"]["channel"];
+                                $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
+                            }
+                            else {
+                                $value = $value["content"]["channel"];
+                                $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
+                            }
+                            $needUpdate = true;
+                            break;
+        
+                        case self::TASKS:
+                            $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
+        
+                            if ($mel->createTaskslist($workspace->title))
+                            {
+                                foreach ($users as $s)
+                                {
+                                    $mel->setAcl($s, ["w"]);
+                                }
+        
+                                $taskslist = $mel->getTaskslist();
+                                $this->save_object($workspace, self::TASKS, $taskslist->id);
+                            }
+                            $needUpdate = true;
+                            break;
+                        
+                        default:
+                            # code...
+                            break;
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la gestion de l'espace de travail ''".$workspace->title."'' !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
+        }
+
+        return $needUpdate;
+    }
+
 
     function log_error($func, $text, $th)
     {

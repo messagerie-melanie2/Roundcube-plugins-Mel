@@ -1456,6 +1456,7 @@ class mel_driver extends calendar_driver {
             if (count($attachments) > 0) {
               $event['attachments'] = $attachments;
             }
+            $event["alarm_dismissed"] = false;
             return $event;
           }
         }
@@ -1848,6 +1849,20 @@ class mel_driver extends calendar_driver {
         }
       }
     }
+
+    //alarms
+    if (isset($_event['alarms']))
+    {
+      $lastStack = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+      if (isset($lastStack))
+        $_event["alarm_dismissed"] = isset($lastStack);
+      else
+      {
+        $snooze = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
+        $_event["alarm_dismissed"] = strtotime($snooze);    
+      }
+    }
+
     // Pb de memoire
     // if (mel_logs::is(mel_logs::TRACE))
     //   mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess() event : " . var_export($_event, true));
@@ -1999,7 +2014,7 @@ class mel_driver extends calendar_driver {
           $event->uid = $event_id;
           if ($event->load()) {
             if ($snooze != 0) {              
-              $time = time() + $snooze * 60;
+              $time = time() + $snooze;
               $event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME, gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z');
             }
             else {

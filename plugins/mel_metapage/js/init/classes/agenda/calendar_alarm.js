@@ -1,99 +1,135 @@
 
-    class Alarm{
-        constructor(alarmString)
+/**
+ * Représente une alarme de l'agenda
+ */
+class Alarm{
+    /**
+     * 
+     * @param {string} alarmString Chaîne de charactère qui reprèsente l'alarme.
+     */
+    constructor(alarmString)
+    {
+        this.init();
+        this.assign(alarmString);
+    }
+
+    /**
+     * Initialise l'objet.
+     */
+    init()
+    {
+        this.type = Alarm.enums.type.before;
+        this.time = 0;
+        this.mode = Alarm.enums.mode.none;
+        this.timeMode = Alarm.enums.time_type.minutes;
+    }
+
+    /**
+     * Assigne les différents paramètres aux propriétés de l'objet.
+     * @param {string} string 
+     */
+    assign(string)
+    {
+        if (string !== "" && string !== null && string !== "")
         {
-            this.init();
-            this.assign(alarmString);
-        }
+            try {
+                
+                if (string[0] == "+") //Après, avant sinon
+                    this.type = Alarm.enums.type.after;
 
-        init()
-        {
-            this.type = Alarm.enums.type.before;
-            this.time = 0;
-            this.mode = Alarm.enums.mode.none;
-            this.timeMode = Alarm.enums.time_type.minutes;
-        }
+                this.time = parseInt(string.split("PT")[1].split("M")[0]);
 
-        assign(string)
-        {
-            if (string !== "" && string !== null && string !== "")
-            {
-                try {
-                    
-                    if (string[0] == "+")
-                        this.type = Alarm.enums.type.after;
+                if (string.includes("DISPLAY")) //Type d'alarme
+                    this.mode = Alarm.enums.mode.display;
 
-                    this.time = parseInt(string.split("PT")[1].split("M")[0]);
+                this.timeMode = this.getTimeMode();//Début ou fin de l'évènement
 
-                    if (string.includes("DISPLAY"))
-                        this.mode = Alarm.enums.mode.display;
-
-                    this.timeMode = this.getTimeMode();
-
-                } catch (error) {
-                    
-                }
+            } catch (error) {
+                
             }
         }
-
-        getTimeMode()
-        {
-            const day = 24 * 60;
-            const minutes = 60;
-
-            if (this.time >= day)
-                return Alarm.enums.time_type.day;
-            else if (day > this.time && this.time >= minutes)
-                return Alarm.enums.time_type.hour
-            else
-                return Alarm.enums.time_type.minutes;
-
-        }
-
-        getTime()
-        {
-            return this.time * 60 * 1000;
-        }
-
     }
 
-    Alarm.enums = {
-        type:{
-            before:Symbol("before"),
-            after:Symbol("after")
-        },
-        mode:{
-            none:Symbol("none"),
-            display:Symbol("display")
-        },
-        time_type:{
-            day:Symbol("d"),
-            hour:Symbol("h"),
-            minutes:Symbol("m")
-        }
+    /**
+     * Récupère le mode de l'alarme.
+     * @returns {Symbol} Alarm.enums.time_type
+     */
+    getTimeMode()
+    {
+        const day = 24 * 60;
+        const minutes = 60;
+
+        let mode;
+
+        if (this.time >= day)
+            mode = Alarm.enums.time_type.day;
+        else if (day > this.time && this.time >= minutes)
+            mode = Alarm.enums.time_type.hour
+        else
+            mode = Alarm.enums.time_type.minutes;
+
+        return mode;
     }
-/*
-(() => {
 
+    getTime()
+    {
+        return this.time * 60 * 1000;
+    }
 
+}
 
+/**
+ * Liste des énumérations de la classe <c>Alarm</c>
+ */
+Alarm.enums = {
+    type:{
+        before:Symbol("before"),
+        after:Symbol("after")
+    },
+    mode:{
+        none:Symbol("none"),
+        display:Symbol("display")
+    },
+    time_type:{
+        day:Symbol("d"),
+        hour:Symbol("h"),
+        minutes:Symbol("m")
+    }
+};
+
+(function calendar_alarm() {
 
     if (window !== parent)
         return;
 
+    /**
+     * Gère les alarmes de l'agenda
+     */
     class Calendar_Alarm
     {
+        /**
+         * 
+         * @param {JSON} args {timeouts:{}, showed_alarms[]}
+         */
         constructor(args = {})
         {
             this.init();
             this.assign(args);
         }
 
+        /**
+         * Initialise l'objet.
+         */
         init()
         {
             this.timeouts = {};
+            this.showed_alarms = [];
         }
 
+        /**
+         * Assigne les différents paramètres aux propriétés de l'objet.
+         * @param {JSON} args Idem construtor
+         */
         assign(args)
         {
             if (args !== undefined && args !== null)
@@ -107,10 +143,18 @@
             }
         }
 
-        create_alarm(event)
+        /**
+         * Créer un timeout qui va afficher l'alarme lié à l'évènement.
+         * @param {JSON} event Evènement de l'agenda
+         * @param {Moment} alarmDate Date pour le snooze
+         * @returns {number|null}
+         */
+        create_alarm(event, alarmDate = null)
         {
             let start = moment(event.start);
             let end = moment(event.end);
+
+            let retour = null;
 
             //mode d'alarme
             const alarm = new Alarm(event.alarms);
@@ -119,25 +163,23 @@
 
                     let time = 0;
 
-                    //type d'alarme
-                    switch (alarm.type) {
-                        case Alarm.enums.type.before:
-                            time = start.subtract(alarm.time, "m") - moment();
-                            break;
-                        case Alarm.enums.type.after:
-                            time = end.add(alarm.time, "m") - moment();
-                            break;
-                    
-                        default:
-                            break;
+                    if (alarmDate === null)
+                    {
+                        //type d'alarme
+                        switch (alarm.type) {
+                            case Alarm.enums.type.before:
+                                time = start.subtract(alarm.time, "m") - moment();
+                                break;
+                            case Alarm.enums.type.after:
+                                time = end.add(alarm.time, "m") - moment();
+                                break;
+                        
+                            default:
+                                break;
+                        }
                     }
-
-                    console.log("[create_alarm]", time, alarm, {
-                        title:event.title,
-                        start:event.start,
-                        end:event.end,
-                        now:moment().format()
-                    });
+                    else
+                        time = alarmDate - moment();
 
                     if (time <= 0)
                         this.show(event);
@@ -148,6 +190,7 @@
                             delete this.timeouts[id];
                             this.show(event);
                         }, time);
+                        retour = this.timeouts[id];
                     }
                     
                     break;
@@ -155,8 +198,16 @@
                 default:
                     break;
             }
+
+            return retour;
+
         }
 
+        /**
+         * Génère un id via un uid si il existe déjà.
+         * @param {string} uid 
+         * @returns {string} uid ou nouvel uid
+         */
         generate_id(uid)
         {
             let returnId;
@@ -177,6 +228,9 @@
             return returnId;
         }
 
+        /**
+         * Supprime la liste des timeouts.
+         */
         clearTimeouts()
         {
             for (const key in this.timeouts) {
@@ -186,19 +240,36 @@
                     delete this.timeouts[key];
                 }
             }
+            this.showed_alarms = [];
         }
 
+        /**
+         * Affiche l'évènement
+         * @param {JSON} event Evènement de l'agenda
+         */
         show(event)
         {
-            console.log("[SHOW]", event);
+            event.id = "cal:" + event.id;
+            event.uid = "cal:" + event.uid;
+            this.showed_alarms.push(event);
+            rcmail.triggerEvent("plugin.display_alarms", this.showed_alarms);
         }
 
+        /**
+         * Génère les alarmes via une liste d'évènements
+         * @param {Array<JSON>} events 
+         */
         generate(events = [])
         {
             for (let index = 0; index < events.length; ++index) {
                 const element = events[index];
-                if (element.alarms !== undefined && element.alarms !== null)
-                    this.create_alarm(element);
+                if (element.alarms !== undefined && element.alarms !== null && element.alarm_dismissed !== true)
+                {
+                    if (element.alarm_dismissed === false)
+                        this.create_alarm(element);
+                    else
+                        this.create_alarm(element, moment(element.alarm_dismissed*1000));
+                }
             }
         }
 
@@ -206,4 +277,28 @@
 
     window.alarm_managment = new Calendar_Alarm();
 
-})();*/
+    // $(document).ready(() => {
+    //     if (rcmail)
+    //     {
+    //         rcmail.addEventListener("responseafter", (props) => {
+    //             if (props.response && props.response.action == 'plugin.alarms')
+    //                 rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+    //         });
+
+    //         // rcmail.addEventListener("responseafterrefresh", (props) => {
+    //         //     if (window.alarm_managment !== true)
+    //         //         window.alarm_managment = true;
+    //         // });
+
+    //         rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
+    //             if (window.alarm_managment !== undefined)
+    //             {
+    //                 window.alarm_managment.clearTimeouts();
+    //                 const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar);
+    //                 if (storage !== null && storage !== undefined)
+    //                     window.alarm_managment.generate(storage);
+    //             }
+    //         });
+    //     }
+    // });
+})();

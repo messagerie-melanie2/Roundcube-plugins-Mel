@@ -24,6 +24,7 @@ const event_keys = {
 if (rcmail)
 {
 
+    //Initialise le bouton de chat
     rcmail.addEventListener(event_keys.init.chat_button.key, () => {
         if (rcmail.env.last_frame_class !== undefined && parent === window)
         {
@@ -45,5 +46,25 @@ if (rcmail)
             }
         }
     });
+
+    //Response afer
+    rcmail.addEventListener("responseafter", (props) => {
+        if (props.response && props.response.action == 'plugin.alarms')
+            rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+
+        
+    });
+
+    //Après la mise à jours du calendrier
+    rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
+        if (window.alarm_managment !== undefined)
+        {
+            window.alarm_managment.clearTimeouts();
+            const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar);
+            if (storage !== null && storage !== undefined)
+                window.alarm_managment.generate(storage);
+        }
+    });
+
 }
 

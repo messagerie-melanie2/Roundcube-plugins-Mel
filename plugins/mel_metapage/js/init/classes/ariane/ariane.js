@@ -33,7 +33,7 @@
             if (this.listeners[key] === undefined)
                 this.listeners[key] = [listener];
             else
-                his.listeners[key].push(listener);
+                this.listeners[key].push(listener);
         }
 
         triggerEvent(key, ...args)

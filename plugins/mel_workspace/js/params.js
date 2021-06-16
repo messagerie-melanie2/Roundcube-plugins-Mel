@@ -318,6 +318,7 @@
                 }
                 );
                 await this.update_toolbar().always(() => {
+                    $(".wsp-services button").addClass("btn btn-secondary");
                     this.busy(false);
                 });
             });
@@ -331,7 +332,8 @@
                 console.log("toolbar", datas, $("#wsp-toolbar"));
                $(".wsp-toolbar").html(datas);
                $(".wsp-home.active").removeClass("active");
-               $(".wsp-item-params").addClass("active");
+               $(".wsp-toolbar-item").addClass("btn btn-secondary").removeAttr("disabled").removeAttr("aria-disabled");
+               $(".wsp-item-params").addClass("active").attr("disabled", "disabled").attr("aria-disabled", true);
             });
         }
 
@@ -427,6 +429,7 @@
                 rcmail.env.WSP_Param.quit();
             } ,true);
             rcmail.register_command('workspace.archive', () => rcmail.env.WSP_Param.archive(), true);
+            rcmail.register_command('workspace.update_app', (e) => rcmail.env.WSP_Param.update_app(e), true);
             rcmail.register_command('workspace.unarchive', () => rcmail.env.WSP_Param.archive(false), true);
         })
     })

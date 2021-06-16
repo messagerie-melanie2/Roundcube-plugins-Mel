@@ -147,6 +147,11 @@ class libcalendaring extends rcube_plugin
                 $this->add_hook('message_load', array($this, 'mail_message_load'));
             }
         }
+
+        //PAMELA
+        $this->add_texts('localization/', true);
+        $this->rc->output->add_label('close');
+        $this->rc->output->set_env('snooze_select', $this->snooze_select());
     }
 
     /**
@@ -723,6 +728,8 @@ class libcalendaring extends rcube_plugin
             $this->rc->output->command('plugin.display_alarms', $this->_alarms_output($plugin['alarms']));
         }
     }
+
+    
 
     /**
      * Handler for alarm dismiss/snooze requests

@@ -836,5 +836,18 @@ class mel_utils
     return true;
   }
 
+  public static function cal_check_category($category)
+  {
+    try {
+      
+      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("categories");
+      
+      return isset($value) && strpos($value, $category) !== false;
+
+    } catch (\Throwable $th) {
+      return false;
+    }
+  }
+
 
 }

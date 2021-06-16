@@ -52,6 +52,8 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
 
+        $this->rc->output->set_env("plugin.mel_metapage", true);
+
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE    

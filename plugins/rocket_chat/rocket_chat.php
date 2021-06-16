@@ -60,6 +60,8 @@ class rocket_chat extends rcube_plugin {
         else {
           $this->register_task('discussion');
         }
+
+
         
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
@@ -605,5 +607,10 @@ EOF;
       $rocketClient = $this->get_rc_client();
 
       return $rocketClient->get_all_joined();
+    }
+
+    public function check_if_room_exist($room_id)
+    {
+      return $this->get_rc_client()->room_exist($room_id);
     }
 }

@@ -50,8 +50,16 @@ function wsp_epingle(id)
         //         }
         //     }
         // }
-        $("#tak-" + initialId).removeClass("disabled");
-        $("#tak-" + initialId + "-epingle").removeClass("disabled");
+        let querry = $("#tak-" + initialId);
+        querry.removeClass("disabled");
+
+        if (querry.hasClass("active"))
+            querry.attr("title", querry.attr("title").replace("Épingler", "Désépingler"));
+        else
+            querry.attr("title", querry.attr("title").replace("Désépingler", "Épingler"));
+
+        $("#tak-" + initialId + "-epingle").removeClass("disabled").attr("title", querry.attr("title"));
+
         EpingleEmpty();
 
         workspaces.sync.PostToParent({

@@ -35,8 +35,8 @@
 .dwp-circle.dwp-user:before {
     content: " ";
     border-style: solid;
-    width: 44px;
-    height: 44px;
+    width: 45px;
+    height: 45px;
     display: block;
     position: absolute;
     border-radius: 100%;

@@ -769,6 +769,9 @@ class mel_driver extends calendar_driver {
         }
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, $new);
+        //Supprime le tag que l'alarme a été repoussé
+        if ($_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK) !== null)
+          $_event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK, null); 
       }
 
       if ($_event->save() !== null) {
@@ -815,6 +818,7 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::edit_event()");
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::edit_event() : " . var_export($event, true));
+
     if ($this->new_event($event, false)) {
       if (isset($event['_fromcalendar'])) {
         $deleted_event = $event;
@@ -1913,6 +1917,8 @@ class mel_driver extends calendar_driver {
   public function pending_alarms($time, $calendars = null) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::pending_alarms()");
+
+    return [];
 
     try {      
       // Récupération des evenements en cache

@@ -253,7 +253,30 @@ Alarm.enums = {
             event.uid = "cal:" + event.uid;
             this.showed_alarms.push(event);
             rcmail.triggerEvent("plugin.display_alarms", this.showed_alarms);
+            setTimeout(() => {
+                this.update_links();
+            }, 100);
         }
+
+        update_links()
+        {
+            try {
+                let querry = $("#alarm-display .event-section")[0];
+                querry.innerHTML = this.urlify(querry.innerHTML);
+            } catch (error) {
+                console.error("###[update_links()]", error);
+            }
+        }
+
+        urlify(text) {
+            const kLINK_DETECTION_REGEX = /(https?:\/\/[^\s]+)/gi;
+
+            return text.replace(kLINK_DETECTION_REGEX, function(url) {
+              return '<a href="' + url + '">' + url + '</a>';
+            })
+            // or alternatively
+            // return text.replace(urlRegex, '<a href="$1">$1</a>')
+          }
 
         /**
          * Génère les alarmes via une liste d'évènements

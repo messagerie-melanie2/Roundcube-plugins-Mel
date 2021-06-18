@@ -81,6 +81,7 @@ if (rcmail)
                     break;
                 case "tasks":
                     type = "tasks";
+                    break;
                 default:
                     type = null;
                     break;

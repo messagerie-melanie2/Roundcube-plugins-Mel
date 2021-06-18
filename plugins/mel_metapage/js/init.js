@@ -1,5 +1,5 @@
 (function(){
-
+    $.datetimepicker.setLocale("fr");
 if (rcmail)
 {
     if (rcmail.env.task === "tasks")

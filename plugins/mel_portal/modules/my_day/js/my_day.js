@@ -85,11 +85,11 @@ function setupMyDay(datas)
         const element = datas[index];
         html += "<div class=row style=margin-bottom:15px;margin-right:15px; role=listitem>";
 		if (element.allDay)
-			html += "<div class=col-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+			html += "<div class=col-8><span class=element-title>" + rcmail.gettext("Journée entière") + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
 		else
 		{
 			const style_date = set_style(element);
-        	html += "<div class=col-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+        	html += "<div class=col-8><span class=element-title>" + style_date.start + " - " + style_date.end + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
 		}
 		// bool = element.attendees !== undefined && 
 		// element.attendees.length > 0 && 
@@ -169,7 +169,7 @@ function setup_tasks(datas)
 		date = moment(parseInt(element.created + "000"));
         html += "<div class=row style=margin-bottom:15px;margin-right:15px; role=listitem>";
 		if (date._isValid)
-        	html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
+        	html += '<div class=col-md-10><span class="element-title">' + element.title + '</span><br/><span class="element-desc">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</span></div>";
         else
 			html += "<div class=col-md-10></div>";
 		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'

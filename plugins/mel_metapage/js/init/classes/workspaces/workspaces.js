@@ -93,6 +93,8 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
         case "reload_frame":
             let querry = $(`iframe.${args.args[0]}`);
 
+            console.log("[SynchroniseWorkspaces.integrated_functions]",querry, args);
+
             if (querry.length > 0)
             {
                 //delete jQuery._data($(`.${args.args[0]}`)[0], 'events').load;

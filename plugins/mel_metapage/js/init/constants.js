@@ -272,8 +272,10 @@ const mel_metapage = {
         update_calendar: function (start, end){
             start = start.format("YYYY-MM-DDTHH:mm:ss");
             end = end.format("YYYY-MM-DDTHH:mm:ss");
-            if (parent.rcmail.env.ev_calendar_url === undefined)
-                parent.rcmail.env.ev_calendar_url = ev_calendar_url;
+            
+            if (rcmail.env.ev_calendar_url === undefined)
+                rcmail.env.ev_calendar_url = ev_calendar_url;
+
             return $.ajax({ // fonction permettant de faire de l'ajax
             type: "POST", // methode de transmission des données au fichier php
             url: rcmail.env.ev_calendar_url+'&start='+start+'&end='+end, // url du fichier php

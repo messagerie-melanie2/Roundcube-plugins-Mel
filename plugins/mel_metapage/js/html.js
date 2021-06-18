@@ -3,13 +3,39 @@ function html_helper(option, html, optional_classes = ""){
     switch (option) {
         case html_helper.options["block"]:   
             return '<div class="square_div '+optional_classes+'"><div class=contents><div class=square-contents>'+html+'</div></div></div>';
-        default:
+        case html_helper.options.create_button:
+
+			let onclick = "";
+			let classes = 'mel-button create mel-before-remover btn btn-secondary';
+			let id = "";
+
+			if (typeof optional_classes !== "string" && optional_classes !== null && optional_classes !== undefined)
+			{
+				if (optional_classes.onclick !== undefined)
+					onclick = `onclick="${optional_classes.onclick}"`;
+
+				if (optional_classes.new_classes !== undefined)
+					classes = `${optional_classes.new_classes}`
+				
+				if (optional_classes.additional_classes !== undefined)
+					classes += `${optional_classes.additional_classes}`
+
+				if (optional_classes.id !== undefined)
+					id = `id="${optional_classes.id}"`;
+			}
+
+			if (classes !== "")
+				classes = `class="${classes}"`;
+
+			return `<button ${id} ${classes} ${onclick} >${html}</button>`;
+		default:
             return html;
     }
 }
 
 html_helper.options = {
-    "block":Symbol("block")
+    "block":Symbol("block"),
+	"create_button":Symbol("create_button")
 }
 
 /**
@@ -92,11 +118,11 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
 		if (date._isValid)
-        	html += "<div class=col-md-10>" + element.title + "<br/>Créer le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</div>";
+        	html += "<div class=col-md-12><span class=element-title>" + element.title + "</span><br/><span class=element-desc>Créée le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</span></div>";
         else
-			html += "<div class=col-md-10></div>";
+			html += "<div class=col-md-12></div>";
 
-		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icon-mel-warning warning" : "icon-mel-time clear") + '"></a></div>'
+		//html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icon-mel-warning warning" : "icon-mel-time clear") + '"></a></div>'
         html += "</div>";
     }
     html += "</div>";
@@ -121,6 +147,7 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
 html_helper.CalendarsAsync = async function(config = {
     add_day_navigation:false,
     add_create:false,
+	create_function:null,
     add_see_all:false
 }, e = null, e_number = null, _date = moment())
 {
@@ -152,6 +179,7 @@ html_helper.CalendarsAsync = async function(config = {
 html_helper.Calendars = function({datas, config = {
     add_day_navigation:false,
     add_create:false,
+	create_function:null,
     add_see_all:false
 }, e = null, e_number = null, _date = moment(), get_only_body = false} = {})
 {
@@ -208,11 +236,11 @@ html_helper.Calendars = function({datas, config = {
 			const element = datas[index];
 			html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 			if (element.allDay)
-				html += "<div class=col-md-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+				html += "<div class=col-md-8><span class=element-title>" + rcmail.gettext("Journée entière") + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
 			else
 			{
 				const style_date = set_style(element);
-				html += "<div class=col-md-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
+				html += "<div class=col-md-8><span class=element-title>" + style_date.start + " - " + style_date.end + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
 			}
 			// bool = element.attendees !== undefined && 
 			// element.attendees.length > 0 && 
@@ -249,11 +277,20 @@ html_helper.Calendars = function({datas, config = {
 			html += "</div>";
 		}
 	}
+
 	if (!get_only_body)
 	{
 		html += "</div>";
 		html += "</div>";
 	}
+
+	if (config.add_create === true)
+	{
+		html += html_helper(html_helper.options.create_button, 'Créer <span class="icon-mel-plus plus"></span>', {
+			onclick:config.create_function === undefined || config.create_function === null ? "html_helper.Calendars.create()" : config.create_function
+		});
+	}
+
     if (e !== null)
 	    e.html(html);
     if (e_number !== null)
@@ -267,4 +304,35 @@ html_helper.Calendars = function({datas, config = {
         e_number.addClass("hidden");
     }
     return html;
+}
+
+html_helper.Calendars.create = function(config = {
+	date:moment(),
+	selector:null
+})
+{
+
+	let date;
+
+	if (config.selector !== undefined && config.selector !== null)
+		date = $(config.selector).data("current-date");
+	else if (config.date !== undefined && config.date !== null)
+		date = config.date;
+	else
+		date = moment();
+
+	const e = {
+		target:null
+	};
+
+	let event = {
+        start:moment(`${moment(date).format("YYYY-MM-DD")} ${moment().format("HH:mm")}`),
+        end:null//moment().add(1, "h")
+    };
+
+	event.end = moment(event.start).add(1, "h");
+    rcmail.local_storage_set_item("tmp_calendar_event", event);
+	console.log("[html_helper.Calendars.create]", event, date, config);
+
+    return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
 }

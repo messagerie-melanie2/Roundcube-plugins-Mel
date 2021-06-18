@@ -142,6 +142,16 @@
 								<roundcube:label name='mel_metapage.state_tool_conf' />
                             </label>
                         </div>
+						<!-- <label for="key-visio-cal" class="sr-only"><roundcube:label name='mel_metapage.choose_visio_tool' /></label> -->
+						<div class="row" id="row-for-key-visio-cal">
+							<div class="col-2">
+								<button type="button" onclick="$('#key-visio-cal').val(window.rcube_calendar_ui.generateRoomName())" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover"><span class="icofont-refresh"></span></button>
+							</div>
+							<div class="col-10">
+								<input type="text" id="key-visio-cal" class="form-control input-mel" placeholder="Saisir le nom du salon" />
+							</div>
+
+						</div>
                         <div class="form-check"> <!--autre-->
                             <input class="form-check-input custom-control-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">
                             <label class="form-check-label" for="eb-mm-wm-a">
@@ -149,7 +159,7 @@
                             </label>
                         </div>
 						<label for="url-visio-cal" class="sr-only"><roundcube:label name='mel_metapage.other_tool_conf' /></label>
-                        <input type="text" id="url-visio-cal" class="form-control input-mel disabled" disabled placeholder="Saisir l'url de visioconférence" />
+                        <input type="text" id="url-visio-cal" class="form-control input-mel hidden" placeholder="Saisir l'url de visioconférence" />
                     </div>    
                     <!--Audio-->
                     <div class="eb-mm-em-a content event-mode" style="display: none;">

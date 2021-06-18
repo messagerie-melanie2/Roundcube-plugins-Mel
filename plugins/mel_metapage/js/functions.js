@@ -1352,6 +1352,7 @@ async function m_mp_shortcuts()
         const config = {
             add_day_navigation:true,
             add_create:true,
+            create_function:`html_helper.Calendars.create({selector:'.fullscreen-item .mm-agenda-date'});window.shortcuts.close();`,
             add_see_all:true
         };
         let shortcuts = new FullscreenItem("body", true);

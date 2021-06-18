@@ -76,6 +76,25 @@ $(document).ready(() => {
         else if ($(`#${date.end.text_id}`).length > 0)
             $(`#${date.end.text_id}`).remove();
 
+
+        if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
+        {
+            const text_id = "key-error-cal";
+            const val = $("#key-visio-cal").val();
+
+            $(`#${text_id}`).remove();
+
+            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3)
+            {
+
+                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : "Il doit y avoir au moins 3 chiffres dans le nom du salon !";
+                //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
+                //$(".webconf-error-text").css("display", "").css("color", "red");
+                $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+                canContinue = false;
+            }
+        }
+
         if (canContinue)
             $(".nav-link.nav-icon.attendees").click();
     }
@@ -108,6 +127,30 @@ $(document).ready(() => {
         }
     }
 
+    window.rcube_calendar_ui.shuffle = function (array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+        return array;
+    };
+
+    window.rcube_calendar_ui.generateRoomName = function() {
+        var charArray= ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+        var digitArray= ["0","1","2","3","4","5","6","7","8","9"];
+        var roomName = window.rcube_calendar_ui.shuffle(digitArray).join("").substring(0,3) + window.rcube_calendar_ui.shuffle(charArray).join("").substring(0,7);
+        return window.rcube_calendar_ui.shuffle(roomName.split("")).join("");
+    };
+
     window.rcube_calendar_ui.edit = function(event)
     {
         if (event === "" && rcmail.env.event_prop !== undefined)
@@ -124,28 +167,8 @@ $(document).ready(() => {
         }
         //console.log("copy event", event, rcmail.env.event_prop);
         //Shuffle array elements
-        function shuffle(array) {
-            var currentIndex = array.length, temporaryValue, randomIndex;
-            // While there remain elements to shuffle...
-            while (0 !== currentIndex) {
-
-                // Pick a remaining element...
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex -= 1;
-
-                // And swap it with the current element.
-                temporaryValue = array[currentIndex];
-                array[currentIndex] = array[randomIndex];
-                array[randomIndex] = temporaryValue;
-            }
-            return array;
-        };
-        function generateRoomName() {
-            var charArray= ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-            var digitArray= ["0","1","2","3","4","5","6","7","8","9"];
-            var roomName = shuffle(digitArray).join("").substring(0,3) + shuffle(charArray).join("").substring(0,7);
-            return shuffle(roomName.split("")).join("");
-        };
+        const shuffle = window.rcube_calendar_ui.shuffle;
+        const generateRoomName = rcube_calendar_ui.generateRoomName;
         const getDate = function(string)
         {
             string = string.split(" ");
@@ -168,7 +191,7 @@ $(document).ready(() => {
                 if ($("#eb-mm-wm-e")[0].checked)
                 {
                     let config = {
-                        _key:generateRoomName(),
+                        _key:$("#key-visio-cal").val()//generateRoomName(),
                     };
                     if ($("#wsp-event-all-cal-mm").val() !== "#none")
                         config["_wsp"] = $("#wsp-event-all-cal-mm").val();
@@ -199,6 +222,7 @@ $(document).ready(() => {
             //Update datetime
             $(".input-mel-datetime .input-mel.start").datetimepicker({
                 format: 'd/m/Y H:i',
+                lang:"fr",
                 onChangeDateTime:() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
@@ -213,6 +237,7 @@ $(document).ready(() => {
             });
             $(".input-mel-datetime .input-mel.end").datetimepicker({
                 format: 'd/m/Y H:i',
+                lang:"fr",
                 onChangeDateTime:() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
@@ -267,17 +292,33 @@ $(document).ready(() => {
                 update_location();
                 //console.log($("#eb-mm-wm-e")[0].checked, "checked");
                 if (!$("#eb-mm-wm-e")[0].checked)
-                    $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
+                {
+                    $("#url-visio-cal").removeClass("hidden");//.removeClass("disabled").removeAttr("disabled");
+                    $("#row-for-key-visio-cal").addClass("hidden");
+                }
                 else
-                    $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
+                {
+                    $("#url-visio-cal").addClass("hidden");//addClass("disabled").attr("disabled", "disabled");
+                    $("#row-for-key-visio-cal").removeClass("hidden");
+                }
             });
             $("#eb-mm-wm-a").on("change", () => {
                 update_location();
                 //console.log($("#eb-mm-wm-e")[0].checked, "checked");
+                // if (!$("#eb-mm-wm-e")[0].checked)
+                //     $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
+                // else
+                //     $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
                 if (!$("#eb-mm-wm-e")[0].checked)
-                    $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
+                {
+                    $("#url-visio-cal").removeClass("hidden");//.removeClass("disabled").removeAttr("disabled");
+                    $("#row-for-key-visio-cal").addClass("hidden");
+                }
                 else
-                    $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
+                {
+                    $("#url-visio-cal").addClass("hidden");//addClass("disabled").attr("disabled", "disabled");
+                    $("#row-for-key-visio-cal").removeClass("hidden");
+                }
             });
             $("#url-visio-cal").on("change", () => {
                 update_location();
@@ -292,6 +333,9 @@ $(document).ready(() => {
                 update_location();
             });
             $("#num-audio-input-cal-location").on("change", () => {
+                update_location();
+            });
+            $("#key-visio-cal").on("change", () => {
                 update_location();
             });
             $("#edit-wsp").on("click", (e) => {
@@ -342,6 +386,8 @@ $(document).ready(() => {
 
             const update_desc = function (description) 
             {
+                //$("#key-visio-cal").val(generateRoomName());
+
                 if (description !== undefined && description !== "")
                 {
                     if (description.includes("https://audio.mtes.fr/ : "))
@@ -356,11 +402,18 @@ $(document).ready(() => {
                         const isRc = description.includes("#visio");
                         $("#eb-mm-em-v").click();
                         if (isRc)
+                        {
                             $("#eb-mm-wm-e").click();
+                            $("#url-visio-cal").addClass("hidden");
+                            $("#row-for-key-visio-cal").removeClass("hidden");
+                            $("#key-visio-cal").val(description.split("&_key=")[1].split("&")[0]);
+                        }
                         else
                         {
                             $("#eb-mm-wm-a").click();
-                            $("#url-visio-cal").removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
+                            $("#url-visio-cal").removeClass("hidden").val(description.replace("@visio:", ""));
+                            $("#row-for-key-visio-cal").addClass("hidden");
+                            //.removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
                         }
                     }
                     else {
@@ -368,6 +421,8 @@ $(document).ready(() => {
                         $("#presential-cal-location").val(description);
                     }
                 }
+                else
+                    $("#eb-mm-em-p").click();         
             };
 
             if (event === "") //nouvel event
@@ -420,6 +475,9 @@ $(document).ready(() => {
                 update_desc($("#edit-location").val());
 
                 $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
+
+                console.log("roomname_generated", generateRoomName());
+                $("#key-visio-cal").val(generateRoomName());
 
             }
             else{ //ancien event
@@ -632,8 +690,8 @@ $(document).ready(() => {
             _category: event === null || event.categories === undefined || event.categories === null || event.categories.length === 0 ? null : event.categories[0], 
             _framed: true,
             _calendar_blocked: event != null && event.calendar_blocked === true,
-            // _startDate: event == null || event.start === undefined ? null : event.start,
-            // _endDate: event == null || event.end === undefined ? null : event.end,
+            _startDate: event == null || event.start === undefined ? null : moment(event.start).format("YYYY-MM-DDTHH:mm"),
+            _endDate: event == null || event.end === undefined ? null : moment(event.end).format("YYYY-MM-DDTHH:mm"),
         },
             buttons = {},
             button_classes = ['mainaction save', 'cancel'],

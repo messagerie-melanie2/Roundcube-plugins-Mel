@@ -1357,3 +1357,43 @@ html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-con
     display: initial!important;
 }
 
+/**temporaire**/
+@media screen and (max-width: 1346px){
+    html.layout-large body.task-mail #layout-content .header .menu.toolbar a
+    {
+        font-size: 0.65rem;
+        line-height: 2;
+    }
+
+    html.layout-large body.task-mail #layout-content .header .menu.toolbar a:before{
+        font-size: 1rem;
+    }
+}
+
+@media screen and (max-width: 997px){
+    body.task-mail #layout-content .header .menu.toolbar a
+    {
+        font-size: 0.65rem;
+        line-height: 2;
+    }
+
+    body.task-mail #layout-content .header .menu.toolbar a:before{
+        font-size: 1rem;
+    }
+}
+
+/*********/
+
+body.task-mail .ui-dialog iframe, .ui-dialog .ui-dialog-content.iframe{
+    width: 97.9% !important;;
+}
+
+.element-title{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.element-desc
+{
+    font-size: 12px;
+}

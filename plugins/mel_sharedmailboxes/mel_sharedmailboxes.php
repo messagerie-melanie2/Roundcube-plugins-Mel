@@ -398,6 +398,9 @@ class mel_sharedmailboxes extends rcube_plugin {
     public function refresh_store_target_selection() {
         $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GET);
 
+        $this->get_account = mel::get_account();
+        $this->mel->set_account($this->get_account);
+
         $attrib = array(
                 'name'      => '_store_target',
                 'maxlength' => '30',

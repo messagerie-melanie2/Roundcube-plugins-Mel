@@ -81,9 +81,9 @@ function desk_epingle(id)
         if (data.success)
         {
             if (data.is_epingle)
-                $("#tak-" + initialId).addClass("active");
+                $("#tak-" + initialId).addClass("active").attr("title", rcmail.gettext("untak", "mel_portal"));
             else
-                $("#tak-" + initialId).removeClass("active");
+                $("#tak-" + initialId).removeClass("active").attr("title", rcmail.gettext("tak", "mel_portal"));
 
             workspaces.sync.PostToParent({
                 exec:"workspace_load_epingle(`" + JSON.stringify(data) + "`, `" + initialId + "`)"

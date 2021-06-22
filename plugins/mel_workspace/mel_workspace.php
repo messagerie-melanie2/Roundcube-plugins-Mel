@@ -1080,75 +1080,7 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
-    public static function is_admin($workspace, $username = null)
-    {
-        $user = $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid];
-        if ($user !== null)
-            return $user->rights === Share::RIGHT_OWNER;
-        else
-            return false;
-    }
 
-    public static function nb_admin($workspace)
-    {
-        $nb_admin = 0;
-        $shares = $workspace->shares;
-        foreach ($shares as $key => $value) {
-            if (self::is_admin($workspace, $value->user))
-                ++$nb_admin;
-        }
-        return $nb_admin;
-    }
-
-    public static function get_other_admin($workspace, $username = null)
-    {
-        $me = $username ?? driver_mel::gi()->getUser()->uid;
-        foreach ($workspace->shares as $key => $value) {
-            if ($key !== $me && self::is_admin($key))
-                return $key;
-        }
-        return null;
-    }
-
-    public static function is_in_workspace($workspace, $username = null)
-    {
-        return $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid] !== null;
-    }
-
-    public static function generate_uid($title)
-    {
-        $max = 35;
-
-        include_once "lib/mel_utils.php";
-        $text = mel_utils::replace_determinants(mel_utils::remove_accents(mel_utils::replace_special_char(strtolower($title))), "-");
-        $text = str_replace(" ", "-", $text);
-        if (count($text) > $max)
-        {
-            $title = "";
-            for ($i=0; $i < count($text); $i++) { 
-                if ($i >= $max)
-                    break;
-                $title.= $text[$i];
-            }
-            $text = $title;
-        }
-        $it = 0;
-        do {
-            $workspace = driver_mel::gi()->workspace();
-            $workspace->uid = $text."-".(++$it);
-        } while ($workspace->exists());
-        return $text."-".$it;
-    }
-
-    public static function is_epingle($loaded_workspace)
-    {
-        $settings = json_decode($loaded_workspace->settings);
-        if ($settings === null)
-            return false;
-        if ($settings->epingle === true)
-            return true;
-        return false;
-    }
 
     function epingle()
     {
@@ -1315,10 +1247,6 @@ class mel_workspace extends rcube_plugin
         return $html;
     }
 
-    public static function get_completed_task($task)
-    {
-        return $task["complete"] === 1;
-    }
 
     public function get_tasks($workspace, $html, $replace = "<workspace-task-all/>", &$total = 0)
     {
@@ -1336,7 +1264,7 @@ class mel_workspace extends rcube_plugin
                         return $task["complete"] === 1;
                     }));
                     //$taskslist = $task->get_lists()
-                    $div = html::div(["class" => "wsp-tasks-all", "style" => "font-size:smaller;margin-top: -25px;"],
+                    $div = html::p(["class" => "wsp-tasks-all", "style" => "font-size:smaller;margin-top: -25px;"],
                         html::tag("span", ["style" => "font-size:large"], $completed).
                         " tâches réalisées sur $total"
                     );
@@ -1510,14 +1438,6 @@ class mel_workspace extends rcube_plugin
             echo "error";
         }
         exit;
-    }
-
-    public static function get_workspace($uid)
-    {
-        $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
-        $workspace->uid = $uid;
-        $workspace->load();
-        return $workspace;
     }
 
     function update_user_table_rights()
@@ -1970,4 +1890,95 @@ class mel_workspace extends rcube_plugin
         mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
     }
 
+    public static function is_admin($workspace, $username = null)
+    {
+        $user = $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid];
+        if ($user !== null)
+            return $user->rights === Share::RIGHT_OWNER;
+        else
+            return false;
+    }
+
+    public static function nb_admin($workspace)
+    {
+        $nb_admin = 0;
+        $shares = $workspace->shares;
+        foreach ($shares as $key => $value) {
+            if (self::is_admin($workspace, $value->user))
+                ++$nb_admin;
+        }
+        return $nb_admin;
+    }
+
+    public static function get_other_admin($workspace, $username = null)
+    {
+        $me = $username ?? driver_mel::gi()->getUser()->uid;
+        foreach ($workspace->shares as $key => $value) {
+            if ($key !== $me && self::is_admin($key))
+                return $key;
+        }
+        return null;
+    }
+
+    public static function is_in_workspace($workspace, $username = null)
+    {
+        return $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid] !== null;
+    }
+
+    public static function generate_uid($title)
+    {
+        $max = 35;
+
+        include_once "lib/mel_utils.php";
+        $text = mel_utils::replace_determinants(mel_utils::remove_accents(mel_utils::replace_special_char(strtolower($title))), "-");
+        $text = str_replace(" ", "-", $text);
+        if (count($text) > $max)
+        {
+            $title = "";
+            for ($i=0; $i < count($text); $i++) { 
+                if ($i >= $max)
+                    break;
+                $title.= $text[$i];
+            }
+            $text = $title;
+        }
+        $it = 0;
+        do {
+            $workspace = driver_mel::gi()->workspace();
+            $workspace->uid = $text."-".(++$it);
+        } while ($workspace->exists());
+        return $text."-".$it;
+    }
+
+    public static function is_epingle($loaded_workspace)
+    {
+        $settings = json_decode($loaded_workspace->settings);
+        if ($settings === null)
+            return false;
+        if ($settings->epingle === true)
+            return true;
+        return false;
+    }
+
+    public static function get_workspace($uid)
+    {
+        $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+        $workspace->uid = $uid;
+        $workspace->load();
+        return $workspace;
+    }
+
+    public static function get_completed_task($task)
+    {
+        return $task["complete"] === 1;
+    }
+
+    public static function get_from_template($config, $html)
+    {
+        foreach ($config as $key => $value) {
+            $html = str_replace("<$key/>", $value, $html);
+        }
+
+        return $html;
+    }
 }

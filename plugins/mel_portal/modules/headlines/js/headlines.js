@@ -19,7 +19,7 @@ function create_headline(datas, index)
 
 function by(datas, index)
 {
-    return '<div class=headlines-by>Information '+datas[index].by+'</div>'
+    return '<p class=headlines-by>Information '+datas[index].by+'</p>'
 }
 
 function title(datas, index)
@@ -30,15 +30,15 @@ function title(datas, index)
 function publishAt(datas, index)
 {
     const date = moment(datas[index].date);
-    let html = '<div class=headlines-publish>';
+    let html = '<p class=headlines-publish>';
     if (date._isValid)
         html += "Publié le " + GetDateFr(date.format("dddd DD MMMM YYYY"));
-    return html + "</div>";
+    return html + "</p>";
 }
 
 function contents(datas, index)
 {
-    return '<div class=headlines-contents>'+datas[index].contents+'</div>'
+    return '<p class=headlines-contents>'+datas[index].contents+'</p>'
 }
 
 // function header(data, head, index = null)

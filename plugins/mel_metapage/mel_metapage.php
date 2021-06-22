@@ -640,7 +640,7 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->add_handlers(array(
             'document_type'    => array($this, 'get_docs_types'),
         ));
-        echo $this->rc->output->parse("mel_metapage.create_document");
+        echo $this->rc->output->parse("mel_metapage.create_document", false, false);
         exit;
         //$this->rc->output->send("mel_metapage.create_document");
     }

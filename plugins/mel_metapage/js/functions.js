@@ -38,16 +38,15 @@ function m_mp_Create()
             let disabled = click ==="" ? "disabled" : "";
             return '<button class="btn btn-block btn-secondary btn-mel ' + disabled + '" onclick="'+click+'"'+disabled+'><span class="'+font+'"></span>'+ txt +'</button>';
         }
-        let html = "";
-        let workspace = `<div role="listitem" class="col-12" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + button(rcmail.gettext("mel_metapage.a_worspace"), "icon-mel-workplace", "m_mp_createworkspace()") + '</div>'
-        let mail = `<div role="listitem" class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + button(rcmail.gettext("mel_metapage.a_mail"), "icon-mel-mail block", "window.create_popUp.close();rcmail.command('compose','',this,event)") + "</div>";
-        let reu = `<div role="listitem" class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + button(rcmail.gettext("mel_metapage.a_meeting"), "icon-mel-calendar block", 'mm_create_calendar(this);//rcube_calendar.mel_create_event()//m_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</div>";
-        let viso = `<div role="listitem" class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + button(rcmail.gettext("mel_metapage.a_web_conf"), "icon-mel-videoconference block", `window.webconf_helper.go()`) + "</div>";
-        let tache = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + button(rcmail.gettext("mel_metapage.a_task"), "icon-mel-survey block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)") + "</div>";
-        let document = `<div role="listitem" class="col-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + button(rcmail.gettext("mel_metapage.a_document"), "icon-mel-folder block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</div>";
-        let blocnote = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</div>";
-        let pega = `<div role="listitem" class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + button(rcmail.gettext("mel_metapage.a_survey"), "icon-mel-sondage block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</div>";
-        html = '<section role="list"><div class="row">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</div></section>';
+        let workspace = `<li class="col-12" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + button(rcmail.gettext("mel_metapage.a_worspace"), "icon-mel-workplace", "m_mp_createworkspace()") + '</li>'
+        let mail = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + button(rcmail.gettext("mel_metapage.a_mail"), "icon-mel-mail block", "window.create_popUp.close();rcmail.command('compose','',this,event)") + "</li>";
+        let reu = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + button(rcmail.gettext("mel_metapage.a_meeting"), "icon-mel-calendar block", 'mm_create_calendar(this);//rcube_calendar.mel_create_event()//m_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</li>";
+        let viso = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + button(rcmail.gettext("mel_metapage.a_web_conf"), "icon-mel-videoconference block", `window.webconf_helper.go()`) + "</li>";
+        let tache = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + button(rcmail.gettext("mel_metapage.a_task"), "icon-mel-survey block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)") + "</li>";
+        let document = `<li class="col-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + button(rcmail.gettext("mel_metapage.a_document"), "icon-mel-folder block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</li>";
+        let blocnote = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
+        let pega = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + button(rcmail.gettext("mel_metapage.a_survey"), "icon-mel-sondage block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</li>";
+        html = '<ul class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         create_popUp = new GlobalModal("globalModal", config, true);
     }
@@ -157,8 +156,8 @@ function m_mp_createworskpace_steps()
             html += '<div style=margin:15px></div>'
             html += '<div class="row"><div class="col-12" style="text-align: center;"><span id="wspsse" style="color: red;display:none;"></span></div></div>'
             //html += '<button style="float:left" class="btn btn-warning btn-workspace-left" onclick=m_mp_switch_step(`workspace-step2`)>Retour</button><button onclick="m_mp_check_w(3, null)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
-            html += '    <div style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step2`)"><span>Retour</span><span class="icon-mel-undo  plus" style="margin-left: 15px;"></span></div>';
-            html += '    <div style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(3, null)"><span>Continuer</span><span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span></div>';
+            html += '    <button style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step2`)"><span>Retour</span><span class="icon-mel-undo  plus" style="margin-left: 15px;"></span></button>';
+            html += '    <button style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(3, null)"><span>Continuer</span><span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span></button>';
             return html;
         }
     }
@@ -234,7 +233,7 @@ function m_mp_createworkspace()
 
     //create_popUp.contents.html(html);
     //create_popUp.editTitle();
-    create_popUp.editTitleAndSetBeforeTitle('<a title="Retour" href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
+    create_popUp.editTitleAndSetBeforeTitle('<a href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
     'Création d\'un espace de travail');
     // $.ajax({ // fonction permettant de faire de l'ajax
     //     type: "GET", // methode de transmission des données au fichier php
@@ -868,7 +867,7 @@ function m_mp_CreateDocumentIconContract(icon, type)
  */
 async function m_mp_InitializeDocument()
 {
-    create_popUp.editTitleAndSetBeforeTitle('<a title="Retour" href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>','Création d\'un nouveau document');
+    create_popUp.editTitleAndSetBeforeTitle('<a href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>','Création d\'un nouveau document');
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
 
     let url_config ={
@@ -876,7 +875,7 @@ async function m_mp_InitializeDocument()
     };
     url_config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
 
-    $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", 
+    $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", url_config
     )}"></iframe>`).on("load", () => {
         create_popUp.contents.find(".spinner-border").parent().remove();
         create_popUp.contents.find("iframe").css("display", "");

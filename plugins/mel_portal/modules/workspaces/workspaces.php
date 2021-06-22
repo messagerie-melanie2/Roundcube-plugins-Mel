@@ -84,9 +84,15 @@ class Workspaces extends Module
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
         if ($is_epingle)
+        {
             $html = str_replace("<workspace-epingle/>", "active", $html);
+            $html = str_replace("<workspace-epingle-title/>", $this->text('untak'), $html);
+        }
         else
+        {
             $html = str_replace("<workspace-epingle/>", "", $html);
+            $html = str_replace("<workspace-epingle-title/>", $this->text('tak'), $html);
+        }
         if ($workspace->logo !== null && $workspace->logo !== "false")
             $html = str_replace("<workspace-image/>", '<div class=dwp-round><img alt="" src="'.$workspace->logo.'"></div>', $html);
         else
@@ -131,7 +137,7 @@ class Workspaces extends Module
         $nb_tasks = 0;
         $html = $ws->get_tasks($workspace, $html, "<workspace-avancement/>", $nb_tasks);
         if ($nb_tasks > 0)
-            $html = str_replace("<workspace-task-all/>", html::div(["class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>$nb_tasks</span><br/>tâches au total"), $html);
+            $html = str_replace("<workspace-task-all/>", html::p(["class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>$nb_tasks</span><br/>tâches au total"), $html);
 
         $services = $ws->get_worskpace_services($workspace);
         $tmp_html = "";

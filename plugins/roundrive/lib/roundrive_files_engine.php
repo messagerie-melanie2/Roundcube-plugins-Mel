@@ -1134,7 +1134,7 @@ class roundrive_files_engine
             $this->rc->output->send("roundrive.create");
         else
         {
-            echo $this->rc->output->parse("roundrive.create", false, false);
+            echo $this->rc->output->parse("roundrive.create");
             exit;
         }
     }

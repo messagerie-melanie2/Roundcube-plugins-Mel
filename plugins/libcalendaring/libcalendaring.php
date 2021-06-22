@@ -386,7 +386,8 @@ class libcalendaring extends rcube_plugin
             html::span(array('class' => 'edit-alarm-values input-group', 'style' => 'display:none'),
                 $input_value->show($preset[0]) . ' ' .
                 $select_offset->show($preset[1]) . ' ' .
-                $select_related->show() . ' ' .
+                //PAMELA - Retirer l'affichage début/fin car pas utilisé
+               // $select_related->show() . ' ' .
                 $input_date->show('', $hidden) . ' ' .
                 $input_time->show('', $hidden)
             )

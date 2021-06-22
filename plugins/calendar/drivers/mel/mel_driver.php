@@ -1797,13 +1797,35 @@ class mel_driver extends calendar_driver {
         // TODO: Alarme
         // Alarm
         if (isset($event->alarm) && $event->alarm != 0) {
+
+          $modifier = 1;
+
           if ($event->alarm > 0) {
             $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
-            $_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
+            //$_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
           }
           else {
             $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
+            $modifier = -1;
+            //$_event['valarms'] = [['action' => 'DISPLAY','trigger' => "+PT" . $tmp_alarm . $alarm_char]];
           }
+
+          $tmp_alarm = $event->alarm * $modifier;
+          $alarm_char = "M";
+
+          if ($tmp_alarm >= 1440)
+          {
+            $tmp_alarm /= 1440;
+            $alarm_char = "D"; 
+          }
+          else if ($tmp_alarm >= 60)
+          {
+            $tmp_alarm /= 60;
+            $alarm_char = "H"; 
+          }
+
+          $_event['valarms'] = [['action' => 'DISPLAY','trigger' => ($modifier > 0 ? "-" : "+")."PT" . $tmp_alarm . $alarm_char]];
+          //$_event["char"] = ["modifier" => $modifier, "value" => ($modifier > 0 ? "-" : "+"), "alarm" => $event->alarm, "trigger" => ($modifier > 0 ? "-" : "+")."PT" . $tmp_alarm . $alarm_char, "tmp_alarm" => $tmp_alarm];
         }
 
         // Attendees

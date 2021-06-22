@@ -958,7 +958,7 @@ class mel extends rcube_plugin {
         $identity = [];
         $identity['name'] = $this->m2_identity_shortname($_object->fullname);
         $identity['realname'] = $_object->fullname;
-        $identity['email'] = $email;
+        $identity['email'] = strtolower($email);
         $identity['uid'] = $_object->uid;
         $identity['standard'] = 0;
         $identities[strtolower($email)] = $identity;
@@ -981,7 +981,7 @@ class mel extends rcube_plugin {
       $identity = [];
       $identity['name'] = $user->fullname;
       $identity['realname'] = $user->fullname;
-      $identity['email'] = $email;
+      $identity['email'] = strtolower($email);
       $identity['uid'] = $user->uid;
       $identity['standard'] = $email == $user->email_send ? 1 : 0;
       $identities[strtolower($email)] = $identity;

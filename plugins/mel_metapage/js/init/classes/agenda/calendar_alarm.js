@@ -249,13 +249,20 @@ Alarm.enums = {
          */
         show(event)
         {
-            event.id = "cal:" + event.id;
-            event.uid = "cal:" + event.uid;
+            event.id = this.setCalId(event.id);//"cal:" + event.id;
+            event.uid = this.setCalId(event.uid);//"cal:" + event.uid;
             this.showed_alarms.push(event);
             rcmail.triggerEvent("plugin.display_alarms", this.showed_alarms);
             setTimeout(() => {
                 this.update_links();
             }, 100);
+        }
+
+        setCalId(id)
+        {
+            if (id.includes("@DATE"))
+                id = id.split("@DATE")[0];
+            return `cal:${id}`;
         }
 
         update_links()

@@ -6,7 +6,7 @@
 //     }  
 // );
 
-rcmail.addEventListener('responseafter', function(props) {
+rcmail.addEventListener('responsebefore', function(props) {
 
     if (props.response && props.response.action == 'task') {
         parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.get);

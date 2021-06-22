@@ -35,6 +35,7 @@ if (rcmail)
                     try {
                         let events = [];
                         data = JSON.parse(data);
+                        console.log("calendar", data);
                         data = Enumerable.from(data).where(x =>  mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
                         let startMoment;
                         let endMoment;
@@ -161,12 +162,24 @@ if (rcmail)
             },
             mail_updated: function() {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
+                const last_count = mel_metapage.Storage.get(mel_metapage.Storage.mail);
                 return $.ajax({ // fonction permettant de faire de l'ajax
                 type: "GET", // methode de transmission des données au fichier php
                 url: '?_task=mel_metapage&_action=get_unread_mail_count',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
                     try {
                         //console.log("mail_updated", data);
+                        if (last_count === null || last_count || undefined || last_count < data)
+                        {
+                            const querry = $(`iframe.mail-frame`);
+                            if (querry.length > 0)
+                                querry[0].contentWindow.postMessage({
+                                    exec:"refresh_frame",
+                                    child:false,
+                                    _integrated:true,
+                                    always:true
+                                });
+                        }
                         mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);

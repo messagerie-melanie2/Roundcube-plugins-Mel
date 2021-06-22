@@ -10,6 +10,7 @@ function my_day(symbol = null)
 	if (symbol === null || symbol === mel_metapage.Symbols.my_day.tasks) //Si l'on charge tout ou uniquement les tâches
 		current_day(mel_metapage.Storage.tasks, mel_metapage.Storage.last_task_update, mel_metapage.EventListeners.tasks_updated.get, setup_tasks);
 
+	MEL_ELASTIC_UI.gestionTabs($("#myday .tabs"));
 }
 
 /**
@@ -39,6 +40,7 @@ function current_day(storage, last_update_storage, trigger, setup_func = (local_
 
 Main.Add(my_day); //Sera appelé au chargement du plugin "mel_portal".
 Update(my_day); //Sera appelé à chaque fois que l'on ouvrira la frame qui contient ce module.
+
 
 /**
  * Affiche les évènements.
@@ -83,7 +85,8 @@ function setupMyDay(datas)
 	let icon;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
-        html += "<div class=row style=margin-bottom:15px;margin-right:15px; role=listitem>";
+		html += "<li>";
+        html += "<div class=row style=margin-bottom:15px;margin-right:15px; >";
 		if (element.allDay)
 			html += "<div class=col-8><span class=element-title>" + rcmail.gettext("Journée entière") + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
 		else
@@ -135,9 +138,10 @@ function setupMyDay(datas)
 
 		html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
         html += "</div>";
+		html += "</li>";
     }
 
-    html = `<section role="list">${html}</section>`;
+    html = `<ul class="ignore-bullet">${html}</ul>`;
 	$("#agenda").html(html);
 
 	if (datas.length > 0)
@@ -165,18 +169,20 @@ function setup_tasks(datas)
 	datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
 	let date;
     for (let index = 0; index < datas.length; index++) {
+		html += "<li>";
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
-        html += "<div class=row style=margin-bottom:15px;margin-right:15px; role=listitem>";
+        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 		if (date._isValid)
         	html += '<div class=col-md-10><span class="element-title">' + element.title + '</span><br/><span class="element-desc">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</span></div>";
         else
 			html += "<div class=col-md-10></div>";
 		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
+		html += "</li>";
     }
 
-    html = `<section role="list">${html}</section>`;
+    html = `<ul class="ignore-bullet">${html}</ul>`;
 
 	$("#tasks").html(html);
 	if (datas.length > 0)
@@ -274,7 +280,7 @@ function add_task_to_completed(id)
   {
 	  $(".tablinks").each((i,e) => {
 		e.classList.remove("selected");
-		$(e).attr("aria-selected", false);
+		$(e).attr("aria-selected", false).attr("tabindex", -1);
 	  });
 	  
 	  $(".tabcontent").each((i,e) => {
@@ -283,11 +289,11 @@ function add_task_to_completed(id)
 	  });
 
 	  element.classList.add("selected");
-	  $(element).attr("aria-selected", true);
+	  $(element).attr("aria-selected", true).attr("tabindex", 0);
 	  $("#" + id).removeClass("hidden").removeAttr("hidden");
 
-	  setTimeout(() => {
-		document.activeElement.blur();
-	  }, 100);
+	//   setTimeout(() => {
+	// 	document.activeElement.blur();
+	//   }, 100);
   }
 

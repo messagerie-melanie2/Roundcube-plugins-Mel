@@ -1859,7 +1859,7 @@ class mel_driver extends calendar_driver {
     {
       $lastStack = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
       if (isset($lastStack))
-        $_event["alarm_dismissed"] = isset($lastStack);
+        $_event["alarm_dismissed"] = $_event["recurrence"] !== null &&  $_event["recurrence"] !== "" ? time() > strtotime($lastStack) : isset($lastStack);
       else
       {
         $snooze = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);

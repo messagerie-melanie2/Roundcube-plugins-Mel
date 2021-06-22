@@ -17,6 +17,14 @@ textarea,
     font-family: Marianne,Roboto,sans-serif;
 }
 
+a{
+    color:#0476C4;
+}
+
+a:hover{
+    color:#4F7B9F
+}
+
 .mel-clickable {
     cursor: pointer;
 }
@@ -1396,4 +1404,9 @@ body.task-mail .ui-dialog iframe, .ui-dialog .ui-dialog-content.iframe{
 .element-desc
 {
     font-size: 12px;
+}
+
+.ignore-bullet{
+    list-style-type: none;
+    padding: 0;
 }

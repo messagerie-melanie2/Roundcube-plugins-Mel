@@ -40,6 +40,22 @@ $(document).ready(() => {
                 }
               });
 
+              
+              Object.defineProperty(this, 'keys', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: {
+                    end: 35,
+                    home: 36,
+                    left: 37,
+                    up: 38,
+                    right: 39,
+                    down: 40,
+                    delete: 46
+                  }
+              });
+
               if (parent === window)
               {
                   //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
@@ -99,10 +115,10 @@ $(document).ready(() => {
 
                 });
 
-                $("#taskmenu").append('<ul class="list-unstyled" role="menubar" aria-label="Navigation principale"></ul>');
+                $("#taskmenu").append('<ul class="list-unstyled"></ul>');
 
                 Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
-                    let li = $("<li style=display:block role=none></li>")
+                    let li = $("<li style=display:block></li>")
                     e = e.item;
                     if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
                     li.css("display", "none");
@@ -550,6 +566,7 @@ $(document).ready(() => {
             if (doAction)
                 eval(e.parent().data("page").replaceAll("¤page¤", number));
         }
+
         pagination_next(e) {
             const count = $(e).parent().data("count");
             let current = $(e).parent().data("current");
@@ -557,11 +574,101 @@ $(document).ready(() => {
             if (count+1 != current)
                 this.pagination_page($(".pagination-number-" + current)[0], current)
         }
+
         pagination_prev(e) {
             const current = $(e).parent().data("current");
             if (current !== undefined || current !== 1)
                 this.pagination_page($(".pagination-number-" + (current-1))[0], current - 1);
         }
+
+        gestionTabs($item = null)
+        {
+            if ($item === null)
+            {
+                const items = document.querySelectorAll('[role="tablist"]');
+                for (let index = 0; index < items.length; ++index) {
+                    const element = items[index];
+                    this.gestionTabs(element);
+                }
+            }
+            else {
+                const determineDelay = function () {
+                    var hasDelay = tablist.hasAttribute('data-delay');
+                    var delay = 0;
+                
+                    if (hasDelay) {
+                      var delayValue = tablist.getAttribute('data-delay');
+                      if (delayValue) {
+                        delay = delayValue;
+                      }
+                      else {
+                        // If no value is specified, default to 300ms
+                        delay = 300;
+                      };
+                    };
+                
+                    return delay;
+                  };
+
+                let item = $($item);
+
+                if (item.hasClass("mel-ui-tab-system"))
+                  return;
+                else
+                    item.addClass("mel-ui-tab-system");
+
+                let tabs = item.find("button");
+
+                tabs.keydown( (event) => {
+                    const key = event.keyCode;
+
+                    let direction = 0;
+                    switch (key) {
+                        case this.keys.left:
+                            direction = -1;
+                            break;
+                        case this.keys.right:
+                            direction = 1;
+                            break;
+
+                        case this.keys.home:
+                            $(tabs[0]).focus().click();
+                            break;
+                        case this.keys.end:
+                            $(tabs[tabs.length-1]).focus().click();
+                            break;
+                    
+                        default:
+                            break;
+                    }
+
+                    if (direction !== 0)
+                    {
+                        for (let index = 0; index < tabs.length; ++index) {
+                            const element = $(tabs[index]);
+                            
+                            if (element.hasClass("selected"))
+                            {
+                                let id;
+                                if (index + direction < 0)
+                                    id = tabs.length - 1;
+                                else if (index + direction >= tabs.length)
+                                    id = 0;
+                                else
+                                    id = index + direction;
+
+                                $(tabs[id]).focus().click();
+
+                                break;
+                            }
+                        }
+                    }
+                });
+                
+            }
+        }
+
+        
 
     }
 
@@ -577,6 +684,8 @@ $(document).ready(() => {
     });
 
 });
+
+
 
 // function rc_url(task, action = "", args = null)
 // {

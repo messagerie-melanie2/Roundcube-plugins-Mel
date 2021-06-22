@@ -93,7 +93,7 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
         case "reload_frame":
             let querry = $(`iframe.${args.args[0]}`);
 
-            console.log("[SynchroniseWorkspaces.integrated_functions]",querry, args);
+            //console.log("[SynchroniseWorkspaces.integrated_functions]",querry, args);
 
             if (querry.length > 0)
             {
@@ -109,6 +109,17 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
             }
             else if ($(`.${args.args[0]}`).length > 0)
                 SynchroniseWorkspaces.integrated_functions("reload_location");
+            break;
+
+        case "refresh_frame":
+            const frame = rcmail.env.task;
+
+            if (frame === "mail")
+            {
+                if (rcmail && rcmail.refresh_list)
+                    rcmail.refresh_list();
+            }
+
             break;
 
         default:

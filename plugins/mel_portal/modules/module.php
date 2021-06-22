@@ -289,6 +289,9 @@ class Module implements iModule {
                 aHTMLElement::ARG_ATTRIBUTES => ['onclick="selectTab(`'.$array[$i]["id"].'`, this)"'],
             ]);
 
+            if ($i !== 0)
+                $tab->attributes[] = "tabindex=-1";
+
             $tab->html(($array[$i]["deco"] === null ? "" : $array[$i]["deco"])." ".($array[$i]["name"] === null ? "" : $array[$i]["name"]));
             $tab->content->id = $array[$i]["id"];
             $tab->content->classes = ["tabcontent"];

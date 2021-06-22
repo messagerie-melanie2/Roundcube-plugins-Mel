@@ -24,7 +24,7 @@ function by(datas, index)
 
 function title(datas, index)
 {
-    return '<div class=headlines-title>'+datas[index].title+'</div>'
+    return '<h3 class=headlines-title>'+datas[index].title+'</h3>'
 }
 
 function publishAt(datas, index)

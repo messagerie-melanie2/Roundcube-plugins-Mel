@@ -2,45 +2,30 @@
 
 $config = array();
 
-// ----------------- IMAP --------------------
-// Master password to fallback to in case the OIDC provider
-// does not supply a cleartext password
-$config['oidc_imap_master_password'] = '';
+// --------------- AUTH Methods --------------
 
-// Master user separator for Dovecot
-// https://doc.dovecot.org/configuration_manual/authentication/master_users/
-// https://docs.iredmail.org/dovecot.master.user.html
-$config['oidc_master_user_separator'] = '*';
+// OIDC only (?oidc=1 triggers OIDC auth)
+$config['oidc_auth_standalone'] = false;
 
-// Master user to append after separator
-// Set to blank to not use a master user
-$config['oidc_config_master_user'] = '';
+// OIDC + Kerberos (Kerberos triggers OIDC auth, after LDAP check)
+$config['oidc_auth_kerberos'] = true;
 
 // --------------- Provider ------------------
-// URL for OIDC
-$config['oidc_url'] = 'https://oidc.example.com';
 
-// Client ID already registered on the provider
-$config['oidc_client'] = 'client_id';
+// OIDC Provider URL
+$config['oidc_url'] = 'OIDC_PROVIDER_URL';
 
-// Client secret corresponding to the given client ID
-$config['oidc_secret'] = 'my_secret';
+// Client ID (registered on the provider)
+$config['oidc_client'] = 'OIDC_CLIENT_ID';
 
-// OIDC scope
-$config['oidc_scope'] = 'openid';
+// Client secret (corresponding to the given client ID)
+$config['oidc_secret'] = 'OIDC_CLIENT_SECRET';
+
+// OIDC scopes
+$config['oidc_scope'] = 'openid profile email';
 
 // -------------- User Fields -----------------
-// Field for login UID. This may be an email ID
-$config['oidc_field_uid'] = 'mail';
 
-// Field for cleartext password
-$config['oidc_field_password'] = 'password';
-
-// Field for IMAP server
-$config['oidc_field_server'] = 'imap_server';
-
-// Alternative login page
-// This page gets included on login page
-// Any errors will be reported as $ERROR
-$config['oidc_login_page'] = '';
+// Field used as a login UID (email, uid, ...)
+$config['oidc_field_uid'] = 'uid';
 

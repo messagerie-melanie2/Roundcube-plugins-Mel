@@ -309,7 +309,7 @@ class OpenIDConnectClient
 
             // Do an OpenID Connect session check
             if ($_REQUEST['state'] !== $this->getState()) {
-                throw new OpenIDConnectClientException('Unable to determine state');
+                throw new OpenIDConnectClientException('Unable to determine state' . "  --  " . $_REQUEST['state'] . "  --  " . $this->getState());
             }
 
             // Cleanup state
@@ -602,8 +602,12 @@ class OpenIDConnectClient
                 ?: @$_SERVER['SERVER_ADDR'];
 
         $port = (443 === $port) || (80 === $port) ? '' : ':' . $port;
-
-        return sprintf('%s://%s%s/%s', $protocol, $host, $port, @trim(reset(explode('?', $_SERVER['REQUEST_URI'])), '/'));
+        $protocol='http'; // FBH tuning
+        
+        $res = sprintf('%s://%s%s/%s', $protocol, $host, $port, @trim(reset(explode('?', $_SERVER['REQUEST_URI'])), '/'));
+        
+        $res = $res . "?oidc=1"; // TBG tuning
+        return $res;
     }
 
     /**
@@ -643,7 +647,7 @@ class OpenIDConnectClient
 
         $auth_params = array_merge($this->authParams, array(
             'response_type' => $response_type,
-            'redirect_uri' => $this->getRedirectURL(),
+            'redirect_uri' => $this->getRedirectURL(),// . "?oidc=1", // TBG tuning
             'client_id' => $this->clientID,
             'nonce' => $nonce,
             'state' => $state,
@@ -760,7 +764,7 @@ class OpenIDConnectClient
         $token_params = array(
             'grant_type' => $grant_type,
             'code' => $code,
-            'redirect_uri' => $this->getRedirectURL(),
+            'redirect_uri' => $this->getRedirectURL(),// . "?oidc=1",
             'client_id' => $this->clientID,
             'client_secret' => $this->clientSecret
         );

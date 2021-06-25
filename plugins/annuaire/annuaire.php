@@ -102,7 +102,7 @@ class annuaire extends rcube_plugin
             $this->rc->output->set_env('annuaire_source', $this->rc->config->get('annuaire_source'));
 
             $this->include_script('directorylist.js');
-        } else if ($this->rc->task == 'mail' && $this->rc->action == 'compose') {
+        } else if (($this->rc->task == 'mail' && $this->rc->action == 'compose') || $this->rc->task == "custom_page") {
             // Chargement de la conf
             $this->load_config();
 
@@ -150,6 +150,14 @@ class annuaire extends rcube_plugin
             $this->include_stylesheet($this->local_skin_path() . '/annuaire.css');
 
             // register UI objects
+            $this->rc->output->add_handlers(array(
+                'annuaire_list' => array(
+                    $this,
+                    'annuaire_list'
+                )
+            ));
+        }
+        else {
             $this->rc->output->add_handlers(array(
                 'annuaire_list' => array(
                     $this,

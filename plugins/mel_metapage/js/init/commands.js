@@ -64,5 +64,16 @@ if (rcmail)
 
             }, true);
 
+            rcmail.drag_menu_action = function(action)
+            {
+              var menu = this.gui_objects.dragmenu;
+              if (menu) {
+                $(menu).show();
+              }
+          
+              this.command(action, this.env.drag_target);
+              this.env.drag_target = null;
+            };
+
     })(); //
 }

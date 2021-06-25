@@ -61,7 +61,8 @@ ul.treelist li.selected > a {
     color:#fff;
 } 
 
-.listing li.selected, .listing tr.selected td {
+.listing li.selected, .listing tr.selected td,
+.popupmenu .listing li.selected {
     background-color: #2C3054;
     color:#fff; 
 }
@@ -1409,4 +1410,41 @@ body.task-mail .ui-dialog iframe, .ui-dialog .ui-dialog-content.iframe{
 .ignore-bullet{
     list-style-type: none;
     padding: 0;
+}
+
+#annuaire-list [aria-expanded="true"]{
+    /* color:white; */
+    background-color: white!important;
+    color:#424564!important;
+    /* #757575 */
+}
+
+html #annuaire-list .folder > .description{
+    color:#757575!important;
+}
+
+#annuaire-list .person.object:hover{
+    background-color: #484D7A !important;
+    color:white;
+}
+
+#annuaire-list .person.object.selected
+{
+    color:white;
+}
+
+#annuaire-list .person.object.added
+{
+    background-color: #363A5B !important;
+    color:white;
+}
+
+
+
+#annuaire-list [aria-expanded="true"] .folder{
+    /* color:white; */
+}
+
+#messagestack{
+    z-index: 9999;
 }

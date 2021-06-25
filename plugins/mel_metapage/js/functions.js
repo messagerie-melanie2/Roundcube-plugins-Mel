@@ -73,7 +73,7 @@ function m_mp_createworskpace_steps()
                 html += `<li role="menuitem"><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
                 for (let index = 0; index < rcmail.env.mel_metapage_workspace_logos.length; index++) {
                     const element = rcmail.env.mel_metapage_workspace_logos[index];
-                    html += `<li role="menuitem"><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
+                    html += `<li role="menuitem"><a alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
                 }
             }
             $("#ul-wsp").html(html);
@@ -143,13 +143,13 @@ function m_mp_createworskpace_steps()
         // },
         step3:()=> {
             let html = "";
-            html += `<span class="span-mel t1 first">Sélectionner les services à intégrer à l’espace de travail</span>`;
+            html += `<h3 class="span-mel t1 first">Sélectionner les services à intégrer à l’espace de travail</h3>`;
             html += "<div class=row>";
             const mel_metapage_templates_services = rcmail.env.mel_metapage_templates_services;
             for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
                 const element = mel_metapage_templates_services[index];
                 html += "<div class=col-md-4>";
-                html += '<button type=button data-type="'+element.type+'" class="doc-'+element.type+' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `'+JSON.stringify(element).replace(/"/g, "¤¤¤")+'`)"><span style="display:block;margin-right:0px" class="'+m_mp_CreateDocumentIconContract(element.icon)+'"></span>'+ rcmail.gettext(element.name) +'</button>';
+                html += '<button type=button aria-pressed=false data-type="'+element.type+'" class="doc-'+element.type+' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `'+JSON.stringify(element).replace(/"/g, "¤¤¤")+'`)"><span style="display:block;margin-right:0px" class="'+m_mp_CreateDocumentIconContract(element.icon)+'"></span>'+ rcmail.gettext(element.name) +'</button>';
                 html += "</div>"
             }
             html += "</div>";
@@ -595,9 +595,9 @@ function m_mp_UpdateWorkspace_type(event, element)
     event = $(event);
     //console.log(event, event.hasClass("active"));
     if (event.hasClass("active"))
-        event.removeClass("active");
+        event.removeClass("active").attr("aria-pressed", false);
     else 
-        event.addClass("active");
+        event.addClass("active").attr("aria-pressed", true);
     document.activeElement.blur();
 }
 
@@ -759,7 +759,7 @@ function m_mp_add_users()
                 let querry = $("#mm-cw-participants").css("height", `${window.innerHeight - 442}`);
                 for (let index = 0; index < datas.added.length; ++index) {
                     const element = datas.added[index];
-                    html = "";
+                    html = "<li>";
                     html += "<div class=row style=margin-top:15px>";
                     html += '<div class="col-2">';
                     html += `<div class="dwp-round" style="background-color:transparent"><img src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
@@ -767,9 +767,9 @@ function m_mp_add_users()
                     html += '<div class="col-10 workspace-users-added">';
                     html += `<span class="name">${element.name}</span><br/>`;
                     html += `<span class="email">${element.email}</span>`;
-                    html += `<span onclick=m_mp_remove_user(this) class="mel-return" style="float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></span>`;
+                    html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></button>`;
                     html += "</div>";
-                    html += "</div>";
+                    html += "</div></li>";
                     querry.append(html);
                 }
                 for (let it = 0; it < datas.unexist.length; it++) {
@@ -787,7 +787,7 @@ function m_mp_add_users()
 
 function m_mp_remove_user(e)
 {
-    $(e).parent().parent().remove();
+    $(e).parent().parent().parent().remove();
 }
 
 function m_mp_remove_li(event)
@@ -796,11 +796,107 @@ function m_mp_remove_li(event)
     $("#workspace-user-list").focus();
 }
 
-function m_mp_openTo()
+function m_mp_openTo(e, idInput)
 {
-    UI.recipient_selector('to');
-    $(".popup.ui-dialog-content").css("max-height", (window.innerHeight-120) + "px")
-    .parent().css("top", "60px");
+    // if (rcmail.contact_list === undefined)
+    // {
+    //     rcmail.contact_list = new rcube_list_widget(rcmail.gui_objects.contactslist,
+    //         {multiselect:true, draggable:rcmail.gui_objects.folderlist?true:false, keyboard:true});
+    //     rcmail.contact_list
+    //         .addEventListener('initrow', function(o) { ref.triggerEvent('insertrow', { cid:o.uid, row:o }); })
+    //         .addEventListener('keypress', function(o) { ref.contactlist_keypress(o); })
+    //         .addEventListener('select', function(o) { ref.contactlist_select(o); })
+    //         .addEventListener('dragstart', function(o) { ref.drag_start(o); })
+    //         .addEventListener('dragmove', function(e) { ref.drag_move(e); })
+    //         .addEventListener('dragend', function(e) { ref.drag_end(e); })
+    //         .init();     
+
+    //     if (rcmail.gui_objects.addressbookslist) {
+    //         rcmail.gui_objects.folderlist = rcmail.gui_objects.addressbookslist;
+    //         rcmail.enable_command('list-addresses', true);
+    //         }
+    // }
+
+    // UI.recipient_selector('to');
+    // $(".popup.ui-dialog-content").css("max-height", (window.innerHeight-120) + "px")
+    // .parent().css("top", "60px");
+
+    if (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined))
+    {
+        new Promise(async () => {
+            $("#layout").append(await rcmail.env.mel_metapage_call_parsed.contact_list());
+            $("head").append(`<script src="plugins/mel_metapage/js/program/../../../annuaire/annuaire.js"></script>`);
+            $("head").append(`<script src="program/js/treelist.min.js"></script>`)
+            .append(`<link rel="stylesheet" type="text/css" href="plugins/mel_metapage/skins/elastic/annuaire_part.css">`);
+            setTimeout(() => {
+                rcmail.gui_objects.annuaire_list = $("#annuaire-list")[0];
+                if (rcmail.gui_objects.annuaire_list
+					&& window.rcube_treelist_widget) {
+				rcmail.annuaire_list = new rcube_treelist_widget(
+						rcmail.gui_objects.annuaire_list, {
+							selectable : true,
+							id_prefix : 'rcmrow'
+						});
+
+				rcmail.annuaire_list
+					.addEventListener('expand', function(node) {
+						rcmail.annuaire_folder_expand(node)
+					})
+					.addEventListener('beforeselect', function(node) {
+						return !$('#rcmrow' + node.id).hasClass('folder') && !$('#rcmrow' + node.id).hasClass('legend');
+						// return !$('#rcmrow' + node.id).hasClass('legend');
+					})
+					.addEventListener('select', function(node) {
+						rcmail.annuaire_node_select(node)
+					});
+
+				if (rcmail.env.annuaire_list) {
+					rcmail.annuaire_list_fill_list(null,
+							rcmail.env.annuaire_list);
+				}
+                console.log("timeout lunched");
+			}
+                setTimeout(() => {
+                    if (window.mmp_open_contact === undefined)
+                        window.mmp_open_contact = {};
+                    window.mmp_open_contact[idInput] = true;
+                    m_mp_openTo(e, idInput);
+                }, 100);
+            }, 100);
+        });
+        return;
+    }
+
+    if (rcmail.env.task !== "mail" && rcmail.env.action !== "compose")
+    {
+        if (!$(e).hasClass("initialized"))
+        {
+            $(e).addClass("showcontacts")[0].id = `showcontacts_${idInput}`;
+            setTimeout(() => {
+                rcmail.annuaire_set_show_contacts();
+                setTimeout(() => {
+                    $(e).click();
+                }, 100);
+            }, 100);
+
+            $("#compose-contact-close-modal").click(() => {
+                $("#compose-contacts").modal("hide");
+
+            });
+
+            $("#compose-contacts").on("hide.bs.modal", () => {
+                if (window.create_popUp !== undefined)
+                    create_popUp.modal.css("z-index", "");
+                else if ($("#globalModal").length > 0)  
+                    $("#globalModal").css("z-index", "");
+            });
+        }
+    }
+
+    if (window.create_popUp !== undefined)
+        create_popUp.modal.css("z-index", 1);
+    else if ($("#globalModal").length > 0)  
+        $("#globalModal").css("z-index", 1);
     
 }
 

@@ -205,7 +205,8 @@ body.task-mail.action-preview #layout-content
 }
 
 .mel_metapage_favourite{
-    padding-left: 43px;
+    /* padding-left: 43px; */
+    padding-left: 3rem;
 }
 
 v_separate{

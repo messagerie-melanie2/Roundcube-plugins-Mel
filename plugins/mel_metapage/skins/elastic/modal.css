@@ -12,7 +12,8 @@
 }
 
 .modal-header > .modal-close,
-.fullscreen-close
+.fullscreen-close,
+.edited-modal-close
 {
     font-size: xx-large;
     cursor: pointer;
@@ -23,7 +24,8 @@
 }
 
 .modal-header > .modal-close:focus,
-.fullscreen-close:focus
+.fullscreen-close:focus,
+.edited-modal-close:focus
 {
     box-shadow: none;
     text-shadow: 0px 0px .2rem #484D7A;
@@ -31,15 +33,23 @@
     color: #484D7A;
 }
 
+.edited-modal-close:hover
+{
+    background-color: transparent!important;
+    border-color: transparent!important;
+}
+
 .modal-header > .modal-close:hover,
-.fullscreen-close:hover
+.fullscreen-close:hover,
+.edited-modal-close:hover
 {
     text-shadow: 0px 0px 2px black;
     color: white;
 }
 
 .modal-header > .modal-close:active,
-.fullscreen-close:active
+.fullscreen-close:active,
+.edited-modal-close:active
 {
     box-shadow: none!important;
     text-shadow: 0px 0px .2rem #c30000;

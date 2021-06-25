@@ -1,0 +1,39 @@
+<div id="compose-contacts" class="modal uibox listbox contactslist" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content" style="padding-bottom: 30px;">
+        <div class="modal-header">
+          <h2 class="modal-title"><roundcube:label name="contacts" /></h2>
+          <button title="Fermer la modale" id="compose-contact-close-modal" aria-label="Close" class="edited-modal-close btn btn-secondary"><span class="icon-mel-close"></span><span class="sr-only">Fermer la modale</span></button>
+        </div>
+        <div class="modal-body">
+
+            <div class="listsearchbox" role="search" aria-labelledby="aria-label-composequicksearch">
+                <h3 id="aria-label-composequicksearch" class="voice"><roundcube:label name="arialabelcontactquicksearch" /></h3>
+                <div class="searchbox form-control input-mel mel-input-container sm" >
+                    <div class="row hidden-input-inside">
+                        <div class="col-10">
+                            <label for="contactsearchbox" class="voice"><roundcube:label name="arialabelcontactsearchbox" /></label>
+                            <roundcube:object name="searchform" id="contactsearchbox" class="form-control input-mel" style="background-color:transparent" />
+                        </div>
+                        <div class="col-2">
+                            <a id="searchmenulink" href="#" class="iconbutton searchicon icon-mel-search added-item"> </a>
+                        </div>
+                    </div>
+
+
+                    <!-- <roundcube:button command="reset-search" class="iconbutton reset" title="resetsearch" content=" " /> -->
+                </div>
+            </div>
+            <div class="scroller withfooter" tabindex="-1">
+                <roundcube:object name="annuaire_list" id="annuaire-list" class="treelist listing iconized" noheader="true" role="listbox" />
+            </div>
+
+            <!-- <roundcube:include file="includes/pagenav.html" /> -->
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div> -->
+      </div>
+    </div>
+  </div>

@@ -94,5 +94,29 @@ if (rcmail)
 
     });
 
+    rcmail.addEventListener("plugin.calendar.initialized", (cal) => {
+
+
+        if (cal && rcmail.env.task === "mail")
+        {
+            cal.create_from_mail = function (uid) {
+                if (!uid && !(uid = rcmail.get_single_uid())) {
+                    return;
+                  }
+            
+                  const event = {
+                    mail_datas:{
+                        mbox:rcmail.env.mailbox,
+                        uid:uid
+                    }
+                  };
+            
+                    this.create_event_from_somewhere(event);
+            }
+            rcmail.register_command('calendar-create-from-mail', function() { cal.create_from_mail(); }, true);
+        }
+
+    });
+
 }
 

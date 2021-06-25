@@ -677,7 +677,7 @@ $(document).ready(() => {
     
         //     }
         // });
-    
+
 
     rcube_calendar.prototype.create_event_from_somewhere = function(event = null)
     {
@@ -692,8 +692,16 @@ $(document).ready(() => {
             _calendar_blocked: event != null && event.calendar_blocked === true,
             _startDate: event == null || event.start === undefined ? null : moment(event.start).format("YYYY-MM-DDTHH:mm"),
             _endDate: event == null || event.end === undefined ? null : moment(event.end).format("YYYY-MM-DDTHH:mm"),
-        },
-            buttons = {},
+        };
+
+        if (event.mail_datas)
+        {
+            url["_mbox"] = event.mail_datas.mbox;
+            url["_uid"] = event.mail_datas.uid;
+        }
+
+
+            var buttons = {},
             button_classes = ['mainaction save', 'cancel'],
             title = rcmail.gettext('mel_metapage.new_event'),
             dialog = $('<iframe>').attr({
@@ -737,6 +745,11 @@ $(document).ready(() => {
     // var sheet = window.document.styleSheets[0];
     // sheet.insertRule('.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default { color: black!important; }', sheet.cssRules.length);
      };
+    
+     if (window.cal)
+     {
+         cal.create_event_from_somewhere = rcube_calendar.prototype.create_event_from_somewhere;
+     }
 
      rcube_calendar.change_calendar_date = async function (jquery_element, add, where = null)
      {

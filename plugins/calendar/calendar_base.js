@@ -113,6 +113,10 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
         }
       });
     }
+
+    //PAMELA - add custom actions after init
+    rcmail.triggerEvent("plugin.calendar.initialized", cal);
+
   }
 
   rcmail.register_command('plugin.calendar', function() { rcmail.switch_task('calendar'); }, true);

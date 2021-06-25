@@ -357,3 +357,25 @@ input.input-mel.error {
 {
 	display: none;
 }
+
+.mel-input-container .hidden-input-inside
+{
+	margin-top:4px;
+}
+
+.mel-input-container .hidden-input-inside a.added-item
+{
+	font-size: 21px;
+	margin-top: 5px;
+	display: block;
+	text-align: center;
+}
+
+.mel-input-container.form-control.input-mel.sm{
+	height: 40px;
+}
+
+.mel-input-container.form-control.input-mel.sm .hidden-input-inside
+{
+	margin-top:-3px;
+}

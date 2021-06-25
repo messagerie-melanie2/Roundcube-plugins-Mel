@@ -62,6 +62,9 @@ $(document).on("submit", '.contactslist .listsearchbox form', function(e) {
 					_source: source,
 					_q: $('input#contactsearchbox').val()
 				};
+
+				rcmail.annuaire_set_loading_icon();
+
 				rcmail.http_get('mail/plugin.annuaire', params, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 			}
 		});
@@ -73,6 +76,7 @@ $(document).on("submit", '.contactslist .listsearchbox form', function(e) {
 			params['_source'] = rcmail.env.annuaire_source;
 			params['_q'] = $('input#contactsearchbox').val();
 		}
+		rcmail.annuaire_set_loading_icon();
 		// Search for current container
 		rcmail.http_get('mail/plugin.annuaire', params, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 	}
@@ -175,17 +179,7 @@ window.rcmail
 			}
 			
 			if (rcmail.env.task == 'mail') {
-				$('.showcontacts').click(function(e) {
-		        	$('#composeview-float-right').show();
-		        	if ($('#annuaire-list li').length == 0) {
-		        		rcmail.http_get('mail/plugin.annuaire', {}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
-		        	}
-		        	window.field = $(this).attr('id').replace('showcontacts_', '');
-			    }).css('cursor', 'pointer');
-				$('#compose-contacts .close').click(function(e){
-		        	$('#composeview-float-right').hide();
-		        	$('#annuaire-list li.added').removeClass('added');
-			    });
+				rcmail.annuaire_set_show_contacts();
 			}
 			else if (rcmail.env.task == 'settings' && rcmail.env.action == 'plugin.mel_moncompte') {
 				$('#listes_ajouter').click(function(e) {
@@ -193,6 +187,7 @@ window.rcmail
 					if (dn_list) {
 						$('#listview-float-right').show();
 			        	if ($('#annuaire-list li').length == 0) {
+							rcmail.annuaire_set_loading_icon();
 			        		rcmail.http_get('mail/plugin.annuaire', {}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
 			        	}
 					}
@@ -221,7 +216,10 @@ window.rcmail
 						});
 				$(document).on("click", '#list-contacts .close',
 						function(e) {
-							$('#listview-float-right').hide();
+							if ($('#listview-float-right').hide !== undefined)
+								$('#listview-float-right').hide();
+							else 	
+								$('#listview-float-right').modal("hide");
 				        	$('#annuaire-list li.added').removeClass('added');
 						});
 			}
@@ -311,8 +309,56 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 		$('#annuaire-list li.added').removeClass('added');
 		$('#rcmrow' + node_id).addClass('added');
 		setTimeout(() => {
-			$('#listview-float-right').hide();
+			if ($('#listview-float-right').hide !== undefined)
+				$('#listview-float-right').hide();
+			else
+				$('#listview-float-right').modal("hide");
 		}, 1000);
+	}
+	else {
+
+		if (!$('#rcmrow' + node_id).hasClass('added')) {
+			// find last focused field name
+			if (!window.field) {
+				window.field = $(this.env.focused_field).filter(':visible');
+				window.field = window.field.length ? window.field.attr('id').replace('_', '') : 'to';
+			}
+	
+			// Utiliser le node en mémoire
+			if (window.nodes[node.id]) {
+				node = window.nodes[node.id];
+			}
+			
+			var recipients = [], input = $('#_'+field), delim = this.env.recipients_delimiter;
+
+			if (input.length === 0)
+				input = $('#'+field);
+			
+			if (node.mail) {
+				recipients.push(node.mail);
+			}
+			else if (node.name) {
+				recipients.push(node.name);
+				
+				var gid = node_id.substr(1);
+				this.group2expand[gid] = { name: node.name, input:input.get(0) };
+				
+				this.http_request('group-expand', {_source: $('#rcmrow' + node_id).parent().parent().attr('id').replace(/rcmrow/, ''), _gid: gid}, false);
+			}
+
+			if (recipients.length && input.length) {
+				var oldval = input.val(), rx = new RegExp(RegExp.escape(delim) + '\\s*$');
+				if (oldval && !rx.test(oldval))
+				  oldval += delim + ' ';
+				input.val(oldval + recipients.join(delim + ' ') + delim + ' ').change();
+			}
+			else if (recipients.length){
+				input.val(recipients.join(delim)).change();
+			}
+
+			$('#rcmrow' + node_id).addClass('added');
+		}
+
 	}
 };
 
@@ -336,7 +382,7 @@ rcube_webmail.prototype.annuaire_folder_expand = function(node) {
 			params['_source'] = split.pop();
 			params['_base'] = split[0];
 		}
-		
+		rcmail.annuaire_set_loading_icon();
 		this.http_get('addressbook/plugin.annuaire', params, this.display_message(this.get_label('loading'), 'loading'));
 	}
 };
@@ -356,6 +402,7 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 	}
 	if (evt.response.id) {
 		if (evt.response.search) {
+
 			if (evt.response.elements.length) {
 				$('#rcmrow' + evt.response.id).attr('aria-expanded', 'true');
 				$('#rcmrow' + evt.response.id + ' > ul').show();
@@ -364,6 +411,7 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 			else {
 				$('#rcmrow' + evt.response.id).hide();
 			}
+
 		}
 		else {
 			rcmail.annuaire_list_fill_list(evt.response.id, evt.response.elements);
@@ -392,6 +440,8 @@ rcmail.addEventListener('responseafterplugin.annuaire', function(evt) {
 			$('#annuaire-list li#' + 'rcmrow' + evt.response.find).click();
 		}
 	}
+
+	rcmail.annuaire_set_loading_icon(false);
 });
 
 // Fill list with elements
@@ -506,3 +556,54 @@ rcube_webmail.prototype.annuaire_remove_search_item = function(id)
 	this.reset_qsearch();
 	$('#mainscreen-annuaire #quicksearchbar form').submit();
 };
+
+rcube_webmail.prototype.annuaire_set_loading_icon = function(load = true)
+{
+	if (load)
+	{
+		if ($(".listsearchbox a.searchicon").length > 0)
+			$(".listsearchbox a.searchicon").attr("disabled", "disabled").addClass("disabled").addClass("mel-before-remover").html(`<span class="spinner-grow"></span>`);
+	}
+	else {
+
+		if ($(".listsearchbox a.searchicon").length > 0)
+			$(".listsearchbox a.searchicon").removeAttr("disabled").removeClass("disabled").removeClass("mel-before-remover").html(``);
+	}
+}
+
+rcube_webmail.prototype.annuaire_set_show_contacts = function()
+{
+	const init = "initialized";
+
+	$(".showcontacts").each((index, element) => {
+		element = $(element);
+		if (!element.hasClass(init))
+		{
+			element.click(function(e) {
+				$('#compose-contacts').modal("show");
+				if ($('#annuaire-list li').length == 0) {
+					rcmail.annuaire_set_loading_icon();
+					rcmail.http_get('mail/plugin.annuaire', {}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));
+				}
+				else {
+					$('#annuaire-list li.added').removeClass("selected").removeClass("added").attr("aria-selected", false);
+				}
+				window.field = $(this).attr('id').replace('showcontacts_', '');
+			}).css('cursor', 'pointer').addClass(init);
+		}
+	});
+
+	$('#compose-contacts .close').each((index, element) => {
+		element = $(element);
+
+		if (!element.hasClass(init))
+		{
+			$('#compose-contacts .close').click(function(e){
+				$('#compose-contacts').modal("hide");
+				$('#annuaire-list li.added').removeClass('added');
+			}).addClass(init);
+		}
+
+	});
+
+}

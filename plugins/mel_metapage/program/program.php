@@ -67,9 +67,9 @@ abstract class Program{
         return rcube_utils::get_input_value($arg, $type);
     }
 
-    protected function parse($html, $plugin = "mel_metapage")
+    protected function parse($html, $plugin = "mel_metapage", $exit = false, $write = false)
     {
-        return $this->rc->output->parse("$plugin.$html", false, false);
+        return $this->rc->output->parse("$plugin.$html", $exit, $write);
     }
 
     protected function get_plugin($name)

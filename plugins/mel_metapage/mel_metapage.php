@@ -36,6 +36,26 @@ class mel_metapage extends rcube_plugin
     function init()
     {
         $this->setup();
+
+        $dir = __DIR__;
+        $files = scandir(__DIR__."/program/pages");
+        $size = count($files);
+        for ($i=0; $i < $size; ++$i) { 
+            if (strpos($files[$i], ".php") !== false && $files[$i] !== "page.php" && $files[$i] !== "parsed_page.php")
+            {
+                include_once "program/pages/".$files[$i];
+                $classname = str_replace(".php", "", ucfirst($files[$i]));
+                $object = new $classname($this->rc, $this);
+
+                if (method_exists($object, "call"))
+                    $object->call();
+
+                if ($this->rc->task === "custom_page")
+                    $object->init();
+
+            }
+        }
+
         if ($this->rc->task === "webconf")
         {
             include_once "program/webconf/webconf.php";
@@ -45,6 +65,12 @@ class mel_metapage extends rcube_plugin
         else if ($this->rc->task === "chat")
             $this->register_action('index', array($this, 'ariane'));
 
+
+    }
+
+    protected function before_page()
+    {
+        $this->rc->output->include_script('list.js');
     }
 
     function setup()
@@ -67,7 +93,10 @@ class mel_metapage extends rcube_plugin
 
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
+        {
+            $this->include_stylesheet($this->local_skin_path().'/modal.css');
             return;
+        }
 
         if ($this->rc->task !== "login" && $this->rc->task !== "logout")
             $this->startup();
@@ -92,6 +121,8 @@ class mel_metapage extends rcube_plugin
                 $this->register_task("webconf");
             else if ($this->rc->task === "chat")
                 $this->register_task("chat");
+            else if ($this->rc->task === "custom_page")
+                $this->register_task("custom_page");
             else
                 $this->register_task("mel_metapage");
 
@@ -108,8 +139,20 @@ class mel_metapage extends rcube_plugin
             $this->register_action('check_users', array($this, 'check_users'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
+
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
+            {
                 $this->include_script('js/actions/startup.js');
+                // $this->rc->output->add_handlers(array(
+                //     'searchform'          => array($this->rc->output, 'search_form'),
+                //     "addressbooks" => [$this, 'override_rcmail_addressbook_list'],
+                //     "addresslist" => [$this, 'override_rcmail_contacts_list']
+                // ));
+                // $this->rc->output->add_gui_object('contactslist', "contacts-table");
+                // $this->rc->output->add_gui_object('addressbookslist', "directorylist");
+
+                // $this->rc->output->include_script('list.js');
+            }
             else
             {
                 try {
@@ -692,6 +735,7 @@ class mel_metapage extends rcube_plugin
 
     function create_calendar_event()
     {
+
         $calendar = $this->rc->plugins->get_plugin('calendar');
         $calendar->add_texts('localization/', true);
         $calendar->ui->init();
@@ -717,17 +761,22 @@ class mel_metapage extends rcube_plugin
         }
         else
             $event = rcube_utils::get_input_value("_event", rcube_utils::INPUT_POST);
-        $user = driver_mel::gi()->getUser();
-        $event["calendar"] = driver_mel::gi()->mceToRcId($user->uid);
+
+        $this->include_script('../mel_workspace/js/setup_event.js');
+
         $event["attendees"] = [
             ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
         ];
+        
         foreach ($this->rc->user->list_emails() as $rec) {
+
             if (!$identity)
                 $identity = $rec;
+
             $identity['emails'][] = $rec['email'];
             $settings['identities'][$rec['identity_id']] = $rec['email'];
-            }
+        }
+
         $identity['emails'][] = $this->rc->user->get_username();
         $settings['identity'] = array('name' => $identity['name'], 'email' => strtolower($identity['email']), 'emails' => ';' . strtolower(join(';', $identity['emails'])));
         $driver = $calendar->__get("driver");
@@ -737,11 +786,23 @@ class mel_metapage extends rcube_plugin
             'aria-label' => $this->gettext('roleorganizer'),
             'class'      => 'form-control custom-select',
         )));
-        $this->rc->output->set_env('event_prop', $event);
-        $this->include_script('../mel_workspace/js/setup_event.js');
-        //$this->include_script('../calendar/calendar_ui.js');
-        $this->rc->output->send('calendar.dialog');
+
+        if (rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET) !== null)
+        {
+            $calendar = $this->rc->plugins->get_plugin("calendar");
+            $calendar->mail_message2event();
+        }
+        else {
+
+            $user = driver_mel::gi()->getUser();
+            $event["calendar"] = driver_mel::gi()->mceToRcId($user->uid);
+            $this->rc->output->set_env('event_prop', $event);
+            //$this->include_script('../calendar/calendar_ui.js');
+            $this->rc->output->send('calendar.dialog');
+        }
     }
+
+
     // public function display_event()
     // {
     //     $source = rcube_utils::get_input_value('_source', rcube_utils::INPUT_GET);
@@ -750,5 +811,47 @@ class mel_metapage extends rcube_plugin
     //         ["source" => $source, ]
     //     )
     // }
+    public function override_rcmail_contacts_list($attrib = array())
+    {
+        $attrib += array('id' => 'rcmAddressList');
+    
+        // set client env
+
+        $this->rc->output->set_env('pagecount', 0);
+        $this->rc->output->set_env('current_page', 0);
+
+    
+        return $this->rc->table_output($attrib, array(), array('name'), 'ID');
+    }
+
+    public function override_rcmail_addressbook_list($attrib = array())
+    {
+        $attrib += array('id' => 'rcmdirectorylist');
+    
+        $out = '';
+        $line_templ = html::tag('li', array(
+            'id' => 'rcmli%s', 'class' => '%s'),
+            html::a(array('href' => '#list',
+                'rel' => '%s',
+                'onclick' => "return ".rcmail_output::JS_OBJECT_NAME.".command('list-addresses','%s',this)"), '%s'));
+    
+        foreach ($this->rc->get_address_sources(false, true) as $j => $source) {
+            $id = strval(strlen($source['id']) ? $source['id'] : $j);
+            $js_id = rcube::JQ($id);
+    
+            // set class name(s)
+            $class_name = 'addressbook';
+            if ($source['class_name'])
+                $class_name .= ' ' . $source['class_name'];
+    
+            $out .= sprintf($line_templ,
+                rcube_utils::html_identifier($id,true),
+                $class_name,
+                $source['id'],
+                $js_id, ($source['name'] ?: $id));
+        }
+    
+        return html::tag('ul', $attrib, $out, html::$common_attrib);
+    }
 
 }

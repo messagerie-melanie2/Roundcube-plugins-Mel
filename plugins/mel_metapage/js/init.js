@@ -19,6 +19,7 @@ if (rcmail)
     parent.rcmail.addEventListener("init", function() {
         $(`<p id="sr-document-title-focusable" tabindex="-1" class="sr-only">${window.document.title}</p>`).prependTo("body");
 
+        
         //Definition des functions
         parent.rcmail.mel_metapage_fn = {
             calendar_updated: function () {
@@ -160,7 +161,7 @@ if (rcmail)
                 // rcmail.clear_messages();
              });
             },
-            mail_updated: function() {
+            mail_updated: function(isFromRefresh = false) {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
                 const last_count = mel_metapage.Storage.get(mel_metapage.Storage.mail);
                 return $.ajax({ // fonction permettant de faire de l'ajax
@@ -169,7 +170,7 @@ if (rcmail)
                 success: function (data) {
                     try {
                         //console.log("mail_updated", data);
-                        if (last_count === null || last_count || undefined || last_count < data)
+                        if (isFromRefresh === true && ( last_count === null || last_count || undefined || last_count < data))
                         {
                             const querry = $(`iframe.mail-frame`);
                             if (querry.length > 0)
@@ -180,6 +181,7 @@ if (rcmail)
                                     always:true
                                 });
                         }
+                        
                         mel_metapage.Storage.set(mel_metapage.Storage.mail, data);
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(data, mel_metapage.Ids.menu.badge.mail);
@@ -219,7 +221,7 @@ if (rcmail)
                 }
                 parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
                     parent.rcmail.mel_metapage_fn.tasks_updated();
-                    parent.rcmail.mel_metapage_fn.mail_updated();
+                    parent.rcmail.mel_metapage_fn.mail_updated(true);
                 });
             }
         };

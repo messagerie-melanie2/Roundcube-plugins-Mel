@@ -1412,28 +1412,28 @@ body.task-mail .ui-dialog iframe, .ui-dialog .ui-dialog-content.iframe{
     padding: 0;
 }
 
-#annuaire-list [aria-expanded="true"]{
+#compose-contacts #annuaire-list [aria-expanded="true"]{
     /* color:white; */
     background-color: white!important;
     color:#424564!important;
     /* #757575 */
 }
 
-html #annuaire-list .folder > .description{
+html #compose-contacts #annuaire-list .folder > .description{
     color:#757575!important;
 }
 
-#annuaire-list .person.object:hover{
+#compose-contacts #annuaire-list .object:hover{
     background-color: #484D7A !important;
     color:white;
 }
 
-#annuaire-list .person.object.selected
+#compose-contacts #annuaire-list .person.object.selected
 {
     color:white;
 }
 
-#annuaire-list .person.object.added
+#compose-contacts #annuaire-list .person.object.added
 {
     background-color: #363A5B !important;
     color:white;

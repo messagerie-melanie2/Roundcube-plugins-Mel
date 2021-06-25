@@ -179,7 +179,8 @@ body.task-mail.action-preview #layout-content
 
 .my_favorites{
     display:inline-block;
-    width: 175px;
+    /* width: 175px; */
+    width:13rem;
     height: 32px;
     border-radius: 50px;
     /* background-color: #363A5B; */

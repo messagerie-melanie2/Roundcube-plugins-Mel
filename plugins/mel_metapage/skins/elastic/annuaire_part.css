@@ -82,48 +82,48 @@
 }  */
 
 #annuaire-list .folder.annuaire {
-	background: url(images/annuaire.png?v=e784.5000) 17px 8px no-repeat;
+	background: url(images/annuaire.png?v=e784.5000) 17px 18px no-repeat;
 }
 
 #annuaire-list .folder.addressbook {
-	background: url(images/carnet.png?v=e784.5000) 17px 9px no-repeat;
-	background-image: var(--image-carnet);
+	background: url(images/carnet.png?v=e784.5000) 17px 19px no-repeat;
+	/* background-image: var(--image-carnet); */
 }
 
 #annuaire-list .list {
-	background: url(images/list.png?v=e784.5000) 14px 10px no-repeat;
+	background: url(images/list.png?v=e784.5000) 14px 20px no-repeat;
 }
 
 #annuaire-list .person {
-	background: url(images/person.png?v=e784.5000) 14px 10px no-repeat;
+	background: url(images/person.png?v=e784.5000) 14px 20px no-repeat;
 }
 
 #annuaire-list .nophoto {
-	background: url(images/nophoto.png?v=e784.5000) 14px 10px no-repeat;
+	background: url(images/nophoto.png?v=e784.5000) 14px 20px no-repeat;
 }
 
 #annuaire-list .service {
-	background: url(images/service.png?v=e784.5000) 18px 12px no-repeat;
+	background: url(images/service.png?v=e784.5000) 18px 22px no-repeat;
 }
 
 #annuaire-list .function {
-	background: url(images/function.png?v=e784.5000) 18px 9px no-repeat;
+	background: url(images/function.png?v=e784.5000) 18px 19px no-repeat;
 }
 
 #annuaire-list .unit {
-	background: url(images/unit.png?v=e784.5000) 18px 10px no-repeat;
+	background: url(images/unit.png?v=e784.5000) 18px 20px no-repeat;
 }
 
 #annuaire-list .resource {
-	background: url(images/resource.png?v=e784.5000) 18px 10px no-repeat;
+	background: url(images/resource.png?v=e784.5000) 18px 20px no-repeat;
 }
 
 #annuaire-list .application {
-	background: url(images/application.png?v=e784.5000) 18px 10px no-repeat;
+	background: url(images/application.png?v=e784.5000) 18px 20px no-repeat;
 }
 
 #annuaire-list .added {
-	background: url(images/ajoute.png?v=e784.5000) 16px 13px no-repeat;
+	background: url(images/ajoute.png?v=e784.5000) 16px 23px no-repeat;
 	font-weight: bold;
 }
 
@@ -131,7 +131,7 @@
 	background: none;
 	border-top: 1px solid #d8d8d8;
 	border-color: var(--annuaire-border-color);
-	padding-left: 10px;
+	padding-left: 20px;
 	display: none;
 }
 

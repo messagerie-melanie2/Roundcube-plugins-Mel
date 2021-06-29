@@ -145,10 +145,10 @@
 						<!-- <label for="key-visio-cal" class="sr-only"><roundcube:label name='mel_metapage.choose_visio_tool' /></label> -->
 						<div class="row" id="row-for-key-visio-cal">
 							<div class="col-2">
-								<button type="button" onclick="$('#key-visio-cal').val(window.rcube_calendar_ui.generateRoomName())" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover"><span class="icofont-refresh"></span></button>
+								<button type="button" onclick="$('#key-visio-cal').val(window.rcube_calendar_ui.generateRoomName()).change()" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover"><span class="icofont-refresh"></span></button>
 							</div>
 							<div class="col-10">
-								<input type="text" id="key-visio-cal" class="form-control input-mel" placeholder="Saisir le nom du salon" />
+								<input type="text" id="key-visio-cal" pattern="^(?=(?:[a-zA-Z0-9]*[a-zA-Z]))(?=(?:[a-zA-Z0-9]*[0-9]){3})[a-zA-Z0-9]{10,}$" class="form-control input-mel" title="Le nom de la conférence doit contenir un minimum de 10 caractères dont au moins 3 chiffres. Ces caractères sont exclusivement des lettres de l’alphabet et des chiffres, la casse (Min/Maj) n’a pas d’importance." placeholder="Saisir le nom du salon" />
 							</div>
 
 						</div>

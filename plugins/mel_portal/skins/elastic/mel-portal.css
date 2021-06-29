@@ -29,7 +29,14 @@
 #headlines_fi_block
 {
   color:#ffffffff;
+
 }
+
+#headlines_fi_block > h2
+{
+  opacity: 0%;
+}
+
 #headlines_fi_contents
 {
   /* background-color:#FC945A;*/

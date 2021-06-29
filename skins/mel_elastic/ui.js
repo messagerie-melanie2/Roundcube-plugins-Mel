@@ -123,7 +123,7 @@ $(document).ready(() => {
                     if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
                     li.css("display", "none");
 
-                    e.attr('role', "menuitem").appendTo(li);
+                    e.appendTo(li);
                     li.appendTo($("#taskmenu ul"));
                 });
 
@@ -163,7 +163,36 @@ $(document).ready(() => {
                 });
                 $("#contacthead").append($tmp);
             }
+
+            // if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
+            // {
+            //     console.log("imhere");
+            //     $("ul.recipient-input").on("change", () => {
+            //         //$("li.recipient").prepend();
+            //         console.log("changement detected");
+            //         $("li.recipient").each((i,e) => {
+            //             const init = "initialized";
+            //             e = $(e);
+            //             if (!e.hasClass(init))
+            //             {
+            //                 const func = (element) => {
+            //                     event.preventDefault();
+            //                     $(element).css("display", "none").parent()
+            //                     .prepend(`<input type=text val="${$(element).find(".name").html()}${$(element).find(".email").html()}" />`);
+            //                 };
+
+            //                 let $tmp = $(`<a href="mailto:${e.find(".email").html().replaceAll("&lt;", "").replaceAll("&gt;", "").replaceAll(" ", "").replaceAll(",", "")}"></a>`).on("click", func);
+            //                 e.find("span").appendTo($tmp);
+            //                 e.addClass(init).prepend($tmp);
+            //             }
+
+            //         })
+
+            //     })
+            // }
         }
+
+
 
         update()
         {
@@ -176,6 +205,31 @@ $(document).ready(() => {
                     //console.log("MEL_ELASTIC", this, e);
                     this.switchTab(e.currentTarget);
                 })
+                querry.each((i,e) => {
+                    let parent = $(e).parent();
+
+                    if (!parent.hasClass("mel-ui-tab-system"))
+                    {
+                        this.gestionTabs(parent);
+
+                        for (let index = 0; index < e.classList.length; ++index) {
+                            const element = e.classList[index];
+                            
+                            if (element.includes("tab-"))
+                            {
+                                $(`.${element}`).each((index, element) => {
+                                    if (index !== 0)
+                                        $(element).attr("tabindex", -1);
+                                });
+                                break;
+                            }
+
+                        }
+
+                    }
+
+                    
+                });
             }
 
             querry = $(".select-button-mel");
@@ -391,11 +445,11 @@ $(document).ready(() => {
                 return;
 
             //Désactivation des autres tabs et objets
-            $("."+namespace+".mel-tab").removeClass("active").attr("aria-selected", false);
+            $("."+namespace+".mel-tab").removeClass("active").attr("aria-selected", false).attr("tabindex", -1);
             $("."+namespace+".mel-tab-content").css("display", "none");
 
             //Activation de la tab
-            $(event).addClass("active").attr("aria-selected", true);
+            $(event).addClass("active").attr("aria-selected", true).attr("tabindex", 0);
 
             //activation des objets lié à la tab
             $("." + id + "." + namespace).css("display", "");
@@ -647,7 +701,7 @@ $(document).ready(() => {
                         for (let index = 0; index < tabs.length; ++index) {
                             const element = $(tabs[index]);
                             
-                            if (element.hasClass("selected"))
+                            if (element.hasClass("selected") || element.hasClass("active"))
                             {
                                 let id;
                                 if (index + direction < 0)

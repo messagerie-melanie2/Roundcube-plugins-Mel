@@ -307,7 +307,7 @@ class mel_workspace extends rcube_plugin
 
     function get_title()
     {
-        return html::tag("span", ["class" => "header-wsp"], $this->currentWorkspace->title);
+        return html::tag("h1", ["class" => "header-wsp"], $this->currentWorkspace->title);
     }
 
     function get_toolbar()
@@ -334,7 +334,7 @@ class mel_workspace extends rcube_plugin
             $uid = $this->currentWorkspace->uid;
             $html = html::tag("button",["onclick" => "ChangeToolbar('back', this)", "class" => " wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
             $html .= $vseparate;
-            $html .= html::tag("button",["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active", "disabled" => "disabled", "aria-disabled" => true], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
+            $html .= html::tag("button",["onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active", "disabled" => "disabled", "aria-disabled" => "true"], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
             
             if ($is_in_wsp)
             {
@@ -478,8 +478,8 @@ class mel_workspace extends rcube_plugin
                 if ($services[self::AGENDA])
                 {
                     $arrow = [
-                        "left" => '<button class="btn-mel-invisible btn-arrow" style="float:right" onclick="change_date(-1)"><span class="'.$icons["arrow_left"].'"></span></button>',
-                        "right" => '<button class="btn-mel-invisible btn-arrow" style="float:left" onclick="change_date(1)"><span class="'.$icons["arrow_right"].'"></span></button>'
+                        "left" => '<button class="btn-mel-invisible btn-arrow" style="float:right" onclick="change_date(-1)"><span class="'.$icons["arrow_left"].'"><span class="sr-only">'.$this->rc->gettext("last_day", "mel_workspace").'</span></span></button>',
+                        "right" => '<button class="btn-mel-invisible btn-arrow" style="float:left" onclick="change_date(1)"><span class="'.$icons["arrow_right"].'"><span class="sr-only">'.$this->rc->gettext("next_day", "mel_workspace").'</span></span></button>'
                     ];
     
                     $header = html::div(["class" => "row"], 
@@ -496,7 +496,7 @@ class mel_workspace extends rcube_plugin
     
                     $body = "";
                     $agenda = self::AGENDA;
-                    $col["right"].= html::tag("h1", [], "Mes réunions");
+                    $col["right"].= html::tag("h2", [], "Mes réunions");
                     $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)", $this->rc->gettext("create_event", "mel_workspace"));
                 }
     
@@ -529,7 +529,7 @@ class mel_workspace extends rcube_plugin
                             html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
     
                     $tasks = self::TASKS;
-                    $col["left"].= html::tag("h1", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
+                    $col["left"].= html::tag("h2", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
                 }
                 
                 $tmp = $col["left"];
@@ -615,7 +615,7 @@ class mel_workspace extends rcube_plugin
                         $body_component
                     );
         
-                    $html_return.= html::tag("h1", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
+                    $html_return.= html::tag("h2", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
                 }
         }
     
@@ -1181,7 +1181,7 @@ class mel_workspace extends rcube_plugin
         }
 
         if ($workspace->logo !== null && $workspace->logo !== false  && $workspace->logo !== "false")
-            $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img src="'.$workspace->logo.'"></div>', $html);
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$color.'><img alt="" src="'.$workspace->logo.'"></div>', $html);
         else
             $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:$color><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
         
@@ -1206,7 +1206,7 @@ class mel_workspace extends rcube_plugin
                     $html_tmp.='<div class="dwp-circle dwp-user"><span>+'.(count($workspace->shares)-2).'</span></div>';
                     break;
                 }
-                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
+                $html_tmp.= '<div data-user="'.$s->user.'" class="dwp-circle dwp-user"><img alt="'.$s->user.'" src="'.$this->rc->config->get('rocket_chat_url')."avatar/".$s->user.'" /></div>';
                 ++$it;
             }
 

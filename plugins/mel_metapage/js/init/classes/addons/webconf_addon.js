@@ -22,6 +22,8 @@
                     config["_wsp"] = wsp;
                 else if (ariane !== null)
                     config["_ariane"] = ariane;
+
+                config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
             }
             mel_metapage.Functions.call("$('.tiny-rocket-chat').css('display', 'none')", false);
             mel_metapage.Functions.call(() => {

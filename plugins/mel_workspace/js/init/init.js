@@ -43,7 +43,7 @@ function EpingleEmpty()
     if ($(".epingle").find(".workspace").length === 0)
     {
         if ($("#wsp-not-epingle-0").length === 0)
-            $(".wsp-others").append("<span id=wsp-not-epingle-0>Pas d'espace de travail épinglé</span>");
+            $(".wsp-others").append("<p id=wsp-not-epingle-0>Pas d'espace de travail épinglé</p>");
         else
             $("#wsp-not-epingle-0").css("display", "");
     }

@@ -135,8 +135,9 @@ html.layout-small .wsp-index{
     font-size: 8px;
 }
 
-.header-wsp{
+.header-wsp > h1{
     font-size:xxx-large;
+    display: inline-block;
 }
 
 .header-wsp > .roundbadge
@@ -584,7 +585,7 @@ separate.wsp {
     margin-top: 50px;
 }
 
-.wsp-services h1 {
+.wsp-services h2 {
 	margin-top: 30px;
 }
 

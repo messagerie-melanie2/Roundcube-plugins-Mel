@@ -559,18 +559,27 @@ Webconf.update_room_name = function()
 {
     let querry = $("#webconf-room-name");
     querry.val(querry.val().toUpperCase());
-    const val = querry.val();
-    const url = MEL_ELASTIC_UI.url("webconf", "", {_key:val});
-    mel_metapage.Functions.title(url);
+    let val = querry.val();
 
-    if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3)
+    if (val.includes(rcmail.env["webconf.base_url"].toUpperCase()))
     {
-        $("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
+        val = val.split("/");
+        val = val[val.length-1];
+        querry.val(val.toUpperCase());
+        //querry.val()
+    }
+
+    if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+    {
+        $("#webconf-enter").addClass("disabled").attr("disabled", "disabled");
         $(".webconf-error-text").css("display", "").css("color", "red");
     }
     else
     {
-        $("#webconf-enter").removeClass("disalbled").removeAttr("disabled", "disabled");
+        const url = MEL_ELASTIC_UI.url("webconf", "", {_key:val});
+        mel_metapage.Functions.title(url);
+        
+        $("#webconf-enter").removeClass("disabled").removeAttr("disabled", "disabled");
         $(".webconf-error-text").css("display", "none").css("color", "black");
     }
 }

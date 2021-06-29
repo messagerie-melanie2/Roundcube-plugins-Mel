@@ -68,7 +68,11 @@ if (rcmail)
             {
               var menu = this.gui_objects.dragmenu;
               if (menu) {
-                $(menu).show();
+                  if ($(menu).show)
+                    $(menu).show();
+                  else
+                    $(menu).removeClass("hidden").css("display", "");
+
               }
           
               this.command(action, this.env.drag_target);

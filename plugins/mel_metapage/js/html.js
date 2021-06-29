@@ -220,13 +220,14 @@ html_helper.Calendars = function({datas, config = {
         html += '<div class="col-2"><span class="icon-mel-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || datas.length === 0 ? "style=display:none;" : "")+'>'+datas.length+'</span></span></div>';
         html += '<div class="col-6"><span class="mm-agenda-date">'+rcube_calendar.mel_metapage_misc.GetDate(_date)+'</span></div>';
         html += '<div class="col-4"><div class="row">';
-        html += '<div class="col-6"><span class="icon-mel-arrow-left btn-arrow" onclick="'+nav_click.replace("¤¤¤", "-1")+'"></span></div>';
-        html += '<div class="col-6"><span class="icon-mel-arrow-right btn-arrow" onclick="'+nav_click.replace("¤¤¤", "1")+'"></span></div>';
+        html += '<div class="col-6"><span class="icon-mel-arrow-left btn-arrow" onclick="'+nav_click.replace("¤¤¤", "-1")+'"> <span class="sr-only">'+rcmail.gettext("last_day", "mel_metapage")+'</span> </span></div>';
+        html += '<div class="col-6"><span class="icon-mel-arrow-right btn-arrow" onclick="'+nav_click.replace("¤¤¤", "1")+'"> <span class="sr-only">'+rcmail.gettext("next_day", "mel_metapage")+'</span> </span></div>';
         html += "</div></div></div>"
     }
 	if (!get_only_body)
     	html += "<div class=block-body>";
 	let style;
+	let link;
 	//let bool;
 	//let icon;
 	if (typeof datas === "string")
@@ -269,11 +270,31 @@ html_helper.Calendars = function({datas, config = {
 			// 			break;
 			// 	}
 			// }
-			if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
+
+			if (element.location.includes("@visio") || element.location.includes("#visio"))
+			{
 				style = "";
+				if (element.location.includes("@visio"))
+					link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
+				else
+				{
+					var tmp_link = new WebconfLink(element.location);
+					link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+				}
+			}
 			else
 				style = "display:none;";
-			html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+	
+			html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+
+			// if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
+			// 	style = "";
+			// else
+			// 	style = "display:none;";
+
+			// console.log(element.location, "location");
+
+			// html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 			html += "</div>";
 		}
 	}

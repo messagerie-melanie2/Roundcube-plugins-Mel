@@ -70,10 +70,10 @@ function m_mp_createworskpace_steps()
             let html = "";
             if (rcmail.env.mel_metapage_workspace_logos.length > 0)
             {
-                html += `<li role="menuitem"><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
+                html += `<li><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
                 for (let index = 0; index < rcmail.env.mel_metapage_workspace_logos.length; index++) {
                     const element = rcmail.env.mel_metapage_workspace_logos[index];
-                    html += `<li role="menuitem"><a alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
+                    html += `<li><a alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
                 }
             }
             $("#ul-wsp").html(html);
@@ -235,6 +235,7 @@ function m_mp_createworkspace()
     //create_popUp.editTitle();
     create_popUp.editTitleAndSetBeforeTitle('<a href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
     'Création d\'un espace de travail');
+    create_popUp.modal.focus();
     // $.ajax({ // fonction permettant de faire de l'ajax
     //     type: "GET", // methode de transmission des données au fichier php
     //     url: "/?_task=discussion&_action=chanel_create",
@@ -917,6 +918,8 @@ function m_mp_switch_step(id)
 {
     $(".step").css("display", "none");
     $("#" + id).css("display", "");
+
+    create_popUp.modal.focus();
 }
 
 /**

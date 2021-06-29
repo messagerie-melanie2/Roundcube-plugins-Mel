@@ -6,19 +6,19 @@
 <!-- contact details frame -->
 <div id="layout-content" class="wsp-content wsp-index" style="overflow: auto;" role="main">
 	<!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>-->
-	<div class="wsp-header" style="background-color: white;height: auto;color: inherit;display:block;text-align: center;" role="toolbar" aria-labelledby="aria-label-toolbar">
+	<div class="wsp-header" style="background-color: white;height: auto;color: inherit;display:block;text-align: center;" >
         <div class=row>
             <div class=col-12>
                 <div class="header-wsp">
                     <span class="icon-mel-workplace no-weight roundbadge"></span>
-                    <span><roundcube:label name="mel_workspace.my_workspaces" /></span>
+                    <h1><roundcube:label name="mel_workspace.my_workspaces" /></h1>
                 </div>
             </div>
         </div>
         <div class=row>
             <div class=col-12>
                 <div class="wsp-search-wsp">
-                    <span class="title-wsp">Rechercher un espace de travail</span>
+                    <label for="wsp-search-input" class="title-wsp">Rechercher un espace de travail</label>
                     <div class="input-group mel-search-group mel-centered">
                         <input id="wsp-search-input" type="text" onmousedown="" class="form-control mel-max-width-500" />
                         <div class="input-group-append">
@@ -33,9 +33,9 @@
     <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
 	<div class="body" style="padding-bottom: 15px;">
         <div class="epingle">
-            <span class="title-wsp">
+            <h2 class="title-wsp">
                 Mes espaces de travail épinglés
-            </span>
+            </h2>
             <div class=wsp-epingle>
                 <roundcube:object name="epingle" />
             </div>
@@ -43,9 +43,9 @@
             <separate></separate>
         </div>
         <div class="joined">
-            <span class="title-wsp">
+            <h2 class="title-wsp">
                 Tous mes espaces de travail
-            </span> 
+            </h2> 
             <div style="width: 100%;" role="tablist" aria-label="Espaces de travail">
                 <button id="not-archive" role="tab"
                 aria-selected="true"

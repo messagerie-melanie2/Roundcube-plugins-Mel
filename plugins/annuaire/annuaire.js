@@ -580,7 +580,7 @@ rcube_webmail.prototype.annuaire_set_show_contacts = function()
 		if (!element.hasClass(init))
 		{
 			element.click(function(e) {
-				$('#compose-contacts').modal("show");
+				$('#compose-contacts').focus().modal("show");
 				if ($('#annuaire-list li').length == 0) {
 					rcmail.annuaire_set_loading_icon();
 					rcmail.http_get('mail/plugin.annuaire', {}, rcmail.display_message(rcmail.get_label('loading'), 'loading'));

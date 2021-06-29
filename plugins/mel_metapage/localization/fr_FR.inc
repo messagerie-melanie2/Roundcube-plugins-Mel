@@ -150,3 +150,6 @@ $labels["menu_create_help_note"] = "Créer une nouvelle note";
 $labels["menu_create_help_survey"] = "Créer un nouveau sondage";
 
 $labels["change_avatar"] = "Changer d'avatar";
+
+$labels["last_day"] = "Jour précédent";
+$labels["next_day"] = "Jour suivant";

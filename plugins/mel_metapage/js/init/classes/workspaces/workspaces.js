@@ -122,6 +122,17 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
 
             break;
 
+        case "display_webconf":
+            let __frame = $(".webconf-frame");
+            $(".mm-frame").css("display", "none");
+
+            if (__frame.parent()[0].id === "layout-frames")
+                __frame.css("display", "").parent().css("display", "");
+            else
+                __frame.css("display", "");
+
+            break;
+
         default:
             break;
     }

@@ -203,6 +203,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
     if (changepage)//Actions à faire si on change de page.
         metapage_frames.triggerEvent("changepage", eClass, changepage, isAriane, querry);
 
+    console.log(querry, "querry");
+
     if (querry.length == 0) //Si on doit créer la frame
     {
         if (rcmail.nb_frames === undefined)
@@ -234,6 +236,7 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
         return id;
     }
     else {
+        console.log("open datas");
         let id = querry[0].id;
         //Mise en place de diverses configurations lorque l'on doit ouvrir une frame.
         metapage_frames.triggerEvent("rcmailconfig.yes", eClass, changepage, isAriane, querry, id);

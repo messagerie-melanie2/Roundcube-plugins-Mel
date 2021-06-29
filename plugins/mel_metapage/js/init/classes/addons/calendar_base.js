@@ -80,14 +80,14 @@ $(document).ready(() => {
         if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
         {
             const text_id = "key-error-cal";
-            const val = $("#key-visio-cal").val();
+            let val = $("#key-visio-cal").val();
 
             $(`#${text_id}`).remove();
 
-            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3)
+            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
             {
 
-                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : "Il doit y avoir au moins 3 chiffres dans le nom du salon !";
+                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : /^[0-9a-zA-Z]+$/.test(val) ? "Il doit y avoir au moins 3 chiffres dans le nom du salon !" : "Alphanumérique seulement !";
                 //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
                 //$(".webconf-error-text").css("display", "").css("color", "red");
                 $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
@@ -196,8 +196,8 @@ $(document).ready(() => {
                     if ($("#wsp-event-all-cal-mm").val() !== "#none")
                         config["_wsp"] = $("#wsp-event-all-cal-mm").val();
                     else
-                        config["_ariane"] = "home";
-                    $("#edit-location").val(`#visio:${mel_metapage.Functions.url("webconf", "", config)}`);
+                        config["_ariane"] = "@home";
+                    $("#edit-location").val(`#visio:${mel_metapage.Functions.url("webconf", "", config).replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`)}`);
                 }
                 else
                     $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
@@ -335,9 +335,22 @@ $(document).ready(() => {
             $("#num-audio-input-cal-location").on("change", () => {
                 update_location();
             });
+            $("#key-visio-cal").on("input", () => {
+                let val = $("#key-visio-cal").val().toUpperCase();
+                console.log("val", val);
+                if (val.includes(rcmail.env["webconf.base_url"].toUpperCase()))
+                {
+                    val = val.split("/");
+                    val = val[val.length-1];
+                    $("#key-visio-cal").val(val.toUpperCase());
+                    //querry.val()
+                }
+            });
+
             $("#key-visio-cal").on("change", () => {
                 update_location();
             });
+
             $("#edit-wsp").on("click", (e) => {
                 e = e.target;
                 if (e.checked)

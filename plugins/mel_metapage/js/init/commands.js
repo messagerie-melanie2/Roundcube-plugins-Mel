@@ -64,20 +64,28 @@ if (rcmail)
 
             }, true);
 
-            rcmail.drag_menu_action = function(action)
-            {
-              var menu = this.gui_objects.dragmenu;
-              if (menu) {
-                  if ($(menu).show)
-                    $(menu).show();
-                  else
-                    $(menu).removeClass("hidden").css("display", "");
+            rcmail.register_command("mel_metapage_change_wsp_picture",
+            (item) => {
 
-              }
+                m_mp_change_picture(item);
+
+            }, true);
+
+
+            // rcmail.drag_menu_action = function(action)
+            // {
+            //   var menu = this.gui_objects.dragmenu;
+            //   if (menu) {
+            //     //   if ($(menu).show)
+            //     //     $(menu).show();
+            //     //   else
+            //         $(menu).removeClass("hidden").css("display", "block");
+
+            //   }
           
-              this.command(action, this.env.drag_target);
-              this.env.drag_target = null;
-            };
+            //   this.command(action, this.env.drag_target);
+            //   this.env.drag_target = null;
+            // };
 
     })(); //
 }

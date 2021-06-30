@@ -204,7 +204,7 @@
         }
         update_table(html, id="#wsp-user-rights")
         {
-            console.log("id", id);
+            //console.log("id", id);
             $(id).parent().html(html);
         }
 
@@ -329,7 +329,7 @@
             return this.ajax(this.url("PARAMS_update_toolbar"), {
                 _uid:this.uid
             }, (datas) => {
-                console.log("toolbar", datas, $("#wsp-toolbar"));
+                //console.log("toolbar", datas, $("#wsp-toolbar"));
                $(".wsp-toolbar").html(datas);
                $(".wsp-home.active").removeClass("active");
                $(".wsp-toolbar-item").addClass("btn btn-secondary").removeAttr("disabled").removeAttr("aria-disabled");

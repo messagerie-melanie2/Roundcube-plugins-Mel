@@ -31,7 +31,7 @@ async function WSPReady()
     {
         //console.log("g");
         await wait(() => {
-            console.log(window.ariane === undefined);
+            //console.log(window.ariane === undefined);
              return window.ariane === undefined
         });
         //console.log("h");
@@ -402,7 +402,7 @@ async function change_date(add)
     let querry = GetAgenda().html('<center><span class="spinner-border"></span></center>');
     const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
     const events = Enumerable.from(JSON.parse(datas)).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).toArray();
-    console.log(events, JSON.parse(datas));
+    //console.log(events, JSON.parse(datas));
     if (events === null || events.length === 0)
     { 
         if (date === moment().startOf("day"))

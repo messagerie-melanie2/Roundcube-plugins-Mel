@@ -169,7 +169,6 @@ var nextcloud_document = (() => {
                             return conf;
                         };
                     return nextcloud.createDocument(embed_datas.val, null, (element.href === null ? null : (typeof element.href === "function" ? element.href(embed_datas) : element.href)), config, embed_datas.path).then(() => {
-                        console.log("created");
                         return true;
                     });
                 }

@@ -78,6 +78,14 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
 
+        if ($this->rc->task === "portail")
+        {
+            $this->rc->output->redirect([
+                '_task' => 'bureau',
+            ]);
+            return;
+        }
+
         $this->rc->output->set_env("plugin.mel_metapage", true);
 
         $this->rc->output->set_env('mel_metapage_const', [
@@ -210,27 +218,34 @@ class mel_metapage extends rcube_plugin
      */
     function startup()
     {
-        $files = scandir(__DIR__."/js/init/classes");
-        $size = count($files);
-        for ($i=0; $i < $size; ++$i) {
-            if (strpos($files[$i], ".js") !== false)
-                $this->include_script('js/init/classes/'.$files[$i]);
-            else if ($files[$i] === "." || $files[$i] === ".." || strpos($files[$i], ".") !== false)
-                continue;
-            else {
-                $folderFiles = scandir(__DIR__."/js/init/classes/".$files[$i]);
-                $folderSize = count($folderFiles);
-                for ($j=0; $j < $folderSize; ++$j) { 
-                    if(strpos($folderFiles[$j], ".js") !== false)
-                        $this->include_script('js/init/classes/'.$files[$i]."/".$folderFiles[$j]);
-                }
-            }
-        }
+        $this->include_script('js/init/rcmail_updater.js');
+        $this->get__init_js_from_folder("updates");
+        $this->get__init_js_from_folder("classes");
         $this->include_script('js/init/classes.js');
         $this->include_script('js/init/constants.js');
         $this->include_script('js/init/events.js');
         $this->include_script('js/init/commands.js');
         $this->load_config_js();
+    }
+
+    function get__init_js_from_folder($folder)
+    {
+        $files = scandir(__DIR__."/js/init/$folder");
+        $size = count($files);
+        for ($i=0; $i < $size; ++$i) {
+            if (strpos($files[$i], ".js") !== false)
+                $this->include_script("js/init/$folder/".$files[$i]);
+            else if ($files[$i] === "." || $files[$i] === ".." || strpos($files[$i], ".") !== false)
+                continue;
+            else {
+                $folderFiles = scandir(__DIR__."/js/init/$folder/".$files[$i]);
+                $folderSize = count($folderFiles);
+                for ($j=0; $j < $folderSize; ++$j) { 
+                    if(strpos($folderFiles[$j], ".js") !== false)
+                        $this->include_script("js/init/$folder/".$files[$i]."/".$folderFiles[$j]);
+                }
+            }
+        }
     }
 
     function mm_include_plugin()
@@ -557,14 +572,25 @@ class mel_metapage extends rcube_plugin
      */
     public function get_unread_mail_count()
     {
-        $msgs = $this->rc->storage->list_messages();
-        $size = count($msgs);
-        $retour = 0;
-        for ($i=0; $i < $size; ++$i) { 
-            if (/*count($msgs[$i]) == 0 || */$msgs[$i]->flags["SEEN"] === null || !$msgs[$i]->flags["SEEN"] )
-                ++$retour;
+        // $msgs = $this->rc->storage->list_messages();
+        // $size = count($msgs);
+        // $retour = 0;
+        // for ($i=0; $i < $size; ++$i) { 
+        //     if (/*count($msgs[$i]) == 0 || */$msgs[$i]->flags["SEEN"] === null || !$msgs[$i]->flags["SEEN"] )
+        //         ++$retour;
+        // }
+        $value;
+        $mbox_name = 'INBOX';
+
+        $value = $this->rc->storage->count($mbox_name, 'UNSEEN', true);
+        if (!is_array($_SESSION['unseen_count'])) {
+            $_SESSION['unseen_count'] = array();
         }
-        echo $retour;
+    
+        $_SESSION['unseen_count'][$mbox_name] = $count;
+    
+
+        echo $value;
         exit;
     }
 

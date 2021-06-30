@@ -7,7 +7,7 @@ function MetapageEventKey(key)
         {
             if (rcmail)
                 rcmail.triggerEvent(this.key);
-            else   
+            else
                 console.warn("/!\\[MetapageEventKey::trigger]rcmail n'est pas défini !");
         }
     }
@@ -52,7 +52,7 @@ if (rcmail)
         if (props.response && props.response.action == 'plugin.alarms')
             rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
 
-        
+
     });
 
     //Après la mise à jours du calendrier
@@ -86,10 +86,10 @@ if (rcmail)
                     type = null;
                     break;
             }
-        
+
             if (type !== null)
                 mel_metapage.Functions.update_frame(type);
-            
+
         }
 
     });
@@ -103,20 +103,48 @@ if (rcmail)
                 if (!uid && !(uid = rcmail.get_single_uid())) {
                     return;
                   }
-            
+
                   const event = {
                     mail_datas:{
                         mbox:rcmail.env.mailbox,
                         uid:uid
                     }
                   };
-            
+
                     this.create_event_from_somewhere(event);
             }
             rcmail.register_command('calendar-create-from-mail', function() { cal.create_from_mail(); }, true);
         }
 
     });
+
+    //Action à faire après certains actions des mails.
+    rcmail.addEventListener('responsebefore', function(props) {
+        if (props.response && (/*props.response.action == 'mark' ||*/ props.response.action=='getunread')) {
+            parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get);
+        }
+    });
+
+    rcmail.addEventListener('set_unread', function(props) {
+        // //if (props.response && (props.response.action == 'mark' || props.response.action=='getunread')) {
+         if (props.mbox === "INBOX")
+         {
+            parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get, {
+                new_count:props.count
+            });
+         }
+    });
+
+    rcmail.addEventListener("init", () => {
+        $('[data-popup]').each((i,e) => {
+            $(e).on("show.bs.popover", () => {
+                $(e).attr("aria-expanded", "true");
+            })
+            .on("hide.bs.popover", () => {
+                $(e).attr("aria-expanded", "false");
+            })
+        });
+    })
 
 }
 

@@ -70,13 +70,15 @@ function m_mp_createworskpace_steps()
             let html = "";
             if (rcmail.env.mel_metapage_workspace_logos.length > 0)
             {
-                html += `<li><a title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
+                html += `<li role=menuitem><a title="" tabindex=-1 class="active" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
                 for (let index = 0; index < rcmail.env.mel_metapage_workspace_logos.length; index++) {
                     const element = rcmail.env.mel_metapage_workspace_logos[index];
-                    html += `<li><a alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="" id="" role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
+                    html += `<li role=menuitem><a alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="active" id="" tabindex=-1 role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
                 }
             }
             $("#ul-wsp").html(html);
+            // rcmail.register_menu_button($("#worspace-avatar-a")[0], $("#worspace-avatar-a").data('popup'))
+            // UI.popup_init($("#worspace-avatar-a")[0]);
 
             return "";
         },
@@ -855,7 +857,7 @@ function m_mp_openTo(e, idInput)
 					rcmail.annuaire_list_fill_list(null,
 							rcmail.env.annuaire_list);
 				}
-                console.log("timeout lunched");
+                //console.log("timeout lunched");
 			}
                 setTimeout(() => {
                     if (window.mmp_open_contact === undefined)
@@ -1205,7 +1207,7 @@ async function m_mp_CreateDocCurrent(val = null, close = true)
     }
     Enumerable.from(querry.contents().find("input")).where(x => x.attributes.type !== undefined && x.attributes.type.value === "submit" && x.classList.contains("primary")).first().click();
 
-    console.log("7 change page");
+    //console.log("7 change page");
     m_mp_CreateOrOpenFrame("stockage", () => {}, () => {
         rcmail.set_busy(false);
         rcmail.clear_messages();
@@ -1401,14 +1403,6 @@ function m_mp_OpenTask()
         navigator.command('newtask','',this, event);
     });
 }
-
-//Action à faire après certains actions des mails.
-rcmail.addEventListener('responseafter', function(props) {
-    if (props.response && (props.response.action == 'mark' || props.response.action=='getunread')) {
-     parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.get);
-    }
-
-});
 
 /**
  * Ferme ariane.

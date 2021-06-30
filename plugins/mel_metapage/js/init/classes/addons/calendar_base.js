@@ -337,7 +337,6 @@ $(document).ready(() => {
             });
             $("#key-visio-cal").on("input", () => {
                 let val = $("#key-visio-cal").val().toUpperCase();
-                console.log("val", val);
                 if (val.includes(rcmail.env["webconf.base_url"].toUpperCase()))
                 {
                     val = val.split("/");
@@ -489,7 +488,6 @@ $(document).ready(() => {
 
                 $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
 
-                console.log("roomname_generated", generateRoomName());
                 $("#key-visio-cal").val(generateRoomName());
 
             }

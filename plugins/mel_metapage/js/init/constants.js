@@ -406,7 +406,6 @@ const mel_metapage = {
             {
                 await wait(() => mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) !== mel_metapage.Storage.wait_frame_loaded);
                 mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
-                console.log("wait ended", mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading));
             }
 
             if (frame === "webconf")

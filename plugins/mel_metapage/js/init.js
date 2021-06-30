@@ -36,7 +36,7 @@ if (rcmail)
                     try {
                         let events = [];
                         data = JSON.parse(data);
-                        console.log("calendar", data);
+                        //console.log("calendar", data);
                         data = Enumerable.from(data).where(x =>  mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
                         let startMoment;
                         let endMoment;
@@ -161,8 +161,23 @@ if (rcmail)
                 // rcmail.clear_messages();
              });
             },
-            mail_updated: function(isFromRefresh = false) {
+            mail_updated: function(isFromRefresh = false, new_count = null) {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
+
+                //console.log("mail_updated", isFromRefresh, new_count);
+
+                if (new_count !== null && new_count !== undefined)
+                {
+                    mel_metapage.Storage.set(mel_metapage.Storage.mail, new_count);
+                    try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
+                    update_badge(new_count, mel_metapage.Ids.menu.badge.mail);
+                    parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
+                    if ($(".mail-frame").length > 0)
+                        Title.update($(".mail-frame")[0].id);
+
+                    return (async () => {})();
+                }
+
                 const last_count = mel_metapage.Storage.get(mel_metapage.Storage.mail);
                 return $.ajax({ // fonction permettant de faire de l'ajax
                 type: "GET", // methode de transmission des données au fichier php
@@ -229,7 +244,9 @@ if (rcmail)
         //ajout des events listener
         parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.get, parent.rcmail.mel_metapage_fn.calendar_updated);
         parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.get, parent.rcmail.mel_metapage_fn.tasks_updated);
-        parent.rcmail.addEventListener(mel_metapage.EventListeners.mails_updated.get, parent.rcmail.mel_metapage_fn.mail_updated);
+        parent.rcmail.addEventListener(mel_metapage.EventListeners.mails_updated.get, (x) => {
+            parent.rcmail.mel_metapage_fn.mail_updated((x.isFromRefresh === undefined ? false : x.isFromRefresh), (x.new_count === undefined ? null : x.new_count));
+        });
         
         parent.rcmail.enable_command("my_account", true);
         parent.rcmail.register_command("my_account", () => {

@@ -353,7 +353,7 @@ html_helper.Calendars.create = function(config = {
 
 	event.end = moment(event.start).add(1, "h");
     rcmail.local_storage_set_item("tmp_calendar_event", event);
-	console.log("[html_helper.Calendars.create]", event, date, config);
+	//console.log("[html_helper.Calendars.create]", event, date, config);
 
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
 }

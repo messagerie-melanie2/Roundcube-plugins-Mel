@@ -128,7 +128,7 @@ RoundriveCreate.prototype.create_document = function()
             },
             (datas) => {
                 datas = JSON.parse(datas);
-                console.log("datas", datas);
+                //console.log("datas", datas);
                 
                 if (datas.success)
                 {

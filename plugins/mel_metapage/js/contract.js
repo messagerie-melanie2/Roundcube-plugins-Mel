@@ -123,7 +123,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
 SearchResultCalendar.after_loading = function (event)
 {
     event = JSON.parse(event.replace(/£¤£/g, '"'))
-    console.log("event", event, window.ui_cal);
+    //console.log("event", event, window.ui_cal);
     if (event !== null && window.ui_cal !== undefined)
     {
         setTimeout(() => {

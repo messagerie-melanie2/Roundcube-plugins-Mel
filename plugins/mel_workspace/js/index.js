@@ -91,7 +91,7 @@ $(document).ready(() => {
     if (rcmail.env.action === "action")
         rcmail.register_command("workspaces.page", (page) => {
             rcmail.set_busy(true, "loading");
-            console.log("here");
+            //console.log("here");
             window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {"_event":"list_public", "_page":page});
         }, true);
         //<workspace-uid/>
@@ -132,12 +132,12 @@ function load_archives(e)
 
 function update_tasks()
 {
-    console.log("here", "update_tasks()");
+    //console.log("here", "update_tasks()");
     $(".workspace").each((i,e) => {
         const id = e.id.replace("wsp-", "").replace("-epingle", "");
         const datas = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks)[id];
         const count = mel_metapage.Storage.get(mel_metapage.Storage.other_tasks_count)[id];
-        console.log("update_tasks()", id, datas, count);
+        //console.log("update_tasks()", id, datas, count);
         if (datas !== undefined && count !== undefined)
             $(e).find(".wsp-tasks-all").html('<span style="font-size:large">'+(count-datas.length)+'</span> tâches réalisées sur '+count+'</div>');
     });

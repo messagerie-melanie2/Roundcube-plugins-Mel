@@ -1,10 +1,13 @@
-<a data-popup="groupoptions-user" role="button"
+<a id=user-up-panel-a class="sr-only sr-only-focusable" href=# style="position: absolute;top:-1000px;"><p class="sr-only"><roundcube:label name='mel_metapage.user_help' /></p></a>
+<div data-popup="groupoptions-user" role="button"
 title="<roundcube:label name='mel_metapage.user_help' />"
 href="#" 
 aria-haspopup="true" aria-owns="groupoptions-user" 
 data-original-title=""
 id="user-up-panel"
-style="text-decoration: none;">
+style="text-decoration: none;cursor: pointer;"
+tabindex=-1>
+
 <div class="user-child">
     <div class="row">
         <div class="col-lg-2">
@@ -23,7 +26,7 @@ style="text-decoration: none;">
         </div>
     </div>
 </div>
-</a>
+</div>
 <style>
     #groupoptions-user
     {

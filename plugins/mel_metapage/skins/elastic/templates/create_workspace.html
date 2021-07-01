@@ -89,15 +89,15 @@
     <!-- <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="mel-button create mel-before-remover">Ajouter <span class="icon-mel-plus plus"></span></button> -->
 
     <!--Liste des participants-->
-    <span class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></span>
+    <h3 class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></h3>
     <div id="mm-wsp-loading" style="display:none">
         <center>
             <span class="spinner-border"></span>
         </center>
     </div>
-    <div id="mm-cw-participants">
+    <ul id="mm-cw-participants" class="ignore-bullet">
 
-    </div>
+    </ul>
 
     <!--Retour-->
     <button style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step1`)">

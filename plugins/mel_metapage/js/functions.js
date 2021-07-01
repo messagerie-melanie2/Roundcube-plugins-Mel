@@ -70,10 +70,10 @@ function m_mp_createworskpace_steps()
             let html = "";
             if (rcmail.env.mel_metapage_workspace_logos.length > 0)
             {
-                html += `<li role=menuitem><a title="" tabindex=-1 class="active" id="" role="button" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
+                html += `<li role=menuitem><a title="" aria-disabled=true href=# tabindex=-1 class="active" id="" href="#" onclick="m_mp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
                 for (let index = 0; index < rcmail.env.mel_metapage_workspace_logos.length; index++) {
                     const element = rcmail.env.mel_metapage_workspace_logos[index];
-                    html += `<li role=menuitem><a alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="active" id="" tabindex=-1 role="button" href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
+                    html += `<li role=menuitem><a aria-disabled=true href=# alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="active" id="" tabindex=-1 href="#" onclick="m_mp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
                 }
             }
             $("#ul-wsp").html(html);
@@ -220,11 +220,14 @@ function m_mp_createworkspace()
     mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_create_workspace"),{}, 
     (datas) => {
         create_popUp.contents.html(html + datas + `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`);
+        
         if ($("#tmpavatar").find("a").length === 0)
-        $("#worspace-avatar-a").css("display", "").appendTo($("#tmpavatar"));
-    m_mp_switch_step("workspace-step1");
-    rcmail.init_address_input_events($("#workspace-user-list"));
-    $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+            $("#worspace-avatar-a").css("display", "").appendTo($("#tmpavatar"));
+    
+        m_mp_switch_step("workspace-step1");
+        rcmail.init_address_input_events($("#workspace-user-list"));
+        $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+
         setTimeout(() => {
             $('#workspace-color').val(MEL_ELASTIC_UI.getRandomColor()); 
             $("#workspace-date-end").datetimepicker({
@@ -260,6 +263,19 @@ function m_mp_change_picture(img)
     }
     else
         $("#worspace-avatar-a").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
+}
+
+async function m_mp_avatarOnSelect(e) 
+{
+    console.log(e, "e");
+    if (e.type === "keydown")
+    {
+        if (e.originalEvent.code === "Enter" || e.originalEvent.code === "Space")
+        {
+            $("#user-up-panel").focus().popover('show').data("event", "key");//.trigger("click", e);
+            //$("#groupoptions-user").find("a.active").first().focus();
+        }
+    }
 }
 
 function m_mp_input(element)
@@ -765,7 +781,7 @@ function m_mp_add_users()
                     html = "<li>";
                     html += "<div class=row style=margin-top:15px>";
                     html += '<div class="col-2">';
-                    html += `<div class="dwp-round" style="background-color:transparent"><img src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+                    html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
                     html += "</div>";
                     html += '<div class="col-10 workspace-users-added">';
                     html += `<span class="name">${element.name}</span><br/>`;

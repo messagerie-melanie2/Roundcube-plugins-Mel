@@ -29,12 +29,13 @@
 #headlines_fi_block
 {
   color:#ffffffff;
-
+  margin-top: 41px;
 }
 
 #headlines_fi_block > h2
 {
   opacity: 0%;
+  display: none;
 }
 
 #headlines_fi_contents

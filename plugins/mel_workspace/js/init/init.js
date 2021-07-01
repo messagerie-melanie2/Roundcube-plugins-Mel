@@ -52,3 +52,22 @@ function EpingleEmpty()
     }
 
 }
+
+$(document).ready(() => {
+    $('.wsp-focusable-link').each((i,e) => {
+        $(e).on("keydown", (event) => {
+            if (event.type === "keydown")
+            {
+                if (event.originalEvent.code === "Enter" || event.originalEvent.code === "Space")
+                {
+                    $(`#${$(e).data("id")}`).find(".btn_btn-secondary_no-style_mel-focus").click();
+                }
+            }
+        }).on("focus", () => {
+           $(`#${$(e).data("id")}`).css("box-shadow","0 0 0 .2rem #484D7A69");
+        })
+        .on("blur", () => {
+            $(`#${$(e).data("id")}`).css("box-shadow","");
+        });
+    });
+});

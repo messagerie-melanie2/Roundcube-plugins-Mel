@@ -2,7 +2,7 @@
 /**
  * Plugin Mél
  *
- * Driver specifique au MTES pour le plugin mel
+ * Driver specifique a la MCE pour le plugin mel
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2
@@ -17,13 +17,36 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-use LibMelanie\Ldap\Ldap as Ldap;
 
 include_once __DIR__ . '/../mce/mce.php';
 
-class gen_driver_mel extends mce_driver_mel {
+class mce_mi_driver_mel extends mce_driver_mel {
+  /**
+   * Label utilisé dans les boites partagées pour l'arborescence des dossiers
+   * 
+   * @var string
+   */
+  protected $BALP_LABEL = 'Boite partag&AOk-e';
+
   /**
    * Namespace for the objets
    */
-  protected static $_objectsNS = "\\LibMelanie\\Api\\Gen\\";
+  protected static $_objectsNS = "\\LibMelanie\\Api\\Mce\\";
+  
+  /**
+   * Retourne le MBOX par defaut pour une boite partagée donnée
+   * Peut être INBOX ou autre chose si besoin
+   * 
+   * @param string $balpname
+   * @return string $mbox par defaut
+   */
+  public function getMboxFromBalp($balpname) {
+    if (isset($balpname)) {
+      $delimiter = rcmail::get_instance()->get_storage()->delimiter;
+      return $this->BALP_LABEL . $delimiter . $balpname;
+    }
+    else {
+      return 'INBOX';
+    }
+  }
 }

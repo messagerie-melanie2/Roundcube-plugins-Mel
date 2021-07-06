@@ -57,3 +57,16 @@
     padding: 3px;
     background-color: #FFFFE0;
 }
+
+#tb_label_popup .toolbarmenu li.labels,
+#messagessearchfilter option.labels {
+	display: none;
+}
+
+#messagessearchfilter option.labels.show {
+	display: block;
+}
+
+#tb_label_popup .toolbarmenu li.labels.show {
+	display: block;
+}

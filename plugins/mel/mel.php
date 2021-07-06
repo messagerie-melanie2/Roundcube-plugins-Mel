@@ -94,6 +94,7 @@ class mel extends rcube_plugin {
     $this->add_hook('identity_form',        array($this, 'identity_form'));
     $this->add_hook('identities_list',      array($this, 'identities_list'));
     $this->add_hook('identity_update',      array($this, 'identity_update'));
+    $this->add_hook('message_before_send',  array($this, 'message_before_send'));
 
     // Template
     $this->add_hook('template_object_loginform',  array($this, 'login_form'));
@@ -542,6 +543,21 @@ class mel extends rcube_plugin {
       mel_logs::get_instance()->log(mel_logs::TRACE, "mel::identity_update() args : " . var_export($args, true));
     }
     $args['record']['standard'] = strtolower(driver_mel::gi()->getUser()->email_send) == strtolower($args['record']['email']) ? 1 : 0;
+    return $args;
+  }
+
+  /**
+   * Ajout des headers dans le message via le driver mel
+   */
+  public function message_before_send($args) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::gi()->l(mel_logs::DEBUG, "mel::message_before_send()");
+
+    $headers = driver_mel::gi()->setHeadersMessageBeforeSend([]);
+    if (count($headers)) {
+      $args['message']->headers($headers, true);
+    }
+
     return $args;
   }
 

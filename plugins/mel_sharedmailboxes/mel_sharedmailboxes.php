@@ -1155,7 +1155,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      */
     public function message_before_send($args) {
         if (mel_logs::is(mel_logs::DEBUG))
-            mel_logs::gi()->l(mel_logs::DEBUG, "mel::message_before_send()");
+            mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes::message_before_send()");
 
         $_SESSION['m2_from_identity'] = $args['from'];
         $_SESSION['m2_uid_identity'] = null;
@@ -1175,7 +1175,6 @@ class mel_sharedmailboxes extends rcube_plugin {
             }
         }
         if (!empty($headers)) {
-            $headers = driver_mel::gi()->setHeadersMessageBeforeSend($headers);
             $args['message']->headers($headers, true);
         }
         if (!$found) {
@@ -1193,6 +1192,10 @@ class mel_sharedmailboxes extends rcube_plugin {
     private function render_sharedmailboxlist($list, $mailbox, $delimiter, $is_balp = true) {
         if (mel_logs::is(mel_logs::DEBUG)) {
             mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes_imap::render_sharedmailboxlist()");
+        }
+        if (mel_logs::is(mel_logs::TRACE)) {
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist($mailbox, $delimiter, $is_balp)");
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): list = " . var_export($list, 1));
         }
         // On est sur une balp
         $driver_mel = driver_mel::gi();
@@ -1219,6 +1222,10 @@ class mel_sharedmailboxes extends rcube_plugin {
         else {
             // Gestion de la boite individuelle
             $folders = $list;
+        }
+
+        if (mel_logs::is(mel_logs::TRACE)) {
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): folders = " . var_export($folders, 1));
         }
 
         $_folders = [];
@@ -1284,6 +1291,10 @@ class mel_sharedmailboxes extends rcube_plugin {
             $folders[$folder]['realname'] = true;
             $_folders[$folder] = $folders[$folder];
             unset($folders[$folder]);
+        }
+
+        if (mel_logs::is(mel_logs::TRACE)) {
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): _folders = " . var_export($_folders, 1));
         }
 
         $display = $this->rc->config->get('mailboxes_display', 'default');

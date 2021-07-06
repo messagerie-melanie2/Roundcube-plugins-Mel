@@ -346,6 +346,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $check_all = (bool)$this->rc->config->get('check_all_folders');
 
                         foreach ($a_folders as $mbox) {
+                            // MANTIS 0006141: L'ouverture de Courriel ne liste pas les non lus de l'INBOX de la BALI
+                            if ($mbox == 'INBOX' || $mbox == 'Corbeille') {
+                                continue;
+                            }
+
                             $unseen_old = rcmail_get_unseen_count($mbox);
 
                             if (!$check_all && $unseen_old !== null && $mbox != $current) {

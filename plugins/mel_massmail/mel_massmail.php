@@ -145,6 +145,11 @@ class mel_massmail extends rcube_plugin {
             if (isset($mailOpM2)) {
               $mail_dest .= ", " . $mailOpM2;
             }
+            // MANTIS 0006182: Loguer au niveau warning les grillages de compte sur trop d'émissions
+            mel_logs::get_instance()->log(mel_logs::WARN, "[mel_massmail] '$uid' bloqué ($mail_count courriels en $k minutes, limite à $s). Dernière IP : $ip_address.");
+            if ($ldap_error) {
+              mel_logs::get_instance()->log(mel_logs::ERROR, "[mel_massmail] Erreur LDAP de grillage pour le compte '$uid' : $ldap_error");
+            }
             // MANTIS 0004601: Mauvaise encodage des messages d'alerte pour les mass mails
             $headers = array();
             $headers[] = "MIME-Version: 1.0";

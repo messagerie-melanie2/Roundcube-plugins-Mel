@@ -15,6 +15,9 @@ $config['oidc_auth_kerberos'] = true;
 // OIDC Provider URL
 $config['oidc_url'] = 'OIDC_PROVIDER_URL';
 
+// OIDC Provider URL
+$config['oidc_proxy'] = '';
+
 // Client ID (registered on the provider)
 $config['oidc_client'] = 'OIDC_CLIENT_ID';
 

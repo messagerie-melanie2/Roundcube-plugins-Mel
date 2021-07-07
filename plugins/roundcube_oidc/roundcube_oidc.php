@@ -115,7 +115,8 @@ class roundcube_oidc extends rcube_plugin
                     $rcmail->config->get('oidc_secret'),
                     explode(" ", $rcmail->config->get('oidc_scope')),
                     false, // host verification
-                    false // peer verification
+                    false, // peer verification
+                    $rcmail->config->get('oidc_proxy')
                 );
 
                 // Store the redirection query

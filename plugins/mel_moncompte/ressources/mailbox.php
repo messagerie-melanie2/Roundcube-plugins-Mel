@@ -358,6 +358,7 @@ class M2mailbox {
     $mbox = driver_mel::gi()->getUser($id, false);
     if ($mbox->is_objectshare) {
       $mbox = $mbox->objectshare->mailbox;
+      $id = $mbox->uid;
     }
     $folders = [];
     $imap = $this->rc->get_storage();

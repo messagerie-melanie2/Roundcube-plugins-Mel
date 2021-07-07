@@ -85,10 +85,17 @@ use Jumbojett\OpenIDConnectClient;
         private $oidc;
         private $userInfo;
 
-        function __construct(string $url, string $clientID, string $clientSecret, array $scopes, bool $hostVerification, bool $peerVerification)
+        function __construct(
+            string $url, string $clientID, string $clientSecret, 
+            array $scopes, bool $hostVerification, bool $peerVerification, 
+            string $proxyURL = '')
         {
             // Initialize OIDC object
             $this->oidc = new OpenIDConnectClient($url, $clientID, $clientSecret);
+            if($proxyURL != '')
+            {
+                $this->oidc->setHttpProxy($proxyURL);
+            }
 
             // Add scopes
             //

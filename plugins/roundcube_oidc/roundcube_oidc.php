@@ -51,11 +51,19 @@ class roundcube_oidc extends rcube_plugin
      */
     function startup($args)
     {
+        // TODO remove
+        mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - startup");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - startup");
+
         if(empty($_SESSION['user_id']))
         {
             // Get Roundcube instance
             $rcmail = rcmail::get_instance();
             $auth = false;
+
+            // TODO remove
+            mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
 
             //region =========== AUTH methods ===========
 
@@ -115,7 +123,8 @@ class roundcube_oidc extends rcube_plugin
                     $rcmail->config->get('oidc_secret'),
                     explode(" ", $rcmail->config->get('oidc_scope')),
                     false, // host verification
-                    false // peer verification
+                    false, // peer verification
+                    $rcmail->config->get('oidc_proxy')
                 );
 
                 // Store the redirection query

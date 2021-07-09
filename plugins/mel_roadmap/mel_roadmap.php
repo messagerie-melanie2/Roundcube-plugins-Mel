@@ -33,12 +33,24 @@ class mel_roadmap extends rcube_plugin {
   function init() {
     $rcmail = rcmail::get_instance();
     if ($rcmail->task == 'settings' && !$rcmail->config->get('ismobile', false)) {
-        $this->add_texts('localization/', false);
-        $this->add_hook('settings_actions', array($this, 'settings_actions'));
-        $this->api->register_action('plugin.mel_roadmap', $this->ID, array(
-            $this,
-            'settings'
-        ));
+      // Chargement de la conf
+      $this->load_config();
+      // MANTIS 0006196: Ne pas afficher la feuille de route MélWeb Wekan pour les agents du MAA
+      $filtered_dn = $rcmail->config->get('roadmap_filtered_dn', []);
+      if (count($filtered_dn)) {
+        $user = driver_mel::gi()->getUser();
+        foreach ($filtered_dn as $dn) {
+          if (strpos($user->dn, $dn) !== false) {
+            return;
+          }
+        }
+      }
+      $this->add_texts('localization/', false);
+      $this->add_hook('settings_actions', array($this, 'settings_actions'));
+      $this->api->register_action('plugin.mel_roadmap', $this->ID, array(
+          $this,
+          'settings'
+      ));
     }
   }
 

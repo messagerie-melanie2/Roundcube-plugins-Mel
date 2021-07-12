@@ -95,7 +95,7 @@ class driver_annuaire {
     $this->rc = rcmail::get_instance();
 
     // Get serveur
-    $this->server = LibMelanie\Config\Ldap::$SEARCH_LDAP;
+    $this->server = LibMelanie\Config\Ldap::$AUTOCOMPLETE_LDAP;
 
     // Get instance LDAP from ORM
     $this->ldap = Ldap::GetInstance($this->server);

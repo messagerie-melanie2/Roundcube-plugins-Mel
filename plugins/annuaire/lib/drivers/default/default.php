@@ -50,16 +50,27 @@ class default_driver_annuaire extends driver_annuaire {
         }
         $this->filter = "(|(telephonenumber=*$search)(mobile=*$search))";
       } else {
-        $searchField = $this->rc->config->get('annuaire_search_field', ['cn', 'mail']);
-        if (is_array($searchField)) {
+        $searchFields = $this->rc->config->get('annuaire_search_fields', ['cn', 'mail']);
+        // MANTIS 0006197: Passer la recherche sur mail à un égal au lieu de commence par
+        $searchEqualFields = $this->rc->config->get('annuaire_search_equal_fields', []);
+        if (!is_array($searchEqualFields)) {
+          $searchEqualFields = [$searchEqualFields];
+        }
+        if (is_array($searchFields)) {
           $filter = "";
-          foreach ($searchField as $field) {
-            $filter .= "($field=$search*)";
+          foreach ($searchFields as $field) {
+            if (in_array($field, $searchEqualFields)) {
+              $filter .= "($field=$search)";
+            }
+            else {
+              $filter .= "($field=$search*)";
+            }
+            
           }
           $this->filter = "(|$filter)";
         }
         else {
-          $this->filter = "$searchField=$search*";
+          $this->filter = "$searchFields=$search*";
         }
       }
     }

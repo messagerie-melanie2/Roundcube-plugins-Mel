@@ -121,7 +121,7 @@ class default_driver_annuaire extends driver_annuaire {
     
     $this->ldap->anonymous();
     if ($search) {
-      $sr = $this->ldap->search($this->base_dn, $this->filter, $this->attributes, 0, 100);
+      $sr = $this->ldap->search($this->base_dn, $this->filter, $this->attributes, 0, 200);
     } else {
       $sr = $this->ldap->list_alias($this->base_dn, $this->filter, $this->attributes);
     }

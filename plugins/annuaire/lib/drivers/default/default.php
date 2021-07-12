@@ -52,7 +52,7 @@ class default_driver_annuaire extends driver_annuaire {
       } else {
         $searchFields = $this->rc->config->get('annuaire_search_fields', ['cn', 'mail']);
         // MANTIS 0006198: Recherche approximative pour les Contacts ministériels
-        $searchFilter = $this->rc->config->get('annuaire_search_filter', '%%filter%%');
+        $searchFilter = $this->rc->config->get('annuaire_search_filter');
         // MANTIS 0006197: Passer la recherche sur mail à un égal au lieu de commence par
         $searchEqualFields = $this->rc->config->get('annuaire_search_equal_fields', []);
         if (!is_array($searchEqualFields)) {
@@ -69,19 +69,22 @@ class default_driver_annuaire extends driver_annuaire {
             }
             
           }
-          // Rechercher si on est déjà dans un OU
-          if (strpos($searchFilter, '(|(') === 0) {
-            $this->filter = str_replace('%%filter%%', "$filter", $searchFilter);
+          if (isset($searchFilter)) {
+            $filter = $searchFilter . $filter;
           }
-          else {
-            $this->filter = str_replace('%%filter%%', "(|$filter)", $searchFilter);
-          }
+          $this->filter = "(|$filter)";
         }
         else if (in_array($searchFields, $searchEqualFields)) {
-          $this->filter = str_replace('%%filter%%', "$searchFields=$search", $searchFilter);
+          $this->filter = "$searchFields=$search";
+          if (isset($searchFilter)) {
+            $this->filter = "(|$searchFilter(".$this->filter."))";
+          }
         }
         else {
-          $this->filter = str_replace('%%filter%%', "$searchFields=$search*", $searchFilter);
+          $this->filter = "$searchFields=$search*";
+          if (isset($searchFilter)) {
+            $this->filter = "(|$searchFilter(".$this->filter."))";
+          }
         }
       }
     }

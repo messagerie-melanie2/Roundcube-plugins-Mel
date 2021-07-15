@@ -359,7 +359,6 @@ function rcube_calendar_ui(settings)
     // event details dialog (show only)
     var event_show_dialog = function(event, ev, temp)
     {
-      console.log("event", event, ev, temp);
       var $dialog = $("#eventshow");
       var calendar = event.calendar && me.calendars[event.calendar] ? me.calendars[event.calendar] : { editable:false, rights:'lrs' };
 
@@ -380,8 +379,6 @@ function rcube_calendar_ui(settings)
         event.start = parseISO8601(event.start);
       if (typeof event.end == 'string')
         event.end = parseISO8601(event.end);
-
-        console.log("event 2 ", event, event.end);
 
       // allow other plugins to do actions when event form is opened
       rcmail.triggerEvent('calendar-event-init', {o: event});
@@ -643,7 +640,6 @@ function rcube_calendar_ui(settings)
     // bring up the event dialog (jquery-ui popup)
     var event_edit_dialog = function(action, event)
     {
-      console.log(action, event, settings.date_format);
       // copy opener element from show dialog
       var op_elem = $("#eventshow:ui-dialog").data('opener');
 

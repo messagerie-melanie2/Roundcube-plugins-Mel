@@ -1479,6 +1479,10 @@ async function m_mp_shortcuts()
         else
             window.shortcuts.open();
     }
+    
+    setTimeout(() => {
+        $(".fullscreen-item").focus();
+    }, 100);
 }
 
 function mm_create_calendar(e, existingEvent = null)

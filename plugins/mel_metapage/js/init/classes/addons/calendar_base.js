@@ -834,12 +834,21 @@ $(document).ready(() => {
                         tmp = element;
                      else if (e < date || s.startOf("day") > date.startOf("day"))
                         tmp = element;
+                    else if (element.allDay)
+                    {
+                        element.end = moment(cal.parseISO8601(element.end)).startOf("day");
+                        if (element.end.format("YYYY-MM-DD HH:mm:ss") == date.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
+                            tmp = element;
+                        else
+                            element.end = element.end.format();
+                    }
                  }
 
                  if (tmp === true)
                      array = Array.AddIfExist(array, check, element);
                  else if (tmp !== false)
                      elementsToDelete.push(tmp);
+
              }
              //console.log(array);
              events = Enumerable.from(array).where(x => !elementsToDelete.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
@@ -995,88 +1004,3 @@ $(document).ready(() => {
 
 
 
-/*
-
-
-
-    class CalendarEvent
-    {
-        constructor()
-        {
-            this._id = "";
-            this.id = "";
-            this.uid = "";
-
-            this.start = "";
-            this.end = "";
-            this.changed = '';
-            this.created = "";
-
-            this.title = "";
-            this.description = "";
-            this.location = "";
-
-            this["calendar-name"] = "";
-            this.calendar = "";
-
-            this.free_busy = "";
-            this.status = "";
-            this.sensitivity = "";
-
-            this.attachments = []
-
-            this.vurl = null;
-            this.allDay = false;
-
-            this.className = [];
-
-        }
-
-        // add_attachments(...a)
-        // {
-        //     this.attachments = a;
-        // }
-
-        daily(interval, until)
-        {
-            this.recurrence = {
-                FREQ:"DAILY",
-                INTERVAL:interval,
-                //UNTIL:until,
-                EXTDATE:[]
-            };
-        }
-
-        weekly(interval, byday, until)
-        {
-            this.recurrence = {
-                FREQ:"DAILY",
-                INTERVAL:interval,
-                BYDAY:byday,
-                EXTDATE:[]
-            };  
-        }
-
-        monthly(interval, byday, until)
-        {
-            this.recurrence = {
-                FREQ:"MONTHLY",
-                INTERVAL:interval,
-                BYMONTHDAY:byday,
-                EXTDATE:[]
-            };  
-        }
-
-        yearly(interval, BYmonth, until)
-        {
-            this.recurrence = {
-                FREQ:"YEARLY",
-                INTERVAL:interval,
-                BYMONTH:BYmonth,
-                EXTDATE:[]
-            };  
-        }
-    }
-
-
-*/

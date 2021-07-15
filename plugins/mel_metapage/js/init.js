@@ -51,8 +51,17 @@ if (rcmail)
                             else
                                 element.order = 1;
 
-                            if (moment(element.end) < now)
+                            if (moment(cal.parseISO8601(element.end)) < now)
                                     continue;
+
+                            if (element.allDay)
+                            {
+                                element.end = moment(cal.parseISO8601(element.end)).startOf("day");
+                                if (element.end.format("YYYY-MM-DD HH:mm:ss") == now.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
+                                    continue;
+                                else
+                                    element.end = element.end.format();
+                            }
 
                             events.push(element);
                             
@@ -187,14 +196,17 @@ if (rcmail)
                         //console.log("mail_updated", data);
                         if (isFromRefresh === true && ( last_count === null || last_count || undefined || last_count < data))
                         {
-                            const querry = $(`iframe.mail-frame`);
-                            if (querry.length > 0)
-                                querry[0].contentWindow.postMessage({
-                                    exec:"refresh_frame",
-                                    child:false,
-                                    _integrated:true,
-                                    always:true
-                                });
+                            if (rcmail.env.current_frame_name !== "mail")
+                            {
+                                const querry = $(`iframe.mail-frame`);
+                                if (querry.length > 0)
+                                    querry[0].contentWindow.postMessage({
+                                        exec:"refresh_frame",
+                                        child:false,
+                                        _integrated:true,
+                                        always:true
+                                    });
+                            }
                         }
                         
                         mel_metapage.Storage.set(mel_metapage.Storage.mail, data);

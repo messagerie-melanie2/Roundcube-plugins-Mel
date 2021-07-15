@@ -261,9 +261,11 @@ function SetupTasks(datas, id, where = null)
 	let html = ''
 	datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
 	let date;
+    html += `<ul class="ignore-bullet">`;
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
+        html += "<li>";
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
         if (date._isValid)
             html += "<div class=col-md-10><span class=element-title>" + element.title + (element.created === undefined ? "" : "</span><br/><span class=element-desc>Créée le " + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )+"</span></div>";
@@ -271,8 +273,9 @@ function SetupTasks(datas, id, where = null)
             html += "<div class=col-md-10></div>";
         html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
+        html += "</li>";
     }
-    html += ""
+    html += "</ul>";
 	querry.html(html);
     /*console.log("SetupTasks()", 
     $("#nb-" + id),
@@ -479,11 +482,11 @@ function UpdateFrameAriane()
     if (arrow.hasClass(right))
     {
         arrow.removeClass(right).addClass(down).parent().attr("title", rcmail.gettext("close_ariane", "mel_workspace"));
-        $(".unreads-ariane").find("iframe").css("display", "").parent().css("display", "");
+        $(".unreads-ariane").attr("aria-expanded", "true").find("iframe").css("display", "").parent().css("display", "");
     }
     else
     {
         arrow.removeClass(down).addClass(right).parent().attr("title", rcmail.gettext("open_ariane", "mel_workspace"));
-        $(".unreads-ariane").find("iframe").css("display", "none").parent().css("display", "none");;
+        $(".unreads-ariane").attr("aria-expanded", "false").find("iframe").css("display", "none").parent().css("display", "none");;
     }
 }

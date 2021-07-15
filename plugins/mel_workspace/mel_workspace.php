@@ -589,13 +589,13 @@ class mel_workspace extends rcube_plugin
                         );
 
                     if ($services[self::CHANNEL]){
-                        $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
+                        $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"aria-expanded" => "false","onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane taab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
                             html::tag("span", ["style" => "position:relative"], "#$channel_name".html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
                             html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
                         );
                         $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
                             html::tag("iframe", 
-                            ["src" => $src, "style" => "width:100%;height:500px;display:none;"]
+                            ["src" => $src, "style" => "width:100%;height:500px;display:none;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
                             )
                         );
                     }

@@ -136,7 +136,7 @@ function setupMyDay(datas)
 		else
 			style = "display:none;";
 
-		html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+		html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"><span class="sr-only">Aller à la Webconf</span></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
         html += "</div>";
 		html += "</li>";
     }

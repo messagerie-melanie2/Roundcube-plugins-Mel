@@ -21,6 +21,8 @@ class FullscreenItem
                 this.generate_flex();
         }
 
+        this.item.attr("tabindex", -1).prepend(`<span class="sr-only">Ecran Mes Raccourcis</span>`);
+
         this.close_button = $('<button class="fullscreen-close"><span class="icofont-close-line-circled"></span><span class="sr-only">Fermer les raccourcis</span></button>').appendTo(this.item);
         
         this.close_button.on("click", () => {

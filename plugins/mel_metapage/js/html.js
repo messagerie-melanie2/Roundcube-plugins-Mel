@@ -112,9 +112,12 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
     datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
 	let date;
 
+    html += `<ul class="ignore-bullet">`;
+
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
+		html += "<li>";
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
 		if (date._isValid)
@@ -124,7 +127,9 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
 
 		//html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icon-mel-warning warning" : "icon-mel-time clear") + '"></a></div>'
         html += "</div>";
+		html += "</li>";
     }
+	html += "</ul>";
     html += "</div>";
 	
     if (e !== null)
@@ -220,12 +225,12 @@ html_helper.Calendars = function({datas, config = {
         html += '<div class="col-2"><span class="icon-mel-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || datas.length === 0 ? "style=display:none;" : "")+'>'+datas.length+'</span></span></div>';
         html += '<div class="col-6"><span class="mm-agenda-date">'+rcube_calendar.mel_metapage_misc.GetDate(_date)+'</span></div>';
         html += '<div class="col-4"><div class="row">';
-        html += '<div class="col-6"><span class="icon-mel-arrow-left btn-arrow" onclick="'+nav_click.replace("¤¤¤", "-1")+'"> <span class="sr-only">'+rcmail.gettext("last_day", "mel_metapage")+'</span> </span></div>';
-        html += '<div class="col-6"><span class="icon-mel-arrow-right btn-arrow" onclick="'+nav_click.replace("¤¤¤", "1")+'"> <span class="sr-only">'+rcmail.gettext("next_day", "mel_metapage")+'</span> </span></div>';
+        html += '<div class="col-6"><button class="btn-mel-invisible btn-arrow btn btn-secondary" onclick="'+nav_click.replace("¤¤¤", "-1")+'"> <span class="icon-mel-arrow-left"><span class="sr-only">'+rcmail.gettext("last_day", "mel_metapage")+'</span></span> </button></div>';
+        html += '<div class="col-6"><button class="btn-mel-invisible btn-arrow btn btn-secondary" onclick="'+nav_click.replace("¤¤¤", "1")+'"> <span class="icon-mel-arrow-right"><span class="sr-only">'+rcmail.gettext("next_day", "mel_metapage")+'</span></span> </button></div>';
         html += "</div></div></div>"
     }
 	if (!get_only_body)
-    	html += "<div class=block-body>";
+    	html += '<ul class="block-body ignore-bullet">';
 	let style;
 	let link;
 	//let bool;
@@ -235,6 +240,7 @@ html_helper.Calendars = function({datas, config = {
 	else {
 		for (let index = 0; index < datas.length; index++) {
 			const element = datas[index];
+			html += "<li>";
 			html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 			if (element.allDay)
 				html += "<div class=col-md-8><span class=element-title>" + rcmail.gettext("Journée entière") + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
@@ -285,7 +291,7 @@ html_helper.Calendars = function({datas, config = {
 			else
 				style = "display:none;";
 	
-			html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+			html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"><span class="sr-only">Webconf</span></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 
 			// if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
 			// 	style = "";
@@ -296,14 +302,17 @@ html_helper.Calendars = function({datas, config = {
 
 			// html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 			html += "</div>";
+			html += "</li>";
 		}
 	}
 
 	if (!get_only_body)
 	{
-		html += "</div>";
+		html += "</ul>";
 		html += "</div>";
 	}
+	else
+	html = `<ul class="ignore-bullet">${html}</ul>`;
 
 	if (config.add_create === true)
 	{

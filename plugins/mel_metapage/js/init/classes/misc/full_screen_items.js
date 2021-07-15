@@ -21,7 +21,7 @@ class FullscreenItem
                 this.generate_flex();
         }
 
-        this.item.attr("tabindex", -1).prepend(`<span class="sr-only">Ecran Mes Raccourcis</span>`);
+        this.item.prepend(`<span tabindex=-1 id=fullscreenreaderfocus class="sr-only">Ecran Mes Raccourcis</span>`);
 
         this.close_button = $('<button class="fullscreen-close"><span class="icofont-close-line-circled"></span><span class="sr-only">Fermer les raccourcis</span></button>').appendTo(this.item);
         
@@ -86,6 +86,8 @@ class FullscreenItem
             this.item.css("display", "none");
 
         this.is_open = false;
+
+        $(".my_favorites").focus();
     }
 
     static close_if_exist()

@@ -166,8 +166,12 @@ html_helper.CalendarsAsync = async function(config = {
 		html_helper.cals_updates = new Mel_Update(mel_metapage.EventListeners.calendar_updated.after, "calendars.update", async () => {
 			$('.html-calendar').each(async (i,e) => {
 				e = $(e);
-				const config = html_helper.JSON.parse(e.data('config'));
+				let config = html_helper.JSON.parse(e.data('config'));
 				const date = moment(e.data('date'));
+
+				if (config.add_create)
+					delete config.add_create;
+
 				if (config.add_day_navigation)
 				{
 					if ( moment(e.find(".mm-agenda-date").data("current-date")).startOf("day").format() === date.startOf("day").format())
@@ -178,6 +182,7 @@ html_helper.CalendarsAsync = async function(config = {
 			});
 		});
 	}
+	
     return html_helper.Calendars({datas:storage, config:config, e:e, e_number:e_number, _date:_date});
 }
 
@@ -312,11 +317,13 @@ html_helper.Calendars = function({datas, config = {
 		html += "</div>";
 	}
 	else
-	html = `<ul class="ignore-bullet">${html}</ul>`;
+		html = `<ul class="ignore-bullet">${html}</ul>`;
 
 	if (config.add_create === true)
 	{
-		html += html_helper(html_helper.options.create_button, 'Créer <span class="icon-mel-plus plus"></span>', {
+		const data_text = 'Créer <span class="icon-mel-plus plus"></span>';
+		if (!html.includes(data_text))
+		html += html_helper(html_helper.options.create_button, data_text, {
 			onclick:config.create_function === undefined || config.create_function === null ? "html_helper.Calendars.create()" : config.create_function
 		});
 	}

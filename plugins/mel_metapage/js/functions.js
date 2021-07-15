@@ -1453,6 +1453,10 @@ async function m_mp_shortcuts()
 {
     if (window.shortcuts === undefined)
     {
+
+        if ($(".fullscreen-item").length > 0)
+            $(".fullscreen-item").remove();
+
         const tab_tasks = {
             left:"",
             right:"Toute les tâches"
@@ -1481,7 +1485,7 @@ async function m_mp_shortcuts()
     }
     
     setTimeout(() => {
-        $(".fullscreen-item").focus();
+        $("#fullscreenreaderfocus").focus();
     }, 100);
 }
 

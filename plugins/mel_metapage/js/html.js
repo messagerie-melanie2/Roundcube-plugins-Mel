@@ -121,7 +121,7 @@ html_helper.Tasks = function (datas, tabs, e = null,  e_news = null,title = null
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
 		if (date._isValid)
-        	html += "<div class=col-md-12><span class=element-title>" + element.title + "</span><br/><span class=element-desc>Créée le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</span></div>";
+			html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}')"><span class="element-title element-block">${element.title}</span><span class="element-desc element-block">Créée le ${date.format("DD/MM/YYYY")} à ${date.format("hh:mm")}</span></a></div>`;//html += "<div class=col-md-12><span class=element-title>" + element.title + "</span><br/><span class=element-desc>Créée le " + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</span></div>";
         else
 			html += "<div class=col-md-12></div>";
 
@@ -238,6 +238,7 @@ html_helper.Calendars = function({datas, config = {
     	html += '<ul class="block-body ignore-bullet">';
 	let style;
 	let link;
+	let text;
 	//let bool;
 	//let icon;
 	if (typeof datas === "string")
@@ -248,39 +249,14 @@ html_helper.Calendars = function({datas, config = {
 			html += "<li>";
 			html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 			if (element.allDay)
-				html += "<div class=col-md-8><span class=element-title>" + rcmail.gettext("Journée entière") + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
+				text = rcmail.gettext("Journée entière");
 			else
 			{
 				const style_date = set_style(element);
-				html += "<div class=col-md-8><span class=element-title>" + style_date.start + " - " + style_date.end + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
+				text = `${style_date.start} - ${style_date.end}`;
 			}
-			// bool = element.attendees !== undefined && 
-			// element.attendees.length > 0 && 
-			// Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
-			// if (bool)
-			// {
-			// 	icon = null;
-			// 	for (let it = 0; it < rcmail.env.mel_metapage_user_emails.length; it++) {
-			// 		const mail = rcmail.env.mel_metapage_user_emails[it];
-			// 		for (let j = 0; j < element.attendees.length; j++) {
-			// 			const attendee = element.attendees[j];
-			// 			if (attendee.email == mail)
-			// 			{
-			// 				if (attendee.role === "ORGANIZER")
-			// 					icon = classes.organizer;
-			// 				else if (attendee.status.toUpperCase() === 'CONFIRMED')
-			// 					icon = classes.tick;
-			// 				else if (attendee.status.toUpperCase() === 'DECLINED')
-			// 					icon = classes.declined;
-			// 				else 
-			// 					icon = classes.waiting;
-			// 				break;
-			// 			}
-			// 		}
-			// 		if (icon !== null)
-			// 			break;
-			// 	}
-			// }
+
+			html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title element-block">${text}</span><span class="element-desc element-block">${element.title}</span></a></div>`;
 
 			if (element.location.includes("@visio") || element.location.includes("#visio"))
 			{
@@ -298,14 +274,6 @@ html_helper.Calendars = function({datas, config = {
 	
 			html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"><span class="sr-only">Webconf</span></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 
-			// if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
-			// 	style = "";
-			// else
-			// 	style = "display:none;";
-
-			// console.log(element.location, "location");
-
-			// html += '<div class=col-4><div class="webconf-myday"><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icon-mel-videoconference"></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 			html += "</div>";
 			html += "</li>";
 		}
@@ -372,4 +340,14 @@ html_helper.Calendars.create = function(config = {
 	//console.log("[html_helper.Calendars.create]", event, date, config);
 
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
+}
+
+html_helper.Calendars.generate_link = function(event)
+{
+	let link = "";
+
+	if (SearchResultCalendar && SearchResultCalendar.CreateOrOpen)
+		link = `SearchResultCalendar.CreateOrOpen('${JSON.stringify(event).replaceAll('"', '£¤£').replaceAll("'", "µ¤¤µ")}')`;
+
+	return link;
 }

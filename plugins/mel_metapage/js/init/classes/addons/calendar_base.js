@@ -816,6 +816,9 @@ $(document).ready(() => {
              let tmp;
              let array = [];
              let elementsToDelete = [];
+
+             const parse = cal && cal.parseISO8601 ? cal.parseISO8601 : (item) => item;
+
              for (let index = 0; index < events.length; index++) {
                  element = events[index];
                  if (element.allDay)
@@ -836,7 +839,7 @@ $(document).ready(() => {
                         tmp = element;
                     else if (element.allDay)
                     {
-                        element.end = moment(cal.parseISO8601(element.end)).startOf("day");
+                        element.end = moment(parse(element.end)).startOf("day");
                         if (element.end.format("YYYY-MM-DD HH:mm:ss") == date.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
                             tmp = element;
                         else

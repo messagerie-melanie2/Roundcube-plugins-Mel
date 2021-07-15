@@ -43,6 +43,8 @@ if (rcmail)
                         let element;
                         let now = moment().startOf('day');
 
+                        const parse = cal && cal.parseISO8601 ? cal.parseISO8601 : (item) => item;
+
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
 
@@ -51,12 +53,12 @@ if (rcmail)
                             else
                                 element.order = 1;
 
-                            if (moment(cal.parseISO8601(element.end)) < now)
+                            if (moment(parse(element.end)) < now)
                                     continue;
 
                             if (element.allDay)
                             {
-                                element.end = moment(cal.parseISO8601(element.end)).startOf("day");
+                                element.end = moment(parse(element.end)).startOf("day");
                                 if (element.end.format("YYYY-MM-DD HH:mm:ss") == now.format("YYYY-MM-DD HH:mm:ss") && moment(element.start).startOf("day").format("YYYY-MM-DD HH:mm:ss") != element.end.format("YYYY-MM-DD HH:mm:ss"))
                                     continue;
                                 else

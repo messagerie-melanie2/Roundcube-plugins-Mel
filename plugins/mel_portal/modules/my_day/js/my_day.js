@@ -42,6 +42,16 @@ Main.Add(my_day); //Sera appelé au chargement du plugin "mel_portal".
 Update(my_day); //Sera appelé à chaque fois que l'on ouvrira la frame qui contient ce module.
 
 
+function my_day_generate_link(event)
+{
+	let link = "";
+
+	if (SearchResultCalendar && SearchResultCalendar.CreateOrOpen)
+		link = `SearchResultCalendar.CreateOrOpen('${JSON.stringify(event).replaceAll('"', '£¤£').replaceAll("'", "µ¤¤µ")}')`;
+
+	return link;
+}
+
 /**
  * Affiche les évènements.
  * @param {array} datas Données des évènements.
@@ -88,11 +98,11 @@ function setupMyDay(datas)
 		html += "<li>";
         html += "<div class=row style=margin-bottom:15px;margin-right:15px; >";
 		if (element.allDay)
-			html += "<div class=col-8><span class=element-title>" + rcmail.gettext("Journée entière") + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
+			html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title element-block">` + rcmail.gettext("Journée entière") + `</span><span class="element-desc element-block">` + element.title + `</span></a></div>`;
 		else
 		{
 			const style_date = set_style(element);
-        	html += "<div class=col-8><span class=element-title>" + style_date.start + " - " + style_date.end + "</span><br/><span class=element-desc>" + element.title +"</span></div>";
+        	html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title element-block">` + style_date.start + " - " + style_date.end + `</span><span class="element-desc element-block">` + element.title +"</span></a></div>";
 		}
 		// bool = element.attendees !== undefined && 
 		// element.attendees.length > 0 && 
@@ -174,7 +184,7 @@ function setup_tasks(datas)
 		date = moment(parseInt(element.created + "000"));
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 		if (date._isValid)
-        	html += '<div class=col-md-10><span class="element-title">' + element.title + '</span><br/><span class="element-desc">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("hh:mm") +"</span></div>";
+        	html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}')"><span class="element-title element-block">${element.title}</span><span class="element-desc element-block">Créée le ${date.format("DD/MM/YYYY")} à ${date.format("hh:mm")}</span></a></div>`;
         else
 			html += "<div class=col-md-10></div>";
 		html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
@@ -232,44 +242,6 @@ function add_task_to_completed(id)
 	 });
 	}
 }
-
-// function removeEvent(id, calendarId)
-// {
-// 	$.ajax({ // fonction permettant de faire de l'ajax
-// 	   type: "POST", // methode de transmission des données au fichier php
-//        url: rcmail.env.ev_remove_calendar_url, // url du fichier php
-//        data:{
-//            action:"remove",
-//            e:{
-//             id:id,
-//             calendar:calendarId
-//            },
-//            _remote:1,
-//            _unlock:0
-//        },
-// 	   success: function (data) {
-//             my_day();
-// 	   },
-// 	   error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-
-// 	   },
-// 	});
-// }
-
-// function dateNow(date){
-// 	let set = date; 
-// 	let getDate = set.getDate().toString();
-// 	if (getDate.length == 1){ //example if 1 change to 01
-// 	 getDate = "0"+getDate;
-// 	}
-// 	let getMonth = (set.getMonth()+1).toString();
-// 	if (getMonth.length == 1){
-// 	 getMonth = "0"+getMonth;
-// 	}
-// 	let getYear = set.getFullYear().toString();
-// 	let dateNow = getYear + "-" + getMonth + '-' + getDate+"T00:00:00";
-// 	return dateNow;
-//   }
 
 /**
  * Selectionne un onglet.

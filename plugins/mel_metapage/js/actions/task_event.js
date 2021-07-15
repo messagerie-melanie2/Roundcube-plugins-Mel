@@ -16,6 +16,7 @@ rcmail.addEventListener('responsebefore', function(props) {
 
 if (rcmail.env.task === "tasks")
 {
+    console.log("yolo");
     rcmail.addEventListener("pamella.editTask.after", (element) => {
         const event = rcmail.local_storage_get_item("task_id");
 
@@ -44,6 +45,19 @@ if (rcmail.env.task === "tasks")
 
         });
         
+    });
+
+    rcmail.addEventListener("plugin.data_ready", (r) => {
+        
+        let val = mel_metapage.Storage.get("task_to_open");
+
+        if (val !== null && val !== undefined)
+        {
+            mel_metapage.Storage.remove("task_to_open");
+            setTimeout(() => {
+                $(`#${val}-title`).parent().click();
+            }, 100);
+        }
     });
     // new Promise(async (i,e) => {
     //     let event = rcmail.local_storage_get_item("task_id");

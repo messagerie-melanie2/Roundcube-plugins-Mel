@@ -52,7 +52,18 @@ SearchResultCalendar.from_array = function (cals)
  */
 SearchResultCalendar.CreateOrOpen= function (json)
 {
-    event.preventDefault();
+
+    if (event !== undefined)
+        event.preventDefault();
+
+    if (parent != window)
+    {
+        workspaces.sync.PostToParent({
+            exec:`SearchResultCalendar.CreateOrOpen('${json}');`,
+            always:true
+        });
+        return;
+    }
 
     cal = JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
     // mm_create_calendar(this, cal);

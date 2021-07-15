@@ -1159,6 +1159,17 @@ a.button.icon.attach::before, button.btn.attach::before {
     content: none!important;
 }
 
+.mel-hover:hover
+{
+    box-shadow: 0 0 0 .2rem #484D7A69;
+    border-radius: 15px;
+}
+
+.mel-hover:hover:focus
+{
+    border-radius: initial;
+}
+
 .mel-focus:focus,
 .input-child-mel-focus input:focus,
 .a-child-mel-focus a:focus,
@@ -1457,4 +1468,9 @@ html #compose-contacts #annuaire-list .folder > .description{
 .mel-animated
 {
     transition: all 0.1s ease-in;
+}
+
+.element-block
+{
+    display:block;
 }

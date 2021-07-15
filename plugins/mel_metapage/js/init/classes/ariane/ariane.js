@@ -139,6 +139,8 @@
 
                 if (!epingle)
                     this.update(channel, false, true);
+
+                rcmail.triggerEvent("ariane.updated");
             } catch (error) {
                 
             }

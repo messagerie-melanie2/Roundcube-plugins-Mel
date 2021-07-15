@@ -1536,3 +1536,17 @@ function m_mp_NewTask()
 
     mel_metapage.Functions.call(func, true);
 }
+
+function open_task(id, config = {})
+{
+    if (event !== undefined)
+        event.preventDefault();
+
+    mel_metapage.Storage.set("task_to_open", id);
+    mel_metapage.Functions.change_frame("tasklist", true, false, config);
+
+    if ($("iframe.tasks-frame").length > 0)
+        $("iframe.tasks-frame")[0].contentWindow.rcmail.triggerEvent("plugin.data_ready");
+    else if ($(".tasks-frame").length > 0)
+        rcmail.triggerEvent("plugin.data_ready");
+}

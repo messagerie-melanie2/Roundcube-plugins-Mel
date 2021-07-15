@@ -201,3 +201,8 @@ html.layout-small .--col{
 {
     float:right;
 }
+
+.mel-portail-displayed-wsp-notif
+{
+    display: inline-block!important;
+}

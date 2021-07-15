@@ -1,4 +1,12 @@
 $(document).ready(function() {
+
+	parent.rcmail.set_busy(true, "loading");
+	$("#mel_nextcloud_frame").on("load", () => {
+		parent.rcmail.clear_messages();
+		parent.rcmail.set_busy(false);
+		$("#mel_nextcloud_frame").off("load");
+	});
+
 	$.ajax({ // fonction permettant de faire de l'ajax
 	   type: "POST", // methode de transmission des données au fichier php
 	   url: rcmail.env.nextcloud_url, // url du fichier php
@@ -14,10 +22,10 @@ $(document).ready(function() {
 			} else {
 			   window.document.getElementById('mel_nextcloud_frame').src = rcmail.env.nextcloud_gotourl;
 			}
-		   $("#wait_box").hide();
+		//    $("#wait_box").hide();
 	   },
 	   error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-		   $("#wait_box").hide();
+		//    $("#wait_box").hide();
 	   },
 	});
 });

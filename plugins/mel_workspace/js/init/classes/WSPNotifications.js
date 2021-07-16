@@ -11,13 +11,12 @@ class WSPNotification
                 e = $(e);
                 const id = e.parent().parent().parent()[0].id.replace("wsp-notifs-wsp-", "").replace("-epingle", "");
                 const value = func(item, id);
-                //console.log("update", id, value);
                 if (value === 0)
-                    e.parent().parent().css("display", "none");
+                    e.css("display", "none").parent().parent().css("display", "none");
                 else
                 {
                     e.html(value);
-                    e.parent().parent().css("display", "");
+                    e.css("display", "").parent().parent().css("display", "");
                 }
             });
             return this;

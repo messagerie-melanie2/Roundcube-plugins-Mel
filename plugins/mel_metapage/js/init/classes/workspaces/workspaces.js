@@ -147,6 +147,7 @@ if (parent === window)
         const datas = event.data;
         if (datas.exec === undefined)
             return;
+
         try {
             if (SynchroniseWorkspaces.im_who_have_lunched_this)
                 SynchroniseWorkspaces.im_who_have_lunched_this = false;

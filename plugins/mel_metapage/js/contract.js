@@ -56,11 +56,12 @@ SearchResultCalendar.CreateOrOpen= function (json)
     if (event !== undefined)
         event.preventDefault();
 
-    if (parent != window)
+    if (parent !== window)
     {
         workspaces.sync.PostToParent({
             exec:`SearchResultCalendar.CreateOrOpen('${json}');`,
-            always:true
+            always:true,
+            child:false
         });
         return;
     }

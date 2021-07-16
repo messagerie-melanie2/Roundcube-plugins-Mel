@@ -37,6 +37,45 @@ async function WSPReady()
         //console.log("h");
         window.ariane.addEventListener("update", UpdateAriane);
     }
+
+    if (rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
+    {
+        if (rcmail.env.current_workspace_page !== "home")
+        {
+            const val = wsp_contract(rcmail.env.current_workspace_page);
+            if (val === "ariane")
+                setTimeout(async () => {
+                    await wait(() => parent.rcmail.busy);
+                    $(`.wsp-ariane`).click();
+                }, 100);
+            else
+                click_on_menu(rcmail.env.current_workspace_page);
+                //ChangeToolbar(rcmail.env.current_workspace_page, $(`.wsp-${val}`));
+            delete rcmail.env.current_workspace_page;
+        }
+        else if (rcmail.env.current_workspace_page)
+            delete rcmail.env.current_workspace_page;
+
+    }
+    else if (rcmail.env.current_workspace_page)
+        delete rcmail.env.current_workspace_page;
+}
+
+function wsp_contract(_class)
+{
+    switch (_class) {
+        case "calendar":
+            return "agenda"
+        case "tasklist":
+            return "tasks";
+        case "params":
+            return "item-params";
+        case "rocket":
+            return "ariane";
+    
+        default:
+            break;
+    }
 }
 
 var UpdateAriane = (channel, store, unread) => {
@@ -56,6 +95,14 @@ var UpdateAriane = (channel, store, unread) => {
             }
         }
     }
+}
+
+function click_on_menu(page)
+{
+    setTimeout(async () => {
+        await wait(() => parent.rcmail.busy);
+        $(`.wsp-${wsp_contract(page)}`).click();
+    }, 100);
 }
 
 /**
@@ -268,7 +315,7 @@ function SetupTasks(datas, id, where = null)
         html += "<li>";
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
         if (date._isValid)
-            html += "<div class=col-md-10><span class=element-title>" + element.title + (element.created === undefined ? "" : "</span><br/><span class=element-desc>Créée le " + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )+"</span></div>";
+            html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}', {source:'${rcmail.env.current_workspace_tasklist_uid}'})"><span class="element-title element-block">${element.title} ${(element.created === undefined ? "" : '</span><span class="element-desc element-block">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )}</span></a></div>`;
         else
             html += "<div class=col-md-10></div>";
         html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'

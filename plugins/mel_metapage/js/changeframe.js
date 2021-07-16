@@ -388,6 +388,9 @@ async function ChangeToolbar(_class, event, otherDatas = null)
         const element = datas[index];
         parent.postMessage(element);
     }
+
+    const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid, _page:_class});
+    window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
 }
 
 async function ChangeFrame(_class, otherDatas = null)

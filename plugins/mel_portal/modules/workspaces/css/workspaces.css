@@ -206,3 +206,9 @@ html.layout-small .--col{
 {
     display: inline-block!important;
 }
+
+.wsp-notif-block .roundbadge
+{
+    top: 3px!important;
+    right: 3px!important;
+}

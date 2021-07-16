@@ -65,12 +65,57 @@ try {
         //     getUnread("apitech-1");
         //  });
 
-     })
-
+     });
 
 
 
 })();
+
+
+rcmail.addEventListener("ariane.updated", () => {
+    if ($(".wsp-notif-block .ariane").parent().first().data("added") !== "true")
+       $(".wsp-notif-block .ariane").parent().addClass("btn-mel-invisible btn-text btn btn-secondary mel-portail-displayed-wsp-notif mel-hover").data("added", "true")
+       .on("click", (e) => {
+           //console.log(e);
+           wsp_action_notif(e.currentTarget, "rocket");
+       });
+});
+
+async function wsp_action_notif(target, page)
+{
+
+    const key = "fromphp_";
+    if (page.includes(key))
+        page = page.replace(key, "");
+
+    const uid = $(target).parent()[0].id.replace("wsp-notifs-wsp-", "");
+    let config = {
+     _action:"workspace",
+     _uid:uid,
+     _page:page
+     };
+
+     //console.log("yolo", key, page, uid, config);
+
+     if (parent.$(`iframe.workspace-frame`).length > 0)
+     {
+         //delete config._action;
+         await $(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", $(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
+         $(`iframe.workspace-frame`).remove();
+         config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+         await mel_metapage.Functions.change_frame("wsp", true, true, config);
+         //$(`iframe.workspace-frame`)[0].src = mel_metapage.Functions.url("workspace", "workspace", config);
+     }
+     else if (parent.$(`.workspace-frame`).length > 0)
+     {
+         delete config._action;
+         parent.location.href = mel_metapage.Functions.url("workspace", "workspace", config).replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
+     }
+     else {
+         config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+         mel_metapage.Functions.change_frame("wsp", true, false, config);
+     }
+}
 
 function desk_epingle(id)
 {

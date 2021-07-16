@@ -1474,3 +1474,15 @@ html #compose-contacts #annuaire-list .folder > .description{
 {
     display:block;
 }
+
+.btn-mel-invisible.btn-text
+{
+    background-color: transparent !important;
+    color: #363A5B;
+    border-color: transparent !important;
+    border-radius: 15px!important;
+}
+
+.btn-mel-invisible.btn-text:hover{
+    color: #484D7A;
+}

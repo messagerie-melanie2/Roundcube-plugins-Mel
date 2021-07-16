@@ -264,6 +264,8 @@ class mel_workspace extends rcube_plugin
         if (self::is_in_workspace($this->currentWorkspace))
             $this->rc->output->set_env("wsp_is_in", "yes");
 
+        $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
+
         $this->rc->output->set_pagetitle("Espace de travail \"".$this->currentWorkspace->title."\"");
         $this->rc->output->send('mel_workspace.workspace');
     }

@@ -16,7 +16,6 @@ rcmail.addEventListener('responsebefore', function(props) {
 
 if (rcmail.env.task === "tasks")
 {
-    console.log("yolo");
     rcmail.addEventListener("pamella.editTask.after", (element) => {
         const event = rcmail.local_storage_get_item("task_id");
 

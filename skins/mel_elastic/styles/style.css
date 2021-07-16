@@ -1460,10 +1460,10 @@ html #compose-contacts #annuaire-list .folder > .description{
     z-index: 9999;
 }
 
-#files-compose-dialog
+/* #files-compose-dialog
 {
     display:none!important;
-}
+} */
 
 .mel-animated
 {

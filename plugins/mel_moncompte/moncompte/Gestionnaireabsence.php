@@ -39,7 +39,7 @@ class Gestionnaireabsence extends Moncompteobject {
 	*/
 	public static function load($plugin = null) {
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
@@ -83,7 +83,7 @@ class Gestionnaireabsence extends Moncompteobject {
 	 */
 	public static function absence_hebdomadaire($attrib) {
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
 		// Parcourir les absences
 		$hasAbsence = false;
 		$html = self::absence_template('%%template%%');
@@ -187,7 +187,7 @@ class Gestionnaireabsence extends Moncompteobject {
 		$message_externe = trim(rcube_utils::get_input_value('absence_message_externe', rcube_utils::INPUT_POST));
 
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.gestionnaireabsence');
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			// Chargement des informations supplémenaires nécessaires
@@ -265,7 +265,6 @@ class Gestionnaireabsence extends Moncompteobject {
 				}
 				$i++;
 			}
-
 			$user->outofoffices = $outofoffices;
 
 			// Enregistrement de l'utilisateur avec les nouvelles données

@@ -39,7 +39,7 @@ class Informationspersonnelles extends Moncompteobject {
 	 */
     public static function load($plugin = null) {
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.informationspersonnelles');
 		// Liste des attributs à charger
 		$attributes = [
 			'employee_number',
@@ -148,7 +148,7 @@ class Informationspersonnelles extends Moncompteobject {
 			'use_photo_intranet',
 		];
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.informationspersonnelles');
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			$user->load('update_personnal_info');

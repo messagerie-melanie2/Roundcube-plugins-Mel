@@ -356,12 +356,13 @@ abstract class driver_mel {
    * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
    * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
-   * @param string $username [Optionnel] DN de l'utilisateur a récupérer
-   * @param string $username [Optionnel] Email de l'utilisateur a récupérer
+   * @param string $dn [Optionnel] DN de l'utilisateur a récupérer
+   * @param string $email [Optionnel] Email de l'utilisateur a récupérer
+   * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
    * @return \LibMelanie\Api\Defaut\User
    */
-  abstract public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null);
+  abstract public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null, $itemName = null);
 
   /**
    * Retourne l'objet Group
@@ -370,10 +371,11 @@ abstract class driver_mel {
    * @param string $group_dn [Optionnel] DN du groupe a récupérer
    * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
+   * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
    * @return \LibMelanie\Api\Defaut\Group
    */
-  abstract public function getGroup($group_dn = null, $load = true, $fromCache = true);
+  abstract public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null);
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée

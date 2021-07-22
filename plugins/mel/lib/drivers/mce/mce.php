@@ -31,17 +31,18 @@ class mce_driver_mel extends driver_mel {
    * @param string $username [Optionnel] Identifiant de l'utilisateur a récupérer, sinon utilise l'utilisateur RC courant
    * @param boolean $load [Optionnel] L'utilisateur doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer l'utilisateur depuis le cache s'il existe ? Oui par défaut
-   * @param string $username [Optionnel] DN de l'utilisateur a récupérer
-   * @param string $username [Optionnel] Email de l'utilisateur a récupérer
+   * @param string $dn [Optionnel] DN de l'utilisateur a récupérer
+   * @param string $email [Optionnel] Email de l'utilisateur a récupérer
+   * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
    * @return \LibMelanie\Api\Mce\User
    */
-  public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null) {
+  public function &getUser($username = null, $load = true, $fromCache = true, $dn = null, $email = null, $itemName = null) {
     if (!isset($username) && !isset($dn) && !isset($email)) {
       $username = rcmail::get_instance()->user->get_username();
     }
     if (!$fromCache) {
-      $user = $this->user();
+      $user = $this->user([null, $itemName]);
       if (isset($username)) {   $user->uid = $username; }
       else if (isset($dn)) {    $user->dn = $dn; }
       else if (isset($email)) { $user->email = $email; }
@@ -53,24 +54,25 @@ class mce_driver_mel extends driver_mel {
     if (!isset(self::$_users)) {
       self::$_users = [];
     }
-    if (!isset(self::$_users[$username])) {
+    $keyCache = $username . (isset($itemName) ? $itemName : '');
+    if (!isset(self::$_users[$keyCache])) {
       $users = \mel::getCache('users');
-      if (isset($users) && isset($users[$username]) && $users[$username]->issetObjectMelanie()) {
-        self::$_users[$username] = $users[$username];
-        self::$_users[$username]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+      if (isset($users) && isset($users[$keyCache]) && $users[$keyCache]->issetObjectMelanie()) {
+        self::$_users[$keyCache] = $users[$keyCache];
+        self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
       }
       else {
-        self::$_users[$username] = $this->user();
-        self::$_users[$username]->uid = $username;
-        if ($load && !self::$_users[$username]->load()) {
-          self::$_users[$username] = null;
+        self::$_users[$keyCache] = $this->user([null, $itemName]);
+        self::$_users[$keyCache]->uid = $username;
+        if ($load && !self::$_users[$keyCache]->load()) {
+          self::$_users[$keyCache] = null;
         }
         else {
-          self::$_users[$username]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
+          self::$_users[$keyCache]->registerCache('mce_driver_mel', [$this, 'onUserChange']);
         }
       }
     }
-    return self::$_users[$username];
+    return self::$_users[$keyCache];
   }
 
   /**
@@ -87,10 +89,11 @@ class mce_driver_mel extends driver_mel {
    * @param string $group_dn [Optionnel] DN du groupe a récupérer
    * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
+   * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
    * @return \LibMelanie\Api\Mce\Group
    */
-  public function getGroup($group_dn = null, $load = true, $fromCache = true) {
+  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
     return null;
   }
   

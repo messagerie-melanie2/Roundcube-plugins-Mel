@@ -69,12 +69,13 @@ class mtes_driver_mel extends mce_driver_mel {
    * @param string $group_dn [Optionnel] DN du groupe a récupérer
    * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
+   * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
    * @return \LibMelanie\Api\Defaut\Group
    */
-  public function getGroup($group_dn = null, $load = true, $fromCache = true) {
+  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
     if (!$fromCache) {
-      $group = $this->group();
+      $group = $this->group([null, $itemName]);
       $group->dn = $group_dn;
       if ($load && !$group->load()) {
         $group = null;
@@ -84,14 +85,15 @@ class mtes_driver_mel extends mce_driver_mel {
     if (!isset(self::$_groups)) {
       self::$_groups = [];
     }
-    if (!isset(self::$_groups[$group_dn])) {
-      self::$_groups[$group_dn] = $this->group();
-      self::$_groups[$group_dn]->dn = $group_dn;
-      if ($load && !self::$_groups[$group_dn]->load()) {
-        self::$_groups[$group_dn] = null;
+    $keyCache = $group_dn . (isset($itemName) ? $itemName : '');
+    if (!isset(self::$_groups[$keyCache])) {
+      self::$_groups[$keyCache] = $this->group([null, $itemName]);
+      self::$_groups[$keyCache]->dn = $group_dn;
+      if ($load && !self::$_groups[$keyCache]->load()) {
+        self::$_groups[$keyCache] = null;
       }
     }
-    return self::$_groups[$group_dn];
+    return self::$_groups[$keyCache];
   }
   
   /**
@@ -256,9 +258,9 @@ class mtes_driver_mel extends mce_driver_mel {
     $dossier = str_replace('/', '^', $folder);
 
     if (isset($dossier)) {
-      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
-    } else {
-      $nom = $rep . '/' . $_user->uid;
+      $nom = $rep . '/' . $mbox . '^' . $dossier;
+    } else{
+      $nom = $rep . '/' . $mbox;
     }
 
     $fic = fopen($nom, 'w');

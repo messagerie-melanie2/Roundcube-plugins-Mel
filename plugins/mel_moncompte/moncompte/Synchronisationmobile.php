@@ -52,7 +52,7 @@ class Synchronisationmobile extends Moncompteobject {
 		if (isset($check_cgu_mobile) && $check_cgu_mobile == '1') {
 			$date = gmstrftime('%Y%m%d%H%M%S', time()) . 'Z';
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.synchronisationmobile');
 			// Liste des attributs à charger
 			$attributes = [
 				'acces_synchro_admin_profil',
@@ -98,7 +98,7 @@ class Synchronisationmobile extends Moncompteobject {
 	 */
 	public static function valideCGUmobile($attrib) {
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.synchronisationmobile');
 
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {

@@ -37,7 +37,7 @@ class Changepassword extends Moncompteobject {
 	*/
 	public static function load($plugin = null) {
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.changepassword');
 		// Chargement des informations supplémenaires nécessaires
 		$user->load(['is_agriculture', 'liens_import', 'has_bureautique']);
 		// Titre de la page

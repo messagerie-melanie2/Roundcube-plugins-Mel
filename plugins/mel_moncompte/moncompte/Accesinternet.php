@@ -37,7 +37,7 @@ class Accesinternet extends Moncompteobject {
 	 */
 	public static function load($plugin = null) {
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.accessinternet');
 		// Liste des attributs à charger
 		$attributes = [
 			'internet_access_admin',
@@ -71,7 +71,7 @@ class Accesinternet extends Moncompteobject {
 	public static function change() {
 		$acces_internet_enable = trim(rcube_utils::get_input_value('accesinternetenable', rcube_utils::INPUT_POST));
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.accessinternet');
 		// Liste des attributs à charger
 		$attributes = [
 			'internet_access_user',

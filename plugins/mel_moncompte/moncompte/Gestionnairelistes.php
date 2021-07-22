@@ -64,7 +64,7 @@ class Gestionnairelistes extends Moncompteobject {
 	public static function readUserListes($attrib) {
 		$select_listes = new html_select($attrib);
 		// Récupération de l'utilisateur
-		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+		$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 			$groups = $user->getGroups(['fullname','dn']);
@@ -148,10 +148,10 @@ class Gestionnairelistes extends Moncompteobject {
 
 		if (isset($dn_list)) {
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-				$group = driver_mel::gi()->getGroup($dn_list, false);
+				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load('owners', 'members_email', 'is_dynamic') 
 						&& $group->isOwner($user)) {
 					$list_emails = array_map('strtolower', $group->members_email);
@@ -178,16 +178,16 @@ class Gestionnairelistes extends Moncompteobject {
 
 		if (isset($dn_list)) {
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-				$group = driver_mel::gi()->getGroup($dn_list, false);
+				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
 						&& $group->isOwner($user)) {
 					if (!$group->is_dynamic) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
 						$list_members = is_array($group->members) ? $group->members : [];
-						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
+						if ($group->authentification(null, true)) {
 							$new_member = driver_mel::gi()->member();
 							$new_member->email = $new_smtp;
 							if ($new_member->load('uid')) {
@@ -230,17 +230,17 @@ class Gestionnairelistes extends Moncompteobject {
 
 		if (isset($dn_list)) {
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-				$group = driver_mel::gi()->getGroup($dn_list, false);
+				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
 						&& $group->isOwner($user)) {
 					if (!$group->is_dynamic) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
 						$list_members = is_array($group->members) ? $group->members : [];
 						if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, var_export($list_members, true));
-						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
+						if ($group->authentification(null, true)) {
 							$member_to_delete = driver_mel::gi()->member();
 							$member_to_delete->email = $address;
 							if ($member_to_delete->load('uid')) {
@@ -283,14 +283,14 @@ class Gestionnairelistes extends Moncompteobject {
 
 		if (isset($dn_list)) {
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-				$group = driver_mel::gi()->getGroup($dn_list, false);
+				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
 						&& $group->isOwner($user) 
 						&& !$group->is_dynamic 
-						&& $group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
+						&& $group->authentification(null, true)) {
 					$group->members = [];
 					$group->members_email = [];
 					if (!$group->save()) {
@@ -313,10 +313,10 @@ class Gestionnairelistes extends Moncompteobject {
 
 		if (isset($dn_list)) {
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-				$group = driver_mel::gi()->getGroup($dn_list, false);
+				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load('owners', 'fullname', 'members_email', 'is_dynamic') 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					$members = implode("\r\n", $group->members_email);
@@ -345,10 +345,10 @@ class Gestionnairelistes extends Moncompteobject {
 		
 		if (isset($dn_list)) {
 			// Récupération de l'utilisateur
-			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name());
+			$user = driver_mel::gi()->getUser(Moncompte::get_current_user_name(), true, true, null, null, 'webmail.moncompte.userlistes');
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
-				$group = driver_mel::gi()->getGroup($dn_list, false);
+				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
 				if ($group->load('owners', 'fullname', 'members_email', 'is_dynamic') 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					if ($filepath = $_FILES['_listes_csv']['tmp_name']) {
@@ -384,7 +384,7 @@ class Gestionnairelistes extends Moncompteobject {
 						sort($list_emails);
 						$group->members_email = $list_emails;
 						$group->members = $list_members;
-						if ($group->authentification(rcmail::get_instance()->config->get('liste_pwd'), true, rcmail::get_instance()->config->get('liste_admin'))) {
+						if ($group->authentification(null, true)) {
 							if (!$group->save()) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::uploadCSVMembers() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::uploadCSVMembers() ldap_modify DN : " . $dn_list);

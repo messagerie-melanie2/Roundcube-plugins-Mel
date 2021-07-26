@@ -219,4 +219,17 @@ class mce_driver_mel extends driver_mel {
     }
     return $args;
   }
+
+  /**
+   * Méthode de création/modification d'un groupe associé à un workspace
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * @param array $members Liste des membres du groupe
+   * @param boolean $mdrive Est-ce que l'accès au stockage est activé ou non
+   * 
+   * @return boolean
+   */
+  public function workspace_group($workspace_id, $members = [], $mdrive = true) {
+    return false;
+  }
 }

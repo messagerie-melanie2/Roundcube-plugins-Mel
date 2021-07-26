@@ -63,6 +63,23 @@ class mtes_driver_mel extends mce_driver_mel {
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mel\\";
 
   /**
+   * Liste des valeurs pour un groupe de workspace
+   */
+  const WS_GROUP = [
+    'rdn'               => '%%workspace%%',
+    'dn'                => 'mineqRDN=%%workspace%%,ou=Groupes,ou=BNUM,ou=applications,ou=ressources,dc=equipement,dc=gouv,dc=fr',
+    'service'           => 'BNUM/Groupes',
+    'email'             => 'edt.%%workspace%%@%%domain%%',
+    'name'              => 'Liste edt %%workspace%%',
+    'lastname'          => '%%workspace%%',
+    'fullname'          => 'Liste edt %%workspace%% - BNUM/Groupes',
+    'server_routage'    => 'edt.%%workspace%%%%%domain%%@tous.melanie2.i2',
+    'restrictions'      => '00+ LDAP:(&(mail=edt.%%workspace%%@%%domain%%)(mineqMelMembres=%s))',
+    'liens_import'      => 'BNUM.Lien: %%workspace%%',
+    'gestion'           => 'AUTO/BNUM',
+  ];
+
+  /**
    * Retourne l'objet Group
    * Permet de retourner l'instance Group en fonction du driver
    * 
@@ -430,5 +447,51 @@ class mtes_driver_mel extends mce_driver_mel {
    */
   public function renderList($val, $col) {
     return html::a(['target' => '_blank', 'href' => rcmail::get_instance()->url(['task' => 'addressbook', 'action' => 'show', '_source' => 'amande', '_cid' => base64_encode($val['dn'])])], $val['mail']);
+  }
+
+  /**
+   * Méthode de création/modification d'un groupe associé à un workspace
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * @param array $members Liste des membres du groupe
+   * @param boolean $mdrive Est-ce que l'accès au stockage est activé ou non
+   * 
+   * @return boolean
+   */
+  public function workspace_group($workspace_id, $members = [], $mdrive = true) {
+    $group = $this->group([null, 'webmail.workspace']);
+
+    // Calculer le domain
+    $domain = substr(strstr($this->getUser()->email, '@'), 1);
+
+    // On test si le groupe existe déjà
+    $group->dn = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['dn']);
+    if (!$group->load()) {
+      // Ajout des attributs
+      foreach (self::WS_GROUP as $key => $value) {
+        $group->$key = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], $value);
+      }
+      // Attributs particuliers
+      $group->email_list = [$group->email];
+      $group->unique_identifier = $this->uuidv4();
+    }
+
+    // Gestion du MDrive
+    $group->mdrive = $mdrive;
+    
+    // Gérer les membres
+    $membersList = []; $membersEmail = [];
+    foreach ($members as $member) {
+      $user = $this->getUser($member);
+      if (isset($user)) {
+        $membersList[] = $user;
+      }
+      $membersEmail[] = $member;
+    }
+    $group->members_email = $membersEmail;
+    $group->members = $membersList;
+
+    // Sauvegarde
+    return $group->save();
   }
 }

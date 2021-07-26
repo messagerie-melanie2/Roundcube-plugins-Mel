@@ -78,6 +78,8 @@ class Workspaces extends Module
 
     function create_block($workspace, $_it, $count)
     {
+        $username = driver_mel::gi()->getUser($workspace->creator)->name;
+
         $ws = $this->rc->plugins->get_plugin('mel_workspace');
         $html = $this->rc->output->parse("mel_portal.dwp_block", false, false);
         $is_epingle = self::is_epingle($workspace);
@@ -126,10 +128,10 @@ class Workspaces extends Module
             $html = str_replace("<workspace-users/>", "", $html);
 
         if ($workspace->created === $workspace->modified)
-            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$username, $html);
         else
         {
-            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jours : ".$workspace->modified, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$username."<br/>Mise à jour : ".date("d/m/Y", strtotime($workspace->modified)), $html);
         }
 
         $html = str_replace("<workspace-task-danger/>", "<br/>", $html);

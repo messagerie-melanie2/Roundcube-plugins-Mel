@@ -48,6 +48,11 @@ class mel_workspace extends rcube_plugin
             $this->portal();
     }
 
+    /**
+     * Enregistre les différentes actions, configs et boutons.
+     *
+     * @return void
+     */
     function setup()
     {
         $this->rc = rcmail::get_instance();
@@ -78,6 +83,11 @@ class mel_workspace extends rcube_plugin
         ), "taskbar");
     }
 
+    /**
+     * Initialise le plugin lorsque l'on est dans la tâche "workspace"
+     *
+     * @return void
+     */
     function portal()
     {
         $this->include_css();
@@ -104,6 +114,11 @@ class mel_workspace extends rcube_plugin
         //add_users
     }
 
+    /**
+     * Charge les espaces de travail de l'utilisateur
+     *
+     * @return void
+     */
     public function load_workspaces()
     {
         $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
@@ -116,6 +131,13 @@ class mel_workspace extends rcube_plugin
         // driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", null);
     }
 
+    /**
+     * Trie les espaces de travail en fonction de leurs id.
+     *
+     * @param Workspace $a
+     * @param Workspace $b
+     * @return int
+     */
     public function sort_workspaces($a, $b)
     {
         if ($a->id == $b->id) {
@@ -124,6 +146,13 @@ class mel_workspace extends rcube_plugin
         return ($a->id < $b->id) ? -1 : 1;
     }
 
+    /**
+     * Trie les utilisateurs
+     *
+     * @param User $a
+     * @param User $b
+     * @return int
+     */
     public function array_sort_users($a, $b)
     {
         include_once 'lib/mel_utils.php';
@@ -429,6 +458,7 @@ class mel_workspace extends rcube_plugin
     const TASKS = "tasks";
     const EMAIL = "unknown1";
     const CLOUD = "doc"; 
+    const GROUP = "annuaire";
     public function get_worskpace_services($workspace, $services_to_remove = false)
     {
         $datas = [
@@ -436,7 +466,7 @@ class mel_workspace extends rcube_plugin
             self::AGENDA => $this->get_object($workspace, self::AGENDA) === true,
             self::TASKS => $this->get_object($workspace, self::TASKS) !== null,
             self::EMAIL => false,
-            self::CLOUD => false,
+            self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
         ];
         if ($services_to_remove)
         {
@@ -700,7 +730,7 @@ class mel_workspace extends rcube_plugin
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
         foreach ($services as $key => $value) {
-            if ($key === self::EMAIL || $key === self::CLOUD || $key === self::AGENDA)
+            if ($key === self::EMAIL || $key === self::AGENDA || ($key === self::CLOUD && $value))
                 continue;
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
@@ -715,7 +745,7 @@ class mel_workspace extends rcube_plugin
                 $span = $icons["plus"];    
             }
             $func = "rcmail.command('workspace.update_app','$key')";
-            if ($info === null || $key === self::CLOUD)
+            if ($info === null)
                 $class.= " disabled";
             $html.= "<button onclick=$func style=float:right; class=\"$class\" ><span class=$span></span></button>";
             $html .= "</td></tr>";
@@ -743,7 +773,7 @@ class mel_workspace extends rcube_plugin
         $current_user = driver_mel::gi()->getUser();
         foreach ($share as $key => $value) {
             $html .= "<tr>";
-            $html .= "<td>".$value->user."</td>";
+            $html .= "<td>". driver_mel::gi()->getUser($value->user)->name."</td>";
             $html .= "<td>".$this->setup_params_value($icons_rights, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
                 $html += '<td></td>';
@@ -911,6 +941,20 @@ class mel_workspace extends rcube_plugin
         $services = $this->create_tasklist($workspace,$services, $users, $update_wsp);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
         $services = $this->create_channel($workspace, $services, $users);
+        $services = $this->create_service_group($workspace, $services);
+
+        return $services;
+    }
+
+    function create_service_group(&$workspace, $services)
+    {
+        $search = array_search(self::CLOUD, $services);
+        $create_nc = $search !== false;
+
+        $this->create_group($workspace, $create_nc);
+
+        if (!$create_nc)
+            unset($services[$search]);
 
         return $services;
     }
@@ -949,7 +993,10 @@ class mel_workspace extends rcube_plugin
             }
         }
         $key = array_search($tasks, $services);
-        unset($services[$key]);
+
+        if ($key !== false)
+            unset($services[$key]);
+
         return $services;
     }
 
@@ -1002,7 +1049,10 @@ class mel_workspace extends rcube_plugin
         }
         
         $key = array_search($service, $services);
-        unset($services[$key]);
+
+        if ($key !== false)
+            unset($services[$key]);
+
         return $services;
     }
 
@@ -1164,6 +1214,8 @@ class mel_workspace extends rcube_plugin
 
     function create_block($workspace, $epingle = false)
     {
+        $username = driver_mel::gi()->getUser($workspace->creator)->name;
+
         $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
         $is_epingle = self::is_epingle($workspace);
         $color = $this->get_setting($workspace, "color");
@@ -1218,10 +1270,10 @@ class mel_workspace extends rcube_plugin
             $html = str_replace("<workspace-users/>", "", $html);
 
         if ($workspace->created === $workspace->modified)
-            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jour : ".$workspace->created, $html);// $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$username."<br/>Mise à jour : ".date("d/m/Y", strtotime($workspace->created)), $html);// $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator, $html);
         else
         {
-            $html = str_replace("<workspace-misc/>", "Crée par ".$workspace->creator."<br/>Mise à jour : ".$workspace->modified, $html);
+            $html = str_replace("<workspace-misc/>", "Crée par ".$username."<br/>Mise à jour : ".date("d/m/Y", strtotime($workspace->modified)), $html);
         }
 
         $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
@@ -1982,5 +2034,83 @@ class mel_workspace extends rcube_plugin
         }
 
         return $html;
+    }
+
+    // public function create_nc($workspace)
+    // {
+    //     $datas = null;
+
+    //     return $datas;
+    // }
+
+    public function check_if_workspace_have_nc($workspace)
+    {
+        return $this->get_object($workspace, self::CLOUD);
+    }
+
+    // public function delete_nc(&$workspace)
+    // {
+
+    // }
+
+    public function create_stockage_service(&$workspace)
+    {
+        if (!$this->check_if_workspace_have_nc($workspace))
+        {
+            $created = create_nc($workspace);
+
+            if ($created["success"])
+                $this->save_object($workspace, self::CLOUD, $created["datas_to_save"]);
+    
+            return $created["datas_to_save"];
+        }
+    }
+
+    public function have_group($workspace)
+    {
+        return $this->get_object($workspace, self::GROUP);
+    }
+
+    public function create_group(&$workspace, $activate_drive)
+    {
+        $return = ["success" => "true", "why" => "everything is okay", "error_num" => 0];
+
+        $have_group = $this->have_group($workspace) ?? false;
+        $have_nc = $this->check_if_workspace_have_nc($workspace) ?? false;
+
+        if (!$have_group || $have_nc !== $activate_drive)
+        {
+            $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $activate_drive);
+            $this->save_object($workspace, self::GROUP, $result);
+            $this->save_object($workspace, self::CLOUD, $activate_drive);
+
+            if (!$result)
+            {
+                $result["success"] = false;
+                $result["why"] = "error";
+                $result["error_num"] = 1;
+            }
+        }
+        else
+        {
+            $result["success"] = false;
+            $result["why"] = "already exist";
+            $result["error_num"] = 2;
+        }
+
+        return $return;
+
+    }
+
+    public function get_mails_from_workspace($workspace)
+    {
+        $mails = [];
+        $shares = $workspace->shares;
+
+        foreach ($shares as $key => $value) {
+            $mails[] = driver_mel::gi()->getUser($key)->email;
+        }
+
+        return $mails;
     }
 }

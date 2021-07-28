@@ -203,6 +203,8 @@ class WebDAVAdapter extends AbstractAdapter
             '{DAV:}getcontentlength',
             '{DAV:}getcontenttype',
             '{DAV:}getlastmodified',
+            '{http://owncloud.org/ns}fileid',
+            '{http://owncloud.org/ns}owner-display-name',
         ], 1);
 
         array_shift($response);
@@ -255,18 +257,28 @@ class WebDAVAdapter extends AbstractAdapter
      */
     protected function normalizeObject(array $object, $path)
     {
+        //dossier
         if (! isset($object['{DAV:}getcontentlength'])) {
-            return ['type' => 'dir', 'path' => trim($path, '/')];
+            $result = ['type' => 'dir', 'path' => trim($path, '/')];
+
+        }
+        //fichier
+        else {
+            $result = Util::map($object, static::$resultMap);
+            $result['type'] = 'file';
+            $result['path'] = trim($path, '/');
+
+            if (isset($object['{http://owncloud.org/ns}owner-display-name']))
+                $result["createdBy"] = $object['{http://owncloud.org/ns}owner-display-name'];
         }
 
-        $result = Util::map($object, static::$resultMap);
-
         if (isset($object['{DAV:}getlastmodified'])) {
+            $result["modifiedAt"] = $object['{DAV:}getlastmodified'];
             $result['timestamp'] = strtotime($object['{DAV:}getlastmodified']);
         }
 
-        $result['type'] = 'file';
-        $result['path'] = trim($path, '/');
+        if (isset($object['{http://owncloud.org/ns}fileid']))
+            $result["id"] = $object['{http://owncloud.org/ns}fileid'];
 
         return $result;
     }

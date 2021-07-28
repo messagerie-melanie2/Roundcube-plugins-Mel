@@ -50,6 +50,41 @@ Nextcloud.prototype.getAllDocumentsFromFolder = async function(folder = null, ge
   });
 }
 
+Nextcloud.prototype.GetFile = function(path)
+{
+  const href = Nextcloud.url() + '/remote.php/dav/files/'+this.user+'/'+path;
+
+  return fetch(href, {withCredentials: true,
+    method: 'PROPFIND', 
+    credentials: "same-origin",
+    headers: {
+        'OCS-APIRequest': 'true',
+        // Authorization:this.auth
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    body: 
+        '<?xml version="1.0"?><d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns" xmlns:nc="http://nextcloud.org/ns"><d:prop><d:getlastmodified /><d:getetag /><d:getcontenttype /><d:resourcetype /><oc:fileid /><oc:permissions /><oc:size /><d:getcontentlength /><nc:has-preview /><oc:favorite /><oc:comments-unread /><oc:owner-display-name /><oc:share-types /></d:prop></d:propfind>'
+    
+    }).then(function(response) {
+      //     console.log(response);
+         return response.text();
+       })
+      .then(function(text) {
+        //console.log('Request successful');
+        //let parser = new DOMParser();
+        let xmlDoc = $.parseXML(text);//parser.parseFromString(text,"text/xml");
+        //console.log(xmlDoc);
+        //window.doc = xmlDoc;
+        return new Nextcloud_Response(xmlDoc, Nextcloud_File, false);
+        //let all = xmlDoc.getElementsByTagName("d:response");
+    
+      })
+      .catch(function(error) {
+        console.error('Request failed', error)
+        return new Promise(() => {});
+      });
+}
+
 /**
  * @async
  * Créer un document dans un dossier.

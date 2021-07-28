@@ -1,4 +1,5 @@
 $(document).ready(async () => {
+    initCloud();
     WSPReady();
 });
 
@@ -186,85 +187,6 @@ function UpdateCalendar()
  */
 function setup_calendar(datas, querry, _date = moment())
 {
-	// const classes = {
-	// 	organizer:"icofont-royal royal",
-	// 	tick:"icofont-check lightgreen",
-	// 	waiting:"icofont-hour-glass clear",
-	// 	declined:"icofont-close danger"
-	// }
-	// const set_style = (event) => {
-	// 	const now = {
-	// 		now:_date,
-	// 		start:moment(_date).startOf('day'),
-	// 		end:moment(_date).endOf('day')
-	// 	}
-	// 	const date = {
-	// 		start:moment(event.start),
-	// 		end:moment(event.end)
-	// 	}
-	// 	if (date.start < now.start || date.end > now.end)
-	// 		return {
-	// 			start:date.start.format("DD/MM/YYYY HH:mm"),
-	// 			end:date.end.format("DD/MM/YYYY HH:mm"),
-	// 		}
-	// 	else
-	// 		return {
-	// 			start:date.start.format("HH:mm"),
-	// 			end:date.end.format("HH:mm"),
-	// 		}
-	// };
-	// let html = ''
-	// // datas.sort(function(a,b){
-	// // 	return moment(a.start) - moment(b.start);
-	// // });
-	// let style;
-	// let bool = false;
-	// let icon;
-    // for (let index = 0; index < datas.length; index++) {
-    //     const element = datas[index];
-    //     html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-	// 	if (element.allDay)
-	// 		html += "<div class=col-md-8>" + rcmail.gettext("Journée entière") + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
-	// 	else
-	// 	{
-	// 		const style_date = set_style(element);
-    //     	html += "<div class=col-md-8>" + style_date.start + " - " + style_date.end + "<br/><span style=font-size:smaller>" + element.title +"</span></div>";
-	// 	}
-	// 	// bool = element.attendees !== undefined && 
-	// 	// element.attendees.length > 0 && 
-	// 	// Enumerable.from(element.attendees).any(x =>  rcmail.env.mel_metapage_user_emails.includes(x.email));
-	// 	// if (bool)
-	// 	// {
-	// 	// 	icon = null;
-	// 	// 	for (let it = 0; it < rcmail.env.mel_metapage_user_emails.length; it++) {
-	// 	// 		const mail = rcmail.env.mel_metapage_user_emails[it];
-	// 	// 		for (let j = 0; j < element.attendees.length; j++) {
-	// 	// 			const attendee = element.attendees[j];
-	// 	// 			if (attendee.email == mail)
-	// 	// 			{
-	// 	// 				if (attendee.role === "ORGANIZER")
-	// 	// 					icon = classes.organizer;
-	// 	// 				else if (attendee.status.toUpperCase() === 'CONFIRMED')
-	// 	// 					icon = classes.tick;
-	// 	// 				else if (attendee.status.toUpperCase() === 'DECLINED')
-	// 	// 					icon = classes.declined;
-	// 	// 				else 
-	// 	// 					icon = classes.waiting;
-	// 	// 				break;
-	// 	// 			}
-	// 	// 		}
-	// 	// 		if (icon !== null)
-	// 	// 			break;
-	// 	// 	}
-	// 	// }
-    //     html += '<div class=col-md-2><a ' + (bool ? "" : 'style="display:none;') + ' class="roundbadge large ' + (icon !== null ? icon : "") + '"></a></div>';
-	// 	if (element.location.includes("http://") || element.location.includes("https://") || (element.vurl !== null && vurl !== ""))
-	// 		style = "";
-	// 	else
-	// 		style = "display:none;";
-	// 	html += '<div class=col-md-2><a target="_blank" style="'+style+'" href="'+element.location+'" class="roundbadge link large dark icofont-network"></a></div>';
-    //     html += "</div>";
-    // }
     let html = html_helper.Calendars({
         datas:datas,
         _date:_date,
@@ -324,10 +246,6 @@ function SetupTasks(datas, id, where = null)
     }
     html += "</ul>";
 	querry.html(html);
-    /*console.log("SetupTasks()", 
-    $("#nb-" + id),
-    $("#nb-" + id).find(".nb"),
-    datas.length);*/
     $("#nb-" + id).find(".nb").html(datas.length);
 
 }
@@ -386,14 +304,6 @@ function create_calendar(id, e)
     }
     rcmail.local_storage_set_item("tmp_calendar_event", event);
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
-    // m_mp_CreateOrOpenFrame(`calendar`, 
-    // () => {
-    //     m_mp_CreateEvent();
-    //     m_mp_CreateEvent(() => {
-    //         m_mp_set_storage("calendar_category", "ws#" + id, false);
-    //     })
-    // }
-    // , m_mp_CreateEvent_inpage)
 }
 
 function create_tasks(id, e)
@@ -402,23 +312,6 @@ function create_tasks(id, e)
     m_mp_set_storage('task_id', id);
 
     return mel_metapage.Functions.change_frame("tasklist", true, false, rcmail.env.current_workspace_tasklist_uid !== undefined && rcmail.env.current_workspace_tasklist_uid !== null ? {source:rcmail.env.current_workspace_tasklist_uid} : null);
-
-    // m_mp_CreateOrOpenFrame('tasklist', () => {
-    //     m_mp_set_storage('task_create');
-    //     m_mp_set_storage('task_id', id);
-    // }
-    // , () => {
-    //     //m_mp_action_from_storage('task_create', m_mp_OpenTask);
-    //     let func = () => {
-
-    //         if (rcmail._events["pamella.tasks.afterinit"] !== undefined)
-    //             rcmail.triggerEvent("pamella.tasks.afterinit", undefined);
-
-    //         // if (rcmail._events["pamella.editTask.after"] !== undefined)
-    //         //     rcmail.triggerEvent("pamella.editTask.after", undefined);
-    //     };
-    //     mel_metapage.Functions.call(func, true);
-    // })
 }
 
 function SetCalendarDate(date = null)
@@ -536,4 +429,23 @@ function UpdateFrameAriane()
         arrow.removeClass(down).addClass(right).parent().attr("title", rcmail.gettext("open_ariane", "mel_workspace"));
         $(".unreads-ariane").attr("aria-expanded", "false").find("iframe").css("display", "none").parent().css("display", "none");;
     }
+}
+
+async function initCloud()
+{
+    const folder = "";
+
+    let spinner = $("#spinner-grow-center");
+    let frame = $("#cloud-frame");
+
+    rcmail.env.wsp_roundrive_show = new RoundriveShow(folder, frame, {
+        afterInit:() => {
+            spinner.remove();
+            frame.css("display", "");
+        },
+        classes:{
+            folder:"wsp-rd-row",
+            file:"wsp-rd-row last"
+        }
+    });
 }

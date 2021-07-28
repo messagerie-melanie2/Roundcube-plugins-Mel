@@ -735,3 +735,34 @@ body.task-workspace .wsp-toolbar v_separate{
     border-color: #647CCB;
     margin: 15px 0;
 }
+
+.wsp-rd-row {
+    border:none;
+    border-radius: 0;
+    border-bottom-style: solid!important;
+    border-bottom-width: thin!important;
+    border-color: #C4C4C4!important;
+    margin-bottom: 15px;
+}
+
+.wsp-rd-row.last,
+.wsp-rd-row.open{
+    border-bottom: none!important;
+}
+
+.wsp-rd-row.open+.open
+{
+    border-bottom-style: solid!important;
+    border-bottom-width: thin!important;
+    border-color: #C4C4C4!important;
+}
+
+.wsp-rd-row .col-arrow{
+    text-align: right;
+}
+
+.child-for {
+	border-left-style: dashed;
+	padding-left: 25px;
+	margin-left: 15px;
+}

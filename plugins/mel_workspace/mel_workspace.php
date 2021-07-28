@@ -499,6 +499,7 @@ class mel_workspace extends rcube_plugin
         $html_return = "";
 
         try {
+            //Agenda ou tâches
             if ($services[self::AGENDA] || $services[self::TASKS])
             {
                 $col = [
@@ -579,6 +580,7 @@ class mel_workspace extends rcube_plugin
                 );
             }
     
+            //Email ou discussion
             if ($services[self::EMAIL] || $services[self::CHANNEL])
             {
                 if ($is_in_wsp)
@@ -649,7 +651,63 @@ class mel_workspace extends rcube_plugin
         
                     $html_return.= html::tag("h2", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
                 }
-        }
+            }
+
+            //Mes documents
+            if ($services[self::CLOUD])
+            {
+                $header_component = [];
+
+                if ($services[self::CLOUD])
+                    $header_component[] = html::div(["id" => "ressources-cloud", "class" => "col-6 tab-ressources mel-tab mel-tabheader ¤¤¤"], "Mes documents");
+
+                $tmp = "";
+                $count = count($header_component);
+
+                for ($i=0; $i < $count; ++$i) { 
+                    if ($i === 0)
+                        $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
+                    else
+                        $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);
+                }
+
+                $header_component = $tmp;
+
+                $header = 
+                html::div(["class" => "row", "style"=> "padding-bottom:15px"], 
+                    $header_component
+                );
+                
+                $body_component = [];
+
+                if ($services[self::CLOUD]){
+                    $body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤"],
+                    //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
+                    html::tag('center', ["id" => "spinner-grow-center"],
+                    html::tag('span', ["class" => "spinner-grow"], html::tag('p', ["class" => "sr-only"], "Chargement des documents..."))).    
+                    html::tag("div", 
+                        [ "id" => "cloud-frame", "style" => "overflow:auto;width:100%;max-height:500px;display:none;"]
+                        )
+                    );
+                }
+
+                $tmp = "";
+                $count = count($body_component);
+
+                for ($i=0; $i < $count; ++$i) { 
+                    if ($i === 0)
+                        $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
+                    else
+                        $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);
+                }
+
+                $body_component = $tmp;
+                $body = html::div(["class" => ""],
+                    $body_component
+                );
+
+                $html_return.= html::tag("h2", [], "Mes ressources").$header.html::div(["class" => "wsp-block wsp-left"], $body);
+            }
     
     
             $this->rc->output->set_env("current_workspace_constantes", [
@@ -826,6 +884,7 @@ class mel_workspace extends rcube_plugin
             $this->include_script('js/index.js');
         if ($this->rc->action === "workspace")
         {
+            $this->include_script('js/init/classes/RoundriveShow.js');
             $this->include_script('js/workspace.js');
             $this->include_script('js/params.js');
         }

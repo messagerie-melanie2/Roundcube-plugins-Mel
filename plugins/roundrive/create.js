@@ -128,7 +128,6 @@ RoundriveCreate.prototype.create_document = function()
             },
             (datas) => {
                 datas = JSON.parse(datas);
-                //console.log("datas", datas);
                 
                 if (datas.success)
                 {
@@ -207,6 +206,8 @@ RoundriveCreate.expand_folder = function(event)
         else
         {
             elements.chevron.removeClass(chevron.right).addClass(chevron.loading).addClass("mel-loading");
+
+            console.log("path", elements.path);
 
             returns = mel_metapage.Functions.get(
                 mel_metapage.Functions.url("roundrive", "folder_list_items"),

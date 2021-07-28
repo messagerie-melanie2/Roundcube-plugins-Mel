@@ -1173,6 +1173,16 @@ class roundrive_files_engine
         exit;
     }
 
+    protected function action_folder_list_all_items()
+    {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_GET);
+        $folder = str_replace($this->plugin->gettext('files'), '/', $folder);
+        $folder = $this->encoderawpath($folder);
+        $files = $this->filesystem->listContents($folder, false);
+        echo json_encode($files);
+        exit;
+    }
+
     protected function action_create_file()
     {
         $doc = rcube_utils::get_input_value('_type', rcube_utils::INPUT_POST);

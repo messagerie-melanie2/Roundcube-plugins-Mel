@@ -1006,6 +1006,16 @@ td.mel-fit-content{
     color: white;
 }
 
+.mel-button.btn-danger{
+    background-color: #fc945a;
+    border-color: #fc945a;
+}
+
+.mel-button.btn-success{
+    background-color: #03a889;
+    border-color: #03a889;
+}
+
 .mel-button:hover
 {
     background-color: #484D7A;
@@ -1020,6 +1030,11 @@ td.mel-fit-content{
 .mel-button.button-white:hover
 {
     color:white;
+}
+
+.mel-button.no-button-margin
+{
+    margin-top:0;
 }
 
 .square_div > .contents

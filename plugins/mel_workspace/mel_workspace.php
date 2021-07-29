@@ -465,7 +465,7 @@ class mel_workspace extends rcube_plugin
             self::CHANNEL => $this->get_object($workspace, self::CHANNEL) !== null,
             self::AGENDA => $this->get_object($workspace, self::AGENDA) === true,
             self::TASKS => $this->get_object($workspace, self::TASKS) !== null,
-            self::EMAIL => false,
+            self::EMAIL => false,//$this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
         ];
         if ($services_to_remove)
@@ -595,9 +595,9 @@ class mel_workspace extends rcube_plugin
         
                     $header_component = [];
                     if ($services[self::EMAIL])
-                        $header_component[] = html::div(["id" => "unreads-emails", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
+                        $header_component[] = html::div(["id" => "unreads-emails", "class" => "tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
                     if ($services[self::CHANNEL])
-                        $header_component[] = html::div(["id" => "unreads-ariane", "class" => "col-6 tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
+                        $header_component[] = html::div(["id" => "unreads-ariane", "class" => "tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
                     
                     $tmp = "";
                     $count = count($header_component);
@@ -754,13 +754,13 @@ class mel_workspace extends rcube_plugin
         $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
         $html = str_replace("<applications/>", $this->setup_params_apps($this->currentWorkspace), $html);
         if ($user_rights === Share::RIGHT_OWNER)
-            $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
+            $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
         else
-            $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
+            $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
         if (!$this->currentWorkspace->isarchived) //<button class="btn btn-danger" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command('workspace.archive', '<workspace-uid/>')">Archiver</button>
-            $html = str_replace("<button-archive/>", '<button class="btn btn-danger" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>', $html);
+            $html = str_replace("<button-archive/>", '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>', $html);
         else
-            $html = str_replace("<button-archive/>", '<button class="btn btn-success" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>', $html);
+            $html = str_replace("<button-archive/>", '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>', $html);
         return $html;
     }
 
@@ -795,11 +795,11 @@ class mel_workspace extends rcube_plugin
             $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
             if ($value)
             {
-                $class = "btn btn-danger";
+                $class = "btn btn-danger mel-button no-button-margin";
                 $span = $icons["minus"];               
             }
             else {
-                $class = "btn btn-success";
+                $class = "btn btn-success mel-button no-button-margin";
                 $span = $icons["plus"];    
             }
             $func = "rcmail.command('workspace.update_app','$key')";
@@ -836,7 +836,7 @@ class mel_workspace extends rcube_plugin
             if ($value->user === $current_user)
                 $html += '<td></td>';
             else
-                $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger"><span class='.$icon_delete.'></span></button></td>';
+                $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger mel-button no-button-margin"><span class='.$icon_delete.'></span></button></td>';
             $html .= "</tr>";
         }
         $html .= "</table>";
@@ -852,7 +852,7 @@ class mel_workspace extends rcube_plugin
             $classes[$key] = $key;
         }
         $classes = str_replace('"', "¤¤¤", json_encode($classes));
-        return '<button style="float:right"  type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
+        return '<button style="float:right"  type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel mel-button no-button-margin  btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
         // $html = '<select class=" pretty-select" >';
         // foreach ($icons as $key => $value) {
         //     $html .= '<option class=icofont-home value="'.$key.'" '.($key === $rights ? "selected" : "")." ></option>";
@@ -1539,6 +1539,12 @@ class mel_workspace extends rcube_plugin
             $workspace = self::get_workspace($uid);
             if (self::is_admin($workspace))
             {
+                if (self::nb_admin($workspace) === 1 && $new_right === "w")
+                {
+                    echo "you are the alone";
+                    exit;
+                }
+
                 $workspace->shares[$user]->rights = $new_right;
                 $workspace->save();
                 $this->get_ariane()->update_owner($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);

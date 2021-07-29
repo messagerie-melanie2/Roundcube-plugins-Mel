@@ -231,6 +231,14 @@
                                 MEL_ELASTIC_UI.setValue((value === "o" ? "w" : "o"), $(e));
                         });
                         return;
+                    case "you are the alone":
+                        $(".btn-u-r").each((i,e) => {
+                            if ($(e).data("onchange").includes(user))
+                                MEL_ELASTIC_UI.setValue((value === "o" ? "w" : "o"), $(e));
+                        });
+                        rcmail.clear_messages();
+                        rcmail.display_message("Il doit y avoir au minimum un administrateur par espace !", "error");
+                        return;
                     default:
                         break;
                 }

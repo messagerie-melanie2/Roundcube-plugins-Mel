@@ -96,7 +96,7 @@ class RoundriveShow
 
     generateID(path)
     {
-        let id = "";
+        let id = ``;
         for (let index = 0; index < path.length; ++index) {
             const element = path[index];
             id += element.charCodeAt();
@@ -116,9 +116,9 @@ class RoundriveShow
 
         console.log("datas", datas);
 
-        const col_text = 6;
+        const col_text = 7;
         const col_datas = 4;
-        const col_link = 2;
+        const col_link = 1;
 
         let id;
         let tmp;
@@ -153,15 +153,22 @@ class RoundriveShow
                         break;
                     case this.enum.type.file:
 
-                        html = `<button style="display:flex" class=" ${isChild ? "child" : ""} no-style full-width btn btn-secondary row ${it === datas.length - 1 ? "last" : ""} ${this.config.classes !== undefined && this.config.classes.file !== undefined ? this.config.classes.file : ""}">`;
-                        html += `<div class="col-${col_text}"><h4><span class="${this.getIcon(element)}"><span class="sr-only">Fichier</span></span> ${decodeURIComponent(element.basename)}<h4></div>`;
-                        html += `<div class="col-${col_datas}"><h4></h4></div>`;
-                        html += `<div class="col-${col_link} col-arrow"><h4></h4></div>`;
-                        html += "</button>";
+                        html = `<div class=" ${isChild ? "child" : ""}   ${it === datas.length - 1 ? "last" : ""} ${this.config.classes !== undefined && this.config.classes.file !== undefined ? this.config.classes.file : ""}">`;
+                        html += '<div class="row" style="width:100%">';
+                        html += `<div class=" col-${col_text}"><button class="havefunc1 no-style full-width btn btn-secondary"><h4><span class="${this.getIcon(element)}"><span class="sr-only">Fichier</span></span> ${decodeURIComponent(element.basename)}<h4></button></div>`;
+                        html += `<div style="text-align:right;cursor:pointer;" class="havefunc1 col-${col_datas}"><p>Créé par : ${element.createdBy.includes(" - ") ? element.createdBy.split(" - ")[0] : element.createdBy}<br/>Dernières mise à jour : ${moment(element.modifiedAt).format("DD/MM/YYYY")}</p></div>`;
+                        html += `<div class="col-${col_link} col-arrow"><button class="col-arrow havefunc2 no-style btn btn-secondary"><h4><span class="icon-mel-expand"></span></h4></button></div>`;
+                        html += "</div></div>";
 
-                        html = $(html).on("click", (event) => {
+                        html = $(html);
+                        html.find(".havefunc1").on("click", (event) => {
                             this.clickFile(event, element);
-                        }).appendTo(parent);
+                        });
+                        html.find(".havefunc2").on("click", (event) => {
+                            this.clickGoToFile(event, element);
+                        });
+
+                        html.appendTo(parent);
 
                         break;
                 
@@ -253,9 +260,9 @@ class RoundriveShow
         }    
     }
 
-    clickGoToFile(event, file, id)
+    clickGoToFile(event, file)
     {
-        window.open(Nextcloud.index_url + "/apps/files?dir=/"+file.path+"&fileid=" + id);
+        window.open(Nextcloud.index_url + "/apps/files?dir=/"+file.path+"&fileid=" + file.id);
     }
 
     save()

@@ -75,7 +75,6 @@ class mtes_driver_mel extends mce_driver_mel {
     'fullname'          => 'Liste edt %%workspace%% - BNUM/Groupes',
     'server_routage'    => 'edt.%%workspace%%%%%domain%%@tous.melanie2.i2',
     'restrictions'      => '00+ LDAP:(&(mail=edt.%%workspace%%@%%domain%%)(mineqMelMembres=%s))',
-    'liens_import'      => 'BNUM.Lien: %%workspace%%',
     'gestion'           => 'AUTO/BNUM',
   ];
 
@@ -459,6 +458,8 @@ class mtes_driver_mel extends mce_driver_mel {
    * @return boolean
    */
   public function workspace_group($workspace_id, $members = [], $mdrive = true) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::workspace_group($workspace_id, $mdrive)");
     $group = $this->group([null, 'webmail.workspace']);
 
     // Calculer le domain
@@ -492,6 +493,11 @@ class mtes_driver_mel extends mce_driver_mel {
     $group->members = $membersList;
 
     // Sauvegarde
-    return $group->save();
+    $ret = $group->save();
+    // Gestion des erreurs
+    if (!$ret) {
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::workspace_group() save error : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
+    }
+    return $ret;
   }
 }

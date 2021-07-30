@@ -7,7 +7,8 @@ async function WSPReady()
 {
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
     try {
-        parent.rcmail.mel_metapage_fn.mail_wsp_updated();
+        if (rcmail.env.current_workspace_services.mail)
+            parent.rcmail.mel_metapage_fn.mail_wsp_updated();
     } catch (error) {
         
     }

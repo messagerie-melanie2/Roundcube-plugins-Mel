@@ -613,15 +613,24 @@ class mel_metapage extends rcube_plugin
         $before = "edt.";
         $after = "@i-carre.net";
 
+        $first = true;
         foreach ($workpaces as $key => $value) {
             if ($wsp->get_object($value, mel_workspace::GROUP))
             {
-                $lines .= "HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
-                $or .= " OR ";
+                $lines .= "OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
+                if ($first)
+                {
+                    $or .= " OR ";
+                    $first = false;
+                }
             }
         }
 
         $search .= $or.$lines;
+
+        $input = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
+        if ($input !== null && $input !== "")
+            $search = $input;
 
         $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();
 

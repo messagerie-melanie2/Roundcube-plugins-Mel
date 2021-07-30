@@ -606,15 +606,22 @@ class mel_metapage extends rcube_plugin
         $msgs = $this->rc->storage->list_messages();
         $msize = count($msgs);
 
-        $search = "ALL UNSEEN OR ";
+        $search = "ALL UNSEEN ";
+        $or = "";
+        $lines = "";
 
         $before = "edt.";
         $after = "@i-carre.net";
 
         foreach ($workpaces as $key => $value) {
             if ($wsp->get_object($value, mel_workspace::GROUP))
-                $search .= "HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
+            {
+                $lines .= "HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
+                $or .= " OR ";
+            }
         }
+
+        $search .= $or.$lines;
 
         $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();
 

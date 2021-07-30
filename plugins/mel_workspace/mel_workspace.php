@@ -465,7 +465,7 @@ class mel_workspace extends rcube_plugin
     const CHANNEL = "channel";
     const AGENDA = "calendar";
     const TASKS = "tasks";
-    const EMAIL = "unknown1";
+    const EMAIL = "mail";
     const CLOUD = "doc"; 
     const GROUP = "annuaire";
     public function get_worskpace_services($workspace, $services_to_remove = false)
@@ -474,7 +474,7 @@ class mel_workspace extends rcube_plugin
             self::CHANNEL => $this->get_object($workspace, self::CHANNEL) !== null,
             self::AGENDA => $this->get_object($workspace, self::AGENDA) === true,
             self::TASKS => $this->get_object($workspace, self::TASKS) !== null,
-            self::EMAIL => true,//$this->get_object($workspace, self::GROUP) === true,
+            self::EMAIL => $this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
         ];
         if ($services_to_remove)

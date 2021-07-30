@@ -6,6 +6,11 @@ $(document).ready(async () => {
 async function WSPReady()
 {
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
+    try {
+        parent.rcmail.mel_metapage_fn.mail_wsp_updated();
+    } catch (error) {
+        
+    }
 
     //console.log("a");
     const uid = rcmail.env.current_workspace_uid;

@@ -608,7 +608,7 @@ class mel_metapage extends rcube_plugin
 
         $search = "ALL UNSEEN OR ";
 
-        $before = "edt";
+        $before = "edt.";
         $after = "@i-carre.net";
 
         foreach ($workpaces as $key => $value) {

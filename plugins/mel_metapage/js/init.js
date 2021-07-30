@@ -238,7 +238,7 @@ if (rcmail)
                     (datas) => {
                         datas = JSON.parse(datas);
                         console.log("datas", datas);
-                        mel_metapage.Storage.set(mel_metapage.Storage.wsp_mail, datas);
+                        mel_metapage.Storage.set(mel_metapage.Storage.wsp_mail, datas.datas);
 
                         workspaces.sync.PostToParent({
                             exec:"trigger.mail_wsp_updated",

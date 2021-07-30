@@ -427,12 +427,12 @@ function UpdateFrameAriane()
     if (arrow.hasClass(right))
     {
         arrow.removeClass(right).addClass(down).parent().attr("title", rcmail.gettext("close_ariane", "mel_workspace"));
-        $(".unreads-ariane").attr("aria-expanded", "true").find("iframe").css("display", "").parent().css("display", "");
+        $(".ariane-frame").attr("aria-expanded", "true").find("iframe").css("display", "").parent().css("display", "");
     }
     else
     {
         arrow.removeClass(down).addClass(right).parent().attr("title", rcmail.gettext("open_ariane", "mel_workspace"));
-        $(".unreads-ariane").attr("aria-expanded", "false").find("iframe").css("display", "none").parent().css("display", "none");;
+        $(".ariane-frame").attr("aria-expanded", "false").find("iframe").css("display", "none").parent().css("display", "none");;
     }
 }
 

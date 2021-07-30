@@ -441,6 +441,9 @@ async function ChangeFrame(_class, otherDatas = null)
     const id = mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
 
+    if ($(`#${id}`).length === 0 || $(`#${id}`).parent()[0].id !== "layout-frames")
+        $("#layout-frames").css("display", "none");
+
     if (window.webconf_master_bar === undefined)
         (_class === "rocket" ? $("#" + id).css("display", "").parent().parent() : $("#" + id).css("display", "").parent()).css("display", "").css("position", "absolute").css("height", "100%");
 

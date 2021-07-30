@@ -632,13 +632,13 @@ class mel_workspace extends rcube_plugin
                         );
 
                     if ($services[self::CHANNEL]){
-                        $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"aria-expanded" => "false","onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane taab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
+                        $body_component[] = html::tag("button",["title" => $this->rc->gettext("open_ariane", "mel_workspace"),"aria-expanded" => "false","onclick" => "UpdateFrameAriane()","class" => "mel-focus no-style full-width unreads-ariane tab-unreads mel-tab-content wsp-ariane-header", "style" => "¤¤¤;font-size:x-large;"],
                             html::tag("span", ["style" => "position:relative"], "#$channel_name".html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
                             html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
-                        );
-                        $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
+                        )
+                        .html::div(["class" => "ariane-frame", "style" => ""],
                             html::tag("iframe", 
-                            ["src" => $src, "style" => "width:100%;height:500px;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
+                            ["src" => $src, "class"=>"", "style" => "display:none;width:100%;height:500px;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
                             )
                         );
                     }
@@ -687,9 +687,38 @@ class mel_workspace extends rcube_plugin
                     $header_component
                 );
                 
+                $before_body_component = [];
+
+                if ($services[self::CLOUD])
+                {
+                    
+                    $before_body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
+                        html::tag("button", ["class" => "mel-button btn btn-secondary"], 
+                            '<span>Créer</span><span class="icon-mel-plus plus"></span>'
+                        )
+                    );
+                }
+
+                $tmp = "";
+                $count = count($before_body_component);
+
+                for ($i=0; $i < $count; ++$i) { 
+                    if ($i === 0)
+                        $tmp .= str_replace("¤¤¤", "", $before_body_component[$i]);
+                    else
+                        $tmp .= str_replace("¤¤¤", "display:none", $before_body_component[$i]);
+                }
+
+                $before_body_component = $tmp;
+
+                $before_body = html::div([],
+                $before_body_component
+            );
+
                 $body_component = [];
 
                 if ($services[self::CLOUD]){
+
                     $body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤"],
                     //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
                     html::tag('center', ["id" => "spinner-grow-center"],
@@ -715,7 +744,7 @@ class mel_workspace extends rcube_plugin
                     $body_component
                 );
 
-                $html_return.= html::tag("h2", [], "Mes ressources").$header.html::div(["class" => "wsp-block wsp-left"], $body);
+                $html_return.= html::tag("h2", [], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left"], $body);
             }
     
     

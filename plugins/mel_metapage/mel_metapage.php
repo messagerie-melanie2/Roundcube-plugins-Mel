@@ -640,7 +640,7 @@ class mel_metapage extends rcube_plugin
            }
         }
 
-        echo json_encode($datas);
+        echo json_encode(["datas" => $datas, "search" => $search, "get" => $tmp]);
         exit;
     }
 

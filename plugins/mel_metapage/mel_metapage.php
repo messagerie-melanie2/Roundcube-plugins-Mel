@@ -612,7 +612,7 @@ class mel_metapage extends rcube_plugin
         $after = "@i-carre.net";
 
         foreach ($workpaces as $key => $value) {
-            if ($wsp->get_object($workspace, mel_workspace::GROUP))
+            if ($wsp->get_object($value, mel_workspace::GROUP))
                 $search .= "HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
         }
 

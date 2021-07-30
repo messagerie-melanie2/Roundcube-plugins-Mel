@@ -175,7 +175,9 @@ if (rcmail)
             mail_updated: function(isFromRefresh = false, new_count = null) {
                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.before);
 
-                //console.log("mail_updated", isFromRefresh, new_count);
+                mel_metapage.Storage.remove(mel_metapage.Storage.mail);
+
+                rcmail.mel_metapage_fn.mail_wsp_updated();
 
                 if (new_count !== null && new_count !== undefined)
                 {
@@ -227,6 +229,24 @@ if (rcmail)
                     rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                 },
                 });
+            },
+            mail_wsp_updated: async function()
+            {
+                return mel_metapage.Functions.get(
+                    mel_metapage.Functions.url("mel_metapage", "get_wsp_unread_mails_count"),
+                    {},
+                    (datas) => {
+                        datas = JSON.parse(datas);
+                        console.log("datas", datas);
+                        mel_metapage.Storage.set(mel_metapage.Storage.wsp_mail, datas);
+
+                        workspaces.sync.PostToParent({
+                            exec:"trigger.mail_wsp_updated",
+                            _integrated:true,
+                            always:true
+                        })
+                    }
+                );
             },
             refresh: function () {
                 let querry = $(".calendar-frame");

@@ -5,6 +5,8 @@ $(document).ready(async () => {
 
 async function WSPReady()
 {
+    rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
+
     //console.log("a");
     const uid = rcmail.env.current_workspace_uid;
     SetCalendarDate()
@@ -60,6 +62,9 @@ async function WSPReady()
     }
     else if (rcmail.env.current_workspace_page)
         delete rcmail.env.current_workspace_page;
+
+
+    wsp_mail_updated();
 }
 
 function wsp_contract(_class)
@@ -448,4 +453,62 @@ async function initCloud()
             file:"wsp-rd-row last"
         }
     });
+}
+
+function showMail($id)
+{
+    //?_task=mail&_action=show&_uid=363&_mbox=INBOX
+
+    let config = {
+        _uid:$id
+    };
+
+    if ($("iframe.mail-frame").length > 0)
+    {
+        config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.key.value;
+        workspaces.sync.PostToParent({
+            exec:"select_mail",
+            _integrated:true,
+            child:false,
+            args:[$id, true]
+        });
+        mel_metapage.Functions.change_frame("mail");
+    }
+    else if ($(".mail-frame").length > 0)
+        window.location.href = mel_metapage.Functions.url("mail", "show", config);
+    else {
+        config["_action"] = "show";
+        mel_metapage.Functions.change_frame("mail", true, false, config);
+    }
+}
+
+function wsp_mail_updated()
+{
+
+    let datas = mel_metapage.Storage.get(mel_metapage.Storage.wsp_mail);
+
+    let html = "";
+
+    if (datas === undefined || datas === null || datas[rcmail.env.current_workspace_uid] === undefined || datas[rcmail.env.current_workspace_uid] === null)
+    {    
+        html = "Aucun mail non lu.";
+        $(".wsp-mail").find(".notif").remove();
+    }
+    else {
+        for (const key in datas[rcmail.env.current_workspace_uid]) {
+            if (Object.hasOwnProperty.call(datas[rcmail.env.current_workspace_uid], key)) {
+                const element = datas[rcmail.env.current_workspace_uid][key];
+                html += `<div class="row wsp-email-row" onclick="showMail('${element.uid}')">`;
+                html += `<div class="col-md-3 wsp-email-from">${element.from}</div>`;
+                html += `<div class="col-md-6 wsp-email-subject">${element.subject}</div>`;
+                html += `<div class="col-md-3 wsp-email-date">${element.date}</div>`;
+                html += "</div>";
+            }
+        }
+
+        $(".wsp-mail").html(`<span style="" class="notif roundbadge lightgreen">${datas[rcmail.env.current_workspace_uid].length}</span>`)
+
+    }
+
+    $(".unreads-emails").html(html);
 }

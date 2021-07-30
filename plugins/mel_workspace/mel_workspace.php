@@ -370,9 +370,18 @@ class mel_workspace extends rcube_plugin
             if ($is_in_wsp)
             {
 
-                if ($services[self::AGENDA] || $services[self::CHANNEL]
+                if ($services[self::AGENDA] || $services[self::EMAIL] || $services[self::CHANNEL]
                 || $services[self::TASKS] || $is_admin)
                     $html .= $vseparate;
+
+                if ($services[self::EMAIL])
+                {
+                    $onclick = "ChangeToolbar('mail', this)";
+                    $html .= html::tag("button",["onclick" => $onclick, "class" => "wsp-toolbar-item wsp-mail"], "<span class=".$icons["mail"]."></span><span class=text-item>".$this->rc->gettext("mail", "mel_workspace")."</span>");
+                    
+                    if ($services[self::CHANNEL] || $services[self::AGENDA] || $services[self::TASKS] || $is_admin)
+                        $html .= $vseparate;
+                }
         
                 if ($services[self::AGENDA])
                 {
@@ -465,7 +474,7 @@ class mel_workspace extends rcube_plugin
             self::CHANNEL => $this->get_object($workspace, self::CHANNEL) !== null,
             self::AGENDA => $this->get_object($workspace, self::AGENDA) === true,
             self::TASKS => $this->get_object($workspace, self::TASKS) !== null,
-            self::EMAIL => false,//$this->get_object($workspace, self::GROUP) === true,
+            self::EMAIL => true,//$this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
         ];
         if ($services_to_remove)
@@ -619,7 +628,7 @@ class mel_workspace extends rcube_plugin
                     $body_component = [];
                     if ($services[self::EMAIL])
                         $body_component[] = html::div(["class" => "unreads-emails tab-unreads mel-tab-content", "style" => "¤¤¤"],
-                            ""
+                            ""//$this->get_mails($this->currentWorkspace)
                         );
 
                     if ($services[self::CHANNEL]){
@@ -629,7 +638,7 @@ class mel_workspace extends rcube_plugin
                         );
                         $body_component[] = html::div(["class" => "unreads-ariane tab-unreads mel-tab-content", "style" => "¤¤¤"],
                             html::tag("iframe", 
-                            ["src" => $src, "style" => "width:100%;height:500px;display:none;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
+                            ["src" => $src, "style" => "width:100%;height:500px;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
                             )
                         );
                     }
@@ -1164,7 +1173,7 @@ class mel_workspace extends rcube_plugin
         $workspace->objects = json_encode($workspace->objects);
     }
 
-    function get_object(&$workspace, $key)
+    public function get_object(&$workspace, $key)
     {
         if ($workspace->objects === null)
             return null;
@@ -2177,5 +2186,44 @@ class mel_workspace extends rcube_plugin
         }
 
         return $mails;
+    }
+
+    function get_mails($workspace)
+    {
+        $before = "edt.";
+        $uid = $workspace->uid;
+        $after = "@i-carre.net";
+
+        include_once "program/search_result/search_result_mail.php";
+        $input = "tommy.delphin@i-carre.net";//"tommy.delphin@i-carre.net";//$before.$uid.$after;
+        $search = "ALL UNSEEN OR HEADER TO $input HEADER CC $input";
+        $msgs = $this->rc->storage->list_messages();
+        $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival");
+        //$this->rc->storage->search(null, "HEADER TO $input", RCUBE_CHARSET, "arrival");
+        $array = $tmp->get();
+
+        $size = count($msgs);
+        $return = "";
+
+        foreach ($array as $index => $id) {
+            $key = mel_metapage::search_id_in_mail($id, $msgs, $size);
+
+            if ($key !== false)
+                $return .= $this->format_mail_in_html($msgs[$key]);
+        } 
+
+        return $return;
+
+    }
+
+    function format_mail_in_html($mail)
+    {
+        $html = html::div(["class" => "row wsp-email-row", "onclick" => "showMail(".$mail->uid.")"], 
+            html::tag("div", ["class" => "col-md-3 wsp-email-from"], rcube_mime::decode_header($mail->from, $mail->charset)).
+            html::tag("div", ["class" => "col-md-6 wsp-email-subject"], rcube_mime::decode_header($mail->subject, $mail->charset)).
+            html::tag("div", ["class" => "col-md-3 wsp-email-date"], date("d/m/Y H:i:s", strtotime($mail->date)))
+        );
+
+        return $html;
     }
 }

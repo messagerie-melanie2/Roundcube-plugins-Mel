@@ -53,7 +53,7 @@ class RoundriveShow
             }
         };
 
-        this.expandInitialFolder(initFolder).then(() => {
+        this.expandInitialFolder(initFolder).always(() => {
 
             if (config.afterInit !== undefined && config.afterInit !== null)
                 config.afterInit();
@@ -90,6 +90,12 @@ class RoundriveShow
             config,
             (datas) => {
                 this.showDatas(datas, this.parent);
+            },
+            (xhr, ajaxOptions, thrownError) => {
+                console.error(xhr, ajaxOptions, thrownError, this);
+                this.parent.html("Connexion impossible.");
+                rcmail.display_message("Impossible de se connecter au stockage !", "error");
+
             }
         );
     }
@@ -218,6 +224,11 @@ class RoundriveShow
                 (datas) => {
                     parent.find("center").remove();
                     this.showDatas(datas, parent, true);
+                },
+                (xhr, ajaxOptions, thrownError) => {
+                    console.error(xhr, ajaxOptions, thrownError);
+                    parent.removeClass("open").find("center").remove();
+                    rcmail.display_message("Impossible de se connecter au stockage !", "error");
                 }
             );
         }

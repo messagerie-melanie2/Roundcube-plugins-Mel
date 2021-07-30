@@ -184,6 +184,7 @@ const mel_metapage = {
          * Clé du nombre de mail non lus.
          */
         mail:"mel_metapage.mail.count",
+        wsp_mail:"mel_metapage.wsp.mails",
         last_calendar_update:"mel_metapage.calendar.last_update",
         last_task_update:"mel_metapage.tasks.last_update",
         ariane:"ariane_datas",

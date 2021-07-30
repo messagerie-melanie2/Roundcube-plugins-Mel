@@ -137,6 +137,7 @@ class mel_metapage extends rcube_plugin
             
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
+            $this->register_action('get_wsp_unread_mails_count', [$this, 'get_wsp_unread_mails_count']);
             $this->register_action('search_contact', array($this, 'search_contact'));
             $this->register_action('contact', array($this, 'display_contact'));
             $this->register_action('chat', array($this, 'ariane'));
@@ -594,6 +595,74 @@ class mel_metapage extends rcube_plugin
         exit;
     }
 
+    public function get_wsp_unread_mails_count()
+    {
+        $wsp = $this->rc->plugins->get_plugin("mel_workspace");
+        $wsp->load_workspaces();
+        $workpaces = $wsp->workspaces;
+
+        $datas = [];
+
+        $msgs = $this->rc->storage->list_messages();
+        $msize = count($msgs);
+
+        $search = "ALL UNSEEN OR ";
+
+        $before = "edt";
+        $after = "@i-carre.net";
+
+        foreach ($workpaces as $key => $value) {
+            if ($wsp->get_object($workspace, mel_workspace::GROUP))
+                $search .= "HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
+        }
+
+        $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();
+
+        foreach ($tmp as $key => $value) {
+           $result = $this->mail_where($value, $msgs, $msize);
+
+           if ($result !== false)
+           {
+               $result = $msgs[$result];
+                $edts = $this->get_wsp_uids_by_to($result->to);
+
+                foreach ($edts as $index => $uid) {
+                    if ($datas[$uid] === null)
+                        $datas[$uid] = [];
+                    
+                    $datas[$uid][] = [
+                        "from" => rcube_mime::decode_header($result->from, $result->charset),
+                        "subject" => rcube_mime::decode_header($result->subject, $result->charset),
+                        "date" => date("d/m/Y H:i:s", strtotime($result->date)),
+                        "uid" => $result->uid
+                    ];
+                }
+           }
+        }
+
+        echo json_encode($datas);
+        exit;
+    }
+
+    function get_wsp_uids_by_to($to)
+    {
+        $to = explode(",", $to);
+
+        $wsps = [];
+
+        foreach ($to as $index => $mail) {
+            if (strpos($mail, "edt.") !== false)
+            {
+                $espace = explode("@i-carre.net",explode("edt.", $mail)[1])[0];
+                $wsps[] = $espace;
+            }
+        }
+
+        return $wsps;
+
+
+    } 
+
     /**
      * Recherche un texte dans les mails.
      */
@@ -620,15 +689,20 @@ class mel_metapage extends rcube_plugin
 
     }
 
+    function mail_where($id, $array, $size = null)
+    {
+        return self::search_id_in_mail($id, $array, $size);
+    }
+
     /**
      * Recherche un id parmis les mails.
      */
-    function mail_where($id, $array, $size = null)
+    public static function search_id_in_mail($id, $array, $size = null)
     {
         if ($size === null)
             $size = count($array);
         for ($i=0; $i < $size; ++$i) { 
-            if ($array[$i]->id == $id)
+            if ($array[$i]->uid == $id)
                 return $i;
         }
         return false;

@@ -133,7 +133,35 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
 
             break;
 
+        case "select_mail":
+
+            if (args.args[1])
+            {
+                $("iframe.mail-frame")[0].contentWindow.postMessage({
+                    exec:"select_mail",
+                    _integrated:true,
+                    child:false,
+                    args:[args.args[0], false]
+                });
+            }
+            else {
+                rcmail.set_busy(true, "loading");
+                let config = {
+                    _uid:args.args[0]
+                };
+                config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.key.value;
+                window.location.href = mel_metapage.Functions.url("mail", "show", config);
+            }
+
+            break;
+
         default:
+
+            if (func_name.includes("trigger"))
+            {
+                rcmail.triggerEvent(func_name.split(".")[1]);
+            }
+
             break;
     }
 

@@ -262,6 +262,30 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                 }
             );
             break;
+            case "mail":
+                //let picture = $(".wsp-picture");
+                datas.push({
+                    exec_info:"change_environnement",
+                    datas:_class
+                })
+                datas.push({
+                    exec_info:"UpdateMenu",
+                    datas:{
+                        class:_class,
+                        picture:{
+                            color:picture.css("background-color"),
+                            picture:picture.html()
+                        },
+                        toolbar:$(".wsp-toolbar")[0].outerHTML.replace("wsp-toolbar", "wsp-toolbar wsp-toolbar-edited")
+                    }
+                });
+                datas.push(
+                    {
+                        exec_info:"ChangeFrame",
+                        datas:_class
+                    }
+                );
+                break;
         case "rocket":
             datas.push({
                 exec_info:"change_environnement",

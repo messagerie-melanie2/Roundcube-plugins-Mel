@@ -766,3 +766,24 @@ body.task-workspace .wsp-toolbar v_separate{
 	padding-left: 25px;
 	margin-left: 15px;
 }
+
+.wsp-email-row {
+	margin: 15px 0;
+	border-bottom-style: solid;
+	padding-bottom: 15px;
+	border-bottom-width: thin;
+	border-color: #C4C4C4;
+}
+
+.wsp-email-from,
+.wsp-email-subject
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wsp-email-date
+{
+    text-align: right;
+}

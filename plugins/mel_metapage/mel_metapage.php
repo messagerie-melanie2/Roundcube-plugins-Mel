@@ -606,7 +606,7 @@ class mel_metapage extends rcube_plugin
         $msgs = $this->rc->storage->list_messages();
         $msize = count($msgs);
 
-        $search = "ALL UNSEEN ";
+        $search = "OR ALL UNSEEN ";
         $or = "";
         $lines = "";
 

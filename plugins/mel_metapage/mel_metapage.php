@@ -631,7 +631,7 @@ class mel_metapage extends rcube_plugin
         if ($input !== null && $input !== "")
             $search = $input;
 
-        if ($search !== "OR ALL UNSEEN ")
+        if ($search !== "ALL UNSEEN ")
         {
 
             $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();

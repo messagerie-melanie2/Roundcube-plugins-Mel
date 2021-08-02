@@ -477,6 +477,9 @@ class mel_workspace extends rcube_plugin
             self::EMAIL => $this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
         ];
+
+        //$datas[self::EMAIL] = $datas[self::CLOUD];
+
         if ($services_to_remove)
         {
             $services = [];
@@ -604,9 +607,9 @@ class mel_workspace extends rcube_plugin
         
                     $header_component = [];
                     if ($services[self::EMAIL])
-                        $header_component[] = html::div(["id" => "unreads-emails", "class" => "tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
+                        $header_component[] = html::tag("button", ["id" => "unreads-emails", "class" => "tab-unreads mel-tab mel-tabheader ¤¤¤"], "Emails");
                     if ($services[self::CHANNEL])
-                        $header_component[] = html::div(["id" => "unreads-ariane", "class" => "tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
+                        $header_component[] = html::tag("button", ["id" => "unreads-ariane", "class" => "tab-unreads mel-tab mel-tabheader ¤¤¤"], "Discussions Ariane");
                     
                     $tmp = "";
                     $count = count($header_component);
@@ -636,7 +639,7 @@ class mel_workspace extends rcube_plugin
                             html::tag("span", ["style" => "position:relative"], "#$channel_name".html::tag("span", ["class" => "ariane-count notif roundbadge lightgreen"])).
                             html::tag("span", ["class" => $icons["arrow_close"]." arrow", "style" => "float:right"])
                         )
-                        .html::div(["class" => "ariane-frame", "style" => ""],
+                        .html::div(["class" => "ariane-frame unreads-ariane tab-unreads mel-tab-content", "style" => ""],
                             html::tag("iframe", 
                             ["src" => $src, "class"=>"", "style" => "display:none;width:100%;height:500px;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
                             )

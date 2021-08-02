@@ -458,6 +458,9 @@ async function ChangeFrame(_class, otherDatas = null)
     else
         $(".a-frame").css("display", "none");
 
+    //if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
+        //mel_metapage.Functions.searchOnMail("ariane", ["to", "cc", "bcc"]);
+
     // if ($("#layout-content").hasClass("workspace-frame"))
     //     $("#layout-content").css("display", "");
 

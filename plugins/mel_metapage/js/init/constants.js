@@ -679,6 +679,27 @@ const mel_metapage = {
 
                 mel_metapage.Functions.call(init + go + then);
             }
+        },
+
+        searchOnMail: async function(itemToSearch, fields, openFrame = false)
+        {
+            if (parent === window)
+            {
+                if (openFrame)
+                    await mel_metapage.Functions.change_frame("mail", true, true);
+
+                 if ($("iframe.mail-frame").length > 0)
+                    $("iframe.mail-frame")[0].contentWindow.postMessage({
+                        exec:"search",
+                        _integrated:true,
+                        child:false,
+                        args:[itemToSearch, fields]
+                    });
+                else
+                    search_action(itemToSearch);
+            }
+            else    
+                mel_metapage.Functions.call(`mel_metapage.Functions.searchOnMail('${itemToSearch}', ${JSON.stringify(fields)}, ${openFrame})`);
         }
 
 

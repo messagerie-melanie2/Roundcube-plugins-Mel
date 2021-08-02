@@ -217,7 +217,7 @@ $(document).ready(() => {
                             
                             if (element.includes("tab-"))
                             {
-                                $(`.${element}`).each((index, element) => {
+                                $(`.${element}.mel-tabheader`).each((index, element) => {
                                     if (index !== 0)
                                         $(element).attr("tabindex", -1);
                                 });

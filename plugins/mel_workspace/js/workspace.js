@@ -512,7 +512,7 @@ function wsp_mail_updated()
             }
         }
 
-        $(".wsp-mail").html(`<span style="" class="notif roundbadge lightgreen">${datas[rcmail.env.current_workspace_uid].length}</span>`)
+        $(".wsp-mail").append(`<span style="" class="notif roundbadge lightgreen">${datas[rcmail.env.current_workspace_uid].length}</span>`)
 
     }
 

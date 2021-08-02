@@ -606,7 +606,7 @@ class mel_metapage extends rcube_plugin
         $msgs = $this->rc->storage->list_messages();
         $msize = count($msgs);
 
-        $search = "OR ALL UNSEEN ";
+        $search = "ALL UNSEEN ";
         $or = "";
         $lines = "";
 
@@ -617,12 +617,11 @@ class mel_metapage extends rcube_plugin
         foreach ($workpaces as $key => $value) {
             if ($wsp->get_object($value, mel_workspace::GROUP))
             {
-                $lines .= "OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
+                $lines .= "OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";// HEADER BCC $before".$value->uid."$after ";
                 if ($first)
-                {
-                    $or .= "OR ";
                     $first = false;
-                }
+                else
+                    $or .= "OR ";
             }
         }
 
@@ -632,28 +631,32 @@ class mel_metapage extends rcube_plugin
         if ($input !== null && $input !== "")
             $search = $input;
 
-        $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();
+        if ($search !== "OR ALL UNSEEN ")
+        {
 
-        foreach ($tmp as $key => $value) {
-           $result = $this->mail_where($value, $msgs, $msize);
+            $tmp = $this->rc->storage->search(null, $search, RCUBE_CHARSET, "arrival")->get();
 
-           if ($result !== false)
-           {
-               $result = $msgs[$result];
-                $edts = $this->get_wsp_uids_by_to($result->to);
+            foreach ($tmp as $key => $value) {
+            $result = $this->mail_where($value, $msgs, $msize);
 
-                foreach ($edts as $index => $uid) {
-                    if ($datas[$uid] === null)
-                        $datas[$uid] = [];
-                    
-                    $datas[$uid][] = [
-                        "from" => rcube_mime::decode_header($result->from, $result->charset),
-                        "subject" => rcube_mime::decode_header($result->subject, $result->charset),
-                        "date" => date("d/m/Y H:i:s", strtotime($result->date)),
-                        "uid" => $result->uid
-                    ];
-                }
-           }
+            if ($result !== false)
+            {
+                $result = $msgs[$result];
+                    $edts = $this->get_wsp_uids_by_to($result->to);
+
+                    foreach ($edts as $index => $uid) {
+                        if ($datas[$uid] === null)
+                            $datas[$uid] = [];
+                        
+                        $datas[$uid][] = [
+                            "from" => rcube_mime::decode_header($result->from, $result->charset),
+                            "subject" => rcube_mime::decode_header($result->subject, $result->charset),
+                            "date" => date("d/m/Y H:i:s", strtotime($result->date)),
+                            "uid" => $result->uid
+                        ];
+                    }
+            }
+            }
         }
 
         echo json_encode(["datas" => $datas, "search" => $search, "get" => $tmp]);

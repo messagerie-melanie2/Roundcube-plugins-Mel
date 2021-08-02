@@ -67,7 +67,7 @@ class mel_envoi_differe extends rcube_plugin
                     $rcmail->output->set_env('envoi_differe_timestamp', $_SESSION['envoi_differe_timestamp']);
                 }
                 else {
-                    unset($_SESSION['envoi_differe_timestamp']);
+                    $_SESSION['envoi_differe_timestamp'] = null;
                 }
             }
         } else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
@@ -115,7 +115,7 @@ class mel_envoi_differe extends rcube_plugin
                     $_SESSION['envoi_differe_timestamp'] = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
                 }
                 else if (isset($_SESSION['envoi_differe_timestamp'])) {
-                    unset($_SESSION['envoi_differe_timestamp']);
+                    $_SESSION['envoi_differe_timestamp'] = null;
                 }
                 // $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'X-StatusEnvoiDiffere' => 'true', 'Date' => $dateFormat), true);
                 $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
@@ -123,7 +123,7 @@ class mel_envoi_differe extends rcube_plugin
         }
         else if (isset($_SESSION['envoi_differe_timestamp']) && (!isset($save) || $save != 'true')) {
             // Désactivation de l'envoi différé pour les envois suivants
-            unset($_SESSION['envoi_differe_timestamp']);
+            $_SESSION['envoi_differe_timestamp'] = null;
         }
         return $args;
     }

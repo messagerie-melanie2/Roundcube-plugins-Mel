@@ -53,6 +53,23 @@ class mel_envoi_differe extends rcube_plugin
 
             $rcmail->output->set_env('timezone', $rcmail->config->get('timezone', date_default_timezone_get()));
             $rcmail->output->set_env('max_days', $rcmail->config->get('remise_max_days', 30));
+            if (isset($_SESSION['envoi_differe_timestamp']) && $timestamp = intval($_SESSION['envoi_differe_timestamp'])) {
+                $timestamp = $timestamp / 1000;
+                $date_utc = new \DateTime("now", new \DateTimeZone("UTC"));
+                if ($date_utc->getTimestamp() < $timestamp) {
+                    // On récupère la timezone de l'utilisateur
+                    $timezone = $rcmail->config->get('timezone', date_default_timezone_get());
+
+                    $date = new \DateTime('@'.$timestamp);
+                    $date->setTimeZone(new DateTimeZone($timezone));
+
+                    $rcmail->output->set_env('envoi_differe_date', $date->format('d/m/Y H:i'));
+                    $rcmail->output->set_env('envoi_differe_timestamp', $_SESSION['envoi_differe_timestamp']);
+                }
+                else {
+                    unset($_SESSION['envoi_differe_timestamp']);
+                }
+            }
         } else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
             $this->add_hook('message_before_send', array($this, 'message_before_send'));
         }
@@ -64,6 +81,7 @@ class mel_envoi_differe extends rcube_plugin
     function message_before_send($args)
     {
         $timestamp = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
+        $save = rcube_utils::get_input_value('save_envoi_differe', rcube_utils::INPUT_GPC);
 
         if ($timestamp) {
             $this->load_config();
@@ -71,7 +89,7 @@ class mel_envoi_differe extends rcube_plugin
             $rcmail = rcmail::get_instance();
             $timestamp = $timestamp / 1000;
             // On récupère la timezone de l'utilisateur
-            $timezone = $rcmail->config->get('timezone', null);
+            $timezone = $rcmail->config->get('timezone', date_default_timezone_get());
 
             $currentDate = new DateTime();
             $date = new DateTime("@$timestamp");
@@ -93,9 +111,19 @@ class mel_envoi_differe extends rcube_plugin
             }
             // On vérifie que la date correspond bien à une date future
             else if ($dateTimestamp > $currentDateTimestamp) {
+                if ($save == 'true') {
+                    $_SESSION['envoi_differe_timestamp'] = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
+                }
+                else if (isset($_SESSION['envoi_differe_timestamp'])) {
+                    unset($_SESSION['envoi_differe_timestamp']);
+                }
                 // $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'X-StatusEnvoiDiffere' => 'true', 'Date' => $dateFormat), true);
                 $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
             }
+        }
+        else if (isset($_SESSION['envoi_differe_timestamp']) && (!isset($save) || $save != 'true')) {
+            // Désactivation de l'envoi différé pour les envois suivants
+            unset($_SESSION['envoi_differe_timestamp']);
         }
         return $args;
     }

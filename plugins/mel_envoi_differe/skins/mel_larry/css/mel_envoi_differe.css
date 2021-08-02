@@ -43,6 +43,7 @@ body.envoidiffere {
 #envoidiffere_time {
     width: 120px;
 }
+
 #envoidiffere-details .warning {
     margin-top: 5px;
     padding: 10px 15px;
@@ -55,4 +56,13 @@ body.envoidiffere {
 
 #envoidiffere-details .margin {
     margin: 30px 0;
+}
+
+#envoidiffere-details .saving {
+    margin-bottom: 30px;
+}
+
+#envoidiffere-details .saving .checkbox_description {
+    display: block;
+    margin-left: 24px;
 }

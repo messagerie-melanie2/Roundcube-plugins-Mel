@@ -620,7 +620,7 @@ class mel_metapage extends rcube_plugin
                 $lines .= "OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";
                 if ($first)
                 {
-                    $or .= " OR ";
+                    $or .= "OR ";
                     $first = false;
                 }
             }

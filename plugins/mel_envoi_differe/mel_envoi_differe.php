@@ -29,14 +29,13 @@ class mel_envoi_differe extends rcube_plugin
     {
         $rcmail = rcmail::get_instance();
 
-        $this->load_config();
-
         if ($rcmail->task == 'mail' && $rcmail->action == 'compose') {
             if ($rcmail->config->get('ismobile', false)) {
                 $skin_path = 'skins/mel_larry_mobile';
             } else {
                 $skin_path = $this->local_skin_path();
             }
+            $this->load_config();
             $this->include_stylesheet($skin_path . '/css/mel_envoi_differe.css');
             $this->include_script('mel_envoi_differe.js');
             $this->add_texts('localization/', true);
@@ -52,20 +51,11 @@ class mel_envoi_differe extends rcube_plugin
                 'domain'   => 'mel_envoi_differe'
             ), 'toolbar');
 
-            $this->register_action('plugin.mel_envoi_differe', array($this, 'request_action'));
-            $rcmail->output->set_env('timezone', $rcmail->config->get('timezone', null));
+            $rcmail->output->set_env('timezone', $rcmail->config->get('timezone', date_default_timezone_get()));
+            $rcmail->output->set_env('max_days', $rcmail->config->get('remise_max_days', 30));
         } else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
             $this->add_hook('message_before_send', array($this, 'message_before_send'));
         }
-    }
-
-    /**
-     * Affichage du template archivage
-     */
-    public function request_action()
-    {
-        $rcmail = rcmail::get_instance();
-        $rcmail->output->send('mel_envoi_differe.mel_envoi_differe');
     }
 
     /**
@@ -76,6 +66,8 @@ class mel_envoi_differe extends rcube_plugin
         $timestamp = rcube_utils::get_input_value('envoi_differe', rcube_utils::INPUT_GPC);
 
         if ($timestamp) {
+            $this->load_config();
+            $this->add_texts('localization/', true);
             $rcmail = rcmail::get_instance();
             $timestamp = $timestamp / 1000;
             // On récupère la timezone de l'utilisateur
@@ -92,8 +84,15 @@ class mel_envoi_differe extends rcube_plugin
             $currentDateTimestamp = $currentDate->getTimestamp();
             $dateTimestamp = $date->getTimestamp();
 
-            //On vérifie que la date correspond bien à une date future
-            if ($dateTimestamp >  $currentDateTimestamp) {
+            // MANTIS 0006201: Limiter la durée d'une remise différée
+            $max_is_seconds = ($rcmail->config->get('remise_max_days', 30) + 1) * 24 * 60 * 60;
+
+            if (($dateTimestamp - $currentDateTimestamp) > $max_is_seconds) {
+                $args['abort'] = true;
+                $args['error'] = str_replace('%%max_days%%', $rcmail->config->get('remise_max_days', 30), $this->gettext('max_days_error'));
+            }
+            // On vérifie que la date correspond bien à une date future
+            else if ($dateTimestamp > $currentDateTimestamp) {
                 // $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'X-StatusEnvoiDiffere' => 'true', 'Date' => $dateFormat), true);
                 $args['message']->headers(array('X-DateEnvoiDiffere' => $dateTimestamp, 'Date' => $dateFormat), true);
             }

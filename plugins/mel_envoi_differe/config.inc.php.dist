@@ -1,0 +1,4 @@
+<?php
+
+// Nombre de jour maximum accepté pour une remise différée
+$rcmail_config['remise_max_days'] = 30;

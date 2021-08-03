@@ -23,22 +23,34 @@
 class mel_envoi_differe extends rcube_plugin
 {
     /**
+     *
+     * @var string
+     */
+    public $task = 'portail|mail|addressbook|stockage|calendar|tasks|discussion';
+
+    /**
      * Méthode d'initialisation du plugin mel_envoi_differe
      */
     function init()
     {
         $rcmail = rcmail::get_instance();
+        if ($rcmail->config->get('ismobile', false)) {
+            $skin_path = 'skins/mel_larry_mobile';
+        } else {
+            $skin_path = $this->local_skin_path();
+        }
 
+        $this->load_config();
+        $this->add_hook('refresh', array($this, 'refresh'));
+
+        // Command
+        $this->register_action('plugin.disconnection', array($this, 'disconnection'));
+        
         if ($rcmail->task == 'mail' && $rcmail->action == 'compose') {
-            if ($rcmail->config->get('ismobile', false)) {
-                $skin_path = 'skins/mel_larry_mobile';
-            } else {
-                $skin_path = $this->local_skin_path();
-            }
-            $this->load_config();
-            $this->include_stylesheet($skin_path . '/css/mel_envoi_differe.css');
+            
             $this->include_script('mel_envoi_differe.js');
             $this->add_texts('localization/', true);
+            $this->include_stylesheet($skin_path . '/css/mel_envoi_differe.css');
 
             $this->add_button(array(
                 'type'     => 'link',
@@ -53,6 +65,7 @@ class mel_envoi_differe extends rcube_plugin
 
             $rcmail->output->set_env('timezone', $rcmail->config->get('timezone', date_default_timezone_get()));
             $rcmail->output->set_env('max_days', $rcmail->config->get('remise_max_days', 30));
+
             if (isset($_SESSION['envoi_differe_timestamp']) && $timestamp = intval($_SESSION['envoi_differe_timestamp'])) {
                 $timestamp = $timestamp / 1000;
                 $date_utc = new \DateTime("now", new \DateTimeZone("UTC"));
@@ -73,6 +86,110 @@ class mel_envoi_differe extends rcube_plugin
         } else if ($rcmail->task == 'mail' && $rcmail->action == 'send') {
             $this->add_hook('message_before_send', array($this, 'message_before_send'));
         }
+
+        // Droit à la déconnexion
+        if ($rcmail->config->get('remise_enable_deconnection_right', false) 
+                && $rcmail->output->type == 'html' 
+                && !$rcmail->output->env['framed']) {
+            $this->add_texts('localization/', ['disco_popup_title', 'disco_popup_description', 
+                'disco_button_continue', 'disco_button_continue_with_remise_differe',
+                'disco_button_disconnect'
+            ]);
+            
+            $this->include_stylesheet($skin_path . '/css/mel_envoi_differe.css');
+            $this->include_script('deconnection_right_popup.js');
+            if ($this->is_deconnection_right_enable()) {
+                // Afficher le popup ?
+                $rcmail->output->set_env('deconnection_right_popup', true);
+            }
+        }
+    }
+
+    /**
+     * Fonction refresh pour le popup de droit à la déconnexion
+     */
+    function refresh() {
+        if ($this->is_deconnection_right_enable()) {
+            $this->add_texts('localization/', ['disco_popup_title', 'disco_popup_description', 
+                'disco_button_continue', 'disco_button_continue_with_remise_differe',
+                'disco_button_disconnect'
+            ]);
+            // Afficher le popup ?
+            rcmail::get_instance()->output->command('plugin.deconnection_right_popup');
+        }
+    }
+
+    /**
+     * Continuer la sans déconnexion avec ou sans remise différée
+     */
+    function disconnection() {
+        $_SESSION['disconnexion_popup'] = true;
+        $act = rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC);
+        if ($act == 'continue_with_remise_differe') {
+            $this->add_texts('localization/', ['disco_remise_differe_enabled']);
+            $rcmail = rcmail::get_instance();
+
+            $timezone = $rcmail->config->get('timezone', date_default_timezone_get());
+            $open_days = $rcmail->config->get('remise_open_days', ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
+            $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            $open_hours = explode('-', $rcmail->config->get('remise_open_hours', '08:00-19:00'), 2);
+
+            $date = new \DateTime('now');
+            $date->setTimezone(new \DateTimeZone($timezone));
+
+            $day = $date->format('D');
+            $nbDay = 0;
+            $aKey = array_search($day, $days);
+            $key = array_search($day, $open_days);
+            if ($key === false || $key == (count($open_days) - 1) && $date->format('H:i') > $open_hours[1]) {
+                // Cas ou on est un jour non ouvré ou après l'heure ouvré du dernier jour ouvré
+                $nbDay = count($days) - $aKey;
+            }
+            else if ($key == (count($open_days) - 1) && $date->format('H:i') < $open_hours[0]) {
+                // On est le dernier jour ouvré mais avant l'heure ouvré
+                $nbDay = 0;
+            }
+            else {
+                // On est après l'heure ouvré d'un jour ouvré classique
+                $nbDay = 1;
+            }
+            $date->add(new \DateInterval('P'.$nbDay.'D'));
+            $_SESSION['envoi_differe_timestamp'] = strtotime($date->format('m/d/Y') . ' ' . $open_hours[0]) * 1000;
+            $rcmail->output->show_message(str_replace('%%date%%', $date->format('d/m/Y') . ' ' . $open_hours[0], $this->gettext('disco_remise_differe_enabled')), 'confirmation');
+        }
+    }
+
+    /**
+     * Est-ce que le pop up de droit à la déconnexion doit s'afficher ?
+     * 
+     * @return boolean
+     */
+    private function is_deconnection_right_enable() {
+        $show_popup = false;
+        $rcmail = rcmail::get_instance();
+
+        $timezone = $rcmail->config->get('timezone', date_default_timezone_get());
+        $open_days = $rcmail->config->get('remise_open_days', ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
+
+        $date = new \DateTime('now');
+        $date->setTimezone(new \DateTimeZone($timezone));
+
+        if (!in_array($date->format('D'), $open_days)) {
+            // On n'est pas dans un jour ouvré
+            $show_popup = true;
+        }
+        else {
+            $open_hours = explode('-', $rcmail->config->get('remise_open_hours', '08:00-19:00'), 2);
+            if ($date->format('H:i') < $open_hours[0] || $date->format('H:i') > $open_hours[1]) {
+                // On est hors des plages horaires
+                $show_popup = true;
+            }
+            else {
+                $_SESSION['disconnexion_popup'] = null;
+            }
+        }
+        
+        return $show_popup && !isset($_SESSION['disconnexion_popup']);
     }
 
     /**

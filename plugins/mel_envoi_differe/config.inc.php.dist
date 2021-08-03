@@ -2,3 +2,12 @@
 
 // Nombre de jour maximum accepté pour une remise différée
 $rcmail_config['remise_max_days'] = 30;
+
+// Activer le droit à la déconnexion ?
+$rcmail_config['remise_enable_deconnection_right'] = false;
+
+// Liste des jours ouvrés au format PHP (https://www.php.net/manual/fr/datetime.format.php) : Mon Tue Wed Thu Fri Sat Sun
+$rcmail_config['remise_open_days'] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+// Plage horaire heures ouvrés au format H:i-H:i
+$rcmail_config['remise_open_hours'] = '08:00-19:00';

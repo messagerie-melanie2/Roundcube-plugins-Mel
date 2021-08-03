@@ -298,7 +298,7 @@ rcube_webmail.prototype.display_mel_envoi_differe = function () {
         });
     }
 
-    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 500, resizable: false, height: 460 })
+    rcmail.show_popup_dialog(html, rcmail.gettext('buttontitle', 'mel_envoi_differe'), buttons, { width: 500, resizable: false, height: 460 });
 
     $('#envoidiffere_date').datepicker({ minDate: 0, maxDate: "+" + rcmail.env.max_days + "D", dateFormat: 'dd/mm/yy' })
         .change(function () {

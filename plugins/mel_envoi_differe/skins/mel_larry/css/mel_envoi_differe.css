@@ -66,3 +66,16 @@ body.envoidiffere {
     display: block;
     margin-left: 24px;
 }
+
+#disconnection_popup span {
+    display: block;
+    margin: 5px 0;
+}
+
+#disconnection_popup span.title {
+    font-weight: bold;
+}
+
+.disconnection_popup .ui-dialog-buttonset {
+    text-align: center;
+}

@@ -44,3 +44,13 @@ $labels['empty_message'] = 'Merci de remplir les champs ci-dessus';
 $labels['max_days_error'] = 'Erreur : le message n\'a pas été envoyé, la remise différée dépasse la limite de %%max_days%% jours.';
 $labels['saving_remise'] = 'Conserver la remise différée pour les envois suivants';
 $labels['saving_remise_description'] = 'En cochant cette case le paramètrage de la remise différée sera conservée pour les prochains envois, jusqu\'a ce qu\'elle soit désactivée ou que la date choisie soit dépassée.';
+
+$labels['disco_popup_title'] = 'ATTENTION : Vous êtes en train de travailler en heure non ouvrée, pensez à utiliser votre droit à la déconnexion.';
+$labels['disco_popup_description'] = 'Vous avez la possibilité de quitter votre session Mél mais également de continuer votre travail via la messagerie de 2 manières :
+<br>1. Continuer en mode normal en envoyant en temps réel vos messages
+<br>2. Passer en mode "Différé". Chaque message envoyé sera remis à la prochaine heure ouvrée.
+<br>l\'envoi immédiat de mails est possible en désactivant ponctuellement la remise différée.';
+$labels['disco_button_continue'] = 'Continuer';
+$labels['disco_button_continue_with_remise_differe'] = 'Continuer en activant la remise différée';
+$labels['disco_button_disconnect'] = 'Se déconnecter';
+$labels['disco_remise_differe_enabled'] = 'La remise différée a bien été activée au %%date%%';

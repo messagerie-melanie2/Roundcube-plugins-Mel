@@ -17,6 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+var dialog;
+
 if (window.rcmail) {
     rcmail.addEventListener('init', function (evt) {
         if (rcmail.env.deconnection_right_popup) {
@@ -24,6 +26,12 @@ if (window.rcmail) {
                 rcmail.deconnection_right_popup();
             }, 500);
         }
+        // Event storage pour fermer les popup
+        window.addEventListener('storage', function(e) {
+            if (e.key == 'disable_disconnection_popup' && e.newValue) {
+                window.dialog.dialog('destroy');
+            }
+        });
     });
     // Gérer la pop up après le regresh
     rcmail.addEventListener('plugin.deconnection_right_popup', function (evt) {
@@ -49,26 +57,29 @@ rcube_webmail.prototype.deconnection_right_popup = function() {
             'class': 'mainaction',
             click: function () {
                 rcmail.http_post('plugin.disconnection', {_act: 'continue'});
-                $(this).dialog('destroy');
+                window.localStorage.setItem('disable_disconnection_popup', true);
+                window.dialog.dialog('destroy');
             }
         },
         {
             text: this.gettext('disco_button_continue_with_remise_differe', 'mel_envoi_differe'),
             click: function () {
                 rcmail.http_post('plugin.disconnection', {_act: 'continue_with_remise_differe'});
-                $(this).dialog('destroy');
+                window.localStorage.setItem('disable_disconnection_popup', true);
+                window.dialog.dialog('destroy');
             }
         },
         {
             text: this.gettext('disco_button_disconnect', 'mel_envoi_differe'),
             click: function (event) {
-                $(this).dialog('destroy');
+                window.dialog.dialog('destroy');
                 return rcmail.command('switch-task', 'logout', this, event);
             }
         },
     ];
 
     // Show pop up
-    this.show_popup_dialog(html, this.gettext('disco_popup_title', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 380 });
+    window.dialog = this.show_popup_dialog(html, this.gettext('disco_popup_title', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 380 });
     $('#disconnection_popup').parent().parent().addClass('disconnection_popup');
+    window.localStorage.removeItem('disable_disconnection_popup');
 };

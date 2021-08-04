@@ -108,7 +108,8 @@ class mel_envoi_differe extends rcube_plugin
     /**
      * Fonction refresh pour le popup de droit à la déconnexion
      */
-    function refresh() {
+    function refresh() 
+    {
         if ($this->is_deconnection_right_enable()) {
             $this->add_texts('localization/', ['disco_popup_title', 'disco_popup_description', 
                 'disco_button_continue', 'disco_button_continue_with_remise_differe',
@@ -122,37 +123,25 @@ class mel_envoi_differe extends rcube_plugin
     /**
      * Continuer la sans déconnexion avec ou sans remise différée
      */
-    function disconnection() {
+    function disconnection() 
+    {
         $_SESSION['disconnexion_popup'] = true;
         $act = rcube_utils::get_input_value('_act', rcube_utils::INPUT_GPC);
         if ($act == 'continue_with_remise_differe') {
-            $this->add_texts('localization/', ['disco_remise_differe_enabled']);
             $rcmail = rcmail::get_instance();
+            $this->add_texts('localization/', ['disco_remise_differe_enabled']);
 
+            // Get config values
             $timezone = $rcmail->config->get('timezone', date_default_timezone_get());
             $open_days = $rcmail->config->get('remise_open_days', ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
-            $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             $open_hours = explode('-', $rcmail->config->get('remise_open_hours', '08:00-19:00'), 2);
 
+            // Date now
             $date = new \DateTime('now');
             $date->setTimezone(new \DateTimeZone($timezone));
 
-            $day = $date->format('D');
-            $nbDay = 0;
-            $aKey = array_search($day, $days);
-            $key = array_search($day, $open_days);
-            if ($key === false || $key == (count($open_days) - 1) && $date->format('H:i') > $open_hours[1]) {
-                // Cas ou on est un jour non ouvré ou après l'heure ouvré du dernier jour ouvré
-                $nbDay = count($days) - $aKey;
-            }
-            else if ($key == (count($open_days) - 1) && $date->format('H:i') < $open_hours[0]) {
-                // On est le dernier jour ouvré mais avant l'heure ouvré
-                $nbDay = 0;
-            }
-            else {
-                // On est après l'heure ouvré d'un jour ouvré classique
-                $nbDay = 1;
-            }
+            $nbDay = $this->_get_number_of_days($date, $open_days, $open_hours);
+
             $date->add(new \DateInterval('P'.$nbDay.'D'));
             $_SESSION['envoi_differe_timestamp'] = strtotime($date->format('m/d/Y') . ' ' . $open_hours[0]) * 1000;
             $rcmail->output->show_message(str_replace('%%date%%', $date->format('d/m/Y') . ' ' . $open_hours[0], $this->gettext('disco_remise_differe_enabled')), 'confirmation');
@@ -160,11 +149,52 @@ class mel_envoi_differe extends rcube_plugin
     }
 
     /**
+     * Récupère le nombre de jours jusqu'au prochain jour ouvré
+     * 
+     * @param DateTime $date date du jour
+     * @param array $open_days liste des jours ouvrés configurés
+     * @param array $open_hours liste des heures ouvrées configurées
+     * 
+     * @return integer Nombre de jours
+     */
+    private function _get_number_of_days($date, $open_days, $open_hours)
+    {
+        $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+        $day = $date->format('D');
+
+        $aKey = array_search($day, $days);
+        $key = array_search($day, $open_days);
+
+        $nbDay = 0;
+
+        if ($key === false || $date->format('H:i') > $open_hours[1]) {
+            // Cas ou on est un jour non ouvré ou après l'heure ouvré du dernier jour ouvré
+            for ($nbDay = 1; $nbDay + $aKey < count($days); $nbDay++) {
+                if (in_array($days[$nbDay + $aKey], $open_days)) {
+                    break;
+                }
+            }
+        }
+        else if ($date->format('H:i') <= $open_hours[0]) {
+            // On est le dernier jour ouvré mais avant l'heure ouvré
+            $nbDay = 0;
+        }
+        else {
+            // On est après l'heure ouvré d'un jour ouvré classique
+            $nbDay = 1;
+        }
+
+        return $nbDay;
+    }
+
+    /**
      * Est-ce que le pop up de droit à la déconnexion doit s'afficher ?
      * 
      * @return boolean
      */
-    private function is_deconnection_right_enable() {
+    private function is_deconnection_right_enable() 
+    {
         $show_popup = false;
         $rcmail = rcmail::get_instance();
 

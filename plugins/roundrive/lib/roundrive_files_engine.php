@@ -1130,6 +1130,11 @@ class roundrive_files_engine
             "initfolders" => [$this, "init_folder"]
         ]);
 
+        $this->rc->output->add_handlers([
+            "initpathname" => [$this, "initpathname"],
+            "initpathname2" => [$this, "initpathname2"]
+        ]);
+
         if ($send === true || $send === "true")
             $this->rc->output->send("roundrive.create");
         else
@@ -1139,11 +1144,45 @@ class roundrive_files_engine
         }
     }
 
+    public function action_folder_get_metadatas()
+    {
+        $folders = rcube_utils::get_input_value('_folders', rcube_utils::INPUT_POST);
+
+        $return = [];
+
+        foreach ($folders as $key => $value) {
+           $return[] = ["metadatas" =>  $this->filesystem->getMetadata($value["path"]), "path" => $value["path"]];
+        } 
+
+        echo json_encode($return);
+        exit;
+    }
+
+    public function initpathname()
+    {
+        $initFolder = rcube_utils::get_input_value('_initPath', rcube_utils::INPUT_GET);
+        $haveInitFolder = $initFolder !== null;
+
+        return '<input id=roundrive-folder-input type="text" aria-disabled="true" class="form-control input-mel disabled roundrive-folder" disabled placeholder="'.($haveInitFolder ? $this->plugin->gettext('files')."/$initFolder" : $this->plugin->gettext('files')).'" />';
+    }
+
+    public function initpathname2()
+    {
+        $initFolder = rcube_utils::get_input_value('_initPath', rcube_utils::INPUT_GET);
+        $haveInitFolder = $initFolder !== null;
+
+        return '<input aria-disabled="true" id="fake-input-folder" style="margin-bottom: 25px;" type="text" class="form-control input-mel disabled roundrive-folder" disabled placeholder="'.($haveInitFolder ? $this->plugin->gettext('files')."/$initFolder" : $this->plugin->gettext('files')).'" />';
+    }
+
     public function init_folder()
     {
-        $folders = $this->get_folders();
+        $initFolder = rcube_utils::get_input_value('_initPath', rcube_utils::INPUT_GET);
+
+        $haveInitFolder = $initFolder !== null;
+
+        $folders = $this->get_folders(!$haveInitFolder ? "" : $initFolder);
         $html = "<ul class=\"list-group list-group-flush mel-list mel-tree\">";
-        $html .= "<li data-path=\"".$this->plugin->gettext('files')."\" class=\"list-group-item mel-list-item \"><a href=# onclick=RoundriveCreate.folder_click(this) class=\"mel-not-link color-white mel-item-icon icon-mel-chevron-right mel-clickable\"></a><a href=# class=\"mel-text mel-focus mel-not-link link-like-hover color-white\" onclick=rcmail.env.roundrive.select(this)>".$this->plugin->gettext('files')."</a>";
+        $html .= "<li data-path=\"".($haveInitFolder ? $this->plugin->gettext('files')."/".$initFolder : $this->plugin->gettext('files'))."\" class=\"list-group-item mel-list-item \"><a href=# onclick=RoundriveCreate.folder_click(this) class=\"mel-not-link color-white mel-item-icon icon-mel-chevron-right mel-clickable\"></a><a href=# class=\"mel-text mel-focus mel-not-link link-like-hover color-white\" onclick=rcmail.env.roundrive.select(this)>".($haveInitFolder ? $initFolder : $this->plugin->gettext('files'))."</a>";
         $html .= "<ul class=\"list-group list-group-flush \" style=display:none>";
         foreach ($folders as $key => $value) {
             $path = $this->plugin->gettext('files')."/".urldecode($value["path"]);

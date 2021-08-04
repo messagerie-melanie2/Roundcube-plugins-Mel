@@ -59,6 +59,7 @@ class WebDAVAdapter extends AbstractAdapter
                 '{DAV:}getcontentlength',
                 '{DAV:}getcontenttype',
                 '{DAV:}getlastmodified',
+                '{DAV:}getetag'
             ]);
 
             return $this->normalizeObject($result, $path);
@@ -203,6 +204,7 @@ class WebDAVAdapter extends AbstractAdapter
             '{DAV:}getcontentlength',
             '{DAV:}getcontenttype',
             '{DAV:}getlastmodified',
+            '{DAV:}getetag',
             '{http://owncloud.org/ns}fileid',
             '{http://owncloud.org/ns}owner-display-name',
         ], 1);
@@ -276,6 +278,9 @@ class WebDAVAdapter extends AbstractAdapter
             $result["modifiedAt"] = $object['{DAV:}getlastmodified'];
             $result['timestamp'] = strtotime($object['{DAV:}getlastmodified']);
         }
+
+        if (isset($object['{DAV:}getetag']))
+            $result["etag"] = $object['{DAV:}getetag'];
 
         if (isset($object['{http://owncloud.org/ns}fileid']))
             $result["id"] = $object['{http://owncloud.org/ns}fileid'];

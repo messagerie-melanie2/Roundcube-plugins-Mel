@@ -22,8 +22,9 @@ function search_action(searchValue, activeFields = [])
                 //console.log("array", element, key, element.checked !== undefined, activeFields.includes(key));
                 if (element.checked !== undefined)
                 {
-                    //setTimeout(() => {
-                        $(`#${element.id}`)[0].checked = activeFields.includes(key); 
+                    if ((activeFields.includes(key) && !element.checked) || 
+                    (!activeFields.includes(key) && element.checked))
+                        $(`#${element.id}`)[0].click();//checked = activeFields.includes(key); 
                     //}, 100);
                     //console.log($(`#${element.id}`)[0],$(`#${element.id}`)[0].checked );
                 }

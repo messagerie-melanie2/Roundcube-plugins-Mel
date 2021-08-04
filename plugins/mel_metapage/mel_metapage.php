@@ -617,11 +617,12 @@ class mel_metapage extends rcube_plugin
         foreach ($workpaces as $key => $value) {
             if ($wsp->get_object($value, mel_workspace::GROUP))
             {
-                $lines .= "OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after ";// HEADER BCC $before".$value->uid."$after ";
+                $lines .= "OR OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after HEADER BCC $before".$value->uid."$after ";// HEADER BCC $before".$value->uid."$after ";
                 if ($first)
                     $first = false;
                 else
                     $or .= "OR ";
+                    break;
             }
         }
 

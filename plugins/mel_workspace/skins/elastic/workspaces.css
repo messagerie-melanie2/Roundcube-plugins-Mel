@@ -787,3 +787,16 @@ body.task-workspace .wsp-toolbar v_separate{
 {
     text-align: right;
 }
+
+.notif.roundbadge.nc{
+
+    position: absolute;
+    top: 6px;
+    right: -20px;
+    color: black;
+    height: 15px;
+    width: 15px;
+    font-size: 15px;
+    line-height: 15px;
+    
+}

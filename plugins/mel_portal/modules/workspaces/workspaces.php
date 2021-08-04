@@ -59,7 +59,7 @@ class Workspaces extends Module
     {
         $html = "";
         $it = 0;
-        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces();
+        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
         foreach ($this->workspaces as $key => $value) {
             if ($it > 2)
                 break;

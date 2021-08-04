@@ -982,14 +982,18 @@ function m_mp_CreateDocumentIconContract(icon, type)
  * @async
  * Affiche les données pour créer un document dans la modale de création.
  */
-async function m_mp_InitializeDocument()
+async function m_mp_InitializeDocument(initPath = null)
 {
     create_popUp.editTitleAndSetBeforeTitle('<a href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>','Création d\'un nouveau document');
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
 
     let url_config ={
-        "_send":true
+        "_send":true,
     };
+    
+    if (initPath !== null)
+        url_config["_initPath"] = initPath;
+
     url_config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
 
     $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", url_config

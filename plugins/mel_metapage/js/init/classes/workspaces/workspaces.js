@@ -80,7 +80,25 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
 
         case "update_location":
             try {
-                window.location.href = args.args[0];
+                if (args.args.length === 1)
+                    window.location.href = args.args[0];
+                else {
+                    if (args.args.length === 3)
+                    {
+                        if ($(`iframe.${args.args[1]}`).length === 0)
+                        {
+                            $(`iframe#${args.args[2]}`)[0].src = args.args[0];
+                            console.log("iframe", $(`iframe#${args.args[2]}`), $(`iframe#${args.args[2]}`)[0].src);
+                        }
+                        else
+                            $(`iframe.${args.args[1]}`)[0].contentWindow.postMessage({
+                                exec:"update_location",
+                                child:"false",
+                                _integrated:true,
+                                args:args.args
+                            });
+                    }
+                }
             } catch (error) {
                 
             }
@@ -154,6 +172,18 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
             }
 
             break;
+        
+            case "open_create":
+                m_mp_Create();
+                switch (args.args[0]) {
+                    case "document":
+                        m_mp_InitializeDocument(args.args[1] === undefined ? null : args.args[1]);
+                        break;
+                
+                    default:
+                        break;
+                }
+                break;
 
         default:
 

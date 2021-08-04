@@ -5,6 +5,7 @@ $labels['back'] = 'Retour';
 $labels['home'] = 'Accueil';
 $labels['calendar'] = 'Agenda';
 $labels['mail'] = 'Messagerie';
+$labels['documents'] = 'documents';
 $labels['rocketchat'] = 'Discussion';
 $labels['tasks'] = 'Tâches';
 $labels['params'] = 'Paramètres';

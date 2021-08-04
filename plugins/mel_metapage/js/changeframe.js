@@ -88,7 +88,7 @@
                         ChangeFrame(datas, event.data.url);
                         break;
                     default:
-                        ChangeFrame(datas);
+                        ChangeFrame(datas, event.data.args === undefined ? null : event.data.args);
                         break;
                 }
                 break;
@@ -286,6 +286,31 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                     }
                 );
                 break;
+                case "stockage":
+                    //let picture = $(".wsp-picture");
+                    datas.push({
+                        exec_info:"change_environnement",
+                        datas:_class
+                    })
+                    datas.push({
+                        exec_info:"UpdateMenu",
+                        datas:{
+                            class:_class,
+                            picture:{
+                                color:picture.css("background-color"),
+                                picture:picture.html()
+                            },
+                            toolbar:$(".wsp-toolbar")[0].outerHTML.replace("wsp-toolbar", "wsp-toolbar wsp-toolbar-edited")
+                        }
+                    });
+                    datas.push(
+                        {
+                            exec_info:"ChangeFrame",
+                            datas:_class,
+                            args:otherDatas
+                        }
+                    );
+                    break;
         case "rocket":
             datas.push({
                 exec_info:"change_environnement",
@@ -458,8 +483,15 @@ async function ChangeFrame(_class, otherDatas = null)
     else
         $(".a-frame").css("display", "none");
 
-    //if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
-        //mel_metapage.Functions.searchOnMail("ariane", ["to", "cc", "bcc"]);
+    if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
+        mel_metapage.Functions.searchOnMail(`edt.${rcmail.env.current_workspace_uid}@i-carre.net`, ["to", "cc", "bcc"]);
+    else if (_class === "stockage")
+        mel_metapage.Functions.call("update_location", false, {
+            _integrated:true,
+            args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${rcmail.env.current_workspace_uid}`,"stockage-frame","mel_nextcloud_frame"]
+        });
+        //https://roundcube.ida.melanie2.i2/nextcloud/
+        //Nextcloud.index_url + "/apps/files?dir=/dossiers-"+rcmail.env.current_workspace_uid
 
     // if ($("#layout-content").hasClass("workspace-frame"))
     //     $("#layout-content").css("display", "");

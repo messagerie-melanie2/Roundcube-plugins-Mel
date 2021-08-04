@@ -444,7 +444,7 @@ function UpdateFrameAriane()
 
 async function initCloud()
 {
-    const folder = `/dossiers-${rcmail.env.current_workspace_uid}`;
+    const folder = 'Documents';//`/dossiers-${rcmail.env.current_workspace_uid}`;
 
     let spinner = $("#spinner-grow-center");
     let frame = $("#cloud-frame");
@@ -454,15 +454,27 @@ async function initCloud()
             spinner.remove();
             frame.css("display", "");
         },
+        updatedFunc:async (bool)=>{
+            if (bool && $(".wsp-documents").find(".notif").length === 0)
+                $(".wsp-documents").append(`<span style="" class="notif roundbadge lightgreen">•</span>`);
+            else if (!bool && $(".wsp-documents").find(".notif").length > 0)
+                $(".wsp-documents").find(".notif").remove();
+        },
         classes:{
             folder:"wsp-rd-row",
             file:"wsp-rd-row last"
-        }
+        },
+        wsp:rcmail.env.current_workspace_uid
     });
 }
 
 function showMail($id)
 {
+    try {
+        event.preventDefault();
+    } catch (error) {
+        
+    }
     //?_task=mail&_action=show&_uid=363&_mbox=INBOX
 
     let config = {
@@ -504,11 +516,11 @@ function wsp_mail_updated()
         for (const key in datas[rcmail.env.current_workspace_uid]) {
             if (Object.hasOwnProperty.call(datas[rcmail.env.current_workspace_uid], key)) {
                 const element = datas[rcmail.env.current_workspace_uid][key];
-                html += `<div class="row wsp-email-row" onclick="showMail('${element.uid}')">`;
-                html += `<div class="col-md-3 wsp-email-from">${element.from}</div>`;
-                html += `<div class="col-md-6 wsp-email-subject">${element.subject}</div>`;
-                html += `<div class="col-md-3 wsp-email-date">${element.date}</div>`;
-                html += "</div>";
+                html += `<a href="#" class="row wsp-email-row mel-not-link mel-focus" onclick="showMail('${element.uid}')">`;
+                html += `<div class="col-md-3 wsp-email-from"><p class="sr-only">De : </p>${element.from}</div>`;
+                html += `<div class="col-md-6 wsp-email-subject"><p class="sr-only"> Objet : </p>${element.subject}</div>`;
+                html += `<div class="col-md-3 wsp-email-date"><p class="sr-only"> Reçu le : </p>${element.date}</div>`;
+                html += "</a>";
             }
         }
 

@@ -113,3 +113,8 @@ WSPNotification.agenda = function ()
         return  Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).count();
     }, mel_metapage.Storage.last_calendar_update, mel_metapage.EventListeners.calendar_updated.after);
 }
+
+WSPNotification.documents = function()
+{
+    return new WSPNotification("doc-notif", null, null, "icon-mel-folder", () => 0, null, null);
+}

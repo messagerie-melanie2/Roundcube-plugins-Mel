@@ -191,6 +191,12 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
             {
                 rcmail.triggerEvent(func_name.split(".")[1]);
             }
+            else if (func_name.includes("mel_metapage"))
+            {
+                console.log("HERE", func_name, args);
+                mel_metapage.Functions[func_name.split(".")[1]](...args.args);
+            }
+
 
             break;
     }
@@ -209,7 +215,7 @@ if (parent === window)
         try {
             if (SynchroniseWorkspaces.im_who_have_lunched_this)
                 SynchroniseWorkspaces.im_who_have_lunched_this = false;
-            ////console.error("post", datas);
+            //console.error("post", datas);
             if (datas._integrated === true && datas.this !== false)
                 SynchroniseWorkspaces.integrated_functions(datas.exec, datas);
             else {

@@ -128,25 +128,41 @@ RoundriveCreate.prototype.create_document = function()
             },
             (datas) => {
                 datas = JSON.parse(datas);
+
+                console.log("created",datas);
                 
                 if (datas.success)
                 {
                     if (window.Nextcloud !== undefined)
                     {
+                        // mel_metapage.Functions.stockage.go({
+                        //     file:datas.file,
+                        //     folder:datas.path
+                        // }, false, async (error) => {
+                        //     create_popUp.close(); 
+                        //     create_popUp = undefined;
+                        //     if (!error)
+                        //     {
+                        //         console.error("Impossible d'ouvrir le fichier");
+                        //         mel_metapage.Functions.busy(false);
+                        //         await mel_metapage.Functions.change_frame("stockage", true, true);
+                        //         rcmail.display_message("Impossible d'ouvrir le fichier.", "error");
+                        //     }
+                        // });
                         mel_metapage.Functions.stockage.go({
-                            file:datas.file,
-                            folder:datas.path
-                        }, false, async (error) => {
-                            create_popUp.close(); 
-                            create_popUp = undefined;
-                            if (!error)
-                            {
-                                console.error("Impossible d'ouvrir le fichier");
-                                mel_metapage.Functions.busy(false);
-                                await mel_metapage.Functions.change_frame("stockage", true, true);
-                                rcmail.display_message("Impossible d'ouvrir le fichier.", "error");
-                            }
-                        });
+                            path:datas.path,
+                            name:datas.file
+                        }, null, async (error) => {
+                                create_popUp.close(); 
+                                create_popUp = undefined;
+                                // if (!error)
+                                // {
+                                //     console.error("Impossible d'ouvrir le fichier", error);
+                                //     mel_metapage.Functions.busy(false);
+                                //     await mel_metapage.Functions.change_frame("stockage", true, true);
+                                //     rcmail.display_message("Impossible d'ouvrir le fichier.", "error");
+                                // }
+                            });
                     }
                 }
                 else

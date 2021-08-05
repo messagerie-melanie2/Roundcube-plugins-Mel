@@ -29,6 +29,7 @@ try {
 }
 try {
     WSPNotification.agenda().update();
+    WSPNotification.documents().update();
 } catch (error) {
     console.error("###[WSPNotification.agenda().update()]", error);
 }

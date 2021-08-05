@@ -184,71 +184,143 @@ Nextcloud.prototype._getAllFolders = async function(folder = null, parent = "")
   return retour;
 }
 
-/**
- * Permet d'ouvrir la frame Nextcloud.
- * @param {*} data Données pour ouvrir la frame.
- * @param {boolean} isFileData Si les données est un objet de type Nextcloud_File.
- */
-Nextcloud.prototype.go = async function(data, isFileData = true)
+Nextcloud.prototype.go = async function(file, goFunc = null)
 {
-  //console.log("data", data);
-  async function open()
+  if (file.id === undefined)
   {
-    mm_st_OpenOrCreateFrame("stockage", false);
-    rcmail.set_busy(true, "loading");
-    await wait(() => $('.stockage-frame').length === 0);
-    rcmail.set_busy(true, "loading");
-    needToOpen = true;
-    $('.stockage-frame').css("padding-top","60px");
-    return $('.stockage-frame');
+
+    let config = {
+      _folder:file.path
+    };
+
+    file = await mel_metapage.Functions.get(
+        mel_metapage.Functions.url("roundrive", "folder_list_all_items"),
+        config,
+        (datas) => {
+            datas = JSON.parse(datas);
+            for (const key in datas) {
+              if (Object.hasOwnProperty.call(datas, key)) {
+                const element = datas[key];
+                if (element.basename === file.name)
+                  return element;
+              }
+            }
+            rcmail.display_message("Le fichier n'existe pas !", "error");
+            return "stop";
+        },
+        (xhr, ajaxOptions, thrownError) => {
+            console.error(xhr, ajaxOptions, thrownError);
+            rcmail.display_message("Impossible de se connecter au stockage !", "error");
+            return "stop";
+        }
+    );
+
+    if (file === "stop")
+        return;
+
   }
-  rcmail.set_busy(true, "loading");
-  let frameToUpdate = null;
-  let needToOpen = false;
-  //console.log(rcmail.env.current_frame, $("#" + rcmail.env.current_frame).hasClass("stockage-frame"), $(".stockage-frame").length === 0);
-  if (rcmail.env.current_frame === undefined && rcmail.env.task === "stockage")
-    frameToUpdate = $("#mel_nextcloud_frame");
-  else if (!$("#" + rcmail.env.current_frame).hasClass("stockage-frame"))
+
+  if (goFunc !== null)
   {
-    //console.log("zbra", $(".stockage-frame").length);
-    if ($(".stockage-frame").length === 0){
-      frameToUpdate = open(); 
-    }
-    else 
-    {
-      frameToUpdate = $('.stockage-frame');
-      $('.stockage-frame').css("padding-top","60px");
-      needToOpen = true;
-    }
+    goFunc(file);
   }
-  else 
-    frameToUpdate = $('.stockage-frame').css("padding-top","60px");
-  if (isFileData)
-    data =  Nextcloud.index_url +  "/apps/files?dir=/"+data.document_path()+"&openfile=" + data.id;
   else {
-    data = await this.searchDocument(data.file, data.folder, data.href);
-    if (data === null || data.is_valid_file === false || data.type === mel_metapage.Symbols.nextcloud.folder)
-    {  
-      return false;
-    }
-    else 
-      data = Nextcloud.index_url + "/apps/files?dir=/"+data.document_path()+"&openfile=" + data.id;
+
+    mel_metapage.Functions.doActionFrame("stockage", async (actionType, file) => {
+
+      const url = `${Nextcloud.index_url}/apps/files?dir=/${file.dirname}&openfile=${file.id}`;
+
+      switch (actionType) {
+        case 0:
+        case 1:
+          await mel_metapage.Functions.change_frame("stockage", true, true);
+          $(`iframe.stockage-frame`)[0].contentWindow.postMessage({
+            exec:"update_location",
+            _integrated:true,
+            always:true,
+            child:false,
+            args:[url, "stockage-frame", "mel_nextcloud_frame"]
+          }); 
+          break;
+        
+        case 2:
+          window.location.href = url;
+          break;
+      
+        default:
+          break;
+      }
+    }, file);
+    
+    
   }
-  //console.log("src", data);
-  //console.log('fu', frameToUpdate, typeof frameToUpdate !== "function");
-  rcmail.set_busy(true, "loading");
-  if (frameToUpdate.then === undefined)
-    frameToUpdate[0].src = data;
-  else {
-    frameToUpdate = await frameToUpdate;
-    frameToUpdate[0].src = data;
-  }
-  if (needToOpen)
-    mm_st_OpenOrCreateFrame("stockage", true);
-  rcmail.set_busy(false);
-  rcmail.clear_messages();
-  return true;
 }
+
+// /**
+//  * Permet d'ouvrir la frame Nextcloud.
+//  * @param {*} data Données pour ouvrir la frame.
+//  * @param {boolean} isFileData Si les données est un objet de type Nextcloud_File.
+//  */
+// Nextcloud.prototype.go = async function(data, isFileData = true)
+// {
+//   //console.log("data", data);
+//   async function open()
+//   {
+//     mm_st_OpenOrCreateFrame("stockage", false);
+//     rcmail.set_busy(true, "loading");
+//     await wait(() => $('.stockage-frame').length === 0);
+//     rcmail.set_busy(true, "loading");
+//     needToOpen = true;
+//     $('.stockage-frame').css("padding-top","60px");
+//     return $('.stockage-frame');
+//   }
+//   rcmail.set_busy(true, "loading");
+//   let frameToUpdate = null;
+//   let needToOpen = false;
+//   //console.log(rcmail.env.current_frame, $("#" + rcmail.env.current_frame).hasClass("stockage-frame"), $(".stockage-frame").length === 0);
+//   if (rcmail.env.current_frame === undefined && rcmail.env.task === "stockage")
+//     frameToUpdate = $("#mel_nextcloud_frame");
+//   else if (!$("#" + rcmail.env.current_frame).hasClass("stockage-frame"))
+//   {
+//     //console.log("zbra", $(".stockage-frame").length);
+//     if ($(".stockage-frame").length === 0){
+//       frameToUpdate = open(); 
+//     }
+//     else 
+//     {
+//       frameToUpdate = $('.stockage-frame');
+//       $('.stockage-frame').css("padding-top","60px");
+//       needToOpen = true;
+//     }
+//   }
+//   else 
+//     frameToUpdate = $('.stockage-frame').css("padding-top","60px");
+//   if (isFileData)
+//     data =  Nextcloud.index_url +  "/apps/files?dir=/"+data.document_path()+"&openfile=" + data.id;
+//   else {
+//     data = await this.searchDocument(data.file, data.folder, data.href);
+//     if (data === null || data.is_valid_file === false || data.type === mel_metapage.Symbols.nextcloud.folder)
+//     {  
+//       return false;
+//     }
+//     else 
+//       data = Nextcloud.index_url + "/apps/files?dir=/"+data.document_path()+"&openfile=" + data.id;
+//   }
+//   //console.log("src", data);
+//   //console.log('fu', frameToUpdate, typeof frameToUpdate !== "function");
+//   rcmail.set_busy(true, "loading");
+//   if (frameToUpdate.then === undefined)
+//     frameToUpdate[0].src = data;
+//   else {
+//     frameToUpdate = await frameToUpdate;
+//     frameToUpdate[0].src = data;
+//   }
+//   if (needToOpen)
+//     mm_st_OpenOrCreateFrame("stockage", true);
+//   rcmail.set_busy(false);
+//   rcmail.clear_messages();
+//   return true;
+// }
 
 /**
  * Url de Nextcloud.

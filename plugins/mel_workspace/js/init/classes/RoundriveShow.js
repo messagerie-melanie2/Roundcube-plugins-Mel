@@ -330,26 +330,27 @@ class RoundriveShow
     {
         //console.log(file, "file");
 
-        if (window.Nextcloud !== undefined && !rcmail.busy)
-        {
-            const datas = {
-                file:file.basename,
-                path:file.path.replace(file.basename, "")
-            };
+        // if (window.Nextcloud !== undefined && !rcmail.busy)
+        // {
+        //     const datas = {
+        //         file:file.basename,
+        //         path:file.path.replace(file.basename, "")
+        //     };
 
-            mel_metapage.Functions.stockage.go({
-                file:datas.file,
-                folder:datas.path
-            }, false, async (error) => {
-                if (!error)
-                {
-                    console.error("Impossible d'ouvrir le fichier");
-                    mel_metapage.Functions.busy(false);
-                    await mel_metapage.Functions.change_frame("stockage", true, true);
-                    rcmail.display_message("Impossible d'ouvrir le fichier.", "error");
-                }
-            });
-        }    
+        //     mel_metapage.Functions.stockage.go({
+        //         file:datas.file,
+        //         folder:datas.path
+        //     }, false, async (error) => {
+        //         if (!error)
+        //         {
+        //             console.error("Impossible d'ouvrir le fichier", error);
+        //             mel_metapage.Functions.busy(false);
+        //             await mel_metapage.Functions.change_frame("stockage", true, true);
+        //             rcmail.display_message("Impossible d'ouvrir le fichier.", "error");
+        //         }
+        //     });
+        // }    
+        ChangeToolbar('stockage', this, Nextcloud.index_url + "/apps/files?dir=/"+file.dirname+"&openfile=" + file.id);
     }
 
     clickGoToFile(event, file)

@@ -666,10 +666,10 @@ const mel_metapage = {
              * @param {boolean} isfiledatas Si vrai, datas est un objet <c>Nextcloud_File</c>
              * @param {function} thenFunc Action à faire une fois que l'on à changer de page.
              */
-            go:function(datas, isfiledatas, thenFunc = null)
+            go:function(datas, goFunc = null, thenFunc = null)
             {
                 let init = 'new Nextcloud("rcmail.env.nextcloud_username")';
-                let go = `.go(${JSON.stringify(datas)}, ${isfiledatas})`;
+                let go = `.go(${JSON.stringify(datas)}, ${goFunc})`;
                 let then = "";
 
                 if (thenFunc !== null)
@@ -700,6 +700,35 @@ const mel_metapage = {
             }
             else    
                 mel_metapage.Functions.call(`mel_metapage.Functions.searchOnMail('${itemToSearch}', ${JSON.stringify(fields)}, ${openFrame})`);
+        },
+
+        doActionFrame:function (frame, doAction, ...functionArgs)
+        {
+            //console.log("[doActionFrame]",frame, doAction, parent !== window);
+            if (parent !== window)
+            {
+                mel_metapage.Functions.call("mel_metapage.doActionFrame", false, {
+                    _integrated:true,
+                    always:true,
+                    args:[frame, doAction + "", ...functionArgs]
+                });
+            }
+            else {
+
+                if (typeof doAction === "string")
+                    doAction = new Function(`return (${doAction})(...arguments)`);
+
+                //console.log("here",doAction);
+
+                //Personne ouvert
+                if ($(`.${frame}-frame`).length === 0)
+                    doAction(0, ...functionArgs);
+                else if ($(`iframe.${frame}-frame`).length > 0) //Frame ouverte
+                    doAction(1, ...functionArgs);
+                else //Page ouverte
+                    doAction(2, ...functionArgs);
+
+            }
         }
 
 

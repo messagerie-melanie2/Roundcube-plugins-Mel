@@ -439,6 +439,9 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $folder = $this->rc->storage->get_folder();
                     }
                 }
+                else if ($this->rc->task == 'mail' && $this->rc->action == 'send') {
+                    
+                }
                 else {
                     $folder = $this->rc->storage->get_folder();
                 }

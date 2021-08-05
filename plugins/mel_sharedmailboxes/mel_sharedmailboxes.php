@@ -439,15 +439,20 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $folder = $this->rc->storage->get_folder();
                     }
                 }
+                else if ($this->rc->task == 'mail' && $this->rc->action == 'plugin.refresh_store_target_selection') {
+                    $folder = null;
+                }
                 else {
                     $folder = $this->rc->storage->get_folder();
                 }
 
-                $ret = $this->get_user_from_folder($folder);
-                if (isset($ret)) {
-                    // Récupération de la configuration de la boite pour l'affichage
-                    $args['user'] = $ret['user'];
-                    $args['host'] = $ret['host'];
+                if (isset($folder)) {
+                    $ret = $this->get_user_from_folder($folder);
+                    if (isset($ret)) {
+                        // Récupération de la configuration de la boite pour l'affichage
+                        $args['user'] = $ret['user'];
+                        $args['host'] = $ret['host'];
+                    }
                 }
             }
             // Utiliser les proxy imap ?

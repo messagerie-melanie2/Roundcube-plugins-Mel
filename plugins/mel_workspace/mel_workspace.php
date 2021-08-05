@@ -44,6 +44,8 @@ class mel_workspace extends rcube_plugin
         $this->setup();
         $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
         $this->include_script('js/init/classes/WSPNotifications.js');
+        $this->include_script('js/init/classes/RoundriveShow.js');
+        $this->include_script('js/init/classes/WorkspaceDrive.js');
         if ($this->rc->task === "workspace")
             $this->portal();
     }
@@ -490,7 +492,7 @@ class mel_workspace extends rcube_plugin
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
         ];
 
-        $datas[self::EMAIL] = $datas[self::CLOUD];
+        //$datas[self::EMAIL] = $datas[self::CLOUD];
 
         if ($services_to_remove)
         {
@@ -941,12 +943,11 @@ class mel_workspace extends rcube_plugin
                     $this->include_script('js/'.$this->folders[$it]."/".$files[$i]);
             }
         }
+
         if ($this->rc->action === "index" || $this->rc->action === "" || $this->rc->action === "action")
             $this->include_script('js/index.js');
         if ($this->rc->action === "workspace")
         {
-            $this->include_script('js/init/classes/RoundriveShow.js');
-            $this->include_script('js/init/classes/WorkspaceDrive.js');
             $this->include_script('js/workspace.js');
             $this->include_script('js/params.js');
         }

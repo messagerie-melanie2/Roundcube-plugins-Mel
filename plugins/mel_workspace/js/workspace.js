@@ -444,7 +444,7 @@ function UpdateFrameAriane()
 
 async function initCloud()
 {
-    const folder = 'Documents';//`/dossiers-${rcmail.env.current_workspace_uid}`;
+    const folder = `/dossiers-${rcmail.env.current_workspace_uid}`;
 
     let spinner = $("#spinner-grow-center");
     let frame = $("#cloud-frame");

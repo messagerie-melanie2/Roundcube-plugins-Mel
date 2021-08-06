@@ -710,7 +710,7 @@ class mel_workspace extends rcube_plugin
                 {
                     
                     $before_body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
-                        html::tag("button", ["id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", "class" => "mel-button btn btn-secondary"],
+                        html::tag("button", ["title" => "Actualiser","id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", "class" => "mel-button btn btn-secondary"],
                             '<span class="icofont-refresh"><p class="sr-only">Actualiser la visualisation du stockage</p></span>'
                         ).
                         html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-documents').click()", "class" => "mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;

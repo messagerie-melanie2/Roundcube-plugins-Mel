@@ -146,7 +146,7 @@ WSPNotification.documents = function()
 {
     let txt = "(async () => {";
     Enumerable.from($(".doc-notif").parent().parent().parent()).select(x => x.id.replace("wsp-notifs-wsp-", "").replace("-epingle", "")).forEach(x=>{
-        txt += `await new RoundriveShow('Documents'/*'dossiers-${x}'*/, null, {
+        txt += `await new RoundriveShow('dossiers-${x}', null, {
             wsp:'${x}',
             ignoreInit:true,
             updatedFunc: (bool) => {

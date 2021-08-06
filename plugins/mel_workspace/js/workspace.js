@@ -5,6 +5,9 @@ $(document).ready(async () => {
 
 async function WSPReady()
 {
+
+    //$("button.wsp-toolbar-item").data("uid", rcmail.env.current_workspace_uid);
+
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
     try {
         if (rcmail.env.current_workspace_services.mail)

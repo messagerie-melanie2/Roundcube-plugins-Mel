@@ -225,6 +225,11 @@ function UpdateMenu(_class, _picture, _toolbar)
 
 async function ChangeToolbar(_class, event, otherDatas = null)
 {
+
+    const uid = $(event).data("uid");
+
+    console.log(event, "event", uid);
+
     if(rcmail.busy)
         return;
 
@@ -282,7 +287,8 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                 datas.push(
                     {
                         exec_info:"ChangeFrame",
-                        datas:_class
+                        datas:_class,
+                        args:`uid:${uid}`
                     }
                 );
                 break;
@@ -307,7 +313,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                         {
                             exec_info:"ChangeFrame",
                             datas:_class,
-                            args:otherDatas
+                            args:otherDatas === null ? `uid:${uid}` : null 
                         }
                     );
                     break;
@@ -438,7 +444,8 @@ async function ChangeToolbar(_class, event, otherDatas = null)
         parent.postMessage(element);
     }
 
-    const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid, _page:_class});
+    const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class});
+    console.log("url", url);
     window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
 }
 
@@ -483,13 +490,23 @@ async function ChangeFrame(_class, otherDatas = null)
     else
         $(".a-frame").css("display", "none");
 
+//console.log(rcmail, otherDatas);
+    let uid = undefined;
+    if (otherDatas.includes('uid:'))
+    {
+        uid = otherDatas.replace("uid:", "");
+        otherDatas = null;
+    }
+
     if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
-        mel_metapage.Functions.searchOnMail(`edt.${rcmail.env.current_workspace_uid}@i-carre.net`, ["to", "cc", "bcc"]);
+        mel_metapage.Functions.searchOnMail(`edt.${uid}@i-carre.net`, ["to", "cc", "bcc"]);
     else if (_class === "stockage")
+    {
         mel_metapage.Functions.call("update_location", false, {
             _integrated:true,
-            args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${rcmail.env.current_workspace_uid}`,"stockage-frame","mel_nextcloud_frame"]
+            args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`,"stockage-frame","mel_nextcloud_frame"]
         });
+    }
         //https://roundcube.ida.melanie2.i2/nextcloud/
         //Nextcloud.index_url + "/apps/files?dir=/dossiers-"+rcmail.env.current_workspace_uid
 

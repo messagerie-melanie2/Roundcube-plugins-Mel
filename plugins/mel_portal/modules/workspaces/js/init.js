@@ -34,10 +34,19 @@ try {
 }
 
 try {
+
+    $(".doc-notif").css("display", "none");
+
     if (rcmail.env.bureau === undefined)
         rcmail.env.bureau = {};
     rcmail.env.bureau["wsp_doc"] = WSPNotification.documents();
-    rcmail.env.bureau.wsp_doc.update(true);
+
+    rcmail.env.bureau.wsp_doc.update().then(bool => 
+        {
+            if (!bool)
+                rcmail.env.bureau.wsp_doc.update(true);
+        });
+    //rcmail.env.bureau.wsp_doc.update(true);
 } catch (error) {
     console.error("###[WSPNotification.documents().update(true)]", error);
 }

@@ -41,16 +41,21 @@ class WSPNotification
 
     async update(force = false)
     {
+        let valueChecked = false;
         try {
             let item = mel_metapage.Storage.get(this.key);
-            //console.log("UPDATE", item, this.check_date(), force, this.key);
             if (item === null || this.check_date() ||force)
+            {
+                valueChecked = true;
                 item = await this.update_value();
+            }
             //console.log("UPDATE 2", item, this.check_date(), force, this.key);
             this.notif.update(item, this.count);
         } catch (error) {
             console.error("update", error);
         }
+
+        return valueChecked;
         // if(item === 0)
         //     this.parent.css("display", "none");
         // else
@@ -141,7 +146,7 @@ WSPNotification.documents = function()
 {
     let txt = "(async () => {";
     Enumerable.from($(".doc-notif").parent().parent().parent()).select(x => x.id.replace("wsp-notifs-wsp-", "").replace("-epingle", "")).forEach(x=>{
-        txt += `await new RoundriveShow('dossiers-${x}', null, {
+        txt += `await new RoundriveShow('Documents'/*'dossiers-${x}'*/, null, {
             wsp:'${x}',
             ignoreInit:true,
             updatedFunc: (bool) => {

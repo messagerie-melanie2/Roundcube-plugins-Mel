@@ -157,7 +157,7 @@ class RoundriveShow
                 return x;
             }).orderBy(x => x.order).thenBy(x => x.basename).toArray();
 
-            console.log("datas root",datas);
+            //console.log("datas root",datas);
 
             this.tree.addOrUpdateRange(this.wsp, datas);
             this.save();
@@ -191,11 +191,11 @@ class RoundriveShow
                         tmp = $(`<div class="${this.config.classes !== undefined && this.config.classes.folder !== undefined ? this.config.classes.folder : ""}"></div>`);
 
                         html = $(html).on("click", (event) => {
-                            console.log("click", event);
+                            //console.log("click", event);
                             this.expandOrMinimizeFolder(event, element.path, this.generateID(element.path));
                         }).appendTo(tmp);
 
-                        console.log("ELEMENET", html, element, this.openDatas[element.path]);
+                        //console.log("ELEMENET", html, element, this.openDatas[element.path]);
 
                         tmp.append(`<div class="child-for" style="${this.openDatas[element.path].opened ? "" : "display:none"}" data-path="${id}"></div>`)
                         .appendTo(parent);
@@ -263,7 +263,7 @@ class RoundriveShow
     expandOrMinimizeFolder(event, folder, id)
     {
         let target = $(event.currentTarget);
-        //console.log("[expandOrMinimizeFolder]", event, folder, target, id);
+        ////console.log("[expandOrMinimizeFolder]", event, folder, target, id);
         if (target.hasClass("open"))
         {
             this.minimizeFolder(event, id);
@@ -280,7 +280,7 @@ class RoundriveShow
         const initFolder = folder;
         folder = `${rcmail.gettext("files", "roundrive")}/${decodeURIComponent(folder)}`;
 
-        //console.log("path", $(`.child-for[data-path=${path}]`));
+        ////console.log("path", $(`.child-for[data-path=${path}]`));
 
         let parent = $(`.child-for[data-path=${path}]`);
 
@@ -294,7 +294,7 @@ class RoundriveShow
             parent.html('<center><span class="spinner-grow"></span></center>').css("display", "").addClass("open");
 
             let treeDatas = this.tree.getFolder(this.wsp, initFolder)
-            console.log("yolo", treeDatas, initFolder, this.wsp, this.tree);
+            //console.log("yolo", treeDatas, initFolder, this.wsp, this.tree);
             if (treeDatas.length !== 0)
             {
                 parent.find("center").remove();
@@ -336,7 +336,7 @@ class RoundriveShow
 
     clickFile(event, file)
     {
-        //console.log(file, "file");
+        ////console.log(file, "file");
 
         // if (window.Nextcloud !== undefined && !rcmail.busy)
         // {
@@ -392,15 +392,15 @@ class RoundriveShow
         if (!onlyCheck)
             $("#refresh-nc").find("span").css("display", "none").parent().addClass("disabled").attr("disabled", "disabled").append('<span class="spinner-grow spinner-grow-sm"></span>');
         const folders = this.tree.getFolders(this.wsp, {path:this.config.initFolder});
-        console.log("folders", folders);
+        //console.log("folders", folders);
         if (folders.length > 0)
         {
-            mel_metapage.Functions.post(
+            await mel_metapage.Functions.post(
                 mel_metapage.Functions.url("roundrive", "folder_get_metadatas"),
                 {
                     _folders:folders
                 }, (datas) => {
-                    console.log("datas",JSON.parse(datas), this, this.tree);
+                    //console.log("datas",JSON.parse(datas), this, this.tree);
                     datas = JSON.parse(datas);
                     
                     let tmpId;
@@ -413,7 +413,7 @@ class RoundriveShow
                             const element = datas[key];
 
                             isRootFolder = element.path === this.config.initFolder;
-                            console.log("isroot", isRootFolder, element);
+                            //console.log("isroot", isRootFolder, element);
                             if (isRootFolder)
                             {
                                 if (this.tree.parentMetadatas[this.wsp] === undefined)
@@ -426,7 +426,7 @@ class RoundriveShow
                             if ((isRootFolder && element.metadatas.etag !== this.tree.parentMetadatas[this.wsp].etag) || (!isRootFolder && element.metadatas.etag !== this.tree.tree[this.wsp][element.path].etag))
                             {
 
-                                console.log("update", element, isRootFolder, isRootFolder ? this.tree.parentMetadatas[this.wsp].etag : "");
+                                //console.log("update", element, isRootFolder, isRootFolder ? this.tree.parentMetadatas[this.wsp].etag : "");
 
                                 if (!updated)
                                 {
@@ -483,7 +483,7 @@ class RoundriveShow
                 },
                 (datas) => {
                     let isRootFolder = element.path === this.config.initFolder;
-                    console.log("datas", this.openDatas[element.path])
+                    //console.log("datas", this.openDatas[element.path])
                     if (!isRootFolder && (this.openDatas[element.path] === undefined || this.openDatas[element.path] === false))
                     {
                         this.actionQuerryClose(querry, element);
@@ -504,10 +504,10 @@ class RoundriveShow
                         })
                         //}
 
-                        console.log("updatedtree",   this.tree.tree[this.wsp]);
+                        //console.log("updatedtree",   this.tree.tree[this.wsp]);
                         tmp = this.showDatas(datas, $('<generated></generated'), !isRootFolder, false, true);
                         (isRootFolder ? this.parent : $(`.child-for[data-path=${idPath}]`)).html("").append(tmp);
-                        console.log(querry, tmp);
+                        //console.log(querry, tmp);
                         if (!isRootFolder)
                             this.tree.tree[this.wsp][element.path].etag = element.metadatas.etag;
                         else
@@ -535,6 +535,6 @@ class RoundriveShow
         tmp.forEach((x,i) => {
             this.tree.tree[this.wsp][x.key] = x.value;
         })
-        console.log("updatedtree",   this.tree.tree[this.wsp]);
+        //console.log("updatedtree",   this.tree.tree[this.wsp]);
     }
 }

@@ -189,7 +189,15 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
 
             if (func_name.includes("trigger"))
             {
-                rcmail.triggerEvent(func_name.split(".")[1]);
+                let tmpArray = func_name.split(".");
+                if (tmpArray.length > 2)
+                {
+                    delete tmpArray[0];
+                    tmpArray = Enumerable.from(tmpArray).where(x => x !== undefined).toArray().join(".");
+                }
+                else
+                    tmpArray = tmpArray[1];
+                rcmail.triggerEvent(tmpArray);
             }
             else if (func_name.includes("mel_metapage"))
             {

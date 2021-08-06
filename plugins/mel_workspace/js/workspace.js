@@ -47,7 +47,7 @@ async function WSPReady()
         window.ariane.addEventListener("update", UpdateAriane);
     }
 
-    console.log("wsp", rcmail.env.current_workspace_page);
+    //console.log("wsp", rcmail.env.current_workspace_page);
 
     if (rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
     {
@@ -473,6 +473,11 @@ async function initCloud()
             datas[rcmail.env.current_workspace_uid] = bool;
             
             mel_metapage.Storage.set(id, datas);
+
+            mel_metapage.Functions.call(`trigger.${mel_metapage.EventListeners.wsp_stockage_updated.after}`, true, {
+                always:true,
+                _integrated:true
+            });
         },
         classes:{
             folder:"wsp-rd-row",

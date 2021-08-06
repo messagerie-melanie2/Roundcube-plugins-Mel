@@ -6,7 +6,7 @@ class WSPNotification
         //console.log('update', this.notif, notifClass,  $("." + notifClass), "." + notifClass);
         this.notif.update = function (item, func)
         {
-            console.log("update", this, item, func);
+            //console.log("update", this, item, func);
             this.each((i,e) => {
                 e = $(e);
                 const id = e.parent().parent().parent()[0].id.replace("wsp-notifs-wsp-", "").replace("-epingle", "");
@@ -43,10 +43,10 @@ class WSPNotification
     {
         try {
             let item = mel_metapage.Storage.get(this.key);
-            console.log("UPDATE", item, this.check_date(), force, this.key);
+            //console.log("UPDATE", item, this.check_date(), force, this.key);
             if (item === null || this.check_date() ||force)
                 item = await this.update_value();
-            console.log("UPDATE 2", item, this.check_date(), force, this.key);
+            //console.log("UPDATE 2", item, this.check_date(), force, this.key);
             this.notif.update(item, this.count);
         } catch (error) {
             console.error("update", error);
@@ -131,7 +131,7 @@ WSPNotification.agenda = function ()
 WSPNotification.mails = function ()
 {
     return new WSPNotification("mail-notif", "mel_metapage.wsp.mails", "rcmail.mel_metapage_fn.mail_updated()", "icon-mel-mail", (mel, id) => {
-        console.log("update-func",mel, id);
+        //console.log("update-func",mel, id);
         //id = "ws#" + id;
         return mel[id] === undefined ? 0 : mel[id].length;//Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).count();
     }, mel_metapage.Storage.last_calendar_update, "mail_wsp_updated");
@@ -159,8 +159,8 @@ WSPNotification.documents = function()
     txt += `mel_metapage.Storage.set('wsp_doc_parent${rcmail.env.username}', true);})()`;
     txt = new WSPNotification("doc-notif", `wsp_have_news_${rcmail.env.username}`, txt, "icon-mel-folder", (item, id) => {
         
-        console.log("LOG",item, id, item[id]);
-        if (item !== null && item[id])
+        //console.log("LOG",item, id, item[id]);
+        if (item !== undefined && item !== null && item[id])
             return "•";
 
         return 0;

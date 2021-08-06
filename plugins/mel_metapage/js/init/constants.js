@@ -76,6 +76,7 @@ const mel_metapage = {
          * Lorsque les mails sont mis à jours.
          */
         mails_updated: new EventListenerDatas("mel_metapage.mails_updated"),
+        wsp_stockage_updated: new EventListenerDatas("mel_metapage.wsp_stockage_updated")
     },
     /**
      * Différents clés de stockage local.
@@ -704,7 +705,7 @@ const mel_metapage = {
 
         doActionFrame:function (frame, doAction, ...functionArgs)
         {
-            //console.log("[doActionFrame]",frame, doAction, parent !== window);
+            console.log("[doActionFrame]",frame, doAction, parent !== window);
             if (parent !== window)
             {
                 mel_metapage.Functions.call("mel_metapage.doActionFrame", false, {
@@ -716,9 +717,20 @@ const mel_metapage = {
             else {
 
                 if (typeof doAction === "string")
+                {
                     doAction = new Function(`return (${doAction})(...arguments)`);
+                    // for (let index = 0; index < functionArgs.length; ++index) {
+                      
+                    //     try {
+                    //         const parsedItem = JSON.parse(functionArgs[index]);
+                    //         functionArgs[index] = parsedItem;
+                    //     } catch (error) {
+                            
+                    //     }
+                    // }
+                }
 
-                //console.log("here",doAction);
+                console.log("here",doAction, functionArgs);
 
                 //Personne ouvert
                 if ($(`.${frame}-frame`).length === 0)

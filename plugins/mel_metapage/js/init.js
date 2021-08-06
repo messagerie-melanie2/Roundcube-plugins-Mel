@@ -5,10 +5,43 @@ if (rcmail)
     if (rcmail.env.task === "tasks")
         parent.child_rcmail = rcmail;
 
+    var refreshWorkspaceCloudNotification = function ()
+    {
+        switch (rcmail.env.task) {
+            case "bureau":
+                if (rcmail.env.bureau && rcmail.env.bureau.wsp_doc)
+                    rcmail.env.bureau.wsp_doc.update(true);
+                break;
+
+            case "workspace":
+                switch (rcmail.env.action) {
+                    case "":
+                    case "index":
+                        if (rcmail.env.wsp_index && rcmail.env.wsp_index.wsp_doc)
+                            rcmail.env.wsp_index.wsp_doc.update(true);
+                        break;
+
+                    case "workspace":
+                        if (rcmail.env.wsp_roundrive_show)
+                            rcmail.env.wsp_roundrive_show.checkNews();
+                        break;
+                
+                    default:
+                        break;
+                }
+                break;
+        
+            default:
+                break;
+        }
+    };
+
     if (parent != window && rcmail.mel_metapage_fn === undefined)
     {
             rcmail.mel_metapage_fn = {
-                refresh:() => {}
+                refresh:() => {
+                    refreshWorkspaceCloudNotification();
+                }
             };
     }
 
@@ -272,6 +305,8 @@ if (rcmail)
                     parent.rcmail.mel_metapage_fn.tasks_updated();
                     parent.rcmail.mel_metapage_fn.mail_updated(true);
                 });
+
+                refreshWorkspaceCloudNotification();
             }
         };
 

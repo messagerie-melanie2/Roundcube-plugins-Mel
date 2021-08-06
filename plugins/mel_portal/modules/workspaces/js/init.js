@@ -29,10 +29,25 @@ try {
 }
 try {
     WSPNotification.agenda().update();
-    WSPNotification.documents().update();
 } catch (error) {
     console.error("###[WSPNotification.agenda().update()]", error);
 }
+
+try {
+    if (rcmail.env.bureau === undefined)
+        rcmail.env.bureau = {};
+    rcmail.env.bureau["wsp_doc"] = WSPNotification.documents();
+    rcmail.env.bureau.wsp_doc.update(true);
+} catch (error) {
+    console.error("###[WSPNotification.documents().update(true)]", error);
+}
+
+try {
+    WSPNotification.mails().update();
+} catch (error) {
+    
+}
+
         $(".dwp-user").each((i,e) => {
             var image = $(e).find("img")[0];
             if (image === null || image === undefined)

@@ -12,7 +12,8 @@ class RoundriveShow
             folder:"",
             file:"",
         },
-        wsp:"unknown"
+        wsp:"unknown",
+        ignoreInit:false
     })
     {
         this.wsp = config.wsp;
@@ -59,24 +60,31 @@ class RoundriveShow
 
         this.load();
 
-        let tmp = this.expandInitialFolder(initFolder);
-        if (tmp !== undefined && tmp !== null && tmp.always)
-        {
-            tmp.always(() => {
+        const ignoreInit = this.config.ignoreInit;
 
+        if (!ignoreInit)
+        {
+
+            let tmp = this.expandInitialFolder(initFolder);
+            if (tmp !== undefined && tmp !== null && tmp.always)
+            {
+                tmp.always(() => {
+
+                    if (config.afterInit !== undefined && config.afterInit !== null)
+                        config.afterInit();
+        
+                    this.checkNews();
+
+                });
+            }
+            else
+            {
                 if (config.afterInit !== undefined && config.afterInit !== null)
                     config.afterInit();
-    
+
                 this.checkNews();
+            }
 
-            });
-        }
-        else
-        {
-            if (config.afterInit !== undefined && config.afterInit !== null)
-                config.afterInit();
-
-            this.checkNews();
         }
     }
 
@@ -379,9 +387,10 @@ class RoundriveShow
         this.tree = new WorkspaceDriveTree(datas === undefined || datas === null ? {tree:{}, parentMetadatas:{}} : datas);
     }
 
-    async checkNews()
+    async checkNews(onlyCheck = false)
     {
-        $("#refresh-nc").find("span").css("display", "none").parent().addClass("disabled").attr("disabled", "disabled").append('<span class="spinner-grow spinner-grow-sm"></span>');
+        if (!onlyCheck)
+            $("#refresh-nc").find("span").css("display", "none").parent().addClass("disabled").attr("disabled", "disabled").append('<span class="spinner-grow spinner-grow-sm"></span>');
         const folders = this.tree.getFolders(this.wsp, {path:this.config.initFolder});
         console.log("folders", folders);
         if (folders.length > 0)
@@ -427,14 +436,19 @@ class RoundriveShow
                                     updated = true;
                                 }
 
-                                tmpId = this.generateID(element.path)
+                                if (!onlyCheck)
+                                {
 
-                                querry = isRootFolder ? this.parent : $(`.child-for[data-path=${tmpId}]`);
+                                    tmpId = this.generateID(element.path)
 
-                                if (querry.hasClass("open") || isRootFolder)
-                                    this.actionQuerryOpen(querry, element, tmpId);
-                                else
-                                    this.actionQuerryClose(querry, element);
+                                    querry = isRootFolder ? this.parent : $(`.child-for[data-path=${tmpId}]`);
+
+                                    if (querry.hasClass("open") || isRootFolder)
+                                        this.actionQuerryOpen(querry, element, tmpId);
+                                    else
+                                        this.actionQuerryClose(querry, element);
+
+                                }
                                     
                             }
 
@@ -447,7 +461,8 @@ class RoundriveShow
                         this.save();
                     }
 
-                    $("#refresh-nc").removeClass("disabled").removeAttr("disabled").find("span").css("display", "").parent().find(".spinner-grow").remove();
+                    if (!onlyCheck)
+                        $("#refresh-nc").removeClass("disabled").removeAttr("disabled").find("span").css("display", "").parent().find(".spinner-grow").remove();
 
 
                 }

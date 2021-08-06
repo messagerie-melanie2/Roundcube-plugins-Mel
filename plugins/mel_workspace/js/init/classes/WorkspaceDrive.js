@@ -50,6 +50,9 @@ class WorkspaceDriveTree{
 
     getFolders(wsp, ...addedPaths)
     {
+        console.log("folders", wsp, addedPaths);
+        if (this.tree[wsp] === undefined)
+            return [];
         return Enumerable.from(this.tree[wsp]).where(x => x.value.type === "dir").select(x => x.value).concat(addedPaths).orderBy(x => x.path.split("/").length).toArray();
     }
 

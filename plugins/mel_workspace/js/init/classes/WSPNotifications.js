@@ -6,7 +6,7 @@ class WSPNotification
         //console.log('update', this.notif, notifClass,  $("." + notifClass), "." + notifClass);
         this.notif.update = function (item, func)
         {
-            //console.log("update", this, item, func);
+            console.log("update", this, item, func);
             this.each((i,e) => {
                 e = $(e);
                 const id = e.parent().parent().parent()[0].id.replace("wsp-notifs-wsp-", "").replace("-epingle", "");
@@ -35,14 +35,22 @@ class WSPNotification
         });
         WSPNotification.add_to_refresh((eventListener === null ? "WSPNotification." + notifClass : eventListener), 
         "() => WSPNotification.update_notifications(`"+listener+"`)");
+
+        this.falseKey = null;
     }
 
-    async update()
+    async update(force = false)
     {
-        let item = mel_metapage.Storage.get(this.key);
-        if (item === null || this.check_date())
-            item = await this.update_value();
-        this.notif.update(item, this.count);
+        try {
+            let item = mel_metapage.Storage.get(this.key);
+            console.log("UPDATE", item, this.check_date(), force, this.key);
+            if (item === null || this.check_date() ||force)
+                item = await this.update_value();
+            console.log("UPDATE 2", item, this.check_date(), force, this.key);
+            this.notif.update(item, this.count);
+        } catch (error) {
+            console.error("update", error);
+        }
         // if(item === 0)
         //     this.parent.css("display", "none");
         // else
@@ -62,12 +70,18 @@ class WSPNotification
 
     async update_value()
     {
-        mel_metapage.Storage.remove(this.key);
+
+        mel_metapage.Storage.remove(this.falseKey === null ? this.key : this.falseKey);
         window.workspaces.sync.PostToParent({
             exec:this.post
         });
-        await wait(() => mel_metapage.Storage.get(this.key) === null);
+        await wait(() => mel_metapage.Storage.get(this.falseKey === null ? this.key : this.falseKey) === null);
+        
+        if (this.falseKey !== null)
+            mel_metapage.Storage.remove(this.falseKey);
+
         return mel_metapage.Storage.get(this.key);
+        
     }
 }
 
@@ -114,7 +128,43 @@ WSPNotification.agenda = function ()
     }, mel_metapage.Storage.last_calendar_update, mel_metapage.EventListeners.calendar_updated.after);
 }
 
+WSPNotification.mails = function ()
+{
+    return new WSPNotification("mail-notif", "mel_metapage.wsp.mails", "rcmail.mel_metapage_fn.mail_updated()", "icon-mel-mail", (mel, id) => {
+        console.log("update-func",mel, id);
+        //id = "ws#" + id;
+        return mel[id] === undefined ? 0 : mel[id].length;//Enumerable.from(cal).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).count();
+    }, mel_metapage.Storage.last_calendar_update, "mail_wsp_updated");
+}
+
 WSPNotification.documents = function()
 {
-    return new WSPNotification("doc-notif", null, null, "icon-mel-folder", () => 0, null, null);
-}
+    let txt = "(async () => {";
+    Enumerable.from($(".doc-notif").parent().parent().parent()).select(x => x.id.replace("wsp-notifs-wsp-", "").replace("-epingle", "")).forEach(x=>{
+        txt += `await new RoundriveShow('dossiers-${x}', null, {
+            wsp:'${x}',
+            ignoreInit:true,
+            updatedFunc: (bool) => {
+                const id = \`wsp_have_news_${rcmail.env.username}\`;
+                let datas = mel_metapage.Storage.get(id);
+                if (datas === undefined || datas === null)
+                    datas = {};
+    
+                datas['${x}'] = bool;
+                
+                mel_metapage.Storage.set(id, datas);
+            }
+        }).checkNews(true);`;
+    }); //dossiers-${x}
+    txt += `mel_metapage.Storage.set('wsp_doc_parent${rcmail.env.username}', true);})()`;
+    txt = new WSPNotification("doc-notif", `wsp_have_news_${rcmail.env.username}`, txt, "icon-mel-folder", (item, id) => {
+        
+        console.log("LOG",item, id, item[id]);
+        if (item !== null && item[id])
+            return "•";
+
+        return 0;
+    }, null, mel_metapage.EventListeners.wsp_stockage_updated.after);
+    txt.falseKey = "wsp_doc_parent"+ rcmail.env.username;
+    return txt;
+} 

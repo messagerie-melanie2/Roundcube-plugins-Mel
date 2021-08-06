@@ -988,7 +988,7 @@ async function m_mp_InitializeDocument(initPath = null)
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
 
     let url_config ={
-        "_send":true,
+        "_send":true
     };
     
     if (initPath !== null)

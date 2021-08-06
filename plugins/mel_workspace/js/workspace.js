@@ -47,6 +47,8 @@ async function WSPReady()
         window.ariane.addEventListener("update", UpdateAriane);
     }
 
+    console.log("wsp", rcmail.env.current_workspace_page);
+
     if (rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
     {
         if (rcmail.env.current_workspace_page !== "home")
@@ -84,9 +86,11 @@ function wsp_contract(_class)
             return "item-params";
         case "rocket":
             return "ariane";
+        case "doc":
+            return "documents";
     
         default:
-            break;
+            return _class;
     }
 }
 
@@ -113,6 +117,7 @@ function click_on_menu(page)
 {
     setTimeout(async () => {
         await wait(() => parent.rcmail.busy);
+        console.log($(`.wsp-${wsp_contract(page)}`), "contract");
         $(`.wsp-${wsp_contract(page)}`).click();
     }, 100);
 }
@@ -459,6 +464,15 @@ async function initCloud()
                 $(".wsp-documents").append(`<span style="" class="notif roundbadge lightgreen">•</span>`);
             else if (!bool && $(".wsp-documents").find(".notif").length > 0)
                 $(".wsp-documents").find(".notif").remove();
+
+            const id = `wsp_have_news_${rcmail.env.username}`;
+            let datas = mel_metapage.Storage.get(id);
+            if (datas === undefined || datas === null)
+                datas = {};
+
+            datas[rcmail.env.current_workspace_uid] = bool;
+            
+            mel_metapage.Storage.set(id, datas);
         },
         classes:{
             folder:"wsp-rd-row",

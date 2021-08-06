@@ -94,12 +94,13 @@ $(document).ready(() => {
             //console.log("here");
             window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {"_event":"list_public", "_page":page});
         }, true);
-        //<workspace-uid/>
+
     rcmail.register_command("workspaces.go", (uid) => {
         rcmail.set_busy(true, 'loading');
         let config = {
             _uid:uid
         };
+
         if (rcmail.env.action === "action")
             config["_last_location"] = encodeURIComponent(window.location.href);
 
@@ -109,6 +110,7 @@ $(document).ready(() => {
         //console.log("config", config, MEL_ELASTIC_UI.url('workspace','workspace', config));
         window.location.href= MEL_ELASTIC_UI.url('workspace','workspace', config);// + '&_uid=' + uid + (parent !== window ? '&_from=iframe' : '');
     }, true);
+    
     new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "wsp-tasks-all-number", update_tasks);
 });
 

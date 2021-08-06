@@ -193,25 +193,29 @@ Nextcloud.prototype.go = async function(file, goFunc = null)
       _folder:file.path
     };
 
-    file = await mel_metapage.Functions.get(
+    await mel_metapage.Functions.get(
         mel_metapage.Functions.url("roundrive", "folder_list_all_items"),
         config,
         (datas) => {
             datas = JSON.parse(datas);
+            console.log("DATAS", datas);
             for (const key in datas) {
               if (Object.hasOwnProperty.call(datas, key)) {
                 const element = datas[key];
                 if (element.basename === file.name)
-                  return element;
+                { 
+                  file = element;
+                  return;
+                }
               }
             }
             rcmail.display_message("Le fichier n'existe pas !", "error");
-            return "stop";
+            file = "stop";
         },
         (xhr, ajaxOptions, thrownError) => {
             console.error(xhr, ajaxOptions, thrownError);
             rcmail.display_message("Impossible de se connecter au stockage !", "error");
-            return "stop";
+            file = "stop";
         }
     );
 
@@ -225,7 +229,7 @@ Nextcloud.prototype.go = async function(file, goFunc = null)
     goFunc(file);
   }
   else {
-
+    console.log("file",file);
     mel_metapage.Functions.doActionFrame("stockage", async (actionType, file) => {
 
       const url = `${Nextcloud.index_url}/apps/files?dir=/${file.dirname}&openfile=${file.id}`;

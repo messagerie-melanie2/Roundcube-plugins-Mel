@@ -82,7 +82,7 @@ RoundriveCreate.prototype.accept_document = function()
  * Créer le document.
  * @returns {Promise<void>} 
  */
-RoundriveCreate.prototype.create_document = function()
+RoundriveCreate.prototype.create_document = function(goFunc = null)
 {
     const values = {
         type:this.buttons.parent.find("button.active").data("doc"),
@@ -152,7 +152,7 @@ RoundriveCreate.prototype.create_document = function()
                         mel_metapage.Functions.stockage.go({
                             path:datas.path,
                             name:datas.file
-                        }, null, async (error) => {
+                        }, goFunc, async (error) => {
                                 create_popUp.close(); 
                                 create_popUp = undefined;
                                 // if (!error)

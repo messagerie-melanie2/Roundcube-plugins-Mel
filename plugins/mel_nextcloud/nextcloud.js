@@ -18,7 +18,7 @@ $(document).ready(function() {
 				}
 				else if ($("#mel_nextcloud_frame")[0].contentWindow.location.href !== rcmail.env.last_src_updated)
 				{
-					$("#mel_nextcloud_frame")[0].contentWindow.location.href = rcmail.env.last_src_updated;
+					$("#mel_nextcloud_frame")[0].src = rcmail.env.last_src_updated
 					delete rcmail.env.last_src_updated;
 				}
 			} catch (error) {

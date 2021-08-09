@@ -9,11 +9,20 @@ $(document).ready(function() {
 		if (rcmail.env.last_src_updated !== undefined && rcmail.env.last_src_updated !== null)
 		{
 			console.log("ready2", $("#mel_nextcloud_frame")[0].src !== rcmail.env.last_src_updated);
-			if ($("#mel_nextcloud_frame")[0].src !== rcmail.env.last_src_updated)
-			{
-				console.log("ready3", rcmail.env.last_src_updated);
-				$("#mel_nextcloud_frame")[0].src = rcmail.env.last_src_updated
-				delete rcmail.env.last_src_updated;
+			try {
+				if ($("#mel_nextcloud_frame")[0].src !== rcmail.env.last_src_updated)
+				{
+					console.log("ready3", rcmail.env.last_src_updated);
+					$("#mel_nextcloud_frame")[0].src = rcmail.env.last_src_updated
+					delete rcmail.env.last_src_updated;
+				}
+				else if ($("#mel_nextcloud_frame")[0].contentWindow.location.href !== rcmail.env.last_src_updated)
+				{
+					$("#mel_nextcloud_frame")[0].contentWindow.location.href = rcmail.env.last_src_updated;
+					delete rcmail.env.last_src_updated;
+				}
+			} catch (error) {
+				console.error('###[$("#mel_nextcloud_frame").on("load", () => {]', error);
 			}
 		}
 	});

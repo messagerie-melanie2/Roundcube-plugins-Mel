@@ -9,6 +9,8 @@
 // global variable for contextmenu actions
 rcmail.tb_label = '';
 
+rcmail.options_labels = {};
+
 if (window.rcmail) {
 	rcmail.addEventListener('init', function(evt) {
 		if (rcmail.task == 'mail') {
@@ -32,7 +34,38 @@ if (window.rcmail) {
 					key = rcmail_tb_labels_key_to_css(rcmail.env.username);
 				}
 				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
-				$('#messagessearchfilter option.labels.'+key).addClass('show');	
+				$('#searchfilter option.labels.'+key).addClass('show');	
+
+				if (Enumerable.from(rcmail.options_labels).count() == 0)
+				{
+					$('#searchfilter option.labels').each((index, elem) => {
+							const labelKey = Enumerable.from(elem.classList).toArray().join("."); 
+
+							if (rcmail.options_labels[labelKey] === undefined)
+								rcmail.options_labels[labelKey] = [];
+
+							rcmail.options_labels[labelKey].push(elem.outerHTML);
+
+							if (!$(elem).hasClass(key))
+								$(elem).remove();
+					});
+				}
+				else {
+					let tmpQuerry = $('#searchfilter');//.html("");
+	
+					$('#searchfilter option.labels').remove();
+
+					if (rcmail.options_labels[`labels.${key}`] !== undefined && rcmail.options_labels[`labels.${key}`])
+					{
+						for (const objectKey in rcmail.options_labels[`labels.${key}`]) {
+							if (Object.hasOwnProperty.call(rcmail.options_labels[`labels.${key}`], objectKey)) {
+								const element = rcmail.options_labels[`labels.${key}`][objectKey];
+								tmpQuerry.append(element);
+							}
+						}
+					}
+
+				}
 			});
 		}
 	});

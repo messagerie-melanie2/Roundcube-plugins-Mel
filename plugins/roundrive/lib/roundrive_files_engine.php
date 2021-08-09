@@ -1163,7 +1163,7 @@ class roundrive_files_engine
         $initFolder = rcube_utils::get_input_value('_initPath', rcube_utils::INPUT_GET);
         $haveInitFolder = $initFolder !== null;
 
-        return '<input id=roundrive-folder-input type="text" aria-disabled="true" class="form-control input-mel disabled roundrive-folder" disabled placeholder="'.($haveInitFolder ? $this->plugin->gettext('files')."/$initFolder" : $this->plugin->gettext('files')).'" />';
+        return '<input id=roundrive-folder-input type="text" '.($haveInitFolder ? "value=\"".$this->plugin->gettext('files')."/$initFolder\"" : "").' aria-disabled="true" class="form-control input-mel disabled roundrive-folder" disabled placeholder="'.($haveInitFolder ? $this->plugin->gettext('files')."/$initFolder" : $this->plugin->gettext('files')).'" />';
     }
 
     public function initpathname2()
@@ -1177,7 +1177,6 @@ class roundrive_files_engine
     public function init_folder()
     {
         $initFolder = rcube_utils::get_input_value('_initPath', rcube_utils::INPUT_GET);
-
         $haveInitFolder = $initFolder !== null;
 
         $folders = $this->get_folders(!$haveInitFolder ? "" : $initFolder);

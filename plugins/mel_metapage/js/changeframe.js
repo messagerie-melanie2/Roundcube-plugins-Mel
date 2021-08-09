@@ -313,7 +313,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                         {
                             exec_info:"ChangeFrame",
                             datas:_class,
-                            args:otherDatas === null ? `uid:${uid}` : null 
+                            args:otherDatas === null ? `uid:${uid}` : otherDatas 
                         }
                     );
                     break;
@@ -444,9 +444,12 @@ async function ChangeToolbar(_class, event, otherDatas = null)
         parent.postMessage(element);
     }
 
-    const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class});
-    console.log("url", url);
-    window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+    if (uid !== undefined)
+    {
+        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class});
+        console.log("url", url);
+        window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+    }
 }
 
 async function ChangeFrame(_class, otherDatas = null)
@@ -490,7 +493,7 @@ async function ChangeFrame(_class, otherDatas = null)
     else
         $(".a-frame").css("display", "none");
 
-//console.log(rcmail, otherDatas);
+    console.log("changeframe", otherDatas);
     let uid = undefined;
     if (otherDatas !== undefined && otherDatas !== null && otherDatas.includes('uid:'))
     {

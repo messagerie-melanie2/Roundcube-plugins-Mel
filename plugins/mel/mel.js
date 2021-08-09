@@ -174,10 +174,18 @@ if (window.rcmail) {
         $('.pagenavbuttons').hide();
         $('#countcontrols').hide();
 
+        var ml_container = '#messagelistcontainer';
+        if(rcmail.env.skin == 'elastic' || rcmail.env.skin == 'mel_elastic') {
+          ml_container = '#messagelist-content';
+          $('.firstpage').closest('div').children().hide();
+        } else {
+                $('.pagenavbuttons').hide();
+                $('#countcontrols').hide();
+        }
         // Gestion du scroll infini
-        $('#messagelistcontainer').scroll(function() {
-          if (($('#messagelistcontainer').scrollTop() > 1 
-          && (($('#messagelistcontainer').scrollTop() + $('#messagelistcontainer').height()) / $('#messagelist').height()) >= 0.95)
+        $(ml_container).scroll(function() {
+          if (($(ml_container).scrollTop() > 1 
+              && (($(ml_container).scrollTop() + $(ml_container).height()) / $('#messagelist').height()) >= 0.95)
           && current_page_scroll > 1
           && (!rcmail.env.iselectron || rcmail.env.mailbox.indexOf(rcmail.env.local_archive_folder) !== 0)) {
             // Affichage de la page suivante au bas de la page					  					  
@@ -205,7 +213,7 @@ if (window.rcmail) {
           rcmail.addEventListener('responseafterlist', function(evt) {
             if (rcmail.env.use_infinite_scroll) {
               current_page_scroll = rcmail.env.current_page + 1;
-              //rcmail.env.current_page = 1;
+              rcmail.env.current_page = 1;
             }
             rcmail.http_post('plugin.set_current_page', {});
           });

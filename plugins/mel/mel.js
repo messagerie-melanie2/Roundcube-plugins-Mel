@@ -205,7 +205,7 @@ if (window.rcmail) {
           rcmail.addEventListener('responseafterlist', function(evt) {
             if (rcmail.env.use_infinite_scroll) {
               current_page_scroll = rcmail.env.current_page + 1;
-              rcmail.env.current_page = 1;
+              //rcmail.env.current_page = 1;
             }
             rcmail.http_post('plugin.set_current_page', {});
           });

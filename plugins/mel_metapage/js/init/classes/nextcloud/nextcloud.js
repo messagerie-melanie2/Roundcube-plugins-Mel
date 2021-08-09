@@ -202,7 +202,7 @@ Nextcloud.prototype.go = async function(file, goFunc = null)
             for (const key in datas) {
               if (Object.hasOwnProperty.call(datas, key)) {
                 const element = datas[key];
-                if (element.basename === file.name)
+                if (decodeURIComponent(element.basename) === file.name)
                 { 
                   file = element;
                   return;

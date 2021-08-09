@@ -492,7 +492,7 @@ async function ChangeFrame(_class, otherDatas = null)
 
 //console.log(rcmail, otherDatas);
     let uid = undefined;
-    if (otherDatas.includes('uid:'))
+    if (otherDatas !== undefined && otherDatas !== null && otherDatas.includes('uid:'))
     {
         uid = otherDatas.replace("uid:", "");
         otherDatas = null;

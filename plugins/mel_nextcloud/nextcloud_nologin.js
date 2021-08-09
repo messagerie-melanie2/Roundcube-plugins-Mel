@@ -5,6 +5,17 @@ $(document).ready(function() {
 		parent.rcmail.clear_messages();
 		parent.rcmail.set_busy(false);
 		$("#mel_nextcloud_frame").off("load");
+		console.log("ready", rcmail.env.last_src_updated);
+		if (rcmail.env.last_src_updated !== undefined && rcmail.env.last_src_updated !== null)
+		{
+			console.log("ready2", $("#mel_nextcloud_frame")[0].src !== rcmail.env.last_src_updated);
+			if ($("#mel_nextcloud_frame")[0].src !== rcmail.env.last_src_updated)
+			{
+				console.log("ready3", rcmail.env.last_src_updated);
+				$("#mel_nextcloud_frame")[0].src = rcmail.env.last_src_updated
+				delete rcmail.env.last_src_updated;
+			}
+		}
 	});
 
 	parent.rcmail.set_busy(true, "loading");

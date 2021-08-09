@@ -228,8 +228,6 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
     const uid = $(event).data("uid");
 
-    console.log(event, "event", uid);
-
     if(rcmail.busy)
         return;
 
@@ -447,7 +445,6 @@ async function ChangeToolbar(_class, event, otherDatas = null)
     if (uid !== undefined)
     {
         const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class});
-        console.log("url", url);
         window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
     }
 }
@@ -493,7 +490,6 @@ async function ChangeFrame(_class, otherDatas = null)
     else
         $(".a-frame").css("display", "none");
 
-    console.log("changeframe", otherDatas);
     let uid = undefined;
     if (otherDatas !== undefined && otherDatas !== null && otherDatas.includes('uid:'))
     {

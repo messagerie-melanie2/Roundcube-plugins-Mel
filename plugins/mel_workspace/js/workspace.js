@@ -120,7 +120,7 @@ function click_on_menu(page)
 {
     setTimeout(async () => {
         await wait(() => parent.rcmail.busy);
-        console.log($(`.wsp-${wsp_contract(page)}`), "contract");
+        //console.log($(`.wsp-${wsp_contract(page)}`), "contract");
         $(`.wsp-${wsp_contract(page)}`).click();
     }, 100);
 }

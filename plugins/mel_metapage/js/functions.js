@@ -267,7 +267,7 @@ function m_mp_change_picture(img)
 
 async function m_mp_avatarOnSelect(e) 
 {
-    console.log(e, "e");
+    //console.log(e, "e");
     if (e.type === "keydown")
     {
         if (e.originalEvent.code === "Enter" || e.originalEvent.code === "Space")

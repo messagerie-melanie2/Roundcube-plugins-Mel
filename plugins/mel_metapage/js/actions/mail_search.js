@@ -3,7 +3,7 @@ function search_action(searchValue, activeFields = [])
     const timeoutValue = 1;
     setTimeout(async () => {
         await wait(() => rcmail.busy);
-        console.log("search", searchValue);
+        //console.log("search", searchValue);
 
         let fields = {
             subject:$("#icochk1")[0],

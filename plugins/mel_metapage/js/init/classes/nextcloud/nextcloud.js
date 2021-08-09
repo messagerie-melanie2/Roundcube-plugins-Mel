@@ -198,7 +198,7 @@ Nextcloud.prototype.go = async function(file, goFunc = null)
         config,
         (datas) => {
             datas = JSON.parse(datas);
-            console.log("DATAS", datas);
+            //console.log("DATAS", datas);
             for (const key in datas) {
               if (Object.hasOwnProperty.call(datas, key)) {
                 const element = datas[key];
@@ -229,7 +229,7 @@ Nextcloud.prototype.go = async function(file, goFunc = null)
     goFunc(file);
   }
   else {
-    console.log("file",file);
+    //console.log("file",file);
     mel_metapage.Functions.doActionFrame("stockage", async (actionType, file) => {
 
       const url = `${Nextcloud.index_url}/apps/files?dir=/${file.dirname}&openfile=${file.id}`;

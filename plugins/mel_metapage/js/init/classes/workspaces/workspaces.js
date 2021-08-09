@@ -88,7 +88,6 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
                         if ($(`iframe.${args.args[1]}`).length === 0)
                         {
                             $(`iframe#${args.args[2]}`)[0].src = args.args[0];
-                            console.log("iframe", $(`iframe#${args.args[2]}`), $(`iframe#${args.args[2]}`)[0].src);
                             rcmail.env.last_src_updated = args.args[0];
                         }
                         else
@@ -202,7 +201,6 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
             }
             else if (func_name.includes("mel_metapage"))
             {
-                console.log("HERE", func_name, args);
                 mel_metapage.Functions[func_name.split(".")[1]](...args.args);
             }
 

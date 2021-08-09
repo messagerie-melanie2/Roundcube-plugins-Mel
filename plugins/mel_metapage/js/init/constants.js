@@ -705,7 +705,7 @@ const mel_metapage = {
 
         doActionFrame:function (frame, doAction, ...functionArgs)
         {
-            console.log("[doActionFrame]",frame, doAction, parent !== window);
+            //console.log("[doActionFrame]",frame, doAction, parent !== window);
             if (parent !== window)
             {
                 mel_metapage.Functions.call("mel_metapage.doActionFrame", false, {
@@ -730,7 +730,7 @@ const mel_metapage = {
                     // }
                 }
 
-                console.log("here",doAction, functionArgs);
+                ///console.log("here",doAction, functionArgs);
 
                 //Personne ouvert
                 if ($(`.${frame}-frame`).length === 0)

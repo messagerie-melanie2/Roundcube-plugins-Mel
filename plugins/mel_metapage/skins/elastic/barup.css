@@ -428,7 +428,8 @@ html.layout-normal.touch .task-bureau #layout-content{
     margin-left: 60px;
 }
 
-html.layout-small #layout-sidebar, html.layout-small #layout-content, html.layout-small #layout-list
+html.layout-small #layout-sidebar, html.layout-small #layout-content, html.layout-small #layout-list,
+html.layout-phone #layout-sidebar, html.layout-phone #layout-content, html.layout-phone #layout-list
 {
     margin-top: 0px;
     margin-left: 60px;

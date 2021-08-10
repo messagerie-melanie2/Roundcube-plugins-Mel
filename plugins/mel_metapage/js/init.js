@@ -419,7 +419,7 @@ if (rcmail)
         }
 
 
-        $("#menu-small").appendTo("#taskmenu").css("display", "");
+        $("#menu-small-li").prependTo("#taskmenu ul").css("display", "");
 
         $("#user-up-panel-a").on("click", m_mp_avatarOnSelect).on("keydown", m_mp_avatarOnSelect).on("focus", () => {
             $("#user-up-panel").find(".row").first().css("box-shadow","0 0 0 .2rem #484D7A69");

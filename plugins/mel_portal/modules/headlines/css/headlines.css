@@ -45,6 +45,13 @@
     overflow: auto;
 }
 
+html.layout-phone .square_div > .contents
+{
+    height: auto;
+    overflow: auto;
+}
+
+
 .headlines-by {
 	background-color: #1F8073;
 	width: max-content;

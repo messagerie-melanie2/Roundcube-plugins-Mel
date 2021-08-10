@@ -65,6 +65,11 @@
     line-height: 45px;
 }
 
+html.layout-phone #taskmenu a
+{
+    color: white!important;
+}
+
 /* @media screen and (max-width: 1024px) and (min-width: 481px)
 {
 #taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover
@@ -262,8 +267,8 @@ span.menu-last-frame-item {
 
 a.menu-small.icofont-navigation-menu:before
 {
-    content:"\efa2";
-    font-family: "IcoFont"!important;
+    content:"\e91f";
+    font-family: "DWP"!important;
 }
 
 iframe.mm-frame/*,
@@ -357,4 +362,44 @@ html.touch .menu.toolbar a.menu-small,
 html.layout-small .menu.toolbar a.menu-small
 {
     display: initial!important;
+}
+
+html.layout-phone #taskmenu,
+html.layout-phone #layout-menu
+{
+    display: initial!important;
+}
+
+html.layout-phone #taskmenu a:before
+{
+    line-height: 55px;
+    margin-left: 6px!important;
+}
+
+html.layout-phone #taskmenu a.menu-last-frame:before
+{
+    margin-left:-3px!important;
+}
+
+html.layout-phone #taskmenu a.menu-last-frame .menu-last-frame-item::before {
+    margin-top: 19px;
+    display: block;
+    margin-left: 0px;
+}
+
+html.layout-phone #layout-menu
+{
+    overflow: auto;
+    overflow-x: hidden;
+    width: 60px!important;
+}
+
+html.layout-phone #taskmenu a .inner
+{
+    display:none!important;
+}
+
+html.layout-phone .button.icon.task-menu-button
+{
+    display: none!important;
 }

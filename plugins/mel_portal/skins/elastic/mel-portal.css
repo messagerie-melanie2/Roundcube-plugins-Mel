@@ -244,10 +244,11 @@ html.touch .logo-mel
   margin-left: 0;
 } */
 
-html.layout-small .--col-dwp
+html.layout-small .--col-dwp,
+html.layout-phone .--col-dwp
 {
   margin: 0;
-  padding: 0 15px;
+  padding: 0 5px;
 }
 
 html.layout-small .--col-dwp--under
@@ -261,20 +262,23 @@ html.layout-small .--row-dwp--under
 display: block;
 }
 
-html.layout-small .--col-dwp-1
+html.layout-small .--col-dwp-1,
+html.layout-phone .--col-dwp-1
 {
   flex: 0 0 100%;
   max-width: 100%;
 }
 
-html.layout-small .--col-dwp-2
+html.layout-small .--col-dwp-2,
+html.layout-phone .--col-dwp-2
 {
   flex: 0 0 100%;
   max-width: 100%;
   
 }
 
-html.layout-small .--col-dwp-half
+html.layout-small .--col-dwp-half,
+html.layout-phone .--col-dwp-half
 {
   flex: 0 0 100%;
   max-width: 100%;
@@ -285,7 +289,8 @@ html.layout-small .--col-dwp-half
   width: 100%;
 } 
 
-html.layout-small .--row
+html.layout-small .--row,
+html.layout-phone .--row
 {
   display:block;
 }

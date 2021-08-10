@@ -167,11 +167,17 @@ html.layout-small .--col > .workspace
     margin: 0 15px;
 }
 
+html.layout-phone .--col-m
+{
+    margin:0;
+}
+
 .--col-l{
     margin-left:15px;
 }
 
-html.layout-small .--col{
+html.layout-small .--col,
+html.layout-phone .--col{
     display: block;
     width: 100%;
     margin: 0;

@@ -626,8 +626,10 @@ class mel_sharedmailboxes extends rcube_plugin {
                     }
                 }
                 $mailbox = $this->rc->output->get_env('mailbox');
-                $mailbox = str_replace(driver_mel::gi()->getMboxTrash(), $trash_mbox, $mailbox);
-                $this->rc->output->set_env('mailbox', $mailbox);
+                if (strpos($mailbox, driver_mel::gi()->getMboxTrash()) === 0) {
+                    $mailbox = str_replace(driver_mel::gi()->getMboxTrash(), $trash_mbox, $mailbox);
+                    $this->rc->output->set_env('mailbox', $mailbox);
+                }
             }
         }
         return $args;

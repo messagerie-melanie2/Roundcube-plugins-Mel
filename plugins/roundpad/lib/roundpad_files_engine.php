@@ -268,7 +268,7 @@ class roundpad_files_engine
         $out = $this->rc->output->form_tag($attrib, $out);
       }
 
-      $this->plugin->add_label('filecreating', 'filecreatenotice', 'create', 'filecreate', 'cancel', 'open', 'filenoname', 'filenofolder');
+      $this->plugin->add_label('filecreating', 'filecreatenotice', 'fileaddnotice', 'create', 'filecreate', 'add', 'fileadd', 'cancel', 'open', 'filenoname', 'filenofolder');
       $this->rc->output->add_gui_object('file-create-form', $attrib['id']);
 
       return $out;
@@ -732,6 +732,34 @@ class roundpad_files_engine
       echo json_encode($result);
       exit;
     }
+
+    /**
+     * Handler for "file add" function
+     */
+    protected function action_file_add() {
+      $result = array(
+              'status' => 'OK',
+              'req_id' => rcube_utils::get_input_value('req_id', rcube_utils::INPUT_GET),
+      );
+      try {
+        $folder = str_replace($this->plugin->gettext('files'), '', urldecode(rcube_utils::get_input_value('folder', rcube_utils::INPUT_POST)));
+        $name = rcube_utils::get_input_value('name', rcube_utils::INPUT_POST);
+        $type = rcube_utils::get_input_value('type', rcube_utils::INPUT_POST);
+        $url = rcube_utils::get_input_value('url', rcube_utils::INPUT_POST);
+        $owner = rcube_utils::get_input_value('owner', rcube_utils::INPUT_POST);
+        if (!$this->driver->createFile($name, $type, $folder, $url, $owner)) {
+          throw new Exception();
+        }
+      }
+      catch (Exception $e) {
+        $message = $e->getMessage();
+        $result['status'] = 'NOK';
+        $result['reason'] = $this->plugin->gettext('cantaddfile') . (!empty($message) ? $message : '');
+      }
+      echo json_encode($result);
+      exit;
+    }
+
 
     /**
      * Handler for "file delete" function

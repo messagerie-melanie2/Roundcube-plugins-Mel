@@ -24,25 +24,43 @@ class mel_logs extends rcube_plugin
 	const ERROR = 'ERROR';
 	const WARN = 'WARN';
 	const TRACE = 'TRACE';
+
 	/**
 	 * Fichier de log
 	 * @var string
 	 */
 	private $log_file;
+
 	/**
 	 * Tableau contenant les différents niveaux de logs acceptés
 	 * @var array
 	 */
 	private $log_level;
+
 	/**
 	 * Instance courante de la classe
 	 * @var mel_logs
 	 */
 	private static $instance;
+
     /**
      * @var string
      */
 	public $task = '.*';
+
+	/**
+	 * Liste des erreurs possibles dans la page de login
+	 */
+	private static $login_errors = [
+		rcmail::ERROR_STORAGE          => 'Erreur de connexion au serveur de stockage.',
+		rcmail::ERROR_COOKIES_DISABLED => 'Votre navigateur n\'accepte pas les fichiers témoins.',
+		rcmail::ERROR_INVALID_REQUEST  => 'Requête invalide ! Aucune donnée n\'a été enregistrée.',
+		rcmail::ERROR_INVALID_HOST     => 'Nom du serveur invalide.',
+		rcmail::ERROR_RATE_LIMIT       => 'Trop de tentatives de connexion infructueuses. Ressayez ultérieurement.',
+		49 => 'Mauvais identifiant ou mot de passe',
+		491 => 'Accès internet non activé pour ce compte',
+		492 => 'Double authentification obligatoire',
+	];
 
 	/**
 	 * Constructeur du plugin
@@ -118,7 +136,12 @@ class mel_logs extends rcube_plugin
 	 */
 	public function login_failed($args)
 	{
-		$this->log(self::INFO, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code']);
+		$message = '';
+		// Gérer les messages d'erreurs
+		if (isset(self::$login_errors[$args['code']])) {
+			$message = ' (' . self::$login_errors[$args['code']] . ')';
+		}
+		$this->log(self::INFO, "[login] Echec de connexion pour l'utilisateur <".$args['user']."> Code erreur : ".$args['code'].$message);
 		return $args;
 	}
 	/**

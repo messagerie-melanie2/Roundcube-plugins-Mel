@@ -474,22 +474,27 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __get2FAconfig()
     {
-        $user = $this->rc->user;
+        if (!isset($_SESSION['2FA_config'])) {
+            $user = $this->rc->user;
         
-        $arr_prefs = $user->get_prefs();
-        $pref_name = 'mel_doubleauth';
-        
-        if (!isset($arr_prefs[$pref_name])) {
-          $pref_name = 'melanie2_doubleauth';
+            $arr_prefs = $user->get_prefs();
+            $pref_name = 'mel_doubleauth';
+            
+            if (!isset($arr_prefs[$pref_name])) {
+              $pref_name = 'melanie2_doubleauth';
+            }
+    
+            // Récupération si la double auth est activé pour l'utilisateur courant
+            $response = $this->__isActivated();
+    
+            $arr_prefs[$pref_name]['activate'] = $response;
+            $arr_prefs[$pref_name]['secret'] = ($response) ? '*************' : '';
+
+            // MANTIS 0005754: Réduire les appels au webservice de double auth
+            $_SESSION['2FA_config'] = $arr_prefs[$pref_name];
         }
-
-        // Récupération si la double auth est activé pour l'utilisateur courant
-        $response = $this->__isActivated();
-
-        $arr_prefs[$pref_name]['activate'] = $response;
-        $arr_prefs[$pref_name]['secret'] = ($response) ? '*************' : '';
         
-        return $arr_prefs[$pref_name];
+        return $_SESSION['2FA_config'];
     }
     
     /**
@@ -517,7 +522,14 @@ class mel_doubleauth extends rcube_plugin {
             $res = true;
         }
         
-        return $res && $user->save_prefs($arr_prefs);
+        if ($res && $user->save_prefs($arr_prefs)) {
+            // MANTIS 0005754: Réduire les appels au webservice de double auth
+            $_SESSION['2FA_config'] = $arr_prefs['mel_doubleauth'];
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     
     /**

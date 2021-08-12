@@ -17,7 +17,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-require_once 'PHPGangsta/GoogleAuthenticator.php';
 
 class mel_doubleauth extends rcube_plugin {
     /**
@@ -51,6 +50,7 @@ class mel_doubleauth extends rcube_plugin {
         // hooks
         if (!$this->is_internal()) { // Connexion intranet => pas de double auth
             $this->add_hook('login_after', array($this, 'login_after'));
+            $this->add_hook('logout_after', array($this, 'logout_after'));
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
         }
@@ -73,7 +73,6 @@ class mel_doubleauth extends rcube_plugin {
         $this->include_script('qrcode.min.js');
     }
     
-    // Use the form login, but removing inputs with jquery and action (see twofactor_gauthenticator_form.js)
     /**
      * Hook login_after
      * Permet d'afficher la demande de double authentification en js
@@ -144,6 +143,23 @@ class mel_doubleauth extends rcube_plugin {
         
         $this->rc->output->send('login');
     }
+
+
+    /**
+     * Hook logout_after
+     * 
+     * @param array $args
+     */
+    function logout_after($args)
+    {
+        $message = rcube_utils::get_input_value('_logout_msg', rcube_utils::INPUT_GET);
+
+        if (isset($message)) {
+            $this->rc->output->show_message($message);
+        }
+
+        return $args;
+    }
     
     /**
      * Interception du positionnement du code par l'utilisateur
@@ -192,10 +208,19 @@ class mel_doubleauth extends rcube_plugin {
                 $this->__exitSession();
             }
         }
-        else if ($this->rc->config->get('force_enrollment_users') 
-                && ($this->rc->task !== 'settings' || $this->rc->action !== 'plugin.mel_doubleauth')
-                && $this->rc->task !== 'login') {
-            $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
+        // MANTIS 0005292: La double authentification doit être obligatoire pour certains comptes
+        else {
+            $user = driver_mel::gi()->getUser();
+            $user->load(['double_authentification']);
+            if ($user->double_authentification) {
+                $this->__exitSession("La double authentification est obligatoire pour votre compte.");
+            }
+            // Continuer à proposer l'enrollment si besoin
+            else if ($this->rc->config->get('force_enrollment_users') 
+                    && ($this->rc->task !== 'settings' || $this->rc->action !== 'plugin.mel_doubleauth')
+                    && $this->rc->task !== 'login') {
+                $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
+            }
         }
         
         return $p;
@@ -456,13 +481,21 @@ class mel_doubleauth extends rcube_plugin {
     
     /**
      * Destruction de la session de l'utilisateur (via Logout)
+     * 
+     * @param string $message
      */
-    private function __exitSession()
+    private function __exitSession($message = null)
     {
         unset($_SESSION['mel_doubleauth_login']);
         unset($_SESSION['mel_doubleauth_2FA_login']);
         
-        header('Location: ?_task=logout&_token='.$this->rc->get_request_token());
+        if (isset($message)) {
+            header('Location: ?_task=logout&_logout_msg=' . $message . '&_token=' . $this->rc->get_request_token());
+        }
+        else {
+            header('Location: ?_task=logout&_token=' . $this->rc->get_request_token());
+        }
+        
 
         exit;
     }

@@ -65,9 +65,9 @@ tapez le code donné par votre téléphone puis cliquez sur &laquo; Vérifier &r
 .";
 $labels['info_active_ok'] = "La double authentification est activée pour votre compte.";
 
-
-
 $labels['check_code_to_activate'] = 'Pour sauvegarder vous devez valider un code au préalable';
+
+$labels['logout_2fa_needed'] = "La double authentification est obligatoire pour votre compte.";
 
 // Messages used for the different portions of the plugin
 $messages = array();

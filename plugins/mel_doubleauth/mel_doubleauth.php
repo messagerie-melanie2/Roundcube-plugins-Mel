@@ -209,17 +209,18 @@ class mel_doubleauth extends rcube_plugin {
             }
         }
         // MANTIS 0005292: La double authentification doit être obligatoire pour certains comptes
-        else {
+        else if ($this->rc->task !== 'login' && $this->rc->task !== 'logout') {
             $user = driver_mel::gi()->getUser();
-            $user->load(['double_authentification']);
-            if ($user->double_authentification) {
-                $this->__exitSession("La double authentification est obligatoire pour votre compte.");
-            }
-            // Continuer à proposer l'enrollment si besoin
-            else if ($this->rc->config->get('force_enrollment_users') 
-                    && ($this->rc->task !== 'settings' || $this->rc->action !== 'plugin.mel_doubleauth')
-                    && $this->rc->task !== 'login') {
-                $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
+            if (isset($user)) {
+                $user->load(['double_authentification']);
+                if ($user->double_authentification) {
+                    $this->__exitSession($this->gettext('logout_2fa_needed'));
+                }
+                // Continuer à proposer l'enrollment si besoin
+                else if ($this->rc->config->get('force_enrollment_users') 
+                        && ($this->rc->task !== 'settings' || $this->rc->action !== 'plugin.mel_doubleauth')) {
+                    $this->__goingRoundcubeTask('settings', 'plugin.mel_doubleauth');
+                }
             }
         }
         
@@ -602,6 +603,11 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __checkCode($code)
     {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_checkCode', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,
@@ -626,7 +632,13 @@ class mel_doubleauth extends rcube_plugin {
      * 
      * @return boolean
      */
-    private function __isActivated() {
+    private function __isActivated()
+    {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_isActivated', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,
@@ -653,6 +665,11 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __addUser()
     {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_addUser', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,
@@ -682,6 +699,11 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __removeUser()
     {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_removeUser', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,
@@ -714,6 +736,11 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __ValidateCookie($username, $code, $date_validitee, $application)
     {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_ValidateCookie', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,
@@ -745,6 +772,11 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __addCookie($username, $code, $expiration, $application)
     {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_addCookie', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,
@@ -778,6 +810,11 @@ class mel_doubleauth extends rcube_plugin {
      */
     private function __modifyCookie($username, $code, $expiration, $application)
     {
+        // Gérer le mode bouchon
+        if ($this->rc->config->get('dynalogin_mode_bouchon', false)) {
+            return $this->rc->config->get('dynalogin_bouchon_modifyCookie', true);
+        }
+
         // Données de connexion au webservice
         $client = new SoapClient($this->rc->config->get('dynalogin_websvc'), array(
             "cache_wsdl" => WSDL_CACHE_BOTH,

@@ -214,6 +214,7 @@ class mel_doubleauth extends rcube_plugin {
             if (isset($user)) {
                 $user->load(['double_authentification']);
                 if ($user->double_authentification) {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[login] Echec de connexion pour l'utilisateur <".$user->uid."> Code erreur : 492 (Double authentification obligatoire)");
                     $this->__exitSession($this->gettext('logout_2fa_needed'));
                 }
                 // Continuer à proposer l'enrollment si besoin

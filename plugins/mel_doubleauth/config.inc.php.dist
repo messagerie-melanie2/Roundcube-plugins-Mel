@@ -15,3 +15,9 @@ $rcmail_config['dynalogin_websvc_ssl'] = stream_context_create(array(
         'verify_peer' => true,
     )
 ));
+
+// Mode bouchon pour dynalogin
+$rcmail_config['dynalogin_mode_bouchon'] = true;
+
+// Mode bouchon double authentification activée ou non
+$rcmail_config['dynalogin_bouchon_isActivated'] = true;

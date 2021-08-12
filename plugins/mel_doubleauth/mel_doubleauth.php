@@ -40,7 +40,7 @@ class mel_doubleauth extends rcube_plugin {
      *
      * @see rcube_plugin::init()
      */
-    function init() {
+    public function init() {
         $this->rc = rcmail::get_instance();
         $this->load_config();
         
@@ -80,7 +80,7 @@ class mel_doubleauth extends rcube_plugin {
      * 
      * @param array $args
      */
-    function login_after($args)
+    public function login_after($args)
     {
         if ($this->is_internal()) { 
             // Connexion intranet => pas de double auth
@@ -150,7 +150,7 @@ class mel_doubleauth extends rcube_plugin {
      * 
      * @param array $args
      */
-    function logout_after($args)
+    public function logout_after($args)
     {
         $message = rcube_utils::get_input_value('_logout_msg', rcube_utils::INPUT_GET);
 
@@ -169,7 +169,7 @@ class mel_doubleauth extends rcube_plugin {
      * 
      * @return array
      */
-    function check_2FAlogin($p)
+    public function check_2FAlogin($p)
     {
         if ($this->is_internal()) {
             // Connexion intranet => pas de double auth
@@ -231,7 +231,7 @@ class mel_doubleauth extends rcube_plugin {
     /**
      * Afficher la popup d'enrollement si la double authentification n'est pas activée
      */
-    function popup_msg_enrollment()
+    public function popup_msg_enrollment()
     {
         $config_2FA = $this->__get2FAconfig();
         
@@ -260,7 +260,7 @@ class mel_doubleauth extends rcube_plugin {
     /**
      * Afficher la configuration de la double authentification
      */
-    function mel_doubleauth_init()
+    public function mel_doubleauth_init()
     {
         $this->add_texts('localization/', true);
 
@@ -275,7 +275,7 @@ class mel_doubleauth extends rcube_plugin {
     /**
      * Enregistrement de la configuration de double authentification
      */
-    function mel_doubleauth_save()
+    public function mel_doubleauth_save()
     {
         $this->add_texts('localization/', true);
         $this->register_handler('plugin.body', array($this, 'mel_doubleauth_form'));

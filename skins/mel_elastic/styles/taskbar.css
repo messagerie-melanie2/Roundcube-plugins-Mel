@@ -352,14 +352,14 @@ overflow: hidden;
    text-overflow: ellipsis;
 }
 
-html.layout-large .menu.toolbar a.menu-small,
-html.layout-normal .menu.toolbar a.menu-small
+html.layout-large .menu.toolbar li#menu-small-li,
+html.layout-normal .menu.toolbar li#menu-small-li
 {
     display: none!important;
 }
 
-html.touch .menu.toolbar a.menu-small,
-html.layout-small .menu.toolbar a.menu-small
+html.touch .menu.toolbar li#menu-small-li,
+html.layout-small .menu.toolbar li#menu-small-li
 {
     display: initial!important;
 }

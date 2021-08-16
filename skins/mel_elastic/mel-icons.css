@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?mv36k7') format('truetype'),
-    url('fonts/DWP.woff?mv36k7') format('woff'),
-    url('fonts/DWP.svg?mv36k7#DWP') format('svg');
+    url('fonts/DWP.ttf?1b44g5') format('truetype'),
+    url('fonts/DWP.woff?1b44g5') format('woff'),
+    url('fonts/DWP.svg?1b44g5#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -24,6 +24,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-mel_trello:before {
+  content: "\e94c";
+}
 .icon-mel-arrow-left:before {
   content: "\e93b";
 }

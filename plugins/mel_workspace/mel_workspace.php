@@ -41,6 +41,7 @@ class mel_workspace extends rcube_plugin
      */
     public function init()
     {
+        $this->require_plugin('mel_helper');
         $this->setup();
         $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
         $this->include_script('js/init/classes/WSPNotifications.js');
@@ -508,6 +509,9 @@ class mel_workspace extends rcube_plugin
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
             self::WEKAN => $this->get_object($workspace, self::WEKAN) !== null
         ];
+
+        if ($datas[self::TASKS] && !$datas[self::WEKAN])
+            $datas[self::WEKAN] = true;
 
         if ($services_to_remove)
         {

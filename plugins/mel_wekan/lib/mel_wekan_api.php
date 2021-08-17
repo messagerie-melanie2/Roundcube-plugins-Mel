@@ -136,29 +136,6 @@ class mel_wekan_api extends amel_lib
         return $return;
     }
 
-    function insert($partUrl, $body ,$try = 0)
-    {
-        $return = null;
-
-        if ($body !== null && count($body) > 0 && $try <= 0)
-        {
-            if (in_array(self::KEY_PARAM_ID, $body))
-                $body[array_search(self::KEY_PARAM_ID, $body)] = $_SESSION[self::KEY_SESSION_AUTH]["id"];
-        }
-
-        if ($this->is_logged())   
-            $return = $this->put($partUrl, $body, array_merge(self::FETCH_HEADER, ["", 'Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]));
-        else {
-            if ($try < 10)
-            {
-                $this->login();
-                $return = $this->insert($partUrl, $body, ++$try);
-            }
-        }
-
-        return $return;
-    }
-
     /**
      * Créer un tableau
      *
@@ -184,7 +161,8 @@ class mel_wekan_api extends amel_lib
 
     function create_label($board, $labelName)
     {
-        return $this->insert(str_replace("{board}", $board, self::CALL_ADD_LABEL), ["label" => $labelName]);
+       // return $this->insert(str_replace("{board}", $board, self::CALL_ADD_LABEL), ["label" => $labelName]);
+       return $this->fetch()->_custom_url($this->url.str_replace("{board}", $board, self::CALL_ADD_LABEL), "PUT", ["label" => $labelName], null, array_merge(self::FETCH_HEADER, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]));
     }
 
     /**

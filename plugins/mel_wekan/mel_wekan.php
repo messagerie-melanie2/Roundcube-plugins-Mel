@@ -19,6 +19,7 @@ class mel_wekan extends rcube_plugin
      */
     public function init()
     {
+        $this->require_plugin('mel_helper');
         $this->setup();
     }
 
@@ -154,6 +155,11 @@ class mel_wekan extends rcube_plugin
         $board = $this->check_board($board);
 
         return $board["httpCode"] == 200;
+    }
+
+    public function add_label($board, $label)
+    {
+        return $this->wekanApi->create_label($board, $label);
     }
 
     public function wekan_url()

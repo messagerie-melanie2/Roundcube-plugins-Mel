@@ -441,7 +441,7 @@ class mel_workspace extends rcube_plugin
 
                 if ($services[self::WEKAN] && $this->get_setting($this->currentWorkspace, self::WEKAN) !== true)
                 {
-                    $html .= html::tag("button",["data-uid" => $uid, "onclick" => "ChangeToolbar('wekan', this)" ,"class" => "wsp-toolbar-item wsp-wekan"], "<span class=".$icons["wekan"]."></span><span class=text-item>Wekan</span>");
+                    $html .= html::tag("button",["data-uid" => $uid, "onclick" => "ChangeToolbar('wekan', this)" ,"class" => "wsp-toolbar-item wsp-wekan"], "<span class=".$icons["wekan"]."></span><span class=text-item>Kanban</span>");
                     
                     if ($services[self::TASKS] || $is_admin)
                         $html .= $vseparate;

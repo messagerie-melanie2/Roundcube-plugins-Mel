@@ -7,6 +7,6 @@ aide/custom.css
 aide/images/
 aide/doc
 aide/config_search.php
-/plugins/mel_portail/modules/fluxrss/rss
-/plugins/mel_portail/config
-
+plugins/mel_portail/modules/fluxrss/rss
+plugins/mel_portail/config
+plugins/mel_help/public/*

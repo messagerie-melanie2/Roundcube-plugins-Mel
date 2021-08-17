@@ -15,3 +15,7 @@ $labels["open_ariane"] = "Afficher la discussion instantanée de l'espace de tra
 $labels["close_ariane"] = "Cacher la discussion instantanée de l'espace de travail";
 $labels["last_day"] = "Jour précédent";
 $labels["next_day"] = "Jour suivant";
+
+$labels["wekan_todo"] = "À faire";
+$labels["wekan_in_progress"] = "En cours";
+$labels["wekan_do"] = "Fait";

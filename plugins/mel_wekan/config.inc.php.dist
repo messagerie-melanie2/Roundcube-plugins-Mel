@@ -1,0 +1,10 @@
+<?php
+$config['wekan_url'] = "";
+$config['wekan_admin_user'] = [
+    "username" => "",
+    "password" => ""
+];
+$config["wekan_ssl_options"] = [
+    "verify_peer" => false,
+    "verify_host" => 0
+];

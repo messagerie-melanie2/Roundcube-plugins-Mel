@@ -56,6 +56,17 @@ class mel_wekan extends rcube_plugin
         }
     }
 
+    public function login_user($user, $password)
+    {
+        if (!$this->wekanApi->is_logged($user))
+            return $this->wekanApi->login([
+                "username" => $user,
+                "password" => $password
+            ]);
+        
+        return true;
+    }
+
     public function login()
     {        
         $result = $this->wekanApi->login();

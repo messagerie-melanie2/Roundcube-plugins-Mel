@@ -82,32 +82,36 @@ class mel_wekan_api extends amel_lib
         return $this->fetch()->_get_url($this->url.$url, $params, $headers);
     }
 
-    public function login()
+    public function login($fakeUser = null)
     {
-        $fakeUser = $this->get_config("wekan_admin_user");
+        $argUser = $fakeUser !== null;
+        $fakeUser = !$argUser ? $this->get_config("wekan_admin_user") : $fakeUser;
         $get = $this->post(self::CALL_LOGIN, ["username" => $fakeUser["username"], "password" => $fakeUser["password"]], null, self::FETCH_HEADER);
+
+        $key = !$argUser ? self::KEY_SESSION_AUTH : self::KEY_SESSION_AUTH.".".$fakeUser["username"];
 
         if ($get["httpCode"] == 200)
         {
             $content = json_decode($get["content"]);
-            $_SESSION[self::KEY_SESSION_AUTH] = [
+            $_SESSION[$key] = [
                 "id" => $content->id,
                 "token" => $content->token,
                 "expires" => $content->tokenExpires,
             ];
         }
         else {
-            $_SESSION[self::KEY_SESSION_AUTH] = null;
+            $_SESSION[$key] = null;
         }
 
         return $get;
         //$_SESSION[self::KEY_SESSION_AUTH];
     }
 
-    function is_logged()
+    function is_logged($username = null)
     {
+        $key = $username === null ? self::KEY_SESSION_AUTH : self::KEY_SESSION_AUTH.".$username";
         try {
-            return $_SESSION[self::KEY_SESSION_AUTH] !== null &&  strToTime($_SESSION[self::KEY_SESSION_AUTH]["expires"]) >= strToTime(date('m/d/Y h:i:s a', time()));
+            return $_SESSION[$key] !== null &&  strToTime($_SESSION[$key]["expires"]) >= strToTime(date('m/d/Y h:i:s a', time()));
         } catch (\Throwable $th) {
             return false;
         }

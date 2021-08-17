@@ -328,8 +328,7 @@ class mel_doubleauth extends rcube_plugin {
         $html_secret = $input_descsecret->show();
         $table->add(['colspan' => '3'], $html_secret);
         
-        if ($data['activate'] == null) {
-
+        if (!$data['activate']) {
             // Activate/deactivate
             $field_id = '2FA_activate_button';
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
@@ -360,9 +359,7 @@ class mel_doubleauth extends rcube_plugin {
                 html::div(['id' => 'prefs-title', 'class' => 'boxtitle'], $this->gettext('mel_doubleauth') . ' - ' . $this->rc->user->data['username']) .
                 html::div(['class' => 'boxcontent'], $table->show())
             );
-
         } else {
-
             $table->add(['colspan' => '3'], $this->gettext('info_active_ok'));
             $html_check_code = '<input type="text" id="2FA_code_to_check" maxlength="10">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
             $table->add(['colspan' => '3'], $this->gettext('info_check_code'));
@@ -552,14 +549,14 @@ class mel_doubleauth extends rcube_plugin {
         } else {
             // Mise a jour des paramètres de double authentification
             unset($data["secret"]);
-            unset($data["activate"]);
             $arr_prefs['mel_doubleauth'] = $data;
+            unset($arr_prefs['mel_doubleauth']["activate"]);
             $res = true;
         }
         
         if ($res && $user->save_prefs($arr_prefs)) {
             // MANTIS 0005754: Réduire les appels au webservice de double auth
-            $_SESSION['2FA_config'] = $arr_prefs['mel_doubleauth'];
+            $_SESSION['2FA_config'] = $data;
             return true;
         }
         else {

@@ -416,12 +416,26 @@ var mel_shortcuts_down = {
   //////// Delete
   'delete': {
       keydown: 46, // Delete
-      active: function(e) { return rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
+      active: function(e) { return rcmail.task == 'mail' && rcmail.env.action == 'preview' || rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible'); },
       action: function(e) {
-        if ($('#eventshow').length && $('#eventshow').is(':visible')) {
+        if (rcmail.task == 'calendar' && $('#eventshow').length && $('#eventshow').is(':visible')) {
           $('#eventshow').parent().find('.delete').click();
         }
+        else if (rcmail.task == 'mail' && rcmail.env.action == 'preview') {
+          window.parent.rcmail.command('delete', '', e.target, e);
+        }
       }
+  },
+
+  //////// Shift + Delete
+  'shift_delete': {
+    keydown: 46, // Shift + Delete
+    shift: true,
+    active: function(e) { return rcmail.task == 'mail' && rcmail.env.action == 'preview' },
+    action: function(e) {
+      if (confirm(window.parent.rcmail.get_label('deletemessagesconfirm')))
+        window.parent.rcmail.permanently_remove_messages();
+    }
   },
   
   //////// Print

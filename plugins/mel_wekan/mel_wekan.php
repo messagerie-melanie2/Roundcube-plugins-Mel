@@ -154,10 +154,22 @@ class mel_wekan extends rcube_plugin
     {
         $board = $this->check_board($board);
 
-        return $board["httpCode"] == 200;
+        return $board["httpCode"] == 200 && $board["content"] !== "{}";
     }
 
-    public function add_label($board, $label)
+    public function board_archived($board)
+    {
+        $archived = false;
+        $board = $this->check_board($board);
+
+        if ($board["httpCode"] == 200 && $board["content"] !== "{}")
+            $archived = json_decode($board["content"])->archived;
+
+        return $archived;
+
+    }
+
+    public function add_tag($board, $label)
     {
         return $this->wekanApi->create_label($board, $label);
     }

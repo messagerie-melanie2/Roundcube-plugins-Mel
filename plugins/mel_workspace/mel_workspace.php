@@ -435,11 +435,11 @@ class mel_workspace extends rcube_plugin
                 {
                     $html .= html::tag("button",["data-uid" => $uid, "onclick" => "ChangeToolbar('stockage', this)" ,"class" => "wsp-toolbar-item wsp-documents"], "<span class=".$icons["documents"]."></span><span class=text-item>".$this->rc->gettext("documents", "mel_workspace")."</span>");
 
-                    if ($services[self::TASKS] || $services[self::WEKAN] || $is_admin)
+                    if ($services[self::TASKS] || ($services[self::WEKAN] && $this->get_setting($this->currentWorkspace, self::WEKAN) !== true) || $is_admin)
                         $html .= $vseparate;
                 }
 
-                if ($services[self::WEKAN])
+                if ($services[self::WEKAN] && $this->get_setting($this->currentWorkspace, self::WEKAN) !== true)
                 {
                     $html .= html::tag("button",["data-uid" => $uid, "onclick" => "ChangeToolbar('wekan', this)" ,"class" => "wsp-toolbar-item wsp-wekan"], "<span class=".$icons["wekan"]."></span><span class=text-item>Wekan</span>");
                     
@@ -873,7 +873,7 @@ class mel_workspace extends rcube_plugin
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
         foreach ($services as $key => $value) {
-            if ($key === self::EMAIL || $key === self::AGENDA || ($key === self::CLOUD && $value))
+            if ($key === self::EMAIL || $key === self::AGENDA || ($key === self::CLOUD && $value) || $key === self::WEKAN)
                 continue;
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
@@ -1158,7 +1158,7 @@ class mel_workspace extends rcube_plugin
         
         if ($board_id === null)
         {
-            $board_id = $this->create_workspace_wekan($workspace->title, $workspace->ispublic === 0 ? false: true, null, [
+            $board_id = $this->create_workspace_wekan($workspace, $workspace->title, $workspace->ispublic === 0 ? false: true, null, [
                 $this->rc->gettext("wekan_todo", "mel_workspace"),
                 $this->rc->gettext("wekan_in_progress", "mel_workspace"),
                 $this->rc->gettext("wekan_do", "mel_workspace")
@@ -1598,6 +1598,7 @@ class mel_workspace extends rcube_plugin
 
         if (!(array_search(self::WEKAN, $services) === false))
         {
+            $wekan = $this->wekan();
             //Update wekan
             $board_id = $this->get_object($workspace, self::WEKAN)->id; 
             foreach ($users as $key => $value) {
@@ -1654,19 +1655,19 @@ class mel_workspace extends rcube_plugin
                         else
                             $mel->deleteAcl($user);
                     }
+                    break;
                 case self::WEKAN:
+                    $wekan = $this->wekan();
                     $board_id = $this->get_object($workspace, self::WEKAN)->id; 
-                    foreach ($users as $key => $value) {
-                        if ($wekan->check_if_user_exist($board_id, $value))
-                        {
-                            try {
-                                $wekan->remove_user($board_id, $value);
-                            } catch (\Throwable $th) {
-                                throw $th;
-                            }
-                        }
 
-                    }
+                    if ($wekan->check_if_user_exist($board_id, $user))
+                    {
+                        try {
+                            $wekan->remove_user($board_id, $user);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                    }                
 
                     break;
                 default:
@@ -1699,7 +1700,7 @@ class mel_workspace extends rcube_plugin
                     $this->get_ariane()->update_owner($user, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false, $new_right === Share::RIGHT_WRITE);
 
                 if ($services[self::WEKAN])
-                    $this->wekan()->update_user_status($this->get_object($workspace, self::WEKAN)->id, $user, $new_right === Share::RIGHT_WRITE);
+                    $this->wekan()->update_user_status($this->get_object($workspace, self::WEKAN)->id, $user, !($new_right === Share::RIGHT_WRITE));
 
                 if ($user === driver_mel::gi()->getUser()->uid)
                     echo "reload";
@@ -2048,8 +2049,20 @@ class mel_workspace extends rcube_plugin
                 {
                     $board_id = $this->get_object($workspace, self::WEKAN)->id;
 
-                    if ($this->check_wekan($board_id))
+                    if ($board_id !== null && $this->check_wekan($board_id))
+                    {
+
+                        if ($this->wekan()->board_archived($board_id))
+                        {
+                            if ($this->get_setting($workspace, self::WEKAN) !== true)
+                                $this->add_setting($workspace, self::WEKAN, true);
+                            return true;
+                        }
+                        else if ($this->get_setting($workspace, self::WEKAN) === true)
+                            $this->add_setting($workspace, self::WEKAN, false);
+
                         return $this->check_wekan_member($board, driver_mel::gi()->getUser()->uid) ? true : null;
+                    }
                     else 
                         return false;
 
@@ -2133,28 +2146,32 @@ class mel_workspace extends rcube_plugin
                             break;
         
                         case self::CHANNEL:      
-                            $users = array_map($map, $workspace->shares);
-                            $tmp_users = [];
-        
-                            foreach ($users as $key => $value) {
-                                $tmp_users[] = $key;
-                            }
-        
-                            $uid = $this->generate_channel_id_via_uid($workspace->uid);
-                            $value = $this->get_ariane()->_create_channel($uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
-                            
-                            if (is_string($value["content"]))
-                            {
-                                $value = json_decode($value["content"]);
-                                $value = $value->channel;//$value["content"]["channel"];
-                                $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
-                            }
-                            else {
-                                $value = $value["content"]["channel"];
-                                $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
-                            }
+                            try {
+                                $users = array_map($map, $workspace->shares);
+                                $tmp_users = [];
+            
+                                foreach ($users as $key => $value) {
+                                    $tmp_users[] = $key;
+                                }
+            
+                                $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                                $value = $this->get_ariane()->_create_channel($uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
+                                
+                                if (is_string($value["content"]))
+                                {
+                                    $value = json_decode($value["content"]);
+                                    $value = $value->channel;//$value["content"]["channel"];
+                                    $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
+                                }
+                                else {
+                                    $value = $value["content"]["channel"];
+                                    $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
+                                }
+    
+                                $needUpdate = true;
+                            } catch (\Throwable $th) {
 
-                            $needUpdate = true;
+                            }
 
                             break;
         
@@ -2185,7 +2202,13 @@ class mel_workspace extends rcube_plugin
                             else if ($services[$key] === false)
                             {
                                 $this->save_object($workspace, self::WEKAN, null);
-                                $this->create_wekan($workspace, $services, [driver_mel::gi()->getUser()->uid]);
+
+                                $map = function($value) {
+                                    return $value->user;
+                                };
+                                $users = array_map($map, $workspace->shares);
+
+                                $this->create_wekan($workspace, $services, $users);
                             }
 
                             $needUpdate = true;
@@ -2429,7 +2452,7 @@ class mel_workspace extends rcube_plugin
         return mel_helper::get_rc_plugin($this->rc, "mel_wekan");
     }
 
-    function create_workspace_wekan($title, $isPublic, $color, $list, $users)
+    function create_workspace_wekan($workspace, $title, $isPublic, $color, $list, $users)
     {
         $wekan = $this->wekan();
         $return = [
@@ -2446,7 +2469,8 @@ class mel_workspace extends rcube_plugin
                 if (!$wekan->check_if_user_exist($board_id, $value))
                 {
                     try {
-                        $return["users"][$value] = $wekan->add_member($board_id, $value);
+                        $return["users"][$value] = $wekan->add_member($board_id, $value, self::is_admin($workspace, $value));
+                        $wekan->update_user_status($board_id, $value, self::is_admin($workspace, $value));
                     } catch (\Throwable $th) {
                         //throw $th;
                     }

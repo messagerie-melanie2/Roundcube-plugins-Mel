@@ -386,6 +386,29 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                 }
             );
             break;
+        case "wekan":
+            datas.push({
+                exec_info:"change_environnement",
+                datas:"inpage"
+            })
+            datas.push({
+                exec_info:"UpdateMenu",
+                datas:{
+                    class:"inpage",
+                    picture:{
+                        color:null,
+                        picture:null
+                    },
+                    toolbar:null
+                }
+            });
+            datas.push(
+                {
+                    exec_info:"ChangePage",
+                    datas:_class
+                }
+            );
+            break;
         case "params":
             datas.push({
                 exec_info:"change_environnement",
@@ -573,6 +596,24 @@ async function ChangeToolbarPage(_class)
             .attr("disabled", "disabled")
             .attr("aria-disabled", "true");
             $(".wsp-home").css("display", "");
+            break;
+        case "wekan":
+            $(".wsp-toolbar-item.wsp-wekan").addClass("active")
+            .attr("disabled", "disabled")
+            .attr("aria-disabled", "true");
+
+            if ($("iframe.wsp-wekan-frame").length === 0)
+            {
+                $(".body").append(`
+                <div class="wsp-services wsp-object wsp-wekan">
+                <iframe style=width:100%;min-height:500px;margin-top:30px; title="wekan" class="wsp-wekan-frame" src="${rcmail.env.wekan_base_url}/b/${rcmail.env.wekan_datas.id}/${rcmail.env.wekan_datas.title}"></iframe>
+                </div>
+                `);
+            }
+            else
+                $(".wsp-wekan").css("display", "");
+
+            //console.log("wekan_url", `${rcmail.env.wekan_base_url}/b/${rcmail.env.wekan_datas.id}/${rcmail.env.wekan_datas.title}`);
             break;
         case "params":
             $(".wsp-toolbar-item.wsp-item-params").addClass("active")

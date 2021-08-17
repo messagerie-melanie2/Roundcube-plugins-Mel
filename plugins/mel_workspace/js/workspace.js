@@ -452,6 +452,9 @@ function UpdateFrameAriane()
 
 async function initCloud()
 {
+    if (rcmail.env.current_workspace_services.doc !== true)
+        return;
+
     const folder = `/dossiers-${rcmail.env.current_workspace_uid}`;
 
     let spinner = $("#spinner-grow-center");

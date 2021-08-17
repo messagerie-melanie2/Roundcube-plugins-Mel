@@ -38,10 +38,10 @@ class mel_helper extends rcube_plugin
      * @param [any] $ssl_verify_peer
      * @return mel_fetch
      */
-    public function fetch($user_agent, $ssl_verify_peer)
+    public function fetch($user_agent, $ssl_verify_peer, $ssl_verify_host)
     {
         include_once "lib/mel_fetch.php";
-        return new mel_fetch($user_agent, $ssl_verify_peer);
+        return new mel_fetch($user_agent, $ssl_verify_peer, $ssl_verify_host);
     }
 
     public function include_amel_lib()

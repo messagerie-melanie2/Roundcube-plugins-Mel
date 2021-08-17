@@ -11,6 +11,8 @@ class mel_wekan extends rcube_plugin
      */
     private $rc;
 
+    private $wekanApi;
+
     /**
      * (non-PHPdoc)
      * @see rcube_plugin::init()
@@ -19,8 +21,6 @@ class mel_wekan extends rcube_plugin
     {
         $this->setup();
     }
-
-    private $api;
 
     /**
      * Enregistre les différentes actions, configs et boutons.
@@ -35,10 +35,11 @@ class mel_wekan extends rcube_plugin
         $this->register_task("wekan");
         $this->register_action('login', array($this, 'login'));
         $this->register_action('create_board', array($this, 'action_create_board'));
+        $this->register_action('check_board', array($this, 'action_check_board'));
         $this->include_script('js/wekan.js');
 
         $this->load_lib();
-        $this->api = new mel_wekan_api($this->rc, $this);
+        $this->wekanApi = new mel_wekan_api($this->rc, $this);
 
     }
 
@@ -56,7 +57,7 @@ class mel_wekan extends rcube_plugin
 
     public function login()
     {        
-        $result = $this->api->login();
+        $result = $this->wekanApi->login();
 
         echo json_encode($result);
         exit;
@@ -75,7 +76,7 @@ class mel_wekan extends rcube_plugin
 
     public function create_board($title, $isPublic, $color = null)
     {
-        return $this->api->create_board($title, $isPublic, $color);
+        return $this->wekanApi->create_board($title, $isPublic, $color);
     }
 
     public function create_board_with_inital_lists($title, $isPublic, $color = null, $lists = [])
@@ -89,6 +90,7 @@ class mel_wekan extends rcube_plugin
             if ($content->_id !== null)
             {
                 $board = [
+                    "httpCode" => 200,
                     "board_id" => $content->_id,
                     "board" => $board,
                     "lists" => []
@@ -106,31 +108,56 @@ class mel_wekan extends rcube_plugin
 
     public function create_list($board, $title)
     {
-        return $this->api->create_list($board, $title);
+        return $this->wekanApi->create_list($board, $title);
     }
 
     public function update_user_status($board, $user, $isAdmin)
     {
-        return $this->api->update_user($board, $user, $isAdmin);
+        return $this->wekanApi->update_user($board, $user, $isAdmin);
     }
 
     public function check_if_user_exist($board, $user)
     {
-        return $this->api->check_user_exist($board, $user);
+        return $this->wekanApi->check_user_exist($board, $user);
     }
 
     public function add_member($board, $username, $isAdmin = false)
     {
-        return $this->api->add_member($board, $username, $isAdmin);
+        return $this->wekanApi->add_member($board, $username, $isAdmin);
     }
 
     public function remove_user($board, $user)
     {
-        return $this->api->delete_user($board, $user);
+        return $this->wekanApi->delete_user($board, $user);
     }
 
     public function delete_board($board)
     {
-        return $this->api->delete_board($board);
+        return $this->wekanApi->delete_board($board);
+    }
+
+    public function action_check_board()
+    {
+        $board = rcube_utils::get_input_value("_board", rcube_utils::INPUT_GPC);
+
+        echo json_encode($this->check_board($board));
+        exit;
+    }
+
+    public function check_board($board)
+    {
+        return $this->wekanApi->get_board($board);
+    }
+
+    public function board_exist($board)
+    {
+        $board = $this->check_board($board);
+
+        return $board["httpCode"] == 200;
+    }
+
+    public function wekan_url()
+    {
+        return $this->wekanApi->get_url();
     }
 }

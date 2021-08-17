@@ -3,10 +3,12 @@ class mel_fetch
 {
     private $_user_agent;
     private $_ssl_verify_peer;
+    private $_ssl_verify_host;
 
-    public function __construct($user_agent, $ssl_verify_peer) {
+    public function __construct($user_agent, $ssl_verify_peer, $ssl_verify_host) {
         $this->_user_agent = $user_agent;
         $this->_ssl_verify_peer = $ssl_verify_peer;
+        $this->_ssl_verify_host = $ssl_verify_host;
     }
 
       /**

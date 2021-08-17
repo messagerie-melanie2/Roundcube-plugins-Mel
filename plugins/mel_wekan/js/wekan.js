@@ -35,7 +35,20 @@ class Wekan{
             (datas) => {
                 console.log("wekan", datas);
             }
-        )
+        );
+    }
+
+    check_board()
+    {
+        return mel_metapage.Functions.post(
+            this.url("check_board"),
+            {
+                _board:"pSSkHJ6wb64ZS2gxE"
+            },
+            (datas) => {
+                console.log("wekan", datas);
+            }
+        );
     }
 
     url(task)

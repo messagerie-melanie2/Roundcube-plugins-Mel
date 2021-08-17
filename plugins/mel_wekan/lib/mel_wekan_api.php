@@ -6,7 +6,6 @@ class mel_wekan_api extends amel_lib
 {
 
     public const USER_AGENT = "";
-    public const SSL_VERIFY_PEER = false;
 
     public const FETCH_HEADER = [
         "Content-Type: application/json; charset=utf-8",
@@ -50,7 +49,10 @@ class mel_wekan_api extends amel_lib
     function set_fetch_to_cache()
     {
         if ($this->cache[self::KEY_CACHE_FETCH] === null)
-            $this->cache[self::KEY_CACHE_FETCH] = $this->helper()->fetch(self::USER_AGENT, self::SSL_VERIFY_PEER);
+        {
+            $config = $this->get_config("wekan_ssl_options");
+            $this->cache[self::KEY_CACHE_FETCH] = $this->helper()->fetch(self::USER_AGENT, $config["verify_peer"], $config["verify_host"]);
+        }
     }
 
     function helper()
@@ -67,22 +69,23 @@ class mel_wekan_api extends amel_lib
 
     function post($url, $params = null, $json = null, $headers = null)
     {
-        return $this->fetch(self::USER_AGENT, self::SSL_VERIFY_PEER)->_post_url($this->url.$url, $params, $json, $headers);
+        return $this->fetch()->_post_url($this->url.$url, $params, $json, $headers);
     }
 
     function put($url, $item, $contentType)
     {
-        return $this->fetch(self::USER_AGENT, self::SSL_VERIFY_PEER)->_put_url($this->url.$url, $item, $contentType, $this->rc->config->get('curl_cainfo', null), $this->rc->config->get('curl_http_proxy', null));
+        return $this->fetch()->_put_url($this->url.$url, $item, $contentType, $this->rc->config->get('curl_cainfo', null), $this->rc->config->get('curl_http_proxy', null));
     }
 
     function get($url, $params = null, $headers = null)
     {
-        return $this->fetch(self::USER_AGENT, self::SSL_VERIFY_PEER)->_get_url($this->url.$url, $params, $headers);
+        return $this->fetch()->_get_url($this->url.$url, $params, $headers);
     }
 
     public function login()
     {
-        $get = $this->post(self::CALL_LOGIN, ["username" => $this->rc->get_user_name(), "password" => $this->rc->get_user_password()], null, self::FETCH_HEADER);
+        $fakeUser = $this->get_config("wekan_admin_user");
+        $get = $this->post(self::CALL_LOGIN, ["username" => $fakeUser["username"], "password" => $fakeUser["password"]], null, self::FETCH_HEADER);
 
         if ($get["httpCode"] == 200)
         {
@@ -345,10 +348,21 @@ class mel_wekan_api extends amel_lib
         if (!$this->is_logged())  
             $this->login();
 
-        return $this->fetch(self::USER_AGENT, self::SSL_VERIFY_PEER)->_custom_url($this->url.self::CALL_DELETE_BOARD."/$board", "DELETE", null, null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]);
+        return $this->fetch()->_custom_url($this->url.self::CALL_DELETE_BOARD."/$board", "DELETE", null, null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]);
     }
 
-    
+    public function get_board($board)
+    {
+        if (!$this->is_logged())  
+            $this->login();
+
+        return $this->get(self::CALL_NEW_BOARD."/$board", null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"], "Accept: */*"]);
+    }
+
+    public function get_url()
+    {
+        return $this->url;
+    }
 
 
 

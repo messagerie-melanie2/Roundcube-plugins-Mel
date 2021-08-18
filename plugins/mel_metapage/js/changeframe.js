@@ -539,7 +539,7 @@ async function ChangeFrame(_class, otherDatas = null)
             args:[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"]
         });
 
-        console.log("args", otherDatas,[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"])
+        //console.log("args", otherDatas,[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"])
     }
         //https://roundcube.ida.melanie2.i2/nextcloud/
         //Nextcloud.index_url + "/apps/files?dir=/dossiers-"+rcmail.env.current_workspace_uid

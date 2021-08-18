@@ -32,7 +32,9 @@ $(document).ready(function() {
     rcmail.env.last_frame_class = task;//[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
     //rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
     if ($("#layout-menu a.selected").length === 0)
+    {
         rcmail.env.last_frame_name = document.title;
+    }
     else
         rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
 
@@ -79,6 +81,7 @@ $(document).ready(function() {
     }
 
     mm_st_ChangeClicks();
+    mm_st_ChangeClicks("#otherapps");
 });
 
 function mm_st_GetClass(classlist)
@@ -95,10 +98,14 @@ function mm_st_GetClass(classlist)
     return "";
 }
 
-function mm_st_ChangeClicks()
+function mm_st_ChangeClicks(selector = "#taskmenu")
 {
-    let as = $("#taskmenu").find("a");
+    let as = $(selector).find("a");
     as.each((i, e) => {
+
+        if (e.classList.contains("more-options"))
+            return;
+
         let cClass = "";
         e.classList.forEach((a) => {
             switch (a) {
@@ -285,6 +292,27 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
             $(e).attr("aria-disabled", false).attr("tabIndex", "0");
         }
     });
+
+    $("#otherapps").find("a").each((i,e) => {
+        if (e.classList.contains(eClass))
+        {
+            if (!e.classList.contains("selected"))
+                e.classList.add("selected");
+            
+            $(e).attr("aria-disabled", true).attr("tabIndex", "-1");
+            $("#taskmenu a.more-options").addClass("selected");
+        }
+        else
+        {
+            e.classList.remove("selected");
+            $(e).attr("aria-disabled", false).attr("tabIndex", "0");
+        }
+    });
+
+    if($("#otherapps a.selected").length === 0)
+        $("#taskmenu a.more-options").removeClass("selected");
+
+    $("#otherapps").css("display", "none");
 
 });
 
@@ -550,7 +578,7 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 function m_mp_ChangeLasteFrameInfo()
 {
-    //console.log("last", rcmail.env.last_frame_class);
+    console.log("last", rcmail.env.last_frame_class);
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
     if (isUndefined)

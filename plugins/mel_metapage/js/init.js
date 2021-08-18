@@ -359,6 +359,21 @@ if (rcmail)
                 mel_metapage.Functions.change_frame("rocket", true, true).then(func);
         });
 
+        rcmail.register_command("more_options", () => {
+            console.log("click");
+            let otherapp = $("#otherapps");
+            if (otherapp.css("display") === "none")
+            {
+                otherapp.css("display", "");
+                otherapp.find("a").first().focus();
+                $("#taskmenu a.more-options").addClass("selected");
+            }
+            else {
+                otherapp.css("display", "none");
+                $("#taskmenu a.more-options").focus().removeClass("selected");
+            }
+        }, true);
+
         $(".barup").on("click", (e) => {
             let target = $(e.target);
 

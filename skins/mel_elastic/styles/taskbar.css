@@ -24,7 +24,9 @@
     display:none;
 }
 
-#taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover
+#taskmenu a.selected, #taskmenu a:hover, #taskmenu a.selected:hover, #taskmenu .action-buttons a:hover,
+#otherapps a.selected, #otherapps a:hover, #otherapps a.selected:hover, #otherapps .action-buttons a:hover,
+#otherapps a:hover span
 {
     /* -moz-border-radius: 100%;
     border-radius: 100%; */
@@ -50,17 +52,18 @@
     width: 1px;
 }
 
-#layout-menu, #taskmenu a
+#layout-menu, #taskmenu a,
+#otherapps a
 {
     width: 60px !important;
     font-size: 1.3rem !important;
 }
 
-#taskmenu a {
+#taskmenu a,#otherapps a {
     height: 58px !important;
 }
 
-#taskmenu a:before
+#taskmenu a:before,#otherapps a:before
 {
     line-height: 45px;
 }
@@ -173,8 +176,12 @@ html.layout-phone #taskmenu a
     font-weight: normal;
 }
 
-.settings{
+.more-options{
     order:14;
+}
+
+.settings{
+    order:15;
 }
 
 .menu.toolbar  a.settings::before
@@ -231,6 +238,13 @@ span.menu-last-frame-item {
     font-weight: normal;
 }
 
+.menu.toolbar a.more-options.icon-mel-dots:before
+{
+    content:"\e90c";
+    font-family: "DWP"!important;
+    font-weight: normal;
+}
+
 .menu.toolbar a.home.icon-mel-home:before
 {
     content:"\e918";
@@ -238,7 +252,8 @@ span.menu-last-frame-item {
     font-weight: normal;
 }
 
-.menu.toolbar a.mel.icon-mel-sondage:before
+.menu.toolbar a.mel.icon-mel-sondage:before,
+#otherapps a.icon-mel-sondage:before
 {
     content:"\e930";
     font-family: "DWP"!important;
@@ -268,6 +283,12 @@ span.menu-last-frame-item {
 a.menu-small.icofont-navigation-menu:before
 {
     content:"\e91f";
+    font-family: "DWP"!important;
+}
+
+a.icon-mel_trello:before
+{
+    content:"\e94c";
     font-family: "DWP"!important;
 }
 
@@ -333,7 +354,8 @@ iframe.mm-frame/*,
     width: 120px;
 }
 
-.menu.toolbar a.wsp > span
+.menu.toolbar a.wsp > span,
+.menu.toolbar a.more-options > span
 {
     white-space: break-spaces;
     padding-top: 5px!important;
@@ -402,4 +424,43 @@ html.layout-phone #taskmenu a .inner
 html.layout-phone .button.icon.task-menu-button
 {
     display: none!important;
+}
+
+nav.otherapps
+{
+    position: absolute;
+    height: 100%;
+    width: 200px;
+    left: 60px;
+    background-color: #2C3054;
+    z-index: 999999;
+}
+
+#otherapps a::before
+{
+    text-align: left;
+    margin-left: 15px !important;
+}
+
+#otherapps a
+{
+    color:white!important;
+    width:100%!important;
+    max-width:100%!important;
+}
+
+#otherapps a span
+{
+    position: absolute;
+    left: 69px;
+    margin-top: -16px;
+}
+
+#listotherapps{
+    text-align: left;
+}
+
+#otherapps ul li
+{
+    display:block;
 }

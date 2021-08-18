@@ -261,6 +261,17 @@ class mel_metapage extends rcube_plugin
             'title' => 'Retour à la page précédente',
             'type'       => 'link',
         ), "taskbar");
+
+        $this->add_button(array(
+            'command' => 'more_options',
+            'href' => '',
+            'class'	=> 'icon-mel-dots more-options',
+            'classsel' => 'icon-mel-dots more-options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.my_apps',
+            'title' => 'Toutes mes applications',
+            'type'       => 'link',
+        ), "taskbar");
         $this->include_depedencies();
         $this->include_css();
         $this->include_js();

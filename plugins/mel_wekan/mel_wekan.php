@@ -31,17 +31,36 @@ class mel_wekan extends rcube_plugin
     function setup()
     {
         $this->rc = rcmail::get_instance();
+        $this->add_texts('localization/', true);
         $this->load_config();
 
         $this->register_task("wekan");
         $this->register_action('login', array($this, 'login'));
         $this->register_action('create_board', array($this, 'action_create_board'));
         $this->register_action('check_board', array($this, 'action_check_board'));
+        $this->register_action('index', array($this, 'index'));
         $this->include_script('js/wekan.js');
 
         $this->load_lib();
         $this->wekanApi = new mel_wekan_api($this->rc, $this);
 
+        $this->add_button(array(
+            'command' => 'wekan',
+            'class'	=> 'button-mel-wekan icon-mel_trello wekan',
+            'classsel' => 'button-mel-wekan button-selected icon-mel_trello wekan',
+            'innerclass' => 'button-inner inner',
+            'label'	=> 'mel_wekan.kanban',
+            'title' => 'mel_wekan.kanban',
+            'type'       => 'link'
+        ), "otherappsbar");
+
+        $this->rc->output->set_env("wekan_base_url", $this->wekan_url());
+
+    }
+
+    function index()
+    {
+        $this->rc->output->send('mel_wekan.wekan');
     }
 
     function load_lib()

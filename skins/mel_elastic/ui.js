@@ -89,6 +89,7 @@ $(document).ready(() => {
 
         async init()
         {
+            this.initOtherApps();
             if ($("#taskmenu").length > 0)
             {
                 let array = [];
@@ -163,36 +164,33 @@ $(document).ready(() => {
                 });
                 $("#contacthead").append($tmp);
             }
-
-            // if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
-            // {
-            //     console.log("imhere");
-            //     $("ul.recipient-input").on("change", () => {
-            //         //$("li.recipient").prepend();
-            //         console.log("changement detected");
-            //         $("li.recipient").each((i,e) => {
-            //             const init = "initialized";
-            //             e = $(e);
-            //             if (!e.hasClass(init))
-            //             {
-            //                 const func = (element) => {
-            //                     event.preventDefault();
-            //                     $(element).css("display", "none").parent()
-            //                     .prepend(`<input type=text val="${$(element).find(".name").html()}${$(element).find(".email").html()}" />`);
-            //                 };
-
-            //                 let $tmp = $(`<a href="mailto:${e.find(".email").html().replaceAll("&lt;", "").replaceAll("&gt;", "").replaceAll(" ", "").replaceAll(",", "")}"></a>`).on("click", func);
-            //                 e.find("span").appendTo($tmp);
-            //                 e.addClass(init).prepend($tmp);
-            //             }
-
-            //         })
-
-            //     })
-            // }
         }
 
+        async initOtherApps()
+        {
+            $("#listotherapps").find("a").each((i,e) => {
+                let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
+                $(e).appendTo(tmp);
+            });
 
+            $("#listotherapps").find("a").on('focusout', (e) => {
+                if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
+                {
+                    if (!$(e.relatedTarget).hasClass("more-options") && $("#otherapps").css("display") !== "none")
+                        $("a.more-options").click();
+                }
+            });
+
+            // $("#listotherapps").find("a").last().on('focusout', (e) => {
+            //     if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
+            //     {
+            //         if (!$(e.relatedTarget).hasClass("more-options"))
+            //             $("a.more-options").click();
+            //     }
+            // });
+
+            
+        }
 
         update()
         {

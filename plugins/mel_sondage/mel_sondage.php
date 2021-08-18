@@ -61,11 +61,11 @@ class mel_sondage extends rcube_plugin
                 'command' => 'sondage',
                 'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
                 'classsel' => 'button-mel_sondage button-selected icon-mel-sondage sondage',
-                'innerclass' => 'button-inner',
+                'innerclass' => 'button-inner inner',
                 'label'	=> 'mel_sondage.task',
                 'title' => 'mel_sondage.sondages_title',
                 'type'       => 'link'
-            ), $taskbar);
+            ), "otherappsbar");
         }
 
         // Si tache = sondage, on charge l'onglet

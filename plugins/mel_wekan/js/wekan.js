@@ -83,3 +83,14 @@ class Wekan{
 }
 
 window.wekan = new Wekan();
+
+$(document).ready(async () => {
+
+    if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
+    {
+        if (!wekan.isLogged())
+            await wekan.login();
+        $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+    }
+
+});

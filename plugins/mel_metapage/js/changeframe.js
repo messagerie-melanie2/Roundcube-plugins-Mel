@@ -386,29 +386,32 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                 }
             );
             break;
+
         case "wekan":
-            datas.push({
-                exec_info:"change_environnement",
-                datas:"inpage"
-            })
-            datas.push({
-                exec_info:"UpdateMenu",
-                datas:{
-                    class:"inpage",
-                    picture:{
-                        color:null,
-                        picture:null
-                    },
-                    toolbar:null
-                }
-            });
-            datas.push(
-                {
-                    exec_info:"ChangePage",
-                    datas:_class
-                }
-            );
+                    datas.push({
+                        exec_info:"change_environnement",
+                        datas:_class
+                    })
+                    datas.push({
+                        exec_info:"UpdateMenu",
+                        datas:{
+                            class:_class,
+                            picture:{
+                                color:picture.css("background-color"),
+                                picture:picture.html()
+                            },
+                            toolbar:$(".wsp-toolbar")[0].outerHTML.replace("wsp-toolbar", "wsp-toolbar wsp-toolbar-edited")
+                        }
+                    });
+                    datas.push(
+                        {
+                            exec_info:"ChangeFrame",
+                            datas:_class,
+                            args:otherDatas !== null ? otherDatas : $(event).data("wekan")
+                        }
+                    );
             break;
+
         case "params":
             datas.push({
                 exec_info:"change_environnement",
@@ -528,6 +531,15 @@ async function ChangeFrame(_class, otherDatas = null)
             _integrated:true,
             args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`,"stockage-frame","mel_nextcloud_frame"]
         });
+    }
+    else if (_class === "wekan")
+    {
+        mel_metapage.Functions.call("update_location", false, {
+            _integrated:true,
+            args:[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"]
+        });
+
+        console.log("args", otherDatas,[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"])
     }
         //https://roundcube.ida.melanie2.i2/nextcloud/
         //Nextcloud.index_url + "/apps/files?dir=/dossiers-"+rcmail.env.current_workspace_uid

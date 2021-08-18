@@ -153,3 +153,5 @@ $labels["change_avatar"] = "Changer d'avatar";
 
 $labels["last_day"] = "Jour précédent";
 $labels["next_day"] = "Jour suivant";
+
+$labels["my_apps"] = "Toutes mes applications";

@@ -360,7 +360,6 @@ if (rcmail)
         });
 
         rcmail.register_command("more_options", () => {
-            console.log("click");
             let otherapp = $("#otherapps");
             if (otherapp.css("display") === "none")
             {

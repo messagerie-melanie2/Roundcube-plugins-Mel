@@ -299,8 +299,8 @@ class mel_workspace extends rcube_plugin
         if ($this->get_worskpace_services($this->currentWorkspace)[self::WEKAN])
         {
 
-            if (driver_mel::gi()->getUser()->uid !== $this->rc->config->get("wekan_admin_user")["username"])
-                $this->wekan()->login_user(driver_mel::gi()->getUser()->uid ,$this->rc->get_user_password());
+            // if (driver_mel::gi()->getUser()->uid !== $this->rc->config->get("wekan_admin_user")["username"])
+            //     $this->wekan()->login_user(driver_mel::gi()->getUser()->uid ,$this->rc->get_user_password());
 
             $this->rc->output->set_env("wekan_base_url", $this->wekan()->wekan_url());
             $this->rc->output->set_env("wekan_datas", $this->get_object($this->currentWorkspace, self::WEKAN));

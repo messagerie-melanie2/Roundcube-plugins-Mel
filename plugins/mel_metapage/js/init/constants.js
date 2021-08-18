@@ -99,9 +99,9 @@ const mel_metapage = {
          * @param {string} key Clé de la donnée pour la retrouver. 
          * @param {*} item Donnée à sauvegarder.
          */
-        set:function(key, item)
+        set:function(key, item, stringify = true)
         {
-            window.localStorage.setItem(key, JSON.stringify(item));
+            window.localStorage.setItem(key, stringify ? JSON.stringify(item) : item);
         },
         /**
          * Supprime une donnée dans le stockage local.

@@ -1,16 +1,35 @@
 class Wekan{
 
     constructor()
-    {}
+    {
+        this.tokenName = "Meteor.loginToken:/:/kanban";
+    }
 
     login()
     {
         return mel_metapage.Functions.post(
             this.url("login"),
+            {
+                currentUser:true
+            },
             (datas) => {
-                console.log("wekan", datas);
+                try {
+                    datas = JSON.parse(datas);
+                    datas = JSON.parse(datas.content);
+    
+                    const token = this.tokenName;
+                    
+                    mel_metapage.Storage.set(token, datas.token, false);
+                } catch (error) {
+                    
+                }
             }
-        )
+        );
+    }
+
+    isLogged()
+    {
+        return window.localStorage.getItem(this.tokenName) !== null;
     }
 
     create_board(title, isPublic, color = null)
@@ -34,6 +53,8 @@ class Wekan{
             this.url("update_user_status"),
             (datas) => {
                 console.log("wekan", datas);
+
+                
             }
         );
     }
@@ -46,7 +67,10 @@ class Wekan{
                 _board:"pSSkHJ6wb64ZS2gxE"
             },
             (datas) => {
-                console.log("wekan", datas);
+                console.log("wekan", JSON.parse(datas));
+
+
+
             }
         );
     }

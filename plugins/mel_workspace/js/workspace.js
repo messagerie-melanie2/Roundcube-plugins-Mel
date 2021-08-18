@@ -7,6 +7,8 @@ async function WSPReady()
 {
 
     //$("button.wsp-toolbar-item").data("uid", rcmail.env.current_workspace_uid);
+    if (rcmail.env.current_workspace_services.wekan && !wekan.isLogged())
+        await wekan.login();
 
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
     try {

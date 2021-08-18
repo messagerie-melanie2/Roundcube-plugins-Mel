@@ -69,7 +69,11 @@ class mel_wekan extends rcube_plugin
 
     public function login()
     {        
-        $result = $this->wekanApi->login();
+        $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
+        $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->login([
+            "username" => driver_mel::gi()->getUser()->uid,
+            "password" => $this->rc->get_user_password()
+        ]);
 
         echo json_encode($result);
         exit;

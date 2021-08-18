@@ -87,7 +87,8 @@ SynchroniseWorkspaces.integrated_functions = (func_name, args) => {
                     {
                         if ($(`iframe.${args.args[1]}`).length === 0)
                         {
-                            $(`iframe#${args.args[2]}`)[0].src = args.args[0];
+                            if ($(`iframe#${args.args[2]}`)[0].src !== args.args[0] || $(`iframe#${args.args[2]}`)[0].contentWindow.location.href !== args.args[0])
+                                $(`iframe#${args.args[2]}`)[0].src = args.args[0];
                             rcmail.env.last_src_updated = args.args[0];
                         }
                         else

@@ -3,6 +3,7 @@ class Wekan{
     constructor()
     {
         this.tokenName = "Meteor.loginToken:/:/kanban";
+        this.tokenId = "Meteor.userId:/:/kanban";
     }
 
     login()
@@ -89,9 +90,18 @@ $(document).ready(async () => {
     {
 
         if (!wekan.isLogged())
+        {
+            rcmail.set_busy(true, "loading");
             await wekan.login();
+            await wait(() => mel_metapage.Storage.get(wekan.tokenId) === null);
+            $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+        }
 
-        $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+        if ($("#wekan-iframe")[0].src === "" && $("#wekan-iframe")[0].contentWindow.location.href === "about:blank")
+            $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+
+
+
     }
 
 });

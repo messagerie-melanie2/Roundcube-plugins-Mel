@@ -97,8 +97,8 @@ $(document).ready(async () => {
                 window.addEventListener('storage', (e) => {
 
                     if (e.key === wekan.tokenId)
-                        $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
-                        
+                        $("#wekan-iframe")[0].contentWindow.location.reload();
+
                   });
             }
             else

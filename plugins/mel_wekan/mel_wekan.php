@@ -60,6 +60,9 @@ class mel_wekan extends rcube_plugin
 
     function index()
     {
+
+        $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
+
         $this->rc->output->set_pagetitle("Kanban");
         $this->rc->output->send('mel_wekan.wekan');
     }

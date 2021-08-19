@@ -2,8 +2,8 @@ class Wekan{
 
     constructor()
     {
-        this.tokenName = "Meteor.loginToken:/:/wekan";
-        this.tokenId = "Meteor.userId:/:/wekan";
+        this.tokenName = `Meteor.loginToken:/:/${rcmail.env.wekan_storage_end}`;
+        this.tokenId = `Meteor.userId:/:/${rcmail.env.wekan_storage_end}`;
     }
 
     login()
@@ -81,10 +81,12 @@ class Wekan{
 
 }
 
-window.wekan = new Wekan();
+
 
 $(document).ready(async () => {
 
+    window.wekan = new Wekan();
+    
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
 

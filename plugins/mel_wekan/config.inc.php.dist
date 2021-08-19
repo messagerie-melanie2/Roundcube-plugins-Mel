@@ -13,3 +13,5 @@ $config["wekan_ssl_options"] = [
     "verify_peer" => false,
     "verify_host" => 0
 ];
+//Nom de l'application à la fin du stockage local du type Meteor.loginToken:/:/xxxx 
+$config["wekan_storage_end"] = "wekan";

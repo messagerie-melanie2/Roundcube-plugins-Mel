@@ -72,6 +72,7 @@ html_helper.JSON = {
 html_helper.TasksAsync = async function (tabs, e = null,  e_news = null,title = null)
 {
     let storage = await mel_metapage.Storage.check(mel_metapage.Storage.tasks).wait();
+
 	if (html_helper.tasks_updates === undefined)
 	{
 		html_helper.tasks_updates = new Mel_Update(mel_metapage.EventListeners.tasks_updated.after, "tasks.update", async () => {
@@ -83,6 +84,7 @@ html_helper.TasksAsync = async function (tabs, e = null,  e_news = null,title = 
 			});
 		});
 	}
+
     return html_helper.Tasks(storage, tabs, e, e_news, title);
 }
 
@@ -244,39 +246,46 @@ html_helper.Calendars = function({datas, config = {
 	if (typeof datas === "string")
 		html += "<div>" + datas + "</div>";
 	else {
-		for (let index = 0; index < datas.length; index++) {
-			const element = datas[index];
-			html += "<li>";
-			html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
-			if (element.allDay)
-				text = rcmail.gettext("Journée entière");
-			else
-			{
-				const style_date = set_style(element);
-				text = `${style_date.start} - ${style_date.end}`;
-			}
 
-			html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title element-block">${text}</span><span class="element-desc element-block">${element.title}</span></a></div>`;
+		if (datas.length > 0)
+		{
+			for (let index = 0; index < datas.length; index++) {
+				const element = datas[index];
+				html += "<li>";
+				html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
-			if (element.location.includes("@visio") || element.location.includes("#visio"))
-			{
-				style = "";
-				if (element.location.includes("@visio"))
-					link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
+				if (element.allDay)
+					text = rcmail.gettext("Journée entière");
 				else
 				{
-					var tmp_link = new WebconfLink(element.location);
-					link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+					const style_date = set_style(element);
+					text = `${style_date.start} - ${style_date.end}`;
 				}
-			}
-			else
-				style = "display:none;";
-	
-			html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"><span class="sr-only">Webconf</span></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
 
-			html += "</div>";
-			html += "</li>";
+				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title element-block">${text}</span><span class="element-desc element-block">${element.title}</span></a></div>`;
+
+				if (element.location.includes("@visio") || element.location.includes("#visio"))
+				{
+					style = "";
+					if (element.location.includes("@visio"))
+						link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
+					else
+					{
+						var tmp_link = new WebconfLink(element.location);
+						link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+					}
+				}
+				else
+					style = "display:none;";
+		
+				html += '<div class=col-4><div class="webconf-myday"><a '+link+' style="'+style+'" class="roundbadge link large dark icon-mel-videoconference"><span class="sr-only">Webconf</span></a><span style="'+style+'" class="span-webconf">Webconf</span></div></div>';
+
+				html += "</div>";
+				html += "</li>";
+			}
 		}
+		else 
+			html += `<li>Pas d'évènements aujourd'hui !</li>`;
 	}
 
 	if (!get_only_body)

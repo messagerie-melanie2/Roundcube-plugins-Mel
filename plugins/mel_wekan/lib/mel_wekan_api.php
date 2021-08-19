@@ -29,6 +29,7 @@ class mel_wekan_api extends amel_lib
     const CALL_GET_BOARD = "/api/boards/{board}";
     const CALL_DELETE_MEMBER = "/api/boards/{board}/members/{user}/remove";
     const CALL_DELETE_BOARD = "/api/boards";
+    const CALL_CREATE_TOKEN = "/api/createtoken";
 
     private $cache;
     private $url;
@@ -133,6 +134,16 @@ class mel_wekan_api extends amel_lib
 
         return $get;
         //$_SESSION[self::KEY_SESSION_AUTH];
+    }
+
+    public function create_token($username)
+    {
+        $username = $this->get_user($username);
+
+        if (gettype($username) !== "string")
+            return $username;
+
+        return $this->call(self::CALL_CREATE_TOKEN."/$username", null);
     }
 
     /**

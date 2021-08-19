@@ -16,10 +16,9 @@ class Wekan{
                 try {
                     datas = JSON.parse(datas);
                     datas = JSON.parse(datas.content);
-    
                     const token = this.tokenName;
                     
-                    mel_metapage.Storage.set(token, datas.token, false);
+                    mel_metapage.Storage.set(token, datas.authToken, false);
                 } catch (error) {
                     
                 }
@@ -88,8 +87,10 @@ $(document).ready(async () => {
 
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
+
         if (!wekan.isLogged())
             await wekan.login();
+
         $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
     }
 

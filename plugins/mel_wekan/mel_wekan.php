@@ -60,6 +60,7 @@ class mel_wekan extends rcube_plugin
 
     function index()
     {
+        $this->rc->output->set_pagetitle("Kanban");
         $this->rc->output->send('mel_wekan.wekan');
     }
 
@@ -88,10 +89,7 @@ class mel_wekan extends rcube_plugin
     public function login()
     {        
         $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
-        $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->login([
-            "username" => driver_mel::gi()->getUser()->uid,
-            "password" => $this->rc->get_user_password()
-        ]);
+        $result = !$currentUser ? $this->wekanApi->login() : $this->wekanApi->create_token(driver_mel::gi()->getUser()->uid);
 
         echo json_encode($result);
         exit;

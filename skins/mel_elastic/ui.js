@@ -174,7 +174,6 @@ $(document).ready(() => {
             });
 
             $("#listotherapps").find("a").on('focusout', (e) => {
-                console.log(e, $(e.relatedTarget).parent().parent());
                 if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
                 {
                     if (!$(e.relatedTarget).hasClass("more-options") && $("#otherapps").css("display") !== "none")

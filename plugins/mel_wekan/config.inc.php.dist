@@ -1,10 +1,14 @@
 <?php
+//Url public de wekan
 $config['wekan_url'] = "";
+//Url interne de wekan, si il n'y en a pas, mettez la même que l'url public
 $config['server_wekan_url'] = $config['wekan_url'];
+//Nom d'utilisateur et mot de passe de l'admin wekan (Seul un admin wekan peux faire des appel à l'api)
 $config['wekan_admin_user'] = [
     "username" => "",
     "password" => ""
 ];
+//Gestion du ssl
 $config["wekan_ssl_options"] = [
     "verify_peer" => false,
     "verify_host" => 0

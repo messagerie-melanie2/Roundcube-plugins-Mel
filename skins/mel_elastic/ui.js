@@ -131,8 +131,12 @@ $(document).ready(() => {
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
             }
             
-            $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
-        
+            try {
+                $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
+            } catch (error) {
+                
+            }
+            
             if (rcmail.env.task === "mail" && $("#mailsearchform").length > 0)
             {
                 $("#mailsearchform").parent().parent().find(".unread").on("click",(e) => {

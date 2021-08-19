@@ -18,13 +18,12 @@ class Wekan{
                     datas = JSON.parse(datas);
                     datas = JSON.parse(datas.content);
                     const token = this.tokenName;
-                    
+
                     mel_metapage.Storage.set(token, datas.authToken, false);
                 } catch (error) {
-                    
                 }
             }
-        );
+        ).then(e => JSON.parse(e).httpCode === 200 && mel_metapage.Storage.get(this.tokenName) !== null);
     }
 
     isLogged()
@@ -88,19 +87,18 @@ $(document).ready(async () => {
 
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
+        $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
 
         if (!wekan.isLogged())
         {
-            rcmail.set_busy(true, "loading");
-            await wekan.login();
-            await wait(() => mel_metapage.Storage.get(wekan.tokenId) === null);
-            $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+            if (await wekan.login())
+            {
+                await wait(() => mel_metapage.Storage.get(wekan.tokenId) === null);
+                $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+            }
+            else
+                rcmail.display_message("Impossible de se connecter au kanban !", "error");
         }
-
-        if ($("#wekan-iframe")[0].src === "" && $("#wekan-iframe")[0].contentWindow.location.href === "about:blank")
-            $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
-
-
 
     }
 

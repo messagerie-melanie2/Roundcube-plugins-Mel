@@ -2,8 +2,8 @@ class Wekan{
 
     constructor()
     {
-        this.tokenName = "Meteor.loginToken:/:/kanban";
-        this.tokenId = "Meteor.userId:/:/kanban";
+        this.tokenName = "Meteor.loginToken:/:/wekan";
+        this.tokenId = "Meteor.userId:/:/wekan";
     }
 
     login()
@@ -87,19 +87,23 @@ $(document).ready(async () => {
 
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
+
         $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
 
         if (!wekan.isLogged())
         {
             if (await wekan.login())
-            {
-                await wait(() => mel_metapage.Storage.get(wekan.tokenId) === null);
-                $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+            {             
+                window.addEventListener('storage', (e) => {
+
+                    if (e.key === wekan.tokenId)
+                        $("#wekan-iframe")[0].src = rcmail.env.wekan_base_url;
+                        
+                  });
             }
             else
                 rcmail.display_message("Impossible de se connecter au kanban !", "error");
         }
-
     }
 
 });

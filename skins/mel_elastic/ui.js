@@ -170,10 +170,11 @@ $(document).ready(() => {
         {
             $("#listotherapps").find("a").each((i,e) => {
                 let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
-                $(e).appendTo(tmp);
+                $(e).addClass("mel-focus").appendTo(tmp);
             });
 
             $("#listotherapps").find("a").on('focusout', (e) => {
+                console.log(e, $(e.relatedTarget).parent().parent());
                 if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
                 {
                     if (!$(e.relatedTarget).hasClass("more-options") && $("#otherapps").css("display") !== "none")

@@ -109,6 +109,8 @@ function mm_st_ChangeClicks(selector = "#taskmenu")
         let cClass = "";
         e.classList.forEach((a) => {
             switch (a) {
+                case "mel-focus":
+                    return;
                 case "selected":
                     return;
                 case "order1":

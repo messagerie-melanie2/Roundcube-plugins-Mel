@@ -369,7 +369,10 @@ if (rcmail)
             }
             else {
                 otherapp.css("display", "none");
-                $("#taskmenu a.more-options").focus().removeClass("selected");
+                if ($("#otherapps a.selected").length === 0)
+                    $("#taskmenu a.more-options").focus().removeClass("selected");
+                else
+                    $("#taskmenu a.more-options").focus().addClass("selected");
             }
         }, true);
 

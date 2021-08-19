@@ -434,6 +434,8 @@ nav.otherapps
     left: 60px;
     background-color: #2C3054;
     z-index: 999999;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #otherapps a::before

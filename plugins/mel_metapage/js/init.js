@@ -392,6 +392,44 @@ if (rcmail)
                 FullscreenItem.close_if_exist();
         });
 
+        $(window).on("resize", () => {
+
+            //console.log($("#otherapps .resized").length);
+            if ($("#otherapps .resized").length > 0)
+            {
+                $("#otherapps .resized").remove();
+                $("#taskmenu li.hiddedli").css("display", "block");
+            }
+
+            if ($("#taskmenu")[0].scrollHeight > window.innerHeight)
+            {
+                let items = $("#taskmenu li");
+                let it = items.length;
+
+                while($("#taskmenu")[0].scrollHeight > window.innerHeight)
+                {
+                    --it;
+                    //console.log("here", it , $("#taskmenu")[0].scrollHeight,  window.innerHeight, $("#taskmenu")[0].scrollHeight > window.innerHeight);
+                    if (it <= 5)
+                        break;
+
+                    if ($(items[it]).find("a").hasClass("settings") || $(items[it]).find("a").hasClass("more-options"))
+                        continue;
+                    else {
+                        const tmp = $(items[it]).clone();
+                        $(items[it]).addClass("hiddedli").css("display", "none");
+                        $("#otherapps ul").append(tmp.addClass("resized"));
+                        //.addClass("resized").appendTo($("#otherapps ul"));
+                    }
+                }
+            }
+
+        });
+        $(document).ready(() => {
+        $(window).resize();});
+        
+        
+
         // //checks
         let local_storage = {
             calendar:mel_metapage.Storage.get(mel_metapage.Storage.calendar),

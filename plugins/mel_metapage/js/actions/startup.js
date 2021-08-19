@@ -98,9 +98,9 @@ function mm_st_GetClass(classlist)
     return "";
 }
 
-function mm_st_ChangeClicks(selector = "#taskmenu")
+function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
 {
-    let as = $(selector).find("a");
+    let as = $(selector).find(otherSelector);
     as.each((i, e) => {
 
         if (e.classList.contains("more-options"))

@@ -457,6 +457,10 @@ nav.otherapps
     left: 69px;
     margin-top: -16px;
 }
+#otherapps a.wsp span
+{
+    margin-top: -30px;
+}
 
 #listotherapps{
     text-align: left;

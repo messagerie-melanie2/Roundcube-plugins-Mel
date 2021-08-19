@@ -394,10 +394,12 @@ if (rcmail)
 
         //Ajustement de la barre des tâches
         $(window).on("resize", () => {
+            let check = false;
             if ($("#otherapps .resized").length > 0)
             {
                 $("#otherapps .resized").remove();
                 $("#taskmenu li.hiddedli").css("display", "block");
+                check = true;
             }
 
             if ($("#taskmenu")[0].scrollHeight > window.innerHeight)
@@ -420,7 +422,19 @@ if (rcmail)
                         $("#otherapps ul").append(tmp.addClass("resized"));
                     }
                 }
+                setTimeout(() => {
+                    mm_st_ChangeClicks("#otherapps", ".resized a");
+                }, 10);
+                check = true;
             }
+
+            if (check)
+             setTimeout(() => {
+                if ($("#otherapps .selected").length === 0)
+                    $(".more-options").removeClass("selected");
+                else
+                    $(".more-options").addClass("selected");
+             }, 10);
 
         });
 

@@ -537,12 +537,12 @@ class ArianeButton
 
     loading()
     {
-        this.font.removeClass(this.default_font).addClass("spinner-border").parent().addClass("disabled");
+        this.font.removeClass(this.default_font).addClass("spinner-grow").parent().addClass("disabled");
     }
 
     stop()
     {
-        this.font.removeClass("spinner-border ").addClass(this.default_font).parent().removeClass("disabled");  
+        this.font.removeClass("spinner-grow").addClass(this.default_font).parent().removeClass("disabled");  
     }
 }
 

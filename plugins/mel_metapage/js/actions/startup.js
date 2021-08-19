@@ -580,14 +580,16 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 function m_mp_ChangeLasteFrameInfo()
 {
-    console.log("last", rcmail.env.last_frame_class);
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
+
     if (isUndefined)
         rcmail.env.last_frame_name = rcmail.gettext('nothing', "mel_metapage");
+
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
     window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+
     if (!isUndefined)
     {
         m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
@@ -598,6 +600,7 @@ function m_mp_ChangeLasteFrameInfo()
         m_mp_CreateOrUpdateIcon(null, "");
         $(".menu-last-frame").addClass("disabled").attr("disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
     }
+
 }
 
 function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
@@ -612,8 +615,10 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
         document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
         document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
     }
+
     var font;
     var content;
+
     if (default_content === null)
     {
         content =    window.getComputedStyle(
@@ -628,6 +633,7 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
             content = "e926";
             font = "DWP";
         }
+
     }
     else
     {
@@ -649,6 +655,7 @@ function m_mp_focus_current_frame($this)
         let tmp = $("#layout").children();
         for (let index = 0; index < tmp.length; ++index) {
             const element = tmp[index];
+
             if (element.id !== null && element.id !== undefined && element.id !== "")
             {
                 if (element.id.includes("layout"))
@@ -658,6 +665,7 @@ function m_mp_focus_current_frame($this)
                 }
             }
         }
+
         if (focus === undefined || focus === null)
             focus = "layout";
 
@@ -670,8 +678,10 @@ function m_mp_focus_current_frame($this)
     else
     {
         focus = $(`#${current}`);
+
         if (focus.attr("tabindex") !== -1)
             focus.attr("tabindex", -1);
+            
         setTimeout(() => {
             focus[0].focus();
         }, 10);

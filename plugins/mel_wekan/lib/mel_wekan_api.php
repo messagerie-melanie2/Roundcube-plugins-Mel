@@ -55,33 +55,61 @@ class mel_wekan_api extends amel_lib
         }
     }
 
+    /**
+     * Récupère un objet de type mel_helper
+     *
+     * @return mel_helper
+     */
     function helper()
     {
         $this->set_helper_to_cache();
         return $this->cache[self::KEY_CACHE_HELPER];
     }
 
+    /**
+     * Récupère un objet de type mel_fetch
+     *
+     * @return mel_fetch
+     */
     function fetch()
     {
         $this->set_fetch_to_cache();
         return $this->cache[self::KEY_CACHE_FETCH];
     }
 
+    /**
+     * Effectue une requêtte post
+     *
+     * @param string $url - Url de destination
+     * @param array|null $params - Différents paramètres
+     * @param array|null $json - Idem params
+     * @param array|null $headers - Headers additionnels
+     * @return array
+     */
     function post($url, $params = null, $json = null, $headers = null)
     {
         return $this->fetch()->_post_url($this->url.$url, $params, $json, $headers);
     }
 
-    function put($url, $item, $contentType)
-    {
-        return $this->fetch()->_put_url($this->url.$url, $item, $contentType, $this->rc->config->get('curl_cainfo', null), $this->rc->config->get('curl_http_proxy', null));
-    }
-
+    /**
+     * Effectue un requête get
+     *
+     * @param string $url - Url de destination
+     * @param string $params - null
+     * @param string $headers - Headers additionnels
+     * @return array
+     */
     function get($url, $params = null, $headers = null)
     {
         return $this->fetch()->_get_url($this->url.$url, $params, $headers);
     }
 
+    /**
+     * Récupère les tokens d'identifications d'un utilisateur
+     *
+     * @param array|null $fakeUser - ["username" => "", "password" => ""]; Si null, on log l'utilisateur en config.
+     * @return array
+     */
     public function login($fakeUser = null)
     {
         $argUser = $fakeUser !== null;
@@ -107,6 +135,12 @@ class mel_wekan_api extends amel_lib
         //$_SESSION[self::KEY_SESSION_AUTH];
     }
 
+    /**
+     * Vérifie si un utilisateur est loggué
+     *
+     * @param string|null $username - Utilisateur à vérifier, si null, on vérifie celui en config.
+     * @return boolean
+     */
     function is_logged($username = null)
     {
         $key = $username === null ? self::KEY_SESSION_AUTH : self::KEY_SESSION_AUTH.".$username";
@@ -117,6 +151,14 @@ class mel_wekan_api extends amel_lib
         }
     }
 
+    /**
+     * Effectue un post, mais vérifie si l'utilisateur est loggué avant.
+     *
+     * @param string $partUrl - Partie de l'url de destination.
+     * @param array $body - Paramètre du post.
+     * @param integer $try - Assure le bon fonctionnement interne.
+     * @return array
+     */
     function call($partUrl, $body ,$try = 0)
     {
         $return = null;
@@ -333,6 +375,12 @@ class mel_wekan_api extends amel_lib
         return $this->fetch()->_custom_url($this->url.self::CALL_DELETE_BOARD."/$board", "DELETE", null, null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"]]);
     }
 
+    /**
+     * Récupère les données d'un tableau
+     *
+     * @param string $board - Id du tableau
+     * @return array
+     */
     public function get_board($board)
     {
         if (!$this->is_logged())  
@@ -341,6 +389,11 @@ class mel_wekan_api extends amel_lib
         return $this->get(self::CALL_NEW_BOARD."/$board", null, ['Authorization: Bearer '.$_SESSION[self::KEY_SESSION_AUTH]["token"], "Accept: */*"]);
     }
 
+    /**
+     * Récupère l'url (server_wekan_url) de wekan.
+     *
+     * @return string
+     */
     public function get_url()
     {
         return $this->url;

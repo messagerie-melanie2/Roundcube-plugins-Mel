@@ -63,6 +63,11 @@ class mel_wekan extends rcube_plugin
         $this->rc->output->send('mel_wekan.wekan');
     }
 
+    /**
+     * Charge les différents fichiers librairies de wekan (/lib)
+     *
+     * @return void
+     */
     function load_lib()
     {
         mel_helper::load_helper($this->rc)->include_amel_lib();
@@ -75,17 +80,11 @@ class mel_wekan extends rcube_plugin
         }
     }
 
-    public function login_user($user, $password)
-    {
-        if (!$this->wekanApi->is_logged($user))
-            return $this->wekanApi->login([
-                "username" => $user,
-                "password" => $password
-            ]);
-        
-        return true;
-    }
-
+    /**
+     * Log un utilisateur et récupère ses tokens d'identifications.
+     *
+     * @return void
+     */
     public function login()
     {        
         $currentUser = rcube_utils::get_input_value("currentUser", rcube_utils::INPUT_GPC) ?? false;
@@ -109,11 +108,28 @@ class mel_wekan extends rcube_plugin
         exit;
     }
 
+    /**
+     * Créer un tableau.
+     *
+     * @param string $title - Nom du tableau.
+     * @param boolean $isPublic - Si le tableau est visible par tous ou non.
+     * @param string|null $color - Couleur du tableau.
+     * @return array
+     */
     public function create_board($title, $isPublic, $color = null)
     {
         return $this->wekanApi->create_board($title, $isPublic, $color);
     }
 
+    /**
+     * Créer un tableau avec des colonnes déjà prédéfini.
+     *
+     * @param string $title - Nom du tableau.
+     * @param boolean $isPublic - Si le tableau est visible par tous ou non.
+     * @param string|null $color - Couleur du tableau.
+     * @param array $lists - Nom des colonnes
+     * @return array
+     */
     public function create_board_with_inital_lists($title, $isPublic, $color = null, $lists = [])
     {
         $board = $this->create_board($title, $isPublic, $color);
@@ -141,31 +157,74 @@ class mel_wekan extends rcube_plugin
         return $board;
     }
 
+    /**
+     * Créer une colonne pour un tableau.
+     *
+     * @param string $board - Id du tableau.
+     * @param string $title - Nom de la colonne.
+     * @return void
+     */
     public function create_list($board, $title)
     {
         return $this->wekanApi->create_list($board, $title);
     }
 
+    /**
+     * Met à jours le privilège de l'utilisateur.
+     *
+     * @param string $board - Id du tableau.
+     * @param string $user - Nom de l'utilisateur.
+     * @param boolean $isAdmin - Devient admin ou non.
+     * @return array
+     */
     public function update_user_status($board, $user, $isAdmin)
     {
         return $this->wekanApi->update_user($board, $user, $isAdmin);
     }
 
+    /**
+     * Vérifie si l'utilisateur éxiste dans un tableau.
+     *
+     * @param string $board - Id du tableau.
+     * @param string $user - Nom de l'utilisateur.
+     * @return boolean
+     */
     public function check_if_user_exist($board, $user)
     {
         return $this->wekanApi->check_user_exist($board, $user);
     }
 
+    /**
+     * Ajoute un utilisateur au tableau.
+     *
+     * @param string $board - Id du tableau.
+     * @param string $username - Nom de l'utilisateur à ajouter.
+     * @param boolean $isAdmin - Doit être administrateur du tableau ?
+     * @return array
+     */
     public function add_member($board, $username, $isAdmin = false)
     {
         return $this->wekanApi->add_member($board, $username, $isAdmin);
     }
 
+    /**
+     * Supprime un utilisateur du tableau.
+     *
+     * @param string $board - Id du tableau
+     * @param string $user - Nom de l'utilisateur
+     * @return array
+     */
     public function remove_user($board, $user)
     {
         return $this->wekanApi->delete_user($board, $user);
     }
 
+    /**
+     * Supprime un tableau.
+     *
+     * @param string $board - Id du tableau.
+     * @return array
+     */
     public function delete_board($board)
     {
         return $this->wekanApi->delete_board($board);
@@ -179,11 +238,23 @@ class mel_wekan extends rcube_plugin
         exit;
     }
 
+    /**
+     * Récupère les données d'un tableau.
+     *
+     * @param string $board - Id du tableau.
+     * @return array
+     */
     public function check_board($board)
     {
         return $this->wekanApi->get_board($board);
     }
 
+    /**
+     * Vérifie si un tableau éxiste.
+     *
+     * @param string $board - Id du tableau.
+     * @return bool
+     */
     public function board_exist($board)
     {
         $board = $this->check_board($board);
@@ -191,6 +262,12 @@ class mel_wekan extends rcube_plugin
         return $board["httpCode"] == 200 && $board["content"] !== "{}";
     }
 
+    /**
+     * Vérifie si un tableau est archivé.
+     *
+     * @param string $board - Id du tableau.
+     * @return boolean
+     */
     public function board_archived($board)
     {
         $archived = false;
@@ -208,6 +285,12 @@ class mel_wekan extends rcube_plugin
         return $this->wekanApi->create_label($board, $label);
     }
 
+    /**
+     * Récupère l'url de wekan.
+     *
+     * @param boolean $server - Si vrai, l'url interne, sinon, l'url public.
+     * @return string
+     */
     public function wekan_url($server = true)
     {
         return $server ? $this->wekanApi->get_url() : $this->rc->config->get("wekan_url");

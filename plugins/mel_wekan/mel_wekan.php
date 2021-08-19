@@ -54,7 +54,7 @@ class mel_wekan extends rcube_plugin
             'type'       => 'link'
         ), "otherappsbar");
 
-        $this->rc->output->set_env("wekan_base_url", $this->wekan_url());
+        $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
 
     }
 
@@ -208,8 +208,8 @@ class mel_wekan extends rcube_plugin
         return $this->wekanApi->create_label($board, $label);
     }
 
-    public function wekan_url()
+    public function wekan_url($server = true)
     {
-        return $this->wekanApi->get_url();
+        return $server ? $this->wekanApi->get_url() : $this->rc->config->get("wekan_url");
     }
 }

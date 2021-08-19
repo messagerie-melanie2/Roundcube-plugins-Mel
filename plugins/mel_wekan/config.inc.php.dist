@@ -1,5 +1,6 @@
 <?php
 $config['wekan_url'] = "";
+$config['server_wekan_url'] = $config['wekan_url'];
 $config['wekan_admin_user'] = [
     "username" => "",
     "password" => ""

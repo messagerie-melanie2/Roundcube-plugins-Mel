@@ -36,7 +36,7 @@ class mel_wekan_api extends amel_lib
     public function __construct($rc, $plugin)
     {
         parent::__construct($rc, $plugin);
-        $this->url = $this->get_config("wekan_url");
+        $this->url = $this->get_config("server_wekan_url");
         $this->cache = [];
     }
 

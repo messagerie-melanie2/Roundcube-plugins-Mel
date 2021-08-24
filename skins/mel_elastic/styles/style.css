@@ -110,7 +110,7 @@ ul.treelist li.context-source:not(.selected) > div > a {
     color:#fff;
 }
 
-.messagelist tr.unread > td:first-child,
+/* .messagelist tr.unread > td:first-child,
 .messagelist:not(.withselection) tr.unread > td.selection + td {
     border-left: 2px solid #fff !important;
 }
@@ -119,9 +119,9 @@ ul.treelist li.context-source:not(.selected) > div > a {
     border-bottom: 1px solid #5C5F7B;
     padding-top: 0.4rem;
     padding-bottom: 0.4rem;
-}
+} */
 
-.messagelist td.subject span.date,
+/* .messagelist td.subject span.date,
 .messagelist td.subject a,
 .messagelist td.subject span.fromto {
     color:#cacfd2;
@@ -129,23 +129,29 @@ ul.treelist li.context-source:not(.selected) > div > a {
 
 .messagelist td.subject span.msgicon.status::before {
     color:#909497;
-}
+} */
 
-.messagelist td.subject span.fromto {
-    font-style: italic;
+.messagelist td.subject {
+    flex-wrap: wrap;
+} 
+
+.messagelist td.labels
+{
+    flex-basis: 100%;
+    border: none!important;
 }
 
 .messagelist td.subject span.date {
     font-size: 85%;
 }
 
-.messagelist .unread td.subject span.date,
+/* .messagelist .unread td.subject span.date,
 .messagelist tr.unread td.subject a,
 .messagelist .unread td.subject span.fromto,
 .messagelist td.subject span.msgicon.status.unread::before {
     font-weight: bold;
     color:#fff;
-}
+} */
 
 .messagelist span.attachment span::before {
     font-size: 80%;

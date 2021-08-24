@@ -106,11 +106,14 @@ function rcm_tb_label_insert(uid, row)
 	
 	if (message.flags && message.flags.tb_labels)
 	{
+		var html = "";
 		var rowobj = $(row.obj);
 		for (idx in message.flags.tb_labels) {
 			rowobj.addClass('label_' + message.flags.tb_labels[idx].replace('~', ''));
+			html += `<span>${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
 		}
-			
+		if (html !== "")
+			rowobj.find("td.subject").prepend(`<td class="labels">${html}</td>`);
 	}
 }
 
@@ -158,7 +161,7 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 	} else {
 		var label_name = toggle_label;
 	}
-	
+	//console.log("on/off", onoff, header_preview_all_table.find('tr td.label').html());
 	// for single message view
 	if (headers_table.length && flag_uids.length)
 	{
@@ -211,17 +214,17 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 			message.flags.tb_labels.push(toggle_label);
 			
 			if (rowobj.find('td.labels').length > 0) {
-				if (rowobj.find('td.labels').text() == "") {
-					rowobj.find('td.labels').text(label_name);
+				if (rowobj.find('td.labels').html() == "") {
+					rowobj.find('td.labels').html(label_name);
 				} else {
-					rowobj.find('td.labels').text(rowobj.find('td.labels').text() + ', ' + label_name);
+					rowobj.find('td.labels').append(`<span>${label_name}</span>`);
 				}
 			}
 			else if (rowobj.find('span.labels').length > 0) {
-				if (rowobj.find('span.labels').text() == "") {
-					rowobj.find('span.labels').text(label_name);
+				if (rowobj.find('span.labels').html() == "") {
+					rowobj.find('span.labels').html(label_name);
 				} else {
-					rowobj.find('span.labels').text(rowobj.find('span.labels').text() + ', ' + label_name);
+					rowobj.find('span.labels').html(rowobj.find('span.labels').html() + ', ' + label_name);
 				}
 			}
 		}
@@ -236,7 +239,7 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 				message.flags.tb_labels.splice(pos, 1);
 			
 			if (rowobj.find('td.labels').length > 0) {
-				rowobj.find('td.labels').text(rowobj.find('td.labels').text().replace(label_name + ', ','').replace(', ' + label_name,'').replace(label_name,''));
+				rowobj.find('td.labels').html(rowobj.find('td.labels').html().replace(`<span>${label_name}</span>`, ''));
 			}
 			else if (rowobj.find('span.labels').length > 0) {
 				rowobj.find('span.labels').text(rowobj.find('span.labels').text().replace(label_name + ', ','').replace(', ' + label_name,'').replace(label_name,''));
@@ -275,16 +278,21 @@ function rcm_tb_label_create_popupmenu()
 	}	
 }
 
-function rcm_tb_label_init_onclick()
+function rcm_tb_label_init_onclick(selector = '#tb_label_popup li a', closeAction = () => rcmail.hide_menu('tb_label_popup'))
 {
-	if ($('#tb_label_popup li a').length) {
-		$('#tb_label_popup li a').each(function() {
+	if ($(selector).length) {
+		$(selector).each(function() {
 			var cur_a = $(this);
 			
 			// TODO check if click event is defined instead of unbinding?
 			$(this).unbind('click');
 			$(this).click(function() {
-				var toggle_label = $(this).parent().attr('id').split('_b_')[0];
+				var toggle_label;// = $(this).parent().attr('id').split('_b_')[0];
+				try {
+					toggle_label = $(this).parent().attr('id').split('_b_')[0];
+				} catch (error) {
+					toggle_label = Enumerable.from(this.classList).where(x => x.includes("label_")).first().replace("label_", "");
+				}
 				var selection = rcm_tb_label_get_selection();
 				
 				var unset_all = false;
@@ -371,7 +379,8 @@ function rcm_tb_label_init_onclick()
 					}
 				});
 				// Fermer le pop up au click
-				rcmail.hide_menu('tb_label_popup');
+				closeAction();
+				//rcmail.hide_menu('tb_label_popup');
 			});
 		});
 	}

@@ -30,7 +30,7 @@ class mel_fetch
         CURLOPT_USERAGENT => $this->_user_agent, // name of client
         CURLOPT_CONNECTTIMEOUT => 120, // time-out on connect
         CURLOPT_TIMEOUT => 120, // time-out on response
-        CURLOPT_SSL_VERIFYHOST => 0,
+        CURLOPT_SSL_VERIFYHOST => $this->_ssl_verify_host,
         CURLOPT_SSL_VERIFYPEER => $this->_ssl_verify_peer
     );
     if (isset($headers)) {

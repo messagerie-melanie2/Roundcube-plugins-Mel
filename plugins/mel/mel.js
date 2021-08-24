@@ -177,7 +177,7 @@ if (window.rcmail) {
         var ml_container = '#messagelistcontainer';
         if(rcmail.env.skin == 'elastic' || rcmail.env.skin == 'mel_elastic') {
           ml_container = '#messagelist-content';
-          $('.firstpage').closest('div').children().hide();
+          $('.firstpage').parent()/*.closest('div').children()*/.hide();
         } else {
                 $('.pagenavbuttons').hide();
                 $('#countcontrols').hide();

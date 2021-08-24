@@ -281,6 +281,45 @@ if (rcmail)
                     }
                 );
             },
+            weather: async function()
+            {
+              //3600000  
+
+              const maxAge = 1000 * 60;
+              const weatherKey = "weatherIcon";
+
+              let options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: maxAge
+              };
+              
+              function success(pos) {
+                let crd = pos.coords;
+              
+                console.log('Your current position is:');
+                console.log(`Latitude : ${crd.latitude}`);
+                console.log(`Longitude: ${crd.longitude}`);
+                console.log(`More or less ${crd.accuracy} meters.`);
+
+                mel_metapage.Functions.post(mel_metapage.Functions.url("mel_metapage", "weather"), {
+                    _lat:crd.latitude,
+                    _lng:crd.longitude
+                },
+                (datas) => {
+                    console.log("datas", datas);
+                });
+
+              }
+              
+              function error(err) {
+                console.warn(`ERROR(${err.code}): ${err.message}`);
+                mel_metapage.Storage.remove(weatherKey);
+              }
+              
+              navigator.geolocation.getCurrentPosition(success, error, options);
+              
+            },
             refresh: function () {
                 let querry = $(".calendar-frame");
                 if (querry.length > 0)

@@ -28,32 +28,50 @@
 <!-- messages list -->
 <div id="layout-list" class="listbox selected">
 
-	<div style="margin-top: 15px;
-	margin-bottom: 5px;">
-		<center><p style="font-size: larger;">Rechercher</p></center>
-		<div style="height: calc(1.5em + .75rem + 2px);margin: 0 15px;
-		width: 92%;position:relative" class="form-control input-mel mel-input-container">
-			<div style="margin-top:-7px;width: calc(100% - 24px);">
-				<!-- <div style="position: relative;"> -->
-					<roundcube:object name="searchform" id="mailsearchform" wrapper="searchbar menu input-child-mel-focus mel-invisible-background mel-child-form-before-remover"
-					label="mailquicksearchbox" buttontitle="findmail" options="searchmenu" ariatag="h2" />
-				<!-- </div> -->
-
-			</div>
-			<div style="    text-align: center;
-			display: inline-block;
-			position: absolute;
-			top: 1px;
-			right: 9px;
-		">
-				<span style="font-size: 1.5rem;
-				margin-top: 4px;
-				display: inline-block;
-				color: #2c363a;" class="icon-mel-search"></span>
-			</div>
+	<div id="messagelist-header" class="header">
+		<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
+		<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="mailboxlist" /></span></a>
+		<span class="header-title"></span>
+		<div class="toolbar menu" role="toolbar">
+			<a href="#select" class="select disabled" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="<roundcube:label name="select" />"><span class="inner"><roundcube:label name="select" /></span></a>
+			<roundcube:if condition="env:threads" />
+				<a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner"><roundcube:label name="threads" /></span></a>
+			<roundcube:endif />
+			<roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
+			<roundcube:container name="listcontrols" id="listcontrols" />
 		</div>
+		<roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh"
+			label="refresh" title="checkmail" innerclass="inner" />
+		<a class="button icon toolbar-menu-button" href="#list-menu"><span class="inner"><roundcube:label name="menu" /></span></a>
+
+		<div id=mailsearchlist style="margin-top: 11px;
+		margin-bottom: 5px;">
+			<div style="height: calc(1.5em + .75rem + 2px);margin: 0 15px;
+			width: 92%;position:relative" class="form-control input-mel mel-input-container">
+				<div style="margin-top:-7px;width: calc(100% - 24px);">
+	
+						<roundcube:object name="searchform" id="mailsearchform" wrapper="searchbar menu input-child-mel-focus mel-invisible-background mel-child-form-before-remover"
+						label="mailquicksearchbox" buttontitle="findmail" options="searchmenu" ariatag="h2" />
+	
+	
+				</div>
+				<div style="    text-align: center;
+				display: inline-block;
+				position: absolute;
+				top: 1px;
+				right: 9px;
+			">
+					<span style="font-size: 1.5rem;
+					margin-top: 4px;
+					display: inline-block;
+					color: #2c363a;" class="icon-mel-search"></span>
+				</div>
+			</div>
+	
+		</div> 
 
 	</div>
+
 	<div id="searchmenu" class="hidden searchoptions scroller propform formcontainer" aria-labelledby="aria-label-search-menu" aria-controls="messagelist">
 		<h3 id="aria-label-search-menu" class="voice"><roundcube:label name="searchmod" /></h3>
 		<div class="formcontent">
@@ -94,25 +112,9 @@
 		</div>
 	</div>
 
-	<div id="messagelist-header" class="header">
-		<a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
-		<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="mailboxlist" /></span></a>
-		<span class="header-title"></span>
-		<div class="toolbar menu" role="toolbar">
-			<a href="#select" class="select disabled" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="<roundcube:label name="select" />"><span class="inner"><roundcube:label name="select" /></span></a>
-			<roundcube:if condition="env:threads" />
-				<a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="<roundcube:label name="threads" />"><span class="inner"><roundcube:label name="threads" /></span></a>
-			<roundcube:endif />
-			<roundcube:object name="listmenulink" class="options active" label="options" innerclass="inner" />
-			<roundcube:container name="listcontrols" id="listcontrols" />
-		</div>
-		<roundcube:button command="checkmail" type="link" class="button icon toolbar-button refresh"
-			label="refresh" title="checkmail" innerclass="inner" />
-		<a class="button icon toolbar-menu-button" href="#list-menu"><span class="inner"><roundcube:label name="menu" /></span></a>
-	</div>
 	<roundcube:add_label name="showunread" />
 
-<separate></separate>
+<!-- <separate></separate> -->
 
 	<div id="messagelist-content" class="scroller" tabindex="-1">
 		<h2 id="aria-label-messagelist" class="voice"><roundcube:label name="arialabelmessagelist" /></h2>
@@ -124,7 +126,7 @@
 </div>
 
 <!-- message preview -->
-<div id="layout-content">
+<div id="layout-content" style="display: none;">
 	<h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
 	<div class="header" role="toolbar" aria-labelledby="aria-label-toolbar">
 		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
@@ -133,6 +135,10 @@
 	</div>
 	<h2 id="aria-label-mailpreviewframe" class="voice"><roundcube:label name="arialabelmailpreviewframe" /></h2>
 	<div class="iframe-wrapper">
+		<button id=backtomails class="mel-button btn btn-secondary">Retour<span class="plus icon-mel-undo"></span></button>
+		
+		<separate></separate>
+
 		<roundcube:object name="contentframe"
 			id="messagecontframe"
 			aria-labelledby="aria-label-mailpreviewframe"

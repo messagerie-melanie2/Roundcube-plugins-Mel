@@ -46,6 +46,7 @@ class mel_elastic extends rcube_plugin
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->load_folders();
             $this->add_texts('localization/', true);
+            //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
             $this->rc->output->set_env("button_add", 
             '<div class="mel-add" onclick="¤¤¤">
                 <span style="position:relative">'.$this->gettext('add').'<span class="icofont-plus-circle plus"></span></span>
@@ -75,5 +76,18 @@ class mel_elastic extends rcube_plugin
                 }
             }
         }
+    }
+
+    public function mail_messages_list($p)
+    {
+
+        $count = count($p["messages"]);
+        for ($i=0; $i < $count; ++$i) { 
+            $tmp = $p["messages"][$i]->from;
+            $p["messages"][$i]->from = $p["messages"][$i]->subject;
+            $p["messages"][$i]->subject = $tmp;
+        }
+
+        return $p;
     }
 }

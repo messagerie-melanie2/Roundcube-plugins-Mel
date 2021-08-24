@@ -146,6 +146,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('get_event_html', array($this, 'get_event_html'));
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
             $this->register_action('check_users', array($this, 'check_users'));
+            $this->register_action('weather', array($this, 'weather'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
@@ -983,6 +984,25 @@ class mel_metapage extends rcube_plugin
         }
     
         return html::tag('ul', $attrib, $out, html::$common_attrib);
+    }
+
+    public function weather()
+    {
+        $lat = rcube_utils::get_input_value("_lat", rcube_utils::INPUT_POST);
+        $lng =  rcube_utils::get_input_value("_lng", rcube_utils::INPUT_POST);
+
+        $url = "http://www.prevision-meteo.ch/services/json/lat=".$lat."lng=$lng";
+
+        $json = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url);
+
+        if ($json["httpCode"] !== 200)
+        {
+            $url = "http://www.prevision-meteo.ch/services/json/lat=".round($lat)."lng=".round($lng);
+            $json = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url);
+        }
+
+        echo json_encode([$url, $json]);
+        exit;
     }
 
 }

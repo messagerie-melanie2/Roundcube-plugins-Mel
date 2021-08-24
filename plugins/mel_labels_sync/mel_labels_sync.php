@@ -197,7 +197,7 @@ class mel_labels_sync extends rcube_plugin {
                 'class' => 'mark_as_read icon ui-link ui-btn ui-corner-all ui-icon-tags ui-btn-icon-notext'
         ), 'more_buttons_toolbar_mobile');
       }
-      else {
+      else {//contextmenu
         // Ajout du bouton dans la toolbar
         $this->add_button(array(
                 'command' => 'Event.preventDefault()',

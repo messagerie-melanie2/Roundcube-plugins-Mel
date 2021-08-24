@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?1b44g5') format('truetype'),
-    url('fonts/DWP.woff?1b44g5') format('woff'),
-    url('fonts/DWP.svg?1b44g5#DWP') format('svg');
+    url('fonts/DWP.ttf?q943zr') format('truetype'),
+    url('fonts/DWP.woff?q943zr') format('woff'),
+    url('fonts/DWP.svg?q943zr#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -113,6 +113,9 @@
 }
 .icon-mel-folder:before {
   content: "\e915";
+}
+.icon-mel-cloud-alt:before {
+  content: "\e94f";
 }
 .icon-mel-hand:before {
   content: "\e916";
@@ -254,4 +257,10 @@
 }
 .icon-mel-grid:before {
   content: "\e946";
+}
+.icon-mel-full-dot:before {
+  content: "\e94d";
+}
+.icon-mel-empty-dot:before {
+  content: "\e94e";
 }

@@ -168,6 +168,45 @@ $(document).ready(() => {
                 });
                 $("#contacthead").append($tmp);
             }
+
+
+            if (rcmail.env.task === "mail")
+            {
+                $(".task-mail #quotadisplay").prepend(`<span>Espace de stockage</span><p style="flex-basis: 100%;
+                height: 0;
+                margin: 0;"></p>`);
+
+                // $("#messagecontframe").on("load", () => {
+                //     console.log("load");
+                //     $("#layout-content").css("display", "");
+                //     $("#layout-list").css("display", "none");
+                // });
+
+                $("#backtomails").on("click", () => {
+                    $(".message.selected").removeClass("selected").removeAttr("aria-selected")
+                    .find(".selection input").click();
+                    $("#layout-content").css("display", "none");
+                    $("#layout-list").css("display", "");
+                });
+
+                rcmail.show_contentframe_parent = rcmail.show_contentframe;
+                rcmail.show_contentframe = function(show)
+                {
+                    if (show)
+                    {
+                        $("#layout-content").css("display", "");
+                        $("#layout-list").css("display", "none");
+                    }
+                    else
+                    {
+                        $("#layout-content").css("display", "none");
+                        $("#layout-list").css("display", "");
+                    }
+
+                    rcmail.show_contentframe_parent(show);
+                };
+
+            }
         }
 
         async initOtherApps()

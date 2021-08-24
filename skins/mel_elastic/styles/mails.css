@@ -1,0 +1,250 @@
+.task-mail #layout-sidebar, 
+.task-mail #layout-sidebar > .header,
+.task-mail #layout-content > .header,
+.task-mail #layout-list
+{
+    background-color:#484D7A!important;
+}
+
+.task-mail #layout-sidebar
+{
+    border-right-color: white;
+    border-right-style: solid;
+    border-right-width: thin;
+}
+
+.task-mail #layout-list #messagelist-header,
+.task-mail #layout-content > .header
+{
+    justify-content: left;
+}
+
+.task-mail #messagelist-content{
+    background-color: white!important;
+}
+
+.task-mail #layout-content > .header #toolbar-menu li a {
+	color: white;
+}
+
+.task-mail #layout-content > .header #toolbar-menu li .dropbutton {
+	background-color: #484D7A  ;
+}
+
+.task-mail #layout-list{
+    max-width: 100%;
+    width:100%!important;
+    flex: 0 1 auto!important;
+}
+
+.messagelist tr.unread > td:first-child,
+.messagelist:not(.withselection) tr.unread > td.selection + td {
+    border-left: 2px solid #363A5B !important;
+}
+
+.messagelist tr.message td {
+    border-bottom: 1px solid #3E4261;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.messagelist td.subject span.date,
+html body div#layout-list .messagelist td.subject a,
+.messagelist td.subject span.fromto,
+.messagelist tr.flagged td, .messagelist tr.flagged td.subject span.subject a, .messagelist tr.flagged td.subject span.date, .messagelist tr.flagged td.subject span.fromto
+{
+    color:#363A5B;
+}
+
+.messagelist td.subject span.msgicon.status::before {
+    color:#3E4261;
+}
+
+.messagelist .unread td.subject span.date,
+.messagelist tr.unread td.subject a,
+.messagelist .unread td.subject span.fromto,
+.messagelist td.subject span.msgicon.status.unread::before {
+    font-weight: bold;
+    color:#363A5B;
+}
+
+
+.messagelist .unread{
+    background-color: #F0F0F0;
+}
+
+.messagelist .selected .subject,
+.messagelist .contextRow.context-source .subject,
+.messagelist .contextRow.context-source td.subject span.date, .messagelist .contextRow.context-source td.subject a, .messagelist .contextRow.context-source td.subject span.fromto
+{
+    color:white!important;
+}
+
+.messagelist td.subject .msgicon {
+	/* display: none; */
+}
+
+.messagelist td.subject .fromto
+{
+    padding-left:0!important;
+    font-size: 100%!important;
+}
+
+table.messagelist td.subject span.msgicon::before{
+    content:"\e94e"!important;
+    font-family:"DWP"!important;
+    font-style: normal!important;
+    color:#A8ACC0!important;
+    margin-right:25px!important;
+    font-size:1rem!important;
+}
+
+table.messagelist .unread td.subject span.msgicon::before{
+    content:"\e94d"!important;
+    color:#363A5B!important;
+}
+
+.messagelist .selected td.subject .fromto::before,
+.messagelist .contextRow.context-source td.subject .fromto::before{
+    color:white;
+}
+
+.messagelist td.subject span.subject
+{
+    padding-left: 2.9rem;
+    font-size: 95%;
+}
+
+.messagelist .selected td.subject span.date,
+.messagelist .selected td.subject a,
+.messagelist .selected td.subject span.fromto {
+    color:white!important;
+}
+
+.messagelist .flags {
+	color: #363A5B;
+}
+
+.messagelist tr.message td
+{
+    border-color:#D1D3DD;
+}
+
+#mailsearchlist
+{
+    position: absolute;
+    right: 0;
+}
+
+html body.task-mail #mailsearchlist .searchbar a
+{
+    color:#363A5B;
+}
+
+#mailsearchlist .searchbar a.unread::before {
+	content: "\e91e";
+	font-family: DWP;
+	font-weight: normal;
+}
+
+#mailsearchlist .searchbar a.options::before {
+	content: "\e907";
+	font-family: DWP;
+	font-weight: normal;
+}
+
+#mailsearchlist .searchbar.open a.options::before{
+    content: "\e906";
+}
+
+#messagelist-header {
+	display: flex !important;
+}
+
+html body.task-mail #layout > div > .footer.small {
+	background-color: transparent;
+    height: 80px;
+}
+
+.task-mail .quota-widget {
+	color: white;
+    flex-wrap: wrap;
+    padding: .5rem 3.7rem;
+    max-width: none;
+}
+
+.task-mail .quota-widget .count {
+	color: white;
+}
+
+.task-mail .quota-widget .bar {
+	background-color: #80D5C6;
+	border-color: #80D5C6;
+    margin-left: 0;
+}
+
+.task-mail .quota-widget .value {
+	background-color: #2C3054;
+}
+
+.quota-widget::before {
+	content: "\e94f";
+    font-family:DWP;
+}
+
+#backtomails {
+	margin-left: 30px;
+}
+
+#backtomails + separate {
+	display: block;
+	border-color: #D1D3DD;
+}
+
+#messagecontframe
+{
+    padding-left: 18px;
+    height: calc(100% - 6.22rem)!important;
+}
+
+.contextmenu li a.label.selected {
+	background: #484D7A;
+	color: white;
+}
+
+.messagelist td.labels span {
+	margin-right: 15px;
+}
+
+.messagelist td.labels::before
+{
+    font-family: 'IcoFont' !important;
+    content: "\ec85";
+    margin-left: -6px;
+    margin-right: 12px;
+}
+
+#rcm_messagelist li .ct-tb::before{
+    font-family: 'IcoFont' !important;
+    content: "\ec85";
+}
+
+#rcm_messagelist li .ct-tb::after{
+    color: #737677;
+    font-size: .9em;
+    margin: 0 0 0 .2em;
+    min-width: 1.18em;
+    content: "\f054";
+
+    /* font-size: 1.25em; */
+display: block;
+float: right;
+/* margin: 0 .25rem 0 0; */
+width: 1.18em;
+height: 1em;
+font-family: 'Icons';
+font-style: normal;
+font-weight: 900;
+text-decoration: inherit;
+text-align: center;
+}

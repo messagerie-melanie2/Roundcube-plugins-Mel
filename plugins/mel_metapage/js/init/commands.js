@@ -71,6 +71,8 @@ if (rcmail)
 
             }, true);
 
+            rcmail.register_command("gestion_labels", () => {show_rcube_manage_labels();}, true);
+
 
             // rcmail.drag_menu_action = function(action)
             // {

@@ -52,7 +52,7 @@ class roundcube_oidc extends rcube_plugin
     function startup($args)
     {
         // TODO remove
-        mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - startup");
+        //mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - startup");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - startup");
 
         if(empty($_SESSION['user_id']))
@@ -62,18 +62,18 @@ class roundcube_oidc extends rcube_plugin
             $auth = false;
 
             // TODO remove
-            mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
+            //mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
             mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
 
             //region =========== AUTH methods ===========
 
             // Auth OIDC triggered by Kerberos (with LDAP field)
-            if($rcmail->config->get('oidc_auth_kerberos') && !empty($_SERVER['REMOTE_USER']))
+            if($rcmail->config->get('oidc_auth_kerberos') && isset($_GET['kerb']) && !empty($_SERVER['REMOTE_USER']))
             {
-                mel_logs::get_instance()->log(mel_logs::INFO, "Connexion OIDC avec déclenchement Kerberos/LDAP...");
+                //mel_logs::get_instance()->log(mel_logs::INFO, "Connexion OIDC avec déclenchement Kerberos/LDAP...");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "Connection OIDC avec déclenchement Kerberos/LDAP...");
 
-                mel_logs::get_instance()->log(mel_logs::INFO, "Valeur du champ REMOTE_USER (Kerberos) :" . $_SERVER['REMOTE_USER']);
+                //mel_logs::get_instance()->log(mel_logs::INFO, "Valeur du champ REMOTE_USER (Kerberos) :" . $_SERVER['REMOTE_USER']);
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "Valeur du champ REMOTE_USER (Kerberos) :" . $_SERVER['REMOTE_USER']);
                 
                 // Transformation de 'prenom.nom@REALM' en 'prenom.nom' seulement 
@@ -85,7 +85,7 @@ class roundcube_oidc extends rcube_plugin
                 // Chargement de l'attribut du LDAP
                 $user->load('cerbere');
     
-                mel_logs::get_instance()->log(mel_logs::INFO, "Valeur du champ AUTH.Cerbere pour $user_uid : $user->cerbere");
+                //mel_logs::get_instance()->log(mel_logs::INFO, "Valeur du champ AUTH.Cerbere pour $user_uid : $user->cerbere");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "Valeur du champ AUTH.Cerbere pour $user_uid : $user->cerbere");
     
                 // Si l'utilisateur est autorisé à se connecter par OIDC Cerbère
@@ -99,7 +99,7 @@ class roundcube_oidc extends rcube_plugin
             // Auth OIDC only (without LDAP field)
             else if($rcmail->config->get('oidc_auth_standalone') && isset($_GET['oidc']))
             {
-                mel_logs::get_instance()->log(mel_logs::INFO, "Connexion OIDC direct...");
+                //mel_logs::get_instance()->log(mel_logs::INFO, "Connexion OIDC direct...");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "Connection OIDC direct...");
 
                 $auth = true;
@@ -150,10 +150,18 @@ class roundcube_oidc extends rcube_plugin
             try
             {
                 // Get user information
-                $user = json_decode(json_encode($this->tokenHelper->getUserInfo()), true);
+                //$user = json_decode(json_encode($this->tokenHelper->getUserInfo()), true);
+
+                // Get ID Token
+                $token = $this->tokenHelper->getOIDC()->getIdTokenPayload();
 
                 // Parse fields
-                $uid = $user[$rcmail->config->get('oidc_field_uid')];
+                $uid = $token->{$rcmail->config->get('oidc_field_uid')};
+                $eidas = $token->{$rcmail->config->get('oidc_field_eidas')};
+
+                // Store eidas value
+                unset($_SESSION['eidas']);
+                $_SESSION['eidas'] = $eidas;
 
                 // Get modified ID token
                 // $password = $this->tokenHelper->modifyTokenID(
@@ -161,6 +169,11 @@ class roundcube_oidc extends rcube_plugin
                 // );
 
                 $password = $this->tokenHelper->getToken(TokenTypeEnum::ID_TOKEN);
+
+                // mel_logs::get_instance()->log(mel_logs::ERROR, "roundcube_oidc user/pass");
+                // mel_logs::get_instance()->log(mel_logs::ERROR, $uid);
+                // mel_logs::get_instance()->log(mel_logs::ERROR, $password);
+                // mel_logs::get_instance()->log(mel_logs::ERROR, $eidas);
             }
             catch (\Exception $e)
             {
@@ -170,10 +183,12 @@ class roundcube_oidc extends rcube_plugin
             }
             
             // Modify args values
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - ajout de l'eidas dans args : ".$eidas);
             $args['user'] = $uid;
             $args['pass'] = $password;
             $args['cookiecheck'] = true;
             $args['valid'] = true;
+            $args['eidas'] = $eidas;
         }
 
         return $args;

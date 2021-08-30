@@ -246,6 +246,49 @@ if (rcmail)
         }
       });
 
+      //$(window).on("resize", resize_mail);
+      function resize_mail()
+      {
+        if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))
+        {
+
+            if ($("#layout-content .header ul#toolbar-menu li.hidden-item-mt").length > 0)
+            {
+                $("#layout-content .header ul#toolbar-menu li.hidden-item-mt").removeClass("hidden-item-mt").css("display", "");
+                $("#message-menu > ul.menu .hidden-item-mt").remove();
+            }
+
+            if ($("#layout-content .header")[0].scrollWidth > $("#layout-content").width())
+            {
+                let array = $("#layout-content .header ul#toolbar-menu li");
+                let it = array.length;
+
+                while ($("#layout-content .header ul#toolbar-menu")[0].scrollWidth > $("#layout-content").width()) {
+                    --it;
+
+                    if (it <= 3)
+                        break;
+                    else if ($(array[it]).css("display") === "none" || $(array[it]).find("a").hasClass("more") || $(array[it]).find("a").attr("aria-haspopup") == "true")//aria-haspopup
+                        continue;
+                    else
+                    {
+                        $(array[it]).addClass("hidden-item-mt").css("display", "none");
+                        $("#message-menu > ul.menu").append($(array[it]).clone().css("display", ""));
+                    }
+                }
+                
+            }
+        }
+      }
+
+      $(document).ready(async () => {
+        if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))
+        {
+            new ResizeObserver(resize_mail).observe($("#layout-content")[0]);
+            resize_mail();
+        }
+
+      });
     
 
 }

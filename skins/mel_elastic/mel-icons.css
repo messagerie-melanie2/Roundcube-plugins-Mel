@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?q943zr') format('truetype'),
-    url('fonts/DWP.woff?q943zr') format('woff'),
-    url('fonts/DWP.svg?q943zr#DWP') format('svg');
+    url('fonts/DWP.ttf?qto1t0') format('truetype'),
+    url('fonts/DWP.woff?qto1t0') format('woff'),
+    url('fonts/DWP.svg?qto1t0#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -69,6 +69,9 @@
 .icon-mel-favorite:before {
   content: "\e90b";
 }
+.icon-mel-updgrade-1:before {
+  content: "\e950";
+}
 .icon-mel-dots:before {
   content: "\e90c";
 }
@@ -114,6 +117,12 @@
 .icon-mel-folder:before {
   content: "\e915";
 }
+.icon-mel-folder-2:before {
+  content: "\e951";
+}
+.icon-mel-cloud:before {
+  content: "\e952";
+}
 .icon-mel-cloud-alt:before {
   content: "\e94f";
 }
@@ -140,6 +149,30 @@
 }
 .icon-mel-mail:before {
   content: "\e91e";
+}
+.icon-mel-compose:before {
+  content: "\e953";
+}
+.icon-pencil:before {
+  content: "\e95c";
+}
+.icon-mel-send:before {
+  content: "\e954";
+}
+.icon-mel-label-full:before {
+  content: "\e955";
+}
+.icon-mel-label:before {
+  content: "\e956";
+}
+.icon-mel-flag-full:before {
+  content: "\e957";
+}
+.icon-mel-flag:before {
+  content: "\e958";
+}
+.icon-mel-pj:before {
+  content: "\e959";
 }
 .icon-mel-menu:before {
   content: "\e91f";
@@ -183,6 +216,9 @@
 .icon-mel-parameters:before {
   content: "\e926";
 }
+.icon-mel-options:before {
+  content: "\e95d";
+}
 .icon-mel-pin:before {
   content: "\e928";
 }
@@ -197,6 +233,9 @@
 }
 .icon-mel-reply:before {
   content: "\e92a";
+}
+.icon-mel-reply-all:before {
+  content: "\e95a";
 }
 .icon-mel-rss:before {
   content: "\e92b";
@@ -251,6 +290,9 @@
 }
 .icon-mel-last-frame:before {
   content: "\e93d";
+}
+.icon-mel-refresh:before {
+  content: "\e95b";
 }
 .icon-mel-popup-anchor:before {
   content: "\e93e";

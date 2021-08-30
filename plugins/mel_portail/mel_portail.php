@@ -54,7 +54,7 @@ class mel_portail extends rcube_plugin
     }
 
     // ajout de la tache
-    $this->register_task('portail');
+    $this->register_task('lep');
 
     // Ajoute le bouton en fonction de la skin
     if ($this->rc->config->get('ismobile', false)) {
@@ -68,7 +68,7 @@ class mel_portail extends rcube_plugin
     } else {
         $taskbar = $this->rc->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
         $this->add_button(array(
-            'command' => 'portail',
+            'command' => 'lep',
             'class'	=> 'button-mel_portail',
             'classsel' => 'button-mel_portail button-selected',
             'innerclass' => 'button-inner',
@@ -78,7 +78,7 @@ class mel_portail extends rcube_plugin
     }
     
     // Si tache = portail, on charge l'onglet
-    if ($this->rc->task == 'portail') {
+    if ($this->rc->task == 'lep') {
       $this->add_texts('localization/', true);
       
       // Chargement de la conf

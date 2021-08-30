@@ -1,3 +1,8 @@
+html.layout-large #layout-sidebar > .header
+{
+    display: none;
+}
+
 .task-mail #layout-sidebar, 
 .task-mail #layout-sidebar > .header,
 .task-mail #layout-content > .header,
@@ -6,15 +11,16 @@
     background-color:#484D7A!important;
 }
 
-.task-mail #layout-sidebar
+.task-mail #layout-sidebar,
+.task-mail #layout-list
 {
     border-right-color: white;
     border-right-style: solid;
     border-right-width: thin;
 }
 
-.task-mail #layout-list #messagelist-header,
-.task-mail #layout-content > .header
+.task-mail #layout-list #messagelist-header/*,
+.task-mail #layout-content > .header */
 {
     justify-content: left;
 }
@@ -31,11 +37,13 @@
 	background-color: #484D7A  ;
 }
 
-.task-mail #layout-list{
+.task-mail #layout-list.full,
+.task-mail #layout-list.initial{
     max-width: 100%;
     width:100%!important;
     flex: 0 1 auto!important;
 }
+
 
 .messagelist tr.unread > td:first-child,
 .messagelist:not(.withselection) tr.unread > td.selection + td {
@@ -99,13 +107,35 @@ table.messagelist td.subject span.msgicon::before{
     font-size:1rem!important;
 }
 
+table.messagelist td.subject span.msgicon.replied::before{
+    content:"\e92a"!important;
+}
+
+table.messagelist td.subject span.msgicon.forwarded::after{
+    content:"\e92a"!important;
+    transform: scaleX(-1);
+    font-family:"DWP"!important;
+    font-style: normal!important;
+    opacity: 1!important;
+    color:#A8ACC0!important;
+}
+
 table.messagelist .unread td.subject span.msgicon::before{
     content:"\e94d"!important;
     color:#363A5B!important;
 }
 
+table.messagelist .contextRow.context-source td.subject span.msgicon::before,
+table.messagelist .selected td.subject span.msgicon::before,
+table.messagelist .contextRow.context-source td.subject span.msgicon::after,
+table.messagelist .selected td.subject span.msgicon::after
+{
+    color:white!important;
+}
+
 .messagelist .selected td.subject .fromto::before,
-.messagelist .contextRow.context-source td.subject .fromto::before{
+.messagelist .contextRow.context-source td.subject .fromto::before
+{
     color:white;
 }
 
@@ -201,11 +231,11 @@ html body.task-mail #layout > div > .footer.small {
 	border-color: #D1D3DD;
 }
 
-#messagecontframe
+/* #messagecontframe
 {
     padding-left: 18px;
     height: calc(100% - 6.22rem)!important;
-}
+} */
 
 .contextmenu li a.label.selected {
 	background: #484D7A;
@@ -218,15 +248,15 @@ html body.task-mail #layout > div > .footer.small {
 
 .messagelist td.labels::before
 {
-    font-family: 'IcoFont' !important;
-    content: "\ec85";
+    font-family: 'DWP' !important;
+    content: "\e955";
     margin-left: -6px;
     margin-right: 12px;
 }
 
 #rcm_messagelist li .ct-tb::before{
-    font-family: 'IcoFont' !important;
-    content: "\ec85";
+    font-family: 'DWP' !important;
+    content: "\e956";
 }
 
 #rcm_messagelist li .ct-tb::after{
@@ -248,3 +278,268 @@ font-weight: 900;
 text-decoration: inherit;
 text-align: center;
 }
+
+.messagelist span.threads > div
+{
+    color:#363A5B;
+}
+
+.messagelist .contextRow.context-source span.threads > div,
+.messagelist .selected span.threads > div
+{
+    color:white;
+}
+
+#folderlist-content > a.button{
+    color:white;
+    position: absolute;
+    padding-bottom: 10px;
+    /* margin-top: 5px; */
+    top: 24px;
+    right: 18px;
+    z-index:5;
+    padding-left: 3px;
+}
+
+#folderlist-content > a.button:hover{
+    background-color: #2C3054;
+}
+
+#folderlist-content li.mailbox.boite
+{
+    margin: 20px 0;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+    padding-right:20px;
+    padding-bottom: 10px;
+}
+
+#folderlist-content li.mailbox.boite[aria-expanded="true"]{
+    border:none;
+}
+
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type {
+	border-top-style: solid;
+	border-top-width: thin;
+	margin-top: 15px;
+	padding-top: 20px;
+	/* position: relative; */
+}
+
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
+	top: 20px;
+}
+
+#folderlist-content ul#mailboxlist > li ~ li{
+    padding-right:0;
+}
+
+#folderlist-content
+{
+    padding: 0 20px;
+}
+
+ #folderlist-content ul#mailboxlist > li:first-of-type .unreadcount{
+    right: 21px;
+}
+
+#folderlist-content ul#mailboxlist ul > li .unreadcount {
+	right: 0!important;
+} 
+
+#rcm_labellist {
+	overflow: auto;
+	max-height: 400px;
+}
+
+ul#mailboxlist ul li.mailbox.selected {
+	/* background-color: #2C3054; */
+}
+
+ul#mailboxlist ul li.mailbox.selected a {
+	background-color: #2C3054;
+}
+
+/* ul#mailboxlist ul li.mailbox a {
+	padding-top: 0.4rem;
+	padding-bottom: 0.4rem;
+} */
+
+/* #folderlist-content ul#mailboxlist > li > ul li .unreadcount {
+	top: 6px;
+}
+
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
+	top: 26px;
+} */
+
+#folderlist-content ul#mailboxlist > li:first-of-type > ul:first-of-type li[aria-level="2"]
+{
+    margin-right: -20px;
+}
+
+#folderlist-content ul#mailboxlist.unified > li:first-of-type > ul:first-of-type li[aria-level="2"]
+{
+    margin-right: 0;
+} 
+
+#folderlist-content ul#mailboxlist.unified{
+    margin-top: 20px;
+}
+
+/**ICONS**/
+.menu a#listmenulink.options::before {
+	content: "\e95d"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+.menu a.compose::before {
+	content: "\e953"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+a.button.icon.refresh::before, button.btn.refresh::before {
+	content: "\e95b"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+.folderlist li.drafts a::before {
+	content: "\e95c"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+.menu a.reply::before {
+	content: "\e92a"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+.menu a.reply-all::before, .menu a.reply.all::before, .menu a.reply.list::before {
+	content: "\e95a"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+.folderlist li.trash a::before,
+.menu a.delete::before {
+	content: "\e934"!important;
+    font-family: DWP!important;
+    font-weight: normal !important;
+}
+
+#tb_label_popuplink::before
+{
+    font-family: 'DWP'!important;
+    content: "\e956"!important;
+    font-weight: normal !important;
+}
+
+.menu a.junk::before,
+.folderlist li.junk a::before {
+    font-family: 'DWP'!important;
+    content: "\e908"!important;
+    font-weight: normal !important;
+}
+
+.menu a.more::before {
+    font-family: 'DWP'!important;
+    content: "\e90c"!important;
+    font-weight: normal !important;
+}
+
+.menu a.close-visu::before {
+    font-family: 'DWP'!important;
+    content: "\e936"!important;
+    font-weight: normal !important;
+}
+
+.menu a.forward::before, .menu a.forward.attachment::before, .menu a.forward.bounce::before, .menu a.forward.inline::before {
+    font-family: 'DWP'!important;
+    content: "\e92a"!important;
+    font-weight: normal !important;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+.folderlist li a::before {
+	content: "\e951"!important;
+    font-family: 'DWP'!important;
+    font-weight: normal !important;
+}
+
+.folderlist li.sent a::before {
+	content: "\e954"!important;
+    font-family: 'DWP'!important;
+    font-weight: normal !important;
+}
+
+.folderlist li.inbox > a::before,
+.folderlist li.boite > a::before {
+	content: "\f01c"!important;
+	font-weight: 900!important;
+    font-family: 'Icons'!important;
+}
+
+.menu a.threads::before {
+	content: "\e920"!important;
+    font-family: 'DWP'!important;
+    font-weight: normal !important;
+}
+
+.messagelist tr:hover span.unflagged::before {
+	content: "\e958"!important;
+    font-family: 'DWP'!important;
+    font-weight: normal !important;
+}
+
+.messagelist span.flagged::before {
+	content: "\e957"!important;
+    font-family: 'DWP'!important;
+    font-weight: normal !important;
+}
+
+.messagelist span.attachment span::before {
+	content: "\e959"!important;
+    font-family: 'DWP'!important;
+    font-weight: normal !important;
+    color:#363A5B!important;
+}
+
+#mailsearchlist{
+    /* transition: width 0.1s ease-in; */
+}
+
+#mailsearchlist.hoverable {
+    right:20px;
+}
+
+/* #mailsearchlist.hoverable .searchbar.menu
+{
+    width:100%;
+} */
+
+#mailsearchlist.hoverable .searchbar.menu {
+     /* display:none;  */
+     width: 0;
+    /* animation: slide 0.1s linear;/* delay iteration-count direction fill-mode;*
+    animation-fill-mode: forwards;
+    -webkit-animation: slide 0.1s linear; */
+}
+
+#mailsearchlist.hoverable .icon-mel-search
+{
+    margin-right: 4px;
+}
+
+/* @-webkit-keyframes slide {
+    from {width: 100%;}
+    to {width: 0;}
+  }
+@keyframes slide {
+    from {width: 100%;}
+    to {width: 0;}
+  } */

@@ -273,6 +273,19 @@ class mel_metapage extends rcube_plugin
             'title' => 'Toutes mes applications',
             'type'       => 'link',
         ), "taskbar");
+
+        // $this->add_button(array(
+        //     'command' => "compose",
+        //     'href' => './?_task=mail&_action=compose',
+        //     'class'	=> 'compose options',
+        //     'classsel' => 'compose options',
+        //     'innerclass' => 'inner',
+        //     'label'	=> 'compose',
+        //     'title' => '',
+        //     'type'       => 'link',
+        // ), "listcontrols");
+
+        //listcontrols
         $this->include_depedencies();
         $this->include_css();
         $this->include_js();
@@ -576,6 +589,10 @@ class mel_metapage extends rcube_plugin
         }
 
         $this->rc->output->set_env('mel_metapage_user_emails', $emails);
+
+        if ($this->rc->task === "mail")
+            $this->rc->output->set_env('mailboxes_display', $this->rc->config->get('mailboxes_display', 'default'));
+        
 
         //$this->rc->output->set_env('currentTask', $this->rc->task);
     }

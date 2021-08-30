@@ -550,12 +550,6 @@ li#settingstabpluginmel_suggestion_box > a::before
   margin: 0!important;
 }
 
-#tb_label_popuplink::before
-{
-    font-family: 'IcoFont'!important;
-    content: "\ec85";
-}
-
 /* .task-addressbook
 {
     margin-top: 60px;
@@ -809,6 +803,7 @@ img.menu-image {
     background: #80D5C6;
     color: #484D7A;
     font-size: 0.9rem;
+    border-radius: 5rem;
 }
 
 .folderlist li.boite > a::before {
@@ -1399,7 +1394,7 @@ html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-con
 }
 
 /**temporaire**/
-@media screen and (max-width: 1367px){
+/* @media screen and (max-width: 1367px){
     html.layout-large body.task-mail #layout-content .header .menu.toolbar a
     {
         font-size: 0.65rem;
@@ -1409,7 +1404,7 @@ html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-con
     html.layout-large body.task-mail #layout-content .header .menu.toolbar a:before{
         font-size: 1rem;
     }
-}
+} */
 
 @media screen and (max-width: 997px){
     body.task-mail #layout-content .header .menu.toolbar a

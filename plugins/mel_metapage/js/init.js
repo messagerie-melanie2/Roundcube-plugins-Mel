@@ -36,6 +36,11 @@ if (rcmail)
         }
     };
 
+    $(document).ready(( )=> {
+        if (rcmail.env.mailboxes_display === "unified")
+            $("#folderlist-content ul#mailboxlist").addClass(rcmail.env.mailboxes_display);
+    })
+
     if (parent != window && rcmail.mel_metapage_fn === undefined)
     {
             rcmail.mel_metapage_fn = {

@@ -1,0 +1,50 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/this/resources.css" />
+</head>
+<body class="noscroll">
+
+<roundcube:include file="/includes/header.html" />
+
+<div id="mainscreen" class="offset">
+
+<roundcube:include file="/includes/settingstabs.html" />
+
+<div id="settings-right">
+
+<div id="mel_resources_elements_listbox" class="uibox listbox">
+	
+	<h2 class="boxtitle">
+		<roundcube:button command="plugin.mel_portail_add_resource" type="link" title="mel_portail.add_resource" class="listbutton add disabled" classAct="listbutton add" content="+" />
+		<roundcube:label name="mel_portail.applications_list" />
+	</h2>
+    <div class="scroller withfooter">
+	  <roundcube:object name="mel_resources_elements_list" id="mel_resources_elements_list" class="listing" cellspacing="0" summary="Objects list" noheader="true" />
+	</div>
+	<div class="boxfooter">		  
+	  <roundcube:button command="plugin.mel_portail_delete_resource" type="link" title="mel_portail.delete_resource" class="listbutton delete disabled" classAct="listbutton delete" innerClass="inner" content="-" />
+	  <roundcube:button command="plugin.mel_portail_reinit_resource" type="link" title="mel_portail.reinit_resources" class="listbutton reinit disabled" classAct="listbutton reinit" innerClass="inner" content="-" />
+	  <roundcube:button command="plugin.mel_portail_export_resource" type="link" title="mel_portail.export_resource" class="listbutton export disabled" classAct="listbutton export" innerClass="inner" content="-" />
+	</div>
+</div>
+
+<div id="mel_resources_elements_type_box" class="uibox contentbox">
+  <div class="iframebox">
+    <roundcube:object name="mel_resources_type_frame" id="mel_resources_type_frame" style="width:100%; height:100%" frameborder="0" src="/watermark.html" />
+  </div>
+  <roundcube:object name="message" id="message" class="statusbar" />
+</div>
+<roundcube:include file="/includes/footer.html" />
+
+<script type="text/javascript">
+	new rcube_splitter({ id:'melsplitter', p1:'#settings-sections', p2:'#settings-right',
+		orientation:'v', relative:true, start:180, min:42, size:1 }).init();
+	new rcube_splitter({ id:'melresourcessplitter2', p1:'#mel_resources_elements_listbox', p2:'#mel_resources_elements_type_box',
+      orientation:'v', relative:true, start:186, min:120, size:1 }).init();
+</script>
+
+</body>
+</html>

@@ -182,29 +182,72 @@ $(document).ready(() => {
                 //     $("#layout-list").css("display", "none");
                 // });
 
-                $("#backtomails").on("click", () => {
-                    $(".message.selected").removeClass("selected").removeAttr("aria-selected")
-                    .find(".selection input").click();
-                    $("#layout-content").css("display", "none");
-                    $("#layout-list").css("display", "");
-                });
+                // $("#backtomails").on("click", () => {
+                //     $(".message.selected").removeClass("selected").removeAttr("aria-selected")
+                //     .find(".selection input").click();
+                //     $("#layout-content").css("display", "none");
+                //     $("#layout-list").css("display", "");
+                // });
 
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
-                    if (show)
+                    if ($("#layout-list").hasClass("initial"))
+                    {
+                        if (show)
+                        {
+                            $("#layout-content").css("display", "");
+                            $("#layout-list").removeClass("initial");
+
+                            $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
+                                if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
+                                    $("#mailsearchlist").removeClass("hoverable");
+                            }).on("mouseleave", () => {
+                                if (!$("#mailsearchlist").hasClass("hoverable")  && !$("#layout-list").hasClass("full"))
+                                    $("#mailsearchlist").addClass("hoverable");
+                            });
+
+                            let $back = `<li role="menuitem">
+                                <a  onclick="return rcmail.command('close-mail-visu','',this,event)"  class="close-visu"  role="button" href="#" ><span class="inner">Fermer</span></a>
+                            </li>`;
+                            
+
+                            $("#layout-content ul#toolbar-menu").prepend($back);
+
+                            rcmail.register_command("close-mail-visu", () => {
+                                $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
+
+                                $("#layout-content").css("display", "none");
+                                $("#layout-list").addClass("full");
+
+                                $("#mailsearchlist").removeClass("hoverable");
+
+                                // $("#messagelist-content .selected .selection input")[0].checked = false;
+                                
+
+                            }, true)
+                        }
+                    }   
+                    else if ($("#layout-list").hasClass("full"))
                     {
                         $("#layout-content").css("display", "");
-                        $("#layout-list").css("display", "none");
-                    }
-                    else
-                    {
-                        $("#layout-content").css("display", "none");
-                        $("#layout-list").css("display", "");
+                        $("#layout-list").removeClass("full");
+
+                        $("#mailsearchlist").addClass("hoverable");
                     }
 
                     rcmail.show_contentframe_parent(show);
                 };
+
+                if (rcmail.env.action === "compose")
+                {
+                    $(".btn.btn-primary.send").remove();
+                    $("#toolbar-menu").prepend(`
+                        <li role="menuitem">
+                            <a class="send" href=# onclick="return rcmail.command('send','',this,event)">Envoyer</a>
+                        </li>
+                    `);
+                }
 
             }
         }

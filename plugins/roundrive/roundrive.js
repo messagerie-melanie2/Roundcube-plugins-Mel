@@ -41,7 +41,7 @@ window.rcmail && window.files_api && rcmail.addEventListener('init', function() 
       }, true);
 
       var elem = $('#compose-attachments > div'),
-        input = $('<button class="button" type="button"></button>')
+        input = $('<button class="button mel-button inverse" type="button"></button>')
           .attr('tabindex', $('input', elem).attr('tabindex') || 0)
           .html(`<span class="icon-mel-link"></span> ${rcmail.gettext('roundrive.fromcloud')}`)
           .click(function() { roundrive_selector_dialog(); })

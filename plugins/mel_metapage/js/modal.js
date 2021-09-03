@@ -160,6 +160,11 @@ class GlobalModal
         this.contents.html(html);
     }
 
+    appendToBody(querry)
+    {
+        querry.appendTo(this.contents);
+    }
+
     /**
      * Modifie la position en Y de la modale.
      * @param {string} pos Position Y avec "px" à la fin.

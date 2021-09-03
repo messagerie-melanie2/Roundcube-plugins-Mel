@@ -111,7 +111,17 @@ table.messagelist td.subject span.msgicon.replied::before{
     content:"\e92a"!important;
 }
 
-table.messagelist td.subject span.msgicon.forwarded::after{
+table.messagelist td.subject span.msgicon.forwarded::before{
+    content:"\e92a"!important;
+    transform: scaleX(-1);
+}
+
+table.messagelist td.subject span.msgicon.replied.forwarded::before
+{
+    transform: none;
+}
+
+table.messagelist td.subject span.msgicon.replied.forwarded::after{
     content:"\e92a"!important;
     transform: scaleX(-1);
     font-family:"DWP"!important;
@@ -308,10 +318,11 @@ text-align: center;
 #folderlist-content li.mailbox.boite
 {
     margin: 20px 0;
-    border-bottom-style: solid;
-    border-bottom-width: thin;
+    margin-bottom: -10px;
+    /* border-bottom-style: solid;
+    border-bottom-width: thin; */
     padding-right:20px;
-    padding-bottom: 10px;
+    /* padding-bottom: 10px; */
 }
 
 #folderlist-content li.mailbox.boite[aria-expanded="true"]{
@@ -322,7 +333,7 @@ text-align: center;
 	border-top-style: solid;
 	border-top-width: thin;
 	margin-top: 15px;
-	padding-top: 20px;
+	padding-top: 10px;
 	/* position: relative; */
 }
 

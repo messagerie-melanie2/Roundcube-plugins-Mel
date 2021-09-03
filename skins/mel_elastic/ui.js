@@ -192,51 +192,66 @@ $(document).ready(() => {
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
-                    if ($("#layout-list").hasClass("initial"))
+                    if (rcmail.env.is_from_scroll === true)
+                        delete rcmail.env.is_from_scroll;
+                    else if ($("#layout-list").hasClass("initial") && show)
                     {
-                        if (show)
-                        {
-                            $("#layout-content").css("display", "");
-                            $("#layout-list").removeClass("initial");
 
-                            $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
-                                if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
-                                    $("#mailsearchlist").removeClass("hoverable");
-                            }).on("mouseleave", () => {
-                                if (!$("#mailsearchlist").hasClass("hoverable")  && !$("#layout-list").hasClass("full"))
-                                    $("#mailsearchlist").addClass("hoverable");
-                            });
+                        $("#layout-content").css("display", "");
+                        $("#layout-list").removeClass("initial");
 
-                            let $back = `<li role="menuitem">
-                                <a  onclick="return rcmail.command('close-mail-visu','',this,event)"  class="close-visu"  role="button" href="#" ><span class="inner">Fermer</span></a>
-                            </li>`;
+                        $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
+                            if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
+                                $("#mailsearchlist").removeClass("hoverable");
+                        }).on("mouseleave", () => {
+                            if (!$("#mailsearchlist").hasClass("hoverable")  && !$("#layout-list").hasClass("full"))
+                                $("#mailsearchlist").addClass("hoverable");
+                        });
+
+                        let $back = `<li role="menuitem">
+                            <a  onclick="return rcmail.command('close-mail-visu','',this,event)"  class="close-visu"  role="button" href="#" ><span class="inner">Fermer</span></a>
+                        </li>`;
+                        
+
+                        $("#layout-content ul#toolbar-menu").prepend($back);
+
+                        rcmail.register_command("close-mail-visu", () => {
+                            $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
+
+                            $("#layout-content").css("display", "none");
+                            $("#layout-list").addClass("full");
+
+                            $("#mailsearchlist").removeClass("hoverable");
+
+                            // $("#messagelist-content .selected .selection input")[0].checked = false;
                             
 
-                            $("#layout-content ul#toolbar-menu").prepend($back);
-
-                            rcmail.register_command("close-mail-visu", () => {
-                                $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
-
-                                $("#layout-content").css("display", "none");
-                                $("#layout-list").addClass("full");
-
-                                $("#mailsearchlist").removeClass("hoverable");
-
-                                // $("#messagelist-content .selected .selection input")[0].checked = false;
-                                
-
-                            }, true)
-                        }
+                        }, true)
+                        
                     }   
-                    else if ($("#layout-list").hasClass("full"))
+                    else if ($("#layout-list").hasClass("full") && show)
                     {
+
                         $("#layout-content").css("display", "");
                         $("#layout-list").removeClass("full");
 
                         $("#mailsearchlist").addClass("hoverable");
+                        
                     }
 
                     rcmail.show_contentframe_parent(show);
+
+                    let hidden = $("#layout-content .header #toolbar-menu .hidden-item-mt a");
+                    if (hidden.length > 0)
+                    {
+                        hidden.each(async (i, e) =>{
+                            let a = $(`#message-menu #${e.id}`);
+                            if (a.hasClass("disabled") && !$(e).hasClass("disabled"))
+                                a.removeClass("disabled")
+                            else if (!a.hasClass("disabled") && $(e).hasClass("disabled"))
+                                a.addClass("disabled")
+                        });
+                    }
                 };
 
                 if (rcmail.env.action === "compose")
@@ -248,7 +263,26 @@ $(document).ready(() => {
                         </li>
                     `);
                 }
-
+                else if (rcmail.env.action === "" || rcmail.env.action === "index")
+                {
+                    	// add roundcube events
+                    rcmail.addEventListener('insertrow', function(event) { 
+                        var rowobj = $(event.row.obj);
+                        rowobj.find(".selection input").on("change", () => {
+                            let hidden = $("#layout-content .header #toolbar-menu .hidden-item-mt a");
+                            if (hidden.length > 0)
+                            {
+                                hidden.each(async (i, e) =>{
+                                    let a = $(`#message-menu #${e.id}`);
+                                    if (a.hasClass("disabled") && !$(e).hasClass("disabled"))
+                                        a.removeClass("disabled")
+                                    else if (!a.hasClass("disabled") && $(e).hasClass("disabled"))
+                                        a.addClass("disabled")
+                                });
+                            }
+                        });
+                    });
+                }
             }
         }
 

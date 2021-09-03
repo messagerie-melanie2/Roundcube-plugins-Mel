@@ -190,6 +190,8 @@ if (window.rcmail) {
           && (!rcmail.env.iselectron || rcmail.env.mailbox.indexOf(rcmail.env.local_archive_folder) !== 0)) {
             // Affichage de la page suivante au bas de la page					  					  
             var page = current_page_scroll;
+            if (!rcmail.busy)
+              console.log("Fin de la liste des mails, recherche de mails plus ancien....");			 
             if (page > 0 && page <= rcmail.env.pagecount && !page_loading[page]) {
               page_loading[page] = true;
               var lock = rcmail.set_busy(true, 'loading');
@@ -198,9 +200,17 @@ if (window.rcmail) {
               post_data._page = page;
               // also send search request to get the right records
               if (rcmail.env.search_request)
-              post_data._search = rcmail.env.search_request;
-              rcmail.http_request('list', post_data, lock);						  
+                post_data._search = rcmail.env.search_request;
+              rcmail.env.is_from_scroll = true;
+              console.log("Recherche en cours....", post_data);
+              rcmail.http_request('list', post_data, lock).always(() => {
+                console.log("Recherche terminée !");
+              });	
+
             }
+            else if (!rcmail.busy)
+              console.log("Il n'y a pas de nouveaux mails");
+            
           }		  
         });
         if (!rcmail.env.ismobile) {

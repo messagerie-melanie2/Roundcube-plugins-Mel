@@ -245,6 +245,13 @@ span.menu-last-frame-item {
     font-weight: normal;
 }
 
+a.useful_links.icon-mel-link::before
+{
+    content:"\e91c";
+    font-family: "DWP"!important;
+    font-weight: normal;
+}
+
 .menu.toolbar a.home.icon-mel-home:before
 {
     content:"\e918";

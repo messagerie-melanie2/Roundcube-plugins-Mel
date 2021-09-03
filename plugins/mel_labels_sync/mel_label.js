@@ -161,7 +161,6 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 	} else {
 		var label_name = toggle_label;
 	}
-	//console.log("on/off", onoff, header_preview_all_table.find('tr td.label').html());
 	// for single message view
 	if (headers_table.length && flag_uids.length)
 	{
@@ -212,6 +211,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 			rowobj.addClass('label_' + toggle_label.replace('~',''));
 			// add to flag list
 			message.flags.tb_labels.push(toggle_label);
+
+			if (rowobj.find('td.labels').length === 0 && rowobj.find('span.labels').length === 0)
+				rowobj.find("td.subject").prepend(`<td class="labels"></td>`)
 			
 			if (rowobj.find('td.labels').length > 0) {
 				if (rowobj.find('td.labels').html() == "") {
@@ -244,6 +246,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 			else if (rowobj.find('span.labels').length > 0) {
 				rowobj.find('span.labels').text(rowobj.find('span.labels').text().replace(label_name + ', ','').replace(', ' + label_name,'').replace(label_name,''));
 			}
+
+			if (rowobj.find('td.labels').children().length === 0)
+				rowobj.find('td.labels').remove();
 		}
 	});
 }

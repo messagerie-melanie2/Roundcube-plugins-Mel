@@ -996,6 +996,18 @@ td.mel-fit-content{
     font-size: small;
 }
 
+.mel-button.inverse
+{
+    border-color: #484D7A;
+    background-color: #484D7A;
+}
+
+.mel-button.inverse:hover
+{
+    background-color: #363A5B;
+    border-color: #363A5B;
+}
+
 .mel-button.white{
     background-color: white;
     color: unset;
@@ -1503,3 +1515,7 @@ html #compose-contacts #annuaire-list .folder > .description{
     color: #484D7A;
 }
 
+.upload-form .hint
+{
+    color:white;
+}

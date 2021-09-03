@@ -20,7 +20,7 @@
                 <div class="wsp-search-wsp">
                     <label for="wsp-search-input" class="title-wsp"><roundcube:label name="mel_useful_link.find_useful_link" /></label>
                     <div class="input-group mel-search-group mel-centered">
-                        <input id="wsp-search-input" type="text" onmousedown="" class="form-control mel-max-width-500" />
+                        <input id="wsp-search-input" oninput="SearchLinks(this)" type="text" onmousedown="" class="form-control mel-max-width-500" />
                         <div class="input-group-append">
                             <span class="icon-mel-search input-group-text"></span>
                         </div>
@@ -34,9 +34,9 @@
 	<div class="body" style="padding-bottom: 15px;">
         <div class="epingle">
             <h2 class="title-wsp">
-                Mes espaces de travail épinglés
+                <roundcube:label name="mel_useful_link.pined_links" />
             </h2>
-            <div class=wsp-epingle>
+            <div class=ulinks-epingle>
                 <roundcube:object name="epingle" />
             </div>
             <div class=wsp-others></div>
@@ -44,43 +44,14 @@
         </div>
         <div class="joined">
             <h2 class="title-wsp">
-                Tous mes espaces de travail
+                <roundcube:label name="mel_useful_link.all_useful_links" />
+                <button onclick="CreateLink()" id="mulba" class="mel-button">Ajouter <span class="plus icon-mel-plus"></span></button>
             </h2> 
-            <div style="width: 100%;" role="tablist" aria-label="Espaces de travail">
-                <button id="not-archive" role="tab"
-                aria-selected="true"
-                aria-controls="not-archive-panel" class="tab-archive mel-tab mel-tabheader active">En cours</button>
-
-                <button id="wsp-archive-items"
-                role="tab"
-                aria-selected="false"
-                aria-controls="archived-panel"
-                data-delete-after-click="true" data-onclick="load_archives(this)" class="tab-archive mel-tab mel-tabheader last">Archivés</button>
-            </div>
-            <div
-            tabindex="0"
-            role="tabpanel"
-            aria-labelledby="wsp-archive-items"
-             id="not-archive-panel" class="not-archive tab-archive mel-tab-content">
+            <div>
                 <roundcube:object name="joined" />
             </div>
-            <div
-            tabindex="0"
-            role="tabpanel"
-            aria-labelledby="not-archive"
-            id="archived-panel" class="wsp-archive-items tab-archive mel-tab-content">
-
-            </div>
         </div>
 
-        <div class=wsp-desc-block>
-            <center>
-                <!--rcmail.goto_url('action', '_event=list_public')-->
-                <h2>Vous cherchez à rejoindre un projet spécifique ?</h2>
-                <p>Accédez à la liste complète des projets ouverts</p>
-                <button onclick="rcmail.set_busy(true, 'loading');window.location.href = mel_metapage.Functions.url('workspace', 'action', {_event:'list_public'})" class="mel-button mel-focus light-focus quit-button plus">Voir tous les projets ouverts<span class="icon-mel-arrow-right plus"></span></button>
-            </center>
-        </div>
 	</div>
 </div>
 

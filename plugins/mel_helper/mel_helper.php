@@ -54,6 +54,12 @@ class mel_helper extends rcube_plugin
         include_once "lib/amel_lib.php";
     }
 
+    public function include_utilities()
+    {
+        include_once "lib/mel_utils.php";
+        return "mel_utils";
+    }
+
     /**
      * Récupère un plugin.
      *

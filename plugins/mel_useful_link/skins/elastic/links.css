@@ -1,0 +1,51 @@
+body.task-useful_links separate {
+	border-top-color: #E0E1E8;
+	border-top-style: solid;
+	border-top-width: thin;
+	margin: 50px 200px;
+	display: block;
+}
+
+.link-block .pin{
+	top:15px;
+}
+
+button.btn.icon-mel-copy::before
+{
+	font-family: DWP!important;
+	content: "\e90a"!important;
+	font-weight: normal!important;
+}
+
+button.btn.icon-mel-pencil::before
+{
+	font-family: DWP!important;
+	content: "\e95c"!important;
+	font-weight: normal!important;
+}
+
+.link-block .tools{
+	position: absolute;
+	right:15px;
+	bottom: 15px;
+}
+
+.link-block .tools a.roundbadge
+{
+	color:#424564;
+	transition: all 0.1s ease-in;
+	margin-left: 5px;
+}
+
+.link-block .tools a.roundbadge:hover
+{
+	color:white;
+	background-color: #484D7A;
+	text-decoration: none;
+}
+
+#mulba
+{
+	margin-top:0;
+	float: right;
+}

@@ -70,7 +70,11 @@ class mel_workspace extends rcube_plugin
         $this->register_action('epingle', array($this, 'epingle'));
         $this->register_action('get_email_from_ws', array($this, 'get_email_from_workspace'));
         $this->register_action('hashtag', array($this, 'get_hashtags'));
-        $this->register_action('notify_chat', array($this, 'notify_chat'));
+        $this->register_action('notify_chat', array($this, 'notify_chat'));//get_uLinks
+        $this->register_action('show_links', array($this, 'get_uLinks'));
+        $this->register_action('update_ulink', array($this, 'update_ulink'));
+        $this->register_action('delete_ulink', array($this, 'delete_ulink'));
+        $this->register_action('pin_ulink', array($this, 'pin_ulink'));
         $this->include_script('js/epingle.js');
 
         // Ajoute le bouton en fonction de la skin
@@ -366,7 +370,8 @@ class mel_workspace extends rcube_plugin
             "wekan" => "icon-mel_trello",
             "tasks" => "icon-mel-task",
             "news" => "icofont-rss-feed",
-            "params" => "icon-mel-parameters"
+            "params" => "icon-mel-parameters",
+            "links" => "icon-mel-link"
         ];
 
         $vseparate = "<v_separate></v_separate>";
@@ -460,6 +465,14 @@ class mel_workspace extends rcube_plugin
                 {
                     $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
                     
+                    if ($is_admin || $services[self::LINKS])
+                        $html .= $vseparate;
+                }
+
+                if ($services[self::LINKS])
+                {
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('links', this)" ,"class" => "wsp-toolbar-item wsp-links"], "<span class=".$icons["links"]."></span><span class=text-item>".$this->rc->gettext("useful_links", "mel_workspace")."</span>");
+                    
                     if ($is_admin)
                         $html .= $vseparate;
                 }
@@ -507,6 +520,7 @@ class mel_workspace extends rcube_plugin
     const CLOUD = "doc"; 
     const GROUP = "annuaire";
     const WEKAN = "wekan";
+    const LINKS = "useful-links";
 
     public function get_worskpace_services($workspace, $services_to_remove = false)
     {
@@ -516,7 +530,8 @@ class mel_workspace extends rcube_plugin
             self::TASKS => $this->get_object($workspace, self::TASKS) !== null,
             self::EMAIL => $this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $this->get_object($workspace, self::CLOUD) === true,
-            self::WEKAN => $this->get_object($workspace, self::WEKAN) !== null
+            self::WEKAN => $this->get_object($workspace, self::WEKAN) !== null,
+            self::LINKS => $this->get_object($workspace, self::LINKS) !== null
         ];
 
         if ($datas[self::TASKS] && !$datas[self::WEKAN])
@@ -841,20 +856,25 @@ class mel_workspace extends rcube_plugin
         $uid = $this->currentWorkspace->uid;
         $user_rights = $this->currentWorkspace->shares[driver_mel::gi()->getUser()->uid]->rights;
         $html = $this->rc->output->parse("mel_workspace.params", false, false);
+
         if ($user_rights === "l")
             $html = str_replace("<users-rights/>", "", $html);
         else
             $html = str_replace("<users-rights/>", $this->setup_params_rights($this->currentWorkspace), $html); 
+
         $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
         $html = str_replace("<applications/>", $this->setup_params_apps($this->currentWorkspace), $html);
+
         if ($user_rights === Share::RIGHT_OWNER)
             $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
         else
             $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.leave`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Quitter l\'espace de travail</button>', $html);
-        if (!$this->currentWorkspace->isarchived) //<button class="btn btn-danger" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command('workspace.archive', '<workspace-uid/>')">Archiver</button>
+        
+            if (!$this->currentWorkspace->isarchived) //<button class="btn btn-danger" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command('workspace.archive', '<workspace-uid/>')">Archiver</button>
             $html = str_replace("<button-archive/>", '<button class="btn btn-danger mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.archive`)">Archiver</button>', $html);
         else
             $html = str_replace("<button-archive/>", '<button class="btn btn-success mel-button no-button-margin" style="margin-top: 5px;margin-bottom: 15px;margin-left:10px;"onclick="rcmail.command(`workspace.unarchive`)">Désarchiver</button>', $html);
+        
         return $html;
     }
 
@@ -870,6 +890,7 @@ class mel_workspace extends rcube_plugin
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         $workspace = self::get_workspace($uid);
+
         echo $this->setup_params_apps($workspace);
         exit;
     }
@@ -881,12 +902,15 @@ class mel_workspace extends rcube_plugin
         $config = $this->rc->config->get("workspace_services");
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
+
         foreach ($services as $key => $value) {
             if ($key === self::EMAIL || $key === self::AGENDA || ($key === self::CLOUD && $value) || $key === self::WEKAN)
                 continue;
+
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
             $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
+            
             if ($value)
             {
                 $class = "btn btn-danger mel-button no-button-margin";
@@ -896,13 +920,18 @@ class mel_workspace extends rcube_plugin
                 $class = "btn btn-success mel-button no-button-margin";
                 $span = $icons["plus"];    
             }
+
             $func = "rcmail.command('workspace.update_app','$key')";
+
             if ($info === null)
                 $class.= " disabled";
+
             $html.= "<button onclick=$func style=float:right; class=\"$class\" ><span class=$span></span></button>";
             $html .= "</td></tr>";
         }
+
         $html .= "</table>";
+
         return $html;
 
     }
@@ -923,17 +952,22 @@ class mel_workspace extends rcube_plugin
         $share = $workspace->shares;
         $this->sort_users($share);
         $current_user = driver_mel::gi()->getUser();
+
         foreach ($share as $key => $value) {
             $html .= "<tr>";
             $html .= "<td>". driver_mel::gi()->getUser($value->user)->name."</td>";
+            
             $html .= "<td>".$this->setup_params_value($icons_rights, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
                 $html += '<td></td>';
             else
                 $html .= '<td><button style="float:right" onclick="rcmail.command(`workspace.remove_user`, `'.$value->user.'`)" class="btn btn-danger mel-button no-button-margin"><span class='.$icon_delete.'></span></button></td>';
+            
             $html .= "</tr>";
         }
+
         $html .= "</table>";
+
         return $html;
     }
 
@@ -942,10 +976,13 @@ class mel_workspace extends rcube_plugin
         $options = json_encode($icons);
         $options = str_replace('"', "¤¤¤", $options);
         $classes = [];
+
         foreach ($icons as $key => $value) {
             $classes[$key] = $key;
         }
+
         $classes = str_replace('"', "¤¤¤", json_encode($classes));
+
         return '<button style="float:right"  type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel mel-button no-button-margin  btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
         // $html = '<select class=" pretty-select" >';
         // foreach ($icons as $key => $value) {
@@ -966,9 +1003,11 @@ class mel_workspace extends rcube_plugin
     function include_js()
     {
         $count = count($this->folders);
+
         for ($it=0; $it < $count; ++$it) { 
             $files = scandir(__DIR__."/js/".$this->folders[$it]);
             $size = count($files);
+
             for ($i=0; $i < $size; ++$i) { 
                 if (strpos($files[$i], ".js") !== false)
                     $this->include_script('js/'.$this->folders[$it]."/".$files[$i]);
@@ -977,6 +1016,7 @@ class mel_workspace extends rcube_plugin
 
         if ($this->rc->action === "index" || $this->rc->action === "" || $this->rc->action === "action")
             $this->include_script('js/index.js');
+
         if ($this->rc->action === "workspace")
         {
             $this->include_script('js/workspace.js');
@@ -1032,8 +1072,10 @@ class mel_workspace extends rcube_plugin
         $workspace->modified = new DateTime('now');
         $workspace->ispublic = (($datas["visibility"] === "private") ? false: true);
         $workspace->hashtags = [$datas["hashtag"]];
+
         if ($datas["color"] === "" || $datas["color"] === null)
             $datas["color"] = "#FFFFFF";
+
         $this->add_setting($workspace, "color", $datas["color"]);
         //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Première sauvegarde...");
         $res = $workspace->save();
@@ -1047,8 +1089,10 @@ class mel_workspace extends rcube_plugin
         $shares[] = $share;
 
         $count = count($datas["users"]);
+
         for ($i=0; $i < $count; ++$i) { 
             $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid;
+
             if ($tmp_user === null)
                 $retour["errored_user"][] = $datas["users"][$i];
             else {
@@ -1084,9 +1128,11 @@ class mel_workspace extends rcube_plugin
             };
             $users = array_map($map, $workspace->shares);
             $tmp_users = [];
+
             foreach ($users as $key => $value) {
                 $tmp_users[] = $value;
             }
+
             $users = $tmp_users;
             unset($tmp_user);
         }
@@ -1096,7 +1142,15 @@ class mel_workspace extends rcube_plugin
         $services = $this->create_channel($workspace, $services, $users);
         $services = $this->create_service_group($workspace, $services);
 
+        $this->create_service_links($workspace);
+
         return $services;
+    }
+
+    function create_service_links(&$workspace)
+    {
+        if ($this->get_object($workspace, self::LINKS) === null)
+            $this->save_object($workspace, self::LINKS, []);
     }
 
     function create_service_group(&$workspace, $services)
@@ -2013,6 +2067,7 @@ class mel_workspace extends rcube_plugin
                     self::CHANNEL => $this->check_services(self::CHANNEL, $workspace),
                     self::TASKS => $this->check_services(self::TASKS, $workspace),
                     self::WEKAN => $this->check_services(self::WEKAN, $workspace),
+                    self::LINKS => $this->check_services(self::LINKS, $workspace)
                 ];
                 break;
 
@@ -2024,6 +2079,10 @@ class mel_workspace extends rcube_plugin
                     //mel_utils::cal_check_category('ws#'.$workspace->uid);
                 else
                     $value = true;
+                break;
+
+                case self::LINKS:
+                    return !($this->get_object($workspace, self::LINKS) === null);
                 break;
 
             case self::CHANNEL:
@@ -2221,6 +2280,12 @@ class mel_workspace extends rcube_plugin
                             }
 
                             $needUpdate = true;
+
+                            break;
+
+                        case self::LINKS:
+
+                            $this->create_service_links($workspace);
 
                             break;
                         
@@ -2493,4 +2558,103 @@ class mel_workspace extends rcube_plugin
 
         return $return;
     }
+
+    public function get_uLinks()
+    {
+        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+
+        $uLinks = $this->rc->plugins->get_plugin('mel_useful_link');
+        $uLinks->include_uLinks();
+
+        //$htmls = $uLinks->get_workspace_link(self::get_workspace($id), $this, true);
+
+        $pined = function ()
+        {
+            return $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link(self::get_workspace(rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC)), $this, true)["pined"];
+        };
+
+        $joined = function () {
+            return $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link(self::get_workspace(rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC)), $this, true)["joined"];
+        };
+
+        $this->rc->output->add_handlers(array(
+            'epingle'    => $pined,
+        ));
+        $this->rc->output->add_handlers(array(
+            'joined'    => $joined,
+        ));
+
+        $this->include_script('js/addons/updated_links.js');
+        $this->rc->output->set_env("current_workspace_id", $id);
+
+        $this->rc->output->send('mel_useful_link.index');
+    }
+
+    function update_ulink()
+    {
+        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+        $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_GPC);
+        $link = rcube_utils::get_input_value("_link", rcube_utils::INPUT_GPC);
+        $from = rcube_utils::get_input_value("_from", rcube_utils::INPUT_GPC);
+        $showWhen = rcube_utils::get_input_value("_sw", rcube_utils::INPUT_GPC);
+        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+
+        $workspace = $this->get_workspace($wid);
+        $config = $this->get_object($workspace, self::LINKS);
+
+        if ($id === "")
+            $id = null;
+
+        if ($config->$id === null)
+        {
+            $id = $this->rc->plugins->get_plugin('mel_useful_link')->generate_id($title, $config);
+            $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from)->serialize();
+        }
+        else {
+            $newLink = mel_useful_link::toLink($config->$id);
+            $newLink->title = $title;
+            $newLink->link = $link;
+            $newLink->from = $from;
+            $newLink->showWhen = $showWhen;
+            $config->$id = $newLink->serialize();
+        }
+
+        $this->save_object($workspace, self::LINKS, $config);
+
+        $workspace->save();
+
+    }
+
+    function delete_ulink()
+    {
+        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+
+        $workspace = $this->get_workspace($wid);
+        $config = $this->get_object($workspace, self::LINKS);
+
+        unset($config->$id);
+
+        $this->save_object($workspace, self::LINKS, $config);
+
+        $workspace->save();
+    }
+
+    function pin_ulink()
+    {
+        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+
+        $workspace = $this->get_workspace($wid);
+        $config = $this->get_object($workspace, self::LINKS);
+
+        $link = mel_useful_link::toLink($config->$id);
+        $link->pin = !$link->pin;
+        $config->$id = $link->serialize();
+
+        $this->save_object($workspace, self::LINKS, $config);
+
+        $workspace->save();
+    }
+
 }

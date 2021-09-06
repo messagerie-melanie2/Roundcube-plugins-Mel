@@ -32,9 +32,15 @@ class mel_useful_link extends rcube_plugin
 
           if ($this->rc->action == "index" || $this->rc->action == "")
             $this->links = $this->get_personal_links();
-            $this->include_script('js/links.js');
-            $this->rc->output->set_env("link_modify_options", $this->rc->config->get('modify_options', []));
+            $this->include_uLinks();
         }
+    }
+
+    public function include_uLinks()
+    {
+      $this->include_script('js/links.js');
+      $this->include_stylesheet($this->local_skin_path().'/links.css');
+      $this->rc->output->set_env("link_modify_options", $this->rc->config->get('modify_options', []));
     }
 
     function setup()
@@ -65,8 +71,6 @@ class mel_useful_link extends rcube_plugin
       $this->rc->output->add_handlers(array(
           'joined'    => array($this, 'index_joined'),
       ));
-
-      $this->include_stylesheet($this->local_skin_path().'/links.css');
 
       $this->rc->output->set_pagetitle("Liens utiles");
       $this->rc->output->send('mel_useful_link.index');
@@ -124,6 +128,29 @@ class mel_useful_link extends rcube_plugin
 
       return $html;
 
+    }
+
+    function get_workspace_link($workspace, $plugin, $getHtml = false)
+    {
+      include_once "lib/link.php";
+
+      $serialized_links = $plugin->get_object($workspace, mel_workspace::LINKS);
+
+      $links = [];
+      foreach ($serialized_links as $key => $value) {
+        $links[] = mel_link::fromConfig($value);
+      }
+
+      if ($getHtml)
+      {
+        $this->links = $links;
+        return [
+          "pined" => $this->index_show(true, 1),
+          "joined" => $this->index_show(false, 1)
+        ];
+      }
+      else
+        return $links;
     }
 
     function get_personal_links()
@@ -284,9 +311,6 @@ class mel_useful_link extends rcube_plugin
       exit;
     }
 
-    function get_workspace_link()
-    {}
-
     /************* USEFUL FUNCTIONS **************/
     function generate_id($title, $config)
     {
@@ -307,9 +331,17 @@ class mel_useful_link extends rcube_plugin
           $text = $title;
       }
       $it = 0;
-      do {
+      try {
+        do {
           ++$it;
       } while ($config[$text."-".$it] !== null);
+      } catch (\Throwable $th) {
+        $it = 0;
+        do {
+          ++$it;
+          $newid = $text."-".$it;
+      } while ($config->$newid !== null);
+      }
       return $text."-".$it;
     }
 
@@ -410,6 +442,21 @@ class mel_useful_link extends rcube_plugin
       }
     }
     return $configuration;
+  }
+
+  public static function toLink($item)
+  {
+    include_once "lib/link.php";
+
+    return mel_link::fromConfig($item);
+
+  }
+
+  public static function createLink($id, $title, $link, $pin, $showWhen, $createDate, $from = "always")
+  {
+    include_once "lib/link.php";
+
+    return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen);
   }
 
 }

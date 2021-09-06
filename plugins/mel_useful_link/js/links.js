@@ -119,7 +119,7 @@ class LinkPopUp
      * @param {MelLink|null} link 
      * @returns {LinkPopUp}
      */
-    setLinkEditor(link = null)
+    setLinkEditor(link = null, task = "useful_links", action = "update", addonConfig= null)
     {
         if (link === null)
             link = new MelLink();
@@ -157,7 +157,7 @@ class LinkPopUp
 
                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", $("#mulc-sw").val());//.callUpdate().then(() => this.hide());
                 this.setLoading();
-                link.callUpdate().then((result) => {
+                link.callUpdate(task, action, addonConfig).then((result) => {
 
                      if (result === true)
                          window.location.reload();
@@ -297,11 +297,12 @@ class MelLink
          });
     }
 
-    callDelete()
+    callDelete(task = "useful_links", action = "delete", addonConfig = null)
     {
         rcmail.set_busy(true, "loading");
-        return mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "delete"),
-        {_id:this.id},
+
+        return mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
+        this.getConfig({_id:this.id}, addonConfig),
         (datas) => {
            rcmail.set_busy(false);
            rcmail.clear_messages();
@@ -314,11 +315,27 @@ class MelLink
         });
     }
 
-    callPin()
+    getConfig(config, addonConfig = null)
+    {
+        if (addonConfig !== null)
+        {
+            for (const key in addonConfig) {
+                if (Object.hasOwnProperty.call(addonConfig, key)) {
+                    const element = addonConfig[key];
+                    
+                    config[key] = element; 
+                }
+            }
+        }
+
+        return config;
+    }
+
+    callPin(task = "useful_links", action = "tak", addonConfig = null)
     {
         rcmail.set_busy(true, "loading");
-        return mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "tak"),
-        {_id:this.id},
+        return mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
+        this.getConfig({_id:this.id}, addonConfig),
         (datas) => {
            rcmail.set_busy(false);
            rcmail.clear_messages();
@@ -327,10 +344,8 @@ class MelLink
         );
     }
 
-    async callUpdate()
+    async callUpdate(task = "useful_links", action = "update", addonConfig = null)
     {
-        console.log(this);
-
         rcmail.set_busy(true, "loading");
         const notBusy = () => {
             rcmail.set_busy(false);
@@ -349,7 +364,10 @@ class MelLink
             _from:this.from,
             _sw:this.showWhen
         };
-        await mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "update"), config, (datas) => {
+
+        config = this.getConfig(config, addonConfig);
+
+        await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
             code = datas;
         }, (a,b,c) => {
             success = false;
@@ -363,7 +381,7 @@ class MelLink
             if (confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de voloir contnuer ?"))
             {
                 config["_force"] = true;
-                await mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "update"), config, (datas) => {
+                await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
                     if (datas === override)
                     {
                         notBusy();

@@ -81,12 +81,10 @@ class Wekan{
 
 }
 
-
+window.wekan = new Wekan();
 
 $(document).ready(async () => {
 
-    window.wekan = new Wekan();
-    
     if (rcmail.env.task === "wekan" && (rcmail.env.action === "" || rcmail.env.action === "index"))
     {
 

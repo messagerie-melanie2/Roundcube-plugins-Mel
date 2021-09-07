@@ -413,25 +413,47 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                     );
             break;
         case "links":
+            // datas.push({
+            //     exec_info:"change_environnement",
+            //     datas:"inpage"
+            // })
+            // datas.push({
+            //     exec_info:"UpdateMenu",
+            //     datas:{
+            //         class:"inpage",
+            //         picture:{
+            //             color:null,
+            //             picture:null
+            //         },
+            //         toolbar:null
+            //     }
+            // });
+            // datas.push(
+            //     {
+            //         exec_info:"ChangePage",
+            //         datas:_class
+            //     }
+            // );
             datas.push({
                 exec_info:"change_environnement",
-                datas:"inpage"
+                datas:_class
             })
             datas.push({
                 exec_info:"UpdateMenu",
                 datas:{
-                    class:"inpage",
+                    class:_class,
                     picture:{
-                        color:null,
-                        picture:null
+                        color:picture.css("background-color"),
+                        picture:picture.html()
                     },
-                    toolbar:null
+                    toolbar:$(".wsp-toolbar")[0].outerHTML.replace("wsp-toolbar", "wsp-toolbar wsp-toolbar-edited")
                 }
             });
             datas.push(
                 {
-                    exec_info:"ChangePage",
-                    datas:_class
+                    exec_info:"ChangeFrame",
+                    datas:_class,
+                    args:uid
                 }
             );
             break;
@@ -519,7 +541,19 @@ async function ChangeFrame(_class, otherDatas = null)
         config = {
             source:rcmail.env.current_workspace_tasklist_uid
         }
-    
+    else if(_class === "links")
+    {
+
+        config = {
+            _task:"workspace",
+            _action:"show_links",
+            _id:otherDatas
+        };
+
+        if ($(".links-frame").length > 0 && !$(".links-frame")[0].contentWindow.window.location.href.includes(otherDatas) && otherDatas !== null)
+            $(".links-frame").remove();
+    }
+
     const id = mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
 
@@ -565,6 +599,7 @@ async function ChangeFrame(_class, otherDatas = null)
 
         //console.log("args", otherDatas,[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"])
     }
+
         //https://roundcube.ida.melanie2.i2/nextcloud/
         //Nextcloud.index_url + "/apps/files?dir=/dossiers-"+rcmail.env.current_workspace_uid
 

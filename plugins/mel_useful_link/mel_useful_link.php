@@ -61,6 +61,8 @@ class mel_useful_link extends rcube_plugin
           'type'       => 'link',
           'domain' => "mel_useful_link"
       ), "otherappsbar");
+
+      $this->include_script('js/classes.js');
     }
 
     function index()

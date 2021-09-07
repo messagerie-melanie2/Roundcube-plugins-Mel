@@ -1,4 +1,4 @@
-html.layout-large #layout-sidebar > .header
+html.layout-large .task-mail #layout-sidebar > .header
 {
     display: none;
 }

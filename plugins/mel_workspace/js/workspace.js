@@ -6,6 +6,8 @@ $(document).ready(async () => {
 async function WSPReady()
 {
 
+    let tmpTask = InitLinks();
+
     //$("button.wsp-toolbar-item").data("uid", rcmail.env.current_workspace_uid);
     if (rcmail.env.current_workspace_services.wekan && !wekan.isLogged())
         await wekan.login();
@@ -78,6 +80,7 @@ async function WSPReady()
 
 
     wsp_mail_updated();
+    await tmpTask;
 }
 
 function wsp_contract(_class)
@@ -556,4 +559,77 @@ function wsp_mail_updated()
     }
 
     $(".unreads-emails").html(html);
+}
+
+async function InitLinks()
+{
+    if (rcmail.env.current_workspace_services["useful-links"]) //Si le service est activé
+    {
+
+        rcmail.addEventListener("mel_metapage_refresh", () => {
+            refreshUsefulLinks();
+        });
+
+        if (!rcmail.env.current_workspace_services.doc) //Si nextcloud est activé
+        {
+            $("#ressources-links").parent().parent().find(".wsp-block.wsp-left.wsp-resources").css("background-color", "transparent")
+        }
+
+        $(".tab-ressources.mel-tab.mel-tabheader").each((i, e) => {
+            if (e.id === "ressources-links")
+            {
+                $(e).click(() => {
+                    $(e).parent().parent().find(".wsp-block.wsp-left").css("background-color", "transparent")
+                });
+            }
+            else
+            {
+                $(e).click(() => {
+                    $(e).parent().parent().find(".wsp-block.wsp-left").css("background-color", "")
+                });
+            }
+        });
+
+        $("#button-create-new-ulink").click(() =>{
+            GetLinkPopUp().setLinkEditor(new MelLink(), "workspace", "update_ulink", {_workspace_id:rcmail.env.current_workspace_uid}, async (result) => {
+                
+                if (result)
+                { 
+                    await mel_metapage.Functions.callAsync(`$(".links-frame").remove()`, false);
+                    $(".wsp-toolbar-item.wsp-links").click();
+                }
+
+                GetLinkPopUp().hide();
+            }).show();
+        });
+        
+    }
+}
+
+function PaperClipCopy(link)
+{
+    function copyOnClick (val) {
+        var tempInput = document.createElement ("input"); 
+        tempInput.value = val;
+         document.body.appendChild (tempInput); 
+         tempInput.select (); 
+         document.execCommand ("copy"); 
+         document.body.removeChild (tempInput); 
+    }
+    const url = link[0].href;
+    copyOnClick(url);
+    rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
+}
+
+function refreshUsefulLinks()
+{
+    if (rcmail.env.current_workspace_services["useful-links"]) 
+    {
+        mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "refresh_html_ulinks"), {
+            _workspace_id:rcmail.env.current_workspace_uid
+        }, (datas) => {
+            $(".wsp-block.wsp-left.wsp-resources .ressources-links").html(datas);
+        });
+        //$(".ressources-links")
+    }
 }

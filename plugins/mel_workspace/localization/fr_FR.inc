@@ -19,3 +19,5 @@ $labels["next_day"] = "Jour suivant";
 $labels["wekan_todo"] = "À faire";
 $labels["wekan_in_progress"] = "En cours";
 $labels["wekan_do"] = "Fait";
+
+$labels["useful_links"] = "Liens utiles";

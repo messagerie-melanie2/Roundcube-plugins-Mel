@@ -800,3 +800,8 @@ body.task-workspace .wsp-toolbar v_separate{
     line-height: 15px;
     
 }
+
+.wsp-toolbar-item.toolbar-btn-smaller
+{
+    padding: 0 40px!important;
+}

@@ -1519,3 +1519,8 @@ html #compose-contacts #annuaire-list .folder > .description{
 {
     color:white;
 }
+
+#eventshow .event-attendees .attendee {
+    display: block;
+    margin-bottom: 5px;
+}

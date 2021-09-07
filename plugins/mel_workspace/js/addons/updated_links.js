@@ -17,19 +17,25 @@ function CreateLink()
      GetLinkPopUp().setLoading();
      return link.callDelete("workspace", "delete_ulink", {_workspace_id:rcmail.env.current_workspace_id}).then(() => {
          GetLinkPopUp().hide();
+         window.location.reload();
      });
  }
  
  function TakLink(id)
  {
      return MelLink.from(id).callPin("workspace", "pin_ulink", {_workspace_id:rcmail.env.current_workspace_id}).then(() => {
-         window.location.reload();
+        mel_metapage.Functions.call(`
+            try {
+                refreshUsefulLinks();
+            }catch(e) {}
+        `, true); 
+        window.location.reload();
      });
  }
 
- $(document).ready(() => {
+//  $(document).ready(() => {
      
-    $(".logo-mel.startup").remove();
-    $("#layout-content").css("padding", "0 20px").css("margin-top", "0");
+//     $(".logo-mel.startup").remove();
+//     $("#layout-content").css("padding", "0 20px").css("margin-top", "0");
 
- });
+//  });

@@ -155,6 +155,9 @@ class Workspaces extends Module
 
                     case mel_workspace::WEKAN:
                         break;
+
+                    case mel_workspace::LINKS:
+                        break;
                     
                     default:
                         $tmp_html .= '<button onclick="wsp_action_notif(this, `fromphp_'.$key.'`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';

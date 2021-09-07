@@ -46,6 +46,7 @@ if (rcmail)
             rcmail.mel_metapage_fn = {
                 refresh:() => {
                     refreshWorkspaceCloudNotification();
+                    rcmail.triggerEvent("mel_metapage_refresh");
                 }
             };
     }
@@ -351,6 +352,7 @@ if (rcmail)
                 });
 
                 refreshWorkspaceCloudNotification();
+                rcmail.triggerEvent("mel_metapage_refresh");
             }
         };
 

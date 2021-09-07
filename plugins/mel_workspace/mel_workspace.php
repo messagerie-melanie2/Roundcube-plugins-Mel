@@ -117,6 +117,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('leave_workspace', array($this, 'leave_workspace'));
         $this->register_action('delete_workspace', array($this, 'delete_workspace'));
         $this->register_action('archive_workspace', array($this, 'archive_workspace'));
+        $this->register_action('refresh_html_ulinks', array($this, 'update_html_ulinks'));
         //archive_workspace
         //add_users
     }
@@ -310,6 +311,8 @@ class mel_workspace extends rcube_plugin
             $this->rc->output->set_env("wekan_datas", $this->get_object($this->currentWorkspace, self::WEKAN));
         }
 
+        $this->include_stylesheet($this->local_skin_path().'/links.css');
+
         $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
 
         $this->rc->output->set_pagetitle("Espace de travail \"".$this->currentWorkspace->title."\"");
@@ -382,13 +385,18 @@ class mel_workspace extends rcube_plugin
             $services = $this->get_worskpace_services($this->currentWorkspace);
             $wekan_board_id = "";
 
+            $add_classes = "";
+
+            if (count($this->get_worskpace_services($this->currentWorkspace, true)) > 5)
+                $add_classes = "toolbar-btn-smaller";
+
             if ($services[self::WEKAN])
                 $wekan_board_id = $this->get_object($this->currentWorkspace, self::WEKAN)->id;
 
             $uid = $this->currentWorkspace->uid;
-            $html = html::tag("button",["onclick" => "ChangeToolbar('back', this)", "class" => " wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
+            $html = html::tag("button",["onclick" => "ChangeToolbar('back', this)", "class" => "$add_classes wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>'.$this->rc->gettext("back").'</span>');
             $html .= $vseparate;
-            $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('home', this)","class" => "wsp-toolbar-item wsp-home active", "disabled" => "disabled", "aria-disabled" => "true"], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
+            $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('home', this)","class" => "$add_classes wsp-toolbar-item wsp-home active", "disabled" => "disabled", "aria-disabled" => "true"], "<span class=".$icons["home"]."></span><span class=text-item>".$this->rc->gettext("home", "mel_workspace")."</span>");
             
             if ($is_in_wsp)
             {
@@ -400,7 +408,7 @@ class mel_workspace extends rcube_plugin
                 if ($services[self::EMAIL])
                 {
                     $onclick = "ChangeToolbar('mail', this)";
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $onclick, "class" => "wsp-toolbar-item wsp-mail"], "<span class=".$icons["mail"]."></span><span class=text-item>".$this->rc->gettext("mail", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $onclick, "class" => "$add_classes wsp-toolbar-item wsp-mail"], "<span class=".$icons["mail"]."></span><span class=text-item>".$this->rc->gettext("mail", "mel_workspace")."</span>");
                     
                     if ($services[self::CHANNEL] || $services[self::CLOUD] || $services[self::AGENDA] || $services[self::TASKS] || $is_admin)
                         $html .= $vseparate;
@@ -409,7 +417,7 @@ class mel_workspace extends rcube_plugin
                 if ($services[self::AGENDA])
                 {
                     $onclick = "ChangeToolbar('calendar', this)";
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $onclick, "class" => "wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $onclick, "class" => "$add_classes wsp-toolbar-item wsp-agenda"], "<span class=".$icons["agenda"]."></span><span class=text-item>".$this->rc->gettext("calendar", "mel_workspace")."</span>");
                     
                     if ($services[self::CHANNEL] || $services[self::CLOUD] || $services[self::TASKS] || $is_admin)
                         $html .= $vseparate;
@@ -433,11 +441,11 @@ class mel_workspace extends rcube_plugin
             
                         try {
                             if ($channel_name === null)
-                                $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"data-isId" => true, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                                $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"data-isId" => true, "class" => "$add_classes wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
                             else
-                                $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                                $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"data-isId" => false, "class" => "$add_classes wsp-toolbar-item wsp-ariane", "id"=>"ariane-".$channel_datas->name], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
                         } catch (\Throwable $th) {
-                            $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
+                            $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => $click,"style"=>"display:none","data-isId" => false, "class" => "$add_classes wsp-toolbar-item wsp-ariane", "id"=>"ariane-notexist"], "<span class=".$icons["discussion"]."></span><span class=text-item>".$this->rc->gettext("rocketchat", "mel_workspace")."</span>");
                         }
             
                         if ($services[self::TASKS] || $services[self::CLOUD] || $is_admin)
@@ -447,7 +455,7 @@ class mel_workspace extends rcube_plugin
 
                 if ($services[self::CLOUD])
                 {
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('stockage', this)" ,"class" => "wsp-toolbar-item wsp-documents"], "<span class=".$icons["documents"]."></span><span class=text-item>".$this->rc->gettext("documents", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('stockage', this)" ,"class" => "$add_classes wsp-toolbar-item wsp-documents"], "<span class=".$icons["documents"]."></span><span class=text-item>".$this->rc->gettext("documents", "mel_workspace")."</span>");
 
                     if ($services[self::TASKS] || ($services[self::WEKAN] && $this->get_setting($this->currentWorkspace, self::WEKAN) !== true) || $is_admin)
                         $html .= $vseparate;
@@ -455,7 +463,7 @@ class mel_workspace extends rcube_plugin
 
                 if ($services[self::WEKAN] && $this->get_setting($this->currentWorkspace, self::WEKAN) !== true)
                 {
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('wekan', this)" ,"class" => "wsp-toolbar-item wsp-wekan"], "<span class=".$icons["wekan"]."></span><span class=text-item>Kanban</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('wekan', this)" ,"class" => "$add_classes wsp-toolbar-item wsp-wekan"], "<span class=".$icons["wekan"]."></span><span class=text-item>Kanban</span>");
                     
                     if ($services[self::TASKS] || $is_admin)
                         $html .= $vseparate;
@@ -463,7 +471,7 @@ class mel_workspace extends rcube_plugin
         
                 if ($services[self::TASKS])
                 {
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('tasklist', this)" ,"class" => "$add_classes wsp-toolbar-item wsp-tasks"], "<span class=".$icons["tasks"]."></span><span class=text-item>".$this->rc->gettext("tasks", "mel_workspace")."</span>");
                     
                     if ($is_admin || $services[self::LINKS])
                         $html .= $vseparate;
@@ -471,14 +479,14 @@ class mel_workspace extends rcube_plugin
 
                 if ($services[self::LINKS])
                 {
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('links', this)" ,"class" => "wsp-toolbar-item wsp-links"], "<span class=".$icons["links"]."></span><span class=text-item>".$this->rc->gettext("useful_links", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('links', this)" ,"class" => "$add_classes wsp-toolbar-item wsp-links"], "<span class=".$icons["links"]."></span><span class=text-item>".$this->rc->gettext("useful_links", "mel_workspace")."</span>");
                     
                     if ($is_admin)
                         $html .= $vseparate;
                 }
         
                 if ($is_admin)
-                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('params', this)","class" => "wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
+                    $html .= html::tag("button",["data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('params', this)","class" => "$add_classes wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
             
             }
         } catch (\Throwable $th) {
@@ -726,12 +734,15 @@ class mel_workspace extends rcube_plugin
             }
 
             //Mes documents
-            if ($services[self::CLOUD])
+            if ($services[self::CLOUD] || $services[self::LINKS])
             {
                 $header_component = [];
 
                 if ($services[self::CLOUD])
-                    $header_component[] = html::div(["id" => "ressources-cloud", "class" => "col-6 tab-ressources mel-tab mel-tabheader ¤¤¤"], "Mes documents");
+                    $header_component[] = html::div(["id" => "ressources-cloud", "class" => "tab-ressources mel-tab mel-tabheader ¤¤¤"], "Mes documents");
+
+                    if ($services[self::LINKS])
+                    $header_component[] = html::div(["id" => "ressources-links", "class" => "tab-ressources mel-tab mel-tabheader ¤¤¤"], "Liens utiles");
 
                 $tmp = "";
                 $count = count($header_component);
@@ -770,6 +781,24 @@ class mel_workspace extends rcube_plugin
                     );
                 }
 
+                if ($services[self::LINKS])
+                {
+                    
+                    $before_body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
+                        // html::tag("button", ["title" => "Actualiser","id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", "class" => "mel-button btn btn-secondary"],
+                        //     '<span class="icofont-refresh"><p class="sr-only">Actualiser la visualisation du stockage</p></span>'
+                        // ).
+                        html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-links').click()", "class" => "mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;
+                    margin-top: 15px;
+                    "], 
+                            '<span>Voir tout</span><span class="icon-mel-external plus"></span>'
+                        ).
+                        html::tag("button", ["onclick"  => "", "id" => "button-create-new-ulink", "class" => "mel-button btn btn-secondary"], 
+                            '<span>Créer</span><span class="icon-mel-plus plus"></span>'
+                        )
+                    );
+                }
+
                 $tmp = "";
                 $count = count($before_body_component);
 
@@ -800,6 +829,21 @@ class mel_workspace extends rcube_plugin
                     );
                 }
 
+
+                if ($services[self::LINKS]){
+
+                    $links = $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($this->currentWorkspace, $this, true);
+                    $body_component[] = html::div(["class" => "ressources-links tab-ressources mel-tab-content", "style" => "¤¤¤"],
+                    ($links["pined"] === "" ? "<center>Aucun liens épinglés.</center>" : $links["pined"])
+                    //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
+                    // html::tag('center', ["id" => "spinner-grow-center"],
+                    // html::tag('span', ["class" => "spinner-grow"], html::tag('p', ["class" => "sr-only"], "Chargement des documents..."))).    
+                    // html::tag("div", 
+                    //     [ "id" => "cloud-frame", "style" => "overflow:auto;width:100%;max-height:500px;display:none;"]
+                    //     )
+                     );
+                }
+
                 $tmp = "";
                 $count = count($body_component);
 
@@ -815,7 +859,7 @@ class mel_workspace extends rcube_plugin
                     $body_component
                 );
 
-                $html_return.= html::tag("h2", [], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left"], $body);
+                $html_return.= html::tag("h2", [], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left wsp-resources"], $body);
             }
     
     
@@ -904,7 +948,7 @@ class mel_workspace extends rcube_plugin
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
 
         foreach ($services as $key => $value) {
-            if ($key === self::EMAIL || $key === self::AGENDA || ($key === self::CLOUD && $value) || $key === self::WEKAN)
+            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA || ($key === self::CLOUD && $value) || $key === self::WEKAN)
                 continue;
 
             $info = $this->get_type_config($config, $key);
@@ -997,7 +1041,7 @@ class mel_workspace extends rcube_plugin
     function include_css()
     {
         // Ajout du css
-        $this->include_stylesheet($this->local_skin_path().'/workspaces.css');
+        //$this->include_stylesheet($this->local_skin_path().'/workspaces.css');
     }
 
     function include_js()
@@ -2608,7 +2652,10 @@ class mel_workspace extends rcube_plugin
         if ($config->$id === null)
         {
             $id = $this->rc->plugins->get_plugin('mel_useful_link')->generate_id($title, $config);
-            $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from)->serialize();
+            if (is_array($config))
+                $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from)->serialize();
+            else
+                $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from)->serialize();
         }
         else {
             $newLink = mel_useful_link::toLink($config->$id);
@@ -2622,6 +2669,9 @@ class mel_workspace extends rcube_plugin
         $this->save_object($workspace, self::LINKS, $config);
 
         $workspace->save();
+
+        echo true;
+        exit;
 
     }
 
@@ -2655,6 +2705,20 @@ class mel_workspace extends rcube_plugin
         $this->save_object($workspace, self::LINKS, $config);
 
         $workspace->save();
+
+        echo true;
+        exit;
     }
+
+    function update_html_ulinks()
+    {
+        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+
+        $workspace = $this->get_workspace($wid);
+
+        echo $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($workspace, $this, true)["pined"];
+        exit;
+    }
+
 
 }

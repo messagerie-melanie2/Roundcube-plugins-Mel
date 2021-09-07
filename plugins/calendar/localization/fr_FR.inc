@@ -267,4 +267,10 @@ $labels['arialabelresourceselection'] = 'Ressources disponibles';
 $labels['addcalendar'] = 'Ajouter un calendrier';
 $labels['editcalendar'] = 'Modifier le calendrier';
 $labels['deletecalendar'] = 'Supprimer le calendrier';
+$labels['importtext'] = 'Vous pouvez télécharger des évènements <a href="https://wikipedia.org/wiki/ICalendar">iCalendar</a> au format (.ics).';
+
+$labels['showweekno'] = 'Afficher les numéros de semaine';
+$labels['weeknonone'] = 'Jamais';
+$labels['weeknodatepicker'] = 'Seulement dans le sélecteur de date';
+$labels['weeknoall'] = 'Dans le sélecteur de date ainsi que dans la vue calendrier';
 ?>

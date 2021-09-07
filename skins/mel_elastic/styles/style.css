@@ -1524,3 +1524,8 @@ html #compose-contacts #annuaire-list .folder > .description{
     display: block;
     margin-bottom: 5px;
 }
+
+body.task-settings.action-plugin-managesieve #layout-list .menu.toolbar a
+{
+    color:white!important;
+}

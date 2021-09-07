@@ -260,7 +260,7 @@ html body.task-mail #layout > div > .footer.small {
 {
     font-family: 'DWP' !important;
     content: "\e955";
-    margin-left: -6px;
+    margin-left: -3px;
     margin-right: 12px;
 }
 
@@ -554,3 +554,9 @@ a.button.icon.refresh::before, button.btn.refresh::before {
     from {width: 100%;}
     to {width: 0;}
   } */
+
+ td.subject td.labels {
+	padding-bottom: 0 !important;
+	line-height: 15px !important;
+    font-size: 0.8rem !important;
+}

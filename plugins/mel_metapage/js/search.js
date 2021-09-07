@@ -219,7 +219,12 @@ function mm_s_extend(e)
 
 function mm_s_Calendar(cal)
 {
-    cal = JSON.parse(cal.replace(/£¤£/g, '"'));
+    try {
+        cal = SearchResult.parse(cal);
+    } catch (error) {
+        cal = JSON.parse(cal.replace(/£¤£/g, '"'));
+    }
+
     rcmail.local_storage_set_item("calendar_redirect", cal);
     window.location.href = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
 }

@@ -42,10 +42,52 @@ SearchResultCalendar.from_array = function (cals)
 {
     retour = [];
     for (let index = 0; index < cals.length; ++index) {
+
+        if (SearchResult.calendarToReadable(cals[index].calendar) !== rcmail.env.username)
+            continue;
+
         retour.push(new SearchResultCalendar(cals[index]));
     }
     return {label:rcmail.gettext('agenda', 'mel_portal'), datas:retour};
 }
+
+SearchResult.calendarToReadable = function (key) {
+	return key
+		.replaceAll('_-p-_', ".")
+		.replaceAll('_-s-_', "$")
+		.replaceAll('_-e-_', "&")
+		.replaceAll('_-t-_', "~")
+		.replaceAll('_-q-_', "\\")		
+        .replaceAll('_-P-_', ".")
+		.replaceAll('_-S-_', "$")
+		.replaceAll('_-E-_', "&")
+		.replaceAll('_-T-_', "~")
+		.replaceAll('_-Q-_', "\\");
+}
+
+SearchResult.parse = function (string) {
+    const key = "£¤£";
+    const ap = "µ¤¤µ";
+    const n = "-¤¤n¤¤-";
+	if (string.includes(key))
+        string = string.replaceAll(key, '"');
+
+    if (string.includes(ap))
+        string = string.replaceAll(ap, "'");
+
+    if (string.includes("\n"))
+        string = string.replaceAll("\n", n);
+
+    string = JSON.parse(string);
+
+    if (string.description.includes(n))
+        string.description = string.description.replaceAll(n, "\n");
+
+    return string;
+
+}
+
+
 /**
  * Ouvre ou ferme une frame calendrier.
  * @param {string} json 
@@ -66,7 +108,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
         return;
     }
 
-    cal = JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
+    cal = SearchResult.parse(json)//JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
     // mm_create_calendar(this, cal);
     // return;
     m_mp_set_storage('calendar_redirect', json.replaceAll("µ¤¤µ", "'"), false)
@@ -134,7 +176,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
  */
 SearchResultCalendar.after_loading = function (event)
 {
-    event = JSON.parse(event.replace(/£¤£/g, '"'))
+    event = SearchResult.parse(event);//JSON.parse(event.replace(/£¤£/g, '"'))
     //console.log("event", event, window.ui_cal);
     if (event !== null && window.ui_cal !== undefined)
     {

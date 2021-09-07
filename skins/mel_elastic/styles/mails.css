@@ -338,7 +338,7 @@ text-align: center;
 }
 
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
-	top: 20px;
+	top: 10px;
 }
 
 #folderlist-content ul#mailboxlist > li ~ li{

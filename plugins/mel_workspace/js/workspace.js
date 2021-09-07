@@ -579,13 +579,13 @@ async function InitLinks()
             if (e.id === "ressources-links")
             {
                 $(e).click(() => {
-                    $(e).parent().parent().find(".wsp-block.wsp-left").css("background-color", "transparent")
+                    $(e).parent().parent().find(".wsp-block.wsp-left.wsp-resources").css("background-color", "transparent")
                 });
             }
             else
             {
                 $(e).click(() => {
-                    $(e).parent().parent().find(".wsp-block.wsp-left").css("background-color", "")
+                    $(e).parent().parent().find(".wsp-block.wsp-left.wsp-resources").css("background-color", "")
                 });
             }
         });

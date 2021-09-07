@@ -1,0 +1,54 @@
+<?php
+/**
+ * Chemin vers l'arborescence de configuration JSON
+ * 
+ * @var string portail_configuration_path
+ */
+$rcmail_config['portail_configuration_path'] = __DIR__ . '/config';
+
+/**
+ * DN de base utilisé pour la configuration
+ * Les fichiers seront récupérés dans l'arboresence après cette base
+ *
+ * @var string portail_base_configuration_dn
+ */
+$rcmail_config['portail_base_configuration_dn'] = '';
+
+
+/**
+ * Items list for the portail
+ * Supported properties :
+ *      'type'          => Template name
+        'flip'          => Card support flip or not
+        'newtab'        => Open links in a new tab
+        'logo'          => Url to the logo of the card if not default
+        'logobg'        => Background color for the logo
+        'title'         => Tooltip of the card
+        'name'          => Name title of the card
+        'description'   => Description of the card
+        'url'           => URL of the card
+        'dn'            => Matched DN for the current user to show the card
+        'feedUrl'       => URL to use as a feed
+        'onclick'       => Onclick event on click on the card
+        'buttons'       => List of buttons for the card
+        'links'         => List of links for the card (Card of cards)
+ * 
+ */
+$rcmail_config['portail_items_list'] = [];
+
+$rcmail_config['personal_useful_links'] = [];
+
+$rcmail_config['modify_options'] = [
+       //Modifier
+       [
+              "name" => "modify_link_element",
+              "action" => "ModifyLink",
+              "icon" => "icon-pencil"
+       ],
+       //Supprimer
+       [
+              "name" => "delete_link_element",
+              "action" => "DeleteLink",
+              "icon" => "icon-mel-trash"
+       ]
+];

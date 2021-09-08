@@ -291,6 +291,10 @@ Alarm.enums = {
          */
         generate(events = [])
         {
+            
+            if (events === undefined || events === null)
+                return;
+
             for (let index = 0; index < events.length; ++index) {
                 const element = events[index];
                 if (element.alarms !== undefined && element.alarms !== null && element.alarm_dismissed !== true)

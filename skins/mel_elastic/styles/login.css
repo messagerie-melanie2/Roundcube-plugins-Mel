@@ -165,8 +165,8 @@
 	font-weight: bold;
 }
 
-#formlogintable label[for="rcmloginuser"]::after {
+/* #formlogintable label[for="rcmloginuser"]::after {
 	content: "Adresse email";
 	display: block;
 	font-weight: normal;
-}
+} */

@@ -65,6 +65,9 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     {
         if (wsp !== undefined && wsp !== null) //Si il n'y a pas de bugs
         {
+            if (wsp.objects["useful-links"] !== undefined)
+                wsp.objects["useful-links"] = null;
+
             this.wsp = wsp;
             if (this.wsp.objects !== null)
             {
@@ -483,6 +486,9 @@ Webconf.set_webconf = function()
         let _wsp = rcmail.env.webconf.window_selector.find(".wsp_select");
         const wsp = html_helper.JSON.parse(_wsp.val());
         rcmail.env.webconf.wsp = wsp;
+
+        if (wsp.objects["useful-links"] !== undefined)
+            wsp.objects["useful-links"] = null;
 
         if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane)
         {
@@ -1547,7 +1553,7 @@ $(document).ready(() => {
             rcmail.env.webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
             rcmail.env.webconf.set_title();
 
-            if (rcmail.env.webconf.have_ariane())
+            if (rcmail.env.webconf.have_ariane() || rcmail.env["webconf.wsp"] !== undefined)
             {
                 await rcmail.env.webconf.go();
 

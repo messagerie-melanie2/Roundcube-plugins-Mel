@@ -846,14 +846,14 @@ $(document).ready(() => {
 
     window.MEL_ELASTIC_UI = new Mel_Elastic();
 
-    rcmail.addEventListener("init", () => {
-        if (rcmail.env.task === "login" || rcmail.env.task === "logout")
-        {
-            let querry = $('#formlogintable label[for="rcmloginuser"]');
-            querry.html(`${querry.html()}<br/><span style=font-weight:normal>Adresse email</span>`).addClass("mel-after-remover");
-            $("#formlogintable").attr("role", "presentation");
-        }
-    });
+    // rcmail.addEventListener("init", () => {
+    //     if (rcmail.env.task === "login" || rcmail.env.task === "logout")
+    //     {
+    //         let querry = $('#formlogintable label[for="rcmloginuser"]');
+    //         querry.html(`${querry.html()}<br/><span style=font-weight:normal>Adresse email</span>`).addClass("mel-after-remover");
+    //         $("#formlogintable").attr("role", "presentation");
+    //     }
+    // });
 
 });
 

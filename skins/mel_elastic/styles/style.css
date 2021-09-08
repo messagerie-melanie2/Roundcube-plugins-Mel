@@ -1529,3 +1529,12 @@ body.task-settings.action-plugin-managesieve #layout-list .menu.toolbar a
 {
     color:white!important;
 }
+
+.listing li.disabled, .listing tr.disabled td
+{
+    color:#ffffff80;
+}
+
+form#mel_doubleauth-form{
+    overflow: auto;
+}

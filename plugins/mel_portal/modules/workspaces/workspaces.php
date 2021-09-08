@@ -82,7 +82,7 @@ class Workspaces extends Module
 
         $ws = $this->rc->plugins->get_plugin('mel_workspace');
         $html = $this->rc->output->parse("mel_portal.dwp_block", false, false);
-        $is_epingle = self::is_epingle($workspace);
+        $is_epingle = mel_workspace::is_epingle($workspace->uid, $this->rc);
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid, $html);
         $html = str_replace("<workspace-public/>", $workspace->ispublic, $html);
         if ($is_epingle)
@@ -179,15 +179,15 @@ class Workspaces extends Module
         //$this->plugin->include_script($this->folder().'/flux_rss/js/main.js');
     }
 
-    public static function is_epingle($loaded_workspace)
-    {
-        $settings = json_decode($loaded_workspace->settings);
-        if ($settings === null)
-            return false;
-        if ($settings->epingle === true)
-            return true;
-        return false;
-    }
+    // public static function is_epingle($loaded_workspace)
+    // {
+    //     $settings = json_decode($loaded_workspace->settings);
+    //     if ($settings === null)
+    //         return false;
+    //     if ($settings->epingle === true)
+    //         return true;
+    //     return false;
+    // }
 
     
 }

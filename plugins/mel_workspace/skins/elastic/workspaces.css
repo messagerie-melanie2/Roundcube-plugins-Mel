@@ -805,3 +805,7 @@ body.task-workspace .wsp-toolbar v_separate{
 {
     padding: 0 40px!important;
 }
+
+body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {
+    right: 33px;
+}

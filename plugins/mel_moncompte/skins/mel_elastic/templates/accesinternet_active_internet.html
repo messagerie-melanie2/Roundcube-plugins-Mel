@@ -25,7 +25,7 @@
 			<div style="margin-top: 20px;">
 				<legend style="font-size: 14px;font-weight: bold;"><roundcube:label name="mel_moncompte.acces_internet_doubleauth" /></legend>
 				<div style="margin-top: 10px;">
-					<a class="button" style="text-indent: 0;width: auto;padding: 0px 10px;line-height: 28px;" target="_blank" href="/?_task=settings&_action=plugin.mel_doubleauth"><roundcube:label name="mel_moncompte.acces_internet_doubleauth_link" /></a>
+					<a onclick="event.preventDefault(); parent.location.href = MEL_ELASTIC_UI.url('settings', 'plugin.mel_doubleauth')" class="button" style="text-indent: 0;width: auto;padding: 0px 10px;line-height: 28px;" target="_blank" href="/?_task=settings&_action=plugin.mel_doubleauth"><roundcube:label name="mel_moncompte.acces_internet_doubleauth_link" /></a>
 				</div>
 			</div>
 		</div>

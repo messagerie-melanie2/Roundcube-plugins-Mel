@@ -1413,28 +1413,40 @@ class mel_workspace extends rcube_plugin
     {
         try {
             $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
-            $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
-            $workspace->uid = $uid;
-            $workspace->load();
-            if ($workspace->settings === null)
-            {
-                $settings = [];
-                $settings["epingle"] = true;
-            }
-            else {
-                $settings = json_decode($workspace->settings);
-                if ($settings->epingle === true)
-                    $settings->epingle = false;
-                else
-                    $settings->epingle = true;
-            }
+            
+            $epingles = $this->rc->config->get('workspaces_personal_datas', []);
 
-            $workspace->settings = json_encode($settings);
-            $ret = $workspace->save();
+            if ($epingles[$uid] === null)
+                $epingles[$uid]  = [];
+
+            if ($epingles[$uid]["tak"] === null)
+                $epingles[$uid]["tak"] = true;
+            else
+                $epingles[$uid]["tak"] = !$epingles[$uid]["tak"];
+            
+            $this->rc->user->save_prefs(array('workspaces_personal_datas' => $epingles));
+            // $workspace = driver_mel::gi()->workspace([driver_mel::gi()->getUser()]);
+            // $workspace->uid = $uid;
+            // $workspace->load();
+            // if ($workspace->settings === null)
+            // {
+            //     $settings = [];
+            //     $settings["epingle"] = true;
+            // }
+            // else {
+            //     $settings = json_decode($workspace->settings);
+            //     if ($settings->epingle === true)
+            //         $settings->epingle = false;
+            //     else
+            //         $settings->epingle = true;
+            // }
+
+            // $workspace->settings = json_encode($settings);
+            // $ret = $workspace->save();
             //driver_mel::gi()->getUser()->cleanWorkspaces();
-            echo json_encode(["is_epingle" => json_decode($workspace->settings)->epingle, "success" => true]);
+            echo json_encode(["is_epingle" => $epingles[$uid]["tak"], "success" => true]);
         } catch (\Throwable $th) {
-            echo son_encode(["is_epingle" => json_decode($workspace->settings)->epingle, "success" => false]);
+            echo son_encode(["is_epingle" => $epingles[$uid]["tak"], "success" => false]);
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->epingle] Un erreur est survenue lors de l'epinglage de l'espace de travail '".$workspace->title."'");
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->epingle]".$th->getTraceAsString());
             mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->epingle]".$th->getMessage());
@@ -1442,6 +1454,8 @@ class mel_workspace extends rcube_plugin
         exit;
 
     }
+
+    
 
     function add_setting(&$workspace,$key, $value)
     {
@@ -1468,7 +1482,7 @@ class mel_workspace extends rcube_plugin
         $html = "";
         $this->load_workspaces();
         foreach ($this->workspaces as $key => $value) {
-            if (!self::is_epingle($value) && $only_epingle)
+            if (!self::is_epingle($value->uid, $this->rc) && $only_epingle)
                 continue;
 
             if ($only_archived)
@@ -1492,7 +1506,7 @@ class mel_workspace extends rcube_plugin
         $username = driver_mel::gi()->getUser($workspace->creator)->name;
 
         $html = $this->rc->output->parse("mel_workspace.wsp_block", false, false);
-        $is_epingle = self::is_epingle($workspace);
+        $is_epingle = self::is_epingle($workspace->uid, $this->rc);
         $color = $this->get_setting($workspace, "color");
         $html = str_replace("<workspace-id/>", "wsp-".$workspace->uid.($epingle ? "-epingle" : "") , $html);
         $html = str_replace("<workspace-uid/>", $workspace->uid , $html);
@@ -2416,14 +2430,22 @@ class mel_workspace extends rcube_plugin
         return $text."-".$it;
     }
 
-    public static function is_epingle($loaded_workspace)
+    public static function is_epingle($uid, $rc)
     {
-        $settings = json_decode($loaded_workspace->settings);
-        if ($settings === null)
+        $epingles = $rc->config->get('workspaces_personal_datas', []);
+
+        if ($epingles[$uid] === null)
             return false;
-        if ($settings->epingle === true)
-            return true;
-        return false;
+        else if ($epingles[$uid]["tak"] === null)
+            return false;
+        else
+            return $epingles[$uid]["tak"];
+        // $settings = json_decode($loaded_workspace->settings);
+        // if ($settings === null)
+        //     return false;
+        // if ($settings->epingle === true)
+        //     return true;
+        // return false;
     }
 
     public static function get_workspace($uid)

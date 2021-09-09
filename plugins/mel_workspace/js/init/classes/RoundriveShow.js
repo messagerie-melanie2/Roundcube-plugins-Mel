@@ -129,7 +129,18 @@ class RoundriveShow
                     console.error(xhr, ajaxOptions, thrownError, this);
                     this.parent.html("Connexion impossible.");
                     rcmail.display_message("Impossible de se connecter au stockage !", "error");
+                    
+                    if (rcmail.env.checknews_action_on_error !== undefined)
+                    {
+                        const actions = rcmail.env.checknews_action_on_error;
 
+                        for (const key in actions) {
+                            if (Object.hasOwnProperty.call(actions, key)) {
+                                const element = actions[key];
+                                element();
+                            }
+                        }
+                    }
                 }
             );
         }

@@ -780,6 +780,14 @@ class mel_utils
         return 0;
   }
 
+  public static function get_cal_categories($username)
+  {
+    return [
+      "name" => driver_mel::gi()->getUser($username)->getDefaultPreference("categories"),
+      "colors" => driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors")
+    ];
+  }
+
   public static function cal_add_category($username, $name, $color)
   {
     try {

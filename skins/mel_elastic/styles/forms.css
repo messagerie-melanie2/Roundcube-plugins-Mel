@@ -379,3 +379,8 @@ input.input-mel.error {
 {
 	margin-top:-3px;
 }
+
+#edit-attendees-donotify
+{
+	display: none;
+}

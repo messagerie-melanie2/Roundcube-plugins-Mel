@@ -118,6 +118,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('delete_workspace', array($this, 'delete_workspace'));
         $this->register_action('archive_workspace', array($this, 'archive_workspace'));
         $this->register_action('refresh_html_ulinks', array($this, 'update_html_ulinks'));
+        $this->register_action('refresh_documents', array($this, 'refresh_documents'));
         //archive_workspace
         //add_users
     }
@@ -1082,85 +1083,94 @@ class mel_workspace extends rcube_plugin
 
     function create()
     {
-        //rcube_utils::INPUT_POST custom_uid
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Récupération des inputs....");
-        $datas = [
-            "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
-            "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
-            "uid" => rcube_utils::get_input_value("custom_uid", rcube_utils::INPUT_POST),
-            "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
-            "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
-            "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
-            "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
-            "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
-            "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST),
-            "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
-        ];
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs ok");
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs : ".json_encode($datas));
+        try {
+                        //rcube_utils::INPUT_POST custom_uid
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Récupération des inputs....");
+            $datas = [
+                "avatar" => rcube_utils::get_input_value("avatar", rcube_utils::INPUT_POST),
+                "title" => rcube_utils::get_input_value("title", rcube_utils::INPUT_POST),
+                "uid" => rcube_utils::get_input_value("custom_uid", rcube_utils::INPUT_POST),
+                "desc" => rcube_utils::get_input_value("desc", rcube_utils::INPUT_POST),
+                "end_date" => rcube_utils::get_input_value("end_date", rcube_utils::INPUT_POST),
+                "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
+                "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
+                "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
+                "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST),
+                "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
+            ];
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs ok");
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs : ".json_encode($datas));
 
-        $retour = [
-            "errored_user" => [],
-            "existing_users" => []
-        ];
+            $retour = [
+                "errored_user" => [],
+                "existing_users" => []
+            ];
 
-        $user = driver_mel::gi()->getUser();
-        $workspace = driver_mel::gi()->workspace([$user]);
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création d'un espace...");
-        $workspace->uid = $datas["uid"] === null || $datas["uid"] === "" ? self::generate_uid($datas["title"]) : $datas["uid"];//uniqid(md5(time()), true);
-        $workspace->title = $datas["title"];
-        $workspace->logo = $datas["avatar"];
-        $workspace->description = $datas["desc"];
-        $workspace->creator = $user->uid;
-        $workspace->created = new DateTime('now');
-        $workspace->modified = new DateTime('now');
-        $workspace->ispublic = (($datas["visibility"] === "private") ? false: true);
-        $workspace->hashtags = [$datas["hashtag"]];
+            $user = driver_mel::gi()->getUser();
+            $workspace = driver_mel::gi()->workspace([$user]);
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création d'un espace...");
+            $workspace->uid = $datas["uid"] === null || $datas["uid"] === "" ? self::generate_uid($datas["title"], $this->rc) : $datas["uid"];//uniqid(md5(time()), true);
+            $workspace->title = $datas["title"];
+            $workspace->logo = $datas["avatar"];
+            $workspace->description = $datas["desc"];
+            $workspace->creator = $user->uid;
+            $workspace->created = new DateTime('now');
+            $workspace->modified = new DateTime('now');
+            $workspace->ispublic = (($datas["visibility"] === "private") ? false: true);
+            $workspace->hashtags = [$datas["hashtag"]];
 
-        if ($datas["color"] === "" || $datas["color"] === null)
-            $datas["color"] = "#FFFFFF";
+            if ($datas["color"] === "" || $datas["color"] === null)
+                $datas["color"] = "#FFFFFF";
 
-        $this->add_setting($workspace, "color", $datas["color"]);
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Première sauvegarde...");
-        $res = $workspace->save();
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Premier chargement...");
-        $workspace->load();
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Ajout des utilisateurs...");
-        $shares = [];
-        $share = driver_mel::gi()->workspace_share([$workspace]);
-        $share->user = $user->uid;
-        $share->rights = Share::RIGHT_OWNER;
-        $shares[] = $share;
+            $this->add_setting($workspace, "color", $datas["color"]);
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Première sauvegarde...");
+            $res = $workspace->save();
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Premier chargement...");
+            $workspace->load();
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Ajout des utilisateurs...");
+            $shares = [];
+            $share = driver_mel::gi()->workspace_share([$workspace]);
+            $share->user = $user->uid;
+            $share->rights = Share::RIGHT_OWNER;
+            $shares[] = $share;
 
-        $count = count($datas["users"]);
+            $count = count($datas["users"]);
 
-        for ($i=0; $i < $count; ++$i) { 
-            $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid;
+            for ($i=0; $i < $count; ++$i) { 
+                $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $datas["users"][$i])->uid;
 
-            if ($tmp_user === null)
-                $retour["errored_user"][] = $datas["users"][$i];
-            else {
-                $retour["existing_users"][] = $tmp_user;
-                $share = driver_mel::gi()->workspace_share([$workspace]);
-                $share->user = $tmp_user;
-                $share->rights = Share::RIGHT_WRITE;
-                $shares[] = $share;                
+                if ($tmp_user === null)
+                    $retour["errored_user"][] = $datas["users"][$i];
+                else {
+                    $retour["existing_users"][] = $tmp_user;
+                    $share = driver_mel::gi()->workspace_share([$workspace]);
+                    $share->user = $tmp_user;
+                    $share->rights = Share::RIGHT_WRITE;
+                    $shares[] = $share;                
+                }
             }
+
+            $workspace->shares = $shares;
+
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
+            $datas["services"] = $this->create_services($workspace,$datas["services"]);
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
+            $res = $workspace->save();
+
+            $retour["workspace_uid"] = $workspace->uid;
+
+            $retour["uncreated_services"] = $datas["services"];
+            //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Retour...");
+            echo json_encode($retour);
+            exit;
+        } catch (\Throwable $th) {
+            $func = "create";
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la création de l'espace de travail ''".$workspace->title."'' !");
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
+            mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
+            echo json_encode($th);
+            exit;
         }
-
-        $workspace->shares = $shares;
-
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
-        $datas["services"] = $this->create_services($workspace,$datas["services"]);
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
-        $res = $workspace->save();
-
-        $retour["workspace_uid"] = $workspace->uid;
-
-        $retour["uncreated_services"] = $datas["services"];
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Retour...");
-        echo json_encode($retour);
-        exit;
     }
 
     function create_services(&$workspace,$services, $users = null, $update_wsp = true)
@@ -1282,7 +1292,7 @@ class mel_workspace extends rcube_plugin
         // if (array_search($agenda, $services) === false)
         //     return $services;
 
-        include_once "lib/mel_utils.php";
+        mel_helper::load_helper($this->rc)->include_utilities();
         $color = $this->get_setting($workspace, "color");
 
         foreach ($users as $s)
@@ -1339,7 +1349,7 @@ class mel_workspace extends rcube_plugin
     function get_uid()
     {
         $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_POST);
-        echo self::generate_uid($title);
+        echo self::generate_uid($title, $this->rc);
         exit;
     }
 
@@ -2405,11 +2415,11 @@ class mel_workspace extends rcube_plugin
         return $workspace->shares[$username ?? driver_mel::gi()->getUser()->uid] !== null;
     }
 
-    public static function generate_uid($title)
+    public static function generate_uid($title, $rc)
     {
         $max = 35;
 
-        include_once "lib/mel_utils.php";
+        mel_helper::load_helper($rc)->include_utilities();
         $text = mel_utils::replace_determinants(mel_utils::remove_accents(mel_utils::replace_special_char(strtolower($title))), "-");
         $text = str_replace(" ", "-", $text);
         if (count($text) > $max)
@@ -2739,6 +2749,18 @@ class mel_workspace extends rcube_plugin
         $workspace = $this->get_workspace($wid);
 
         echo $this->rc->plugins->get_plugin('mel_useful_link')->get_workspace_link($workspace, $this, true)["pined"];
+        exit;
+    }
+
+    function refresh_documents()
+    {
+        $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+
+        $mails = $this->get_mails_from_workspace($workspace);
+        $result = driver_mel::gi()->workspace_group($wid, $mails, false);
+        $result2 = driver_mel::gi()->workspace_group($wid, $mails, true);
+
+        echo json_encode([$result, $result2]);
         exit;
     }
 

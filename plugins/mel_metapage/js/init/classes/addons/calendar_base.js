@@ -612,6 +612,8 @@ $(document).ready(() => {
                         $("#categories-event-all-cal-mm").val(event.categories[0]);
                     }
                 }
+
+                $("#edit-attendees-donotify").addClass("custom-control-input");
             }
         }, 10);
         //Suppression text
@@ -748,6 +750,7 @@ $(document).ready(() => {
         // ${event.from === "barup" ? '' : ""}
         if (event.from === "barup")
             window.kolab_event_dialog_element.setBeforeTitle('<a href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>Retour à la modale de création</span></a>');
+        
         window.kolab_event_dialog_element.autoHeight();
         window.kolab_event_dialog_element.onDestroy((globalModal) => {
             globalModal.contents.find("iframe").remove();

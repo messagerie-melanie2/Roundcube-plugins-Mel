@@ -52,10 +52,14 @@
                                 $(".tiny-rocket-chat").css("display", "none");
                                 const lastFrame = $(".tiny-wsp-menu").data("lastopenedframe");
                                 const toolbaropen = $(".tiny-wsp-menu").data("toolbaropen");
-                                //console.log("test", toolbaropen, lastFrame, $(".tiny-wsp-menu").data("toolbaropen"));
+                                console.log("test", toolbaropen, lastFrame, $(".tiny-wsp-menu").data("toolbaropen"));
                                 if (toolbaropen)
                                     $(".wsp-toolbar-edited").css("display", "");
-                                ChangeFrame(lastFrame);
+
+                                if (lastFrame === "wekan")
+                                    ChangeFrame(lastFrame, $("iframe.workspace-frame").length>0 ? $("iframe.workspace-frame")[0].contentWindow.rcmail.env.wekan_datas.id : rcmail.env.wekan_datas.id);
+                                else
+                                    ChangeFrame(lastFrame);
                             }
                             else {
                                 const lastFrame = $(".wsp-toolbar").data("lastopenedframe");
@@ -227,6 +231,8 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 {
 
     const uid = $(event).data("uid");
+
+    console.log("event", $(event).data("wekan"), event);
 
     if(rcmail.busy)
         return;
@@ -592,10 +598,15 @@ async function ChangeFrame(_class, otherDatas = null)
     }
     else if (_class === "wekan")
     {
-        mel_metapage.Functions.call("update_location", false, {
-            _integrated:true,
-            args:[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"]
-        });
+        console.log("wekan", otherDatas, `${rcmail.env.wekan_base_url}/b/${otherDatas}/null`);
+        
+        if (otherDatas !== null)
+        {
+            mel_metapage.Functions.call("update_location", false, {
+                _integrated:true,
+                args:[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"]
+            });
+        }
 
         //console.log("args", otherDatas,[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"])
     }

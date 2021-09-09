@@ -2604,8 +2604,15 @@ class mel_driver extends calendar_driver {
       $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
       $_categories_color = isset($value) ? explode('|', $value) : [];
 
-      // Supprime la valeur dans la liste
       $change = false;
+      if (!in_array("$name:#$color", $_categories_color) && !in_array("$oldname:#$color", $_categories_color))
+      {
+        $_categories_color[] = "$name:#$color";
+        $change = true;
+      }
+
+      // Supprime la valeur dans la liste
+      
       foreach ($_categories_color as $key => $_category_color) {
         // Sépare les couleurs dans les paramètres de horde
         $c = explode(':', $_category_color);

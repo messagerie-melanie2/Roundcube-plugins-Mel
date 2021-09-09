@@ -138,6 +138,14 @@ class GlobalModal
 
     editTitleAndSetBeforeTitle(before, title)
     {
+        $(".global-modal-header").children().each((i, e) => {
+            if (e.id === "created-modal-title-div-auto")
+            {
+                if ($(e).find("h2").length === 0)
+                    $(e).remove();
+            }
+        });
+
         this.editTitle(title);
         this.setBeforeTitle(before);
     }

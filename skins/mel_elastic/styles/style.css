@@ -1542,3 +1542,8 @@ form#mel_doubleauth-form{
 #settingstabresponses {
 	display: none;
 }
+
+body.task-calendar .popup.ui-dialog-content  #showcontacts
+{
+    display: none;
+}

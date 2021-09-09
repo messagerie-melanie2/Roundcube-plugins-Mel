@@ -460,6 +460,13 @@ async function initCloud()
     if (rcmail.env.current_workspace_services.doc !== true)
         return;
 
+    if(rcmail.env.checknews_action_on_error === undefined)
+        rcmail.env.checknews_action_on_error = [];
+
+    rcmail.env.checknews_action_on_error.push(() => {
+        rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");  
+    });
+
     const folder = `/dossiers-${rcmail.env.current_workspace_uid}`;
 
     let spinner = $("#spinner-grow-center");

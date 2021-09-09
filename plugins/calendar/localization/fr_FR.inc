@@ -273,4 +273,7 @@ $labels['showweekno'] = 'Afficher les numéros de semaine';
 $labels['weeknonone'] = 'Jamais';
 $labels['weeknodatepicker'] = 'Seulement dans le sélecteur de date';
 $labels['weeknoall'] = 'Dans le sélecteur de date ainsi que dans la vue calendrier';
+
+// PAMELA
+$labels['tabsharinggroup'] = 'Partage à un groupe';
 ?>

@@ -104,7 +104,6 @@ class Webconf extends Program
 
     public function get_ariane_rooms()
     {
-        return "";
         $chat = $this->get_plugin("rocket_chat");
         $list = $chat->get_joined();
         $list["channel"] = json_decode($list["channel"]["content"]);

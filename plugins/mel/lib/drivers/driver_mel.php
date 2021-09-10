@@ -484,6 +484,15 @@ abstract class driver_mel {
   abstract public function workspace_group($workspace_id, $members = [], $mdrive = true);
 
   /**
+   * Méthode de récupération d'un groupe associé à un workspace
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return null|\LibMelanie\Api\Defaut\Group
+   */
+  abstract public function get_workspace_group($workspace_id);
+
+  /**
    * Génération d'un uuid au format v4
    * 
    * @return string $uuid

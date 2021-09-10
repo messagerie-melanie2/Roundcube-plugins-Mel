@@ -500,4 +500,29 @@ class mtes_driver_mel extends mce_driver_mel {
     }
     return $ret;
   }
+
+  /**
+   * Méthode de récupération d'un groupe associé à un workspace
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return null|\LibMelanie\Api\Defaut\Group
+   */
+  public function get_workspace_group($workspace_id) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::get_workspace_group($workspace_id, $mdrive)");
+    $group = $this->group([null, 'webmail.workspace']);
+
+    // Calculer le domain
+    $domain = substr(strstr($this->getUser()->email, '@'), 1);
+
+    // On test si le groupe existe
+    $group->dn = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['dn']);
+    if ($group->load()) {
+      return $group;
+    }
+    else {
+      return null;
+    }
+  }
 }

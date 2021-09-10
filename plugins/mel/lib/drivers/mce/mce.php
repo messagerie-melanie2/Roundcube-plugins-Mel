@@ -232,4 +232,15 @@ class mce_driver_mel extends driver_mel {
   public function workspace_group($workspace_id, $members = [], $mdrive = true) {
     return false;
   }
+
+  /**
+   * Méthode de récupération d'un groupe associé à un workspace
+   * 
+   * @param string $workspace_id Identifiant du workspace
+   * 
+   * @return null|\LibMelanie\Api\Defaut\Group
+   */
+  public function get_workspace_group($workspace_id) {
+    return null;
+  }
 }

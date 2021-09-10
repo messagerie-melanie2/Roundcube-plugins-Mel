@@ -382,6 +382,8 @@ html.touch .wsp-toolbar .notif.roundbadge
     position: absolute;
     left:0;
     top:0px;
+    left: 50%;
+transform: translate(-50%,0);
 } 
 
 .wsp-picture > span{
@@ -801,9 +803,38 @@ body.task-workspace .wsp-toolbar v_separate{
     
 }
 
-.wsp-toolbar-item.toolbar-btn-smaller
+.wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller
+{
+    padding: 0 30px!important;
+}
+
+.wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:hover, 
+.wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller.active, 
+.wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:active
+{
+    background:radial-gradient(circle, #42548F 35%, rgba(255,255,255,0) 26%) !important
+}
+
+button.wsp-toolbar-item.toolbar-btn-smaller:focus {
+	box-shadow: none;
+	background: radial-gradient(circle, transparent 20%, #484D7A4F 35%, rgba(255,255,255,0) 40%);
+}
+
+body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
 {
     padding: 0 40px!important;
+}
+
+body.task-workspace .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:hover, 
+body.task-workspace .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller.active, 
+body.task-workspace .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:active
+{
+    background:radial-gradient(circle, #42548F 26%, rgba(255,255,255,0) 26%) !important
+}
+
+body.task-workspace  button.wsp-toolbar-item.toolbar-btn-smaller:focus {
+	box-shadow: none;
+	background: radial-gradient(circle, transparent 20%, #484D7A4F 26%, rgba(255,255,255,0) 28%);
 }
 
 body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {

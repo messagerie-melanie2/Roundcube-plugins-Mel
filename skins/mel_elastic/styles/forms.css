@@ -5,6 +5,13 @@
 	margin-bottom: 15px;
 	width:100%
 }
+legend.span-mel.t1 {
+	font-size: large;
+	padding-top: 30px;
+	display: block;
+	margin-bottom: 15px;
+	width:100%
+}
 
 .span-mel.t1.first {
 	font-size: large;

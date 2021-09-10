@@ -147,6 +147,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
             $this->register_action('check_users', array($this, 'check_users'));
             $this->register_action('weather', array($this, 'weather'));
+            $this->register_action('modal', array($this, 'get_modal'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
@@ -1019,6 +1020,12 @@ class mel_metapage extends rcube_plugin
         }
 
         echo json_encode([$url, $json]);
+        exit;
+    }
+
+    function get_modal()
+    {
+        echo $this->rc->output->parse("mel_metapage.mel_modal", false, false);
         exit;
     }
 

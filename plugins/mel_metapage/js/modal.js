@@ -148,6 +148,16 @@ class GlobalModal
 
         this.editTitle(title);
         this.setBeforeTitle(before);
+
+        setTimeout(() => {
+            $(".global-modal-header").children().each((i, e) => {
+                if (e.id === "created-modal-title-div-auto")
+                {
+                    if ($(e).find("h2").length === 0)
+                        $(e).remove();
+                }
+            });
+        }, 100);  
     }
 
     removeBeforeTitle()
@@ -221,6 +231,18 @@ class GlobalModal
     show()
     {
         this.modal.modal("show");
+    }
+
+    static resetModal()
+    {
+        return mel_metapage.Functions.get(
+            mel_metapage.Functions.url("mel_metapage", "modal"),
+            {},
+            (datas) => {
+                $("#globalModal").remove();
+                $("body").append(datas);
+            }
+        );
     }
 
 }

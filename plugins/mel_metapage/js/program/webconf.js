@@ -629,12 +629,19 @@ class MasterWebconfBar {
 
         $(".tiny-rocket-chat").css("display", "");
 
-        if ((this.webconf.wsp === undefined || this.webconf.wsp === null) || this.webconf.wsp.datas.logo === "")
+        //console.log("logo a", (this.webconf.wsp === undefined || this.webconf.wsp === null) || this.webconf.wsp.datas.logo === "" || this.webconf.wsp.datas.logo == "false");
+
+        if ((this.webconf.wsp === undefined || this.webconf.wsp === null) || this.webconf.wsp.datas.logo === "" || this.webconf.wsp.datas.logo == "false")
         {
-            //TODO
+            if ((this.webconf.wsp === undefined || this.webconf.wsp === null))
+                this.logo.html(`<span class="icon-mel-videoconference"></span>`);
+            else
+                this.logo.html(`<span>${this.webconf.wsp.datas.title.slice(0,3).toUpperCase()}</span>`);
         }
-        else       
+        else { 
             this.logo.html(`<img src="${this.webconf.wsp.datas.logo}" />`).css("background-color", this.webconf.wsp.datas.color);
+    
+        }
     }
 
     /**

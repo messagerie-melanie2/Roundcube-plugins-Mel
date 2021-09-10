@@ -1547,3 +1547,12 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 {
     display: none;
 }
+
+.hidden-item-mt {
+	width: 0;
+}
+
+.contextmenu .moved-item-mt 
+{
+    display:none!important;
+}

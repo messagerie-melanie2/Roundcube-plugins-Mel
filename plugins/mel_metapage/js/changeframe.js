@@ -237,7 +237,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
     if(rcmail.busy)
         return;
 
-    $(".wsp-toolbar").css("z-index", "0");
+    //$(".wsp-toolbar").css("z-index", "0");
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");;
     $(event).addClass("active")            
     .attr("disabled", "disabled")
@@ -588,7 +588,11 @@ async function ChangeFrame(_class, otherDatas = null)
     }
 
     if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
-        mel_metapage.Functions.searchOnMail(`edt.${uid}@i-carre.net`, ["to", "cc", "bcc"]);
+    {
+        $(parent.$(".mail-frame")[0].contentDocument).ready(() => {
+            mel_metapage.Functions.searchOnMail(`edt.${uid}@i-carre.net`, ["to", "cc", "bcc"]);
+        });
+    }
     else if (_class === "stockage")
     {
         mel_metapage.Functions.call("update_location", false, {

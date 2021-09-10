@@ -725,7 +725,7 @@ function m_mp_autocoplete(element, action_after = null)
            //console.log(val, _enum);
            //.where((x, i) => i > index2).toArray().splice(1).join("").replace(",", "")
            html += '<span class="email">'+_enum.where((x, i) => index1<i && i < index2).toArray().join("")+'</span>';//.join("")
-           html += '<span class="name">'+_enum.where((x, i) => i < index1).toArray().splice(1).join("").replace(",", "")+'</span>';
+           html += '<span class="name">'+_enum.where((x, i) => i < index1).toArray().join("").replace(",", "")+'</span>';
 
         }
         else {

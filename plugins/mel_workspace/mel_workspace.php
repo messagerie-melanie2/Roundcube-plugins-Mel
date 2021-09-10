@@ -1095,7 +1095,7 @@ class mel_workspace extends rcube_plugin
                 "hashtag" => rcube_utils::get_input_value("hashtag", rcube_utils::INPUT_POST),
                 "visibility" => rcube_utils::get_input_value("visibility", rcube_utils::INPUT_POST),
                 "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
-                "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST),
+                "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST) ?? [],
                 "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
             ];
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs ok");
@@ -2755,12 +2755,24 @@ class mel_workspace extends rcube_plugin
     function refresh_documents()
     {
         $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+        $workspace = self::get_workspace($wid);
 
-        $mails = $this->get_mails_from_workspace($workspace);
-        $result = driver_mel::gi()->workspace_group($wid, $mails, false);
-        $result2 = driver_mel::gi()->workspace_group($wid, $mails, true);
+        if ($this->get_setting($workspace, "nc_refreshed") !== true)
+        {
+            $mails = $this->get_mails_from_workspace($workspace);
+            $result = driver_mel::gi()->workspace_group($wid, $mails, false);
+            $result2 = driver_mel::gi()->workspace_group($wid, $mails, true);
 
-        echo json_encode([$result, $result2]);
+            $this->add_setting($workspace, "nc_refreshed", true);
+
+            $workspace->save();
+
+            echo json_encode([$result, $result2]);
+        }
+        else    
+            echo ([true, true]);
+
+
         exit;
     }
 

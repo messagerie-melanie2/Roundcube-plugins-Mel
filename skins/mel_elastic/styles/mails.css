@@ -560,3 +560,12 @@ a.button.icon.refresh::before, button.btn.refresh::before {
 	line-height: 15px !important;
     font-size: 0.8rem !important;
 }
+
+.popover-body #message-menu .tb_noclass::after {
+	content: none !important;
+}
+
+.popover-body #message-menu .tb_noclass::before {
+	font-family: DWP !important;
+	content: "\e956" !important;
+}

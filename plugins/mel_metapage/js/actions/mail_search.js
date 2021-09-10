@@ -1,4 +1,4 @@
-function search_action(searchValue, activeFields = [])
+async function search_action(searchValue, activeFields = [])
 {
     const timeoutValue = 1;
     setTimeout(async () => {

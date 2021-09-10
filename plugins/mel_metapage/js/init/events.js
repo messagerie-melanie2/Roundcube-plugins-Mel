@@ -254,8 +254,8 @@ if (rcmail)
 
             if ($("#layout-content .header ul#toolbar-menu li.hidden-item-mt").length > 0)
             {
-                $("#layout-content .header ul#toolbar-menu li.hidden-item-mt").removeClass("hidden-item-mt").css("display", "");
-                $("#message-menu > ul.menu .hidden-item-mt").remove();
+                $("#layout-content .header ul#toolbar-menu li.hidden-item-mt").removeClass("hidden-item-mt");//.css("display", "");
+                $("#message-menu > ul.menu .moved-item-mt").remove();
             }
 
             if ($("#layout-content .header")[0].scrollWidth > $("#layout-content").width())
@@ -268,12 +268,29 @@ if (rcmail)
 
                     if (it <= 3)
                         break;
-                    else if ($(array[it]).css("display") === "none" || $(array[it]).find("a").hasClass("more") || $(array[it]).find("a").attr("aria-haspopup") == "true")//aria-haspopup
+                    else if ($(array[it]).find(".tb_noclass").length > 0)//tb_label_popuplink
+                    {
+                        var tmp = $(array[it]).clone().addClass("moved-item-mt");
+                        tmp.find("a").each((i,e) => {
+                            e.id = `${e.id}-${i}`;
+                            $(e).on("click", () => {
+                                $("#tb_label_popuplink").click();
+                            });
+                        });
+                        $("#message-menu > ul.menu").prepend(tmp);
+                        $(array[it]).addClass("hidden-item-mt");
+                    }
+                    else if ($(array[it]).css("display") === "none" || $(array[it]).find("a").hasClass("more") || $(array[it]).find("a").attr("aria-haspopup") == "true" || $(array[it]).find("a").length > 1)//aria-haspopup
                         continue;
                     else
                     {
-                        $(array[it]).addClass("hidden-item-mt").css("display", "none");
-                        $("#message-menu > ul.menu").append($(array[it]).clone().css("display", ""));
+                        var tmp = $(array[it]).clone().addClass("moved-item-mt");
+                        tmp.find("a").each((i,e) => {
+                            e.id = `${e.id}-${i}`;
+                            $(e).addClass("moved-item-mt");
+                        });
+                        $("#message-menu > ul.menu").prepend(tmp);
+                        $(array[it]).addClass("hidden-item-mt");
                     }
                 }
                 

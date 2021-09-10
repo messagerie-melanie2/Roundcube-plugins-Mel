@@ -133,7 +133,7 @@
             });
         }
 
-        add_user()
+        async add_user()
         {
             if (this.is_busy())
                 return;
@@ -150,6 +150,10 @@
                     tmp.save_users();
                 }
             );
+
+            if ($("#globalModal .modal-close-footer").length == 0)
+                await GlobalModal.resetModal();
+
             Workspace_Param.PopUp = new GlobalModal("globalModal", config, true);
             Workspace_Param.PopUp.input = $("#tmp-id-wsp");
             rcmail.init_address_input_events($("#tmp-id-wsp"));

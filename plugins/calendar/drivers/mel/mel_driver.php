@@ -1795,6 +1795,8 @@ class mel_driver extends calendar_driver {
           if ($event->alarm > 0) {
             $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
             $_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
+            $_event['x_moz_lastack'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+            $_event['x_moz_snooze_time'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);;
           }
           else {
             $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
@@ -1935,29 +1937,49 @@ class mel_driver extends calendar_driver {
         $events = [];
         foreach ($_events as $_event) {
           $_event->setCalendarMelanie($this->calendars[$_event->calendar]);
-          $snoozetime = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
-          if (isset($snoozetime)) {
-            $snoozetime = strtotime($snoozetime);
-            if ($snoozetime > time()) {
-              continue;
+
+          if (isset($_event->start)) {
+            $snoozetime = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
+            if (isset($snoozetime)) {
+              $snoozetime = strtotime($snoozetime);
+              if ($snoozetime > time()) {
+                continue;
+              }
             }
-          }
-          $lastack = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
-          if (isset($lastack)) {
-            $lastack = strtotime($lastack);
-            if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
-              continue;
+            $lastack = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+            if (isset($lastack)) {
+              $lastack = strtotime($lastack);
+              if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
+                continue;
+              }
             }
           }
           $_e = $this->_read_postprocess($_event);
+          
           // Ajoute les exceptions
           if (isset($_e['recurrence']) && isset($_e['recurrence']['EXCEPTIONS']) && count($_e['recurrence']['EXCEPTIONS']) > 0) {
             foreach ($_e['recurrence']['EXCEPTIONS'] as $_ex) {
+              $snoozetime = $_ex['x_moz_snooze_time'];
+              if (isset($snoozetime)) {
+                $snoozetime = strtotime($snoozetime);
+                if ($snoozetime > time()) {
+                  continue;
+                }
+              }
+              $lastack = $_ex['x_moz_lastack'];
+              if (isset($lastack)) {
+                $lastack = strtotime($lastack);
+                if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
+                  continue;
+                }
+              }
               $events[] = $_ex;
             }
             unset($_e['recurrence']['EXCEPTIONS']);
           }
-          $events[] = $_e;
+          if (isset($_e['title'])) {
+            $events[] = $_e;
+          }
         }
         \mel::setCache('events_alarm', $events);
       }
@@ -1982,11 +2004,17 @@ class mel_driver extends calendar_driver {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::dismiss_alarm($event_id)");
     try {
-      if (! isset($calendars)) {
+      if (!isset($calendars)) {
         if (empty($this->calendars)) {
           $this->_read_calendars();
         }
         $calendars = $this->calendars;
+      }
+      // Traitement de l'id pour les exceptions
+      if (strpos($event_id, '@DATE-') !== false) {
+        $id = explode('@DATE-', $event_id);
+        $_recurrence_date = date('Ymd', $id[1]);
+        $event_id = $id[0];
       }
       // Parcourir les agendas pour se limité à ceux qui affiche les alarmes
       $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
@@ -1998,6 +2026,13 @@ class mel_driver extends calendar_driver {
           $event = driver_mel::gi()->event([$this->user, $calendar]);
           $event->uid = $event_id;
           if ($event->load()) {
+            // Traiter le cas de l'exception
+            if (isset($_recurrence_date)) {
+              $exceptions = $event->exceptions;
+              if (isset($exceptions[$_recurrence_date])) {
+                $event = $exceptions[$_recurrence_date];
+              }
+            }
             if ($snooze != 0) {              
               $time = time() + $snooze * 60;
               $event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME, gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z');

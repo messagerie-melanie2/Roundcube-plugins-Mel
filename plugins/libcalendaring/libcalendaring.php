@@ -880,7 +880,8 @@ class libcalendaring extends rcube_plugin
                 $select->add($this->gettext('weekly'),  'WEEKLY');
                 $select->add($this->gettext('monthly'), 'MONTHLY');
                 $select->add($this->gettext('yearly'),  'YEARLY');
-                $select->add($this->gettext('rdate'),   'RDATE');
+                // MANTIS 0006223: Supprimer la diffusion Confidentiel lors de la conversion en événement
+                // $select->add($this->gettext('rdate'),   'RDATE');
                 $html = html::label('edit-recurrence-frequency', $this->gettext('frequency')) . $select->show('');
                 break;
 

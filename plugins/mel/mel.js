@@ -225,8 +225,6 @@ if (window.rcmail) {
       $('#edit-free-busy').parent().hide();
       $('#event-free-busy').hide();
       $('.edit-alarm-buttons').hide();
-      $("#edit-sensitivity option[value='confidential']").remove();
-      $("#edit-recurrence-frequency option[value='RDATE']").remove();
     }
   });
   // MANTIS 0004276: Reponse avec sa bali depuis une balp, quels "Elements envoyés" utiliser

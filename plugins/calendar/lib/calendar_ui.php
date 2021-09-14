@@ -526,7 +526,8 @@ class calendar_ui
     $select = new html_select($attrib);
     $select->add($this->cal->gettext('public'), 'public');
     $select->add($this->cal->gettext('private'), 'private');
-    $select->add($this->cal->gettext('confidential'), 'confidential');
+    // MANTIS 0006223: Supprimer la diffusion Confidentiel lors de la conversion en événement
+    // $select->add($this->cal->gettext('confidential'), 'confidential');
     return $select->show(null);
   }
   

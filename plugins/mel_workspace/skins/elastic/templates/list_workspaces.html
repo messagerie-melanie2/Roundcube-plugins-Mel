@@ -11,7 +11,7 @@
             <div class=col-12>
                 <div class="header-wsp">
                     <span class="icon-mel-workplace no-weight roundbadge"></span>
-                    <span><roundcube:object name="label" /></span>
+                    <h1><roundcube:object name="label" /></h1>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
         </div> -->
         <div class="joined">
             <span class="title-wsp">
-                Liste des espaces de travail
+                <span><roundcube:object name="title" /></span> <!-- Liste des espaces de travail -->
             </span> 
             <button onclick="rcmail.set_busy(true, 'loading');window.location.href = mel_metapage.Functions.url('workspace')" style=float:right class="mel-button plus">Retour<span class="icon-mel-undo mel-return plus"></span></button>
             <roundcube:object name="joined" />

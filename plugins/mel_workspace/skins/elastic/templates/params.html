@@ -1,10 +1,26 @@
 <div class="wsp-params wsp-object" style="margin-top:30px;display:none">
-    <div>
-        <label>Couleur de l'espace : </label>
-        <input type="color" value="<color/>" class="form-control" style="max-width: 50px;
-        display: inline-block;margin-left:5px"
-        onchange="rcmail.command('workspace.changeColor',this)"
-        />
+    <div class="row">
+        <div class="col-md-6">
+            <label for="spaceColor">Couleur de l'espace : </label>
+            <input id="spaceColor" type="color" value="<color/>" class="form-control" style="max-width: 50px;
+            display: inline-block;margin-left:5px"
+            onchange="rcmail.command('workspace.changeColor',this)"
+            />
+        </div>
+        <div class="col-md-6">
+            <label for="spaceColor" style="display:block">Logo de l'espace : </label>
+            <a data-popup="groupoptions-wsp-param" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-wsp-param" data-original-title="" style="text-decoration: none;display: inline-block;" id=worspace-avatar-b class="dwp-round mel-focus focus-bordered">
+                <span class="sr-only">Sélectionner un avatar</span>
+                <logo/>
+            </a>
+            <button onclick="rcmail.command('workspace.changeLogo', ($('#worspace-avatar-b img').length === 0 ? null : $('#worspace-avatar-b img').attr('src')))" class="mel-button" style="display: inline-block;margin-left:15px;">Modifier le logo <span class="plus icon-pencil"></span></button>
+            <div id="groupoptions-wsp-param" class="popupmenu">
+                <h3 id="aria-label-groupoptions-wsp-param" class="voice">Avatars</h3>
+                <ul id=ul-wsp-params class="menu listing" role="menu" aria-labelledby="aria-label-groupoptions-wsp-param">
+                    <roundcube:container name="avatar-params" id="avatar-params" />
+                </ul>
+            </div>
+        </div>
     </div>
     <!-- <div class='row' style="margin-top:5px">
         <div class="col-6"> -->

@@ -232,7 +232,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
     const uid = $(event).data("uid");
 
-    console.log("event", $(event).data("wekan"), event);
+    //console.log("event", $(event).data("wekan"), event);
 
     if(rcmail.busy)
         return;
@@ -292,7 +292,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                     {
                         exec_info:"ChangeFrame",
                         datas:_class,
-                        args:`uid:${uid}`
+                        args:$(event).data("email")
                     }
                 );
                 break;
@@ -590,7 +590,7 @@ async function ChangeFrame(_class, otherDatas = null)
     if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
     {
         $(parent.$(".mail-frame")[0].contentDocument).ready(() => {
-            mel_metapage.Functions.searchOnMail(`edt.${uid}@i-carre.net`, ["to", "cc", "bcc"]);
+            mel_metapage.Functions.searchOnMail(otherDatas, ["to", "cc", "bcc"]);
         });
     }
     else if (_class === "stockage")

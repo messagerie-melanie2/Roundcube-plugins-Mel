@@ -79,25 +79,22 @@
                 rcmail.set_busy(true, "loading");
             else
             {
-                rcmail.set_busy(false);
-                rcmail.clear_messages();
+                if (this.is_busy())
+                {
+                    rcmail.set_busy(false);
+                    rcmail.clear_messages();
+                }
             }
         }
 
         async busyAsync(is_busy = true)
         {
-            if (is_busy)
-                rcmail.set_busy(true, "loading");
-            else
-            {
-                rcmail.set_busy(false);
-                rcmail.clear_messages();
-            }
+           this.busy(is_busy);
         }
 
         is_busy()
         {
-            return rcmail.is_busy;
+            return rcmail.busy;
         }
 
         changeColor(element)
@@ -190,8 +187,8 @@
             this.busy();
             return this.ajax(this.url("join_user"), {
                 _uid:this.uid
-            }).alway(() => {
-                wondow.location.reload();
+            }).always(() => {
+                window.location.reload();
             });
         }
 
@@ -260,6 +257,39 @@
             });
         }
 
+        update_workspace_logo(new_logo)
+        {
+            if (new_logo === undefined || new_logo === null || new_logo === "")
+                new_logo = "false";
+
+                this.busy();
+                return this.ajax(this.url("PARAMS_change_logo"), 
+                {
+                    _uid:this.uid,
+                    _logo:new_logo
+                },                    
+                (datas) => {
+                    if (datas === "denied")
+                    {
+                        this.busy(false);
+                        rcmail.display_message("Vous devez être administrateur pour pouvoir changer de logo.", "error");
+                    }
+                    else {
+                        if (new_logo === "false")
+                        {
+                            $("#worspace-avatar-b").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
+                            $(".dwp-round.wsp-picture").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
+                        }
+                        else {
+                        $("#worspace-avatar-b").html(`<img src="${new_logo}" />`);
+                        $(".dwp-round.wsp-picture").html(`<img src="${new_logo}" />`);
+                        }
+                    }
+                }).always(() => {
+                    this.busy(false);
+                });
+        }
+
         delete_user(user)
         {
             this.busy();
@@ -321,18 +351,22 @@
                     this.change_icons();
                 });
             }).always(async () => {
-                await this.ajax(this.url("PARAMS_update_services"), {
-                    _uid:this.uid
-                },
-                (datas) => {
-                    $(".wsp-services").html(datas);
-                    WSPReady();
+                if (app === "doc")
+                    window.location.reload();
+                else {
+                    await this.ajax(this.url("PARAMS_update_services"), {
+                        _uid:this.uid
+                    },
+                    (datas) => {
+                        $(".wsp-services").html(datas);
+                        WSPReady();
+                    }
+                    );
+                    await this.update_toolbar().always(() => {
+                        $(".wsp-services button").addClass("btn btn-secondary");
+                        this.busy(false);
+                    });
                 }
-                );
-                await this.update_toolbar().always(() => {
-                    $(".wsp-services button").addClass("btn btn-secondary");
-                    this.busy(false);
-                });
             });
         }
 
@@ -443,6 +477,7 @@
             rcmail.register_command('workspace.archive', () => rcmail.env.WSP_Param.archive(), true);
             rcmail.register_command('workspace.update_app', (e) => rcmail.env.WSP_Param.update_app(e), true);
             rcmail.register_command('workspace.unarchive', () => rcmail.env.WSP_Param.archive(false), true);
+            rcmail.register_command("workspace.changeLogo", (x) => rcmail.env.WSP_Param.update_workspace_logo(x), true);
         })
     })
 

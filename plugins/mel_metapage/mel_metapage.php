@@ -640,14 +640,14 @@ class mel_metapage extends rcube_plugin
         $or = "";
         $lines = "";
 
-        $before = "edt.";
-        $after = "@i-carre.net";
-
         $first = true;
         foreach ($workpaces as $key => $value) {
+
+            $mail = mel_workspace::get_wsp_mail($value->uid);
+
             if ($wsp->get_object($value, mel_workspace::GROUP))
             {
-                $lines .= "OR OR HEADER TO $before".$value->uid."$after HEADER CC $before".$value->uid."$after HEADER BCC $before".$value->uid."$after ";// HEADER BCC $before".$value->uid."$after ";
+                $lines .= "OR OR HEADER TO $mail HEADER CC $mail HEADER BCC $mail ";// HEADER BCC $before".$value->uid."$after ";
                 if ($first)
                     $first = false;
                 else

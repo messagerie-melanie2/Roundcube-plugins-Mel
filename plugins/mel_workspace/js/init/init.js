@@ -14,6 +14,66 @@
             }
 
             WSPNotification.mails().update();
+
+            $("#wsp-search-input").on("input", (element) => {
+                const val = element.target.value.toUpperCase();
+                if (val === "")
+                {
+                    $(".epingle").css("display", "");
+                    $(".workspace").css("display", "");
+                }
+                else {
+                    $(".epingle").css("display", "none");
+                    $(".workspace").css("display", "");
+                    $(".workspace").each((i,e) => {
+                        e = $(e);
+                        if (e.find(".wsp-title").length === 0 || !e.find(".wsp-title").html().toUpperCase().includes(val))
+                        {
+                            e.css("display", "none");
+                        }
+                    });
+                }
+             });
+
+        }
+        else if (rcmail.env.task === "workspace" && rcmail.env.action === "action" || (rcmail.env.wsp_action_event === "list_public" || rcmail.env.wsp_action_event === "list_public_search"))
+        {
+
+            $("#wsp-search-input").on("change", (element) => {
+                const val = element.target.value.toUpperCase();
+                if (val === "")
+                {
+                    rcmail.set_busy(true, 'loading');
+                    window.location.href = mel_metapage.Functions.url("workspace", "action", {
+                        _event:"list_public"
+                    });
+                }
+                else {
+                    rcmail.set_busy(true, 'loading');
+                    window.location.href = mel_metapage.Functions.url("workspace", "action", {
+                        _event:"list_public_search",
+                        _search:val,
+
+                    });
+                }
+             });
+
+             if (rcmail.env.wsp_action_search !== undefined && rcmail.env.wsp_action_search !== null)
+             {
+                $("#wsp-search-input").val(rcmail.env.wsp_action_search);
+             }
+
+             if (rcmail.env.wsp_action_event === "list_public_search")
+             {
+                $(".tak").remove();
+                $(".mel-search-group .input-group-append").prepend($(`<button class="btn btn-outline-danger"><span class="icon-mel-trash"></span></button>`).click(() => {
+                    $("#wsp-search-input").val("");
+                    rcmail.set_busy(true, 'loading');
+                    window.location.href = mel_metapage.Functions.url("workspace", "action", {
+                        _event:"list_public"
+                    });
+                }));
+             }
         }
 
         //WSPNotification.tasks().update();
@@ -27,25 +87,7 @@
             }
          });
          EpingleEmpty();
-         $("#wsp-search-input").on("input", (element) => {
-            const val = element.target.value.toUpperCase();
-            if (val === "")
-            {
-                $(".epingle").css("display", "");
-                $(".workspace").css("display", "");
-            }
-            else {
-                $(".epingle").css("display", "none");
-                $(".workspace").css("display", "");
-                $(".workspace").each((i,e) => {
-                    e = $(e);
-                    if (e.find(".wsp-title").length === 0 || !e.find(".wsp-title").html().toUpperCase().includes(val))
-                    {
-                        e.css("display", "none");
-                    }
-                });
-            }
-         });
+
 
      });
 

@@ -208,7 +208,7 @@ $(document).ready(() => {
                                 $("#mailsearchlist").addClass("hoverable");
                         });
 
-                        let $back = `<li role="menuitem">
+                        let $back = `<li role="menuitem" class="parent-close-visu">
                             <a  onclick="return rcmail.command('close-mail-visu','',this,event)"  class="close-visu"  role="button" href="#" ><span class="inner">Fermer</span></a>
                         </li>`;
                         
@@ -300,6 +300,8 @@ $(document).ready(() => {
                         $("a.more-options").click();
                 }
             });
+
+            
 
             // $("#listotherapps").find("a").last().on('focusout', (e) => {
             //     if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))

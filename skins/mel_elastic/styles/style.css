@@ -1556,3 +1556,10 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 {
     display:none!important;
 }
+
+/* li.parent-close-visu
+{
+    border-right-style: solid!important;
+    border-right-width: thin!important;
+    border-right-color: white!important;
+} */

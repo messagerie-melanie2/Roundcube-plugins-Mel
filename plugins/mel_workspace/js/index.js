@@ -89,11 +89,27 @@ function wsp_epingle(id)
 $(document).ready(() => {
     //console.log("ready", rcmail.env.action, rcmail.env.action === "action");
     if (rcmail.env.action === "action")
-        rcmail.register_command("workspaces.page", (page) => {
-            rcmail.set_busy(true, "loading");
-            //console.log("here");
-            window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {"_event":"list_public", "_page":page});
-        }, true);
+    {
+        switch (rcmail.env.wsp_action_event) {
+            case "list_public":
+                rcmail.register_command("workspaces.page", (page) => {
+                    rcmail.set_busy(true, "loading");
+                    //console.log("here");
+                    window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {"_event":"list_public", "_page":page});
+                }, true);     
+                break;
+            case "list_public_search":
+                rcmail.register_command("workspaces.page", (page) => {
+                    rcmail.set_busy(true, "loading");
+                    //console.log("here");
+                    window.location.href = MEL_ELASTIC_UI.url("workspace", "action", {_search:rcmail.env.wsp_action_search, "_event":"list_public_search", "_page":page});
+                }, true);     
+                break;
+            default:
+                break;
+        }
+
+    }
 
     rcmail.register_command("workspaces.go", (uid) => {
         rcmail.set_busy(true, 'loading');

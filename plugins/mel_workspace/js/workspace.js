@@ -80,6 +80,7 @@ async function WSPReady()
 
 
     wsp_mail_updated();
+    setup_params();
     await tmpTask;
 }
 
@@ -639,4 +640,44 @@ function refreshUsefulLinks()
         });
         //$(".ressources-links")
     }
+}
+
+function setup_params()
+{
+    const tmp = (img) =>
+    {
+        img = img.split(".");
+        
+        if (img.length > 1)
+            img[img.length-1] = "";
+
+        img = img.join(".");
+        img = img.slice(0, img.length-1);
+
+        return img;
+    };
+
+    let html = "";
+
+    if (rcmail.env.mel_metapage_workspace_logos.length > 0)
+    {
+        html += `<li role=menuitem><a title="" aria-disabled=true href=# tabindex=-1 class="active" id="" href="#" onclick="m_wp_change_picture(null)"><img src="`+rcmail.env.mel_metapage_workspace_logos[0].path+`" class="menu-image invisible">Aucune image</a></li>`;
+        
+        for (let index = 0; index < rcmail.env.mel_metapage_workspace_logos.length; index++) {
+            const element = rcmail.env.mel_metapage_workspace_logos[index];
+            html += `<li role=menuitem><a aria-disabled=true href=# alt="${Enumerable.from(element.path.replace(".png", "").replace(".jpg", "").replace(".PNG", "").split("/")).last()}" title="" class="active" id="" tabindex=-1 href="#" onclick="m_wp_change_picture('`+element.path+`')"><img src="`+element.path+`" class=menu-image>`+tmp(element.name)+`</a></li>`;
+        }
+    }
+    $("#ul-wsp-params").html(html);
+}
+
+function m_wp_change_picture(img)
+{
+    //console.log(img, $("#worspace-avatar-a"));
+    if (img === null)
+    {
+        $("#worspace-avatar-b").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
+    }
+    else
+        $("#worspace-avatar-b").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
 }

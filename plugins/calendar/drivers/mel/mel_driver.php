@@ -1374,6 +1374,7 @@ class mel_driver extends calendar_driver {
             $id = substr($id, 0, strlen($id) - strlen(self::RECURRENCE_DATE . self::RECURRENCE_ID));
           }
           $_event->uid = $id;
+          $event['uid'] = $id;
         }
         else {
           return false;
@@ -1401,6 +1402,12 @@ class mel_driver extends calendar_driver {
               if (isset($event['_instance'])) {
                 $result['_instance'] = $event['_instance'];
               }
+              // MANTIS 0006108: Suppression d'une occurrence depuis MélWeb(New) affiche l'annulation de la première occurrence
+              // Modifier la date de la récurrence par cette de l'exception
+              $interval = $master['start']->diff($master['end']);
+              $result['start'] = clone $recurrence_date;
+              $result['end'] = clone $recurrence_date;
+              $result['end']->add($interval);
             }
             $result['recurrence_date'] = $recurrence_date;
           }

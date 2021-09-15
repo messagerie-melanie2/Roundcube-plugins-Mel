@@ -390,7 +390,19 @@ EOF;
      * @return NULL|string
      */
     private function getUserId() {
-      return $this->rc->config->get('rocket_chat_user_id', null);
+      // MANTIS 0006224: Ajouter un mapping entre les utilisateurs Mél et les utilisateurs Rocket Chat
+      $mapping = $this->rc->config->get('rocket_chat_users_mapping', []);
+      if (isset($mapping[$this->rc->get_user_name()])) {
+        $userId = $mapping[$this->rc->get_user_name()];
+        // Enregistrer la nouvelle valeur en pref si jamais elle est différente
+        if ($userId != $this->rc->config->get('rocket_chat_user_id', null)) {
+          $this->setUserId($userId);
+        }
+      }
+      else {
+        $userId = $this->rc->config->get('rocket_chat_user_id', null);
+      }
+      return $userId;
     }
     /**
      * Positionne le user id en session

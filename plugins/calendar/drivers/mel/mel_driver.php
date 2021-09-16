@@ -1274,7 +1274,8 @@ class mel_driver extends calendar_driver {
           // Positionnement de la recurrence_id et de l'uid
           $recid = explode('@DATE-', $event['id']);
           $recid = $recid[1];
-          $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid) - 24 * 60 * 60);
+          // $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid) - 24 * 60 * 60);
+          $_event->recurrence->enddate = date(self::SHORT_DB_DATE_FORMAT, intval($recid));
           $_event->recurrence->count = '';
           if (strtotime($_event->recurrence->enddate) < strtotime($_event->start)) {
             return $_event->delete();

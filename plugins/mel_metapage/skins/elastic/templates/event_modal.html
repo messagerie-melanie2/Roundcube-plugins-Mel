@@ -45,9 +45,84 @@
                 </label>
             </div>
             
+			<div class="form-group">
+                <label for="edit-description" class="span-mel t1"><roundcube:label name='mel_metapage.day_order' /></label>
+				<!-- <label for="edit-description"><roundcube:label name="calendar.description" /></label> -->
+				<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control input-mel" rows="3" cols="40"></textarea>
+			</div> 
+		</fieldset>
+
+		<!-- recurrence settings -->
+		<!-- <fieldset id="event-panel-recurrence">
+			<legend><roundcube:label name="calendar.tabrecurrence" /></legend>
+			<div class="form-group row border-after">
+				<roundcube:object name="plugin.recurrence_form" part="frequency" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-daily">
+				<roundcube:object name="plugin.recurrence_form" part="daily" class="form-group row" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-weekly">
+				<roundcube:object name="plugin.recurrence_form" part="weekly" class="form-group row" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-monthly">
+				<roundcube:object name="plugin.recurrence_form" part="monthly" class="form-group row" />
+			</div>
+			<div class="recurrence-form border-after" id="recurrence-form-yearly">
+				<roundcube:object name="plugin.recurrence_form" part="yearly" class="form-group row" />
+			</div>
+			<div class="recurrence-form" id="recurrence-form-until">
+				<roundcube:object name="plugin.recurrence_form" part="until" class="form-group row" />
+			</div>
+			<div class="recurrence-form" id="recurrence-form-rdate">
+				<roundcube:object name="plugin.recurrence_form" part="rdate" class="form-group row" />
+			</div>
+		</fieldset> -->
+		<!-- attendees list -->
+		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees">
+			<span class="have-workspace span-mel t1 low-margins"><roundcube:label name='mel_metapage.add_all_member_from_a_workspace' /></span>
+			<button type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0;margin-bottom:15px" onclick="return rcmail.command('calendar-workspace-add-all')">
+				<span><roundcube:label name='mel_metapage.add_all' /></span>
+				<span class="icofont-plus-circle plus"></span>
+			</button>
+			<span class="span-mel t1 low-margins"><roundcube:label name='mel_metapage.select_attendees' /></span>
+			<legend><roundcube:label name="calendar.tabattendees" /></legend>
+			<h3 id="aria-label-attendeestable" class="voice"><roundcube:label name="calendar.arialabeleventattendees" /></h3>
+			<roundcube:object name="plugin.attendees_list" id="edit-attendees-table" class="edit-attendees-table no-img table table-sm"
+				coltitle="attendee" aria-labelledby="aria-label-attendeestable" />
+			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" />
+			<roundcube:include file="/templates/freebusylegend.html" />
+			<!-- <button type="button" class="btn btn-secondary mel" onclick="window.rcube_calendar_ui.back()">Retour</button> -->
+			<!-- <button type="button" style="margin-top: 30px;float: left;" class="mel-button invite-button white" onclick="window.rcube_calendar_ui.back()">
+				<span><roundcube:label name='mel_metapage.back' /></span>
+				<span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
+			</button>
+			<button type="button" style="margin-top: 30px;float: right;" class="mel-button invite-button mel-before-remover create" onclick="window.rcube_calendar_ui.save()">
+				<span><roundcube:label name='mel_metapage.save_event' /></span>
+				<span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
+			</button> -->
+			<!-- <button type="button" class="btn btn-primary mel" onclick="window.rcube_calendar_ui.save()">Créer l'évènement</button> -->
+		</fieldset>
+		<!-- resources list -->
+		<fieldset id="event-panel-resources" data-navlink-class="nav-icon resources">
+			<legend><roundcube:label name="calendar.tabresources" /></legend>
+			<h3 id="aria-label-resourcestable" class="voice"><roundcube:label name="calendar.arialabeleventresources" /></h3>
+			<roundcube:object name="plugin.attendees_list" id="edit-resources-table" class="edit-attendees-table no-img table table-sm"
+				coltitle="resource" aria-labelledby="aria-label-resourcestable" />
+			<roundcube:object name="plugin.resources_form" id="edit-resources-form" />
+			<roundcube:include file="/templates/freebusylegend.html" />
+		</fieldset>
+		<fieldset id="event-panel-detail">
+            <!-- <label><input type="checkbox" name="allday" id="edit-allday" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.all-day" /></label> -->
+			<!-- <div class="form-check mel-radio-1" style="margin-top:15px">
+                <input type="checkbox" name="allday" id="edit-allday" value="1" class="form-check-input custom-control-input" /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
+                <!-- <label class="form-check-label" for="edit-allday">
+                    <span></span><text><roundcube:label name="calendar.all-day" /></text>
+                </label>
+            </div> --> 
+            
             <div class="row">
                 <div class="col-6"><!--Récurence-->
-					<label for="fake-event-rec" class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.reccurence' /></label>
+					<label for="fake-event-rec" class="red-star-after span-mel t1 low-margins"><roundcube:label name='mel_metapage.reccurence' /></label>
 					<select id="fake-event-rec" class="form-control input-mel">
 						<option value="" selected=""><roundcube:label name='mel_metapage.never' /></option>
 						<option value="DAILY"><roundcube:label name='mel_metapage.DAILY' /></option>
@@ -59,7 +134,7 @@
                 <div class="col-6"> <!--Alerte-->
                     <div class="form-group row" id="edit-alarms">
                         <!-- <label for="edit-alarm-item" class="col-sm-2 col-form-label"><roundcube:label name="calendar.alarms" /></label> -->
-                        <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.alert' /></span>
+                        <span class="red-star-after span-mel t1 low-margins"><roundcube:label name='mel_metapage.alert' /></span>
                         <div class="col-sm-12 alarms-input">
                             <div class="edit-alarm-item input-group first">
                                 <roundcube:object name="plugin.alarm_select" id="edit-alarm-item" />
@@ -195,11 +270,7 @@
 				<label for="edit-location"><roundcube:label name="calendar.location" /></label>
 				<input type="text" class="form-control" name="location" id="edit-location" size="40" />
 			</div>
-			<div class="form-group">
-                <label for="edit-description" class="span-mel t1"><roundcube:label name='mel_metapage.day_order' /></label>
-				<!-- <label for="edit-description"><roundcube:label name="calendar.description" /></label> -->
-				<textarea name="description" id="edit-description" placeholder="Ordre du jour" class="form-control input-mel" rows="3" cols="40"></textarea>
-			</div> 
+
 			<div class="form-check mel-radio-1" style="margin-top:15px">
                 <input type="checkbox" name="allday" id="edit-wsp" value="1" class="form-check-input custom-control-input" checked /><!-- <input class="form-check-input" type="checkbox" name="all_day" id="eb-mm-all-day" value="all_day"> -->
                 <label class="form-check-label" for="edit-wsp">
@@ -282,69 +353,10 @@
 				</div>
 			</div>
 			<!-- <button type="button" class="btn btn-primary mel" onclick="window.rcube_calendar_ui.continue()">Continuer</button> -->
-			<button type="button" style="margin-top: 30px;float: right;" class="mel-before-remover mel-button invite-button create" onclick="window.rcube_calendar_ui.continue()">
+			<!-- <button type="button" style="margin-top: 30px;float: right;" class="mel-before-remover mel-button invite-button create" onclick="window.rcube_calendar_ui.continue()">
 				<span><roundcube:label name='mel_metapage.continue' /></span>
 				<span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
-			</button>
-		</fieldset>
-		<!-- recurrence settings -->
-		<!-- <fieldset id="event-panel-recurrence">
-			<legend><roundcube:label name="calendar.tabrecurrence" /></legend>
-			<div class="form-group row border-after">
-				<roundcube:object name="plugin.recurrence_form" part="frequency" />
-			</div>
-			<div class="recurrence-form border-after" id="recurrence-form-daily">
-				<roundcube:object name="plugin.recurrence_form" part="daily" class="form-group row" />
-			</div>
-			<div class="recurrence-form border-after" id="recurrence-form-weekly">
-				<roundcube:object name="plugin.recurrence_form" part="weekly" class="form-group row" />
-			</div>
-			<div class="recurrence-form border-after" id="recurrence-form-monthly">
-				<roundcube:object name="plugin.recurrence_form" part="monthly" class="form-group row" />
-			</div>
-			<div class="recurrence-form border-after" id="recurrence-form-yearly">
-				<roundcube:object name="plugin.recurrence_form" part="yearly" class="form-group row" />
-			</div>
-			<div class="recurrence-form" id="recurrence-form-until">
-				<roundcube:object name="plugin.recurrence_form" part="until" class="form-group row" />
-			</div>
-			<div class="recurrence-form" id="recurrence-form-rdate">
-				<roundcube:object name="plugin.recurrence_form" part="rdate" class="form-group row" />
-			</div>
-		</fieldset> -->
-		<!-- attendees list -->
-		<fieldset id="event-panel-attendees" data-navlink-class="nav-icon attendees">
-			<span class="have-workspace span-mel t1 low-margins"><roundcube:label name='mel_metapage.add_all_member_from_a_workspace' /></span>
-			<button type="button" class="have-workspace mel-button mel-before-remover invite-button create" style="margin-top:0;margin-bottom:15px" onclick="return rcmail.command('calendar-workspace-add-all')">
-				<span><roundcube:label name='mel_metapage.add_all' /></span>
-				<span class="icofont-plus-circle plus"></span>
-			</button>
-			<span class="span-mel t1 low-margins"><roundcube:label name='mel_metapage.select_attendees' /></span>
-			<legend><roundcube:label name="calendar.tabattendees" /></legend>
-			<h3 id="aria-label-attendeestable" class="voice"><roundcube:label name="calendar.arialabeleventattendees" /></h3>
-			<roundcube:object name="plugin.attendees_list" id="edit-attendees-table" class="edit-attendees-table no-img table table-sm"
-				coltitle="attendee" aria-labelledby="aria-label-attendeestable" />
-			<roundcube:object name="plugin.attendees_form" id="edit-attendees-form" />
-			<roundcube:include file="/templates/freebusylegend.html" />
-			<!-- <button type="button" class="btn btn-secondary mel" onclick="window.rcube_calendar_ui.back()">Retour</button> -->
-			<button type="button" style="margin-top: 30px;float: left;" class="mel-button invite-button white" onclick="window.rcube_calendar_ui.back()">
-				<span><roundcube:label name='mel_metapage.back' /></span>
-				<span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
-			</button>
-			<button type="button" style="margin-top: 30px;float: right;" class="mel-button invite-button mel-before-remover create" onclick="window.rcube_calendar_ui.save()">
-				<span><roundcube:label name='mel_metapage.save_event' /></span>
-				<span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
-			</button>
-			<!-- <button type="button" class="btn btn-primary mel" onclick="window.rcube_calendar_ui.save()">Créer l'évènement</button> -->
-		</fieldset>
-		<!-- resources list -->
-		<fieldset id="event-panel-resources" data-navlink-class="nav-icon resources">
-			<legend><roundcube:label name="calendar.tabresources" /></legend>
-			<h3 id="aria-label-resourcestable" class="voice"><roundcube:label name="calendar.arialabeleventresources" /></h3>
-			<roundcube:object name="plugin.attendees_list" id="edit-resources-table" class="edit-attendees-table no-img table table-sm"
-				coltitle="resource" aria-labelledby="aria-label-resourcestable" />
-			<roundcube:object name="plugin.resources_form" id="edit-resources-form" />
-			<roundcube:include file="/templates/freebusylegend.html" />
+			</button> -->
 		</fieldset>
 		<!-- attachments list (with upload form) -->
 		<!-- <fieldset id="event-panel-attachments" data-navlink-class="nav-icon attachments">

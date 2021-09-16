@@ -449,12 +449,12 @@ a.button.icon.refresh::before, button.btn.refresh::before {
     font-weight: normal !important;
 }
 
-.menu a.junk::before,
+/* .menu a.junk::before,
 .folderlist li.junk a::before {
     font-family: 'DWP'!important;
     content: "\e908"!important;
     font-weight: normal !important;
-}
+} */
 
 .menu a.more::before {
     font-family: 'DWP'!important;
@@ -464,7 +464,7 @@ a.button.icon.refresh::before, button.btn.refresh::before {
 
 .menu a.close-visu::before {
     font-family: 'DWP'!important;
-    content: "\e936"!important;
+    content: "\e908"!important;
     font-weight: normal !important;
 }
 
@@ -568,4 +568,18 @@ a.button.icon.refresh::before, button.btn.refresh::before {
 .popover-body #message-menu .tb_noclass::before {
 	font-family: DWP !important;
 	content: "\e956" !important;
+}
+
+.folderlist li.junk a::before {
+	content: "\f7e4" !important;
+	font-weight: 900!important;
+    font-family: Icons!important;
+}
+
+.parent-close-visu {
+	margin-right: 10px;
+	padding-right: 10px;
+	border-right-color: white !important;
+	border-right-style: solid !important;
+	border-right-width: thin !important;
 }

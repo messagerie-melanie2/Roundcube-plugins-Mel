@@ -46,12 +46,18 @@ function m_mp_Create()
         let document = `<li class="col-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + button(rcmail.gettext("mel_metapage.a_document"), "icon-mel-folder block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</li>";
         let blocnote = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
         let pega = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + button(rcmail.gettext("mel_metapage.a_survey"), "icon-mel-sondage block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</li>";
-        html = '<ul class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
+        html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         create_popUp = new GlobalModal("globalModal", config, true);
     }
     else //Si elle existe, on l'affiche.
+    {
         window.create_popUp.show();
+        if ($("#globallist").length > 0)
+        {
+            $("#globalModal .icon-mel-undo.mel-return").remove();
+        }
+    }
 }
 
 function m_mp_createworskpace_steps()
@@ -219,6 +225,10 @@ function m_mp_createworkspace()
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
     mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_create_workspace"),{}, 
     (datas) => {
+
+        if ($("#globallist").length > 0)
+            return;
+
         create_popUp.contents.html(html + datas + `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`);
         
         if ($("#tmpavatar").find("a").length === 0)
@@ -921,6 +931,9 @@ function m_mp_openTo(e, idInput)
 
 function m_mp_reinitialize_popup(funcBefore = null, funcAfter = null)
 {
+    if (rcmail.busy === true)
+        return;
+
     if (funcBefore !== null)
         funcBefore();
     if (window.create_popUp !== undefined)
@@ -1497,7 +1510,7 @@ function mm_create_calendar(e, existingEvent = null)
 {
     if (window.create_popUp !== undefined)
     {
-        //window.create_popUp.close();
+        window.create_popUp.close();
         window.create_popUp = undefined;
     }
 

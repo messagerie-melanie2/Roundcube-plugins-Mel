@@ -434,6 +434,7 @@ EOF;
     {
       require_once __DIR__ . '/lib/rocketchatclient.php';
 
+      $this->logout();
       $this->login();
 
       $uid = $this->getUserId();
@@ -582,6 +583,21 @@ EOF;
       $rocketClient = $this->get_rc_client();
 
       return $rocketClient->delete($channel_id, $private);      
+    }
+
+        /**
+     * Supprime un groupe ou un canal.
+     * 
+     * @param string $channel_id
+     * @param bool $private
+     * 
+     * @return array
+     */
+    public function update_channel_type($channel_id, $private)
+    {
+      $rocketClient = $this->get_rc_client();
+
+      return $rocketClient->update_channel($channel_id, $private);      
     }
 
     /**

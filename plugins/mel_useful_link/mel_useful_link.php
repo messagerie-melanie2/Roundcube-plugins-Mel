@@ -27,6 +27,7 @@ class mel_useful_link extends rcube_plugin
           $this->register_action('index', array($this, 'index'));  
           $this->register_action('gpl', array($this, 'get_personal_links')); 
           $this->register_action('update', array($this, 'update_link'));  
+          $this->register_action('correct', array($this, 'correct_links'));  
           $this->register_action('delete', array($this, 'delete_link'));  
           $this->register_action('tak', array($this, 'pin_link'));
 
@@ -249,6 +250,9 @@ class mel_useful_link extends rcube_plugin
           $melLink->link = $link;
           $melLink->from = $from;
           $melLink->showWhen = $showWhen;
+
+          if ($melLink->configKey === null || $melLink->configKey === "unknown")
+            $melLink->configKey = $id;
         }
 
         $config[$id] = $melLink->serialize();
@@ -311,6 +315,33 @@ class mel_useful_link extends rcube_plugin
 
       echo true;
       exit;
+    }
+
+    function correct_links()
+    {
+      $update = false;
+      $config = $this->rc->config->get('personal_useful_links', []);
+
+      foreach ($config as $key => $value) {
+        if ($key == false || $key == "false" || $key == null || $key === "unknown")
+        {
+          $value = mel_link::fromConfig($config[$key]);
+          $id = $this->generate_id($value->title, $config);
+          $value->configKey = $id;
+          $config[$id] = $value->serialize();
+          unset($config[$key]);
+
+          if (!$update)
+            $update = true;
+        }
+      }
+
+      if ($update)
+        $this->rc->user->save_prefs(array('personal_useful_links' => $config));
+
+      echo "";
+      exit;
+
     }
 
     /************* USEFUL FUNCTIONS **************/

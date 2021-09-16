@@ -75,3 +75,18 @@ function TakLink(id)
     });
 }
 
+function PublicCommands(element)
+{
+    switch ($(element).val()) {
+        case "\\correctLinks":
+            rcmail.display_message("Mise à jour des liens...", "loading");
+            $("#layout").css("display", "block").html(`<center><span style="width:300px;height:300px" class="spinner-grow"></span></center>`);
+            mel_metapage.Functions.post(mel_metapage.Functions.url("useful_links", "correct"), {}).always(() => {
+                window.location.reload();
+            });
+            break;
+    
+        default:
+            break;
+    }
+}

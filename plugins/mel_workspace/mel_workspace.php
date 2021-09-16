@@ -106,6 +106,7 @@ class mel_workspace extends rcube_plugin
         //$this->register_action('list', array($this, 'show_workspace'));
         $this->register_action('PARAM_Change_color', array($this, 'change_color'));
         $this->register_action('PARAMS_change_logo', array($this, 'change_logo'));
+        $this->register_action('PARAMS_change_visibility', array($this, 'change_visibility'));
         $this->register_action('PARAMS_add_users', array($this, 'add_users'));
         $this->register_action('PARAMS_update_user_table_rights', array($this, 'update_user_table_rights'));
         $this->register_action('PARAMS_update_user_rights', array($this, 'update_user_rights'));
@@ -336,7 +337,6 @@ class mel_workspace extends rcube_plugin
         
         if ($this->services_action_errors($this->currentWorkspace))
         {
-            $this->currentWorkspace->ispublic = true;
             $this->currentWorkspace->save();        
             $this->currentWorkspace->load();
         }
@@ -386,6 +386,8 @@ class mel_workspace extends rcube_plugin
         $this->include_stylesheet($this->local_skin_path().'/links.css');
 
         $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
+
+        $this->rc->output->set_env("corrected_wsp", true);
 
         $this->rc->output->set_pagetitle("Espace de travail \"".$this->currentWorkspace->title."\"");
         $this->rc->output->send('mel_workspace.workspace');
@@ -1011,10 +1013,12 @@ class mel_workspace extends rcube_plugin
         if ($user_rights === Share::RIGHT_OWNER)
         {
             $html = str_replace("<logo/>", (($this->currentWorkspace->logo ?? "false") == "false" ? '<span>'.substr($this->currentWorkspace->title, 0, 3)."</span>" : '<img src="'.$this->currentWorkspace->logo.'" />'), $html);
+            $html = str_replace("<visibility/>", ($this->currentWorkspace->ispublic ? "privé" : 'public'), $html);
         }
         else
         {
             $html = str_replace("<logo/>", "", $html);
+            $html = str_replace("<visibility/>", "???", $html);
         }
 
         return $html;
@@ -1748,6 +1752,34 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
+    function change_visibility()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $workspace = self::get_workspace($uid);
+
+        if (self::is_admin($workspace))
+        {
+            $isPublic = !$workspace->ispublic;
+            $workspace->ispublic = $isPublic;
+            $workspace->save();
+
+            try {
+                $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                $rocket->update_channel_type(
+                    $this->get_object($workspace, self::CHANNEL)->id,
+                    !$isPublic);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+
+            echo "";
+        }
+        else 
+            echo "denied";
+
+        exit;
+    }
+
     function change_logo()
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
@@ -1833,7 +1865,7 @@ class mel_workspace extends rcube_plugin
         $this->create_services($workspace, $services, $users, false);
 
         //update channel
-        if (false && !(array_search(self::CHANNEL, $services) === false))
+        if (!(array_search(self::CHANNEL, $services) === false))
         {
             $rocket = $this->rc->plugins->get_plugin('rocket_chat');
             if ($workspace->uid === "apitech-1")
@@ -1877,7 +1909,7 @@ class mel_workspace extends rcube_plugin
             switch ($value) {
                 case self::CHANNEL:
                     $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                    $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $users, $workspace->ispublic === 0 ? true : false);
+                    $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $user, $workspace->ispublic === 0 ? true : false);
                     break;
                 case self::TASKS:
                     include_once "../mel_moncompte/ressources/tasks.php";
@@ -2063,7 +2095,7 @@ class mel_workspace extends rcube_plugin
             if (!$this->get_worskpace_services($workspace)[$app])
             {
                 switch ($app) {
-                    case self::CHANNEL."i":
+                    case self::CHANNEL:
                         $users = $workspace->shares;
                         $map = function($value) {
                             return $value->user;
@@ -2098,7 +2130,7 @@ class mel_workspace extends rcube_plugin
             {
                 //Suppression de l'app
                 switch ($app) {
-                    case self::CHANNEL."i":
+                    case self::CHANNEL:
                         $rocket = $this->rc->plugins->get_plugin('rocket_chat');
                         $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
                         break;
@@ -2252,7 +2284,7 @@ class mel_workspace extends rcube_plugin
     function check_services($service, $workspace)
     {
         $value = true;
-        $all_services = $this->get_worskpace_services($workspace);
+        $all_services = $this->get_worskpace_services($workspace, false, true);
 
         switch ($service) {
             case 'all':               

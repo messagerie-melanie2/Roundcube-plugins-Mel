@@ -282,6 +282,8 @@ $(document).ready(() => {
                             }
                         });
                     });
+
+                    $("#toolbar-list-menu .compose").parent().prependTo($("#toolbar-list-menu .compose").parent().parent());
                 }
             }
         }

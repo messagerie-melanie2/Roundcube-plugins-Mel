@@ -339,6 +339,31 @@
                 return this.busyAsync(false);
         }
 
+        change_visibility()
+        {
+            this.busy();
+            return this.ajax(this.url("PARAMS_change_visibility"), {
+                _uid:this.uid
+            }, (datas) => {
+                this.busy(false);
+                if (datas === "denied")
+                    rcmail.display_message("Vous n'avez pas les droits pour changer la visibilité de cet espace !", "error");
+                else
+                {
+                    rcmail.display_message("Visibilité changé avec succès !", "confirmation");
+                    let querry = $("#param-visibility");
+                    if (querry.html().includes("privé"))
+                        querry.html("Passer en public");
+                    else
+                        querry.html("Passer en privé");
+                }
+            }, (a,b,c) => {
+                this.busy(false);
+                console.error(a,b,c);
+                rcmail.display_message("Une erreur est survenue...", "error");
+            }).always(() => this.busy(false));
+        }
+
         update_app(app)
         {
             this.busy();
@@ -478,6 +503,7 @@
             rcmail.register_command('workspace.update_app', (e) => rcmail.env.WSP_Param.update_app(e), true);
             rcmail.register_command('workspace.unarchive', () => rcmail.env.WSP_Param.archive(false), true);
             rcmail.register_command("workspace.changeLogo", (x) => rcmail.env.WSP_Param.update_workspace_logo(x), true);
+            rcmail.register_command('workspace.change_visibility', () => rcmail.env.WSP_Param.change_visibility(), true);
         })
     })
 

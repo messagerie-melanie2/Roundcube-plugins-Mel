@@ -1324,10 +1324,10 @@ button.btn.no-style:active{
     background-color: transparent!important;
 }
 
-body.task-mail #toolbar-menu li > .compose
+/* body.task-mail #toolbar-menu li > .compose
 {
     display: block !important;
-}
+} */
 
 html.layout-normal body.task-mail.action-compose #layout-sidebar
 {
@@ -1555,6 +1555,13 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 .contextmenu .moved-item-mt 
 {
     display:none!important;
+}
+
+.fc-event.cal-event-status-cancelled div {
+	/* text-decoration-style: dashed !important; */
+	/* text-rendering: unset; */
+	/* font-style: unset; */
+	text-decoration: line-through;
 }
 
 /* li.parent-close-visu

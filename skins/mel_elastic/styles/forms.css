@@ -391,3 +391,60 @@ input.input-mel.error {
 {
 	display: none;
 }
+
+#eventedit
+{
+	height: unset;
+}
+
+#eventedit ul
+{
+	position: sticky;
+	top:-15px;
+	z-index: 5;
+	background-color: white;
+} 
+
+.action-dialog-ui #eventedit ul
+{
+	top:0px;
+}
+
+#eventedit li.nav-item{
+	margin-right: 15px;
+}
+
+#eventedit li.nav-item a
+{
+  font-size: 18px;
+  background-color:#DBDBDB;
+  color:#3A3E5E;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border:0px;
+  /* margin-right: 15px; */
+  /* width: 50%; */
+}
+
+#eventedit li.nav-item a:hover
+{
+  background-color:#F0F0F0;
+  color:#3A3E5E;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border:0px;
+}
+
+#eventedit li.nav-item a.active
+{
+  background-color:#F0F0F0;
+  color:#3A3E5E;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border:0px;
+}
+
+/* #eventedit li.nav-item a{
+	background-color: transparent;
+	border:none;
+} */

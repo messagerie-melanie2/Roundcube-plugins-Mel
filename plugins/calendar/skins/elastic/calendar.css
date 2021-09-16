@@ -1,0 +1,11 @@
+/* PAMELA */
+/* #calfreebusyurl,
+#calpublicfeedurl,
+#caldavurl {
+	width: 98%;
+	background: #fbfbfb;
+	background-color: var(--calendar-url-bg-color);
+	padding: 4px;
+	margin-bottom: 1em;
+	resize: none;
+} */

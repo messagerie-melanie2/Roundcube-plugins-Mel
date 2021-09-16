@@ -484,6 +484,37 @@ class RocketChatClient {
     return $result;
   }
 
+    /**
+   * Ajoute un utilisateur à un canal ou à un groupe.
+   *
+   * @param string $channel - channel or group id
+   * @param array $users
+   * @param bool $private
+   * @return array
+   */
+  public function update_channel($channel, $private = false)
+  {
+    //$private = ;
+    $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        //"Content-type: application/json",
+    );
+
+    $params = array(
+      "roomId" => $channel,
+      "type" => $private ? "p" : "c"
+    );
+
+    $url = $this->_api_url.($private ? self::CHANEL_SET_TYPE : "groups.setType");
+    
+    $results = $this->_post_url($url, $params, null, $headers);
+    
+
+    return $results;
+
+  }
+
   /**
    * Ajoute un utilisateur à un canal ou à un groupe.
    *

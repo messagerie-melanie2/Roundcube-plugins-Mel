@@ -223,6 +223,7 @@ class GlobalModal
     close()
     {
         this.modal.modal('hide');
+        $(".modal-backdrop").remove();
     }
 
     /**

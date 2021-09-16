@@ -275,16 +275,16 @@ class mel_metapage extends rcube_plugin
             'type'       => 'link',
         ), "taskbar");
 
-        // $this->add_button(array(
-        //     'command' => "compose",
-        //     'href' => './?_task=mail&_action=compose',
-        //     'class'	=> 'compose options',
-        //     'classsel' => 'compose options',
-        //     'innerclass' => 'inner',
-        //     'label'	=> 'compose',
-        //     'title' => '',
-        //     'type'       => 'link',
-        // ), "listcontrols");
+        $this->add_button(array(
+            'command' => "compose",
+            'href' => './?_task=mail&_action=compose',
+            'class'	=> 'compose options',
+            'classsel' => 'compose options',
+            'innerclass' => 'inner',
+            'label'	=> 'compose',
+            'title' => '',
+            'type'       => 'link',
+        ), "listcontrols");
 
         //listcontrols
         $this->include_depedencies();

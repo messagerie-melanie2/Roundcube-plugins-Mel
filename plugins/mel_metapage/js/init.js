@@ -82,7 +82,7 @@ if (rcmail)
                         let element;
                         let now = moment().startOf('day');
 
-                        const parse = cal && cal.parseISO8601 ? cal.parseISO8601 : (item) => item;
+                        const parse = window.cal !== null && window.cal !== undefined && window.cal.parseISO8601 ? window.cal.parseISO8601 : (item) => item;
 
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];

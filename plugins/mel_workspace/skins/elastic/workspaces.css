@@ -840,3 +840,15 @@ body.task-workspace  button.wsp-toolbar-item.toolbar-btn-smaller:focus {
 body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {
     right: 33px;
 }
+
+.task-workspace .bandeau {
+	background-color: #5870BF;
+	padding-bottom: 15px;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	text-align: center;
+}
+
+.task-workspace .bandeau .mel-button {
+	margin-right: 15px;
+}

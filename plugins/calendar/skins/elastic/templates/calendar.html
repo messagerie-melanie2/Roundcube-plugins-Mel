@@ -148,6 +148,8 @@
 		<roundcube:button type="link-menuitem" command="calendar-create" label="calendar.addcalendar" class="create disabled" classAct="create active" />
 		<roundcube:button type="link-menuitem" command="calendar-edit" label="calendar.editcalendar" class="edit disabled" classAct="edit active" />
 		<roundcube:button type="link-menuitem" command="calendar-delete" label="calendar.deletecalendar" class="delete disabled" classAct="delete active" />
+		<!-- MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import -->
+		<roundcube:button type="link-menuitem"  command="calendar-delete-all" label="calendar.delete_all" class="delete" classAct="delete active" />
 		<roundcube:if condition="env:calendar_driver == 'kolab'" />
 			<roundcube:button type="link-menuitem" command="calendar-remove" label="calendar.removelist" class="remove disabled" classAct="remove active" />
 		<roundcube:endif />
@@ -158,6 +160,7 @@
 		<roundcube:if condition="env:calendar_driver == 'kolab'" />
 			<roundcube:button type="link-menuitem" command="folders" task="settings" label="managefolders" class="folders disabled" classAct="folders active" />
 		<roundcube:endif />
+		<roundcube:button type="link-menuitem" command="calendar-setting-resource" label="calendar.gereragenda" class="settings" classAct="settings active" />
 	</ul>
 </div>
 

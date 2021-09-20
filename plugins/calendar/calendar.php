@@ -948,7 +948,11 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $this->rc->output->command('plugin.destroy_source', ['id' => $cal['id']]);
             }
             break;
-
+        // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
+        case "delete_all":
+            $success = $this->driver->delete_all_events($cal);
+            $reload = true;
+            break;
         case "subscribe":
             if (!$this->driver->subscribe_calendar($cal)) {
                 $this->rc->output->show_message($this->gettext('errorsaving'), 'error');

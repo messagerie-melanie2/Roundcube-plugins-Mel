@@ -285,6 +285,32 @@ $(document).ready(() => {
 
                     $("#toolbar-list-menu .compose").parent().prependTo($("#toolbar-list-menu .compose").parent().parent());
                 }
+                else if (rcmail.env.action ==="preview" || rcmail.env.action ==="show"){
+                    $("#message-header .headers-table td").each((i,e) => {
+                        switch ($(e).html()) {
+                            case "De":
+                                $(e).parent().addClass("mel-header-from");
+                                break;
+                            case "Date":
+                                $(e).parent().addClass("mel-header-date");
+                                break;
+                        
+                            default:
+                                break;
+                        }
+                    });
+
+                    $("#mel-message-details").click(() => {
+                        const plus = "icon-mel-plus";
+                        const minus = "icon-mel-minus";
+                        let querry = $("#mel-message-details .mel-d-icon");
+
+                        if (querry.hasClass(minus))
+                            querry.removeClass(minus).addClass(plus);
+                        else
+                            querry.removeClass(plus).addClass(minus);
+                    })
+                }
             }
         }
 

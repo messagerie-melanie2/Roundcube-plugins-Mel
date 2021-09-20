@@ -335,7 +335,7 @@ class mel_workspace extends rcube_plugin
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
         
-        if ($this->services_action_errors($this->currentWorkspace))
+        if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
         {
             $this->currentWorkspace->save();        
             $this->currentWorkspace->load();
@@ -562,7 +562,11 @@ class mel_workspace extends rcube_plugin
         
                 if ($is_admin)
                     $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('params', this)","class" => "$add_classes wsp-toolbar-item wsp-item-params"], "<span class=".$icons["params"]."></span><span class=text-item>".$this->rc->gettext("params", "mel_workspace")."</span>");
-            
+                else
+                {
+                    $html .= $vseparate;
+                    $html .= html::tag("button",["data-email" => $email, "data-wekan" => $wekan_board_id, "data-uid" => $uid, "onclick" => "ChangeToolbar('params', this)","class" => "$add_classes wsp-toolbar-item wsp-item-params"], "<span class=icofont-info></span><span class=text-item>".$this->rc->gettext("infos", "mel_workspace")."</span>");
+                }
             }
         } catch (\Throwable $th) {
             $html = "";
@@ -978,12 +982,44 @@ class mel_workspace extends rcube_plugin
         $html = "";
 
         try {
-            $html = $this->setup_params_page();
+            if (self::is_admin($this->currentWorkspace))
+                $html = $this->setup_params_page();
+            else 
+                $html = $this->setup_user_page();
         } catch (\Throwable $th) {
             $this->log_error("get_pages", "des différentes pages de", $th);
         }
 
         return $html;
+    }
+
+    function setup_user_page()
+    {
+        $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
+        $shares = $this->currentWorkspace->shares;
+
+        $html .= '<h2>Liste des membres</h2>';
+        $html .= '<div class="wsp-block">';
+
+        foreach ($shares as $key => $value) {
+            $html .= html::div(["class" => "row"], 
+                html::div(["class" => "col-2"],
+                    html::div(["class" => "dwp-round", "style" => "background-color:transparent"],
+                        html::tag("img", ["src" => $this->rc->config->get('rocket_chat_url')."avatar/".$value->user])
+                    )
+                ).
+                html::div(["class" => "col-10"],
+                    html::tag("span", ["class" => "name"], driver_mel::gi()->getUser($value->user)->name.(self::is_admin($this->currentWorkspace, $value->user) ? html::tag("span", ["class" => "plus icofont-crown"]) : "")).
+                    "<br/>".
+                    html::tag("span", ["class" => "email"], driver_mel::gi()->getUser($value->user)->email)
+                )
+            );
+        }
+
+        $html .= "</div></div>";
+
+        return $html;
+
     }
 
     function setup_params_page()
@@ -1242,6 +1278,8 @@ class mel_workspace extends rcube_plugin
 
                 if ($tmp_user === null)
                     $retour["errored_user"][] = $datas["users"][$i];
+                else if ($tmp_user === $user->uid)
+                    continue;
                 else {
                     $retour["existing_users"][] = $tmp_user;
                     $share = driver_mel::gi()->workspace_share([$workspace]);
@@ -1853,49 +1891,57 @@ class mel_workspace extends rcube_plugin
         $services = $this->get_worskpace_services($workspace, true, true);
         //update share
         $shares = $workspace->shares;
+        $initShares = count($shares);
         $count = count($users);
         for ($i=0; $i < $count; ++$i) { 
-            $share = driver_mel::gi()->workspace_share([$workspace]);
-            $share->user = $users[$i];
-            $share->rights = Share::RIGHT_WRITE;
-            $shares[] = $share;                              
-        }
-        $workspace->shares = $shares;
-        //update services
-        $this->create_services($workspace, $services, $users, false);
-
-        //update channel
-        if (!(array_search(self::CHANNEL, $services) === false))
-        {
-            $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-            if ($workspace->uid === "apitech-1")
-                $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
-            else
-                $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+            if (!self::is_in_workspace($workspace, $users[$i]))
+            {
+                $share = driver_mel::gi()->workspace_share([$workspace]);
+                $share->user = $users[$i];
+                $share->rights = Share::RIGHT_WRITE;
+                $shares[] = $share;   
+            }                           
         }
 
-        if (!(array_search(self::WEKAN, $services) === false))
+        if ($initShares !== count($shares))
         {
-            $wekan = $this->wekan();
-            //Update wekan
-            $board_id = $this->get_object($workspace, self::WEKAN)->id; 
-            foreach ($users as $key => $value) {
-                if (!$wekan->check_if_user_exist($board_id, $value))
-                {
-                    try {
-                        $wekan->add_member($board_id, $value);
-                    } catch (\Throwable $th) {
-                        throw $th;
-                    }
-                }
+            $workspace->shares = $shares;
+            //update services
+            $this->create_services($workspace, $services, $users, false);
 
+            //update channel
+            if (!(array_search(self::CHANNEL, $services) === false))
+            {
+                $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                if ($workspace->uid === "apitech-1")
+                    $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
+                else
+                    $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
             }
-            
+
+            if (!(array_search(self::WEKAN, $services) === false))
+            {
+                $wekan = $this->wekan();
+                //Update wekan
+                $board_id = $this->get_object($workspace, self::WEKAN)->id; 
+                foreach ($users as $key => $value) {
+                    if (!$wekan->check_if_user_exist($board_id, $value))
+                    {
+                        try {
+                            $wekan->add_member($board_id, $value);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                    }
+
+                }
+                
+            }
+
+            if (!(array_search(self::EMAIL, $services) === false))        
+                $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $this->get_worskpace_services($workspace)[self::CLOUD]);
         }
 
-        if (!(array_search(self::EMAIL, $services) === false))        
-            $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $this->get_worskpace_services($workspace)[self::CLOUD]);
-        
     }
 
     function get_ariane()
@@ -2023,11 +2069,11 @@ class mel_workspace extends rcube_plugin
             foreach ($workspace->shares as $key => $value) {
                 if ($value->user === $user_to_delete)
                 {
+                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true));
                     $shares = $workspace->shares;
                     unset($shares[$key]);
                     $workspace->shares = $shares;
                     $user_find = true;
-                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true));
                     break;
                 }
             }
@@ -2077,7 +2123,23 @@ class mel_workspace extends rcube_plugin
             }
             $workspace->hashtags = [];
             $workspace->save();
+
+            $services = $this->get_worskpace_services($add_classes, false, true);
+
+            try {
+
+                if ($services[self::EMAIL] || $services[self::CLOUD])
+                    driver_mel::gi()->workspace_group($workspace->uid, [], false);  
+
+                if ($services[self::WEKAN])
+                    $this->wekan()->delete_board($this->get_object($workspace, $app)->id);
+
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+
             $workspace->delete();
+
         }
         else
             echo "denied";
@@ -2558,6 +2620,12 @@ class mel_workspace extends rcube_plugin
         return $nb_admin;
     }
 
+    public static function nb_users($workspace)
+    {
+        $shares = $workspace->shares;
+        return count($shares);
+    }
+
     public static function get_other_admin($workspace, $username = null)
     {
         $me = $username ?? driver_mel::gi()->getUser()->uid;
@@ -2575,10 +2643,10 @@ class mel_workspace extends rcube_plugin
 
     public static function generate_uid($title, $rc)
     {
-        $max = 35;
+        $max = 30;
 
         mel_helper::load_helper($rc)->include_utilities();
-        $text = mel_utils::replace_determinants(mel_utils::remove_accents(mel_utils::replace_special_char(strtolower($title))), "-");
+        $text = mel_utils::replace_determinants(mel_utils::replace_special_char(mel_utils::remove_accents(strtolower($title))), "-");
         $text = str_replace(" ", "-", $text);
         if (count($text) > $max)
         {

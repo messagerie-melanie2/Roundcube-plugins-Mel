@@ -149,3 +149,11 @@ html.touch .mm-shortcuts > .square_div {
 {
     margin-left: 0px;
 }
+
+.task-mel_metapage.action-dialog-ui .ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable.ui-resizable
+{
+    top:0!important;
+    left:0!important;
+    /* height: 100%!important; */
+    border-radius: 0!important;
+}

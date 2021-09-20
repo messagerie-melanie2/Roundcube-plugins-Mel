@@ -239,9 +239,12 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
     //$(".wsp-toolbar").css("z-index", "0");
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");;
-    $(event).addClass("active")            
-    .attr("disabled", "disabled")
-    .attr("aria-disabled", "true");
+    $(event).addClass("active");
+    if (_class !== "rocket")
+    {
+        $(event).attr("disabled", "disabled")
+        .attr("aria-disabled", "true");
+    }
 
     let datas = [];
     let picture = $(".wsp-picture");
@@ -529,6 +532,20 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
+    try {
+        m_mp_close_ariane();
+    } catch (error) {
+        
+    }
+    if (_class === "rocket" && $(".discussion-frame").length > 0 && $(".discussion-frame").css("display") !== "none")
+    {
+        $(".discussion-frame")[0].contentWindow.postMessage({
+            externalCommand: 'go',
+            path: otherDatas
+        }, '*');
+        return;
+    }
+
     if (window.webconf_master_bar === undefined)
         $(".mm-frame").css("display", "none");
     else

@@ -118,7 +118,7 @@ $labels["choose_event_state"] = "Choisissez le statut de l'évènement";
 $labels["choose_sensivity"] = "Choisissez la sensibilité de l'évènement";
 
 $labels["continue"] = "Continuer";
-$labels["add_all_member_from_a_workspace"] = "Ajouter tout les membres de l'espace de travail";
+$labels["add_all_member_from_a_workspace"] = "Ajouter tous les membres de l'espace de travail";
 $labels["add_all"] = "Ajouter tout";
 $labels["select_attendees"] = "Sélectionner les participants";
 $labels["back"] = "Retour";

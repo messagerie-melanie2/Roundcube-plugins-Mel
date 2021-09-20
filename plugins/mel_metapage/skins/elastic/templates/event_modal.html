@@ -380,3 +380,50 @@
 	<roundcube:object name="plugin.attachments_form" id="event-attachment-form" mode="smart" />
 	<div id="edit-localchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.localchangeswarning" /></div>
 </div>
+
+<roundcube:if condition="in_array(env:task, array('mel_metapage'))" />
+<div id="eventfreebusy" class="popupmenu calendar-scheduler formcontent">
+	<roundcube:object name="plugin.attendees_freebusy_table" id="attendees-freebusy-table"
+		class="schedule-table" data-h-margin="-1" data-v-margin="1" />
+	<div class="nav">
+		<div class="schedule-buttons">
+			<button type="button" id="schedule-find-prev" class="btn btn-secondary prev-slot"><roundcube:label name="calendar.prevslot" /></button>
+			<button type="button" id="schedule-find-next" class="btn btn-secondary next-slot"><roundcube:label name="calendar.nextslot" /></button>
+		</div>
+		<div class="schedule-options">
+			<label><input type="checkbox" id="schedule-freebusy-workinghours" value="1" class="pretty-checkbox" /><roundcube:label name="calendar.onlyworkinghours" /></label>
+		</div>
+		<div class="schedule-nav">
+			<button type="button" id="schedule-freebusy-prev" title="<roundcube:label name='previouspage' />">&#9668;</button>
+			<button type="button" id="schedule-freebusy-next" title="<roundcube:label name='nextpage' />">&#9658;</button>
+		</div>
+	</div>
+	<div class="schedule-range">
+		<div class="form-group row">
+			<label for="schedule-startdate" class="col-form-label col-sm-2"><roundcube:label name="calendar.start" /></label>
+			<span class="col-sm-10 datetime">
+				<input type="text" name="startdate" size="11" id="schedule-startdate" class="form-control" disabled="true" /> &nbsp;
+				<input type="text" name="starttime" size="6" id="schedule-starttime" class="form-control" disabled="true" />
+			</span>
+		</div>
+		<div class="form-group row">
+			<label for="schedule-enddate" class="col-form-label col-sm-2"><roundcube:label name="calendar.end" /></label>
+			<span class="col-sm-10 datetime">
+				<input type="text" name="enddate" size="11" id="schedule-enddate" class="form-control" disabled="true" /> &nbsp;
+				<input type="text" name="endtime" size="6" id="schedule-endtime" class="form-control" disabled="true" />
+			</span>
+		</div>
+		<div class="schedule-legend form-group row">
+			<label class="col-form-label col-sm-2"><roundcube:label name="calendar.legend" /></label>
+			<span class="col-sm-10 form-control-plaintext">
+				<roundcube:include file="/templates/freebusylegend.html" />
+				<span class="attendee organizer"><roundcube:label name="calendar.roleorganizer" /></span>
+				<span class="attendee req-participant"><roundcube:label name="calendar.rolerequired" /></span>
+				<span class="attendee opt-participant"><roundcube:label name="calendar.roleoptional" /></span>
+				<span class="attendee non-participant"><roundcube:label name="calendar.rolenonparticipant" /></span>
+				<span class="attendee chair"><roundcube:label name="calendar.rolechair" /></span>
+			</span>
+		</div>
+	</div>
+</div>
+<roundcube:endif/>

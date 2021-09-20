@@ -583,3 +583,9 @@ a.button.icon.refresh::before, button.btn.refresh::before {
 	border-right-style: solid !important;
 	border-right-width: thin !important;
 }
+
+#message-header .mel-header-from,
+#message-header .mel-header-date
+{
+    display: none;
+}

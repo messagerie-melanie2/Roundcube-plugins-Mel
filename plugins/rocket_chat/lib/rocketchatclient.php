@@ -118,6 +118,7 @@ class RocketChatClient {
   const GROUP_LIST_JOINED = "groups.list";
   const POST_MESSAGE = "chat.sendMessage";
   const ROOM_INFO = "rooms.info";
+  const ME = "me";
   /**
    * Relative API URL
    *
@@ -646,6 +647,23 @@ class RocketChatClient {
     $members = $this->_get_url($private, $params, $headers);  
 
     return json_decode($members["content"]);
+  }
+
+  public function me()
+  {
+      $headers = array(
+        "X-Auth-Token: " . $this->getAuthToken(),
+        "X-User-Id: " . $this->getUserId(),
+        //"Content-type: application/json",
+    );
+
+    // $params = array(
+    //   "roomId" => $channel_id,
+    // );
+
+    //$private = $private ? $this->_api_url.self::GROUP_MEMBERS : $this->_api_url.self::CHANNEL_MEMBERS;
+
+    return $this->_get_url($this->_api_url.self::ME, null, $headers);  
   }
 
   /**

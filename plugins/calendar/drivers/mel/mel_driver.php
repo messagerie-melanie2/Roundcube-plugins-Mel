@@ -255,7 +255,7 @@ class mel_driver extends calendar_driver {
           $rights = 'lrswikxteav';
         }
         else if ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
-          $rights = 'lrsw';
+          $rights = 'lrswt';
         }
         else if ($cal->asRight(LibMelanie\Config\ConfigMelanie::READ)) {
           $rights = 'lrs';

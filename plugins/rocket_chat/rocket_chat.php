@@ -330,7 +330,7 @@ EOF;
      *
      * @param array $args
      */
-    function logout() {
+    public function logout() {
       $authToken = $this->getAuthToken();
       $userId = $this->getUserId();
       
@@ -433,8 +433,7 @@ EOF;
     private function get_rc_client()
     {
       require_once __DIR__ . '/lib/rocketchatclient.php';
-
-      $this->logout();
+      
       $this->login();
 
       $uid = $this->getUserId();
@@ -444,8 +443,33 @@ EOF;
       $rocketClient->setUserId($uid);
       $rocketClient->setAuthToken($token);
 
+      $me = $rocketClient->me();
+      if ($me["httpCode"] === 401)
+      {
+        $this->logout();
+        $rocketClient = $this->get_rc_client();
+        setcookie("ariane_need_to_reconnect", "true");
+      }
+
       return $rocketClient;
     }
+
+    public function me()
+    {
+      require_once __DIR__ . '/lib/rocketchatclient.php';
+      $uid = $this->getUserId();
+      $token = $this->getAuthToken();
+
+      $rocketClient = new RocketChatClient($this->rc);
+      $rocketClient->setUserId($uid);
+      $rocketClient->setAuthToken($token);
+
+      $me = $rocketClient->me();
+
+      return $me["httpCode"] !== 401;
+    }
+
+
 
   /**
    * Créer un canal ou un groupe via un appel ajax.

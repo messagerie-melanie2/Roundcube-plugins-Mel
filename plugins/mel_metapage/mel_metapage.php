@@ -119,10 +119,7 @@ class mel_metapage extends rcube_plugin
             $this->add_texts('localization/', true);
             $this->load_config();
             //$this->include_depedencies();
-            if ($this->rc->action === "chat" || $this->rc->task === "chat")
-            {
-                $this->include_script('js/actions/ariane.js');
-            }
+
             $this->mm_include_plugin();
             $this->rc->get_storage();
             if ($this->rc->task === "webconf")
@@ -134,6 +131,11 @@ class mel_metapage extends rcube_plugin
             else
                 $this->register_task("mel_metapage");
 
+            if ($this->rc->action === "chat" || $this->rc->task === "chat")
+            {
+                $this->include_script('js/actions/ariane.js');
+                $this->register_action('logout', array($this, 'chat_logout'));
+            }
             
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
@@ -1026,6 +1028,20 @@ class mel_metapage extends rcube_plugin
     function get_modal()
     {
         echo $this->rc->output->parse("mel_metapage.mel_modal", false, false);
+        exit;
+    }
+
+    public function chat_logout()
+    {
+        $rc = $this->rc->plugins->get_plugin("rocket_chat");
+
+        if (!$rc->me())
+        {
+            $rc->logout();
+            echo "unloggued";
+        }
+        else
+            echo "loggued";
         exit;
     }
 

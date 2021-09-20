@@ -73,6 +73,10 @@ if (rcmail)
 
             rcmail.register_command("gestion_labels", () => {show_rcube_manage_labels();}, true);
 
+            rcmail.register_command("calendar-setting-resource", () => {
+                //window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_resources_agendas");
+                mel_metapage.Functions.change_frame("settings", true, false, {"_action":"plugin.mel_resources_agendas"});
+            });
 
             // rcmail.drag_menu_action = function(action)
             // {

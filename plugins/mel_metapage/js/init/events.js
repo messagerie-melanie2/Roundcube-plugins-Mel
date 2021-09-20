@@ -135,6 +135,12 @@ if (rcmail)
          }
     });
 
+    
+    rcmail.addEventListener('calendar-delete-all', function() {
+        mel_metapage.Storage.remove(mel_metapage.Storage.calendar);
+        mel_metapage.Storage.remove(mel_metapage.Storage.last_calendar_update);
+    });
+
     rcmail.addEventListener("init", () => {
         $('[data-popup]').each((i,e) => {
             $(e).on("show.bs.popover", () => {
@@ -309,4 +315,76 @@ if (rcmail)
     
 
 }
+
+// const cookieEvent = new CustomEvent("cookieChanged", {
+//     bubbles: true,
+//     detail: {
+//       cookieValue: document.cookie,
+//       checkChange: () => {
+//         if (cookieEvent.detail.cookieValue != document.cookie) {
+        
+//             cookieEvent.detail.changedCookies = {};
+//             const last = Enumerable.from(cookieEvent.detail.cookieValue.split(";")).toDictionary(x => x.split("=")[0], x => x.split("=")[1]);
+//             const _new = Enumerable.from(document.cookie.split(";")).toDictionary(x => x.split("=")[0], x => x.split("=")[1]);
+
+//             const added = _new.toEnumerable().where(x => !last.contains(x.key));
+//             const removed = last.toEnumerable().where(x => !_new.contains(x.key));
+//             const changed = _new.toEnumerable().where(x => last.contains(x.key) && last.get(x.key) !== x.value);
+
+//             added.forEach((x) => {
+//                 cookieEvent.detail.changedCookies[x.key] = x.value;
+//             })
+//             removed.forEach((x) => {
+//                 cookieEvent.detail.changedCookies[x.key] = "removed";
+//             })
+//             changed.forEach((x) => {
+//                 cookieEvent.detail.changedCookies[x.key] = x.value;
+//             })
+
+//             cookieEvent.detail.cookieValue = document.cookie;
+//             return 1;
+//         } else {
+//           return 0;
+//         }
+//       },
+//       changedCookies:{},
+//       listenCheckChange: () => {
+//         setInterval(function () {
+//           if (cookieEvent.detail.checkChange() == 1) {
+//             cookieEvent.detail.changed = true;
+//             //fire the event
+//             cookieEvent.target.dispatchEvent(cookieEvent);
+//           } else {
+//             cookieEvent.detail.changed = false;
+//           }
+//         }, 1000);
+//       },
+//       changed: false
+//     }
+//   });
+  
+//   /*FIRE cookieEvent EVENT WHEN THE PAGE IS LOADED TO
+//    CHECK IF USER CHANGED THE COOKIE VALUE */
+  
+//   document.addEventListener("DOMContentLoaded", function (e) {
+//     e.target.dispatchEvent(cookieEvent);
+//   });
+  
+//   document.addEventListener("cookieChanged", function (e) {
+//     e.detail.listenCheckChange();
+//     if(e.detail.changed === true ){
+//         console.log(e, "event");
+//         return;
+//       for (const key in e.detail.changedCookies) {
+//           if (Object.hasOwnProperty.call(e.detail.changedCookies, key)) {
+//               const element = e.detail.changedCookies[key];
+//               try {
+//                 rcmail.triggerEvent("cookieChanged", {key:key, value:element});
+//               } catch (error) {
+                  
+//               }
+//           }
+//       }
+//     }
+//   });
 

@@ -8,8 +8,27 @@ if (window.rcmail) {
 		animation: 'none'
 	});		
 
+	rcmail.addEventListener("cookieChanged", (element) => {
+
+		if (element.key === "ariane_need_to_reconnect" && (element.value == "true" || element.value == true))
+		{
+			login();
+		}
+
+	});
+
+	metapage_frames.addEvent("open.after", (eClass, changepage, isAriane, querry, id, actions) => {
+		if (eClass === "discussion" && changepage)
+		{
+			//logout().always(() => {
+				rcmail.triggerEvent("init_ariane", id);
+			//});
+		}
+	});
+
 	function login()
 	{
+		console.log("here");
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
 			url: MEL_ELASTIC_UI.url("discussion", "login"),//"/?_task=discussion&_action=login",
@@ -24,14 +43,15 @@ if (window.rcmail) {
 		});
 	} 
 
+
 	function logout(onSuccess = null)
 	{
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
-			url: MEL_ELASTIC_UI.url("discussion", "logout"),//"/?_task=discussion&_action=login",
+			url: MEL_ELASTIC_UI.url("chat", "logout"),//"/?_task=discussion&_action=login",
 			success: function (data) {
 				if (onSuccess !== null)
-					onSuccess();
+					onSuccess(data === "loggued");
 			},
 			error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
 				console.error(xhr, ajaxOptions, thrownError);
@@ -41,8 +61,12 @@ if (window.rcmail) {
 
 	rcmail.addEventListener('init_ariane', async function(evt) {
 		window.ariane_id = evt === null ? "ariane_id" : evt;
-	
-		if (rcmail.env.rocket_chat_auth_token === undefined && rcmail.env.rocket_chat_user_id === undefined)
+		
+			await logout((loggued) => {
+				if (!loggued)
+					rcmail.env.rocket_chat_user_id = undefined;
+			});
+		if (rcmail.env.rocket_chat_auth_token === undefined || rcmail.env.rocket_chat_user_id === undefined)
 			await login();
 		setTimeout(function() {
 			//console.error('log', window.document.getElementById(ariane_id), window.document.getElementById(ariane_id).contentWindow);
@@ -53,7 +77,15 @@ if (window.rcmail) {
 					// userId: rcmail.env.rocket_chat_user_id
 				}, '*');
 			} catch (error) {
-				console.error(error);
+				try {
+					parent.document.getElementById(ariane_id).contentWindow.postMessage({
+						externalCommand: 'login-with-token',
+						token: rcmail.env.rocket_chat_auth_token,
+						// userId: rcmail.env.rocket_chat_user_id
+					}, '*');
+				} catch (error) {
+					console.error(error);
+				}
 			}
 			rcmail.env.ariane_is_logged = true;
 
@@ -188,3 +220,5 @@ if (window.rcmail) {
 }
 else
 	console.warn("/!\\ Il n'y a pas d'environement RCMAIL, la connection automatique risque de ne pas fonctionner.");
+
+

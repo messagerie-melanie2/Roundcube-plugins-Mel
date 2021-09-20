@@ -329,6 +329,7 @@ $(document).ready(() => {
             $(".input-mel-datetime .input-mel.start").datetimepicker({
                 format: 'd/m/Y H:i',
                 lang:"fr",
+                step:15,
                 onChangeDateTime:() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
@@ -344,6 +345,7 @@ $(document).ready(() => {
             $(".input-mel-datetime .input-mel.end").datetimepicker({
                 format: 'd/m/Y H:i',
                 lang:"fr",
+                step:15,
                 onChangeDateTime:() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
@@ -462,19 +464,30 @@ $(document).ready(() => {
                 {
                     $("#div-events-wsp").css("display", "");
                     $("#div-events-category").css("display", "none");
+                    if ($("#wsp-event-all-cal-mm").val() === "#none")
+                        $(".have-workspace").css("display", "none");
+                    else
+                        $(".have-workspace").css("display", "");
                 }
                 else {
                     $("#div-events-wsp").css("display", "none");
                     $("#div-events-category").css("display", "");
+                    $(".have-workspace").css("display", "none");
                 }
             });
             $("#wsp-event-all-cal-mm").on("change", () => {
                 const val = $("#wsp-event-all-cal-mm").val();
                 if (val !== "#none")
+                {
+                    $(".have-workspace").css("display", "");
                     $("#edit-categories").val(`ws#${val}`)
+                }
                 else
+                {
+                    $(".have-workspace").css("display", "none");
                     $("#edit-categories").val("");
                     update_location();
+                }
             });
             $("#categories-event-all-cal-mm").on("change", () => {
                 const val = $("#categories-event-all-cal-mm").val();
@@ -555,10 +568,15 @@ $(document).ready(() => {
                 {
                     $("#div-events-wsp").css("display", "");
                     $("#div-events-category").css("display", "none");
+                    if ($("#wsp-event-all-cal-mm").val() === "#none")
+                        $(".have-workspace").css("display", "none");
+                    else
+                        $(".have-workspace").css("display", "");
                 }
                 else {
                     $("#div-events-wsp").css("display", "none");
                     $("#div-events-category").css("display", "");
+                    $(".have-workspace").css("display", "none");
                 }
 
                 $("#fake-event-rec").val("")
@@ -710,13 +728,23 @@ $(document).ready(() => {
                     else
                     {
                         if ($("#edit-wsp")[0].checked)
+                        {
                             $("#edit-wsp").click();
+                            if ($("#wsp-event-all-cal-mm").val() === "#none")
+                                $(".have-workspace").css("display", "none");
+                            else
+                                $(".have-workspace").css("display", "");
+                        }
                         else {
                             $("#div-events-wsp").css("display", "none");
                             $("#div-events-category").css("display", "");
+                            $(".have-workspace").css("display", "none");
                         }
                         $("#categories-event-all-cal-mm").val(event.categories[0]);
                     }
+                }
+                else {
+                    $(".have-workspace").css("display", "none");
                 }
 
                 $("#edit-attendees-donotify").addClass("custom-control-input");

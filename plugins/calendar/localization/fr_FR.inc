@@ -276,4 +276,9 @@ $labels['weeknoall'] = 'Dans le sélecteur de date ainsi que dans la vue calendr
 
 // PAMELA
 $labels['tabsharinggroup'] = 'Partage à un groupe';
+// MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
+$labels['delete_all'] = 'Vider l\'agenda';
+$labels['gereragenda'] = 'Gérer les agendas';
+// MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
+$labels['deleteallcalendarconfirm'] = 'Voulez-vous vraiment supprimer tous les évènements de cet agenda (l\'opération ne peut pas être annulée) ?';
 ?>

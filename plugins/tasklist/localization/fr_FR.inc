@@ -188,3 +188,5 @@ $labels['itipinvalidrequest'] = 'Cette invitation n\'est plus valide';
 $labels['sentresponseto'] = 'La réponse de l\'utilisateur affecté a été envoyée avec succès à $mailto';
 $labels['successremoval'] = 'Cette tâche a été supprimée avec succès.';
 $labels['invalidlistproperties'] = 'Propriétés de la liste invalides ! Veuillez saisir un nom valide.';
+$labels['editlist'] = 'Modifier la liste';
+$labels['deletelist'] = 'Supprimer la liste';

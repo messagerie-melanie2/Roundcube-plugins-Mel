@@ -533,6 +533,7 @@ function rcube_calendar_ui(settings)
           // for invitation calendars check permissions of the original folder
           if (event._folder_id)
             calendar = me.calendars[event._folder_id];
+
           return calendar && me.has_permission(calendar, 'td');
         };
 
@@ -701,8 +702,9 @@ function rcube_calendar_ui(settings)
       notify.checked = me.has_attendees(event) && invite.checked;
 
       if (event.allDay) {
-        starttime.val("12:00").hide();
-        endtime.val("13:00").hide();
+        //PAMELA
+        // starttime.val("12:00").hide();
+        // endtime.val("13:00").hide();
         allday.checked = true;
       }
       else {
@@ -895,9 +897,13 @@ function rcube_calendar_ui(settings)
           }
 
           // tell server to send notifications
-          if ((data.attendees.length || (event.id && event.attendees.length)) && allow_invitations && (notify.checked || invite.checked || need_invitation)) {
-            data._notify = settings.itip_notify;
-            data._comment = comment.val();
+          try {
+            if ((data.attendees.length || (event.id && event.attendees.length)) && allow_invitations && (notify.checked || invite.checked || need_invitation)) {
+              data._notify = settings.itip_notify;
+              data._comment = comment.val();
+            }
+          } catch (error) {
+            
           }
 
           data.calendar = calendars.val();
@@ -960,7 +966,7 @@ function rcube_calendar_ui(settings)
         $dialog.dialog({
           modal: true,
           resizable: true,
-          closeOnEscape: false,
+          closeOnEscape: true /**PAMELA **/,
           title: rcmail.gettext((action == 'edit' ? 'edit_event' : 'new_event'), 'calendar'),
           open: function() {
             editform.attr('aria-hidden', 'false');
@@ -1611,7 +1617,7 @@ function rcube_calendar_ui(settings)
           $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: rcmail.url('freebusy-times'),
+            url:rcmail.get_task_url("calendar&_action=freebusy-times"),// rcmail.url('freebusy-times'),
             data: { email:email, start:date2servertime(clone_date(start, 1)), end:date2servertime(clone_date(end, 2)), interval:interval, _remote:1 },
             success: function(data) {
               freebusy_ui.loading--;
@@ -2988,6 +2994,17 @@ function rcube_calendar_ui(settings)
       return true;
     };
 
+      // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
+      this.calendar_delete_all = function(calendar)
+      {
+        if (confirm(rcmail.gettext('deleteallcalendarconfirm', 'calendar'))) {
+        var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
+          rcmail.http_post('calendar', { action:'delete_all', c:{ id:calendar.id } });
+          return true;
+        }
+        return false;
+      };
+
     this.calendar_delete = function(calendar)
     {
       var label = calendar.children ? 'deletecalendarconfirmrecursive' : 'deletecalendarconfirm';
@@ -3593,6 +3610,11 @@ function rcube_calendar_ui(settings)
         rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-showfburl', true);
         rcmail.enable_command('calendar-delete', me.calendars[node.id].editable);
         rcmail.enable_command('calendar-remove', me.calendars[node.id] && me.calendars[node.id].removable);
+        // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
+        rcmail.enable_command('calendar-delete-all', true);
+        // MANTIS 3896: Partage public et protégé de l'agenda
+        rcmail.enable_command('calendar-check-feed-url', true);
+        rcmail.enable_command('calendar-setting-resource', true);
       }
     });
     calendars_list.addEventListener('insert-item', function(p) {
@@ -4255,6 +4277,11 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
   rcmail.addEventListener('plugin.event_show_revision', function(data){ cal.event_show_dialog(data, null, true); });
   rcmail.addEventListener('plugin.itip_message_processed', function(data){ cal.itip_message_processed(data); });
   rcmail.addEventListener('requestrefresh', function(q){ return cal.before_refresh(q); });
+  // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
+  rcmail.register_command('calendar-delete-all', function(){ cal.calendar_delete_all(cal.calendars[cal.selected_calendar]); rcmail.triggerEvent("calendar-delete-all"); }, false);
+
+  // MANTIS 3896: Partage public et protégé de l'agenda
+  rcmail.register_command('calendar-check-feed-url', function(){ cal.calendar_check_feed_url(cal.calendars[cal.selected_calendar]); }, false ); 
 
   $(window).resize(function(e) {
     // check target due to bugs in jquery

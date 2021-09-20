@@ -7,12 +7,12 @@ body {
     color:#363A5B;
 }
 
-body, 
-button, 
-input, 
-optgroup, 
-select, 
-textarea, 
+body,
+button,
+input,
+optgroup,
+select,
+textarea,
 .popover {
     font-family: Marianne,Roboto,sans-serif;
 }
@@ -30,7 +30,7 @@ a:hover{
 }
 
 #layout > div > .header,
-#layout-sidebar, 
+#layout-sidebar,
 #layout-list {
     border: none;
 }
@@ -55,27 +55,27 @@ a:hover{
     color:#fff;
 }
 
-ul.treelist li.selected > div > a, 
+ul.treelist li.selected > div > a,
 ul.treelist li.selected > a {
     background-color: #484D7A;
     color:#fff;
-} 
+}
 
 .listing li.selected, .listing tr.selected td,
 .popupmenu .listing li.selected {
     background-color: #2C3054;
-    color:#fff; 
+    color:#fff;
 }
 
-a.button.icon:not(.disabled):focus, 
+a.button.icon:not(.disabled):focus,
 .header a.button.icon:not(.disabled):hover {
     background-color: #484D7A !important;
-    color:#fff;   
+    color:#fff;
 }
 
 .header a.toolbar-button.button.icon:not(.disabled):hover,
 .header a.toolbar-button:hover,
-.menu a:not(.disabled):focus, 
+.menu a:not(.disabled):focus,
 .menu a:not(.disabled):hover {
     background-color: #2C3054 !important;
     color: #fff !important;
@@ -86,7 +86,7 @@ a.button.icon:not(.disabled):focus,
     color:white;
 }
 
-.listing tbody td, 
+.listing tbody td,
 .listing li {
     border: none;
 }
@@ -95,13 +95,13 @@ ul.listing li ul {
     border-top: none;
 }
 
-.listing tbody tr.context-source:not(.selected) > td, 
-.listing:not(.treelist) li.context-source:not(.selected), 
-body > #layout > div.sidebar .listing tbody tr.context-source:not(.selected) > td, 
-body > #layout > div.sidebar .listing:not(.treelist) li.context-source:not(.selected), 
-body > #layout > div.sidebar ul.treelist li.context-source:not(.selected) > a, 
-body > #layout > div.sidebar ul.treelist li.context-source:not(.selected) > div > a, 
-ul.treelist li.context-source:not(.selected) > a, 
+.listing tbody tr.context-source:not(.selected) > td,
+.listing:not(.treelist) li.context-source:not(.selected),
+body > #layout > div.sidebar .listing tbody tr.context-source:not(.selected) > td,
+body > #layout > div.sidebar .listing:not(.treelist) li.context-source:not(.selected),
+body > #layout > div.sidebar ul.treelist li.context-source:not(.selected) > a,
+body > #layout > div.sidebar ul.treelist li.context-source:not(.selected) > div > a,
+ul.treelist li.context-source:not(.selected) > a,
 ul.treelist li.context-source:not(.selected) > div > a {
     background-color: #2C3054 !important;
 }
@@ -133,7 +133,7 @@ ul.treelist li.context-source:not(.selected) > div > a {
 
 .messagelist td.subject {
     flex-wrap: wrap;
-} 
+}
 
 .messagelist td.labels
 {
@@ -207,48 +207,48 @@ ul.treelist li.context-source:not(.selected) > div > a {
 }
 
 /******Calendrier*******/
-.listing li > div.folder .listname::before, 
-.listing li > div span.subscribed::before, 
-.listing li > div.readonly a:first-child::after, 
-.listing li.readonly:not(.virtual) > div a:first-child::after, 
-.listing li > div.calendar .calname::before, 
-fieldset.categories .input-group a.button.create::before, 
-.fc button.prev::before, 
-.fc button.next::before, 
-.fc .fc-time i::before, 
-#eventshow .event-partstat .changersvp::before, 
-.availability span::before, 
-.calendar-scheduler .schedule-buttons .next-slot::after, 
-.resources-dialog .listing li.resource > a::before, 
-#devices-table td:not(.selection)::before, 
-#delegate-table td::before, 
-a.btn.fromcloud::before, 
-li > a.icon.saveas::before, 
-a.button.filesaveall::before, 
-a.button.saveas::before, 
-.folderlist li.mailbox a.subscription.subscribed::before, 
-.filelist tr.session > td.name::after, 
-.filelist tbody td.filename span::before, 
-.document-editor-header #collaborators a.button.add::before, 
-.editors-dialog table td.options a.delete::before, 
-#kolabnoteslist td.title::before, 
-#taglist li::before, 
-#tagsform option::before, 
-.rsvp-status.loading::before, 
-.rsvp-status.declined::before, 
-.rsvp-status.tentative::before, 
-.rsvp-status.accepted::before, 
-.rsvp-status.delegated::before, 
-.rsvp-status.needs-action::before, 
-.attendee::before, 
-.edit-attendees-table th.invite label::before, 
-#event-status-badge span::before, 
-#alarm-display h3::before, 
-#alarm-display .alarm-actions a::before, 
-.listing li > div.tasklist .listname::before, 
-#tasklist .childtoggle::before, 
-#tasklist .taskhead:not(.flagged):hover span.flagged::before, 
-#tasklist .taskhead.flagged span.flagged::before, 
+.listing li > div.folder .listname::before,
+.listing li > div span.subscribed::before,
+.listing li > div.readonly a:first-child::after,
+.listing li.readonly:not(.virtual) > div a:first-child::after,
+.listing li > div.calendar .calname::before,
+fieldset.categories .input-group a.button.create::before,
+.fc button.prev::before,
+.fc button.next::before,
+.fc .fc-time i::before,
+#eventshow .event-partstat .changersvp::before,
+.availability span::before,
+.calendar-scheduler .schedule-buttons .next-slot::after,
+.resources-dialog .listing li.resource > a::before,
+#devices-table td:not(.selection)::before,
+#delegate-table td::before,
+a.btn.fromcloud::before,
+li > a.icon.saveas::before,
+a.button.filesaveall::before,
+a.button.saveas::before,
+.folderlist li.mailbox a.subscription.subscribed::before,
+.filelist tr.session > td.name::after,
+.filelist tbody td.filename span::before,
+.document-editor-header #collaborators a.button.add::before,
+.editors-dialog table td.options a.delete::before,
+#kolabnoteslist td.title::before,
+#taglist li::before,
+#tagsform option::before,
+.rsvp-status.loading::before,
+.rsvp-status.declined::before,
+.rsvp-status.tentative::before,
+.rsvp-status.accepted::before,
+.rsvp-status.delegated::before,
+.rsvp-status.needs-action::before,
+.attendee::before,
+.edit-attendees-table th.invite label::before,
+#event-status-badge span::before,
+#alarm-display h3::before,
+#alarm-display .alarm-actions a::before,
+.listing li > div.tasklist .listname::before,
+#tasklist .childtoggle::before,
+#tasklist .taskhead:not(.flagged):hover span.flagged::before,
+#tasklist .taskhead.flagged span.flagged::before,
 #taskshow.status-flagged h2::before {
     font-size: 1em !important;
 }
@@ -257,7 +257,7 @@ a.button.saveas::before,
     opacity: 0.7;
 }
 
-.listing li > div.readonly a:first-child::after, 
+.listing li > div.readonly a:first-child::after,
 .listing li.readonly:not(.virtual) > div a:first-child::after {
     font-size: .8em !important;
     background-color: transparent !important;
@@ -284,18 +284,18 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
     color: #b3b6b7  !important;
 }
 
-#layout-sidebar .ui-datepicker .ui-state-default, 
+#layout-sidebar .ui-datepicker .ui-state-default,
 #layout-sidebar .ui-datepicker.ui-widget-content .ui-state-default {
     color: #fff;
 }
 
-.ui-datepicker .ui-state-highlight, 
+.ui-datepicker .ui-state-highlight,
 .ui-datepicker.ui-widget-content .ui-state-highlight {
     background-color: #2C3054 !important;
     color: #fff !important;
 }
 
-.ui-datepicker a.ui-state-active.ui-state-highlight, 
+.ui-datepicker a.ui-state-active.ui-state-highlight,
 .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight,
 .ui-datepicker a.ui-state-active {
     background-color: #80D5C6 !important;
@@ -312,8 +312,9 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
 
 /*** Full Calendar ***/
 .fc-event {
-	border: none !important;
-    border-radius: 0 !important;
+	/* border: none !important;
+    border-radius: 0 !important; */
+    border-width: 3px!important;
 }
 
 .fc .fc-event .fc-title {
@@ -434,7 +435,7 @@ separate {
     height: 36px;
     color: #363A5B;
 	margin: 0 .75rem 0 0;
-	
+
 	font-size: 1.25em;
     display: block;
     float: left;
@@ -489,7 +490,7 @@ separate {
     background-color:#2C3054!important;
 }
 
-li.mel >a:before, 
+li.mel >a:before,
 li#settingstabpluginmel_doubleauth > a::before,
 li#settingstabpluginmel_suggestion_box > a::before
 {
@@ -582,8 +583,8 @@ framed_item > .framed_item{
     line-height: 12px;
     -moz-border-radius: 15px;
     border-radius: 15px;
-    background-color: lightgray;    
-    text-align: center;  
+    background-color: lightgray;
+    text-align: center;
     font-weight: bold;
     font-size: 6px;
 }
@@ -667,9 +668,9 @@ a.roundbadge.link:hover{
     background-color: #484D7A;
 }
 
-#taskmenu a.selected > sup > span, 
-#taskmenu a:hover > sup > span, 
-#taskmenu a.selected:hover > sup > span, 
+#taskmenu a.selected > sup > span,
+#taskmenu a:hover > sup > span,
+#taskmenu a.selected:hover > sup > span,
 #taskmenu .action-buttons a:hover > sup > span
 {
     color:#484D7A;
@@ -811,26 +812,26 @@ img.menu-image {
     font-weight: 900;
 }
 
-.listing li > a.virtual.boite, 
+.listing li > a.virtual.boite,
 .listing li.virtual.boite > a,
-.listing li > a.virtual.inbox, 
+.listing li > a.virtual.inbox,
 .listing li.virtual.inbox > a,
-.listing li > a.virtual.drafts, 
+.listing li > a.virtual.drafts,
 .listing li.virtual.drafts > a,
-.listing li > a.virtual.models, 
+.listing li > a.virtual.models,
 .listing li.virtual.models > a,
-.listing li > a.virtual.sent, 
+.listing li > a.virtual.sent,
 .listing li.virtual.sent > a,
-.listing li > a.virtual.junk, 
+.listing li > a.virtual.junk,
 .listing li.virtual.junk > a,
-.listing li > a.virtual.trash, 
+.listing li > a.virtual.trash,
 .listing li.virtual.trash > a,
-.listing li > a.virtual.dossier, 
+.listing li > a.virtual.dossier,
 .listing li.virtual.dossier > a {
     opacity: .9;
 }
 
-html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child, 
+html:not(.touch) .listing li > a:focus, html:not(.touch) .listing.focus tbody tr.focused > td:first-child,
 html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.selection + td {
     border-left: 2px solid #80D5C6 !important;
 }
@@ -880,7 +881,7 @@ table.listing td.subscribed {
 .mel-search
 {
     border-bottom-right-radius: 15px;
-    border-top-right-radius: 15px;   
+    border-top-right-radius: 15px;
 }
 
 .mel-search-group > .input-group-append > .input-group-text{
@@ -952,23 +953,23 @@ div{
  ::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   /* Track */
   ::-webkit-scrollbar-track {
     background: #A3A7BC;
     border-radius: 15px;
   }
-  
+
   /* Handle */
   ::-webkit-scrollbar-thumb {
     background: #363A5B;
     border-radius: 15px;
   }
-  
+
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
     background: #070B2D;
-  } 
+  }
 
 .mel-selected-content-button
 {
@@ -1339,7 +1340,7 @@ html.layout-normal body.task-mail.action-compose #layout-sidebar
     display: block!important;
 } */
 
-#toolbar-menu a.icon-mel-undo::before 
+#toolbar-menu a.icon-mel-undo::before
 {
     content: "\e936" !important;
     font-family: DWP !important;
@@ -1395,7 +1396,7 @@ tr.elementmoveup > td{
 
 body.task-settings.action-plugin-mel_resources_bal #layout-content .header,
 html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-content .header .toolbar-menu-button,
-html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-list .floating-action-buttons .create.button 
+html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-list .floating-action-buttons .create.button
 {
     display: none!important;
 }
@@ -1552,7 +1553,7 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 	width: 0;
 }
 
-.contextmenu .moved-item-mt 
+.contextmenu .moved-item-mt
 {
     display:none!important;
 }

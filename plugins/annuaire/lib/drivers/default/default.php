@@ -50,16 +50,41 @@ class default_driver_annuaire extends driver_annuaire {
         }
         $this->filter = "(|(telephonenumber=*$search)(mobile=*$search))";
       } else {
-        $searchField = $this->rc->config->get('annuaire_search_field', ['cn', 'mail']);
-        if (is_array($searchField)) {
+        $searchFields = $this->rc->config->get('annuaire_search_fields', ['cn', 'mail']);
+        // MANTIS 0006198: Recherche approximative pour les Contacts ministériels
+        $searchFilter = $this->rc->config->get('annuaire_search_filter');
+        // MANTIS 0006197: Passer la recherche sur mail à un égal au lieu de commence par
+        $searchEqualFields = $this->rc->config->get('annuaire_search_equal_fields', []);
+        if (!is_array($searchEqualFields)) {
+          $searchEqualFields = [$searchEqualFields];
+        }
+        if (is_array($searchFields)) {
           $filter = "";
-          foreach ($searchField as $field) {
-            $filter .= "($field=$search*)";
+          foreach ($searchFields as $field) {
+            if (in_array($field, $searchEqualFields)) {
+              $filter .= "($field=$search)";
+            }
+            else {
+              $filter .= "($field=$search*)";
+            }
+            
+          }
+          if (isset($searchFilter)) {
+            $filter = $searchFilter . $filter;
           }
           $this->filter = "(|$filter)";
         }
+        else if (in_array($searchFields, $searchEqualFields)) {
+          $this->filter = "$searchFields=$search";
+          if (isset($searchFilter)) {
+            $this->filter = "(|$searchFilter(".$this->filter."))";
+          }
+        }
         else {
-          $this->filter = "$searchField=$search*";
+          $this->filter = "$searchFields=$search*";
+          if (isset($searchFilter)) {
+            $this->filter = "(|$searchFilter(".$this->filter."))";
+          }
         }
       }
     }
@@ -99,7 +124,7 @@ class default_driver_annuaire extends driver_annuaire {
     
     $this->ldap->anonymous();
     if ($search) {
-      $sr = $this->ldap->search($this->base_dn, $this->filter, $this->attributes, 0, 100);
+      $sr = $this->ldap->search($this->base_dn, $this->filter, $this->attributes, 0, 200);
     } else {
       $sr = $this->ldap->list_alias($this->base_dn, $this->filter, $this->attributes);
     }

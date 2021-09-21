@@ -42,11 +42,6 @@ class mtes_driver_annuaire extends default_driver_annuaire {
    */
   public function __construct() {
     parent::__construct();
-    
-    // Recuperation du service
-    if (!isset($_SESSION['annuaire_user_service'])) {
-      $_SESSION['annuaire_user_service'] = $this->get_user_service($this->rc->user->get_username());
-    }
   }
 
   /**
@@ -77,8 +72,20 @@ class mtes_driver_annuaire extends default_driver_annuaire {
     foreach ($infos as $info) {
       if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '00')) {
         continue;
-      } else if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '20') && isset($_SESSION['annuaire_user_service'])) {
-        if (strpos($info['dn'], $_SESSION['annuaire_user_service']) === false) {
+      } else if (isset($info['mineqportee']) && ($info['mineqportee'][0] == '20')) {
+        // Recuperation des services de l'utilisateur
+        if (!isset($_SESSION['annuaire_user_services'])) {
+          $_SESSION['annuaire_user_services'] = $this->get_user_services($this->rc->user->get_username());
+        }
+        // Avec une portée de 20, on doit vérifier qu'au moins un des services de l'utilisateur correspond
+        $foundService = false;
+        foreach ($_SESSION['annuaire_user_services'] as $service) {
+          if (strpos($info['dn'], $service) !== false) {
+            $foundService = true;
+            break;
+          }
+        }
+        if (!$foundService) {
           continue;
         }
       }
@@ -399,37 +406,49 @@ class mtes_driver_annuaire extends default_driver_annuaire {
    * **** PRIVATE ***
    */
   /**
-   * Récupère
+   * Récupère les services associés à l'utilisateur
+   * Il y a au moins un service lié au DN
+   * Il peut y avoir d'autres service dans le cas d'alias (seeAlso)
    *
    * @param string $uid
    *            Uid de l'utilisateur
+   * 
+   * @return array Liste des services
    */
-  private function get_user_service($uid)
+  private function get_user_services($uid)
   {
     // Récupération du DN en fonction de l'UID
-    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid);
-    $base_dn = $user_infos['dn'];
-    $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
-    $service = null;
-    // Initialisation du filtre LDAP
-    $base_filter = "(mineqTypeEntree=NSER)";
-    // Récupération de l'instance depuis l'ORM
-    $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-    if ($ldap->anonymous()) {
-      do {
-        $tmp = explode(',', $base_dn, 2);
-        $filter = "(&(" . $tmp[0] . ")$base_filter)";
-        $base_dn = $tmp[1];
-        // Search LDAP
-        $result = $ldap->ldap_list($base_dn, $filter, [
-            'cn'
-        ]);
-      } while ((! isset($result) || $ldap->count_entries($result) === 0) && strpos($base_dn, 'ou=') === 0);
-      if (isset($result) && $ldap->count_entries($result) == 1) {
-        $infos = $ldap->get_entries($result);
-        $service = $infos[0]['dn'];
+    $user_infos = LibMelanie\Ldap\Ldap::GetUserInfos($uid, null, ['dn', 'seeAlso']);
+    if (isset($user_infos['seealso'])) {
+      $dns = array_merge([$user_infos['dn']], $user_infos['seealso']);
+    }
+    else {
+      $dns = [$user_infos['dn']];
+    }
+    $services = [];
+    // Parcourir tous les dn pour trouver tous les services associés
+    foreach ($dns as $base_dn) {
+      $base_dn = substr($base_dn, strpos($base_dn, ',') + 1);
+      // Initialisation du filtre LDAP
+      $base_filter = "(mineqTypeEntree=NSER)";
+      // Récupération de l'instance depuis l'ORM
+      $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
+      if ($ldap->anonymous()) {
+        do {
+          $tmp = explode(',', $base_dn, 2);
+          $filter = "(&(" . $tmp[0] . ")$base_filter)";
+          $base_dn = $tmp[1];
+          // Search LDAP
+          $result = $ldap->ldap_list($base_dn, $filter, [
+              'cn'
+          ]);
+        } while ((!isset($result) || $ldap->count_entries($result) === 0) && strpos($base_dn, 'ou=') === 0);
+        if (isset($result) && $ldap->count_entries($result) == 1) {
+          $infos = $ldap->get_entries($result);
+          $services[] = $infos[0]['dn'];
+        }
       }
     }
-    return $service;
+    return $services;
   }
 }

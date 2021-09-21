@@ -589,8 +589,19 @@ class mel_workspace extends rcube_plugin
         $admin = self::is_admin($this->currentWorkspace);
         $html = "";
 
+        if ($exists)
+            $html.= html::tag("button", [
+                "id" => "createthings",
+                "class" => "mel-button btn btn-secondary ignoreActive",
+                "data-popup" => "groupoptions-create",
+                "aria-haspopup" => "true",
+            ],
+            "Créer".html::tag("span", ["class" => $icon])
+            );
+
         if ($exists && $admin)
             $html.= html::tag("button",["style" => "margin-right:15px", "class" => "mel-button invite-button plus", "onclick" => "rcmail.command(`workspace.add_users`)"], html::tag("span", [], "Inviter un membre").html::tag("span", ["class" => $icon]));
+        
         if ($exists)
             $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command('workspace.leave')"], html::tag("span", [], "Se désinscrire de l'espace de travail").html::tag("span", ["class" => $icon_quit]));
         else

@@ -227,7 +227,7 @@ EOF;
      * "name": "Example User",
      * "username": "example"
      */
-    public function getUserInfos($username = null, $email = null) {
+    public function getUserInfos($username = null, $email = null, $force_admin = false) {
       if (mel_logs::is(mel_logs::DEBUG))
         mel_logs::get_instance()->log(mel_logs::DEBUG, "rocket_chat::getUserInfos($username, $email)");
       $infos = null;
@@ -239,9 +239,9 @@ EOF;
         }
       }
       $infos = \mel::getCache('rocketchat');
-      if (!isset($infos)) {
+      if ($force_admin || !isset($infos)) {
         $useMongoDB = $this->rc->config->get('rocket_chat_use_mongodb', false);
-        if ($useMongoDB) {
+        if (!$force_admin && $useMongoDB) {
           // Charge la lib MongoDB si nécessaire
           require_once __DIR__ . '/lib/rocketchatmongodb.php';
           $mongoClient = new RocketChatMongoDB($this->rc);
@@ -454,6 +454,17 @@ EOF;
       return $rocketClient;
     }
 
+    private function get_rc_admin_client()
+    {
+      //getUserInfos
+      require_once __DIR__ . '/lib/rocketchatclient.php';
+
+      $rocketClient = new RocketChatClient($this->rc);
+      $rocketClient->authentification($this->rc->config->get('rocket_chat_admin_username', null), $this->rc->config->get('rocket_chat_admin_password', ''), true);
+
+      return $rocketClient;
+    }
+
     public function me()
     {
       require_once __DIR__ . '/lib/rocketchatclient.php';
@@ -495,6 +506,8 @@ EOF;
     public function post_message($room_id, $text, $alias, $avatar = null)
     {
       $rocketClient = $this->get_rc_client();
+
+      //$b = $this->get_rc_client()->add_users($room_id, [$this->rc->config->get('rocket_chat_admin_username', null)], false);
 
       return $rocketClient->post_message($room_id, $text, $alias
       //, $avatar

@@ -22,3 +22,7 @@ $labels["wekan_do"] = "Fait";
 
 $labels["useful_links"] = "Liens utiles";
 $labels["infos"] = "Informations";
+
+$labels["create_mail"] = "Envoyer un message aux membres";
+$labels["create_webconf"] = "Commencer une visioconférence";
+$labels["create_webconf_params"] = "Nouvelle visioconférence paramétrable";

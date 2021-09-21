@@ -54,7 +54,7 @@ class Webconf extends Program
             "email" => $user->email
         ]);
         $this->set_env_var("webconf.bar", $this->parse("webconf_bar"));
-        if ($wsp === null && $ariane === null)
+        if (($wsp === null && $ariane === null) || $key === "")
         {
             $this->add_handler("roomkey", [$this, "get_key"]);
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
@@ -86,7 +86,7 @@ class Webconf extends Program
                     "color" => json_decode($workspace->settings)->color
                     ]
                 ];
-            $html .= '<option value="'.str_replace('"', $replace, json_encode($wsp)).'">'.$workspace->title.'</option>';
+            $html .= '<option '.($this->get_input("_wsp") !== null && $this->get_input("_wsp") === $workspace->uid ? "selected" : "" ).' value="'.str_replace('"', $replace, json_encode($wsp)).'">'.$workspace->title.'</option>';
         }
         $html .= "</select>";
 

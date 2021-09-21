@@ -81,6 +81,10 @@ async function WSPReady()
 
     wsp_mail_updated();
     setup_params();
+
+    if ($("#createthings").length > 0)
+        $("#createthings").removeClass("active");
+
     await tmpTask;
 }
 

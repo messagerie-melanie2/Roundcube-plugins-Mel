@@ -34,14 +34,31 @@
         }
     }
 
+    async function notify(key, uid)
+    {
+        return mel_metapage.Functions.post(
+            mel_metapage.Functions.url("workspace", "notify_chat"),
+            {
+                _uid:uid,
+                _text:`@all\r\nUne webconference a débuté :\r\n- WebMail => ${mel_metapage.Functions.url("webconf", "", {
+                    _key:key,
+                    _wsp:uid
+                }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '')}\r\n- Lien Classique => ${rcmail.env["webconf.base_url"] + "/" + key}`,
+                _path:(window.location.origin + window.location.pathname).slice(0, (window.location.origin + window.location.pathname).length-1)
+            }
+        );
+    }
+
     if (window.Webconf !== undefined)
         window.Webconf.helpers = {
             go:go_to_webconf,
-            already:webconf_is_active
+            already:webconf_is_active,
+            notify:notify
         };
     window.webconf_helper = {
         go:go_to_webconf,
-        already:webconf_is_active
+        already:webconf_is_active,
+        notify:notify
     };
 
 })();

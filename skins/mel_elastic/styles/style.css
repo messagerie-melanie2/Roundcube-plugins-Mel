@@ -997,6 +997,12 @@ td.mel-fit-content{
     font-size: small;
 }
 
+.ignoreActive.mel-button{
+    color: white!important;
+    background-color: #363A5B!important;
+    border-color: #363A5B!important;
+}
+
 .mel-button.inverse
 {
     border-color: #484D7A;
@@ -1036,6 +1042,12 @@ td.mel-fit-content{
     border-color: #484D7A;
 }
 
+.ignoreActive.mel-button:hover
+{
+    background-color: #484D7A!important;
+    border-color: #484D7A!important;
+}
+
 .mel-button:hover > .mel-return
 {
     color:#ff5552;
@@ -1044,6 +1056,13 @@ td.mel-fit-content{
 .mel-button.button-white:hover
 {
     color:white;
+}
+
+.mel-button.disabled{
+    color: white;
+    background-color: #73778e !important;
+    border-color: #73778e !important;
+    pointer-events: none;
 }
 
 .mel-button.no-button-margin
@@ -1571,3 +1590,19 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
     border-right-width: thin!important;
     border-right-color: white!important;
 } */
+
+.icon-mel::before
+{
+    font-family: DWP!important;
+    font-weight: normal;
+}
+
+.icon-mel-send::before
+{
+    content: "\e954"!important;
+}
+
+.icon-mel-videoconference::before
+{
+    content: "\e938"!important;
+}

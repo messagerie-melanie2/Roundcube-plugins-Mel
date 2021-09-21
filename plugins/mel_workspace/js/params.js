@@ -442,6 +442,50 @@
                 return this.busyAsync(false);
         }
 
+        compose()
+        {
+            parent.rcmail.open_compose_step({to:rcmail.env.current_workspace_email});
+        }
+
+        async create_webconf(needParameters = false)
+        {
+            if (!needParameters)
+            {
+                const conf = this.generate_webconf();
+                const key = `${conf.letters}${rcmail.env.current_workspace_uid.replaceAll("-", "").toUpperCase()}${conf.numbers}`;
+                await parent.webconf_helper.go(key, rcmail.env.current_workspace_uid, null);
+                await parent.webconf_helper.notify(key, rcmail.env.current_workspace_uid);
+            }
+            else
+                await parent.webconf_helper.go("", rcmail.env.current_workspace_uid, null);  
+        }
+
+        generate_webconf()
+        {
+            const letters = ["A","B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+                             "U", "V", "W", "X", "Y", "Z"];
+
+            let datas = {
+                "letters":"",
+                numbers:""
+            };
+
+            for (let index = 0; index < 10; index++) {
+                datas.letters += letters[this.getRandomInt(0, 26)];
+                if (index <= 3)
+                    datas.numbers += this.getRandomInt(0,10).toString(); 
+            }
+
+            return datas;
+        }
+
+        getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+          }
+          
+
         archive(archive = true)
         {
             this.busy();
@@ -504,6 +548,9 @@
             rcmail.register_command('workspace.unarchive', () => rcmail.env.WSP_Param.archive(false), true);
             rcmail.register_command("workspace.changeLogo", (x) => rcmail.env.WSP_Param.update_workspace_logo(x), true);
             rcmail.register_command('workspace.change_visibility', () => rcmail.env.WSP_Param.change_visibility(), true);
+            rcmail.register_command('workspace.compose', () => rcmail.env.WSP_Param.compose(), true);
+            rcmail.register_command('workspace.webconf', () => rcmail.env.WSP_Param.create_webconf(), true);
+            rcmail.register_command('workspace.webconf.needParams', () => rcmail.env.WSP_Param.create_webconf(true), true);
         })
     })
 

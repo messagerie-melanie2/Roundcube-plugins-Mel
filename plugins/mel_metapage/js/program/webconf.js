@@ -1560,7 +1560,7 @@ $(document).ready(() => {
             rcmail.env.webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
             rcmail.env.webconf.set_title();
 
-            if (rcmail.env.webconf.have_ariane() || rcmail.env["webconf.wsp"] !== undefined)
+            if ((rcmail.env.webconf.have_ariane() || rcmail.env["webconf.wsp"] !== undefined) && rcmail.env["webconf.key"] !== "")
             {
                 await rcmail.env.webconf.go();
 
@@ -1570,6 +1570,17 @@ $(document).ready(() => {
             {
                 rcmail.env.webconf.set_title();
                 rcmail.env.webconf.show_selector();
+                if (rcmail.env["webconf.key"] === "")
+                {
+                    if (rcmail.env["webconf.wsp"] !== undefined)
+                    {
+                        $(".mel-radio-1").css("display", "none");
+                        $(".webconf-wsp").css("display", "").find(".wsp_select").addClass("disabled").attr("disabled", "disabled");
+                        $(".webconf-ariane").css("display", "none");
+                    }
+                    Webconf.update_room_name();
+                }
+
             }
             //rcmail.env.webconf = webconf;
             rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);   

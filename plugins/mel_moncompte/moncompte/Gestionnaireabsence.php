@@ -46,14 +46,19 @@ class Gestionnaireabsence extends Moncompteobject {
 			$user->load(['outofoffices']);
 			// Message interne
 			$internal_oof = $user->outofoffices[Outofoffice::TYPE_INTERNAL];
+			// Message externe
+			$external_oof = $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
 			if (isset($internal_oof)) {
 				rcmail::get_instance()->output->set_env('moncompte_absence_debut_interne', isset($internal_oof->start) ? $internal_oof->start->format('d/m/Y') : null);
 				rcmail::get_instance()->output->set_env('moncompte_absence_fin_interne', isset($internal_oof->end) ? $internal_oof->end->format('d/m/Y') : null);
 				rcmail::get_instance()->output->set_env('moncompte_absence_status_interne', $internal_oof->enable ? 'checked' : '');
 				rcmail::get_instance()->output->set_env('moncompte_absence_texte_interne', $internal_oof->message);
 			}
-			// Message externe
-			$external_oof = $user->outofoffices[Outofoffice::TYPE_EXTERNAL];
+			else if (isset($external_oof)) {
+				rcmail::get_instance()->output->set_env('moncompte_absence_debut_interne', isset($external_oof->start) ? $external_oof->start->format('d/m/Y') : null);
+				rcmail::get_instance()->output->set_env('moncompte_absence_fin_interne', isset($external_oof->end) ? $external_oof->end->format('d/m/Y') : null);
+			}
+			
 			if (isset($external_oof)) {
 				rcmail::get_instance()->output->set_env('moncompte_absence_status_externe', $external_oof->enable ? 'checked' : '');
 				rcmail::get_instance()->output->set_env('moncompte_absence_texte_externe', $external_oof->message);
@@ -206,7 +211,12 @@ class Gestionnaireabsence extends Moncompteobject {
 				$outofoffice_interne->message = $message_interne;
 				$outofoffice_interne->order = 50;
 				$outofoffices[] = $outofoffice_interne;
+			}
 
+			if ((isset($message_externe) && !empty($message_externe)
+						|| isset($message_interne) && !empty($message_interne) && isset($radio_externe) && $radio_externe == 'abs_texte_nodiff')
+					&& isset($date_debut) && !empty($date_debut)
+					&& isset($date_fin) && !empty($date_fin)) {
 				$outofoffice_externe = driver_mel::gi()->users_outofoffice();
 				$outofoffice_externe->type = Outofoffice::TYPE_EXTERNAL;
 				$outofoffice_externe->enable = (isset($status_externe) && $status_externe == '1' );

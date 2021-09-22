@@ -258,7 +258,6 @@ class mel_sharedmailboxes extends rcube_plugin {
                                         "title" => $_object->email_send),
                                     $cn)
                             );
-
                             if ($last) {
                                 $content_last .= $content;
                             }
@@ -267,7 +266,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                                 $last = $current_mailbox;
                             }
                         }
-                        else {
+                        else if (!$current_mailbox) {
                             if ($uid == $this->rc->get_user_name()) {
                                 $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action;
                             }
@@ -333,8 +332,15 @@ class mel_sharedmailboxes extends rcube_plugin {
                 if (isset($_object->mailbox)) {
                     $mailbox = $_object->mailbox;
                     // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-                    $mailbox->load(['internet_access_enable']);
+                    $mailbox->load(['internet_access_enable', 'double_authentification']);
                     if (!mel::is_internal() && !$mailbox->internet_access_enable) {
+                        continue;
+                    }
+                    // MANTIS 0005292: La double authentification doit être obligatoire pour certains comptes
+                    if (!mel::is_internal() 
+                            && class_exists('mel_doubleauth')
+                            && !mel_doubleauth::is_double_auth_enable()
+                            && $mailbox->double_authentification) {
                         continue;
                     }
                     // Récupération de la configuration de la boite pour l'affichage
@@ -361,6 +367,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $check_all = (bool)$this->rc->config->get('check_all_folders');
 
                         foreach ($a_folders as $mbox) {
+                            // MANTIS 0006141: L'ouverture de Courriel ne liste pas les non lus de l'INBOX de la BALI
+                            if ($mbox == 'INBOX' || $mbox == 'Corbeille') {
+                                continue;
+                            }
+
                             $unseen_old = rcmail_get_unseen_count($mbox);
 
                             if (!$check_all && $unseen_old !== null && $mbox != $current) {
@@ -449,15 +460,20 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $folder = $this->rc->storage->get_folder();
                     }
                 }
+                else if ($this->rc->task == 'mail' && $this->rc->action == 'plugin.refresh_store_target_selection') {
+                    $folder = null;
+                }
                 else {
                     $folder = $this->rc->storage->get_folder();
                 }
 
-                $ret = $this->get_user_from_folder($folder);
-                if (isset($ret)) {
-                    // Récupération de la configuration de la boite pour l'affichage
-                    $args['user'] = $ret['user'];
-                    $args['host'] = $ret['host'];
+                if (isset($folder)) {
+                    $ret = $this->get_user_from_folder($folder);
+                    if (isset($ret)) {
+                        // Récupération de la configuration de la boite pour l'affichage
+                        $args['user'] = $ret['user'];
+                        $args['host'] = $ret['host'];
+                    }
                 }
             }
             // Utiliser les proxy imap ?
@@ -631,8 +647,10 @@ class mel_sharedmailboxes extends rcube_plugin {
                     }
                 }
                 $mailbox = $this->rc->output->get_env('mailbox');
-                $mailbox = str_replace(driver_mel::gi()->getMboxTrash(), $trash_mbox, $mailbox);
-                $this->rc->output->set_env('mailbox', $mailbox);
+                if (strpos($mailbox, driver_mel::gi()->getMboxTrash()) === 0) {
+                    $mailbox = str_replace(driver_mel::gi()->getMboxTrash(), $trash_mbox, $mailbox);
+                    $this->rc->output->set_env('mailbox', $mailbox);
+                }
             }
         }
         return $args;
@@ -1170,7 +1188,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      */
     public function message_before_send($args) {
         if (mel_logs::is(mel_logs::DEBUG))
-            mel_logs::gi()->l(mel_logs::DEBUG, "mel::message_before_send()");
+            mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes::message_before_send()");
 
         $_SESSION['m2_from_identity'] = $args['from'];
         $_SESSION['m2_uid_identity'] = null;
@@ -1190,7 +1208,6 @@ class mel_sharedmailboxes extends rcube_plugin {
             }
         }
         if (!empty($headers)) {
-            $headers = driver_mel::gi()->setHeadersMessageBeforeSend($headers);
             $args['message']->headers($headers, true);
         }
         if (!$found) {
@@ -1208,6 +1225,10 @@ class mel_sharedmailboxes extends rcube_plugin {
     private function render_sharedmailboxlist($list, $mailbox, $delimiter, $is_balp = true) {
         if (mel_logs::is(mel_logs::DEBUG)) {
             mel_logs::gi()->l(mel_logs::DEBUG, "mel_sharedmailboxes_imap::render_sharedmailboxlist()");
+        }
+        if (mel_logs::is(mel_logs::TRACE)) {
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist($mailbox, $delimiter, $is_balp)");
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): list = " . var_export($list, 1));
         }
         // On est sur une balp
         $driver_mel = driver_mel::gi();
@@ -1234,6 +1255,10 @@ class mel_sharedmailboxes extends rcube_plugin {
         else {
             // Gestion de la boite individuelle
             $folders = $list;
+        }
+
+        if (mel_logs::is(mel_logs::TRACE)) {
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): folders = " . var_export($folders, 1));
         }
 
         $_folders = [];
@@ -1299,6 +1324,10 @@ class mel_sharedmailboxes extends rcube_plugin {
             $folders[$folder]['realname'] = true;
             $_folders[$folder] = $folders[$folder];
             unset($folders[$folder]);
+        }
+
+        if (mel_logs::is(mel_logs::TRACE)) {
+            mel_logs::gi()->l(mel_logs::TRACE, "mel_sharedmailboxes_imap::render_sharedmailboxlist(): _folders = " . var_export($_folders, 1));
         }
 
         $display = $this->rc->config->get('mailboxes_display', 'default');

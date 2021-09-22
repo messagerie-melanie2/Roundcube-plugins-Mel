@@ -144,6 +144,20 @@ class mel_workspace extends rcube_plugin
         // driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", null);
     }
 
+    public function get_all_wsp()
+    {
+        $wsp = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
+        $r = [];
+        foreach ($wsp as $key => $value) {
+            try {
+                $r[$value->uid] = json_decode($value->objects);
+            } catch (\Throwable $th) {
+                $r[$value->uid] = "nothing";
+            }
+        }
+        return $r;
+    }
+
     /**
      * Trie les espaces de travail en fonction de leurs id.
      *

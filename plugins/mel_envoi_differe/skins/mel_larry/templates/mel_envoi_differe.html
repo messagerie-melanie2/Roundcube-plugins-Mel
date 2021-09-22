@@ -1,0 +1,37 @@
+<roundcube:object name="doctype" value="html5" />
+<html>
+
+<head>
+    <title>
+        <roundcube:object name="pagetitle" />
+    </title>
+    <roundcube:include file="/includes/links.html" />
+</head>
+
+<body class="iframe envoidiffere">
+    <h1 class="boxtitle">
+        <roundcube:label name="mel_envoi_differe.title" />
+    </h1>
+    <div id="envoidiffere-details" class="boxcontent">
+        <roundcube:object name="mel_envoi_differe" />
+        <form name="valide" action="" method="get" class="propform" id="form_envoidiffere">
+            <fieldset>
+                <div class="warning">
+                    <roundcube:label name="mel_envoi_differe.description" />
+                    <br>
+                    <roundcube:label name="mel_envoi_differe.description_warning" />
+                </div>
+                <div>
+                    <label for="envoidiffere_date">
+                        <roundcube:label name="mel_envoi_differe.date" />
+                    </label>
+                    <input type="text" name="envoidiffere_date" id="envoidiffere_date" required />
+                    <roundcube:label name="mel_envoi_differe.time" />
+                    <input type="text" name="envoidiffere_time" id="envoidiffere_time" required />
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</body>
+
+</html>

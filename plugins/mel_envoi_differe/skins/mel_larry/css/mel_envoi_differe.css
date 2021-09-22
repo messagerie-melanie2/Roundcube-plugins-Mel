@@ -1,0 +1,58 @@
+/*Affichage du bouton*/
+.toolbar a.button.mel_envoi_differe {
+    background-position: 10px center !important;
+    color: var(--labels-text-color);
+    text-indent: 0;
+    font-weight: bold;
+    font-size: 13px;
+    width: 125px;
+    line-height: 30px;
+    padding-left: 30px;
+}
+
+.toolbar a.button.mel_envoi_differe.enable {
+    border-color: #3ec400;
+}
+
+/* 
+#mel_envoi_differe {
+	max-width: 120px;
+} */
+
+/*Affichage du dialog*/
+body.envoidiffere {
+	background: #fff !important;
+	background: var(--main-content-bg-color) !important;
+}
+
+#envoidiffere_date {
+    width: 140px;
+    margin-right: 10px;
+}
+
+#info_message {
+    position: absolute;
+    bottom: 20px;
+}
+
+#error_message {
+    margin-top: 20px;
+    color: var(--settings-disconnect-text-color);
+}
+
+#envoidiffere_time {
+    width: 120px;
+}
+#envoidiffere-details .warning {
+    margin-top: 5px;
+    padding: 10px 15px;
+    color: var(--box-warning-text-color);
+    border: 1px solid #d8cebc;
+    border-color: var(--box-warning-border-color);
+    background-color: #ffe1e0;
+    background-color: var(--box-warning-bg-color);
+}
+
+#envoidiffere-details .margin {
+    margin: 30px 0;
+}

@@ -133,7 +133,7 @@ $labels["define_end_date"] = "Définir une date de fin";
 
 $labels["authorized_access"] = "Autoriser l'accès";
 $labels["restricted"] = "Restreint";
-$labels["public"] = "public";
+$labels["public"] = "Public";
 $labels["color"] = "Couleur";
 $labels["define_end_date"] = "Définir une date de fin";
 $labels["select_attendees2"] = "Sélectionner des participants";

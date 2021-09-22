@@ -1613,3 +1613,10 @@ a.roadmap::before
     font-family: 'IcoFont'!important;
     font-weight: normal!important;
 }
+
+#mel_envoi_differe::before
+{
+    font-family: IcoFont!important;
+    font-weight: normal!important;
+    content: "\eedc"!important;
+}

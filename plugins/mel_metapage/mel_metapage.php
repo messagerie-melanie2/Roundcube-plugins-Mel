@@ -643,18 +643,26 @@ class mel_metapage extends rcube_plugin
         $lines = "";
 
         $first = true;
+        $annuaire_exists = false;
+        //$annuaires = [];
         foreach ($workpaces as $key => $value) {
 
-            $mail = mel_workspace::get_wsp_mail($value->uid);
+            try {
+                $mail = mel_workspace::get_wsp_mail($value->uid);
 
-            if (/*true || */$wsp->get_object($value, mel_workspace::GROUP))
-            {
-                $lines .= "OR OR HEADER TO $mail HEADER CC $mail HEADER BCC $mail ";// HEADER BCC $before".$value->uid."$after ";
-                if ($first)
-                    $first = false;
-                else
-                    $or .= "OR ";
-                    break;
+                $annuaire_exists = $wsp->get_object($value, mel_workspace::GROUP);
+                //$annuaires[$value->uid] = $annuaire_exists;
+                if (/*true || */ $annuaire_exists)
+                {
+                    $lines .= "OR OR HEADER TO $mail HEADER CC $mail HEADER BCC $mail ";// HEADER BCC $before".$value->uid."$after ";
+                    if ($first)
+                        $first = false;
+                    else
+                        $or .= "OR ";
+                        //break;
+                }
+            } catch (\Throwable $th) {
+                //$annuaires[$value->uid] = $th->getMessage();
             }
         }
 
@@ -692,7 +700,7 @@ class mel_metapage extends rcube_plugin
             }
         }
 
-        echo json_encode(["datas" => $datas, "search" => $search, "get" => $tmp]);
+    echo json_encode(["datas" => $datas, "search" => $search, "get" => $tmp/*, "annuaires" => $annuaires*/]);
         exit;
     }
 

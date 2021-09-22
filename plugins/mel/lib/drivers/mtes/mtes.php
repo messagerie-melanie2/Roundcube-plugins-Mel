@@ -70,6 +70,7 @@ class mtes_driver_mel extends mce_driver_mel {
     'dn'                => 'mineqRDN=%%workspace%%,ou=Groupes,ou=BNUM,ou=applications,ou=ressources,dc=equipement,dc=gouv,dc=fr',
     'service'           => 'BNUM/Groupes',
     'email'             => 'edt.%%workspace%%@%%domain%%',
+    'reponse'          => 'edt.%%workspace%%@%%domain%%',
     'name'              => 'Liste edt %%workspace%%',
     'lastname'          => '%%workspace%%',
     'fullname'          => 'Liste edt %%workspace%% - BNUM/Groupes',

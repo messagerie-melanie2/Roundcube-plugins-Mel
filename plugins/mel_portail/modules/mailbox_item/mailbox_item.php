@@ -67,7 +67,7 @@ class Mailbox_item extends Module {
             $uid = urlencode($mailbox->uid);
             if (isset($mailbox->mailbox)) {
               // Récupération de la configuration de la boite pour l'affichage
-              $hostname = driver_mel::get_instance()->getRoutage($mailbox->mailbox);
+              $hostname = driver_mel::get_instance()->getRoutage($mailbox->mailbox, 'setting_prop');
               if (isset($hostname)) {
                 $uid = urlencode($uid . "@" . $hostname);
               }

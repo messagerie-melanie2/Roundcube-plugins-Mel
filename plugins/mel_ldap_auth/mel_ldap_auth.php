@@ -139,7 +139,7 @@ class mel_ldap_auth extends rcube_plugin {
           unset($_COOKIE['roundcube_login']);
           rcube_utils::setcookie('roundcube_login', null, -1);
         } else {
-          $hostname = driver_mel::gi()->getRoutage($_user_mce);
+          $hostname = driver_mel::gi()->getRoutage($_user_mce, 'authenticate');
           if (isset($hostname)) {
             if (driver_mel::gi()->isSsl($hostname)) {
               $args['host'] = "ssl://" . $hostname;

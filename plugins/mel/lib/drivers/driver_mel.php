@@ -391,9 +391,11 @@ abstract class driver_mel {
    * pour retourner le hostname de connexion IMAP et/ou SMTP
    * 
    * @param array $infos Entry LDAP
+   * @param string $function Nom de la fonction pour personnaliser les retours
+   * 
    * @return string $hostname de routage, null si pas de routage trouvé
    */
-  abstract public function getRoutage($infos);
+  abstract public function getRoutage($infos, $function = '');
   
   /**
    * Positionne des headers pour un message avant de l'envoyer

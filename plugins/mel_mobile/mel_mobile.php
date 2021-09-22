@@ -479,7 +479,7 @@ class mel_mobile extends rcube_plugin {
             continue;
           }
           // Récupération de la configuration de la boite pour l'affichage
-          $hostname = driver_mel::get_instance()->getRoutage($_object->mailbox);
+          $hostname = driver_mel::get_instance()->getRoutage($_object->mailbox, 'init_balp');
           if (isset($hostname)) {
             $uid = urlencode($uid . "@" . $hostname);
           }

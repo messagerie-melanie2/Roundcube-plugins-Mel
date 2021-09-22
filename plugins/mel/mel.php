@@ -293,7 +293,7 @@ class mel extends rcube_plugin {
 
     $user = driver_mel::gi()->getUser($args['user']);
     // Récupération du hostname
-    $hostname = driver_mel::get_instance()->getRoutage($user);
+    $hostname = driver_mel::get_instance()->getRoutage($user, 'user_create');
     if (isset($hostname)) {
       $args['host'] = $hostname;
     }

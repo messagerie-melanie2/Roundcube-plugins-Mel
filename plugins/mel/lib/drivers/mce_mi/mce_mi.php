@@ -31,7 +31,7 @@ class mce_mi_driver_mel extends mce_driver_mel {
   /**
    * Namespace for the objets
    */
-  protected static $_objectsNS = "\\LibMelanie\\Api\\Mce\\";
+  protected static $_objectsNS = "\\LibMelanie\\Api\\Mi\\";
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée
@@ -47,6 +47,32 @@ class mce_mi_driver_mel extends mce_driver_mel {
     }
     else {
       return 'INBOX';
+    }
+  }
+
+  /**
+   * Récupère et traite les infos de routage depuis l'objet LDAP 
+   * pour retourner le hostname de connexion IMAP et/ou SMTP
+   * 
+   * @param array $infos Entry LDAP
+   * @param string $function Nom de la fonction pour personnaliser les retours
+   * 
+   * @return string $hostname de routage, null si pas de routage trouvé
+   */
+  public function getRoutage($infos, $function = '') {
+    // MANTIS 0006228: [Driver MI] Gérer la connexion sieve au serveur imap en direct
+    if ($function == 'managesieve_connect') {
+      if (is_array($infos)) {
+        $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
+      }
+      else {
+        $hostname = $infos->server_host;
+      }
+      return $hostname;
+    }
+    else {
+      // Si ce n'est pas du sieve on reprend la mécanique du driver MCE
+      return parent::getRoutage($infos, $function);
     }
   }
 }

@@ -219,7 +219,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                                 continue;
                             }
                             // Récupération de la configuration de la boite pour l'affichage
-                            $hostname = driver_mel::gi()->getRoutage($mailbox);
+                            $hostname = driver_mel::gi()->getRoutage($mailbox, 'init_ui');
                             if (isset($hostname)) {
                                 $uid = urlencode($uid . "@" . $hostname);
                             }
@@ -330,7 +330,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                         continue;
                     }
                     // Récupération de la configuration de la boite pour l'affichage
-                    $hostname = driver_mel::gi()->getRoutage($mailbox);
+                    $hostname = driver_mel::gi()->getRoutage($mailbox, 'getunread');
                     // Environnement
                     $env_mailboxes[$mailbox->uid] = $_object->uid . '@' . $hostname;
                 }
@@ -493,7 +493,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                     // Récupération de la configuration de la boite pour l'affichage
                     $ret = [
                         'user' => $_object->uid,
-                        'host' => driver_mel::gi()->getRoutage($mailbox),
+                        'host' => driver_mel::gi()->getRoutage($mailbox, 'get_user_from_folder'),
                     ];
                     $this->get_account = urlencode($ret['user']) . '@' . $ret['host'];
                     $this->mel->set_account($this->get_account);
@@ -530,7 +530,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                         $mailbox = $_object->mailbox;
                         // Récupération de la configuration de la boite pour l'affichage
                         $args['user'] = $mailbox->uid;
-                        $args['host'] = driver_mel::gi()->getRoutage($mailbox);
+                        $args['host'] = driver_mel::gi()->getRoutage($mailbox, 'managesieve_connect');
                     }
                 }
             }
@@ -951,7 +951,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                         continue;
                     }
                     // Récupération de la configuration de la boite pour l'affichage
-                    $hostname = driver_mel::gi()->getRoutage($mailbox);
+                    $hostname = driver_mel::gi()->getRoutage($mailbox, 'render_mailboxlist');
                     // Environnement
                     $env_mailboxes[$mailbox->uid] = $_object->uid . '@' . $hostname;
                 }
@@ -1420,7 +1420,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                 if (strcasecmp(strtolower($mail), strtolower($id['email'])) === 0) {
                     $uid = $mailbox->uid;
                     if ($mailbox instanceof \LibMelanie\Api\Defaut\ObjectShare) {
-                        $hostname = driver_mel::gi()->getRoutage($mailbox->mailbox);
+                        $hostname = driver_mel::gi()->getRoutage($mailbox->mailbox, 'assoc_identity_bal');
                         if (isset($account) && $account == $mailbox->mailbox->uid) {
                             $this->get_account = urlencode($uid) . "@" . $hostname;
                             $this->mel->set_account($this->get_account);

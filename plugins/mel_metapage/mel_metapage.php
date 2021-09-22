@@ -647,7 +647,7 @@ class mel_metapage extends rcube_plugin
 
             $mail = mel_workspace::get_wsp_mail($value->uid);
 
-            if ($wsp->get_object($value, mel_workspace::GROUP))
+            if (/*true || */$wsp->get_object($value, mel_workspace::GROUP))
             {
                 $lines .= "OR OR HEADER TO $mail HEADER CC $mail HEADER BCC $mail ";// HEADER BCC $before".$value->uid."$after ";
                 if ($first)
@@ -1043,6 +1043,24 @@ class mel_metapage extends rcube_plugin
         else
             echo "loggued";
         exit;
+    }
+
+    public function get_program($program_name)
+    {
+        $program = null;
+
+        switch ($program_name) {
+            case 'webconf':
+                include_once "program/webconf/webconf.php";
+                $program = new Webconf($this->rc, $this);            
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return $program;
     }
 
 }

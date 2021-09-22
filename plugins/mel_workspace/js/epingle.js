@@ -12,7 +12,7 @@ function workspace_epingle(id, start = null,success = null, error = null, always
         id = id.replace("wsp-", "").replace("-epingle", "");
     return $.ajax({ // fonction permettant de faire de l'ajax
     type: "POST", // methode de transmission des données au fichier php
-    url: "/?_task=workspace&_action=epingle",
+    url: mel_metapage.Functions.url("workspace", "epingle"),//"/?_task=workspace&_action=epingle",
     data:{
         _uid:id
     },

@@ -111,6 +111,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('PARAMS_update_user_table_rights', array($this, 'update_user_table_rights'));
         $this->register_action('PARAMS_update_user_rights', array($this, 'update_user_rights'));
         $this->register_action('PARAMS_delete_user', array($this, 'delete_user'));
+        $this->register_action('PARAMS_get_arianes_rooms', array($this, 'get_arianes_rooms'));
+        $this->register_action('PARAMS_change_ariane_room', array($this, 'change_ariane_room'));
         $this->register_action('PARAMS_update_app', array($this, 'update_app'));
         $this->register_action('PARAMS_update_app_table', array($this, 'update_app_table'));
         $this->register_action('PARAMS_update_toolbar', array($this, 'update_toolbar'));
@@ -382,6 +384,9 @@ class mel_workspace extends rcube_plugin
         if ($services[self::EMAIL])
             $this->rc->output->set_env("current_workspace_email", self::get_wsp_mail($workspace_id));
 
+        if ($services[self::CHANNEL])
+            $this->rc->output->set_env("current_workspace_channel", $this->get_object($this->currentWorkspace, self::CHANNEL));
+
 
         $this->include_stylesheet($this->local_skin_path().'/links.css');
 
@@ -629,7 +634,7 @@ class mel_workspace extends rcube_plugin
             self::CHANNEL => $is_in_wsp && $this->get_object($workspace, self::CHANNEL) !== null,
             self::AGENDA => $is_in_wsp && $this->get_object($workspace, self::AGENDA) === true,
             self::TASKS => $is_in_wsp && $this->get_object($workspace, self::TASKS) !== null,
-            self::EMAIL => $is_in_wsp && $this->get_object($workspace, self::GROUP) === true,
+            self::EMAIL => /*true || */$is_in_wsp && $this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $is_in_wsp && $this->get_object($workspace, self::CLOUD) === true,
             self::WEKAN => $is_in_wsp && $this->get_object($workspace, self::WEKAN) !== null,
             self::LINKS => $is_in_wsp && $this->get_object($workspace, self::LINKS) !== null
@@ -1103,9 +1108,16 @@ class mel_workspace extends rcube_plugin
             $info = $this->get_type_config($config, $key);
             $html.= '<tr><td>';
             $html.= '<span class="'.($value ? "text-success" : "text-secondary").' wsp-change-icon '.$info["icon"].'"></span> '.$info["name"];
-            
+
             if ($value)
             {
+
+                if ($key === self::CHANNEL)
+                    $html.= html::tag("button", ["id" => "update-channel-button","class" => "mel-button param-button"], "Changer de canal".html::tag("span", ["class" => "plus icon-pencil"]));
+
+                if (false && $key === self::TASKS)
+                    $html.= html::tag("button", ["id" => "update-kanban-button","class" => "mel-button param-button"], "Changer de kanban".html::tag("span", ["class" => "plus icon-pencil"]));
+
                 $class = "btn btn-danger mel-button no-button-margin";
                 $span = $icons["minus"];               
             }
@@ -1644,6 +1656,8 @@ class mel_workspace extends rcube_plugin
         foreach ($this->workspaces as $key => $value) {
             if (!self::is_epingle($value->uid, $this->rc) && $only_epingle)
                 continue;
+            else if (self::is_epingle($value->uid, $this->rc) && !$only_epingle)
+                continue;
 
             if ($only_archived)
             {
@@ -1921,13 +1935,17 @@ class mel_workspace extends rcube_plugin
             $this->create_services($workspace, $services, $users, false);
 
             //update channel
-            if (!(array_search(self::CHANNEL, $services) === false))
-            {
-                $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                if ($workspace->uid === "apitech-1")
-                    $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
-                else
-                    $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+            try {
+                if (!(array_search(self::CHANNEL, $services) === false))
+                {
+                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                    if ($workspace->uid === "apitech-1")
+                        $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL), $workspace->ispublic === 0 ? true : false);
+                    else
+                        $rocket->add_users($users, $this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
             }
 
             if (!(array_search(self::WEKAN, $services) === false))
@@ -1965,8 +1983,12 @@ class mel_workspace extends rcube_plugin
         foreach ($services_to_delete as $key => $value) {
             switch ($value) {
                 case self::CHANNEL:
-                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                    $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $user, $workspace->ispublic === 0 ? true : false);
+                    try {
+                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                        $rocket->kick_user($this->get_object($workspace, self::CHANNEL)->id, $user, $workspace->ispublic === 0 ? true : false);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
                     break;
                 case self::TASKS:
                     include_once "../mel_moncompte/ressources/tasks.php";
@@ -2134,8 +2156,9 @@ class mel_workspace extends rcube_plugin
             }
             $workspace->hashtags = [];
             $workspace->save();
+            $workspace->load();
 
-            $services = $this->get_worskpace_services($add_classes, false, true);
+            $services = $this->get_worskpace_services($workspace, false, true);
 
             try {
 
@@ -2144,6 +2167,22 @@ class mel_workspace extends rcube_plugin
 
                 if ($services[self::WEKAN])
                     $this->wekan()->delete_board($this->get_object($workspace, $app)->id);
+
+                if ($services[self::CHANNEL])
+                {
+                    $can = true;
+                    try {
+                        $can = !($this->get_object($workspace, self::CHANNEL)->edited ?? false);
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+
+                    if ($can)
+                    {
+                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                        $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                    }
+                }
 
             } catch (\Throwable $th) {
                 //throw $th;
@@ -2204,8 +2243,20 @@ class mel_workspace extends rcube_plugin
                 //Suppression de l'app
                 switch ($app) {
                     case self::CHANNEL:
-                        $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-                        $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                        $can = true;
+                        try {
+                            if ($this->get_object($workspace, self::CHANNEL)->edited ?? false)
+                                $can = false;
+                        } catch (\Throwable $th) {
+                            //throw $th;
+                        }
+
+                        if ($can)
+                        {
+                            $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                            $rocket->delete_channel($this->get_object($workspace, self::CHANNEL)->id, $workspace->ispublic === 0 ? true : false);
+                        }
+                        
                         break;
                     case self::AGENDA:
                         break;
@@ -3027,5 +3078,29 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
+    function get_arianes_rooms()
+    {
+        $html_ariane = "<div id=selectnewchannel>".
+        mel_helper::get_rc_plugin($this->rc, "mel_metapage")->get_program("webconf")->get_ariane_rooms(" custom-select pretty-select form-control input-mel ").
+        "</div>";
+        echo $html_ariane;
+        exit;
+    }
+
+    function change_ariane_room()
+    {
+        $name = rcube_utils::get_input_value("_name", rcube_utils::INPUT_GPC);
+        $uid =  rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
+
+        $name = $this->get_ariane()->room_info($name);
+        $datas = ["id" => $name["content"]->room->_id, "name" => $name["content"]->room->name, "edited" => true];
+
+        $wsp = self::get_workspace($uid);
+        $this->save_object($wsp, self::CHANNEL, $datas);
+        $wsp->save();
+
+        echo json_encode($datas);
+        exit;
+    }
 
 }

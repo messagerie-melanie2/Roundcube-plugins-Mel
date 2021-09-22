@@ -52,7 +52,7 @@
                                 $(".tiny-rocket-chat").css("display", "none");
                                 const lastFrame = $(".tiny-wsp-menu").data("lastopenedframe");
                                 const toolbaropen = $(".tiny-wsp-menu").data("toolbaropen");
-                                console.log("test", toolbaropen, lastFrame, $(".tiny-wsp-menu").data("toolbaropen"));
+                                //console.log("test", toolbaropen, lastFrame, $(".tiny-wsp-menu").data("toolbaropen"));
                                 if (toolbaropen)
                                     $(".wsp-toolbar-edited").css("display", "");
 
@@ -619,7 +619,7 @@ async function ChangeFrame(_class, otherDatas = null)
     }
     else if (_class === "wekan")
     {
-        console.log("wekan", otherDatas, `${rcmail.env.wekan_base_url}/b/${otherDatas}/null`);
+        //console.log("wekan", otherDatas, `${rcmail.env.wekan_base_url}/b/${otherDatas}/null`);
         
         if (otherDatas !== null)
         {

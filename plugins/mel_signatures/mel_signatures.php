@@ -72,7 +72,7 @@ class mel_signatures extends rcube_plugin
     {
         $args['actions'][] = array(
             'action' => 'plugin.mel_signatures',
-            'class'  => 'signatures',
+            'class'  => 'signatures identities',
             'label'  => 'task',
             'domain' => 'mel_signatures',
             'title'  => 'signaturestitle',

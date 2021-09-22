@@ -102,13 +102,13 @@ class Webconf extends Program
         */
     }
 
-    public function get_ariane_rooms()
+    public function get_ariane_rooms($classes = "")
     {
         $chat = $this->get_plugin("rocket_chat");
         $list = $chat->get_joined();
         $list["channel"] = json_decode($list["channel"]["content"]);
         $list["group"] = json_decode($list["group"]["content"]);
-        $html = '<select class="ariane_select input-mel">';
+        $html = '<select class="ariane_select input-mel '.$classes.'">';
         $html .= "<option value=home>".$this->rc->gettext("nothing", "mel_metapage")."</option>";
         foreach ($list["channel"]->channels as $key => $value) {
             $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';

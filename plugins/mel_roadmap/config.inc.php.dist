@@ -1,0 +1,7 @@
+<?php
+
+// URLs vers la roadmap publique
+$rcmail_config['roadmap_url'] = '';
+
+// Liste des DN qui n'auront pas la roadmap
+$rcmail_config['roadmap_filtered_dn'] = [];

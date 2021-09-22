@@ -545,9 +545,22 @@ function showMail($id)
 function wsp_mail_updated()
 {
 
-    let datas = mel_metapage.Storage.get(mel_metapage.Storage.wsp_mail);
+    const tmpDatas = mel_metapage.Storage.get(mel_metapage.Storage.wsp_mail);
+
+    let datas = [];
+
+    for (const key in tmpDatas) {
+        if (Object.hasOwnProperty.call(tmpDatas, key)) {
+            const element = tmpDatas[key];
+            datas[key.split("@")[0].replace("edt.", "")] = element;
+        }
+    }
+
+    console.log("datas mails", datas);
 
     let html = "";
+
+    //const bool1 = datas === undefined || datas === null || datas[rcmail.env.current_workspace_uid] === undefined || datas[rcmail.env.current_workspace_uid] === null;
 
     if (datas === undefined || datas === null || datas[rcmail.env.current_workspace_uid] === undefined || datas[rcmail.env.current_workspace_uid] === null)
     {    

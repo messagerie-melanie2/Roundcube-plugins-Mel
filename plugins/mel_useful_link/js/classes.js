@@ -117,7 +117,7 @@
          this.setTitle(`Que souhaitez-vous faire du lien "${this.setLinkMaxSize(link.title)}"`);
          let html = '<div style="display:flex">';
  
-         console.log(link);
+         //console.log(link);
  
          for (let index = 0; index < rcmail.env.link_modify_options.length; ++index) {
              const element = rcmail.env.link_modify_options[index];

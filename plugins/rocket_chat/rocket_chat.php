@@ -671,4 +671,11 @@ EOF;
     {
       return $this->get_rc_client()->room_exist($room_name, false);
     }
+
+    public function room_info($room_name)
+    {
+      $infos = $this->get_rc_client()->room_info($room_name, false);
+      $infos["content"] = json_decode($infos["content"]);
+      return $infos;
+    }
 }

@@ -7,8 +7,10 @@
 function wsp_epingle(id)
 {
     event.preventDefault();
+
     if (rcmail.busy)
         return async () => {};
+
     rcmail.set_busy(true, "loading");
     const initialId = id.replace("-epingle", "");
     workspaces.sync.PostToParent({
@@ -27,40 +29,19 @@ function wsp_epingle(id)
     },
     success: function (data) {
         data = JSON.parse(data);
-        workspace_load_epingle(data, initialId);
-        // if (data.success)
-        // {
-        //     if (data.is_epingle)
-        //     {
-        //         if ($(".wsp-epingle").find("#" + initialId + "-epingle").length === 0)
-        //         {
-        //             $("#tak-" + initialId).addClass("active");
-        //             $(".wsp-epingle").append($("#" + initialId)[0].outerHTML);
-        //             $(".wsp-epingle").find("#" + initialId)[0].id = initialId + "-epingle";
-        //             $("#" + initialId + "-epingle").find("#wsp-notifs-" + initialId)[0].id = "wsp-notifs-" + initialId + "-epingle";
-        //             $("#" + initialId + "-epingle").find("#tak-" + initialId)[0].id = "tak-" + initialId + "-epingle";
-        //             $("#tak-" + initialId + "-epingle").removeClass("disabled");
-        //         }
-        //     }
-        //     else {
-        //         if ($(".wsp-epingle").find("#" + initialId + "-epingle").length !== 0)
-        //         {
-        //             $("#" + initialId + "-epingle").remove();
-        //             $("#tak-" + initialId).removeClass("active").removeClass("disabled");
-        //         }
-        //     }
-        // }
-        let querry = $("#tak-" + initialId);
-        querry.removeClass("disabled");
+        // workspace_load_epingle(data, initialId);
 
-        if (querry.hasClass("active"))
-            querry.attr("title", querry.attr("title").replace("Épingler", "Désépingler"));
-        else
-            querry.attr("title", querry.attr("title").replace("Désépingler", "Épingler"));
+        // let querry = $("#tak-" + initialId);
+        // querry.removeClass("disabled");
 
-        $("#tak-" + initialId + "-epingle").removeClass("disabled").attr("title", querry.attr("title"));
+        // if (querry.hasClass("active"))
+        //     querry.attr("title", querry.attr("title").replace("Épingler", "Désépingler"));
+        // else
+        //     querry.attr("title", querry.attr("title").replace("Désépingler", "Épingler"));
 
-        EpingleEmpty();
+        // $("#tak-" + initialId + "-epingle").removeClass("disabled").attr("title", querry.attr("title"));
+
+        // EpingleEmpty();
 
         workspaces.sync.PostToParent({
             datas:data,
@@ -77,12 +58,15 @@ function wsp_epingle(id)
         console.error(xhr, ajaxOptions, thrownError);
     },
     }).always(() => {
-        rcmail.set_busy(false);
-        rcmail.clear_messages();
+        // rcmail.set_busy(false);
+        // rcmail.clear_messages();
         workspaces.sync.PostToParent({
             exec:"workspace_enable_epingle(`" + initialId + "`)"
         });
         workspace_enable_epingle(initialId);
+
+        window.location.reload();
+
      });  
 }
 

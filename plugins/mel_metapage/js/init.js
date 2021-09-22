@@ -275,6 +275,11 @@ if (rcmail)
                     mel_metapage.Functions.url("mel_metapage", "get_wsp_unread_mails_count"),
                     {},
                     (datas) => {
+                        try {
+                            console.log("datas mails upd", JSON.parse(datas));
+                        } catch (error) {
+                            console.log("datas mails upde", datas);
+                        }
                         datas = JSON.parse(datas);
                         //console.log("datas", datas);
                         mel_metapage.Storage.set(mel_metapage.Storage.wsp_mail, datas.datas);

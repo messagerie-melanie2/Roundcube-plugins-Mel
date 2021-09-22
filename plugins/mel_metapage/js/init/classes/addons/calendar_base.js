@@ -750,6 +750,7 @@ $(document).ready(() => {
                 $("#edit-attendees-donotify").addClass("custom-control-input");
             }
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
+            update_location();
         }, 10);
         //Suppression text
         //$("#eventedit").find(".nav.nav-tabs").css("display", "");

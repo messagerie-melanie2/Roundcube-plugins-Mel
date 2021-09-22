@@ -1,0 +1,144 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+<roundcube:include file="includes/settings-menu.html" />
+
+<div id="layout-content" role="main">
+
+<div id="settings-right">
+  <div class="container">
+  <div class="usersignature">
+    <span><roundcube:label name="mel_signatures.signaturelabel" /></span>
+    <div class="sign"></div>
+    <textarea id="signature_html" readonly="readonly" type="text"></textarea>
+    <div class="action">
+      <input type="button" class="action-button" id="modify-signature" title="<roundcube:label name="mel_signatures.modifytitle" />" value="<roundcube:label name="mel_signatures.modify" />" onclick="modify_signature();">
+      <input type="button" class="action-button" id="use-signature" title="<roundcube:label name="mel_signatures.usesignaturetitle" />" value="<roundcube:label name="mel_signatures.usesignature" />" onclick="use_signature();">
+      <input type="button" class="action-button" id="copy-to-clipboard" title="<roundcube:label name="mel_signatures.clictocopytitle" />" value="<roundcube:label name="mel_signatures.clictocopy" />" onclick="copy_signature();">
+    </div>
+  </div>
+  <div class="userinfos">
+    <span><roundcube:label name="mel_signatures.informationslabel" /></span>
+    <div class="form">
+        <div class="grid-form">
+            <div class="left-form">
+                <div class="form-section">
+                    <label for="input-nom"><roundcube:label name="mel_signatures.name" /></label>
+                    <input type="text" id="input-nom" onkeyup="onInputChange();" value="<roundcube:var name="env:name" />" required="">
+                </div>
+                <div class="form-section" style="margin-top: 23px;">
+                    <label for="input-fonction"><roundcube:label name="mel_signatures.jobtitle" /></label>
+                    <input type="text" list="functions-list" id="input-fonction" onchange="onInputChange();" onkeyup="onInputChange();" value="<roundcube:var name="env:observation" />" required="">
+                    <roundcube:object name="datalistfunctions" id="functions-list" />
+                </div>
+                <div class="form-section">
+                  <label for="input-service"><roundcube:label name="mel_signatures.service" /></label>
+                  <input type="text" id="input-service" onkeyup="onInputChange();" value="<roundcube:var name="env:service" />">
+                </div>
+                <div class="form-section">
+                  <label for="input-department"><roundcube:label name="mel_signatures.department" /></label>
+                  <input type="text" id="input-department" onkeyup="onInputChange();" value="<roundcube:var name="env:department" />">
+                </div>
+                <div class="form-section">
+                  <label for="input-links"><roundcube:label name="mel_signatures.links" /></label>
+                  <roundcube:object name="signaturelinks" id="input-links" />
+                </div>
+                <div class="form-section custom-link">
+                  <label for="input-custom-link"><roundcube:label name="mel_signatures.customlink" /></label>
+                  <input type="text" id="input-custom-link" onkeyup="onInputChange();" value="">
+                </div>
+            </div>
+            <div class="right-form">
+                <div class="form-section">
+                    <label for="input-address"><roundcube:label name="mel_signatures.address" /></label>
+                    <textarea id="input-address" type="text" onkeyup="onInputChange();" required=""><roundcube:var name="env:street" /> <roundcube:var name="env:postalcode" /> <roundcube:var name="env:locality" /></textarea>
+                </div>
+                <div class="form-section">
+                  <label for="input-bureau"><roundcube:label name="mel_signatures.office" /></label>
+                  <input type="text" id="input-bureau" onkeyup="onInputChange();" value="<roundcube:var name="env:roomnumber" />">
+                </div>
+                <div class="form-section">
+                    <label for="input-fixe"><roundcube:label name="mel_signatures.phone" /></label>
+                    <input type="text" id="input-fixe" onkeyup="onInputChange();" value="<roundcube:var name="env:phonenumber" />">
+                </div>
+                <div class="form-section">
+                    <label for="input-mobile"><roundcube:label name="mel_signatures.mobile" /></label>
+                    <input type="text" id="input-mobile" onkeyup="onInputChange();" value="<roundcube:var name="env:mobilephone" />">
+                </div>
+                <div class="form-section">
+                  <label for="input-logo"><roundcube:label name="mel_signatures.logo" /></label>
+                  <roundcube:object name="signaturelogo" id="input-logo" onchange="onInputChange();" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="notice-container">
+  <div class="texte">
+      <div>
+          <h2 class="emploi"> Mode d'emploi (Courrielleur Mél)</h2>
+          <p>- Cliquez sur "Copier la signature" pour copier le code généré</p>
+          <p>- Dans le Courrielleur, cliquez sur "Outils", puis "Paramètres des comptes"</p>
+          <p>- Sélectionner son compte</p>
+          <p>- Si cochée, décocher l'option "Apposer la signature à partir d'un fichier"</p>
+          <p>- Texte de signature : cocher "Utiliser HTML"</p>
+          <p>- Coller le code généré dans la zone "Texte de signature"</p>
+          <p>- Cliquer sur OK</p>
+          <p>Votre signature est en place. Faites un test rapide en essayant de rédiger un nouveau courriel.</p>
+      </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="identities-content">
+  <div id="identities-dialog">
+    <roundcube:object name="identiteslist" id="identities-list" />
+  </div>
+</div>
+
+
+<div id="signature_template">
+  <div style="line-height:10pt;margin:10px 0;font-family:marianne,Arial,Helvetica,sans-serif;">
+    <div style="font-size:9pt;">
+      <b>%%TEMPLATE_NAME%%</b>
+      <br>
+      <span style="font-size:8pt;">%%TEMPLATE_JOBTITLE%%%%TEMPLATE_SERVICE%%%%TEMPLATE_DIRECTION%%</span>
+    </div>
+    <p style="margin:15px 0;height:0px;"></p>
+    <p style="font-size:8pt;">%%TEMPLATE_ADDRESS%%%%TEMPLATE_OFFICE%%%%TEMPLATE_PHONE%%
+      <span>
+      %%TEMPLATE_LINKS%%
+      </span>
+    </p>
+    <table style="border:0;line-height:10pt;border-collapse:collapse;width:auto;background-color:#fff;">
+      <tbody>
+        <tr style="border:0">
+          <td style="padding:0;padding-bottom:5px;padding-top:15px">
+            <img src="<roundcube:var name="env:logo_source_marianne" />" alt="Marianne">
+          </td>
+        </tr>
+        <tr style="border:0">
+          <td style="border:0;border-right:1.5px solid #000;text-align:left;vertical-align:top;padding:0;padding-right:30px;" valign="top" align="left">
+            %%TEMPLATE_LOGO%%
+          </td>
+          <td style="border:0 solid #000;text-align:left;vertical-align:middle;padding:0px;padding-left:5px;" valign="center" align="left">
+            <span style="font-weight:bold;font-size:8pt;line-height:9pt;">
+            <p style="color:#000;font-size:8pt;font-weight:bold;max-width:180px;"> %%TEMPLATE_DIRECTION%%</p>
+          </span></td>
+        </tr>
+        <tr style="border:0">
+          <td style="border:0;text-align:left;vertical-align:top;padding:0;padding-right:30px" valign="top" align="left">
+            <img src="<roundcube:var name="env:logo_source_devise" />" alt="liberté, égalité, fraternité">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<roundcube:include file="includes/footer.html" />

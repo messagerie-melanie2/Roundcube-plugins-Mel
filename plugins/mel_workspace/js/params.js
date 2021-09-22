@@ -14,6 +14,16 @@
                 writable: false,
                 value: Workspace_Param.data_null
               });
+
+              this.init_params_buttons();
+        }
+
+        init_params_buttons()
+        {
+            if ($("#update-channel-button").length > 0)
+            $("#update-channel-button").on("click", () => {
+                this.change_canal();
+            });
         }
 
         change_icons()
@@ -483,8 +493,119 @@
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-          }
-          
+        }
+
+        change_canal()
+        {
+            if (this.is_busy())
+                return Promise.resolve();
+            else
+                this.busy(true);
+
+            let globalModal;
+            if ($("#globalModal .modal-close-footer").length == 0)
+                globalModal = GlobalModal.resetModal();
+            else
+                globalModal = Promise.resolve();
+
+            return this.ajax(this.url("PARAMS_get_arianes_rooms"),
+            {},
+            (datas) => {
+                globalModal.then(() => {
+
+                if (Workspace_Param.PopUp !== undefined)
+                    delete Workspace_Param.PopUp;
+                const config = new GlobalModalConfig("Changer de canal",
+                "default",
+                datas,
+                null,
+                "default",
+                "default",
+                    () => {
+                        let val = $("#selectnewchannel select").val();
+
+                        const confirmation = confirm("Attention !\r\nSi vous changer d'espace, si vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres ne pourrait pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimer à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?");
+
+                        if (confirmation && val.includes(":"))
+                        {
+                            val = val.split(":")[1];
+
+                            if (val === rcmail.env.current_workspace_channel.name)
+                            {
+                                let querry = $("#selectnewchannel");
+                                querry.find("#addederrorsn").remove();
+                                querry.append(`<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal différent !</div>`) 
+                                return;
+                            }
+                            
+                            this.busy(true);
+                            this.ajax(this.url("PARAMS_change_ariane_room"), {
+                                _name:val,
+                                _uid:this.uid
+                            }, (datas) => {
+                                window.location.reload();
+                            },
+                                (a,b,c) => {
+                                    console.error("###[change_canal]une erreur est survenue ! ", a, b, c);
+                                    this.busy(false);
+                                    rcmail.display_message("impossible de mettre à jour le canal !", "error");
+                                }).always(() => {
+                                this.busy(false);
+                                Workspace_Param.PopUp.close();
+                            });
+                        }
+                        else if (confirmation)
+                        {
+                            if (!val.includes(":"))
+                            {
+                                let querry = $("#selectnewchannel");
+                                querry.find("#addederrorsn").remove();
+                                querry.append(`<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal !</div>`)
+                            }
+                        }
+                    }
+                );
+    
+                Workspace_Param.PopUp = new GlobalModal("globalModal", config, false);
+
+                let querry = $("#selectnewchannel select");
+                querry.find(`option[value="home"]`).remove();
+                querry = querry.find("option")
+
+                for (let index = 0; index < querry.length; ++index) {
+                    const element = querry[index];
+
+                    try {
+                        if ($(element).attr("value").split(":")[1] === rcmail.env.current_workspace_channel.name)
+                        {
+                            $(element).attr("selected", "selected");
+                            break;
+                        }
+                    } catch (error) {
+                        console.warn(error);
+                        continue;
+                    }
+                }
+
+                Workspace_Param.PopUp.footer.buttons.save.addClass("mel-button btn-secondary").removeClass("btn-primary").html(
+                    rcmail.gettext("save") + 
+                    '<span class="plus icon-mel-plus"></span>'
+                );
+
+                Workspace_Param.PopUp.footer.buttons.exit.addClass("mel-button btn-danger").removeClass("btn-secondary").html(
+                    rcmail.gettext("close") + 
+                    '<span class="plus icon-mel-close"></span>'
+                );
+                console.log("popup", Workspace_Param.PopUp);
+               
+
+                this.busy(false);
+                Workspace_Param.PopUp.show();
+                });
+            },
+            (a,b,c) => {},
+            "GET");
+        }          
 
         archive(archive = true)
         {

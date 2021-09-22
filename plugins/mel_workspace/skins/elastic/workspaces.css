@@ -852,3 +852,10 @@ body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {
 .task-workspace .bandeau .mel-button {
 	margin-right: 15px;
 }
+
+.task-workspace .param-button.mel-button
+{
+    margin-top: 0;
+    margin-left: 15px;
+
+}

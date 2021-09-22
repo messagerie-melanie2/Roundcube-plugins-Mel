@@ -1606,3 +1606,10 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 {
     content: "\e938"!important;
 }
+
+a.roadmap::before
+{
+    content: "\efd8"!important;
+    font-family: 'IcoFont'!important;
+    font-weight: normal!important;
+}

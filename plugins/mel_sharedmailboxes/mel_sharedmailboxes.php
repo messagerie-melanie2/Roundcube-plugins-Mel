@@ -214,9 +214,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                         if (isset($_object->mailbox)) {
                             $mailbox = $_object->mailbox;
                             // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-                            $mailbox->load(['internet_access_enable']);
-                            if (!mel::is_internal() && !$mailbox->internet_access_enable) {
-                                continue;
+                            if (!mel::is_internal()) {
+                                $mailbox->load(['internet_access_enable']);
+                                if (!$mailbox->internet_access_enable) {
+                                    continue;
+                                }
                             }
                             // Récupération de la configuration de la boite pour l'affichage
                             $hostname = driver_mel::gi()->getRoutage($mailbox, 'init_ui');
@@ -317,17 +319,18 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $mailbox = $_object;
                 if (isset($_object->mailbox)) {
                     $mailbox = $_object->mailbox;
-                    // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-                    $mailbox->load(['internet_access_enable', 'double_authentification']);
-                    if (!mel::is_internal() && !$mailbox->internet_access_enable) {
-                        continue;
-                    }
-                    // MANTIS 0005292: La double authentification doit être obligatoire pour certains comptes
-                    if (!mel::is_internal() 
-                            && class_exists('mel_doubleauth')
-                            && !mel_doubleauth::is_double_auth_enable()
-                            && $mailbox->double_authentification) {
-                        continue;
+                    if (!mel::is_internal()) {
+                        // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                        $mailbox->load(['internet_access_enable', 'double_authentification']);
+                        if (!$mailbox->internet_access_enable) {
+                            continue;
+                        }
+                        // MANTIS 0005292: La double authentification doit être obligatoire pour certains comptes
+                        if (class_exists('mel_doubleauth')
+                                && !mel_doubleauth::is_double_auth_enable()
+                                && $mailbox->double_authentification) {
+                            continue;
+                        }
                     }
                     // Récupération de la configuration de la boite pour l'affichage
                     $hostname = driver_mel::gi()->getRoutage($mailbox, 'getunread');
@@ -577,9 +580,11 @@ class mel_sharedmailboxes extends rcube_plugin {
                     if (isset($_object->mailbox)) {
                         $mailbox = $_object->mailbox;
                         // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-                        $mailbox->load(['internet_access_enable']);
-                        if (!mel::is_internal() && !$mailbox->internet_access_enable) {
-                            continue;
+                        if (!mel::is_internal()) {
+                            $mailbox->load(['internet_access_enable']);
+                            if (!$mailbox->internet_access_enable) {
+                                continue;
+                            }
                         }
                         $args['folders'][] = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $mailbox->uid;
                     }
@@ -873,7 +878,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @param ObjectShare[] $_objects Liste des boites partagées
      * @param array $hidden_mailboxes Liste des boites masquées par l'utilisateur
      * 
-     * @return $_objects Liste des boites partagées sans les masquées
+     * @return ObjectShare[] $_objects Liste des boites partagées sans les masquées
      */
     public function get_user_sharedmailboxes_list($_objects = null, $hidden_mailboxes = null) {
         // Récupération des préférences de l'utilisateur
@@ -945,10 +950,18 @@ class mel_sharedmailboxes extends rcube_plugin {
                 $mailbox = $_object;
                 if (isset($_object->mailbox)) {
                     $mailbox = $_object->mailbox;
-                    // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
-                    $mailbox->load(['internet_access_enable']);
-                    if (!mel::is_internal() && !$mailbox->internet_access_enable) {
-                        continue;
+                    if (!mel::is_internal()) {
+                        // Ne lister que les bal qui ont l'accès internet activé si l'accés se fait depuis Internet
+                        $mailbox->load(['internet_access_enable', 'double_authentification']);
+                        if (!$mailbox->internet_access_enable) {
+                            continue;
+                        }
+                        // MANTIS 0005292: La double authentification doit être obligatoire pour certains comptes
+                        if (class_exists('mel_doubleauth')
+                                && !mel_doubleauth::is_double_auth_enable()
+                                && $mailbox->double_authentification) {
+                            continue;
+                        }
                     }
                     // Récupération de la configuration de la boite pour l'affichage
                     $hostname = driver_mel::gi()->getRoutage($mailbox, 'render_mailboxlist');

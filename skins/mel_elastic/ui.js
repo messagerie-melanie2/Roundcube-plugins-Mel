@@ -67,23 +67,43 @@ $(document).ready(() => {
                       $("#layout-content").css("margin-left", width);
               }
 
-              this.update();
+              try {
+                this.update();
 
-              if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
-                $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
+                if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
+                    $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
 
-              if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
-              {
-                  $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
-                  .on("click", () => {
-                      window.location.href = this.url("mail");
-                  })
-                  .prependTo($("#toolbar-menu"))
+                if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
+                {
+                    $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
+                    .on("click", () => {
+                        window.location.href = this.url("mail");
+                    })
+                    .prependTo($("#toolbar-menu"))
+                }
+              } catch (error) {
+                  
+              }
+
+
+              
+              try {
+                $("#login-form p.formbuttons a").click(() => {
+                      event.preventDefault();
+                      window.location.href = window.location.href.replaceAll("/changepassword/index.php", "");
+                  });
+              } catch (error) {
+                  console.error(error);
               }
             //   else if (rcmail.env.task === "mail" && rcmail.env.action === "show" && window.location.href.includes("_extwin"))
             //     $("#layout-content").css("margin-left", 0);
 
-              this.init();
+              try {
+                  if (rcmail !== undefined)
+                        this.init();
+              } catch (error) {
+                  
+              }
 
         }
 

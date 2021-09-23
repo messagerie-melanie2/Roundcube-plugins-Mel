@@ -318,6 +318,44 @@ body.iframe.mail #filter-form
 	margin-bottom: 10px;
 }
 
+#form_gest_abs div.ui-tabs-panel {
+	padding-top: 15px;
+}
+
+#form_gest_abs .absence {
+  padding: 10px 5px;
+  border-bottom: 1px solid #d0d0d0;
+  border-color: var(--top-border-color);
+}
+
+#form_gest_abs .absence.template {
+  display: none;
+}
+
+#form_gest_abs .absence:hover {
+  background: #f4f4f4;
+  background-color: var(--jquery-tabs-active-bg-color);
+}
+
+#form_gest_abs .absence > span {
+  padding: 5px;
+}
+
+#form_gest_abs .absence > span.days {
+  padding: 10px 5px;
+  display: block;
+}
+
+#form_gest_abs .absence > span.hourstart > input:disabled,
+#form_gest_abs .absence > span.hourend > input:disabled {
+  opacity: 0.6;
+}
+
+#form_gest_abs .absence > span.days span.checkbox label {
+  width: 55px;
+  display: inline-block;
+}
+
 .listes_buttons div {
 	margin-bottom: 10px;
 }

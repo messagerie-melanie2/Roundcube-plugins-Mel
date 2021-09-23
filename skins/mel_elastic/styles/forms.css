@@ -449,3 +449,6 @@ input.input-mel.error {
 	background-color: transparent;
 	border:none;
 } */
+#taskedit ul.nav.nav-tabs{
+	display: none!important;
+}

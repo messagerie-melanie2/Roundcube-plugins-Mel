@@ -687,18 +687,22 @@ function m_mp_hashtag_select(e)
 
 function m_mp_hashtag_on_click(event)
 {
-    const id = "list-of-all-hashtag";
-    querry = $("#list-of-all-hashtag");
-    if (querry.css("display") !== "none" && querry.find(".spinner-border").length === 0)
-    {
-        let target = event.target;
-        while (target.nodeName !== "BODY") {
-            if (target.id === id || target.id === "workspace-hashtag")
-                return;
-            else
-                target = target.parentElement;
+    try {
+        const id = "list-of-all-hashtag";
+        querry = $("#list-of-all-hashtag");
+        if (querry.css("display") !== "none" && querry.find(".spinner-border").length === 0)
+        {
+            let target = event.target;
+            while (target.nodeName !== "BODY") {
+                if (target.id === id || target.id === "workspace-hashtag")
+                    return;
+                else
+                    target = target.parentElement;
+            }
+            querry.css("display", "none");
         }
-        querry.css("display", "none");
+    } catch (error) {
+        
     }
 }
 

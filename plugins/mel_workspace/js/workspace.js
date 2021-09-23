@@ -523,7 +523,7 @@ function showMail($id)
         _uid:$id
     };
 
-    if ($("iframe.mail-frame").length > 0)
+    if (parent.$("iframe.mail-frame").length > 0)
     {
         config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.key.value;
         workspaces.sync.PostToParent({
@@ -534,8 +534,11 @@ function showMail($id)
         });
         mel_metapage.Functions.change_frame("mail");
     }
-    else if ($(".mail-frame").length > 0)
-        window.location.href = mel_metapage.Functions.url("mail", "show", config);
+    else if (parent.$(".mail-frame").length > 0)
+    {
+        rcmail.set_busy(true, "loading");
+        parent.location.href = mel_metapage.Functions.url("mail", "show", config).replaceAll(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
+    }
     else {
         config["_action"] = "show";
         mel_metapage.Functions.change_frame("mail", true, false, config);

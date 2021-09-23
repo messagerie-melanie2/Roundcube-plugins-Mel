@@ -42,6 +42,29 @@ $(document).ready(
     
             });
 
+            parent.metapage_frames.addEvent("open.after", async (eClass, changepage, isAriane, querry, id, actions) => {
+            
+                if (eClass === "calendar")
+                {
+                    querry = $(`iframe#${id}`);
+                    if (querry.length > 0)
+                    {
+                        //querry[0].contentWindow.$('#calendar').fullCalendar( 'refetchEvents' );
+                        querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
+                    }
+                    else
+                    {
+                        try {
+                            //$('#calendar').fullCalendar( 'refetchEvents' );
+                            $('#calendar').fullCalendar('rerenderEvents');
+                        } catch (error) {
+                            
+                        }
+                    } 
+                }
+            
+            });
+
         });
     
 

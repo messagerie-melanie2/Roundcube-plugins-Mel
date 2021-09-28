@@ -32,12 +32,67 @@ if (window.rcmail) {
                 rcmail.enable_command('plugin.markasjunk', list.get_selection().length > 0 && rcmail.env.mailbox != rcmail.env.junk_folder);
             });
         }
+
+        // make sure the correct icon is displayed even when there is no listupdate event
+        rcmail.mel_junk_toggle_button();
+    });
+
+    rcmail.addEventListener('listupdate', function() { rcmail.mel_junk_toggle_button(); });
+}
+
+rcube_webmail.prototype.mel_junk_toggle_button = function() {
+    var spamobj = $('a.junk'),
+        hamobj = $('a.notjunk'),
+        disp = {spam: true, ham: true};
+
+    if (this.env.markasjunk_spam_only) {
+        disp.ham = false;
+    }
+    else if (!this.is_multifolder_listing() && this.env.markasjunk_spam_mailbox) {
+        if (this.env.mailbox.indexOf(this.env.markasjunk_spam_mailbox) === -1) {
+            disp.ham = false;
+        }
+        else {
+            disp.spam = false;
+        }
+    }
+
+    // if only 1 button is visible make sure its the last one (for styling)
+    // allow for multiple instances of the buttons, eg toolbar and contextmenu
+    $.each(spamobj, function(i) {
+        var cur_spamobj = spamobj.eq(i),
+            cur_hamobj = hamobj.eq(i),
+            cur_index = spamobj.eq(i).index();
+
+        if (cur_spamobj.parent().parent('li').length > 0) {
+            cur_spamobj = cur_spamobj.parent().parent();
+            cur_hamobj = cur_hamobj.parent();
+        }
+
+        var evt_rtn = rcmail.triggerEvent('markasjunk-update', {objs: {spamobj: cur_spamobj, hamobj: cur_hamobj}, disp: disp});
+        if (evt_rtn && evt_rtn.abort)
+            return;
+
+        disp = evt_rtn ? evt_rtn.disp : disp;
+
+        disp.spam ? cur_spamobj.show() : cur_spamobj.hide();
+        disp.ham ? cur_hamobj.show() : cur_hamobj.hide();
+
+        if (disp.spam && !disp.ham) {
+            if (cur_index < cur_hamobj.index()) {
+                cur_spamobj.insertAfter(cur_hamobj);
+            }
+        }
+        else if (cur_index > cur_hamobj.index()) {
+            cur_hamobj.insertAfter(cur_spamobj);
+        }
     });
 }
 
 // Open mel junk box
 function mel_junk_box(prop, item, event) {
-    UI.toggle_popup('mel_junk-box', event);
+    rcmail.show_menu('mel_junk-box', true, event);
+    // rcmail.command('menu-open', 'mel_junk-box', event.target, event);
 }
 
 // mel junk action
@@ -52,7 +107,7 @@ function mel_junk_send(prop, item, event) {
         var send_admin = true;
         var junk_folder = true;
     }
-    // Send message to administrator ? (bounce plugin)
+    // Send message to administrator ? (bounce)
     if (send_admin) {      
         // Récupère les uid de messages sélectionnés
         var uids = rcmail.env.uid ? [rcmail.env.uid] : rcmail.message_list.get_selection();
@@ -62,17 +117,22 @@ function mel_junk_send(prop, item, event) {
         for (const uid of uids) {
             // all checks passed, send message
             lock = rcmail.set_busy(true, 'sendingmessage');
-            rcmail.http_post('plugin.bounce', 
-                                '_uid='+uid+
+            rcmail.http_post('mail/bounce', 
+                                '_token='+rcmail.env.junk_token+
+                                '&_id='+
+                                '&_attachments='+
+                                '&_from='+rcmail.env.junk_identity+
                                 '&_to='+urlencode(rcmail.env.administrator_email)+
-                                '&_cc=&_bcc='+
-                                '&_mbox='+urlencode(rcmail.env.mailbox), 
+                                '&_cc=&_bcc=&_store_target='+
+                                '&_uid='+uid+
+                                '&_mbox='+urlencode(rcmail.env.mailbox)+
+                                '&_remote=1', 
                                 lock);
         }
     }
     // Put message in junk folder ? (markasjunk plugin)
     if (junk_folder) {
-        rcmail_markasjunk();
+        rcmail.markasjunk_mark(true);
     }
     if ($('#mel_junk-box').is(':visible')) {
         $('#mel_junk-box').hide();

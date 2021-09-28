@@ -1,0 +1,30 @@
+#mel_junk-box
+{
+  padding: 10px;
+}
+
+#mel_junk-box .mel_junk-title
+{
+  text-align: center;
+  color: #333333;
+  font-weight: bold;
+}
+
+#mel_junk-box .checkboxes > div > input {
+  position: relative;
+  top: 18px;
+}
+
+#mel_junk-box .checkboxes > div > label {
+  margin-left: 20px;
+}
+
+.junk-body .buttons .button
+{
+  cursor: pointer;
+}
+
+#mel_junk-box input.button
+{
+  margin-top: 8px;
+}

@@ -325,13 +325,30 @@ class mel_useful_link extends rcube_plugin
       $config = $this->rc->config->get('personal_useful_links', []);
 
       foreach ($config as $key => $value) {
+        $value = mel_link::fromConfig($config[$key]);
+        //Si problème de clé
         if ($key == false || $key == "false" || $key == null || $key === "unknown")
         {
-          $value = mel_link::fromConfig($config[$key]);
           $id = $this->generate_id($value->title, $config);
           $value->configKey = $id;
           $config[$id] = $value->serialize();
           unset($config[$key]);
+
+          if (!$update)
+            $update = true;
+        }//Si problème de configkey
+        else if ($value->configKey === null)
+        {
+          if ($key !== $value->configKey)
+            $value->configKey = $key;
+          else 
+          {
+            $key = $this->generate_id($value->title, $config);
+            $value->configKey = $key;
+            unset($config[$key]);
+          }
+
+          $config[$key] = $value->serialize();
 
           if (!$update)
             $update = true;

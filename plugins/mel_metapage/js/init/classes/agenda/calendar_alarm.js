@@ -310,29 +310,4 @@ Alarm.enums = {
     }
 
     window.alarm_managment = new Calendar_Alarm();
-
-    // $(document).ready(() => {
-    //     if (rcmail)
-    //     {
-    //         rcmail.addEventListener("responseafter", (props) => {
-    //             if (props.response && props.response.action == 'plugin.alarms')
-    //                 rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-    //         });
-
-    //         // rcmail.addEventListener("responseafterrefresh", (props) => {
-    //         //     if (window.alarm_managment !== true)
-    //         //         window.alarm_managment = true;
-    //         // });
-
-    //         rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
-    //             if (window.alarm_managment !== undefined)
-    //             {
-    //                 window.alarm_managment.clearTimeouts();
-    //                 const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar);
-    //                 if (storage !== null && storage !== undefined)
-    //                     window.alarm_managment.generate(storage);
-    //             }
-    //         });
-    //     }
-    // });
 })();

@@ -144,3 +144,5 @@ $labels['junk'] = 'Indésirables';
 $labels['sent'] = 'Éléments envoyés';
 
 $labels['mailboxselector'] = 'Liste des boites';
+
+$labels['bureau'] = 'Bureau';

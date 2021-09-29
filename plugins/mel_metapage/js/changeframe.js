@@ -8,6 +8,9 @@
         const message = event.data.exec_info;
         const datas = event.data.datas;
         switch (message) {
+            case "uid":
+                rcmail.env.current_workspace_multipage_uid = datas;
+                break;
             case "UpdateMenu":
                 //console.log("UpdateMenu", UpdateMenu, datas);
                 UpdateMenu(datas.class, datas.picture, datas.toolbar);
@@ -58,6 +61,8 @@
 
                                 if (lastFrame === "wekan")
                                     ChangeFrame(lastFrame, $("iframe.workspace-frame").length>0 ? $("iframe.workspace-frame")[0].contentWindow.rcmail.env.wekan_datas.id : rcmail.env.wekan_datas.id);
+                                else if(lastFrame === "stockage")
+                                    ChangeFrame(lastFrame, `uid:${rcmail.env.current_workspace_multipage_uid}`);
                                 else
                                     ChangeFrame(lastFrame);
                             }
@@ -232,8 +237,6 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
     const uid = $(event).data("uid");
 
-    //console.log("event", $(event).data("wekan"), event);
-
     if(rcmail.busy)
         return;
 
@@ -246,7 +249,10 @@ async function ChangeToolbar(_class, event, otherDatas = null)
         .attr("aria-disabled", "true");
     }
 
-    let datas = [];
+    let datas = [{
+        exec_info:"uid",
+        datas:uid
+    }];
     let picture = $(".wsp-picture");
 
     switch (_class) {

@@ -49,7 +49,7 @@ class mel_link
         else 
             $rl = parse_url($rl)['host'];
 
-        return $rl;
+        return ($rl === null || $rl === "") ? $this->link : $rl;
     }
 
     public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0)

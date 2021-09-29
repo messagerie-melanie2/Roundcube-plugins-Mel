@@ -452,3 +452,33 @@ input.input-mel.error {
 #taskedit ul.nav.nav-tabs{
 	display: none!important;
 }
+
+@media screen and (max-width:768px) {
+
+	#eventedit .nav-link{
+		color:transparent!important;
+	}
+
+	#eventedit .nav-link[href="#event-panel-summary"],
+	#eventedit .nav-link[href="#event-panel-detail"]
+	{
+		width: 3em!important;
+	}
+
+	#eventedit .nav-link::before{
+		color:#3A3E5E;
+	}
+
+	#eventedit .nav-link[href="#event-panel-summary"]::before
+	{
+		content: "\e923"!important; /*e929*/
+		font-family: DWP!important;
+	}
+
+	#eventedit .nav-link[href="#event-panel-detail"]::before
+	{
+		content: "\e929"!important;
+		font-family: DWP!important;
+		margin-left: 3px;
+	}
+}

@@ -1620,3 +1620,15 @@ a.roadmap::before
     font-weight: normal!important;
     content: "\eedc"!important;
 }
+
+.layout-hidden{
+    display: none!important;
+}
+
+#sections-table tr td {
+	width: 100%;
+}
+
+div#files-folder-list ul li.selected {
+    color: white;
+}

@@ -468,8 +468,71 @@ async function initCloud()
     if(rcmail.env.checknews_action_on_error === undefined)
         rcmail.env.checknews_action_on_error = [];
 
+    if(rcmail.env.checknews_action_on_success === undefined)
+        rcmail.env.checknews_action_on_success = [];
+
     rcmail.env.checknews_action_on_error.push(() => {
-        rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");  
+        //rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
+        //console.log("ncupdated", rcmail.env.current_nextcloud_updated);
+        if (rcmail.env.current_nextcloud_updated === null || rcmail.env.current_nextcloud_updated === false)
+        {
+            rcmail.env.current_nextcloud_updated = moment();
+            mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_date_stockage_user_updated"), {
+                _uid:rcmail.env.current_workspace_uid,
+                _date:moment().format(),
+                _user:true
+            });
+        }
+        else if (rcmail.env.current_nextcloud_updated === 0)
+        {
+            rcmail.env.current_nextcloud_updated = moment();
+            mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_date_stockage_user_updated"), {
+                _uid:rcmail.env.current_workspace_uid,
+                _date:moment().format()
+            }); 
+        }
+
+        const finished = moment(rcmail.env.current_nextcloud_updated).add(rcmail.env.wsp_waiting_nextcloud_minutes, "m");
+        if (moment() < finished) //(personnal data)
+        {
+            $("button.wsp-documents").css("display", "none");
+            $("#cloud-frame").html(`
+            <center><div class="spinner-grow"></div><div>Création en cours...</div></center>
+            <!--<div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Création en cours...</div>
+            </div>-->
+            `);
+            
+            let createdTimeOut = setInterval(() => {
+                const val = Math.round((1 - ((finished - moment())/(rcmail.env.wsp_waiting_nextcloud_minutes*60*1000)))*100);
+                //$("#cloud-frame .progress-bar").css("width", `${val}%`);
+                rcmail.triggerEvent("workspace.roundrive.createStockage.wait", val);
+                if (val >= 100)
+                {
+                    $("button.wsp-documents").css("display", "");
+                    clearInterval(createdTimeOut);
+                    initCloud();
+                    //Envoi au serveur que rcmail.env.current_workspace_document_ten vaut vrai
+                }
+            }, 1000);
+        }  
+        else {
+            $("button.wsp-documents").css("display", "none");
+            rcmail.display_message("Impossible d'accéder au dossier !", "error");
+            if (moment(rcmail.env.current_nextcloud_updated).add(rcmail.env.wsp_waiting_nextcloud_minutes*2, "m") > moment())
+                rcmail.display_message("Si vous venez de créer un espace de travail, attendez quelques minutes que l'espace se créé.", "error");
+        }
+
+    });
+
+    rcmail.env.checknews_action_on_success.push(() => {
+        if (rcmail.env.current_nextcloud_updated !== 1)
+        {
+            mel_metapage.Functions.post(mel_metapage.Functions.url("workspace", "get_date_stockage_user_updated"), {
+                _uid:rcmail.env.current_workspace_uid,
+                _set:true
+            });
+        }
     });
 
     const folder = `/dossiers-${rcmail.env.current_workspace_uid}`;
@@ -506,7 +569,8 @@ async function initCloud()
             folder:"wsp-rd-row",
             file:"wsp-rd-row last"
         },
-        wsp:rcmail.env.current_workspace_uid
+        wsp:rcmail.env.current_workspace_uid,
+        show_errors:false
     });
 }
 
@@ -558,8 +622,6 @@ function wsp_mail_updated()
             datas[key.split("@")[0].replace("edt.", "")] = element;
         }
     }
-
-    console.log("datas mails", datas);
 
     let html = "";
 

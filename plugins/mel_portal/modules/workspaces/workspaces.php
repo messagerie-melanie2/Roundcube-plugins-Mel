@@ -147,8 +147,8 @@ class Workspaces extends Module
             if ($value)
             {
                 switch ($key) {
-                    case mel_workspace::CHANNEL:
-                        break;
+
+
 
                     case mel_workspace::TASKS:
                         break;
@@ -158,7 +158,10 @@ class Workspaces extends Module
 
                     case mel_workspace::LINKS:
                         break;
-                    
+
+                    case mel_workspace::CHANNEL:
+                        $tmp_html .= '<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>';  
+                        break;              
                     default:
                         $tmp_html .= '<button onclick="wsp_action_notif(this, `fromphp_'.$key.'`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';
                     break;

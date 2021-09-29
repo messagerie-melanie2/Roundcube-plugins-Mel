@@ -53,10 +53,11 @@ function m_mp_Create()
     else //Si elle existe, on l'affiche.
     {
         window.create_popUp.show();
-        if ($("#globallist").length > 0)
-        {
-            $("#globalModal .icon-mel-undo.mel-return").remove();
-        }
+    }
+
+    if ($("#globallist").length > 0)
+    {
+        $("#globalModal .icon-mel-undo.mel-return").remove();
     }
 }
 
@@ -232,7 +233,7 @@ function m_mp_createworkspace()
         create_popUp.contents.html(html + datas + `<div style=display:none class=step id=workspace-step3>${object.step3()}</div>`);
         
         if ($("#tmpavatar").find("a").length === 0)
-            $("#worspace-avatar-a").css("display", "").appendTo($("#tmpavatar"));
+            $("#worspace-avatar-a").html("").css("display", "").appendTo($("#tmpavatar"));
     
         m_mp_switch_step("workspace-step1");
         rcmail.init_address_input_events($("#workspace-user-list"));

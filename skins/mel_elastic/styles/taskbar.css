@@ -361,6 +361,29 @@ iframe.mm-frame/*,
     width: 120px;
 }
 
+
+#layout-menu:hover a:hover > span.inner {
+	background-color: #484D7A;
+	left: 61px;
+	margin-top: -2.2rem;
+	font-family: Roboto,sans-serif;
+	padding-top: 17px;
+	padding-bottom: 17px;
+	border-color: #484D7A;
+	padding-left: 4px;
+    z-index: 3;
+    border:none;
+}
+
+#layout-menu:hover a.wsp:hover > span.inner,
+#layout-menu:hover a.more-options:hover > span.inner {
+	padding-bottom: 0.36rem;
+}
+
+#layout-menu:hover a.menu-last-frame:hover > span.inner {
+	padding-bottom: 0.75rem;
+}
+
 .menu.toolbar a.wsp > span,
 .menu.toolbar a.more-options > span
 {
@@ -477,4 +500,10 @@ nav.otherapps
 #otherapps ul li
 {
     display:block;
+}
+
+#mailsearchlist .icon-mel-search
+{
+    font-size: 1.3rem!important;
+    margin-top: 5px!important;
 }

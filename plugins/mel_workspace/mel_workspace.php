@@ -123,7 +123,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('archive_workspace', array($this, 'archive_workspace'));
         $this->register_action('refresh_html_ulinks', array($this, 'update_html_ulinks'));
         $this->register_action('refresh_documents', array($this, 'refresh_documents'));
-        //archive_workspace
+        $this->register_action('get_date_stockage_user_updated', array($this, 'stockage_user_updated'));
+        //stockage_user_updated
         //add_users
     }
 
@@ -400,6 +401,13 @@ class mel_workspace extends rcube_plugin
 
         if ($services[self::CHANNEL])
             $this->rc->output->set_env("current_workspace_channel", $this->get_object($this->currentWorkspace, self::CHANNEL));
+
+        if ($services[self::CLOUD])
+        {
+            //$this->edit_personal_user_data($this->currentWorkspace->uid, "current_nextcloud_updated", null);
+            $this->rc->output->set_env("current_nextcloud_updated", $this->get_stockage_enabled($this->currentWorkspace, driver_mel::gi()->getUser()->uid));
+            $this->rc->output->set_env("wsp_waiting_nextcloud_minutes", $this->rc->config->get('waiting_nextcloud_minutes', 10));
+        }
 
 
         $this->include_stylesheet($this->local_skin_path().'/links.css');
@@ -1162,6 +1170,16 @@ class mel_workspace extends rcube_plugin
             Share::RIGHT_WRITE => "icofont-pencil-alt-2"
         ];
 
+        $options_title = [
+            Share::RIGHT_OWNER => "Passer en administrateur",
+            Share::RIGHT_WRITE => "Passer en utilisateur"
+        ];
+
+        $current_title = [
+            Share::RIGHT_OWNER => "Administrateur",
+            Share::RIGHT_WRITE => "Utilisateur"
+        ];
+
         $icon_delete = "icon-mel-trash";
 
         $html = '<table id=wsp-user-rights class="table table-striped table-bordered">';
@@ -1176,7 +1194,7 @@ class mel_workspace extends rcube_plugin
             $html .= "<tr>";
             $html .= "<td>". driver_mel::gi()->getUser($value->user)->name."</td>";
             
-            $html .= "<td>".$this->setup_params_value($icons_rights, $value->rights,$value->user)."</td>";
+            $html .= "<td>".$this->setup_params_value($icons_rights, $options_title, $current_title, $value->rights,$value->user)."</td>";
             if ($value->user === $current_user)
                 $html += '<td></td>';
             else
@@ -1190,7 +1208,7 @@ class mel_workspace extends rcube_plugin
         return $html;
     }
 
-    function setup_params_value($icons, $rights, $user)
+    function setup_params_value($icons, $titles, $current_titles, $rights, $user)
     {
         $options = json_encode($icons);
         $options = str_replace('"', "¤¤¤", $options);
@@ -1202,7 +1220,7 @@ class mel_workspace extends rcube_plugin
 
         $classes = str_replace('"', "¤¤¤", json_encode($classes));
 
-        return '<button style="float:right"  type="button" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel mel-button no-button-margin  btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
+        return '<button style="float:right" title="'.$current_titles[$rights].'"  type="button" data-option-title-current="'.str_replace('"', "¤¤¤", json_encode($current_titles)).'" data-option-title="'.str_replace('"', "¤¤¤", json_encode($titles)).'" data-rcmail=true data-onchange="rcmail.command(`workspace.update_user`, MEL_ELASTIC_UI.SELECT_VALUE_REPLACE+`:'.$user.'`)" data-options_class="'.$classes.'" data-is_icon="true" data-value="'.$rights.'" data-options="'.$options.'" class="select-button-mel mel-button no-button-margin  btn-u-r btn btn-primary '.$rights.'"><span class='.$icons["$rights"].'></span></button>';
         // $html = '<select class=" pretty-select" >';
         // foreach ($icons as $key => $value) {
         //     $html .= '<option class=icofont-home value="'.$key.'" '.($key === $rights ? "selected" : "")." ></option>";
@@ -2456,7 +2474,11 @@ class mel_workspace extends rcube_plugin
                         $value = $this->check_channel($this->get_object($workspace, self::CHANNEL)->id);
                         //$this->get_ariane()->check_if_room_exist($this->get_object($workspace, self::CHANNEL)->id);
                     } catch (\Throwable $th) {
-                        $value = false;
+                        $value = true;
+                        $func = "CheckChannel";
+                        mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors du check de l'espace de travail ''".$this->currentWorkspace->title."'' pour ariane !");
+                        mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
+                        mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
                     }
                 }
                 else
@@ -2579,28 +2601,33 @@ class mel_workspace extends rcube_plugin
         
                         case self::CHANNEL:      
                             try {
-                                $users = array_map($map, $workspace->shares);
-                                $tmp_users = [];
-            
-                                foreach ($users as $key => $value) {
-                                    $tmp_users[] = $key;
-                                }
-            
-                                $uid = $this->generate_channel_id_via_uid($workspace->uid);
-                                $value = $this->get_ariane()->_create_channel($uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
-                                
-                                if (is_string($value["content"]))
+
+                                if (self::is_admin($workspace))
                                 {
-                                    $value = json_decode($value["content"]);
-                                    $value = $value->channel;//$value["content"]["channel"];
-                                    $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
+                                    $users = array_map($map, $workspace->shares);
+                                    $tmp_users = [];
+                
+                                    foreach ($users as $key => $value) {
+                                        $tmp_users[] = $key;
+                                    }
+                
+                                    $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                                    $value = $this->get_ariane()->_create_channel($uid, $tmp_users, $workspace->ispublic === 0 ? false : true);
+                                    
+                                    if (is_string($value["content"]))
+                                    {
+                                        $value = json_decode($value["content"]);
+                                        $value = $value->channel;//$value["content"]["channel"];
+                                        $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
+                                    }
+                                    else {
+                                        $value = $value["content"]["channel"];
+                                        $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
+                                    }
+        
+                                    $needUpdate = true;
                                 }
-                                else {
-                                    $value = $value["content"]["channel"];
-                                    $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
-                                }
-    
-                                $needUpdate = true;
+
                             } catch (\Throwable $th) {
 
                             }
@@ -2608,20 +2635,24 @@ class mel_workspace extends rcube_plugin
                             break;
         
                         case self::TASKS:
-                            $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
-        
-                            if ($mel->createTaskslist($workspace->title))
-                            {
-                                foreach ($users as $s)
-                                {
-                                    $mel->setAcl($s, ["w"]);
-                                }
-        
-                                $taskslist = $mel->getTaskslist();
-                                $this->save_object($workspace, self::TASKS, $taskslist->id);
-                            }
 
-                            $needUpdate = true;
+                            if (self::is_admin($workspace))
+                            {
+                                $mel = new M2tasks(driver_mel::gi()->getUser()->uid, $workspace->uid);
+            
+                                if ($mel->createTaskslist($workspace->title))
+                                {
+                                    foreach ($users as $s)
+                                    {
+                                        $mel->setAcl($s, ["w"]);
+                                    }
+            
+                                    $taskslist = $mel->getTaskslist();
+                                    $this->save_object($workspace, self::TASKS, $taskslist->id);
+                                }
+
+                                $needUpdate = true;
+                            }
 
                             break;
 
@@ -2843,6 +2874,9 @@ class mel_workspace extends rcube_plugin
             $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $activate_drive);
             $this->save_object($workspace, self::GROUP, $result);
             $this->save_object($workspace, self::CLOUD, $activate_drive);
+            $this->remove_stockage_settings($workspace);
+            $this->set_stockage_created($workspace, 0);
+            //$this->edit_personal_user_data($workspace->uid, "current_nextcloud_updated", null);
 
             if (!$result)
             {
@@ -3115,6 +3149,121 @@ class mel_workspace extends rcube_plugin
 
         echo json_encode($datas);
         exit;
+    }
+
+    function stockage_user_updated()
+    {
+        $uid =  rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
+
+        $wsp = self::get_workspace($uid);
+        if (!$this->get_worskpace_services($wsp, false, true)[self::CLOUD])
+        {
+            echo 0;
+            exit; 
+        }
+        else {
+
+            $date = rcube_utils::get_input_value("_date", rcube_utils::INPUT_GPC);
+            $user = rcube_utils::get_input_value("_user", rcube_utils::INPUT_GPC) ?? false;
+            $set = rcube_utils::get_input_value("_set", rcube_utils::INPUT_GPC) ?? false;
+
+            if (!$set)
+                $this->set_stockage_created($wsp, $date, $user ? driver_mel::gi()->getUser()->uid : null);
+            else
+            {
+                $this->set_stockage_enabled($wsp);
+                $this->set_stockage_enabled($wsp, driver_mel::gi()->getUser()->uid);
+            }
+
+            echo 1;
+            exit;
+        }
+    }
+
+    const STOCKAGE = "stockage";
+    function get_stockage_enabled($workspace, $user = null)
+    {
+        $stockage = $this->get_setting($workspace, self::STOCKAGE);
+
+        if ($stockage === null)
+            return false;
+        
+        if ($user !== null)
+            return $stockage->enabled == 1 && ($stockage->$user ?? 0) == 1 ? 1 : ($stockage->$user ?? ($stockage->enabled ?? false));
+        else
+            return $stockage->enabled == 1 ? 1 : ($stockage->enabled ?? false);
+    }
+
+    function set_stockage_created(&$workspace, $date, $user = null)
+    {
+        $stockage = $this->get_setting($workspace, self::STOCKAGE);
+
+        if ($stockage === null)
+        {
+            $stockage = [];
+            $stockage["enabled"] = $date;
+            if ($user != null)
+                $stockage[$user] = $date;
+        }
+        else {
+            if ($user !== null)
+                $stockage->$user = $date;
+            else
+                $stockage->enabled = $date;
+        }
+
+        $this->add_setting($workspace, self::STOCKAGE, $stockage);
+        $workspace->save();
+    }
+
+    function set_stockage_enabled(&$workspace, $user = null)
+    {
+        $stockage = $this->get_setting($workspace, self::STOCKAGE);
+        
+        if ($stockage === null)
+            $stockage = ["enabled" => 1];
+        else {
+            if ($user !== null && $stockage->$user !== null)
+                unset($stockage->$user);
+            else
+                $stockage->enabled = 1;
+        }
+
+        $this->add_setting($workspace, self::STOCKAGE, $stockage);
+        $workspace->save();
+    }
+
+    function remove_stockage_settings(&$workspace)
+    {
+        $this->add_setting($workspace, self::STOCKAGE, null);
+        $workspace->save();
+    }
+
+    function edit_personal_user_data($uid, $key, $value)
+    {
+        $datas = $this->rc->config->get('workspaces_personal_datas', []);
+
+        if ($datas[$uid] === null)
+            $datas[$uid]  = [];
+
+        $datas[$uid][$key] = $value;
+
+        $this->rc->user->save_prefs(array('workspaces_personal_datas' => $datas));
+    }
+
+    function get_personal_user_data($uid, $key, $defaultVal = null)
+    {
+        $val = null;
+        $datas = $this->rc->config->get('workspaces_personal_datas', []);
+
+        if ($datas[$uid] !== null)
+            $val = $datas[$uid][$key];
+
+        if ($val === null && $defaultVal !== null)
+            $this->edit_personal_user_data($uid, $key, $defaultVal);
+
+        return $val ?? $defaultVal;
+
     }
 
 }

@@ -78,6 +78,9 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
 
+        $this->add_hook('preferences_list', array($this, 'prefs_list'));
+        $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+
         if ($this->rc->task === "portail")
         {
             $this->rc->output->redirect([
@@ -136,6 +139,13 @@ class mel_metapage extends rcube_plugin
                 $this->include_script('js/actions/ariane.js');
                 $this->register_action('logout', array($this, 'chat_logout'));
             }
+
+            $this->rc->output->set_env("mel_metapage_mail_configs", $this->rc->config->get('mel_mail_configuration'));
+
+            // if ($this->rc->task === "settings")
+            // {
+
+            //}
             
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
@@ -1070,5 +1080,120 @@ class mel_metapage extends rcube_plugin
 
         return $program;
     }
+
+  /**
+   * Handler for user preferences form (preferences_list hook)
+   */
+  public function prefs_list($args) {
+
+    if ($args['section'] == 'general') {
+      // Load localization and configuration
+      $this->add_texts('localization/');
+
+      $icon = "mel-icon-size";
+      $folder_space = "mel-folder-space";
+      $message_space = "mel-message-space";
+      $mel_column = "mel-3-columns";
+
+      // Check that configuration is not disabled
+      $config = $this->rc->config->get('mel_mail_configuration', [
+          $icon => $this->gettext("normal", "mel_metapage"),
+          $folder_space => $this->gettext("normal", "mel_metapage"),
+          $message_space => $this->gettext("normal", "mel_metapage"),
+          $mel_column => $this->gettext("yes", "mel_metapage")
+      ]);
+
+      $options = [
+        $icon => [
+            $this->gettext("smaller", "mel_metapage"),
+            $this->gettext("normal", "mel_metapage")
+        ],
+        $folder_space => [
+            $this->gettext("smaller", "mel_metapage"),
+            $this->gettext("normal", "mel_metapage"),
+            $this->gettext("larger", "mel_metapage")
+        ],
+        $message_space => [
+            $this->gettext("smaller", "mel_metapage"),
+            $this->gettext("normal", "mel_metapage"),
+            $this->gettext("larger", "mel_metapage")
+        ],
+        $mel_column => [
+            $this->gettext("yes", "mel_metapage"),
+            $this->gettext("no", "mel_metapage")
+        ],
+      ];
+
+       foreach ($config as $key => $value) {
+         $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+       }
+      
+    }
+
+    return $args;
+  }
+
+  function create_pref_select($field_id, $current, $options, $attrib = null)
+  {
+
+    if ($attrib === null)
+        $attrib = [];
+
+    $attrib['name'] = $field_id;
+    $attrib['id'] = $field_id;
+
+    $input = new html_select($attrib);
+
+    foreach ($options as $key => $value) {
+        $input->add($value);
+    }
+
+    unset($attrib['name']);
+    unset($attrib['id']);
+    $attrib["for"] = $field_id;
+
+    return array(
+        'title' => html::label($attrib, rcube::Q($this->gettext($field_id))),
+        'content' => $input->show($current),
+      );
+
+  }
+
+    /**
+   * Handler for user preferences save (preferences_save hook)
+   */
+  public function prefs_save($args) {
+    if ($args['section'] == 'general') {
+
+        $this->add_texts('localization/');
+
+        $icon = "mel-icon-size";
+        $folder_space = "mel-folder-space";
+        $message_space = "mel-message-space";
+        $mel_column = "mel-3-columns";
+      // Check that configuration is not disabled
+      // Check that configuration is not disabled
+      $config = $this->rc->config->get('mel_mail_configuration', [
+        $icon => $this->gettext("normal", "mel_metapage"),
+        $folder_space => $this->gettext("normal", "mel_metapage"),
+        $message_space => $this->gettext("normal", "mel_metapage"),
+        $mel_column => $this->gettext("yes", "mel_metapage")
+      ]);
+
+      foreach ($config as $key => $value) {
+        $config[$key] = rcube_utils::get_input_value($key, rcube_utils::INPUT_POST);
+      }
+
+      $args['prefs']["mel_mail_configuration"] = $config;
+      
+
+    //   $key = 'mel_default_task';
+    //   if (!in_array($key, $dont_override)) {
+    //     $config_key = 'default_task';
+    //     $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
+    //   }
+    }
+    return $args;
+  }
 
 }

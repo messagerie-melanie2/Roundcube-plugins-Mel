@@ -128,7 +128,7 @@
 </div>
 
 <!-- message preview -->
-<div id="layout-content" style="display:none">
+<div id="layout-content" class="layout-hidden" style="display:none">
 	<h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>
 	<div class="header" role="toolbar" aria-labelledby="aria-label-toolbar">
 		<a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
@@ -192,6 +192,23 @@
 		<roundcube:button command="expand-unread" type="link-menuitem" label="expand-unread" class="expand unread disabled" classAct="expand unread active" />
 		<roundcube:button command="expand-all" type="link-menuitem" label="expand-all" class="expand all disabled" classAct="expand all active" />
 		<roundcube:button command="collapse-all" type="link-menuitem" label="collapse-all" class="expand none disabled" classAct="expand none active" />
+	</ul>
+</div>
+
+<!--Added-->
+<a id="melplusmails" href="#plus" data-popup="melmorethings-menu" aria-haspopup="true" aria-expanded="false" aria-owns="melmorethings-menu"  style="color:white;display:none;" class="more active" id="moremailsoptions" title="Plus d'actions" tabindex="0"><span class="inner">Plus</span></a>
+<div id="melmorethings-menu" class="popupmenu">
+	<h3 id="aria-label-melmorethings-menu" class="voice"><roundcube:label name="" /></h3>
+	<ul class="menu listing" role="menu" aria-labelledby="aria-label-melmorethings-menu">
+		<li>
+			<a href="#select" class="select active" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner"><span class="inner">Sélectionner</span></a>
+		</li>
+		<li>
+			<a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="Fils" aria-haspopup="true" aria-expanded="false" aria-owns="threadselect-menu" data-original-title="Fils"><span class="inner">Fils</span></a>
+		</li>
+		<li>
+			<a href="#list-options" onclick="return rcmail.command('menu-open', 'messagelistmenu', this, event)" class="options active" id="listmenulink" title="Options" tabindex="0"><span class="inner">Options</span></a>
+		</li>
 	</ul>
 </div>
 

@@ -85,6 +85,16 @@ function PublicCommands(element)
                 window.location.reload();
             });
             break;
+        case "\\oldLinks":
+            try {
+                console.log("OBJET : ", rcmail.env.mul_old_items, "STRING : ", JSON.stringify(rcmail.env.mul_old_items));
+                rcmail.display_message("Anciens liens affichés dans la console javascript !", "confirmation");
+                $(element).val("");
+                SearchLinks(element);
+            } catch (error) {
+                console.error(error);
+            }
+            break;
     
         default:
             break;

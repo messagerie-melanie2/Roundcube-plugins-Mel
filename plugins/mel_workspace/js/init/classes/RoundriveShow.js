@@ -57,6 +57,7 @@ class RoundriveShow
             }
         };
         this.openDatas = {};
+        this.showErrors = config.show_errors === undefined || config.showErrors === null ? true : config.show_errors;
 
         this.load();
 
@@ -124,11 +125,24 @@ class RoundriveShow
                 config,
                 (datas) => {
                     this.showDatas(datas, this.parent);
+
+                    if (rcmail.env.checknews_action_on_success !== undefined)
+                    {
+                        const actions = rcmail.env.checknews_action_on_success;
+
+                        for (const key in actions) {
+                            if (Object.hasOwnProperty.call(actions, key)) {
+                                const element = actions[key];
+                                element();
+                            }
+                        }
+                    }
                 },
                 (xhr, ajaxOptions, thrownError) => {
                     console.error(xhr, ajaxOptions, thrownError, this);
                     this.parent.html("Connexion impossible.");
-                    rcmail.display_message("Impossible de se connecter au stockage !", "error");
+                    if (this.showErrors)
+                        rcmail.display_message("Impossible de se connecter au stockage !", "error");
                     
                     if (rcmail.env.checknews_action_on_error !== undefined)
                     {

@@ -217,7 +217,7 @@ $(document).ready(() => {
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
 
-                        $("#layout-content").css("display", "");
+                        $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
 
                         $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
@@ -238,7 +238,7 @@ $(document).ready(() => {
                         rcmail.register_command("close-mail-visu", () => {
                             $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
-                            $("#layout-content").css("display", "none");
+                            $("#layout-content").css("display", "none").addClass("hidden layout-hidden");
                             $("#layout-list").addClass("full");
 
                             $("#mailsearchlist").removeClass("hoverable");
@@ -251,8 +251,7 @@ $(document).ready(() => {
                     }   
                     else if ($("#layout-list").hasClass("full") && show)
                     {
-
-                        $("#layout-content").css("display", "");
+                        $("#layout-content").css("display", "").removeClass("hidden").removeClass("layout-hidden");
                         $("#layout-list").removeClass("full");
 
                         $("#mailsearchlist").addClass("hoverable");
@@ -304,6 +303,97 @@ $(document).ready(() => {
                     });
 
                     $("#toolbar-list-menu .compose").parent().prependTo($("#toolbar-list-menu .compose").parent().parent());
+                
+                    //Ajout de "plus"
+                    $("#toolbar-list-menu").append($(`
+                        <li id="limelmailplusmenu"style="display:none" role="menuitem">
+                        
+                        </li>
+                    `).append($("#melplusmails").css("display", "")))
+
+                    const mailConfig = rcmail.env.mel_metapage_mail_configs;
+
+                    let test = new ResizeObserver(() => {
+                        const max = mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
+                        if ($("#layout-list").width() < max)
+                        {
+                            $("#toolbar-list-menu li").css("display", "none").find(".compose").parent().css("display", "");
+                            $("#limelmailplusmenu").css("display", "")
+                        }
+                        else {
+                            $("#toolbar-list-menu li").css("display", "");
+                            $("#limelmailplusmenu").css("display", "none");
+                        }
+                    });
+                    test.observe($("#layout-list")[0]);
+
+                    
+                    if (mailConfig !== null)
+                    {
+                        let _css = "";
+
+                        //Taille des icônes
+                        if (mailConfig["mel-icon-size"] !== rcmail.gettext("normal", "mel_metapage"))
+                        {
+                            _css += `
+                            #toolbar-menu li a,
+                            #messagelist-header a.refresh,
+                            #toolbar-list-menu li a {
+                                font-size: 0.9rem;
+                            }
+    
+                            
+                            `;
+                        }
+
+                        //Espacement des dossiers
+                        if (mailConfig["mel-folder-space"] === rcmail.gettext("larger", "mel_metapage"))
+                            _css += `
+                            
+                            #folderlist-content li {
+                                margin-top: 10px;
+                            }
+                            
+                            `;
+                        else if (mailConfig["mel-folder-space"] === rcmail.gettext("smaller", "mel_metapage"))
+                            _css += `
+                                
+                            #folderlist-content li {
+                                margin-top: -5px;
+                            }
+                            
+                            `;
+
+                        //Espacement des messages
+                        if (mailConfig["mel-message-space"] === rcmail.gettext("larger", "mel_metapage"))
+                            _css += `
+                            
+                            #messagelist tr.message td {
+                                margin: 5px 0;
+                            }
+                            
+                            `;
+                        else if (mailConfig["mel-message-space"] === rcmail.gettext("smaller", "mel_metapage"))
+                            _css += `
+                                
+                            #messagelist tr.message td {
+                                margin: -5px 0;
+                            }
+                            
+                            `;
+
+
+                        var style=document.createElement('style');
+                        style.type='text/css';
+
+                        if(style.styleSheet){
+                            style.styleSheet.cssText = _css;
+                        }else{
+                            style.appendChild(document.createTextNode(_css));
+                        }
+                        document.getElementsByTagName('head')[0].appendChild(style);
+                    }
+                
                 }
                 else if (rcmail.env.action ==="preview" || rcmail.env.action ==="show"){
                     $("#message-header .headers-table td").each((i,e) => {
@@ -485,6 +575,8 @@ $(document).ready(() => {
             //console.log("generateSelect", event.data("options"), typeof event.data("options"), event);
             const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
             const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
+            const options_title = typeof event.data("option-title") === "string" ? JSON.parse(event.data("option-title").includes("¤¤¤") ? event.data("option-title").replaceAll('¤¤¤', '"') : event.data("option-title")) : event.data("option-title");
+            const options_current_title = typeof event.data("option-title-current") === "string" ? JSON.parse(event.data("option-title-current").includes("¤¤¤") ? event.data("option-title-current").replaceAll('¤¤¤', '"') : event.data("option-title-current")) : event.data("option-title-current");
             const update = event.data("event");
             const is_icon = typeof event.data("is_icon") === "string" ? event.data("is_icon") === "true" : event.data("is_icon");
             const value = event.data("value");
@@ -497,7 +589,9 @@ $(document).ready(() => {
                 if (Object.hasOwnProperty.call(options, key)) {
                     const element = options[key];
                     const current_option_class = options_class !== null && options_class !== undefined && options_class[key] !== undefined ? options_class[key] : "";
-                    html += '<button onclick="MEL_ELASTIC_UI.updateSelectValue(`'+key+'`)" class="'+current_option_class+' mel-selected-content-button btn btn-primary '+(value === key ? "active" : "")+'">'+(is_icon ? ("<span class="+element+"></span>") : element)+'</button>'
+                    const current_option_title = options_title !== null && options_title !== undefined && options_title[key] !== undefined ? options_title[key] : "";
+                    const new_option_title =  options_current_title !== null && options_current_title !== undefined && options_current_title[key] !== undefined ? options_current_title[key] : "";
+                    html += '<button title="'+current_option_title+'" onclick="MEL_ELASTIC_UI.updateSelectValue(`'+key+'`, `'+new_option_title+'`)" class="'+current_option_class+' mel-selected-content-button btn btn-primary '+(value === key ? "active" : "")+'">'+(is_icon ? ("<span class="+element+"></span>") : element)+'</button>'
                 }
             }
             html += "</div>";
@@ -535,7 +629,7 @@ $(document).ready(() => {
             //     }
             // });
         }
-        updateSelectValue(value)
+        updateSelectValue(value, newTitle = "")
         {
             //console.log("generateSelect", value);
             if (this.tmp_popup !== undefined)
@@ -546,8 +640,10 @@ $(document).ready(() => {
                     delete this.tmp_popup;
                     return;
                 }
-                this.tmp_popup.event.data("value", value).html((this.tmp_popup.is_icon ? ("<span class="+this.tmp_popup.options[value]+"></span>") : this.tmp_popup.options[value]));
+
+                this.tmp_popup.event.data("value", value).attr("title", newTitle).html((this.tmp_popup.is_icon ? ("<span class="+this.tmp_popup.options[value]+"></span>") : this.tmp_popup.options[value]));
                 const options_class = this.tmp_popup.options_class;
+                
                 if (options_class !== null && options_class !== undefined)
                 {
                     const current_option_class =  options_class[value] !== undefined ? options_class[value] : null;
@@ -560,19 +656,24 @@ $(document).ready(() => {
                     if (current_option_class !== null)
                         this.tmp_popup.event.addClass(current_option_class);
                 }
+
                 $(".mel-select-popup").remove();
+
                 if (this.tmp_popup.onchange !== null && this.tmp_popup.onchange !== undefined)
                 {
                     if (this.tmp_popup.onchange.includes("<value/>"))
-                    this.tmp_popup.onchange = this.tmp_popup.onchange.replaceAll("<value/>", value);
-                    if (this.tmp_popup.onchange.includes("MEL_ELASTIC_UI.SELECT_VALUE_REPLACE"))
+                        this.tmp_popup.onchange = this.tmp_popup.onchange.replaceAll("<value/>", value);
+                    
+                        if (this.tmp_popup.onchange.includes("MEL_ELASTIC_UI.SELECT_VALUE_REPLACE"))
                         this.tmp_popup.onchange = this.tmp_popup.onchange.replaceAll("MEL_ELASTIC_UI.SELECT_VALUE_REPLACE", "`" + value + "`");
-                    //console.log('generateSelect', this.tmp_popup.onchange);
+
                     eval(this.tmp_popup.onchange);
                 }
+
                 delete this.tmp_popup;
             }
         }
+        
         setValue(new_value, event)
         {
             const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");

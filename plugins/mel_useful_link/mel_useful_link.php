@@ -34,6 +34,8 @@ class mel_useful_link extends rcube_plugin
           if ($this->rc->action == "index" || $this->rc->action == "")
             $this->links = $this->get_personal_links();
             $this->include_uLinks();
+            $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
+            $this->rc->output->set_env("mul_items", $this->rc->config->get('personal_useful_links', []));
         }
     }
 

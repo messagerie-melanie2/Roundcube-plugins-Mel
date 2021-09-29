@@ -155,3 +155,13 @@ $labels["last_day"] = "Jour précédent";
 $labels["next_day"] = "Jour suivant";
 
 $labels["my_apps"] = "Toutes mes applications";
+
+$labels["normal"] = "Normal";
+$labels["smaller"] = "Plus petit";
+$labels["larger"] = "Plus grand";
+$labels["yes"] = "Oui";
+$labels["no"] = "Non";
+
+$labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
+$labels["mel-folder-space"] = "Mail - Espacement des dossiers";
+$labels["mel-message-space"] = "Mail - Espacement des messages";

@@ -40,12 +40,11 @@ class mel_junk extends rcube_plugin
      */
     function init() {
         // Plugins require
-        $this->require_plugin('bounce');
         $this->require_plugin('markasjunk');
 
         $rcmail = rcmail::get_instance();
 
-        if ($rcmail->task == 'mail' && ($rcmail->action == '' || $rcmail->action == 'show')) {
+        if ($rcmail->action == '' || $rcmail->action == 'show') {
             $this->rendered = false;
             $this->load_config();
             $this->include_script('mel_junk.js');
@@ -53,6 +52,54 @@ class mel_junk extends rcube_plugin
             $this->add_hook('render_page', array($this, 'render_box'));
             $rcmail->output->set_env('administrator_email', $rcmail->config->get('mel_junk_administrator_email'));
             $rcmail->output->set_env('junk_folder', $rcmail->config->get('junk_mbox'));
+            $rcmail->output->set_env('junk_token', $rcmail->get_request_token());
+
+            // Ajout de l'identité par defaut
+            $default_identity = $rcmail->user->get_identity();
+            $rcmail->output->set_env('junk_identity', $default_identity['identity_id']);
+
+            // Ajout des boutons
+            
+            $this->api->add_content(
+              html::span('dropbutton', 
+                $this->api->output->button(array(
+                  'command'    => 'plugin.mel_junk',
+                  'type'       => 'link',
+                  'class'      => 'button buttonPas junk disabled',
+                  'classact'   => 'button junk',
+                  'classsel'   => 'button junk pressed',
+                  'title'      => 'mel_junk.admin',
+                  'innerclass' => 'inner',
+                  'label'      => 'junk'
+                )) . 
+                html::a([
+                    'href' => '#junk', 
+                    'id' => 'junkmenulink', 
+                    'class' => 'dropdown active', 
+                    'data-popup' => "junk-menu", 
+                    'tabindex' => "0",
+                    'aria-haspopup' => "true", 
+                    'aria-expanded' => "false", 
+                    'aria-owns' => "junk-menu",
+                    'data-original-title' => "", 
+                    'title' => "",
+                  ], 
+                  html::span('inner', $this->gettext('arialabeljunkoptions'))
+                )
+              )
+            , 'toolbar');
+
+            // add the buttons to the main toolbar
+            $this->add_button(array(
+                'command'    => 'plugin.markasjunk.not_junk',
+                'type'       => 'link',
+                'class'      => 'button buttonPas notjunk disabled',
+                'classact'   => 'button notjunk',
+                'classsel'   => 'button notjunk pressed',
+                'title'      => 'mel_junk.buttonnotjunk',
+                'innerclass' => 'inner',
+                'label'      => 'markasjunk.notjunk'
+            ), 'toolbar');
         }
     }
 
@@ -70,8 +117,9 @@ class mel_junk extends rcube_plugin
             'id'    => 'mel_junk-box',
             'class' => 'popupmenu',
             'data-sticky' => 'true',
+            'data-align' => 'bottom',
         ];
-    
+
         $button = new html_inputfield(array('type' => 'button'));
         $checkbox = new html_checkbox();
     
@@ -93,6 +141,29 @@ class mel_junk extends rcube_plugin
             )
           )
         ));
+
+        $rcmail->output->add_footer(html::div(['id' => "junk-menu", 'class' => "popupmenu", 'aria-hidden' => "true"],
+          html::tag('h3', ['id' => "aria-label-junkmenu", 'class' => "voice"], $this->gettext('arialabeljunkoptions')) .
+          html::tag('ul', ['id' => "junkmenu-menu", 'class' => "menu listing", 'role' => "menu", 'aria-labelledby' => "aria-label-junkmenu"],
+            $rcmail->output->button(array(
+              'command'    => 'plugin.markasjunk.junk',
+              'type'       => 'link-menuitem',
+              'class'      => 'markasjunk',
+              'classact'   => 'markasjunk active',
+              'label'      => 'mel_junk.buttontitle',
+              'prop'       => 'sub',
+            )) . 
+            $rcmail->output->button(array(
+              'command'    => 'plugin.mel_junk_send',
+              'type'       => 'link-menuitem',
+              'class'      => 'junkadmin',
+              'classact'   => 'junkadmin active',
+              'label'      => 'mel_junk.admin',
+              'prop'       => 'sub',
+            ))
+          )
+        ));
+
         $rcmail->output->add_gui_object('mel_junkbox', $attrib['id']);
         $rcmail->output->add_gui_object('mel_junkform', 'mel_junkform');
     

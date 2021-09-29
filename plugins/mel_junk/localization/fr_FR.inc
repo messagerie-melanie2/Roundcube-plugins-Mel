@@ -20,7 +20,10 @@
 $labels = array();
 $labels['title'] = 'Message(s) indésirable(s) : que voulez-vous faire ?';
 $labels['junk'] = 'Valider';
-$labels['admin'] = 'Signaler à l\'administrateur';
+$labels['admin'] = 'Message(s) indésirable(s)';
+$labels['buttontitle'] = 'Marquer comme indésirable';
 $labels['add to junk folder'] = 'Mettre le(s) message(s) dans le dossier Indésirables';
 $labels['send message to administrator'] = 'Signaler le(s) message(s) à l\'administrateur';
 $labels['arialabeljunkoptions'] = 'Options de message indésirable';
+$labels['buttonnotjunk'] = 'Ce message n\'est pas un message indésirable';
+

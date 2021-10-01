@@ -555,6 +555,7 @@ class calendar extends rcube_plugin
       $select->add($this->gettext('afterdelete'), 2);
       $select->add($this->gettext('afterflagdeleted'), 3);
       $select->add($this->gettext('aftermoveto'), 4);
+      $select->add($this->gettext('afterread'), 5);
 
       $val = $this->rc->config->get('calendar_itip_after_action', $this->defaults['calendar_itip_after_action']);
       if ($val !== null && $val !== '' && !is_int($val)) {

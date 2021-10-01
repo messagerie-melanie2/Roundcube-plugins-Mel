@@ -1406,6 +1406,7 @@ rcube_libcalendaring.itip_message_processed = function(metadata)
  *     2 - delete the message
  *     3 - flag as deleted
  *     folder_name - move the message to the specified folder
+ *     5 - PAMELA flag rdvtraite AND SEEN
  */
 rcube_libcalendaring.itip_after_action = function(action)
 {
@@ -1420,6 +1421,18 @@ rcube_libcalendaring.itip_after_action = function(action)
   }
   else if (action === 3) {
     rc.mark_message('delete');
+  }
+  else if (action === 5) {
+    // PAMELA - Mark as read and rdvtraite
+    rc.mark_message('read');
+    // Add rdvtraite label if plugin mel_labels exist
+    if (typeof rc.mel_label_toggle === "function") {
+        var label = '_-t-_rdvtraite';
+        // Check in rdvtraite isnt already set
+		if (tb_labels_for_message && jQuery.inArray(label, tb_labels_for_message) === -1) {
+            rc.mel_label_toggle(label);
+        }
+    }
   }
   else {
     rc.move_messages(action === 1 ? rc.env.trash_mailbox : action);

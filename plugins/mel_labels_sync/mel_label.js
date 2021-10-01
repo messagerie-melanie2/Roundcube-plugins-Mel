@@ -298,94 +298,7 @@ function rcm_tb_label_init_onclick(selector = '#tb_label_popup li a', closeActio
 				} catch (error) {
 					toggle_label = Enumerable.from(this.classList).where(x => x.includes("label_")).first().replace("label_", "");
 				}
-				var selection = rcm_tb_label_get_selection();
-				
-				var unset_all = false;
-				var labels_list = [];
-				// special case flag 0 means remove all flags
-				if (toggle_label == 'label0') {
-					unset_all = true;
-					$('#tb_label_popup li.show a').each(function() {
-						if ($(this).parent().attr('id') != 'label0' 
-								&& $(this).attr('id') != 'rcube_manage_labels') {
-							labels_list.push($(this).parent().attr('id').split('_b_')[0]);
-						}
-					});
-				} else {
-					labels_list.push(toggle_label);
-				}
-				
-				jQuery.each(labels_list, function(index, value) {
-					if (value) {
-						var toggle_label = value.toLowerCase();
-						// compile list of unflag and flag msgs and then send command
-						// Thunderbird modifies multiple message flags like it did the first in the selection
-						// e.g. first message has flag1, you click flag1, every message select loses flag1, the ones not having flag1 don't get it!
-						var first_toggle_mode = 'on';
-						if (rcmail.env.messages)
-						{
-							var first_message = rcmail.env.messages[selection[0]];
-							if (first_message.flags && jQuery.inArray(toggle_label, first_message.flags.tb_labels) >= 0)
-								first_toggle_mode = 'off';
-							else
-								first_toggle_mode = 'on';
-						}
-						else // single message display
-						{
-							// flag already set?
-							if (jQuery.inArray(toggle_label, tb_labels_for_message) >= 0)
-								first_toggle_mode = 'off';
-						}
-						
-						var flag_uids = [];
-						var unflag_uids = [];
-						jQuery.each(selection, function (idx, uid) {
-								// message list not available (example: in detailview)
-								if (!rcmail.env.messages)
-								{
-									if (first_toggle_mode == 'on')
-										flag_uids.push(uid);
-									else
-										unflag_uids.push(uid);
-									// make sure for unset all there is the single message id
-									if (unset_all && unflag_uids.length == 0)
-										unflag_uids.push(uid);
-									return;
-								}
-								var message = rcmail.env.messages[uid];
-								if (message.flags && jQuery.inArray(toggle_label, message.flags.tb_labels) >= 0)
-								{
-									if (first_toggle_mode == 'off')
-										unflag_uids.push(uid);
-								}
-								else
-								{
-									if (first_toggle_mode == 'on')
-										flag_uids.push(uid);
-								}
-						});
-						
-						if (unset_all)
-							flag_uids = [];
-						
-						// skip sending flags to backend that are not set anywhere
-						if (flag_uids.length > 0
-								|| unflag_uids.length > 0) {
-							var str_flag_uids = flag_uids.join(',');
-							var str_unflag_uids = unflag_uids.join(',');
-							
-							var lock = rcmail.set_busy(true, 'loading');
-							rcmail.http_request('plugin.thunderbird_labels.set_flags', '_flag_uids=' + str_flag_uids + '&_unflag_uids=' + str_unflag_uids + '&_mbox=' + urlencode(rcmail.env.mailbox) + "&_toggle_label=" + urlencode(toggle_label), lock);
-							
-							// remove/add classes and tb labels from messages in JS
-							rcm_tb_label_flag_msgs(flag_uids, toggle_label);
-							rcm_tb_label_unflag_msgs(unflag_uids, toggle_label);
-						}
-					}
-				});
-				// Fermer le pop up au click
-				closeAction();
-				//rcmail.hide_menu('tb_label_popup');
+				rcmail.mel_label_toggle(toggle_label);
 			});
 		});
 	}
@@ -447,6 +360,100 @@ function show_rcube_manage_labels()
   // Fermer le pop up au click
   rcmail.hide_menu('tb_label_popup');
 }
+
+// Toggle label for selection
+rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
+	var selection = rcm_tb_label_get_selection();
+	var unset_all = false;
+	var labels_list = [];
+
+	// special case flag 0 means remove all flags
+	if (toggle_label == 'label0') {
+		unset_all = true;
+		$('#tb_label_popup li.show a').each(function() {
+			if ($(this).parent().attr('id') != 'label0' 
+					&& $(this).attr('id') != 'rcube_manage_labels') {
+				labels_list.push($(this).parent().attr('id').split('_b_')[0]);
+			}
+		});
+	} else {
+		labels_list.push(toggle_label);
+	}
+
+	var _this = this;
+	
+	jQuery.each(labels_list, function(index, value) {
+		if (value) {
+			var toggle_label = value.toLowerCase();
+			// compile list of unflag and flag msgs and then send command
+			// Thunderbird modifies multiple message flags like it did the first in the selection
+			// e.g. first message has flag1, you click flag1, every message select loses flag1, the ones not having flag1 don't get it!
+			var first_toggle_mode = 'on';
+			if (_this.env.messages)
+			{
+				var first_message = _this.env.messages[selection[0]];
+				if (first_message.flags && jQuery.inArray(toggle_label, first_message.flags.tb_labels) >= 0)
+					first_toggle_mode = 'off';
+				else
+					first_toggle_mode = 'on';
+			}
+			else // single message display
+			{
+				// flag already set?
+				if (jQuery.inArray(toggle_label, tb_labels_for_message) >= 0)
+					first_toggle_mode = 'off';
+			}
+			
+			var flag_uids = [];
+			var unflag_uids = [];
+			jQuery.each(selection, function (idx, uid) {
+					// message list not available (example: in detailview)
+					if (!_this.env.messages)
+					{
+						if (first_toggle_mode == 'on')
+							flag_uids.push(uid);
+						else
+							unflag_uids.push(uid);
+						// make sure for unset all there is the single message id
+						if (unset_all && unflag_uids.length == 0)
+							unflag_uids.push(uid);
+						return;
+					}
+					var message = _this.env.messages[uid];
+					if (message.flags && jQuery.inArray(toggle_label, message.flags.tb_labels) >= 0)
+					{
+						if (first_toggle_mode == 'off')
+							unflag_uids.push(uid);
+					}
+					else
+					{
+						if (first_toggle_mode == 'on')
+							flag_uids.push(uid);
+					}
+			});
+			
+			if (unset_all)
+				flag_uids = [];
+			
+			// skip sending flags to backend that are not set anywhere
+			if (flag_uids.length > 0
+					|| unflag_uids.length > 0) {
+				var str_flag_uids = flag_uids.join(',');
+				var str_unflag_uids = unflag_uids.join(',');
+				
+				var lock = _this.set_busy(true, 'loading');
+				_this.http_request('plugin.thunderbird_labels.set_flags', '_flag_uids=' + str_flag_uids + '&_unflag_uids=' + str_unflag_uids + '&_mbox=' + urlencode(rcmail.env.mailbox) + "&_toggle_label=" + urlencode(toggle_label), lock);
+				
+				// remove/add classes and tb labels from messages in JS
+				rcm_tb_label_flag_msgs(flag_uids, toggle_label);
+				rcm_tb_label_unflag_msgs(unflag_uids, toggle_label);
+			}
+		}
+	});
+	// Fermer le pop up au click
+	closeAction();
+	//rcmail.hide_menu('tb_label_popup');
+};
 
 $(document).ready(function() {
 	rcm_tb_label_init_onclick();

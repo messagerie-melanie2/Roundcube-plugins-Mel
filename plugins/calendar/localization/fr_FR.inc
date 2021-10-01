@@ -25,6 +25,8 @@ $labels['aftertrash'] = 'Déplacer dans la corbeille';
 $labels['afterdelete'] = 'Supprimer ce message';
 $labels['afterflagdeleted'] = 'Marquer comme supprimer';
 $labels['aftermoveto'] = 'Déplacer vers...';
+// PAMELA - Read after itip mail
+$labels['afterread'] = 'Passer en lu et RdvTraité';
 $labels['itipoptions'] = 'Invitations à l\'événement';
 $labels['afteraction'] = 'Après une invitation ou une modification, le message est traité';
 $labels['weeknonone'] = 'jamais';

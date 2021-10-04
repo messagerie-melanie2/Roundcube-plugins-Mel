@@ -1364,8 +1364,11 @@ rcube_libcalendaring.update_itip_object_status = function(p)
       .filter('.'+String(p.status||'unknown').toLowerCase()).prop('disabled', p.latest);
   }
 
-  // show rsvp/import buttons (with calendar selector)
-  $('#'+p.action+'-'+p.id).show().find('input.button').last().after(p.select);
+  // PAMELA - 0006238: Ne pas afficher les boutons si l'étiquette RdvTraité est positionnée
+  if (!tb_labels_for_message || jQuery.inArray('_-t-_rdvtraite', tb_labels_for_message) === -1) {
+    // show rsvp/import buttons (with calendar selector)
+    $('#'+p.action+'-'+p.id).show().find('input.button').last().after(p.select);
+  }
 
   // highlight date if date change detected
   if (p.rescheduled)
@@ -1394,7 +1397,8 @@ rcube_libcalendaring.itip_message_processed = function(metadata)
   if (metadata.after_action) {
     setTimeout(function(){ rcube_libcalendaring.itip_after_action(metadata.after_action); }, 1200);
   }
-  else {
+  // PAMELA - Mark as read and rdvtraite
+  if (!metadata.after_action || metadata.after_action === 5) {
     rcube_libcalendaring.fetch_itip_object_status(metadata);
   }
 };

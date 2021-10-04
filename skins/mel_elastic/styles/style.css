@@ -253,6 +253,10 @@ a.button.saveas::before,
     font-size: 1em !important;
 }
 
+div.calendar-invitebox .rsvp-status {
+	font-weight: bold;
+}
+
 .listing li > div.calendar .calname::before {
     opacity: 0.7;
 }

@@ -576,6 +576,9 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);
 
+    if (parent === window && $(html).hasClass("webconf-started"))
+        $(window).resize();
+
 });
 
 function m_mp_ChangeLasteFrameInfo()

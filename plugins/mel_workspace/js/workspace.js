@@ -5,14 +5,27 @@ $(document).ready(async () => {
 
 async function WSPReady()
 {
+    const uid = rcmail.env.current_workspace_uid;
+    const hasAriane = $(".wsp-ariane").length > 0;
+    let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
 
-    let tmpTask = InitLinks();
+    let end = End(uid, hasAriane, datas);
 
-    //$("button.wsp-toolbar-item").data("uid", rcmail.env.current_workspace_uid);
-    if (rcmail.env.current_workspace_services.wekan && !wekan.isLogged())
-        await wekan.login();
+    Start(uid, hasAriane, datas);
+    Middle(uid, hasAriane, datas);
 
+    await end;
+}
+
+function Start(uid, hasAriane, datas) {
+    setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
+}
+
+function Middle(uid, hasAriane, datas) {
+
+    SetCalendarDate();
+
     try {
         if (rcmail.env.current_workspace_services.mail)
             parent.rcmail.mel_metapage_fn.mail_wsp_updated();
@@ -20,13 +33,6 @@ async function WSPReady()
         
     }
 
-    //console.log("a");
-    const uid = rcmail.env.current_workspace_uid;
-    SetCalendarDate()
-    //console.log("b");
-    //Récupération des données d'ariane
-    let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
-    const hasAriane = $(".wsp-ariane").length > 0;
     if (hasAriane)
     {
         //console.log("c");
@@ -34,27 +40,12 @@ async function WSPReady()
         //console.log("Init()", datas, channel, datas[channel]);
         UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
     }
-    //console.log("d");
-    //Récupération des données de l'agenda
+
     UpdateCalendar();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, UpdateCalendar);
-    //Récupération des données des tâches
-    //console.log("e");
+
     UpdateTasks();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
-    //console.log("f");
-    if (hasAriane)
-    {
-        //console.log("g");
-        await wait(() => {
-            //console.log(window.ariane === undefined);
-             return window.ariane === undefined
-        });
-        //console.log("h");
-        window.ariane.addEventListener("update", UpdateAriane);
-    }
-
-    //console.log("wsp", rcmail.env.current_workspace_page);
 
     if (rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
     {
@@ -84,8 +75,27 @@ async function WSPReady()
 
     if ($("#createthings").length > 0)
         $("#createthings").removeClass("active");
+}
 
-    await tmpTask;
+async function End(uid, hasAriane, datas) {
+    let promises = [
+        InitLinks()
+    ];
+
+    if (rcmail.env.current_workspace_services.wekan && !wekan.isLogged())
+        promises.push(wekan.login());
+
+    if (hasAriane)
+    {
+        promises.push(wait(() => {
+                return window.ariane === undefined
+            })
+            .then(() => {window.ariane.addEventListener("update", UpdateAriane);})
+        );
+    }
+
+    return Promise.all(promises);
+
 }
 
 function wsp_contract(_class)
@@ -762,4 +772,28 @@ function m_wp_change_picture(img)
     }
     else
         $("#worspace-avatar-b").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
+}
+
+function setup_end_date()
+{
+    let querry = $("#new-end-date");
+
+    if (querry.length > 0)
+    {
+        querry.datetimepicker({
+            format: 'd/m/Y H:i',
+            lang:"fr",
+            step:15
+        });
+    }
+
+    const date = rcmail.env.current_settings.end_date;
+    if (date !== undefined && date !== null && date !== "")
+    {
+        let querry = $("#wsp-end-date");
+        if (moment() >= moment(date, "DD/MM/YYYY hh:mm"))
+            querry.html("<i>Espace clôt !</i>")
+        else
+            querry.html(`Date de fin : ${date}`);
+    }
 }

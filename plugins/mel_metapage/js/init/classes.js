@@ -111,6 +111,8 @@ class ArianePopUp{
         this.ariane.disable();
         this.ariane.popUp.css("width", "100%");
         this.is_show = false;
+
+        $("html").removeClass("ariane-started");
     }
 }
 ArianePopUp.set_width = function(node)
@@ -315,6 +317,9 @@ class ArianeFrame{
             {
                 $("#layout-content").css("overflow", "hidden").find(".header").css("overflow-x", "auto").css("overflow-y", "hidden");
             }
+
+            $("html").addClass("ariane-started");
+            $(window).resize();
             //ArianePopUp.set_width(this.popUp);
         }
         else {
@@ -332,6 +337,9 @@ class ArianeFrame{
             {
                 $("#layout-content").css("overflow", "").find(".header").css("overflow-x", "").css("overflow-y", "");
             }
+
+            $("html").removeClass("ariane-started");
+            $(window).resize();
             //ArianePopUp.set_width(this.popUp);
         }
 

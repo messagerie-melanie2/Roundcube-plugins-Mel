@@ -1607,6 +1607,16 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
     content: "\e938"!important;
 }
 
+.icon-mel-plus::before
+{
+    content: "\e929"!important;
+}
+
+.icon-mel-close::before
+{
+    content: "\e908"!important;
+}
+
 a.roadmap::before
 {
     content: "\efd8"!important;
@@ -1631,4 +1641,24 @@ a.roadmap::before
 
 div#files-folder-list ul li.selected {
     color: white;
+}
+
+.show-on-small
+{
+    display: none;
+}
+
+
+html.layout-small .show-on-small,
+html.layout-phone .show-on-small
+{
+    display: initial;
+}
+
+
+
+html.layout-small .hide-on-small,
+html.layout-phone .hide-on-small
+{
+    display: none;
 }

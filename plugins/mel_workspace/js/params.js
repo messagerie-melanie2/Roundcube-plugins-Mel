@@ -267,6 +267,40 @@
             });
         }
 
+        update_end_date(new_date)
+        {
+            if (new_date === undefined || new_date === null || new_date === "")
+            {
+                if (!confirm("Vous n'avez pas inscrit de nouvelle date, cela aurais pour effet de supprime la date de fin.\r\nSi c'est ce que voulez, appuyez sur \"Ok\"."))
+                    return;
+            }
+
+            this.busy();
+            return this.ajax(this.url("PARAMS_update_end_date"), {
+                _uid:this.uid,
+                _date:new_date,
+            },
+            (datas) => {
+                this.busy(false);
+                if (datas === "denied")
+                    rcmail.display_message("Vous devez être un administrateur pour faire ça !", "error");
+                else {
+                    rcmail.display_message("Date de fin modifié avec succès !", "confirmation");
+                    if (new_date === undefined || new_date === null || new_date === "")
+                        $("#wsp-end-date").remove();
+                    else
+                    {
+                        if (moment(new_date, "DD/MM/YYYY hh:mm") <= moment())
+                            $("#wsp-end-date").html(`<i>Espace clôt !</i>`);
+                        else
+                            $("#wsp-end-date").html(`Date de fin : ${new_date}`);
+                    }
+                }
+            }).always(() => {
+                this.busy(false);
+            });
+        }
+
         update_workspace_logo(new_logo)
         {
             if (new_logo === undefined || new_logo === null || new_logo === "")
@@ -672,6 +706,7 @@
             rcmail.register_command('workspace.compose', () => rcmail.env.WSP_Param.compose(), true);
             rcmail.register_command('workspace.webconf', () => rcmail.env.WSP_Param.create_webconf(), true);
             rcmail.register_command('workspace.webconf.needParams', () => rcmail.env.WSP_Param.create_webconf(true), true);
+            rcmail.register_command('workspace.update_end_date', (jquery) => rcmail.env.WSP_Param.update_end_date(jquery.val()), true);
         })
     })
 

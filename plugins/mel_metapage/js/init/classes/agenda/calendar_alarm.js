@@ -249,6 +249,11 @@ Alarm.enums = {
          */
         show(event)
         {
+            if (event.alarm_dismissed === true || event.alarm_dismissed === "true")
+                return;
+            else if (event.x_moz_lastack !== undefined && event.x_moz_lastack !== null && moment() > moment(event.x_moz_lastack))
+                return;
+
             event.id = this.setCalId(event.id);//"cal:" + event.id;
             event.uid = this.setCalId(event.uid);//"cal:" + event.uid;
             this.showed_alarms.push(event);

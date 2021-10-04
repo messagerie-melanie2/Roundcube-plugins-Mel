@@ -103,6 +103,7 @@ html.touch .shortcut-task{
 	top: unset;
 	left:calc(50% + 60px);
 	transform: translateX(-50%);
+    width: unset;
 }
 
 .wsp-toolbar.webconf-toolbar .wsp-toolbar-item

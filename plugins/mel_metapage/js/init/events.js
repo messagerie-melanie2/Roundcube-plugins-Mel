@@ -304,6 +304,14 @@ if (rcmail)
         }
       }
 
+    //   function resize_taskbar_wsp()
+    //   {
+    //       if ($(".layout-small").length > 0 && $(".layout-ultra-small").length === 0 && !$(".wsp-toolbar").hasClass("") && $(".wsp-toolbar"))
+    //       {
+    //         $(".wsp-toolbar")
+    //       }
+    //   }
+
       $(document).ready(async () => {
         if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))
         {
@@ -311,7 +319,48 @@ if (rcmail)
             resize_mail();
         }
 
+
       });
+
+      if (parent === window)
+      {
+          switch (rcmail.env.task) {
+              case "workspace":
+                  rcmail.addEventListener("elastic.UI.screen_mode.tests", (datas) => {
+                    if ($("html").hasClass("webconf-started"))
+                    {
+                        for (const key in datas.tests) {
+                            if (Object.hasOwnProperty.call(datas.tests, key)) {
+                                datas.tests[key] += 324;                            
+                            }
+                        }
+                    }
+                    else if ($("html").hasClass("ariane-started"))
+                    {
+                        for (const key in datas.tests) {
+                            if (Object.hasOwnProperty.call(datas.tests, key)) {
+                                datas.tests[key] += (datas.tests[key] * (25/100));                            
+                            }
+                        }
+                    }
+                    
+                    return datas.tests;
+                  });
+
+
+                  rcmail.addEventListener("elastic.UI.screen_mode.customSize", (datas) => {
+                    const size = $("html").hasClass("webconf-started") ? 597 + 324 : $("html").hasClass("ariane-started") ? 597 + (597*(25/100)) : 597;
+                    if (datas.tests.phone <= datas.width && datas.width <= size )
+                        $("html").addClass("layout-ultra-small");
+                    else if ($("html").hasClass("layout-ultra-small"))
+                        $("html").removeClass("layout-ultra-small");
+                  })
+                  break;
+          
+              default:
+                  break;
+          }
+      }
     
 
 }

@@ -22,6 +22,17 @@
             </div>
         </div>
     </div>
+    <div class="row" style="margin-bottom:15px">
+        <div class="col-md-3 datetime">
+            <label for="new-end-date">Nouvelle date de fin : </label>
+            <div class="input-mel-datetime">
+                <input class="form-control input-mel mel-input" name="new-end-date" id="new-end-date" type="text" value="<end_date/>" placeholder="JJ/MM/YYYY HH:mm " />
+            </div>
+            <button class="mel-button btn btn-secondary" onclick="rcmail.command('workspace.update_end_date', $('#new-end-date'))" >Modifier la date de fin<span class="plus icon-pencil"></span></button>
+        </div>
+    </div>
+
+    <separate></separate>
     <!-- <div class='row' style="margin-top:5px">
         <div class="col-6"> -->
             <button style="margin-top:5px" class="btn btn-secondary mel-button" onclick="rcmail.command('workspace.add_users')">Ajouter un utilisateur <span class="plus icon-mel-plus"></span></button>

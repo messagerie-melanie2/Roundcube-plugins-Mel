@@ -5,7 +5,7 @@ $labels['back'] = 'Retour';
 $labels['home'] = 'Accueil';
 $labels['calendar'] = 'Agenda';
 $labels['mail'] = 'Messagerie';
-$labels['documents'] = 'documents';
+$labels['documents'] = 'Documents';
 $labels['rocketchat'] = 'Discussion';
 $labels['tasks'] = 'Tâches';
 $labels['params'] = 'Paramètres';
@@ -26,3 +26,6 @@ $labels["infos"] = "Informations";
 $labels["create_mail"] = "Envoyer un message aux membres";
 $labels["create_webconf"] = "Commencer une visioconférence";
 $labels["create_webconf_params"] = "Nouvelle visioconférence paramétrable";
+
+$labels["invite_member"] = "Inviter un membre";
+$labels["quit_space"] = "Se désinscrire de l'espace de travail";

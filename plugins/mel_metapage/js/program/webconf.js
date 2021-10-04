@@ -240,7 +240,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             parentNode: document.querySelector('#mm-webconf'),
             configOverwrite: { 
                 hideLobbyButton: true,
-                startWithAudioMuted: true,
+                startWithAudioMuted: false,
                 startWithVideoMuted:true,
                 prejoinPageEnabled: false,
                 toolbarButtons: [''
@@ -285,6 +285,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         this.jitsii.addListener("tileViewChanged", (args) => {
             mel_metapage.Functions.call(`window.webconf_master_bar.toggle_tile_view(${args.enabled})`);
         });
+
+        if (parent.rcmail.task !== "webconf")
+            parent.$("html").addClass("webconf-started");
+        
     }
 
     /**
@@ -857,6 +861,9 @@ class MasterWebconfBar {
 
         $(".webconf-frame").remove();
         $(".tiny-rocket-chat").css("display", "block");
+
+        parent.$("html").removeClass("webconf-started");
+        $(parent).resize();
     }
 
     /**

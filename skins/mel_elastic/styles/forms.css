@@ -453,7 +453,7 @@ input.input-mel.error {
 	display: none!important;
 }
 
-@media screen and (max-width:768px) {
+@media screen and (max-width:492px) {
 
 	#eventedit .nav-link{
 		color:transparent!important;

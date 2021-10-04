@@ -1215,6 +1215,10 @@ function rcube_calendar_ui(settings)
       
       if (!event_attendees.length)
         return false;
+
+        //PAMELLA
+      event.start = moment($("#edit-startdate").val() + " " + $("#edit-starttime").val(), "DD/MM/YYYY HH:mm");
+      event.end = moment($("#edit-enddate").val() + " " + $("#edit-endtime").val(), "DD/MM/YYYY HH:mm");
       
       // set form elements
       var allday = $('#edit-allday').get(0);

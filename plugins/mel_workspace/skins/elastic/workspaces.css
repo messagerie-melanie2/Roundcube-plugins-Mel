@@ -27,6 +27,7 @@ html.touch .wsp-content{
     padding-right: 15px;
 }
 
+html.layout-phone .wsp-content,
 html.layout-small .wsp-content{
   padding: 0px;
 }
@@ -210,16 +211,15 @@ body.task-workspace separate{
     background-color: #5870BF;
     border-radius: 50px;
     color: white;
-    width: fit-content;
-    width: -moz-fit-content;
+    width: 100%;
+    /* width: -moz-fit-content; */
     margin: auto;
     position: sticky;
     top: 0px;
     z-index: 5;
 }
 
-
-
+html.layout-phone .wsp-toolbar,
 html.layout-small .wsp-toolbar{
     border-radius: 0px;
     width: 100%;
@@ -268,28 +268,68 @@ body.task-workspace .wsp-toolbar-item > .text-item,
     right: 0;
     text-align: center;
     width: 100%;
+    white-space: nowrap;
+    /* text-overflow: ellipsis;
+    overflow: hidden; */
 } 
 
+body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
+{
+    padding: 0 20px!important;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+html.layout-phone body.task-workspace .wsp-toolbar-item > .text-item,
+html.layout-phone .wsp-toolbar-edited button.wsp-toolbar-item > .text-item,
 html.layout-small body.task-workspace .wsp-toolbar-item > .text-item,
 html.layout-small .wsp-toolbar-edited button.wsp-toolbar-item > .text-item {
     display: none;
 } 
 
 html.layout-normal .wsp-toolbar-item{
-    font-size:27px;
+    font-size:18px;
     padding: 0 40px;
 }
 
-html.touch .wsp-toolbar-item{
-    font-size:20px;
-    padding: 0 32px;
+html.layout-normal body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
+{
+    padding: 0 30px;
 }
 
+
+
+html.touch .wsp-toolbar-item{
+    font-size:20px;
+    padding: 0 25px;
+}
+
+html.touch body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
+{
+    padding: 0 25px;
+}
+
+html.layout-phone .wsp-toolbar-item,
 html.layout-small .wsp-toolbar-item
 {
     margin: 10px auto;
     border: none;
     /* background: linear-gradient(90deg, rgba(2,0,36,1) 2%, rgba(255,0,0,1) 2%, rgba(255,0,0,1) 98%, rgba(0,0,0,1) 98%); */
+}
+
+html.layout-small .wsp-toolbar-item{
+    font-size:20px;
+    padding: 0 15px!important;
+}
+
+html.layout-small body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
+{
+    padding: 0 15px;
+}
+
+html.layout-phone .wsp-toolbar-item{
+    font-size:15px;
+    padding: 0 20px;
 }
 
 .wsp-toolbar-item.first{
@@ -299,25 +339,25 @@ html.layout-small .wsp-toolbar-item
 .wsp-toolbar-item:hover,
 .wsp-toolbar-item.active{
     cursor: pointer;
-    background: radial-gradient(circle, #42548F 26%, rgba(255,255,255,0) 26%); /*29*/
+    background: radial-gradient(circle, #42548F 45%, rgba(255,255,255,0) 45%); /*29*/
 }
 
 button.wsp-toolbar-item:focus
 {
     box-shadow: none;
-    background: radial-gradient(circle, transparent 20%, #484D7A4F 26%, rgba(255,255,255,0) 28%);
+    background: radial-gradient(circle, transparent 20%, #484D7A4F 45%, rgba(255,255,255,0) 28%);
 }
 
 button.wsp-toolbar-item:focus:hover
 {
     box-shadow: none;
-    background: radial-gradient(circle, #42548F 20%, #484D7A4F 26%, rgba(255,255,255,0) 28%);
+    background: radial-gradient(circle, #42548F 20%, #484D7A4F 45%, rgba(255,255,255,0) 28%);
 }
 
 .wsp-toolbar-item.active,
 .wsp-toolbar-item:active
 {
-    background: radial-gradient(circle, #42548F 26%, rgba(255,255,255,0) 26%)!important;
+    background: radial-gradient(circle, #42548F 45%, rgba(255,255,255,0) 26%)!important;
 }
 
 .wsp-toolbar-item > span {
@@ -330,7 +370,7 @@ body.task-workspace .wsp-toolbar-item > span {
 	margin-top: 7px;
 }
 
-html.layout-normal .wsp-toolbar-item:hover,
+/* html.layout-normal .wsp-toolbar-item:hover,
 html.layout-normal .wsp-toolbar-item.active{
     background:radial-gradient(circle, #42548F 35%, rgba(255,255,255,0) 35%)
 }
@@ -338,7 +378,7 @@ html.layout-normal .wsp-toolbar-item.active{
 html.touch .wsp-toolbar-item:hover,
 html.touch .wsp-toolbar-item.active{
     background:radial-gradient(circle, #42548F 35%, rgba(255,255,255,0) 35%)
-}
+} */
 
 .wsp-toolbar-item.active
 {
@@ -349,18 +389,18 @@ html.touch .wsp-toolbar-item.active{
 {
     position: absolute;
     top: -4px;
-    right: 45px;
+    right: 15px;
     color: black;
 }
 
 html.layout-normal .wsp-toolbar .notif.roundbadge
 {
-    right:35px;
+    right:15px;
 }
 
 html.touch .wsp-toolbar .notif.roundbadge
 {
-    right:26px;
+    right:15px;
     top:-4px;
 }
 
@@ -626,6 +666,7 @@ html.layout-small .wsp-toolbar-title
     margin-left:15px;
 }
 
+html.layout-phone .wsp-toolbar-edited,
 html.layout-small .wsp-toolbar-edited {
 	/* font-size: small; */
 	/* width: 80%; */
@@ -638,6 +679,8 @@ html.layout-small .wsp-toolbar-edited {
     padding-bottom: 50px;
     max-height: 500px;
     overflow: auto;
+    width: auto!important;
+    display: none;
 }
 
 .wsp-toolbar-edited {
@@ -808,7 +851,7 @@ body.task-workspace .wsp-toolbar v_separate{
     padding: 0 30px!important;
 }
 
-.wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:hover, 
+/* .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:hover, 
 .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller.active, 
 .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:active
 {
@@ -820,10 +863,7 @@ button.wsp-toolbar-item.toolbar-btn-smaller:focus {
 	background: radial-gradient(circle, transparent 20%, #484D7A4F 35%, rgba(255,255,255,0) 40%);
 }
 
-body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
-{
-    padding: 0 40px!important;
-}
+
 
 body.task-workspace .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller:hover, 
 body.task-workspace .wsp-toolbar-edited .wsp-toolbar-item.toolbar-btn-smaller.active, 
@@ -839,7 +879,7 @@ body.task-workspace  button.wsp-toolbar-item.toolbar-btn-smaller:focus {
 
 body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {
     right: 33px;
-}
+} */
 
 .task-workspace .bandeau {
 	background-color: #5870BF;
@@ -858,4 +898,30 @@ body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {
     margin-top: 0;
     margin-left: 15px;
 
+}
+
+html.layout-phone body.task-workspace .wsp-toolbar v_separate,
+html.layout-ultra-small body.task-workspace .wsp-toolbar v_separate,
+html.layout-phone body.task-workspace .wsp-toolbar-item,
+html.layout-ultra-small body.task-workspace .wsp-toolbar-item
+{
+    display:none;
+}
+
+body.task-workspace .wsp-toolbar-item.small-item,
+body.task-workspace .wsp-toolbar v_separate.first
+{
+    display: none;
+}
+
+html.layout-phone body.task-workspace .wsp-toolbar-item.small-item,
+html.layout-ultra-small body.task-workspace .wsp-toolbar-item.small-item,
+html.layout-phone body.task-workspace .wsp-toolbar v_separate.first,
+html.layout-ultra-small body.task-workspace .wsp-toolbar v_separate.first,
+html.layout-phone body.task-workspace .wsp-toolbar-item.first,
+html.layout-ultra-small body.task-workspace .wsp-toolbar-item.first,
+html.layout-phone body.task-workspace .wsp-toolbar-item.wsp-home,
+html.layout-ultra-small body.task-workspace .wsp-toolbar-item.wsp-home
+{
+    display:initial;
 }

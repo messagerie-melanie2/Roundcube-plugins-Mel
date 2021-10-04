@@ -96,9 +96,9 @@ class Workspaces extends Module
             $html = str_replace("<workspace-epingle-title/>", $this->text('tak'), $html);
         }
         if ($workspace->logo !== null && $workspace->logo !== "false")
-            $html = str_replace("<workspace-image/>", '<div class=dwp-round><img alt="" src="'.$workspace->logo.'"></div>', $html);
+            $html = str_replace("<workspace-image/>", '<div class=dwp-round style=background-color:'.$ws->get_setting($workspace, "color").'><img alt="" src="'.$workspace->logo.'"></div>', $html);
         else
-            $html = str_replace("<workspace-image/>", "<div class=dwp-round><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
+            $html = str_replace("<workspace-image/>", "<div class=dwp-round style=background-color:".$ws->get_setting($workspace, "color")."><span>".substr($workspace->title, 0, 3)."</span></div>", $html);
         if (count($workspace->hashtags) > 0 && $workspace->hashtags[0] !== "")
             $html = str_replace("<workspace-#/>", "#".$workspace->hashtags[0], $html);
         else
@@ -140,6 +140,9 @@ class Workspaces extends Module
         $html = $ws->get_tasks($workspace, $html, "<workspace-avancement/>", $nb_tasks);
         if ($nb_tasks > 0)
             $html = str_replace("<workspace-task-all/>", html::p(["class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>$nb_tasks</span><br/>tâches au total"), $html);
+        else 
+            $html = str_replace("<workspace-task-all/>", html::p(["style" => "color:transparent", "class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>0</span><br/>tâches au total"), $html);
+
 
         $services = $ws->get_worskpace_services($workspace);
         $tmp_html = "";

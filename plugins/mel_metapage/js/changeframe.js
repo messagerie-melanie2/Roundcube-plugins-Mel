@@ -146,7 +146,8 @@ function UpdateMenu(_class, _picture, _toolbar)
                 .css("position", "")
                 .css("bottom", "")
                 .css("right", "")
-                .css("z-index", "");
+                .css("z-index", "")
+                .css("width", "");
                 $(".added-wsp-item").remove();
         }
         else
@@ -204,6 +205,7 @@ function UpdateMenu(_class, _picture, _toolbar)
             .css("bottom", (parseInt(bottom.replace("px", "")) - 3) + "px")
             .css("right", right)
             .css("z-index", 99)
+            .css("width", "calc(100% - 120px)")
             .append('<div class="wsp-toolbar-item added-wsp-item" style="pointer-events:none"></div>');
             rcmail.env.wsp_datas.toolbar = {
                 current: _class,
@@ -775,6 +777,36 @@ function HideOrShowMenu(element)
         element.addClass(enabled);
         $(".wsp-toolbar-edited").css("display", ""); 
     }
+
+    if ($(".layout-small").length > 0 || $(".layout-phone").length > 0)
+    {
+        $("#menu-hanburger-wsp").click();
+    }
+
+    if ($("html").hasClass("layout-small") || $("html").hasClass("layout-phone"))
+        ClickOnButton(true);
+}
+
+function ClickOnButton(addAll = false)
+{
+    let options = [];
+
+    $(".wsp-toolbar-item").each((i,e) => {
+        if ($(e).hasClass("small-item"))
+            return;
+        else if (!addAll && ($(e).hasClass("first") || $(e).hasClass("wsp-home")))
+            return;
+
+        const text = $(e).find('.text-item').html();
+        if (!Enumerable.from(options).any(x => x.text === text) && text != "undefined" && text !== undefined)
+            options.push(new OptionObject(text, `$('.${Enumerable.from(e.classList).toArray().join(".")}').click()`));
+    });
+    
+    let customOption = new CustomOption({options:options});
+    customOption.show();
+    setTimeout(() => {
+        customOption.click();
+    }, 100);
 }
 // function ChangeMenu(hide = true ,_picture = null, _toolbar = null)
 // {

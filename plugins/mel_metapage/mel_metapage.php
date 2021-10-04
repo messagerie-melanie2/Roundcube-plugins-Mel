@@ -80,6 +80,7 @@ class mel_metapage extends rcube_plugin
 
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+        $this->add_hook("send_page", array($this, "appendTo"));
 
         if ($this->rc->task === "portail")
         {
@@ -338,6 +339,13 @@ class mel_metapage extends rcube_plugin
 
             $args["content"] = $this->add_html($args["content"]);
         }
+        return $args;
+    }
+
+    function appendTo($args)
+    {
+        $tmp = explode('<div id="layout">', $args["content"]);
+        $args["content"] = $tmp[0].'<div id="layout">'.$this->rc->output->parse("mel_metapage.custom_options", false, false).$tmp[1];
         return $args;
     }
 

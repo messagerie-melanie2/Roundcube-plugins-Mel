@@ -1380,7 +1380,7 @@ class mel_driver extends calendar_driver {
           return false;
         }
         if ($_event->load()) {
-          if (!isset($_recurrence_date) && isset($event['_instance'])) {
+          if (!isset($_recurrence_date) && isset($event['_instance']) && !empty($event['_instance'])) {
             $_recurrence_date = strtotime($event['_instance']);
           }
           // Pour une exception ne donner que l'exception

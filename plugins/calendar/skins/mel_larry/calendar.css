@@ -2539,6 +2539,7 @@ div.calendar-invitebox .folder-select {
 
 div.calendar-invitebox .rsvp-status {
 	padding-left: 2px;
+	font-weight: bold;
 }
 
 div.calendar-invitebox .rsvp-status.loading {

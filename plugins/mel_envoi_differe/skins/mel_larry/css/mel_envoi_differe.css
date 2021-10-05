@@ -14,11 +14,6 @@
     border-color: #3ec400;
 }
 
-/* 
-#mel_envoi_differe {
-	max-width: 120px;
-} */
-
 /*Affichage du dialog*/
 body.envoidiffere {
 	background: #fff !important;
@@ -69,11 +64,12 @@ body.envoidiffere {
 
 #disconnection_popup span {
     display: block;
-    margin: 5px 0;
+    margin: 10px 0;
 }
 
 #disconnection_popup span.title {
     font-weight: bold;
+    font-size: 1.1em;
 }
 
 .disconnection_popup .ui-dialog-buttonset {

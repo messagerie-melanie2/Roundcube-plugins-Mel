@@ -87,8 +87,30 @@ class mel_envoi_differe extends rcube_plugin
             $this->add_hook('message_before_send', array($this, 'message_before_send'));
         }
 
+        $deconnection_enabled = $rcmail->config->get('remise_enable_deconnection_right', false);
+        // Si le droit à la déconnexion est activé, on check par dn
+        if ($deconnection_enabled) {
+            $user = driver_mel::gi()->getUser();
+            $deconnection_right_ldap_enabled_dn = $rcmail->config->get('deconnection_right_ldap_enabled_dn', []);
+            if (count($deconnection_right_ldap_enabled_dn)) {
+                $deconnection_enabled = false;
+                // Parcourir les dn autorisés et valider l'activation
+                foreach ($rcmail->config->get('deconnection_right_ldap_enabled_dn', []) as $allowed_dn) {
+                    if (strpos($user->dn, $allowed_dn) !== false) {
+                        $deconnection_enabled = true;
+                    }
+                }
+            }
+            // Parcourir les dn interdits et bloquer l'activation
+            foreach ($rcmail->config->get('deconnection_right_ldap_disabled_dn', []) as $forbidden_dn) {
+                if (strpos($user->dn, $forbidden_dn) !== false) {
+                    $deconnection_enabled = false;
+                }
+            }
+        }
+
         // Droit à la déconnexion
-        if ($rcmail->config->get('remise_enable_deconnection_right', false) 
+        if ($deconnection_enabled
                 && $rcmail->output->type == 'html' 
                 && !$rcmail->output->env['framed']) {
             $this->add_texts('localization/', ['disco_popup_title', 'disco_popup_description', 

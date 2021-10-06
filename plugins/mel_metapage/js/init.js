@@ -443,6 +443,83 @@ if (rcmail)
                 FullscreenItem.close_if_exist();
         });
 
+        //console.log(rcmail.env.mel_metapage_mail_configs, rcmail.gettext("up", "mel_metapage"));
+
+
+        parent.rcmail.register_command("chat.setupConfig", () => {
+
+            if (rcmail.env.mel_metapage_chat_visible == undefined || rcmail.env.mel_metapage_chat_visible === true)
+            {
+                if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+                {
+                    //console.log("neteoemkd");//width: calc(25% - 60px)
+                    $("#barup-search-col").append(`<div class="row"><div class=col-5></div></div>`)
+                    .find(".search").appendTo("#barup-search-col .col-5");
+        
+                    $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
+        
+                    $("#barup-search-input").attr("placeholder", "Globale");
+        
+                    $(".tiny-rocket-chat").appendTo("#chatCore")
+                    .css("position", "sticky")
+                    .css("height", "100%")
+                    .css("width", "100%")
+                    .css("min-width", "125px")
+                    .css("border-radius", "15px")
+                    .css("z-index", 0)
+                    .css("white-space", "nowrap")
+                    .prepend("<span class=disc>Discussion</span>")
+                    .find(".tiny-rocket-chat-icon")
+                    .css("position", "initial")
+                    .css("font-size", "initial")
+                    .css("margin-left", "15px")
+                    ;//.css("position", "sticky").appendTo($(".barup"));
+                }
+            }
+            else {
+                $(".tiny-rocket-chat").addClass("layout-hidden");
+            }
+        }, true);
+
+        parent.rcmail.register_command("chat.reinit", () => {
+
+            if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] !== rcmail.gettext("up", "mel_metapage"))
+            {
+                //console.log("neteoemkd");//width: calc(25% - 60px)
+                $("#barup-search-col .search").appendTo($("#barup-search-col"));
+                // .append(`<div class="row"><div class=col-5></div></div>`)
+                // .find(".search").appendTo("#barup-search-col .col-5");
+    
+                // $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
+    
+                $("#barup-search-input").attr("placeholder", "Recherche globale...");
+    
+                $(".tiny-rocket-chat").appendTo("#layout")
+                .css("position", "absolute")
+                .css("height", "")
+                .css("width", "")
+                .css("min-width", "")
+                .css("border-radius", "")
+                .css("z-index", 999)
+                .css("white-space", "")
+                .find(".tiny-rocket-chat-icon")
+                .css("position", "")
+                .css("font-size", "")
+                .css("margin-left", "")
+                .parent()
+                .find(".disc")
+                .remove()
+                ;
+
+                $("#barup-search-col .row").remove();
+            }
+
+        }, true);
+
+        parent.rcmail.command("chat.setupConfig");
+
+        
+
         //Ajustement de la barre des tâches
         $(window).on("resize", () => {
             let check = false;

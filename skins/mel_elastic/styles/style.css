@@ -1645,6 +1645,7 @@ a.roadmap::before
 
 div#files-folder-list ul li.selected {
     color: white;
+    background-color: #363A5B;
 }
 
 .show-on-small

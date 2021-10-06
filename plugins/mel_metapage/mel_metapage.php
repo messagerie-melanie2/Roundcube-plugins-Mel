@@ -77,6 +77,8 @@ class mel_metapage extends rcube_plugin
     {
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
+        $this->add_texts('localization/', true);
+        $this->load_config();
 
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
@@ -91,7 +93,8 @@ class mel_metapage extends rcube_plugin
         }
 
         $this->rc->output->set_env("plugin.mel_metapage", true);
-
+        $this->rc->output->set_env("mel_metapage_chat_visible", $this->rc->config->get("mel_metapage_chat_visible", true));
+        $this->rc->output->set_env("mel_metapage_mail_configs", $this->rc->config->get('mel_mail_configuration'));
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE    
@@ -120,8 +123,8 @@ class mel_metapage extends rcube_plugin
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
         {
-            $this->add_texts('localization/', true);
-            $this->load_config();
+
+            $this->rc->output->set_env("plugin.mel_metapage", true);
             //$this->include_depedencies();
 
             $this->mm_include_plugin();
@@ -147,8 +150,6 @@ class mel_metapage extends rcube_plugin
                 $this->register_action('logout', array($this, 'chat_logout'));
             }
 
-            $this->rc->output->set_env("mel_metapage_mail_configs", $this->rc->config->get('mel_mail_configuration'));
-
             // if ($this->rc->task === "settings")
             // {
 
@@ -167,6 +168,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('check_users', array($this, 'check_users'));
             $this->register_action('weather', array($this, 'weather'));
             $this->register_action('modal', array($this, 'get_modal'));
+            $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
@@ -350,6 +352,9 @@ class mel_metapage extends rcube_plugin
 
     function appendTo($args)
     {
+        if (strpos($args["content"], '<div id="layout">') === false)
+            return $args;
+
         $tmp = explode('<div id="layout">', $args["content"]);
         $args["content"] = $tmp[0].'<div id="layout">'.$this->rc->output->parse("mel_metapage.custom_options", false, false).$tmp[1];
         return $args;
@@ -1119,39 +1124,48 @@ class mel_metapage extends rcube_plugin
       $folder_space = "mel-folder-space";
       $message_space = "mel-message-space";
       $mel_column = "mel-3-columns";
+      $chat_placement = "mel-chat-placement";
 
       // Check that configuration is not disabled
       $config = $this->rc->config->get('mel_mail_configuration', [
           $icon => $this->gettext("normal", "mel_metapage"),
           $folder_space => $this->gettext("normal", "mel_metapage"),
           $message_space => $this->gettext("normal", "mel_metapage"),
-          $mel_column => $this->gettext("yes", "mel_metapage")
+          $mel_column => $this->gettext("yes", "mel_metapage"),
+          $chat_placement => $this->gettext("down", "mel_metapage")
       ]);
 
       $options = [
-        $icon => [
-            $this->gettext("smaller", "mel_metapage"),
-            $this->gettext("normal", "mel_metapage")
-        ],
-        $folder_space => [
-            $this->gettext("smaller", "mel_metapage"),
-            $this->gettext("normal", "mel_metapage"),
-            $this->gettext("larger", "mel_metapage")
-        ],
-        $message_space => [
-            $this->gettext("smaller", "mel_metapage"),
-            $this->gettext("normal", "mel_metapage"),
-            $this->gettext("larger", "mel_metapage")
-        ],
-        $mel_column => [
-            $this->gettext("yes", "mel_metapage"),
-            $this->gettext("no", "mel_metapage")
-        ],
-      ];
+            $icon => [
+                $this->gettext("smaller", "mel_metapage"),
+                $this->gettext("normal", "mel_metapage")
+            ],
+            $folder_space => [
+                $this->gettext("smaller", "mel_metapage"),
+                $this->gettext("normal", "mel_metapage"),
+                $this->gettext("larger", "mel_metapage")
+            ],
+            $message_space => [
+                $this->gettext("smaller", "mel_metapage"),
+                $this->gettext("normal", "mel_metapage"),
+                $this->gettext("larger", "mel_metapage")
+            ],
+            $mel_column => [
+                $this->gettext("yes", "mel_metapage"),
+                $this->gettext("no", "mel_metapage")
+            ],
+            $chat_placement => [
+                $this->gettext("up", "mel_metapage"),
+                $this->gettext("down", "mel_metapage")
+            ]
+        ];
 
-       foreach ($config as $key => $value) {
-         $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
-       }
+        if ($config[$chat_placement] === null || $config[$chat_placement] === "")
+            $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+        foreach ($config as $key => $value) {
+            $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+        }
       
     }
 
@@ -1196,14 +1210,19 @@ class mel_metapage extends rcube_plugin
         $folder_space = "mel-folder-space";
         $message_space = "mel-message-space";
         $mel_column = "mel-3-columns";
+        $chat_placement = "mel-chat-placement";
+        
       // Check that configuration is not disabled
-      // Check that configuration is not disabled
-      $config = $this->rc->config->get('mel_mail_configuration', [
-        $icon => $this->gettext("normal", "mel_metapage"),
-        $folder_space => $this->gettext("normal", "mel_metapage"),
-        $message_space => $this->gettext("normal", "mel_metapage"),
-        $mel_column => $this->gettext("yes", "mel_metapage")
-      ]);
+        $config = $this->rc->config->get('mel_mail_configuration', [
+            $icon => $this->gettext("normal", "mel_metapage"),
+            $folder_space => $this->gettext("normal", "mel_metapage"),
+            $message_space => $this->gettext("normal", "mel_metapage"),
+            $mel_column => $this->gettext("yes", "mel_metapage"),
+            $chat_placement => $this->gettext("down", "mel_metapage")
+        ]);
+
+        if ($config[$chat_placement] === null || $config[$chat_placement] === "")
+            $config[$chat_placement] = $this->gettext("down", "mel_metapage");
 
       foreach ($config as $key => $value) {
         $config[$key] = rcube_utils::get_input_value($key, rcube_utils::INPUT_POST);
@@ -1211,14 +1230,18 @@ class mel_metapage extends rcube_plugin
 
       $args['prefs']["mel_mail_configuration"] = $config;
       
-
-    //   $key = 'mel_default_task';
-    //   if (!in_array($key, $dont_override)) {
-    //     $config_key = 'default_task';
-    //     $args['prefs'][$config_key] = rcube_utils::get_input_value('_' . $key, rcube_utils::INPUT_POST);
-    //   }
+      $this->rc->output->set_env("mel_metapage_mail_configs", $config);
     }
     return $args;
+  }
+
+  function toggleChat()
+  {
+    $config = !$this->rc->config->get('mel_metapage_chat_visible', true);
+    $this->rc->user->save_prefs(array('mel_metapage_chat_visible' => $config));
+
+    echo json_encode($config);
+    exit;
   }
 
 }

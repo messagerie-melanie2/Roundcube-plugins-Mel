@@ -248,8 +248,11 @@ const mel_metapage = {
                 return;
             if (mel_metapage.PopUp.ariane === null)
                 mel_metapage.PopUp.ariane = new ArianePopUp(ArianeButton.default());
-            //console.log(mel_metapage, window == parent);
-            mel_metapage.PopUp.ariane.show();
+        
+            if (mel_metapage.PopUp.ariane.is_show === true)
+                mel_metapage.PopUp.ariane.hide();
+            else
+                mel_metapage.PopUp.ariane.show();
         },
         ariane:null,
     },

@@ -78,6 +78,45 @@ if (rcmail)
                 mel_metapage.Functions.change_frame("settings", true, false, {"_action":"plugin.mel_resources_agendas"});
             });
 
+            rcmail.register_command("toggleChat", () => {
+                mel_metapage.Functions.post(
+                    mel_metapage.Functions.url("mel_metapage", "toggleChat"),
+                    {},
+                    (datas) => {
+                        if (typeof datas === "string")
+                            datas = datas == "true";
+
+                        rcmail.env.mel_metapage_chat_visible = datas;
+
+                        //On affiche
+                        if (datas)
+                        {
+                            if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+                                rcmail.command("chat.setupConfig");
+
+                            $(".tiny-rocket-chat").removeClass("layout-hidden");
+
+                            $(".toggleChatCommand").html("Cacher la bulle de discussion instantanée");
+                        }
+                        //On cache
+                        else {
+                            if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+                            {
+                                if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+                                    mel_metapage.PopUp.ariane.hide();
+
+                                $(".tiny-rocket-chat").appendTo(".barup").find(".disc").remove();
+                                $("#barup-search-col .search").appendTo($("#barup-search-col"));
+                                $("#barup-search-col .row").remove();
+                            }
+
+                            $(".tiny-rocket-chat").addClass("layout-hidden");
+                            $(".toggleChatCommand").html("Afficher la bulle de discussion instantanée");
+                        }
+                    }
+                );
+            }, true);
+
             // rcmail.drag_menu_action = function(action)
             // {
             //   var menu = this.gui_objects.dragmenu;

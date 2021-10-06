@@ -161,7 +161,13 @@ $labels["smaller"] = "Plus petit";
 $labels["larger"] = "Plus grand";
 $labels["yes"] = "Oui";
 $labels["no"] = "Non";
+$labels["up"] = "En haut";
+$labels["down"] = "En bas";
 
 $labels["mel-icon-size"] = "Mail - Taille des icônes en tête";
 $labels["mel-folder-space"] = "Mail - Espacement des dossiers";
 $labels["mel-message-space"] = "Mail - Espacement des messages";
+$labels["mel-chat-placement"] = "Chat - Placement de la bulle";
+
+$labels["hide_bubble"] = "Cacher le bulle de discussion instantée";
+$labels["show_bubble"] = "Afficher le bulle de discussion instantée";

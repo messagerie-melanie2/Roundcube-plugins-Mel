@@ -52,7 +52,10 @@
                             if (window.webconf_master_bar === undefined)
                             {
                                 $(".tiny-wsp-menu").css("display", "");
-                                $(".tiny-rocket-chat").css("display", "none");
+
+                                if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] !== rcmail.gettext("up", "mel_metapage"))
+                                    $(".tiny-rocket-chat").css("display", "none");
+                                    
                                 const lastFrame = $(".tiny-wsp-menu").data("lastopenedframe");
                                 const toolbaropen = $(".tiny-wsp-menu").data("toolbaropen");
                                 //console.log("test", toolbaropen, lastFrame, $(".tiny-wsp-menu").data("toolbaropen"));
@@ -173,11 +176,15 @@ function UpdateMenu(_class, _picture, _toolbar)
             let button = $(".tiny-rocket-chat");
             if (button.length > 0)
             {
-                button.css("display", "none");
+                if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] !== rcmail.gettext("up", "mel_metapage"))
+                    button.css("display", "none");
+
                 right = button.css("right");
                 bottom = button.css("bottom");
+
                 if (right === "auto")
                     right = basePx;
+
                 if (bottom === "auto")
                     bottom = basePx;
 
@@ -540,6 +547,9 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
+    if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+        ArianeButton.default().hide_button();
+
     try {
         m_mp_close_ariane();
     } catch (error) {
@@ -693,10 +703,14 @@ async function ChangePage(_class)
         })
     else
         ChangeToolbarPage(_class);
+
 }
 
 async function ChangeToolbarPage(_class)
 {
+    if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+        ArianeButton.default().show_button()
+
     $(".wsp-toolbar").css("z-index", "");
     $(".wsp-object").css("display", "none");
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");

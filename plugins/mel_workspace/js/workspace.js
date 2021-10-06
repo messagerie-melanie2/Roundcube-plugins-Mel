@@ -94,6 +94,12 @@ async function End(uid, hasAriane, datas) {
         );
     }
 
+    if (rcmail.env.current_workspace_services.doc)
+    {
+        if (parent.$(".stockage-frame").length == 0)
+            promises.push(wait(() => rcmail.busy).then(() => mel_metapage.Functions.change_frame("stockage", false, false)));
+    }
+
     return Promise.all(promises);
 
 }

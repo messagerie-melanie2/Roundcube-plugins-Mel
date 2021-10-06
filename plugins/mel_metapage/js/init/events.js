@@ -150,6 +150,18 @@ if (rcmail)
                 $(e).attr("aria-expanded", "false");
             })
         });
+
+        if (rcmail.env.task === "settings")
+        {
+            if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] !== parent.parent.rcmail.env.mel_metapage_mail_configs["mel-chat-placement"])
+            {
+                parent.parent.rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] = rcmail.env.mel_metapage_mail_configs["mel-chat-placement"];
+                if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+                    parent.parent.rcmail.command("chat.setupConfig");
+                else
+                    parent.parent.rcmail.command("chat.reinit");
+            }
+        }
     })
 
     rcmail.addEventListener('contextmenu_init', function(menu) {

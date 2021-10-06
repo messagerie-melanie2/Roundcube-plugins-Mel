@@ -81,7 +81,6 @@ class ArianePopUp{
     {
         this.ariane.card.card.card.css("position", "absolute");
         this.ariane.card.card.card.css("right", "0");
-        this.button.button.css("display", "none");
         this.ariane.enable();
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "0px");
         this.ariane.popUp.addClass("tiny-rocket-chat-card");
@@ -91,6 +90,11 @@ class ArianePopUp{
         this.ariane.popUp.css("margin-top", "0");
         //this.ariane.popUp.css("margin-top", "-1.25em");
         this.button.stop();
+        if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+            this.button.button.find(".icon-mel-message").removeClass("icon-mel-message").addClass("icon-mel-close");
+        else
+            this.button.button.css("display", "none");
+
         this.is_show = true;
         // if ($("#pop-up-resizer").length === 0)
         //     ArianePopUp.splitter_init(this.ariane.popUp);
@@ -101,6 +105,7 @@ class ArianePopUp{
     {
         if (this.is_anchor())
             this.anchor();
+
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "");
         this.ariane.popUp.css("display", "none");
         this.ariane.popUp.css("height", "100%");
@@ -111,6 +116,9 @@ class ArianePopUp{
         this.ariane.disable();
         this.ariane.popUp.css("width", "100%");
         this.is_show = false;
+
+        if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+            this.button.button.find(".icon-mel-close").removeClass("icon-mel-close").addClass("icon-mel-message");
 
         $("html").removeClass("ariane-started");
     }
@@ -529,12 +537,19 @@ class ArianeButton
 
     show_button = function()
     {
+        if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+            this.button.removeClass("disabled").removeAttr("disabled");
+
         this.button.css("display", "initial");
     }
 
     hide_button = function()
     {
-        this.button.css("display", "none");
+        //console.log("test", this.hide_button + "", rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"), rcmail.env.mel_metapage_mail_configs["mel-chat-placement"], rcmail.gettext("up", "mel_metapage"))
+        if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+            this.button.addClass("disabled").attr("disabled", "disabled").css("display", "initial");
+        else
+            this.button.css("display", "none");
     }
     
     place_button = function(bottom, right)
@@ -543,9 +558,15 @@ class ArianeButton
         this.button.css("right", right);
     }
 
+    place_button_top = function(top, right)
+    {
+        this.button.css("top", top);
+        this.button.css("right", right);
+    }
+
     loading()
     {
-        this.font.removeClass(this.default_font).addClass("spinner-grow").parent().addClass("disabled");
+        this.font.removeClass(this.default_font).addClass("spinner-grow" + (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage") ? " spinner-grow-sm" : "")).parent().addClass("disabled");
     }
 
     stop()

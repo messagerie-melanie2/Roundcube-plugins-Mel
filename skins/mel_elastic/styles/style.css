@@ -1666,3 +1666,16 @@ html.layout-phone .hide-on-small
 {
     display: none;
 }
+
+#toolbar-list-menu li .compose{
+    display: none;
+}
+
+.task-mail #toolbar-list-menu li .compose{
+    display: unset;
+}
+
+.task-addressbook.action-show.formcontainer #layout
+{
+    display: none;
+}

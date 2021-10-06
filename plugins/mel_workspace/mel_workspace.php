@@ -1082,7 +1082,7 @@ class mel_workspace extends rcube_plugin
     function setup_user_page()
     {
         $html = '<div class="wsp-params wsp-object" style="margin-top:30px;display:none">';
-        $shares = $this->currentWorkspace->shares;
+        $shares = $this->sort_user($this->currentWorkspace->shares); 
 
         $html .= '<h2>Liste des membres</h2>';
         $html .= '<div class="wsp-block">';

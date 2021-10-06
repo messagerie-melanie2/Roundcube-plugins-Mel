@@ -558,7 +558,7 @@
                     () => {
                         let val = $("#selectnewchannel select").val();
 
-                        const confirmation = confirm("Attention !\r\nSi vous changer d'espace, si vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres ne pourrait pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimer à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?");
+                        const confirmation = confirm("Attention !\r\nSi vous changez de canal et que vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres pourrait ne pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimer automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?");
 
                         if (confirmation && val.includes(":"))
                         {

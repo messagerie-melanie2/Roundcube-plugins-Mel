@@ -130,10 +130,16 @@ class mel_metapage extends rcube_plugin
                 $this->register_task("webconf");
             else if ($this->rc->task === "chat")
                 $this->register_task("chat");
-            else if ($this->rc->task === "custom_page")
-                $this->register_task("custom_page");
+            else if ($this->rc->task === "questionswebconf")
+            {
+                $this->register_task("questionswebconf");
+                $this->register_action('index', array($this, 'redirectToWebconf'));
+                $this->register_action('loading', array($this, 'loadingFrame'));
+            }
+            else if ($this->rc->task === "questionswebconf")
+                $this->register_task("questionswebconf");
             else
-                $this->register_task("mel_metapage");
+                $this->register_task("mel_metapage");               
 
             if ($this->rc->action === "chat" || $this->rc->task === "chat")
             {
@@ -473,6 +479,17 @@ class mel_metapage extends rcube_plugin
     function from_iframe($contents)
     {
         return str_replace('<div id="layout-menu"', '<div id="layout-menu" data-edited=true style="display:none;"', $contents);
+    }
+
+    function loadingFrame()
+    {
+        $this->rc->output->set_pagetitle("Chargement...");
+        $this->rc->output->send("mel_metapage.loading");
+    }
+
+    function redirectToWebconf()
+    {
+        $this->rc->output->redirect(["task" => "webconf"]);
     }
 
     /**

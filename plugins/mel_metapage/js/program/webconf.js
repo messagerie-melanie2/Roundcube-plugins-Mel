@@ -646,6 +646,13 @@ class MasterWebconfBar {
             this.logo.html(`<img src="${this.webconf.wsp.datas.logo}" />`).css("background-color", this.webconf.wsp.datas.color);
     
         }
+
+        this.start();
+    }
+
+    start()
+    {
+        this.send("start");
     }
 
     /**
@@ -799,13 +806,16 @@ class MasterWebconfBar {
      */
     async hangup()
     {
-        window.open("https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html", '_blank');//.focus();
+        //.focus();
+        const url = "https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
 
         if (this.toolbar_item("wsp-toolbar-item-wsp").length > 0)
         {
             if (!(this.toolbar_item("conf-switch-toolbar").length === 0 || this.toolbar_item("conf-switch-toolbar").css("display") === "none"))
             {
                 await ChangeToolbar("home");
+
+                window.open(url, '_blank');
 
                 if ($("iframe.workspace-frame").length > 0)
                     $("iframe.workspace-frame").css("padding-right", "");
@@ -819,10 +829,10 @@ class MasterWebconfBar {
 
         if (!this.webconf._is_minimized)
         {
-            if (rcmail.env.last_frame_class === undefined)
-                await mel_metapage.Functions.change_frame("home");
-            else
-                rcmail.command("last_frame");
+            // if (rcmail.env.last_frame_class === undefined)
+            //     await mel_metapage.Functions.change_frame("home");
+            // else
+            //     rcmail.command("last_frame");
         }          
         else
         {
@@ -859,7 +869,22 @@ class MasterWebconfBar {
                 $("#layout-frames").css("display", "none");
         }
 
-        $(".webconf-frame").remove();
+        if (!parent.$("body").hasClass("task-webconf"))
+        {
+            parent.$("#layout-frames").css("display", "");
+            parent.$(".mm-frame").css("display", "none");
+            parent.$("iframe.webconf-frame").css("max-width", "100%").css("display", "")[0].src = url;
+        }
+        else {
+            parent.$(".questionswebconf-frame").remove();
+            $(".webconf-frame").remove();
+            mel_metapage.Functions.change_frame("questionswebconf", true, true, {_action:"loading"}).then(() => {
+                parent.$(".questionswebconf-frame")[0].src = url;
+                Title.set("Questionnaire Satisfaction", true);
+            });
+        }
+
+
         $(".tiny-rocket-chat").css("display", "block");
 
         parent.$("html").removeClass("webconf-started");
@@ -954,7 +979,7 @@ class MasterWebconfBar {
      * Mute ou demute le micro ou la caméra
      * @param {Symbol} what Micro (MasterWebconfBar.micro) ou camera (MasterWebconfBar.video)
      */
-    mute_demute(what)
+    mute_demute(what, send = true)
     {
         switch (what) {
             case MasterWebconfBar.micro:
@@ -969,8 +994,11 @@ class MasterWebconfBar {
                     this.micro.removeClass("active").addClass("muted");
                 }
                 
-                this.send("toggle_micro");
+                if (send)
+                    this.send("toggle_micro");
+
                 break;
+
             case MasterWebconfBar.video:
                 if (this.video.hasClass("muted"))
                 {
@@ -985,11 +1013,59 @@ class MasterWebconfBar {
                     this.video.removeClass("active").addClass("muted");
                 }
 
-                this.send("toggle_video");
+                if (send)
+                    this.send("toggle_video");
+
                 break;
+
             default:
                 break;
         }
+    }
+
+    mute(what, send = true)
+    {
+        switch (what) {
+            case MasterWebconfBar.micro:
+                if (!this.micro.hasClass("muted"))
+                    this.mute_demute(what, send);
+
+                break;
+
+            case MasterWebconfBar.video:
+                if (!this.video.hasClass("muted"))
+                    this.mute_demute(what, send);
+
+                break;
+                
+            default:
+                break;
+        }
+    }
+
+    demute(what, send = true)
+    {
+        switch (what) {
+            case MasterWebconfBar.micro:
+                if (this.micro.hasClass("muted"))
+                    this.mute_demute(what, send);
+
+                break;
+                
+            case MasterWebconfBar.video:
+                if (this.video.hasClass("muted"))
+                    this.mute_demute(what, send);
+
+                break;
+                
+            default:
+                break;
+        }
+    }
+
+    toggleHand()
+    {
+        this.send("toggleHand");
     }
 
     /**
@@ -1315,7 +1391,50 @@ class ListenerWebConfBar
     constructor(webconf = new Webconf())
     {
         this.webconf = webconf;
+        this.alreadyListening = false;
     }
+
+    start()
+    {
+        this.isVideoMuted().then(muted => {
+            this.send((muted ? "mute" : "demute"), "MasterWebconfBar.video, false");
+        });
+
+        this.isAudioMuted().then(muted => {
+            this.send((muted ? "mute" : "demute"), "MasterWebconfBar.micro, false");
+        });
+
+        this.listen();
+    }
+
+    listen()
+    {
+        if (!this.alreadyListening)
+        {
+            this.alreadyListening = true;
+
+            this.webconf.jitsii.addEventListener("videoMuteStatusChanged", (muted) => {
+                muted = muted.muted;
+                this.send((muted ? "mute" : "demute"), "MasterWebconfBar.video, false");
+            });
+
+            this.webconf.jitsii.addEventListener("audioMuteStatusChanged", (muted) => {
+                muted = muted.muted;
+                this.send((muted ? "mute" : "demute"), "MasterWebconfBar.micro, false");
+            });
+        }
+    }
+
+    isVideoMuted()
+    {
+        return this.webconf.jitsii.isVideoMuted();
+    }
+
+    isAudioMuted()
+    {
+        return this.webconf.jitsii.isAudioMuted();
+    }
+
 
     show_ariane()
     {
@@ -1366,7 +1485,6 @@ class ListenerWebConfBar
 
     full_screen_ariane()
     {
-        console.error("fsariane");
         this.webconf.ariane.is_full = true;
         this.webconf.update();
     }
@@ -1457,6 +1575,10 @@ class ListenerWebConfBar
     set_video_device(label, id)
     {
         this.webconf.jitsii.setVideoInputDevice(label, id);
+    }
+
+    toggleHand(){
+        this.webconf.jitsii.executeCommand('toggleRaiseHand');
     }
 
 

@@ -227,6 +227,14 @@ html.layout-small .wsp-toolbar{
     justify-content: center;
 }
 
+html.layout-phone .webconf-toolbar,
+html.layout-small .webconf-toolbar{
+    border-radius: 50px;
+    width: unset;
+    margin: 0;
+    justify-content: center;
+}
+
 .wsp-toolbar-item {
     font-size: xx-large;
     padding: 0 50px;
@@ -273,11 +281,11 @@ body.task-workspace .wsp-toolbar-item > .text-item,
     overflow: hidden; */
 } 
 
-body.task-workspace .wsp-toolbar-item.toolbar-btn-smaller
+.wsp-toolbar-item.toolbar-btn-smaller
 {
     padding: 0 20px!important;
-    margin-right:auto;
-    margin-left:auto;
+    margin-right:auto!important;
+    margin-left:auto!important;
 }
 
 html.layout-phone body.task-workspace .wsp-toolbar-item > .text-item,
@@ -900,28 +908,34 @@ body.task-workspace .toolbar-btn-smaller.wsp-toolbar-item > .notif {
 
 }
 
-html.layout-phone body.task-workspace .wsp-toolbar v_separate,
-html.layout-ultra-small body.task-workspace .wsp-toolbar v_separate,
-html.layout-phone body.task-workspace .wsp-toolbar-item,
-html.layout-ultra-small body.task-workspace .wsp-toolbar-item
+html.layout-phone .wsp-toolbar v_separate,
+html.layout-small .wsp-toolbar v_separate,
+html.layout-phone .wsp-toolbar-item,
+html.layout-small .wsp-toolbar-item
 {
     display:none;
 }
 
-body.task-workspace .wsp-toolbar-item.small-item,
-body.task-workspace .wsp-toolbar v_separate.first
+ .wsp-toolbar-item.small-item,
+ .wsp-toolbar v_separate.first
 {
     display: none;
 }
 
-html.layout-phone body.task-workspace .wsp-toolbar-item.small-item,
-html.layout-ultra-small body.task-workspace .wsp-toolbar-item.small-item,
-html.layout-phone body.task-workspace .wsp-toolbar v_separate.first,
-html.layout-ultra-small body.task-workspace .wsp-toolbar v_separate.first,
-html.layout-phone body.task-workspace .wsp-toolbar-item.first,
-html.layout-ultra-small body.task-workspace .wsp-toolbar-item.first,
-html.layout-phone body.task-workspace .wsp-toolbar-item.wsp-home,
-html.layout-ultra-small body.task-workspace .wsp-toolbar-item.wsp-home
+html.layout-phone .wsp-toolbar-item.small-item,
+html.layout-small .wsp-toolbar-item.small-item,
+html.layout-phone .wsp-toolbar v_separate.first,
+html.layout-small .wsp-toolbar v_separate.first,
+html.layout-phone .wsp-toolbar-item.first,
+html.layout-small .wsp-toolbar-item.first,
+html.layout-phone .wsp-toolbar-item.wsp-home,
+html.layout-small .wsp-toolbar-item.wsp-home
 {
     display:initial;
+}
+
+html.layout-phone .webconf-toolbar .wsp-toolbar-item,
+html.layout-small .webconf-toolbar .wsp-toolbar-item
+{
+    display: initial;
 }

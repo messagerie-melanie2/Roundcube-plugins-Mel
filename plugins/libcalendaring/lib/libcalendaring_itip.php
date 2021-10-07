@@ -117,10 +117,19 @@ class libcalendaring_itip
 
         // compose a list of all event attendees
         $attendees_list = array();
+        // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
+        $organizer = "";
         foreach ((array)$event['attendees'] as $attendee) {
-            $attendees_list[] = (!empty($attendee['name']) && !empty($attendee['email'])) ?
+            $name = ($attendee['name'] && $attendee['email']) ?
                 $attendee['name'] . ' <' . $attendee['email'] . '>' :
-                (!empty($attendee['name']) ? $attendee['name'] : $attendee['email']);
+                ($attendee['name'] ? $attendee['name'] : $attendee['email']);
+            // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
+            if (strtolower($attendee['role']) == 'organizer') {
+                $organizer = $name;
+            }
+            else {
+                $attendees_list[] = $name;
+            }
         }
 
         $recurrence_info = '';
@@ -139,7 +148,8 @@ class libcalendaring_itip
                 'date'        => $this->lib->event_date_text($event, true) . $recurrence_info,
                 'attendees'   => join(",\n ", $attendees_list),
                 'sender'      => $this->sender['name'],
-                'organizer'   => $this->sender['name'],
+                // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
+                'organizer'   => $organizer,
                 'description' => isset($event['description']) ? $event['description'] : '',
             )
         ));

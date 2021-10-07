@@ -1,5 +1,6 @@
 (function(){
     $.datetimepicker.setLocale("fr");
+    
 if (rcmail)
 {
     if (rcmail.env.task === "tasks")
@@ -445,18 +446,17 @@ if (rcmail)
 
         //console.log(rcmail.env.mel_metapage_mail_configs, rcmail.gettext("up", "mel_metapage"));
 
-
-        parent.rcmail.register_command("chat.setupConfig", () => {
-
+        function ChatSetupConfig()
+        {
             if (rcmail.env.mel_metapage_chat_visible == undefined || rcmail.env.mel_metapage_chat_visible === true)
             {
-                if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
+                if (rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
                 {
                     //console.log("neteoemkd");//width: calc(25% - 60px)
-                    $("#barup-search-col").append(`<div class="row"><div class=col-5></div></div>`)
-                    .find(".search").appendTo("#barup-search-col .col-5");
+                    $("#barup-search-col").append(`<div class="row"><div class=col-6></div></div>`)
+                    .find(".search").appendTo("#barup-search-col .col-6");
         
-                    $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
+                    $("#barup-search-col").find(".row").append("<div id=chatCore class=col-6></div>");
         
                     $("#barup-search-input").attr("placeholder", "Globale");
         
@@ -479,9 +479,13 @@ if (rcmail)
             else {
                 $(".tiny-rocket-chat").addClass("layout-hidden");
             }
+        }
+
+        rcmail.register_command("chat.setupConfig", () => {
+            ChatSetupConfig();
         }, true);
 
-        parent.rcmail.register_command("chat.reinit", () => {
+        rcmail.register_command("chat.reinit", () => {
 
             if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] !== rcmail.gettext("up", "mel_metapage"))
             {
@@ -516,7 +520,7 @@ if (rcmail)
 
         }, true);
 
-        parent.rcmail.command("chat.setupConfig");
+        ChatSetupConfig();
 
         
 

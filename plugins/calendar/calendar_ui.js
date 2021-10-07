@@ -3920,10 +3920,14 @@ function rcube_calendar_ui(settings)
           fc.fullCalendar('gotoDate', d)
           fc.fullCalendar('select', d, d);
           setTimeout(function() { pretty_select($('select', minical)); }, 25);
+          //PAMELLA
+          rcmail.triggerEvent("calendar.datepicker.onSelect", {date:dateText, inst:inst});
         },
         onChangeMonthYear: function(year, month, inst) {
           minical.data('year', year).data('month', month);
           setTimeout(function() { pretty_select($('select', minical)); }, 25);
+          //PAMELLA
+          rcmail.triggerEvent("calendar.datepicker.onChangeMonthYear", {year:year, month:month, inst:inst});
         },
         beforeShowDay: function(date) {
           // TODO: this pretty_select() calls should be implemented in a different way
@@ -3933,6 +3937,8 @@ function rcube_calendar_ui(settings)
             dt = moment(date).format('YYYYMMDD'),
             active = view.start && view.start.format('YYYYMMDD') <= dt && view.end.format('YYYYMMDD') > dt;
 
+          //Pamella
+          rcmail.triggerEvent("calendar.datepicker.beforeShowDay", {date:date});
           return [ true, (active ? 'ui-datepicker-activerange ui-datepicker-active-' + view.name : ''), ''];
         }
       })) // set event handler for clicks on calendar week cell of the datepicker widget

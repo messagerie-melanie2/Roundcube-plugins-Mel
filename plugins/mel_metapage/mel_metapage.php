@@ -94,7 +94,23 @@ class mel_metapage extends rcube_plugin
 
         $this->rc->output->set_env("plugin.mel_metapage", true);
         $this->rc->output->set_env("mel_metapage_chat_visible", $this->rc->config->get("mel_metapage_chat_visible", true));
-        $this->rc->output->set_env("mel_metapage_mail_configs", $this->rc->config->get('mel_mail_configuration'));
+
+        $icon = "mel-icon-size";
+        $folder_space = "mel-folder-space";
+        $message_space = "mel-message-space";
+        $mel_column = "mel-3-columns";
+        $chat_placement = "mel-chat-placement";
+  
+        // Check that configuration is not disabled
+        $config = $this->rc->config->get('mel_mail_configuration', [
+            $icon => $this->gettext("normal", "mel_metapage"),
+            $folder_space => $this->gettext("normal", "mel_metapage"),
+            $message_space => $this->gettext("normal", "mel_metapage"),
+            $mel_column => $this->gettext("yes", "mel_metapage"),
+            $chat_placement => $this->gettext("down", "mel_metapage")
+        ]);
+
+        $this->rc->output->set_env("mel_metapage_mail_configs", $config);
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE    

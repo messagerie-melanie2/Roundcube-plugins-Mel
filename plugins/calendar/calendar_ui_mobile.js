@@ -3929,9 +3929,13 @@ function rcube_calendar_ui(settings)
           ignore_click = true;
           var d = minical.datepicker('getDate'); //parse_datetime('0:0', dateText);
           fc.fullCalendar('gotoDate', d).fullCalendar('select', d, d, true);
+          //PAMELLA
+          rcmail.triggerEvent("calendar.datepicker.onSelect", {date:dateText, inst:inst});
         },
         onChangeMonthYear: function(year, month, inst) {
           minical.data('year', year).data('month', month);
+          //PAMELLA
+          rcmail.triggerEvent("calendar.datepicker.onChangeMonthYear", {year:year, month:month, inst:inst});
         },
         beforeShowDay: function(date) {
           var view = fc.fullCalendar('getView');

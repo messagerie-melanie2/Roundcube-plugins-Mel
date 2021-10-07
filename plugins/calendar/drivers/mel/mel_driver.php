@@ -164,7 +164,7 @@ class mel_driver extends calendar_driver {
    * See FILTER_* constants for possible values.
    * @return array List of calendars
    */
-  public function list_calendars($filter = 0, $tree = null, $calid = null) {
+  public function list_calendars($filter = 0, &$tree = null, $calid = null) {
     if ($this->rc->task != 'calendar' && $this->rc->task != 'mel_metapage' && $this->rc->task != 'settings' && $this->rc->task != 'login') {
       return;
     }
@@ -194,6 +194,12 @@ class mel_driver extends calendar_driver {
           array('id' => $this->user->uid, 'name' => $default_calendar_name, 'color' => $this->_random_color()), 
           true);
       }
+      // Gérer le tree
+      if ($tree) {
+        $tree = new stdClass();
+        $tree->children = [];
+      }
+
       $default_calendar = $this->user->getDefaultCalendar();
       $calendars = [];
       foreach ($this->calendars as $id => $cal) {
@@ -263,29 +269,81 @@ class mel_driver extends calendar_driver {
         else {
           $rights = 'l';
         }
+        $calendar_name = $cal->name;
+        if ($cal->owner != $this->user->uid && $cal->id == $cal->owner) {
+          $calendar_name = explode(' - ', $calendar_name, 2);
+          $calendar_name = explode(' (', $calendar_name[0], 2);
+          $calendar_name = $calendar_name[0];
+        }
         // formatte le calendrier pour le driver
-        $calendars[$rcId] = array(
-            'id' => $rcId,
-            'order' => $order,
-            'name' => $cal->name,
-            'listname' => $cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name,
-            'editname' => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : ($cal->owner == $this->user->uid ? $cal->name : "[" . $cal->owner . "] " . $cal->name),
-            'color' => $color,
-            'showalarms' => $alarm ? 1 : 0,
-            'default' => $default_calendar->id == $cal->id,
-            'active' => $active,
-            'owner' => $cal->owner,
-            'children' => false, // TODO: determine if that folder indeed has child folders
-            'caldavurl' => '',
-            'history' => false,
-            'virtual' => false,
-            'editable' => $cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
-            'deletable' => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
-            'rights' => $rights,
-            'group' => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
-            'class' => 'user',
-    				'caldavurl' => $this->get_caldav_url($cal),
+        $calendar = array(
+            'id'          => $rcId,
+            'order'       => $order,
+            'name'        => $cal->name,
+            'listname'    => $calendar_name,
+            'editname'    => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name,
+            'color'       => $color,
+            'showalarms'  => $alarm ? 1 : 0,
+            'default'     => $default_calendar->id == $cal->id,
+            'active'      => $active,
+            'owner'       => $cal->owner,
+            'children'    => false, // TODO: determine if that folder indeed has child folders
+            'caldavurl'   => '',
+            'history'     => false,
+            'virtual'     => false,
+            'editable'    => $cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE),
+            'deletable'   => $cal->owner == $this->user->uid && $cal->id != $this->user->uid,
+            'rights'      => $rights,
+            'group'       => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
+            'class'       => 'user',
+    				'caldavurl'   => $this->get_caldav_url($cal),
+            'children'    => false,
         );
+        if (isset($tree)) {
+          // Gérer les enfants
+          if (isset($calendars[$rcId]) && isset($calendars[$rcId]['tree'])) {
+            $calendar['tree'] = $calendars[$rcId]['tree'];
+          }
+          if ($cal->id == $cal->owner) {
+            // On est dans le calendrier parent
+            $calendars[$rcId] = $calendar;
+
+            // Ajouter le folder au tree
+            $folder = new stdClass();
+            $folder->id = $rcId;
+            $tree->children[$rcId] = $folder;
+          }
+          else {
+            // On est dans un calendrier enfant on cherche le parent
+            $parentRcId = driver_mel::gi()->mceToRcId($cal->owner);
+            if (isset($tree->children[$parentRcId])) {
+              if (!isset($tree->children[$parentRcId]->children)) {
+                $tree->children[$parentRcId]->children = [];
+              }
+            }
+            else {
+              // Ajouter le folder au tree
+              $folder = new stdClass();
+              $folder->id = $parentRcId;
+              $folder->children = [];
+
+              $tree->children[$parentRcId] = $folder;
+
+              // Créer un dossier virtuel pour le calendrier parent
+              $calendars[$parentRcId] = [
+                'id'    => $parentRcId,
+                'name'  => driver_mel::gi()->getUser($cal->owner)->name,
+                'listname' => driver_mel::gi()->getUser($cal->owner)->name,
+                'virtual' => true,
+              ];
+            }
+            // Ajouter le folder au tree
+            $folder = new stdClass();
+            $folder->id = $rcId;
+            $tree->children[$parentRcId]->children[$rcId] = $folder;
+          }
+        }
+        $calendars[$rcId] = $calendar;
       }
 
       if ($save_prefs) {

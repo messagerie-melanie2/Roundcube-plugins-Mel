@@ -1093,7 +1093,7 @@ class mel_driver extends calendar_driver {
       }
     }
     // Recurrence
-    if (isset($event['recurrence']) && strpos(get_class($_event), '\Exception') === false) {
+    if (isset($event['recurrence']) && !empty($event['recurrence']) && strpos(get_class($_event), '\Exception') === false) {
       $_event->recurrence->rrule = $event['recurrence'];
     }
     // Status

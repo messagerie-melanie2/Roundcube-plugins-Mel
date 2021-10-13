@@ -453,26 +453,27 @@ if (rcmail)
                 if (rcmail.env.mel_metapage_mail_configs !== undefined && rcmail.env.mel_metapage_mail_configs !== null && rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
                 {
                     //console.log("neteoemkd");//width: calc(25% - 60px)
-                    $("#barup-search-col").append(`<div class="row"><div class=col-6></div></div>`)
-                    .find(".search").appendTo("#barup-search-col .col-6");
+                    $("#barup-search-col").append(`<div class="row"><div class=col-7></div></div>`)
+                    .find(".search").appendTo("#barup-search-col .col-7");
         
-                    $("#barup-search-col").find(".row").append("<div id=chatCore class=col-6></div>");
+                    $("#barup-search-col").find(".row").append("<div id=chatCore class=col-5></div>");
         
-                    $("#barup-search-input").attr("placeholder", "Globale");
+                    $("#barup-search-input").attr("placeholder", "Recherche globale...");
         
                     $(".tiny-rocket-chat").appendTo("#chatCore")
                     .css("position", "sticky")
                     .css("height", "100%")
                     .css("width", "100%")
-                    .css("min-width", "125px")
+                    // .css("min-width", "125px")
                     .css("border-radius", "15px")
                     .css("z-index", 0)
                     .css("white-space", "nowrap")
                     .prepend("<span class=disc>Discussion</span>")
+                    .css("font-size", "1vw")
                     .find(".tiny-rocket-chat-icon")
                     .css("position", "initial")
-                    .css("font-size", "initial")
-                    .css("margin-left", "15px")
+                    .css("font-size", "1vw")
+                    .css("margin-left", "0.5vw")
                     ;//.css("position", "sticky").appendTo($(".barup"));
                 }
             }

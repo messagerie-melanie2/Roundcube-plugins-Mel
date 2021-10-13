@@ -359,11 +359,27 @@ function rcube_calendar_ui(settings)
     // event details dialog (show only)
     var event_show_dialog = function(event, ev, temp)
     {
-      var $dialog = $("#eventshow");
-      var calendar = event.calendar && me.calendars[event.calendar] ? me.calendars[event.calendar] : { editable:false, rights:'lrs' };
 
+      //PAMELLA
       if (!temp)
         me.selected_event = event;
+
+        //PAMELLA
+      if (rcmail.env.calendar_custom_dialog === true)
+      {
+        return rcmail.triggerEvent("calendar.event_show_dialog.custom", {
+          showed:Object.assign({}, event),
+          ev:ev,
+          temp:temp,
+          object:me,
+          functions:{
+            event_edit_dialog:event_edit_dialog
+          }
+        });
+      }
+
+      var $dialog = $("#eventshow");
+      var calendar = event.calendar && me.calendars[event.calendar] ? me.calendars[event.calendar] : { editable:false, rights:'lrs' };
 
       if ($dialog.is(':ui-dialog'))
         $dialog.dialog('close');
@@ -619,6 +635,7 @@ function rcube_calendar_ui(settings)
 
       rcmail.enable_command('event-history', calendar.history);
 
+      //PAMELLA, add event
       rcmail.triggerEvent('calendar-event-dialog', {dialog: $dialog});
     };
 
@@ -4235,6 +4252,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
 
   //PAMELA - Accès en dehors du plugin
   window.ui_cal = cal;
+  window.cal = cal;
 
   if (rcmail.env.action == 'dialog-ui') {
     return;
@@ -4255,7 +4273,7 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
   rcmail.register_command('events-import', function(){ cal.import_events(cal.calendars[cal.selected_calendar]); }, true);
   rcmail.register_command('calendar-showurl', function(){ cal.showurl(cal.calendars[cal.selected_calendar]); }, false);
   rcmail.register_command('calendar-showfburl', function(){ cal.showfburl(); }, false);
-  rcmail.register_command('event-download', function(){ cal.event_download(cal.selected_event); }, true);
+  rcmail.register_command('event-download', function(){ console.log("d", cal.selected_event, cal); cal.event_download(cal.selected_event); }, true);
   rcmail.register_command('event-sendbymail', function(p, obj, e){ cal.event_sendbymail(cal.selected_event, e); }, true);
   rcmail.register_command('event-copy', function(){ cal.event_copy(cal.selected_event); }, true);
   rcmail.register_command('event-history', function(p, obj, e){ cal.event_history_dialog(cal.selected_event); }, false);

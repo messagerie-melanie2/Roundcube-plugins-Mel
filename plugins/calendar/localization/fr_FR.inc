@@ -53,7 +53,8 @@ $labels['print'] = 'Imprimer';
 $labels['printtitle'] = 'Imprimer les calendriers';
 $labels['title'] = 'Résumé';
 $labels['description'] = 'Description';
-$labels['all-day'] = 'toute la journée';
+//PAMELLA
+$labels['all-day'] = 'Journée';
 $labels['export'] = 'Exporter';
 $labels['exporttitle'] = 'Exporter vers iCalendar';
 $labels['exportrange'] = 'Événements depuis';

@@ -166,6 +166,11 @@ class mel_metapage extends rcube_plugin
                 $this->register_action('logout', array($this, 'chat_logout'));
             }
 
+            if ($this->rc->task === "calendar")
+            {
+                $this->rc->output->set_env("calendar_custom_dialog", true);
+            }
+
             // if ($this->rc->task === "settings")
             // {
 

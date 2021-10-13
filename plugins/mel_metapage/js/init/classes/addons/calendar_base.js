@@ -1,5 +1,5 @@
 $(document).ready(() => {
-    
+
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
         
@@ -296,14 +296,14 @@ $(document).ready(() => {
                 //Visio
                 if ($("#eb-mm-wm-e")[0].checked)
                 {
-                    let config = {
-                        _key:$("#key-visio-cal").val()//generateRoomName(),
-                    };
-                    if ($("#wsp-event-all-cal-mm").val() !== "#none")
-                        config["_wsp"] = $("#wsp-event-all-cal-mm").val();
-                    else
-                        config["_ariane"] = "@home";
-                    $("#edit-location").val(`#visio:${mel_metapage.Functions.url("webconf", "", config).replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`)}`);
+                    // let config = {
+                    //     _key:$("#key-visio-cal").val()//generateRoomName(),
+                    // };
+                    // if ($("#wsp-event-all-cal-mm").val() !== "#none")
+                    //     config["_wsp"] = $("#wsp-event-all-cal-mm").val();
+                    // else
+                    //     config["_ariane"] = "@home";
+                    $("#edit-location").val(`${rcmail.env["webconf.base_url"]}/${$("#key-visio-cal").val()}`);
                 }
                 else
                     $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
@@ -546,6 +546,14 @@ $(document).ready(() => {
                             $("#row-for-key-visio-cal").addClass("hidden");
                             //.removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
                         }
+                    }
+                    else if (description.includes(rcmail.env["webconf.base_url"]))
+                    {
+                        $("#eb-mm-em-v").click();
+                        $("#eb-mm-wm-e").click();
+                        $("#url-visio-cal").addClass("hidden");
+                        $("#row-for-key-visio-cal").removeClass("hidden");
+                        $("#key-visio-cal").val(mel_metapage.Functions.webconf_url(description));
                     }
                     else {
                         $("#eb-mm-em-p").click();
@@ -838,7 +846,48 @@ $(document).ready(() => {
                 }).always(() => {
                     mel_metapage.Functions.busy(false);
                 });
+
             }, true);
+
+            try {            
+                $(".task-calendar #layout #layout-content > .header #calendartoolbar a.button").each((i,e) => {
+
+                    if ($(e).data("hidden") == "small")
+                        return;
+
+                    let li = $("<li></li>");
+                    $(e).clone().appendTo(li)
+                    li.appendTo($("#toolbar-menu-mel ul"));
+                    console.log("e", $(e).css("display"),e);
+                });
+                
+            } catch (error) {
+                
+            }
+
+            $("#mel-button-small-search").click(() => {
+                let querry = $("#mel-small-search");
+                
+                if (querry.css("display") === "none")
+                    querry.css("display", "");
+                else
+                    querry.css("display", "none");
+            });
+
+            $("#mel-small-search input").on("change", () => {
+                $("#searchform").val($("#mel-small-search input").val())
+                .parent().submit();
+            });
+            
+            $("#mel-small-search button").click(() => {
+                $('.toolbar-calendar .button.reset').click();
+                $("#mel-small-search input").val("");
+                $("#mel-button-small-search").click();
+            });
+
+            $("#searchform").parent().on("submit", () => {
+                $("#calendarOptionSelect").val("ootd");
+            });
         })
 
         // return;
@@ -1126,6 +1175,15 @@ $(document).ready(() => {
                 }
             }
             return capitalize(date);
+        },
+        CapitalizeMonth: function (date, monthIndex = 1)
+        {
+            const capitalize = (s) => {
+                if (typeof s !== 'string') return ''
+                s = s.toLowerCase();
+                return s.charAt(0).toUpperCase() + s.slice(1)
+            }
+            return Enumerable.from(date.split(" ")).select((x, i) => i === monthIndex ? capitalize(x) : x).toArray().join(" ");
         }
 
      }

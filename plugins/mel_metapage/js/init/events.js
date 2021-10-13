@@ -164,6 +164,254 @@ if (rcmail)
         }
     })
 
+    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
+        const event = datas.showed;
+
+        let html = "";
+        html += "<div id=parenthtmlcalendar>";
+        //Date / Horaire
+        html += `<div class="row"><div class=col-6><b>${event.start.format("dddd D MMMM")}</b></div><div class="col-6"><span class="icofont-clock-time mel-cal-icon"></span>${event.allDay ? rcmail.gettext("all-day", "mel_metapage") : `${event.start.format("HH:mm")} - ${event.end.format("HH:mm")}`}</div></div>`;
+
+        //Affichage de la récurrence puis de l'alarme
+        let rec = event.recurrence_text === undefined ? null : event.recurrence_text;
+        let alarm = event.alarms !== undefined ? (new Alarm(event.alarms)).toString() : null;
+
+        console.log("show_event", datas);
+
+        html += `<div class=row style="margin-top:5px">${(rec !== null ? `<div class=col-6>${rec}</div>` : "")}${(alarm !== null ? `<div class=col-6><span class="icofont-alarm mel-cal-icon"></span>Rappel : ${alarm}</div>` : "")}</div>`;
+
+        //Affichage du lieu
+        if (event.location !== undefined && event.location !== null && event.location !== "")
+            html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;"><span class="icofont-location-pin mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@vision:", ""))}</span></div></div>`;
+
+
+        if (event.categories !== undefined && event.categories.length > 0)
+        {
+            const isWsp = event.categories[0].includes("ws#");
+            html += `<div class=row style="margin-top:5px"><div class=col-12><span ${isWsp ? "" : `style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"`} class="${isWsp ? "icon-mel-workplace" : "icon-mel-label-full"} mel-cal-icon"></span><span ${!isWsp ? "" : `style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"`} >${isWsp ?  event.categories[0].replace("ws#", "") : event.categories[0]}</span></div></div>`;
+        }
+
+        //Affichage de la description
+        if (event.description !== undefined && event.description !== "")
+            html += `<div class=row style="margin-top:15px"><div class=col-12><span class="icofont-console mel-cal-icon" style="display: inline-block;
+            vertical-align: top;
+            margin-top: 5px;"></span><p style="display:inline-block">${event.description.replaceAll("\n", "<br/>")}</p></div></div>`;
+
+        //Affichage des invités
+        if (event.attendees !== undefined && event.attendees.length > 1)
+        {
+            let tmp = Enumerable.from(event.attendees).orderBy(x => (x.role==="ORGANIZER")).thenBy(x =>x.name).toArray();
+            let attendeesHtml = "";
+            for (let index = 0; index < tmp.length && index < 3; ++index) {
+                const element = tmp[index];
+                attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${element.name}</a></div>`;
+            }
+
+            if (tmp.length > 3)
+            {
+                attendeesHtml += "<div id=mel-hidden-attendees class=hidden>";
+
+                for (let index = 3; index < tmp.length; ++index) {
+                    const element = tmp[index];
+                    attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${element.name}</a></div>`;
+                }
+
+                attendeesHtml += "</div>";
+
+                attendeesHtml += `<b><a role="button" data-length=${tmp.length - 3} href=# onclick="event_calendar_show_all_something(this)">${tmp.length - 3} de plus...</a></b>`;
+            }
+
+            html += `<div class=row style="max-width:100%;"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="font-size:1.2rem">${attendeesHtml}</div></div></div>`;
+        }
+
+        //Affichage des pièces jointes
+        if ($.isArray(event.attachments) && event.attachments.length > 0)
+            html += `<div id=mel-event-attachments class="row" style=margin-top:15px><div class="col-12"><span class="icon-mel-pj mel-cal-icon mel-calendar-left-element"></span><span class="mel-event-text mel-calendar-right-element"></span></div></div>`;
+
+        //Affichage du calendrier
+        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-calendar mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top>${event["calendar-name"]}</span></div></div>`;
+
+        //Affichage free_busy
+        html += `<div class=row><div class=col-12 style="margin-top:10px"><span style="display: inline-block;
+        width: 0.7rem;
+        height: 0.7rem;
+        background-color: ${event.free_busy === "free" ? "green" : "red"};
+        border-radius: 100%;
+        margin-bottom: 0.15rem;
+        margin-left: 0.35rem;
+        margin-right: 1.6rem;" class="mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Status</b> : ${rcmail.gettext(event.free_busy, "calendar")}</span></div></div>`;
+
+        //Affichage de la date de création
+        const created = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.created).format("DD MMMM YYYY")));
+        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Créé le : </b>${created}</span></div></div>`;
+
+        //Affichage de la date de modification
+        if (event.changed !== undefined)
+        {
+            const edited = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.changed).format("DD MMMM YYYY")));
+            html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Dernière modification le : </b>${created}</span></div></div>`;
+        }
+        //fin table
+        html += "</div>";
+
+        const cancelled = event.status === "CANCELLED";
+        const title = event.sensitivity === "private" ? `<span class="icofont-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title}` : (cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title);
+        
+        const config = new GlobalModalConfig(title, "default", html);
+        let modal = new GlobalModal("globalModal", config, true);
+        modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.5rem");
+        
+        modal.header.querry.css("position", "sticky")
+        .css("top", "0")
+        .css("background-color","white")
+        .css("border-top-left-radius","15px")
+        .css("border-top-right-radius","15px")
+        .css("z-index", 1);
+
+        modal.footer.querry.css("position", "")
+        .css("bottom", "0")
+        .css("background-color", "white")
+        .css("flex-direction", "row-reverse")
+        .css("z-index", 1)
+        .addClass("calendar-show-event");
+
+        modal.footer.querry.html("")
+        .append($(`<button class="mel-calendar-button" id="-mel-send-event"><span class="icon-mel-send"></span><span class=inner>Partager</span></button>`).click((e) => {
+            datas.object.event_sendbymail(event, e);
+        }))
+        .append($(`<button class="mel-calendar-button danger" id="-mel-delete-event"><span class="icon-mel-trash"></span><span class=inner>Supprimer</span></button>`).click(() => {
+            datas.object.delete_event(event);
+            modal.close();
+        }))
+        .append($(`<button class="mel-calendar-button" id="-mel-modify-event"><span class="icon-pencil"></span><span class=inner>Modifier</span></button>`).click(() => {
+            modal.close();
+            datas.functions.event_edit_dialog('edit', event);
+            // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
+            rcmail.triggerEvent('edit-event', event);
+        }))
+        ;
+
+        //$(".global-modal-body")
+
+              // add link for "more options" drop-down
+      if (!datas.temp && !event.temporary && event.calendar != '_resource') {
+        $('<button>')
+          .attr({href: '#', 'class': 'dropdown-link mel-calendar-button ', 'data-popup-pos': 'top'})
+          .append(`<span class="inner">${rcmail.gettext('eventoptions','calendar')}</span>`)
+          .click(function(e) {
+            return rcmail.command('menu-open','eventoptionsmenu', this, e);
+          })
+          .prepend(`<span style="transform: rotateZ(90deg);
+          display: inline-block;" class="icon-mel-dots"></span>`)
+          .prependTo(modal.footer.querry);
+        $("#eventoptionsmenu .send").css("display", "none");
+
+        if (!$("#eventoptionsmenu .copy").hasClass("mel-edited"))
+            $("#eventoptionsmenu .copy").addClass("mel-edited")
+            .click(() => {
+                modal.close();
+            });
+
+      }
+
+    modal.footer.querry.prepend($(`<button style="position: absolute;
+    right: 50px;
+    bottom: 20px;" class="mel-button">Fermer<span class="plus icon-mel-close"></span></button>`).click(() => {
+        modal.close();
+    }))
+
+    modal.contents.css("height", `${window.innerHeight - 250}px`).css("overflow-y", "auto").css("overflow-x", "hidden");//.css("height", "").css("overflow", "");
+
+    modal.onClose(() => {
+        modal.footer.querry.css("position", "")
+        .css("bottom", "")
+        .css("background-color", "")
+        .css("flex-direction", "")
+        .css("z-index", 1)
+        .removeClass("calendar-show-event");
+
+        if(window.create_popUp !== undefined)
+            delete window.create_popUp;
+
+    });
+
+    setTimeout(() => {
+        let querry = $("#location-mel-edited-calendar").find("a");
+        if (querry.length > 0)
+        {
+            if (querry.attr("href").includes(rcmail.env["webconf.base_url"]))
+            {
+                querry.click((e) => {
+                    e.preventDefault();
+                    modal.close();
+                    const ariane = event.categories[0].includes("ws#") ? null : "@home";
+                    const wsp = event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
+                    window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                });
+
+            }
+        }
+    }, 1);
+
+        if ($.isArray(event.attachments)) {
+            libkolab.list_attachments(event.attachments, $('#mel-event-attachments').find('.mel-event-text'), undefined, event,
+                function(id) { rcmail.env.deleted_attachments.push(id); },
+                function(data) { 
+                    var event = data.record,
+                    query = {_id: data.attachment.id, _event: event.recurrence_id || event.id, _cal: event.calendar};
+            
+                  if (event.rev)
+                    query._rev = event.rev;
+            
+                  if (event.calendar == "--invitation--itip")
+                    $.extend(query, {_uid: event._uid, _part: event._part, _mbox: event._mbox});
+            
+                  libkolab.load_attachment(query, data.attachment);
+
+                 }
+              );
+            if (event.attachments.length > 0) {
+                $('#mel-event-attachments').show();
+                $('#mel-event-attachments').find("ul").css("background-color", "transparent").css("border-color", "transparent");
+                $('#mel-event-attachments').find('.mel-event-text').css("font-size", "1.2rem").css("width","94%").find("li").each((i,e) => {
+                    const txt = $(e).addClass("mel-before-remover").css("display", "block").find("a").find("span").html();
+                    const splited = txt.split(".");
+                    const ext = splited[splited.length-1];
+                    const name = Enumerable.from(splited).where((x, i) => i < splited.length-1).toArray().join(".");
+                    
+                    $(e).prepend(`<div class=row><div class=col-8>${name}</div><div class=col-2>${ext}</div><div class="col-2 r-gm-col-temp" ></div></div>`);
+                    $(e).find("a").addClass("mel-calendar-button mel-calendar-button-sm").appendTo($(".r-gm-col-temp").removeClass("r-gm-col-temp")).find("span").html("").addClass("icon-mel-download");
+                    
+                });
+            }
+        }
+    });
+
+    function linkify(text, config = {style:""}) {
+        var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlRegex, function(url) {
+            return `<a href="${url}" ${(config !== undefined && config.style !== undefined && config.style !== "" ? `style="${config.style}"` : "")}>${url}</a>`;
+        });
+    }
+
+    function event_calendar_show_all_something(element)
+    {
+        element = $(element);
+        let querry = $("#mel-hidden-attendees");
+
+        if (querry.hasClass("hidden"))
+        {
+            querry.removeClass("hidden");
+            element.html("Voir moins...");
+        }
+        else {
+            querry.addClass("hidden");
+            element.html(`${element.data("length")}  de plus...`);
+        }
+    }
+
     rcmail.addEventListener('contextmenu_init', function(menu) {
         // identify the folder list context menu
         if (menu.menu_name == 'messagelist') {

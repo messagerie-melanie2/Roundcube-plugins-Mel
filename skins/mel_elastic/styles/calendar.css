@@ -30,10 +30,11 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange,
     color:black;
 }
 
-.task-calendar #layout #layout-content > .header
+html.layout-large .task-calendar #layout #layout-content > .header,
+html.layout-normal .task-calendar #layout #layout-content > .header
 {
     display: block;
-}
+} 
 
 .task-calendar #layout #layout-content > .header #toolbar-menu
 {
@@ -53,7 +54,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
         border-radius: 100%;
         height: 20px;
         width: 20px;
-        line-height: 15px;
+        line-height: 15px!important;
         color: #31365B!important;
     
 }
@@ -275,4 +276,306 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
     background-color: #484D7A;
     border-color: #484D7A;
     color:white;
+}
+
+.task-calendar #layout-sidebar .searchbar 
+{
+    display: none;
+}
+
+.task-calendar #layout > #layout-sidebar > .header .header-title
+{
+    font-size: 1.5rem;
+    font-weight: normal;
+}
+
+.task-calendar #layout > #layout-sidebar > .header
+{
+    border-bottom: solid white thin;
+    margin: 0 15px;
+}
+
+.task-calendar .listing li > div.calendar .calname::before
+{
+    /* margin-left: 15px; */
+    position: absolute;
+    content: "\e94d";
+    margin-left: -42px;
+    font-family: DWP;
+    font-size: 9px !important;
+}
+
+.task-calendar .listing li > div.calendar .actions
+{
+    padding-right: 30px;
+}
+
+.task-calendar .listing li > div.calendar > *
+{
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+
+.task-calendar .listing li > div.calendar
+{
+    margin-top:5px;
+}
+
+.task-calendar .listing li > div.calendar .custom-control
+{
+    height: auto;
+    padding-left: 50px;
+    margin-right: -20px;
+}
+
+.task-calendar .listing.notree li > div.calendar .custom-control
+{
+    margin-right: -10px;
+}
+
+.task-calendar .listing li[aria-level="2"] .custom-control{
+    padding-left: 70px!important;
+    margin-right: -43px!important;
+}
+html.touch .task-calendar .listing .custom-switch .custom-control-label
+{
+    padding-left: 2.5rem;
+}
+
+.task-calendar .listing .custom-switch .custom-control-label::before/*,
+.task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::before*/ {
+	border-color: black!important;
+	background-color: white!important;
+	border-radius: 5px;
+	width: 16px;
+    height: 16px;
+    margin-left: 10px;
+}
+
+
+.task-calendar .listing .custom-switch .custom-control-label::after
+{
+    background:none;
+    transition: none;
+    margin-left: 10px;
+}
+
+.task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+	background: none;
+	top: 4px;
+	left: -4px;
+	content: "\ec4b";
+	font-family: IcoFont;
+	/* font-weight: bold; */
+	/* color: black; */
+	font-size: 8px;
+    /* transform: none; */
+}
+
+html.touch .task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::after
+{
+    transform: translateX(10px);
+}
+
+.task-calendar ul.treelist.iconized li div.treetoggle {
+	top: 10px;
+	left: 22px;
+}
+
+.task-calendar #layout > #layout-sidebar > .header .header-title
+{
+    text-align: left;
+}
+
+.task-calendar .listing li > div.calendar .calname {
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.task-calendar #layout-content .searchbar.menu input
+{
+    padding-left:15px;
+}
+
+.menu a.refresh::before {
+	content: "\e95b"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.task-calendar #layout #layout-content > .header a.button.create::before {
+	content: "\e901"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.import::before, .menu a.upload::before {
+	content: "\e95f"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.export::before, .menu a.export.all::before, .menu a.export.selection::before {
+	content: "\e90d"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.mel-cal-icon
+{
+    margin-right:15px;
+}
+
+.mel-calendar-col
+{
+    white-space: nowrap;
+}
+
+.mel-calendar-right-element
+{
+    display: inline-block;
+    max-width: 100%;
+}
+
+.mel-calendar-left-element
+{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 5px;
+}
+
+.mel-ellipsis{
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    
+}
+
+a.mel-calendar-button
+{
+    text-decoration: none;
+    transition: all 0.1s ease-in;
+    border-radius: 50px;
+    width: -moz-fit-content;
+    width: fit-content;
+    /* padding: 5px 5px!important; */
+    /* padding: 5px 10px; */
+}
+
+button.mel-calendar-button
+{
+    transition: all 0.1s ease-in;
+    border-radius: 10px;
+    border: none;
+    background-color: transparent;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right:10px!important;
+    margin-left:0!important;
+}
+
+button.mel-calendar-button > .inner
+{
+    display: block;
+    font-size: small;
+    margin-top: 9px;
+}
+
+.mel-calendar-button-sm{
+    padding: 5px 5px!important;
+}
+
+button.mel-calendar-button:hover,
+a.mel-calendar-button:hover
+{
+    color: white!important;
+    background-color: #484D7A;
+    border-color: #484D7A;
+}
+
+button.mel-calendar-button.danger:hover,
+a.mel-calendar-button.danger:hover
+{
+    background-color: #fc945a;
+    border-color: #fc945a;
+}
+
+button.mel-calendar-button:hover{
+    border-radius: 10px;
+}
+
+a.mel-calendar-button:hover > span
+{
+    color:white!important;
+}
+
+.calendar-show-event.modal-footer.global-modal-footer {
+	border-top-style: solid;
+	border-top-width: 1.6px;
+	border-color: #B1B4C6;
+	margin: 0 3rem;
+}
+
+html.layout-phone .task-calendar #layout-content,
+html.layout-small .task-calendar #layout-content
+{
+    max-width: calc(100% - 60px);
+}
+
+html.layout-phone.framed .task-calendar #layout-content,
+html.layout-small.framed .task-calendar #layout-content
+{
+    max-width: 100%;
+}
+
+html.layout-phone .toolbar-calendar,
+html.layout-small .toolbar-calendar
+{
+    display: none;
+}
+
+html.layout-large .small-toolbar-calendar,
+html.layout-normal .small-toolbar-calendar
+{
+    display: none;
+}
+
+.task-calendar #layout > #layout-content > .header .header-title span
+{
+    color:white;
+}
+
+.input-group.icalendar input
+{
+    border-radius: 0 !important;
+}
+
+.input-group.icalendar .mel-button
+{
+    border-radius: 0 !important;
+}
+
+html .task-calendar .ui-dialog .ui-datepicker-header,
+html .task-calendar .ui-dialog .ui-datepicker,
+.ui-dialog #datepicker {
+	background-color: white !important;
+}
+
+html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activerange
+{
+    background-color:#F2FAF9 !important;
+}
+
+.layout-small body.task-calendar select.mel-input.calendar,
+.layout-phone body.task-calendar select.mel-input.calendar
+{
+    border-radius: 0!important;
+    margin:0;
+}
+
+.task-calendar .ui-datepicker .ui-state-highlight, 
+.task-calendar .ui-datepicker.ui-widget-content .ui-state-highlight {
+	background-color: #454F98 !important;
 }

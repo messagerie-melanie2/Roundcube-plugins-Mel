@@ -39,6 +39,7 @@ class Alarm{
 
                 this.time = parseInt(string.split("PT")[1].split("M")[0]);
 
+                console.log("string", string, string.includes("DISPLAY"))
                 if (string.includes("DISPLAY")) //Type d'alarme
                     this.mode = Alarm.enums.mode.display;
 
@@ -74,6 +75,37 @@ class Alarm{
     getTime()
     {
         return this.time * 60 * 1000;
+    }
+
+    toString()
+    {
+        let time = this.time;
+        let txt = "";
+
+        switch (this.timeMode) {
+            case Alarm.enums.time_type.minutes:
+                txt += ` minute${this.time > 1 ? "s" : ""}`;
+                break;
+            
+            case Alarm.enums.time_type.hour:
+                time = this.time/60;
+                txt += ` heure${time > 1 ? "s" : ""}`;
+                break;
+            
+            case Alarm.enums.time_type.day:
+                time=this.time/60/24;
+                txt += ` jour${time > 1 ? "s" : ""}`;
+        
+            default:
+                break;
+        }
+
+        if (this.type === Alarm.enums.type.before)
+            txt += " avant";
+        else
+            txt += " après";
+
+        return time + txt;
     }
 
 }

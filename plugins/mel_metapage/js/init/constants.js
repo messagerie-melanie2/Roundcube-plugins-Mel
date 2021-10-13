@@ -575,6 +575,19 @@ const mel_metapage = {
             return props;
         },
 
+        webconf_url: function(url)
+        {
+            let val = url.toUpperCase();
+            
+            if (val.includes(rcmail.env["webconf.base_url"].toUpperCase())) {
+              val = val.split("/");
+              val = val[val.length - 1];
+              return val.toUpperCase();
+            }
+
+            return null;
+        },
+
         /**
          * Faire facilement une requête ajax
          * @param {string} url 

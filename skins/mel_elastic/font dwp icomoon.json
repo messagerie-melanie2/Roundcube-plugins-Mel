@@ -91,6 +91,11 @@
       "prevSize": 32
     },
     {
+      "order": 136,
+      "name": "mel-upload",
+      "prevSize": 32
+    },
+    {
       "order": 77,
       "name": "mel-edit",
       "prevSize": 32
@@ -477,12 +482,12 @@
   "metadata": {
     "name": "DWP",
     "importSize": {
-      "width": 69,
-      "height": 69
+      "width": 60,
+      "height": 58
     },
     "url": "https://app.zeplin.io/project/6086d70c6a061a16aeb462e1/screen/6086d76eee153a1154186dc4",
     "designer": "ECEDI",
-    "iconsHash": 1446442912
+    "iconsHash": 344757995
   },
   "height": 1024,
   "prevSize": 32,
@@ -684,6 +689,22 @@
         "download"
       ],
       "defaultCode": 59661
+    },
+    {
+      "paths": [
+        "M70.621 703.929h-70.621v317.793h1059.31v-317.793h-70.621v247.172h-918.069v-247.172zM529.66 2.278l-332.412 311.649 48.345 51.518 248.761-233.242v554.072h70.61v-554.072l248.761 233.242 48.345-51.518-332.412-311.649z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "width": 1059,
+      "grid": 0,
+      "tags": [
+        "upload"
+      ],
+      "defaultCode": 59743
     },
     {
       "paths": [
@@ -1553,8 +1574,8 @@
       "prefix": "icon-",
       "metadata": {
         "fontFamily": "DWP",
-        "majorVersion": 2,
-        "minorVersion": 1,
+        "majorVersion": 1,
+        "minorVersion": 13,
         "copyright": "2015 PNE Annuaire et Messagerie MEDDE/MLETR",
         "description": ""
       },

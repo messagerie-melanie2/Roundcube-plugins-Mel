@@ -344,7 +344,14 @@ class calendar_ui
 
         if (!$activeonly || !empty($prop['active'])) {
             $label_id = 'cl:' . $id;
-            $content = html::a(
+            $content = html::div(["style" => "color:#".(empty($prop['color']) ? '000' : $prop['color'])], html::tag('input', [
+                'type'    => 'checkbox',
+                'name'    => '_cal[]',
+                'value'   => $id,
+                'checked' => !empty($prop['active']),
+                'aria-labelledby' => $label_id
+            ]))
+            .html::a(
                 ['class' => 'calname', 'id' => $label_id, 'title' => $title, 'href' => '#'],
                 rcube::Q(!empty($prop['editname']) ? $prop['editname'] : $prop['listname'])
             );
@@ -382,14 +389,7 @@ class calendar_ui
                     );
                 }
 
-                $content .= html::tag('input', [
-                        'type'    => 'checkbox',
-                        'name'    => '_cal[]',
-                        'value'   => $id,
-                        'checked' => !empty($prop['active']),
-                        'aria-labelledby' => $label_id
-                    ])
-                    . html::span('actions', $actions)
+                $content .=  html::span('actions', $actions)
                     . html::span(['class' => 'handle', 'style' => "background-color: #$color"], '&nbsp;');
             }
 

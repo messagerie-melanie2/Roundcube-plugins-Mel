@@ -207,6 +207,11 @@ class GlobalModal
         this.ondestroy = func;
     }
 
+    onClose(e)
+    {
+        this.modal.on("hide.bs.modal", e);
+    }
+
     dialog(txt)
     {
         if (txt === "destroy")

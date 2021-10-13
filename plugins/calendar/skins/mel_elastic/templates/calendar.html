@@ -7,7 +7,7 @@
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="arial-label-calendars">
 	<div class="header">
 		<a class="button icon back-content-button" href="#back" data-hidden="big"><span class="inner"><roundcube:label name="back" /></span></a>
-		<span id="aria-label-calendars" class="header-title"><roundcube:label name="calendar.calendars" /></span>
+		<span id="aria-label-calendars" class="header-title"><span class="icon-mel-calendar" style="margin-right:10px"></span><roundcube:label name="calendar.calendars" /></span>
 		<roundcube:button name="calendaractionsmenu" id="calendaroptionsmenulink" type="link"
 			title="calendar.calendaractions" class="button icon sidebar-menu" data-popup="calendaractions-menu"
 			innerClass="inner" label="actions" />
@@ -29,7 +29,9 @@
 		<a class="button icon back-sidebar-button folders" href="#sidebar" data-hidden="big"><span class="inner"><roundcube:label name="calendar.calendars" /></span></a>
 		<span class="header-title"></span>
 		<!-- toolbar -->
-		<div class="row">
+		<button title="Rechercher des évènements" id=mel-button-small-search style="font-size: 1.35rem;margin-right:5px" class="mel-button ignoreActive inverse no-button-margin small-toolbar-calendar"><span class="sr-only">Rechercher</span><span class="icon-mel-search"></span></button>
+		<button title="Plus d'options" style="font-size: 1.35rem;" data-popup="toolbar-menu-mel" aria-haspopup="true" aria-expanded="false" aria-owns="toolbar-menu-mel" class="mel-button ignoreActive inverse no-button-margin small-toolbar-calendar"><span class="sr-only">Plus d'options</span><span class="icon-mel-dots"></span></button>
+		<div class="row toolbar-calendar">
 			<div class="col-8">
 				<div id="calendartoolbar" class="toolbar menu">
 					<!-- PAMELA - MANTIS 0004466: Ajouter un bouton pour rafraichir l'agenda -->
@@ -58,6 +60,14 @@
 			</div>
 		</div>
 	</div>
+
+	<div id="mel-small-search" class="input-group icalendar" style="display: none;">
+		<input class="form-control" type=text placeholder="Recherche..."/>
+		<div class="input-group-append">
+			<button class="btn btn-secondary mel-button no-button-margin" type="button"><span class="icon-mel-close"></span></button>
+		</div>
+	</div>
+
 	<h2 id="aria-label-calendarview" class="voice"><roundcube:label name="calendar.arialabelcalendarview" /></h2>
 	<div id="calendar" class="content" role="main" aria-labelledby="aria-label-calendarview" data-elastic-mode="true">
 		<roundcube:object name="plugin.agenda_options" id="agendaoptions" />
@@ -179,6 +189,13 @@
 		<roundcube:if condition="env:calendar_driver == 'kolab' && config:kolab_bonnie_api" />
 			<roundcube:button type="link-menuitem" command="event-history" label="calendar.eventhistory" class="history disabled" classAct="history active" />
 		<roundcube:endif />
+	</ul>
+</div>
+
+<div id="toolbar-menu-mel" class="popupmenu">
+	<h3 id="aria-label-toolbar-menu-mel" class="voice">Plus d'options</h3>
+	<ul class="menu toolbar listing iconized " role="menu" aria-labelledby="aria-label-toolbar-menu-mel">
+
 	</ul>
 </div>
 

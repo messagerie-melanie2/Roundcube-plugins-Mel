@@ -171,3 +171,4 @@ $labels["mel-chat-placement"] = "Chat - Placement de la bulle";
 
 $labels["hide_bubble"] = "Cacher le bulle de discussion instantée";
 $labels["show_bubble"] = "Afficher le bulle de discussion instantée";
+$labels["all-day"] = "Journée entière";

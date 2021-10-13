@@ -631,7 +631,7 @@ class MasterWebconfBar {
             MasterWebconfBar.video = Symbol("video");
         }
 
-        $(".tiny-rocket-chat").css("display", "");
+        ArianeButton.default().hide_button();
 
         //console.log("logo a", (this.webconf.wsp === undefined || this.webconf.wsp === null) || this.webconf.wsp.datas.logo === "" || this.webconf.wsp.datas.logo == "false");
 
@@ -884,8 +884,10 @@ class MasterWebconfBar {
             });
         }
 
-
-        $(".tiny-rocket-chat").css("display", "block");
+        if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
+            $(".tiny-rocket-chat").removeClass("disabled").removeAttr("disabled");
+        else
+            $(".tiny-rocket-chat").css("display", "block");
 
         parent.$("html").removeClass("webconf-started");
         $(parent).resize();
@@ -1661,7 +1663,11 @@ $(document).ready(() => {
 
                     window.webconf_master_bar.change_frame(false);
                     window.webconf_master_bar.webconf.set_title();
-                    $(".tiny-rocket-chat").css("display", "none");
+
+                    if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
+                        $(".tiny-rocket-chat").addClass("disabled").attr("disabled", "disabled");
+                    else 
+                        $(".tiny-rocket-chat").css("display", "none");
 
                     if (eClass !== "stockage")
                         window.webconf_master_bar.document.removeClass("active");

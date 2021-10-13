@@ -25,7 +25,7 @@
 
                 config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
             }
-            mel_metapage.Functions.call("$('.tiny-rocket-chat').css('display', 'none')", false);
+            mel_metapage.Functions.call("ArianeButton.default().hide_button()", false);
             mel_metapage.Functions.call(() => {
                 if (window.create_popUp !== undefined)
                     window.create_popUp.close();

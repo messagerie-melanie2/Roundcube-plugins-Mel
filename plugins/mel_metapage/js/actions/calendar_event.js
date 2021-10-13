@@ -147,8 +147,10 @@ async function DatePickerInit()
         return;
 
     let querry = $("#datepicker-dp-title");
-    querry.append(`<span role=button tabIndex=0 style="cursor:pointer;font-weight:normal;" class="mel-focus mel-hover" id=${idMonth}>${$(`.ui-datepicker-month option[value=${$(".ui-datepicker-month").val()}]`).html()}</span>
-    <span role=button tabIndex=0 style="cursor:pointer;font-weight:normal;" class="mel-focus mel-hover" id=${idYear}>${$(`.ui-datepicker-year option[value=${$(".ui-datepicker-year").val()}]`).html()}</span>`);
+    querry.append(`<span role=button tabIndex=0 style="cursor:pointer;font-weight:normal;" class="mel-focus mel-hover" id=${idMonth}>${$(`#datepicker-dp-title .ui-datepicker-month option[value=${$("#datepicker-dp-title .ui-datepicker-month").val()}]`).html()}</span>
+    <span role=button tabIndex=0 style="cursor:pointer;font-weight:normal;" class="mel-focus mel-hover" id=${idYear}>${$(`#datepicker-dp-title .ui-datepicker-year option[value=${$("#datepicker-dp-title .ui-datepicker-year").val()}]`).html()}</span>`);
+
+    console.log("month", $(`#datepicker-dp-title .ui-datepicker-month option[value=${$("#datepicker-dp-title .ui-datepicker-month").val()}]`));
 
     querry.find(`#${idMonth}`).click((e) => {
         ForceSelectClick($("#datepicker-dp-title .ui-datepicker-month"));
@@ -182,11 +184,11 @@ async function DatePickerInit()
         DatePickerInit();
     });
 
-    $('.ui-datepicker-next').click(() => {
+    $('#datepicker-dp-title .ui-datepicker-next').click(() => {
         DatePickerInit();
     })
 
-    $('.ui-datepicker-prev').click(() => {
+    $('#datepicker-dp-title .ui-datepicker-prev').click(() => {
         DatePickerInit();
     })
 }

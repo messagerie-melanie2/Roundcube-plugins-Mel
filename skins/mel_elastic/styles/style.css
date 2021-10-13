@@ -1013,10 +1013,22 @@ td.mel-fit-content{
     background-color: #484D7A;
 }
 
+.ignoreActive.mel-button.inverse
+{
+    border-color: #484D7A!important;
+    background-color: #484D7A!important;
+}
+
 .mel-button.inverse:hover
 {
     background-color: #363A5B;
     border-color: #363A5B;
+}
+
+.ignoreActive.mel-button.inverse:hover
+{
+    background-color: #363A5B!important;
+    border-color: #363A5B!important;
 }
 
 .mel-button.white{
@@ -1679,4 +1691,9 @@ html.layout-phone .hide-on-small
 .task-addressbook.action-show.formcontainer #layout
 {
     display: none;
+}
+
+.task-mail .header .attach
+{
+    display:none;
 }

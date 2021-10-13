@@ -62,8 +62,8 @@ class roundcube_oidc extends rcube_plugin
             $auth = false;
 
             // TODO remove
-            //mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']);
+            //mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']));
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - pre-auth (KRB=" . $_SERVER['REMOTE_USER'] . " - OIDC=" . isset($_GET['oidc']));
 
             //region =========== AUTH methods ===========
 

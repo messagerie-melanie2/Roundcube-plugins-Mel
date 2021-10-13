@@ -694,7 +694,7 @@ class mel_driver extends calendar_driver {
         $event['uid'] = $id;
       }
       elseif ($new) {
-        $_event->uid = date('Ymd') . time() . md5($event['calendar'] . strval(time())) . '@roundcube';
+        $_event->uid = $this->cal->generate_uid();
       }
       else {
         return false;

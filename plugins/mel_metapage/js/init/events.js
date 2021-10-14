@@ -191,6 +191,8 @@ if (rcmail)
             html += `<div class=row style="margin-top:5px"><div class=col-12><span ${isWsp ? "" : `style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"`} class="${isWsp ? "icon-mel-workplace" : "icon-mel-label-full"} mel-cal-icon"></span><span ${!isWsp ? "" : `style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"`} >${isWsp ?  event.categories[0].replace("ws#", "") : event.categories[0]}</span></div></div>`;
         }
 
+        html += "<div style=font-size:1rem>";
+
         //Affichage de la description
         if (event.description !== undefined && event.description !== "")
             html += `<div class=row style="margin-top:15px"><div class=col-12><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
@@ -221,7 +223,7 @@ if (rcmail)
                 attendeesHtml += `<b><a role="button" data-length=${tmp.length - 3} href=# onclick="event_calendar_show_all_something(this)">${tmp.length - 3} de plus...</a></b>`;
             }
 
-            html += `<div class=row style="max-width:100%;${(event.description === undefined || event.description === "" ? "margin-top:15px;" : "")}"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="font-size:1.2rem">${attendeesHtml}</div></div></div>`;
+            html += `<div class=row style="max-width:100%;${(event.description === undefined || event.description === "" ? "margin-top:15px;" : "")}"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="">${attendeesHtml}</div></div></div>`;
         }
 
         //Affichage des pièces jointes
@@ -229,7 +231,7 @@ if (rcmail)
             html += `<div id=mel-event-attachments class="row" style=margin-top:15px><div class="col-12"><span class="icon-mel-pj mel-cal-icon mel-calendar-left-element"></span><span class="mel-event-text mel-calendar-right-element"></span></div></div>`;
 
         //Affichage du calendrier
-        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-calendar mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top>${event["calendar-name"]}</span></div></div>`;
+        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-calendar mel-cal-icon"></span><span style=vertical-align:text-top>${event["calendar-name"]}</span></div></div>`;
 
         //Affichage free_busy
         html += `<div class=row><div class=col-12 style="margin-top:10px"><span style="display: inline-block;
@@ -237,29 +239,29 @@ if (rcmail)
         height: 0.7rem;
         background-color: ${event.free_busy === "free" ? "green" : "red"};
         border-radius: 100%;
-        margin-bottom: 0.15rem;
+        margin-bottom: -0.1rem;
         margin-left: 0.35rem;
-        margin-right: 1.6rem;" class="mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Status</b> : ${rcmail.gettext(event.free_busy, "calendar")}</span></div></div>`;
+        margin-right: 1rem;" class="mel-cal-icon"></span><span style=vertical-align:text-top><b>Status</b> : ${rcmail.gettext(event.free_busy, "calendar")}</span></div></div>`;
 
         //Affichage de la date de création
         const created = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.created).format("DD MMMM YYYY")));
-        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Créé le : </b>${created}</span></div></div>`;
+        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-pencil mel-cal-icon"></span><span style=vertical-align:text-top><b>Créé le : </b>${created}</span></div></div>`;
 
         //Affichage de la date de modification
         if (event.changed !== undefined)
         {
             const edited = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.changed).format("DD MMMM YYYY")));
-            html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-mel-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Dernière modification le : </b>${created}</span></div></div>`;
+            html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-mel-pencil mel-cal-icon"></span><span style=vertical-align:text-top><b>Dernière modification le : </b>${created}</span></div></div>`;
         }
         //fin table
-        html += "</div>";
+        html += "</div></div>";
 
         const cancelled = event.status === "CANCELLED";
         const title = event.sensitivity === "private" ? `<span class="icofont-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title}` : (cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title);
         
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);
-        modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.5rem");
+        modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem");
         
         modal.header.querry.css("position", "sticky")
         .css("top", "0")
@@ -373,7 +375,7 @@ if (rcmail)
             if (event.attachments.length > 0) {
                 $('#mel-event-attachments').show();
                 $('#mel-event-attachments').find("ul").css("background-color", "transparent").css("border-color", "transparent");
-                $('#mel-event-attachments').find('.mel-event-text').css("font-size", "1.2rem").css("width","94%").find("li").each((i,e) => {
+                $('#mel-event-attachments').find('.mel-event-text')/*.css("font-size", "1.2rem")*/.css("width","94%").find("li").each((i,e) => {
                     const txt = $(e).addClass("mel-before-remover").css("display", "block").find("a").find("span").html();
                     const splited = txt.split(".");
                     const ext = splited[splited.length-1];

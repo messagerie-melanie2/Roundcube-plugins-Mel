@@ -141,6 +141,7 @@ class mel_metapage extends rcube_plugin
         {
 
             $this->rc->output->set_env("plugin.mel_metapage", true);
+            $this->rc->output->set_env("username", $this->rc->user->get_username());
             //$this->include_depedencies();
 
             $this->mm_include_plugin();

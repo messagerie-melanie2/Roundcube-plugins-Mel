@@ -123,7 +123,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
     border-color: #FE7351;
 }
 
-.fc-now-indicator.fc-now-indicator-line::after,
+/* .fc-now-indicator.fc-now-indicator-line::after,
 .fc-now-indicator.fc-now-indicator-line::before {
 	content: ".";
 	position: absolute;
@@ -142,7 +142,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
 {
     left:unset;
     right: -3px;
-}
+} */
 
 .task-calendar .fc .fc-nonbusiness
 {
@@ -197,7 +197,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
 {
     display: inline-block!important;
     margin: 0!important;
-    padding: 0!important;
+    padding: 0.1px!important;
     opacity: 0;
     /* width:0!important; */
     position: absolute;
@@ -608,4 +608,14 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 	content: "\e90a";
     font-family: DWP!important;
     font-weight: normal!important;
+}
+
+.virtual > div > .custom-control {
+    /* display: none; */
+    opacity: 0;
+    margin-right: -50px!important;
+}
+
+.virtual > .calname::before {
+    margin-left: -16px!important;
 }

@@ -319,10 +319,15 @@ $(document).ready(() => {
                         {
                             $("#toolbar-list-menu li").css("display", "none").find(".compose").parent().css("display", "");
                             $("#limelmailplusmenu").css("display", "")
+                            //$("#melmorethings-menu .select").data("popup", `-${$("#melmorethings-menu .select").data("popup")}`)
+                            if ($("#melmorethings-menu .select").length === 0)
+                                $("#toolbar-list-menu .select").clone().appendTo($("<li></li>")).parent().prependTo($("#melmorethings-menu ul"));
                         }
                         else {
                             $("#toolbar-list-menu li").css("display", "");
                             $("#limelmailplusmenu").css("display", "none");
+                            $("#melmorethings-menu .select").parent().remove();
+                            //$("#melmorethings-menu .select").data("popup", $("#melmorethings-menu .select").data("popup").replace("-", ""))
                         }
                     });
                     test.observe($("#layout-list")[0]);

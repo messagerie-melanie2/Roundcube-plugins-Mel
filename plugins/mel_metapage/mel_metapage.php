@@ -111,6 +111,14 @@ class mel_metapage extends rcube_plugin
         ]);
 
         $this->rc->output->set_env("mel_metapage_mail_configs", $config);
+
+        $calendar_space = "mel-calendar-space";
+
+        $config = $this->rc->config->get('mel_calendar_configuration', [
+            $calendar_space => $this->gettext("normal", "mel_metapage"),
+        ]);
+        $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
+
         $this->rc->output->set_env('mel_metapage_const', [
             "key" => self::FROM_KEY,
             "value" => self::FROM_VALUE    
@@ -1190,6 +1198,27 @@ class mel_metapage extends rcube_plugin
         }
       
     }
+    else if($args['section'] == 'calendar'){
+        $this->add_texts('localization/');
+
+        $calendar_space = "mel-calendar-space";
+
+        $config = $this->rc->config->get('mel_calendar_configuration', [
+            $calendar_space => $this->gettext("normal", "mel_metapage"),
+        ]);
+
+        $options = [
+            $calendar_space => [
+                $this->gettext("smaller", "mel_metapage"),
+                $this->gettext("normal", "mel_metapage"),
+                $this->gettext("larger", "mel_metapage")
+            ]
+        ];
+
+        foreach ($config as $key => $value) {
+            $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
+        }
+    }
 
     return $args;
   }
@@ -1254,6 +1283,25 @@ class mel_metapage extends rcube_plugin
       
       $this->rc->output->set_env("mel_metapage_mail_configs", $config);
     }
+    else if($args['section'] == 'calendar'){
+        $this->add_texts('localization/');
+
+        $calendar_space = "mel-calendar-space";
+
+        $config = $this->rc->config->get('mel_calendar_configuration', [
+            $calendar_space => $this->gettext("normal", "mel_metapage"),
+        ]);
+
+        foreach ($config as $key => $value) {
+            $config[$key] = rcube_utils::get_input_value($key, rcube_utils::INPUT_POST);
+          }
+    
+          $args['prefs']["mel_calendar_configuration"] = $config;
+          
+          $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
+    }
+
+
     return $args;
   }
 

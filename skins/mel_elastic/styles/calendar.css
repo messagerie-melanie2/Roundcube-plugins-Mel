@@ -121,6 +121,7 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
 .task-calendar .fc .fc-now-indicator
 {
     border-color: #FE7351;
+    border-width: thin;
 }
 
 /* .fc-now-indicator.fc-now-indicator-line::after,
@@ -184,24 +185,26 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
     background-color :#31365B!important;
 }
 
-.ui-datepicker-year,
-.ui-datepicker-month {
-	/* background: transparent;
-	color: white;
-	border: none;
-    margin: 0; */
-    display: none!important;
+html .task-calendar #layout .ui-datepicker-year,
+html .task-calendar #layout .ui-datepicker-month {
+    display: inline-block!important;
+    margin: 0!important;
+    padding: 0px!important;
+    opacity: 0;
+    width:100%; 
+    position: absolute;
+    pointer-events: none;
 }
 
-.task-calendar .calendar-force-show
+/* .task-calendar .calendar-force-show
 {
     display: inline-block!important;
     margin: 0!important;
     padding: 0.1px!important;
     opacity: 0;
-    /* width:0!important; */
+    /* width:0!important; *
     position: absolute;
-}
+} */
 
 .ui-datepicker-header.ui-widget-header.ui-helper-clearfix.ui-corner-all {
 	margin: 0 20px;
@@ -316,6 +319,18 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
     padding-bottom: 5px;
 }
 
+.task-calendar.cal-space-smaller .listing li > div.calendar > * {
+    padding-top:0px;
+    padding-bottom: 0px;
+	/* margin-bottom: -5px; */
+}
+
+.task-calendar.cal-space-larger .listing li > div.calendar > * {
+    padding-top:10px;
+    padding-bottom: 10px;
+	/* margin-bottom: -5px; */
+}
+
 .task-calendar .listing li > div.calendar
 {
     margin-top:5px;
@@ -370,6 +385,8 @@ html.touch .task-calendar .listing .custom-switch .custom-control-label
 	/* color: black; */
 	font-size: 8px;
     /* transform: none; */
+    /* filter: brightness(0.5); */
+    text-shadow: 0px 0px 1px black;
 }
 
 html.touch .task-calendar .listing .custom-switch .custom-control-input:checked ~ .custom-control-label::after
@@ -379,6 +396,16 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 
 .task-calendar ul.treelist.iconized li div.treetoggle {
 	top: 10px;
+	left: 22px;
+}
+
+.task-calendar.cal-space-smaller ul.treelist.iconized li div.treetoggle {
+	top: 6px;
+	left: 22px;
+}
+
+.task-calendar.cal-space-larger ul.treelist.iconized li div.treetoggle {
+	top: 15px;
 	left: 22px;
 }
 
@@ -404,8 +431,32 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
     font-weight: normal!important;
 }
 
+.menu a.create::before {
+	content: "\e929"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
 .task-calendar #layout #layout-content > .header a.button.create::before {
-	content: "\e901"!important;
+	content: "\e929"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.edit::before {
+	content: "\e95c"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.showurl::before {
+	content: "\e91c"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.settings::before {
+	content: "\e926"!important;
     font-family: DWP!important;
     font-weight: normal!important;
 }
@@ -580,9 +631,9 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 	background-color: #454F98 !important;
 }
 
-.task-calendar .menu a.print::before {
+.menu a.print::before {
 	content: "\e965";
-    font-weight: normal;
+    font-weight: normal!important;
     font-family: DWP!important;
 }
 
@@ -595,11 +646,11 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 	content: "\e962";
 }
 
-.task-calendar .menu a.download::before, 
-.task-calendar .menu a.download.eml::before, 
-.task-calendar .menu a.download.maildir::before, 
-.task-calendar .menu a.download.mbox::before {
-	content: "\e90d";
+.menu a.download::before, 
+.menu a.download.eml::before, 
+.menu a.download.maildir::before, 
+.menu a.download.mbox::before {
+	content: "\e90d"!important;
     font-family: DWP!important;
     font-weight: normal!important;
 }

@@ -1697,3 +1697,87 @@ html.layout-phone .hide-on-small
 {
     display:none;
 }
+
+.menu a.folders::before {
+	content: "\e951"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.source::before {
+	content: "\eef0"!important;
+    font-family: IcoFont!important;
+    font-weight: normal!important;
+}
+
+.menu a.move::before {
+	content: "\e915"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.extwin::before {
+	content: "\e910"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.calendarlink::before {
+	content: "\e901"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.tasklistlink::before,
+.menu a.taskaddlink::before {
+	content: "\e931"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+html .menu a.selection::before {
+	content: "\e932"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.select.page::before {
+	content: "\e91f"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.unread::before, 
+.menu a.expand.unread::before, 
+.menu a.select.unread::before {
+	content: "\e91e"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.flag::before, 
+.menu a.select.flagged::before {
+	content: "\e957"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+/***/
+.menu a.select.invert::before {
+	content: "\e932"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+    color: white;
+    text-shadow: 0px 0px 1px black;
+}
+
+.menu a.select.invert:hover:before {
+    color: #2C3054;
+    text-shadow: 0px 0px 1px white;
+}
+
+.menu a.select.none::before {
+	content: "\e908"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}

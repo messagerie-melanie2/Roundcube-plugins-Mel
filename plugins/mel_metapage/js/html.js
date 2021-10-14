@@ -276,7 +276,8 @@ html_helper.Calendars = function({datas, config = {
 					}
 					else
 					{
-						const isWsp = element.categories[0].includes("ws#");
+						const categoryExist = element.categories !== undefined && element.categories !== null && element.categories.length > 0;
+						const isWsp = categoryExist && element.categories[0].includes("ws#");
 						const ariane = isWsp ? "null" : "'@home'";
 						const wsp = isWsp ? `'${element.categories[0].replace("ws#", "")}'` : "null";
 						link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(element.location)}', ${wsp}, ${ariane})"`;

@@ -118,6 +118,19 @@ function CalendarPageInit()
         .appendTo($("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left"));
     });
 
+    switch (rcmail.env.mel_metapage_calendar_configs["mel-calendar-space"]) {
+        case rcmail.gettext("smaller", "mel_metapage"):
+            $("body").addClass("cal-space-smaller");
+            break;
+
+        case rcmail.gettext("larger", "mel_metapage"):
+            $("body").addClass("cal-space-larger");
+            break;
+    
+        default:
+            break;
+    }
+
 
     //$(".body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left").append()
     

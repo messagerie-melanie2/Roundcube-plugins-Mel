@@ -846,7 +846,8 @@ $("#rcmfd_new_category").keypress(function(event) {
             $birthdays_alarm_value  = rcube_utils::get_input_value('_birthdays_alarm_value', rcube_utils::INPUT_POST);
             $birthdays_alarm_value  = $birthdays_alarm_offset[0] . intval($birthdays_alarm_value) . $birthdays_alarm_offset[1];
 
-            $p['prefs'] = [
+            //PAMELLA - Ne pas écraser les autres configs.
+            $tmp_keys = [
                 'calendar_default_view' => rcube_utils::get_input_value('_default_view', rcube_utils::INPUT_POST),
                 'calendar_timeslots'    => intval(rcube_utils::get_input_value('_timeslots', rcube_utils::INPUT_POST)),
                 'calendar_first_day'    => intval(rcube_utils::get_input_value('_first_day', rcube_utils::INPUT_POST)),
@@ -866,6 +867,10 @@ $("#rcmfd_new_category").keypress(function(event) {
                 'calendar_birthdays_alarm_offset' => $birthdays_alarm_value ?: null,
                 'calendar_itip_after_action'      => intval(rcube_utils::get_input_value('_after_action', rcube_utils::INPUT_POST)),
             ];
+
+            foreach ($tmp_keys as $key => $value) {
+                $p['prefs'][$key] = $value;
+            }
 
             if ($p['prefs']['calendar_itip_after_action'] == 4) {
                 $p['prefs']['calendar_itip_after_action'] = rcube_utils::get_input_value('_after_action_folder', rcube_utils::INPUT_POST, true);

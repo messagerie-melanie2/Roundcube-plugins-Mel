@@ -182,7 +182,7 @@ if (rcmail)
         if (event.location !== undefined && event.location !== null && event.location !== "")
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis;"><span class="icon-mel-pin-location mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@vision:", ""))}</span></div></div>`;
+            text-overflow: ellipsis;"><span class="icon-mel-pin-location mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@visio:", ""))}</span></div></div>`;
 
 
         if (event.categories !== undefined && event.categories.length > 0)
@@ -195,9 +195,9 @@ if (rcmail)
 
         //Affichage de la description
         if (event.description !== undefined && event.description !== "")
-            html += `<div class=row style="margin-top:15px"><div class=col-12><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
+            html += `<div class=row style="margin-top:15px;"><div class=col-12 style=white-space:nowrap;><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
             vertical-align: top;
-            margin-top: 5px;"></span><p style="display:inline-block">${event.description.replaceAll("\n", "<br/>")}</p></div></div>`;
+            margin-top: 5px;"></span><p style="display:inline-block;white-space: break-spaces;">${event.description.replaceAll("\n", "<br/>")}</p></div></div>`;
 
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)
@@ -206,7 +206,7 @@ if (rcmail)
             let attendeesHtml = "";
             for (let index = 0; index < tmp.length && index < 3; ++index) {
                 const element = tmp[index];
-                attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${element.name}</a></div>`;
+                attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${(element.name === undefined || element.name === "" ? element.email : element.name)}</a></div>`;
             }
 
             if (tmp.length > 3)
@@ -215,7 +215,7 @@ if (rcmail)
 
                 for (let index = 3; index < tmp.length; ++index) {
                     const element = tmp[index];
-                    attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${element.name}</a></div>`;
+                    attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${(element.name === undefined || element.name === "" ? element.email : element.name)}</a></div>`;
                 }
 
                 attendeesHtml += "</div>";
@@ -231,7 +231,7 @@ if (rcmail)
             html += `<div id=mel-event-attachments class="row" style=margin-top:15px><div class="col-12"><span class="icon-mel-pj mel-cal-icon mel-calendar-left-element"></span><span class="mel-event-text mel-calendar-right-element"></span></div></div>`;
 
         //Affichage du calendrier
-        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-calendar mel-cal-icon"></span><span style=vertical-align:text-top>${event["calendar-name"]}</span></div></div>`;
+        html += `<div class=row style="margin-top:15px"><div class=col-12><span class="icon-mel-calendar mel-cal-icon"></span><span style=vertical-align:text-top>${event["calendar-name"]}</span></div></div>`;
 
         //Affichage free_busy
         html += `<div class=row><div class=col-12 style="margin-top:10px"><span style="display: inline-block;
@@ -305,7 +305,11 @@ if (rcmail)
           })
           .prepend(`<span style="transform: rotateZ(90deg);
           display: inline-block;" class="icon-mel-dots"></span>`)
-          .prependTo(modal.footer.querry);
+          .prependTo(modal.footer.querry)
+          .find("span")
+          .click((e) => {
+            $(e.currentTarget).parent().click();
+          });;
         $("#eventoptionsmenu .send").css("display", "none");
 
         if (!$("#eventoptionsmenu .copy").hasClass("mel-edited"))
@@ -346,8 +350,9 @@ if (rcmail)
                 querry.click((e) => {
                     e.preventDefault();
                     modal.close();
-                    const ariane = event.categories[0].includes("ws#") ? null : "@home";
-                    const wsp = event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
+                    const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
+                    const ariane = categoryExist && event.categories[0].includes("ws#") ? null : "@home";
+                    const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
                     window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                 });
 
@@ -563,6 +568,7 @@ if (rcmail)
             }
         }
       }
+
 
     //   function resize_taskbar_wsp()
     //   {

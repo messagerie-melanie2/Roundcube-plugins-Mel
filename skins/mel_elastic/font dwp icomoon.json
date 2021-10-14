@@ -1,158 +1,193 @@
 {
   "selection": [
     {
+      "order": 143,
+      "name": "clock",
+      "prevSize": 32
+    },
+    {
+      "order": 142,
+      "name": "descri",
+      "prevSize": 32
+    },
+    {
+      "order": 141,
+      "name": "eye-crossed",
+      "prevSize": 32
+    },
+    {
+      "order": 140,
+      "name": "eye",
+      "prevSize": 32
+    },
+    {
+      "order": 139,
+      "name": "pin-location",
+      "prevSize": 32
+    },
+    {
+      "order": 138,
+      "name": "notif",
+      "prevSize": 32
+    },
+    {
+      "order": 137,
+      "name": "print",
+      "prevSize": 32
+    },
+    {
       "order": 113,
-      "name": "mel_trello",
+      "name": "trello",
       "prevSize": 32
     },
     {
       "order": 107,
-      "name": "mel-arrow-left",
+      "name": "arrow-left",
       "prevSize": 32
     },
     {
       "order": 79,
-      "name": "mel-arrow-right",
+      "name": "arrow-right",
       "prevSize": 32
     },
     {
       "order": 74,
-      "name": "mel-arrow-down",
+      "name": "arrow-down",
       "prevSize": 32
     },
     {
       "order": 78,
-      "name": "mel-calendar",
+      "name": "calendar",
       "prevSize": 32
     },
     {
       "order": 5,
-      "name": "mel-check",
+      "name": "check",
       "prevSize": 32
     },
     {
       "order": 6,
-      "name": "mel-chevron-right",
+      "name": "chevron-right",
       "prevSize": 32
     },
     {
       "order": 7,
-      "name": "mel-chevron-left",
+      "name": "chevron-left",
       "prevSize": 32
     },
     {
       "order": 8,
-      "name": "mel-chevron-up",
+      "name": "chevron-up",
       "prevSize": 32
     },
     {
       "order": 9,
-      "name": "mel-chevron-down",
+      "name": "chevron-down",
       "prevSize": 32
     },
     {
       "order": 10,
-      "name": "mel-close",
+      "name": "close",
       "prevSize": 32
     },
     {
       "order": 82,
-      "name": "mel-popup-cose",
+      "name": "popup-cose",
       "prevSize": 32
     },
     {
       "order": 11,
-      "name": "mel-coffee",
+      "name": "coffee",
       "prevSize": 32
     },
     {
       "order": 12,
-      "name": "mel-copy",
+      "name": "copy",
       "prevSize": 32
     },
     {
       "order": 13,
-      "name": "mel-favorite",
+      "name": "favorite",
       "prevSize": 32
     },
     {
       "order": 121,
-      "name": "mel-updgrade-1",
+      "name": "updgrade-1",
       "prevSize": 32
     },
     {
       "order": 14,
-      "name": "mel-dots",
+      "name": "dots",
       "prevSize": 32
     },
     {
       "order": 15,
-      "name": "mel-download",
+      "name": "download",
       "prevSize": 32
     },
     {
       "order": 136,
-      "name": "mel-upload",
+      "name": "upload",
       "prevSize": 32
     },
     {
       "order": 77,
-      "name": "mel-edit",
+      "name": "edit",
       "prevSize": 32
     },
     {
       "order": 76,
-      "name": "mel-expand",
+      "name": "expand",
       "prevSize": 32
     },
     {
       "order": 83,
-      "name": "mel-popup-expand",
+      "name": "popup-expand",
       "prevSize": 32
     },
     {
       "order": 91,
-      "name": "mel-fullscreen-interface",
+      "name": "fullscreen-interface",
       "prevSize": 32
     },
     {
       "order": 75,
-      "name": "mel-external",
+      "name": "external",
       "prevSize": 32
     },
     {
       "order": 81,
-      "name": "mel-popup-external",
+      "name": "popup-external",
       "prevSize": 32
     },
     {
       "order": 60,
-      "name": "mel-heart",
+      "name": "heart",
       "prevSize": 32
     },
     {
       "order": 66,
-      "name": "mel-file-empty",
+      "name": "file-empty",
       "prevSize": 32
     },
     {
       "order": 59,
-      "name": "mel-file-pdf",
+      "name": "file-pdf",
       "prevSize": 32
     },
     {
       "order": 58,
-      "name": "mel-file-word",
+      "name": "file-word",
       "prevSize": 32
     },
     {
       "order": 57,
-      "name": "mel-file-excel",
+      "name": "file-excel",
       "prevSize": 32
     },
     {
       "order": 86,
-      "name": "mel-file-ppt",
+      "name": "file-ppt",
       "prevSize": 32,
       "codes": [
         59714
@@ -160,67 +195,67 @@
     },
     {
       "order": 56,
-      "name": "mel-folder",
+      "name": "folder",
       "prevSize": 32
     },
     {
       "order": 122,
-      "name": "mel-folder-2",
+      "name": "folder-2",
       "prevSize": 32
     },
     {
       "order": 123,
-      "name": "mel-cloud",
+      "name": "cloud",
       "prevSize": 32
     },
     {
       "order": 118,
-      "name": "mel-cloud-alt",
+      "name": "cloud-alt",
       "prevSize": 32
     },
     {
       "order": 55,
-      "name": "mel-hand",
+      "name": "hand",
       "prevSize": 32
     },
     {
       "order": 54,
-      "name": "mel-help",
+      "name": "help",
       "prevSize": 32
     },
     {
       "order": 53,
-      "name": "mel-home",
+      "name": "home",
       "prevSize": 32
     },
     {
       "order": 52,
-      "name": "mel-intranet",
+      "name": "intranet",
       "prevSize": 32
     },
     {
       "order": 51,
-      "name": "mel-newspaper",
+      "name": "newspaper",
       "prevSize": 32
     },
     {
       "order": 50,
-      "name": "mel-life",
+      "name": "life",
       "prevSize": 32
     },
     {
       "order": 49,
-      "name": "mel-link",
+      "name": "link",
       "prevSize": 32
     },
     {
       "order": 73,
-      "name": "mel-mail",
+      "name": "mail",
       "prevSize": 32
     },
     {
       "order": 124,
-      "name": "mel-compose",
+      "name": "compose",
       "prevSize": 32
     },
     {
@@ -230,268 +265,377 @@
     },
     {
       "order": 125,
-      "name": "mel-send",
+      "name": "send",
       "prevSize": 32
     },
     {
       "order": 126,
-      "name": "mel-label-full",
+      "name": "label-full",
       "prevSize": 32
     },
     {
       "order": 131,
-      "name": "mel-label",
+      "name": "label",
       "prevSize": 32
     },
     {
       "order": 130,
-      "name": "mel-flag-full",
+      "name": "flag-full",
       "prevSize": 32
     },
     {
       "order": 129,
-      "name": "mel-flag",
+      "name": "flag",
       "prevSize": 32
     },
     {
       "order": 128,
-      "name": "mel-pj",
+      "name": "pj",
       "prevSize": 32
     },
     {
       "order": 72,
-      "name": "mel-menu",
+      "name": "menu",
       "prevSize": 32
     },
     {
       "order": 38,
-      "name": "mel-message",
+      "name": "message",
       "prevSize": 32
     },
     {
       "order": 87,
-      "name": "mel-unreads",
+      "name": "unreads",
       "prevSize": 32
     },
     {
       "order": 39,
-      "name": "mel-micro",
+      "name": "micro",
       "prevSize": 32
     },
     {
       "order": 97,
-      "name": "mel-micro2",
+      "name": "micro2",
       "prevSize": 32
     },
     {
       "order": 99,
-      "name": "mel-micro-off",
+      "name": "micro-off",
       "prevSize": 32
     },
     {
       "order": 45,
-      "name": "mel-phone",
+      "name": "phone",
       "prevSize": 32
     },
     {
       "order": 4,
-      "name": "mel-camera",
+      "name": "camera",
       "prevSize": 32
     },
     {
       "order": 101,
-      "name": "mel-camera2",
+      "name": "camera2",
       "prevSize": 32
     },
     {
       "order": 100,
-      "name": "mel-camera-off",
+      "name": "camera-off",
       "prevSize": 32
     },
     {
       "order": 41,
-      "name": "mel-notes",
+      "name": "notes",
       "prevSize": 32
     },
     {
       "order": 42,
-      "name": "mel-paragraph-extend",
+      "name": "paragraph-extend",
       "prevSize": 32
     },
     {
       "order": 43,
-      "name": "mel-parameters-invert",
+      "name": "parameters-invert",
       "prevSize": 32
     },
     {
       "order": 44,
-      "name": "mel-parameters",
+      "name": "parameters",
       "prevSize": 32
     },
     {
       "order": 134,
-      "name": "mel-options",
+      "name": "options",
       "prevSize": 32
     },
     {
       "order": 46,
-      "name": "mel-pin",
+      "name": "pin",
       "prevSize": 32
     },
     {
       "order": 47,
-      "name": "mel-plus",
+      "name": "plus",
       "prevSize": 32
     },
     {
       "order": 40,
-      "name": "mel-minus",
+      "name": "minus",
       "prevSize": 32
     },
     {
       "order": 89,
-      "name": "mel-minus-roundless",
+      "name": "minus-roundless",
       "prevSize": 32
     },
     {
       "order": 48,
-      "name": "mel-reply",
+      "name": "reply",
       "prevSize": 32
     },
     {
       "order": 127,
-      "name": "mel-reply-all",
+      "name": "reply-all",
       "prevSize": 32
     },
     {
       "order": 19,
-      "name": "mel-rss",
+      "name": "rss",
       "prevSize": 32
     },
     {
       "order": 71,
-      "name": "mel-screen-share",
+      "name": "screen-share",
       "prevSize": 32
     },
     {
       "order": 70,
-      "name": "mel-search",
+      "name": "search",
       "prevSize": 32
     },
     {
       "order": 69,
-      "name": "mel-share-info",
+      "name": "share-info",
       "prevSize": 32
     },
     {
       "order": 31,
-      "name": "mel-share",
+      "name": "share",
       "prevSize": 32
     },
     {
       "order": 30,
-      "name": "mel-sondage",
+      "name": "sondage",
       "prevSize": 32
     },
     {
       "order": 29,
-      "name": "mel-survey",
+      "name": "survey",
       "prevSize": 32
     },
     {
       "order": 28,
-      "name": "mel-task",
+      "name": "task",
       "prevSize": 32
     },
     {
       "order": 27,
-      "name": "mel-time",
+      "name": "time",
       "prevSize": 32
     },
     {
       "order": 26,
-      "name": "mel-trash",
+      "name": "trash",
       "prevSize": 32
     },
     {
       "order": 24,
-      "name": "mel-twitter",
+      "name": "twitter",
       "prevSize": 32
     },
     {
       "order": 25,
-      "name": "mel-undo",
+      "name": "undo",
       "prevSize": 32
     },
     {
       "order": 23,
-      "name": "mel-user",
+      "name": "user",
       "prevSize": 32
     },
     {
       "order": 22,
-      "name": "mel-videoconference",
+      "name": "videoconference",
       "prevSize": 32
     },
     {
       "order": 21,
-      "name": "mel-warning",
+      "name": "warning",
       "prevSize": 32
     },
     {
       "order": 88,
-      "name": "mel-round-warning",
+      "name": "round-warning",
       "prevSize": 32
     },
     {
       "order": 20,
-      "name": "mel-workplace",
+      "name": "workplace",
       "prevSize": 32
     },
     {
       "order": 67,
-      "name": "mel-last-frame",
+      "name": "last-frame",
       "prevSize": 32
     },
     {
       "order": 132,
-      "name": "mel-refresh",
+      "name": "refresh",
       "prevSize": 32
     },
     {
       "order": 80,
-      "name": "mel-popup-anchor",
+      "name": "popup-anchor",
       "prevSize": 32
     },
     {
       "order": 90,
-      "name": "mel-grid",
+      "name": "grid",
       "prevSize": 32
     },
     {
       "order": 119,
-      "name": "mel-full-dot",
+      "name": "full-dot",
       "prevSize": 32
     },
     {
-      "order": 115,
-      "name": "mel-empty-dot",
+      "order": 144,
+      "name": "empty-dot",
       "prevSize": 32
     }
   ],
   "metadata": {
     "name": "DWP",
     "importSize": {
-      "width": 60,
-      "height": 58
+      "width": 100,
+      "height": 100
     },
     "url": "https://app.zeplin.io/project/6086d70c6a061a16aeb462e1/screen/6086d76eee153a1154186dc4",
     "designer": "ECEDI",
-    "iconsHash": 344757995
+    "iconsHash": 396489992
   },
   "height": 1024,
   "prevSize": 32,
   "icons": [
+    {
+      "paths": [
+        "M514.478 102.4c224.481 0 408.996 184.525 408.996 412.078 0 224.481-184.525 408.996-408.996 408.996-227.564 0-412.078-184.525-412.078-408.996 0-227.564 184.525-412.078 412.078-412.078zM471.438 289.956l-0.003 239.836c0 15.4 9.24 27.68 24.6 30.76l159.918 49.2c39.961 9.2 55.361-49.2 18.44-61.52l-141.435-39.96v-218.317c0-39.96-61.52-39.96-61.52 0zM514.478 163.881c-193.72 0-350.556 156.836-350.556 350.556 0 190.638 156.836 347.484 350.556 347.484 190.638 0 347.484-156.836 347.484-347.484 0-193.72-156.836-350.556-347.484-350.556z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Clock"
+      ],
+      "defaultCode": 59742
+    },
+    {
+      "paths": [
+        "M280.342 169.953c31.638 0.054 57.259 25.675 57.313 57.313v572.91c-0.054 31.638-25.675 57.259-57.313 57.313h-114.571c-31.638-0.054-57.259-25.675-57.313-57.313v-572.91c0.054-31.638 25.675-57.259 57.313-57.313h114.571zM280.342 112.64h-114.571c-63.275 0-114.571 51.297-114.571 114.625v572.91c0 30.401 12.032 59.568 33.571 81.054 21.485 21.485 50.598 33.571 81 33.571h114.571c30.401 0 59.568-12.086 81.054-33.571s33.571-50.652 33.571-81.054v-572.91c0-30.401-12.086-59.568-33.571-81.054s-50.652-33.571-81.054-33.571zM967.877 255.895v-0.002c0 7.574-3.007 14.879-8.379 20.251s-12.677 8.379-20.251 8.379h-401.081c-15.791 0-28.629-12.784-28.629-28.629s12.838-28.629 28.629-28.629h401.081c7.574 0 14.879 3.007 20.251 8.379s8.379 12.677 8.379 20.251zM967.877 427.779v-0.002c0 7.574-3.007 14.879-8.379 20.251s-12.677 8.379-20.251 8.379h-401.081c-15.791 0-28.629-12.784-28.629-28.629s12.838-28.629 28.629-28.629h401.081c7.574 0 14.879 3.007 20.251 8.379s8.379 12.677 8.379 20.251zM967.877 599.663v-0.002c0 7.574-3.007 14.879-8.379 20.251s-12.677 8.379-20.251 8.379h-401.081c-15.791 0-28.629-12.784-28.629-28.629s12.838-28.629 28.629-28.629h401.081c7.574 0 14.879 3.007 20.251 8.379s8.379 12.677 8.379 20.251zM967.877 771.546v-0.002c0 7.574-3.007 14.879-8.379 20.251s-12.677 8.379-20.251 8.379h-401.081c-15.791 0-28.629-12.784-28.629-28.629s12.838-28.629 28.629-28.629h401.081c7.574 0 14.879 3.007 20.251 8.379s8.379 12.677 8.379 20.251z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Descri"
+      ],
+      "defaultCode": 59744
+    },
+    {
+      "paths": [
+        "M506.881 225.28c108.165 0 202.844 52.24 283.361 138.117 27.64 29.48 51.68 61 72.040 92.52 12.28 19.040 20.72 34.040 25.24 43.040 4.48 9 4.48 19.64 0 28.64-4.52 9-12.96 24.001-25.24 43.040-20.36 31.52-44.4 63.039-72.040 92.52-80.52 85.88-175.196 138.117-283.361 138.117s-202.844-52.24-283.361-138.117c-27.64-29.48-51.68-61-72.040-92.52-12.28-19.040-20.72-34.040-25.24-43.040-4.48-9-4.48-19.64 0-28.64 4.52-9 12.96-24.001 25.24-43.040 20.36-31.52 44.4-63.039 72.040-92.52 80.52-85.88 175.196-138.117 283.361-138.117zM506.877 289.276c-87.839 0-167.158 43.76-236.636 117.883-24.84 26.52-46.6 55-64.961 83.48-5.24 8.080-9.88 15.679-13.88 22.64 4 6.96 8.64 14.56 13.88 22.64 18.36 28.479 40.12 56.96 64.961 83.48 69.48 74.12 148.797 117.883 236.636 117.883s167.158-43.76 236.636-117.883c24.84-26.52 46.6-55 64.961-83.48 5.24-8.080 9.88-15.679 13.88-22.64-4-6.96-8.64-14.56-13.88-22.64-18.36-28.479-40.12-56.96-64.961-83.48-69.48-74.12-148.797-117.883-236.636-117.883zM506.879 385.277c70.68 0 128 57.32 128 128s-57.32 128-128 128c-70.68 0-128-57.32-128-128s57.32-128 128-128zM506.879 449.277c-35.36 0-64 28.64-64 64s28.64 64 64 64c35.36 0 64-28.64 64-64s-28.64-64-64-64z",
+        "M193.406 149.961l680.633 680.633c11.997 11.997 11.997 31.448 0 43.445s-31.448 11.997-43.445 0l-680.633-680.633c-11.997-11.997-11.997-31.448 0-43.445s31.448-11.997 43.445-0z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        },
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Eye crossed"
+      ],
+      "defaultCode": 59745
+    },
+    {
+      "paths": [
+        "M506.881 225.28c108.165 0 202.844 52.24 283.361 138.117 27.64 29.48 51.68 61 72.040 92.52 12.28 19.040 20.72 34.040 25.24 43.040 4.48 9 4.48 19.64 0 28.64-4.52 9-12.96 24.001-25.24 43.040-20.36 31.52-44.4 63.039-72.040 92.52-80.52 85.88-175.196 138.117-283.361 138.117s-202.844-52.24-283.361-138.117c-27.64-29.48-51.68-61-72.040-92.52-12.28-19.040-20.72-34.040-25.24-43.040-4.48-9-4.48-19.64 0-28.64 4.52-9 12.96-24.001 25.24-43.040 20.36-31.52 44.4-63.039 72.040-92.52 80.52-85.88 175.196-138.117 283.361-138.117zM506.877 289.276c-87.839 0-167.158 43.76-236.636 117.883-24.84 26.52-46.6 55-64.961 83.48-5.24 8.080-9.88 15.679-13.88 22.64 4 6.96 8.64 14.56 13.88 22.64 18.36 28.479 40.12 56.96 64.961 83.48 69.48 74.12 148.797 117.883 236.636 117.883s167.158-43.76 236.636-117.883c24.84-26.52 46.6-55 64.961-83.48 5.24-8.080 9.88-15.679 13.88-22.64-4-6.96-8.64-14.56-13.88-22.64-18.36-28.479-40.12-56.96-64.961-83.48-69.48-74.12-148.797-117.883-236.636-117.883zM506.879 385.277c70.68 0 128 57.32 128 128s-57.32 128-128 128c-70.68 0-128-57.32-128-128s57.32-128 128-128zM506.879 449.277c-35.36 0-64 28.64-64 64s28.64 64 64 64c35.36 0 64-28.64 64-64s-28.64-64-64-64z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Eye"
+      ],
+      "defaultCode": 59746
+    },
+    {
+      "paths": [
+        "M512 92.16c-164.28 0-296.96 138.516-296.96 307.2 0 60.84 18.32 109.24 46.72 155.197l224 362.557c5.56 9.16 15.52 14.76 26.24 14.76s20.68-5.6 26.24-14.76l224-362.557c28.4-45.92 46.72-94.32 46.72-155.156 0-168.684-132.68-307.2-296.96-307.2v-0.041zM512 153.6c129.802 0 235.52 109.036 235.52 245.76 0 49.24-12.92 82.64-37.76 122.88l-197.755 320.041-197.755-320c-24.84-40.24-37.76-73.68-37.76-122.88 0-136.724 105.718-245.76 235.52-245.76l-0.010-0.041zM512 235.52c-84.48 0-153.6 69.12-153.6 153.6s69.12 153.6 153.6 153.6c84.48 0 153.6-69.12 153.6-153.6s-69.12-153.6-153.6-153.6zM512 296.96c51.28 0 92.16 40.88 92.16 92.16s-40.88 92.16-92.16 92.16c-51.28 0-92.16-40.88-92.16-92.16s40.88-92.16 92.16-92.16z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Location"
+      ],
+      "defaultCode": 59747
+    },
+    {
+      "paths": [
+        "M513.266 133.12c16.292 0 29.539 13.246 29.539 29.539v0 31.57c59.174 8.261 113.313 37.71 152.313 82.939s60.232 103.105 59.678 162.829v208.614l40.559 55.847c15.231 20.817 17.4 48.462 5.631 71.401-11.215 22.386-34.062 36.555-59.077 36.601v0h-114.739c-13.292 52.109-60.185 88.616-113.954 88.616-53.769 0-100.708-36.507-113.954-88.616v0h-114.739c-25.016-0.046-47.862-14.216-59.077-36.601-11.816-22.939-9.647-50.54 5.585-71.355v0-0.046l40.708-55.847v-208.614c-0.554-59.72 20.672-117.598 59.678-162.829s93.144-74.677 152.313-82.939v0-31.57c0-16.292 13.246-29.539 29.539-29.539zM564.138 812.504h-101.724c10.477 18.231 29.862 29.493 50.862 29.539 21.001-0.046 40.385-11.307 50.862-29.539v0zM513.267 251.259c-49.195 0.924-96.042 21.277-130.242 56.632-34.201 35.404-52.985 82.896-52.201 132.097v0 218.268c0 6.231-1.985 12.324-5.677 17.401v0-0.046l-46.339 63.646c-2.169 2.862-2.446 6.692-0.738 9.877 1.108 2.585 3.646 4.292 6.508 4.292v0h457.389c2.862 0 5.4-1.708 6.508-4.292v0c1.698-3.185 1.421-7.015-0.748-9.877v0 0.046l-46.339-63.646c-3.692-5.077-5.677-11.17-5.677-17.401v0-218.268c0.785-49.204-18.001-96.697-52.201-132.097-34.195-35.354-81.041-55.709-130.242-56.632zM697.201 159.139c-10.339 12.6-8.539 31.246 4.108 41.585 71.585 58.755 112.94 146.63 112.57 239.264 0 16.292 13.246 29.539 29.539 29.539 16.338 0 29.539-13.246 29.539-29.539 0.369-110.308-48.877-214.936-134.17-284.91-12.6-10.385-31.2-8.539-41.585 4.062zM287.767 155.087c-85.294 69.97-134.543 174.597-134.165 284.907 0 16.292 13.2 29.539 29.539 29.539 16.292 0 29.539-13.246 29.539-29.539-0.369-92.631 40.986-180.505 112.564-239.261 12.646-10.339 14.447-28.985 4.108-41.585-10.385-12.6-28.985-14.447-41.585-4.062z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Notif"
+      ],
+      "defaultCode": 59748
+    },
+    {
+      "paths": [
+        "M865.743 269.969h-130.319v-148.961c0-4.922-1.955-9.67-5.446-13.161s-8.239-5.446-13.161-5.446h-409.635c-10.263 0-18.607 8.309-18.607 18.607v148.961h-130.319c-30.86 0-55.856 24.996-55.856 55.856v372.35c0 30.86 24.996 55.856 55.856 55.856h111.712v-37.214h-111.712c-10.298 0-18.642-8.343-18.642-18.642v-372.35c0-10.298 8.343-18.642 18.642-18.642h707.486c4.957 0 9.67 1.99 13.161 5.481s5.481 8.204 5.481 13.161v372.35c0 4.957-1.99 9.67-5.481 13.161s-8.204 5.481-13.161 5.481h-111.712v37.249l111.712-0.035c30.86 0 55.856-24.996 55.856-55.856v-372.35c0-30.86-24.996-55.856-55.856-55.856l0.001-0.001zM325.825 269.969v-130.355h372.35v130.319l-372.35 0.036zM754.031 623.712v-37.249h-484.062v37.249h18.607v279.28c0 4.922 1.955 9.67 5.446 13.161s8.239 5.446 13.161 5.446h409.635c4.922 0 9.67-1.955 13.161-5.446s5.446-8.239 5.446-13.161v-279.28h18.605zM698.175 884.386h-372.35v-260.674h372.35v260.674zM176.864 381.681h74.463v-37.249h-74.463v37.249zM363.039 381.681v-37.249h-74.463v37.249h74.463zM642.319 716.818v-37.249h-260.638v37.249h260.638zM642.319 828.53v-37.249h-260.638v37.249h260.638z"
+      ],
+      "attrs": [
+        {
+          "fill": "rgb(54, 58, 91)"
+        }
+      ],
+      "grid": 0,
+      "tags": [
+        "Print"
+      ],
+      "defaultCode": 59749
+    },
     {
       "paths": [
         "M928 0h-832c-52.8 0-96 43.2-96 96v832c0 52.8 43.2 96 96 96h832c52.8 0 96-43.2 96-96v-832c0-52.8-43.2-96-96-96zM448 768c0 35.2-28.8 64-64 64h-128c-35.2 0-64-28.8-64-64v-512c0-35.2 28.8-64 64-64h128c35.2 0 64 28.8 64 64v512zM832 576c0 35.2-28.8 64-64 64h-128c-35.2 0-64-28.8-64-64v-320c0-35.2 28.8-64 64-64h128c35.2 0 64 28.8 64 64v320z"
@@ -1571,13 +1715,14 @@
     "showQuickUse2": true,
     "showSVGs": true,
     "fontPref": {
-      "prefix": "icon-",
+      "prefix": "icon-mel-",
       "metadata": {
         "fontFamily": "DWP",
-        "majorVersion": 1,
-        "minorVersion": 13,
+        "majorVersion": 2,
+        "minorVersion": 1,
         "copyright": "2015 PNE Annuaire et Messagerie MEDDE/MLETR",
-        "description": ""
+        "description": "Icônes pour le Bureau Numérique.",
+        "designer": ""
       },
       "metrics": {
         "emSize": 1024,

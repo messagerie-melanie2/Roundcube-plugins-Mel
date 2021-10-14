@@ -478,7 +478,7 @@ class mel_workspace extends rcube_plugin
             "mail" => "icon-mel-mail",
             "agenda" => "icon-mel-calendar",
             "documents" => "icon-mel-folder",
-            "wekan" => "icon-mel_trello",
+            "wekan" => "icon-mel-trello",
             "tasks" => "icon-mel-task",
             "news" => "icofont-rss-feed",
             "params" => "icon-mel-parameters",
@@ -1184,10 +1184,10 @@ class mel_workspace extends rcube_plugin
             {
 
                 if ($key === self::CHANNEL)
-                    $html.= html::tag("button", ["title" => ($this->channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-channel-button","class" => "mel-button param-button ".($this->channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal".html::tag("span", ["class" => "plus icon-pencil"]));
+                    $html.= html::tag("button", ["title" => ($this->channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-channel-button","class" => "mel-button param-button ".($this->channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal".html::tag("span", ["class" => "plus icon-mel-pencil"]));
 
                 if (false && $key === self::TASKS)
-                    $html.= html::tag("button", ["id" => "update-kanban-button","class" => "mel-button param-button"], "Changer de kanban".html::tag("span", ["class" => "plus icon-pencil"]));
+                    $html.= html::tag("button", ["id" => "update-kanban-button","class" => "mel-button param-button"], "Changer de kanban".html::tag("span", ["class" => "plus icon-mel-pencil"]));
 
                 $class = "btn btn-danger mel-button no-button-margin";
                 $span = $icons["minus"];               

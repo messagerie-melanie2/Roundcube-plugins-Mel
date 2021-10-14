@@ -170,21 +170,19 @@ if (rcmail)
         let html = "";
         html += "<div id=parenthtmlcalendar>";
         //Date / Horaire
-        html += `<div class="row"><div class=col-6><b>${event.start.format("dddd D MMMM")}</b></div><div class="col-6"><span class="icofont-clock-time mel-cal-icon"></span>${event.allDay ? rcmail.gettext("all-day", "mel_metapage") : `${event.start.format("HH:mm")} - ${event.end.format("HH:mm")}`}</div></div>`;
+        html += `<div class="row"><div class=col-6><b>${event.start.format("dddd D MMMM")}</b></div><div class="col-6"><span class="icon-mel-clock mel-cal-icon"></span>${event.allDay ? rcmail.gettext("all-day", "mel_metapage") : `${event.start.format("HH:mm")} - ${event.end.format("HH:mm")}`}</div></div>`;
 
         //Affichage de la récurrence puis de l'alarme
         let rec = event.recurrence_text === undefined ? null : event.recurrence_text;
         let alarm = event.alarms !== undefined ? (new Alarm(event.alarms)).toString() : null;
 
-        console.log("show_event", datas);
-
-        html += `<div class=row style="margin-top:5px">${(rec !== null ? `<div class=col-6>${rec}</div>` : "")}${(alarm !== null ? `<div class=col-6><span class="icofont-alarm mel-cal-icon"></span>Rappel : ${alarm}</div>` : "")}</div>`;
+        html += `<div class=row style="margin-top:5px">${(rec !== null ? `<div class=col-6>${rec}</div>` : "")}${(alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : "")}</div>`;
 
         //Affichage du lieu
         if (event.location !== undefined && event.location !== null && event.location !== "")
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis;"><span class="icofont-location-pin mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@vision:", ""))}</span></div></div>`;
+            text-overflow: ellipsis;"><span class="icon-mel-pin-location mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@vision:", ""))}</span></div></div>`;
 
 
         if (event.categories !== undefined && event.categories.length > 0)
@@ -195,7 +193,7 @@ if (rcmail)
 
         //Affichage de la description
         if (event.description !== undefined && event.description !== "")
-            html += `<div class=row style="margin-top:15px"><div class=col-12><span class="icofont-console mel-cal-icon" style="display: inline-block;
+            html += `<div class=row style="margin-top:15px"><div class=col-12><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
             vertical-align: top;
             margin-top: 5px;"></span><p style="display:inline-block">${event.description.replaceAll("\n", "<br/>")}</p></div></div>`;
 
@@ -223,7 +221,7 @@ if (rcmail)
                 attendeesHtml += `<b><a role="button" data-length=${tmp.length - 3} href=# onclick="event_calendar_show_all_something(this)">${tmp.length - 3} de plus...</a></b>`;
             }
 
-            html += `<div class=row style="max-width:100%;"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="font-size:1.2rem">${attendeesHtml}</div></div></div>`;
+            html += `<div class=row style="max-width:100%;${(event.description === undefined || event.description === "" ? "margin-top:15px;" : "")}"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="font-size:1.2rem">${attendeesHtml}</div></div></div>`;
         }
 
         //Affichage des pièces jointes
@@ -245,13 +243,13 @@ if (rcmail)
 
         //Affichage de la date de création
         const created = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.created).format("DD MMMM YYYY")));
-        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Créé le : </b>${created}</span></div></div>`;
+        html += `<div class=row style="margin-top:10px"><div class=col-12><span class="icon-mel-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Créé le : </b>${created}</span></div></div>`;
 
         //Affichage de la date de modification
         if (event.changed !== undefined)
         {
             const edited = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.changed).format("DD MMMM YYYY")));
-            html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Dernière modification le : </b>${created}</span></div></div>`;
+            html += `<div class=row><div class=col-12><span style="opacity:0" class="icon-mel-pencil mel-cal-icon"></span><span style=font-size:1.2rem;vertical-align:text-top><b>Dernière modification le : </b>${created}</span></div></div>`;
         }
         //fin table
         html += "</div>";
@@ -285,7 +283,7 @@ if (rcmail)
             datas.object.delete_event(event);
             modal.close();
         }))
-        .append($(`<button class="mel-calendar-button" id="-mel-modify-event"><span class="icon-pencil"></span><span class=inner>Modifier</span></button>`).click(() => {
+        .append($(`<button class="mel-calendar-button" id="-mel-modify-event"><span class="icon-mel-pencil"></span><span class=inner>Modifier</span></button>`).click(() => {
             modal.close();
             datas.functions.event_edit_dialog('edit', event);
             // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement

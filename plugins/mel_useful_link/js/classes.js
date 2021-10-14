@@ -71,7 +71,7 @@
              this.setBody("");
              this.modal.appendToBody(parentDiv);
  
-             this.modal.footer.querry.html("").append($(`<button id="mulc-button" class="mel-button btn btn-secondary">${link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-pencil"></span>'}</button>`).on("click", () => {
+             this.modal.footer.querry.html("").append($(`<button id="mulc-button" class="mel-button btn btn-secondary">${link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>'}</button>`).on("click", () => {
                  event.preventDefault();
  
                  if (!$("#mulc-title")[0].reportValidity())
@@ -102,7 +102,7 @@
              $("#mulc-title").val(link.title);
              $("#mulc-url").val(link.link);
              $("#mulc-sw").val(link.showWhen === "" ? "always" : link.showWhen);
-             $("#mulc-button").html(link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-pencil"></span>');
+             $("#mulc-button").html(link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>');
          }
  
          return this;

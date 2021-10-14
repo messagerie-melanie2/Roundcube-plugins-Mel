@@ -1,15 +1,15 @@
 @font-face {
   font-family: 'DWP';
   src:
-    url('fonts/DWP.ttf?rjg7qm') format('truetype'),
-    url('fonts/DWP.woff?rjg7qm') format('woff'),
-    url('fonts/DWP.svg?rjg7qm#DWP') format('svg');
+    url('fonts/DWP.ttf?ddamt5') format('truetype'),
+    url('fonts/DWP.woff?ddamt5') format('woff'),
+    url('fonts/DWP.svg?ddamt5#DWP') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icon-mel-"], [class*=" icon-mel-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'DWP' !important;
   speak: never;
@@ -24,7 +24,35 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-mel_trello:before {
+.icon-mel-clock:before {
+  content: "\e95e";
+  color: #363a5b;
+}
+.icon-mel-descri:before {
+  content: "\e960";
+  color: #363a5b;
+}
+.icon-mel-eye-crossed:before {
+  content: "\e961";
+  color: #363a5b;
+}
+.icon-mel-eye:before {
+  content: "\e962";
+  color: #363a5b;
+}
+.icon-mel-pin-location:before {
+  content: "\e963";
+  color: #363a5b;
+}
+.icon-mel-notif:before {
+  content: "\e964";
+  color: #363a5b;
+}
+.icon-mel-print:before {
+  content: "\e965";
+  color: #363a5b;
+}
+.icon-mel-trello:before {
   content: "\e94c";
 }
 .icon-mel-arrow-left:before {
@@ -157,7 +185,7 @@
 .icon-mel-compose:before {
   content: "\e953";
 }
-.icon-pencil:before {
+.icon-mel-pencil:before {
   content: "\e95c";
 }
 .icon-mel-send:before {

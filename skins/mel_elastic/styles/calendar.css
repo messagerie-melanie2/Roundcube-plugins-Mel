@@ -579,3 +579,33 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 .task-calendar .ui-datepicker.ui-widget-content .ui-state-highlight {
 	background-color: #454F98 !important;
 }
+
+.task-calendar .menu a.print::before {
+	content: "\e965";
+    font-weight: normal;
+    font-family: DWP!important;
+}
+
+.task-calendar .listing li > div a.quickview::before {
+	content: "\e961";
+    font-family: DWP!important;
+}
+
+.task-calendar .listing li > div.focusview a.quickview::before {
+	content: "\e962";
+}
+
+.task-calendar .menu a.download::before, 
+.task-calendar .menu a.download.eml::before, 
+.task-calendar .menu a.download.maildir::before, 
+.task-calendar .menu a.download.mbox::before {
+	content: "\e90d";
+    font-family: DWP!important;
+    font-weight: normal!important;
+}
+
+.menu a.copy::before {
+	content: "\e90a";
+    font-family: DWP!important;
+    font-weight: normal!important;
+}

@@ -43,7 +43,7 @@ $rcmail_config['modify_options'] = [
        [
               "name" => "modify_link_element",
               "action" => "ModifyLink",
-              "icon" => "icon-pencil"
+              "icon" => "icon-mel-pencil"
        ],
        //Supprimer
        [

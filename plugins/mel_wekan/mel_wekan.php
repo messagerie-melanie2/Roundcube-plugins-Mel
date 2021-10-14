@@ -46,8 +46,8 @@ class mel_wekan extends rcube_plugin
 
         $this->add_button(array(
             'command' => 'wekan',
-            'class'	=> 'button-mel-wekan icon-mel_trello wekan',
-            'classsel' => 'button-mel-wekan button-selected icon-mel_trello wekan',
+            'class'	=> 'button-mel-wekan icon-mel-trello wekan',
+            'classsel' => 'button-mel-wekan button-selected icon-mel-trello wekan',
             'innerclass' => 'button-inner inner',
             'label'	=> 'mel_wekan.kanban',
             'title' => 'mel_wekan.kanban',

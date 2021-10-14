@@ -307,10 +307,17 @@ class mel_driver extends calendar_driver {
           if ($cal->id == $cal->owner) {
             // On est dans le calendrier parent
             $calendars[$rcId] = $calendar;
-
+            
             // Ajouter le folder au tree
             $folder = new stdClass();
             $folder->id = $rcId;
+            $folder->order = $order;
+
+            // Est-ce que le dossier a déjà été ajouté (en virtuel) ?
+            if (isset($tree->children[$rcId]) && isset($tree->children[$rcId]->children)) {
+              $folder->children = $tree->children[$rcId]->children;
+            }
+
             $tree->children[$rcId] = $folder;
           }
           else {
@@ -325,6 +332,7 @@ class mel_driver extends calendar_driver {
               // Ajouter le folder au tree
               $folder = new stdClass();
               $folder->id = $parentRcId;
+              $folder->order = $order;
               $folder->children = [];
 
               $tree->children[$parentRcId] = $folder;
@@ -340,6 +348,7 @@ class mel_driver extends calendar_driver {
             // Ajouter le folder au tree
             $folder = new stdClass();
             $folder->id = $rcId;
+            $folder->order = $order;
             $tree->children[$parentRcId]->children[$rcId] = $folder;
           }
         }
@@ -366,12 +375,34 @@ class mel_driver extends calendar_driver {
           $calendars[$id] = array('id' => $id, 'name' => $this->cal->gettext('birthdays'), 'listname' => $this->cal->gettext('birthdays'), 'color' => $prefs['color'], 'showalarms' => (bool)$this->rc->config->get('calendar_birthdays_alarm_type'), 'active' => isset($active_calendars[$id]), 'group' => 'x-birthdays', 'editable' => false, 'default' => false, 'children' => false);
         }
       }
+      // Trier les calendriers
       uasort($calendars, function ($a, $b) {
         if ($a['order'] === $b['order'])
           return strcmp(strtolower($a['listname']), strtolower($b['listname']));
         else
           return strnatcmp($a['order'], $b['order']);
       });
+
+      // Trier l'arbre
+      if (isset($tree)) {
+        $sortTree = function ($a, $b) {
+          global $calendars;
+          if ($a->order === $b->order)
+            return strcmp(strtolower($calendars[$a->id]['listname']), strtolower($calendars[$b->id]['listname']));
+          else
+            return strnatcmp($a->order, $b->order);
+        };
+
+        // Trier le premier niveau
+        uasort($tree->children, $sortTree);
+
+        // Trier le deuxième niveau
+        foreach ($tree->children as $child) {
+          if (isset($child->children)) {
+            uasort($child->children, $sortTree);
+          }
+        }
+      }
       // Retourne la concaténation des agendas pour avoir une liste ordonnée
       return $calendars;
     }

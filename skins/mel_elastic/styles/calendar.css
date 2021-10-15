@@ -56,6 +56,8 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
         width: 20px;
         line-height: 15px!important;
         color: #31365B!important;
+        margin-left: auto;
+    margin-right: auto;
     
 }
 

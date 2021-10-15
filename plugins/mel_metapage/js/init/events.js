@@ -198,7 +198,7 @@ if (rcmail)
         if (event.description !== undefined && event.description !== "")
             html += `<div class=row style="margin-top:15px;"><div class=col-12 style=white-space:nowrap;><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
             vertical-align: top;
-            margin-top: 5px;"></span><p style="display:inline-block;white-space: break-spaces;">${event.description.replaceAll("\n", "<br/>")}</p></div></div>`;
+            margin-top: 5px;"></span><p style="display:inline-block;white-space: break-spaces;">${linkify(event.description.replaceAll("\n", "<br/>"))}</p></div></div>`;
 
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)

@@ -170,6 +170,6 @@ $labels["mel-message-space"] = "Mail - Espacement des messages";
 $labels["mel-chat-placement"] = "Chat - Placement de la bulle";
 $labels["mel-calendar-space"] = "Espacement des agendas";
 
-$labels["hide_bubble"] = "Cacher le bulle de discussion instantée";
-$labels["show_bubble"] = "Afficher le bulle de discussion instantée";
+$labels["hide_bubble"] = "Cacher la bulle de discussion instantée";
+$labels["show_bubble"] = "Afficher la bulle de discussion instantée";
 $labels["all-day"] = "Journée entière";

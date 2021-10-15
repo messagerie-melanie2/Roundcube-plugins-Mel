@@ -1781,3 +1781,9 @@ html .menu a.selection::before {
     font-family: DWP!important;
     font-weight: normal!important;
 }
+
+.menu a.logout::before {
+	content: "\e967"!important;
+    font-family: DWP!important;
+    font-weight: normal!important;
+}

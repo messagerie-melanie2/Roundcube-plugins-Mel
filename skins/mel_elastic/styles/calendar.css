@@ -438,7 +438,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 }
 
 .task-calendar #layout #layout-content > .header a.button.create::before {
-	content: "\e929"!important;
+	content: "\e901"!important;
     font-family: DWP!important;
     font-weight: normal!important;
 }
@@ -456,7 +456,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 }
 
 .menu a.settings::before {
-	content: "\e926"!important;
+	content: "\e925"!important;
     font-family: DWP!important;
     font-weight: normal!important;
 }

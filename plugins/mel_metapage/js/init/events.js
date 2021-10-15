@@ -164,6 +164,7 @@ if (rcmail)
         }
     })
 
+    /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
         const event = datas.showed;
 
@@ -257,7 +258,7 @@ if (rcmail)
         html += "</div></div>";
 
         const cancelled = event.status === "CANCELLED";
-        const title = event.sensitivity === "private" ? `<span class="icofont-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title}` : (cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title);
+        const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title}` : (cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title);
         
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);

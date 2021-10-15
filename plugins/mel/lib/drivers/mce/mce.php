@@ -118,7 +118,15 @@ class mce_driver_mel extends driver_mel {
    * @return string $hostname de routage, null si pas de routage trouvé
    */
   public function getRoutage($infos, $function = '') {
-    $hostname = rcmail::get_instance()->config->get('default_host');
+    // Conf dédiée pour le managesieve
+    if ($function == 'managesieve_connect') {
+      $conf = 'managesieve_host';
+    }
+    else {
+      $conf = 'default_host';
+    }
+    // Récupère le hostname depuis la configuration
+    $hostname = rcmail::get_instance()->config->get($conf);
     if (!isset($hostname) 
         || is_array($hostname)) {
       if (is_array($infos)) {

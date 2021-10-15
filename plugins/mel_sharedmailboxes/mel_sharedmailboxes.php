@@ -511,6 +511,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      * Utilise les identifiants de la balp si nécessaire
      */
     public function managesieve_connect($args) {
+        $host_as_changed = false;
         /* PAMELA - Gestion des boites partagées */
         if (!empty($this->get_account)) {
             if (mel_logs::is(mel_logs::DEBUG))
@@ -518,6 +519,7 @@ class mel_sharedmailboxes extends rcube_plugin {
             $args['user'] = $this->mel->get_user_bal();
             // Ajouter également l'host pour les règles sieve
             $args['host'] = $this->mel->get_host();
+            $host_as_changed = true;
         }
         else if (isset($_GET['_mbox'])) {
             $folder = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET);
@@ -534,9 +536,14 @@ class mel_sharedmailboxes extends rcube_plugin {
                         // Récupération de la configuration de la boite pour l'affichage
                         $args['user'] = $mailbox->uid;
                         $args['host'] = driver_mel::gi()->getRoutage($mailbox, 'managesieve_connect');
+                        $host_as_changed = true;
                     }
                 }
             }
+        }
+        // Gérer la host dédiée à managesieve_connect
+        if (!$host_as_changed) {
+            $args['host'] = driver_mel::gi()->getRoutage(driver_mel::gi()->getUser(), 'managesieve_connect');
         }
         return $args;
     }

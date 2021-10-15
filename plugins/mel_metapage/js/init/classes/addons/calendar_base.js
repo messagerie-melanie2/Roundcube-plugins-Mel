@@ -337,7 +337,8 @@ $(document).ready(() => {
 
                     if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
                     {
-                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
+                        const dif = window.rcube_calendar_ui.difTime === undefined ? 3600 : window.rcube_calendar_ui.difTime;
+                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(format) );
                         update_date();
                     }
                 }
@@ -353,7 +354,8 @@ $(document).ready(() => {
 
                     if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
                     {
-                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(1,"h").format(format) );
+                        const dif = window.rcube_calendar_ui.difTime === undefined ? 3600 : window.rcube_calendar_ui.difTime;
+                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(format) );
                         update_date();
                     }
                 }
@@ -621,12 +623,17 @@ $(document).ready(() => {
                 $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
 
                 $("#key-visio-cal").val(generateRoomName());
+                window.rcube_calendar_ui.difTime = undefined;
 
             }
             else{ //ancien event
                 $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
                 $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
                 update_date();
+
+                window.rcube_calendar_ui.difTime = (moment(event.end) - moment(event.start))/1000.0;
+                if (window.rcube_calendar_ui.difTime === 0)
+                    window.rcube_calendar_ui.difTime = undefined;
 
                 // if ($("#edit-allday")[0].checked)
                 //     $("#edit-allday").click().click();

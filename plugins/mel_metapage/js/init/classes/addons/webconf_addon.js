@@ -2,7 +2,7 @@
 
     function webconf_is_active()
     {
-        return window.webconf_master_bar !== undefined;
+        return window.webconf_master_bar !== undefined || parent.webconf_master_bar !== undefined;
     }
 
     async function go_to_webconf(key = null, wsp = null, ariane = null)
@@ -31,6 +31,9 @@
                     window.create_popUp.close();
             }, false);
             await mel_metapage.Functions.change_frame('webconf', true, true, config);
+        }
+        else {
+            rcmail.display_message("Une visioconférence est déja en cours, finissez celle en cours avant d'en démarrer une nouvelle !", "warning");
         }
     }
 

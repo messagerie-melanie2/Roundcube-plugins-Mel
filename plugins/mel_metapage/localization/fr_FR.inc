@@ -173,3 +173,5 @@ $labels["mel-calendar-space"] = "Espacement des agendas";
 $labels["hide_bubble"] = "Cacher la bulle de discussion instantée";
 $labels["show_bubble"] = "Afficher la bulle de discussion instantée";
 $labels["all-day"] = "Journée entière";
+
+$labels["without_spaces"] = "Sans espaces";

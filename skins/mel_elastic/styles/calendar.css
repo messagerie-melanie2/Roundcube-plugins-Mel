@@ -321,6 +321,7 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
     padding-bottom: 5px;
 }
 
+.task-calendar.cal-space-old .listing li > div.calendar > *,
 .task-calendar.cal-space-smaller .listing li > div.calendar > * {
     padding-top:0px;
     padding-bottom: 0px;
@@ -336,6 +337,11 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
 .task-calendar .listing li > div.calendar
 {
     margin-top:5px;
+}
+
+.task-calendar.cal-space-old .listing li > div.calendar
+{
+    margin-top:0;
 }
 
 .task-calendar .listing li > div.calendar .custom-control
@@ -398,6 +404,11 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 
 .task-calendar ul.treelist.iconized li div.treetoggle {
 	top: 10px;
+	left: 22px;
+}
+
+.task-calendar.cal-space-old ul.treelist.iconized li div.treetoggle {
+	top: 0px;
 	left: 22px;
 }
 

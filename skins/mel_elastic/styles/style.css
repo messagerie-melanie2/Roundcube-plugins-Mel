@@ -1787,3 +1787,13 @@ html .menu a.selection::before {
     font-family: DWP!important;
     font-weight: normal!important;
 }
+
+.task-mail.action-compose #files-compose-dialog
+{
+    display: none!important;
+}
+
+.task-mail.action-compose .popup #files-compose-dialog
+{
+    display: flex!important;
+}

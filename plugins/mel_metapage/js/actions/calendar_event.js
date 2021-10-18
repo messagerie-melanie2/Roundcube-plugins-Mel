@@ -50,7 +50,11 @@ $(document).ready(
                     if (querry.length > 0)
                     {
                         //querry[0].contentWindow.$('#calendar').fullCalendar( 'refetchEvents' );
-                        querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
+                        try {
+                            querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
+                        } catch (error) {
+                            
+                        }
                     }
                     else
                     {
@@ -127,6 +131,10 @@ function CalendarPageInit()
             $("body").addClass("cal-space-larger");
             break;
     
+        case rcmail.gettext("without_spaces", "mel_metapage"):
+            $("body").addClass("cal-space-old");
+            break;
+
         default:
             break;
     }

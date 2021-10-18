@@ -106,8 +106,11 @@ class mel_useful_link extends rcube_plugin
       //On forme des couples
       for ($i=0; $i < $max; ++$i) { 
 
-        if ($pined && !$this->links[$i]->pin)//Si on demande seulement ceux qui sont épinglé
+        if ($pined && !$this->links[$i]->pin ||
+            !$pined && $this->links[$i]->pin)//Si on demande seulement ceux qui sont épinglé
           continue;
+
+        
         
         $couples->add($this->links[$i]);
       }
@@ -175,7 +178,7 @@ class mel_useful_link extends rcube_plugin
         if (count($items) > 0)
         {
           $k = function ($k, $x) {
-              return $x["type"] === "website" || $x["type"] === "website_button" || $x["type"] === "website_links";
+              return strpos($x["type"], "website") !== false;//$x["type"] === "website" || $x["type"] === "website_button" || $x["type"] === "website_links";
           };
 
           $items = $this->where($items, $k);
@@ -183,7 +186,24 @@ class mel_useful_link extends rcube_plugin
           $tmpLink;
           foreach ($items as $key => $value) {
               if ($value["url"] === null || $item["url"] === "")
-                continue;
+              {
+                if ($value["links"] !== null && count($value["links"]) > 0)
+                {
+                  foreach ($value["links"] as $keyLink => $link) {
+                    $tmpLink = mel_link::fromOldPortail($key, $value);
+
+                    if (end($links) == $tmpLink)
+                      continue;
+
+                    $links[] = $tmpLink;
+                    continue;
+                  }
+
+                }
+                else
+                  continue;
+                  
+              }
 
               $tmpLink = mel_link::fromOldPortail($key, $value);
               if (end($links) == $tmpLink)
@@ -337,7 +357,7 @@ class mel_useful_link extends rcube_plugin
           if (!$update)
             $update = true;
         }//Si problème de configkey
-        else if ($value->configKey === null)
+        else if ($value->configKey === null || $value->configKey === "unknown")
         {
           if ($key !== $value->configKey)
             $value->configKey = $key;

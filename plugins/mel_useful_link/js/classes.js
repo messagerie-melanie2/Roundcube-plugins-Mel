@@ -47,6 +47,8 @@
      {
          if (link === null)
              link = new MelLink();
+
+        console.log("LINK", link);
  
          this.setTitle(link.id === "" ? "Création d'un nouveau lien" : "Modification d'un lien");
  
@@ -58,6 +60,16 @@
  
              /**Id */
              $(`<input type="hidden" id="mulc-id" value="${link.id}" />`).appendTo(parentDiv);
+             /**subItem */
+             $(`<input type="hidden" id="mulc-subItem" value="${link.isSubLink()}" />`).appendTo(parentDiv);
+
+             if (link.isSubLink())
+             {
+                /**Sub Id */
+                $(`<input type="hidden" id="mulc-subid" value="${link.subItem.id}" />`).appendTo(parentDiv);
+                /**SubParent */
+                $(`<input type="hidden" id="mulc-subparent" value="${link.subItem.parentId}" />`).appendTo(parentDiv);
+             }
  
              /**Title */
              this.linkText("mulc-title", "Nom du lien", "Titre du lien", link.title, true).appendTo(parentDiv);
@@ -79,7 +91,9 @@
                  if (!$("#mulc-url")[0].reportValidity())
                      return;
  
-                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always" /*$("#mulc-sw").val()*/);//.callUpdate().then(() => this.hide());
+                console.log("log", $("#mulc-subItem").val(), $("#mulc-subItem").val() == "true");
+
+                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  ($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null)/*$("#mulc-sw").val()*/);//.callUpdate().then(() => this.hide());
                  this.setLoading();
                  link.callUpdate(task, action, addonConfig).then((result) => {
  
@@ -101,6 +115,9 @@
              $("#mulc-id").val(link.id);
              $("#mulc-title").val(link.title);
              $("#mulc-url").val(link.link);
+             $("#mulc-subItem").val(link.isSubLink());
+             $("#mulc-subid").val(link.subItem.id);
+             $("#mulc-subparent").val(link.subItem.parentId);
              $("#mulc-sw").val(link.showWhen === "" ? "always" : link.showWhen);
              $("#mulc-button").html(link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>');
          }
@@ -195,15 +212,22 @@
          this.link = "";
          this.from = "";
          this.showWhen = "";
+         this.subItem = new MelSubLink(null, null);
      }
  
-     init(id, title, link, from, showWhen)
+     init(id, title, link, from, showWhen, subItem = null)
      {
          this.id = id;
          this.title = title;
          this.link = link;
          this.from = from;
          this.showWhen = showWhen;
+         this.subItem = subItem;
+     }
+
+     isSubLink()
+     {
+         return this.subItem !== null;
      }
  
      delete(popup = null)
@@ -260,17 +284,53 @@
          return config;
      }
  
-     callPin(task = "useful_links", action = "tak", addonConfig = null)
+     async callPin(task = "useful_links", action = "tak", addonConfig = null)
      {
-         rcmail.set_busy(true, "loading");
-         return mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
-         this.getConfig({_id:this.id}, addonConfig),
-         (datas) => {
+        let resultDatas = true;
+        let config = {
+            _id:this.id,
+            _is_sub_item:this.isSubLink()
+        }
+
+        rcmail.set_busy(true, "loading");
+
+        await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
+        this.getConfig(config, addonConfig),
+        (datas) => {
+
+        if (datas === "override")
+        {
+            resultDatas = datas;
+            return;
+        }
+
+        rcmail.set_busy(false);
+        rcmail.clear_messages();
+        rcmail.display_message("Modification effectué avec succès !", "confirmation");
+        }
+        );
+
+        if (resultDatas === "override" && confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de vouloir continuer ?"))
+        {
+
+            config["_forced"] = true;
+            if (config._is_sub_item)
+                config = this.subItem.updateConfig(config);
+
+            await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
+            this.getConfig(config, addonConfig),
+                (datas) => { 
+                    rcmail.set_busy(false);
+                    rcmail.clear_messages();
+                    rcmail.display_message("Modification effectué avec succès !", "confirmation");
+                }
+            );
+        }
+        else
+        {
             rcmail.set_busy(false);
             rcmail.clear_messages();
-            rcmail.display_message("Modification effectué avec succès !", "confirmation");
-         }
-         );
+        }
      }
  
      async callUpdate(task = "useful_links", action = "update", addonConfig = null)
@@ -291,11 +351,15 @@
              _title:this.title,
              _link:this.link,
              _from:this.from,
-             _sw:this.showWhen
+             _sw:this.showWhen,
+             _is_sub_item:this.isSubLink()
          };
  
+         if (config._is_sub_item)
+            config  = this.subItem.updateConfig(config);
+
          config = this.getConfig(config, addonConfig);
- 
+
          await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
              code = datas;
          }, (a,b,c) => {
@@ -307,9 +371,10 @@
  
          if (code === override)
          {
-             if (confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de voloir contnuer ?"))
+             if (confirm("Il s'agit d'un lien personnel venant de l'ancien bureau numérique, si vous continuez, il sera supprimé de l'ancien bureau numérique.\r\nÊtes-vous sûr de vouloir continuer ?"))
              {
                  config["_force"] = true;
+                 config["_subtitle"] = this.title;
                  await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action), config, (datas) => {
                      if (datas === override)
                      {
@@ -370,7 +435,29 @@
      {
          id = $(`#link-block-${id}`);
  
-         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"));
+         const isSubItem = id.data("subitem");
+
+         let subLink = null;
+         if (isSubItem)
+            subLink = new MelSubLink(id.data("subid"), id.data("subparent"));
+
+         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), subLink);
      }
  
+ }
+
+ class MelSubLink
+ {
+     constructor(id, parentId)
+     {
+        this.id = id;
+        this.parentId = parentId;
+     }
+
+     updateConfig(config)
+     {
+        config["_subparent"] = this.parentId;
+        config["_subid"] = this.id;
+        return config;
+     }
  }

@@ -106,6 +106,8 @@ class ArianePopUp{
         if (this.is_anchor())
             this.anchor();
 
+        this.is_show = false;
+
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "");
         this.ariane.popUp.css("display", "none");
         this.ariane.popUp.css("height", "100%");
@@ -115,7 +117,6 @@ class ArianePopUp{
         this.ariane.popUp.css("padding-top", "");
         this.ariane.disable();
         this.ariane.popUp.css("width", "100%");
-        this.is_show = false;
 
         if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
             this.button.button.find(".icon-mel-close").removeClass("icon-mel-close").addClass("icon-mel-message");
@@ -400,17 +401,22 @@ class ArianeFrame{
                     }
                     let stop = false;
                     let tmp = 0;
+
                     if (window.location.href.includes("&_action=chat"))
                         return;
+
                     exec();
+
                     while ((this.is_touch ? is_touch() : !is_touch())) {
                         await delay(100);
                         tmp += 100;
                         if (tmp === 1000)
                             break;
                     }
+
                     if (window.location.href.includes("&_action=chat"))
                         return;
+
                     this.is_touch = is_touch();
                     exec();
                     // if (is_touch())

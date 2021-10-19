@@ -209,7 +209,7 @@ class RoundriveShow
                             this.setFolderOpenOrClose(element.path, false);
 
                         html = `<button style="display:flex" class=" ${isChild ? "child" : ""} no-style full-width btn btn-secondary row ${it === datas.length - 1 ? "last" : ""} ">`;
-                        html += `<div class="col-${col_text + col_datas}"><h4><span class="icon-mel-folder"><span class="sr-only">Dossier</span></span> <span class="elementname" style="position:relative">${decodeURIComponent(element.filename)}${this.openDatas[element.path].news ? `<span style="" class="notif roundbadge lightgreen nc">•</span>` : ""}</span><h4></div>`;
+                        html += `<div class="col-${col_text + col_datas}"><h4><span class="icon-mel-folder"><span class="sr-only">Dossier</span></span> <span class="elementname" style="position:relative">${decodeURIComponent(element.basename)}${this.openDatas[element.path].news ? `<span style="" class="notif roundbadge lightgreen nc">•</span>` : ""}</span><h4></div>`;
                         html += `<div class="col-${col_link} col-arrow"><h4><span class="${this.openDatas[element.path].opened ? "icon-mel-chevron-down" : "icon-mel-chevron-right"}"></span></h4></div>`;
                         html += "</button>";
 

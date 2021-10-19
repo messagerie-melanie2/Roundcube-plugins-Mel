@@ -1209,6 +1209,7 @@ class mel_metapage extends rcube_plugin
 
         $options = [
             $calendar_space => [
+                $this->gettext("without_spaces", "mel_metapage"),
                 $this->gettext("smaller", "mel_metapage"),
                 $this->gettext("normal", "mel_metapage"),
                 $this->gettext("larger", "mel_metapage")

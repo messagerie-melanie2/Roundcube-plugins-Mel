@@ -593,15 +593,19 @@ function m_mp_ChangeLasteFrameInfo()
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
     window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
 
-    if (!isUndefined)
-    {
-        m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
-        $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
-    }
-    else
-    {
-        m_mp_CreateOrUpdateIcon(null, "");
-        $(".menu-last-frame").addClass("disabled").attr("disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+    try {
+        if (!isUndefined)
+        {
+            m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
+            $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
+        }
+        else
+        {
+            m_mp_CreateOrUpdateIcon(null, "");
+            $(".menu-last-frame").addClass("disabled").attr("disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+        }
+    } catch (error) {
+        
     }
 
 }

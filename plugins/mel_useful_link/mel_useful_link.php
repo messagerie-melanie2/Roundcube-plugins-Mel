@@ -103,16 +103,31 @@ class mel_useful_link extends rcube_plugin
       $min = 10*($page-1);
       $max = $size;// 10*$page > $size ? $size : 10*$page; 
 
-      //On forme des couples
-      for ($i=0; $i < $max; ++$i) { 
+      // //On forme des couples
+      // for ($i=0; $i < $max; ++$i) { 
 
-        if ($pined && !$this->links[$i]->pin ||
-            !$pined && $this->links[$i]->pin)//Si on demande seulement ceux qui sont épinglé
-          continue;
+      //   if ($pined && !$this->links[$i]->pin ||
+      //       !$pined && $this->links[$i]->pin)//Si on demande seulement ceux qui sont épinglé
+      //     continue;
 
         
         
-        $couples->add($this->links[$i]);
+      //   $couples->add($this->links[$i]);
+      // }
+
+      $i = 0;
+      foreach ($this->links as $key => $value) {
+        if ($i >= $max)
+          break;
+
+          if ($pined && !$value->pin ||
+            !$pined && $value->pin)//Si on demande seulement ceux qui sont épinglé
+            continue;
+
+      
+      
+        $couples->add($value);
+        ++$i;
       }
 
       $size = $couples->length();
@@ -173,7 +188,25 @@ class mel_useful_link extends rcube_plugin
         // $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
         // $items = $this->mergeItems($items, $this->rc->config->get('portail_personal_items', []));
 
-        $items = $this->rc->config->get('portail_personal_items', []);
+        $items = $this->rc->config->get('personal_useful_links', null);
+
+        if ($items !== null)
+        {
+           foreach ($items as $key => $value) {
+               $links[$key] = mel_link::fromConfig($value);
+           } 
+        }
+
+        $items = /*[
+          "website_links616d3bb2cf99e" => [
+            "name" => "Test",
+            "type" => "website_links",
+            "links" => [
+              "Reddit" => ["url" => "https://reddit.com"],
+              "¤This is swag" => ["url" => "https://minecraft-france.fr"]
+            ]
+          ]
+            ];//*/ $this->rc->config->get('portail_personal_items', []);
 
         if (count($items) > 0)
         {
@@ -185,42 +218,42 @@ class mel_useful_link extends rcube_plugin
 
           $tmpLink;
           foreach ($items as $key => $value) {
-              if ($value["url"] === null || $item["url"] === "")
+              if ($value["url"] === null || $value["url"] === "" || $value["links"] !== null || $value["buttons"] !== null)
               {
-                if ($value["links"] !== null && count($value["links"]) > 0)
+                if ($value["links"] !== null || $value["buttons"] !== null)
                 {
-                  foreach ($value["links"] as $keyLink => $link) {
-                    $tmpLink = mel_link::fromOldPortail($key, $value);
+                  foreach ($value[($value["links"] !== null ? "links" : "buttons")] as $keyLink => $link) {
+                    $link["name"] = $value["name"]." - $keyLink";
 
-                    if (end($links) == $tmpLink)
-                      continue;
+                    $tmpKey = $this->generate_id($keyLink, $links);
+                    $tmpLink = mel_link::fromOldPortail($tmpKey, $link, [
+                      "parent" => $key,
+                      "id" => $keyLink
+                    ]);
 
-                    $links[] = $tmpLink;
-                    continue;
+                    if (end($links) != $tmpLink)  
+                      $links[$tmpKey] = $tmpLink;
+
                   }
+
+                  if ($value["url"] === null || $value["url"] === "")
+                    continue;
 
                 }
                 else
                   continue;
-                  
+
               }
 
               $tmpLink = mel_link::fromOldPortail($key, $value);
               if (end($links) == $tmpLink)
                 continue;
-              $links[] = $tmpLink;
+              $links[$key] = $tmpLink;
           }
         }
         //$this->rc->user->save_prefs(array('personal_useful_links' => []));
         //from config
-        $items = $this->rc->config->get('personal_useful_links', null);
 
-        if ($items !== null)
-        {
-           foreach ($items as $key => $value) {
-               $links[] = mel_link::fromConfig($value);
-           } 
-        }
 
         return $links;
     }
@@ -232,7 +265,10 @@ class mel_useful_link extends rcube_plugin
       $link = rcube_utils::get_input_value("_link", rcube_utils::INPUT_GPC);
       $from = rcube_utils::get_input_value("_from", rcube_utils::INPUT_GPC);
       $showWhen = rcube_utils::get_input_value("_sw", rcube_utils::INPUT_GPC);
+      $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC);//_is_sub_item
+      $isSubItem = $isSubItem === "true";
       $forceUpdate = rcube_utils::get_input_value("_force", rcube_utils::INPUT_GPC) ?? false;
+      $forceUpdate = $forceUpdate === "true";
 
       if ($id === "")
         $id = null;
@@ -240,27 +276,36 @@ class mel_useful_link extends rcube_plugin
       //Vérification des anciens
       $config = $id === null ? [] : $this->rc->config->get('portail_personal_items', []);
 
-      if ($config[$id] !== null && !$forceUpdate)
+      if (($config[$id] !== null || $isSubItem) && !$forceUpdate)
       {
         echo "override";
         exit;
       }
       else {
+        include_once "lib/link.php";
 
         //Suppression de l'ancien lien 
-        if ($config[$id] !== null)
+        if ($config[$id] !== null && $isSubItem)
         {
           unset($config[$id]);
-          //TO DO => Vérifier set_user_pref
+          $this->rc->user->save_prefs(array('portail_personal_items' => $config));
+        }
+        //Suppression des sous-items des anciens liens
+        else if ($isSubItem)
+        {
+          $parent = rcube_utils::get_input_value("_subparent", rcube_utils::INPUT_GPC);
+          $child = rcube_utils::get_input_value("_subid", rcube_utils::INPUT_GPC);
+          
+          if ($config[$parent]["buttons"] !== null || $config[$parent]["links"] !== null)
+            unset($config[$parent][$config[$parent]["buttons"] !== null ? "buttons" : "links"][$child]);
+
           $this->rc->user->save_prefs(array('portail_personal_items' => $config));
         }
 
         $config = $this->rc->config->get('personal_useful_links', []);
         $melLink;
-
-        include_once "lib/link.php";
         
-        if ($id === null)
+        if ($id === null || $isSubItem)
         {
           $id = $this->generate_id($title, $config);
           $melLink = mel_link::create($id, $title, $link, false, time(), $from, $showWhen);
@@ -273,7 +318,7 @@ class mel_useful_link extends rcube_plugin
           $melLink->from = $from;
           $melLink->showWhen = $showWhen;
 
-          if ($melLink->configKey === null || $melLink->configKey === "unknown")
+          if ($melLink->configKey === null || $melLink->configKey === "unknown" || $melLink->configKey === "")
             $melLink->configKey = $id;
         }
 
@@ -291,9 +336,22 @@ class mel_useful_link extends rcube_plugin
       include_once "lib/link.php";
 
       $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+      $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC) ?? false;
+      $isSubItem = $isSubItem === "true";
+      $force = rcube_utils::get_input_value("_forced", rcube_utils::INPUT_GPC) ?? false;
+      $force = $force === "true";
 
       $config = $this->rc->config->get('portail_personal_items', []);
-      if ($config[$id] !== null)
+
+      //Prévenir pour les anciens liens
+      if (($config[$id] !== null || $isSubItem) && !$force)
+      {
+        echo "override";
+        exit;
+      }
+
+      //Si c'est un vieux lien
+      if ($config[$id] !== null && !$isSubItem)
       {
         $link = mel_link::fromOldPortail($id, $config[$id]);
         $link->pin = true;
@@ -306,6 +364,26 @@ class mel_useful_link extends rcube_plugin
         $this->rc->user->save_prefs(array('personal_useful_links' => $config));
 
       }
+      //Si c'est un sous item d'un vieux lien
+      else if ($isSubItem)
+      {
+        $parent = rcube_utils::get_input_value("_subparent", rcube_utils::INPUT_GPC);
+        $child = rcube_utils::get_input_value("_subid", rcube_utils::INPUT_GPC);
+        
+        $link = mel_link::fromOldPortail($id, $config[$parent][$config[$parent]["buttons"] !== null ? "buttons" : "links"][$child], true);
+        
+        if ($link->title === null || $link->title === "")
+          $link->title = rcube_utils::get_input_value("_subtitle", rcube_utils::INPUT_GPC);
+        
+        unset($config[$parent][$config[$parent]["buttons"] !== null ? "buttons" : "links"][$child]);
+        $link->pin = true;
+        $link->configKey = $this->generate_id($id, $this->rc->config->get('personal_useful_links', []));
+        $config = $this->rc->config->get('personal_useful_links', []);
+        $config[$link->configKey] = $link->serialize();
+        $this->rc->user->save_prefs(array('personal_useful_links' => $config));
+
+      }
+      //SINON
       else {
         $config = $this->rc->config->get('personal_useful_links', []);
         $link = mel_link::fromConfig($config[$id]);
@@ -341,6 +419,8 @@ class mel_useful_link extends rcube_plugin
 
     function correct_links()
     {
+      include_once "lib/link.php";
+
       $update = false;
       $config = $this->rc->config->get('personal_useful_links', []);
 
@@ -363,9 +443,9 @@ class mel_useful_link extends rcube_plugin
             $value->configKey = $key;
           else 
           {
+            unset($config[$key]);
             $key = $this->generate_id($value->title, $config);
             $value->configKey = $key;
-            unset($config[$key]);
           }
 
           $config[$key] = $value->serialize();
@@ -378,7 +458,7 @@ class mel_useful_link extends rcube_plugin
       if ($update)
         $this->rc->user->save_prefs(array('personal_useful_links' => $config));
 
-      echo "";
+      echo $update;
       exit;
 
     }

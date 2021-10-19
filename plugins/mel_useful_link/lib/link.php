@@ -9,9 +9,18 @@ class mel_link
     public $from;//internet 1, intranet 2
     public $showWhen;//internet 1, intranet 2, toujours 0
     public $configKey;
+    // public $subItem;
+    public $subItemData;
+    public $personal;
 
     private function __construct() {
+        $this->subItem = false;
+        $this->subItemData = null;
+        $this->personal = true;
+    }
 
+    public function subItem () {
+        return $this->subItemData !== null;
     }
 
     public function serialize()
@@ -36,8 +45,38 @@ class mel_link
 
     function toHtmlAttrDatas()
     {
-        return 'data-title="'.$this->title.'" data-link="'.$this->link.'" data-from="'.$this->from.'" data-showWhen="'.$this->showWhen.'" data-id="'.$this->configKey.'"';
+
+        $isSubItem = $this->subItem();
+
+        $html = 'data-title="'.$this->title.
+        '" data-link="'.$this->link.
+        '" data-from="'.$this->from.
+        '" data-showWhen="'.$this->showWhen.
+        '" data-id="'.$this->configKey.
+        '" data-subItem="'.($isSubItem ? "true" : "false").'"';
+
+        if ($isSubItem)
+            $html .= ' data-subparent="'.$this->subItemData["parent"].
+            '" data-subid="'.$this->subItemData["id"].'"';
+
+        return $html;
     }
+
+    // public function subItem_GetId()
+    // {
+    //     if ($this->subItem)
+    //         return $tmp = split("-¤¤-", $this->configKey)[1];
+
+    //     return null;
+    // }
+
+    // public function subItem_GetParentId()
+    // {
+    //     if ($this->subItem)
+    //         return $tmp = split("-¤¤-", $this->configKey)[0];
+
+    //     return null;
+    // }
 
     public function get_reduced_link()
     {
@@ -52,7 +91,7 @@ class mel_link
         return ($rl === null || $rl === "") ? $this->link : $rl;
     }
 
-    public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0)
+    public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0, $subItemData = null, $isPersonal = true)
     {
         $mel_link = new mel_link();
         $mel_link->title = $title;
@@ -62,13 +101,22 @@ class mel_link
         $mel_link->from = $from;
         $mel_link->showWhen = $showWhen;
         $mel_link->configKey = $id;
+        $mel_link->subItemData = $subItemData;
+        $mel_link->personal = $isPersonal;
 
         return $mel_link;
     }
 
-    public static function fromOldPortail($key, $item)
+    public static function fromOldPortail($key, $item, $subItemData = null)
     {
-        return self::create($key, $item["name"], $item["url"], false, null, $item["provenance"], strpos($key, "intranet") !== false ? "intranet" : (strpos($key, "internet") !== false ? "internet" : "always"));
+        return self::create($key, 
+        $item["name"], 
+        $item["url"] === null ? $item["href"] : $item["url"], 
+        false, 
+        null, 
+        $item["provenance"], 
+        strpos($key, "intranet") !== false ? "intranet" : (strpos($key, "internet") !== false ? "internet" : "always"),
+        $subItemData);
     }
 
     public static function fromConfig($item)
@@ -83,11 +131,24 @@ class mel_link
 
             if ($item["configKey"] !== null)
                 $link->configKey = $item["configKey"];
+
+            if ($item["subItemData"] !== null)
+                $link->subItemData = $item["subItemData"];
+
+            if ($item["personal"] !== null)
+                $link->personal = $item["personal"];
+                
         } catch (\Throwable $th) {
-            $link = self::create("unknown", $item->title, $item->link, $item->pin, $item->createDate, $item->from);
+            $link = self::create("unknown", $item->title, $item->link, $item->pin, $item->createDate, $item->from, $item->showWhen);
 
             if ($item->configKey !== null)
                 $link->configKey = $item->configKey;
+
+            // if ($item->subItemData !== null)
+            //     $link->subItemData = $item->subItemData;
+
+            if ($item->personal !== null)
+                $link->personal = $item->personal;
         }
 
         return $link;

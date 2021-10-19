@@ -316,9 +316,8 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
 
 /*** Full Calendar ***/
 .fc-event {
-	/* border: none !important;
-    border-radius: 0 !important; */
-    border-width: 3px!important;
+    border-width: 1px 7px 1px 1px !important;
+    font-size: 12px !important;
 }
 
 .fc .fc-event .fc-title {

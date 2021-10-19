@@ -15087,6 +15087,12 @@ ViewRegistry_1.defineView('agendaWeek', {
     type: 'agenda',
     duration: { weeks: 1 }
 });
+ViewRegistry_1.defineView('agendaWork', {
+    type: 'agendaWeek'
+});
+ViewRegistry_1.defineView('monthWork', {
+    type: 'month'
+});
 
 
 /***/ }),

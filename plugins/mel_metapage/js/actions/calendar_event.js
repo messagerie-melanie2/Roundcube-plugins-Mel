@@ -97,23 +97,16 @@ function CalendarPageInit()
             return $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .active").html() === value ? "selected" : "";
         };
 
-        $(`<select id=calendarOptionSelect class="form-control mel-input calendar input-mel custom-select">
-            <option value=day ${isSelected("Jour")}>Jour</option>
-            <option value=week ${isSelected("Semaine")}>Semaine</option>
-            <option value=month ${isSelected("Mois")}>Mois</option>
-            <option value=ootd ${isSelected("Ordre du jour")}>Planning</option>
-        </select>`)
+        let select = '<select id="calendarOptionSelect" class="form-control mel-input calendar input-mel custom-select">';
+        $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .fc-button-group .fc-button").each(function() {
+            select += '<option value="' + $(this).attr('class').split(/\s+/)[0] + '" ' + isSelected($(this).text()) + '>' + $(this).text() + '</option>';
+        });
+        select += '</select>';
+        $(select)
         .on("change", () => {
+            const val = $("#calendarOptionSelect").val();
 
-            let querry = $("#calendarOptionSelect");
-            const val = querry.val() === "ootd" ? "Ordre du jour" : querry.find(`option[value=${querry.val()}]`).html();
-
-            $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left button").removeClass("active").each((i, e) => {
-                e = $(e);
-                if (e.html() === val)
-                    e.click();
-            });
-            
+            $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .fc-button-group ." + val).click();
         })
         .appendTo($("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left"));
     });

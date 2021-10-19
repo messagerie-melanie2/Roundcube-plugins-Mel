@@ -403,7 +403,9 @@ class calendar extends rcube_plugin
 
             $select = new html_select(['name' => '_default_view', 'id' => $field_id]);
             $select->add($this->gettext('day'), "agendaDay");
+            $select->add($this->gettext('work'), "agendaWork");
             $select->add($this->gettext('week'), "agendaWeek");
+            $select->add($this->gettext('monthWork'), "monthWork");
             $select->add($this->gettext('month'), "month");
             $select->add($this->gettext('agenda'), "list");
 

@@ -106,6 +106,17 @@ function rcube_calendar_ui(settings)
           titleFormat: 'MMMM YYYY',
           eventLimit: 4
         },
+        monthWork: {
+          columnFormat: 'ddd', // Mon
+          titleFormat: 'MMMM YYYY',
+          eventLimit: 4,
+          hiddenDays: [0, 6]
+        },
+        agendaWork: {
+          columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
+          titleFormat: settings.dates_long,
+          hiddenDays: [0, 6]
+        },
         week: {
           columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
           titleFormat: settings.dates_long
@@ -123,7 +134,9 @@ function rcube_calendar_ui(settings)
         today: settings['today'],
         day: rcmail.gettext('day', 'calendar'),
         week: rcmail.gettext('week', 'calendar'),
+        agendaWork: rcmail.gettext('work', 'calendar'),
         month: rcmail.gettext('month', 'calendar'),
+        monthWork: rcmail.gettext('monthWork', 'calendar'),
         list: rcmail.gettext('agenda', 'calendar')
       },
       buttonIcons: {
@@ -3781,7 +3794,7 @@ function rcube_calendar_ui(settings)
       header: {
         right: 'prev,next today',
         center: 'title',
-        left: 'agendaDay,agendaWeek,month,list'
+        left: 'agendaDay,agendaWork,agendaWeek,monthWork,month,list'
       },
       defaultDate: viewdate,
       height: $('#calendar').height(),

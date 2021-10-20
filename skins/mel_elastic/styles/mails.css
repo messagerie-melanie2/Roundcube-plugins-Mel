@@ -315,14 +315,17 @@ text-align: center;
     background-color: #2C3054;
 }
 
+#folderlist-content ul#mailboxlist > li.mailbox.inbox.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.drafts.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.models.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.sent.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.junk.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.trash.virtual,
 #folderlist-content li.mailbox.boite
 {
     margin: 20px 0;
     margin-bottom: -10px;
-    /* border-bottom-style: solid;
-    border-bottom-width: thin; */
-    padding-right:20px;
-    /* padding-bottom: 10px; */
+    padding-right: 0;
 }
 
 #folderlist-content li.mailbox.boite[aria-expanded="true"]{
@@ -335,6 +338,10 @@ text-align: center;
 	margin-top: 15px;
 	padding-top: 10px;
 	/* position: relative; */
+}
+
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle {
+	top: 10px;
 }
 
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
@@ -351,11 +358,11 @@ text-align: center;
 }
 
  #folderlist-content ul#mailboxlist > li:first-of-type .unreadcount{
-    right: 21px;
+    right: 15px;
 }
 
 #folderlist-content ul#mailboxlist ul > li .unreadcount {
-	right: 0!important;
+	right: 0 !important;
 } 
 
 #rcm_labellist {
@@ -363,30 +370,16 @@ text-align: center;
 	max-height: 400px;
 }
 
-ul#mailboxlist ul li.mailbox.selected {
-	/* background-color: #2C3054; */
-}
-
 ul#mailboxlist ul li.mailbox.selected a {
 	background-color: #2C3054;
 }
 
-/* ul#mailboxlist ul li.mailbox a {
-	padding-top: 0.4rem;
-	padding-bottom: 0.4rem;
-} */
-
-/* #folderlist-content ul#mailboxlist > li > ul li .unreadcount {
-	top: 6px;
+#folderlist-content ul#mailboxlist > li:first-of-type > a {
+    padding-right: 1.5rem;
 }
 
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
-	top: 26px;
-} */
-
-#folderlist-content ul#mailboxlist > li:first-of-type > ul:first-of-type li[aria-level="2"]
-{
-    margin-right: -20px;
+#folderlist-content ul#mailboxlist > li:first-of-type[aria-expanded=false] > a {
+    padding-right: 4rem;
 }
 
 #folderlist-content ul#mailboxlist.unified > li:first-of-type > ul:first-of-type li[aria-level="2"]
@@ -394,7 +387,7 @@ ul#mailboxlist ul li.mailbox.selected a {
     margin-right: 0;
 } 
 
-#folderlist-content ul#mailboxlist.unified{
+#folderlist-content ul#mailboxlist.unified {
     margin-top: 20px;
 }
 

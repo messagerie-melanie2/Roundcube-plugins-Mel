@@ -316,9 +316,8 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
 
 /*** Full Calendar ***/
 .fc-event {
-	/* border: none !important;
-    border-radius: 0 !important; */
-    border-width: 3px!important;
+    border-width: 1px 7px 1px 1px !important;
+    font-size: 12px !important;
 }
 
 .fc .fc-event .fc-title {
@@ -814,6 +813,46 @@ img.menu-image {
 .folderlist li.boite > a::before {
     content: "\f01c";
     font-weight: 900;
+}
+
+ul.folderlist.treelist li ul li a {
+    padding-left: 1.5em;
+}
+
+ul.folderlist.treelist li ul li div.treetoggle {
+    left: 0;
+}
+
+ul.folderlist.treelist li ul li li a {
+    padding-left: 3em;
+}
+
+ul.folderlist.treelist li ul li li div.treetoggle {
+    left: 1.5em;
+}
+
+ul.folderlist.treelist li ul li li li a {
+    padding-left: 4.5em;
+}
+
+ul.folderlist.treelist li ul li li li div.treetoggle {
+    left: 3em;
+}
+
+ul.folderlist.treelist li ul li li li li a {
+    padding-left: 6em;
+}
+
+ul.folderlist.treelist li ul li li li li div.treetoggle {
+    left: 4.5em;
+}
+
+ul.folderlist.treelist li ul li li li li li a {
+    padding-left: 7.5em;
+}
+
+ul.folderlist.treelist li ul li li li li li div.treetoggle {
+    left: 6em;
 }
 
 .listing li > a.virtual.boite,

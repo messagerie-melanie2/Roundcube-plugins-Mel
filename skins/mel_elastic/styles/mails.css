@@ -337,6 +337,10 @@ text-align: center;
 	/* position: relative; */
 }
 
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle {
+	top: 10px;
+}
+
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
 	top: 10px;
 }

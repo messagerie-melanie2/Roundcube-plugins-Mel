@@ -15,6 +15,9 @@ function PaperClipCopy(link)
 
 function EditLink(id)
 {
+    if (rcmail.busy)
+        return;
+
     GetLinkPopUp().setPopUpChoice(MelLink.from(id)).show();
 }
 
@@ -25,11 +28,17 @@ function ModifyLink(link)
 
 function CreateLink()
 {
+    if (rcmail.busy)
+        return;
+
     GetLinkPopUp().setLinkEditor(new MelLink()).show();
 }
 
 function SearchLinks(search)
 {
+    if (rcmail.busy)
+        return;
+
     search = search.value;
 
     $(".epingle").css("display", search === "" ? "" : "none");
@@ -70,9 +79,63 @@ function DeleteLink(link)
 
 function TakLink(id)
 {
+    if (rcmail.busy)
+        return;
+
     return MelLink.from(id).callPin().then(() => {
         window.location.reload();
     });
+}
+
+function HideOrShowLink(id)
+{   if (rcmail.busy)
+        return;
+    
+    return MelLink.from(id).callHideOrShow();
+}
+
+function ShowOrHideAllHidden()
+{
+    if (rcmail.busy)
+        return;
+
+    if (rcmail.env.showHiddenLinks === undefined)
+        rcmail.env.showHiddenLinks = false;
+
+    $("#mulsah").addClass("disabled").attr("disabled", "disabled");
+    rcmail.set_busy(true, "loading");
+
+    if (!rcmail.env.showHiddenLinks)
+    {
+        MelLink.updateLinks("useful_links", true).then(() => {
+            rcmail.set_busy(false);
+            rcmail.clear_messages();
+            $("#mulsah").removeClass("disabled").removeAttr("disabled", "disabled");
+        });
+        rcmail.env.showHiddenLinks = true;
+        $("#mulsah").removeClass("crossed-eye")
+        .addClass("eye")
+        .attr("title", "Cacher les vignettes cachées")
+        .find("span")
+        .removeClass("icon-mel-eye-crossed")
+        .addClass("icon-mel-eye");
+    }
+    else {
+        MelLink.updateLinks("useful_links", null).then(() => {
+            rcmail.set_busy(false);
+            rcmail.clear_messages();
+            $("#mulsah").removeClass("disabled").removeAttr("disabled", "disabled");
+        });
+        rcmail.env.showHiddenLinks = null;
+        $("#mulsah").addClass("crossed-eye")
+        .removeClass("eye")
+        .attr("title", "Afficher toutes les vignettes")
+        .find("span")
+        .addClass("icon-mel-eye-crossed")
+        .removeClass("icon-mel-eye");
+    }
+
+
 }
 
 function PublicCommands(element)

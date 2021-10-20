@@ -127,4 +127,6 @@ $(document).ready(() => {
             $(`#${$(e).data("id")}`).css("box-shadow","");
         });
     });
+
+    $(".eye").css("display", "none");
 });

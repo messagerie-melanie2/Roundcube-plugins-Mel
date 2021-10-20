@@ -30,13 +30,20 @@ class mel_useful_link extends rcube_plugin
           $this->register_action('correct', array($this, 'correct_links'));  
           $this->register_action('delete', array($this, 'delete_link'));  
           $this->register_action('tak', array($this, 'pin_link'));
+          $this->register_action('get_joined_links', array($this, 'get_joined_links'));
+          $this->register_action('hideOrShow', array($this, 'HideOrShow'));
 
           if ($this->rc->action == "index" || $this->rc->action == "")
             $this->links = $this->get_personal_links();
             $this->include_uLinks();
             $this->rc->output->set_env("mul_old_items", $this->rc->config->get('portail_personal_items', []));
             $this->rc->output->set_env("mul_items", $this->rc->config->get('personal_useful_links', []));
+            include_once "lib/hidden.php";
+            $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
         }
+
+        // $this->add_hook('preferences_list', array($this, 'prefs_list'));
+        // $this->add_hook('preferences_save',     array($this, 'prefs_save'));
     }
 
     public function include_uLinks()
@@ -72,13 +79,30 @@ class mel_useful_link extends rcube_plugin
     {
       $this->rc->output->add_handlers(array(
           'epingle'    => array($this, 'index_epingle'),
-      ));
-      $this->rc->output->add_handlers(array(
           'joined'    => array($this, 'index_joined'),
+          'showahl'    => array($this, 'show_button_all_hidden_link')
       ));
 
       $this->rc->output->set_pagetitle("Liens utiles");
       $this->rc->output->send('mel_useful_link.index');
+    }
+
+    public function show_button_all_hidden_link()
+    {
+      include_once "lib/hidden.php";
+
+      $hiddened = mel_hidden_links::load($this->rc);
+
+      if ($hiddened->haveHidden())
+        return html::tag("button", [
+          "id" => "mulsah",
+          "class" => "mel-button btn btn-secondary crossed-eye",
+          "title" => "Afficher toutes les vignettes",
+          "style" => "margin-right:15px;",
+          "onclick" => "ShowOrHideAllHidden()"
+        ], html::tag("span", ["class" => "icon-mel-eye-crossed"]));
+
+      return "";
     }
 
     public function index_epingle()
@@ -153,6 +177,13 @@ class mel_useful_link extends rcube_plugin
 
     }
 
+    public function get_joined_links()
+    {
+      $this->links = $this->get_personal_links(rcube_utils::get_input_value("_show", rcube_utils::INPUT_GPC) ?? false);
+      echo $this->index_joined();
+      exit;
+    }
+
     function get_workspace_link($workspace, $plugin, $getHtml = false)
     {
       include_once "lib/link.php";
@@ -176,9 +207,13 @@ class mel_useful_link extends rcube_plugin
         return $links;
     }
 
-    function get_personal_links()
+    function get_personal_links($showHidden = false)
     {
+        if ($showHidden === "true" || $showHidden === "false")
+          $showHidden = $showHidden === "true";
+
         include_once "lib/link.php";
+        include_once "lib/hidden.php";
 
         $links = [];
         $user = driver_mel::gi()->getUser();
@@ -189,11 +224,18 @@ class mel_useful_link extends rcube_plugin
         // $items = $this->mergeItems($items, $this->rc->config->get('portail_personal_items', []));
 
         $items = $this->rc->config->get('personal_useful_links', null);
+        $hiddened = mel_hidden_links::load($this->rc);
 
         if ($items !== null)
         {
            foreach ($items as $key => $value) {
-               $links[$key] = mel_link::fromConfig($value);
+
+              if (!$showHidden && $hiddened->check_new($key))
+                continue;
+
+              $links[$key] = mel_link::fromConfig($value);
+              $links[$key]->hidden = $hiddened->check_new($key);
+                
            } 
         }
 
@@ -201,12 +243,18 @@ class mel_useful_link extends rcube_plugin
           "website_links616d3bb2cf99e" => [
             "name" => "Test",
             "type" => "website_links",
+            "personal" => true,
             "links" => [
               "Reddit" => ["url" => "https://reddit.com"],
               "¤This is swag" => ["url" => "https://minecraft-france.fr"]
             ]
           ]
-            ];//*/ $this->rc->config->get('portail_personal_items', []);
+            ];// $this->rc->config->get('portail_personal_items', []);
+            $this->rc->user->save_prefs(array('portail_personal_items' => $items));*/
+
+         $items = $this->getCardsConfiguration($user->dn);
+         $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
+         $items = $this->mergeItems($items, $this->rc->config->get('portail_personal_items', []));
 
         if (count($items) > 0)
         {
@@ -218,18 +266,30 @@ class mel_useful_link extends rcube_plugin
 
           $tmpLink;
           foreach ($items as $key => $value) {
+
+              if (mel::is_internal() && strpos($key, "internet") !== false)
+                continue;
+              else if (!mel::is_internal() && strpos($key, "intranet") !== false)
+                continue;
+
               if ($value["url"] === null || $value["url"] === "" || $value["links"] !== null || $value["buttons"] !== null)
               {
                 if ($value["links"] !== null || $value["buttons"] !== null)
                 {
                   foreach ($value[($value["links"] !== null ? "links" : "buttons")] as $keyLink => $link) {
+
+                    if (!$showHidden && $hiddened->check_old($keyLink, $key))
+                      continue;
+
                     $link["name"] = $value["name"]." - $keyLink";
 
                     $tmpKey = $this->generate_id($keyLink, $links);
+                    $link["personal"] = $value["personal"];
                     $tmpLink = mel_link::fromOldPortail($tmpKey, $link, [
                       "parent" => $key,
                       "id" => $keyLink
                     ]);
+                    $tmpLink->hidden = $hiddened->check_old($keyLink, $key);
 
                     if (end($links) != $tmpLink)  
                       $links[$tmpKey] = $tmpLink;
@@ -245,9 +305,15 @@ class mel_useful_link extends rcube_plugin
 
               }
 
+              if (!$showHidden && $hiddened->check_old($key))
+                continue;
+
               $tmpLink = mel_link::fromOldPortail($key, $value);
+              $tmpLink->hidden = $hiddened->check_old($key);
+
               if (end($links) == $tmpLink)
                 continue;
+
               $links[$key] = $tmpLink;
           }
         }
@@ -376,6 +442,7 @@ class mel_useful_link extends rcube_plugin
           $link->title = rcube_utils::get_input_value("_subtitle", rcube_utils::INPUT_GPC);
         
         unset($config[$parent][$config[$parent]["buttons"] !== null ? "buttons" : "links"][$child]);
+        $this->rc->user->save_prefs(array('portail_personal_items' => $config));
         $link->pin = true;
         $link->configKey = $this->generate_id($id, $this->rc->config->get('personal_useful_links', []));
         $config = $this->rc->config->get('personal_useful_links', []);
@@ -399,12 +466,22 @@ class mel_useful_link extends rcube_plugin
     function delete_link()
     {
       $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
-
+      $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC) ?? false;
+      $isSubItem = $isSubItem === "true";
+      
       //Supression chez les anciens
       $config = $this->rc->config->get('portail_personal_items', []);
-      if ($config[$id] !== null)
+      if ($config[$id] !== null && !$isSubItem)
       {
         unset($config[$id]);
+        $this->rc->user->save_prefs(array('portail_personal_items' => $config));
+      }
+      else if($isSubItem)
+      {
+        $parent = rcube_utils::get_input_value("_subparent", rcube_utils::INPUT_GPC);
+        $child = rcube_utils::get_input_value("_subid", rcube_utils::INPUT_GPC);
+        $isButton = $config[$parent]["links"] === null;
+        unset($config[$parent][$isButton ? "buttons" : "links"][$child]);
         $this->rc->user->save_prefs(array('portail_personal_items' => $config));
       }
       else {
@@ -461,6 +538,40 @@ class mel_useful_link extends rcube_plugin
       echo $update;
       exit;
 
+    }
+
+    function HideOrShow()
+    {
+      //init
+      include_once "lib/hidden.php";
+
+      $hiddened = mel_hidden_links::load($this->rc);
+      $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+      $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC) ?? false;
+      $isSubItem = $isSubItem === "true";
+
+      $user = driver_mel::gi()->getUser();
+      $config = $this->getCardsConfiguration($user->dn);
+      $config = array_merge($config, $this->rc->config->get('portail_items_list', []));
+      $config = $this->mergeItems($config, $this->rc->config->get('portail_personal_items', []));
+
+      //body
+      if ($isSubItem)
+      {
+        $parent = rcube_utils::get_input_value("_subparent", rcube_utils::INPUT_GPC);
+        $child = rcube_utils::get_input_value("_subid", rcube_utils::INPUT_GPC);
+        $hiddened->set_old($child, $parent);
+      }
+      else if ($config[$id] !== null)
+        $hiddened->set_old($id);
+      else
+        $hiddened->set_new($id);
+
+      //return
+      echo $hiddened->save($this->rc);
+      exit;
+
+      //end
     }
 
     /************* USEFUL FUNCTIONS **************/
@@ -610,5 +721,12 @@ class mel_useful_link extends rcube_plugin
 
     return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen);
   }
+
+
+
+  // public function prefs_list($args)
+  // {
+
+  // }
 
 }

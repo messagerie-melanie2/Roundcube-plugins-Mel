@@ -312,7 +312,7 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
 
 .task-calendar .listing li > div.calendar .actions
 {
-    padding-right: 30px;
+    padding-right: 10px;
 }
 
 .task-calendar .listing li > div.calendar > *
@@ -347,7 +347,7 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
 .task-calendar .listing li > div.calendar .custom-control
 {
     height: auto;
-    padding-left: 50px;
+    padding-left: 45px;
     margin-right: -20px;
 }
 
@@ -357,8 +357,8 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
 }
 
 .task-calendar .listing li[aria-level="2"] .custom-control{
-    padding-left: 70px!important;
-    margin-right: -43px!important;
+    padding-left: 60px !important;
+    margin-right: -43px !important;
 }
 html.touch .task-calendar .listing .custom-switch .custom-control-label
 {
@@ -404,7 +404,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 
 .task-calendar ul.treelist.iconized li div.treetoggle {
 	top: 10px;
-	left: 22px;
+	left: 14px;
 }
 
 .task-calendar.cal-space-old ul.treelist.iconized li div.treetoggle {

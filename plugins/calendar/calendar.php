@@ -1741,6 +1741,15 @@ class calendar extends rcube_plugin
     // configuration
     $settings['default_calendar'] = $this->rc->config->get('calendar_default_calendar');
     $settings['default_view'] = (string)$this->rc->config->get('calendar_default_view', $this->defaults['calendar_default_view']);
+
+    // PAMELA - Problème avec les vues travail du Bnum
+    if ($settings['default_view'] == 'agendaWork') {
+      $settings['default_view'] = 'agendaWeek';
+    }
+    else if ($settings['default_view'] == 'monthWork') {
+      $settings['default_view'] = 'month';
+    }
+
     $settings['date_agenda'] = (string)$this->rc->config->get('calendar_date_agenda', $this->defaults['calendar_date_agenda']);
 
     $settings['timeslots'] = (int)$this->rc->config->get('calendar_timeslots', $this->defaults['calendar_timeslots']);

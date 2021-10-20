@@ -815,6 +815,46 @@ img.menu-image {
     font-weight: 900;
 }
 
+ul.folderlist.treelist li ul li a {
+    padding-left: 1.5em;
+}
+
+ul.folderlist.treelist li ul li div.treetoggle {
+    left: 0;
+}
+
+ul.folderlist.treelist li ul li li a {
+    padding-left: 3em;
+}
+
+ul.folderlist.treelist li ul li li div.treetoggle {
+    left: 1.5em;
+}
+
+ul.folderlist.treelist li ul li li li a {
+    padding-left: 4.5em;
+}
+
+ul.folderlist.treelist li ul li li li div.treetoggle {
+    left: 3em;
+}
+
+ul.folderlist.treelist li ul li li li li a {
+    padding-left: 6em;
+}
+
+ul.folderlist.treelist li ul li li li li div.treetoggle {
+    left: 4.5em;
+}
+
+ul.folderlist.treelist li ul li li li li li a {
+    padding-left: 7.5em;
+}
+
+ul.folderlist.treelist li ul li li li li li div.treetoggle {
+    left: 6em;
+}
+
 .listing li > a.virtual.boite,
 .listing li.virtual.boite > a,
 .listing li > a.virtual.inbox,

@@ -315,6 +315,12 @@ text-align: center;
     background-color: #2C3054;
 }
 
+#folderlist-content ul#mailboxlist > li.mailbox.inbox.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.drafts.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.models.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.sent.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.junk.virtual,
+#folderlist-content ul#mailboxlist > li.mailbox.trash.virtual,
 #folderlist-content li.mailbox.boite
 {
     margin: 20px 0;

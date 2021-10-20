@@ -354,10 +354,14 @@ class mel_workspace extends rcube_plugin
         $this->currentWorkspace->uid = $workspace_id;
         $this->currentWorkspace->load();
         
-        if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
-        {
-            $this->currentWorkspace->save();        
-            $this->currentWorkspace->load();
+        try {
+            if (self::is_in_workspace($this->currentWorkspace) && $this->services_action_errors($this->currentWorkspace))
+            {
+                $this->currentWorkspace->save();        
+                $this->currentWorkspace->load();
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
         }
 
         $this->rc->output->add_handlers(array(
@@ -402,10 +406,14 @@ class mel_workspace extends rcube_plugin
         if ($services[self::EMAIL])
             $this->rc->output->set_env("current_workspace_email", self::get_wsp_mail($workspace_id));
 
-        if ($services[self::CHANNEL])
-        {
-            $this->channel_enabled = $this->check_channel($this->get_object($this->currentWorkspace, self::CHANNEL)->id);
-            $this->rc->output->set_env("current_workspace_channel", $this->get_object($this->currentWorkspace, self::CHANNEL));
+        try {
+            if ($services[self::CHANNEL])
+            {
+                $this->channel_enabled = $this->check_channel($this->get_object($this->currentWorkspace, self::CHANNEL)->id);
+                $this->rc->output->set_env("current_workspace_channel", $this->get_object($this->currentWorkspace, self::CHANNEL));
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
         }
         
         if ($services[self::CLOUD])

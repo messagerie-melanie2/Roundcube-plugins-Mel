@@ -12,11 +12,13 @@ class mel_link
     // public $subItem;
     public $subItemData;
     public $personal;
+    public $hidden;
 
     private function __construct() {
         $this->subItem = false;
         $this->subItemData = null;
         $this->personal = true;
+        $this->hidden = false;
     }
 
     public function subItem () {
@@ -39,6 +41,15 @@ class mel_link
         $html = str_replace("<datas/>", $this->toHtmlAttrDatas(), $html);
         $html = str_replace("<tak/>", $this->pin ? "active" : "", $html);
         $html = str_replace("<tak-text/>", $this->pin ? "Désépingler" : "Epingler", $html);
+        $html = str_replace("<hidden/>", $this->hidden ? "crossed-" : "", $html);
+        $html = str_replace("<takHidden/>", $this->pin ? " style=display:none " : "", $html);
+        $html = str_replace("<hiddenTitle/>", $this->hidden ? "Afficher le lien" : "Cacher le lien", $html);
+        $html = str_replace("<hidden\>", $this->hidden ? " hidden-link " : "", $html);
+
+        if (!$this->personal)
+            $html = str_replace("<personal/>", ' style="display:none;" ', $html);
+        else
+            $html = str_replace("<personal/>", '', $html);
 
         return $html;
     }
@@ -53,6 +64,7 @@ class mel_link
         '" data-from="'.$this->from.
         '" data-showWhen="'.$this->showWhen.
         '" data-id="'.$this->configKey.
+        '" data-isHidden="'.$this->hidden.
         '" data-subItem="'.($isSubItem ? "true" : "false").'"';
 
         if ($isSubItem)
@@ -116,7 +128,8 @@ class mel_link
         null, 
         $item["provenance"], 
         strpos($key, "intranet") !== false ? "intranet" : (strpos($key, "internet") !== false ? "internet" : "always"),
-        $subItemData);
+        $subItemData,
+        $item["personal"]);
     }
 
     public static function fromConfig($item)
@@ -135,8 +148,8 @@ class mel_link
             if ($item["subItemData"] !== null)
                 $link->subItemData = $item["subItemData"];
 
-            if ($item["personal"] !== null)
-                $link->personal = $item["personal"];
+            // if ($item["personal"] !== null)
+            //     $link->personal = $item["personal"];
                 
         } catch (\Throwable $th) {
             $link = self::create("unknown", $item->title, $item->link, $item->pin, $item->createDate, $item->from, $item->showWhen);
@@ -147,8 +160,8 @@ class mel_link
             // if ($item->subItemData !== null)
             //     $link->subItemData = $item->subItemData;
 
-            if ($item->personal !== null)
-                $link->personal = $item->personal;
+            // if ($item->personal !== null)
+            //     $link->personal = $item->personal;
         }
 
         return $link;

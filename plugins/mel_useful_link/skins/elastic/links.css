@@ -44,8 +44,46 @@ button.btn.icon-mel-pencil::before
 	text-decoration: none;
 }
 
+#mulsah,
 #mulba
 {
 	margin-top:0;
 	float: right;
+}
+
+html body #mulsah span::before
+{
+	color:white!important;
+}
+
+#mulsah.eye:hover span::before,
+.link-block .tools a.roundbadge.eye:hover::before
+{
+	color:white!important;
+	content: "\e961"!important;
+}
+
+.link-block .tools a.roundbadge.crossed-eye::before
+{
+	content: "\e961"!important;
+}
+
+.link-block .tools a.roundbadge.crossed-eye:hover::before,
+#mulsah.crossed-eye:hover span::before
+{
+	color:white!important;
+	content: "\e962"!important;
+}
+
+.tools .hidden-link,
+.tak.hidden-link
+{
+	display: none!important;
+}
+
+.square_div.hidden-link .contents.square-contents {
+	background-color: #F0F0F042;
+	color: #0000006b;
+	border: solid;
+	border-color: #F0F0F0;
 }

@@ -212,16 +212,18 @@
          this.link = "";
          this.from = "";
          this.showWhen = "";
-         this.subItem = new MelSubLink(null, null);
+         this.subItem = null;
+         this.hidden = false;
      }
  
-     init(id, title, link, from, showWhen, subItem = null)
+     init(id, title, link, from, showWhen, hidden, subItem = null)
      {
          this.id = id;
          this.title = title;
          this.link = link;
          this.from = from;
          this.showWhen = showWhen;
+         this.hidden = hidden;
          this.subItem = subItem;
      }
 
@@ -248,6 +250,66 @@
                  rcmail.clear_messages();
              }
           });
+     }
+
+     async callHideOrShow(task = "useful_links", action="hideOrShow", addonConfig = null)
+     {
+        rcmail.set_busy(true, "loading");
+
+        let ok = false;
+        let config = {
+            _id:this.id,
+            _is_sub_item:this.isSubLink()
+        }
+
+        if (config._is_sub_item)
+            config = this.subItem.updateConfig(config);
+
+        config = this.getConfig(config, addonConfig);
+
+        //Call
+        await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
+        config,
+        (data) => {
+            ok = true;
+        }
+        );
+        //Si réussi
+        if (ok)
+        {
+            if (rcmail.env.link_show_hiddened === undefined)
+                rcmail.env.link_show_hiddened = false;
+            
+            //MAJ des liens
+            ok = await this.callUpdateLinks(task, rcmail.env.showHiddenLinks);
+        }
+
+        rcmail.set_busy(false);
+        rcmail.clear_messages();
+
+        if (!ok)
+            rmcail.display_message("Une erreur est survenue lors de cette action !", "error");
+
+     }
+
+     async callUpdateLinks(task = "useful_links", showHiddened = false)
+     {
+        let ok = false;
+
+        await mel_metapage.Functions.post(
+            mel_metapage.Functions.url(task, "get_joined_links"),
+            {_show:showHiddened}, 
+            (datas) => {
+                $(".body .joined .links-items").html(datas);
+            }
+        );
+
+        return false;
+     }
+
+     static updateLinks(task = "useful_links", showHiddened = false)
+     {
+        return new MelLink().callUpdateLinks(task, showHiddened);
      }
  
      callDelete(task = "useful_links", action = "delete", addonConfig = null)
@@ -315,7 +377,10 @@
 
             config["_forced"] = true;
             if (config._is_sub_item)
+            {
                 config = this.subItem.updateConfig(config);
+                config["_subtitle"] = this.title;
+            }
 
             await mel_metapage.Functions.post(mel_metapage.Functions.url(task, action),
             this.getConfig(config, addonConfig),
@@ -441,7 +506,7 @@
          if (isSubItem)
             subLink = new MelSubLink(id.data("subid"), id.data("subparent"));
 
-         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), subLink);
+         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink);
      }
  
  }

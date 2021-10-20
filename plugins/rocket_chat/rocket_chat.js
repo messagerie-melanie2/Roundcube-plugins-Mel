@@ -17,14 +17,19 @@ if (window.rcmail) {
 
 	});
 
-	metapage_frames.addEvent("open.after", (eClass, changepage, isAriane, querry, id, actions) => {
-		if (eClass === "discussion" && changepage)
-		{
-			//logout().always(() => {
-				rcmail.triggerEvent("init_ariane", id);
-			//});
-		}
-	});
+	
+	try {
+		metapage_frames.addEvent("open.after", (eClass, changepage, isAriane, querry, id, actions) => {
+			if (eClass === "discussion" && changepage)
+			{
+				//logout().always(() => {
+					rcmail.triggerEvent("init_ariane", id);
+				//});
+			}
+		});
+	} catch (error) {
+		
+	}
 
 	function login()
 	{

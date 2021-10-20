@@ -224,6 +224,18 @@ $(document).ready(() => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
                         }).on("mouseleave", () => {
+
+                            if (document.activeElement === $("#mailsearchform")[0])
+                                return;
+
+                            if (!$("#mailsearchlist").hasClass("hoverable")  && !$("#layout-list").hasClass("full"))
+                                $("#mailsearchlist").addClass("hoverable");
+                        })
+                        .find("#mailsearchform")
+                        .on("focusout", (e) => {
+                            if (e.relatedTarget === $("#mailsearchlist .reset")[0])
+                                return;
+
                             if (!$("#mailsearchlist").hasClass("hoverable")  && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").addClass("hoverable");
                         });

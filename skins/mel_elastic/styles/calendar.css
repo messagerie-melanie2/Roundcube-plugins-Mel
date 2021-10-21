@@ -409,17 +409,17 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
 
 .task-calendar.cal-space-old ul.treelist.iconized li div.treetoggle {
 	top: 0px;
-	left: 22px;
+	left: 14px;
 }
 
 .task-calendar.cal-space-smaller ul.treelist.iconized li div.treetoggle {
 	top: 6px;
-	left: 22px;
+	left: 14px;
 }
 
 .task-calendar.cal-space-larger ul.treelist.iconized li div.treetoggle {
 	top: 15px;
-	left: 22px;
+	left: 14px;
 }
 
 .task-calendar #layout > #layout-sidebar > .header .header-title

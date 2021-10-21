@@ -3090,6 +3090,7 @@ class mel_workspace extends rcube_plugin
         $from = rcube_utils::get_input_value("_from", rcube_utils::INPUT_GPC);
         $showWhen = rcube_utils::get_input_value("_sw", rcube_utils::INPUT_GPC);
         $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
+        $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
 
         $workspace = $this->get_workspace($wid);
         $config = $this->get_object($workspace, self::LINKS);
@@ -3101,9 +3102,9 @@ class mel_workspace extends rcube_plugin
         {
             $id = $this->rc->plugins->get_plugin('mel_useful_link')->generate_id($title, $config);
             if (is_array($config))
-                $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from)->serialize();
+                $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
             else
-                $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from)->serialize();
+                $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
         }
         else {
             $newLink = mel_useful_link::toLink($config->$id);
@@ -3111,6 +3112,7 @@ class mel_workspace extends rcube_plugin
             $newLink->link = $link;
             $newLink->from = $from;
             $newLink->showWhen = $showWhen;
+            $newLink->color = $color;
             $config->$id = $newLink->serialize();
         }
 

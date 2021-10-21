@@ -822,7 +822,7 @@ class mel_utils
   public static function cal_update_color($username, $name, $color)
   {
     try {
-      $value = driver_mel::gi()->getUser()->getDefaultPreference("category_colors");
+      $value = driver_mel::gi()->getUser($username)->getDefaultPreference("category_colors");
       if (!isset($value))
         return self::cal_add_category($username, $name, $color);
       $_categories_color = explode('|', $value);

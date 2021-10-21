@@ -377,20 +377,6 @@ function rcube_calendar_ui(settings)
       if (!temp)
         me.selected_event = event;
 
-        //PAMELLA
-      if (rcmail.env.calendar_custom_dialog === true)
-      {
-        return rcmail.triggerEvent("calendar.event_show_dialog.custom", {
-          showed:Object.assign({}, event),
-          ev:ev,
-          temp:temp,
-          object:me,
-          functions:{
-            event_edit_dialog:event_edit_dialog
-          }
-        });
-      }
-
       var $dialog = $("#eventshow");
       var calendar = event.calendar && me.calendars[event.calendar] ? me.calendars[event.calendar] : { editable:false, rights:'lrs' };
 
@@ -556,6 +542,20 @@ function rcube_calendar_ui(settings)
         else {
           $('#event-rsvp .rsvp-buttons').removeClass('recurring');
         }
+      }
+
+      //PAMELLA
+      if (rcmail.env.calendar_custom_dialog === true)
+      {
+        return rcmail.triggerEvent("calendar.event_show_dialog.custom", {
+          showed:Object.assign({}, event),
+          ev:ev,
+          temp:temp,
+          object:me,
+          functions:{
+            event_edit_dialog:event_edit_dialog
+          }
+        });
       }
 
       var buttons = [], is_removable_event = function(event, calendar) {

@@ -939,3 +939,8 @@ html.layout-small .webconf-toolbar .wsp-toolbar-item
 {
     display: initial;
 }
+
+.link-block .tools .roundbadge
+{
+	background-color: #00000021!important;
+}

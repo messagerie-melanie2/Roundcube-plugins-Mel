@@ -76,6 +76,9 @@
  
              /**Url */
              this.linkText("mulc-url", "Adresse de la page", "URL", link.link).appendTo(parentDiv);
+
+             /**Couleur */
+             this.linkColor("mulc-color", "Couleur de la vignette", link.color).appendTo(parentDiv);
          
              /**Show When */
              //this.linkChoice("mulc-sw", "Choisissez quand le lien doit être visible", 0, {value:"always", text:"Tout le temps"}, {value:"internet", text:"Depuis internet"}, {value:"intranet", text:"Depuis l'intranet"}).appendTo(parentDiv);
@@ -90,11 +93,10 @@
                      return;
                  if (!$("#mulc-url")[0].reportValidity())
                      return;
- 
-                console.log("log", $("#mulc-subItem").val(), $("#mulc-subItem").val() == "true");
 
-                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  ($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null)/*$("#mulc-sw").val()*/);//.callUpdate().then(() => this.hide());
+                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/);//.callUpdate().then(() => this.hide());
                  this.setLoading();
+
                  link.callUpdate(task, action, addonConfig).then((result) => {
  
                     if (afterCreate !== null)
@@ -112,6 +114,7 @@
          }
          else
          {
+            $("#mulc-color").val(link.color);
              $("#mulc-id").val(link.id);
              $("#mulc-title").val(link.title);
              $("#mulc-url").val(link.link);
@@ -167,6 +170,14 @@
          const redstar = '<span style=color:red>*</span> '
          return $(`<label for="${id}" class="span-mel t1 ${isFirst ? "first" : ""}">${title}${redstar}</label><input id="${id}" class="form-control input-mel required" required type="text" placeholder="${placeholder}" value="${value}" />`);
      }
+
+     linkColor(id, title, value)
+     {
+        return $(`<div><label for="${id}" class="span-mel t1">${title}</label><input style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
+        .find("input").on("input", (e) => {
+            $(e.currentTarget).parent().find(".link-test-color").css("background-color", $(e.currentTarget).val());
+        }).parent();
+     }
  
      linkChoice(id, title, _default = 0, ...choices)
      {
@@ -214,9 +225,10 @@
          this.showWhen = "";
          this.subItem = null;
          this.hidden = false;
+         this.color = "#F0F0F0";
      }
  
-     init(id, title, link, from, showWhen, hidden, subItem = null)
+     init(id, title, link, from, showWhen, hidden, subItem = null, color = "#F0F0F0")
      {
          this.id = id;
          this.title = title;
@@ -225,6 +237,7 @@
          this.showWhen = showWhen;
          this.hidden = hidden;
          this.subItem = subItem;
+         this.color = color;
      }
 
      isSubLink()
@@ -287,8 +300,8 @@
         rcmail.set_busy(false);
         rcmail.clear_messages();
 
-        if (!ok)
-            rmcail.display_message("Une erreur est survenue lors de cette action !", "error");
+        // if (!ok)
+        //     rcmail.display_message("Une erreur est survenue lors de cette action !", "error");
 
      }
 
@@ -417,7 +430,8 @@
              _link:this.link,
              _from:this.from,
              _sw:this.showWhen,
-             _is_sub_item:this.isSubLink()
+             _is_sub_item:this.isSubLink(),
+             _color:(this.color === "#F0F0F0" ? null : this.color)
          };
  
          if (config._is_sub_item)
@@ -506,7 +520,7 @@
          if (isSubItem)
             subLink = new MelSubLink(id.data("subid"), id.data("subparent"));
 
-         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink);
+         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink, id.data("color"));
      }
  
  }

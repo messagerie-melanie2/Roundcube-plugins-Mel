@@ -87,3 +87,14 @@ html body #mulsah span::before
 	border: solid;
 	border-color: #F0F0F0;
 }
+
+.link-test-color
+{
+	margin-left:30px;
+	padding: 15px;
+}
+
+.tools .roundbadge
+{
+	background-color: #00000021!important;
+}

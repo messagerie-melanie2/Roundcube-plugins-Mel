@@ -91,7 +91,16 @@ function HideOrShowLink(id)
 {   if (rcmail.busy)
         return;
     
-    return MelLink.from(id).callHideOrShow();
+    return MelLink.from(id).callHideOrShow();/*.then(() => {
+        const haveHidden = Enumerable.from(rcmail.env.mul_hiddens).where(x => Enumerable.from(x.value).where(parent => parent.value === true ? true : parent.value.length !== undefined ? Enumerable.from(parent.value).where(child => child.value) > 0 : parent.value) > 0).any();
+        if (haveHidden && $("#mulsah").length === 0)
+        {
+            $(`<button id="mulsah" class="mel-button btn btn-secondary crossed-eye" title="Afficher toutes les vignettes" style="margin-right:15px;" onclick="ShowOrHideAllHidden()"><span class="icon-mel-eye-crossed"></span></button>`)
+            .appendTo($(".joined .title-wsp"));
+        }
+        else if (!haveHidden && $("#mulsah").length > 0)
+            $("#mulsah").remove();
+    });*/
 }
 
 function ShowOrHideAllHidden()

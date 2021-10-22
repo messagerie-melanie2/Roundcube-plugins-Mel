@@ -13,12 +13,14 @@ class mel_link
     public $subItemData;
     public $personal;
     public $hidden;
+    public $color;
 
     private function __construct() {
         $this->subItem = false;
         $this->subItemData = null;
         $this->personal = true;
         $this->hidden = false;
+        $this->color = null;
     }
 
     public function subItem () {
@@ -46,6 +48,8 @@ class mel_link
         $html = str_replace("<hiddenTitle/>", $this->hidden ? "Afficher le lien" : "Cacher le lien", $html);
         $html = str_replace("<hidden\>", $this->hidden ? " hidden-link " : "", $html);
 
+        $html = str_replace("<color/>", $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.($this->hidden ? "6b" : "") : "", $html);
+
         if (!$this->personal)
             $html = str_replace("<personal/>", ' style="display:none;" ', $html);
         else
@@ -65,6 +69,7 @@ class mel_link
         '" data-showWhen="'.$this->showWhen.
         '" data-id="'.$this->configKey.
         '" data-isHidden="'.$this->hidden.
+        '" data-color="'.$this->color.
         '" data-subItem="'.($isSubItem ? "true" : "false").'"';
 
         if ($isSubItem)
@@ -103,7 +108,7 @@ class mel_link
         return ($rl === null || $rl === "") ? $this->link : $rl;
     }
 
-    public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0, $subItemData = null, $isPersonal = true)
+    public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0, $subItemData = null, $isPersonal = true, $color = null)
     {
         $mel_link = new mel_link();
         $mel_link->title = $title;
@@ -115,6 +120,7 @@ class mel_link
         $mel_link->configKey = $id;
         $mel_link->subItemData = $subItemData;
         $mel_link->personal = $isPersonal;
+        $mel_link->color = $color;
 
         return $mel_link;
     }
@@ -129,7 +135,8 @@ class mel_link
         $item["provenance"], 
         strpos($key, "intranet") !== false ? "intranet" : (strpos($key, "internet") !== false ? "internet" : "always"),
         $subItemData,
-        $item["personal"]);
+        $item["personal"],
+        $item["color"] === null || $item["color"] === "default" ? null : $item["color"]);
     }
 
     public static function fromConfig($item)
@@ -148,8 +155,8 @@ class mel_link
             if ($item["subItemData"] !== null)
                 $link->subItemData = $item["subItemData"];
 
-            // if ($item["personal"] !== null)
-            //     $link->personal = $item["personal"];
+             if ($item["color"] !== null)
+                 $link->personal = $item["color"];
                 
         } catch (\Throwable $th) {
             $link = self::create("unknown", $item->title, $item->link, $item->pin, $item->createDate, $item->from, $item->showWhen);
@@ -157,11 +164,11 @@ class mel_link
             if ($item->configKey !== null)
                 $link->configKey = $item->configKey;
 
-            // if ($item->subItemData !== null)
-            //     $link->subItemData = $item->subItemData;
+             if ($item->subItemData !== null)
+                 $link->subItemData = $item->subItemData;
 
-            // if ($item->personal !== null)
-            //     $link->personal = $item->personal;
+             if ($item->color !== null)
+                 $link->color = $item->color;
         }
 
         return $link;

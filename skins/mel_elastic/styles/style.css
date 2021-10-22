@@ -1836,3 +1836,16 @@ html .menu a.selection::before {
 {
     display: flex!important;
 }
+
+.link-ellipse {
+	white-space: nowrap;
+	display:inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+ }
+.two-lines {
+	-webkit-line-clamp: 3;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	white-space: normal;
+}

@@ -359,6 +359,38 @@ if (rcmail)
 
             }
         }
+
+        $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
+        .find('.rsvp-buttons')
+        .find('input[rel=accepted]')
+        .click((e) => {
+            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=accepted]')[0].click();
+            deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+        })
+        .parent().find('input[rel=tentative]')
+        .click((e) => {
+            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=tentative]')[0].click();
+            deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+        })
+        .parent().find('input[rel=delegated]')
+        .click((e) => {
+            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=delegated]')[0].click();
+            if (e.attr("aria-haspopup") == 'true')
+                deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+            else
+                modal.close();
+        })
+        .parent().find('input[rel=declined]')
+        .click((e) => {
+            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=declined]')[0].click();
+            deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+        })
+        .parent().find(".itip-reply-controls")
+        .find("input.form-check-input")
+        .click(() => {
+            $("#event-rsvp").find('.rsvp-buttons').find(".itip-reply-controls").find("input.form-check-input")[0].click();
+        });
+
     }, 1);
 
         if ($.isArray(event.attachments)) {
@@ -394,6 +426,31 @@ if (rcmail)
             }
         }
     });
+
+    async function deplace_popup_if_exist(rec)
+    {
+        //popover .show
+        let it = -1;
+        return wait(() => {
+            ++it;
+            if ($(".popover.show").length > 0 && $("#itip-rsvp-menu").length > 0)
+                return false;
+            else if ($(".popover.show").length > 0 && $("#itip-rsvp-menu").length == 0)
+                return false;
+            else if (it === 5)
+                return false;
+            else
+                return true;
+        }).then(() => {
+            //$(".popover.show")
+            const top = rec.top + (rec.height/2);
+            const left = rec.left + rec.width;
+            $(".popover.show")
+            .css("top", `${top}px`)
+            .css("left", `${left}px`)
+            ;
+        });
+    }
 
     function linkify(text, config = {style:""}) {
         var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;

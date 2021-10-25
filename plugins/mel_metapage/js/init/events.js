@@ -281,18 +281,22 @@ if (rcmail)
         modal.footer.querry.html("")
         .append($(`<button class="mel-calendar-button" id="-mel-send-event"><span class="icon-mel-send"></span><span class=inner>Partager</span></button>`).click((e) => {
             datas.object.event_sendbymail(event, e);
-        }))
-        .append($(`<button class="mel-calendar-button danger" id="-mel-delete-event"><span class="icon-mel-trash"></span><span class=inner>Supprimer</span></button>`).click(() => {
-            datas.object.delete_event(event);
-            modal.close();
-        }))
-        .append($(`<button class="mel-calendar-button" id="-mel-modify-event"><span class="icon-mel-pencil"></span><span class=inner>Modifier</span></button>`).click(() => {
-            modal.close();
-            datas.functions.event_edit_dialog('edit', event);
-            // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
-            rcmail.triggerEvent('edit-event', event);
-        }))
-        ;
+        }));
+
+        if (rcmail.env.calendars[event.calendar].editable)
+        {
+            modal.footer.querry.append($(`<button class="mel-calendar-button danger" id="-mel-delete-event"><span class="icon-mel-trash"></span><span class=inner>Supprimer</span></button>`).click(() => {
+                datas.object.delete_event(event);
+                modal.close();
+            }))
+            .append($(`<button class="mel-calendar-button" id="-mel-modify-event"><span class="icon-mel-pencil"></span><span class=inner>Modifier</span></button>`).click(() => {
+                modal.close();
+                datas.functions.event_edit_dialog('edit', event);
+                // PAMELA - Actions à faire lorsque l'on appelle la fenêtre d'édition d'évènement
+                rcmail.triggerEvent('edit-event', event);
+            }))
+            ;
+        }
 
         //$(".global-modal-body")
 

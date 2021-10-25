@@ -237,7 +237,9 @@
          this.showWhen = showWhen;
          this.hidden = hidden;
          this.subItem = subItem;
-         this.color = color;
+
+         if (color !== undefined && color !== null && color != "")
+            this.color = color;
      }
 
      isSubLink()

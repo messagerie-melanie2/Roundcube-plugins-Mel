@@ -244,6 +244,18 @@ class mel_useful_link extends rcube_plugin
                 
            } 
         }
+        // $dbug =            ["website_buttons61766c11d8650" => [
+        //   "buttons" => [
+        //     "Test enfant" => [
+        //       "href" => "http://enfant"
+        //     ]
+        //   ],
+        //   "color" => "default",
+        //   "name" => "parent",
+        //   "type" => "website_buttons",
+        //   "url" => "http://Test parent",
+        //  ]];
+        //  $this->rc->user->save_prefs(array('portail_personal_items' => $dbug));
 
         $items = /*[
           "website_links616d3bb2cf99e" => [
@@ -350,7 +362,9 @@ class mel_useful_link extends rcube_plugin
         $id = null;
 
       //Vérification des anciens
-      $config = $id === null ? [] : $this->rc->config->get('portail_personal_items', []);
+      $config = $id === null ? [
+
+      ] : $this->rc->config->get('portail_personal_items', []);
 
       if (($config[$id] !== null || $isSubItem) && !$forceUpdate)
       {
@@ -361,7 +375,7 @@ class mel_useful_link extends rcube_plugin
         include_once "lib/link.php";
 
         //Suppression de l'ancien lien 
-        if ($config[$id] !== null && $isSubItem)
+        if ($config[$id] !== null && !$isSubItem)
         {
           $this->child_old_links_to_new_link($config, $id);
           unset($config[$id]);
@@ -495,7 +509,7 @@ class mel_useful_link extends rcube_plugin
 
             //Tranformer les liens enfants en lien BNum
             foreach ($config[$id][$member] as $key => $value) {
-              $link["name"] = $config[$id]["name"]." - $key";
+              $value["name"] = $config[$id]["name"]." - $key";
 
               if ($value["color"] === null)
                 $value["color"] = $config[$id]["color"];

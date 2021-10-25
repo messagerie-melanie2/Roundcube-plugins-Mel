@@ -88,6 +88,9 @@ if (rcmail)
                         for (let index = 0; index < data.length; ++index) {
                             element = data[index];
 
+                            if (element.status === "CANCELLED")
+                                continue;
+
                             if (element.allDay)
                                 element.order = 0;
                             else

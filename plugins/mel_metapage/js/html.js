@@ -241,7 +241,8 @@ html_helper.Calendars = function({datas, config = {
 	let style;
 	let link;
 	let text;
-	//let bool;
+	let title;
+	let bool;
 	//let icon;
 	if (typeof datas === "string")
 		html += "<div>" + datas + "</div>";
@@ -251,6 +252,42 @@ html_helper.Calendars = function({datas, config = {
 		{
 			for (let index = 0; index < datas.length; index++) {
 				const element = datas[index];
+
+			if (element.status === "CANCELLED")
+				continue;
+
+			title = element.title;
+
+			if (element.attendees !== undefined && element.attendees.length > 0)
+			{
+				bool = false;
+				const item = Enumerable.from(element.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
+				switch (item.status) {
+					case "NEEDS-ACTION":
+						title += ` (En attente)`;
+						break;
+
+					case "ACCEPTED":
+						title += ` (Accepter)`;
+						break;
+
+					case "TENTATIVE":
+						title += ` (Peut-être)`;
+						break;
+
+					case "CANCELLED":
+						bool = true;
+						break;
+				
+					default:
+						break;
+				}
+
+				if (bool)
+					continue;
+
+			}
+
 				html += "<li>";
 				html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
@@ -262,7 +299,9 @@ html_helper.Calendars = function({datas, config = {
 					text = `${style_date.start} - ${style_date.end}`;
 				}
 
-				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title element-block">${text}</span><span class="element-desc element-block">${element.title}</span></a></div>`;
+
+
+				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(element)}"><span class="element-title element-block">${text}</span><span class="element-desc element-block">${title}</span></a></div>`;
 
 				if (element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
 				{

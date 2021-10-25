@@ -68,7 +68,7 @@ class roundcube_oidc extends rcube_plugin
             //region =========== AUTH methods ===========
 
             // Auth OIDC triggered by Kerberos (with LDAP field)
-            if($rcmail->config->get('oidc_auth_kerberos') && isset($_GET['kerb']) && !empty($_SERVER['REMOTE_USER']))
+            if($rcmail->config->get('oidc_auth_kerberos') /*&& isset($_GET['kerb'])*/ && !empty($_SERVER['REMOTE_USER']))
             {
                 //mel_logs::get_instance()->log(mel_logs::INFO, "Connexion OIDC avec déclenchement Kerberos/LDAP...");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "Connection OIDC avec déclenchement Kerberos/LDAP...");

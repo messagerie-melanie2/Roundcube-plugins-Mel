@@ -468,7 +468,7 @@ class mtes_driver_mel extends mce_driver_mel {
 
     // On test si le groupe existe déjà
     $group->dn = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['dn']);
-    if (!$group->load()) {
+    if (!$group->load(['fullname', 'email', 'members', 'members_email', 'mdrive'])) {
       // Ajout des attributs
       foreach (self::WS_GROUP as $key => $value) {
         $group->$key = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], $value);
@@ -511,7 +511,7 @@ class mtes_driver_mel extends mce_driver_mel {
    */
   public function get_workspace_group($workspace_id) {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::get_workspace_group($workspace_id, $mdrive)");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "[driver_mel] mtes::get_workspace_group($workspace_id)");
     $group = $this->group([null, 'webmail.workspace']);
 
     // Calculer le domain
@@ -519,7 +519,7 @@ class mtes_driver_mel extends mce_driver_mel {
 
     // On test si le groupe existe
     $group->dn = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['dn']);
-    if ($group->load()) {
+    if ($group->load(['fullname', 'email', 'members', 'members_email', 'mdrive'])) {
       return $group;
     }
     else {

@@ -21,7 +21,7 @@ if (window.rcmail) {
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
 rcube_webmail.prototype.show_current_page_onboarding = function() {
-    fetch('/bureau/plugins/mel_onboarding/json/' + this.env.task + '.json', {credentials: "include", cache: "no-cache"}).then((res) => {
+    fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + this.env.task + '.json', {credentials: "include", cache: "no-cache"}).then((res) => {
         res.text().then((json) => {
             window.current_onboarding = JSON.parse(json);
 
@@ -32,7 +32,6 @@ rcube_webmail.prototype.show_current_page_onboarding = function() {
             if (window.current_onboarding.addpadding) {
                 let div = $('<div class="onboarding-padding"></div>');
                 div.attr('style', 'height: 60em;');
-                console.log('Addpadding : ' + window.current_onboarding.addpadding);
                 $(window.current_onboarding.addpadding).append(div);
             }
 
@@ -52,7 +51,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function() {
                         const element = window.current_onboarding.stepper.items[key];
                         
                         // Affichage de l'élément dans la navigation
-                        let li = $('<li class="c-stepper__item ' + key + '"></li>');
+                        let li = $('<li class="c-stepper__item ' + key + '" title="' + element.description + '"></li>');
                         li.append($('<h3 class="c-stepper__title">' + element.title + '</h3>'));
                         li.append($('<p class="c-stepper__desc">' + element.description + '</p>'));
 
@@ -120,8 +119,6 @@ rcube_webmail.prototype.show_current_page_onboarding = function() {
                     rcmail.onboarding_close();
                 });
                 stepper.append(buttonClose);
-                stepper.append($('<div><label><input type="checkbox"> Ne plus afficher cette aide au démarrage (elle reste accessible depuis le bouton Assistance)</label></div>'));
-
                 html.append(stepper);
             }
             else {
@@ -130,7 +127,6 @@ rcube_webmail.prototype.show_current_page_onboarding = function() {
                     rcmail.onboarding_close();
                 });
                 html.append(button);
-                html.append($('<div><label><input type="checkbox"> Ne plus afficher cette aide au démarrage (elle reste accessible depuis le bouton Assistance)</label></div>'));
             }
             $("#layout").after(html);
 
@@ -145,7 +141,6 @@ rcube_webmail.prototype.show_current_page_onboarding = function() {
  * Permet d'afficher l'item courant
  */
  rcube_webmail.prototype.onboarding_show_item = function(item) {
-    console.log("onboarding_show_item : " + item);
     // Réinitialiser l'ancien item
     if (window.last_modified_item) {
         $(window.last_modified_item).attr('style', window.last_item_css);
@@ -179,7 +174,6 @@ rcube_webmail.prototype.show_current_page_onboarding = function() {
 
         // Mettre en surbrillance l'objet associé
         if (window.current_onboarding.stepper.items[item].highlight) {
-            console.log("onboarding_show_item highlight : " + window.current_onboarding.stepper.items[item].highlight);
             window.last_modified_item = window.current_onboarding.stepper.items[item].highlight;
             window.last_item_css = $(window.current_onboarding.stepper.items[item].highlight).attr('style');
 
@@ -248,5 +242,10 @@ rcube_webmail.prototype.onboarding_close = function() {
     // Gestion du padding ?
     if (window.current_onboarding.addpadding) {
         $('.onboarding-padding').remove();
+    }
+
+    // Réinitialiser l'ancien item
+    if (window.last_modified_item) {
+        $(window.last_modified_item).attr('style', window.last_item_css);
     }
 };

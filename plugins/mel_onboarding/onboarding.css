@@ -54,7 +54,7 @@
 #dimScreen button.btn {
     background-color: #5870BF;
     margin: 1em;
-    border-radius: 1em;
+    border-radius: 2em;
 }
 
 #dimScreen button.btn.disabled {

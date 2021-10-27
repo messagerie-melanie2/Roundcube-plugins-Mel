@@ -186,9 +186,33 @@
 	</ul>
 </div>
 
+<div id="listselect-menu-copy" class="popupmenu">
+	<h3 id="aria-label-listselect-menu-copy" class="voice"><roundcube:label name="arialabellistselectmenu" /></h3>
+	<ul class="menu listing" role="menu" aria-labelledby="aria-label-listselect-menu-copy">
+		<roundcube:button type="link-menuitem" label="selection" class="selection disabled" classAct="selection active"
+			name="list-toggle-button" id="list-toggle-button"
+			onclick="if ($(this).is('.active')) $('#messagelist').toggleClass('withselection');" />
+		<roundcube:button command="select-all" type="link-menuitem" label="all" class="select all disabled" classAct="select all active" />
+		<roundcube:button command="select-all" type="link-menuitem" prop="page" label="currpage" class="select page disabled" classAct="select page active" />
+		<roundcube:button command="select-all" type="link-menuitem" prop="unread" label="unread" class="select unread disabled" classAct="select unread active" />
+		<roundcube:button command="select-all" type="link-menuitem" prop="flagged" label="flagged" class="select flagged disabled" classAct="select flagged active" />
+		<roundcube:button command="select-all" type="link-menuitem" prop="invert" label="invert" class="select invert disabled" classAct="select invert active" />
+		<roundcube:button command="select-none" type="link-menuitem" label="none" class="select none disabled" classAct="select none active" />
+	</ul>
+</div>
+
 <div id="threadselect-menu" class="popupmenu">
 	<h3 id="aria-label-threadselectmenu" class="voice"><roundcube:label name="arialabelthreadselectmenu" /></h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-threadselectmenu">
+		<roundcube:button command="expand-unread" type="link-menuitem" label="expand-unread" class="expand unread disabled" classAct="expand unread active" />
+		<roundcube:button command="expand-all" type="link-menuitem" label="expand-all" class="expand all disabled" classAct="expand all active" />
+		<roundcube:button command="collapse-all" type="link-menuitem" label="collapse-all" class="expand none disabled" classAct="expand none active" />
+	</ul>
+</div>
+
+<div id="threadselect-menu-copy" class="popupmenu">
+	<h3 id="aria-label-threadselect-menu-copy" class="voice"><roundcube:label name="arialabelthreadselectmenu" /></h3>
+	<ul class="menu listing" role="menu" aria-labelledby="aria-label-threadselect-menu-copy">
 		<roundcube:button command="expand-unread" type="link-menuitem" label="expand-unread" class="expand unread disabled" classAct="expand unread active" />
 		<roundcube:button command="expand-all" type="link-menuitem" label="expand-all" class="expand all disabled" classAct="expand all active" />
 		<roundcube:button command="collapse-all" type="link-menuitem" label="collapse-all" class="expand none disabled" classAct="expand none active" />
@@ -200,11 +224,11 @@
 <div id="melmorethings-menu" class="popupmenu">
 	<h3 id="aria-label-melmorethings-menu" class="voice"><roundcube:label name="" /></h3>
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-melmorethings-menu">
-		<!-- <li>
-			<a href="#select" class="select active" data-popup="listselect-menu" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu" data-original-title="Sélectionner"><span class="inner">Sélectionner</span></a>
-		</li> -->
+		 <li>
+			<a href="#select" class="select active" data-popup="listselect-menu-copy" data-toggle-button="list-toggle-button" title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu-copy" data-original-title="Sélectionner"><span class="inner">Sélectionner</span></a>
+		</li> 
 		<li>
-			<a href="#threads" class="threads disabled" data-popup="threadselect-menu" title="Fils" aria-haspopup="true" aria-expanded="false" aria-owns="threadselect-menu" data-original-title="Fils"><span class="inner">Fils</span></a>
+			<a href="#threads" class="threads disabled" data-popup="threadselect-menu-copy" title="Fils" aria-haspopup="true" aria-expanded="false" aria-owns="threadselect-menu-copy" data-original-title="Fils"><span class="inner">Fils</span></a>
 		</li>
 		<li>
 			<a href="#list-options" onclick="return rcmail.command('menu-open', 'messagelistmenu', this, event)" class="options active" id="listmenulink" title="Options" tabindex="0"><span class="inner">Options</span></a>

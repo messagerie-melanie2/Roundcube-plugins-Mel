@@ -332,13 +332,13 @@ $(document).ready(() => {
                             $("#toolbar-list-menu li").css("display", "none").find(".compose").parent().css("display", "");
                             $("#limelmailplusmenu").css("display", "")
                             //$("#melmorethings-menu .select").data("popup", `-${$("#melmorethings-menu .select").data("popup")}`)
-                            if ($("#melmorethings-menu .select").length === 0)
-                                $("#toolbar-list-menu .select").clone().appendTo($("<li></li>")).parent().prependTo($("#melmorethings-menu ul"));
+                            // if ($("#melmorethings-menu .select").length === 0)
+                            //     $("#toolbar-list-menu .select").clone().appendTo($("<li></li>")).parent().prependTo($("#melmorethings-menu ul"));
                         }
                         else {
                             $("#toolbar-list-menu li").css("display", "");
                             $("#limelmailplusmenu").css("display", "none");
-                            $("#melmorethings-menu .select").parent().remove();
+                            //$("#melmorethings-menu .select").parent().remove();
                             //$("#melmorethings-menu .select").data("popup", $("#melmorethings-menu .select").data("popup").replace("-", ""))
                         }
                     });
@@ -810,7 +810,7 @@ $(document).ready(() => {
         set_pagination(e,count, current = null)
         {
             const _integer = this._integer;
-            console.log("count", count);
+            //console.log("count", count);
             count = Math.ceil(count/7.0);
             e.html('<button class="pagination_prev pagination-button" onclick="MEL_ELASTIC_UI.pagination_prev(this)">Précédent</button>')
             e.append("<div class=pagination-elements></div>");
@@ -825,7 +825,7 @@ $(document).ready(() => {
                 pagination_elements.append(this.create_number(index+1, true, (index === 0)));
             }
             e.append('<button class="pagination_next pagination-button" onclick="MEL_ELASTIC_UI.pagination_next(this)">Suivant</button>')
-            console.log("current", current);
+            //console.log("current", current);
             if (current !== null)
                 this.pagination_page($(".pagination-number-" + current)[0],current, false);
         }
@@ -896,7 +896,7 @@ $(document).ready(() => {
             else
             {
                 for (let index = 0; index < count; ++index) {
-                    console.log("test", index+1 === number);
+                    //console.log("test", index+1 === number);
                     html += this.create_number(index+1, true, (index+1 === number));
                 }
             }

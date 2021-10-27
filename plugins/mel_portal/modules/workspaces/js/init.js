@@ -117,7 +117,6 @@ rcmail.addEventListener("ariane.updated", () => {
 
 async function wsp_action_notif(target, page)
 {
-
     const key = "fromphp_";
     if (page.includes(key))
         page = page.replace(key, "");
@@ -129,13 +128,11 @@ async function wsp_action_notif(target, page)
      _page:page
      };
 
-     //console.log("yolo", key, page, uid, config);
-
      if (parent.$(`iframe.workspace-frame`).length > 0)
      {
          //delete config._action;
-         await $(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", $(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
-         $(`iframe.workspace-frame`).remove();
+         await parent.$(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", $(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
+         parent.$(`iframe.workspace-frame`).remove();
          config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
          await mel_metapage.Functions.change_frame("wsp", true, true, config);
          //$(`iframe.workspace-frame`)[0].src = mel_metapage.Functions.url("workspace", "workspace", config);

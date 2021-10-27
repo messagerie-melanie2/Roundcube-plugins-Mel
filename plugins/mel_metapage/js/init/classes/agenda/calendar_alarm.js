@@ -39,7 +39,7 @@ class Alarm{
 
                 this.time = parseInt(string.split("PT")[1].split("M")[0]);
 
-                console.log("string", string, string.includes("DISPLAY"))
+                //console.log("string", string, string.includes("DISPLAY"))
                 if (string.includes("DISPLAY")) //Type d'alarme
                     this.mode = Alarm.enums.mode.display;
 

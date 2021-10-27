@@ -33,7 +33,7 @@ if (window.rcmail) {
 
 	function login()
 	{
-		console.log("here");
+		//console.log("here");
 		return $.ajax({ // fonction permettant de faire de l'ajax
 			type: "GET", // methode de transmission des données au fichier php
 			url: MEL_ELASTIC_UI.url("discussion", "login"),//"/?_task=discussion&_action=login",

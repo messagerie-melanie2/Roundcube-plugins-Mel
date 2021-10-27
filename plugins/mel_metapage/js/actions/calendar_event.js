@@ -164,7 +164,7 @@ async function DatePickerInit()
     querry.append(`<span role=button tabIndex=0 style="cursor:pointer;font-weight:normal;" class="mel-focus mel-hover" id=${idMonth}>${$(`#datepicker-dp-title .ui-datepicker-month option[value=${$("#datepicker-dp-title .ui-datepicker-month").val()}]`).html()}</span>
     <span role=button tabIndex=0 style="cursor:pointer;font-weight:normal;" class="mel-focus mel-hover" id=${idYear}>${$(`#datepicker-dp-title .ui-datepicker-year option[value=${$("#datepicker-dp-title .ui-datepicker-year").val()}]`).html()}</span>`);
 
-    console.log("month", $(`#datepicker-dp-title .ui-datepicker-month option[value=${$("#datepicker-dp-title .ui-datepicker-month").val()}]`));
+    //console.log("month", $(`#datepicker-dp-title .ui-datepicker-month option[value=${$("#datepicker-dp-title .ui-datepicker-month").val()}]`));
 
     querry.find(`#${idMonth}`).click((e) => {
         ForceSelectClick($("#datepicker-dp-title .ui-datepicker-month"));

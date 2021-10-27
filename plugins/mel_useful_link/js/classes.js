@@ -47,9 +47,7 @@
      {
          if (link === null)
              link = new MelLink();
-
-        console.log("LINK", link);
- 
+             
          this.setTitle(link.id === "" ? "Création d'un nouveau lien" : "Modification d'un lien");
  
          if (this.modal.contents.find("#mul-editor").length === 0)

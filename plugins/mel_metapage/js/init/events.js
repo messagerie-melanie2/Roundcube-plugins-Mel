@@ -167,6 +167,7 @@ if (rcmail)
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
         const event = datas.showed;
+        const isInvited = datas.show_rsvp;//event.attendees !== undefined && event.attendees.length > 0 && Enumerable.from(event.attendees).where(x => rcmail.env.mel_metapage_user_emails.includes(x.email)).first().status === "NEEDS-ACTION";
 
         let html = "";
         html += "<div id=parenthtmlcalendar>";
@@ -264,6 +265,7 @@ if (rcmail)
         let modal = new GlobalModal("globalModal", config, true);
         modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem");
         
+        //Gérer le titre
         modal.header.querry.css("position", "sticky")
         .css("top", "0")
         .css("background-color","white")
@@ -271,6 +273,7 @@ if (rcmail)
         .css("border-top-right-radius","15px")
         .css("z-index", 1);
 
+        //gérer les boutons du footer
         modal.footer.querry.css("position", "")
         .css("bottom", "0")
         .css("background-color", "white")
@@ -298,9 +301,7 @@ if (rcmail)
             ;
         }
 
-        //$(".global-modal-body")
-
-              // add link for "more options" drop-down
+        //Options
       if (!datas.temp && !event.temporary && event.calendar != '_resource') {
         $('<button>')
           .attr({href: '#', 'class': 'dropdown-link mel-calendar-button ', 'data-popup-pos': 'top'})
@@ -346,6 +347,7 @@ if (rcmail)
 
     });
 
+    //Gestion des liens
     setTimeout(() => {
         let querry = $("#location-mel-edited-calendar").find("a");
         if (querry.length > 0)
@@ -364,39 +366,44 @@ if (rcmail)
             }
         }
 
-        $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
-        .find('.rsvp-buttons')
-        .find('input[rel=accepted]')
-        .click((e) => {
-            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=accepted]')[0].click();
-            deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
-        })
-        .parent().find('input[rel=tentative]')
-        .click((e) => {
-            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=tentative]')[0].click();
-            deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
-        })
-        .parent().find('input[rel=delegated]')
-        .click((e) => {
-            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=delegated]')[0].click();
-            if (e.attr("aria-haspopup") == 'true')
+        //Gestion des invitations
+        if (isInvited)
+        {
+            $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
+            .find('.rsvp-buttons')
+            .find('input[rel=accepted]')
+            .click((e) => {
+                $("#event-rsvp").find('.rsvp-buttons').find('input[rel=accepted]')[0].click();
                 deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
-            else
-                modal.close();
-        })
-        .parent().find('input[rel=declined]')
-        .click((e) => {
-            $("#event-rsvp").find('.rsvp-buttons').find('input[rel=declined]')[0].click();
-            deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
-        })
-        .parent().find(".itip-reply-controls")
-        .find("input.form-check-input")
-        .click(() => {
-            $("#event-rsvp").find('.rsvp-buttons').find(".itip-reply-controls").find("input.form-check-input")[0].click();
-        });
+            })
+            .parent().find('input[rel=tentative]')
+            .click((e) => {
+                $("#event-rsvp").find('.rsvp-buttons').find('input[rel=tentative]')[0].click();
+                deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+            })
+            .parent().find('input[rel=delegated]')
+            .click((e) => {
+                $("#event-rsvp").find('.rsvp-buttons').find('input[rel=delegated]')[0].click();
+                if (e.attr("aria-haspopup") == 'true')
+                    deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+                else
+                    modal.close();
+            })
+            .parent().find('input[rel=declined]')
+            .click((e) => {
+                $("#event-rsvp").find('.rsvp-buttons').find('input[rel=declined]')[0].click();
+                deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+            })
+            .parent().find(".itip-reply-controls")
+            .find("input.form-check-input")
+            .click(() => {
+                $("#event-rsvp").find('.rsvp-buttons').find(".itip-reply-controls").find("input.form-check-input")[0].click();
+            });
+        }
 
     }, 1);
 
+    //Gestion des attachements
         if ($.isArray(event.attachments)) {
             libkolab.list_attachments(event.attachments, $('#mel-event-attachments').find('.mel-event-text'), undefined, event,
                 function(id) { rcmail.env.deleted_attachments.push(id); },
@@ -429,6 +436,7 @@ if (rcmail)
                 });
             }
         }
+        //fin
     });
 
     async function deplace_popup_if_exist(rec)
@@ -692,6 +700,28 @@ if (rcmail)
     
 
 }
+
+// $(document).ready(() => {
+
+//     //Alarmes
+//     window.addEventListener('storage', (e) => {
+//         if ($("#alarm-display").length == 0)
+//             return;
+
+//         const key = e.key;
+
+//         switch (key) {
+//             case mel_metapage.Storage.calendar:
+                
+//                 break;
+        
+//             default:
+//                 break;
+//         }
+
+//       });
+
+// });
 
 // const cookieEvent = new CustomEvent("cookieChanged", {
 //     bubbles: true,

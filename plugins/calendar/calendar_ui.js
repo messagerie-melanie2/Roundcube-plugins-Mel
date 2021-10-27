@@ -552,6 +552,7 @@ function rcube_calendar_ui(settings)
           ev:ev,
           temp:temp,
           object:me,
+          show_rsvp:show_rsvp === undefined ? false : show_rsvp,
           functions:{
             event_edit_dialog:event_edit_dialog
           }

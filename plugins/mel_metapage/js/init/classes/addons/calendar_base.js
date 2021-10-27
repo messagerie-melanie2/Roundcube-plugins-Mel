@@ -865,7 +865,7 @@ $(document).ready(() => {
                     let li = $("<li></li>");
                     $(e).clone().appendTo(li)
                     li.appendTo($("#toolbar-menu-mel ul"));
-                    console.log("e", $(e).css("display"),e);
+                    //console.log("e", $(e).css("display"),e);
                 });
                 
             } catch (error) {

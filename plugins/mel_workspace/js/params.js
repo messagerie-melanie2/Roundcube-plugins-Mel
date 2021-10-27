@@ -630,7 +630,7 @@
                     rcmail.gettext("close") + 
                     '<span class="plus icon-mel-close"></span>'
                 );
-                console.log("popup", Workspace_Param.PopUp);
+                //console.log("popup", Workspace_Param.PopUp);
                
 
                 this.busy(false);

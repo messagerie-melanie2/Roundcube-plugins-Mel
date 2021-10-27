@@ -119,7 +119,7 @@ $labels["choose_sensivity"] = "Choisissez la sensibilité de l'évènement";
 
 $labels["continue"] = "Continuer";
 $labels["add_all_member_from_a_workspace"] = "Ajouter tous les membres de l'espace de travail";
-$labels["add_all"] = "Ajouter tout";
+$labels["add_all"] = "Ajouter tous les membres de l'espace";
 $labels["select_attendees"] = "Sélectionner les participants";
 $labels["back"] = "Retour";
 $labels["save_event"] = "Sauvegarder l'évènement";

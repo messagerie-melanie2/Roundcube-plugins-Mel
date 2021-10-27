@@ -683,3 +683,9 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 .virtual > .calname::before {
     margin-left: -16px!important;
 }
+.layout-phone .col-6.datetime,
+.layout-small .col-6.datetime {
+	flex: 1 0 100%!important;
+	max-width: 100%!important;
+	width: 100%!important;
+}

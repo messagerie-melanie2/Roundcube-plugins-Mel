@@ -143,6 +143,7 @@ ul.treelist li.context-source:not(.selected) > div > a {
 
 .messagelist td.subject span.date {
     font-size: 85%;
+    padding-top: 4px;
 }
 
 /* .messagelist .unread td.subject span.date,

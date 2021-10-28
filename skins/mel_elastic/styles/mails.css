@@ -58,10 +58,16 @@ html.layout-large .task-mail #layout-sidebar > .header
 
 .messagelist td.subject span.date,
 html body div#layout-list .messagelist td.subject a,
-.messagelist td.subject span.fromto,
-.messagelist tr.flagged td, .messagelist tr.flagged td.subject span.subject a, .messagelist tr.flagged td.subject span.date, .messagelist tr.flagged td.subject span.fromto
+.messagelist tr.flagged td, 
+.messagelist tr.flagged td.subject span.subject a, 
+.messagelist tr.flagged td.subject span.date
 {
-    color:#363A5B;
+    color: #363A5B;
+}
+
+.messagelist td.subject span.fromto,
+.messagelist tr.flagged td.subject span.fromto {
+    color: #15193A;
 }
 
 .messagelist td.subject span.msgicon.status::before {
@@ -99,12 +105,12 @@ html body div#layout-list .messagelist td.subject a,
 }
 
 table.messagelist td.subject span.msgicon::before{
-    content:"\e94e"!important;
-    font-family:"DWP"!important;
-    font-style: normal!important;
-    color:#A8ACC0!important;
-    margin-right:25px!important;
-    font-size:1rem!important;
+    content: "\e94e" !important;
+    font-family:"DWP" !important;
+    font-style: normal !important;
+    color: #A8ACC0 !important;
+    margin-right: 13px !important;
+    font-size: 1rem !important;
 }
 
 table.messagelist td.subject span.msgicon.replied::before{
@@ -151,7 +157,7 @@ table.messagelist .selected td.subject span.msgicon::after
 
 .messagelist td.subject span.subject
 {
-    padding-left: 2.9rem;
+    padding-left: 2rem;
     font-size: 95%;
 }
 

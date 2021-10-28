@@ -1859,3 +1859,41 @@ html.touch .popover-overlay {
 	bottom: 0;
 	width: 100%;
 }
+
+html.layout-small #mailsearchlist a::before,
+html.layout-phone #mailsearchlist a::before
+{
+    height: auto!important;
+}
+
+html.layout-phone body.task-mail a.toolbar-list-button,
+html.layout-small body.task-mail a.toolbar-list-button
+{
+    display: inline-block!important;
+}
+
+html.layout-phone #mel-added-list-menu,
+html.layout-small #mel-added-list-menu
+{
+    display: none!important;
+}
+
+html.touch body.task-mail #layout-sidebar {
+	/* width: 100% !important; */
+	/* flex: 1 0 100% !important; */
+	max-width: 100%;
+}
+
+#datepicker-onoff
+{
+    color:white!important;
+}
+
+#datepicker-onoff:hover
+{
+    background-color: #5870BF !important;
+}
+
+#datepicker{
+    transition: all 0.1s ease-in;
+}

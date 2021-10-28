@@ -300,6 +300,11 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
     margin: 0 15px;
 }
 
+/* html.touch .task-calendar #layout > #layout-sidebar > .header
+{
+    margin-top:60px;
+} */
+
 .task-calendar .listing li > div.calendar .calname::before
 {
     /* margin-left: 15px; */
@@ -585,7 +590,7 @@ a.mel-calendar-button:hover > span
 html.layout-phone .task-calendar #layout-content,
 html.layout-small .task-calendar #layout-content
 {
-    max-width: calc(100% - 60px);
+    max-width: calc(100%);
 }
 
 html.layout-phone.framed .task-calendar #layout-content,
@@ -688,4 +693,12 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 	flex: 1 0 100%!important;
 	max-width: 100%!important;
 	width: 100%!important;
+}
+
+.layout-small #mel-calendar-date-month,
+.layout-phone #mel-calendar-date-month,
+.layout-small #mel-calendar-date-year,
+.layout-phone #mel-calendar-date-year
+{
+    display: none!important;
 }

@@ -623,7 +623,46 @@ if (rcmail)
         }
       });
 
-      //$(window).on("resize", resize_mail);
+      $(window).on("resize", (e) => {
+        //console.log("e", window.innerHeight, !$("html").hasClass("layout-phone"), !$("html").hasClass("layout-small"));
+        if (rcmail.env.task !== "calendar")
+            return;
+
+        if (!$("html").hasClass("layout-phone") && !$("html").hasClass("layout-small") && window.innerHeight <= 500)
+        {
+            $("#datepicker-onoff").remove();
+            $("#datepicker").addClass("showed").css("margin-bottom", "");
+            $("#datepicker").prepend(
+                $(`<button class="btn btn-block" id=datepicker-onoff><span class="icon-mel-chevron-down"></span></button>`)
+                .click(() => {
+                    console.log("clicked");
+                    const size = $("#datepicker .ui-datepicker")[0].getClientRects()[0].height;
+                    if ($("#datepicker").hasClass("showed")) //est pas affiché
+                    {
+                        $("#datepicker").css("margin-bottom", `-${size}px`).removeClass("showed");
+                        $("#datepicker-onoff .icon-mel-chevron-down").removeClass("icon-mel-chevron-down").addClass("icon-mel-chevron-up")
+                    }
+                    else {
+                        $("#datepicker").css("margin-bottom", ``).addClass("showed");
+                        $("#datepicker-onoff .icon-mel-chevron-up").removeClass("icon-mel-chevron-up").addClass("icon-mel-chevron-down")
+                    }
+                })
+            );
+
+            setTimeout(() => {
+                if ($("#datepicker").hasClass("showed"))
+                    $("#datepicker-onoff").click();
+            }, 1);
+        }
+        else {
+            $("#datepicker-onoff").remove();
+            $("#datepicker").addClass("showed").css("margin-bottom", "");
+            setTimeout(() => {
+                $(window).resize();
+            }, 100);
+        }
+      });
+
       function resize_mail()
       {
         if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))

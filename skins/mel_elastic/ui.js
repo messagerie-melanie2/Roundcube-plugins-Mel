@@ -212,6 +212,13 @@ $(document).ready(() => {
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
+                    if ($("html").hasClass("layout-small") || $("html").hasClass("layout-phone"))
+                    {
+                        rcmail.show_contentframe_parent(show);
+                        $("#layout-content").css("display", "").removeClass("layout-hidden")
+                        return;
+                    }
+                    
                     if (rcmail.env.is_from_scroll === true)
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
@@ -283,7 +290,7 @@ $(document).ready(() => {
                                 a.addClass("disabled")
                         });
                     }
-                };
+                };/////////
 
                 if (rcmail.env.action === "compose")
                 {

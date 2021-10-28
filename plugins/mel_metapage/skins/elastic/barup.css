@@ -446,7 +446,7 @@ html.layout-normal #layout-list
 
 html.touch.layout-normal #layout-sidebar, html.touch.layout-normal #layout-list
 {
-    margin-top: 0px;
+    /* margin-top: 0px; */
     margin-left: 60px;
 }
 

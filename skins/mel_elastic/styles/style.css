@@ -1849,3 +1849,12 @@ html .menu a.selection::before {
 	-webkit-box-orient: vertical;
 	white-space: normal;
 }
+
+html.touch .popover-overlay {
+	z-index: 1000;
+	background-color: rgba(44,54,58,0.5);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}

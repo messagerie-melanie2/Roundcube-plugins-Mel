@@ -386,7 +386,7 @@ class ArianeFrame{
                 new Promise(async (a,b) => {
                     const exec = function ()
                     {
-                        if (is_touch())
+                        if (false && is_touch())
                         {
                             // mel_metapage.PopUp.ariane.ariane.popUp.css("top", 0);
                             // mel_metapage.PopUp.ariane.ariane.popUp.css("margin-top", "");

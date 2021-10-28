@@ -7,6 +7,11 @@
     overflow-x: visible; */
 }
 
+html.touch #layout-menu
+{
+    display: block;
+}
+
 #taskmenu{
     display: flex;
     flex-direction: column;
@@ -31,6 +36,7 @@
     /* -moz-border-radius: 100%;
     border-radius: 100%; */
     background-color: #484D7A !important;    
+    /* padding: 0; */
     
 }
 
@@ -66,6 +72,11 @@
 #taskmenu a:before,#otherapps a:before
 {
     line-height: 45px;
+    display: inline-block;
+}
+
+html.touch #taskmenu a::before{
+	line-height: 4rem;
 }
 
 html.layout-phone #taskmenu a
@@ -203,18 +214,24 @@ span.menu-last-frame-item {
 	position: absolute;
 	left: 22px;
 	font-size: 17px;
-	margin-top: -13px;
+	margin-top: 10px;
 }
 
+html.touch span.menu-last-frame-item {
+	margin-top: 14px;
+}
 /* .menu-last-frame-item::before{
     font-weight: 900;
 } */
 
 .menu-last-frame-inner-up
 {
-    margin-top: -7px;
+    /* margin-top: -7px; */
     font-size: 9px;
     display: block;
+
+    flex: 1 0 100%;
+    margin-top: 10px;
 }
 
 .menu.toolbar a.menu-last-frame:before
@@ -306,6 +323,7 @@ iframe.mm-frame/*,
     padding-left:60px;
 }
 
+html.touch #layout-menu,
 #layout-menu:hover{
     width: 200px!important;
 }
@@ -326,26 +344,34 @@ iframe.mm-frame/*,
 	/* margin-top: -31px; */
 }
 
-#layout-menu:hover  a > span.inner,
-#layout-menu:hover  span > a > span.inner
+#layout-menu  a > span.inner,
+#layout-menu  span > a > span.inner
 {
     font-size: initial;
 }
 
+html.touch #layout-menu{
+    z-index: 1001;
+}
+
+html.touch #layout-menu  a > span.inner,
+html.touch #layout-menu  span > a > span.inner,
 #layout-menu:hover  a > span.inner,
 #layout-menu:hover  span > a > span.inner,
 #layout-menu  a:focus > span.inner,
 #layout-menu  span > a:focus > span.inner {
-    display: block!important;
+    display: inline-flex!important;
+    align-items: center;
+    flex-wrap: wrap;
     position: absolute;
     left: 65px;
-    margin-top: -32px;
+    /* margin-top: -32px; */
     /* top: inherit; */
     font-family: Roboto,sans-serif;
     border-top-style: solid;
     /* border-bottom-style: solid; */
     border-width: thin;
-    padding-top: 17px;
+    /* padding-top: 17px; */
     /* padding-bottom: 8px; */
     text-align: left;
     border-color: #363A5B;
@@ -353,27 +379,45 @@ iframe.mm-frame/*,
 
     /* border: 0; */
     clip: initial;
-    height: initial;
+    /* height: initial; */
     /* margin: -1px; */
     /* overflow: initial; */
     /* padding: 0; */
     /* position: absolute; */
     width: 120px;
+
+    margin: -.45rem 0;
+    margin-left: -5px;
+    padding:0;
+    padding-left: 5px;
+    height: 58px;
 }
 
+html.touch #layout-menu  a > span.inner,
+html.touch #layout-menu  span > a > span.inner
+{
+    margin:0;
+    margin-left: -5px;
+    line-height: initial;
+}
 
+ /* html.touch #layout-menu a > span.inner, */
 #layout-menu:hover a:hover > span.inner {
 	background-color: #484D7A;
-	left: 61px;
-	margin-top: -2.2rem;
+	left: 65px;
+	/* margin-top: -2.2rem; */
 	font-family: Roboto,sans-serif;
-	padding-top: 17px;
-	padding-bottom: 17px;
+	/* padding-top: 17px;
+	padding-bottom: 17px; */
 	border-color: #484D7A;
-	padding-left: 4px;
+	/* padding-left: 4px; */
     z-index: 3;
     border:none;
-}
+
+    /* margin-top: 0px; */
+    /* padding:0;
+    height: 58px; */
+} 
 
 #layout-menu:hover a.wsp:hover > span.inner,
 #layout-menu:hover a.more-options:hover > span.inner {
@@ -402,15 +446,21 @@ overflow: hidden;
 {
    overflow: hidden;
    text-overflow: ellipsis;
+   margin-top: -13px;
+
 }
 
-html.layout-large .menu.toolbar li#menu-small-li,
-html.layout-normal .menu.toolbar li#menu-small-li
+.menu.toolbar li#menu-small-li
 {
     display: none!important;
 }
 
-html.touch .menu.toolbar li#menu-small-li,
+html.touch .menu.toolbar li#menu-small-li
+{
+    display: block!important;
+}
+
+/* html.touch .menu.toolbar li#menu-small-li,
 html.layout-small .menu.toolbar li#menu-small-li
 {
     display: initial!important;
@@ -420,7 +470,7 @@ html.layout-phone #taskmenu,
 html.layout-phone #layout-menu
 {
     display: initial!important;
-}
+} */
 
 html.layout-phone #taskmenu a:before
 {
@@ -433,23 +483,27 @@ html.layout-phone #taskmenu a.menu-last-frame:before
     margin-left:-3px!important;
 }
 
-html.layout-phone #taskmenu a.menu-last-frame .menu-last-frame-item::before {
+/* html.layout-phone #taskmenu a.menu-last-frame .menu-last-frame-item::before {
     margin-top: 19px;
     display: block;
     margin-left: 0px;
+} */
+
+html.touch.layout-phone span.menu-last-frame-item {
+	margin-top: 6px;
 }
 
 html.layout-phone #layout-menu
 {
     overflow: auto;
     overflow-x: hidden;
-    width: 60px!important;
+    /* width: 60px!important; */
 }
 
-html.layout-phone #taskmenu a .inner
+/* html.layout-phone #taskmenu a .inner
 {
     display:none!important;
-}
+} */
 
 html.layout-phone .button.icon.task-menu-button
 {
@@ -479,15 +533,19 @@ nav.otherapps
     color:white!important;
     width:100%!important;
     max-width:100%!important;
+    display: flex;
 }
 
-#otherapps a span
-{
-    position: absolute;
-    left: 69px;
-    margin-top: -16px;
-    font-family: Marianne,Roboto,sans-serif;
+#otherapps a span {
+	/* position: absolute; */
+	/* left: 69px; */
+	/* margin-top: -16px; */
+	font-family: Marianne,Roboto,sans-serif;
+	margin-left: 15px;
+	display: flex;
+	align-items: center;
 }
+
 #otherapps a.wsp span
 {
     margin-top: -30px;
@@ -506,4 +564,13 @@ nav.otherapps
 {
     font-size: 1.3rem!important;
     margin-top: 5px!important;
+}
+
+html.touch #taskmenu a{
+    border:none!important;
+}
+
+li#menu-small-li
+{
+    display: block!important;
 }

@@ -449,10 +449,19 @@ $(document).ready(() => {
             });
 
             $("#listotherapps").find("a").on('focusout', (e) => {
+
+                $("#menu-overlay").remove();
                 if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
                 {
                     if (!$(e.relatedTarget).hasClass("more-options") && $("#otherapps").css("display") !== "none")
+                    {
                         $("a.more-options").click();
+                        if ($("html").hasClass("touch"))
+                        {
+
+                            $("#touchmelmenu").click();
+                        }
+                    }
                 }
             });
 

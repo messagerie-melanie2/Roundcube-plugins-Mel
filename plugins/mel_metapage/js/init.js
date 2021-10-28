@@ -414,16 +414,26 @@ if (rcmail)
                 mel_metapage.Functions.change_frame("rocket", true, true).then(func);
         });
 
-        rcmail.register_command("more_options", () => {
+        rcmail.register_command("more_options", (e) => {
             let otherapp = $("#otherapps");
             if (otherapp.css("display") === "none")
             {
                 otherapp.css("display", "");
                 otherapp.find("a").first().focus();
                 $("#taskmenu a.more-options").addClass("selected");
+
+                if ($("html").hasClass("touch"))
+                {
+                    otherapp.css("left", "0");
+                    $('<div id="menu-overlay" class="popover-overlay">')
+                    .on('click', function() { $("#touchmelmenu").click(); })
+                    .appendTo('body');
+                }
+
+
             }
             else {
-                otherapp.css("display", "none");
+                otherapp.css("display", "none").css("left", "");
                 if ($("#otherapps a.selected").length === 0)
                     $("#taskmenu a.more-options").focus().removeClass("selected");
                 else
@@ -537,7 +547,15 @@ if (rcmail)
                 $("#taskmenu li.hiddedli").css("display", "block");
                 check = true;
             }
+            let isHidden = false;
 
+            //console.log("scrooll", $("#taskmenu")[0].scrollHeight, window.innerHeight, $("#taskmenu")[0].scrollHeight > window.innerHeight);
+           if ($("#layout-menu").hasClass("hidden"))
+           {
+                $("#layout-menu").css("opacity", "0").removeClass("hidden");
+                isHidden = true;
+           }
+           
             if ($("#taskmenu")[0].scrollHeight > window.innerHeight)
             {
                 let items = $("#taskmenu li");
@@ -570,6 +588,9 @@ if (rcmail)
                     $(".more-options").removeClass("selected");
                 else
                     $(".more-options").addClass("selected");
+
+                if (isHidden)
+                    $("#layout-menu").css("opacity", "").addClass("hidden");
              }, 10);
 
         });
@@ -623,7 +644,25 @@ if (rcmail)
         }
 
 
-        $("#menu-small-li").prependTo("#taskmenu ul").css("display", "");
+        $("#menu-small-li").prependTo("#taskmenu ul").css("display", "")
+        .children().click(() => {
+            if ($("html").hasClass("touch") && $("html").hasClass("layout-normal"))
+            {
+                let it = 0;
+                wait(() => {
+                    ++it;
+                    if (it >= 5)
+                        return false;
+                    
+                    return $(".popover .popover-body").length === 0
+                }).then(() => {
+                    const rect = $("#touchmelmenu")[0].getClientRects()[0];
+                    $(".popover .popover-body").parent()
+                    .css("top", `${rect.top + rect.height}px`)
+                    .css("left", `${rect.width/2}px`);
+                });
+            }
+        });
 
         $("#user-up-panel-a").on("click", m_mp_avatarOnSelect).on("keydown", m_mp_avatarOnSelect).on("focus", () => {
             $("#user-up-panel").find(".row").first().css("box-shadow","0 0 0 .2rem #484D7A69");

@@ -376,6 +376,11 @@ font-family: 'IcoFont'!important;
     margin-left: 60px!important;
 }
 
+html.touch .task-mail.action-compose #layout-content
+{
+    margin-left: 0px!important;
+}
+
 .required-text
 {
     display: block!important;

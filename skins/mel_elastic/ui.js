@@ -212,7 +212,7 @@ $(document).ready(() => {
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
-                    if ($("html").hasClass("layout-small") || $("html").hasClass("layout-phone"))
+                    if (rcmail.env.force_show_mel === undefined && ( $("html").hasClass("layout-small") || $("html").hasClass("layout-phone")))
                     {
                         rcmail.show_contentframe_parent(show);
                         $("#layout-content").css("display", "").removeClass("layout-hidden")
@@ -347,6 +347,52 @@ $(document).ready(() => {
                             $("#limelmailplusmenu").css("display", "none");
                             //$("#melmorethings-menu .select").parent().remove();
                             //$("#melmorethings-menu .select").data("popup", $("#melmorethings-menu .select").data("popup").replace("-", ""))
+                        }
+
+                        if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
+                        {
+                            rcmail.env.search_initialized = true;
+                            $("#mailsearchlist").addClass("hoverable").click((e) => {
+                                
+                                //console.log("e", $("#mailsearchlist").hasClass("stopclick"));
+                                if ($("#mailsearchlist").hasClass("stopclick"))
+                                {
+                                    $("#mailsearchlist").removeClass("stopclick")
+
+                                    if (!$("#mailsearchlist").hasClass("hoverable"))
+                                    {
+                                        $("#mailsearchlist").addClass("hoverable")
+                                        return;
+                                    }
+                                }
+
+                                if (window.innerWidth < 410)
+                                {
+                                    $("#mailsearchlist").removeClass("hoverable");
+                                    $("#mailsearchlist input").focus();
+                                }
+                            }).find("input").on("focusout", (e) => {
+                                if (window.innerWidth < 410)
+                                {
+                                    let parent = e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
+                                    while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
+                                    {
+                                        //console.log("parent", parent);
+                                        parent = parent.parent();
+                                    }
+
+                                    if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
+                                    {
+                                        if (parent.hasClass("icon-mel-search"))
+                                            $("#mailsearchlist").addClass("stopclick");
+                                        else {
+                                            $("#mailsearchlist").addClass("hoverable");
+                                        }
+                                        document.activeElement.blur();
+                                    }
+                                }
+                            });
+
                         }
                     });
                     test.observe($("#layout-list")[0]);

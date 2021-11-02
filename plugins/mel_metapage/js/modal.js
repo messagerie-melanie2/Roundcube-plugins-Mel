@@ -121,7 +121,7 @@ class GlobalModal
      */
     editTitle(title)
     {
-        this.header.title.html(title);
+        this.header.title.html(title).css("white-space", "nowrap");
     }
 
     setBeforeTitle(back)
@@ -199,7 +199,7 @@ class GlobalModal
 
     autoHeight()
     {
-        this.editHeight(window.innerHeight-60);
+        this.editHeight(window.innerHeight-(this.isPhone() ? 0 : 60));
     }
 
     onDestroy(func)
@@ -236,7 +236,42 @@ class GlobalModal
      */
     show()
     {
+
+        if (this.isPhone())
+            this.setToPhone();
+
         this.modal.modal("show");
+    }
+
+    setToPhone()
+    {
+        this.modal
+        .find(".modal-dialog")
+        .css("padding", "0")
+        .css("padding-right", "15px")
+        .css("margin", 0);
+
+        this.modal.find(".modal-content")
+        .css("border-radius", 0);
+
+        this.header.querry
+        // .css("white-space", "nowrap")
+        .css("font-size-adjust", "0.4")
+        ;
+
+        this.contents.css("margin", 0).css("padding", "0 15px");//.css("padding-right", "15px");
+
+        this.footer.querry.css("text-align", "center")
+        .css("display", "block");
+
+        console.log("header", this.header);
+
+        this.autoHeight();
+    }
+
+    isPhone()
+    {
+        return $("html").hasClass("layout-phone");
     }
 
     static resetModal()

@@ -8,6 +8,16 @@ jQuery.fn.swap = function(b){
     t.parentNode.removeChild(t); 
     return this; 
 };
+
+function get_action(text, icon, action)
+{
+    return {
+        text:rcmail.gettext(text),
+        icon:icon,
+        action:action
+    }
+}
+
 /**
  * Affiche la modale du bouton "créer".
  */
@@ -25,6 +35,17 @@ function m_mp_Create()
         window.mel_metapage_tmp = null;
         console.error(rcmail.gettext("mel_metapage.nextcloud_connection_error"));
     }
+    const actions = {
+        mail:get_action("mel_metapage.a_mail", "icon-mel-mail", "rcmail.command('compose','',this,event)"),
+        espace:get_action("mel_metapage.a_worspace", "icon-mel-workplace", "m_mp_createworkspace()"),
+        event:get_action("mel_metapage.a_meeting", "icon-mel-calendar", "mm_create_calendar(this);"),
+        visio:get_action("mel_metapage.a_web_conf", "icon-mel-videoconference", "window.webconf_helper.go()"),
+        tache:get_action("mel_metapage.a_task", "icon-mel-survey", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)"),
+        documents:get_action("mel_metapage.a_document", "icon-mel-folder", "m_mp_InitializeDocument()"),
+        sondages:get_action("mel_metapage.a_survey", "icon-mel-sondage", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})"),
+    };
+
+    const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
     //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined)
@@ -38,26 +59,59 @@ function m_mp_Create()
             let disabled = click ==="" ? "disabled" : "";
             return '<button class="btn btn-block btn-secondary btn-mel ' + disabled + '" onclick="'+click+'"'+disabled+'><span class="'+font+'"></span>'+ txt +'</button>';
         }
-        let workspace = `<li class="col-12" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + button(rcmail.gettext("mel_metapage.a_worspace"), "icon-mel-workplace", "m_mp_createworkspace()") + '</li>'
-        let mail = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + button(rcmail.gettext("mel_metapage.a_mail"), "icon-mel-mail block", "window.create_popUp.close();rcmail.command('compose','',this,event)") + "</li>";
-        let reu = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + button(rcmail.gettext("mel_metapage.a_meeting"), "icon-mel-calendar block", 'mm_create_calendar(this);//rcube_calendar.mel_create_event()//m_mp_CreateOrOpenFrame(`calendar`, m_mp_CreateEvent, m_mp_CreateEvent_inpage)') + "</li>";
-        let viso = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + button(rcmail.gettext("mel_metapage.a_web_conf"), "icon-mel-videoconference block", `window.webconf_helper.go()`) + "</li>";
-        let tache = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + button(rcmail.gettext("mel_metapage.a_task"), "icon-mel-survey block", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)") + "</li>";
-        let document = `<li class="col-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + button(rcmail.gettext("mel_metapage.a_document"), "icon-mel-folder block", (window.mel_metapage_tmp === null ? "":"m_mp_InitializeDocument()")) + "</li>";
-        let blocnote = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
-        let pega = `<li class="col-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + button(rcmail.gettext("mel_metapage.a_survey"), "icon-mel-sondage block", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})") + "</li>";
+        const _button = function (action, block = true)
+        {
+            return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action);
+        }
+
+        let workspace = `<li class="col-12" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + _button(actions.espace, false) + '</li>'
+        let mail = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + _button(actions.mail) + "</li>";
+        let reu = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + _button(actions.event) + "</li>";
+        let viso = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + _button(actions.visio) + "</li>";
+        let tache = `<li class="col-md-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + _button(actions.tache) + "</li>";
+        let document = `<li class="col-md-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
+        let blocnote = `<li class="col-md-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
+        let pega = `<li class="col-md-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
-        create_popUp = new GlobalModal("globalModal", config, true);
+        create_popUp = new GlobalModal("globalModal", config, !isSmall);
     }
-    else //Si elle existe, on l'affiche.
+    else if (!isSmall)//Si elle existe, on l'affiche.
     {
         window.create_popUp.show();
     }
 
-    if ($("#globallist").length > 0)
+    if ($("#globallist").length > 0 && !isSmall)
     {
         $("#globalModal .icon-mel-undo.mel-return").remove();
+    }
+
+    if (isSmall)
+    {
+        if (!$("#groupoptions-createthings").hasClass("initialized"))
+        {
+            for (const key in actions) {
+                if (Object.hasOwnProperty.call(actions, key)) {
+                    const element = actions[key];
+                    $("#ul-createthings").append(`
+                    <li role="menuitem">
+                        <a class="${element.icon}" role="button" href="#" onclick="${element.action}">
+                            <span class="restore-font">${element.text}</span>
+                        </a>
+                    </li>
+                    `);
+                }
+            }
+
+            $("#groupoptions-createthings").addClass("initialized")
+
+        }
+        window.create_popUp.close();
+
+        setTimeout(() => {
+            $("#open-created-popup").click();
+        }, 1);
+
     }
 }
 
@@ -212,6 +266,7 @@ function m_mp_createworkspace()
 {
 
 
+try {
     let html = "";
     const object = m_mp_createworskpace_steps();
     for (const key in object) {
@@ -252,6 +307,10 @@ function m_mp_createworkspace()
     create_popUp.editTitleAndSetBeforeTitle('<a href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
     'Création d\'un espace de travail');
     create_popUp.modal.focus();
+    create_popUp.show();
+} catch (error) {
+    console.error(error);
+}
     // $.ajax({ // fonction permettant de faire de l'ajax
     //     type: "GET", // methode de transmission des données au fichier php
     //     url: "/?_task=discussion&_action=chanel_create",
@@ -939,6 +998,12 @@ function m_mp_reinitialize_popup(funcBefore = null, funcAfter = null)
     if (rcmail.busy === true)
         return;
 
+    if ($("html").hasClass("layout-phone") || $("html").hasClass("layout-small"))
+    {
+        m_mp_Create();
+        return;
+    }
+
     if (funcBefore !== null)
         funcBefore();
     if (window.create_popUp !== undefined)
@@ -1020,6 +1085,7 @@ async function m_mp_InitializeDocument(initPath = null)
         create_popUp.contents.find("iframe").css("display", "");
         $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
     }).appendTo(create_popUp.contents);
+    create_popUp.show();
     // mel_metapage.Functions.get(
     //     mel_metapage.Functions.url("roundrive", "files_create"),
     //     {

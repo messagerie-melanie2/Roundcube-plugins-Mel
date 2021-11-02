@@ -1861,7 +1861,9 @@ html.touch .popover-overlay {
 }
 
 html.layout-small #mailsearchlist a::before,
-html.layout-phone #mailsearchlist a::before
+html.layout-phone #mailsearchlist a::before,
+html.layout-small .searchbar a::before,
+html.layout-phone .searchbar a::before
 {
     height: auto!important;
 }

@@ -94,6 +94,47 @@ if (rcmail)
                 }
             });
 
+            rcmail.register_command("refreshFrame", () => {
+
+                let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);
+                let parent = $(`.${rcmail.env.current_frame_name}-frame`);
+
+                // Frame déjà ouverte
+                if (iframe.length > 0)
+                {
+                    iframe[0].contentWindow.$("body").html('<center><div style="height: 20vw;width: 20vw;" class="spinner-grow"></div></center>')
+                    iframe[0].contentWindow.location.reload();
+                }
+                // Frame parent
+                else if (rcmail.env.current_frame_name === undefined || parent.length > 0)
+                {
+                    const url = window.location.href;
+
+                    if (rcmail.env.current_frame_name === undefined)
+                    {
+                        const _includes = ["mel-focus", "selected", "order1", "mel"];
+                        const key = Enumerable.from($("#taskmenu .selected")[0].classList).where((x) => !_includes.includes(x) && !x.includes("icofont") && !x.includes("icon-mel-") && !x.includes("button")).first();
+                        rcmail.env.current_frame_name = key;
+                        parent = $(`.${mm_st_ClassContract(key)}-frame`);
+
+                    }
+
+                    parent.remove();
+
+                    mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, false, true).then(() => {  
+                        const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
+                        console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`));                     
+                        $(`iframe.${contract}-frame`)[0].src = `${url}&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`;
+                        rcmail.set_busy(false);
+                        rcmail.clear_messages();
+                        mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, true);
+                    });
+                    
+
+                }
+
+            }, true);
+
             rcmail.register_command("toggleChat", () => {
                 mel_metapage.Functions.post(
                     mel_metapage.Functions.url("mel_metapage", "toggleChat"),

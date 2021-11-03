@@ -8,6 +8,7 @@
                 this.change_icons();
             });
             this.uid = workspace_id;
+
             Object.defineProperty(this, '_data_null', {
                 enumerable: false,
                 configurable: false,
@@ -15,33 +16,37 @@
                 value: Workspace_Param.data_null
               });
 
-              this.init_params_buttons();
+            this.init_params_buttons();
         }
 
         init_params_buttons()
         {
             if ($("#update-channel-button").length > 0)
-            $("#update-channel-button").on("click", () => {
-                this.change_canal();
-            });
+                $("#update-channel-button").on("click", () => {
+                    this.change_canal();
+                });
         }
 
         change_icons()
         {
             $(".wsp-change-icon").each((i,e) => {
-                //e = $(e);
                 let _class = null;
+
                 for (let index = 0; index < e.classList.length; ++index) {
                     const element = e.classList[index];
+
                     if (element !== "wsp-change-icon" && !element.includes("text"))
                     {
                         _class = element;
                         break;
                     }
                 }
+
                 e = $(e);
+
                 if (_class !== null)
                     e.removeClass(_class).addClass(m_mp_CreateDocumentIconContract(_class));
+
                 e.removeClass("wsp-change-icon");
               });
         }
@@ -74,9 +79,10 @@
             let config = { // fonction permettant de faire de l'ajax
                 type: type, // methode de transmission des données au fichier php
                 url: url,//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
-                success: success,
+                success,
                 error: failed
             };
+
             if (datas !== Workspace_Param.data_null)
                 config["data"] = datas;
 
@@ -111,12 +117,15 @@
         {
             if (this.is_busy())
                 return;
+
             this.busy();
             let color;
+
             if (typeof element === "string")
             {
                 if (!element.includes("#"))
                     element = "#" + element;
+
                 color = element;
             }
             else if ("value" in element)
@@ -128,6 +137,7 @@
                 console.warn("[changeColor]/!\\ Impossible de déterminer le type de la variable \"element\".", element);
                 color = element
             }
+
             return this.ajax(this.url("PARAM_Change_color"), {
                 _color:color,
                 _uid:this.uid
@@ -144,8 +154,10 @@
         {
             if (this.is_busy())
                 return;
+
             if (Workspace_Param.PopUp !== undefined)
                 delete Workspace_Param.PopUp;
+
             const config = new GlobalModalConfig("Ajouter un utilisateur",
             "default",
             MEL_ELASTIC_UI.get_input_mail_search("tmp-id-wsp"),
@@ -171,7 +183,7 @@
             this.busy();
             let users = [];
             let input = Workspace_Param.PopUp.input;
-            //console.log("auto", input.val(), input);
+
             if (input.val() !== "")
             {
                 input.val(input.val() + ",");
@@ -179,11 +191,11 @@
             }
             $(".workspace-recipient").each((i,e) => {
                 users.push($(e).find(".email").html());
-                //console.log("auto -rec",e, $(e), $(e).find(".email"), $(e).find(".email").html());
             });
+
             Workspace_Param.PopUp.close();
             delete Workspace_Param.PopUp;
-            //console.log("auto", users);
+
             return this.ajax(this.url("PARAMS_add_users"), {
                 _users:users,
                 _uid:this.uid
@@ -226,12 +238,15 @@
             value = value.split(":");
             const user = value[1];
             value = value[0];
+
             return this.ajax(this.url("PARAMS_update_user_rights"), {
                 _uid:this.uid,
                 _id:user,
                 _right:value
             },
             (datas) => {
+                this.busy(false);
+                $(".btn-u-r").removeClass("disabled").removeAttr("disabled");
                 switch (datas) {
                     case "reload":
                         window.location.reload();
@@ -253,12 +268,11 @@
                     default:
                         break;
                 }
-                this.busy(false);
-                $(".btn-u-r").removeClass("disabled").removeAttr("disabled");
             },
             (a,b,c) => {
                 console.error("###[update_user_right]",a,b,c);
                 $(".btn-u-r").each((i,e) => {
+
                     if ($(e).data("onchange").includes(user))
                         MEL_ELASTIC_UI.setValue((value === "o" ? "w" : "o"), $(e));
                 });
@@ -282,10 +296,12 @@
             },
             (datas) => {
                 this.busy(false);
+
                 if (datas === "denied")
                     rcmail.display_message("Vous devez être un administrateur pour faire ça !", "error");
                 else {
                     rcmail.display_message("Date de fin modifié avec succès !", "confirmation");
+
                     if (new_date === undefined || new_date === null || new_date === "")
                         $("#wsp-end-date").remove();
                     else
@@ -296,6 +312,7 @@
                             $("#wsp-end-date").html(`Date de fin : ${new_date}`);
                     }
                 }
+
             }).always(() => {
                 this.busy(false);
             });
@@ -325,8 +342,8 @@
                             $(".dwp-round.wsp-picture").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
                         }
                         else {
-                        $("#worspace-avatar-b").html(`<img src="${new_logo}" />`);
-                        $(".dwp-round.wsp-picture").html(`<img src="${new_logo}" />`);
+                            $("#worspace-avatar-b").html(`<img src="${new_logo}" />`);
+                            $(".dwp-round.wsp-picture").html(`<img src="${new_logo}" />`);
                         }
                     }
                 }).always(() => {
@@ -467,6 +484,7 @@
         delete()
         {
             this.busy();
+
             if (confirm("Êtes-vous sûr de vouloir supprimer cet espace de travail ?\r\nAttention, cette action sera irréversible !"))
             {
                 return this.ajax(this.url("delete_workspace"), {
@@ -549,6 +567,7 @@
 
                 if (Workspace_Param.PopUp !== undefined)
                     delete Workspace_Param.PopUp;
+
                 const config = new GlobalModalConfig("Changer de canal",
                 "default",
                 datas,
@@ -649,6 +668,7 @@
                 bool = confirm("Êtes-vous sûr de vouloir archiver cet espace de travail ?");
             else
                 bool = confirm("Êtes-vous sûr de vouloir désarchiver cet espace de travail ?");
+
             if (bool)
             {
                 return this.ajax(this.url("archive_workspace"), {
@@ -685,6 +705,7 @@
         writable: false,
         value: Symbol("null")
       });
+      
     $(document).ready(() => {
         rcmail.addEventListener("init", () => {
             rcmail.env.WSP_Param = new Workspace_Param(rcmail.env.current_workspace_uid);

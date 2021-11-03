@@ -175,3 +175,4 @@ $labels["show_bubble"] = "Afficher la bulle de discussion instantée";
 $labels["all-day"] = "Journée entière";
 
 $labels["without_spaces"] = "Sans espaces";
+$labels["refresh"] = "Rafraîchir la page en cours";

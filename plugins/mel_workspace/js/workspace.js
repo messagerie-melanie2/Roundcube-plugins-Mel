@@ -7,8 +7,8 @@ async function WSPReady()
 {
     const uid = rcmail.env.current_workspace_uid;
     const hasAriane = $(".wsp-ariane").length > 0;
-    let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
 
+    let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     let end = End(uid, hasAriane, datas);
 
     Start(uid, hasAriane, datas);
@@ -22,7 +22,7 @@ function Start(uid, hasAriane, datas) {
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
     rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {
         _uid:uid
-    });
+    }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
 }
 
 function Middle(uid, hasAriane, datas) {
@@ -32,6 +32,7 @@ function Middle(uid, hasAriane, datas) {
     try {
         if (rcmail.env.current_workspace_services.mail)
             parent.rcmail.mel_metapage_fn.mail_wsp_updated();
+
     } catch (error) {
         
     }
@@ -101,31 +102,24 @@ async function End(uid, hasAriane, datas) {
     {
         let it = 0;
         if (parent.$(".stockage-frame").length == 0)
-            promises.push(wait(() => {
-                if (++it >= 5)
-                    return false;
-
-                return rcmail.busy;
-            }).then(() => mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
-                rcmail.set_busy("false");
+            promises.push(wait(() => rcmail.busy).then(() => mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
+                rcmail.set_busy(false);
                 rcmail.clear_messages();
-            })));
-    
 
-        if (rcmail.env.current_workspace_file !== undefined)
-        {
-            it = 0;
-            await wait(() => {
-                if (++it >= 5)
-                    return false;
-                
-                return rcmail.env.wsp_roundrive_show === undefined;
-            });
-            
-            promises.push(mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
-                rcmail.env.wsp_roundrive_show.clickGoToFile(null, rcmail.env.current_workspace_file);
-            }));
-        }
+                if (rcmail.env.current_workspace_file !== undefined)
+                {
+                    return wait(() => {
+                        if (++it >= 5)
+                            return false;
+                        
+                        return rcmail.env.wsp_roundrive_show === undefined;
+                    }).then(() =>
+                         setTimeout(() => {
+                            return rcmail.env.wsp_roundrive_show.clickFile(null, rcmail.env.current_workspace_file);
+                        }, 500)
+                         );
+                }
+            })));
     }
 
     await wait(() => rcmail.busy);
@@ -153,8 +147,10 @@ function wsp_contract(_class)
 }
 
 var UpdateAriane = (channel, store, unread) => {
-    $(".ariane-count").html(unread > 99 ? "+99" : unread).css("display", (unread === 0 ? "none" : ""));
     let querry = $("#ariane-" + channel);
+
+    $(".ariane-count").html(unread > 99 ? "+99" : unread).css("display", (unread === 0 ? "none" : ""));
+
     if (querry.length === 0)
         return;
     else {
@@ -175,7 +171,6 @@ function click_on_menu(page)
 {
     setTimeout(async () => {
         await wait(() => parent.rcmail.busy);
-        //console.log($(`.wsp-${wsp_contract(page)}`), "contract");
         $(`.wsp-${wsp_contract(page)}`).click();
     }, 100);
 }
@@ -191,26 +186,30 @@ function Update(key, func, funcBefore = null, funcAfter = null, ...args)
 {
     if (funcBefore != null)
         funcBefore(...args);
+
     let data = mel_metapage.Storage.get(key);
+
     if (func != null)
         func(data, ...args);
+
     if (funcAfter != null)
         funcAfter(data, ...args);
 }
 
 function UpdateSomething(data,_class, editor = null)
-{
-    //console.log("UpdateSomething()", data, _class);
+{;
     if (editor !== null)
         data = editor(data);
-    //console.log("UpdateSomething()", data);
+
     let querry = $("." + _class);
     const unread = data === null ? 0 : data;
+
     if (querry.find(".roundbadge").length === 0)
         querry.append(`<span `+(unread <= 0 ? "style=display:none" : "")+` class="notif roundbadge lightgreen">`+unread+`</span>`);
     else
     {
         querry = querry.find(".roundbadge");
+
         if (unread === 0)
             querry.css("display", "none");
         else
@@ -222,6 +221,7 @@ function UpdateCalendar()
 {
     const uid = rcmail.env.current_workspace_uid;
     let array;
+
     Update(mel_metapage.Storage.calendar, UpdateSomething, null, null, "wsp-agenda", (data) => {
         if (data === null || data === undefined)
         {
@@ -239,7 +239,7 @@ function UpdateCalendar()
         else
             return 0;
     });
-    //console.log("array", array);
+
     {
         const agenda = rcmail.env.current_workspace_constantes.agenda;
         const id = "wsp-block-" + agenda;
@@ -297,27 +297,33 @@ function SetupTasks(datas, id, where = null)
 {
     if (datas === undefined)
         datas = [];
+
     if (datas.length > 0 && where !== null)
         datas = Enumerable.from(datas).where(where).toArray();
-    let querry = $("#" + id);
 
+    let date;
+    let querry = $("#" + id);
 	let html = ''
+
 	datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
-	let date;
     html += `<ul class="ignore-bullet">`;
+
     for (let index = 0; index < datas.length; index++) {
         const element = datas[index];
 		date = moment(parseInt(element.created + "000"));
         html += "<li>";
         html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+
         if (date._isValid)
             html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}', {source:'${rcmail.env.current_workspace_tasklist_uid}'})"><span class="element-title element-block">${element.title} ${(element.created === undefined ? "" : '</span><span class="element-desc element-block">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )}</span></a></div>`;
         else
             html += "<div class=col-md-10></div>";
+
         html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
         html += "</div>";
         html += "</li>";
     }
+
     html += "</ul>";
 	querry.html(html);
     $("#nb-" + id).find(".nb").html(datas.length);
@@ -358,6 +364,7 @@ function GetDateFr(date)
         "DECEMBER":"DECEMBRE"
     }
     date = date.toUpperCase();
+
     for (const key in arrayTransform) {
         if (Object.hasOwnProperty.call(arrayTransform, key)) {
             const element = arrayTransform[key];
@@ -365,6 +372,7 @@ function GetDateFr(date)
                 date = date.replace(key, element);
         }
     }
+
     return capitalize(date);
 }
 
@@ -377,6 +385,7 @@ function create_calendar(id, e)
         end:moment().add(1, "h")
     }
     rcmail.local_storage_set_item("tmp_calendar_event", event);
+
     return rcmail.commands['add-event-from-shortcut'] ? rcmail.command('add-event-from-shortcut', '', e.target, e) : rcmail.command('addevent', '', e.target, e);
 }
 
@@ -398,6 +407,7 @@ function GetAgenda()
 {
     const agenda = rcmail.env.current_workspace_constantes.agenda;
     const id = "wsp-block-" + agenda;
+
     return  $("#" + id).find(".block-body");
 }
 
@@ -405,6 +415,7 @@ function GetTasks()
 {
     const tasks = rcmail.env.current_workspace_constantes.tasks;
     const id = "wsp-block-" + tasks;
+
     return  $("#" + id).find(".block-body");
 }
 
@@ -419,7 +430,7 @@ async function change_date(add)
     let querry = GetAgenda().html('<center><span class="spinner-border"></span></center>');
     const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
     const events = Enumerable.from(JSON.parse(datas)).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).toArray();
-    //console.log(events, JSON.parse(datas));
+
     if (events === null || events.length === 0)
     { 
         if (date === moment().startOf("day"))
@@ -433,17 +444,21 @@ async function change_date(add)
         let tmp;
         let array = [];
         let elementsToDelete = [];
+
         for (let index = 0; index < events.length; index++) {
             element = events[index];
+
             if (element.allDay)
                 element.order = 0;
             else
                 element.order = 1;
+
             tmp = mel_metapage.Functions.check_if_calendar_valid(element, events);
             
             if (tmp === true)
             {
                 tmp = mel_metapage.Functions.check_if_date_is_okay(element.start, element.end, date);
+
                 if (tmp === true)
                     array = Array.AddIfExist(array,check, element);
                 else
@@ -452,8 +467,9 @@ async function change_date(add)
             else if (tmp !== false)
                 elementsToDelete.push(tmp);
         }
-        // console.log(array);
+
         array = Enumerable.from(array).where(x => !elementsToDelete.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
+        
         if (array.length === 0)
         {
             if (date === moment().startOf("day"))
@@ -472,6 +488,7 @@ function OpenAriane(id, src)
     $(".wsp-toolbar-item").removeClass("active");
     $(".wsp-ariane").addClass("active");
     let querry = $("#" + id);
+
     if (querry.length === 0)
     {
         const frame = "<iframe class=wsp-object id="+id+" src="+src+"></iframe>";
@@ -481,6 +498,7 @@ function OpenAriane(id, src)
         .css("height", "500px")
         .css("margin-top", "30px");
     }
+
     querry.css("display", "");
 }
 
@@ -586,11 +604,13 @@ async function initCloud()
     let frame = $("#cloud-frame");
 
     rcmail.env.wsp_roundrive_show = new RoundriveShow(folder, frame, {
-        afterInit:() => {
+        afterInit() {
             spinner.remove();
             frame.css("display", "");
         },
-        updatedFunc:async (bool)=>{
+
+        async updatedFunc(bool) {
+
             if (bool && $(".wsp-documents").find(".notif").length === 0)
                 $(".wsp-documents").append(`<span style="" class="notif roundbadge lightgreen">•</span>`);
             else if (!bool && $(".wsp-documents").find(".notif").length > 0)
@@ -598,6 +618,7 @@ async function initCloud()
 
             const id = `wsp_have_news_${rcmail.env.username}`;
             let datas = mel_metapage.Storage.get(id);
+
             if (datas === undefined || datas === null)
                 datas = {};
 

@@ -253,7 +253,7 @@ class RoundriveShow
                         });
 
                         html.find(".havefunc3").on("click", (event) => {                           
-                            mel_metapage.Functions.copy(rcmail.env.nextcloudCopy + `&_fileid=${element.id}&_filepath=${element.path}`);
+                            mel_metapage.Functions.copy(rcmail.env.nextcloudCopy + `&_fileid=${element.id}&_filepath=${element.dirname}`);
                         });
 
                         if (rcmail.env.nextcloudCopy === undefined) html.find(".havefunc3").addClass("disabled").attr("disabled", "disabled");

@@ -212,7 +212,7 @@ $(document).ready(() => {
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
-                    if (rcmail.env.force_show_mel === undefined && ( $("html").hasClass("layout-small") || $("html").hasClass("layout-phone")))
+                    if (( $("html").hasClass("layout-small") || $("html").hasClass("layout-phone")))
                     {
                         rcmail.show_contentframe_parent(show);
                         $("#layout-content").css("display", "").removeClass("layout-hidden")
@@ -642,15 +642,18 @@ $(document).ready(() => {
                 rect2:rect2
             };
         }
+        
         generateSelect(event)
         {
             event = $(event);
             const rc = typeof event.data("rcmail") === "string" ? event.data("rcmail") === "true" : event.data("rcmail");
+            
             if (rc)
             {
                 if (rcmail.is_busy)
                     return;
             }
+            
             //console.log("generateSelect", event.data("options"), typeof event.data("options"), event);
             const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
             const options_class = typeof event.data("options_class") === "string" ? JSON.parse(event.data("options_class").includes("¤¤¤") ? event.data("options_class").replaceAll('¤¤¤', '"') : event.data("options_class")) : event.data("options_class");
@@ -663,7 +666,9 @@ $(document).ready(() => {
             //Create selectbox
             if (event.parent().css("position") !== "relative")
                 event.parent().css("position", "relative");
+
             let html = '<div class="btn-group-vertical">';
+
             for (const key in options) {
                 if (Object.hasOwnProperty.call(options, key)) {
                     const element = options[key];
@@ -673,6 +678,7 @@ $(document).ready(() => {
                     html += '<button title="'+current_option_title+'" onclick="MEL_ELASTIC_UI.updateSelectValue(`'+key+'`, `'+new_option_title+'`)" class="'+current_option_class+' mel-selected-content-button btn btn-primary '+(value === key ? "active" : "")+'">'+(is_icon ? ("<span class="+element+"></span>") : element)+'</button>'
                 }
             }
+
             html += "</div>";
             const rect = this.getRect(event[0].getBoundingClientRect(), event.parent()[0].getBoundingClientRect() );
             html = $(html)
@@ -692,6 +698,7 @@ $(document).ready(() => {
                 else
                     $(".mel-select-popup").remove();
             });
+
             this.tmp_popup = {
                 options:options,
                 options_class:options_class,
@@ -708,6 +715,7 @@ $(document).ready(() => {
             //     }
             // });
         }
+
         updateSelectValue(value, newTitle = "")
         {
             //console.log("generateSelect", value);

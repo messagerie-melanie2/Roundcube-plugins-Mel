@@ -237,3 +237,8 @@ a:visited.ui-button,
 .ui-button {
   color: var(--buttons-text-color);
 }
+
+.ui-widget-overlay {
+  background: #000;
+  opacity: 0.8;
+}

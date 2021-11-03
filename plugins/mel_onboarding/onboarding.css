@@ -129,3 +129,9 @@
 #dimScreen .c-stepper__item.active .c-stepper__desc {
     opacity: 1;
 }
+
+.ui-dialog-buttonpane
+{
+  padding: 0 !important;
+  margin: 0 1.5rem !important;
+}

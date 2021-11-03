@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Mél nextCloud
  *
@@ -18,24 +19,55 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-class mel_onboarding extends rcube_plugin {
+class mel_onboarding extends rcube_plugin
+{
   /**
    *
    * @var string
    */
   public $task = '?(?!login).*';
-
+  private $rc;
   /**
    * (non-PHPdoc)
    *
    * @see rcube_plugin::init()
    */
-  public function init() {
-    $rcmail = rcmail::get_instance();
+  public function init()
+  {
+    $this->rc = rcmail::get_instance();
+    $prefs = $this->rc->config->get('see_help_again', [true]);
+    if ($prefs) {
+      //Si l'aide à déjà été affichée sur cette session
+      if (isset($_SESSION['onboarding'])) {
+        $this->rc->output->set_env('onboarding', $_SESSION['onboarding']);
+      }
+    } else {
+      $this->rc->output->set_env('onboarding', true);
+    }
+
+
+
+
+
+
+    $this->add_texts('localization/', true);
 
     $this->include_script('onboarding.js');
 
     // Ajout du css
     $this->include_stylesheet('onboarding.css');
+
+    if ($this->rc->task == 'settings') {
+      $this->register_action('plugin.set_onboarding', array($this, 'set_onboarding'));
+    }
+  }
+
+  public function set_onboarding()
+  {
+    $onboarding = filter_var(rcube_utils::get_input_value('_onboarding', rcube_utils::INPUT_POST), FILTER_VALIDATE_BOOLEAN);
+    $see_help_again = filter_var(rcube_utils::get_input_value('_see_help_again', rcube_utils::INPUT_POST), FILTER_VALIDATE_BOOLEAN);
+
+    $_SESSION['onboarding'] =  $onboarding;
+    $this->rc->user->save_prefs(array('see_help_again' => $see_help_again));
   }
 }

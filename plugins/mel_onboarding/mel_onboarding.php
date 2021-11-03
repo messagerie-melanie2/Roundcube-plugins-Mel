@@ -45,11 +45,6 @@ class mel_onboarding extends rcube_plugin
       $this->rc->output->set_env('onboarding', true);
     }
 
-
-
-
-
-
     $this->add_texts('localization/', true);
 
     $this->include_script('onboarding.js');

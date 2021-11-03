@@ -241,7 +241,17 @@ rcube_webmail.prototype.onboarding_get_previous_item = function () {
 rcube_webmail.prototype.onboarding_close = function () {
   let buttons = [
     {
-      text: rcmail.gettext('View my desktop', 'mel_onboarding'),
+      text: rcmail.gettext('hide all help', 'mel_onboarding'),
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: !$('#see_help_again').is(":checked"),
+        });
+        $(this).dialog('destroy');
+      }
+    },
+    {
+      text: rcmail.gettext('hide this help', 'mel_onboarding'),
       'class': 'mainaction text-white',
       click: function () {
         rcmail.http_post('settings/plugin.set_onboarding', {
@@ -262,6 +272,6 @@ rcube_webmail.prototype.onboarding_close = function () {
   if (window.last_modified_item) {
     $(window.last_modified_item).attr('style', window.last_item_css);
   }
-  rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons)
+  rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons, {height:100})
 
 };

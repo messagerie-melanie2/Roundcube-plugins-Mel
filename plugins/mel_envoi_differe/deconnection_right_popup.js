@@ -79,7 +79,7 @@ rcube_webmail.prototype.deconnection_right_popup = function() {
     ];
 
     // Show pop up
-    window.dialog = this.show_popup_dialog(html, this.gettext('disco_popup_title', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 450 });
+    window.dialog = this.show_popup_dialog(html, this.gettext('disco_popup_title', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 500 });
     $('#disconnection_popup').parent().parent().addClass('disconnection_popup');
     window.localStorage.removeItem('disable_disconnection_popup');
 };

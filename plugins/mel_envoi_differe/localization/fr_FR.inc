@@ -45,11 +45,13 @@ $labels['max_days_error'] = 'Erreur : le message n\'a pas été envoyé, la remi
 $labels['saving_remise'] = 'Conserver la remise différée pour les envois suivants';
 $labels['saving_remise_description'] = 'En cochant cette case le paramètrage de la remise différée sera conservée pour les prochains envois, jusqu\'a ce qu\'elle soit désactivée ou que la date choisie soit dépassée.';
 
-$labels['disco_popup_title'] = 'Vous êtes en train de travailler en heure non ouvrée, pensez à respecter le droit à la déconnexion de votre correspondant. Si votre message n\'est pas urgent, activez la remise différée !';
-$labels['disco_popup_description'] = 'Vous avez la possibilité de quitter votre session Mél mais également de continuer votre travail via la messagerie de 2 manières :
-<br>1. Continuer en mode normal en envoyant en temps réel vos messages
-<br>2. Passer en mode "Différé". Chaque message envoyé sera remis à la prochaine heure ouvrée.
-<br>l\'envoi immédiat de mails est possible en désactivant ponctuellement la remise différée.';
+$labels['disco_popup_title'] = 'Vous travaillez actuellement durant une heure non ouvrée, pensez à respecter le droit à la déconnexion de votre correspondant, pour cela utilisez la remise différée des messages.';
+$labels['disco_popup_description'] = 'Vous avez la possibilité de quitter Mel mais également de continuer votre travail :
+<ul>
+<li>Soit en mode différé, chaque message sera remis à son destinataire à la prochaine heure ouvrée et respectera ainsi son droit à la déconnexion.</li>
+<li>Soit vous continuer d\'envoyer vos messages en temps réel, sans respecter le droit à la déconnexion de votre correspondant.</li>
+</ul>
+<p>Toutefois, l\'envoi d\'un courriel urgent est possible en désactivant ponctuellement la remise différée.</p>';
 $labels['disco_button_continue'] = 'Continuer';
 $labels['disco_button_continue_with_remise_differe'] = 'Continuer en activant la remise différée';
 $labels['disco_button_disconnect'] = 'Se déconnecter';

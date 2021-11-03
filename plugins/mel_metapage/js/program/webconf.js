@@ -25,6 +25,12 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     if (this._is_framed)
         $(".webconf-fullscreen").css("top", "5px");
 
+    if ($("html").hasClass("layout-phone"))
+    {
+        wsp = null;
+        ariane = "@home";
+    }
+
     /**
      * Génère un string de la création d'une MasterBar qui sera évalué dans dans une fenêtre parente.
      * @returns {string}
@@ -208,24 +214,31 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         $("#mm-webconf").css("display", "");
         $("#mm-ariane").css("display", "none");
 
-        if (this.have_ariane() && this.ariane.room_name !== "@home") //Si on a une room ariane
+        if (!this.isPhone())
         {
-            //on affiche
-            if (changeSrc)
-                this.chat[0].src = rcmail.env.rocket_chat_url + await this.get_room();
-            else
+            if (this.have_ariane() && this.ariane.room_name !== "@home") //Si on a une room ariane
             {
-                this.chat[0].contentWindow.postMessage({
-                    externalCommand: 'go',
-                    path: `/${await this.get_room()}`
-                }, '*')
+                //on affiche
+                if (changeSrc)
+                    this.chat[0].src = rcmail.env.rocket_chat_url + await this.get_room();
+                else
+                {
+                    this.chat[0].contentWindow.postMessage({
+                        externalCommand: 'go',
+                        path: `/${await this.get_room()}`
+                    }, '*')
+                }
+            }
+            else { //Sinon, on cache
+                this.chat[0].src = rcmail.env.rocket_chat_url;
+                this.ariane.is_hide = true;
+                this.ariane.room_name = "@home";
+                this.ariane._is_allowed = "true";
             }
         }
-        else { //Sinon, on cache
-            this.chat[0].src = rcmail.env.rocket_chat_url;
-            this.ariane.is_hide = true;
-            this.ariane.room_name = "@home";
-            this.ariane._is_allowed = "true";
+        else {
+            parent.$("#touchmelmenu").attr("disabled", "disabled").addClass("disabled");
+            parent.$("#user-up-panel").attr("disabled", "disabled").addClass("disabled").css("pointer-events", "none");
         }
 
         this.set_title();
@@ -478,6 +491,11 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
 }
 
+Webconf.prototype.isPhone = function()
+{
+    return $("html").hasClass("layout-phone");
+}
+
 /**
  * Appelé depuis la div de paramétrage, lance la webconf
  */
@@ -655,6 +673,11 @@ class MasterWebconfBar {
         this.send("start");
     }
 
+    isPhone()
+    {
+        return $("html").hasClass("layout-phone");
+    }
+
     /**
      * Affcihe et met en place la toolbar
      */
@@ -710,6 +733,15 @@ class MasterWebconfBar {
         this.chevrons = {
             micro:element("wsp-icon-micro"),
             video:element("wsp-icon-video")
+        }
+
+        if (this.isPhone())
+        {
+            this.document.css("display", "none");
+            this.ariane.css("display", "none");
+            this.logo.css("display", "none");
+            $(".wsp-toolbar-item.empty").css("display", "none");
+            $(".wsp-toolbar").css("border-radius", 0).css("width", "100%").css("left","0").css("transform", "none");
         }
     }
 
@@ -891,6 +923,12 @@ class MasterWebconfBar {
 
         parent.$("html").removeClass("webconf-started");
         $(parent).resize();
+
+        if (this.isPhone())
+        {
+            parent.$("#touchmelmenu").removeAttr("disabled").removeClass("disabled");
+            parent.$("#user-up-panel").removeAttr("disabled").removeClass("disabled").css("pointer-events", "");
+        }
     }
 
     /**

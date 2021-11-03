@@ -268,6 +268,19 @@ const mel_metapage = {
         }
     },
     Functions:{
+        copy(text)
+        {
+            function copyOnClick (val) {
+                var tempInput = document.createElement ("input"); 
+                tempInput.value = val;
+                 document.body.appendChild (tempInput); 
+                 tempInput.select (); 
+                 document.execCommand ("copy"); 
+                 document.body.removeChild (tempInput); 
+                 }
+                 copyOnClick(text);
+                 rcmail.display_message(`${text} copier dans le presse-papier.`, "confirmation");
+        },
 
         /**
          * 

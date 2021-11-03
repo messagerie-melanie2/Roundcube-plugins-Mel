@@ -20,6 +20,9 @@ async function WSPReady()
 function Start(uid, hasAriane, datas) {
     setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
+    rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {
+        _uid:uid
+    });
 }
 
 function Middle(uid, hasAriane, datas) {
@@ -47,7 +50,7 @@ function Middle(uid, hasAriane, datas) {
     UpdateTasks();
     parent.rcmail.addEventListener(mel_metapage.EventListeners.tasks_updated.after, UpdateTasks);
 
-    if (rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
+    if (rcmail.env.current_workspace_file === undefined && rcmail.env.current_workspace_page !== undefined && rcmail.env.current_workspace_page !== null)
     {
         if (rcmail.env.current_workspace_page !== "home")
         {
@@ -96,10 +99,36 @@ async function End(uid, hasAriane, datas) {
 
     if (rcmail.env.current_workspace_services.doc)
     {
+        let it = 0;
         if (parent.$(".stockage-frame").length == 0)
-            promises.push(wait(() => rcmail.busy).then(() => mel_metapage.Functions.change_frame("stockage", false, false)));
+            promises.push(wait(() => {
+                if (++it >= 5)
+                    return false;
+
+                return rcmail.busy;
+            }).then(() => mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
+                rcmail.set_busy("false");
+                rcmail.clear_messages();
+            })));
+    
+
+        if (rcmail.env.current_workspace_file !== undefined)
+        {
+            it = 0;
+            await wait(() => {
+                if (++it >= 5)
+                    return false;
+                
+                return rcmail.env.wsp_roundrive_show === undefined;
+            });
+            
+            promises.push(mel_metapage.Functions.change_frame("stockage", false, true).then(() => {
+                rcmail.env.wsp_roundrive_show.clickGoToFile(null, rcmail.env.current_workspace_file);
+            }));
+        }
     }
 
+    await wait(() => rcmail.busy);
     return Promise.all(promises);
 
 }

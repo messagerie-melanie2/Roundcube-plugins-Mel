@@ -188,9 +188,9 @@ class RoundriveShow
             this.save();
         }
 
-        const col_text = 7;
+        const col_text = 6;
         const col_datas = 4;
-        const col_link = 1;
+        const col_link = 2;
 
         let id;
         let tmp;
@@ -209,7 +209,7 @@ class RoundriveShow
                             this.setFolderOpenOrClose(element.path, false);
 
                         html = `<button style="display:flex" class=" ${isChild ? "child" : ""} no-style full-width btn btn-secondary row ${it === datas.length - 1 ? "last" : ""} ">`;
-                        html += `<div class="col-${col_text + col_datas}"><h4><span class="icon-mel-folder"><span class="sr-only">Dossier</span></span> <span class="elementname" style="position:relative">${decodeURIComponent(element.basename)}${this.openDatas[element.path].news ? `<span style="" class="notif roundbadge lightgreen nc">•</span>` : ""}</span><h4></div>`;
+                        html += `<div class="col-${col_text + col_datas}"><h4><span style="font-size:smaller" class="icon-mel-folder-2"><span class="sr-only">Dossier</span></span> <span class="elementname" style="position:relative">${decodeURIComponent(element.basename)}${this.openDatas[element.path].news ? `<span style="" class="notif roundbadge lightgreen nc">•</span>` : ""}</span><h4></div>`;
                         html += `<div class="col-${col_link} col-arrow"><h4><span class="${this.openDatas[element.path].opened ? "icon-mel-chevron-down" : "icon-mel-chevron-right"}"></span></h4></div>`;
                         html += "</button>";
 
@@ -241,7 +241,7 @@ class RoundriveShow
                         html += '<div class="row" style="width:100%">';
                         html += `<div class=" col-${col_text}"><button class="havefunc1 no-style full-width btn btn-secondary"><h4><span class="${this.getIcon(element)}"><span class="sr-only">Fichier</span></span> ${decodeURIComponent(element.basename)}<h4></button></div>`;
                         html += `<div style="text-align:right;cursor:pointer;" class="havefunc1 col-${col_datas}"><p><span style="display:none">Créé par : ${element.createdBy.includes(" - ") ? element.createdBy.split(" - ")[0] : element.createdBy}</span>Dernières mise à jour : ${moment(element.modifiedAt).format("DD/MM/YYYY")}</p></div>`;
-                        html += `<div class="col-${col_link} col-arrow"><button class="col-arrow havefunc2 no-style btn btn-secondary"><h4><span class="icon-mel-expand"></span></h4></button></div>`;
+                        html += `<div class="col-${col_link} col-arrow" style="white-space: nowrap;"><button class="col-arrow havefunc2 no-style btn btn-secondary"><h4><span class="icon-mel-folder"></span></h4></button><button title="Copier le lien" class="col-arrow havefunc3 no-style btn btn-secondary"><h4><span class="icon-mel-copy"></span></h4></button></div>`;
                         html += "</div></div>";
 
                         html = $(html);
@@ -251,6 +251,12 @@ class RoundriveShow
                         html.find(".havefunc2").on("click", (event) => {
                             this.clickGoToFile(event, element);
                         });
+
+                        html.find(".havefunc3").on("click", (event) => {                           
+                            mel_metapage.Functions.copy(rcmail.env.nextcloudCopy + `&_fileid=${element.id}&_filepath=${element.path}`);
+                        });
+
+                        if (rcmail.env.nextcloudCopy === undefined) html.find(".havefunc3").addClass("disabled").attr("disabled", "disabled");
 
                         html.appendTo(parent);
 

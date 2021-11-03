@@ -55,3 +55,35 @@
 	margin-top:15px;
 	text-align: left;
 }
+
+html.layout-phone #room-selector .square_div
+{
+	width: 95%;
+}
+
+html.layout-phone #room-selector .square_div .square-contents
+{
+	max-width: 100%;
+}
+
+html.layout-phone #room-selector .square_div .square-contents .form-conf,
+html.layout-phone #room-selector .square_div .square-contents .form-check-label
+{
+	/* transform: scale(0.7); */
+	display: none;
+}
+
+/* html.layout-phone #room-selector .square_div .square-contents .form-conf
+{
+	font-size: 15px;
+} */
+
+html.touch .mm-frame #mm-webconf
+{
+	left: 0!important;
+}
+
+html.layout-phone .mm-frame #mm-webconf
+{
+	width: 100%!important;
+}

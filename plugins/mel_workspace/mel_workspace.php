@@ -421,6 +421,15 @@ class mel_workspace extends rcube_plugin
             //$this->edit_personal_user_data($this->currentWorkspace->uid, "current_nextcloud_updated", null);
             $this->rc->output->set_env("current_nextcloud_updated", $this->get_stockage_enabled($this->currentWorkspace, driver_mel::gi()->getUser()->uid));
             $this->rc->output->set_env("wsp_waiting_nextcloud_minutes", $this->rc->config->get('waiting_nextcloud_minutes', 10));
+        
+            $fileId = rcube_utils::get_input_value('_fileid', rcube_utils::INPUT_GPC);
+
+            if (isset($fileId))
+                $this->rc->output->set_env("current_workspace_file", [
+                    "id" => $fileId,
+                    "path" => rcube_utils::get_input_value('_filepath', rcube_utils::INPUT_GPC)
+                ]);
+
         }
 
 

@@ -101,7 +101,8 @@ html.touch .mm-shortcuts{
 }
 
 html.touch .fullscreen-item {
-	top: 0px;
+	width: 100%;
+    left: 0;
 }
 
 .fullscreen-close {

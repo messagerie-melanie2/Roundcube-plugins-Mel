@@ -1899,3 +1899,52 @@ html.touch body.task-mail #layout-sidebar {
 #datepicker{
     transition: all 0.1s ease-in;
 }
+
+.icon-mel-videoconference::before
+{
+    font-family: DWP!important;
+    content: "\e938"!important;
+    font-weight: normal!important;
+}
+
+.icon-mel-mail::before
+{
+    font-family: DWP!important;
+    content: "\e91e"!important;
+    font-weight: normal!important;
+}
+
+.icon-mel-workplace::before
+{
+    font-family: DWP!important;
+    content: "\e93a"!important;
+    font-weight: normal!important;
+}
+
+.icon-mel-calendar::before
+{
+    font-family: DWP!important;
+    content: "\e901"!important;
+    font-weight: normal!important;
+}
+
+.icon-mel-survey::before
+{
+    font-family: DWP!important;
+    content: "\e931"!important;
+    font-weight: normal!important;
+}
+
+.icon-mel-folder::before
+{
+    font-family: DWP!important;
+    content: "\e915"!important;
+    font-weight: normal!important;
+}
+
+.icon-mel-sondage::before
+{
+    font-family: DWP!important;
+    content: "\e930"!important;
+    font-weight: normal!important;
+}

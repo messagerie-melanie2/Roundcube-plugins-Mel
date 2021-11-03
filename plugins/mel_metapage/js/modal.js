@@ -255,8 +255,8 @@ class GlobalModal
         .css("border-radius", 0);
 
         this.header.querry
-        // .css("white-space", "nowrap")
-        .css("font-size-adjust", "0.4")
+        .css("white-space", "nowrap")
+        .css("font-size-adjust", "0.3")
         ;
 
         this.contents.css("margin", 0).css("padding", "0 15px");//.css("padding-right", "15px");

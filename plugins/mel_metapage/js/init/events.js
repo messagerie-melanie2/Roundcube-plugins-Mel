@@ -503,7 +503,7 @@ if (rcmail)
     function linkify(text, config = {style:""}) {
         var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
         return text.replace(urlRegex, function(url) {
-            return `<a href="${url}" ${(config !== undefined && config.style !== undefined && config.style !== "" ? `style="${config.style}"` : "")}>${url}</a>`;
+            return `<a target="_blank" href="${url}" ${(config !== undefined && config.style !== undefined && config.style !== "" ? `style="${config.style}"` : "")}>${url}</a>`;
         });
     }
 

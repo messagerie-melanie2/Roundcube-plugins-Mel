@@ -23,6 +23,7 @@
 // Configuration des logs
 define('LOG_PATH', '/var/log/roundcube');
 define('LOG_FILE', 'attachment.log');
+define('SESSION_PATH', '/m2/sessions');
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
@@ -42,11 +43,20 @@ if (!is_internal()) {
 }
 else {
   // Récupération des paramètres
-  $username = rcube_utils::get_input_value("horde_user", rcube_utils::INPUT_POST);
-  $password = rcube_utils::get_input_value("horde_pass", rcube_utils::INPUT_POST);
+  $username = rcube_utils::get_input_value("horde_user", rcube_utils::INPUT_GPC);
+  $password = rcube_utils::get_input_value("horde_pass", rcube_utils::INPUT_GPC);
+
+  // Positionner le path de la sesion
+  session_save_path(SESSION_PATH);
 
   // Démarrage de session
   session_start();
+
+  // Est-ce qu'une session en cours existe ?
+  if (isset($_SESSION["user_uid"])) {
+    write_log("[INFO] Session déjà en cours pour '$_SESSION[user_uid]'");
+    echo "Session déjà en cours pour '$_SESSION[user_uid]'\r\n";
+  }
 
   if (isset($username)
       && isset($password)

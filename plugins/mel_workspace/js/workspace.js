@@ -98,7 +98,7 @@ async function End(uid, hasAriane, datas) {
         );
     }
 
-    if (rcmail.env.current_workspace_services.doc)
+    if (rcmail.env.current_workspace_file !== undefined && rcmail.env.current_workspace_services.doc)
     {
         let it = 0;
         if (parent.$(".stockage-frame").length == 0)
@@ -106,6 +106,7 @@ async function End(uid, hasAriane, datas) {
                 rcmail.set_busy(false);
                 rcmail.clear_messages();
 
+                //console.log("rcmail.env.current_workspace_file", rcmail.env.current_workspace_file)
                 if (rcmail.env.current_workspace_file !== undefined)
                 {
                     return wait(() => {
@@ -113,10 +114,12 @@ async function End(uid, hasAriane, datas) {
                             return false;
                         
                         return rcmail.env.wsp_roundrive_show === undefined;
-                    }).then(() =>
+                    }).then(() =>{
                          setTimeout(() => {
+                            rcmail.env.current_workspace_file.dirname = rcmail.env.current_workspace_file.path;
                             return rcmail.env.wsp_roundrive_show.clickFile(null, rcmail.env.current_workspace_file);
                         }, 500)
+                    }
                          );
                 }
             })));

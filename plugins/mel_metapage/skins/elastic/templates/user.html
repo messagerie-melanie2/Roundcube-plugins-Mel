@@ -36,7 +36,7 @@ tabindex=-1>
 <div id="groupoptions-user" style="z-index: index 10000;" class="popupmenu">
 	<!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
 	<ul class="menu listing" role="menu" aria-labelledby="user-up-panel">
-        <roundcube:button type="link-menuitem" command="refreshFrame" title="mel_metapage.refresh" label="mel_metapage.refresh" class="refresh active" classAct="active" />
+        <roundcube:button type="link-menuitem" command="refreshFrame" title="mel_metapage.refresh" label="mel_metapage.refresh" class="refresh refresh-current-thing active" classAct="active" />
         <roundcube:if condition="env:mel_metapage_chat_visible" />
             <roundcube:button type="link-menuitem" command="toggleChat" title="mel_metapage.hide_bubble" label="mel_metapage.hide_bubble" class="settings active toggleChatCommand hide-touch" classAct="active" />
         <roundcube:else />

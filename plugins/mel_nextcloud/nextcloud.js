@@ -36,6 +36,7 @@ $(document).ready(function() {
 			 },
 			 crossDomain: true,
 			success: function (data) {
+				//console.log("nc_login", refresh, rcmail.env.nextcloud_gotourl);
 				if (refresh)
 				{
 					if (navigator.appName == "Microsoft Internet Explorer"){

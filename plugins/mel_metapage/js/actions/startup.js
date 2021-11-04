@@ -322,6 +322,8 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     rcmail.env.current_frame_name = eClass;
 
+    mel_metapage.Functions.update_refresh_thing();
+
     $("."+mm_frame).each((i,e) => {
         //console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
         //e.classList.contains("webconf-frame") , window.webconf_helper.already());

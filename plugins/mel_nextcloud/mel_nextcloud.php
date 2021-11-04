@@ -254,7 +254,8 @@ class mel_nextcloud extends rcube_plugin {
     }
     else if (isset($_GET['_params'])) {
       $params = rcube_utils::get_input_value('_params', rcube_utils::INPUT_GET);
-      $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_url . $params);
+      $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_url . ($params ?? ""));
+      $rcmail->output->set_env('nextcloud_gotourl_params', $params);
     }
     else {
       $rcmail->output->set_env('nextcloud_gotourl', $nextcloud_url);

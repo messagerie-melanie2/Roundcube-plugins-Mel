@@ -41,7 +41,7 @@ class Wekan{
                 _color:color
             },
             (datas) => {
-                console.log("wekan", datas);
+                //console.log("wekan", datas);
             }
         )
     }
@@ -51,7 +51,7 @@ class Wekan{
         return mel_metapage.Functions.post(
             this.url("update_user_status"),
             (datas) => {
-                console.log("wekan", datas);
+                //console.log("wekan", datas);
 
                 
             }
@@ -66,7 +66,7 @@ class Wekan{
                 _board:"pSSkHJ6wb64ZS2gxE"
             },
             (datas) => {
-                console.log("wekan", JSON.parse(datas));
+                //console.log("wekan", JSON.parse(datas));
 
 
 

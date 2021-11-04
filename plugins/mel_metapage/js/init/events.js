@@ -635,7 +635,7 @@ if (rcmail)
             $("#datepicker").prepend(
                 $(`<button class="btn btn-block" id=datepicker-onoff><span class="icon-mel-chevron-down"></span></button>`)
                 .click(() => {
-                    console.log("clicked");
+                    //console.log("clicked");
                     const size = $("#datepicker .ui-datepicker")[0].getClientRects()[0].height;
                     if ($("#datepicker").hasClass("showed")) //est pas affiché
                     {
@@ -657,9 +657,9 @@ if (rcmail)
         else {
             $("#datepicker-onoff").remove();
             $("#datepicker").addClass("showed").css("margin-bottom", "");
-            setTimeout(() => {
-                $(window).resize();
-            }, 100);
+            // setTimeout(() => {
+            //     $(window).resize();
+            // }, 100);
         }
       });
 

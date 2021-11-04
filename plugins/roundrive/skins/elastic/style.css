@@ -495,3 +495,10 @@ html.layout-small #files-compose-dialog .header
 {
   margin-left: 15px;
 }
+
+.roundrive-folder-create-select {
+	position: sticky;
+	bottom: 0;
+	background-color: white;
+	text-align: right;
+}

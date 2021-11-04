@@ -264,7 +264,7 @@ class GlobalModal
         this.footer.querry.css("text-align", "center")
         .css("display", "block");
 
-        console.log("header", this.header);
+        //console.log("header", this.header);
 
         this.autoHeight();
     }

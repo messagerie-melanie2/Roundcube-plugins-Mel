@@ -229,32 +229,34 @@ Nextcloud.prototype.go = async function(file, goFunc = null)
     goFunc(file);
   }
   else {
+    console.log("[NC.GO]", file, file.dirname, file.id);
+    await mel_metapage.Functions.change_frame_nextcloud(`/apps/files?dir=/${file.dirname}&openfile=${file.id}`);
     //console.log("file",file);
-    mel_metapage.Functions.doActionFrame("stockage", async (actionType, file) => {
+    // mel_metapage.Functions.doActionFrame("stockage", async (actionType, file) => {
 
-      const url = `${Nextcloud.index_url}/apps/files?dir=/${file.dirname}&openfile=${file.id}`;
+    //   const url = `${Nextcloud.index_url}/apps/files?dir=/${file.dirname}&openfile=${file.id}`;
 
-      switch (actionType) {
-        case 0:
-        case 1:
-          await mel_metapage.Functions.change_frame("stockage", true, true);
-          $(`iframe.stockage-frame`)[0].contentWindow.postMessage({
-            exec:"update_location",
-            _integrated:true,
-            always:true,
-            child:false,
-            args:[url, "stockage-frame", "mel_nextcloud_frame"]
-          }); 
-          break;
+    //   switch (actionType) {
+    //     case 0:
+    //     case 1:
+    //       await mel_metapage.Functions.change_frame("stockage", true, true);
+    //       $(`iframe.stockage-frame`)[0].contentWindow.postMessage({
+    //         exec:"update_location",
+    //         _integrated:true,
+    //         always:true,
+    //         child:false,
+    //         args:[url, "stockage-frame", "mel_nextcloud_frame"]
+    //       }); 
+    //       break;
         
-        case 2:
-          window.location.href = url;
-          break;
+    //     case 2:
+    //       window.location.href = url;
+    //       break;
       
-        default:
-          break;
-      }
-    }, file);
+    //     default:
+    //       break;
+    //   }
+    // }, file);
     
     
   }

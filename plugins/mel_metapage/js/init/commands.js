@@ -102,7 +102,7 @@ if (rcmail)
                 // Frame déjà ouverte
                 if (iframe.length > 0)
                 {
-                    iframe[0].contentWindow.$("body").html('<center><div style="height: 20vw;width: 20vw;" class="spinner-grow"></div></center>')
+                    iframe[0].contentWindow.$("body").html('<center><div title="Rechargement de la page" style="height: 20vw;width: 20vw;" class="spinner-grow"><span class="sr-only">Rechargement de la page...</span></div></center>')
                     iframe[0].contentWindow.location.reload();
                 }
                 // Frame parent
@@ -123,7 +123,7 @@ if (rcmail)
 
                     mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, false, true).then(() => {  
                         const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
-                        console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`));                     
+                        //console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`));                     
                         $(`iframe.${contract}-frame`)[0].src = `${url}&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`;
                         rcmail.set_busy(false);
                         rcmail.clear_messages();

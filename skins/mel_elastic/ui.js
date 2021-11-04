@@ -212,7 +212,7 @@ $(document).ready(() => {
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
-                    if (( $("html").hasClass("layout-small") || $("html").hasClass("layout-phone")))
+                    if (show && ( $("html").hasClass("layout-small") || $("html").hasClass("layout-phone")))
                     {
                         rcmail.show_contentframe_parent(show);
                         $("#layout-content").css("display", "").removeClass("layout-hidden")

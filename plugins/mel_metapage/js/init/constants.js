@@ -696,7 +696,7 @@ const mel_metapage = {
              * @param {boolean} isfiledatas Si vrai, datas est un objet <c>Nextcloud_File</c>
              * @param {function} thenFunc Action à faire une fois que l'on à changer de page.
              */
-            go:function(datas, goFunc = null, thenFunc = null)
+            go(datas, goFunc = null, thenFunc = null)
             {
                 let init = 'new Nextcloud("rcmail.env.nextcloud_username")';
                 let go = `.go(${JSON.stringify(datas)}, ${goFunc})`;
@@ -707,7 +707,7 @@ const mel_metapage = {
                     then = `.then((a) => { (${thenFunc + ""})(a) })`;
                 }
 
-                mel_metapage.Functions.call(init + go + then);
+                return mel_metapage.Functions.call(init + go + then);
             }
         },
 
@@ -770,6 +770,56 @@ const mel_metapage = {
                     doAction(2, ...functionArgs);
 
             }
+        },
+
+        update_refresh_thing()
+        {
+            let current = $(".refresh-current-thing");
+            switch (rcmail.env.current_frame_name) {
+                case "webconf":
+                case "discussion":
+                    current.addClass("disabled").attr("disabled", "disabled");
+                    break;
+            
+                default:
+                    current.removeClass("disabled").removeAttr("disabled");
+                    break;
+            }
+        },
+
+        /**
+         * 
+         * @param {string|JSON} _params - String sous forme '?dir=PATH&fileid=ID' ou JSON sous forme {path:'', id:''}
+         */
+        async change_frame_nextcloud(_params = null)
+        {
+            const appfiles = '/apps/files/';
+            const urlToAdd = _params.id === undefined && _params.includes(appfiles) ? appfiles : "";
+            let param = urlToAdd + (_params ?? "");
+            let configArgs = null;
+
+            //si _params n'est pas un string
+            if (_params !== null)
+            {
+                if (_params.id !== undefined)
+                    param = `${urlToAdd}?dir=${_params.path}&fileid=${_params.id}`;
+
+                configArgs = {
+                    _params:urlencode(param)
+                };
+            }
+
+            const url = `${rcmail.env.nextcloud_url}${param ?? ""}`;
+
+            if (parent.$("iframe.stockage-frame").length > 0)
+                parent.$("iframe.stockage-frame")[0].contentWindow.$("#mel_nextcloud_frame")[0].src = url;
+
+            await this.change_frame("stockage", true, true, configArgs);
+
+            parent.$("iframe.stockage-frame")[0].contentWindow.rcmail.env.nextcloud_gotourl = url;
+
+            // if (parent.$("iframe.stockage-frame")[0].contentWindow.$("#mel_nextcloud_frame")[0].contentWindow.location.href !== url)
+            //     parent.$("iframe.stockage-frame")[0].contentWindow.$("#mel_nextcloud_frame")[0].src = url;
         }
 
 

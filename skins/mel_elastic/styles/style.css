@@ -651,15 +651,15 @@ framed_item > .framed_item{
 
 .roundbadge.menu
 {
-    -moz-transform: translateY(15px);
-    top: -13px;
+    /* -moz-transform: translateY(15px); */
+    top: -5px;
     position: absolute;
     height: 15px;
     width: 15px;
     line-height: 16px;
     font-size: 8px;
     color: #2C3054;
-    left: 2px;
+    left: -10px;
 }
 
 a.roundbadge.link{

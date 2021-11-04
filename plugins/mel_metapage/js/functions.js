@@ -1080,9 +1080,24 @@ async function m_mp_InitializeDocument(initPath = null)
     url_config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
 
     $(`<iframe style="display:none;width:100%;height:100%" src="${mel_metapage.Functions.url("roundrive", "files_create", url_config
-    )}"></iframe>`).on("load", () => {
+    )}"></iframe>`).on("load", async () => {
         create_popUp.contents.find(".spinner-border").parent().remove();
-        create_popUp.contents.find("iframe").css("display", "");
+        let iframe = create_popUp.contents.find("iframe").css("display", "");
+
+        if ($("html").hasClass("layout-normal") || $("html").hasClass("layout-large"))
+        {
+            let it = 0;
+            await wait(() => {
+
+                if (++it > 4)
+                    return false;
+
+                return iframe[0].contentWindow.$("#roundrive-elements .col-md-3").length == 0;
+            });
+            iframe[0].contentWindow.$("#roundrive-elements .col-md-3").removeClass('col-md-3').addClass('col-3');
+        }
+        //console.log("iframe", iframe, iframe[0].contentWindow.$("#roundrive-elements .col-md-3"));
+
         $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
     }).appendTo(create_popUp.contents);
     create_popUp.show();

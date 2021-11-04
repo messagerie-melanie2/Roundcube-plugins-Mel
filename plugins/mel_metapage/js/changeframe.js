@@ -547,6 +547,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
 async function ChangeFrame(_class, otherDatas = null)
 {
+    //Actions à faire avant de changer de frame
     if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
         ArianeButton.default().hide_button();
 
@@ -576,6 +577,7 @@ async function ChangeFrame(_class, otherDatas = null)
 
     $(".workspace-frame").css("display", "none");
 
+    //Gestion de la config en fonction des dofférentes frame voulues
     let config = null;
 
     if (_class === "tasklist" && rcmail.env.current_workspace_tasklist_uid !== undefined && rcmail.env.current_workspace_tasklist_uid !== null)
@@ -594,10 +596,19 @@ async function ChangeFrame(_class, otherDatas = null)
         if ($(".links-frame").length > 0 && !$(".links-frame")[0].contentWindow.window.location.href.includes(otherDatas) && otherDatas !== null)
             $(".links-frame").remove();
     }
+    else if (_class === "stockage" && otherDatas !== null)
+    {
+        if (otherDatas !== undefined && otherDatas !== null && otherDatas.includes('uid:'))
+            config = {_params: `/apps/files?dir=/dossiers-${otherDatas.replace(':uid', '')}`};
+        else 
+            config = {_params: otherDatas.replace(rcmail.env.nextcloud_url, '')};
+    }
 
+    //Ouverture de la frame
     const id = mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
 
+    //Choses à faire en fonction des différentes frames voulues
     if ($(`#${id}`).length === 0 || $(`#${id}`).parent()[0].id !== "layout-frames")
         $("#layout-frames").css("display", "none");
 
@@ -622,22 +633,26 @@ async function ChangeFrame(_class, otherDatas = null)
         otherDatas = null;
     }
 
+    //Mails
     if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
     {
         $(parent.$(".mail-frame")[0].contentDocument).ready(() => {
             mel_metapage.Functions.searchOnMail(otherDatas, ["to", "cc", "bcc"]);
         });
     }
+    //Stockage
     else if (_class === "stockage")
     {
-        mel_metapage.Functions.call("update_location", false, {
-            _integrated:true,
-            args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`,"stockage-frame","mel_nextcloud_frame"]
-        });
+        parent.$('iframe.stockage-frame')[0].contentWindow.rcmail.env.nextcloud_gotourl = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+        parent.$('iframe.stockage-frame')[0].contentWindow.$("#mel_nextcloud_frame")[0].src = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+        // mel_metapage.Functions.call("update_location", false, {
+        //     _integrated:true,
+        //     args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`,"stockage-frame","mel_nextcloud_frame"]
+        // });
     }
+    //Kanban
     else if (_class === "wekan")
     {
-        //console.log("wekan", otherDatas, `${rcmail.env.wekan_base_url}/b/${otherDatas}/null`);
         
         if (otherDatas !== null)
         {
@@ -647,20 +662,15 @@ async function ChangeFrame(_class, otherDatas = null)
             });
         }
 
-        //console.log("args", otherDatas,[otherDatas === null ? rcmail.env.wekan_base_url :`${rcmail.env.wekan_base_url}/b/${otherDatas}/null`,"wekan-frame","wekan-iframe"])
     }
 
-        //https://roundcube.ida.melanie2.i2/nextcloud/
-        //Nextcloud.index_url + "/apps/files?dir=/dossiers-"+rcmail.env.current_workspace_uid
 
-    // if ($("#layout-content").hasClass("workspace-frame"))
-    //     $("#layout-content").css("display", "");
 
     $(`#${id}`).css("display", "");
-        rcmail.env.have_frame_positioned = true;
-        rcmail.set_busy(false);
-        rcmail.clear_messages();
-    }
+    rcmail.env.have_frame_positioned = true;
+    rcmail.set_busy(false);
+    rcmail.clear_messages();
+}
 
 async function ChangePage(_class)
 {

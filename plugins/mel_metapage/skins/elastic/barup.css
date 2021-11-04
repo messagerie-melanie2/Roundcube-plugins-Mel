@@ -599,3 +599,9 @@ html.layout-phone #barup-search .search-container
 {
     width: 95%;
 }
+
+html.layout-small #barup-wrapper-row,
+html.layout-phone #barup-wrapper-row
+{
+    margin-right: 0!important;
+}

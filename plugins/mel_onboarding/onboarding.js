@@ -13,8 +13,14 @@ last_item_css = null;
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
-    if (!rcmail.env.onboarding) {
-      rcmail.show_current_page_onboarding();
+    let current_page = rcmail.env.task;
+    if (rcmail.env.current_page) {
+      current_page += "/" + rcmail.env.current_page;
+    }
+    if (rcmail.env.help_page_onboarding[current_page]) {
+      if (!rcmail.env.onboarding) {
+        rcmail.show_current_page_onboarding(current_page);
+      }
     }
   });
 }
@@ -22,8 +28,8 @@ if (window.rcmail) {
 /**
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
-rcube_webmail.prototype.show_current_page_onboarding = function () {
-  fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + this.env.task + '.json', { credentials: "include", cache: "no-cache" }).then((res) => {
+rcube_webmail.prototype.show_current_page_onboarding = function (current_page) {
+  fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + current_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
       window.current_onboarding = JSON.parse(json);
 
@@ -241,7 +247,17 @@ rcube_webmail.prototype.onboarding_get_previous_item = function () {
 rcube_webmail.prototype.onboarding_close = function () {
   let buttons = [
     {
-      text: rcmail.gettext('View my desktop', 'mel_onboarding'),
+      text: rcmail.gettext('hide all help', 'mel_onboarding'),
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: !$('#see_help_again').is(":checked"),
+        });
+        $(this).dialog('destroy');
+      }
+    },
+    {
+      text: rcmail.gettext('hide this help', 'mel_onboarding'),
       'class': 'mainaction text-white',
       click: function () {
         rcmail.http_post('settings/plugin.set_onboarding', {
@@ -262,6 +278,6 @@ rcube_webmail.prototype.onboarding_close = function () {
   if (window.last_modified_item) {
     $(window.last_modified_item).attr('style', window.last_item_css);
   }
-  rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons)
+  rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons, { height: 100 })
 
 };

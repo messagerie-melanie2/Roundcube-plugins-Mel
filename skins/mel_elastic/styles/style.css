@@ -1844,11 +1844,21 @@ html .menu a.selection::before {
 	overflow: hidden;
 	text-overflow: ellipsis;
  }
-.two-lines {
-	-webkit-line-clamp: 3;
-	display: -webkit-box;
+
+ .three-lines,
+ .two-lines
+ {
+    display: -webkit-box;
 	-webkit-box-orient: vertical;
 	white-space: normal;
+ }
+
+.three-lines {
+	-webkit-line-clamp: 3;
+}
+
+.two-lines {
+	-webkit-line-clamp: 3;
 }
 
 html.touch .popover-overlay {

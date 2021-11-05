@@ -1,15 +1,15 @@
 <div class="workspace" data-public="<workspace-public/>" id="<workspace-id/>">
-    <div class="mel-hover mel-animated" style="width: 100%;cursor: pointer;" onclick="rcmail.command('portal.go.workspace', '<workspace-id/>')">
+    <div title="Ouvrir l'espace ''<workspace-title/>''" class="mel-hover mel-animated" style="width: 100%;cursor: pointer;" onclick="rcmail.command('portal.go.workspace', '<workspace-id/>')">
         <div class="row">
             <div class="col-4"><workspace-image/></div>
-            <div class="col-8">
+            <div class="col-8 link-ellipse three-lines" style="height: 80px;">
                 <span><workspace-#/></span>
                 <br/>
                 <h3 class="wsp-title"><workspace-title/></h3>
             </div>
         </div>
         <div class="row" style="    margin-top: 40px;
-        margin-bottom: 25px;">
+        margin-bottom: 25px;height: 25px;">
             <div class="col-12">
                 <workspace-avancement/>
             </div>

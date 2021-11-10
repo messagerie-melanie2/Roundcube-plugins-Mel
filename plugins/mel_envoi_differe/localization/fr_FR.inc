@@ -49,7 +49,7 @@ $labels['disco_popup_title'] = 'Vous travaillez actuellement durant une heure no
 $labels['disco_popup_description'] = 'Vous avez la possibilité de quitter Mel mais également de continuer votre travail :
 <ul>
 <li>Soit en mode différé, chaque message sera remis à son destinataire à la prochaine heure ouvrée et respectera ainsi son droit à la déconnexion.</li>
-<li>Soit vous continuer d\'envoyer vos messages en temps réel, sans respecter le droit à la déconnexion de votre correspondant.</li>
+<li>Soit vous continuez d\'envoyer vos messages en temps réel, sans respecter le droit à la déconnexion de votre correspondant.</li>
 </ul>
 <p>Toutefois, l\'envoi d\'un courriel urgent est possible en désactivant ponctuellement la remise différée.</p>';
 $labels['disco_button_continue'] = 'Continuer';

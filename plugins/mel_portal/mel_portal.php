@@ -62,9 +62,11 @@ class mel_portal extends rcube_plugin
     {
         $this->setup();
         $this->include_depedencies();
-        $this->load_modules_actions();
         if ($this->rc->task == $this->taskName)
+        {
+            $this->load_modules_actions();
             $this->portal();
+        }
     }
 
     /**

@@ -633,18 +633,29 @@ async function ChangeFrame(_class, otherDatas = null)
         otherDatas = null;
     }
 
+    let currentFrame;
     //Mails
     if (_class === "mail") //`edt.${rcmail.env.current_workspace_uid}@i-carre.net`
     {
-        $(parent.$(".mail-frame")[0].contentDocument).ready(() => {
+        currentFrame = parent.$("iframe.mail-frame");
+        $(currentFrame.length > 0 ? currentFrame[0].contentDocument : parent.document).ready(() => {
             mel_metapage.Functions.searchOnMail(otherDatas, ["to", "cc", "bcc"]);
         });
     }
     //Stockage
     else if (_class === "stockage")
     {
-        parent.$('iframe.stockage-frame')[0].contentWindow.rcmail.env.nextcloud_gotourl = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
-        parent.$('iframe.stockage-frame')[0].contentWindow.$("#mel_nextcloud_frame")[0].src = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+        currentFrame = parent.$('iframe.stockage-frame');
+        //Mode frame
+        if (currentFrame.length > 0)
+        {
+            currentFrame[0].contentWindow.rcmail.env.nextcloud_gotourl = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+            currentFrame[0].contentWindow.$("#mel_nextcloud_frame")[0].src = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+        }
+        else {
+            parent.rcmail.env.nextcloud_gotourl = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+            parent.$("#mel_nextcloud_frame")[0].src = otherDatas ?? `${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`;
+        }
         // mel_metapage.Functions.call("update_location", false, {
         //     _integrated:true,
         //     args:[otherDatas !== null ? otherDatas :`${Nextcloud.index_url}/apps/files?dir=/dossiers-${uid}`,"stockage-frame","mel_nextcloud_frame"]

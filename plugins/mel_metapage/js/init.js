@@ -582,16 +582,24 @@ if (rcmail)
                 check = true;
             }
 
-            if (check)
-             setTimeout(() => {
-                if ($("#otherapps .selected").length === 0)
-                    $(".more-options").removeClass("selected");
-                else
-                    $(".more-options").addClass("selected");
 
-                if (isHidden)
-                    $("#layout-menu").css("opacity", "").addClass("hidden");
-             }, 10);
+            if (check)
+            {
+                setTimeout(() => {
+                    if ($("#otherapps .selected").length === 0)
+                        $(".more-options").removeClass("selected");
+                    else
+                        $(".more-options").addClass("selected");
+                }, 10);
+            }
+
+            if (isHidden)
+            {
+                $("#layout-menu").css("opacity", "").addClass("hidden");
+                let $html = $("html");
+                if (($html.hasClass("layout-normal") && !$html.hasClass("touch")) || $html.hasClass("layout-large"))
+                    $("#layout-menu").css("opacity", "").removeClass("hidden");
+            }
 
         });
 

@@ -177,7 +177,7 @@ function mm_st_CommandContract(_class)
 {
     switch (_class) {
         case "news":
-            return 'bureau&action=index&_data=news'
+            return 'news'
         default:
             return _class;
     }
@@ -400,11 +400,17 @@ metapage_frames.addEvent("node", (eClass, changepage, isAriane, querry, id, resu
 
 metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, args, result) => {
     const empty = "";
+    const frameArg = {
+        complete:"_is_from=iframe",
+        key:"_is_from",
+        value:"iframe"
+    };
 
     if (args === null || args === undefined)
         args = {};
 
-    args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+    if (rcmail.env.mel_metapage_const !== undefined)
+        args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
 
     if (eClass === "addressbook" && (args["_action"] === undefined || args["_action"] === null))
     {
@@ -429,6 +435,10 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
         }
         else
             task = mm_st_CommandContract(eClass);
+
+        //Vérification frame
+        if (args[rcmail.env.mel_metapage_const.key] === undefined || args[frameArg.key] === undefined)
+            args[frameArg.key] = frameArg.value;
 
         src = mel_metapage.Functions.url(task, "", args);
     }

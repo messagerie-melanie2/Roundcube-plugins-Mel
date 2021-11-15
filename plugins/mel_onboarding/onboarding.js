@@ -18,9 +18,9 @@ if (window.rcmail) {
       current_page += "/" + rcmail.env.current_page;
     }
     if (rcmail.env.help_page_onboarding[current_page]) {
-      current_page = rcmail.env.help_page_onboarding[current_page];
+      let json_page = rcmail.env.help_page_onboarding[current_page];
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(current_page);
+        rcmail.show_current_page_onboarding(json_page);
       }
     }
   });

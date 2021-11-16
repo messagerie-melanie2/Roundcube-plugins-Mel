@@ -180,6 +180,20 @@ class mel_metapage extends rcube_plugin
                 $this->rc->output->set_env("calendar_custom_dialog", true);
             }
 
+            if (class_exists('mel_nextcloud'))
+            {
+                $this->require_plugin('mel_helper');
+                $this->rc->output->set_env("is_stockage_active", mel_helper::stockage_active());
+                $this->rc->output->set_env("why_is_not_active", [
+                    "consts" => [
+                        "ST_NO_DOUBLE_AUTH" => mel_helper::ST_NO_DOUBLE_AUTH,
+                        "ST_NO_RIGHTS" => mel_helper::ST_NO_RIGHTS,
+                        "ST_ACTIVE" => mel_helper::ST_ACTIVE
+                    ],
+                    "value" => mel_helper::why_stockage_not_active()
+                ]);
+            }
+
             // if ($this->rc->task === "settings")
             // {
 

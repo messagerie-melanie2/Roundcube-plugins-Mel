@@ -528,7 +528,7 @@ function UpdateFrameAriane()
 
 async function initCloud()
 {
-    if (rcmail.env.current_workspace_services.doc !== true)
+    if (rcmail.env.current_workspace_services.doc !== true || rcmail.env.is_stockage_active !== true)
         return;
 
     if(rcmail.env.checknews_action_on_error === undefined)
@@ -729,7 +729,7 @@ async function InitLinks()
             refreshUsefulLinks();
         });
 
-        if (!rcmail.env.current_workspace_services.doc) //Si nextcloud est activé
+        if (!rcmail.env.current_workspace_services.doc || !rcmail.env.is_stockage_active) //Si nextcloud n'est pas activé
         {
             $("#ressources-links").parent().parent().find(".wsp-block.wsp-left.wsp-resources").css("background-color", "transparent")
         }

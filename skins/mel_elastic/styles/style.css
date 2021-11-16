@@ -1958,3 +1958,8 @@ html.touch body.task-mail #layout-sidebar {
     content: "\e930"!important;
     font-weight: normal!important;
 }
+
+#datepicker-onoff:focus
+{
+    box-shadow: none;
+}

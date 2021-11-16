@@ -149,6 +149,9 @@ $(document).ready(() => {
                 });
 
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
+
+                if (!rcmail.env.is_stockage_active)
+                    $("#taskmenu .stockage").parent().remove();
             }
             
             try {

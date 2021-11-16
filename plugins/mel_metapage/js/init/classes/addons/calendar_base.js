@@ -330,6 +330,7 @@ $(document).ready(() => {
                 format: 'd/m/Y H:i',
                 lang:"fr",
                 step:15,
+                dayOfWeekStart:1,
                 onChangeDateTime:() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
@@ -347,6 +348,7 @@ $(document).ready(() => {
                 format: 'd/m/Y H:i',
                 lang:"fr",
                 step:15,
+                dayOfWeekStart:1,
                 onChangeDateTime:() => {
                     let querry = $(".input-mel-datetime .input-mel.end");
                     const end_val = getDate(querry.val());
@@ -983,14 +985,19 @@ $(document).ready(() => {
 
             }
         }).removeClass("btn-primary")
-        .addClass("btn-secondary mel-button")
-        .append(`<span class="plus icon-mel-arrow-right"></span>`);
+        .addClass("btn-secondary mel-button");
+        //.append(`<span class="plus icon-mel-arrow-right"></span>`);
+
+        if (kolab_event_dialog_element.footer.buttons.save.find(".plus").length === 0)
+            kolab_event_dialog_element.footer.buttons.save.append(`<span class="plus icon-mel-arrow-right"></span>`);
 
          kolab_event_dialog_element.footer.buttons.exit.addClass("mel-button")
          .addClass("btn-danger")
          .addClass("mel-before-remover")
-         .removeClass("btn-secondary")
-         .append(`<span class="plus icon-mel-close"></span>`);
+         .removeClass("btn-secondary");
+         //.append(`<span class="plus icon-mel-close"></span>`);
+         if (kolab_event_dialog_element.footer.buttons.exit.find(".plus").length === 0)
+            kolab_event_dialog_element.footer.buttons.exit.append(`<span class="plus icon-mel-close"></span>`);
 
         // ${event.from === "barup" ? '' : ""}
         if (event.from === "barup")

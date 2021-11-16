@@ -34,6 +34,7 @@ class mel_news extends rcube_plugin {
   function setup_plugin()
   {
     $this->rc = rcmail::get_instance();
+    return;
     $this->register_task(self::TASK_NAME);
     $this->add_texts('localization/', true);
     $this->add_button(array(

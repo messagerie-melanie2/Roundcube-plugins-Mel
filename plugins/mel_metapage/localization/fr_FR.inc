@@ -80,7 +80,7 @@ $labels["enter"] = "Entrer";
 $labels["documents"] = "Documents";
 $labels["ariane"] = "Ariane";
 $labels["hangup"] = "Raccrocher";
-$labels["diffuse"] = "Diffuser";
+$labels["diffuse"] = "Partager";
 $labels["mosaik"] = "Mosaïque";
 $labels["url"] = "Url";
 

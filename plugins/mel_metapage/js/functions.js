@@ -24,15 +24,8 @@ function m_mp_Create() {
   FullscreenItem.close_if_exist();
 
   //Si problème de configuration, on gère.
-  try {
-    // if (rcmail.env.nextcloud_pinged === false || rcmail.env.nextcloud_username === undefined || rcmail.env.nextcloud_url === undefined || rcmail.env.nextcloud_url === "")
-    //     window.mel_metapage_tmp = null;
-    // else
-    window.mel_metapage_tmp = true;//new Nextcloud(rcmail.env.nextcloud_username).getAllFolders();
-  } catch (error) {
-    window.mel_metapage_tmp = null;
-    console.error(rcmail.gettext("mel_metapage.nextcloud_connection_error"));
-  }
+  window.mel_metapage_tmp = rcmail.env.is_stockage_active ? true : null;
+
   const actions = {
     mail: get_action("mel_metapage.a_mail", "icon-mel-mail", "rcmail.command('compose','',this,event)"),
     espace: get_action("mel_metapage.a_worspace", "icon-mel-workplace", "m_mp_createworkspace()"),
@@ -283,7 +276,8 @@ function m_mp_createworkspace() {
         setTimeout(() => {
           $('#workspace-color').val(MEL_ELASTIC_UI.getRandomColor());
           $("#workspace-date-end").datetimepicker({
-            format: 'd/m/Y H:i'
+            format: 'd/m/Y H:i',
+            dayOfWeekStart:1,
           });
           MEL_ELASTIC_UI.redStars();
         }, 10);

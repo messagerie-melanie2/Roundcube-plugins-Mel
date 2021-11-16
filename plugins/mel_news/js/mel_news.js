@@ -85,7 +85,7 @@ $(document).ready(async () => {
             this.modal.editBody(html);
             this.modal.footer.querry.html("");
             $(`<button class="mel-button" style="margin-right:40px">${(news.id === "" ? "Ajouter" : "Modifier")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
-
+                this.confirm("createOrEditPublish", {id:"generated-tmp-id"});
             }).appendTo(this.modal.footer.querry);
 
             setTimeout(() => {
@@ -97,6 +97,38 @@ $(document).ready(async () => {
                 rcmail.editor_init(config, "mel-publish-body");
                 this.modal.show();
             }, 10);
+
+            return this;
+        }
+
+        confirm(caller, args)
+        {
+            switch (caller) {
+                case "createOrEditPublish":
+                    const news = new MelPublishNew(null)
+                    .create($("#mel-publish-title").val(), $("#mel-publish-body").val())
+                    .setService($("#mel-publish-service").val());
+
+                    console.log(news, "confirm");
+                    //Modification du titre de la modale
+                    this.modal.editTitle("Visualisation de la publication");
+
+                    //Modification du corps de la modale
+
+                    //Modification du pied de la modale
+                    this.modal.footer.querry.html("");
+                    $('<button class="mel-button white" style="position:absolute;left:40px">Retour <span class="plus icon-mel-undo"></span></button>').click(() => {
+                        this.createOrEditPublish(args.id);
+                    }).appendTo(this.modal.footer.querry);
+                    $(`<button class="mel-button" style="margin-right:40px">Confirmer <span class="plus icon-mel-plus"></span></button>`).click(() => {
+
+                    }).appendTo(this.modal.footer.querry);
+                    break;
+            
+                default:
+                    console.error('###[confirm]Impossible de créer une fenêtre de confirmation pour cette action, elle n\'éxiste pas !', caller);
+                    break;
+            }
 
             return this;
         }
@@ -414,6 +446,18 @@ $(document).ready(async () => {
             }
 
             return this;
+        }
+
+        create(title, body)
+        {
+            this.title = title;
+            this.body = body;
+            return this;
+        }
+
+        setService(service)
+        {
+            return this.setType(service);
         }
     }
 

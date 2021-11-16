@@ -1,6 +1,11 @@
 <?php
 class mel_helper extends rcube_plugin
 {
+
+    public const ST_NO_DOUBLE_AUTH = "nodoubleauth";
+    public const ST_NO_RIGHTS = "norights";
+    public const ST_ACTIVE = "active";
+
     /**
      * @var string
      */
@@ -81,6 +86,23 @@ class mel_helper extends rcube_plugin
     public static function load_helper($rc)
     {
         return self::get_rc_plugin($rc, "mel_helper");
+    }
+    
+    public static function stockage_active()
+    {
+        return false && driver_mel::get_instance()->userHasAccessToStockage();
+    }
+
+    public static function why_stockage_not_active()
+    {
+        if (!mel::is_internal() 
+        && class_exists('mel_doubleauth')
+        && !mel_doubleauth::is_double_auth_enable())
+            return self::ST_NO_DOUBLE_AUTH;
+        else if (!self::stockage_active())
+            return self::ST_NO_RIGHTS;
+
+        return self::ST_ACTIVE;
     }
 
 

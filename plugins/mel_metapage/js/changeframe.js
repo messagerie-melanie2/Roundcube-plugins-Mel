@@ -340,6 +340,29 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                     );
                     break;
         case "rocket":
+            if (parent.$("html").hasClass("webconf-started"))
+            {
+                if (parent.$(".webconf-toolbar").length > 0 && parent.$(".webconf-toolbar .wsp-toolbar-item.conf-ariane").css("display") !== "none")
+                {
+                    if (!parent.$(".webconf-toolbar .wsp-toolbar-item.conf-ariane").hasClass("active"))
+                    {
+                        parent.$(".webconf-toolbar .wsp-toolbar-item.conf-ariane").click();
+                    }
+
+                    (parent.$("iframe.webconf-frame").length > 0 ? parent.$("iframe.webconf-frame")[0].contentWindow.$("#mm-ariane")[0] : parent.$("#mm-ariane")[0])
+                    .contentWindow.postMessage({
+                        externalCommand: 'go',
+                        path: otherDatas
+                    }, '*');
+
+                }
+                else {
+                    alert("Cette option n'est pas compatible avec votre visioconférence.");
+                }
+
+                return;
+            }
+
             datas.push({
                 exec_info:"change_environnement",
                 datas:_class

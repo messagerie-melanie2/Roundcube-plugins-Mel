@@ -42,6 +42,31 @@ $(document).ready(
     
             });
 
+            $("#datepicker-onoff").remove();
+            $("#datepicker").addClass("showed").css("margin-bottom", "");
+            $("#datepicker").prepend(
+                $(`<button class="btn btn-block" id=datepicker-onoff><span class="icon-mel-chevron-down"></span></button>`)
+                .click(() => {
+                    const size = $("#datepicker .ui-datepicker")[0].getClientRects()[0].height;
+                    if ($("#datepicker").hasClass("showed")) //est affiché
+                    {
+                        mel_metapage.Storage.set("datepicker_state", false);
+                        $("#datepicker").css("margin-bottom", `-${size}px`).removeClass("showed");
+                        $("#datepicker-onoff .icon-mel-chevron-down").removeClass("icon-mel-chevron-down").addClass("icon-mel-chevron-up")
+                    }
+                    else {
+                        mel_metapage.Storage.set("datepicker_state", true);
+                        $("#datepicker").css("margin-bottom", ``).addClass("showed");
+                        $("#datepicker-onoff .icon-mel-chevron-up").removeClass("icon-mel-chevron-up").addClass("icon-mel-chevron-down")
+                    }
+                })
+            );
+
+            setTimeout(() => {
+                if ($("#datepicker").hasClass("showed") && mel_metapage.Storage.get("datepicker_state") === false)
+                    $("#datepicker-onoff").click();
+            }, 1);
+
             parent.metapage_frames.addEvent("open.after", async (eClass, changepage, isAriane, querry, id, actions) => {
             
                 if (eClass === "calendar")

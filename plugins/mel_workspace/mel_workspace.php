@@ -523,6 +523,9 @@ class mel_workspace extends rcube_plugin
             if ($services[self::WEKAN])
                 $wekan_board_id = $this->get_object($this->currentWorkspace, self::WEKAN)->id;
 
+            if ($services[self::CLOUD])
+                $services[self::CLOUD] = mel_helper::stockage_active();
+
             $uid = $this->currentWorkspace->uid;
             $html = html::tag("button",["onclick" => "ChangeToolbar('back', this)", "class" => "$add_classes wsp-toolbar-item goback first"], '<span class="'.$icons["back"].'"></span><span class=text-item>Quitter</span>');
             $html .= $vseparate;
@@ -916,7 +919,7 @@ class mel_workspace extends rcube_plugin
                     $count = count($body_component);
 
                     for ($i=0; $i < $count; ++$i) { 
-                        if ($i === 0)
+                        if ($i === $count-1)
                             $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
                         else
                             $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);
@@ -934,6 +937,7 @@ class mel_workspace extends rcube_plugin
             //Mes documents
             if ($services[self::CLOUD] || $services[self::LINKS])
             {
+                $cloudNotActive = $services[self::CLOUD] && !mel_helper::stockage_active();
                 $header_component = [];
 
                 if ($services[self::CLOUD])
@@ -946,7 +950,7 @@ class mel_workspace extends rcube_plugin
                 $count = count($header_component);
 
                 for ($i=0; $i < $count; ++$i) { 
-                    if ($i === 0)
+                    if ($i === ($cloudNotActive ? 1 : 0))
                         $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
                     else
                         $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);
@@ -963,17 +967,17 @@ class mel_workspace extends rcube_plugin
 
                 if ($services[self::CLOUD])
                 {
-                    
+                    $cloudDisabled = ($cloudNotActive ? "disabled" : "");
                     $before_body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
-                        html::tag("button", ["title" => "Actualiser","id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", "class" => "mel-button btn btn-secondary"],
+                        html::tag("button", ["title" => "Actualiser","id" => "refresh-nc", "onclick" => "rcmail.env.wsp_roundrive_show.checkNews()", $cloudDisabled=>$cloudDisabled,"class" => "$cloudDisabled mel-button btn btn-secondary"],
                             '<span class="icofont-refresh"><p class="sr-only">Actualiser la visualisation du stockage</p></span>'
                         ).
-                        html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-documents').click()", "class" => "mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;
+                        html::tag("button", ["onclick" => "$('.wsp-toolbar-item.wsp-documents').click()", $cloudDisabled => $cloudDisabled, "class" => "$cloudDisabled mel-button btn btn-secondary white mel-before-remover", "style" => "    margin: 0 10px;
                     margin-top: 15px;
                 "], 
                             '<span>Accéder au drive</span><span class="icon-mel-external plus"></span>'
                         ).
-                        html::tag("button", ["onclick"  => "rcmail.env.wsp_roundrive_show.createFile()", "class" => "mel-button btn btn-secondary"], 
+                        html::tag("button", [$cloudDisabled => $cloudDisabled, "onclick"  => "rcmail.env.wsp_roundrive_show.createFile()", "class" => "$cloudDisabled mel-button btn btn-secondary"], 
                             '<span>Créer</span><span class="icon-mel-plus plus"></span>'
                         )
                     );
@@ -1001,7 +1005,7 @@ class mel_workspace extends rcube_plugin
                 $count = count($before_body_component);
 
                 for ($i=0; $i < $count; ++$i) { 
-                    if ($i === 0)
+                    if ($i === ($cloudNotActive ? 1 : 0))
                         $tmp .= str_replace("¤¤¤", "", $before_body_component[$i]);
                     else
                         $tmp .= str_replace("¤¤¤", "display:none", $before_body_component[$i]);
@@ -1016,15 +1020,27 @@ class mel_workspace extends rcube_plugin
                 $body_component = [];
 
                 if ($services[self::CLOUD]){
-
-                    $body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤"],
-                    //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
-                    html::tag('center', ["id" => "spinner-grow-center"],
-                    html::tag('span', ["class" => "spinner-grow"], html::tag('p', ["class" => "sr-only"], "Chargement des documents..."))).    
-                    html::tag("div", 
-                        [ "id" => "cloud-frame", "style" => "overflow:auto;width:100%;max-height:500px;display:none;"]
-                        )
-                    );
+                    if ($cloudNotActive)
+                    {
+                        $body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤"],
+                        //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
+                        html::tag('center', [],
+                        html::tag('span', [], $this->rc->gettext(mel_helper::why_stockage_not_active(), "mel_workspace"))).    
+                        html::tag("div", 
+                            [ "id" => "cloud-frame", "style" => "overflow:auto;width:100%;max-height:500px;display:none;"]
+                            )
+                        );
+                    }
+                    else {
+                        $body_component[] = html::div(["class" => "ressources-cloud tab-ressources mel-tab-content", "style" => "¤¤¤"],
+                        //'<span class="spinner-grow"><p class="sr-only">Chargement des documents...</p></span>'
+                        html::tag('center', ["id" => "spinner-grow-center"],
+                        html::tag('span', ["class" => "spinner-grow"], html::tag('p', ["class" => "sr-only"], "Chargement des documents..."))).    
+                        html::tag("div", 
+                            [ "id" => "cloud-frame", "style" => "overflow:auto;width:100%;max-height:500px;display:none;"]
+                            )
+                        );
+                    }
                 }
 
 
@@ -1046,7 +1062,7 @@ class mel_workspace extends rcube_plugin
                 $count = count($body_component);
 
                 for ($i=0; $i < $count; ++$i) { 
-                    if ($i === 0)
+                    if ($i === ($cloudNotActive ? 1 : 0))
                         $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
                     else
                         $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);

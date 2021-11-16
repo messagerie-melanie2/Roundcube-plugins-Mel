@@ -29,3 +29,6 @@ $labels["create_webconf_params"] = "Nouvelle visioconférence paramétrable";
 
 $labels["invite_member"] = "Inviter un membre";
 $labels["quit_space"] = "Se désinscrire de l'espace de travail";
+
+$labels["norights"] = "Vous n'avez pas les autorisations pour accéder au stockage.";
+$labels["nodoubleauth"] = "Vous devez être connecté en intranet ou avoir la double authentification d'activer pour accéder au stockage !";

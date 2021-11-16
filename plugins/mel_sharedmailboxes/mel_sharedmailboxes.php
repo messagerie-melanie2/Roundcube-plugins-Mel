@@ -598,14 +598,16 @@ class mel_sharedmailboxes extends rcube_plugin {
                 }
             }
             // Ajout des 5 derniers dossiers visités
-            $i = 1;
-            $folders = array_reverse($_SESSION['folders'], true);
-            foreach ($folders as $folder => $status) {
-                if (!in_array($folder, $args['folders'])) {
-                    $args['folders'][] = $folder;
-                    $i++;
-                    if ($i == 5) {
-                        break;
+            if (isset($_SESSION['folders'])) {
+                $i = 1;
+                $folders = array_reverse($_SESSION['folders'], true);
+                foreach ($folders as $folder => $status) {
+                    if (!in_array($folder, $args['folders'])) {
+                        $args['folders'][] = $folder;
+                        $i++;
+                        if ($i == 5) {
+                            break;
+                        }
                     }
                 }
             }

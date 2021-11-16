@@ -55,39 +55,15 @@ rcube_webmail.prototype.help_open_dialog = function () {
     .attr('style', 'width: 100%;min-height:600px')
     .appendTo(document.body);
 
-  // var h = Math.floor($(window).height() * 0.75);
-  // var w = Math.floor($(window).width() * 0.75);
-  //   var buttons = {};
-
-  //   frame.dialog({
-  //       modal: true,
-  //       resizable: true,
-  //       closeOnEscape: true,
-  //       title: '',
-  //       close: function() {
-  //           frame.dialog('destroy').remove();
-  //           $('.button-mel_help').removeClass('button-selected');
-  //       },
-  //       buttons: buttons,
-  //       width: w+20,
-  //       height: h,
-  //       rcmail: rcmail
-  //   }).width(w);
-  // $("#helppageframe").css("max-width", w+"px");
-
   window.help_popUp = undefined;
   window.create_popUp = undefined;
 
   let config = new GlobalModalConfig("Assistance", "default", frame, ' ');
   help_popUp = new GlobalModal("globalModal", config);
   window.help_popUp.show();
-  // }
-  // else {
-  //   window.help_popUp.show();
-  // }
-  // let config = new GlobalModalConfig("Assistance", "default", frame, ' ');
-  // create_popUp = new GlobalModal("globalModal", config);
-  // window.create_popUp.contents.html("BONSOIR LE MONDE");
-  // window.create_popUp.editTitle('<h2 class=""><span>Chargement...</span></h2>');
-  // window.create_popUp.show();
 };
+
+rcube_webmail.prototype.current_page_onboarding = function (page) {
+  window.parent.help_popUp.close();
+  window.parent.rcmail.show_current_page_onboarding(page);
+}

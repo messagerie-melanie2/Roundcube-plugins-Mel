@@ -35,7 +35,7 @@ class mel_onboarding extends rcube_plugin
   public function init()
   {
     $this->rc = rcmail::get_instance();
-    $prefs = $this->rc->config->get('see_help_again', [true]);
+    $prefs = $this->rc->config->get('see_help_again', true);
     if ($prefs) {
       //Si l'aide à déjà été affichée sur cette session
       if (isset($_SESSION['onboarding'])) {

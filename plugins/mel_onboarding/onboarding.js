@@ -20,8 +20,8 @@ if (window.rcmail) {
     if (rcmail.env.help_page_onboarding[current_page]) {
       let json_page = rcmail.env.help_page_onboarding[current_page];
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(json_page);
-      }
+      rcmail.show_current_page_onboarding(json_page);
+      } 
     }
   });
 }
@@ -88,7 +88,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (current_page) {
             bloc.append($('<h2>' + element.bloc.title + '</h2>'));
 
             if (element.bloc.video) {
-              bloc.append($('<div class="video"><img title="' + element.bloc.title + '" src="/bureau/plugins/mel_onboarding/images/' + element.bloc.img + '" /></div>'));
+              bloc.append($('<div class="video"><img title="' + element.bloc.title + '" src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.bloc.img + '" /></div>'));
             }
             if (element.bloc.description) {
               bloc.append($('<div class="description">' + element.bloc.description + '</div>'));

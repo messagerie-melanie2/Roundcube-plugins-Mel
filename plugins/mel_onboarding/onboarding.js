@@ -18,8 +18,9 @@ if (window.rcmail) {
       current_page += "/" + rcmail.env.current_page;
     }
     if (rcmail.env.help_page_onboarding[current_page]) {
+      let json_page = rcmail.env.help_page_onboarding[current_page];
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(current_page);
+        rcmail.show_current_page_onboarding(json_page);
       }
     }
   });
@@ -87,7 +88,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (current_page) {
             bloc.append($('<h2>' + element.bloc.title + '</h2>'));
 
             if (element.bloc.video) {
-              bloc.append($('<div class="video"><img title="' + element.bloc.title + '" src="/bureau/plugins/mel_onboarding/images/' + element.bloc.img + '" /></div>'));
+              bloc.append($('<div class="video"><img title="' + element.bloc.title + '" src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.bloc.img + '" /></div>'));
             }
             if (element.bloc.description) {
               bloc.append($('<div class="description">' + element.bloc.description + '</div>'));
@@ -278,6 +279,10 @@ rcube_webmail.prototype.onboarding_close = function () {
   if (window.last_modified_item) {
     $(window.last_modified_item).attr('style', window.last_item_css);
   }
-  rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons, { height: 100 })
 
+  // On n'ouve pas la modal si l'onboarding est lancé depuis l'assistance
+  if (!rcmail.env.hide_modal) {
+    rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons, { height: 100 })
+  }
+  delete rcmail.env.hide_modal;
 };

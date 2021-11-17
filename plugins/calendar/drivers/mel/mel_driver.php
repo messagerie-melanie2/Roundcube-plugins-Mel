@@ -301,8 +301,8 @@ class mel_driver extends calendar_driver {
             'group'       => trim(($cal->owner == $this->user->uid ? 'personnal' : 'shared') . ' ' . ($default_calendar->id == $cal->id ? 'default' : '')),
             'class'       => 'user',
     				'caldavurl'   => $this->get_caldav_url($cal),
-            'children'    => false,
         );
+        
         if (isset($tree)) {
           // Gérer les enfants
           if (isset($calendars[$rcId]) && isset($calendars[$rcId]['tree'])) {

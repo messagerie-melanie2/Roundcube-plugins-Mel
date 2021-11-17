@@ -19,6 +19,7 @@ if (window.rcmail) {
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
         rcmail.show_current_page_onboarding(current_page);
+        rcmail.env.hide_modal = 1;
       }
     });
     if (rcmail.env.current_page) {
@@ -26,7 +27,7 @@ if (window.rcmail) {
     }
     if (rcmail.env.help_page_onboarding[current_page]) {
       if (!rcmail.env.onboarding) {
-      rcmail.show_current_page_onboarding(current_page);
+        rcmail.show_current_page_onboarding(current_page);
       }
     }
   });
@@ -34,15 +35,16 @@ if (window.rcmail) {
 
 rcube_webmail.prototype.current_page_onboarding = function (task) {
   window.parent.help_popUp.close();
+
   var iframe = window.parent.$('iframe.' + task + '-frame')[0];
   if (iframe) {
     window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
   }
   else {
     window.parent.rcmail.show_current_page_onboarding(task);
+    window.parent.rcmail.env.hide_modal = 1;
   }
 
-  window.parent.rcmail.env.hide_modal = 1;
 }
 
 
@@ -243,9 +245,9 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
       if (window.current_onboarding.stepper.items[item].scrollto) {
         let element = $(window.current_onboarding.stepper.items[item].highlight).get(0);
         element.scrollIntoView();
-        if (rcmail.env.is_framed) {
+        if (rcmail.env.is_framed && window.current_onboarding.stepper.items[item].scrolltop) {
           let scroll = $("#layout-content").scrollTop();
-          $("#layout-content").scrollTop(scroll - 60)
+          $("#layout-content").scrollTop(scroll - window.current_onboarding.stepper.items[item].scrolltop)
         }
       }
     }

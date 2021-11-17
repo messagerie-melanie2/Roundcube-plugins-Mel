@@ -41,6 +41,7 @@
                 "description": "Affichage des tâches et rendez-vous du jour",
                 "highlight": "#layout-content #contents div.--col-dwp-1",
                 "scrollto": true,
+                "scrolltop": 60,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
                 "bloccss": "margin-left: 50%;",
                 "bloc": {
@@ -53,6 +54,7 @@
                 "description": "Affichage des informations du service et du ministère",
                 "highlight": "#layout-content #contents div.--col-dwp-2",
                 "scrollto": true,
+                "scrolltop": 60,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
                 "bloccss": "margin-right: 65%;",
                 "bloc": {

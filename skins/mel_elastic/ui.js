@@ -352,6 +352,12 @@ $(document).ready(() => {
                             //$("#melmorethings-menu .select").data("popup", $("#melmorethings-menu .select").data("popup").replace("-", ""))
                         }
 
+                        if (!$("html").hasClass("touch") && $("#toolbar-list-menu").hasClass("hidden")) 
+                        {
+                            $("#toolbar-list-menu").removeClass("hidden")
+                            .removeAttr("aria-hidden");
+                        }
+
                         if (rcmail.env.search_initialized !== true && window.innerWidth < 410)
                         {
                             rcmail.env.search_initialized = true;

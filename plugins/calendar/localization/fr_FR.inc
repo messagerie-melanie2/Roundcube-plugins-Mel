@@ -143,7 +143,8 @@ $labels['attendee'] = 'Participant';
 $labels['role'] = 'Rôle';
 $labels['availability'] = 'Dispo.';
 $labels['confirmstate'] = 'Statut';
-$labels['addattendee'] = 'Ajouter participant';
+//PAMELA
+$labels['addattendee'] = 'Ajouter';
 $labels['roleorganizer'] = 'Organisateur';
 $labels['rolerequired'] = 'Requis';
 $labels['roleoptional'] = 'Optionnel';

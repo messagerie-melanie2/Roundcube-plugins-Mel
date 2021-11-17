@@ -512,6 +512,10 @@ $(document).ready(() => {
             $("#eventedit .form-check-input.custom-control-input").removeClass("custom-control-input");
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
+            
+            $("#edit-attendee-add").attr("title", 'Ajoute le participant saisi dans le champ précédent.');
+            $("#edit-attendee-name").attr("placeholder", 'Ajouter un participant...').attr("title", "Saisissez le nom de l'utilisateur pour afficher l'autocomplétion ou saisissez une adresse email puis cliquez sur 'Ajouter'");
+
             //ok
             $("#eventedit").data("callbacks", "ok");
 

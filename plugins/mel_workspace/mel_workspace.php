@@ -437,6 +437,7 @@ class mel_workspace extends rcube_plugin
 
         $this->rc->output->set_env("current_workspace_page", rcube_utils::get_input_value('_page', rcube_utils::INPUT_GPC));
         $this->rc->output->set_env("current_settings", json_decode($this->currentWorkspace->settings));
+        $this->rc->output->set_env("current_objects", json_decode($this->currentWorkspacespace->objects));
 
         $this->rc->output->set_env("corrected_wsp", true);
 
@@ -884,7 +885,7 @@ class mel_workspace extends rcube_plugin
                     $count = count($header_component);
 
                     for ($i=0; $i < $count; ++$i) { 
-                        if ($i === 0)
+                        if ($i === $count-1)
                             $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
                         else
                             $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);

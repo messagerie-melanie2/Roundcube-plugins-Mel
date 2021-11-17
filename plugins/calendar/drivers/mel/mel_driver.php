@@ -202,6 +202,7 @@ class mel_driver extends calendar_driver {
 
       $default_calendar = $this->user->getDefaultCalendar();
       $calendars = [];
+      $haveActive = false;
       foreach ($this->calendars as $id => $cal) {
         if (isset($hidden_calendars[$cal->id])
             && ! ($filter & self::FILTER_ALL)
@@ -241,6 +242,9 @@ class mel_driver extends calendar_driver {
           $active = true;
           $active_calendars = [ $cal->id => 1 ];
         }
+
+        if ($active === true && $haveActive === false) $haveActive = true;
+
         // Gestion des alarmes dans les calendriers
         if (is_array($alarm_calendars)) {
           $alarm = isset($alarm_calendars[$cal->id]);
@@ -403,6 +407,19 @@ class mel_driver extends calendar_driver {
           }
         }
       }
+
+      if ($haveActive === false)
+      {
+        $firstId = driver_mel::gi()->getUser()->uid;
+        $calendars[$firstId]["active"] = true;
+
+        if ($active_calendars === null)
+          $active_calendars = [];
+
+        $active_calendars[$firstId] =  1;
+        $this->rc->user->save_prefs(array('active_calendars' => $active_calendars));
+      }
+
       // Retourne la concaténation des agendas pour avoir une liste ordonnée
       return $calendars;
     }

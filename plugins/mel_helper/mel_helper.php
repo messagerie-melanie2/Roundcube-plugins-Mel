@@ -90,7 +90,7 @@ class mel_helper extends rcube_plugin
     
     public static function stockage_active()
     {
-        return false && driver_mel::get_instance()->userHasAccessToStockage();
+        return driver_mel::get_instance()->userHasAccessToStockage();
     }
 
     public static function why_stockage_not_active()

@@ -1,0 +1,47 @@
+.text-title,
+h1
+{
+    font-size: 40px;
+}
+
+.text-header,
+h2{
+    font-size: 2rem;
+}
+
+.sub-title,
+h3{
+    font-size: 1.4rem;
+}
+
+.span-mel.t1{
+    font-size: 1.4rem!important;
+}
+
+.messagelist td.subject .fromto
+{
+    font-size: 100%!important;
+}
+
+.messagelist td.subject span.subject
+{
+    font-size: 90%!important;
+}
+
+.default-text,
+body{
+    font-size: 1rem;
+}
+
+.secondary-text{
+    font-size:0.875rem;
+}
+
+.secondary-text.min{
+    font-size:0.8rem;
+}
+
+.terciary-text{
+    font-size: 0.75rem;
+}
+

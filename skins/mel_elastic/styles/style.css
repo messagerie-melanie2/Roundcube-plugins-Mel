@@ -1038,7 +1038,7 @@ td.mel-fit-content{
     margin-top: 15px;
     transition: all 0.1s ease-in;
     cursor: pointer;
-    font-size: small;
+    /* font-size: small; */
 }
 
 .ignoreActive.mel-button{
@@ -1079,6 +1079,17 @@ td.mel-fit-content{
     border-color: #363A5B;
 }
 .mel-button.white:hover{
+    color: white;
+}
+
+.mel-button.bckg{
+    background-color: transparent;
+    color: unset;
+    border-style: solid;
+    border-width: thin;
+    border-color: #363A5B;
+}
+.mel-button.bckg:hover{
     color: white;
 }
 
@@ -1512,15 +1523,15 @@ body.task-mail .ui-dialog iframe, .ui-dialog .ui-dialog-content.iframe{
     width: 97.9% !important;;
 }
 
-.element-title{
-    font-size: 14px;
+/* .element-title{
+    /* font-size: 14px; 
     font-weight: bold;
-}
-
+} */
+/* 
 .element-desc
 {
     font-size: 12px;
-}
+} */
 
 .ignore-bullet{
     list-style-type: none;
@@ -1962,4 +1973,26 @@ html.touch body.task-mail #layout-sidebar {
 #datepicker-onoff:focus
 {
     box-shadow: none;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.italic{
+    font-style: italic;
+} 
+
+/* #layout > div > .header,
+#layout-content body.action-preview
+{
+    font-size-adjust: none;
+} */
+
+.margin-right-15{
+    margin-right: 15px;
+}
+
+.task-addressbook ul.treelist.iconized li div.treetoggle {
+    top: 0px!important;
 }

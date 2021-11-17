@@ -136,11 +136,11 @@ function setupMyDay(datas)
 			html += "<div class=row style=margin-bottom:15px;margin-right:15px; >";
 
 			if (element.allDay)
-				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title element-block">` + rcmail.gettext("Journée entière") + `</span><span class="element-desc element-block">` + title + `</span></a></div>`;
+				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title default-text bold element-block">` + rcmail.gettext("Journée entière") + `</span><span class="element-desc secondary-text element-block">` + title + `</span></a></div>`;
 			else
 			{
 				const style_date = set_style(element);
-				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title element-block">` + style_date.start + " - " + style_date.end + `</span><span class="element-desc element-block">` + title +"</span></a></div>";
+				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title default-text bold element-block">` + style_date.start + " - " + style_date.end + `</span><span class="element-desc secondary-text element-block">` + title +"</span></a></div>";
 			}
 
 			if (element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
@@ -210,7 +210,7 @@ function setup_tasks(datas)
 			html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
 			if (date._isValid)
-				html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}')"><span class="element-title element-block">${element.title}</span><span class="element-desc element-block">Créée le ${date.format("DD/MM/YYYY")} à ${date.format("hh:mm")}</span></a></div>`;
+				html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}')"><span class="element-title default-text bold element-block">${element.title}</span><span class="element-desc secondary-text element-block">Créée le ${date.format("DD/MM/YYYY")} à ${date.format("hh:mm")}</span></a></div>`;
 			else
 				html += "<div class=col-md-10></div>";
 

@@ -232,7 +232,7 @@ class Module implements iModule {
     function html_tab($tabName, $id, $selected=false, $misc = "")
     {
         return html::tag("button",
-            array("class" => "tablinks".(($selected == true) ? " selected" : ""), 'onclick' => 'selectTab(`'.$id.'`, this)'),
+            array("class" => "tablinks sub-title".(($selected == true) ? " selected" : ""), 'onclick' => 'selectTab(`'.$id.'`, this)'),
             $misc.$tabName
         );
     }
@@ -285,7 +285,7 @@ class Module implements iModule {
         for ($i=0; $i < $count; ++$i) { 
 
             $tab = new HTMLTab(($array[$i]["tab-id"] === "" ? null : $array[$i]["tab-id"]), null, [
-                aHTMLElement::ARG_CLASSES => ["tablinks".($i === 0 ? " selected" : "")],
+                aHTMLElement::ARG_CLASSES => ["tablinks sub-title".($i === 0 ? " selected" : "")],
                 aHTMLElement::ARG_ATTRIBUTES => ['onclick="selectTab(`'.$array[$i]["id"].'`, this)"'],
             ]);
 

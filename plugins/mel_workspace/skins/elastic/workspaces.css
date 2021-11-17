@@ -38,8 +38,8 @@ html.layout-small .wsp-index{
 }
 
 .title-wsp {
-    font-size: x-large;
-    font-weight: bold;
+    /* font-size: x-large;
+    font-weight: bold; */
 }
 
 .workspace{
@@ -51,8 +51,8 @@ html.layout-small .wsp-index{
 }
 
 .wsp-title {
-    font-weight: bold;
-    font-size: x-large;
+    /* font-weight: bold;
+    font-size: x-large; */
     white-space: nowrap;
     display: block;
     margin-bottom: 20px;
@@ -481,9 +481,9 @@ font-size: 2vw;
 }
 
 .mel-button > span.plus::before {
-	font-size: 15px;
+	/* font-size: 15px; */
 	display: inline-block;
-	vertical-align: sub;
+	vertical-align: middle;
 }
 
 .invite-button.create{

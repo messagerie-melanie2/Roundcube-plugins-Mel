@@ -290,7 +290,7 @@ body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover
 
 .task-calendar #layout > #layout-sidebar > .header .header-title
 {
-    font-size: 1.5rem;
+    /* font-size: 1.5rem; */
     font-weight: normal;
 }
 

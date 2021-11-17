@@ -101,7 +101,7 @@ html body div#layout-list .messagelist td.subject a,
 .messagelist td.subject .fromto
 {
     padding-left:0!important;
-    font-size: 100%!important;
+    /* font-size: 100%!important; */
 }
 
 table.messagelist td.subject span.msgicon::before{
@@ -158,7 +158,7 @@ table.messagelist .selected td.subject span.msgicon::after
 .messagelist td.subject span.subject
 {
     padding-left: 2rem;
-    font-size: 95%;
+    /* font-size: 95%; */
 }
 
 .messagelist .selected td.subject span.date,

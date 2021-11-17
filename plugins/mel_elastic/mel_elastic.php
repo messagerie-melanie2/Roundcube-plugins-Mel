@@ -40,6 +40,8 @@ class mel_elastic extends rcube_plugin
         $this->rc = rcmail::get_instance();
         if ($this->rc->config->get('skin') == 'mel_elastic')
         {
+            $this->add_hook('preferences_list', array($this, 'prefs_list'));
+            $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
@@ -61,6 +63,14 @@ class mel_elastic extends rcube_plugin
         for ($i=0; $i < $size; ++$i) { 
             $this->include_stylesheet('/'.$this->css[$i]);
         }
+
+        $this->load_css_font();
+    }
+
+    function load_css_font()
+    {
+        //$this->rc->config->get('custom-font-size', "sm")
+        $this->include_stylesheet("/fonts/fontsize_".$this->rc->config->get('custom-font-size', "sm").".css");
     }
 
     function load_folders()
@@ -90,4 +100,68 @@ class mel_elastic extends rcube_plugin
 
         return $p;
     }
+
+    public function prefs_list($args) {
+
+        if ($args['section'] == 'general') {
+          // Load localization and configuration
+          $this->add_texts('localization/');
+    
+          $text_size = "mel-text-size";
+    
+          // Check that configuration is not disabled
+          $config = $this->rc->config->get('custom-font-size', 'lg');
+    
+          $options = [
+                $text_size => [
+                    $this->gettext("smaller", "mel_elastic"),
+                    $this->gettext("normal", "mel_elastic")
+                ],
+            ];
+    
+            // $args['blocks']['main']['options'][$text_size] = null;
+        $attrib = [];
+    
+        $attrib['name'] = $text_size;
+        $attrib['id'] = $text_size;
+    
+        $input = new html_select($attrib);   
+        $input->add($options[$text_size], ["sm", "lg"]);
+        
+    
+        unset($attrib['name']);
+        unset($attrib['id']);
+        $attrib["for"] = $text_size;
+    
+        $args['blocks']['main']['options'][$text_size] = array(
+            'title' => html::label($attrib, rcube::Q($this->gettext($text_size, "mel_elastic"))),
+            'content' => $input->show($config),
+          );
+          
+        }
+    
+        return $args;
+      }
+
+
+      public function prefs_save($args) {
+        if ($args['section'] == 'general') {
+    
+            $this->add_texts('localization/');
+    
+            $text_size = "mel-text-size";
+    
+            // Check that configuration is not disabled
+            $config = $this->rc->config->get('custom-font-size', 'lg');
+    
+            $config = rcube_utils::get_input_value($text_size, rcube_utils::INPUT_POST);
+          
+    
+          $args['prefs']["custom-font-size"] = $config;
+          
+        //   $this->rc->output->set_env("custom-font-size", $config);
+        }
+    
+        return $args;
+      }
 }

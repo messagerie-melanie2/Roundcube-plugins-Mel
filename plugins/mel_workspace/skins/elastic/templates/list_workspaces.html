@@ -18,7 +18,7 @@
         <div class=row>
             <div class=col-12>
                 <div class="wsp-search-wsp">
-                    <span class="title-wsp">Rechercher un espace de travail</span>
+                    <span class="title-wsp text-header bold">Rechercher un espace de travail</span>
                     <div class="input-group mel-search-group mel-centered">
                         <input id="wsp-search-input" type="text" onmousedown="" class="form-control mel-max-width-500" />
                         <div class="input-group-append">
@@ -43,9 +43,9 @@
             <separate></separate>
         </div> -->
         <div class="joined">
-            <span class="title-wsp">
+            <h2 class="title-wsp bold">
                 <span><roundcube:object name="title" /></span> <!-- Liste des espaces de travail -->
-            </span> 
+            </h2> 
             <button onclick="rcmail.set_busy(true, 'loading');window.location.href = mel_metapage.Functions.url('workspace')" style=float:right class="mel-button plus">Retour<span class="icon-mel-undo mel-return plus"></span></button>
             <roundcube:object name="joined" />
         </div>

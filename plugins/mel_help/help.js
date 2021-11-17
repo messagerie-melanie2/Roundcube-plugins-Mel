@@ -63,8 +63,3 @@ rcube_webmail.prototype.help_open_dialog = function () {
   window.help_popUp.show();
 };
 
-rcube_webmail.prototype.current_page_onboarding = function (page) {
-  window.parent.help_popUp.close();
-  window.parent.rcmail.show_current_page_onboarding(page);
-  window.parent.rcmail.env.hide_modal = 1;
-}

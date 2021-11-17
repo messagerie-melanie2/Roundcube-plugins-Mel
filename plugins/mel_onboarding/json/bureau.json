@@ -1,6 +1,7 @@
 {
     "title": "Découvrez votre Bureau numérique : l'Accueil",
     "addpadding": "#layout-content #contents",
+    "iframecss": "padding-top:0px;padding-left:0px;",
     "stepper" : {
         "title": "Explorez les fonctionnalités de l'Accueil du Bnum",
         "items": {
@@ -19,6 +20,7 @@
                 "description": "Barre de gauche pour naviguer entre les applications du Bnum",
                 "highlight": "#layout-menu",
                 "bloccss": "text-align: left; max-width: 30em; margin-left: 80px;",
+                "iframecss": "padding-top:0px;padding-left:60px;",
                 "bloc": {
                     "title": "Barre de navigation",
                     "description": "<p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p>Bon à savoir : Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dés qu'une application est ouverte elle est gardée en mémoire et peut être réouverte instantanement à tout moment, le travail en cours ne sera pas perdu.</p>"
@@ -28,6 +30,7 @@
                 "title": "Barre d'outils",
                 "description": "Barre du haut pour accéder rapidement à la création, à l'assistance et à la recherche",
                 "highlight": "#layout header div.barup",
+                "iframecss": "padding-top:60px;padding-left:0px;",
                 "bloc": {
                     "title": "Barre d'outils",
                     "description": "<p>Cette barre d'outils reste tout le temps accessible quelque soit la page du Bnum affichée.</p><p>Elle permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globales dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul>"

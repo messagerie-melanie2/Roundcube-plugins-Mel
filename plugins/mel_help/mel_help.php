@@ -147,7 +147,6 @@ class mel_help extends rcube_plugin
     if (isset($current_task) && !empty($current_task)) {
       $this->require_plugin('mel_onboarding');
       $current_help_pages = $this->rc->config->get('help_page_onboarding', []);
-      // $current_help_pages = $this->rc->config->get('task_help_page', []);
       if (isset($current_action) && !empty($current_action) && isset($current_help_pages[$current_task . '/' . $current_action])) {
         $current_help_page = $current_help_pages[$current_task . '/' . $current_action];
       } else if (isset($current_help_pages[$current_task])) {
@@ -162,7 +161,7 @@ class mel_help extends rcube_plugin
     }
 
     if (isset($current_help_page)) {
-      $html .= html::span(['class' => 'helppage current'], html::a(['href' => '#', 'onclick' => "rcmail.current_page_onboarding('$current_help_page')", 'title' => $this->gettext('help current page title')], $this->gettext('help current page')));
+      $html .= html::span(['class' => 'helppage current'], html::a(['href' => '#', 'onclick' => "rcmail.current_page_onboarding('$current_task')", 'title' => $this->gettext('help current page title')], $this->gettext('help current page')));
     }
 
     $suggestion_url = $this->rc->config->get('help_suggestion_url', null);

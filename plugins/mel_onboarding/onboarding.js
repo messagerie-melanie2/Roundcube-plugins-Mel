@@ -10,27 +10,49 @@ last_modified_item = null;
 // Le css du dernier item modifié
 last_item_css = null;
 
+// Conserver en mémoire le css de l'iframe
+current_iframe_css = null;
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
     let current_page = rcmail.env.task;
+    window.addEventListener('message', (e) => {
+      if (e.data == 'onboarding') {
+        rcmail.show_current_page_onboarding(current_page);
+      }
+    });
     if (rcmail.env.current_page) {
       current_page += "/" + rcmail.env.current_page;
     }
     if (rcmail.env.help_page_onboarding[current_page]) {
-      let json_page = rcmail.env.help_page_onboarding[current_page];
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(json_page);
+      rcmail.show_current_page_onboarding(current_page);
       }
     }
   });
 }
 
+rcube_webmail.prototype.current_page_onboarding = function (task) {
+  window.parent.help_popUp.close();
+  var iframe = window.parent.$('iframe.' + task + '-frame')[0];
+  if (iframe) {
+    window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
+  }
+  else {
+    window.parent.rcmail.show_current_page_onboarding(task);
+  }
+
+  window.parent.rcmail.env.hide_modal = 1;
+}
+
+
 /**
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
-rcube_webmail.prototype.show_current_page_onboarding = function (current_page) {
-  fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + current_page, { credentials: "include", cache: "no-cache" }).then((res) => {
+rcube_webmail.prototype.show_current_page_onboarding = function (task) {
+  let json_page = rcmail.env.help_page_onboarding[task];
+
+  fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
       window.current_onboarding = JSON.parse(json);
 
@@ -150,10 +172,28 @@ rcube_webmail.prototype.show_current_page_onboarding = function (current_page) {
  * Permet d'afficher l'item courant
  */
 rcube_webmail.prototype.onboarding_show_item = function (item) {
+
+  if (rcmail.env.is_framed) {
+    let iframe = window.parent.$('iframe.' + rcmail.env.task + '-frame')[0];
+    let iframe_id = iframe.id;
+    console.log(iframe);
+    console.log(iframe_id);
+
+    if (!current_iframe_css) {
+      current_iframe_css = $("#" + iframe_id, window.parent.document).attr("style");
+    }
+
+    $("#layout-frames", window.parent.document).attr("style", "z-index:1000")
+    if (window.current_onboarding.stepper.items[item].iframecss) {
+      $("#" + iframe_id, window.parent.document).attr('style', current_iframe_css + window.current_onboarding.stepper.items[item].iframecss)
+    }
+    else if (window.current_onboarding.iframecss) {
+      $("#" + iframe_id, window.parent.document).attr('style', current_iframe_css + window.current_onboarding.iframecss)
+    }
+  }
   // Réinitialiser l'ancien item
   if (window.last_modified_item) {
     $(window.last_modified_item).attr('style', window.last_item_css);
-
   }
   // Mettre à jour le nouvel item
   if (window.current_onboarding.stepper.items[item]) {
@@ -203,6 +243,10 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
       if (window.current_onboarding.stepper.items[item].scrollto) {
         let element = $(window.current_onboarding.stepper.items[item].highlight).get(0);
         element.scrollIntoView();
+        if (rcmail.env.is_framed) {
+          let scroll = $("#layout-content").scrollTop();
+          $("#layout-content").scrollTop(scroll - 60)
+        }
       }
     }
   }
@@ -246,30 +290,15 @@ rcube_webmail.prototype.onboarding_get_previous_item = function () {
  * Fermer l'onboarding
  */
 rcube_webmail.prototype.onboarding_close = function () {
-  let buttons = [
-    {
-      text: rcmail.gettext('hide all help', 'mel_onboarding'),
-      click: function () {
-        rcmail.http_post('settings/plugin.set_onboarding', {
-          _onboarding: true,
-          _see_help_again: !$('#see_help_again').is(":checked"),
-        });
-        $(this).dialog('destroy');
-      }
-    },
-    {
-      text: rcmail.gettext('hide this help', 'mel_onboarding'),
-      'class': 'mainaction text-white',
-      click: function () {
-        rcmail.http_post('settings/plugin.set_onboarding', {
-          _onboarding: true,
-          _see_help_again: !$('#see_help_again').is(":checked"),
-        });
-        $(this).dialog('destroy');
-      }
-    }];
 
   $('#dimScreen').remove();
+  if (rcmail.env.is_framed) {
+    let iframe = window.parent.$('iframe.' + rcmail.env.task + '-frame')[0];
+    let iframe_id = iframe.id;
+
+    $("#layout-frames", window.parent.document).attr("style", "z-index:0")
+    $("#" + iframe_id, window.parent.document).attr('style', current_iframe_css)
+  }
   // Gestion du padding ?
   if (window.current_onboarding.addpadding) {
     $('.onboarding-padding').remove();
@@ -280,9 +309,37 @@ rcube_webmail.prototype.onboarding_close = function () {
     $(window.last_modified_item).attr('style', window.last_item_css);
   }
 
-  // On n'ouve pas la modal si l'onboarding est lancé depuis l'assistance
+
+  let buttons = [
+    {
+      text: rcmail.gettext('hide all help', 'mel_onboarding'),
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: !$('#see_help_again').is(":checked"),
+        });
+        window.parent.$('.ui-dialog-content:visible').dialog('close');
+      }
+    },
+    {
+      text: rcmail.gettext('hide this help', 'mel_onboarding'),
+      'class': 'mainaction text-white',
+      click: function () {
+        rcmail.http_post('settings/plugin.set_onboarding', {
+          _onboarding: true,
+          _see_help_again: !$('#see_help_again').is(":checked"),
+        });
+        window.parent.$('.ui-dialog-content:visible').dialog('close');
+      }
+    }];
+
+
+  let content = rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>";
+
+  let title = rcmail.gettext('close help', 'mel_onboarding');
+  // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
   if (!rcmail.env.hide_modal) {
-    rcmail.show_popup_dialog(rcmail.gettext('to display this help again, you can go to', 'mel_onboarding') + "<button class='hide-touch help mel-before-remover mel-focus' onclick='m_mp_Help()' title='Afficher l'aide'><span style='position:relative'>Assistance<span class='icon-mel-help question'></span></span></button><br/><br/><div class='custom-control custom-switch'><input type='checkbox' id='see_help_again' class='form-check-input custom-control-input'><label for='see_help_again' class='custom-control-label' title=''>" + rcmail.gettext('Do not display this help again during my future connections', 'mel_onboarding') + "</label></div>", rcmail.gettext('close help', 'mel_onboarding'), buttons, { height: 100 })
+    window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
   }
   delete rcmail.env.hide_modal;
 };

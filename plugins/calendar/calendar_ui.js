@@ -2688,7 +2688,8 @@ function rcube_calendar_ui(settings)
       
         $dialog.find('a.button').button().filter(':not(.disabled)').click(function(e) {
           data._savemode = String(this.href).replace(/.+#/, '');
-          data._notify = settings.itip_notify;
+          // MANTIS 0006258: Un participant envoie un mail à tous les participants lorsqu'il modifie une occurrence
+          // data._notify = settings.itip_notify;
 
           // open event edit dialog when saving as new
           if (data._savemode == 'new') {

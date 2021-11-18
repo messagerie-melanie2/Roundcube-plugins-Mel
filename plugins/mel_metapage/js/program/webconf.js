@@ -1108,6 +1108,11 @@ class MasterWebconfBar {
         this.send("toggleHand");
     }
 
+    toogle_virtualbackground()
+    {
+        this.send("open_virtual_background");
+    }
+
     /**
      * Partage l'écran (Non compatible avec firefox)
      * @param {boolean} send Doit être envoyé à la frame webconf
@@ -1545,6 +1550,11 @@ class ListenerWebConfBar
     {
         this.webconf.jitsii.executeCommand('hangup');
         this.webconf.jitsii.dispose();
+    }
+
+    async open_virtual_background()
+    {
+        this.webconf.jitsii.executeCommand('toggleVirtualBackgroundDialog');
     }
 
     async get_micro_and_audio_devices()

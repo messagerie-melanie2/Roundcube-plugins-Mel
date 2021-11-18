@@ -70,7 +70,7 @@ class mel_elastic extends rcube_plugin
     function load_css_font()
     {
         //$this->rc->config->get('custom-font-size', "sm")
-        $this->include_stylesheet("/fonts/fontsize_".$this->rc->config->get('custom-font-size', "sm").".css");
+        $this->include_stylesheet("/fonts/fontsize_".$this->rc->config->get('custom-font-size', "lg").".css");
     }
 
     function load_folders()

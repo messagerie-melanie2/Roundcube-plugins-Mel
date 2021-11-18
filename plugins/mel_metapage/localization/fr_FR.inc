@@ -176,3 +176,6 @@ $labels["all-day"] = "Journée entière";
 
 $labels["without_spaces"] = "Sans espaces";
 $labels["refresh"] = "Rafraîchir la page en cours";
+
+$labels["bckg"] = "Arrière-plan";
+$labels["webconf_bckg_help"] = "Utiliser une image comme arrière-plan.";

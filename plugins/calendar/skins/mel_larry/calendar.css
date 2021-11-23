@@ -2258,10 +2258,19 @@ a.dropdown-link:after {
 }
 
 /* MANTIS 0005115: Couleur des événements en fonction du statut */
+.cal-event-status-cancelled,
 .cal-event-status-tentative {
-	opacity: 0.65 !important;
+	opacity: 0.5 !important;
 }
 
+.cal-event-status-free .fc-event-title,
+.cal-event-status-cancelled .fc-event-title,
+.cal-event-status-tentative .fc-event-title {
+	font-weight: normal;
+	opacity: 1;
+}
+
+.cal-event-status-tentative .fc-event-title,
 .cal-event-status-free .fc-event-title {
 	font-style: italic;
 }

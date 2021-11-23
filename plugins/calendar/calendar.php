@@ -2198,6 +2198,10 @@ class calendar extends rcube_plugin
     $sent = 0; $current = array();
     foreach ((array)$event['attendees'] as $attendee) {
       $current[] = strtolower($attendee['email']);
+
+      // 0006296: Ne pas envoyer de mail au participant s'il a "event_saved: true" et qu'il a accepté ou refusé
+      if ($method == 'REQUEST' && isset($attendee['skip_notify']) && $attendee['skip_notify'])
+        continue;
       
       // skip myself for obvious reasons
       if (!$attendee['email'] || in_array(strtolower($attendee['email']), $emails))

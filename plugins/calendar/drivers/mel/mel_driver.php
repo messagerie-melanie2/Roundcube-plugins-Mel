@@ -1822,6 +1822,13 @@ class mel_driver extends calendar_driver {
             $_event_attendee['role'] = mel_mapping::m2_to_rc_attendee_role($attendee->role);
             // status
             $_event_attendee['status'] = mel_mapping::m2_to_rc_attendee_status($attendee->response);
+            // is saved
+            if (is_bool($attendee->is_saved) && in_array($_event_attendee['status'], ['ACCEPTED', 'DECLINED'])) {
+              $_event_attendee['skip_notify'] = $attendee->is_saved;
+            }
+            else {
+              $_event_attendee['skip_notify'] = false;
+            }
             $_attendees[] = $_event_attendee;
           }
           $organizer = $event->organizer;

@@ -198,7 +198,34 @@
 
             return this.ajax(this.url("PARAMS_add_users"), {
                 _users:users,
-                _uid:this.uid
+                _uid:this.uid,
+            }, (datas) => {
+                console.log("datas", datas);
+                if (datas === 'no one was found')
+                {
+                    this.busy(false);
+                    rcmail.display_message('Les personnes ajoutées ne font pas partie de l\'annuaire... Elles ne sont donc pas ajouté à l\'espace.', 'warning');
+                }
+                else if (datas === "denied")
+                {
+                    this.busy(false);
+                    rcmail.display_message('Accès interdit !', "error");
+                }
+                else {
+                    try{
+                        datas = JSON.parse(datas);
+                        if (datas.length > 0)
+                        {
+                            this.busy(false);
+                            for (let index = 0; index < datas.length; ++index) {
+                                const element = datas[index];
+                                rcmail.display_message(`Impossible d'ajouter ${element} !`, "warning");
+                            }
+                        }
+                    }catch(e)
+                    {}
+                }
+
             }).always(() => {
                 return this.update_user_table();
             });
@@ -541,6 +568,17 @@
             return datas;
         }
 
+        toggle_nav_color()
+        {
+            this.busy();
+            return this.ajax(this.url("toggle_nav_color"), {
+                _uid:this.uid
+            }).always(() => {
+                this.busy(false);
+                parent.rcmail.command('refreshFrame');
+            });
+        }
+
         getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
@@ -728,6 +766,7 @@
             rcmail.register_command('workspace.webconf', () => rcmail.env.WSP_Param.create_webconf(), true);
             rcmail.register_command('workspace.webconf.needParams', () => rcmail.env.WSP_Param.create_webconf(true), true);
             rcmail.register_command('workspace.update_end_date', (jquery) => rcmail.env.WSP_Param.update_end_date(jquery.val()), true);
+            rcmail.register_command('workspace.toggle_bar_color', () => {rcmail.env.WSP_Param.toggle_nav_color()}, true);
         })
     })
 

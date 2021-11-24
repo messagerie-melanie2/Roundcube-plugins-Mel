@@ -735,6 +735,23 @@ class MasterWebconfBar {
             video:element("wsp-icon-video")
         }
 
+        // let $webconf = $("iframe.webconf-frame");
+
+        // if ($webconf.length > 0 && $webconf.attr("id") !== 'mm-ariane')    
+        // {
+        //     $webconf[0].contentWindow.$("#wmap").appendTo($(".wsp-toolbar.webconf-toolbar"));
+        //     $webconf[0].contentWindow.$("#webconfmoreactions").appendTo($(".wsp-toolbar.webconf-toolbar").parent());
+        // }
+        // else {
+            $("#wmap").appendTo($(".wsp-toolbar.webconf-toolbar"))
+        //     $("#webconfmoreactions").appendTo($(".wsp-toolbar.webconf-toolbar").parent());
+        // }
+        this.more = $("#wmap").removeClass("hidden").removeClass("active").click(() => {
+            this.more.removeClass("active");
+        });
+
+        this.more_cont = $("#webconfmoreactions");
+
         if (this.isPhone())
         {
             this.document.css("display", "none");
@@ -880,6 +897,15 @@ class MasterWebconfBar {
                 if (querry.length > 0)
                     querry.css("padding-left", "");
             }
+        }
+
+        try {
+            $('iframe.mwsp').removeClass("mwsp").each((i,e) => {
+                if (!$(e).hasClass("workspace-frame"))
+                    e.contentWindow.$("html").removeClass("mwvcs");
+            });
+        } catch (error) {
+            
         }
 
         $("#layout-frames").find("iframe").css("padding-left", "").css("padding-right", "");
@@ -1106,6 +1132,11 @@ class MasterWebconfBar {
     toggleHand()
     {
         this.send("toggleHand");
+    }
+
+    toggle_chat()
+    {
+        this.send("toggle_chat");
     }
 
     toogle_virtualbackground()
@@ -1467,6 +1498,10 @@ class ListenerWebConfBar
                 muted = muted.muted;
                 this.send((muted ? "mute" : "demute"), "MasterWebconfBar.micro, false");
             });
+
+            this.webconf.jitsii.addEventListener("incomingMessage", (message) => {
+                parent.rcmail.display_message(`${message.nick} : ${message.message}`, (message.privateMessage ? "notice private" : "notice notif"));
+            });
         }
     }
 
@@ -1629,6 +1664,11 @@ class ListenerWebConfBar
 
     toggleHand(){
         this.webconf.jitsii.executeCommand('toggleRaiseHand');
+    }
+
+    toggle_chat()
+    {
+        this.webconf.jitsii.executeCommand('toggleChat');
     }
 
 

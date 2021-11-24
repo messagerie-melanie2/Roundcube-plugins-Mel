@@ -18,6 +18,88 @@ async function WSPReady()
 }
 
 function Start(uid, hasAriane, datas) {
+
+    const style = rcmail.env.current_bar_colors;
+    let $html = $("html");
+
+    if (!$html.hasClass("framed"))
+        $html = $("#layout-content");
+
+    if (!$html.hasClass("mwsp")) $html.addClass("mwsp");
+
+    $(".wsp-toolbar-melw-wsp-hider").click(() => {
+        const down = 'icon-mel-chevron-down';
+        const up = 'icon-mel-chevron-up';
+        let $children = $(".wsp-toolbar-melw-wsp-hider").children();
+
+        if ($children.hasClass(down))
+        {
+            let $parent = $(".wsp-toolbar-melw-wsp-hider")
+            .css("right", "0")
+            .css("width", '100%')
+            .attr("title", "Afficher la barre d'accès rapide")
+            .parent();
+            $parent.css('bottom', `-${$parent[0].clientHeight}px`);
+            $children.removeClass(down)
+            .addClass(up);
+            $html.addClass("moved");
+        }
+        else {
+            let $parent = $(".wsp-toolbar-melw-wsp-hider")
+            .css("right", "")
+            .css("width", '')
+            .attr("title", "Cacher la barre d'accès rapide")
+            .parent();
+            $parent.css('bottom', '');
+            $children.removeClass(up)
+            .addClass(down);
+            $html.removeClass("moved");
+        }
+    });
+
+    if (!parent.$("body").hasClass("task-workspace")) parent.$(".mwsp-style").remove();
+    
+    if (style !== undefined && style !== null && style !== '') if (!parent.$("body").hasClass("task-workspace")) parent.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
+
+    if (parent.wsp_cf_d !== true)
+    {
+        try {
+            parent.metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id, actions)=> {
+                if (changepage)
+                {
+                    if (eClass === "workspace")
+                    {
+                        let bool = querry[0].nodeName === 'IFRAME' ? querry[0].contentWindow.rcmail.env.action === 'workspace' : rcmail.env.action === 'workspace';
+
+                        if (bool) $(".ariane-card").addClass("amwsp");
+                        
+                    }
+                    else {
+                        $(".ariane-card").removeClass("amwsp");
+                    }
+
+                }
+            });
+
+            parent.$(".tiny-rocket-chat").click(async () => {
+                //ariane-card
+                let $ariane = $(".ariane-card");
+
+                if ($ariane.length === 0) await wait(() => $(".ariane-card").length === 0);
+
+                if (rcmail.env.current_frame_name === undefined) rcmail.env.current_frame_name = rcmail.env.task;
+
+                if (rcmail.env.current_frame_name === "workspace")  $(".ariane-card").addClass("amwsp");
+                else $(".ariane-card").removeClass("amwsp");
+
+            });
+
+        } catch (error) {
+            console.error(error);
+        }
+        parent.wsp_cf_d = true;
+    }
+
     setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
     rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {

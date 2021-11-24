@@ -105,5 +105,11 @@ class mel_helper extends rcube_plugin
         return self::ST_ACTIVE;
     }
 
+    public static function color()
+    {
+        include_once "lib/mel_color_helper.php";
+        return new Mel_Color_Helper();
+    }
+
 
 }

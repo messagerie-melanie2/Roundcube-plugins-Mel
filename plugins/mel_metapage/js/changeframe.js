@@ -33,6 +33,11 @@
                                     .data("toolbaropen", $(".wsp-toolbar-edited").css("display") !== "none")
                                     .data("lastopenedframe", rcmail.env.wsp_datas.toolbar.current);
                                     $(".wsp-toolbar-edited").css("display", "none");     
+
+                                    $('iframe.mwsp').removeClass("mwsp").each((i,e) => {
+                                        if (!$(e).hasClass("workspace-frame"))
+                                            e.contentWindow.$("html").removeClass("mwsp").removeClass("mwvcs");
+                                    });
                                 }      
                                 else
                                 {
@@ -44,6 +49,12 @@
                             }
                             //console.log("addEvent", $(".tiny-wsp-menu"));
                             metapage_frames.workspace = true;
+                        }
+                        else {
+                            $('iframe.mwsp').removeClass("mwsp").each((i,e) => {
+                                if (!$(e).hasClass("workspace-frame"))
+                                    e.contentWindow.$("html").removeClass("mwsp");//.find(".mwsp-style").remove();
+                            });    
                         }
                     });
                     metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
@@ -194,26 +205,60 @@ function UpdateMenu(_class, _picture, _toolbar)
             if (button.length === 0)
             {
                 let picture = $(".wsp-picture");
-                $("#layout").append(`<div onclick=HideOrShowMenu(this) class="tiny-wsp-menu enabled"></div>`)
+                $("#layout").append(`<div class="tiny-wsp-menu enabled"></div>`)
                 button = $(".tiny-wsp-menu");
                 button.css("position", "absolute");
-                button.css("right", right)
-                .css("bottom", bottom)
+                button.css("left", '80px')
+                .css("bottom", '2px')
+                .css("height", "54px")
+                .css("width", "54px")
                 .css("background-color", _picture === null ? picture.css("background-color") : _picture.color)
-                .css("z-index", 999)
+                .css("z-index", 100)
                 .addClass("dwp-round")
                 .append(_picture === null ? picture.html() : _picture.picture);
             }
             button.css("display", "");
+
             //console.log("ShowToolbar", $(".wsp-toolbar"));
             (_toolbar !== null && $(".wsp-toolbar-edited").length === 0 ? $("#layout").append(_toolbar).find(".wsp-toolbar-edited") : $(".wsp-toolbar-edited") )
             .css("margin", "initial")
             .css("position", "fixed")
-            .css("bottom", (parseInt(bottom.replace("px", "")) - 3) + "px")
-            .css("right", right)
+            // .css("bottom", (parseInt(bottom.replace("px", "")) - 3) + "px")
+            // .css("right", right)
             .css("z-index", 99)
-            .css("width", "calc(100% - 120px)")
-            .append('<div class="wsp-toolbar-item added-wsp-item" style="pointer-events:none"></div>');
+            // .css("width", "calc(100% - 120px)")
+            .prepend('<div class="wsp-toolbar-item added-wsp-item" style="pointer-events: none;border:none"></div><v_separate></v_separate>').find(".wsp-toolbar-melw-wsp-hider").click((e) =>{
+                const down = 'icon-mel-chevron-down';
+                const up = 'icon-mel-chevron-up';
+                let $children = $(e.currentTarget).children();
+        
+                if ($children.hasClass(down))
+                {
+                    let $parent = $(e.currentTarget)
+                    .css("right", "0")
+                    .css("width", '100%')
+                    .attr("title", "Afficher la barre d'accès rapide")
+                    .parent();
+                    $parent.css('bottom', `-${$parent[0].clientHeight}px`);
+                    $(".tiny-wsp-menu").css('bottom', `-${$parent[0].clientHeight}px`);
+                    $children.removeClass(down)
+                    .addClass(up);
+                    //.addClass("moved");
+                    $(".mwsp").addClass("moved");
+                }
+                else {
+                    let $parent = $(e.currentTarget)
+                    .css("right", "")
+                    .css("width", '')
+                    .attr("title", "Cacher la barre d'accès rapide")
+                    .parent();
+                    $parent.css('bottom', '');
+                    $(".tiny-wsp-menu").css('bottom', '2px');
+                    $children.removeClass(up)
+                    .addClass(down);
+                    $(".mwsp").removeClass("moved");
+                }
+            });
             rcmail.env.wsp_datas.toolbar = {
                 current: _class,
                 exists: true
@@ -588,6 +633,8 @@ async function ChangeFrame(_class, otherDatas = null)
         return;
     }
 
+    const style = ($('iframe.workspace-frame').length > 0 ? $('iframe.workspace-frame')[0].contentWindow.rcmail.env.current_bar_colors : rcmail.env.current_bar_colors);
+
     if (window.webconf_master_bar === undefined)
         $(".mm-frame").css("display", "none");
     else
@@ -631,6 +678,43 @@ async function ChangeFrame(_class, otherDatas = null)
     const id = mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
 
+    parent.$(".mwsp").each((i,e) => {
+
+        let $style = (e.nodeName === 'IFRAME' ? e.contentWindow.$(".mwsp-style") : $(".mwsp-style"));
+
+        if ($style.length > 0)  $style.remove();
+    });
+
+    if (_class !== "rocket")
+    {
+        let $querry = $(`iframe#${id}`);
+        if ($querry.length === 0) {
+
+            const $layout_thing = $("#layout-content").length > 0 ? $("#layout-content") : $("#layout-sidebar");
+            const currentFrameClasse = Enumerable.from($layout_thing[0].classList).first(x => x.includes('-frame') && x !== 'mm-frame').replaceAll("-frame", '');
+
+            $(`.${currentFrameClasse}-frame`).remove();
+            rcmail.env.frame_created = false;
+
+            return await ChangeFrame(mm_st_ClassContract(currentFrameClasse), otherDatas);
+
+        }
+        else
+        {
+            try {
+                $querry.addClass("mwsp")[0].contentWindow.$("html").addClass("mwsp");
+
+                if (parent.$("html").hasClass("webconf-started"))
+                    $querry.addClass("mwvcs");
+
+                if (style !== undefined && style !== null && style !== '')
+                    $querry.addClass("mwsp")[0].contentWindow.$('body').prepend(`<div class="mwsp-style">${style}</div>`);
+            } catch (error) {
+                console.error('###[ChangeFrame]', error);
+            }
+        } 
+    }
+
     //Choses à faire en fonction des différentes frames voulues
     if ($(`#${id}`).length === 0 || $(`#${id}`).parent()[0].id !== "layout-frames")
         $("#layout-frames").css("display", "none");
@@ -645,9 +729,13 @@ async function ChangeFrame(_class, otherDatas = null)
             externalCommand: 'go',
             path: otherDatas
         }, '*');
+        $('.card-disabled').find("iframe").addClass("mwsp");
     }
     else
+    {
         $(".a-frame").css("display", "none");
+        $('.card-disabled').find("iframe").removeClass("mwsp");
+    }
 
     let uid = undefined;
     if (otherDatas !== undefined && otherDatas !== null && otherDatas.includes('uid:'))

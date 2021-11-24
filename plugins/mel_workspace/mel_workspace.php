@@ -78,6 +78,9 @@ class mel_workspace extends rcube_plugin
         $this->register_action('pin_ulink', array($this, 'pin_ulink'));
         $this->include_script('js/epingle.js');
 
+        $this->add_hook('preferences_list', array($this, 'prefs_list'));
+        $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+
         // Ajoute le bouton en fonction de la skin
         $this->add_button(array(
             'command' => "workspace",
@@ -126,8 +129,9 @@ class mel_workspace extends rcube_plugin
         $this->register_action('refresh_html_ulinks', array($this, 'update_html_ulinks'));
         $this->register_action('refresh_documents', array($this, 'refresh_documents'));
         $this->register_action('get_date_stockage_user_updated', array($this, 'stockage_user_updated'));
+        $this->register_action('toggle_nav_color', array($this, 'toggle_nav_color'));
         //stockage_user_updated
-        //add_users
+        //toggle_nav_color
     }
 
     /**
@@ -364,6 +368,9 @@ class mel_workspace extends rcube_plugin
             //throw $th;
         }
 
+        $this->rc->output->add_handlers(array(
+            'wsp-style'    => array($this, 'set_wsp_style'),
+        ));
         $this->rc->output->add_handlers(array(
             'wsp-picture'    => array($this, 'get_picture'),
         ));
@@ -653,6 +660,7 @@ class mel_workspace extends rcube_plugin
     function get_users_info()
     {
         $icon = "icon-mel-plus plus";
+        $icon_action = $icon;
         $icon_quit = "icon-mel-close plus";
         $exists = self::is_in_workspace($this->currentWorkspace);
         $admin = self::is_admin($this->currentWorkspace);
@@ -666,7 +674,7 @@ class mel_workspace extends rcube_plugin
                 "data-popup" => "groupoptions-create",
                 "aria-haspopup" => "true",
             ],
-            "Créer".html::tag("span", ["class" => $icon])
+            (false && $admin ? "Créer".html::tag("span", ["class" => $icon]) : "Actions".html::tag("span", ["class" => $icon_action]))
             );
             $html.= '<a data-popup="groupoptions-wsp-plus-actions" role="button" href="#" aria-haspopup="true" aria-expanded="false" aria-owns="groupoptions-wsp-plus-actions" data-original-title="" style="text-decoration:none;" id=groupoptions-wsp-plus-a class="ignoreActive btn btn-secondary mel-button show-on-small">Plus d\'options<span class="plus icon-mel-plus "></span></a>';
         }
@@ -696,11 +704,145 @@ class mel_workspace extends rcube_plugin
                 'type'       => 'link-menuitem',
                 'domain' => "mel_workspace"
             ), "groupoptions-wsp-plus-actions");
+
+            if (!$admin && $this->rc->config->get('workspace_bar_color_force', "default") === "default")
+            {
+                $navColorActive = $this->is_color_custom($this->currentWorkspace);
+                $this->add_button(array(
+                    'command' => "workspace.toggle_bar_color",
+                    'class'	=> 'icon-mel icon-mel-parameters-invert',
+                    'innerclass' => 'restore-font',
+                    'label'	=> ($navColorActive ? 'unactive_bar_color': 'active_bar_color'),
+                    'title' => ($navColorActive ? 'unactive_bar_color_title': 'active_bar_color_title'),
+                    'type'       => 'link-menuitem',
+                    'domain' => "mel_workspace"
+                ), "groupoptionscreate");
+            }
         }
         else
             $html.= html::tag("button",["class" => "mel-button quit-button plus", "onclick" => "rcmail.command(`workspace.join`)"], html::tag("span", [], ($this->currentWorkspace->ispublic === 0 ? "Rejoindre" : "Suivre")).html::tag("span", ["class" => $icon])); 
         
         return html::div([], $html);
+    }
+
+    function set_wsp_style()
+    {
+        $style = "";
+
+        if ($this->is_color_custom($this->currentWorkspace))
+        {
+            $hex = $this->get_setting($this->currentWorkspace, "color");
+            $color = mel_helper::color()->color_from_hexa($hex);
+            $lighter = $color->lighter(20)->to_rgb();
+            $darker = $color->darker(20)->to_rgb();
+            $textColor = $color->need_black_text() ? "black" : "white";
+
+            $style = "<style>
+            .wsp-toolbar.melw-wsp{
+                background-color:$hex;
+            }
+
+            .wsp-toolbar v_separate
+            {
+                border-color:$lighter!important;
+            }
+
+            .wsp-toolbar.melw-wsp button.wsp-toolbar-item
+            {
+                color:$textColor;
+            }
+
+            .wsp-toolbar.melw-wsp button.wsp-toolbar-item:hover,
+            .wsp-toolbar.melw-wsp button.wsp-toolbar-item.active
+            {
+                background: radial-gradient(circle, $darker 45%, rgba(255,255,255,0) 26%) !important
+            }
+
+            .wsp-toolbar.melw-wsp button.wsp-toolbar-item:focus
+            {
+                background: radial-gradient(circle, $darker 45%, rgba(255,255,255,0) 26%) !important
+            }
+
+            .wsp-toolbar.melw-wsp button.wsp-toolbar-item.active:focus
+            {
+                background: radial-gradient(circle, $darker 20%, $lighter 45%, rgba(255,255,255,0) 28%)
+            }
+
+            .btn.btn-block.wsp-toolbar-melw-wsp-hider
+            {
+                background-color: $hex;
+                border-color: $lighter;
+            }
+
+            .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover
+            {
+                background-color: $darker;
+            }
+
+            html.mwsp, #layout-content.mwsp, iframe.discussion-frame.mwsp
+            {
+                border-color: $hex;
+            }
+            </style>";
+
+            $this->rc->output->set_env("current_bar_colors", $style);
+        }
+
+        return $style;
+
+    }
+
+    function is_color_custom($wsp, $default = true)
+    {
+        return $this->is_color_custom_by_uid($wsp->uid, $default);
+    }
+
+    function is_color_custom_by_uid($uid, $default = true)
+    {
+        $value = $default;
+        $config = $this->rc->config->get('workspace_bar_color_force', "default");
+
+        switch ($config) {
+            case 'never':
+                $value = false;
+                break;
+
+            case 'always':
+                $value = true;
+                break;
+            
+            default:
+                $config = $this->rc->config->get('workspaces_personal_datas', []);
+
+                if ($config[$uid] === null)
+                    $value = $default;
+        
+                $value = $config[$uid]["bar_color"] ?? $default;   
+                break;
+        }
+
+        return $value;
+
+ 
+    }
+
+    function toggle_nav_color()
+    {
+        $default = true;
+        $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_GPC);
+
+        $config = $this->rc->config->get('workspaces_personal_datas', []);
+        
+        if ($config[$uid] === null)
+            $config[$uid] = [];
+
+        $config[$uid]["bar_color"] = !($config[$uid]["bar_color"] ?? $default);
+
+        $this->rc->user->save_prefs(array('workspaces_personal_datas' => $config));
+
+        echo  $config[$uid]["bar_color"];
+        exit;
+        
     }
 
     const APP = "-wsp-item";
@@ -1177,6 +1319,16 @@ class mel_workspace extends rcube_plugin
             $html = str_replace("<logo/>", "", $html);
             $html = str_replace("<visibility/>", "???", $html);
         }
+
+        if ($this->rc->config->get('workspace_bar_color_force', "default") === 'default')
+        {
+            $activeColor = $this->is_color_custom($this->currentWorkspace);
+            $html = str_replace("<bar_color_text/>", ($activeColor ? $this->gettext('unactive_bar_color', 'mel_workspace').'<span class="plus icon-mel-minus"></span>' : $this->gettext('active_bar_color', 'mel_workspace').'<span class="plus icon-mel-plus"></span>'), $html);
+            $html = str_replace("<bar_color_title/>", ($activeColor ? $this->gettext('unactive_bar_color_title', 'mel_workspace') : $this->gettext('active_bar_color_title', 'mel_workspace')), $html);
+            $html = str_replace("<bar_color_visibility/>", "", $html);
+        }
+        else
+            $html = str_replace("<bar_color_visibility/>", "display:none;", $html);
 
         return $html;
     }
@@ -2007,10 +2159,13 @@ class mel_workspace extends rcube_plugin
         $count = count($users);
         $tmp_users = $users;
         $users = [];
+        $unexistingUsers = [];
         foreach ($tmp_users as $key => $value) {
             $tmp_user = driver_mel::gi()->getUser(null, true, false, null, $value)->uid;
             if ($tmp_user !== null)
                 $users[] = $tmp_user;
+            else
+                $unexistingUsers[] = $value;
         }
         if (count($users) === 0)
         {
@@ -2026,7 +2181,7 @@ class mel_workspace extends rcube_plugin
                 //save
                 $workspace->save();
                 //end
-                echo "";
+                echo json_encode($unexistingUsers);
             }
             else
                 echo "denied";
@@ -3392,5 +3547,65 @@ class mel_workspace extends rcube_plugin
         });
         return $users;
     }
+
+    public function prefs_list($args) {
+
+        if ($args['section'] == 'general') {
+          // Load localization and configuration
+          $this->add_texts('localization/');
+    
+          $varKey = "mel-force-nav-color";
+    
+          // Check that configuration is not disabled
+          $config = $this->rc->config->get('workspace_bar_color_force', 'default');
+    
+          $options = [
+                $varKey => [
+                    $this->gettext("never", "mel_workspace"),
+                    $this->gettext("default", "mel_workspace"),
+                    $this->gettext("always", "mel_workspace")
+                ],
+            ];
+    
+            // $args['blocks']['main']['options'][$text_size] = null;
+        $attrib = [];
+    
+        $attrib['name'] = $varKey;
+        $attrib['id'] = $varKey;
+    
+        $input = new html_select($attrib);   
+        $input->add($options[$varKey], ["never", "default", "always"]);
+        
+    
+        unset($attrib['name']);
+        unset($attrib['id']);
+        $attrib["for"] = $varKey;
+    
+        $args['blocks']['main']['options'][$varKey] = array(
+            'title' => html::label($attrib, rcube::Q($this->gettext($varKey, "mel_workspace"))),
+            'content' => $input->show($config),
+          );
+          
+        }
+    
+        return $args;
+      }
+
+      public function prefs_save($args) {
+        if ($args['section'] == 'general') {
+            $varKey = "mel-force-nav-color";
+    
+            // Check that configuration is not disabled
+            $config = $this->rc->config->get('workspace_bar_color_force', 'default');
+    
+            $config = rcube_utils::get_input_value($varKey, rcube_utils::INPUT_POST);
+          
+    
+          $args['prefs']["workspace_bar_color_force"] = $config;
+          
+        }
+    
+        return $args;
+      }
 
 }

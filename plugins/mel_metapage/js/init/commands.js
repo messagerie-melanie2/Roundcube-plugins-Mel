@@ -103,7 +103,10 @@ if (rcmail)
                 if (iframe.length > 0)
                 {
                     iframe[0].contentWindow.$("body").html('<center><div title="Rechargement de la page" style="height: 20vw;width: 20vw;" class="spinner-grow"><span class="sr-only">Rechargement de la page...</span></div></center>')
-                    iframe[0].contentWindow.location.reload();
+                    if (!iframe[0].contentWindow.includes("_is_from"))
+                        iframe.src = iframe[0].contentWindow.location.href + (iframe[0].contentWindow.location.href[iframe[0].contentWindow.location.href.length - 1] === '&' ? '' : '&') + '_is_from=iframe';
+                    else
+                        iframe[0].contentWindow.location.reload();
                 }
                 // Frame parent
                 else if (rcmail.env.current_frame_name === undefined || parent.length > 0)
@@ -123,8 +126,8 @@ if (rcmail)
 
                     mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, false, true).then(() => {  
                         const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
-                        //console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`));                     
-                        $(`iframe.${contract}-frame`)[0].src = `${url}&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`;
+                        console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`), `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`);                     
+                        $(`iframe.${contract}-frame`)[0].src = `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`;
                         rcmail.set_busy(false);
                         rcmail.clear_messages();
                         mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, true);

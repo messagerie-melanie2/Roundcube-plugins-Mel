@@ -448,7 +448,8 @@ $(document).ready(() => {
                             _css += `
                             
                             #messagelist tr.message td {
-                                margin: 5px 0;
+                                padding-top: 1rem;
+                                padding-bottom: 1rem;
                             }
                             
                             `;
@@ -456,7 +457,8 @@ $(document).ready(() => {
                             _css += `
                                 
                             #messagelist tr.message td {
-                                margin: -5px 0;
+                                padding-top: 0;
+                                padding-bottom:0;
                             }
                             
                             `;

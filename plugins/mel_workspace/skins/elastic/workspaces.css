@@ -263,9 +263,9 @@ body.task-workspace  .wsp-toolbar-item,
     border-left-style: solid;
     border-color: #7786BD;
     border-left-width: 2px;
-    margin: 10px 0;
+    margin: 5px 0;
     position: relative;
-    margin-bottom:25px;
+    margin-bottom:20px;
 } 
 
 body.task-workspace .wsp-toolbar-item > .text-item,
@@ -558,6 +558,12 @@ font-size: 2vw;
     filter: saturate(7);
 }
 
+html.touch .tiny-wsp-menu,
+html.touch .added-wsp-item
+{
+    display: none;
+}
+
 .btn.btn-primary.o,
 .btn.btn-primary.w
 {
@@ -674,12 +680,12 @@ html.layout-small .wsp-toolbar-title
     margin-left:15px;
 }
 
-html.layout-phone .wsp-toolbar-edited,
+/* html.layout-phone .wsp-toolbar-edited,
 html.layout-small .wsp-toolbar-edited {
-	/* font-size: small; */
-	/* width: 80%; */
+	/* font-size: smal; *
+	/* width: 80%; *
 	border-radius: 60px;
-	/* bottom: 49px; */
+	/* bottom: 49px; *
     flex-direction: column;
     width: min-content;
     bottom: 50px!important;
@@ -689,7 +695,7 @@ html.layout-small .wsp-toolbar-edited {
     overflow: auto;
     width: auto!important;
     display: none;
-}
+} */
 
 .wsp-toolbar-edited {
     top:unset;
@@ -943,4 +949,54 @@ html.layout-small .webconf-toolbar .wsp-toolbar-item
 .link-block .tools .roundbadge
 {
 	background-color: #00000021!important;
+}
+
+.wsp-toolbar.melw-wsp {
+	display: flex;
+	background-color: #5870BF;
+	/* border-radius: 50px; */
+	color: white;
+	width: calc(100% - 60px)!important;
+	/* width: -moz-fit-content; */
+    border-radius: 0;
+	margin: auto;
+	position: absolute;
+	bottom: 0px;
+    top:unset;
+	z-index: 9999;
+	right: 0!important;
+    transition: all 0.1s ease-in;
+    height: 60px!important;
+}
+
+.touch .wsp-toolbar.melw-wsp,
+.framed .wsp-toolbar.melw-wsp{
+    width: 100%!important;
+}
+
+.btn.btn-block.wsp-toolbar-melw-wsp-hider {
+	position: absolute;
+	bottom: 60px;
+	background-color: #5870BF;
+	max-height: 16px;
+	border-radius: 0;
+	border: none;
+	padding: 0px !important;
+	color: white;
+	border-bottom: solid #647CCB thin;
+	right: 0;
+	/* padding-left: 12px !important; */
+	/* display: block; */
+	width: 100%;
+    transition: all 0.1s ease-in;
+}
+
+.btn.btn-block.wsp-toolbar-melw-wsp-hider:hover
+{
+    background-color: #484D7A;
+}
+
+.btn.btn-block.wsp-toolbar-melw-wsp-hider:active
+{
+    background-color: #363A5B;
 }

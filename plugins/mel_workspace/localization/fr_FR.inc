@@ -29,6 +29,17 @@ $labels["create_webconf_params"] = "Nouvelle visioconférence paramétrable";
 
 $labels["invite_member"] = "Inviter un membre";
 $labels["quit_space"] = "Se désinscrire de l'espace de travail";
+$labels["active_bar_color"] = "Activer la couleur de navigation";
+$labels["unactive_bar_color"] = "Désactiver la couleur de navigation";
+
+$labels["active_bar_color_title"] = "La barre de navigation de l'espace, ainsi que les bordures de l'espace auront les couleurs de l'espace.";
+$labels["unactive_bar_color_title"] = "La barre de navigation de l'espace, ainsi que les bordures de l'espace auront les couleurs par défauts.";
 
 $labels["norights"] = "Vous n'avez pas les autorisations pour accéder au stockage.";
 $labels["nodoubleauth"] = "Vous devez être connecté en intranet ou avoir la double authentification d'activer pour accéder au stockage !";
+
+$labels["mel-force-nav-color"] = "Espaces - Forcer la couleur";
+
+$labels["always"] = "Toujours";
+$labels["never"] = "Jamais";
+$labels["default"] = "Par défaut";

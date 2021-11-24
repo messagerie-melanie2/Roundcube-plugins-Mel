@@ -103,6 +103,16 @@
 		<roundcube:container name="otherappsbar" id="otherappsbar" />
     </ul>
 </nav>
+
+<button id="wmap" class="hidden wsp-toolbar-item conf-more-actions" data-popup="webconfmoreactions" aria-haspopup="true" aria-expanded="false" aria-owns="webconfmoreactions"><span class="icon-mel-dots"></span><span class="text-item"><roundcube:label name='mel_metapage.more' /></span></button>
+<div id="webconfmoreactions" class="popupmenu">
+	<!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
+	<ul class="menu listing" role="menu" aria-labelledby="wmap">
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_copy_help' />" class="copy active" role="button" tabindex="-1" aria-disabled="true" href="#" onclick="return webconf_master_bar.copy()"><roundcube:label name='mel_metapage.url' /></a></li>
+        <li role="menuitem"><a title="<roundcube:label name='mel_metapage.webconf_toggle_chat_help' />" class="threads active" role="button" tabindex="-1" aria-disabled="true" href="#" onclick="return webconf_master_bar.toggle_chat()"><roundcube:label name='mel_metapage.toggle_chat' /></a></li>
+		<roundcube:container name="webconfmoreactions-c" id="webconfmoreactions-c" />
+	</ul>
+</div>
 <roundcube:object name="contactepage" />
 
 

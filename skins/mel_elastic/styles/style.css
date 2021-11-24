@@ -1996,3 +1996,98 @@ html.touch body.task-mail #layout-sidebar {
 .task-addressbook ul.treelist.iconized li div.treetoggle {
     top: 0px!important;
 }
+
+html.mwsp,
+#layout-content.mwsp,
+iframe.discussion-frame.mwsp
+{
+    border-style: solid;
+    border-width: thick;
+    border-color: #5870BF;
+}
+
+iframe.discussion-frame.mwsp
+{
+    border-style: solid!important;
+    border-width: thick!important;
+    border-color: #5870BF!important;
+    background-color:#5870BF;
+}
+
+html.mwsp .task-workspace.action-workspace,
+.task-workspace.action-workspace #layout-content.mwsp
+{
+    margin-bottom: 75px;
+    transition: all 0.1s ease-in;
+}
+
+iframe.mwsp{
+    padding-bottom: 75px;
+    transition: all 0.1s ease-in;
+}
+
+iframe.discussion-frame.mwsp
+{
+    padding-bottom: 75px;
+    margin-bottom: 0;
+}
+
+html.mwsp.moved .task-workspace.action-workspace,
+.task-workspace.action-workspace #layout-content.mwsp.moved
+{
+    margin-bottom: 15px;
+}
+
+.mwsp.moved{
+    padding-bottom: 15px;
+}
+
+iframe.discussion-frame.mwsp.moved{
+    padding-bottom: 0;
+    margin-bottom: 15px;
+}
+
+.mwsp.mwvcs
+{
+    padding-bottom: 0;
+}
+
+body.task-mail.action-none #layout-content {
+	border-left: solid #484D7A;
+}
+
+.icon-mel-parameters-invert::before{
+    font-family: DWP!important;
+    content: "\e925"!important;
+    font-weight: normal!important;
+}
+
+#messagestack .notice.private{
+    background-color: #99454d;
+}
+
+#messagestack .notice.private .icon::before
+{
+    font-family: DWP!important;
+    content: "\e966"!important;
+    font-weight: normal!important;
+}
+
+#messagestack .notice.notif{
+    background-color: #FDCF42;
+}
+
+#messagestack .notice.notif .icon::before
+{
+    font-family: DWP!important;
+    content: "\e964"!important;
+    font-weight: normal!important;
+}
+
+.amwsp {
+	background-color: transparent;
+}
+
+.amwsp iframe {
+	padding-bottom: 80px;
+}

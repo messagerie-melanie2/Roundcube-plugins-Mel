@@ -200,6 +200,18 @@ if (rcmail)
         $("window").resize();
     });
 
+    if (rcmail.env.task === 'calendar')
+    {
+        rcmail.addEventListener("calendar.renderEvent", (args) => {
+
+            if ($("html").hasClass("mwsp"))
+                return args.eventDatas.categories !== undefined && args.eventDatas.categories[0] === `ws#${mel_metapage.Storage.get("current_wsp")}`;
+
+            return true;
+
+        });
+    }
+
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
         const event = datas.showed;

@@ -34,7 +34,17 @@ async function search_action(searchValue, activeFields = [])
         //console.log("e", activeFields, fields);
 
         setTimeout(() => {
-            $("#mailsearchform").val(searchValue).parent().submit();
+            $("#mailsearchform").val(searchValue);
+            const params = {
+                _q: searchValue,
+                _headers: activeFields.join(','),
+                _filter: "ALL",
+                _scope: "base",
+                _mbox: "INBOX"
+              };
+              rcmail.clear_message_list();
+              let lock = rcmail.set_busy(true, 'searching');
+              rcmail.http_request('search', params, lock);
         }, timeoutValue);
     }, timeoutValue);
 }

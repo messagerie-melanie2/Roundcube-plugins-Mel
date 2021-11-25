@@ -341,7 +341,7 @@ class mel_metapage extends rcube_plugin
         ), "taskbar");
 
         $this->add_button(array(
-            'command' => "compose",
+            'command' => "mel-compose",
             'href' => './?_task=mail&_action=compose',
             'class'	=> 'compose options',
             'classsel' => 'compose options',

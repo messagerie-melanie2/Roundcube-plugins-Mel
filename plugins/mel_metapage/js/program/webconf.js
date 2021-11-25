@@ -256,7 +256,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 startWithAudioMuted: false,
                 startWithVideoMuted:true,
                 prejoinPageEnabled: false,
-                toolbarButtons: [''
+                toolbarButtons: ['filmstrip'
                 // 'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
                 // 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
                 // 'livestreaming', 'etherpad', 'sharedvideo', 'shareaudio', 'settings', 'raisehand',

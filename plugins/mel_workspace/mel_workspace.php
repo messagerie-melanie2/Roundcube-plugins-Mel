@@ -73,6 +73,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('hashtag', array($this, 'get_hashtags'));
         $this->register_action('notify_chat', array($this, 'notify_chat'));//get_uLinks
         $this->register_action('show_links', array($this, 'get_uLinks'));
+        $this->register_action('calendar', array($this, 'show_calendar'));
         $this->register_action('update_ulink', array($this, 'update_ulink'));
         $this->register_action('delete_ulink', array($this, 'delete_ulink'));
         $this->register_action('pin_ulink', array($this, 'pin_ulink'));
@@ -452,6 +453,13 @@ class mel_workspace extends rcube_plugin
         $this->rc->output->send('mel_workspace.workspace');
     }
 
+    function show_calendar()
+    {
+        $this->include_script('js/workspace_calendare_page.js');
+        $this->include_script('../calendar/lib/js/fullcalendar.js');
+        $this->rc->output->send('mel_workspace.calendar');
+    }
+
     function get_picture()
     {
         
@@ -760,7 +768,7 @@ class mel_workspace extends rcube_plugin
 
             .wsp-toolbar.melw-wsp button.wsp-toolbar-item:focus
             {
-                background: radial-gradient(circle, $darker 45%, rgba(255,255,255,0) 26%) !important
+                background: radial-gradient(circle, $lighter 45%, rgba(255,255,255,0) 26%) !important
             }
 
             .wsp-toolbar.melw-wsp button.wsp-toolbar-item.active:focus
@@ -1053,7 +1061,7 @@ class mel_workspace extends rcube_plugin
                         )
                         .html::div(["class" => "ariane-frame unreads-ariane tab-unreads mel-tab-content", "style" => ""],
                             html::tag("iframe", 
-                            ["src" => $src, "class"=>"", "style" => "display:none;width:100%;height:500px;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
+                            ["src" => $src,"id" => "wsp-disc-id", "class"=>"", "style" => "display:none;width:100%;height:500px;", "title" => "Discussions dans le canal de messagerie #$channel_name"]
                             )
                         );
                     }
@@ -2377,6 +2385,12 @@ class mel_workspace extends rcube_plugin
         $workspace = self::get_workspace($uid);
         if(self::is_admin($workspace) || $user_to_delete === driver_mel::gi()->getUser()->uid)
         {
+            if (self::nb_admin($workspace) === 1)
+            {
+                echo "you are the alone";
+                exit;
+            }
+
             $user_find = false;
             foreach ($workspace->shares as $key => $value) {
                 if ($value->user === $user_to_delete)

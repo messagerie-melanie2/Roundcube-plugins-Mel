@@ -963,11 +963,12 @@ html.layout-small .webconf-toolbar .wsp-toolbar-item
 	position: absolute;
 	bottom: 0px;
     top:unset;
-	z-index: 9999;
+	z-index: 998;
 	right: 0!important;
     transition: all 0.1s ease-in;
     height: 60px!important;
 }
+
 
 .touch .wsp-toolbar.melw-wsp,
 .framed .wsp-toolbar.melw-wsp{

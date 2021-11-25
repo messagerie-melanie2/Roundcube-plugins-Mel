@@ -2091,3 +2091,31 @@ body.task-mail.action-none #layout-content {
 .amwsp iframe {
 	padding-bottom: 80px;
 }
+
+.mwsp .conditionNoSatisfy
+{
+    display: none!important;
+}
+
+.task-mail.action-compose #layout-sidebar .scroller {
+    max-height: 92%;
+}
+
+.task-mail.action-compose #layout-sidebar .scroller a.button.icon.dropdown,
+.task-mail.action-compose #layout-sidebar .scroller a.delete {
+    color: white;
+    border-radius: 5px;
+    transition: all 0.1s ease-in;
+    
+}
+
+.task-mail.action-compose #layout-sidebar .scroller a.button.icon.dropdown:hover,
+.task-mail.action-compose #layout-sidebar .scroller a.delete:hover {
+    color: white;
+    background-color: #2C3054;
+}
+
+.layout-phone .roundbadge.menu {
+	top: 32px;
+	left: -20px;
+}

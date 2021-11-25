@@ -72,20 +72,20 @@ $(document).ready(async () => {
             const obFields = '';//<p class="red-star-removed"><star class="red-star mel-before-remover">*</star>Champs obligatoires</p>';
             const classes = "form-control input-mel required"
             const news = new MelPublishNew(id);
+            console.log(id, $(`#${id}`), $(`#${id}`).find(".title").html(), news);
 
-            if (id === null)
-                this.modal.editTitle("Créer une publication");
-            else
-                this.modal.editTitle(`Modifier "${news.title}"`);
+            if (id === null) this.modal.editTitle("Créer une publication");
+            else this.modal.editTitle(`Modifier "${news.title}"`);
 
-            let html = obFields + this.createSelect("Choisissez un service", "mel-publish-service", "Sélectionnez un service", [], "none");
-            html += this.createInput("Choisissez un titre", "mel-publish-title", "text", "Titre de la publication", news.title, "mel-publish-title", classes);
-            html += this.createTextarea("Ecrivez la publication", "mel-publish-body", "Voici les nouvelles....", news.body);
+            let html = obFields + '<div>' + this.createSelect("Choisissez un service", "mel-publish-service", "Sélectionnez un service", [], "none") + '</div>';
+            html += '<div>' + this.createInput("Choisissez un titre", "mel-publish-title", "text", "Titre de la publication", news.title, "mel-publish-title", classes) + '</div>';
+            html += '<div>' + this.createTextarea("Ecrivez la publication", "mel-publish-body", "Voici les nouvelles....", news.body) + '</div>';
 
             this.modal.editBody(html);
             this.modal.footer.querry.html("");
-            $(`<button class="mel-button" style="margin-right:40px">${(news.id === "" ? "Ajouter" : "Modifier")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
-                this.confirm("createOrEditPublish", {id:"generated-tmp-id"});
+            $(`<button class="mel-button" style="margin-right:15px">${(news.id === "" ? "Ajouter" : "Modifier")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
+                if (this.check([$("#mel-publish-service"), $("#mel-publish-title"), $("#mel-publish-body")], {2:() => tinyMCE.activeEditor.getContent() === ""})) 
+                    this.confirm("createOrEditPublish", {id:"news-generated-tmp-id"});
             }).appendTo(this.modal.footer.querry);
 
             setTimeout(() => {
@@ -96,9 +96,40 @@ $(document).ready(async () => {
                 config.disabled_buttons = ["image", "media"];
                 rcmail.editor_init(config, "mel-publish-body");
                 this.modal.show();
+
+                if (NewsPopup.corrected !== true)
+                {
+                    $(document).on('focusin', function(e) {
+                        if ($(e.target).closest(".mce-window").length) {
+                            e.stopImmediatePropagation();
+                        }
+                    });
+                    NewsPopup.corrected = true;
+                }
+
             }, 10);
 
             return this;
+        }
+
+        check(itemToTest = [], specCond = {})
+        {
+            $(".fieldNotOkay").remove();
+
+            for (let index = 0; index < itemToTest.length; index++) {
+                const element = itemToTest[index];
+                const val = element.val();
+
+                const valid = specCond[index] === undefined ? (val === "none" || val === "") : specCond[index]();
+
+                if (valid)
+                {
+                    element.parent().append('<span class="fieldNotOkay" style="color:red;">*Vous devez renseigner ce champs !</span>');
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         confirm(caller, args)
@@ -114,11 +145,22 @@ $(document).ready(async () => {
                     this.modal.editTitle("Visualisation de la publication");
 
                     //Modification du corps de la modale
+                    this.modal.editBody(`
+                    <div class="square_div">
+                        <div class="contents " id="${args.id}" style=overflow:auto>
+                            <div class="square-contents">
+                                <p class="headlines-by">Information ${news.getService()}</p>
+                                <h3 class="headlines-title bold title">${news.title}</h3>
+                                <p class="headlines-publish">Publié le Mercredi 05 mai 2021</p>
+                                <div class="headlines-contents body">${tinyMCE.activeEditor.getContent()}</div>
+                            </div>
+                        </div>
+                    </div>`)
 
                     //Modification du pied de la modale
                     this.modal.footer.querry.html("");
                     $('<button class="mel-button white" style="position:absolute;left:40px">Retour <span class="plus icon-mel-undo"></span></button>').click(() => {
-                        this.createOrEditPublish(args.id);
+                        this.createOrEditPublish(args.id.replace("news-", ''));
                     }).appendTo(this.modal.footer.querry);
                     $(`<button class="mel-button" style="margin-right:40px">Confirmer <span class="plus icon-mel-plus"></span></button>`).click(() => {
 
@@ -442,6 +484,7 @@ $(document).ready(async () => {
             if (id !== null)
             {
                 this.body = this.$news.find(".body").html();
+                console.log(this.body, this.$news.find(".body"));
                 this.title = this.$news.find(".title").html();
             }
 
@@ -458,6 +501,11 @@ $(document).ready(async () => {
         setService(service)
         {
             return this.setType(service);
+        }
+
+        getService()
+        {
+            return this.type;
         }
     }
 

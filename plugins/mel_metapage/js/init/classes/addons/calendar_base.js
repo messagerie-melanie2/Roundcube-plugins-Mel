@@ -522,7 +522,8 @@ $(document).ready(() => {
         }
         
         setTimeout(() => {
-
+            $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
+            $("#edit-wsp").removeClass("disabled").removeAttr("disabled");
             const update_desc = function (description) 
             {
                 //$("#key-visio-cal").val(generateRoomName());
@@ -570,7 +571,7 @@ $(document).ready(() => {
                 }
                 else
                     $("#eb-mm-em-p").click();         
-            };
+            };        
 
             if (event === "") //nouvel event
             {
@@ -730,6 +731,12 @@ $(document).ready(() => {
                     }
                     catch(error)
                     {}
+                }
+
+                if (parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").length > 0  && parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").css("display") !== "none")
+                {
+                    if (event._id === undefined) event.categories = [`ws#${mel_metapage.Storage.get("current_wsp")}`];
+                    event.calendar_blocked = "true";
                 }
 
                 if (event.categories !== undefined && event.categories.length > 0)

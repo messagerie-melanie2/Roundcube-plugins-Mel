@@ -30,6 +30,16 @@ if (rcmail)
 
         }
 
+        rcmail.register_command('mel-compose', () => {
+            rcmail.set_busy(false);
+            if (parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").length > 0  && parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").css("display") !== "none")
+            {
+                parent.rcmail.open_compose_step({to:mel_metapage.Storage.get("current_wsp_mail")});
+            }
+            else parent.rcmail.command("compose");
+            
+        }, true);
+
         rcmail.register_command("manage_mailbox_folders",
             () => {
 
@@ -103,7 +113,7 @@ if (rcmail)
                 if (iframe.length > 0)
                 {
                     iframe[0].contentWindow.$("body").html('<center><div title="Rechargement de la page" style="height: 20vw;width: 20vw;" class="spinner-grow"><span class="sr-only">Rechargement de la page...</span></div></center>')
-                    if (!iframe[0].contentWindow.includes("_is_from"))
+                    if (!iframe[0].contentWindow.location.href.includes("_is_from"))
                         iframe.src = iframe[0].contentWindow.location.href + (iframe[0].contentWindow.location.href[iframe[0].contentWindow.location.href.length - 1] === '&' ? '' : '&') + '_is_from=iframe';
                     else
                         iframe[0].contentWindow.location.reload();

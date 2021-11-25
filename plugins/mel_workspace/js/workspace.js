@@ -105,6 +105,10 @@ function Start(uid, hasAriane, datas) {
     rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {
         _uid:uid
     }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
+
+    mel_metapage.Storage.set("current_wsp", rcmail.env.current_workspace_uid)
+    mel_metapage.Storage.set("current_wsp_mail", rcmail.env.current_workspace_email)
+
 }
 
 function Middle(uid, hasAriane, datas) {
@@ -600,6 +604,9 @@ function UpdateFrameAriane()
     {
         arrow.removeClass(right).addClass(down).parent().attr("title", rcmail.gettext("close_ariane", "mel_workspace"));
         $(".ariane-frame").attr("aria-expanded", "true").find("iframe").css("display", "").parent().css("display", "");
+        setTimeout(() => {
+            rcmail.triggerEvent("init_ariane", "wsp-disc-id");
+        }, 100);
     }
     else
     {

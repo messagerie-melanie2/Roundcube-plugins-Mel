@@ -31,6 +31,8 @@ if (window.rcmail) {
 		
 	}
 
+	rcmail.register_command("login_ariane", login, true);
+
 	function login()
 	{
 		//console.log("here");

@@ -58,7 +58,9 @@ class mel_news extends rcube_plugin {
     $this->load_config();
     $this->userDatas = self::get_user_dn();
     $this->register_action('index', array($this, 'index'));
-    $this->register_action('setFilter', array($this, 'set_filter'));
+    $this->register_action('update', array($this, 'update'));
+    //$this->register_action('setFilter', array($this, 'set_filter'));
+    $this->include_stylesheet($this->local_skin_path() . '/news.css');
   }
 
   function index()
@@ -66,10 +68,15 @@ class mel_news extends rcube_plugin {
     $this->include_script('js/mel_news.js');
     $this->include_script($this->local_skin_path().'/ui.js');
 
-    $this->rc->output->set_env('news_filter', $this->rc->config->get("news_filter", null));
+    $this->rc->html_editor();
+
+    
+    $this->rc->output->add_handlers(array(
+      'dnnews'    => array($this, 'show_dn_news'),
+      'allnews'    => array($this, 'show_all_news')
+    ));
 
     $this->rc->output->set_pagetitle($this->gettext("my_news", "mel_news"));
-    $this->rc->html_editor();
     $this->rc->output->send('mel_news.news');
   }
 
@@ -77,6 +84,29 @@ class mel_news extends rcube_plugin {
   {
     $this->rc->user->save_prefs(array('news_filter' => rcube_utils::get_input_value("_filter", rcube_utils::INPUT_GPC)));
     echo 1;
+    exit;
+  }
+
+  function show_dn_news()
+  {
+    $news = self::load_last_dn_news(self::get_user_dn());
+    return "";
+  }
+
+  function show_all_news()
+  {
+    $news = [
+      self::load_dn_news(self::get_user_dn()),
+      $this->load_custom_news(),
+      $this->load_default_news()
+    ];
+
+    return "";
+  }
+
+  function update()
+  {
+    echo json_encode(["dn" => $this->show_dn_news(), "all" => $this->show_all_news()]);
     exit;
   }
 

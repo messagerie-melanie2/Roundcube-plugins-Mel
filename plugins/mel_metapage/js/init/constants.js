@@ -726,7 +726,7 @@ const mel_metapage = {
                         args:[itemToSearch, fields]
                     });
                 else
-                    search_action(itemToSearch);
+                    search_action(itemToSearch, fields);
             }
             else    
                 mel_metapage.Functions.call(`mel_metapage.Functions.searchOnMail('${itemToSearch}', ${JSON.stringify(fields)}, ${openFrame})`);

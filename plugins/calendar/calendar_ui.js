@@ -149,6 +149,15 @@ function rcube_calendar_ui(settings)
       },
       // event rendering
       eventRender: function(event, element, view) {
+
+        //PAMELLA
+        let eventDatas = event;
+        if (rcmail.triggerEvent('calendar.renderEvent', {eventDatas, element, view}) === false)
+        {
+          element.css("display", "none");
+          return;
+        }
+
         if (view.name != 'list') {
           var prefix = event.sensitivity && event.sensitivity != 'public' ? String(sensitivitylabels[event.sensitivity]).toUpperCase()+': ' : '';
           element.attr('title', prefix + event.title);

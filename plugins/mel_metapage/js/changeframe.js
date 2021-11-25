@@ -674,6 +674,9 @@ async function ChangeFrame(_class, otherDatas = null)
             config = {_params: otherDatas.replace(rcmail.env.nextcloud_url, '')};
     }
 
+    if (_class === 'calendar')
+        rcmail.env.have_calendar_frame = parent.$(".calendar-frame").length !== 0;
+
     //Ouverture de la frame
     const id = mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
@@ -753,6 +756,31 @@ async function ChangeFrame(_class, otherDatas = null)
             mel_metapage.Functions.searchOnMail(otherDatas, ["to", "cc", "bcc"]);
         });
     }
+    if (_class === "calendar")
+    {
+        currentFrame = parent.$("iframe.calendar-frame");
+        calendar = (currentFrame.length === 0 ? parent : currentFrame[0].contentWindow).$('#calendar');//.scrollToTime( durationInput );
+        calendar.fullCalendar('rerenderEvents');
+        $scroll = calendar.find(".fc-scroller");
+        const currentHour = moment().format('HH');
+        var testOffset = calendar.find(`tr[data-time="${currentHour}:00:00"]`);
+        $scroll.scrollTop(0);
+
+        const y = testOffset[0].getClientRects()[0].y;
+        const t = $scroll.offset().top
+
+        if (rcmail.env.have_calendar_frame !== true)
+        {
+            setTimeout(() => {
+                $scroll.scrollTop(y - t);
+            }, 100);
+            rcmail.env.have_calendar_frame = true;
+        }
+        else
+            $scroll.scrollTop(y - t);
+        //parent.rotomeca = calendar.fullCalendar('getCalendar');//.scrollToTime(`${rcmail.env.calendar_settings.first_hour}:00`);
+    }
+
     //Stockage
     else if (_class === "stockage")
     {

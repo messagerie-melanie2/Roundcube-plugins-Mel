@@ -384,9 +384,25 @@
             return this.ajax(this.url("PARAMS_delete_user"), {
                 _uid:this.uid,
                 _user_to_delete:user
-            }).always(() => {
-                return this.update_user_table();
-            })
+            }, 
+            (datas) => {
+                switch (datas) {
+                    case 'denied':
+                        this.busy(false);
+                        rcmail.display_message("Vous devez être administrateur pour pouvoir faire cette action !", "error");
+                        break;
+                    case 'you are the alone':
+                        this.busy(false);
+                        rcmail.display_message("Vous êtes le seul administrateur, nommez un autre administrateur ou supprimez l'espace.", "error");
+                        break;
+                
+                    default:
+                        return this.update_user_table();
+                }
+            });
+            // ).always(() => {
+            //     return this.update_user_table();
+            // })
         }
 
         set_body_loading()

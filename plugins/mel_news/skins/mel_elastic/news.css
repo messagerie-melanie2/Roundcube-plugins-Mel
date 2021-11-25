@@ -1,0 +1,22 @@
+.headlines-by {
+	background-color: #1F8073;
+	width: max-content;
+	width: -moz-fit-content;
+	border-radius: 5px;
+	color: white;
+	padding: 5px;
+}
+
+.headlines-title {
+	margin-top: 15px;
+	/* font-size: large; */
+	/* font-weight: bold; */
+}
+
+.headlines-publish {
+	margin-top: 10px;
+}
+
+.headlines-contents {
+	margin-top: 20px;
+}

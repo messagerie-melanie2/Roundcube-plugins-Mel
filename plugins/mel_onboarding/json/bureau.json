@@ -8,9 +8,10 @@
             "video": {
                 "title": "Vidéo de présentation",
                 "description": "Présentation du Bnum en vidéo",
+                "iframecss": "margin-right:auto;margin-left:auto;max-width:50%",
                 "bloc": {
                     "title": "Voir la vidéo de présentation",
-                    "description": "<h2>Bienvenue sur votre Bureau Numérique !</h2><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
+                    "description": "<h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
                     "video": "accueil.mkv",
                     "img": "accueil.png"
                 }
@@ -19,11 +20,11 @@
                 "title": "Barre de navigation",
                 "description": "Barre de gauche pour naviguer entre les applications du Bnum",
                 "highlight": "#layout-menu",
-                "bloccss": "text-align: left; max-width: 30em; margin-left: 80px;",
+                "bloccss": "text-align: left; max-width: 30em; margin-left: 80px;text-align:justify",
                 "iframecss": "padding-top:0px;padding-left:60px;",
                 "bloc": {
                     "title": "Barre de navigation",
-                    "description": "<p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p>Bon à savoir : Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dés qu'une application est ouverte elle est gardée en mémoire et peut être réouverte instantanement à tout moment, le travail en cours ne sera pas perdu.</p>"
+                    "description": "<br/><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p><strong>Bon à savoir :</strong> Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dés qu'une application est ouverte elle est gardée en mémoire et peut être réouverte instantanement à tout moment, le travail en cours ne sera pas perdu.</p>"
                 }
             },
             "outils": {
@@ -33,7 +34,7 @@
                 "iframecss": "padding-top:60px;padding-left:0px;",
                 "bloc": {
                     "title": "Barre d'outils",
-                    "description": "<p>Cette barre d'outils reste tout le temps accessible quelque soit la page du Bnum affichée.</p><p>Elle permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globales dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul>"
+                    "description": "<p>Cette barre d'outils reste tout le temps accessible quelque soit la page du Bnum affichée.</p><p>Elle permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul class='onboarding-list'><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globales dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul>"
                 }
             },
             "accueil-majournee": {
@@ -43,10 +44,10 @@
                 "scrollto": true,
                 "scrolltop": 60,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
-                "bloccss": "margin-left: 50%;",
+                "bloccss": "margin-left: 45%;max-width:600px;text-align:start",
                 "bloc": {
                     "title": "Page d'accueil : Ma journée",
-                    "description": "\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu."
+                    "description": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu."
                 }
             },
             "accueil-informations": {
@@ -56,10 +57,10 @@
                 "scrollto": true,
                 "scrolltop": 60,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
-                "bloccss": "margin-right: 65%;",
+                "bloccss": "margin-right: 65%;text-align:end",
                 "bloc": {
                     "title": "Page d'accueil : Informations",
-                    "description": "\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère"
+                    "description": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère"
                 }
             },
             "accueil-espaces-de-travail": {
@@ -68,10 +69,10 @@
                 "highlight": "#layout-content #contents div.--col-dwp-3",
                 "scrollto": true,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
-                "bloccss": "margin-top: 10%;",
+                "bloccss": "margin-top: 8%;margin-right:auto;margin-left:auto;max-width:50%",
                 "bloc": {
                     "title": "Page d'accueil : Mes espaces de travail",
-                    "description": "\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu."
+                    "description": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu."
                 }
             }
         }

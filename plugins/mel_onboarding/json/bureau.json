@@ -8,7 +8,6 @@
             "video": {
                 "title": "Vidéo de présentation",
                 "description": "Présentation du Bnum en vidéo",
-                "iframecss": "margin-right:auto;margin-left:auto;max-width:50%",
                 "bloc": {
                     "title": "Voir la vidéo de présentation",
                     "description": "<h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
@@ -42,7 +41,7 @@
                 "description": "Affichage des tâches et rendez-vous du jour",
                 "highlight": "#layout-content #contents div.--col-dwp-1",
                 "scrollto": true,
-                "scrolltop": 60,
+                "scrolltop": 250,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
                 "bloccss": "margin-left: 45%;max-width:600px;text-align:start",
                 "bloc": {
@@ -55,7 +54,7 @@
                 "description": "Affichage des informations du service et du ministère",
                 "highlight": "#layout-content #contents div.--col-dwp-2",
                 "scrollto": true,
-                "scrolltop": 60,
+                "scrolltop": 250,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
                 "bloccss": "margin-right: 65%;text-align:end",
                 "bloc": {
@@ -68,8 +67,9 @@
                 "description": "Affichage des trois derniers espaces de travail",
                 "highlight": "#layout-content #contents div.--col-dwp-3",
                 "scrollto": true,
+                "scrolltop": 660,
                 "css": "background-color: #fff; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
-                "bloccss": "margin-top: 8%;margin-right:auto;margin-left:auto;max-width:50%",
+                "bloccss": "margin-top: 10%;margin-right:auto;margin-left:auto;max-width:50%",
                 "bloc": {
                     "title": "Page d'accueil : Mes espaces de travail",
                     "description": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu."

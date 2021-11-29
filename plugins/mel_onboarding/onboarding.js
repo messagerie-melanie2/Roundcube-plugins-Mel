@@ -242,9 +242,11 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
       if (window.current_onboarding.stepper.items[item].scrollto) {
         let element = $(window.current_onboarding.stepper.items[item].highlight).get(0);
         element.scrollIntoView();
+        let top = $("#layout-content").scrollTop();
+        $("#layout-content").scrollTop(top - 10);
+        //On re-décale si l'onboarding est dans un iframe
         if (rcmail.env.is_framed && window.current_onboarding.stepper.items[item].scrolltop) {
-          let scroll = $("#layout-content").scrollTop();
-          $("#layout-content").scrollTop(scroll - window.current_onboarding.stepper.items[item].scrolltop)
+          $("#layout-content").scrollTop(top - 60);
         }
       }
     }

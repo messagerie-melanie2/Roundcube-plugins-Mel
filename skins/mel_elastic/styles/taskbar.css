@@ -324,7 +324,9 @@ iframe.mm-frame/*,
 }
 
 html.touch #layout-menu,
-#layout-menu:hover{
+#layout-menu:hover,
+#layout-menu.force-open
+{
     width: 200px!important;
 }
 
@@ -358,6 +360,8 @@ html.touch #layout-menu  a > span.inner,
 html.touch #layout-menu  span > a > span.inner,
 #layout-menu:hover  a > span.inner,
 #layout-menu:hover  span > a > span.inner,
+#layout-menu.force-open  a > span.inner,
+#layout-menu.force-open  span > a > span.inner,
 #layout-menu  a:focus > span.inner,
 #layout-menu  span > a:focus > span.inner {
     display: inline-flex!important;
@@ -402,7 +406,8 @@ html.touch #layout-menu  span > a > span.inner
 }
 
  /* html.touch #layout-menu a > span.inner, */
-#layout-menu:hover a:hover > span.inner {
+#layout-menu:hover a:hover > span.inner,
+#layout-menu.force-open a.force-hover > span.inner {
 	background-color: #484D7A;
 	left: 65px;
 	/* margin-top: -2.2rem; */

@@ -15,19 +15,19 @@ current_iframe_css = null;
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
-    let current_page = rcmail.env.task;
+    let current_task = rcmail.env.task;
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
-        rcmail.show_current_page_onboarding(current_page);
+        rcmail.show_current_page_onboarding(current_task);
         rcmail.env.hide_modal = 1;
       }
     });
-    if (rcmail.env.current_page) {
-      current_page += "/" + rcmail.env.current_page;
+    if (rcmail.env.action) {
+      current_task += "/" + rcmail.env.action;
     }
-    if (rcmail.env.help_page_onboarding[current_page]) {
+    if (rcmail.env.help_page_onboarding[current_task]) {
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(current_page);
+        rcmail.show_current_page_onboarding(current_task);
       }
     }
   });
@@ -53,7 +53,6 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
  */
 rcube_webmail.prototype.show_current_page_onboarding = function (task) {
   let json_page = rcmail.env.help_page_onboarding[task];
-
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
       window.current_onboarding = JSON.parse(json);
@@ -178,8 +177,6 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
   if (rcmail.env.is_framed) {
     let iframe = window.parent.$('iframe.' + rcmail.env.task + '-frame')[0];
     let iframe_id = iframe.id;
-    console.log(iframe);
-    console.log(iframe_id);
 
     if (!current_iframe_css) {
       current_iframe_css = $("#" + iframe_id, window.parent.document).attr("style");
@@ -245,9 +242,11 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
       if (window.current_onboarding.stepper.items[item].scrollto) {
         let element = $(window.current_onboarding.stepper.items[item].highlight).get(0);
         element.scrollIntoView();
+        let top = $("#layout-content").scrollTop();
+        $("#layout-content").scrollTop(top - 10);
+        //On re-décale si l'onboarding est dans un iframe
         if (rcmail.env.is_framed && window.current_onboarding.stepper.items[item].scrolltop) {
-          let scroll = $("#layout-content").scrollTop();
-          $("#layout-content").scrollTop(scroll - window.current_onboarding.stepper.items[item].scrolltop)
+          $("#layout-content").scrollTop(top - 60);
         }
       }
     }

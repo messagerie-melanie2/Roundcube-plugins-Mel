@@ -27,9 +27,15 @@ if (window.rcmail) {
     }
     if (rcmail.env.help_page_onboarding[current_task]) {
       if (!rcmail.env.onboarding) {
-        rcmail.show_current_page_onboarding(current_task);
+      rcmail.show_current_page_onboarding(current_task);
       }
     }
+
+    $(document).ready(function () {
+      $('#navigation-onboarding-details').on('click', function () {
+        console.log("bonsoir");
+      })
+    });
   });
 }
 
@@ -124,7 +130,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
         stepper.append(div);
 
         // Ajout des boutons
-        let buttonPrevious = $('<button class="btn btn-secondary btn-onboarding-previous">' + rcmail.gettext('previous') + '</button>');
+        let buttonPrevious = $('<button class="mel-button btn btn-secondary btn-onboarding-previous">' + rcmail.gettext('previous') + '</button>');
         buttonPrevious.click(function () {
           if (!$(this).hasClass('disabled')) {
             let previousItem = rcmail.onboarding_get_previous_item();
@@ -135,7 +141,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
         });
         stepper.append(buttonPrevious);
 
-        let buttonNext = $('<button class="btn btn-secondary btn-onboarding-next">' + rcmail.gettext('next') + '</button>');
+        let buttonNext = $('<button class="mel-button btn btn-secondary btn-onboarding-next">' + rcmail.gettext('next') + '</button>');
         buttonNext.click(function () {
           if (!$(this).hasClass('disabled')) {
             let nextItem = rcmail.onboarding_get_next_item();
@@ -146,7 +152,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
         });
         stepper.append(buttonNext);
 
-        let buttonClose = $('<button class="btn btn-secondary btn-onboarding-close">' + rcmail.gettext('close') + '</button>');
+        let buttonClose = $('<button class="mel-button btn btn-secondary btn-onboarding-close">' + rcmail.gettext('close') + '</button>');
         buttonClose.click(function () {
           rcmail.onboarding_close();
         });
@@ -247,6 +253,30 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
         //On re-décale si l'onboarding est dans un iframe
         if (rcmail.env.is_framed && window.current_onboarding.stepper.items[item].scrolltop) {
           $("#layout-content").scrollTop(top - 60);
+        }
+      }
+
+      if (window.current_onboarding.stepper.items[item].button) {
+        if (!$('#' + item + '-details').length) {
+          let buttonDetails = $('<button class="mel-button btn btn-secondary btn-onboarding-close float-right" id="' + item + '-details">' + window.current_onboarding.stepper.items[item].button + '</button>');
+          buttonDetails.click(function () {
+            switch (item) {
+              case "navigation":
+                $('#layout-menu').addClass('force-open');
+                break;
+              default:
+                break;
+            }
+            let details = window.current_onboarding.stepper.items[item].details;
+            window.parent.introJs().setOptions({
+              nextLabel: details.nextLabel,
+              prevLabel: details.prevLabel,
+              steps: details.steps
+            }).onbeforeexit(function () {
+              $('#layout-menu').removeClass('force-open');
+            }).start();
+          });
+          $('#dimScreen > div.bloc.' + item).append(buttonDetails);
         }
       }
     }

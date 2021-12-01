@@ -1,31 +1,7 @@
 $(document).ready(() => {
 
-    /**
-     * Classe qui sert à gérer les différentes interfaces
-     */
     class Mel_Elastic {
         constructor() {
-            this.init()
-            .setup()
-            .update();
-        }
-
-        ////////////************* Inits and setups functions *************///////////
-
-        /**
-         * Initialise les différentes variables et constantes de la classe.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        init(){
-            return this.init_const();
-        }
-
-        /**
-         * Initialise les différentes constantes de la classe.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        init_const()
-        {
             Object.defineProperty(this, 'JSON_CHAR_REPLACE', {
                 enumerable: false,
                 configurable: false,
@@ -80,44 +56,94 @@ $(document).ready(() => {
                   }
               });
 
-              return this;
+              if (parent === window)
+              {
+                  //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
+                  const width = "60px";
+
+                  if (!this.IS_EXTERNE && $("#layout-sidebar").length > 0)
+                      $("#layout-sidebar").css("margin-left", width);
+                  else if (!this.IS_EXTERNE && $("#layout-content").length > 0)
+                      $("#layout-content").css("margin-left", width);
+              }
+
+              try {
+                this.update();
+
+                if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
+                    $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
+
+                if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
+                {
+                    $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
+                    .on("click", () => {
+                        window.location.href = this.url("mail");
+                    })
+                    .prependTo($("#toolbar-menu"))
+                }
+              } catch (error) {
+                  
+              }
+
+
+              
+              try {
+                $("#login-form p.formbuttons a").click(() => {
+                      event.preventDefault();
+                      window.location.href = window.location.href.replaceAll("/changepassword/index.php", "");
+                  });
+              } catch (error) {
+                  console.error(error);
+              }
+            //   else if (rcmail.env.task === "mail" && rcmail.env.action === "show" && window.location.href.includes("_extwin"))
+            //     $("#layout-content").css("margin-left", 0);
+
+              try {
+                  if (rcmail !== undefined)
+                        this.init();
+              } catch (error) {
+                  
+              }
+
         }
 
-        /**
-         * Différentes actions à faire après l'initialisation.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup(){
-
-            if (rcmail === undefined) return this;
-
-            return this
-            .setup_html()
-            .setup_nav()
-            .setup_tasks()
-            .setup_other_apps();
-        }
-
-        /**
-         * Met en place l'apparence et le fonctionnel de la barre de navigation principale
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup_nav()
+        get_nav_button_main_class(button)
         {
-            if (parent === window)
-            {
-                //La sidebar étant en position absolue, on décale certaines divs pour que l'affichage soit correct.
-                const width = "60px";
+            const list = button.classList;
+            for (const key in list) {
+                if (Object.hasOwnProperty.call(list, key)) {
+                    const element = list[key];
+                    switch (element) {
+                        case "mel-focus":
+                        case "selected":
+                        case "order1":
+                        case "mel":
+                        case "disabled":
+                        case "hidden":
+                            continue;
+                    
+                        default:
 
-                if (!this.IS_EXTERNE && $("#layout-sidebar").length > 0)
-                    $("#layout-sidebar").css("margin-left", width);
-                else if (!this.IS_EXTERNE && $("#layout-content").length > 0)
-                    $("#layout-content").css("margin-left", width);
+                            if (element.includes("icofont"))
+                                continue;
+                            if (element.includes("icon-mel-"))
+                                continue;
+                            if (element.includes("button"))
+                                continue;
+
+                            return element;
+                    }
+                }
             }
 
+            return "no-class-found";
+        }
+
+        async init()
+        {
+            this.initOtherApps();
             if ($("#taskmenu").length > 0)
             {
-                //On met dans l'ordre les différents boutons de la barre de navigation principale
                 let array = [];
 
                 $("#taskmenu").find("a").each((i,e) => {
@@ -156,57 +182,16 @@ $(document).ready(() => {
 
                 $("#taskmenu .menu-last-frame ").attr("tabIndex", "-1");
 
-                //On supprime le stockage si on y a pas accès.
                 if (!rcmail.env.is_stockage_active)
                     $("#taskmenu .stockage").parent().remove();
             }
-
-            return this;
-        }
-
-        /**
-         * Met en place les actions pour les tâches qui en ont besoins.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup_tasks()
-        {
+            
             try {
-                //Gérer le texte du bouton de login.
-                if (rcmail.env.task == 'login' || rcmail.env.task == 'logout')
-                    $('#rcmloginsubmit').val("Se connecter").html("Se connecter");
-
-                //Revenir à la liste des mails sans rafraîchir la page.
-                if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
-                {
-                    $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
-                    .on("click", () => {
-                        window.location.href = this.url("mail");
-                    })
-                    .prependTo($("#toolbar-menu"))
-                }
+                $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
             } catch (error) {
                 
             }
-
-            try {
-                //Gérer le changement de mot de passe dans le login.
-                $("#login-form p.formbuttons a").click(() => {
-                      event.preventDefault();
-                      window.location.href = window.location.href.replaceAll("/changepassword/index.php", "");
-                  });
-              } catch (error) {
-                  console.error(error);
-              }
-
-            return this.setup_mails().setup_adressbook();
-        }
-
-        /**
-         * Met en place les mails.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup_mails()
-        {
+            
             if (rcmail.env.task === "mail" && $("#mailsearchform").length > 0)
             {
                 $("#mailsearchform").parent().parent().find(".unread").on("click",(e) => {
@@ -217,17 +202,51 @@ $(document).ready(() => {
                 });
             }
 
+            if (rcmail.env.task === "addressbook" && rcmail.env.action === "show" && window != parent && rcmail.env.accept_back === true)
+            {
+                let $tmp = $(`<button type="button" class="btn btn-secondary mel-button create mel-before-remover">Retour <span class="plus icon-mel-undo "></span></button>`)
+                .on("click", () => {
+                    let $args = {
+                        _source:rcmail.env.annuaire_source
+                    };
+
+                    parent.postMessage({
+                        exec:"searchToAddressbook",
+                        _integrated:true,
+                        child:false
+                    }, '*');
+
+                    rcmail.set_busy(true, "loading");
+                    window.location.href = this.url("addressbook", "plugin.annuaire", $args);
+
+
+                });
+                $("#contacthead").append($tmp);
+            }
+
+
             if (rcmail.env.task === "mail")
             {
                 $(".task-mail #quotadisplay").prepend(`<span>Espace de stockage</span><p style="flex-basis: 100%;
                 height: 0;
                 margin: 0;"></p>`);
 
-                //Gérer la prévisu des mails.
+                // $("#messagecontframe").on("load", () => {
+                //     console.log("load");
+                //     $("#layout-content").css("display", "");
+                //     $("#layout-list").css("display", "none");
+                // });
+
+                // $("#backtomails").on("click", () => {
+                //     $(".message.selected").removeClass("selected").removeAttr("aria-selected")
+                //     .find(".selection input").click();
+                //     $("#layout-content").css("display", "none");
+                //     $("#layout-list").css("display", "");
+                // });
+
                 rcmail.show_contentframe_parent = rcmail.show_contentframe;
                 rcmail.show_contentframe = function(show)
                 {
-                    //On ne fait rien si en mode small ou phone
                     if (show && ( $("html").hasClass("layout-small") || $("html").hasClass("layout-phone")))
                     {
                         rcmail.show_contentframe_parent(show);
@@ -239,11 +258,10 @@ $(document).ready(() => {
                         delete rcmail.env.is_from_scroll;
                     else if ($("#layout-list").hasClass("initial") && show)
                     {
-                        //Mise en place du système
+
                         $("#layout-content").css("display", "").removeClass("hidden layout-hidden");
                         $("#layout-list").removeClass("initial");
 
-                        //On réduit la recherche au besoin
                         $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
@@ -271,7 +289,6 @@ $(document).ready(() => {
 
                         $("#layout-content ul#toolbar-menu").prepend($back);
 
-                        //Fermer la prévisu
                         rcmail.register_command("close-mail-visu", () => {
                             $("#messagelist-content .selected").removeClass("selected").removeClass("focused").removeAttr("aria-selected").find(".selection input").click();
 
@@ -288,7 +305,6 @@ $(document).ready(() => {
                     }   
                     else if ($("#layout-list").hasClass("full") && show)
                     {
-                        //Afficher ou fermer
                         $("#layout-content").css("display", "").removeClass("hidden").removeClass("layout-hidden");
                         $("#layout-list").removeClass("full");
 
@@ -313,7 +329,6 @@ $(document).ready(() => {
 
                 if (rcmail.env.action === "compose")
                 {
-                    //Ajouter "Envoyer" en haut.
                     $(".btn.btn-primary.send").remove();
                     $("#toolbar-menu").prepend(`
                         <li role="menuitem">
@@ -323,7 +338,6 @@ $(document).ready(() => {
                 }
                 else if (rcmail.env.action === "" || rcmail.env.action === "index")
                 {
-                    //Gestion de l'apparence et de l'affichage des mails.
                     	// add roundcube events
                     rcmail.addEventListener('insertrow', function(event) { 
                         var rowobj = $(event.row.obj);
@@ -521,54 +535,15 @@ $(document).ready(() => {
                     })
                 }
             }
-
-            return this;
         }
 
-        /**
-         * Met en place certaines actions pour les contacts
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup_adressbook()
+        async initOtherApps()
         {
-            if (rcmail.env.task === "addressbook" && rcmail.env.action === "show" && window != parent && rcmail.env.accept_back === true)
-            {
-                let $tmp = $(`<button type="button" class="btn btn-secondary mel-button create mel-before-remover">Retour <span class="plus icon-mel-undo "></span></button>`)
-                .on("click", () => {
-                    let $args = {
-                        _source:rcmail.env.annuaire_source
-                    };
-
-                    parent.postMessage({
-                        exec:"searchToAddressbook",
-                        _integrated:true,
-                        child:false
-                    }, '*');
-
-                    rcmail.set_busy(true, "loading");
-                    window.location.href = this.url("addressbook", "plugin.annuaire", $args);
-
-
-                });
-                $("#contacthead").append($tmp);
-            }
-
-            return this;
-        }
-
-        /**
-         * Met en place la barre de navigation pour les autres applis.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup_other_apps()
-        {
-            //Enrobe les "a" par des "li".
             $("#listotherapps").find("a").each((i,e) => {
                 let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
                 $(e).addClass("mel-focus").appendTo(tmp);
             });
 
-            //Gestion de la barre.
             $("#listotherapps").find("a").on('focusout', (e) => {
 
                 $("#menu-overlay").remove();
@@ -586,41 +561,20 @@ $(document).ready(() => {
                 }
             });
 
-            return this;
+            
+
+            // $("#listotherapps").find("a").last().on('focusout', (e) => {
+            //     if (!$(e.relatedTarget).parent().parent().hasClass("listotherapps"))
+            //     {
+            //         if (!$(e.relatedTarget).hasClass("more-options"))
+            //             $("a.more-options").click();
+            //     }
+            // });
+
+            
         }
 
-        /**
-         * Met en place diverses choses qui concerne les choses invisibles.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        setup_html()
-        {
-            try {
-                $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
-            } catch (error) {
-                
-            }
-
-            return this;
-        }
-
-        /**
-         * Met à jours la page.
-         * @returns {Mel_Elastic} Chaînage
-         */
         update()
-        {
-            return this
-            .update_tabs()
-            .update_pagination()
-            .redStars();
-        }
-
-        /**
-         * Met à jours le système d'onglet
-         * @returns {Mel_Elastic} Chaînage
-         */
-        update_tabs()
         {
             let querry = $(".mel-tabheader");
 
@@ -668,16 +622,8 @@ $(document).ready(() => {
                 });
             }
 
-            return this;
-        }
 
-        /**
-         * Met à jours le système de pagination.
-         * @returns {Mel_Elastic} Chaînage
-         */
-        update_pagination()
-        {
-            let querry = $(".pagination");
+            querry = $(".pagination");
 
             if (querry.length > 0)
             {
@@ -688,15 +634,9 @@ $(document).ready(() => {
                 });
             }
 
-            return this;
+            this.redStars();
         }
 
-        ////////////************* Main functions *************///////////
-
-        /**
-         * Gère les étoiles rouges.
-         * @returns {Mel_Elastic} Chaînage
-         */
         redStars()
         {
             let querry = $(".red-star-after");
@@ -724,52 +664,8 @@ $(document).ready(() => {
 
                 });
             }
-
-            return this;
         }
 
-        ////////////************* Other functions *************///////////
-        /**
-         * Récupère la classe principale d'un bouton de la barre de navigation
-         * @param {DomElement} button - Ne doit pas être du JQUERY
-         * @returns {string} - Classe principale ou "no-class-found" si aucune classe principale trouvé.
-         */
-        get_nav_button_main_class(button)
-        {
-            const list = button.classList;
-            for (const key in list) {
-                if (Object.hasOwnProperty.call(list, key)) {
-                    const element = list[key];
-                    switch (element) {
-                        case "mel-focus":
-                        case "selected":
-                        case "order1":
-                        case "mel":
-                        case "disabled":
-                        case "hidden":
-                            continue;
-                    
-                        default:
-
-                            if (element.includes("icofont"))
-                                continue;
-                            if (element.includes("icon-mel-"))
-                                continue;
-                            if (element.includes("button"))
-                                continue;
-
-                            return element;
-                    }
-                }
-            }
-
-            return "no-class-found";
-        }
-
-        /**
-         * Génère une couleur au hasard.
-         * @returns {string} Couleur héxadécimale
-         */
         getRandomColor() {
             var letters = '0123456789ABCDEF';
             var color = '#';
@@ -778,13 +674,6 @@ $(document).ready(() => {
             }
             return color;
         }
-
-        /**
-         * Récupère la différence de 2 réctangles.
-         * @param {DOMRect} rect1 Rectangle à soustraire
-         * @param {DOMRect} rect2 Rectangle de soustraction
-         * @returns {{top:number, left:number, right:number, bottom:number, rect1:DOMRect, rect2:DOMRect}} Résultats
-         */
         getRect(rect1, rect2)
         {
             return {
@@ -792,77 +681,11 @@ $(document).ready(() => {
                 left:rect1.left-rect2.left,
                 right:rect1.right-rect2.right,
                 bottom:rect1.bottom-rect2.bottom,
-                rect1,
-                rect2
+                rect1:rect1,
+                rect2:rect2
             };
         }
-
-        /**
-         * Récupère une url correcte
-         * @param {string} task Tâche que l'on souhaite
-         * @param {string} action Action que l'on souhaite
-         * @param {JSON} args Arguments supplémentaires
-         * @returns {string} Url fonctionnel
-         */
-        url(task, action = "", args = null)
-        {
-            if (window.mel_metapage !== undefined)
-                return mel_metapage.Functions.url(task, action, args);
-            else
-            {
-
-                let tmp = "";
-
-                if (action !== "")
-                    tmp += "&_action=" + action;
-
-                if (window.location.href.includes(this.FROM_INFOS.key) && window.location.href.includes(this.FROM_INFOS.value))
-                {
-                    if (args === null || args === undefined)
-                        args = {};
-                    
-                    args[this.FROM_INFOS.key] =  this.FROM_INFOS.value;
-                }
-
-                for (const key in args) {
-                    if (Object.hasOwnProperty.call(args, key)) {
-                        const element = args[key];
-                        tmp += "&" + key + "=" + element;
-                    }
-                }
-                return rcmail.get_task_url((task + tmp), window.location.origin + window.location.pathname);
-            }
-        }
-
-        /**
-         * Récupère une recherche de contact avec autocompletion.
-         * @param {string} id Id de l'input 
-         * @returns {string} html
-         */
-        get_input_mail_search(id = '')
-        {
-            let html = "Participants<span class=red-star></span>";
-            html += '<div class="input-group">';
-		    html += '<textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>';
-            html += '<ul id="wspf" class="form-control recipient-input ac-input rounded-left">'
-                                /* <li class="recipient">
-                                    <span class="name">delphin.tommy@gmail.com</span>
-                                    <span class="email">,</span>
-                                    <a class="button icon remove"></a></li> */
-            html += '<li class="input"><input id="'+id+'" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
-			html += '<span class="input-group-append">';
-		    html += `<a href="#add-contact" onclick="m_mp_openTo(this, '${id}')" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
-			html +=	'			</span>';
-			html += '			</div>';
-            return html;
-        }
-
-        ////////////************* Select box functions *************///////////
-        /**
-         * Créer une selectbox stylisé via un élément
-         * @param {JQUERY} event Jquery élément
-         * @returns {Mel_Elastic} Chaînage
-         */
+        
         generateSelect(event)
         {
             event = $(event);
@@ -926,17 +749,16 @@ $(document).ready(() => {
                 is_icon:is_icon,
                 onchange:onchange
             };
-
-            return this;
-
+            // $(document).on("click", (e) => {
+            //     console.log("generateSelect", e, event[0], e.currentTarget === event[0] || $(e.currentTarget).hasClass("mel-select-popup"));
+            //     if (e.currentTarget === event[0] || $(e.currentTarget).hasClass("mel-select-popup"))
+            //         return;
+            //     else {
+            //         $(".mel-select-popup").remove();
+            //     }
+            // });
         }
 
-        /**
-         * Met à jour la valeur du select
-         * @param {string} value Nouvelle valeur
-         * @param {string} newTitle Nouveau titre associé
-         * @returns {Mel_Elastic} Chaînage
-         */
         updateSelectValue(value, newTitle = "")
         {
             //console.log("generateSelect", value);
@@ -980,16 +802,8 @@ $(document).ready(() => {
 
                 delete this.tmp_popup;
             }
-
-            return this;
         }
         
-        /**
-         * Modifie la valeur d'un select
-         * @param {string} new_value Nouvelle valeur
-         * @param {JQUERY} event Élément JQUERY
-         * @returns {Mel_Elastic} Chaînage
-         */
         setValue(new_value, event)
         {
             const options = typeof event.data("options") === "string" ? JSON.parse(event.data("options").includes("¤¤¤") ? event.data("options").replaceAll('¤¤¤', '"') : event.data("options")) : event.data("options");
@@ -1007,16 +821,7 @@ $(document).ready(() => {
                 onchange:onchange
             };
             this.updateSelectValue(new_value);
-
-            return this;
         }
-
-        ////////////************* Tab functions *************///////////
-        /**
-         * Change d'onglet
-         * @param {DOMElement} event 
-         * @returns {Mel_Elastic} Chaînage
-         */
         switchTab(event)
         {
             //get id
@@ -1036,7 +841,7 @@ $(document).ready(() => {
             });
 
             if (namespace === null)
-                return this;
+                return;
 
             //Désactivation des autres tabs et objets
             $("."+namespace+".mel-tab").removeClass("active").attr("aria-selected", false).attr("tabindex", -1);
@@ -1063,123 +868,58 @@ $(document).ready(() => {
                 });
             }
 
-            return this;
-
         }
 
-        /**
-         * Gère les différents onglets
-         * @param {JQUERY | DOMElement} $item Si null, gère la page entière 
-         * @returns {Mel_Elastic} Chaînage
-         */
-        gestionTabs($item = null)
+        url(task, action = "", args = null)
         {
-            if ($item === null)
+            if (window.mel_metapage !== undefined)
+                return mel_metapage.Functions.url(task, action, args);
+            else
             {
-                const items = document.querySelectorAll('[role="tablist"]');
-                for (let index = 0; index < items.length; ++index) {
-                    const element = items[index];
-                    this.gestionTabs(element);
-                }
-            }
-            else {
-                const determineDelay = function () {
-                    var hasDelay = tablist.hasAttribute('data-delay');
-                    var delay = 0;
-                
-                    if (hasDelay) {
-                      var delayValue = tablist.getAttribute('data-delay');
-                      if (delayValue) {
-                        delay = delayValue;
-                      }
-                      else {
-                        // If no value is specified, default to 300ms
-                        delay = 300;
-                      };
-                    };
-                
-                    return delay;
-                  };
 
-                let item = $($item);
+                let tmp = "";
 
-                if (item.hasClass("mel-ui-tab-system"))
-                  return this;
-                else
-                    item.addClass("mel-ui-tab-system");
+                if (action !== "")
+                    tmp += "&_action=" + action;
 
-                let tabs = item.find("button");
-
-                tabs.keydown( (event) => {
-                    const key = event.keyCode;
-
-                    let direction = 0;
-                    switch (key) {
-                        case this.keys.left:
-                            direction = -1;
-                            break;
-                        case this.keys.right:
-                            direction = 1;
-                            break;
-
-                        case this.keys.home:
-                            $(tabs[0]).focus().click();
-                            break;
-                        case this.keys.end:
-                            $(tabs[tabs.length-1]).focus().click();
-                            break;
+                if (window.location.href.includes(this.FROM_INFOS.key) && window.location.href.includes(this.FROM_INFOS.value))
+                {
+                    if (args === null || args === undefined)
+                        args = {};
                     
-                        default:
-                            break;
+                    args[this.FROM_INFOS.key] =  this.FROM_INFOS.value;
+                }
+
+                for (const key in args) {
+                    if (Object.hasOwnProperty.call(args, key)) {
+                        const element = args[key];
+                        tmp += "&" + key + "=" + element;
                     }
-
-                    if (direction !== 0)
-                    {
-                        for (let index = 0; index < tabs.length; ++index) {
-                            const element = $(tabs[index]);
-                            
-                            if (element.hasClass("selected") || element.hasClass("active"))
-                            {
-                                let id;
-                                if (index + direction < 0)
-                                    id = tabs.length - 1;
-                                else if (index + direction >= tabs.length)
-                                    id = 0;
-                                else
-                                    id = index + direction;
-
-                                $(tabs[id]).focus().click();
-
-                                break;
-                            }
-                        }
-                    }
-                });
-                
+                }
+                return rcmail.get_task_url((task + tmp), window.location.origin + window.location.pathname);
             }
-
-            return this;
         }
-
-        ////////////************* Pagination functions *************///////////
-        /**
-         * Créer un html pour le nombre de la pagination
-         * @param {number} number Nombre
-         * @param {boolean} isClickable Si le nombre est clickable
-         * @param {boolean} active Si le nombre est actif
-         * @returns {string} HTML
-         */
+        get_input_mail_search(id = '')
+        {
+            let html = "Participants<span class=red-star></span>";
+            html += '<div class="input-group">';
+		    html += '<textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>';
+            html += '<ul id="wspf" class="form-control recipient-input ac-input rounded-left">'
+                                /* <li class="recipient">
+                                    <span class="name">delphin.tommy@gmail.com</span>
+                                    <span class="email">,</span>
+                                    <a class="button icon remove"></a></li> */
+            html += '<li class="input"><input id="'+id+'" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
+			html += '<span class="input-group-append">';
+		    html += `<a href="#add-contact" onclick="m_mp_openTo(this, '${id}')" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
+			html +=	'			</span>';
+			html += '			</div>';
+            return html;
+        }
         create_number(number, isClickable = true, active = false) {
             return `<span class="pagination-number pagination-number-`+number.toString().replaceAll(".", "a")+(active ? " active " : "")+(isClickable ? "" : "disabled")+`" onclick="MEL_ELASTIC_UI.pagination_page(this, `+number+`)">` + number + '</span>';
         };
 
-        /**
-         * Créer une barre de pagination
-         * @param {DomElement} e Element qui contiendra la pagination 
-         * @param {number} count Nombre d'éléments
-         * @param {number} current Elément courant
-         * @returns {Mel_Elastic} Chaînage
-         */
         set_pagination(e,count, current = null)
         {
             const _integer = this._integer;
@@ -1201,23 +941,13 @@ $(document).ready(() => {
             //console.log("current", current);
             if (current !== null)
                 this.pagination_page($(".pagination-number-" + current)[0],current, false);
-
-            return this;
         }
 
-        /**
-         * Change de page spécifiquement
-         * @param {JQUERY} e Elément cliqué 
-         * @param {number} number Page
-         * @param {boolean} doAction Si on effectue l'action ou non.
-         * @returns {Mel_Elastic} Chaînage
-         */
         pagination_page(e, number, doAction = true){
             const _integer = this._integer;
             e = $(e).parent();
             const count = Math.ceil(e.parent().data("count")/7.0);
             let html = "";
-
             if (count > _integer)
             {
                 let before = false;
@@ -1285,48 +1015,133 @@ $(document).ready(() => {
             }
             e.html(html);
             e.parent().data("current", number);
- 
+            //console.log((e.parent().data("page").replaceAll("¤page¤", number)));
             if (doAction)
                 eval(e.parent().data("page").replaceAll("¤page¤", number));
-
-            return this;
         }
 
-        /**
-         * On affiche la page suivante
-         * @param {DOMElement} e Element cliqué
-         * @returns {Mel_Elastic} Chaînage
-         */
         pagination_next(e) {
             const count = $(e).parent().data("count");
             let current = $(e).parent().data("current");
             current = (current === null || current === undefined ? 2 : current + 1);
-
             if (count+1 != current)
                 this.pagination_page($(".pagination-number-" + current)[0], current)
-
-            return this;
         }
 
-        /**
-         * On affiche la page précédente
-         * @param {DOMElement} e Element cliqué
-         * @returns {Mel_Elastic} Chaînage
-         */
         pagination_prev(e) {
             const current = $(e).parent().data("current");
-
             if (current !== undefined || current !== 1)
                 this.pagination_page($(".pagination-number-" + (current-1))[0], current - 1);
-
-            return this;
         }
+
+        gestionTabs($item = null)
+        {
+            if ($item === null)
+            {
+                const items = document.querySelectorAll('[role="tablist"]');
+                for (let index = 0; index < items.length; ++index) {
+                    const element = items[index];
+                    this.gestionTabs(element);
+                }
+            }
+            else {
+                const determineDelay = function () {
+                    var hasDelay = tablist.hasAttribute('data-delay');
+                    var delay = 0;
+                
+                    if (hasDelay) {
+                      var delayValue = tablist.getAttribute('data-delay');
+                      if (delayValue) {
+                        delay = delayValue;
+                      }
+                      else {
+                        // If no value is specified, default to 300ms
+                        delay = 300;
+                      };
+                    };
+                
+                    return delay;
+                  };
+
+                let item = $($item);
+
+                if (item.hasClass("mel-ui-tab-system"))
+                  return;
+                else
+                    item.addClass("mel-ui-tab-system");
+
+                let tabs = item.find("button");
+
+                tabs.keydown( (event) => {
+                    const key = event.keyCode;
+
+                    let direction = 0;
+                    switch (key) {
+                        case this.keys.left:
+                            direction = -1;
+                            break;
+                        case this.keys.right:
+                            direction = 1;
+                            break;
+
+                        case this.keys.home:
+                            $(tabs[0]).focus().click();
+                            break;
+                        case this.keys.end:
+                            $(tabs[tabs.length-1]).focus().click();
+                            break;
+                    
+                        default:
+                            break;
+                    }
+
+                    if (direction !== 0)
+                    {
+                        for (let index = 0; index < tabs.length; ++index) {
+                            const element = $(tabs[index]);
+                            
+                            if (element.hasClass("selected") || element.hasClass("active"))
+                            {
+                                let id;
+                                if (index + direction < 0)
+                                    id = tabs.length - 1;
+                                else if (index + direction >= tabs.length)
+                                    id = 0;
+                                else
+                                    id = index + direction;
+
+                                $(tabs[id]).focus().click();
+
+                                break;
+                            }
+                        }
+                    }
+                });
+                
+            }
+        }
+
+        
 
     }
 
-    /**
-     * Contient les fonctions de la classe Mel_Elastic
-     */
     window.MEL_ELASTIC_UI = new Mel_Elastic();
 
+    // rcmail.addEventListener("init", () => {
+    //     if (rcmail.env.task === "login" || rcmail.env.task === "logout")
+    //     {
+    //         let querry = $('#formlogintable label[for="rcmloginuser"]');
+    //         querry.html(`${querry.html()}<br/><span style=font-weight:normal>Adresse email</span>`).addClass("mel-after-remover");
+    //         $("#formlogintable").attr("role", "presentation");
+    //     }
+    // });
+
 });
+
+
+
+// function rc_url(task, action = "", args = null)
+// {
+
+// }
+

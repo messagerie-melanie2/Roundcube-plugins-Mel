@@ -22,7 +22,7 @@ function Start(uid, hasAriane, datas) {
     const style = rcmail.env.current_bar_colors;
     let $html = $("html");
 
-    if (!$html.hasClass("framed"))
+    if (true || !$html.hasClass("framed"))
         $html = $("#layout-content");
 
     if (!$html.hasClass("mwsp")) $html.addClass("mwsp");
@@ -105,6 +105,9 @@ function Start(uid, hasAriane, datas) {
     rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {
         _uid:uid
     }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
+
+    if (parent.webconf_master_bar !== undefined)
+        parent.webconf_master_bar.minify_toolbar();
 
     mel_metapage.Storage.set("current_wsp", rcmail.env.current_workspace_uid)
     mel_metapage.Storage.set("current_wsp_mail", rcmail.env.current_workspace_email)

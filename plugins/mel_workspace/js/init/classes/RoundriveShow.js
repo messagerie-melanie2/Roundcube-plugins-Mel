@@ -387,6 +387,7 @@ class RoundriveShow
     save()
     {
         mel_metapage.Storage.set(`wsp_nc_${rcmail.env.username}`, this.tree);
+        return this;
     }
 
     load()
@@ -466,8 +467,8 @@ class RoundriveShow
                     if (!updated && this.config.updatedFunc !== undefined && this.config.updatedFunc !== null)
                     {
                         this.config.updatedFunc(false);
-                        this.save();
                     }
+                    else if (updated) this.save().notif_to_server(); 
 
                     if (!onlyCheck)
                         $("#refresh-nc").removeClass("disabled").removeAttr("disabled").find("span").css("display", "").parent().find(".spinner-grow").remove();
@@ -480,6 +481,15 @@ class RoundriveShow
         }
 
         
+    }
+
+    notif_to_server()
+    {
+        const _uid = this.wsp;
+        return mel_metapage.Functions.post(
+            mel_metapage.Functions.url("workspace", "update_edit_date"),
+            {_uid}
+        );
     }
 
     actionQuerryOpen(querry, element, idPath)

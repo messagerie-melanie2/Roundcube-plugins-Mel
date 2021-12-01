@@ -747,6 +747,9 @@ class mel_driver extends calendar_driver {
       else {
         return false;
       }
+
+      if (class_exists("mel_metapage")) mel_metapage::events()->triggerEvent("calendar.new_event", $event);
+
       // MANTIS 0005564: Un évt avec participants, modifié par un participant comme nouvel évt garde l'organisateur initial
       if ($event['copy'] && !empty($event['attendees'])) {
         $identity = $this->rc->user->get_identity();

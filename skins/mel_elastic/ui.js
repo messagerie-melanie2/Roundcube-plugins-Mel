@@ -107,6 +107,38 @@ $(document).ready(() => {
 
         }
 
+        get_nav_button_main_class(button)
+        {
+            const list = button.classList;
+            for (const key in list) {
+                if (Object.hasOwnProperty.call(list, key)) {
+                    const element = list[key];
+                    switch (element) {
+                        case "mel-focus":
+                        case "selected":
+                        case "order1":
+                        case "mel":
+                        case "disabled":
+                        case "hidden":
+                            continue;
+                    
+                        default:
+
+                            if (element.includes("icofont"))
+                                continue;
+                            if (element.includes("icon-mel-"))
+                                continue;
+                            if (element.includes("button"))
+                                continue;
+
+                            return element;
+                    }
+                }
+            }
+
+            return "no-class-found";
+        }
+
         async init()
         {
             this.initOtherApps();
@@ -139,7 +171,7 @@ $(document).ready(() => {
                 $("#taskmenu").append('<ul class="list-unstyled"></ul>');
 
                 Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
-                    let li = $("<li style=display:block></li>")
+                    let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                     e = e.item;
                     if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
                     li.css("display", "none");

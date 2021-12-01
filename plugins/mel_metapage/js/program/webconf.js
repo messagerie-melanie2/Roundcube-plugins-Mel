@@ -784,6 +784,7 @@ class MasterWebconfBar {
                 this.toolbar_item("jitsi-select").css("display", "");  
             }
             this.logo.removeClass("hidden-toolbar");
+
             if (MasterWebconfBar.isFirefox())
             {
                 this.broadcast.css("display", "none");
@@ -828,6 +829,7 @@ class MasterWebconfBar {
      */
     switch_toolbar()
     {
+        return;
         let _toolbar = $(".webconf-toolbar");
         let _switch = $(".conf-switch-toolbar");
         if (_toolbar.hasClass("switched-toolbar"))
@@ -849,14 +851,121 @@ class MasterWebconfBar {
         }
     }
 
+    update_toolbar_position(isMinimized)
+    {
+        if (isMinimized === undefined || isMinimized === null)
+            return; 
+
+        this.lastMinimized = isMinimized;
+        let $toolbar = $(".webconf-toolbar");
+
+        if (isMinimized)
+        {
+            if (this.ariane.hasClass("active"))
+            {
+                $toolbar.css("bottom", 'unset')
+                .css("top", '225px')
+                .css('left', 'unset')
+                .css('right', '-68px');
+            }
+            else
+            {
+                $toolbar.css("bottom", '5px')
+                .css("top", 'unset')
+                .css('left', 'unset')
+                .css('right', '-68px');              
+            }
+        }
+        else {
+            $toolbar.css("bottom", '')
+            .css("top", '')
+            .css('left', '')
+            .css('right', '');  
+        }
+
+        return this;
+    }
+
+    minify_toolbar()
+    {
+
+        if (this.minified === true)
+            return;
+
+        this.minified = true;
+
+        this.hide_element(this.document).
+        hide_element(this.ariane).
+        hide_element(this.broadcast).
+        hide_element(this.hand).
+        hide_element(this.mozaik).
+        hide_element(this.logo).
+        hide_element($(".webconf-toolbar .empty.first")).
+        hide_element($(".webconf-toolbar .text-item"));
+
+        $($(".webconf-toolbar").find("v_separate")[0]).css("display", "none");
+        $(".webconf-toolbar .wsp-toolbar-item").css("margin-bottom", "5px");
+
+        $(".webconf-toolbar .toolbar-popup").css("right", "26px");
+
+        return this.update_toolbar_position(true);
+    }
+
+    maximize_toolbar()
+    {
+
+        if (this.minified === false)
+            return;
+
+        this.minified = false;
+        this.show_element(this.document).
+        show_element(this.ariane).
+        show_element(this.broadcast).
+        show_element(this.hand).
+        show_element(this.mozaik).
+        show_element(this.logo).
+        show_element($(".webconf-toolbar .empty.first")).
+        show_element($(".webconf-toolbar .text-item"));
+
+        $($(".webconf-toolbar").find("v_separate")[0]).css("display", "");
+        $(".webconf-toolbar .wsp-toolbar-item").css("margin-bottom", "");
+
+        $(".webconf-toolbar .toolbar-popup").css("right", "");
+
+        return this.update_toolbar_position(false);
+    }
+
+    hide_element(element)
+    {
+        if (element.css("display") === "none") element.addClass("already-hidden"); 
+        else element.hide(); 
+
+        return this;
+    }
+
+    show_element(element)
+    {
+        if (element.hasClass("already-hidden")) element.removeClass("already-hidden");
+        else element.show();
+
+        return this;
+    }
+
     /**
      * @async
      * Met fin à la webconf
      */
     async hangup()
     {
-        //.focus();
+        //L'url à lancer en quittant la webconf
         const url = "https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
+
+        //Permet de gérer correctement la barre de navigation d'un espace (Fait revenir sur l'accueil de l'espace)
+        if ($(".melw-wsp.webconfstarted").length > 0)
+            $(".melw-wsp.webconfstarted").removeClass("webconfstarted").find(".wsp-home").click();
+
+        //Remet le bouton où il était originiellement, pour qu'il puisse être de nouveau la lors de la prochaine conf.
+        this.more.appendTo(".barup").addClass("hidden");
 
         if (this.toolbar_item("wsp-toolbar-item-wsp").length > 0)
         {
@@ -871,12 +980,15 @@ class MasterWebconfBar {
             }
         }
 
+        //Supprime les données de la barre d'outil d'une conf et supprime la toolbar visuellement & fonctionelement 
         delete window.webconf_master_bar;
-
         $(".webconf-toolbar").remove();
+
+        //Envoie la déconnexion à la Jitsii
         this.send("hangup");
 
-        if (!this.webconf._is_minimized)
+        //Remet les frames en place.
+        if (!this.webconf._is_minimized) //Obsolète ?
         {
             // if (rcmail.env.last_frame_class === undefined)
             //     await mel_metapage.Functions.change_frame("home");
@@ -900,6 +1012,7 @@ class MasterWebconfBar {
         }
 
         try {
+            //Supprime 'mwvcs' pour que tout fonctionne correctement avec les espaces de travail
             $('iframe.mwsp').removeClass("mwsp").each((i,e) => {
                 if (!$(e).hasClass("workspace-frame"))
                     e.contentWindow.$("html").removeClass("mwvcs");
@@ -908,6 +1021,7 @@ class MasterWebconfBar {
             
         }
 
+        //Gère correctement les frames puis affiche la frame en cours
         $("#layout-frames").find("iframe").css("padding-left", "").css("padding-right", "");
         $(".webconf-frame").css("display", "none");
 
@@ -927,6 +1041,7 @@ class MasterWebconfBar {
                 $("#layout-frames").css("display", "none");
         }
 
+        //Affiche le questionnaire
         if (!parent.$("body").hasClass("task-webconf"))
         {
             parent.$("#layout-frames").css("display", "");
@@ -942,6 +1057,7 @@ class MasterWebconfBar {
             });
         }
 
+        //Gère le placement de la bulle de tchat
         if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
             $(".tiny-rocket-chat").removeClass("disabled").removeAttr("disabled");
         else
@@ -1015,6 +1131,8 @@ class MasterWebconfBar {
             else
                 this.show_ariane(send);
         }
+
+        this.update_toolbar_position(this.lastMinimized);
     }
 
     /**
@@ -1187,7 +1305,17 @@ class MasterWebconfBar {
 
                 this.webconf._is_minimized = true;   
 
-                await mel_metapage.Functions.change_frame("stockage", true, true);
+                let config = null;
+
+                try{
+                    if (this.webconf.wsp !== undefined && this.webconf.wsp.datas !== undefined && this.webconf.wsp.datas.uid !== undefined)
+                    {
+                        config = {_params: `/apps/files?dir=/dossiers-${this.webconf.wsp.datas.uid}`};
+                    }
+                }catch (er)
+                {}
+
+                await mel_metapage.Functions.change_frame("stockage", true, true, config);
             }
         }
 
@@ -1423,6 +1551,7 @@ class MasterWebconfBar {
      */
     _fullscreen()
     {
+        $(".melw-wsp .wsp-home").click();
         this.update_screen(true);
         this.document.removeClass("active");
         this.webconf._is_minimized = false;
@@ -1431,6 +1560,7 @@ class MasterWebconfBar {
 
         $(".mm-frame").each((i, e) => {
             e = $(e);
+
             if (e.hasClass("webconf-frame"))
                 return;
             else
@@ -1448,6 +1578,10 @@ class MasterWebconfBar {
         $(".webconf-frame").css("display", "");
         $("#layout-frames").css("width", "");
         this.send("fullscreen");
+
+
+        this.maximize_toolbar();
+        $(".melw-wsp").remove();
     }
 
     /**
@@ -1741,12 +1875,17 @@ $(document).ready(() => {
                         {
                             $("#layout-frames").css("width", `${window.webconf_master_bar.webconf.ariane.size}px`).css("display", "");
                         }
+
+                        $(`.${eClass}-frame`).css("display", "");
                     }
                     else
                     {
                         $(".webconf-frame.webconf-mm-frame").addClass("mm-frame").removeClass("webconf-mm-frame");
                         $("iframe.mm-frame").css("padding-left", 0);
                         $(`iframe#${id}`).css("padding-right", `${window.webconf_master_bar.webconf.ariane.size}px`);
+
+                        if ($(`iframe#${id}`).css("display") === 'none')
+                            $(`iframe#${id}`).css("display", '');
                     }
 
                     window.webconf_master_bar.change_frame(false);
@@ -1761,6 +1900,11 @@ $(document).ready(() => {
                         window.webconf_master_bar.document.removeClass("active");
                     else
                         window.webconf_master_bar.document.addClass("active");
+
+                    if (eClass === "workspace" || $(".wsp-toolbar-edited.melw-wsp").length > 0)
+                        window.webconf_master_bar.minify_toolbar();
+                    else
+                        window.webconf_master_bar.maximize_toolbar();
                 }
 
                 mel_metapage.Functions.call(`metapage_frames.addEvent("changepage.before", ${donothide})`);

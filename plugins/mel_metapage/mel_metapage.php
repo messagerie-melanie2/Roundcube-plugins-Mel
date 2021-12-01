@@ -1329,4 +1329,10 @@ class mel_metapage extends rcube_plugin
     exit;
   }
 
+  public static function events()
+  {
+      include_once 'program/eventSystem.php';
+      return mel_event_system::Instance();
+  }
+
 }

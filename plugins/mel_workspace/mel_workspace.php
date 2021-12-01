@@ -35,6 +35,7 @@ class mel_workspace extends rcube_plugin
     private $currentWorkspace;
     private $channel_enabled;
     private $folders = ["init", "lib"];
+    static private $listenersSet;
 
     /**
      * (non-PHPdoc)
@@ -77,6 +78,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('update_ulink', array($this, 'update_ulink'));
         $this->register_action('delete_ulink', array($this, 'delete_ulink'));
         $this->register_action('pin_ulink', array($this, 'pin_ulink'));
+        $this->register_action('update_edit_date', array($this, 'update_edit_date'));
         $this->include_script('js/epingle.js');
 
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
@@ -93,6 +95,8 @@ class mel_workspace extends rcube_plugin
             'type'       => 'link',
             'domain' => "mel_workspace"
         ), "taskbar");
+
+        $this->registerListeners();
     }
 
     /**
@@ -133,6 +137,32 @@ class mel_workspace extends rcube_plugin
         $this->register_action('toggle_nav_color', array($this, 'toggle_nav_color'));
         //stockage_user_updated
         //toggle_nav_color
+    }
+
+    function registerListeners()
+    {
+        if (self::$listenersSet !== true)
+        {
+            self::$listenersSet = true;
+            mel_metapage::events()->addEventListener("calendar.new_event", [$this, "on_new_event"]);
+        }
+    }
+
+    public function on_new_event($event)
+    {
+        if (!empty($event["categories"]) && isset($event["categories"]) && strpos($event["categories"], 'ws#') !== false)
+        {
+            $uid = str_replace('ws#', '', $event["categories"]);
+            try {
+                $wsp = self::get_workspace($uid);
+                
+                if ($wsp !== null) self::edit_modified_date($wsp);
+
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+
+        }
     }
 
     /**
@@ -2092,6 +2122,8 @@ class mel_workspace extends rcube_plugin
             {
                 mel_utils::cal_update_color($s->user, "ws#".$workspace->uid, $color);
             }
+
+            self::edit_modified_date($workspace);
             echo "";
         }
         else
@@ -2108,6 +2140,7 @@ class mel_workspace extends rcube_plugin
         {
             $isPublic = !$workspace->ispublic;
             $workspace->ispublic = $isPublic;
+            self::edit_modified_date($workspace, false);
             $workspace->save();
 
             try {
@@ -2136,6 +2169,7 @@ class mel_workspace extends rcube_plugin
         if (self::is_admin($workspace))
         {
             $workspace->logo = $logo;
+            self::edit_modified_date($workspace, false);
             $workspace->save();
             echo "";
         }
@@ -2186,6 +2220,7 @@ class mel_workspace extends rcube_plugin
             if (self::is_admin($workspace))
             {
                 $this->_add_users($workspace, $users);
+                self::edit_modified_date($workspace, false);
                 //save
                 $workspace->save();
                 //end
@@ -2344,6 +2379,7 @@ class mel_workspace extends rcube_plugin
                 }
 
                 $workspace->shares[$user]->rights = $new_right;
+                self::edit_modified_date($workspace, false);
                 $workspace->save();
 
                 $services = $this->get_worskpace_services($workspace);
@@ -2403,8 +2439,12 @@ class mel_workspace extends rcube_plugin
                     break;
                 }
             }
+
+            self::edit_modified_date($workspace, false);
+
             if ($user_find)
                 $workspace->save();
+
             echo "";
         }
         else
@@ -2575,6 +2615,7 @@ class mel_workspace extends rcube_plugin
                         break;
                 }
             }
+            self::edit_modified_date($workspace, false);
             $workspace->save();
         }
         else
@@ -2589,6 +2630,7 @@ class mel_workspace extends rcube_plugin
         if ($workspace->ispublic === 1)
         {
             $this->_add_users($workspace, [driver_mel::gi()->getUser()->uid]);
+            self::edit_modified_date($workspace, false);
             $workspace->save();
         }
         else
@@ -2622,6 +2664,7 @@ class mel_workspace extends rcube_plugin
         if (self::is_admin($workspace))
         {
             $workspace->isarchived = !$workspace->isarchived;
+            self::edit_modified_date($workspace, false);
             $workspace->save();
             echo "";
         }
@@ -2966,6 +3009,13 @@ class mel_workspace extends rcube_plugin
         mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func] Un erreur est survenue lors de la récupération $text l'espace de travail ''".$this->currentWorkspace->title."'' !");
         mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getTraceAsString());
         mel_logs::get_instance()->log(mel_logs::ERROR, "###[mel_workspace->$func]".$th->getMessage());
+    }
+
+    public static function edit_modified_date(&$workspace, $save = true, $date = null)
+    {
+        $workspace->modified = $date ?? new DateTime('now');
+
+        if ($save) $workspace->save();
     }
 
     public static function is_admin($workspace, $username = null)
@@ -3313,6 +3363,7 @@ class mel_workspace extends rcube_plugin
 
         $this->save_object($workspace, self::LINKS, $config);
 
+        self::edit_modified_date($workspace, false);
         $workspace->save();
 
         echo true;
@@ -3331,7 +3382,7 @@ class mel_workspace extends rcube_plugin
         unset($config->$id);
 
         $this->save_object($workspace, self::LINKS, $config);
-
+        self::edit_modified_date($workspace, false);
         $workspace->save();
     }
 
@@ -3348,7 +3399,7 @@ class mel_workspace extends rcube_plugin
         $config->$id = $link->serialize();
 
         $this->save_object($workspace, self::LINKS, $config);
-
+        self::edit_modified_date($workspace, false);
         $workspace->save();
 
         echo true;
@@ -3408,6 +3459,7 @@ class mel_workspace extends rcube_plugin
 
         $wsp = self::get_workspace($uid);
         $this->save_object($wsp, self::CHANNEL, $datas);
+        self::edit_modified_date($wsp, false);
         $wsp->save();
 
         echo json_encode($datas);
@@ -3476,6 +3528,7 @@ class mel_workspace extends rcube_plugin
         }
 
         $this->add_setting($workspace, self::STOCKAGE, $stockage);
+        self::edit_modified_date($workspace, false);
         $workspace->save();
     }
 
@@ -3493,12 +3546,14 @@ class mel_workspace extends rcube_plugin
         }
 
         $this->add_setting($workspace, self::STOCKAGE, $stockage);
+        self::edit_modified_date($workspace, false);
         $workspace->save();
     }
 
     function remove_stockage_settings(&$workspace)
     {
         $this->add_setting($workspace, self::STOCKAGE, null);
+        self::edit_modified_date($workspace, false);
         $workspace->save();
     }
 
@@ -3539,6 +3594,7 @@ class mel_workspace extends rcube_plugin
         if (self::is_admin($wsp))
         {
             $this->add_setting($wsp, "end_date", $new_date);
+            self::edit_modified_date($wsp, false);
             $wsp->save();
             echo true;
         }
@@ -3621,5 +3677,12 @@ class mel_workspace extends rcube_plugin
     
         return $args;
       }
+
+    function update_edit_date()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        echo self::edit_modified_date(self::get_workspace($uid));
+        exit;
+    }
 
 }

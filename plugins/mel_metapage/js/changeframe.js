@@ -26,7 +26,7 @@
                             //console.log("test");
                             try {
                                 //console.log("test", $(".wsp-toolbar-edited").css("display") !== "none");
-                                if (window.webconf_master_bar === undefined)
+                                if (true || window.webconf_master_bar === undefined)
                                 {
                                     $(".tiny-rocket-chat").css("display", "block");
                                     $(".tiny-wsp-menu").css("display", "none")
@@ -60,7 +60,7 @@
                     metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
                         if (metapage_frames.workspace === true && eClass === "workspace")
                         {
-                            if (window.webconf_master_bar === undefined)
+                            if (true || window.webconf_master_bar === undefined)
                             {
                                 $(".tiny-wsp-menu").css("display", "");
 
@@ -146,7 +146,7 @@ function UpdateMenu(_class, _picture, _toolbar)
     InitialiseDatas();
     if (rcmail.env.wsp_datas.toolbar.current === "inpage")
     {
-        if (window.webconf_master_bar === undefined)
+        if (true || window.webconf_master_bar === undefined)
         {
             let button = $(".tiny-rocket-chat");
             if (button.length > 0)
@@ -176,7 +176,7 @@ function UpdateMenu(_class, _picture, _toolbar)
         
     }
     else {
-        if (window.webconf_master_bar === undefined)
+        if (true || window.webconf_master_bar === undefined)
         {
             rcmail.env.wsp_datas.toolbar.current = _class;
             if (rcmail.env.wsp_datas.toolbar.exists === true)
@@ -184,6 +184,7 @@ function UpdateMenu(_class, _picture, _toolbar)
             const basePx = "50px";
             let right = basePx;
             let bottom = basePx;
+
             let button = $(".tiny-rocket-chat");
             if (button.length > 0)
             {
@@ -202,6 +203,7 @@ function UpdateMenu(_class, _picture, _toolbar)
             }
             //console.log("button", button, right, bottom);
             button = $(".tiny-wsp-menu");
+
             if (button.length === 0)
             {
                 let picture = $(".wsp-picture");
@@ -219,7 +221,6 @@ function UpdateMenu(_class, _picture, _toolbar)
             }
             button.css("display", "");
 
-            //console.log("ShowToolbar", $(".wsp-toolbar"));
             (_toolbar !== null && $(".wsp-toolbar-edited").length === 0 ? $("#layout").append(_toolbar).find(".wsp-toolbar-edited") : $(".wsp-toolbar-edited") )
             .css("margin", "initial")
             .css("position", "fixed")
@@ -263,6 +264,13 @@ function UpdateMenu(_class, _picture, _toolbar)
                 current: _class,
                 exists: true
             };
+
+            if (window.webconf_master_bar !== undefined)
+            {
+                window.webconf_master_bar.minify_toolbar();
+                $(".wsp-toolbar-edited").addClass("webconfstarted");
+            }
+
         }
         else
         {
@@ -681,6 +689,7 @@ async function ChangeFrame(_class, otherDatas = null)
     const id = mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
 
+    //Gestion de "l'encadrage"
     parent.$(".mwsp").each((i,e) => {
 
         let $style = (e.nodeName === 'IFRAME' ? e.contentWindow.$(".mwsp-style") : $(".mwsp-style"));
@@ -691,20 +700,24 @@ async function ChangeFrame(_class, otherDatas = null)
     if (_class !== "rocket")
     {
         let $querry = $(`iframe#${id}`);
+        //Si la frame n'existe pas
         if ($querry.length === 0) {
 
+            //On récupère le nom de la frame
             const $layout_thing = $("#layout-content").length > 0 ? $("#layout-content") : $("#layout-sidebar");
             const currentFrameClasse = Enumerable.from($layout_thing[0].classList).first(x => x.includes('-frame') && x !== 'mm-frame').replaceAll("-frame", '');
 
             $(`.${currentFrameClasse}-frame`).remove();
             rcmail.env.frame_created = false;
 
+            //On supprime et on ouvre une nouvelle frame
             return await ChangeFrame(mm_st_ClassContract(currentFrameClasse), otherDatas);
 
         }
         else
         {
             try {
+                //On ajoute les différents styles et classes
                 $querry.addClass("mwsp")[0].contentWindow.$("html").addClass("mwsp");
 
                 if (parent.$("html").hasClass("webconf-started"))
@@ -874,6 +887,9 @@ async function ChangeToolbarPage(_class)
     $(".wsp-toolbar").css("z-index", "");
     $(".wsp-object").css("display", "none");
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");
+
+    if (window.webconf_master_bar !== undefined)
+        window.webconf_master_bar.minify_toolbar();
     //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));
     switch (_class) {
         case "home":

@@ -992,6 +992,11 @@ html.layout-small .webconf-toolbar .wsp-toolbar-item
     transition: all 0.1s ease-in;
 }
 
+.wsp-toolbar.wsp-toolbar-edited.melw-wsp.webconfstarted {
+	max-width: calc(100% - 323px);
+	right: unset !important;
+}
+
 .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover
 {
     background-color: #484D7A;

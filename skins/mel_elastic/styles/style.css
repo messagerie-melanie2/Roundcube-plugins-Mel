@@ -2049,7 +2049,7 @@ iframe.discussion-frame.mwsp.moved{
 
 .mwsp.mwvcs
 {
-    padding-bottom: 0;
+    /* padding-bottom: 0; */
 }
 
 body.task-mail.action-none #layout-content {

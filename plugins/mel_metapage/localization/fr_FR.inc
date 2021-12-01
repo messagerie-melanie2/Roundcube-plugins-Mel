@@ -78,7 +78,7 @@ $labels["an_ariane_space"] = "un salon Ariane";
 $labels["enter"] = "Entrer";
 
 $labels["documents"] = "Documents";
-$labels["ariane"] = "Ariane";
+$labels["ariane"] = "Discussion";
 $labels["hangup"] = "Raccrocher";
 $labels["diffuse"] = "Partager";
 $labels["mosaik"] = "Mosaïque";

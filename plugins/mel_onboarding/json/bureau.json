@@ -72,7 +72,23 @@
             {
               "title": "Créer !",
               "element": "#button-create",
-              "intro": "",
+              "intro": "Vous permet de créer",
+              "button": "Démonstration",
+              "details": {
+                "steps": [
+                  {
+                    "title": "Mon espace de travail",
+                    "element": "#workspace",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Mes mails",
+                    "element": "#mail",
+                    "intro": ""
+                  }
+                ]
+              },
               "position": "bottom"
             },
             {

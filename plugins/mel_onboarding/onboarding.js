@@ -26,9 +26,9 @@ if (window.rcmail) {
       current_task += "/" + rcmail.env.action;
     }
     if (rcmail.env.help_page_onboarding[current_task]) {
-      if (!rcmail.env.onboarding) {
+      // if (!rcmail.env.onboarding) {
       rcmail.show_current_page_onboarding(current_task);
-      }
+      // }
     }
 
     $(document).ready(function () {
@@ -267,14 +267,7 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
               default:
                 break;
             }
-            let details = window.current_onboarding.stepper.items[item].details;
-            window.parent.introJs().setOptions({
-              nextLabel: details.nextLabel,
-              prevLabel: details.prevLabel,
-              steps: details.steps
-            }).onbeforeexit(function () {
-              $('#layout-menu').removeClass('force-open');
-            }).start();
+            intro_help(item);
           });
           $('#dimScreen > div.bloc.' + item).append(buttonDetails);
         }
@@ -374,3 +367,56 @@ rcube_webmail.prototype.onboarding_close = function () {
   }
   delete rcmail.env.hide_modal;
 };
+
+function intro_help(item) {
+  let intro = window.parent.introJs();
+  let details = window.current_onboarding.stepper.items[item].details;
+
+  intro.setOptions({
+    nextLabel: details.nextLabel,
+    prevLabel: details.prevLabel,
+    doneLabel: details.doneLabel,
+    steps: details.steps
+  });
+  intro.onbeforechange(function () {
+    if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
+      let buttonDetails = '<div class="text-center"><button class="btn btn-secondary btn-onboarding-close mt-4" id="' + item + '-details-open">' + this._introItems[this._currentStep].button + '</button></div>'
+
+      this._introItems[this._currentStep].intro += buttonDetails;
+      this._introItems[this._currentStep].passed = true;
+    }
+  });
+
+  intro.onafterchange(function () {
+    setTimeout(() => {
+      if (this._introItems[this._currentStep].passed) {
+        let currentStep = this._introItems[this._currentStep];
+        $('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_help_popup)
+      }
+    }, 500);
+  })
+  intro.onbeforeexit(function () {
+    $('#layout-menu').removeClass('force-open');
+  })
+  intro.start();
+}
+
+function intro_help_popup(event) {
+  //On ferme l'ancien introjs
+  event.data.intro.exit();
+
+  //On ouvre la popup "créer"
+  m_mp_Create();
+
+  setTimeout(() => {
+    let intro_details = window.parent.introJs();
+    intro_details.setOptions({
+      steps: Object.values(event.data.currentStep.details.steps)
+    });
+    intro_details.start()
+    intro_details.onexit(function () {
+      window.parent.create_popUp.close();
+      setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 200);
+    });
+  }, 500);
+}

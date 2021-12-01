@@ -11,7 +11,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 0.90);
     z-index: 1000;
     text-align: center;
     color: #fff;
@@ -139,4 +139,16 @@
 .onboarding-list {
   display: inline-block;
   text-align:left;
+}
+
+#dimScreen .details {
+  background-color: white;
+  color: #000;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.customTooltipIframe{
+  top: 20px !important;
+  left: 15px !important;
 }

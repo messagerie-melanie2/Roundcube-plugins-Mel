@@ -52,14 +52,14 @@ function m_mp_Create() {
       return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action);
     }
 
-    let workspace = `<li class="col-12" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + _button(actions.espace, false) + '</li>'
-    let mail = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + _button(actions.mail) + "</li>";
-    let reu = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + _button(actions.event) + "</li>";
-    let viso = `<li class="col-sd-4 col-md-4" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + _button(actions.visio) + "</li>";
-    let tache = `<li class="col-md-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + _button(actions.tache) + "</li>";
-    let document = `<li class="col-md-3" style="${haveNextcloud.style}" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
-    let blocnote = `<li class="col-md-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
-    let pega = `<li class="col-md-${haveNextcloud.col}" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
+    let workspace = `<li class="col-12" id="workspace" title="${rcmail.gettext("mel_metapage.menu_create_help_workspace")}">` + _button(actions.espace, false) + '</li>'
+    let mail = `<li class="col-sd-4 col-md-4" id="mail" title="${rcmail.gettext("mel_metapage.menu_create_help_email")}">` + _button(actions.mail) + "</li>";
+    let reu = `<li class="col-sd-4 col-md-4" id="reu" title="${rcmail.gettext("mel_metapage.menu_create_help_event")}">` + _button(actions.event) + "</li>";
+    let viso = `<li class="col-sd-4 col-md-4" id="viso" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + _button(actions.visio) + "</li>";
+    let tache = `<li class="col-md-${haveNextcloud.col}" id="tache" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + _button(actions.tache) + "</li>";
+    let document = `<li class="col-md-3" style="${haveNextcloud.style}" id="document" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
+    let blocnote = `<li class="col-md-${haveNextcloud.col}"  id="blocnote" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
+    let pega = `<li class="col-md-${haveNextcloud.col}" id="pega" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
     html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
     let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
     create_popUp = new GlobalModal("globalModal", config, !isSmall);

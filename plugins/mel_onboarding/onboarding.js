@@ -26,9 +26,9 @@ if (window.rcmail) {
       current_task += "/" + rcmail.env.action;
     }
     if (rcmail.env.help_page_onboarding[current_task]) {
-      // if (!rcmail.env.onboarding) {
+      if (!rcmail.env.onboarding) {
       rcmail.show_current_page_onboarding(current_task);
-      // }
+      }
     }
 
     $(document).ready(function () {

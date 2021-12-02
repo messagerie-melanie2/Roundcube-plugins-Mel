@@ -260,9 +260,9 @@ class mtes_driver_mel extends mce_driver_mel {
     $dossier = str_replace('/', '^', $folder);
 
     if (isset($dossier)) {
-      $nom = $rep . '/' . $mbox . '^' . $dossier;
-    } else{
-      $nom = $rep . '/' . $mbox;
+      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
+    } else {
+      $nom = $rep . '/' . $_user->uid;
     }
 
     $fic = fopen($nom, 'w');

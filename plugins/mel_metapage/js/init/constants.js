@@ -3,7 +3,19 @@
  * @param {number} ms 
  */
 const delay = ms => new Promise(res => setTimeout(res, ms));
+
+/**
+ * Vérifie si une fonction est asynchrone
+ * @param {Function} myFunction 
+ * @returns {boolean}
+ */
 const isAsync = myFunction => myFunction.constructor.name === "AsyncFunction";
+
+/**
+ * Attend que la fonction soit vrai
+ * @param {Function} func 
+ * @param {number} waitTime ms 
+ */
 const wait = async function (func, waitTime = 500)
 {
     while ((isAsync(func) ? await func() : func()))
@@ -11,6 +23,7 @@ const wait = async function (func, waitTime = 500)
         await delay(waitTime);
     }
 }
+
 const ping = async function(url, useSSL = true)
 {
 
@@ -48,6 +61,7 @@ const ping = async function(url, useSSL = true)
     }
     return ok;
 }
+
 const mceToRcId = function (txt = "")
 {
     return txt.replaceAll(".", '_-P-_').replaceAll("@", "'_-A-_'").replaceAll("%", '_-C-_');
@@ -56,6 +70,7 @@ const mceToRcId = function (txt = "")
  * Lien du chargement des évènements d'un calendrier.
  */
 const ev_calendar_url = '?_task=calendar&_action=load_events';
+
 /**
  * Liste des différents données constantes utile pour le plugin "mel_metapage".
  */
@@ -76,6 +91,9 @@ const mel_metapage = {
          * Lorsque les mails sont mis à jours.
          */
         mails_updated: new EventListenerDatas("mel_metapage.mails_updated"),
+        /**
+         * Lorsque le stockage est mis à jours.
+         */
         wsp_stockage_updated: new EventListenerDatas("mel_metapage.wsp_stockage_updated")
     },
     /**
@@ -87,7 +105,7 @@ const mel_metapage = {
          * Récupère une donnée depuis le stockage local.
          * @param {string} key Clé de la donnée à récupérer.
          */
-        get:function(key) {
+        get(key) {
             try {
                 return JSON.parse(window.localStorage.getItem(key));
             } catch (error) {
@@ -99,7 +117,7 @@ const mel_metapage = {
          * @param {string} key Clé de la donnée pour la retrouver. 
          * @param {*} item Donnée à sauvegarder.
          */
-        set:function(key, item, stringify = true)
+        set(key, item, stringify = true)
         {
             window.localStorage.setItem(key, stringify ? JSON.stringify(item) : item);
         },
@@ -107,7 +125,7 @@ const mel_metapage = {
          * Supprime une donnée dans le stockage local.
          * @param {string} key Clé de la donnée à supprimer.
          */
-        remove: function (key){
+        remove(key){
             window.localStorage.removeItem(key);
         },
         check(storage = null)
@@ -268,6 +286,10 @@ const mel_metapage = {
         }
     },
     Functions:{
+        /**
+         * Copie un texte dans le press-papier
+         * @param {string} text Texte à copier
+         */
         copy(text)
         {
             function copyOnClick (val) {
@@ -277,17 +299,20 @@ const mel_metapage = {
                  tempInput.select (); 
                  document.execCommand ("copy"); 
                  document.body.removeChild (tempInput); 
-                 }
-                 copyOnClick(text);
-                 rcmail.display_message(`${text} copier dans le presse-papier.`, "confirmation");
+            }
+
+            copyOnClick(text);
+            rcmail.display_message(`${text} copier dans le presse-papier.`, "confirmation");
+
+            return this;
         },
 
         /**
-         * 
+         * Récupère les données du calendrier entre deux dates.
          * @param {moment} start (moment) Début des évènements à récupérer
          * @param {moment} end (moment) Fin des évènements à récupérer
          */
-        update_calendar: function (start, end){
+        update_calendar(start, end){
             start = start.format("YYYY-MM-DDTHH:mm:ss");
             end = end.format("YYYY-MM-DDTHH:mm:ss");
             
@@ -317,7 +342,14 @@ const mel_metapage = {
          });
         },
 
-        check_if_calendar_valid:function(element, events, test=true)
+        /**
+         * Vérifie si un élement est valide ou si c'est un doublon ou une instance originale
+         * @param {JSON} element 
+         * @param {Array<JSON>} events 
+         * @param {boolean} test 
+         * @returns {boolean|JSON} True si pas de problème | Evènement problématique
+         */
+        check_if_calendar_valid(element, events, test=true)
         {
             if (mceToRcId(rcmail.env.username) !== element.calendar)
                 return false;
@@ -334,6 +366,13 @@ const mel_metapage = {
             return true;
         },
 
+        /**
+         * Vérifie si une date se trouve entre 2 dates
+         * @param {string|moment} sd 
+         * @param {string|moment} ed 
+         * @param {string|moment} date 
+         * @returns {boolean}  
+         */
         check_if_date_is_okay(sd, ed, date)
         {
             if (typeof sd === "string")
@@ -347,9 +386,7 @@ const mel_metapage = {
 
             startDate = moment(date).startOf("day");
             endDate = moment(date).endOf("day");
-            //  console.log("event sd", sd.format(), "event ed",ed.format(), "date", date.format(), "sd", startDate.format(), "ed", endDate.format());
-            //  console.log(startDate <= sd && sd <= endDate, startDate <= sd, sd <= endDate)
-            //  console.log(startDate <= ed && ed <= endDate, startDate <= ed , ed <= endDate)
+
             if (startDate <= sd && sd <= endDate)
                 return true;
             else if (startDate <= ed && ed <= endDate)
@@ -368,7 +405,7 @@ const mel_metapage = {
          * @param {JSON} args divers arguments ex {_eventType:1}
          * @returns {string}
          */
-        url: function (task, action = "", args = null)
+        url(task, action = "", args = null)
         {
             let url = task;
             if (action !== null && action !== undefined && action !== "")
@@ -404,7 +441,7 @@ const mel_metapage = {
          * @param {boolean} waiting Si l'on veux attendre que la frame sois ouverte ou non.
          * @param {JSON} args Arguments à ajouter dans l'url de la frame.
          */
-        change_frame: async function(frame, changepage = true, waiting = false, args = null, actions = [])
+        async change_frame(frame, changepage = true, waiting = false, args = null, actions = [])
         {
             if (frame === "webconf")
             {
@@ -430,27 +467,29 @@ const mel_metapage = {
             {
                 if (initial_change_page)
                 {
-                    //console.log("here !!!!!!!!!!!!!!");
-                    //mel_metapage.Functions.call(`mm_st_OpenOrCreateFrame('webconf', true, JSON.parse('${JSON.stringify(args)}'))`);
                     mel_metapage.Functions.call('display_webconf', false,{
                         _integrated:true
                     });
-                    // workspaces.sync.PostToParent({
-                    //     exec:"$('#layout-frames').css('display', '');$('.mm-frame').css('display', 'none');$('.webconf-frame').css('display', '')",
-                    //     child:false
-                    // });
                 }
             }
             
+            return this;
         },
 
-        update_frame:function (frame)
+        /**
+         * F5 une frame
+         * @param {string} frame Classe de la frame à refresh
+         * @returns Chaînage
+         */
+        update_frame(frame)
         {
-            mel_metapage.Functions.call("reload_frame", false, {
+            this.call("reload_frame", false, {
                 _integrated:true,
                 always:true,
                 args:[`${frame}-frame`]
             });
+
+            return this;
         },
 
         /**
@@ -458,9 +497,10 @@ const mel_metapage = {
          * @param {boolean} wait Si l'on doit attendre le changement de frame ou non.
          * @param {string} default_frame Frame par défaut si il n'y a pas de frame d'avant. Si null, ne fait rien dans ce cas.
          */
-        frame_back:async function(wait = true, default_frame = null)
+        async frame_back(wait = true, default_frame = null)
         {
             let last = await this.ask("rcmail.env.last_frame_class");
+            
             if (last === null || last === undefined || last === mel_metapage.Storage.unexist)
             {
                 if (default_frame !== null)
@@ -468,7 +508,8 @@ const mel_metapage = {
                 else
                     return;
             }
-            await this.change_frame(last, true, wait);
+
+            return (await this.change_frame(last, true, wait));
         },
 
         /**
@@ -477,7 +518,7 @@ const mel_metapage = {
          * @param {string} child Exécuter aussi dans les fenetres filles ?
          * @param  {JSON} args Autres arguments (eval etc....)
          */
-        call:function(exec, child = false, args = {})
+        call(exec, child = false, args = {})
         {
             if (typeof exec !== "string")
             {
@@ -492,6 +533,7 @@ const mel_metapage = {
                 else
                     exec = tmp_exec;
             }
+
             let config = {
                 exec:exec,
                 child:child
@@ -511,7 +553,9 @@ const mel_metapage = {
                 workspaces.sync.PostToParent(config);    
             else {
                 parent.postMessage(config);
-            }      
+            }     
+            
+            return this;
         },
 
         /**
@@ -520,25 +564,32 @@ const mel_metapage = {
          * @param {boolean} child Exécuter aussi dans les fenetres filles ?
          * @param {JSON} args Autres arguments (eval etc....)
          */
-        callAsync:async function(exec, child = false, args = {})
+        async callAsync(exec, child = false, args = {})
         {
             mel_metapage.Storage.set(mel_metapage.Storage.wait_call_loading, mel_metapage.Storage.wait_frame_waiting);
             this.call(exec, child, args);
             await wait(() => {
                 return mel_metapage.Storage.get(mel_metapage.Storage.wait_call_loading) === mel_metapage.Storage.wait_frame_waiting;
             });
+
+            return this;
         },
 
         /**
          * Modifie l'url du navigateur
          * @param {string} url URL à afficher 
          */
-        title:function (url)
+        title(url)
         {
             mel_metapage.Functions.call(`window.history.replaceState({}, document.title, '${url}')`);
+            return this;
         },
 
-        busy:function (busy = true)
+        /**
+         * Met (ou pas) la frame en cours et parente en loading.
+         * @param {boolean} busy 
+         */
+        busy(busy = true)
         {
             const framed = window !== parent;
             mel_metapage.Storage.set("mel.busy", busy);
@@ -557,9 +608,15 @@ const mel_metapage = {
                 }
             }
 
+            return this;
+
         },
 
-        is_busy:function ()
+        /**
+         * Vérifie si l'application est occupée.
+         * @returns {boolean}
+         */
+        is_busy()
         {
             const framed = window !== parent && rcmail.busy != undefined;
             if (framed)
@@ -579,7 +636,7 @@ const mel_metapage = {
          * @param {string} props Variable à récupérer
          * @returns {Promise<any>} Valeur de la variable
          */
-        ask:async function(props)
+        async ask(props)
         {
             this.call(`mel_metapage.Storage.set("mel.ask", ${props})`);
             await wait(() => mel_metapage.Storage.get("mel.ask") === null);
@@ -588,7 +645,12 @@ const mel_metapage = {
             return props;
         },
 
-        webconf_url: function(url)
+        /**
+         * 
+         * @param {string} url 
+         * @returns 
+         */
+        webconf_url(url)
         {
             let val = url.toUpperCase();
             
@@ -610,7 +672,7 @@ const mel_metapage = {
          * @param {string} type 
          * @returns {Promise<any>} Appel ajax
          */
-        ajax:function(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)}, type = "POST")
+        ajax(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)}, type = "POST")
         {
             let config = { // fonction permettant de faire de l'ajax
                 type: type, // methode de transmission des données au fichier php
@@ -632,7 +694,7 @@ const mel_metapage = {
          * @param {function} failed
          * @returns {Promise<any>}
          */
-        get:function(url, datas = {}, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
+        get(url, datas = {}, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
         {
             for (const key in datas) {
                 if (Object.hasOwnProperty.call(datas, key)) {
@@ -650,7 +712,7 @@ const mel_metapage = {
          * @param {function} success 
          * @param {function} failed 
          */
-        post:function(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
+        post(url, datas = mel_metapage.Symbols.null, success = (datas) => {}, failed = (xhr, ajaxOptions, thrownError) => {console.error(xhr, ajaxOptions, thrownError)})
         {
             return this.ajax(url, datas, success, failed);
         },
@@ -658,13 +720,14 @@ const mel_metapage = {
         /**
          * Contient différents fonctions pour mettre à jours certaines données.
          */
-        update :{
+        update:{
             /**
              * Met à jours le calendrier.
              */
-            calendar:function ()
+            calendar()
             {
                 mel_metapage.Functions.call("rcmail.mel_metapage_fn.calendar_updated();");
+                return this;
             }
         },
 
@@ -675,7 +738,7 @@ const mel_metapage = {
          * @param {string} type Type d'évènement
          * @returns {boolean}
          */
-        handlerExist:function (element, handler, type = "click")
+        handlerExist(element, handler, type = "click")
         {
             if (element.val !== undefined)
                 element = element[0];
@@ -711,7 +774,13 @@ const mel_metapage = {
             }
         },
 
-        searchOnMail: async function(itemToSearch, fields, openFrame = false)
+        /**
+         * Recherche dans les mails
+         * @param {string} itemToSearch Objet à chercher
+         * @param {Array<string>} fields Champs
+         * @param {boolean} openFrame Ouvrir ou non la frame
+         */
+        async searchOnMail(itemToSearch, fields, openFrame = false)
         {
             if (parent === window)
             {
@@ -730,9 +799,11 @@ const mel_metapage = {
             }
             else    
                 mel_metapage.Functions.call(`mel_metapage.Functions.searchOnMail('${itemToSearch}', ${JSON.stringify(fields)}, ${openFrame})`);
+            
+            return this;
         },
 
-        doActionFrame:function (frame, doAction, ...functionArgs)
+        doActionFrame(frame, doAction, ...functionArgs)
         {
             //console.log("[doActionFrame]",frame, doAction, parent !== window);
             if (parent !== window)
@@ -748,18 +819,7 @@ const mel_metapage = {
                 if (typeof doAction === "string")
                 {
                     doAction = new Function(`return (${doAction})(...arguments)`);
-                    // for (let index = 0; index < functionArgs.length; ++index) {
-                      
-                    //     try {
-                    //         const parsedItem = JSON.parse(functionArgs[index]);
-                    //         functionArgs[index] = parsedItem;
-                    //     } catch (error) {
-                            
-                    //     }
-                    // }
                 }
-
-                ///console.log("here",doAction, functionArgs);
 
                 //Personne ouvert
                 if ($(`.${frame}-frame`).length === 0)
@@ -770,6 +830,8 @@ const mel_metapage = {
                     doAction(2, ...functionArgs);
 
             }
+
+            return this;
         },
 
         update_refresh_thing()
@@ -785,6 +847,8 @@ const mel_metapage = {
                     current.removeClass("disabled").removeAttr("disabled");
                     break;
             }
+
+            return this;
         },
 
         /**
@@ -818,8 +882,7 @@ const mel_metapage = {
 
             parent.$("iframe.stockage-frame")[0].contentWindow.rcmail.env.nextcloud_gotourl = url;
 
-            // if (parent.$("iframe.stockage-frame")[0].contentWindow.$("#mel_nextcloud_frame")[0].contentWindow.location.href !== url)
-            //     parent.$("iframe.stockage-frame")[0].contentWindow.$("#mel_nextcloud_frame")[0].src = url;
+            return this;
         }
 
 
@@ -827,16 +890,6 @@ const mel_metapage = {
 
     }
 }; 
+
 window.mel_metapage = mel_metapage;
 
-// if (mel_metapage.RCMAIL_Start !== undefined)
-// {
-//     rcmail.addEventListener("init", () => {
-//         for (const key in mel_metapage.RCMAIL_Start) {
-//             if (Object.hasOwnProperty.call(mel_metapage.RCMAIL_Start, key)) {
-//                 const element = mel_metapage.RCMAIL_Start[key];
-//                 element();
-//             }
-//         }
-//     });
-// }

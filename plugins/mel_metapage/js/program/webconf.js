@@ -665,6 +665,9 @@ class MasterWebconfBar {
     
         }
 
+        if ($(".workspace-frame").length > 0 && $("iframe.workspace-frame").length === 0)
+            $(".workspace-frame").remove();
+
         this.start();
     }
 

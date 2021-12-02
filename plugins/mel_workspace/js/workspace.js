@@ -3,6 +3,9 @@ $(document).ready(async () => {
     WSPReady();
 });
 
+/**
+ * @async Fonction appelé lorsque la page de l'espace à fini son chargement.
+ */
 async function WSPReady()
 {
     const uid = rcmail.env.current_workspace_uid;
@@ -17,8 +20,15 @@ async function WSPReady()
     await end;
 }
 
+/**
+ * Appelé par WSPReady, il s'agit de la première action, on fait ici les actions légères.
+ * @param {string} uid Id de l'espace de travail
+ * @param {boolean} hasAriane Si l'espace possède une discussion ou non.
+ * @param {*} datas Diverses données
+ */
 function Start(uid, hasAriane, datas) {
 
+    //Gérer la barre de navigation
     const style = rcmail.env.current_bar_colors;
     let $html = $("html");
 
@@ -27,6 +37,7 @@ function Start(uid, hasAriane, datas) {
 
     if (!$html.hasClass("mwsp")) $html.addClass("mwsp");
 
+    //Afficher/cacher la barre de navigation
     $(".wsp-toolbar-melw-wsp-hider").click(() => {
         const down = 'icon-mel-chevron-down';
         const up = 'icon-mel-chevron-up';
@@ -61,6 +72,7 @@ function Start(uid, hasAriane, datas) {
     
     if (style !== undefined && style !== null && style !== '') if (!parent.$("body").hasClass("task-workspace")) parent.$("body").prepend(`<div class="mwsp-style">${style}</div>`);
 
+    //Gérer la barre de navigation avec ariane
     if (parent.wsp_cf_d !== true)
     {
         try {
@@ -105,15 +117,33 @@ function Start(uid, hasAriane, datas) {
     rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {
         _uid:uid
     }).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
-
+    //A faire si webconf
     if (parent.webconf_master_bar !== undefined)
+    {
         parent.webconf_master_bar.minify_toolbar();
 
+        if (!$("html").hasClass("framed"))
+            $(".wsp-toolbar.melw-wsp").addClass('webconfstarted');
+
+    }
+        
+    //Stockage local
     mel_metapage.Storage.set("current_wsp", rcmail.env.current_workspace_uid)
     mel_metapage.Storage.set("current_wsp_mail", rcmail.env.current_workspace_email)
 
+    rcmail.triggerEvent("mel_workspace.start", {
+        uid,
+        hasAriane, 
+        datas
+    });
 }
 
+/**
+ * Appelé par WSPReady, on fait les actions après le Start, les actions sont légère ou moyenement légères.
+ * @param {string} uid Id de l'espace de travail
+ * @param {boolean} hasAriane Si l'espace possède une discussion ou non.
+ * @param {*} datas Diverses données
+ */
 function Middle(uid, hasAriane, datas) {
 
     SetCalendarDate();
@@ -168,8 +198,20 @@ function Middle(uid, hasAriane, datas) {
 
     if ($("#createthings").length > 0)
         $("#createthings").removeClass("active");
+
+    rcmail.triggerEvent("mel_workspace.middle", {
+        uid,
+        hasAriane, 
+        datas
+    });
 }
 
+/**
+ * Appelé par WSPReady, actions que l'on fait en dernier, ce sont des actions plutôt lourdes ou asynchônes
+ * @param {string} uid Id de l'espace de travail
+ * @param {boolean} hasAriane Si l'espace possède une discussion ou non.
+ * @param {*} datas Diverses données
+ */
 async function End(uid, hasAriane, datas) {
     let promises = [
         InitLinks()

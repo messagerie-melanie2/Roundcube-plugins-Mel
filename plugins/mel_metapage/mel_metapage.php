@@ -142,7 +142,7 @@ class mel_metapage extends rcube_plugin
         else
         {
             $this->include_script('js/init/classes.js');
-            $this->include_script('js/init/constants.js');
+            $this->include_script('js/init/constants.min.js');
         }
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
@@ -290,7 +290,8 @@ class mel_metapage extends rcube_plugin
         $this->get__init_js_from_folder("updates");
         $this->get__init_js_from_folder("classes");
         $this->include_script('js/init/classes.js');
-        $this->include_script('js/init/constants.js');
+        $this->include_script('js/init/constants.min.js');
+        $this->include_script('js/init/mel_metapage.js');
         $this->include_script('js/init/events.js');
         $this->include_script('js/init/commands.js');
         $this->load_config_js();

@@ -750,6 +750,9 @@ function rcube_libcalendaring(settings)
         buttons.push({
             text: rcmail.gettext('close'),
             click: function() {
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
+
                 $(this).dialog('close');
             },
             'class': 'cancel'

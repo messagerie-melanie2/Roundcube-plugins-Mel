@@ -768,13 +768,17 @@ function rcube_libcalendaring(settings)
               }, 5);
             },
             close: function() {
-              $('#alarm-snooze-dropdown').hide();
+              // PAMELA - Problème de snooze sur un rappel
+              // $('#alarm-snooze-dropdown').hide();
+              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
               $(this).dialog('destroy').remove();
               me.alarm_dialog = null;
               me.alarm_ids = null;
             },
             drag: function(event, ui) {
-              $('#alarm-snooze-dropdown').hide();
+              // PAMELA - Problème de snooze sur un rappel
+              // $('#alarm-snooze-dropdown').hide();
+              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
             }
         });
 
@@ -852,7 +856,8 @@ function rcube_libcalendaring(settings)
      */
     this.dismiss_alarm = function(id, snooze, event)
     {
-        rcmail.command('menu-close', 'alarm-snooze-dropdown', null, event);
+        // PAMELA - Problème de snooze sur un rappel
+        rcmail.command('menu-close', 'alarm-snooze-dropdown', this.dismiss_link, event);
         rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:snooze } });
 
         // remove dismissed alarm from list

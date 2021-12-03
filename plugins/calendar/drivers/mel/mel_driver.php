@@ -1743,7 +1743,7 @@ class mel_driver extends calendar_driver {
 
               // Gérer l'alarme des occurrences
               // Traiter le lastack
-              if (isset($next_event['x_moz_lastack']) && $next_event["alarm_dismissed"]) {
+              if (isset($next_event['x_moz_lastack']) && is_bool($next_event["alarm_dismissed"]) && $next_event["alarm_dismissed"]) {
                 $next_event["alarm_dismissed"] = ($next_event['start']->getTimestamp() - $next_event['x_alarm_minutes'] * 60) < strtotime($next_event['x_moz_lastack']);
               }
 
@@ -2010,23 +2010,23 @@ class mel_driver extends calendar_driver {
 
     //alarms
     if (isset($_event['alarms'])) {
-      // Cas ou le lastack n'est pas enregistré pour l'occurrence mais dans l'event parent
-      if ($isexception && !isset($_event['x_moz_lastack'])) {
-        $_event['x_moz_lastack'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+      // Cas ou le snooze n'est pas enregistré dans l'occurrence mais dans l'event parent
+      if ($isexception && !isset($_event['x_moz_snooze_time'])) {
+        $_event['x_moz_snooze_time'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
       }
 
-      // Traiter le lastack
-      if (isset($_event['x_moz_lastack'])) {
-        $_event["alarm_dismissed"] = ($_event['start']->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
+      if (isset($_event['x_moz_snooze_time']) && strtotime($_event['x_moz_snooze_time']) > time()) {
+        $_event["alarm_dismissed"] = strtotime($_event['x_moz_snooze_time']);
       }
       else {
-        // Cas ou le snooze n'est pas enregistré dans l'occurrence mais dans l'event parent
-        if ($isexception && !isset($_event['x_moz_snooze_time'])) {
-          $_event['x_moz_snooze_time'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
+        // Cas ou le lastack n'est pas enregistré pour l'occurrence mais dans l'event parent
+        if ($isexception && !isset($_event['x_moz_lastack'])) {
+          $_event['x_moz_lastack'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
         }
 
-        if (isset($_event['x_moz_snooze_time'])) {
-          $_event["alarm_dismissed"] = strtotime($_event['x_moz_snooze_time']);
+        // Traiter le lastack
+        if (isset($_event['x_moz_lastack'])) {
+          $_event["alarm_dismissed"] = ($_event['start']->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
         }
       }
     }

@@ -394,7 +394,7 @@ function intro_help(item) {
 function intro_help_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
-  let hide_popup = false;
+  rcmail.env.hide_popup = false;
 
   //On déclenche l'évènement spécifique a l'item
   switch (event.data.currentStep.popup) {
@@ -411,7 +411,7 @@ function intro_help_popup(event) {
       setTimeout(() => {
         window.parent.$("#user-up-panel").focus().popover('show');
         window.parent.$("#user-up-panel").on('hide.bs.popover', (e) => {
-          if (!hide_popup) {
+          if (!rcmail.env.hide_popup) {
             e.preventDefault();
           }
         })
@@ -453,24 +453,34 @@ function intro_help_info_popup(event, intro_details) {
   });
   intro_details.start()
   intro_details.onexit(function () {
+
     switch (event.data.currentStep.popup) {
       case "Create":
         window.parent.create_popUp.close();
+        goToNextIntroStep(event);
+
         break;
       case "Help":
         window.parent.help_popUp.close();
+        goToNextIntroStep(event);
         break;
       case "Shortcut":
         window.parent.$('.fullscreen-close').trigger("click");
+        goToNextIntroStep(event);
+
         break;
       case "User":
-        hide_popup = true;
+        rcmail.env.hide_popup = true;
         window.parent.$("#user-up-panel").focus().popover('hide');
-        intro.exit();
         break;
       default:
         break;
     }
-    setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 200);
+
   });
+}
+
+function goToNextIntroStep(event) {
+  setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 50);
+
 }

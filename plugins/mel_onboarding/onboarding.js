@@ -30,12 +30,6 @@ if (window.rcmail) {
         rcmail.show_current_page_onboarding(current_task);
       }
     }
-
-    $(document).ready(function () {
-      $('#navigation-onboarding-details').on('click', function () {
-        console.log("bonsoir");
-      })
-    });
   });
 }
 
@@ -387,7 +381,7 @@ function intro_help(item) {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let currentStep = this._introItems[this._currentStep];
-        $('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_help_popup)
+        window.parent.$('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_help_popup)
       }
     }, 500);
   })
@@ -401,21 +395,23 @@ function intro_help_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
   let hide_popup = false;
+
   //On déclenche l'évènement spécifique a l'item
   switch (event.data.currentStep.popup) {
     case "Create":
-      m_mp_Create();
+      console.log("create");
+      window.parent.m_mp_Create();
       break;
     case "Help":
-      m_mp_Help()
+      window.parent.m_mp_Help()
       break;
     case "Shortcut":
-      m_mp_shortcuts()
+      window.parent.m_mp_shortcuts()
       break;
     case "User":
       setTimeout(() => {
         window.parent.$("#user-up-panel").focus().popover('show');
-        $("#user-up-panel").on('hide.bs.popover', (e) => {
+        window.parent.$("#user-up-panel").on('hide.bs.popover', (e) => {
           if (!hide_popup) {
             e.preventDefault();
           }
@@ -431,7 +427,7 @@ function intro_help_popup(event) {
     let intro_details;
     switch (event.data.currentStep.popup) {
       case "Help":
-        intro_details = document.getElementById("helppageframe").contentWindow.introJs();
+        intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
         break;
       default:
         intro_details = window.parent.introJs();
@@ -456,12 +452,12 @@ function intro_help_popup(event) {
           window.parent.help_popUp.close();
           break;
         case "Shortcut":
-          $('.fullscreen-close').trigger("click");
+          window.parent.$('.fullscreen-close').trigger("click");
           break;
         case "User":
           hide_popup = true;
           window.parent.$("#user-up-panel").focus().popover('hide');
-          // intro_details.exit();
+          intro.exit();
           break;
         default:
           break;

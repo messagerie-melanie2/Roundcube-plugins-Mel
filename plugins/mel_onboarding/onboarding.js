@@ -400,6 +400,8 @@ function intro_help(item) {
 function intro_help_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
+  let hide_popup = false;
+  //On déclenche l'évènement spécifique a l'item
   switch (event.data.currentStep.popup) {
     case "Create":
       m_mp_Create();
@@ -409,6 +411,17 @@ function intro_help_popup(event) {
       break;
     case "Shortcut":
       m_mp_shortcuts()
+      break;
+    case "User":
+      setTimeout(() => {
+        window.parent.$("#user-up-panel").focus().popover('show');
+        $("#user-up-panel").on('hide.bs.popover', (e) => {
+          if (!hide_popup) {
+            e.preventDefault();
+          }
+        })
+      }, 100);
+
       break;
     default:
       break;
@@ -443,9 +456,12 @@ function intro_help_popup(event) {
           window.parent.help_popUp.close();
           break;
         case "Shortcut":
-          // this.close();
-          $('.fullscreen-close').trigger( "click" );
-
+          $('.fullscreen-close').trigger("click");
+          break;
+        case "User":
+          hide_popup = true;
+          window.parent.$("#user-up-panel").focus().popover('hide');
+          // intro_details.exit();
           break;
         default:
           break;

@@ -74,7 +74,7 @@
               "element": "#button-create",
               "intro": "Vous permet de créer",
               "popup": "Create",
-              "button": "Démonstration",
+              "button": "Démo",
               "details": {
                 "nextLabel": "Suivant",
                 "prevLabel": "Précédent",
@@ -102,7 +102,7 @@
               "intro": "",
               "position": "bottom",
               "popup": "Help",
-              "button": "Démonstration",
+              "button": "Démo",
               "details": {
                 "nextLabel": "Suivant",
                 "prevLabel": "Précédent",
@@ -145,7 +145,7 @@
               "title": "Mes raccourcis!",
               "element": "#button-shortcut",
               "popup": "Shortcut",
-              "button": "Démonstration",
+              "button": "Démo",
               "details": {
                 "tooltipClass": "index-maj",
                 "nextLabel": "Suivant",
@@ -153,13 +153,13 @@
                 "doneLabel": "Fermer",
                 "steps": [
                   {
-                    "title": "Mon espace de travail",
+                    "title": "Mes tâches",
                     "element": ".shortcut-task",
                     "intro": "",
                     "position": "bottom"
                   },
                   {
-                    "title": "Mes mails",
+                    "title": "mes évènements",
                     "element": ".shortcut-task.shorcut-calendar",
                     "intro": "",
                     "position": "right"
@@ -178,6 +178,45 @@
             {
               "title": "Mon compte!",
               "element": "div#barup-user.col-3.user",
+              "popup": "User",
+              "button": "Démo",
+              "details": {
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
+                  {
+                    "title": "Rafraîchir",
+                    "element": ".refresh.refresh-current-thing",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "Cacher",
+                    "element": ".settings.toggleChatCommand ",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "Mes options",
+                    "element": ".settings.my_account ",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "options",
+                    "element": ".settings.avatar ",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "options",
+                    "element": ".logout.logout-color ",
+                    "intro": "",
+                    "position": "left"
+                  }
+                ]
+              },
               "intro": "",
               "position": "bottom"
             }

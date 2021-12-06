@@ -27,7 +27,7 @@ if (window.rcmail) {
     }
     if (rcmail.env.help_page_onboarding[current_task]) {
       if (!rcmail.env.onboarding) {
-      rcmail.show_current_page_onboarding(current_task);
+        rcmail.show_current_page_onboarding(current_task);
       }
     }
 
@@ -260,12 +260,8 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
         if (!$('#' + item + '-details').length) {
           let buttonDetails = $('<button class="mel-button btn btn-secondary btn-onboarding-close float-right" id="' + item + '-details">' + window.current_onboarding.stepper.items[item].button + '</button>');
           buttonDetails.click(function () {
-            switch (item) {
-              case "navigation":
-                $('#layout-menu').addClass('force-open');
-                break;
-              default:
-                break;
+            if (item === "navigation") {
+              $('#layout-menu').addClass('force-open');
             }
             intro_help(item);
           });
@@ -404,18 +400,56 @@ function intro_help(item) {
 function intro_help_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
-
-  //On ouvre la popup "créer"
-  m_mp_Create();
+  switch (event.data.currentStep.popup) {
+    case "Create":
+      m_mp_Create();
+      break;
+    case "Help":
+      m_mp_Help()
+      break;
+    case "Shortcut":
+      m_mp_shortcuts()
+      break;
+    default:
+      break;
+  }
 
   setTimeout(() => {
-    let intro_details = window.parent.introJs();
+    let intro_details;
+    switch (event.data.currentStep.popup) {
+      case "Help":
+        intro_details = document.getElementById("helppageframe").contentWindow.introJs();
+        break;
+      default:
+        intro_details = window.parent.introJs();
+        break;
+    }
+
+    let details = event.data.currentStep.details
     intro_details.setOptions({
-      steps: Object.values(event.data.currentStep.details.steps)
+      tooltipClass: details.tooltipClass,
+      nextLabel: details.nextLabel,
+      prevLabel: details.prevLabel,
+      doneLabel: details.doneLabel,
+      steps: Object.values(details.steps)
     });
     intro_details.start()
     intro_details.onexit(function () {
-      window.parent.create_popUp.close();
+      switch (event.data.currentStep.popup) {
+        case "Create":
+          window.parent.create_popUp.close();
+          break;
+        case "Help":
+          window.parent.help_popUp.close();
+          break;
+        case "Shortcut":
+          // this.close();
+          $('.fullscreen-close').trigger( "click" );
+
+          break;
+        default:
+          break;
+      }
       setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 200);
     });
   }, 500);

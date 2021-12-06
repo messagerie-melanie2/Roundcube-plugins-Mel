@@ -73,19 +73,24 @@
               "title": "Créer !",
               "element": "#button-create",
               "intro": "Vous permet de créer",
+              "popup": "Create",
               "button": "Démonstration",
               "details": {
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
                 "steps": [
                   {
                     "title": "Mon espace de travail",
-                    "element": "#workspace",
+                    "element": "#workspace button",
                     "intro": "",
                     "position": "bottom"
                   },
                   {
                     "title": "Mes mails",
-                    "element": "#mail",
-                    "intro": ""
+                    "element": "#mail button",
+                    "intro": "",
+                    "position": "right"
                   }
                 ]
               },
@@ -95,11 +100,72 @@
               "title": "Aide!",
               "element": "#button-help",
               "intro": "",
-              "position": "bottom"
+              "position": "bottom",
+              "popup": "Help",
+              "button": "Démonstration",
+              "details": {
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
+                  {
+                    "title": "Barre de recherche",
+                    "element": "#help-search",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Aide générale",
+                    "element": ".helppage.general a",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Aide page courante",
+                    "element": ".helppage.current a",
+                    "intro": "Permet d'ouvrir l'onboarding.",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Proposer une amélioration",
+                    "element": ".helppage.suggestion a",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Ici s'affiche toutes les actualités",
+                    "element": "#helpnews",
+                    "intro": "",
+                    "position": "bottom"
+                  }
+                ]
+              }
             },
             {
               "title": "Mes raccourcis!",
               "element": "#button-shortcut",
+              "popup": "Shortcut",
+              "button": "Démonstration",
+              "details": {
+                "tooltipClass": "index-maj",
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
+                  {
+                    "title": "Mon espace de travail",
+                    "element": ".shortcut-task",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Mes mails",
+                    "element": ".shortcut-task.shorcut-calendar",
+                    "intro": "",
+                    "position": "right"
+                  }
+                ]
+              },
               "intro": "",
               "position": "bottom"
             },

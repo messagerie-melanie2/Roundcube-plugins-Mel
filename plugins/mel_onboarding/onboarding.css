@@ -152,3 +152,10 @@
   top: 20px !important;
   left: 15px !important;
 }
+
+#helppageframe {
+  border-radius: 10px;
+}
+.index-maj {
+  z-index: 99999999999999 !important;
+}

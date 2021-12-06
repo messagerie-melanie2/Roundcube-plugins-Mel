@@ -422,48 +422,55 @@ function intro_help_popup(event) {
       break;
   }
 
-  $( document ).ready(function() {
-    setTimeout(function () {
-      let intro_details;
-      switch (event.data.currentStep.popup) {
-        case "Help":
-          intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
-          break;
-        default:
-          intro_details = window.parent.introJs();
-          break;
-      }
 
-      let details = event.data.currentStep.details
-      intro_details.setOptions({
-        tooltipClass: details.tooltipClass,
-        nextLabel: details.nextLabel,
-        prevLabel: details.prevLabel,
-        doneLabel: details.doneLabel,
-        steps: Object.values(details.steps)
-      });
-      intro_details.start()
-      intro_details.onexit(function () {
-        switch (event.data.currentStep.popup) {
-          case "Create":
-            window.parent.create_popUp.close();
-            break;
-          case "Help":
-            window.parent.help_popUp.close();
-            break;
-          case "Shortcut":
-            window.parent.$('.fullscreen-close').trigger("click");
-            break;
-          case "User":
-            hide_popup = true;
-            window.parent.$("#user-up-panel").focus().popover('hide');
-            intro.exit();
-            break;
-          default:
-            break;
-        }
-        setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 200);
-      });
-    }, 500);
+  let intro_details;
+  switch (event.data.currentStep.popup) {
+    case "Help":
+      window.parent.document.getElementById("helppageframe").onload = function () {
+        intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
+        intro_help_info_popup(event, intro_details);
+      }
+      break;
+    default:
+      intro_details = window.parent.introJs();
+      setTimeout(function () {
+        intro_help_info_popup(event, intro_details);
+      }, 400);
+      break;
+  }
+
+}
+
+function intro_help_info_popup(event, intro_details) {
+
+  let details = event.data.currentStep.details
+  intro_details.setOptions({
+    tooltipClass: details.tooltipClass,
+    nextLabel: details.nextLabel,
+    prevLabel: details.prevLabel,
+    doneLabel: details.doneLabel,
+    steps: Object.values(details.steps)
+  });
+  intro_details.start()
+  intro_details.onexit(function () {
+    switch (event.data.currentStep.popup) {
+      case "Create":
+        window.parent.create_popUp.close();
+        break;
+      case "Help":
+        window.parent.help_popUp.close();
+        break;
+      case "Shortcut":
+        window.parent.$('.fullscreen-close').trigger("click");
+        break;
+      case "User":
+        hide_popup = true;
+        window.parent.$("#user-up-panel").focus().popover('hide');
+        intro.exit();
+        break;
+      default:
+        break;
+    }
+    setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 200);
   });
 }

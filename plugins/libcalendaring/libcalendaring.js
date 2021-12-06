@@ -708,7 +708,31 @@ function rcube_libcalendaring(settings)
             type = alarm.id.match(/^task/) ? 'type-task' : 'type-event';
 
             html = '<h3 class="event-title ' + type + '">' + Q(alarm.title) + '</h3>';
-            html += '<div class="event-section">' + Q(alarm.location || '') + '</div>';
+
+            // PAMELA - Générer le lien vers la webconf
+            if (alarm.location.includes("@visio") || alarm.location.includes("#visio") || alarm.location.includes(rcmail.env["webconf.base_url"]))
+			{
+				let link;
+				if (alarm.location.includes("@visio")) {
+                    link = `target="_blank" href="${alarm.location.replace("@visio:", "")}"`;
+                }
+				else if (alarm.location.includes("#visio")) {
+					let tmp_link = new WebconfLink(alarm.location);
+					link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+				}
+				else {
+					const categoryExist = alarm.categories !== undefined && alarm.categories !== null && alarm.categories.length > 0;
+					const isWsp = categoryExist && alarm.categories[0].includes("ws#");
+					const ariane = isWsp ? "null" : "'@home'";
+					const wsp = isWsp ? `'${alarm.categories[0].replace("ws#", "")}'` : "null";
+					link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(alarm.location)}', ${wsp}, ${ariane})"`;
+				}
+                html += '<div class="event-section"><a title="' + rcmail.gettext('openwebconf_title','libcalendaring') + '" ' + link + '>' + rcmail.gettext('openwebconf','libcalendaring') + '</a></div>';
+			}
+            else {
+                html += '<div class="event-section">' + Q(alarm.location || '') + '</div>';
+            }
+            
             html += '<div class="event-section">' + Q(this.event_date_text(alarm)) + '</div>';
 
             adismiss = $('<a href="#" class="alarm-action-dismiss"></a>')

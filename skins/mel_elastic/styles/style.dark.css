@@ -69,10 +69,19 @@ html.dark-mode .menu a.logout-color:not(.disabled):hover {
 	color:black!important;
 }
 
+html.dark-mode .tiny-rocket-chat
+{
+    background-color: #2E2E2E;
+	color: #E1C58F;
+	border: solid #E1C58F thin;
+
+}
+
+html.dark-mode #rcmloginsubmit,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel,
 html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button,
 html.dark-mode ul#mailboxlist ul li.mailbox.selected a,
-html.dark-mode .tiny-rocket-chat,
+html.dark-mode .barup .tiny-rocket-chat,
 html.dark-mode .my_favorites,
 html.dark-mode .mel-button {
 	background-color: transparent;
@@ -103,6 +112,7 @@ html.dark-mode ul#mailboxlist ul li.selected
     background-color: transparent;
 }
 
+html.dark-mode #rcmloginsubmit:hover,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:hover,
 html.dark-mode option:hover,
 html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover,
@@ -125,6 +135,7 @@ html.dark-mode .my_favorites:hover
     border-color: #2E2E2E!important;
 }
 
+html.dark-mode #rcmloginsubmit.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:active,
 html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:active,
 html.dark-mode .tiny-rocket-chat:active,
@@ -199,6 +210,7 @@ html.dark-mode .mel-not-link
     color:#c7dfff
 }
 
+html.dark-mode .listing tbody td,
 html.dark-mode #annuaire-list,
 html.dark-mode #annuaire-list .folder > .description,
 html.dark-mode .gestion-options,
@@ -211,7 +223,8 @@ html.dark-mode .messagelist span.attachment span::before,
 html.dark-mode div#layout-sidebar,
 html.dark-mode #layout-sidebar > .header,
 html.dark-mode .menu.toolbar a,
-.task-calendar .fc .fc-center h2
+html.dark-mode .task-calendar .fc .fc-center h2,
+html.dark-mode #formlogintable
 {
     color:#c7dfff!important; 
 }
@@ -233,7 +246,8 @@ html.dark-mode .tablinks{
 }
 
 html.dark-mode #layout > div > .header,
-html.dark-mode div#layout-sidebar
+html.dark-mode div#layout-sidebar,
+html.dark-mode .messagelist .unread
 {
     background-color: #323F4B !important
 }
@@ -241,7 +255,8 @@ html.dark-mode div#layout-sidebar
 html.dark-mode .wsp-block,
 html.dark-mode .square_div > .contents,
 html.dark-mode .tablinks.selected,
-html.dark-mode .tabs-contents
+html.dark-mode .tabs-contents,
+html.dark-mode .card.clear
 {
     background-color: #323F4B;
 }
@@ -490,6 +505,7 @@ html.dark-mode .card
 {
 
 } */
+
 
 /******** Modales ********/
 html.dark-mode .modal-content

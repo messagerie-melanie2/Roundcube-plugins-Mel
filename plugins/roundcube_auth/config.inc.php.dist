@@ -1,0 +1,34 @@
+<?php
+
+$config = array();
+
+// --------------- AUTH Methods --------------
+
+// OIDC only (?oidc=1 triggers OIDC auth)
+$config['oidc_auth_standalone'] = true;
+
+// OIDC + Kerberos (Kerberos triggers OIDC auth, after LDAP check)
+$config['oidc_auth_kerberos'] = true;
+
+// --------------- Provider ------------------
+
+// OIDC Provider URL
+$config['oidc_url'] = 'OIDC_PROVIDER_URL';
+
+// Proxy (url:port) to reach OIDC Provider
+$config['oidc_proxy'] = '';
+
+// Client ID (registered on the provider)
+$config['oidc_client'] = 'OIDC_CLIENT_ID';
+
+// Client secret (corresponding to the given client ID)
+$config['oidc_secret'] = 'OIDC_CLIENT_SECRET';
+
+// OIDC scopes ('openid' is automatically added, it should not be needed here)
+$config['oidc_scope'] = 'uid';
+
+// -------------- User Fields -----------------
+
+// Field used as a login UID (email, uid, ...)
+$config['oidc_field_uid'] = 'uid';
+$config['oidc_field_eidas'] = 'acr';

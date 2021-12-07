@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="62px"
+   height="34px"
+   viewBox="0 0 62 34"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="Chevron_down_dark.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs13" />
+  <sodipodi:namedview
+     id="namedview11"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="20.629032"
+     inkscape:cx="31"
+     inkscape:cy="16.990618"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9" />
+  <title
+     id="title2">Atoms / Icons / Chevron_down</title>
+  <g
+     id="STYLEGUIDE"
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd"
+     style="fill:#e1c58f;fill-opacity:1">
+    <g
+       id="Styleguide"
+       transform="translate(-78.000000, -841.000000)"
+       fill="#363A5B"
+       style="fill:#e1c58f;fill-opacity:1">
+      <g
+         id="Path"
+         transform="translate(56.000000, 808.000000)"
+         style="fill:#e1c58f;fill-opacity:1">
+        <polygon
+           transform="translate(52.999700, 49.999700) rotate(-360.000000) translate(-52.999700, -49.999700) "
+           points="52.9994 66.156 55.5932 63.9372 83.5932 39.9372 78.4057 33.8434 52.9997 55.6244 27.5937 33.8434 22.4062 39.9372 50.4062 63.9372"
+           id="polygon4"
+           style="fill:#e1c58f;fill-opacity:1" />
+      </g>
+    </g>
+  </g>
+  <metadata
+     id="metadata866">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Atoms / Icons / Chevron_down</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

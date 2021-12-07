@@ -28,7 +28,7 @@
 
 #headlines_fi_block
 {
-  color:#ffffffff;
+  /* color:#ffffffff; */
   margin-top: 41px;
 }
 
@@ -41,7 +41,7 @@
 #headlines_fi_contents
 {
   /* background-color:#FC945A;*/
-  color: initial; 
+  /* color: initial;  */
 }
 .tablinks
 {

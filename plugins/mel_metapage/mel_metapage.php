@@ -291,7 +291,6 @@ class mel_metapage extends rcube_plugin
         $this->get__init_js_from_folder("classes");
         $this->include_script('js/init/classes.js');
         $this->include_script('js/init/constants.min.js');
-        $this->include_script('js/init/mel_metapage.js');
         $this->include_script('js/init/events.js');
         $this->include_script('js/init/commands.js');
         $this->load_config_js();

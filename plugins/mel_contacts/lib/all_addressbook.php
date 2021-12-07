@@ -91,7 +91,7 @@ class all_addressbook extends rcube_addressbook
      * @param  int    Only return this number of records, use negative values for tail
      * @return array  Indexed list of contact records, each a hash array
      */
-    function list_records($cols=null, $subset=0) {
+    function list_records($cols=null, $subset=0, $nocount=false) {
         if (isset($this->result)) return $this->result;
 
         $result = new rcube_result_set();

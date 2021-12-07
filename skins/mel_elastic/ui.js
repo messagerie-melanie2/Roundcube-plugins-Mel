@@ -515,9 +515,15 @@ $(document).ready(() => {
                         let querry = $("#mel-message-details .mel-d-icon");
 
                         if (querry.hasClass(minus))
+                        {
                             querry.removeClass(minus).addClass(plus);
+                            $(".message-partheaders").hide();
+                        }
                         else
+                        {
                             querry.removeClass(plus).addClass(minus);
+                            $(".message-partheaders").show();
+                        }
                     })
                 }
             }
@@ -726,6 +732,25 @@ $(document).ready(() => {
             }
 
             return this;
+        }
+
+        /**
+         * Switch de thème (sombre/light)
+         * @returns {Mel_Elastic} Chaînage
+         */
+        switch_color()
+        {
+            rcmail.triggerEvent("switch_color_theme");
+            return this;
+        }
+
+        /**
+         * Retourne le thème en cours
+         * @returns {string} dark/light
+         */
+        color_mode()
+        {
+            return $('html').hasClass("dark-mode") ? "dark" : "light";
         }
 
         ////////////************* Other functions *************///////////

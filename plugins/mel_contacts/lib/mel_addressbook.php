@@ -110,7 +110,7 @@ class mel_addressbook extends rcube_addressbook
      * @param  int    Only return this number of records, use negative values for tail
      * @return array  Indexed list of contact records, each a hash array
      */
-    function list_records($cols=null, $subset=0) {
+    function list_records($cols=null, $subset=0, $nocount=false) {
         if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "mel_addressbook::list_records($cols, $subset)");
         if (isset($this->result)) return $this->result;
 

@@ -250,7 +250,7 @@ class annuaire extends rcube_plugin
                     $this,
                     'annuaire_frame'
                 ),
-                'directorylist' => 'rcmail_directory_list'
+                //'directorylist' => 'rcmail_directory_list'
             ));
 
             $this->rc->output->include_script('list.js');

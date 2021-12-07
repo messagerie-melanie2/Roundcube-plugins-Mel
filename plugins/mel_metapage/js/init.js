@@ -165,7 +165,11 @@ if (rcmail)
                 url: '?_task=tasks&_action=fetch&filter=0&_remote=1&_unlock=true&_=1613118450180',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
                     try {
-                        data=JSON.parse(data).callbacks[0][1].data;
+                        try {
+                            data=JSON.parse(data).callbacks[0][1].data;
+                        } catch (error) {
+                            data = data.callbacks[0][1].data;
+                        }
                         let datas_to_save = [];
                         let other_datas = {};
                         let other_datas_count = {};
@@ -202,7 +206,7 @@ if (rcmail)
                         mel_metapage.Storage.set(mel_metapage.Storage.last_task_update, moment().startOf('day'))
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
                     } catch (ex) {
-                        console.error(ex);
+                        console.error(ex, data);
                         rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                     }
                 },

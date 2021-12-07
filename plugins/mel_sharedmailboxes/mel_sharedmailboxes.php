@@ -57,6 +57,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         $this->rc = rcmail::get_instance();
         $this->require_plugin('mel_logs');
         $this->require_plugin('mel');
+        $this->require_plugin('mel_helper');
         $this->mel = $this->rc->plugins->get_plugin('mel');
 
         // Hooks
@@ -987,7 +988,8 @@ class mel_sharedmailboxes extends rcube_plugin {
                         // if ($folder == 'INBOX' || $folder == 'Corbeille' || $folder == driver_mel::gi()->getBalpLabel()) {
                         //     continue;
                         // }
-                        $this->rc->build_folder_tree($folders, $folder, $delimiter);
+                        //$this->rc->build_folder_tree($folders, $folder, $delimiter);
+                        mel_helper::build_folder_tree($folders, $folder, $delimiter);
                     }
 
                     $a_mailboxes[$_object->uid] = [ 

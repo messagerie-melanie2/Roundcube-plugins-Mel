@@ -27,15 +27,9 @@ if (window.rcmail) {
     }
     if (rcmail.env.help_page_onboarding[current_task]) {
       if (!rcmail.env.onboarding) {
-      rcmail.show_current_page_onboarding(current_task);
+        rcmail.show_current_page_onboarding(current_task);
       }
     }
-
-    $(document).ready(function () {
-      $('#navigation-onboarding-details').on('click', function () {
-        console.log("bonsoir");
-      })
-    });
   });
 }
 
@@ -260,12 +254,8 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
         if (!$('#' + item + '-details').length) {
           let buttonDetails = $('<button class="mel-button btn btn-secondary btn-onboarding-close float-right" id="' + item + '-details">' + window.current_onboarding.stepper.items[item].button + '</button>');
           buttonDetails.click(function () {
-            switch (item) {
-              case "navigation":
-                $('#layout-menu').addClass('force-open');
-                break;
-              default:
-                break;
+            if (item === "navigation") {
+              $('#layout-menu').addClass('force-open');
             }
             intro_help(item);
           });
@@ -391,7 +381,7 @@ function intro_help(item) {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let currentStep = this._introItems[this._currentStep];
-        $('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_help_popup)
+        window.parent.$('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_help_popup)
       }
     }, 500);
   })
@@ -404,19 +394,93 @@ function intro_help(item) {
 function intro_help_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
+  rcmail.env.hide_popup = false;
 
-  //On ouvre la popup "créer"
-  m_mp_Create();
+  //On déclenche l'évènement spécifique a l'item
+  switch (event.data.currentStep.popup) {
+    case "Create":
+      window.parent.m_mp_Create();
+      break;
+    case "Help":
+      window.parent.m_mp_Help()
+      break;
+    case "Shortcut":
+      window.parent.m_mp_shortcuts()
+      break;
+    case "User":
+      setTimeout(() => {
+        window.parent.$("#user-up-panel").focus().popover('show');
+        window.parent.$("#user-up-panel").on('hide.bs.popover', (e) => {
+          if (!rcmail.env.hide_popup) {
+            e.preventDefault();
+          }
+        })
+      }, 100);
 
-  setTimeout(() => {
-    let intro_details = window.parent.introJs();
-    intro_details.setOptions({
-      steps: Object.values(event.data.currentStep.details.steps)
-    });
-    intro_details.start()
-    intro_details.onexit(function () {
-      window.parent.create_popUp.close();
-      setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 200);
-    });
-  }, 500);
+      break;
+    default:
+      break;
+  }
+
+
+  let intro_details;
+  switch (event.data.currentStep.popup) {
+    case "Help":
+      window.parent.document.getElementById("helppageframe").onload = function () {
+        intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
+        intro_help_info_popup(event, intro_details);
+      }
+      break;
+    default:
+      intro_details = window.parent.introJs();
+      setTimeout(function () {
+        intro_help_info_popup(event, intro_details);
+      }, 400);
+      break;
+  }
+
+}
+
+function intro_help_info_popup(event, intro_details) {
+
+  let details = event.data.currentStep.details
+  intro_details.setOptions({
+    tooltipClass: details.tooltipClass,
+    nextLabel: details.nextLabel,
+    prevLabel: details.prevLabel,
+    doneLabel: details.doneLabel,
+    steps: Object.values(details.steps)
+  });
+  intro_details.start()
+  intro_details.onexit(function () {
+
+    switch (event.data.currentStep.popup) {
+      case "Create":
+        window.parent.create_popUp.close();
+        goToNextIntroStep(event);
+
+        break;
+      case "Help":
+        window.parent.help_popUp.close();
+        goToNextIntroStep(event);
+        break;
+      case "Shortcut":
+        window.parent.$('.fullscreen-close').trigger("click");
+        goToNextIntroStep(event);
+
+        break;
+      case "User":
+        rcmail.env.hide_popup = true;
+        window.parent.$("#user-up-panel").focus().popover('hide');
+        break;
+      default:
+        break;
+    }
+
+  });
+}
+
+function goToNextIntroStep(event) {
+  setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 50);
+
 }

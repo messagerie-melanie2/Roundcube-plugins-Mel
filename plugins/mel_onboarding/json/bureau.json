@@ -73,19 +73,24 @@
               "title": "Créer !",
               "element": "#button-create",
               "intro": "Vous permet de créer",
-              "button": "Démonstration",
+              "popup": "Create",
+              "button": "Démo",
               "details": {
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
                 "steps": [
                   {
                     "title": "Mon espace de travail",
-                    "element": "#workspace",
+                    "element": "#workspace button",
                     "intro": "",
                     "position": "bottom"
                   },
                   {
                     "title": "Mes mails",
-                    "element": "#mail",
-                    "intro": ""
+                    "element": "#mail button",
+                    "intro": "",
+                    "position": "right"
                   }
                 ]
               },
@@ -95,11 +100,72 @@
               "title": "Aide!",
               "element": "#button-help",
               "intro": "",
-              "position": "bottom"
+              "position": "bottom",
+              "popup": "Help",
+              "button": "Démo",
+              "details": {
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
+                  {
+                    "title": "Barre de recherche",
+                    "element": "#help-search",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Aide générale",
+                    "element": ".helppage.general a",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Aide page courante",
+                    "element": ".helppage.current a",
+                    "intro": "Permet d'ouvrir l'onboarding.",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Proposer une amélioration",
+                    "element": ".helppage.suggestion a",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "Ici s'affiche toutes les actualités",
+                    "element": "#helpnews",
+                    "intro": "",
+                    "position": "bottom"
+                  }
+                ]
+              }
             },
             {
               "title": "Mes raccourcis!",
               "element": "#button-shortcut",
+              "popup": "Shortcut",
+              "button": "Démo",
+              "details": {
+                "tooltipClass": "index-maj",
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
+                  {
+                    "title": "Mes tâches",
+                    "element": ".shortcut-task",
+                    "intro": "",
+                    "position": "bottom"
+                  },
+                  {
+                    "title": "mes évènements",
+                    "element": ".shortcut-task.shorcut-calendar",
+                    "intro": "",
+                    "position": "right"
+                  }
+                ]
+              },
               "intro": "",
               "position": "bottom"
             },
@@ -112,6 +178,45 @@
             {
               "title": "Mon compte!",
               "element": "div#barup-user.col-3.user",
+              "popup": "User",
+              "button": "Démo",
+              "details": {
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
+                  {
+                    "title": "Rafraîchir",
+                    "element": ".refresh.refresh-current-thing",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "Cacher",
+                    "element": ".settings.toggleChatCommand ",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "Mes options",
+                    "element": ".settings.my_account ",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "options",
+                    "element": ".settings.avatar ",
+                    "intro": "",
+                    "position": "left"
+                  },
+                  {
+                    "title": "options",
+                    "element": ".logout.logout-color ",
+                    "intro": "",
+                    "position": "left"
+                  }
+                ]
+              },
               "intro": "",
               "position": "bottom"
             }

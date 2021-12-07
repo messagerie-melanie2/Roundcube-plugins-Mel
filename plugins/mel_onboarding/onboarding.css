@@ -152,3 +152,7 @@
   top: 20px !important;
   left: 15px !important;
 }
+
+#helppageframe {
+  border-radius: 10px;
+}

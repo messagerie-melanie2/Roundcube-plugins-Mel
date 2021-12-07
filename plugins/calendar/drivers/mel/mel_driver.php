@@ -1740,6 +1740,13 @@ class mel_driver extends calendar_driver {
               }
               // Ajout de la date de l'occurrence pour la récupérer lors des modifications
               $next_event['id'] .= "@DATE-" . strtotime($next_event['start']->format('Y-m-d H:i:s'));
+
+              // Gérer l'alarme des occurrences
+              // Traiter le lastack
+              if (isset($next_event['x_moz_lastack']) && is_bool($next_event["alarm_dismissed"]) && $next_event["alarm_dismissed"]) {
+                $next_event["alarm_dismissed"] = ($next_event['start']->getTimestamp() - $next_event['x_alarm_minutes'] * 60) < strtotime($next_event['x_moz_lastack']);
+              }
+
               $_events[] = $next_event;
             }
             // Ajoute les exceptions
@@ -1807,8 +1814,13 @@ class mel_driver extends calendar_driver {
    * Convert sql record into a rcube style event object
    *
    * @param LibMelanie\Api\Defaut\Event $event
+   * @param boolean $freebusy
+   * @param boolean $isexception
+   * @param LibMelanie\Api\Defaut\Event $eventParent
+   * 
+   * @return array Event
    */
-  private function _read_postprocess($event, $freebusy = false, $isexception = false) {
+  private function _read_postprocess($event, $freebusy = false, $isexception = false, $eventParent = null) {
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::_read_postprocess()");
     $_event = array();
@@ -1916,11 +1928,13 @@ class mel_driver extends calendar_driver {
 
           $modifier = 1;
 
+          $_event['x_alarm_minutes'] = $event->alarm;
+          $_event['x_moz_lastack'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+          $_event['x_moz_snooze_time'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);;
+
           if ($event->alarm > 0) {
             $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
             //$_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
-            $_event['x_moz_lastack'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
-            $_event['x_moz_snooze_time'] = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);;
           }
           else {
             $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
@@ -1995,15 +2009,25 @@ class mel_driver extends calendar_driver {
     }
 
     //alarms
-    if (isset($_event['alarms']))
-    {
-      $lastStack = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
-      if (isset($lastStack))
-        $_event["alarm_dismissed"] = $_event["recurrence"] !== null &&  $_event["recurrence"] !== "" ? time() > strtotime($lastStack) : isset($lastStack);
-      else
-      {
-        $snooze = $event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
-        $_event["alarm_dismissed"] = strtotime($snooze);    
+    if (isset($_event['alarms'])) {
+      // Cas ou le snooze n'est pas enregistré dans l'occurrence mais dans l'event parent
+      if ($isexception && !isset($_event['x_moz_snooze_time'])) {
+        $_event['x_moz_snooze_time'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
+      }
+
+      if (isset($_event['x_moz_snooze_time']) && strtotime($_event['x_moz_snooze_time']) > time()) {
+        $_event["alarm_dismissed"] = strtotime($_event['x_moz_snooze_time']);
+      }
+      else {
+        // Cas ou le lastack n'est pas enregistré pour l'occurrence mais dans l'event parent
+        if ($isexception && !isset($_event['x_moz_lastack'])) {
+          $_event['x_moz_lastack'] = $eventParent->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
+        }
+
+        // Traiter le lastack
+        if (isset($_event['x_moz_lastack'])) {
+          $_event["alarm_dismissed"] = ($_event['start']->getTimestamp() - $_event['x_alarm_minutes'] * 60) < strtotime($_event['x_moz_lastack']);
+        }
       }
     }
 
@@ -2033,7 +2057,7 @@ class mel_driver extends calendar_driver {
       else {
         // Génération de l'exception pour Roundcube
         // Ce tableau est ensuite dépilé pour être intégré a la liste des évènements
-        $e = $this->_read_postprocess($_exception, null, true);
+        $e = $this->_read_postprocess($_exception, null, true, $event);
         $e['id'] = $_exception->uid . '@DATE-' . strtotime($_exception->recurrence_id);
         $e['recurrence_id'] = $_exception->uid;
         $e['recurrence'] = $recurrence;
@@ -2193,7 +2217,7 @@ class mel_driver extends calendar_driver {
               }
             }
             if ($snooze != 0) {              
-              $time = time() + $snooze * 60;
+              $time = time() + $snooze;
               $event->setAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME, gmdate('Ymd', $time) . 'T' . gmdate('His', $time) . 'Z');
             }
             else {

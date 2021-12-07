@@ -708,7 +708,31 @@ function rcube_libcalendaring(settings)
             type = alarm.id.match(/^task/) ? 'type-task' : 'type-event';
 
             html = '<h3 class="event-title ' + type + '">' + Q(alarm.title) + '</h3>';
-            html += '<div class="event-section">' + Q(alarm.location || '') + '</div>';
+
+            // PAMELA - Générer le lien vers la webconf
+            if (alarm.location.includes("@visio") || alarm.location.includes("#visio") || alarm.location.includes(rcmail.env["webconf.base_url"]))
+			{
+				let link;
+				if (alarm.location.includes("@visio")) {
+                    link = `target="_blank" href="${alarm.location.replace("@visio:", "")}"`;
+                }
+				else if (alarm.location.includes("#visio")) {
+					let tmp_link = new WebconfLink(alarm.location);
+					link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+				}
+				else {
+					const categoryExist = alarm.categories !== undefined && alarm.categories !== null && alarm.categories.length > 0;
+					const isWsp = categoryExist && alarm.categories[0].includes("ws#");
+					const ariane = isWsp ? "null" : "'@home'";
+					const wsp = isWsp ? `'${alarm.categories[0].replace("ws#", "")}'` : "null";
+					link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(alarm.location)}', ${wsp}, ${ariane})"`;
+				}
+                html += '<div class="event-section"><a title="' + rcmail.gettext('openwebconf_title','libcalendaring') + '" ' + link + '>' + rcmail.gettext('openwebconf','libcalendaring') + '</a></div>';
+			}
+            else {
+                html += '<div class="event-section">' + Q(alarm.location || '') + '</div>';
+            }
+            
             html += '<div class="event-section">' + Q(this.event_date_text(alarm)) + '</div>';
 
             adismiss = $('<a href="#" class="alarm-action-dismiss"></a>')
@@ -727,6 +751,9 @@ function rcube_libcalendaring(settings)
 
             actions = $('<div>').addClass('alarm-actions').append(adismiss.data('id', alarm.id)).append(asnooze.data('id', alarm.id));
             records.push($('<div>').addClass('alarm-item').html(html).append(actions));
+
+            // PAMELA - Display alarm notification
+            this.notification_alarm(Q(alarm.title), Q(this.event_date_text(alarm)), 'calendar');
         }
 
         if (audio_alarms.length)
@@ -750,6 +777,9 @@ function rcube_libcalendaring(settings)
         buttons.push({
             text: rcmail.gettext('close'),
             click: function() {
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
+
                 $(this).dialog('close');
             },
             'class': 'cancel'
@@ -768,19 +798,58 @@ function rcube_libcalendaring(settings)
               }, 5);
             },
             close: function() {
-              $('#alarm-snooze-dropdown').hide();
+              // PAMELA - Problème de snooze sur un rappel
+              // $('#alarm-snooze-dropdown').hide();
+              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
               $(this).dialog('destroy').remove();
               me.alarm_dialog = null;
               me.alarm_ids = null;
             },
             drag: function(event, ui) {
-              $('#alarm-snooze-dropdown').hide();
+              // PAMELA - Problème de snooze sur un rappel
+              // $('#alarm-snooze-dropdown').hide();
+              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
             }
         });
 
         this.alarm_dialog.closest('div[role=dialog]').attr('role', 'alertdialog');
 
         this.alarm_ids = event_ids;
+    };
+
+    /**
+     * PAMELA
+     * Show alarm desktop notification if enable
+     */
+    this.notification_alarm = function(title, body, icon, disabled_callback)
+    {
+        var timeout = rcmail.env.newmail_notifier_timeout || 10,
+        icon = rcmail.assets_path('plugins/newmail_notifier/' + icon + '.png'),
+        success_callback = function() {
+            var popup = new window.Notification(title, {
+                dir: "auto",
+                lang: "",
+                body: body,
+                tag: "alarm_notifier",
+                icon: icon
+            });
+            popup.onclick = function() { this.close(); };
+            setTimeout(function() { popup.close(); }, timeout * 1000);
+        };
+
+        try {
+            window.Notification.requestPermission(function(perm) {
+                if (perm == 'granted')
+                    success_callback();
+                else if (perm == 'denied' && disabled_callback)
+                    disabled_callback();
+            });
+
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
     };
 
     /**
@@ -852,7 +921,8 @@ function rcube_libcalendaring(settings)
      */
     this.dismiss_alarm = function(id, snooze, event)
     {
-        rcmail.command('menu-close', 'alarm-snooze-dropdown', null, event);
+        // PAMELA - Problème de snooze sur un rappel
+        rcmail.command('menu-close', 'alarm-snooze-dropdown', this.dismiss_link, event);
         rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:snooze } });
 
         // remove dismissed alarm from list

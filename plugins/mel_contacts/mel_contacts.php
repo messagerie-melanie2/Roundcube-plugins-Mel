@@ -241,7 +241,13 @@ class mel_contacts extends rcube_plugin {
     if ($args['name'] != 'autocomplete_addressbooks') {
       return $args;
     }
-    $sources = array('amande');
+    if (is_array($args['result']) && count($args['result'])) {
+      $sources = $args['result'];
+    }
+    else {
+      // Default sources
+      $sources = array('amande');
+    }
     try {
       // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
       if (!isset($this->user)) {

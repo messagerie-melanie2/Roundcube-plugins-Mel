@@ -777,7 +777,7 @@ class mel_workspace extends rcube_plugin
 
             $style = "<style>
             .wsp-toolbar.melw-wsp{
-                background-color:$hex;
+                background-color:$hex!important;
             }
 
             .wsp-toolbar v_separate
@@ -808,13 +808,19 @@ class mel_workspace extends rcube_plugin
 
             .btn.btn-block.wsp-toolbar-melw-wsp-hider
             {
-                background-color: $hex;
+                background-color: $hex!important;
                 border-color: $lighter;
             }
 
             .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover
             {
-                background-color: $darker;
+                background-color: $darker!important;
+            }
+
+            
+            html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover
+            {
+                background-color: $darker!important;
             }
 
             html.mwsp, #layout-content.mwsp, iframe.discussion-frame.mwsp

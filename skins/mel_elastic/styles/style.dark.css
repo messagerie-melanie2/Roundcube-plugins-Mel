@@ -175,6 +175,35 @@ html.dark-mode .mel-button:active {
 html.dark-mode .barup > .wrapper > .user #user-welcome{
     color:#c7dfff!important;
 }
+/******** Navigation des espaces *********/
+/*#4d6066*/
+html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider,
+html.dark-mode .wsp-toolbar.melw-wsp
+{
+    background-color: #323F4B;
+    color:#c7dfff;
+}
+
+html.dark-mode .wsp-toolbar.melw-wsp button.wsp-toolbar-item
+{
+    color:#c7dfff;
+}
+
+html.dark-mode body.task-workspace button.wsp-toolbar-item, 
+html.dark-mode .wsp-toolbar-edited button.wsp-toolbar-item
+{
+    background-color: transparent;
+}
+
+html.dark-mode #layout-content
+{
+    border-color: #323F4B;
+}
+
+html.dark-mode .btn.btn-block.wsp-toolbar-melw-wsp-hider:hover{
+    background-color: #2E2E2E!important;
+    color: #E1C58F!important;
+}
 
 /******** Pages **************/
 
@@ -246,6 +275,7 @@ html.dark-mode .mel-not-link
     color:#c7dfff
 }
 
+html.dark-mode .header-wsp > .roundbadge,
 html.dark-mode .invitebox .rsvp-status.hint,
 html.dark-mode .listing tbody td,
 html.dark-mode #annuaire-list,

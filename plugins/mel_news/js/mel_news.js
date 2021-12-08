@@ -88,7 +88,13 @@ $(document).ready(async () => {
                     this.confirm("createOrEditPublish", {id:"news-generated-tmp-id"});
             }).appendTo(this.modal.footer.querry);
 
-            setTimeout(() => {
+            setTimeout(async  () => {
+                if (rcmail.editor !== undefined && rcmail.editor.editor !== null)
+                {
+                    rcmail.editor.editor.remove();
+                    rcmail.editor.editor = null;
+                    delete rcmail.editor;
+                }
                 // tinymce.init({
                 //     selector: '#mel-publish-body'
                 //   });image media 
@@ -106,6 +112,16 @@ $(document).ready(async () => {
                     });
                     NewsPopup.corrected = true;
                 }
+
+                let it = 0;
+                await wait(() => {
+                    if (it++ > 5)
+                        return false;
+            
+                    return rcmail.editor === undefined || rcmail.editor === null || rcmail.editor.editor === null;
+                });
+
+                rcmail.command("updateEditor");
 
             }, 10);
 

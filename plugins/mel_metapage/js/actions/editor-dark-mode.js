@@ -19,11 +19,11 @@ $(document).ready(async () => {
         return rcmail.editor === undefined || rcmail.editor === null || rcmail.editor.editor === null;
     });
 
-    if (rcmail.editor === undefined || rcmail.editor === null || rcmail.editor.editor === null)
-        return;
-
     function updateEditor()
     {
+        if (rcmail.editor === undefined || rcmail.editor === null || rcmail.editor.editor === null)
+            return;
+
         const dark = 'dark';
         if (MEL_ELASTIC_UI.color_mode() === dark && rcmail.editor._conf.content_css !== dark) rcmail.editor.update_to_dark();
         else if (MEL_ELASTIC_UI.color_mode() !== dark && rcmail.editor._conf.content_css === dark) rcmail.editor.restart();
@@ -35,5 +35,8 @@ $(document).ready(async () => {
         updateEditor();
     });
 
+    rcmail.register_command("updateEditor", () => {
+        updateEditor();
+    }, true);
 
 });

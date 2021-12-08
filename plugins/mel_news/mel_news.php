@@ -55,12 +55,14 @@ class mel_news extends rcube_plugin {
    */
   function setup_task()
   {
+    $this->require_plugin('mel_helper');
     $this->load_config();
     $this->userDatas = self::get_user_dn();
     $this->register_action('index', array($this, 'index'));
     $this->register_action('update', array($this, 'update'));
     //$this->register_action('setFilter', array($this, 'set_filter'));
     $this->include_stylesheet($this->local_skin_path() . '/news.css');
+    mel_helper::load_editor_addon($this->rc);
   }
 
   function index()

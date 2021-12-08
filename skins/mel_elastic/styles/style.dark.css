@@ -106,6 +106,7 @@ html.dark-mode .mel-button {
 	background-color: transparent;
 	color: #E1C58F;
 	border-color: #E1C58F;
+    border-width: thin;
 }
 
 html.dark-mode .task-addressbook .listing tbody tr.selected td,

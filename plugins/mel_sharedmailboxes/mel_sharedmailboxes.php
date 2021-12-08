@@ -1250,8 +1250,10 @@ class mel_sharedmailboxes extends rcube_plugin {
                     $subfolders[$mailbox.'_subfolder'] = $subfolders[$mailbox];
                     unset($subfolders[$mailbox]);
                 }
+
+                if (isset($subfolders))
                 // Merge les subfolders directement à la racine
-                $folders = array_merge($folders, $subfolders);
+                    $folders = array_merge($folders, $subfolders);
             }
         }
         else {

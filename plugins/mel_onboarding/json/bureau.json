@@ -11,7 +11,7 @@
         "bloc": {
           "title": "Voir la vidéo de présentation",
           "description": "<h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
-          "video": "videos/Capsule-1-Connexion.mp4",
+          "video": "Capsule-1-Connexion.mp4",
           "img": "accueil.png"
         }
       },
@@ -23,33 +23,84 @@
         "iframecss": "padding-top:0px;padding-left:60px;",
         "button": "<span>En savoir plus</span><span class='icon-mel-arrow-right plus'></span>",
         "details": {
-          "nextLabel": "Suivant",
-          "prevLabel": "Précédent",
-          "doneLabel": "Fermer",
-          "steps": [
+          "hintButtonLabel": "J'ai compris",
+          "hints": [
             {
-              "title": "Accueil!",
+              "title": "Accueil",
               "element": ".button-home",
-              "intro": "Voici l'accueil!",
+              "hint": "L'accueil permet de revenir à la page principale du BNUM.",
+              "hintPosition": "middle-right",
               "position": "right"
             },
             {
-              "title": "Revenir!",
+              "title": "Page précédente",
               "element": ".button-menu-last-frame",
-              "intro": "Ce bouton te permet de revenir sur ta page précédente",
-              "position": "right"
+              "hint": "Ce bouton permet de revenir sur la page précédement ouverte sans avoir à la recharger.",
+              "position": "right",
+              "hintPosition": "middle-right"
             },
             {
-              "title": "Calendrier!",
+              "title": "Mes courriels",
+              "element": ".button-mail",
+              "hint": "Mes courriels permet d'ouvrir votre messagerie web.",
+              "position": "right",
+              "hintPosition": "middle-right"
+            },
+            {
+              "title": "Calendrier",
               "element": ".button-calendar",
-              "intro": "Voici le calendrier !",
-              "position": "right"
+              "hint": "le calendrier permet de gérer votre agenda et ceux sur lesquels vous avez des droits",
+              "position": "right",
+              "hintPosition": "middle-right"
+            },
+            {
+              "title": "Discussion",
+              "element": ".button-rocket",
+              "hint": "l'onglet Discussion permet un accès direct aux caneaux de discussion de Ariane",
+              "position": "right",
+              "hintPosition": "middle-right"
+            },
+            {
+              "title": "Espaces de travail",
+              "element": ".button-wsp",
+              "hint": "Permet de gérer et de créer vos espaces de travails",
+              "position": "right",
+              "hintPosition": "middle-right"
+            },
+            {
+              "title": "Stockage",
+              "element": ".button-stockage",
+              "hint": "Le stockage permet de déposer/échanger des fichiers sur un espace de stockage distant",
+              "position": "right",
+              "hintPosition": "middle-right"
+            },
+            {
+              "title": "Tâches",
+              "element": ".button-tasklist",
+              "hint": "Le BNUM offre la possibilité de créer des listes de tâches à faire",
+              "position": "right",
+              "hintPosition": "middle-right"
+            },
+            {
+              "title": "Contacts",
+              "element": ".button-contacts",
+              "hint": "Permet d'accéder à l'ensemble de vos contacts et différents annuaires.",
+              "position": "right",
+              "hintPosition": "middle-right"
             },
             {
               "title": "Autres applications!",
-              "element": ".button-tasklist",
-              "intro": "Cet onglet regroupe d\"autre fonctionnalité comme le Kanban ou les sondages.",
+              "element": ".button-more-options",
+              "hint": "Cet onglet regroupe d\"autre fonctionnalité comme le Kanban ou les sondages.",
+              "hintPosition": "middle-right",
               "position": "right"
+            },
+            {
+              "title": "Paramètres",
+              "element": ".button-settings",
+              "hint": "Cette page vous présente les options avec leur valeur par défaut.",
+              "position": "right",
+              "hintPosition": "middle-right"
             }
           ]
         },
@@ -74,7 +125,7 @@
               "element": "#button-create",
               "intro": "Vous permet de créer",
               "popup": "Create",
-              "button": "Démo",
+              "button": "Démonstration",
               "details": {
                 "nextLabel": "Suivant",
                 "prevLabel": "Précédent",
@@ -102,7 +153,7 @@
               "intro": "",
               "position": "bottom",
               "popup": "Help",
-              "button": "Démo",
+              "button": "Démonstration",
               "details": {
                 "nextLabel": "Suivant",
                 "prevLabel": "Précédent",
@@ -145,7 +196,7 @@
               "title": "Mes raccourcis!",
               "element": "#button-shortcut",
               "popup": "Shortcut",
-              "button": "Démo",
+              "button": "Démonstration",
               "details": {
                 "tooltipClass": "index-maj",
                 "nextLabel": "Suivant",
@@ -177,9 +228,9 @@
             },
             {
               "title": "Mon compte!",
-              "element": "div#barup-user.col-3.user",
+              "element": "#user-up-popup",
               "popup": "User",
-              "button": "Démo",
+              "button": "Démonstration",
               "details": {
                 "nextLabel": "Suivant",
                 "prevLabel": "Précédent",
@@ -218,6 +269,12 @@
                 ]
               },
               "intro": "",
+              "position": "bottom"
+            },
+            {
+              "title": "Changer de thème",
+              "element": ".theme-mode-switch",
+              "intro": "Permet de passer facilement du thème clair au thème sombre et vice versa",
               "position": "bottom"
             }
           ]

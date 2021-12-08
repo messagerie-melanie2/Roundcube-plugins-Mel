@@ -161,3 +161,18 @@
 .introjs-tooltip {
   color: #000;
 }
+
+.big-width-intro
+{
+  width: 600px !important;
+  max-width: 600px !important;
+}
+
+.introjs-tooltiptext.mel-button {
+  background-color: #000 !important;
+}
+
+.introjs-hint
+{
+  z-index: 9999999;
+}

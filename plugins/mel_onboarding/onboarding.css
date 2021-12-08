@@ -33,8 +33,9 @@
     margin: 2em 5em;
 }
 
-#dimScreen div.bloc > div.video {
+#dimScreen div.bloc > div.video video {
     margin-bottom: 2em;
+    /* border-radius: 10px; */
 }
 
 #dimScreen div.video img {
@@ -52,7 +53,7 @@
 }
 
 #dimScreen button.btn {
-    background-color: #5870BF;
+    /* background-color: #5870BF; */
     margin: 1em;
     border-radius: 2em;
 }
@@ -155,4 +156,8 @@
 
 #helppageframe {
   border-radius: 10px;
+}
+
+.introjs-tooltip {
+  color: #000;
 }

@@ -11,7 +11,7 @@
         "bloc": {
           "title": "Voir la vidéo de présentation",
           "description": "<h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
-          "video": "accueil.mkv",
+          "video": "videos/Capsule-1-Connexion.mp4",
           "img": "accueil.png"
         }
       },

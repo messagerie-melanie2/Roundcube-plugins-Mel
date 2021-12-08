@@ -51,6 +51,29 @@ class roundcube_auth extends rcube_plugin
     private $auth_helper;
     private $oidc_helper;
 
+    /**
+     * Plugin initialization
+     */
+    function init()
+    {
+        // Load plugin's config file
+        $this->load_config();
+
+        // Add plugin's functions to Roundcube
+        $this->add_hook('startup', array($this, 'startup'));
+        $this->add_hook('authenticate', array($this, 'authenticate'));
+        $this->add_hook('login_after', array($this, 'login_after'));
+    }
+
+    function redirect($query)
+    {
+        if ($query)
+        {
+            header('Location: ./?' . $query);
+            exit;
+        }
+    }
+
     private function select_auth()
     {
         // Get Roundcube instance
@@ -113,24 +136,17 @@ class roundcube_auth extends rcube_plugin
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] LDAP - AUTH.Cerbere pour $user_uid : $user->cerbere");
 
         // Si l'utilisateur est autorisé à se connecter par OIDC
+        mel_logs::get_instance()->log(mel_logs::DEBUG, $user); // TODO remove
         if($user->cerbere != null && $user->cerbere >= 1)
-        {            
+        {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] LDAP - AUTH.Cerbere autorisée");
             return true;
         }
-    }
-
-    /**
-     * Plugin initialization
-     */
-    function init()
-    {
-        // Load plugin's config file
-        $this->load_config();
-
-        // Add plugin's functions to Roundcube
-        $this->add_hook('startup', array($this, 'startup'));
-        $this->add_hook('authenticate', array($this, 'authenticate'));
-        $this->add_hook('login_after', array($this, 'login_after'));
+        else
+        {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] LDAP - AUTH.Cerbere refusée");
+            return false;
+        }
     }
 
     /**
@@ -144,19 +160,39 @@ class roundcube_auth extends rcube_plugin
 
         if(empty($_SESSION['user_id'])) // User not logged in
         {
-            // Variables
-            $oidc = false;
-
             // Get Roundcube instance
             $rcmail = rcmail::get_instance();
 
-            // Kerberos (triggered by ?kerb=1 )
-            if($rcmail->config->get('oidc_auth_kerberos') && isset($_GET['kerb']))
+            // Variables
+            $oidc = false;
+            $enabled = '1';
+
+            $keyword_kerberos = 'kerb'; // TODO put in config
+            $query_kerberos = $_GET[$keyword_kerberos];
+            $rcube_kerberos = $rcmail->config->get('oidc_auth_kerberos');
+
+            $keyword_oidc = 'oidc'; // TODO put in config
+            $query_oidc = $_GET[$keyword_oidc];
+            $rcube_oidc = $rcmail->config->get('oidc_auth_standalone');
+
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] ----- KERB ----- ");
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] GET['kerb'] - " . $_GET['kerb']);
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] isset(GET['kerb']) - " . isset($_GET['kerb']));
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] config->get('oidc_auth_kerberos') - " . $rcmail->config->get('oidc_auth_kerberos'));
+
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] ----- OIDC ----- ");
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] GET['oidc'] - " . $_GET['oidc']);
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] isset(GET['oidc']) - " . isset($_GET['oidc']));
+            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] config->get('oidc_auth_standalone') - " . $rcmail->config->get('oidc_auth_standalone'));
+
+            // Kerberos (triggered by query)
+            // if($rcmail->config->get('oidc_auth_kerberos') && isset($_GET['kerb']) && $_GET['kerb'] == '1')
+            if($rcube_kerberos && isset($query_kerberos))
             {
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement Kerberos");
+                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [Kerberos] Déclenchement");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] PHP - REMOTE_USER : " . $_SERVER['REMOTE_USER']);
 
-                if(!empty($_SERVER['REMOTE_USER']))
+                if(!empty($_SERVER['REMOTE_USER']) && $query_kerberos == $enabled)
                 {
                     $selected_auth = AuthTypeEnum::KERBEROS;
                 
@@ -166,30 +202,53 @@ class roundcube_auth extends rcube_plugin
                     // Vérification de l'attribut LDAP autorisant ou non la connexion OIDC
                     $oidc = $this->check_ldap_oidc($user_uid);
                 }
+                else
+                {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [Kerberos] Échec du déclenchement");
+                    // $selected_auth = AuthTypeEnum::PASSWORD;
+                }
             }
 
-            // OIDC (triggered by ?oidc=1 )
-            else if($rcmail->config->get('oidc_auth_standalone') && isset($_GET['oidc']))
+            // OIDC (triggered by query)
+            // else if($rcmail->config->get('oidc_auth_standalone') && isset($_GET['oidc']) && $_GET['oidc'] == '1')
+            else if($rcube_oidc && isset($query_oidc))
             {
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement Standalone");
+                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement");
 
-                $selected_auth = AuthTypeEnum::OIDC;
-                $oidc = true;
+                if($query_oidc == $enabled)
+                {
+                    $selected_auth = AuthTypeEnum::OIDC;
+                    $oidc = true;
+                }
+                else
+                {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Échec du déclenchement");
+                    // $selected_auth = AuthTypeEnum::PASSWORD;
+                }
             }
 
             else
-            {            
+            {    
                 // Détermine la méthode d'auth
                 $selected_auth = $this->select_auth();
+                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Selected : " . $selected_auth);
     
                 switch($selected_auth)
                 {
-                    case AuthTypeEnum::OIDC:
                     case AuthTypeEnum::KERBEROS:
+                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $keyword_kerberos=$enabled");
+                        $this->redirect($keyword_kerberos."=".$enabled); // todo add task login ?
+                        break;
+
+                    case AuthTypeEnum::OIDC:
+                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $keyword_oidc=$enabled");
+                        $this->redirect($keyword_oidc."=".$enabled); // todo add task login ?
+                        break;
+
                     case AuthTypeEnum::PASSWORD:
                     default:
                         // do nothing
-                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [TODO] Switch $selected_auth");
+                        // $this->redirect("_task=login");
                         break;
 
                 }
@@ -197,10 +256,11 @@ class roundcube_auth extends rcube_plugin
             
             //region ========== OIDC execution ==========
 
-            mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Lancement");
-                    
             if($oidc)
             {
+                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Lancement/Execution");
+                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Connexion OIDC");
+
                 // Trigger login action
                 $args['action'] = 'login';
 
@@ -295,11 +355,12 @@ class roundcube_auth extends rcube_plugin
     function login_after($args)
     {
         // Redirect to the previous QUERY_STRING
-        if ($this->redirect_query)
-        {
-            header('Location: ./?' . $this->redirect_query);
-            exit;
-        }
+        $this->redirect($this->redirect_query);
+        // if ($this->redirect_query)
+        // {
+        //     header('Location: ./?' . $this->redirect_query);
+        //     exit;
+        // }
 
         return $args;
     }

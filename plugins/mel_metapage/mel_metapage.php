@@ -84,6 +84,11 @@ class mel_metapage extends rcube_plugin
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
         $this->add_hook("send_page", array($this, "appendTo"));
 
+        if ($this->rc->task === "mail" && $this->rc->action === "compose")
+        {
+            $this->include_edited_editor();
+        }
+
         if ($this->rc->task === "portail")
         {
             $this->rc->output->redirect([
@@ -267,6 +272,7 @@ class mel_metapage extends rcube_plugin
             $this->register_task("mel_metapage");
             $this->register_action('get_create_workspace', array($this, 'create_workspace_html'));
         }
+
         if ($this->rc->task === "calendar" || ($this->rc->task === "mel_metapage" && $this->rc->action === "dialog-ui"))
         {
             $this->add_hook("send_page", array($this, "parasite_calendar"));
@@ -314,6 +320,12 @@ class mel_metapage extends rcube_plugin
                 }
             }
         }
+    }
+
+    public function include_edited_editor()
+    {
+        $this->include_script('js/actions/editor-dark-mode.js');
+        return $this;
     }
 
     function mm_include_plugin()

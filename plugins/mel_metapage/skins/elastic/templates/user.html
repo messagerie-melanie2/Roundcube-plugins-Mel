@@ -1,30 +1,38 @@
 <a id=user-up-panel-a class="sr-only sr-only-focusable" href=# style="position: absolute;top:-1000px;"><p class="sr-only"><roundcube:label name='mel_metapage.user_help' /></p></a>
-<div data-popup="groupoptions-user" role="button"
+<div 
+id="user-up-panel"
+style="width: calc(100% - 30px);"
+>
+
+<div class="user-child">
+    <div class="row" style="margin: 0;">
+        <div class="col-6"
+        data-popup="groupoptions-user" role="button"
 title="<roundcube:label name='mel_metapage.user_help' />"
 href="#" 
 aria-haspopup="true" aria-owns="groupoptions-user" 
 data-original-title=""
-id="user-up-panel"
-style="text-decoration: none;cursor: pointer;width: calc(100% - 30px);"
-tabindex=-1>
-
-<div class="user-child">
-    <div class="row" style="margin: 0;">
-        <div class="col-2">
-            <div class="user-child" comment="Parent ariane, photo + dispo">
-                <div id="user-picture" comment="photo utilisateur"></div>
-                <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
+tabindex=-1
+id="user-up-popup"
+style="text-decoration: none;cursor: pointer;">
+            <div class="row">
+                <div class="col-4">
+                    <div class="user-child" comment="Parent ariane, photo + dispo">
+                        <div id="user-picture" comment="photo utilisateur"></div>
+                        <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
+                    </div>
+                </div>
+                <div class="col-8" style="color:white" class="hide-touch">
+                    <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue !</div>
+                    <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
+                </div>
             </div>
         </div>
-        <div class="col-4" style="color:white" class="hide-touch">
-            <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue !</div>
-            <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
-        </div>
-        <div class="col-5 hide-touch" comment="météo" >
-            <!-- <button class="theme-mode-switch btn btn-primary btn-block">
-                <div class="mel-icofont-theme"></div>
-                <span>Sombre</span>
-            </button> -->
+        <div class="col-5" comment="météo" class="hide-small">
+            <center>
+            <button title="<roundcube:label name='mel_metapage.change_theme' />" class="theme-mode-switch btn btn-primary btn-block hide-small" onclick="MEL_ELASTIC_UI.switch_color()">
+            </button> 
+        </center>
             <!-- <div comment="Icon"></div>
             <div comment="Température"></div> -->
         </div>
@@ -48,6 +56,7 @@ tabindex=-1>
         <roundcube:endif />
         <roundcube:button type="link-menuitem" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="settings my_account active" classAct="active" />
         <roundcube:button type="link-menuitem" command="change_avatar" title="mel_metapage.change_avatar" label="mel_metapage.change_avatar" class="settings avatar active" classAct="active" />
+        <roundcube:button type="link-menuitem" command="switch_theme" title="mel_metapage.change_theme" label="mel_metapage.change_theme" class="settings show-touch important active" classAct="active" />
         <roundcube:button type="link-menuitem" command="logout" label="logout" class="logout logout-color active" classAct="active" />
 		<roundcube:container name="groupoptions" id="groupoptionsmenu" />
 	</ul>

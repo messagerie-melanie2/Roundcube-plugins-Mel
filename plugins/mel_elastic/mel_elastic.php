@@ -44,7 +44,7 @@ class mel_elastic extends rcube_plugin
             $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
-            $this->include_script('../../skins/mel_elastic/ui.min.js');
+            $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
             $this->load_folders();
             $this->add_texts('localization/', true);

@@ -30,6 +30,10 @@ if (rcmail)
 
         }
 
+        rcmail.register_command("switch_theme", () => {
+            MEL_ELASTIC_UI.switch_color();
+        }, true);
+
         rcmail.register_command('mel-compose', () => {
             rcmail.set_busy(false);
             if (parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").length > 0  && parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").css("display") !== "none")

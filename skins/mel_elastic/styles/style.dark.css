@@ -1,8 +1,27 @@
-html.dark-mode .barup .user-child .mel-icofont-theme::before
+/* html.dark-mode .barup .user-child .mel-icofont-theme::before
 {
     font-family: "Icofont";
-    content: "\ee66";
+    content: "\ee81";
     color:#e4e7eb;
+} */
+
+html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
+	border-color: #E1C58F;
+	background-color: #181C28;
+}
+
+html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::before {
+	top: 2px;
+	left: 3px;
+	color: #c7dfff !important;
+    content: "\ee81";
+}
+
+html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block::after {
+	border: solid #E1C58F thin;
+    background-color: #2E2E2E;
+	top: 0;
+	right: -1px;
 }
 
 /******** Navigation principale ********/
@@ -97,6 +116,11 @@ html.dark-mode .ignoreActive.mel-button
 	border-color: #E1C58F!important; 
 }
 
+html.dark-mode .mel-button.inverse:hover
+{
+    border-color: #E1C58F!important; 
+}
+
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel
 {
     border-style: solid!important;
@@ -135,6 +159,7 @@ html.dark-mode .my_favorites:hover
     border-color: #2E2E2E!important;
 }
 
+html.dark-mode .btn.btn-block.btn-secondary.btn-mel.active,
 html.dark-mode #rcmloginsubmit.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:active,
 html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:active,
@@ -178,6 +203,8 @@ html.dark-mode #annuaire-list [aria-expanded="true"] {
 	border-left: solid #3e4c59 thin !important;
 }
 
+html.dark-mode .ui.alert.boxinformation i.icon::before,
+html.dark-mode .invitebox td.label,
 html.dark-mode .formcontent.text-only .faded *,
 html.dark-mode .messagelist tr:hover span.unflagged::before,
 html.dark-mode .messagelist td.subject span.date, 
@@ -185,6 +212,14 @@ html.dark-mode .messagelist td.subject span.size,
 html.dark-mode .messagelist td.subject span.msgicon.status::before,
 html.dark-mode .messagelist td.subject span.fromto{
     color:#96b9e7!important;
+}
+
+html.dark-mode .attachmentslist li.ics::before, 
+html.dark-mode .attachmentslist li.text.calendar::before,
+html.dark-mode .ui.alert.boxinformation.calendar-invitebox i.icon::before
+{
+    content: "\e901"!important;
+    font-family: DWP!important;
 }
 
 html.dark-mode .messagelist span.threads > div,
@@ -210,6 +245,7 @@ html.dark-mode .mel-not-link
     color:#c7dfff
 }
 
+html.dark-mode .invitebox .rsvp-status.hint,
 html.dark-mode .listing tbody td,
 html.dark-mode #annuaire-list,
 html.dark-mode #annuaire-list .folder > .description,
@@ -238,6 +274,7 @@ html.dark-mode .mel-not-link:hover
     color:#E1C58F;
 }
 
+html.dark-mode #mm-cw-participants,
 html.dark-mode .task-calendar .fc .fc-header-toolbar,
 html.dark-mode .workspace,
 html.dark-mode .tablinks{
@@ -245,6 +282,9 @@ html.dark-mode .tablinks{
     color:#c7dfff;
 }
 
+html.dark-mode #mm-cw-participants,
+html.dark-mode .workspace-users-added button,
+html.dark-mode .task-mail #layout-content > .header #toolbar-menu li .dropbutton,
 html.dark-mode #layout > div > .header,
 html.dark-mode div#layout-sidebar,
 html.dark-mode .messagelist .unread
@@ -277,16 +317,16 @@ html.dark-mode .roundbadge.lightgreen {
 }
 
 html.dark-mode ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: #E1C58F!important;
+    color: #96845f!important;
     opacity: 1; /* Firefox */
   }
   
 html.dark-mode :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: #E1C58F!important;
+    color: #96845f!important;
   }
   
 html.dark-mode ::-ms-input-placeholder { /* Microsoft Edge */
-    color: #E1C58F!important;
+    color: #96845f!important;
   }
 
 html.dark-mode .roundbadge.lightgreen.menu
@@ -314,6 +354,15 @@ html.dark-mode .task-calendar #layout-sidebar .listing li.selected ul
     background-color: transparent!important;
 }
 
+html.dark-mode .messagelist .selected span.attachment span::before,
+html.dark-mode .messagelist tr.selected:hover span.unflagged::before, 
+html.dark-mode .messagelist .selected td.subject span.date, 
+html.dark-mode .messagelist .selected td.subject span.size,
+html.dark-mode .messagelist .selected td.subject a,
+html.dark-mode table.messagelist .selected td.subject span.msgicon::before,
+html.dark-mode .messagelist .selected .subject,
+html.dark-mode .messagelist .message.selected td.subject span.fromto,
+html.dark-mode #messagelist-content .message.selected,
 html.dark-mode .listing tr.selected td,
 html.dark-mode .task-tasks #layout-sidebar .listing li.selected > div > *,
 html.dark-mode .listing li.selected,
@@ -501,6 +550,26 @@ html.dark-mode .card
 {
     border-color: #1F2933;
 }
+
+html.dark-mode body.task-mail.action-none #layout-content
+{
+    border-color: #323F4B;   
+}
+
+html.dark-mode .parent-close-visu
+{
+    border-color: #4d6066!important;
+}
+
+html.dark-mode .workspace-users-added button
+{
+    color: #E1C58F!important;
+}
+
+html.dark-mode .workspace-users-added button:hover
+{
+    color: #c62828!important;
+}
 /* html.dark-mode .modal-footer button.mel-calendar-button:hover
 {
 
@@ -515,6 +584,7 @@ html.dark-mode .modal-content
     border: solid #323F4B thin;
 }
 
+html.dark-mode .ui.alert.boxinformation,
 html.dark-mode .task-webconf .square_div > .contents
 {
     background-color: #1F2933!important;
@@ -601,6 +671,8 @@ html.dark-mode .mel-tab.mel-tabheader.active
 
 /******** Formulaires ********/
 
+html.dark-mode .input-group-append > button.input-group-text.mel-text,
+html.dark-mode #wspf.form-control.input-mel,
 html.dark-mode .search > .input-group > .form-control,
 html.dark-mode .search > .input-group > .input-group-append > .input-group-text,
 html.dark-mode .mel-input-container.form-control.input-mel,
@@ -649,12 +721,14 @@ html.dark-mode .searchbar a.button
     color:#E1C58F!important;
 }
 
+html.dark-mode .input-group-append > button.input-group-text.mel-text:hover,
 html.dark-mode  body.task-calendar select.mel-input.calendar:hover,
 html.dark-mode .searchbar a.button:hover
 {
     background-color: #2E2E2E !important;
 }
 
+html.dark-mode .input-group-append > button.input-group-text.mel-text.active,
 html.dark-mode  body.task-calendar select.mel-input.calendar:active
 {
 	background-color: #E1C58F!important;
@@ -708,4 +782,10 @@ html.dark-mode.iframe #eventedit .alarms-input .input-group-text
     background-color: transparent;
     border-color: #E1C58F;
     color: #E1C58F;
+}
+
+html.dark-mode .ui.alert.boxinformation,
+html.dark-mode #mailsearchlist
+{
+    background-color: #323F4B !important;
 }

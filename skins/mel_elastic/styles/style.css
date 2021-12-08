@@ -2152,3 +2152,38 @@ body.task-mail.action-none #layout-content {
 {
     margin-right: 5px;
 }
+
+.theme-mode-switch.btn.btn-primary.btn-block {
+	border-radius: 60px;
+	height: 30px;
+	width: 60px;
+	border-color: #3A3E5E;
+	background-color: #F0F0F0;
+    position: relative;
+    margin-top: 15px;
+}
+
+.theme-mode-switch.btn.btn-primary.btn-block::before {
+	content: "\ee66";
+	font-family: icofont;
+	margin: 0 !important;
+	position: absolute;
+	top: 2px;
+	left: 33px;
+	color: #3A3E5E !important;
+    transition: all 0.1s ease-in;
+}
+
+.theme-mode-switch.btn.btn-primary.btn-block::after {
+	content: "";
+	border: solid #3A3E5E thin;
+    background-color: white;
+	width: 28px;
+	height: 28px;
+	display: block;
+	border-radius: 100%;
+	position: absolute;
+	top: 0;
+	right: 31px;
+    transition: all 0.1s ease-in;
+}

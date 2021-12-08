@@ -117,5 +117,10 @@ class mel_helper extends rcube_plugin
         return mel_rcmail_action::create_folder_tree($arrFolders, $folder, $delm, $path);
     }
 
+    public static function load_editor_addon($rc)
+    {
+        return self::get_rc_plugin($rc, "mel_metapage")->include_edited_editor();
+    }
+
 
 }

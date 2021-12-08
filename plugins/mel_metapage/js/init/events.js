@@ -165,7 +165,7 @@ if (rcmail)
     })
 
 
-    rcmail.addEventListener("ui.resize", (datas)    => { 
+    rcmail.addEventListener("skin-resize", (datas)    => { 
 
         if ($("html").hasClass("framed"))
             return;

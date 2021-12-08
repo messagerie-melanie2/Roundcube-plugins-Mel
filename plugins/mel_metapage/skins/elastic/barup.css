@@ -386,6 +386,9 @@ html.touch .ariane-card-body
     width: 100%;
 }
 
+html.touch .barup .tiny-rocket-chat-icon.icon-mel-message::before,
+html.layout-small .hide-small,
+html.layout-phone .hide-small,
 html.layout-normal .hide-normal,
 html.touch .hide-touch
 {
@@ -394,6 +397,10 @@ html.touch .hide-touch
 
 .show-touch {
     display: none;
+}
+
+.show-touch.important {
+    display: none!important;
 }
 
 html.touch .show-touch

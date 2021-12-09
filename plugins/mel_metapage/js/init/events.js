@@ -274,7 +274,21 @@ if (rcmail)
             }
 
             html += `<div class=row style="max-width:100%;${(event.description === undefined || event.description === "" ? "margin-top:15px;" : "")}"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="">${attendeesHtml}</div></div></div>`;
+        
+            //Affichage du status
+            try {
+                const me = Enumerable.from(event.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
+                if (me.status !== undefined)
+                    html += `<div class=row style="margin-top:15px"><div class=col-4><span style="margin-right:11px" class="mel-cal-icon attendee ${me.status === undefined ? me.role.toLowerCase() : me.status.toLowerCase()}"></span><span style=vertical-align:text-top><b>Ma réponse</b> : ${rcmail.gettext(`status${me.status.toLowerCase()}`, "libcalendaring")}</span>
+                    <button id="event-status-editor" class="btn btn-secondary dark-no-border-default mel-button" style="margin-top:0;margin-left:5px"><span class="icon-mel-pencil"></span></button>
+                    </div>
+                    </div>`;
+            } catch (error) {
+                console.warn("/!\\[status]", error);
+            }
         }
+
+
 
         //Affichage des pièces jointes
         if ($.isArray(event.attachments) && event.attachments.length > 0)
@@ -414,10 +428,10 @@ if (rcmail)
             }
         }
 
-        //Gestion des invitations
-        if (isInvited)
+        function invited()
         {
-            $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
+            console.log("invited", $("#event-rsvp"));
+            return $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
             .find('.rsvp-buttons')
             .find('input[rel=accepted]')
             .click((e) => {
@@ -448,6 +462,31 @@ if (rcmail)
                 $("#event-rsvp").find('.rsvp-buttons').find(".itip-reply-controls").find("input.form-check-input")[0].click();
             });
         }
+
+        //Gestion des invitations
+        if (isInvited)
+        {
+            invited();
+        }
+
+        //Button edit
+        $("#event-status-editor").click(() => {
+            const closed = 'closed';
+            let $this = $("#event-status-editor");
+            if ($this.data("state") !== closed)
+            {
+                invited().parent().parent().parent().parent().parent()
+                .css("display", "")
+                .find("input.button.btn").click(() => {
+                    $("#event-status-editor").click();
+                });
+                $this.data("state", closed).find("span").removeClass("icon-mel-pencil").addClass("icon-mel-close");
+            }
+            else {
+                $("#event-rsvp-cloned").remove();
+                $this.data("state", '').find("span").addClass("icon-mel-pencil").removeClass("icon-mel-close");
+            }
+        });
 
     }, 1);
 

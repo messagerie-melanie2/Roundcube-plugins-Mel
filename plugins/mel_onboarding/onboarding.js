@@ -111,7 +111,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
             bloc.append($('<h2>' + element.bloc.title + '</h2>'));
 
             if (element.bloc.video) {
-              bloc.append($('<div class="video"><video controls  poster="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.bloc.img + '" width="550"><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/' + element.bloc.video + '" type="video/mp4">Sorry, your browser don\'t support embedded videos.</video></div>'));
+              bloc.append($('<div class="video"><video controls  poster="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.bloc.img + '" width="550"><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/' + element.bloc.video + '" type="video/mp4">Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div>'));
             }
             if (element.bloc.description) {
               bloc.append($('<div class="description">' + element.bloc.description + '</div>'));
@@ -252,12 +252,14 @@ rcube_webmail.prototype.onboarding_show_item = function (item) {
 
       if (window.current_onboarding.stepper.items[item].button) {
         if (!$('#' + item + '-details').length) {
-          let buttonDetails = $('<button class="mel-button btn btn-secondary btn-onboarding-close float-right" id="' + item + '-details">' + window.current_onboarding.stepper.items[item].button + '</button>');
+          let buttonDetails = $('<button class="mel-button btn btn-secondary float-right" id="' + item + '-details">' + window.current_onboarding.stepper.items[item].button + '</button>');
           buttonDetails.click(function () {
-            if (item === "navigation") {
-              $('#layout-menu').addClass('force-open');
+            if (window.current_onboarding.stepper.items[item].details.hints) {
+              intro_hints(item);
             }
-            intro_help(item);
+            else {
+              intro_tour(item)
+            }
           });
           $('#dimScreen > div.bloc.' + item).append(buttonDetails);
         }
@@ -358,7 +360,64 @@ rcube_webmail.prototype.onboarding_close = function () {
   delete rcmail.env.hide_modal;
 };
 
-function intro_help(item) {
+function intro_hints(item) {
+  if (item === "navigation") {
+    $('#layout-menu').addClass('force-open');
+  }
+
+  let details = window.current_onboarding.stepper.items[item].details;
+  let intro = window.parent.introJs();
+
+  intro.removeHints();
+
+  intro.setOptions({
+    hintButtonLabel: details.hintButtonLabel,
+    hints: details.hints
+  }).onhintclose(function () {
+    let nextStep = $('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+    if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
+      intro.showHintDialog(parseInt(this._currentStep) + 1);
+    }
+  }).addHints();
+
+  // intro.onhintclick(function (e) {
+  //   if(this._introItems[e.dataset.step].button)
+  //   {
+  //     let buttonPrevious = $('<button class="mel-button btn btn-secondary btn-onboarding-previous">' + rcmail.gettext('previous') + '</button>');
+  //     buttonPrevious.click(function () {
+  //     console.log("kopdqskop");
+  //     });
+  //     var dom_nodes = $($.parseHTML(this._introItems[e.dataset.step].hint));
+  //     dom_nodes.append(buttonPrevious)
+  //     console.log(dom_nodes);
+  //     this._introItems[e.dataset.step].hint = dom_nodes.prop('outerHTML');
+  //     // this._introItems[e.dataset.step].hint.add(buttonPrevious);
+
+  //   }
+  // })
+
+  setTimeout(() => {
+    intro.showHintDialog(0);
+  }, 100);
+
+  $(window).click(function (e) {
+    if (e.target.id != "navigation-details" && e.target.parentElement.id != "navigation-details") {
+      intro.removeHints();
+      if ($('#layout-menu').hasClass('force-open')) {
+        window.parent.$('#layout-menu').removeClass('force-open');
+      }
+    }
+  });
+
+
+
+
+
+
+}
+
+
+function intro_tour(item) {
   let intro = window.parent.introJs();
   let details = window.current_onboarding.stepper.items[item].details;
 
@@ -369,12 +428,14 @@ function intro_help(item) {
     steps: details.steps
   });
   intro.onbeforechange(function () {
+    //On ajoute le bouton permettant de lancer la démonstration
     if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
-      let buttonDetails = '<div class="text-center"><button class="btn btn-secondary btn-onboarding-close mt-4" id="' + item + '-details-open">' + this._introItems[this._currentStep].button + '</button></div>'
+      let buttonDetails = '<div class="text-left"><button class="btn btn-secondary mt-4" id="' + item + '-details-open">' + this._introItems[this._currentStep].button + '</button></div>'
 
       this._introItems[this._currentStep].intro += buttonDetails;
       this._introItems[this._currentStep].passed = true;
     }
+
   });
 
   intro.onafterchange(function () {
@@ -386,7 +447,8 @@ function intro_help(item) {
     }, 500);
   })
   intro.onbeforeexit(function () {
-    $('#layout-menu').removeClass('force-open');
+    window.parent.$('#layout-menu').removeClass('force-open');
+    window.parent.$("#otherapps").css("display", "none");
   })
   intro.start();
 }
@@ -409,8 +471,8 @@ function intro_help_popup(event) {
       break;
     case "User":
       setTimeout(() => {
-        window.parent.$("#user-up-panel").focus().popover('show');
-        window.parent.$("#user-up-panel").on('hide.bs.popover', (e) => {
+        window.parent.$("#user-up-popup").focus().popover('show');
+        window.parent.$("#user-up-popup").on('hide.bs.popover', (e) => {
           if (!rcmail.env.hide_popup) {
             e.preventDefault();
           }
@@ -457,26 +519,20 @@ function intro_help_info_popup(event, intro_details) {
     switch (event.data.currentStep.popup) {
       case "Create":
         window.parent.create_popUp.close();
-        goToNextIntroStep(event);
-
         break;
       case "Help":
         window.parent.help_popUp.close();
-        goToNextIntroStep(event);
         break;
       case "Shortcut":
         window.parent.$('.fullscreen-close').trigger("click");
-        goToNextIntroStep(event);
-
         break;
       case "User":
         rcmail.env.hide_popup = true;
-        window.parent.$("#user-up-panel").focus().popover('hide');
         break;
       default:
         break;
     }
-
+    goToNextIntroStep(event)
   });
 }
 

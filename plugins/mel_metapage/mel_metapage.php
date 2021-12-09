@@ -78,7 +78,27 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
         $this->add_texts('localization/', true);
-        $this->load_config();
+        $this->load_config();//INPUT_GPC
+ //_is_from=iframe
+        if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe')
+        {
+            $haveMaintenance = rcube_utils::get_input_value('_maintenance', rcube_utils::INPUT_GPC);
+
+            if ($haveMaintenance === null)
+            {
+                $this->rc->output->redirect([
+                    '_task' => $this->rc->task,
+                    '_action' => $this->rc->action,
+                    '_maintenance' => 'true'
+                ]);
+                return;
+            }
+            else if ($haveMaintenance === 'true')
+            {
+                $this->add_hook("send_page", array($this, "maintenance"));
+                return;
+            }
+        }
 
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
@@ -218,6 +238,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('weather', array($this, 'weather'));
             $this->register_action('modal', array($this, 'get_modal'));
             $this->register_action('toggleChat', array($this, 'toggleChat'));
+            $this->register_action('check_maintenance', array($this, 'check_maintenance'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
@@ -370,6 +391,12 @@ class mel_metapage extends rcube_plugin
         $this->setup_env_js_vars();
     }
 
+    function check_maintenance()
+    {
+        echo $this->rc->config->get('maintenance', false);
+        exit;
+    }
+
     /**
      * Html du plugin.
      */
@@ -415,6 +442,13 @@ class mel_metapage extends rcube_plugin
         $args["content"] = $tmp[0].'<div id="layout">'.$this->rc->output->parse("mel_metapage.custom_options", false, false).$tmp[1];
         return $args;
     }
+
+    function maintenance($args)
+    {
+        $args["content"] =$this->rc->output->parse("mel_metapage.maintenance", false, false);
+        return $args;
+    }
+
 
     function parasite_calendar($args)
     {
@@ -1345,6 +1379,23 @@ class mel_metapage extends rcube_plugin
   {
       include_once 'program/eventSystem.php';
       return mel_event_system::Instance();
+  }
+
+  public function get_maintenance_text($during = false)
+  {
+        $text = "";
+        $datas = $this->rc->config->get('maintenance_datas', null);
+        
+        if ($datas !== null && $datas['show'] === true)
+        {
+            if (!$during)
+                $text = "Une maintenance aura lieu le ".$datas["day"]." durant ".$datas["when"]." ".$datas["before-howmany"]." ".$datas["howmany"];
+            else
+                $text = "Durée de la maintenance ".$datas["before-howmany"]." ".$datas["howmany"];
+        }
+//<h2 style="text-align: center;/*! text-decoration: blink; */color: #F71E1E;/*! text-decoration: underline; */">Une maintenance aura lieu le 09/12/2021 durant l'après-midi pendant environs moins d'une heure
+//.</h2>
+        return $text;
   }
 
 }

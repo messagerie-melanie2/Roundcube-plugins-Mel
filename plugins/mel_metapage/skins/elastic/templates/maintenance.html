@@ -1,0 +1,23 @@
+<center>
+    <h1>Maintenance en cours, revenez plus tard !</h1>
+</center>
+<script src="program/js/jquery.min.js"></script>
+<script>
+    let config = { // fonction permettant de faire de l'ajax
+        type: "get", // methode de transmission des données au fichier php
+        url: window.location.origin + window.location.pathname + '?_task=mel_metapage&_action=check_maintenance',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
+        success: (datas) => {
+            if (datas !== '1')
+                window.location.reload();
+        },
+        error: (a,b,c) => {
+            console.error("### [MAINTENANCE]", a, b, c);
+        }
+    };
+    
+    $.ajax(config);
+    setInterval(() => {
+        $.ajax(config);
+    }, 60000);
+        
+</script>

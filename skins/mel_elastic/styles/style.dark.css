@@ -109,6 +109,16 @@ html.dark-mode .mel-button {
     border-width: thin;
 }
 
+html.dark-mode .mel-button.dark-no-border-default
+{
+    border-color: transparent;
+}
+
+
+html.dark-mode .barup .tiny-rocket-chat{
+    border: none;
+}
+
 html.dark-mode .task-addressbook .listing tbody tr.selected td,
 html.dark-mode .ignoreActive.mel-button
 {
@@ -144,6 +154,11 @@ html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button
 html.dark-mode .mel-button:hover {
 	background-color: #2E2E2E!important;
     color: #E1C58F!important;
+}
+
+html.dark-mode .mel-button.dark-no-border-default:hover
+{
+    border-color: #E1C58F!important; 
 }
 
 html.dark-mode .mel-button.btn-danger:hover
@@ -439,7 +454,8 @@ html.dark-mode .ui-datepicker .ui-datepicker-prev,
 html.dark-mode .ui-datepicker .ui-state-default, 
 html.dark-mode .ui-datepicker.ui-widget-content .ui-state-default,
 html.dark-mode .datepicker-dp-title,
-html.dark-mode .fc .fc-axis
+html.dark-mode .fc .fc-axis,
+html.dark-mode .fc .fc-day-number
 {
     color:#96b9e7!important;
 }

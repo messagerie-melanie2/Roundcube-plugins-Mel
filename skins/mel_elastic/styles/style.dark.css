@@ -207,7 +207,7 @@ html.dark-mode .wsp-toolbar.melw-wsp button.wsp-toolbar-item
 html.dark-mode body.task-workspace button.wsp-toolbar-item, 
 html.dark-mode .wsp-toolbar-edited button.wsp-toolbar-item
 {
-    background-color: transparent;
+    background-color: transparent!important;
 }
 
 html.dark-mode #layout-content
@@ -622,6 +622,9 @@ html.dark-mode .workspace-users-added button:hover
 
 } */
 
+html.dark-mode .maintenance-text{
+    color:#ECA3A3;
+}
 
 /******** Modales ********/
 html.dark-mode .modal-content

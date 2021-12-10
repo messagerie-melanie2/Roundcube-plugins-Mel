@@ -7,7 +7,7 @@
         type: "get", // methode de transmission des données au fichier php
         url: window.location.origin + window.location.pathname + '?_task=mel_metapage&_action=check_maintenance',//rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
         success: (datas) => {
-            if (datas !== '1')
+            if (datas === '0')
                 window.location.reload();
         },
         error: (a,b,c) => {

@@ -276,6 +276,7 @@ class mel_portal extends rcube_plugin
     {
         $this->rc->output->add_handlers(array(
             'modules'    => array($this, 'creates_modules'),
+            'maintenancetext' => [$this, 'maintenancetext']
         ));
         $this->rc->output->send('mel_portal.'.$this->templateName);
     }
@@ -300,6 +301,12 @@ class mel_portal extends rcube_plugin
         $tmp = $this->modules_html;
         $this->modules_html = null;
         return html::div(array("class" => "row"), $tmp);
+    }
+
+    function maintenancetext()
+    {
+        $this->require_plugin('mel_helper');
+        return mel_helper::get_maintenance_text($this->rc);
     }
 
     /**

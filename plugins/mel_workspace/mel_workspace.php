@@ -2418,7 +2418,7 @@ class mel_workspace extends rcube_plugin
         exit;
     }
 
-    function delete_user($uid = null, $user_to_delete = null, $exit = true)
+    function delete_user($uid = null, $user_to_delete = null, $exit = true, $forceDelete = false)
     {
         if ($uid === null)
             $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
@@ -2427,7 +2427,7 @@ class mel_workspace extends rcube_plugin
         $workspace = self::get_workspace($uid);
         if(self::is_admin($workspace) || $user_to_delete === driver_mel::gi()->getUser()->uid)
         {
-            if (self::nb_admin($workspace) === 1)
+            if (self::nb_admin($workspace) === 1 && !$forceDelete)
             {
                 echo "you are the alone";
                 exit;
@@ -2491,7 +2491,7 @@ class mel_workspace extends rcube_plugin
         {
             $shares = $workspace->shares;
             foreach ($shares as $key => $value) {
-                $this->delete_user($uid, $value->user, false);
+                $this->delete_user($uid, $value->user, false, true);
             }
             $workspace->hashtags = [];
             $workspace->save();

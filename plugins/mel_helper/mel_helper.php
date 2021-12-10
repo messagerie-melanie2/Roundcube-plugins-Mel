@@ -122,5 +122,11 @@ class mel_helper extends rcube_plugin
         return self::get_rc_plugin($rc, "mel_metapage")->include_edited_editor();
     }
 
+    public static function get_maintenance_text($rc)
+    {
+        return self::get_rc_plugin($rc, "mel_metapage")->get_maintenance_text();
+    }
+
+
 
 }

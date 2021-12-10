@@ -19,5 +19,13 @@ $(document).ready(() => {
 
     if (MEL_ELASTIC_UI.color_mode() === 'dark') $(".mel-logo").attr("src", 'skins/mel_elastic/images/taskbar-logo.svg')
     else $(".mel-logo").attr("src", 'plugins/mel_portal/skins/elastic/images/logoportal.svg');
+
+    if (rcmail.env.maintenance_text !== undefined)
+    {
+        $("#mel-login-form").prepend(`
+        <div class="maintenance-text" style="">
+		    <h2>${rcmail.env.maintenance_text}</h2>
+	    </div>`);
+    }
     
 });

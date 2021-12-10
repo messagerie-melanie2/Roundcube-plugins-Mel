@@ -2187,3 +2187,9 @@ body.task-mail.action-none #layout-content {
 	right: 31px;
     transition: all 0.1s ease-in;
 }
+
+.maintenance-text
+{
+    text-align: center;
+    color: red;
+}

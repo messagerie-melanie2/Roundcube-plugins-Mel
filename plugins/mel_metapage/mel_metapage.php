@@ -78,9 +78,9 @@ class mel_metapage extends rcube_plugin
         // Récupération de l'instance de rcmail
         $this->rc = rcmail::get_instance();
         $this->add_texts('localization/', true);
-        $this->load_config();//INPUT_GPC
- //_is_from=iframe
-        if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe')
+        $this->load_config();
+ 
+        if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")
         {
             $haveMaintenance = rcube_utils::get_input_value('_maintenance', rcube_utils::INPUT_GPC);
 
@@ -237,8 +237,8 @@ class mel_metapage extends rcube_plugin
             $this->register_action('check_users', array($this, 'check_users'));
             $this->register_action('weather', array($this, 'weather'));
             $this->register_action('modal', array($this, 'get_modal'));
-            $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->register_action('check_maintenance', array($this, 'check_maintenance'));
+            $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
@@ -271,6 +271,9 @@ class mel_metapage extends rcube_plugin
             // Include javascript files
             $this->include_script('js/actions/logout.js');
             $this->include_script('js/actions/login.js');
+
+            $tmp_maint_text = $this->get_maintenance_text();
+            if ($tmp_maint_text !== '') $this->rc->output->set_env("maintenance_text", $tmp_maint_text);
         }
         else if ($this->rc->action === "create_document_template")
         {
@@ -1389,9 +1392,9 @@ class mel_metapage extends rcube_plugin
         if ($datas !== null && $datas['show'] === true)
         {
             if (!$during)
-                $text = "Une maintenance aura lieu le ".$datas["day"]." durant ".$datas["when"]." ".$datas["before-howmany"]." ".$datas["howmany"];
+                $text = "Une maintenance aura lieu le ".$datas["day"]." durant ".$datas["when"]." ".$datas["before-howmany"]." ".$datas["howmany"].".";
             else
-                $text = "Durée de la maintenance ".$datas["before-howmany"]." ".$datas["howmany"];
+                $text = "Durée de la maintenance ".$datas["before-howmany"]." ".$datas["howmany"].".";
         }
 //<h2 style="text-align: center;/*! text-decoration: blink; */color: #F71E1E;/*! text-decoration: underline; */">Une maintenance aura lieu le 09/12/2021 durant l'après-midi pendant environs moins d'une heure
 //.</h2>

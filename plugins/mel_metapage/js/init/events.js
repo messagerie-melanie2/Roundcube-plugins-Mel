@@ -212,6 +212,32 @@ if (rcmail)
         });
     }
 
+    // au changement de couleur
+    rcmail.addEventListener('switched_color_theme', (color_mode) => {
+        on_switched_color_mode(color_mode);
+    });
+
+    function on_switched_color_mode(color_mode)
+    {
+        const dark_logo = 'skins/mel_elastic/images/taskbar-logo.svg';
+        const element_data_name = 'initsrc';
+
+        let $logo = $(".logo-mel");
+
+        if (MEL_ELASTIC_UI.color_mode() === 'dark') 
+        {
+            $logo.data(element_data_name, $logo.attr('src')).attr("src", dark_logo);
+        }
+        else 
+        {
+            $logo.attr("src", $logo.data(element_data_name)).data(element_data_name, '');
+        }
+    }
+    
+    $(document).ready(() => {
+        on_switched_color_mode(MEL_ELASTIC_UI.color_mode());
+    });
+
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
         const event = datas.showed;

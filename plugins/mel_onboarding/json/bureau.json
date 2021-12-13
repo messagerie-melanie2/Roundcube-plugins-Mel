@@ -26,77 +26,66 @@
           "hintButtonLabel": "J'ai compris",
           "hints": [
             {
-              "title": "Accueil",
               "element": ".button-home",
               "hint": "L'accueil permet de revenir à la page principale du BNUM.",
               "hintPosition": "middle-right",
               "position": "right"
             },
             {
-              "title": "Page précédente",
               "element": ".button-menu-last-frame",
               "hint": "Ce bouton permet de revenir sur la page précédement ouverte sans avoir à la recharger.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Mes courriels",
               "element": ".button-mail",
               "hint": "Mes courriels permet d'ouvrir votre messagerie web.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Calendrier",
               "element": ".button-calendar",
               "hint": "le calendrier permet de gérer votre agenda et ceux sur lesquels vous avez des droits",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Discussion",
               "element": ".button-rocket",
               "hint": "l'onglet Discussion permet un accès direct aux caneaux de discussion de Ariane",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Espaces de travail",
               "element": ".button-wsp",
-              "hint": "Permet de gérer et de créer vos espaces de travails",
+              "hint": "'Mes espaces de travail' permet de gérer et de créer vos espaces de travails",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Stockage",
               "element": ".button-stockage",
               "hint": "Le stockage permet de déposer/échanger des fichiers sur un espace de stockage distant",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Tâches",
               "element": ".button-tasklist",
               "hint": "Le BNUM offre la possibilité de créer des listes de tâches à faire",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Contacts",
               "element": ".button-contacts",
               "hint": "Permet d'accéder à l'ensemble de vos contacts et différents annuaires.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Autres applications!",
               "element": ".button-more-options",
               "hint": "Cet onglet regroupe d\"autre fonctionnalité comme le Kanban ou les sondages.",
               "hintPosition": "middle-right",
               "position": "right"
             },
             {
-              "title": "Paramètres",
               "element": ".button-settings",
               "hint": "Cette page vous présente les options avec leur valeur par défaut.",
               "position": "right",
@@ -121,81 +110,113 @@
           "doneLabel": "Fermer",
           "steps": [
             {
-              "title": "Créer !",
+              "title": "Créer",
               "element": "#button-create",
-              "intro": "Vous permet de créer",
+              "intro": "Ce raccourci permet la création direct de contenu comme des mails ou encore des espaces de travail.",
               "popup": "Create",
-              "button": "Démonstration",
+              "button": "Montrez-moi !",
               "details": {
-                "nextLabel": "Suivant",
-                "prevLabel": "Précédent",
-                "doneLabel": "Fermer",
-                "steps": [
+                "hintButtonLabel": "J'ai compris",
+                "hints": [
                   {
-                    "title": "Mon espace de travail",
-                    "element": "#workspace button",
-                    "intro": "",
-                    "position": "bottom"
+                    "hint": "Un espace de travail permet de créer un espace de travail directement dans cette interface",
+                    "element": "#workspace",
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Mes mails",
-                    "element": "#mail button",
-                    "intro": "",
-                    "position": "right"
-                  }
-                ]
-              },
-              "position": "bottom"
-            },
-            {
-              "title": "Aide!",
-              "element": "#button-help",
-              "intro": "",
-              "position": "bottom",
-              "popup": "Help",
-              "button": "Démonstration",
-              "details": {
-                "nextLabel": "Suivant",
-                "prevLabel": "Précédent",
-                "doneLabel": "Fermer",
-                "steps": [
-                  {
-                    "title": "Barre de recherche",
-                    "element": "#help-search",
-                    "intro": "",
-                    "position": "bottom"
+                    "hint": "Un email permet d'ouvrir l'interface de création d'un nouvel email",
+                    "element": "#mail",
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Aide générale",
-                    "element": ".helppage.general a",
-                    "intro": "",
-                    "position": "bottom"
+                    "hint": "Un évènement permet de créer un évènement directement dans votre agenda",
+                    "element": "#reu",
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Aide page courante",
-                    "element": ".helppage.current a",
-                    "intro": "Permet d'ouvrir l'onboarding.",
-                    "position": "bottom"
+                    "hint": "Ouvre la page de création d'une web-conférence",
+                    "element": "#viso",
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Proposer une amélioration",
-                    "element": ".helppage.suggestion a",
-                    "intro": "",
-                    "position": "bottom"
+                    "hint": "Le BNUM vous offre la possibilité de créer des listes de tâches à faire",
+                    "element": "#tache",
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Ici s'affiche toutes les actualités",
-                    "element": "#helpnews",
-                    "intro": "",
-                    "position": "bottom"
+                    "hint": "Un document permet de créer directement un nouveau fichier (Texte, office, excel ...)",
+                    "element": "#document",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },
+                  {
+                    "hint": "Ouvre l'outil bloc note du BNUM",
+                    "element": "#blocnote",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },
+                  {
+                    "hint": "Ouvre la page de sondage de l'outil 'Pégase'",
+                    "element": "#pega",
+                    "position": "right",
+                    "hintPosition": "top-right"
                   }
                 ]
               }
             },
             {
-              "title": "Mes raccourcis!",
+              "title": "Assistance",
+              "element": "#button-help",
+              "intro": "Ce raccourci ouvre une popup contenant toutes les demandes d'assistances (aides, propositions d'amélioration)",
+              "position": "bottom",
+              "popup": "Help",
+              "button": "Montrez-moi",
+              "details": {
+                "hintButtonLabel": "J'ai compris",
+                "hints": [
+                  {
+                    "hint": "Ce champ de recherche vous permet de rechercher votre besoin en quelques mots",
+                    "element": "#help-search",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },
+                  {
+                    "hint": "'Voir l'aide générale de Mél' permet d'ouvrir l'ancienne page d'aide de l'outil Mél",
+                    "element": ".helppage.general a",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },
+                  {
+                    "hint": "'Voir l'aide de la page courante' permet de réafficher cette aide",
+                    "element": ".helppage.current a",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },
+                  {
+                    "hint": "Il est possible de proposer une idée d'évolution pour Mél (innovation, ergonomie, nouvelle fonctionnalité ...).Il ne s'agit pas de régler des problèmes d'utilisation ou de mauvais fonctionnement qui doivent être adresser à votre cellule informatique de proximité.",
+                    "element": ".helppage.suggestion a",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },
+                  {
+                    "hint": "L'onglet 'Actualité' affiche toutes les dernières nouveautés liées au BNUM ",
+                    "element": "#helpnews",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  }
+                ]
+              }
+            },
+            {
+              "title": "Mes raccourcis",
               "element": "#button-shortcut",
               "popup": "Shortcut",
+              "intro": "Mes raccourcis permet d'afficher vos tâches et évènements du jour",
               "button": "Démonstration",
               "details": {
                 "tooltipClass": "index-maj",
@@ -206,31 +227,31 @@
                   {
                     "title": "Mes tâches",
                     "element": ".shortcut-task",
-                    "intro": "",
+                    "intro": "Contient la liste de toutes vos tâches à venir",
                     "position": "bottom"
                   },
                   {
-                    "title": "mes évènements",
+                    "title": "Mes évènements",
                     "element": ".shortcut-task.shorcut-calendar",
-                    "intro": "",
+                    "intro": "Permet de voir vos évènements du jour",
                     "position": "right"
                   }
                 ]
               },
-              "intro": "",
               "position": "bottom"
             },
             {
-              "title": "Recherche!",
+              "title": "Recherche",
               "element": ".search",
-              "intro": "",
+              "intro": "Vous permet de recherchez des mots clés présent dans vos emails, documents ou agendas",
               "position": "bottom"
             },
             {
-              "title": "Mon compte!",
+              "title": "Mon compte",
               "element": "#user-up-popup",
               "popup": "User",
-              "button": "Démonstration",
+              "intro": "Menu déroulant regroupant certaines options pratiques (Rafraîchir la page, options d'avatar...)",
+              "button": "Dérouler le menu",
               "details": {
                 "nextLabel": "Suivant",
                 "prevLabel": "Précédent",
@@ -239,36 +260,35 @@
                   {
                     "title": "Rafraîchir",
                     "element": ".refresh.refresh-current-thing",
-                    "intro": "",
+                    "intro": "Permet d'actualiser la page en cours",
                     "position": "left"
                   },
                   {
                     "title": "Cacher",
                     "element": ".settings.toggleChatCommand ",
-                    "intro": "",
+                    "intro": "Permet de cacher la bulle de discussion située en bas à droite de votre écran",
                     "position": "left"
                   },
                   {
                     "title": "Mes options",
                     "element": ".settings.my_account ",
-                    "intro": "",
+                    "intro": "Ouvre les options du bureau numérique",
                     "position": "left"
                   },
                   {
-                    "title": "options",
+                    "title": "Changer d'avatar",
                     "element": ".settings.avatar ",
-                    "intro": "",
+                    "intro": "Ouvre les options pour changer votre avatar",
                     "position": "left"
                   },
                   {
-                    "title": "options",
+                    "title": "Déconnexion",
                     "element": ".logout.logout-color ",
-                    "intro": "",
+                    "intro": "Vous permet de vos déconnecter du bureau numérique",
                     "position": "left"
                   }
                 ]
               },
-              "intro": "",
               "position": "bottom"
             },
             {

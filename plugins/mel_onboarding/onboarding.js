@@ -360,6 +360,7 @@ rcube_webmail.prototype.onboarding_close = function () {
   delete rcmail.env.hide_modal;
 };
 
+
 function intro_hints(item) {
   if (item === "navigation") {
     $('#layout-menu').addClass('force-open');
@@ -374,11 +375,26 @@ function intro_hints(item) {
     hintButtonLabel: details.hintButtonLabel,
     hints: details.hints
   }).onhintclose(function () {
-    let nextStep = $('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+    let nextStep = window.parent.$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+
     if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
       intro.showHintDialog(parseInt(this._currentStep) + 1);
     }
   }).addHints();
+
+  setTimeout(() => {
+    intro.showHintDialog(0);
+  }, 100);
+
+  $(window).click(function (e) {
+    if (e.target.id != "navigation-details" && e.target.parentElement.id != "navigation-details") {
+      intro.hideHints();
+      intro.removeHints();
+      if ($('#layout-menu').hasClass('force-open')) {
+        window.parent.$('#layout-menu').removeClass('force-open');
+      }
+    }
+  });
 
   // intro.onhintclick(function (e) {
   //   if(this._introItems[e.dataset.step].button)
@@ -395,25 +411,6 @@ function intro_hints(item) {
 
   //   }
   // })
-
-  setTimeout(() => {
-    intro.showHintDialog(0);
-  }, 100);
-
-  $(window).click(function (e) {
-    if (e.target.id != "navigation-details" && e.target.parentElement.id != "navigation-details") {
-      intro.removeHints();
-      if ($('#layout-menu').hasClass('force-open')) {
-        window.parent.$('#layout-menu').removeClass('force-open');
-      }
-    }
-  });
-
-
-
-
-
-
 }
 
 
@@ -442,7 +439,7 @@ function intro_tour(item) {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let currentStep = this._introItems[this._currentStep];
-        window.parent.$('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_help_popup)
+        window.parent.$('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_popup)
       }
     }, 500);
   })
@@ -453,7 +450,7 @@ function intro_tour(item) {
   intro.start();
 }
 
-function intro_help_popup(event) {
+function intro_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
   rcmail.env.hide_popup = false;
@@ -478,7 +475,6 @@ function intro_help_popup(event) {
           }
         })
       }, 100);
-
       break;
     default:
       break;
@@ -490,21 +486,61 @@ function intro_help_popup(event) {
     case "Help":
       window.parent.document.getElementById("helppageframe").onload = function () {
         intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
-        intro_help_info_popup(event, intro_details);
+        intro_details.iframe = true;
+        intro_popup_hint(event, intro_details);
       }
       break;
     default:
       intro_details = window.parent.introJs();
       setTimeout(function () {
-        intro_help_info_popup(event, intro_details);
+        if (event.data.currentStep.details.hints) {
+          intro_popup_hint(event, intro_details);
+        }
+        else {
+          intro_popup_tour(event, intro_details);
+        }
       }, 400);
       break;
   }
-
 }
 
-function intro_help_info_popup(event, intro_details) {
+function intro_popup_hint(event, intro_details) {
+  let details = event.data.currentStep.details
 
+  intro_details.removeHints();
+
+  intro_details.setOptions({
+    hintButtonLabel: details.hintButtonLabel,
+    hints: Object.values(details.hints)
+  }).onhintclose(function () {
+    let nextStep;
+    if (intro_details.iframe) {
+      nextStep = window.parent.$("#helppageframe").contents().find('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+    }
+    else {
+      nextStep = window.parent.$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+    }
+    if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
+      intro_details.showHintDialog(parseInt(this._currentStep) + 1);
+    }
+  }).addHints();
+
+  setTimeout(() => {
+    intro_details.showHintDialog(0);
+  }, 100);
+
+
+  window.parent.$('#globalModal').on('hidden.bs.modal', function () {
+    if (!intro_details.passed) {
+      intro_details.passed = true;
+      intro_details.hideHints();
+      intro_details.removeHints();
+      goToNextIntroStep(event)
+    }
+  })
+}
+
+function intro_popup_tour(event, intro_details) {
   let details = event.data.currentStep.details
   intro_details.setOptions({
     tooltipClass: details.tooltipClass,
@@ -537,6 +573,8 @@ function intro_help_info_popup(event, intro_details) {
 }
 
 function goToNextIntroStep(event) {
-  setTimeout(() => { event.data.intro.goToStepNumber(event.data.stepNumber + 2) }, 50);
-
+  setTimeout(() => {
+    event.data.intro.exit();
+    event.data.intro.goToStepNumber(event.data.stepNumber + 2)
+  }, 100);
 }

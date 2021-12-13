@@ -686,7 +686,7 @@ class mel_workspace extends rcube_plugin
 
     function get_description()
     {
-        return $this->currentWorkspace->description;
+        return mel_helper::wash_html($this->currentWorkspace->description);
     }
 
     function get_end_date()
@@ -773,7 +773,7 @@ class mel_workspace extends rcube_plugin
             $color = mel_helper::color()->color_from_hexa($hex);
             $lighter = $color->lighter(20)->to_rgb();
             $darker = $color->darker(20)->to_rgb();
-            $textColor = $color->need_black_text() ? "black" : "white";
+            $textColor = $color->need_black_text() ? "black!important" : "white";
 
             $style = "<style>
             .wsp-toolbar.melw-wsp{

@@ -127,6 +127,38 @@ class mel_helper extends rcube_plugin
         return self::get_rc_plugin($rc, "mel_metapage")->get_maintenance_text();
     }
 
-
+    public static function wash_html($html)
+    {
+       // Add header with charset spec., washtml cannot work without that
+       $html = '<html><head>'
+           . '<meta http-equiv="Content-Type" content="text/html; charset='.RCUBE_CHARSET.'" />'
+           . '</head><body>' . $html . '</body></html>';
+   
+       // clean HTML with washhtml by Frederic Motte
+       $wash_opts = array(
+           'show_washed'   => false,
+           'allow_remote'  => 1,
+           'charset'       => RCUBE_CHARSET,
+           'html_elements' => array('body', 'link'),
+           'html_attribs'  => array('rel', 'type'),
+       );
+   
+       // initialize HTML washer
+       $washer = new rcube_washtml($wash_opts);
+   
+       //$washer->add_callback('form', 'rcmail_washtml_callback');
+       //$washer->add_callback('style', 'rcmail_washtml_callback');
+   
+       // Remove non-UTF8 characters (#1487813)
+       $html = rcube_charset::clean($html);
+   
+       $html = $washer->wash($html);
+   
+       // remove unwanted comments and tags (produced by washtml)
+       $html = preg_replace(array('/<!--[^>]+-->/', '/<\/?body>/'), '', $html);
+   
+       return $html;
+    }
+    
 
 }

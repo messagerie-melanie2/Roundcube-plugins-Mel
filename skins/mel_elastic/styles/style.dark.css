@@ -78,9 +78,31 @@ html.dark-mode #layout-menu span > a:focus > span.inner
 
 /******** Navigation secondaire ********/
 
+html.dark-mode .search-container,
+html.dark-mode #barup-search,
 html.dark-mode div#user-picture,
 html.dark-mode .barup{
     background-color: #181C28;
+}
+
+html.dark-mode .search-container
+{
+    border-color:#181C28;
+}
+
+html.dark-mode #barup-search {
+	border: solid #4d6066 thin;
+	border-top: none;
+}
+
+html.dark-mode #barup-search-background
+{
+    border-top: solid #4d6066 thin;
+    top: 60px;
+}
+
+html.dark-mode .table-striped tbody tr:nth-of-type(2n+1) {
+	background-color: rgba(255, 255, 255, 0.05);
 }
 
 html.dark-mode .menu a.logout-color:not(.disabled):focus, 
@@ -147,6 +169,8 @@ html.dark-mode ul#mailboxlist ul li.selected
     background-color: transparent;
 }
 
+html.dark-mode .search-label:hover,
+html.dark-mode .my_favorites:hover,
 html.dark-mode #rcmloginsubmit:hover,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:hover,
 html.dark-mode option:hover,
@@ -167,8 +191,8 @@ html.dark-mode .mel-button.btn-danger:hover
     color:white!important;
 }
 
-html.dark-mode .tiny-rocket-chat:hover,
-html.dark-mode .my_favorites:hover
+html.dark-mode .tiny-rocket-chat:hover/*,
+/* html.dark-mode .my_favorites:hover */
 {
     background-color: #FDCF42 !important;
     color:black!important;
@@ -355,11 +379,17 @@ html.dark-mode .tablinks:hover{
     background-color: #2E2E2E!important;
 }
 
+html.dark-mode .roundbadge.notif.edited,
+html.dark-mode .roundbadge.lightgreen.setalign
+{
+    line-height: 11px;
+}
+
 html.dark-mode .roundbadge.lightgreen {
 	background-color: #2E2E2E !important;
 	border: solid #E1C58F thin;
 	color: #E1C58F !important;
-    line-height: 11px;
+    line-height: 14px;
 }
 
 html.dark-mode ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -383,6 +413,7 @@ html.dark-mode .roundbadge.lightgreen.menu
 html.dark-mode .dwp-circle
 {
     background-color: #1F2933;
+    border-color: #1F2933;
 }
 
 html.dark-mode .dwp-circle.dwp-user::before {
@@ -477,7 +508,7 @@ html.dark-mode .ui-datepicker a.ui-state-active {
 	background-color: #2E2E2E !important;
 	border: solid #E1C58F thin;
 	color: #E1C58F !important;
-	line-height: 12px !important;
+	line-height: 14px !important;
 }
 
 html.dark-mode .ui-datepicker.ui-widget-content .ui-state-default.ui-state-highlight
@@ -563,6 +594,7 @@ html.dark-mode .modal-footer button.mel-calendar-button{
     border-width: thin!important;
 }
 
+
 html.dark-mode .wsp-header
 {
     background-color: transparent!important;
@@ -583,6 +615,7 @@ html.dark-mode .link-block.square_div > .contents
     color:#1F2933;
 }
 
+html.dark-mode #worspace-avatar-a span,
 html.dark-mode .link-test-color
 {
     color:#1F2933!important;
@@ -624,6 +657,17 @@ html.dark-mode .workspace-users-added button:hover
 
 html.dark-mode .maintenance-text{
     color:#ECA3A3;
+}
+
+html.dark-mode #compose-contacts #annuaire-list [aria-expanded="true"]
+{
+    background-color: transparent!important;
+    color:#c7dfff!important;
+}
+
+html.dark-mode .roundrive-folder-create-select
+{
+    background-color: #1F2933;
 }
 
 /******** Modales ********/
@@ -719,8 +763,22 @@ html.dark-mode .mel-tab.mel-tabheader.active
 	border-color: #2E2E2E!important;
 }
 
+html.dark-mode .btn-secondary:focus,
+html.dark-mode .tiny-rocket-chat:focus,
+html.dark-mode .mel-focus:focus,
+html.dark-mode .mel-focus.focused,
+html.dark-mode .input-child-mel-focus input:focus,
+html.dark-mode .a-child-mel-focus a:focus,
+html.dark-mode .mel-button:focus
+{
+    box-shadow: 0 0 0 .2rem #E1C58F69;
+}
+
 /******** Formulaires ********/
 
+html.dark-mode #eventedit .edit-alarm-value, 
+html.dark-mode #eventedit .edit-alarm-offset, 
+html.dark-mode #eventedit .edit-alarm-related,
 html.dark-mode .input-group-append > button.input-group-text.mel-text,
 html.dark-mode #wspf.form-control.input-mel,
 html.dark-mode .search > .input-group > .form-control,
@@ -741,6 +799,7 @@ html.dark-mode .task-addressbook .searchbar.menu
     border:solid thin!important;
 }
 
+html.dark-mode .input-group-append > .input-group-text.mel-text,
 html.dark-mode #edit-attendees-comment, 
 html.dark-mode #edit-attendee-name, 
 html.dark-mode #edit-identities-list, 

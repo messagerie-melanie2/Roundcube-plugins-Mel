@@ -677,10 +677,10 @@ if (rcmail)
         });
 
         $("#user-up-panel-a").on("click", m_mp_avatarOnSelect).on("keydown", m_mp_avatarOnSelect).on("focus", () => {
-            $("#user-up-panel").find(".row").first().css("box-shadow","0 0 0 .2rem #484D7A69");
+            $("#user-up-panel").find(".row").first().addClass('mel-focus focused');//.css("box-shadow","0 0 0 .2rem #484D7A69");
         })
         .on("blur", () => {
-            $("#user-up-panel").find(".row").first().css("box-shadow","");
+            $("#user-up-panel").find(".row").first().removeClass("mel-focus").removeClass("focused");
         });
 
         //create-modal

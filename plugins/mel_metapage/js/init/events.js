@@ -162,6 +162,27 @@ if (rcmail)
                     parent.parent.rcmail.command("chat.reinit");
             }
         }
+
+        //tasklistsearch
+
+        let initSearches = (selector) => {
+            $(selector).on("focus", () => {//.mel-animated
+                let $parent = $(selector).parent().parent();
+    
+                if (!$parent.hasClass("mel-animated"))
+                    $parent.addClass("mel-animated");
+                    
+                $parent.addClass("mel-focus focused");
+            }).on("focusout", () => {
+                $(selector).parent().parent().removeClass("focused").removeClass("mel-focus");
+            });
+
+            return initSearches;
+        };
+
+        initSearches('#searchform')('#tasklistsearch');
+
+
     })
 
 
@@ -240,6 +261,13 @@ if (rcmail)
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
+
+        if (datas.showed.start.format === undefined)
+            datas.showed.start = moment(datas.showed.start);
+
+        if (datas.showed.end.format === undefined)
+            datas.showed.end = moment(datas.showed.end);
+
         const event = datas.showed;
         const isInvited = datas.show_rsvp;//event.attendees !== undefined && event.attendees.length > 0 && Enumerable.from(event.attendees).where(x => rcmail.env.mel_metapage_user_emails.includes(x.email)).first().status === "NEEDS-ACTION";
 

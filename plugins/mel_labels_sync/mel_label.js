@@ -574,7 +574,7 @@ $(document).ready(function() {
 				
 			id = id.replace('~', '').replace(/\./g,'\\.');
 			css += "#messagelist tr.label_" + id + " td,\n";
-			css += "#messagelist tr.label_" + id + " td a,\n";
+			// css += "#messagelist tr.label_" + id + " td a,\n";
 			css += ".toolbarmenu li.label_" + id + ",\n";
 			css += ".toolbarmenu li.label_" + id + " a.active,\n";
 			css += "table span.label_" + id + "\n";
@@ -587,6 +587,13 @@ $(document).ready(function() {
 			css += "  color: #FFFFFF;\n";
 			css += "  background-color: "+val+";\n";
 			css += "}\n";
+			css += `
+				html.dark-mode #messagelist tr.label_${id} td,
+				html.dark-mode #messagelist tr.selected.label_${id} td
+				{
+					color: ${val}!important;
+				}
+			`;
 		});
 
 	}

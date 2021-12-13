@@ -90,6 +90,10 @@
 	/* background-image: var(--image-carnet); */
 }
 
+html.dark-mode #annuaire-list .folder.addressbook {
+	background: url(images/carnet-dark.png) 17px 19px no-repeat;
+}
+
 #annuaire-list .list {
 	background: url(images/list.png?v=e784.5000) 14px 20px no-repeat;
 }
@@ -284,6 +288,7 @@
 #listview-float-right #list-contacts .scroller.nosearch {
     top: 32px;
 }
+
 
 /**********add********/
 li.folder{

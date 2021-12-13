@@ -860,7 +860,6 @@ function m_mp_openTo(e, idInput) {
   // UI.recipient_selector('to');
   // $(".popup.ui-dialog-content").css("max-height", (window.innerHeight-120) + "px")
   // .parent().css("top", "60px");
-
   if (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined)) {
     new Promise(async () => {
       $("#layout").append(await rcmail.env.mel_metapage_call_parsed.contact_list());

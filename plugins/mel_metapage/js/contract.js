@@ -124,7 +124,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
         {
             //rcmail.set_busy(true, "loading");
             rcmail.env.frame_created = false;
-            querry[0].src = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
+            querry[0].src = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0)+"&_is_from=iframe";
             rcmail.env.calendar_mm_created = true;
             // if (!rcmail.busy)
             //     rcmail.set_busy(true, "loading");
@@ -153,7 +153,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
             rcmail.set_busy(true, "loading");
             querry = $("#" + id);
             rcmail.env.frame_created = false;
-            querry[0].src = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0);
+            querry[0].src = rcmail.get_task_url("calendar&source=" + cal.calendar + "&date="+(new Date(cal.start)).getTime()/1000.0)+"&_is_from=iframe";
             new Promise(async (a, b) => {
                 while (rcmail.env.frame_created === false) {
                     await delay(100);

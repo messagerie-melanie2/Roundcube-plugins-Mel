@@ -1298,6 +1298,7 @@ a.button.icon.attach::before, button.btn.attach::before {
 }
 
 .mel-focus:focus,
+.mel-focus.focused,
 .input-child-mel-focus input:focus,
 .a-child-mel-focus a:focus,
 .mel-button:focus

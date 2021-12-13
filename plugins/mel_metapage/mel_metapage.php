@@ -191,6 +191,8 @@ class mel_metapage extends rcube_plugin
             }
             else if ($this->rc->task === "questionswebconf")
                 $this->register_task("questionswebconf");
+            else if ($this->rc->task === "custom_page")
+                $this->register_task("custom_page");
             else
                 $this->register_task("mel_metapage");               
 

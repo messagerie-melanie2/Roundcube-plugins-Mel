@@ -26,77 +26,66 @@
           "hintButtonLabel": "J'ai compris",
           "hints": [
             {
-              "title": "Accueil",
               "element": ".button-home",
               "hint": "L'accueil permet de revenir à la page principale du BNUM.",
               "hintPosition": "middle-right",
               "position": "right"
             },
             {
-              "title": "Page précédente",
               "element": ".button-menu-last-frame",
               "hint": "Ce bouton permet de revenir sur la page précédement ouverte sans avoir à la recharger.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Mes courriels",
               "element": ".button-mail",
               "hint": "Mes courriels permet d'ouvrir votre messagerie web.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Calendrier",
               "element": ".button-calendar",
               "hint": "le calendrier permet de gérer votre agenda et ceux sur lesquels vous avez des droits",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Discussion",
               "element": ".button-rocket",
               "hint": "l'onglet Discussion permet un accès direct aux caneaux de discussion de Ariane",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Espaces de travail",
               "element": ".button-wsp",
               "hint": "Permet de gérer et de créer vos espaces de travails",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Stockage",
               "element": ".button-stockage",
               "hint": "Le stockage permet de déposer/échanger des fichiers sur un espace de stockage distant",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Tâches",
               "element": ".button-tasklist",
               "hint": "Le BNUM offre la possibilité de créer des listes de tâches à faire",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Contacts",
               "element": ".button-contacts",
               "hint": "Permet d'accéder à l'ensemble de vos contacts et différents annuaires.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
-              "title": "Autres applications!",
               "element": ".button-more-options",
               "hint": "Cet onglet regroupe d\"autre fonctionnalité comme le Kanban ou les sondages.",
               "hintPosition": "middle-right",
               "position": "right"
             },
             {
-              "title": "Paramètres",
               "element": ".button-settings",
               "hint": "Cette page vous présente les options avec leur valeur par défaut.",
               "position": "right",
@@ -127,25 +116,58 @@
               "popup": "Create",
               "button": "Démonstration",
               "details": {
-                "nextLabel": "Suivant",
-                "prevLabel": "Précédent",
-                "doneLabel": "Fermer",
-                "steps": [
+                "hintButtonLabel": "J'ai compris",
+                "hints": [
                   {
-                    "title": "Mon espace de travail",
-                    "element": "#workspace button",
-                    "intro": "",
-                    "position": "bottom"
-                  },
+                    "hint": "Espace de travail",
+                    "element": "#workspace",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                  
                   {
-                    "title": "Mes mails",
-                    "element": "#mail button",
-                    "intro": "",
-                    "position": "right"
-                  }
+                    "hint": "Mail",
+                    "element": "#mail",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                
+                  {
+                    "hint": "Évènement",
+                    "element": "#reu",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                
+                  {
+                    "hint": "Web-conférence",
+                    "element": "#viso",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                
+                  {
+                    "hint": "Tâche",
+                    "element": "#tache",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                
+                  {
+                    "hint": "Document",
+                    "element": "#document",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                
+                  {
+                    "hint": "Bloc-note",
+                    "element": "#blocnote",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  },                
+                  {
+                    "hint": "Pégase",
+                    "element": "#pega",
+                    "position": "right",
+                    "hintPosition": "top-right"
+                  }         
                 ]
-              },
-              "position": "bottom"
+              }
             },
             {
               "title": "Aide!",
@@ -155,39 +177,37 @@
               "popup": "Help",
               "button": "Démonstration",
               "details": {
-                "nextLabel": "Suivant",
-                "prevLabel": "Précédent",
-                "doneLabel": "Fermer",
-                "steps": [
+                "hintButtonLabel": "J'ai compris",
+                "hints": [
                   {
-                    "title": "Barre de recherche",
+                    "hint": "Espace de travail",
                     "element": "#help-search",
-                    "intro": "",
-                    "position": "bottom"
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Aide générale",
+                    "hint": "Espace de travail",
                     "element": ".helppage.general a",
-                    "intro": "",
-                    "position": "bottom"
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Aide page courante",
+                    "hint": "Espace de travail",
                     "element": ".helppage.current a",
-                    "intro": "Permet d'ouvrir l'onboarding.",
-                    "position": "bottom"
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Proposer une amélioration",
+                    "hint": "Espace de travail",
                     "element": ".helppage.suggestion a",
-                    "intro": "",
-                    "position": "bottom"
+                    "position": "right",
+                    "hintPosition": "top-right"
                   },
                   {
-                    "title": "Ici s'affiche toutes les actualités",
+                    "hint": "Espace de travail",
                     "element": "#helpnews",
-                    "intro": "",
-                    "position": "bottom"
+                    "position": "right",
+                    "hintPosition": "top-right"
                   }
                 ]
               }
@@ -231,43 +251,43 @@
               "element": "#user-up-popup",
               "popup": "User",
               "button": "Démonstration",
-              "details": {
-                "nextLabel": "Suivant",
-                "prevLabel": "Précédent",
-                "doneLabel": "Fermer",
-                "steps": [
-                  {
-                    "title": "Rafraîchir",
-                    "element": ".refresh.refresh-current-thing",
-                    "intro": "",
-                    "position": "left"
-                  },
-                  {
-                    "title": "Cacher",
-                    "element": ".settings.toggleChatCommand ",
-                    "intro": "",
-                    "position": "left"
-                  },
-                  {
-                    "title": "Mes options",
-                    "element": ".settings.my_account ",
-                    "intro": "",
-                    "position": "left"
-                  },
-                  {
-                    "title": "options",
-                    "element": ".settings.avatar ",
-                    "intro": "",
-                    "position": "left"
-                  },
-                  {
-                    "title": "options",
-                    "element": ".logout.logout-color ",
-                    "intro": "",
-                    "position": "left"
-                  }
-                ]
-              },
+              "details": { 
+                "nextLabel": "Suivant", 
+                "prevLabel": "Précédent", 
+                "doneLabel": "Fermer", 
+                "steps": [ 
+                  { 
+                    "title": "Rafraîchir", 
+                    "element": ".refresh.refresh-current-thing", 
+                    "intro": "", 
+                    "position": "left" 
+                  }, 
+                  { 
+                    "title": "Cacher", 
+                    "element": ".settings.toggleChatCommand ", 
+                    "intro": "", 
+                    "position": "left" 
+                  }, 
+                  { 
+                    "title": "Mes options", 
+                    "element": ".settings.my_account ", 
+                    "intro": "", 
+                    "position": "left" 
+                  }, 
+                  { 
+                    "title": "options", 
+                    "element": ".settings.avatar ", 
+                    "intro": "", 
+                    "position": "left" 
+                  }, 
+                  { 
+                    "title": "options", 
+                    "element": ".logout.logout-color ", 
+                    "intro": "", 
+                    "position": "left" 
+                  } 
+                ] 
+              }, 
               "intro": "",
               "position": "bottom"
             },

@@ -375,7 +375,8 @@ function intro_hints(item) {
     hintButtonLabel: details.hintButtonLabel,
     hints: details.hints
   }).onhintclose(function () {
-    let nextStep = $('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+    let nextStep = window.parent.$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+
     if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
       intro.showHintDialog(parseInt(this._currentStep) + 1);
     }
@@ -387,6 +388,7 @@ function intro_hints(item) {
 
   $(window).click(function (e) {
     if (e.target.id != "navigation-details" && e.target.parentElement.id != "navigation-details") {
+      intro.hideHints();
       intro.removeHints();
       if ($('#layout-menu').hasClass('force-open')) {
         window.parent.$('#layout-menu').removeClass('force-open');
@@ -437,7 +439,7 @@ function intro_tour(item) {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let currentStep = this._introItems[this._currentStep];
-        window.parent.$('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, introp_popup)
+        window.parent.$('#' + item + '-details-open').on('click', { intro, currentStep, stepNumber: this._currentStep }, intro_popup)
       }
     }, 500);
   })
@@ -448,7 +450,7 @@ function intro_tour(item) {
   intro.start();
 }
 
-function introp_popup(event) {
+function intro_popup(event) {
   //On ferme l'ancien introjs
   event.data.intro.exit();
   rcmail.env.hide_popup = false;
@@ -513,10 +515,10 @@ function intro_popup_hint(event, intro_details) {
   }).onhintclose(function () {
     let nextStep;
     if (intro_details.iframe) {
-      nextStep = $("#helppageframe").contents().find('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+      nextStep = window.parent.$("#helppageframe").contents().find('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
     }
     else {
-      nextStep = $('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
+      nextStep = window.parent.$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
     }
     if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
       intro_details.showHintDialog(parseInt(this._currentStep) + 1);
@@ -528,23 +530,14 @@ function intro_popup_hint(event, intro_details) {
   }, 100);
 
 
-  $('#globalModal').on('hidden.bs.modal', function () {
+  window.parent.$('#globalModal').on('hidden.bs.modal', function () {
     if (!intro_details.passed) {
       intro_details.passed = true;
+      intro_details.hideHints();
       intro_details.removeHints();
       goToNextIntroStep(event)
     }
   })
-
-  // $(window).click(function (e) {
-  //   if (window.parent.$("#user-up-popup").hasClass('active') && !rcmail.env.hide_popup && !intro_details.passed) {
-  //     intro_details.passed = true;
-  //     rcmail.env.hide_popup = true;
-  //     intro_details.removeHints();
-  //     window.parent.$("#user-up-popup").focus().popover('hide');
-  //     goToNextIntroStep(event);
-  //   }
-  // });
 }
 
 function intro_popup_tour(event, intro_details) {

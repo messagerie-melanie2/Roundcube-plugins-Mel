@@ -479,7 +479,7 @@ function intro_popup(event) {
       window.parent.document.getElementById("helppageframe").onload = function () {
         intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
         intro_details.iframe = true;
-        intro_popup_hint(event, intro_details);
+        intro_popup_tour(event, intro_details);
       }
       break;
     default:

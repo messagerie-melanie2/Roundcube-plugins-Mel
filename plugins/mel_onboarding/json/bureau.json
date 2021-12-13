@@ -116,58 +116,69 @@
               "popup": "Create",
               "button": "Montrez-moi !",
               "details": {
-                "hintButtonLabel": "J'ai compris",
-                "hints": [
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
                   {
-                    "hint": "Un espace de travail permet de créer un espace de travail directement dans cette interface",
-                    "element": "#workspace",
+                    "title": "Espace de travail",
+                    "intro": "Un espace de travail permet de créer un espace de travail directement dans cette interface",
+                    "element": "#workspace button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Un email permet d'ouvrir l'interface de création d'un nouvel email",
-                    "element": "#mail",
+                    "title": "Email",
+                    "intro": "Un email permet d'ouvrir l'interface de création d'un nouvel email",
+                    "element": "#mail button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Un évènement permet de créer un évènement directement dans votre agenda",
-                    "element": "#reu",
+                    "title": "Évènement",
+                    "intro": "Un évènement permet de créer un évènement directement dans votre agenda",
+                    "element": "#reu button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Ouvre la page de création d'une web-conférence",
-                    "element": "#viso",
+                    "title": "Web-conférence",
+                    "intro": "Ouvre la page de création d'une web-conférence",
+                    "element": "#viso button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Le BNUM vous offre la possibilité de créer des listes de tâches à faire",
-                    "element": "#tache",
+                    "title": "Tâche",
+                    "intro": "Le BNUM vous offre la possibilité de créer des listes de tâches à faire",
+                    "element": "#tache button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Un document permet de créer directement un nouveau fichier (Texte, office, excel ...)",
-                    "element": "#document",
+                    "title": "Document",
+                    "intro": "Un document permet de créer directement un nouveau fichier (Texte, office, excel ...)",
+                    "element": "#document button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Ouvre l'outil bloc note du BNUM",
-                    "element": "#blocnote",
+                    "title": "Bloc-note",
+                    "intro": "Ouvre l'outil bloc note du BNUM",
+                    "element": "#blocnote button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Ouvre la page de sondage de l'outil 'Pégase'",
-                    "element": "#pega",
+                    "title": "Pégase",
+                    "intro": "Ouvre la page de sondage de l'outil 'Pégase'",
+                    "element": "#pega button",
                     "position": "right",
                     "hintPosition": "top-right"
                   }
                 ]
-              }
+              },
+              "position": "bottom"
             },
             {
               "title": "Assistance",

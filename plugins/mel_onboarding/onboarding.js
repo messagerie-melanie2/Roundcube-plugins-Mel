@@ -387,9 +387,17 @@ function intro_hints(item) {
     intro.showHintDialog(0);
   }, 100);
 
+  $('#layout-menu li').click(function (e) {
+    if (window.parent.$('#layout-menu').hasClass('force-open') && $(this).attr('class') != "button-more-options") {
+      intro.hideHints();
+      rcmail.onboarding_close();
+      window.parent.$('#layout-menu').removeClass('force-open');
+    }
+  })
+
   $(window).click(function (e) {
     if (e.target.id != "navigation-details" && (e.target.parentElement != undefined && e.target.parentElement.id != "navigation-details")) {
-        intro.hideHints();
+      intro.hideHints();
       if ($('#layout-menu').hasClass('force-open')) {
         window.parent.$('#layout-menu').removeClass('force-open');
       }

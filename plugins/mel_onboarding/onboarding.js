@@ -53,6 +53,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
  */
 rcube_webmail.prototype.show_current_page_onboarding = function (task) {
   let json_page = rcmail.env.help_page_onboarding[task];
+  // let json_page = "bureau_tour.json";
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
       window.current_onboarding = JSON.parse(json);
@@ -387,30 +388,13 @@ function intro_hints(item) {
   }, 100);
 
   $(window).click(function (e) {
-    if (e.target.id != "navigation-details" && e.target.parentElement.id != "navigation-details") {
-      intro.hideHints();
-      intro.removeHints();
+    if (e.target.id != "navigation-details" && (e.target.parentElement != undefined && e.target.parentElement.id != "navigation-details")) {
+        intro.hideHints();
       if ($('#layout-menu').hasClass('force-open')) {
         window.parent.$('#layout-menu').removeClass('force-open');
       }
     }
   });
-
-  // intro.onhintclick(function (e) {
-  //   if(this._introItems[e.dataset.step].button)
-  //   {
-  //     let buttonPrevious = $('<button class="mel-button btn btn-secondary btn-onboarding-previous">' + rcmail.gettext('previous') + '</button>');
-  //     buttonPrevious.click(function () {
-  //     console.log("kopdqskop");
-  //     });
-  //     var dom_nodes = $($.parseHTML(this._introItems[e.dataset.step].hint));
-  //     dom_nodes.append(buttonPrevious)
-  //     console.log(dom_nodes);
-  //     this._introItems[e.dataset.step].hint = dom_nodes.prop('outerHTML');
-  //     // this._introItems[e.dataset.step].hint.add(buttonPrevious);
-
-  //   }
-  // })
 }
 
 
@@ -534,7 +518,7 @@ function intro_popup_hint(event, intro_details) {
     if (!intro_details.passed) {
       intro_details.passed = true;
       intro_details.hideHints();
-      intro_details.removeHints();
+      // intro_details.removeHints();
       goToNextIntroStep(event)
     }
   })

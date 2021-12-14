@@ -349,7 +349,7 @@ html.touch #layout-menu,
 #layout-menu  a > span.inner,
 #layout-menu  span > a > span.inner
 {
-    font-size: initial;
+    font-size: 1rem;
 }
 
 html.touch #layout-menu{
@@ -395,6 +395,7 @@ html.touch #layout-menu  span > a > span.inner,
     padding:0;
     padding-left: 5px;
     height: 58px;
+    white-space:normal;
 }
 
 html.touch #layout-menu  a > span.inner,
@@ -418,7 +419,7 @@ html.touch #layout-menu  span > a > span.inner
 	/* padding-left: 4px; */
     z-index: 3;
     border:none;
-
+    white-space:normal;
     /* margin-top: 0px; */
     /* padding:0;
     height: 58px; */

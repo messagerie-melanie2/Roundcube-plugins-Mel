@@ -116,58 +116,69 @@
               "popup": "Create",
               "button": "Montrez-moi !",
               "details": {
-                "hintButtonLabel": "J'ai compris",
-                "hints": [
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
                   {
-                    "hint": "Un espace de travail permet de créer un espace de travail directement dans cette interface",
-                    "element": "#workspace",
+                    "title": "Espace de travail",
+                    "intro": "Un espace de travail permet de créer un espace de travail directement dans cette interface",
+                    "element": "#workspace button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Un email permet d'ouvrir l'interface de création d'un nouvel email",
-                    "element": "#mail",
+                    "title": "Email",
+                    "intro": "Un email permet d'ouvrir l'interface de création d'un nouvel email",
+                    "element": "#mail button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Un évènement permet de créer un évènement directement dans votre agenda",
-                    "element": "#reu",
+                    "title": "Évènement",
+                    "intro": "Un évènement permet de créer un évènement directement dans votre agenda",
+                    "element": "#reu button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Ouvre la page de création d'une web-conférence",
-                    "element": "#viso",
+                    "title": "Web-conférence",
+                    "intro": "Ouvre la page de création d'une web-conférence",
+                    "element": "#viso button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Le BNUM vous offre la possibilité de créer des listes de tâches à faire",
-                    "element": "#tache",
+                    "title": "Tâche",
+                    "intro": "Le BNUM vous offre la possibilité de créer des listes de tâches à faire",
+                    "element": "#tache button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Un document permet de créer directement un nouveau fichier (Texte, office, excel ...)",
-                    "element": "#document",
+                    "title": "Document",
+                    "intro": "Un document permet de créer directement un nouveau fichier (Texte, office, excel ...)",
+                    "element": "#document button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Ouvre l'outil bloc note du BNUM",
-                    "element": "#blocnote",
+                    "title": "Bloc-note",
+                    "intro": "Ouvre l'outil bloc note du BNUM",
+                    "element": "#blocnote button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "hint": "Ouvre la page de sondage de l'outil 'Pégase'",
-                    "element": "#pega",
+                    "title": "Pégase",
+                    "intro": "Ouvre la page de sondage de l'outil 'Pégase'",
+                    "element": "#pega button",
                     "position": "right",
                     "hintPosition": "top-right"
                   }
                 ]
-              }
+              },
+              "position": "bottom"
             },
             {
               "title": "Assistance",
@@ -177,37 +188,40 @@
               "popup": "Help",
               "button": "Montrez-moi",
               "details": {
-                "hintButtonLabel": "J'ai compris",
-                "hints": [
+                "nextLabel": "Suivant",
+                "prevLabel": "Précédent",
+                "doneLabel": "Fermer",
+                "steps": [
                   {
-                    "hint": "Ce champ de recherche vous permet de rechercher votre besoin en quelques mots",
+                    "title": "Barre de recherche",
                     "element": "#help-search",
-                    "position": "right",
-                    "hintPosition": "top-right"
+                    "intro": "Ce champ de recherche vous permet de rechercher votre besoin en quelques mots",
+                    "position": "bottom"
                   },
                   {
-                    "hint": "'Voir l'aide générale de Mél' permet d'ouvrir l'ancienne page d'aide de l'outil Mél",
+                    "title": "Aide générale",
                     "element": ".helppage.general a",
-                    "position": "right",
-                    "hintPosition": "top-right"
+                    "intro": "'Voir l'aide générale de Mél' permet d'ouvrir l'ancienne page d'aide de l'outil Mél",
+                    "position": "bottom"
                   },
                   {
-                    "hint": "'Voir l'aide de la page courante' permet de réafficher cette aide",
+                    "title": "Aide page courante",
                     "element": ".helppage.current a",
-                    "position": "right",
-                    "hintPosition": "top-right"
+                    "intro":  "'Voir l'aide de la page courante' permet de réafficher cette aide",
+                    "position": "bottom"
                   },
                   {
-                    "hint": "Il est possible de proposer une idée d'évolution pour Mél (innovation, ergonomie, nouvelle fonctionnalité ...).Il ne s'agit pas de régler des problèmes d'utilisation ou de mauvais fonctionnement qui doivent être adresser à votre cellule informatique de proximité.",
+                    "title": "Proposer une amélioration",
                     "element": ".helppage.suggestion a",
-                    "position": "right",
-                    "hintPosition": "top-right"
+                    "intro": "Il est possible de proposer une idée d'évolution pour Mél (innovation, ergonomie, nouvelle fonctionnalité ...).Il ne s'agit pas de régler des problèmes d'utilisation ou de mauvais fonctionnement qui doivent être adresser à votre cellule informatique de proximité.",
+                    "position": "bottom",
+                    "tooltipClass": "big-width-intro"
                   },
                   {
-                    "hint": "L'onglet 'Actualité' affiche toutes les dernières nouveautés liées au BNUM ",
+                    "title": "Actualités",
                     "element": "#helpnews",
-                    "position": "right",
-                    "hintPosition": "top-right"
+                    "intro":  "L'onglet 'Actualité' affiche toutes les dernières nouveautés liées au BNUM ",
+                    "position": "bottom"
                   }
                 ]
               }

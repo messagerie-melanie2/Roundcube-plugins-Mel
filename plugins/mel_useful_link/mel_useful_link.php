@@ -66,7 +66,7 @@ class mel_useful_link extends rcube_plugin
           'class'	=> 'useful_links icon-mel-link',
           'classsel' => 'links button-selected icon-mel-link',
           'innerclass' => 'button-inner inner',
-          'label'	=> 'useful_links',
+          'label'	=> 'My_useful_links',
           'title' => '',
           'type'       => 'link',
           'domain' => "mel_useful_link"

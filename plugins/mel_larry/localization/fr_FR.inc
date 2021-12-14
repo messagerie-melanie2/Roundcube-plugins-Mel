@@ -20,7 +20,7 @@ $labels = array();
 
 $labels['control'] = "Affichage des messages";
 
-$labels['discussion'] = "Discussion";
+$labels['discussion'] = "Mes discussion";
 
 $labels['search_in'] = 'Rechercher dans';
 $labels['search_in_all_folders'] = 'Rechercher dans tous les dossiers';

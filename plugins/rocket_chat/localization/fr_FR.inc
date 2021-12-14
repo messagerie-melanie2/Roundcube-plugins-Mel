@@ -1,6 +1,6 @@
 <?php
 $labels = array();
-$labels['task'] = 'Discussion';
+$labels['task'] = 'Mes discussions';
 $labels['title'] = 'Discussion avec Ariane';
 
 

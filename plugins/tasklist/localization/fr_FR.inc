@@ -6,7 +6,7 @@
  *
  * For translation see https://www.transifex.com/projects/p/kolab/resource/tasklist/
  */
-$labels['navtitle'] = 'Tâches';
+$labels['navtitle'] = 'Mes tâches';
 $labels['lists'] = 'Liste des tâches';
 $labels['list'] = 'Liste de tâche';
 $labels['tags'] = 'Étiquettes';

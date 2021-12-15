@@ -32,6 +32,13 @@
     filter:brightness(3.5) hue-rotate(160deg)
 }
 
+html.dark-mode .mel-icon.mel-white::before, 
+html.dark-mode .mel-hoverable-icon:hover .mel-icon::before, 
+html.dark-mode .mel-hoverable-icon.mel-icon:hover::before
+{
+    filter:brightness(1);
+}
+
 .mel-icon.icon-align::before
 {
     /* top: -1px; */
@@ -63,6 +70,11 @@
 .mel-icon.icon-chevron-down::before
 {
     background-image: url("../fonts/mel_icons/Chevron_down.svg");
+}
+
+html.dark-mode .mel-icon.icon-chevron-down::before
+{
+    background-image: url("../fonts/mel_icons/Chevron_down_dark.svg");
 }
 
 .mel-icon.icon-help::before

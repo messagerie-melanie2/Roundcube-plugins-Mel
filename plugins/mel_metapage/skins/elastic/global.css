@@ -257,11 +257,16 @@ bottom: 21px; */
     border-top-right-radius: 15px;
 	position: absolute;
     top: -200px;
-	right: 165px;
+	right: 215px;
 	height: 200px;
 	width: 181px;
     padding: 15px;
     background-color: #5870BF;
+}
+
+.mozilla .toolbar-popup
+{
+    right: 165px;
 }
 
 .toolbar-popup > .toolbar-datas

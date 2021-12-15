@@ -118,6 +118,8 @@ html.dark-mode .tiny-rocket-chat
 
 }
 
+html.dark-mode .tiny-webconf-menu.dwp-round,
+html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select,
 html.dark-mode #rcmloginsubmit,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel,
 html.dark-mode body.task-calendar .fc-toolbar.fc-header-toolbar .fc-right button,
@@ -129,6 +131,21 @@ html.dark-mode .mel-button {
 	color: #E1C58F;
 	border-color: #E1C58F;
     border-width: thin;
+}
+
+html.dark-mode .tiny-webconf-menu.dwp-round.hidden-toolbar
+{
+    background-color: #1F2933;
+}
+
+html.dark-mode .tiny-webconf-menu.dwp-round
+{
+    color: #E1C58F!important;
+}
+
+html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select
+{
+    background-color:#1F2933;
 }
 
 html.dark-mode .mel-button.dark-no-border-default
@@ -154,6 +171,7 @@ html.dark-mode .mel-button.inverse:hover
     border-color: #E1C58F!important; 
 }
 
+html.dark-mode .tiny-webconf-menu.dwp-round,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel
 {
     border-style: solid!important;
@@ -169,6 +187,13 @@ html.dark-mode ul#mailboxlist ul li.selected
     background-color: transparent;
 }
 
+html.dark-mode .btn:focus
+{
+    color: #E1C58F!important;
+}
+
+html.dark-mode .tiny-webconf-menu.dwp-round:hover,
+html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select:hover,
 html.dark-mode .search-label:hover,
 html.dark-mode .my_favorites:hover,
 html.dark-mode #rcmloginsubmit:hover,
@@ -199,6 +224,7 @@ html.dark-mode .tiny-rocket-chat:hover/*,
     border-color: #2E2E2E!important;
 }
 
+html.dark-mode .tiny-webconf-menu.dwp-round.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel.active,
 html.dark-mode #rcmloginsubmit.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel:active,
@@ -491,6 +517,7 @@ html.dark-mode .fc .fc-day-number
     color:#96b9e7!important;
 }
 
+html.dark-mode .wsp-toolbar.webconf-toolbar .wsp-toolbar-item,
 html.dark-mode .task-addressbook .listing tbody td, 
 html.dark-mode .task-addressbook #layout-list .header,
 html.dark-mode .wsp-block,
@@ -671,6 +698,8 @@ html.dark-mode .roundrive-folder-create-select
 }
 
 /******** Modales ********/
+html.dark-mode .toolbar-popup,
+html.dark-mode .wsp-toolbar.webconf-toolbar,
 html.dark-mode .modal-content
 {
     background-color: #1F2933;

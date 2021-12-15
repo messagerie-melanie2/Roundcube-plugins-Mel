@@ -944,6 +944,12 @@ async function ChangeToolbarPage(_class)
             rcmail.set_busy(false);
             $(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
             rcmail.command("workspace.go");
+
+            if (parent.webconf_master_bar !== undefined)
+            {
+                parent.webconf_master_bar.update_toolbar_position(true);
+            }
+
         break;
         default:
             break;

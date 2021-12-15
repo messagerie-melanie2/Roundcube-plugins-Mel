@@ -765,6 +765,11 @@ class MasterWebconfBar {
         }
     }
 
+    is_toolbar_hidden()
+    {
+        return this.logo.hasClass("hidden-toolbar");
+    }
+
     /**
      * Affiche ou cache la toolbar
      */
@@ -895,6 +900,9 @@ class MasterWebconfBar {
         if (this.minified === true)
             return;
 
+        if (this.is_toolbar_hidden())
+            this.update_toolbar();
+
         this.minified = true;
 
         this.hide_element(this.document).
@@ -919,6 +927,9 @@ class MasterWebconfBar {
 
         if (this.minified === false)
             return;
+
+        if (this.is_toolbar_hidden())
+            this.update_toolbar();
 
         this.minified = false;
         this.show_element(this.document).
@@ -1097,6 +1108,8 @@ class MasterWebconfBar {
 
         this.send("full_screen_ariane");
         this.webconf.ariane.is_full = true;
+
+        parent.$("#sr-document-title-focusable").focus();
     }
 
     /**
@@ -1318,6 +1331,12 @@ class MasterWebconfBar {
                 }catch (er)
                 {}
 
+                if ($("iframe.stockage-frame").length > 0)
+                {
+                    $("iframe.stockage-frame")[0].contentWindow.src = mel_metapage.Functions.url("stockage", "", config);
+                }
+                else if ($(".stockage-frame").length > 0) $(".stockage-frame").remove();
+              
                 await mel_metapage.Functions.change_frame("stockage", true, true, config);
             }
         }
@@ -1657,6 +1676,18 @@ class ListenerWebConfBar
     {
         this.webconf.ariane.is_hide = false;
         this.webconf.update();
+
+        if (this.webconf.chat.length > 0 && this.webconf.ariane !== null && this.webconf.ariane !== undefined && this.webconf.ariane.room_name !== undefined)
+        {
+            try {
+                this.webconf.chat[0].contentWindow.postMessage({
+                    externalCommand: 'go',
+                    path: `/${this.webconf.ariane.room_name}`
+                }, '*');
+            } catch (error) {
+                
+            }
+        }
     }
 
     hide_ariane()

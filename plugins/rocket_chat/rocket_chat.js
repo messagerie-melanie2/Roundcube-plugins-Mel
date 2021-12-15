@@ -144,7 +144,7 @@ if (window.rcmail) {
 				title = '(' + unread + ') ' + title;
 			}
 			localStorage.setItem('rocket_chat_title', title);
-			$('.button-rocket_chat .button-inner').text(title);
+			// $('.button-rocket_chat .button-inner').text(title);
 			//document.title = title;
 			//refreshFavico();
 

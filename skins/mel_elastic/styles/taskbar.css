@@ -453,7 +453,7 @@ overflow: hidden;
    overflow: hidden;
    text-overflow: ellipsis;
    margin-top: -13px;
-
+    white-space: nowrap;
 }
 
 .menu.toolbar li#menu-small-li
@@ -550,6 +550,7 @@ nav.otherapps
 	margin-left: 15px;
 	display: flex;
 	align-items: center;
+    font-size: 1rem;
 }
 
 #otherapps a.wsp span

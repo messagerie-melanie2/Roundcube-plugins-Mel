@@ -422,7 +422,8 @@ class calendar extends rcube_plugin
             }
 
             $field_id  = 'rcmfd_timeslot';
-            $choices   = ['1', '2', '3', '4', '6'];
+            //PAMELA - Eviter les bugs
+            $choices   = ["1" => '1', '2' => '2', '3' => '3', '4' => '4', '6' => '6'];
             $timeslots = $this->rc->config->get('calendar_timeslots', $this->defaults['calendar_timeslots']);
 
             $select = new html_select(['name' => '_timeslots', 'id' => $field_id]);

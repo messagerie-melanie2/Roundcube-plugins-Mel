@@ -555,6 +555,10 @@ li#settingstabpluginmel_suggestion_box > a::before
     background-color: #363A5B;
 }
 
+.titanic{
+    float: none;
+}
+
 #tasklist li.taskitem div.taskhead.complete span.title
 {
     color: white!important;
@@ -2193,4 +2197,42 @@ body.task-mail.action-none #layout-content {
 {
     text-align: center;
     color: red;
+}
+
+.wlp_box
+{
+    border-radius: 5px;
+    background-color: #484D7A;
+    color: white;
+}
+
+.wlp-header {
+	padding-left: 5rem;
+	margin-top: 5px;
+	border-bottom: solid thin;
+    color:white;
+    border-color: #2C3054;
+}
+
+.wlp-minifieds
+{
+    position: absolute;
+    bottom: 0;
+    white-space: nowrap;
+    overflow: auto;
+}
+
+.wlp-minifieds .wlp-header
+{
+    display: inline-block;
+    margin: 0;
+    padding: 5px;
+    background-color: #484D7A;
+    border:solid thin #2C3054;
+}
+
+.wlp-header .mel-focus.focused,
+.wlp-header .mel-button:focus
+{
+    box-shadow: 0 0 0 .2rem #EDEDF069;
 }

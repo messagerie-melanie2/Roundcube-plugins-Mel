@@ -118,6 +118,7 @@ html.dark-mode .tiny-rocket-chat
 
 }
 
+html.dark-mode .roundbadge.icon-mel-videoconference,
 html.dark-mode .tiny-webconf-menu.dwp-round,
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select,
 html.dark-mode #rcmloginsubmit,
@@ -171,6 +172,7 @@ html.dark-mode .mel-button.inverse:hover
     border-color: #E1C58F!important; 
 }
 
+html.dark-mode .roundbadge.icon-mel-videoconference,
 html.dark-mode .tiny-webconf-menu.dwp-round,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel
 {
@@ -192,6 +194,7 @@ html.dark-mode .btn:focus
     color: #E1C58F!important;
 }
 
+html.dark-mode .roundbadge.icon-mel-videoconference:hover,
 html.dark-mode .tiny-webconf-menu.dwp-round:hover,
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select:hover,
 html.dark-mode .search-label:hover,
@@ -224,6 +227,7 @@ html.dark-mode .tiny-rocket-chat:hover/*,
     border-color: #2E2E2E!important;
 }
 
+html.dark-mode .roundbadge.icon-mel-videoconference.active,
 html.dark-mode .tiny-webconf-menu.dwp-round.active,
 html.dark-mode .btn.btn-block.btn-secondary.btn-mel.active,
 html.dark-mode #rcmloginsubmit.active,
@@ -698,6 +702,8 @@ html.dark-mode .roundrive-folder-create-select
 }
 
 /******** Modales ********/
+html.dark-mode .wlp_box,
+html.dark-mode .wlp-minifieds .wlp-header,
 html.dark-mode .toolbar-popup,
 html.dark-mode .wsp-toolbar.webconf-toolbar,
 html.dark-mode .modal-content
@@ -801,6 +807,18 @@ html.dark-mode .a-child-mel-focus a:focus,
 html.dark-mode .mel-button:focus
 {
     box-shadow: 0 0 0 .2rem #E1C58F69;
+}
+
+html.dark-mode .wlp-minifieds .wlp-header,
+html.dark-mode .wlp-header,
+html.dark-mode .wlp_box
+{
+    border-color: #E1C58F;
+}
+
+html.dark-mode .wlp-header
+{
+    color: #E1C58F;
 }
 
 /******** Formulaires ********/

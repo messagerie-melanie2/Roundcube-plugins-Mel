@@ -1056,20 +1056,21 @@ class MasterWebconfBar {
         }
 
         //Affiche le questionnaire
-        if (!parent.$("body").hasClass("task-webconf"))
-        {
-            parent.$("#layout-frames").css("display", "");
-            parent.$(".mm-frame").css("display", "none");
-            parent.$("iframe.webconf-frame").css("max-width", "100%").css("display", "")[0].src = url;
-        }
-        else {
-            parent.$(".questionswebconf-frame").remove();
-            $(".webconf-frame").remove();
-            mel_metapage.Functions.change_frame("questionswebconf", true, true, {_action:"loading"}).then(() => {
-                parent.$(".questionswebconf-frame")[0].src = url;
-                Title.set("Questionnaire Satisfaction", true);
-            });
-        }
+        this.showEndPageOnPopUp("Questionnaire satisfaction", url);
+        // if (!parent.$("body").hasClass("task-webconf"))
+        // {
+        //     parent.$("#layout-frames").css("display", "");
+        //     parent.$(".mm-frame").css("display", "none");
+        //     parent.$("iframe.webconf-frame").css("max-width", "100%").css("display", "")[0].src = url;
+        // }
+        // else {
+        //     parent.$(".questionswebconf-frame").remove();
+        //     $(".webconf-frame").remove();
+        //     mel_metapage.Functions.change_frame("questionswebconf", true, true, {_action:"loading"}).then(() => {
+        //         parent.$(".questionswebconf-frame")[0].src = url;
+        //         Title.set("Questionnaire Satisfaction", true);
+        //     });
+        // }
 
         //Gère le placement de la bulle de tchat
         if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
@@ -1085,6 +1086,8 @@ class MasterWebconfBar {
             parent.$("#touchmelmenu").removeAttr("disabled").removeClass("disabled");
             parent.$("#user-up-panel").removeAttr("disabled").removeClass("disabled").css("pointer-events", "");
         }
+
+        mm_st_CreateOrOpenModal("home");
     }
 
     /**
@@ -1326,20 +1329,67 @@ class MasterWebconfBar {
                 try{
                     if (this.webconf.wsp !== undefined && this.webconf.wsp.datas !== undefined && this.webconf.wsp.datas.uid !== undefined)
                     {
-                        config = {_params: `/apps/files?dir=/dossiers-${this.webconf.wsp.datas.uid}`};
+                        config = {_params: `/apps/files?dir=/dossiers-${this.webconf.wsp.datas.uid}`,
+                        _is_from:"iframe"
+                        };
                     }
                 }catch (er)
                 {}
 
                 if ($("iframe.stockage-frame").length > 0)
                 {
-                    $("iframe.stockage-frame")[0].contentWindow.src = mel_metapage.Functions.url("stockage", "", config);
+                    $("iframe.stockage-frame")[0].src = mel_metapage.Functions.url("stockage", "", config);
                 }
                 else if ($(".stockage-frame").length > 0) $(".stockage-frame").remove();
               
                 await mel_metapage.Functions.change_frame("stockage", true, true, config);
             }
         }
+
+    }
+
+    showEndPageOnPopUp(title, url)
+    {
+        let config = {
+            title,
+            // onclose:() => {},
+            // onminify:() => {},
+            // onexpand:() => {},
+            // icon_close:"icon-mel-close",
+            // icon_minify:'icon-mel-minus',
+            // icon_expend:'icon-mel-expend',
+            content:`<iframe title="${title}" src="${url}" style="width:100%;height:100%;"/>`,
+            // onsetup:() => {},
+            // aftersetup:() => {},
+            // beforeCreatingContent:() => "",
+            // onCreatingContent:(html) => html,
+             afterCreatingContent:($html, box) => {
+                 box.get.css("left","60px").css("top", "60px").addClass("questionnaireWebconf");
+                 setTimeout(() => {
+                    box.close.addClass("mel-focus focused");
+                    setTimeout(() => {
+                        box.close.removeClass("mel-focus").removeClass("focused");
+                        setTimeout(() => {
+                            box.close.addClass("mel-focus focused");
+                            setTimeout(() => {
+                                box.close.removeClass("mel-focus").removeClass("focused");
+                                setTimeout(() => {
+                                    box.close.focus();
+                                 }, 100);
+                             }, 100);
+                         }, 100);
+                     }, 200);
+                 }, 200);
+             },
+            width:"calc(100% - 60px)",
+            height:"calc(100% - 60px)"
+        };
+
+        return new Windows_Like_PopUp($("body"), config);
+    }
+
+    deletePopUpOnLaunch()
+    {
 
     }
 
@@ -1682,7 +1732,7 @@ class ListenerWebConfBar
             try {
                 this.webconf.chat[0].contentWindow.postMessage({
                     externalCommand: 'go',
-                    path: `/${this.webconf.ariane.room_name}`
+                    path: `/${(this.webconf.ariane.ispublic === true ? "channel" : "group")}/${this.webconf.ariane.room_name}`
                 }, '*');
             } catch (error) {
                 

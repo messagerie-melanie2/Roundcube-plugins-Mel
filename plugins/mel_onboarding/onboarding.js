@@ -166,6 +166,13 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
       if (first_item) {
         rcmail.onboarding_show_item(first_item);
       }
+
+      $('#layout-menu li').click(function (e) {
+        if (window.parent.$('#dimScreen').length && $(this).attr('class') != "button-more-options") {
+          rcmail.onboarding_close();
+          window.parent.$('#layout-menu').removeClass('force-open');
+        }
+      })
     });
   });
 };
@@ -386,14 +393,6 @@ function intro_hints(item) {
   setTimeout(() => {
     intro.showHintDialog(0);
   }, 100);
-
-  $('#layout-menu li').click(function (e) {
-    if (window.parent.$('#layout-menu').hasClass('force-open') && $(this).attr('class') != "button-more-options") {
-      intro.hideHints();
-      rcmail.onboarding_close();
-      window.parent.$('#layout-menu').removeClass('force-open');
-    }
-  })
 
   $(window).click(function (e) {
     if (e.target.id != "navigation-details" && (e.target.parentElement != undefined && e.target.parentElement.id != "navigation-details")) {

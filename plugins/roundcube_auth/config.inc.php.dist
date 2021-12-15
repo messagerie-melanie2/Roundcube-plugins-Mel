@@ -32,3 +32,18 @@ $config['oidc_scope'] = 'uid';
 // Field used as a login UID (email, uid, ...)
 $config['oidc_field_uid'] = 'uid';
 $config['oidc_field_eidas'] = 'acr';
+
+// -------------- Kerberos Activation -----------------
+
+// Kerberos activation based on client browser(s)
+//
+//$config['kerb_browsers'] = ["Firefox", "Chrome"];
+
+// Kerberos activation based on PHP ($_SERVER) header(s)
+// 
+//$config['kerb_headers'] = [ "HTTP_X_MINEQPROVENANCE" => "intranet" ];
+
+// Kerberos activation based on IP Address (IN or NOT IN subnet(s))
+//
+//$config['kerb_subnets'] = [ "0.0.0.0/0" => false, "100.0.0.0/8" => true ];
+//$config['kerb_subnets'] = [ "100.64.0.0/10" => false, "161.48.0.0/16" => false ];

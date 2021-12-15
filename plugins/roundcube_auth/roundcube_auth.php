@@ -26,6 +26,58 @@ abstract class AuthTypeEnum
     const OIDC = "OIDC";
 }
 
+abstract class AuthCheckType
+{
+    const KERB_COOKIES = "kerb_cookies"; // bool
+    const KERB_BROWSERS = "kerb_browsers"; // array (values)
+    const KERB_HEADERS = "kerb_headers"; // array (header => value)
+    const KERB_SUBNETS = "kerb_subnets"; // array (subnet => bool)
+}
+
+class AuthCheck
+{
+    public /*string*/ $name;
+    public /*bool*/ $enabled;
+    public /*array*/ $values;
+    public /*bool*/ $triggering;
+
+    public function getEnabledString($bool = true)
+    {
+        if($bool) { return ($this->enabled ? 'true' : 'false'); }
+        else { return ($this->enabled ? 'activée' : 'désactivée'); }
+    }
+
+    public function getTriggeringString($bool = true)
+    {
+        if($bool) { return ($this->triggering ? 'true' : 'false'); }
+        else { return ($this->triggering ? 'validée' : 'non-validée'); }
+    }
+
+    public function __construct(/*string*/ $name, /*bool*/ $enabled, /*array*/ $values = [], /*bool*/ $triggering = false)
+    {
+        $this->name = $name;
+        $this->enabled = $enabled;
+        $this->values = $values;
+        $this->triggering = $triggering;
+    }
+
+    public function __toString()
+    {
+        $string = "La méthode de vérification $this->name est ";
+        if($this->enabled)
+        {
+            $string .= $this->getEnabledString(false);
+            $string .= ".(Déclenchement : " . $this->getTriggeringString() . ").";
+            $string .= "\r\nValeurs : " . print_r($this->values, true);
+        }
+        else
+        {
+            $string .= $this->getEnabledString(false);
+        }
+        return $string;
+    }
+}
+
 /**
  * Roundcube OIDC
  *
@@ -65,6 +117,26 @@ class roundcube_auth extends rcube_plugin
         $this->add_hook('login_after', array($this, 'login_after'));
     }
 
+    /**
+     * @see https://gist.github.com/tott/7684443
+     * Check if a given ip is in a network
+     * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
+     * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
+     * @return boolean true if the ip is in this range / false if not.
+     */
+    function ip_in_range( $ip, $range ) {
+    	if ( strpos( $range, '/' ) == false ) {
+    		$range .= '/32';
+    	}
+    	// $range is in IP/CIDR format eg 127.0.0.1/24
+    	list( $range, $netmask ) = explode( '/', $range, 2 );
+    	$range_decimal = ip2long( $range );
+    	$ip_decimal = ip2long( $ip );
+    	$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+    	$netmask_decimal = ~ $wildcard_decimal;
+    	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+    }
+
     function redirect($query)
     {
         if ($query)
@@ -78,6 +150,7 @@ class roundcube_auth extends rcube_plugin
     {
         // Get Roundcube instance
         $rcmail = rcmail::get_instance();
+        $cfg = $rcmail->config->all();
 
         // Store (default) auth
         $auth = AuthTypeEnum::PASSWORD;
@@ -94,33 +167,113 @@ class roundcube_auth extends rcube_plugin
         // OIDC with Kerberos
         if($rcmail->config->get('oidc_auth_kerberos'))
         {
-            if(false) // TODO check if cookie contains Kerberos
+            $cookiesCheck = isset($cfg[AuthCheckType::KERB_COOKIES]) && ($cfg[AuthCheckType::KERB_COOKIES] == true)
+                // new AuthCheck(name, enabled, values, triggering)
+                ? new AuthCheck(AuthCheckType::KERB_COOKIES, true, [/* TODO get cookie name ? */], false) 
+                : new AuthCheck(AuthCheckType::KERB_COOKIES, false);
+
+            $browsersCheck = isset($cfg[AuthCheckType::KERB_BROWSERS]) 
+            // new AuthCheck(name, enabled, values, triggering)
+                ? new AuthCheck(AuthCheckType::KERB_BROWSERS, true, $cfg[AuthCheckType::KERB_BROWSERS], false) 
+                : new AuthCheck(AuthCheckType::KERB_BROWSERS, false);
+
+            $headersCheck = isset($cfg[AuthCheckType::KERB_HEADERS])
+            // new AuthCheck(name, enabled, values, triggering) 
+                ? new AuthCheck(AuthCheckType::KERB_HEADERS, true, $cfg[AuthCheckType::KERB_HEADERS], false) 
+                : new AuthCheck(AuthCheckType::KERB_HEADERS, false);
+
+            $subnetsCheck = isset($cfg[AuthCheckType::KERB_SUBNETS]) 
+                // new AuthCheck(name, enabled, values, triggering)        
+                ? new AuthCheck(AuthCheckType::KERB_SUBNETS, true, $cfg[AuthCheckType::KERB_SUBNETS], true) 
+                : new AuthCheck(AuthCheckType::KERB_SUBNETS, false);
+
+            foreach([$cookiesCheck, $browsersCheck, $headersCheck, $subnetsCheck] as $check)
             {
-                $auth = AuthTypeEnum::KERBEROS;
+                mel_logs::get_instance()->log(mel_logs::DEBUG, $check);
             }
-            else
+            
+            // Cookies
+            if($cookiesCheck->enabled)
             {
-                // TODO use a config param (Browser "list")
-                // TODO check OS (Windows, Linux) ?
-                if(strpos($_SERVER['HTTP_USER_AGENT'], "Firefox") !== false) // =~ str_contains()
+                mel_logs::get_instance()->log(mel_logs::ERROR, "[RC_Auth] Kerberos - !!! NOT_YET_IMPLEMENTED !!!.");
+                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - !!! NOT_YET_IMPLEMENTED !!!.");
+                // TODO implement
+                // $cookiesCheck->triggering = true;
+            }
+            else { mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Pas de vérification sur les cookies du client."); }
+            
+            // Browsers
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Kerberos - User-Agent : " . $_SERVER['HTTP_USER_AGENT']);
+            
+            if($browsersCheck->enabled)
+            {
+                foreach($browsersCheck->values as $browser)
                 {
-                    $auth = AuthTypeEnum::KERBEROS;
-                }
-                else
-                {
-                    // TODO use a config param (Intra header)
-                    // TODO filter using IP address (RP or Client) => MTE only ?
-                    if($_SERVER["HTTP_X_MINEQPROVENANCE"] == "intranet")
+                    if(strpos($_SERVER['HTTP_USER_AGENT'], $browser) !== false)
                     {
-                        $auth = AuthTypeEnum::KERBEROS;
+                        $browser_str = $browser == " " ? "ALL" : $browser;
+                        //
+                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client utilise le navigateur autorisé $browser_str");
+                        $browsersCheck->triggering = true;
                     }
                 }
+            }
+            else { mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Pas de vérification sur le navigateur du client."); }
+            
+            // Headers            
+            if($headersCheck->enabled)
+            {
+                foreach($headersCheck->values as $header => $value)
+                {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Kerberos - Valeur de \$_SERVER[$header] : $_SERVER[$header]");
+                    
+                    if($_SERVER[$header] == $value)
+                    {
+                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client arrive avec la valeur attendue pour $header !");
+                        $headersCheck->triggering = true;
+                    }
+                }
+            }
+            else { mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Pas de vérification sur les headers."); }
+            
+            // Subnets            
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Kerberos - REMOTE_ADDR : " . $_SERVER['REMOTE_ADDR']);
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Kerberos - HTTP_X_FORWARDED_FOR : " . $_SERVER['HTTP_X_FORWARDED_FOR']);
+            
+            if($subnetsCheck->enabled)
+            {
+                foreach($subnetsCheck->values as $subnet => $enable)
+                {
+                    $enable_str = $enable ? "autorisé" : "bloqué";
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "Subnet $enable_str : $subnet");
+                    
+                    if($this->ip_in_range($_SERVER['REMOTE_ADDR'], $subnet) || 
+                        $this->ip_in_range($_SERVER['HTTP_X_FORWARDED_FOR'], $subnet))
+                    {
+                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client arrive avec une IP dans un subnet $enable_str !");
+                        $subnetsCheck->triggering = $enable;
+                    }
+                }
+            }
+            else { mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Pas de vérification sur l'adresse IP du client."); }
+
+            $checks = [];
+            foreach([$cookiesCheck, $browsersCheck, $headersCheck, $subnetsCheck] as $check)
+            {
+                if($check->enabled)
+                {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, $check);
+                    array_push($checks, $check->triggering);
+                }
+            }
+
+            if(in_array(false, $checks, true) === false)
+            {
+                $auth = AuthTypeEnum::KERBEROS; 
             }
         }
 
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Détermination de la méthode d'auth...");
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] PHP - User-Agent : " . $_SERVER['HTTP_USER_AGENT']);
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] PHP - Provenance : " . $_SERVER["HTTP_X_MINEQPROVENANCE"]);
         mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Auth déterminée : $auth");
         return $auth;
     }

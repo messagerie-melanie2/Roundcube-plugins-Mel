@@ -21,73 +21,73 @@
         "highlight": "#layout-menu",
         "bloccss": "text-align: left; max-width: 35em; margin-left: 80px;text-align:justify",
         "iframecss": "padding-top:0px;padding-left:60px;",
-        "button": "<span>En savoir plus</span><span class='icon-mel-arrow-right plus'></span>",
+        "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
         "details": {
           "hintButtonLabel": "J'ai compris",
           "hints": [
             {
               "element": ".button-home",
-              "hint": "L'accueil permet de revenir à la page principale du BNUM.",
+              "hint": "Il s'agit de la page de d'accueil par défaut de votre Bureau Numérique.<br/><br/>L'accueil affiche les événements et tâches du jour, les informations de votre ministère et de votre service ainsi que les trois derniers espaces de travail modifiés.",
               "hintPosition": "middle-right",
               "position": "right"
             },
             {
               "element": ".button-menu-last-frame",
-              "hint": "Ce bouton permet de revenir sur la page précédement ouverte sans avoir à la recharger.",
+              "hint": "Le bouton \"Revenir à\" vous permet de revenir instantanément à la dernière application que vous avez ouverte dans le Bureau Numérique.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-mail",
-              "hint": "Mes courriels permet d'ouvrir votre messagerie web.",
+              "hint": "\"Ma messagerie Mél\" vous permet d'accéder à vos courriels.<br><br>Vous aurez la possiblité de consulter les messages venants de votre boîte personnelle ainsi que les messages des boîtes que l'on vous a partagé.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-calendar",
-              "hint": "le calendrier permet de gérer votre agenda et ceux sur lesquels vous avez des droits",
+              "hint": "\"Mon agenda\" vous permet d'accéder à vos agendas.<br><br>Dans cette application vous retrouverez votre agenda personnel ainsi que tous les agendas que les autres utilisateurs de Mél vous ont partagé.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-rocket",
-              "hint": "l'onglet Discussion permet un accès direct aux caneaux de discussion de Ariane",
+              "hint": "\"Mes discussions\" vous permet d'accéder à la messagerie instantanée du Bureau Numérique.<br><br>Dans cette application vous retrouvez tous vos salons de messagerie instantanée ainsi que vos échanges en direct avec les autres utilisateurs du Bureau Numérique.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-wsp",
-              "hint": "'Mes espaces de travail' permet de gérer et de créer vos espaces de travails",
+              "hint": "\"Mes espaces de travail\" vous permet d'accéder à tous vos espaces de travail du Bureau Numérique.<br><br>Dans un espace de travail vous pourrez alors retrouver un espace de stockage pour vos documents, un salon de messagerie instantanée, une liste de diffusion, un kanban et bien d'autres fonctionnalités à découvrir.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-stockage",
-              "hint": "Le stockage permet de déposer/échanger des fichiers sur un espace de stockage distant",
+              "hint": "\"Mes documents\" vous permet d'accéder au stockage de tous vos document.<br><br>Dans cette applications vous pourrez accéder à tous vos documents personnels, ainsi que tous les documents que les autres utilisateurs du Bureau Numérique vous ont partagé.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-tasklist",
-              "hint": "Le BNUM offre la possibilité de créer des listes de tâches à faire",
+              "hint": "\"Mes tâches\" vous permet d'accéder à vos tâches et tâches partagées.<br><br>Dans cette applications vous retrouverez toutes vos listes de tâches personnelles ainsi que toutes les listes de tâches que les autres utilisateurs du Bureau Numérique vous ont partagé.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-contacts",
-              "hint": "Permet d'accéder à l'ensemble de vos contacts et différents annuaires.",
+              "hint": "\"Annuaire\" vous permet d'accéder à l'annuaire ministériel ainsi qu'à vos contacts personnels.<br><br>Dans cette application vous pourrez parcourir l'annuaire ministériel pour retrouver un utilisateur ou un service. Vous pourrez également créer vos propres contacts personnels et les partager avec les autres utilisateurs du Bureau Numérique.",
               "position": "right",
               "hintPosition": "middle-right"
             },
             {
               "element": ".button-more-options",
-              "hint": "Cet onglet regroupe d\"autre fonctionnalité comme le Kanban ou les sondages.",
+              "hint": "\"Plus d'applications\" vous permet de déplier la barre d'outils afin d'accéder aux outils supplémentaires proposés dans le Bureau Numérique.<br><br>Vous pourrez retrouver un outil de Kanban, un outil de Sondage et vos liens utiles du Bureau Numérique.",
               "hintPosition": "middle-right",
               "position": "right"
             },
             {
               "element": ".button-settings",
-              "hint": "Cette page vous présente les options avec leur valeur par défaut.",
+              "hint": "La \"Configuration du Bureau Numérique\" vous permet de personnaliser et de configurer le comportement de votre Bureau Numérique. Vous retrouverez également ici toute la configuration de votre compte (gestionnaire d'absence, gestion du mot de passe, etc.).",
               "position": "right",
               "hintPosition": "middle-right"
             }
@@ -103,7 +103,7 @@
         "description": "Barre du haut pour accéder rapidement à la création, à l'assistance et à la recherche",
         "highlight": "#layout header div.barup",
         "iframecss": "padding-top:60px;padding-left:0px;",
-        "button": "<span>En savoir plus</span><span class='icon-mel-arrow-right plus'></span>",
+        "button": "<span>Découvrir la barre d'outils</span><span class='icon-mel-arrow-right plus'></span>",
         "details": {
           "nextLabel": "Suivant",
           "prevLabel": "Précédent",
@@ -112,7 +112,7 @@
             {
               "title": "Créer",
               "element": "#button-create",
-              "intro": "Ce raccourci permet la création direct de contenu comme des mails ou encore des espaces de travail.",
+              "intro": "Le bouton \"Créer\" est le point d'entrée pour la création de contenu dans le Bureau Numérique.<br><br>Que vous souhaitiez rédiger un nouveau message, créer une réunion ou un espace de travail ou encore lancer une webconférence, tout se retrouve directement dans ce menu.",
               "popup": "Create",
               "button": "Montrez-moi !",
               "details": {
@@ -122,56 +122,56 @@
                 "steps": [
                   {
                     "title": "Espace de travail",
-                    "intro": "Un espace de travail permet de créer un espace de travail directement dans cette interface",
+                    "intro": "Créez votre espace de travail à partir de ce menu.<br><br>Choisissez un titre, des applications pour commencer à collaborer avec d'autres utilisateurs du Bureau Numérique.",
                     "element": "#workspace button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
                     "title": "Email",
-                    "intro": "Un email permet d'ouvrir l'interface de création d'un nouvel email",
+                    "intro": "Rédigez directement un nouvel e-mail depuis ce menu.",
                     "element": "#mail button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
                     "title": "Évènement",
-                    "intro": "Un évènement permet de créer un évènement directement dans votre agenda",
+                    "intro": "Créez un événement ou une réunion directement depuis ce menu.<br><br>Vous pourrez rattacher cette réunion a un espace de travail ou directement lui associer une webconférence.",
                     "element": "#reu button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
                     "title": "Web-conférence",
-                    "intro": "Ouvre la page de création d'une web-conférence",
+                    "intro": "Créez une nouvelle web-conférence depuis ce menu.<br><br>Une fois la web-conférence créée vous pourrez directement partager le lien vers la conférence avec vos contacts.",
                     "element": "#viso button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
                     "title": "Tâche",
-                    "intro": "Le BNUM vous offre la possibilité de créer des listes de tâches à faire",
+                    "intro": "Créez vos nouvelles tâches directement depuis ce menu.<br><br>Vos tâches se retrouveront directement dans l'espace de travail associé et dans votre journée.",
                     "element": "#tache button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
                     "title": "Document",
-                    "intro": "Un document permet de créer directement un nouveau fichier (Texte, office, excel ...)",
+                    "intro": "Créez un nouveau document de travail collaboratif depuis ce menu.<br><br>Vous aurez la possibilité de choisir le format du document à créer (ods, odt, odp) et d'éditer ce document de manière collaborative avec les autres utilisateurs du Bureau Numérique.",
                     "element": "#document button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
                     "title": "Bloc-note",
-                    "intro": "Ouvre l'outil bloc note du BNUM",
+                    "intro": "Le bloc-note arrivera bientôt dans votre Bureau Numérique",
                     "element": "#blocnote button",
                     "position": "right",
                     "hintPosition": "top-right"
                   },
                   {
-                    "title": "Pégase",
-                    "intro": "Ouvre la page de sondage de l'outil 'Pégase'",
+                    "title": "Sondage",
+                    "intro": "Créez un nouveau sondage directement depuis ce menu.<br><br>Vous pourrez alors planifier une réunion avec le sondage de date, gérer des rendez-vous ou encore faire un sondage libre.",
                     "element": "#pega button",
                     "position": "right",
                     "hintPosition": "top-right"
@@ -183,7 +183,7 @@
             {
               "title": "Assistance",
               "element": "#button-help",
-              "intro": "Ce raccourci ouvre une popup contenant toutes les demandes d'assistances (aides, propositions d'amélioration)",
+              "intro": "Le bouton \"Assistance\" ouvre le centre d'assistance du Bureau Numérique.<br><br>Vous pourrez chercher les réponses a vos questions, voir les différentes pages d'aide, lancer l'aide dynamique de la page ou encore contacter la communauté Mél.",
               "position": "bottom",
               "popup": "Help",
               "button": "Montrez-moi",
@@ -195,32 +195,32 @@
                   {
                     "title": "Barre de recherche",
                     "element": "#help-search",
-                    "intro": "Ce champ de recherche vous permet de rechercher votre besoin en quelques mots",
+                    "intro": "Ce champ de recherche vous permet de rechercher votre besoin en quelques mots.",
                     "position": "bottom"
                   },
                   {
                     "title": "Aide générale",
                     "element": ".helppage.general a",
-                    "intro": "'Voir l'aide générale de Mél' permet d'ouvrir l'ancienne page d'aide de l'outil Mél",
+                    "intro": "\"Voir l'aide générale de Mél\" permet d'ouvrir la page d'aide de tous les outils en lien avec Mél.",
                     "position": "bottom"
                   },
                   {
                     "title": "Aide page courante",
                     "element": ".helppage.current a",
-                    "intro":  "'Voir l'aide de la page courante' permet de réafficher cette aide",
+                    "intro":  "\"Voir l'aide de la page courante\" permet d'afficher l'aide dynamique liée à la page courant du Bureau Numérique.",
                     "position": "bottom"
                   },
                   {
                     "title": "Proposer une amélioration",
                     "element": ".helppage.suggestion a",
-                    "intro": "Il est possible de proposer une idée d'évolution pour Mél (innovation, ergonomie, nouvelle fonctionnalité ...).Il ne s'agit pas de régler des problèmes d'utilisation ou de mauvais fonctionnement qui doivent être adresser à votre cellule informatique de proximité.",
+                    "intro": "Proposez une amélioration pour le Bureau Numérique (ou les outils Mel en général).",
                     "position": "bottom",
                     "tooltipClass": "big-width-intro"
                   },
                   {
                     "title": "Actualités",
                     "element": "#helpnews",
-                    "intro":  "L'onglet 'Actualité' affiche toutes les dernières nouveautés liées au BNUM ",
+                    "intro":  "L'onglet 'Actualité' affiche toutes les dernières nouveautés liées au Bureau Numérique.",
                     "position": "bottom"
                   }
                 ]
@@ -230,7 +230,7 @@
               "title": "Mes raccourcis",
               "element": "#button-shortcut",
               "popup": "Shortcut",
-              "intro": "Mes raccourcis permet d'afficher vos tâches et évènements du jour",
+              "intro": "\"Mes raccourcis\" vous permet d'afficher vos tâches et évènements du jour",
               "button": "Démonstration",
               "details": {
                 "tooltipClass": "index-maj",
@@ -257,14 +257,14 @@
             {
               "title": "Recherche",
               "element": ".search",
-              "intro": "Vous permet de recherchez des mots clés présent dans vos emails, documents ou agendas",
+              "intro": "Vous permet de recherchez dans vos emails, vos tâches et vos événements",
               "position": "bottom"
             },
             {
               "title": "Mon compte",
               "element": "#user-up-popup",
               "popup": "User",
-              "intro": "Menu déroulant regroupant certaines options pratiques (Rafraîchir la page, options d'avatar...)",
+              "intro": "Le menu \"Bienvenue\" vous permet d'accéder à certaines options rapides (comme la déconnexion ou le changement d'avatar).",
               "button": "Dérouler le menu",
               "details": {
                 "nextLabel": "Suivant",
@@ -274,19 +274,19 @@
                   {
                     "title": "Rafraîchir",
                     "element": ".refresh.refresh-current-thing",
-                    "intro": "Permet d'actualiser la page en cours",
+                    "intro": "Permet d'actualiser la page en cours (à utiliser en cas de problème d'affichage).",
                     "position": "left"
                   },
                   {
                     "title": "Cacher",
                     "element": ".settings.toggleChatCommand ",
-                    "intro": "Permet de cacher la bulle de discussion située en bas à droite de votre écran",
+                    "intro": "Permet de cacher la bulle de discussion située en bas à droite de votre écran.",
                     "position": "left"
                   },
                   {
-                    "title": "Mes options",
+                    "title": "Mon compte",
                     "element": ".settings.my_account ",
-                    "intro": "Ouvre les options du bureau numérique",
+                    "intro": "Permet de modifier les informations liées à votre compte personnel (gestionnaire d'absence, changement de mot de passe, ...)",
                     "position": "left"
                   },
                   {

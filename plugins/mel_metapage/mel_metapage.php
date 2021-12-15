@@ -333,7 +333,9 @@ class mel_metapage extends rcube_plugin
         $files = scandir(__DIR__."/js/init/$folder");
         $size = count($files);
         for ($i=0; $i < $size; ++$i) {
-            if (strpos($files[$i], ".js") !== false)
+            /*if (strpos($files[$i], ".min.js") !== false)
+                continue;
+            else */if (strpos($files[$i], ".js") !== false)
                 $this->include_script("js/init/$folder/".$files[$i]);
             else if ($files[$i] === "." || $files[$i] === ".." || strpos($files[$i], ".") !== false)
                 continue;

@@ -469,27 +469,29 @@ class roundcube_auth extends rcube_plugin
                 $uid = $token->{$rcmail->config->get('oidc_field_uid')};
                 $eidas = $token->{$rcmail->config->get('oidc_field_eidas')};
 
-                // TODO
-                // check if OIDC is allowed for this user (in case of direct connection)
-                // $this->check_ldap_oidc($uid);
-                // => if false, modify selected_auth / if conditions should not pass
+                if($this->check_ldap_oidc($uid))
+                {
+                    // Remove previous eidas value
+                    unset($_SESSION['eidas']);
 
-                // Remove previous eidas value
-                unset($_SESSION['eidas']);
-
-                // Store eidas value
-                $_SESSION['eidas'] = $eidas;
-
-                // Set token as password
-                $password = $this->oidc_helper->getToken(TokenTypeEnum::ID_TOKEN);
-            
-                // Modify args values
-                // mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - ajout de l'eidas dans args : ".$eidas);
-                $args['user'] = $uid;
-                $args['pass'] = $password;
-                $args['cookiecheck'] = true;
-                $args['valid'] = true;
-                $args['eidas'] = $eidas;
+                    // Store eidas value
+                    $_SESSION['eidas'] = $eidas;
+    
+                    // Set token as password
+                    $password = $this->oidc_helper->getToken(TokenTypeEnum::ID_TOKEN);
+                
+                    // Modify args values
+                    // mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - ajout de l'eidas dans args : ".$eidas);
+                    $args['user'] = $uid;
+                    $args['pass'] = $password;
+                    $args['cookiecheck'] = true;
+                    $args['valid'] = true;
+                    $args['eidas'] = $eidas;
+                }
+                else
+                {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] OIDC - Utilisateur non autorisé à se connecter en OIDC (LDAP).");
+                }
             }
             catch (\Exception $e)
             {

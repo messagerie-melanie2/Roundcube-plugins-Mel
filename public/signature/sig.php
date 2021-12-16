@@ -148,6 +148,7 @@ function logo() {
   }
   $sources[$rcmail_config['signature_image_marianne']] = image_data($rcmail_config['signature_image_marianne_outlook']);
   $sources[$rcmail_config['signature_image_devise']] = image_data($rcmail_config['signature_image_devise_outlook']);
+  $sources[$rcmail_config['signature_image_other_logo']] = image_data($rcmail_config['signature_image_other_logo_outlook'] ?: $rcmail_config['signature_image_other_logo']);
   $html .= '</select>';
   return $html;
 }
@@ -442,11 +443,18 @@ else {
     rcmail.env.logo_sources = {};
     <?php
       foreach ($env_links as $key => $value) {
-        echo "rcmail.env.signature_links['$key'] = '$value';";
+        echo "rcmail.env.signature_links['$key'] = '$value';\r\n";
       }
       foreach ($sources as $key => $value) {
-        echo "rcmail.env.logo_sources['$key'] = '$value';";
+        echo "rcmail.env.logo_sources['$key'] = '$value';\r\n";
       }
+      echo "rcmail.env.logo_url_marianne = '$rcmail_config[signature_image_marianne]';\r\n";
+      echo "rcmail.env.logo_url_marianne_outlook = '$rcmail_config[signature_image_marianne_outlook]';\r\n";
+      echo "rcmail.env.logo_url_devise = '$rcmail_config[signature_image_devise]';\r\n";
+      echo "rcmail.env.logo_url_devise_outlook = '$rcmail_config[signature_image_devise_outlook]';\r\n";
+      echo "rcmail.env.logo_url_other = '$rcmail_config[signature_image_other_logo]';\r\n";
+      echo "rcmail.env.logo_url_other_outlook = '$rcmail_config[signature_image_other_logo_outlook]';\r\n";
+      echo "rcmail.env.logo_title_other = \"$rcmail_config[signature_other_logo_title]\";\r\n";
     ?>
   </script>
 </html>

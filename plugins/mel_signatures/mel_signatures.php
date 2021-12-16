@@ -113,8 +113,27 @@ class mel_signatures extends rcube_plugin
             'identiteslist'         => array($this, 'identities'),
         ));
         // Gestion des images
+
+        // Marianne
         $this->rc->output->set_env('logo_source_marianne', $this->image_data($this->rc->config->get('signature_image_marianne')));
+        $this->rc->output->set_env('logo_url_marianne', $this->rc->config->get('signature_image_marianne'));
+        $this->rc->output->set_env('logo_url_marianne_outlook', $this->rc->config->get('signature_image_marianne_outlook'));
+
+        // Devise
         $this->rc->output->set_env('logo_source_devise', $this->image_data($this->rc->config->get('signature_image_devise')));
+        $this->rc->output->set_env('logo_url_devise', $this->rc->config->get('signature_image_devise'));
+        $this->rc->output->set_env('logo_url_devise_outlook', $this->rc->config->get('signature_image_devise_outlook'));
+
+        // Autres logos
+        $other_logo = $this->rc->config->get('signature_image_other_logo', null);
+        if (isset($other_logo)) {
+            $other_logo_outlook = $this->rc->config->get('signature_image_other_logo_outlook', null);
+            $this->rc->output->set_env('logo_source_other', $this->image_data($other_logo));
+            $this->rc->output->set_env('logo_url_other', $other_logo);
+            $this->rc->output->set_env('logo_url_other_outlook', isset($other_logo_outlook) ? $other_logo_outlook : $other_logo);
+            $this->rc->output->set_env('logo_title_other', $this->rc->config->get('signature_other_logo_title', 'Autre logo'));
+        }
+        
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
         $this->rc->output->send('mel_signatures.settings');

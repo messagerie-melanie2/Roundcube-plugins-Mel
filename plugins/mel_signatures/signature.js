@@ -143,12 +143,20 @@ function download_signature_outlook_zip() {
 
     // Images folder
     var img = zip.folder("images");
-    let select = document.getElementById("input-logo");
 
     // Add images files
-    img.file("marianne.png", rcmail.env.logo_sources['images/marianne.gif'].replace('data:image/png;base64,', ''), { base64: true });
-    img.file("devise.png", rcmail.env.logo_sources['images/devise.gif'].replace('data:image/png;base64,', ''), { base64: true });
-    img.file(select.value.replace('images/', ''), rcmail.env.logo_sources[select.value].replace('data:image/png;base64,', ''), { base64: true });
+    img.file(rcmail.env.logo_url_marianne_outlook.replace(/images\//, ''), rcmail.env.logo_sources[rcmail.env.logo_url_marianne].replace('data:image/png;base64,', ''), { base64: true });
+    img.file(rcmail.env.logo_url_devise_outlook.replace(/images\//, ''), rcmail.env.logo_sources[rcmail.env.logo_url_devise].replace('data:image/png;base64,', ''), { base64: true });
+
+    if (rcmail.env.logo_url_other) {
+        let filename = rcmail.env.logo_url_other_outlook.replace(/images\//, '');
+        if (filename.toLowerCase().indexOf('.png') !== -1) {
+            img.file(filename, rcmail.env.logo_sources[rcmail.env.logo_url_other].replace('data:image/png;base64,', ''), { base64: true });
+        }
+        else {
+            img.file(filename, rcmail.env.logo_sources[rcmail.env.logo_url_other].replace('data:image/jpeg;base64,', ''), { base64: true });
+        }
+    }
 
     // Download zip to browser
     zip.generateAsync({type:"base64"})
@@ -280,7 +288,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', createLogo(select.options[select.selectedIndex].value));
 
     // Logo Marianne
-    let logo_marianne = 'images/marianne.gif';
+    let logo_marianne = rcmail.env.logo_url_marianne;
     if (rcmail.env.logo_sources[logo_marianne]) {
         if (embeddedImage) {
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
@@ -288,15 +296,18 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
         }
         else {
             if (isOutlook) {
-                logo_marianne = 'images/marianne.png';
+                logo_marianne = rcmail.env.logo_url_marianne_outlook;
             }
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
                     createImage(images_url + logo_marianne, 'Marianne', isOutlook, 'marianne'));
         }
     }
+    else {
+        signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', '');
+    }
 
     // Logo Devise
-    let logo_devise = 'images/devise.gif';
+    let logo_devise = rcmail.env.logo_url_devise;
     if (rcmail.env.logo_sources[logo_devise]) {
         if (embeddedImage) {
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
@@ -304,12 +315,38 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
         }
         else {
             if (isOutlook) {
-                logo_devise = 'images/devise.png';
+                logo_devise = rcmail.env.logo_url_devise_outlook;
             }
             signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
                     createImage(images_url + logo_devise, 'Liberté, Égalité, Fraternité', isOutlook, 'devise'));
         }
     }
+    else {
+        signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', '');
+    }
+
+    // Gestion du logo supplémentaire
+    if (rcmail.env.logo_url_other) {
+        if (embeddedImage) {
+            signature_html = signature_html.replace('%%TEMPLATE_OTHER_LOGO%%', 
+                '<br>' + createImage(rcmail.env.logo_source_other ? rcmail.env.logo_source_other : rcmail.env.logo_sources[rcmail.env.logo_url_other], rcmail.env.logo_title_other, isOutlook, 'other'));
+        }
+        else {
+            let logo_other = rcmail.env.logo_url_other;
+            if (isOutlook) {
+                if (!rcmail.env.logo_url_other_outlook) {
+                    rcmail.env.logo_url_other_outlook = rcmail.env.logo_url_other;
+                }
+                logo_other = rcmail.env.logo_url_other_outlook;
+            }
+            signature_html = signature_html.replace('%%TEMPLATE_OTHER_LOGO%%', 
+                '<br>' + createImage(images_url + logo_other, rcmail.env.logo_title_other, isOutlook, 'other'));
+        }
+    }
+    else {
+        signature_html = signature_html.replace('%%TEMPLATE_OTHER_LOGO%%', '');
+    }
+    
     
     return signature_html.replace(/(\r\n|\n|\r)/gm,"").trim();
 }

@@ -2087,7 +2087,7 @@ class mel_driver extends calendar_driver {
     try {
       $organizer = $event->organizer;
       // Ne pas ajouter de pièce jointe si on n'est pas organisateur (et que l'organisateur est au ministère
-      if (isset($organizer) && ! $organizer->extern && ! empty($organizer->email) && $organizer->uid != $this->calendars[$event->calendar]->owner) {
+      if (isset($organizer) && !$organizer->extern && ! empty($organizer->email) && $organizer->uid != $this->calendars[$event->calendar]->owner) {
         return true;
       }
       // Création de la pièce jointe

@@ -167,7 +167,7 @@ class mel_metapage extends rcube_plugin
         else
         {
             $this->include_script('js/init/classes.js');
-            $this->include_script('js/init/constants.min.js');
+            $this->include_script('js/init/constants.js');
         }
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
@@ -322,7 +322,7 @@ class mel_metapage extends rcube_plugin
         $this->get__init_js_from_folder("updates");
         $this->get__init_js_from_folder("classes");
         $this->include_script('js/init/classes.js');
-        $this->include_script('js/init/constants.min.js');
+        $this->include_script('js/init/constants.js');
         $this->include_script('js/init/events.js');
         $this->include_script('js/init/commands.js');
         $this->load_config_js();
@@ -333,9 +333,9 @@ class mel_metapage extends rcube_plugin
         $files = scandir(__DIR__."/js/init/$folder");
         $size = count($files);
         for ($i=0; $i < $size; ++$i) {
-            /*if (strpos($files[$i], ".min.js") !== false)
+            if (strpos($files[$i], ".min.js") !== false)
                 continue;
-            else */if (strpos($files[$i], ".js") !== false)
+            else if (strpos($files[$i], ".js") !== false)
                 $this->include_script("js/init/$folder/".$files[$i]);
             else if ($files[$i] === "." || $files[$i] === ".." || strpos($files[$i], ".") !== false)
                 continue;
@@ -343,7 +343,7 @@ class mel_metapage extends rcube_plugin
                 $folderFiles = scandir(__DIR__."/js/init/$folder/".$files[$i]);
                 $folderSize = count($folderFiles);
                 for ($j=0; $j < $folderSize; ++$j) { 
-                    if(strpos($folderFiles[$j], ".js") !== false)
+                    if(strpos($folderFiles[$j], ".js") !== false && strpos($folderFiles[$j], ".min.js") === false)
                         $this->include_script("js/init/$folder/".$files[$i]."/".$folderFiles[$j]);
                 }
             }

@@ -169,12 +169,27 @@ class Windows_Like_PopUp extends MetapageObject
 
     destroy()
     {
+        try {
+            $(`#minified-${this.id}`).remove();
+        } catch (error) {
+            
+        }
+
         this.box.get.remove();
         delete Windows_Like_PopUp.popUps[this.id];
         this.id = null;
         this.parent = null;
         this.box = null;
         return null;
+    }
+
+    close()
+    {
+        if (this.settings.onclose !== null)
+            this.settings.onclose();
+
+        this.destroy();
+        Windows_Like_PopUp.clean();
     }
 
     static _generateId(base)

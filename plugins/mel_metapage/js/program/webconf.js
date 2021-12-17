@@ -668,12 +668,13 @@ class MasterWebconfBar {
         if ($(".workspace-frame").length > 0 && $("iframe.workspace-frame").length === 0)
             $(".workspace-frame").remove();
 
-        this.start();
+        this.start().deletePopUpOnLaunch();
     }
 
     start()
     {
         this.send("start");
+        return this;
     }
 
     isPhone()
@@ -763,6 +764,8 @@ class MasterWebconfBar {
             $(".wsp-toolbar-item.empty").css("display", "none");
             $(".wsp-toolbar").css("border-radius", 0).css("width", "100%").css("left","0").css("transform", "none");
         }
+
+        return this;
     }
 
     is_toolbar_hidden()
@@ -813,6 +816,7 @@ class MasterWebconfBar {
         if (this.chevrons.micro.hasClass("stop-rotate"))
             this.switch_popup_micro(false);
 
+        return this;
     }
 
     /**
@@ -1002,12 +1006,19 @@ class MasterWebconfBar {
         this.send("hangup");
 
         //Remet les frames en place.
-        if (!this.webconf._is_minimized) //Obsolète ?
+        if (!this.webconf._is_minimized)
         {
-            // if (rcmail.env.last_frame_class === undefined)
-            //     await mel_metapage.Functions.change_frame("home");
-            // else
-            //     rcmail.command("last_frame");
+             if (rcmail.env.last_frame_class === undefined)
+                 await mel_metapage.Functions.change_frame("home");
+            else if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
+            {
+                if ($("#taskmenu .selected").length > 0)
+                    $("#taskmenu .selected").click();
+                else
+                    await mel_metapage.Functions.change_frame("home");
+            }
+            else
+                rcmail.command("last_frame");
         }          
         else
         {
@@ -1087,7 +1098,7 @@ class MasterWebconfBar {
             parent.$("#user-up-panel").removeAttr("disabled").removeClass("disabled").css("pointer-events", "");
         }
 
-        mm_st_CreateOrOpenModal("home");
+        // mm_st_CreateOrOpenModal("home");
     }
 
     /**
@@ -1390,7 +1401,10 @@ class MasterWebconfBar {
 
     deletePopUpOnLaunch()
     {
-
+        return $(".questionnaireWebconf").each((i,e) => {
+            const id = parseInt($(e).attr("id").replace("wlpopup-", ""));
+            Windows_Like_PopUp.popUps[id].close();
+        });
     }
 
     /**

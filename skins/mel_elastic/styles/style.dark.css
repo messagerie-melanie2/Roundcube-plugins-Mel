@@ -32,6 +32,11 @@ html.dark-mode #layout-menu {
     color:#c7dfff;
 }
 
+html.dark-mode nav.otherapps
+{
+    border-right: 1px solid rgb(77, 96, 102);
+}
+
 html.dark-mode #otherapps a
 {
     background-color:#1f2933!important;
@@ -142,6 +147,7 @@ html.dark-mode .tiny-webconf-menu.dwp-round.hidden-toolbar
 html.dark-mode .tiny-webconf-menu.dwp-round
 {
     color: #E1C58F!important;
+    background-color: #1F2933;
 }
 
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select
@@ -407,6 +413,7 @@ html.dark-mode .tablinks.selected:hover{
 
 html.dark-mode .tablinks:hover{
     background-color: #2E2E2E!important;
+    color: #E1C58F !important;
 }
 
 html.dark-mode .roundbadge.notif.edited,

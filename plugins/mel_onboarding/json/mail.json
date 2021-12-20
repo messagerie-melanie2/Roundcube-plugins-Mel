@@ -1,0 +1,42 @@
+{
+  "title": "Découvrez votre Bureau numérique : la messagerie Mél",
+  "addpadding": "#layout-content #contents",
+  "iframecss": "padding-top:0px;padding-left:0px;",
+  "stepper": {
+    "title": "Explorez les fonctionnalités de l'Accueil du Bnum",
+    "items": {
+      "video": {
+        "title": "Vidéo de présentation",
+        "description": "Présentation du Bnum en vidéo",
+        "bloc": {
+          "title": "Voir la vidéo de présentation",
+          "description": "<h2>Bienvenue sur votre messagerie Mél !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la messagerie Mél que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
+          "video": "Capsule-1-Connexion.mp4",
+          "img": "accueil.png"
+        }
+      },
+      "navigation": {
+        "title": "Barre de navigation",
+        "description": "Permet de gérer les dossiers de la messagerie Mél",
+        "highlight": "#folderlist-content",
+        "css": "background-color: #363A5B; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
+        "bloccss": "margin-left: 45%;max-width:600px;text-align:start",
+        "bloc": {
+          "title": "Page d'accueil : Ma journée",
+          "description": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu."
+        }
+      },
+      "liste mail": {
+        "title": "Barre de navigation",
+        "description": "Permet de gérer les dossiers de la messagerie Mél",
+        "highlight": "#layout-list",
+        "css": "background-color: #363A5B; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
+        "bloccss": "margin-left: 45%;max-width:600px;text-align:start",
+        "bloc": {
+          "title": "Page d'accueil : Ma journée",
+          "description": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu."
+        }
+      }
+    }
+  }
+}

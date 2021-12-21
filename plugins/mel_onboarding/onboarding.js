@@ -56,11 +56,15 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
 
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
+console.log(task);
+      json = json.replace("%%POSTER%%",location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + task + '.png')
+      json = json.replace("%%VIDEO%%",location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
       window.current_onboarding = JSON.parse(json);
+
       window.exit_main_intro = true;
       window.exit_details_intro = true;
 
-      // window.parent.onload = function () {
+      window.parent.onload = function () {
       let intro = window.parent.introJs();
 
       intro = bureau_intro(intro);
@@ -93,7 +97,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
           return window.parent.rcmail.onboarding_close()
         }
       }).start();
-      // }
+      }
     });
   });
 };

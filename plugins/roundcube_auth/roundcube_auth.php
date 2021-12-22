@@ -311,7 +311,8 @@ class roundcube_auth extends rcube_plugin
         //mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_auth - startup");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_auth - startup");
 
-        if(empty($_SESSION['user_id'])) // User not logged in
+        // User not logged in && GET request only (to avoid triggering on login POST and making a loop)
+        if(empty($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'GET')
         {
             // Get Roundcube instance
             $rcmail = rcmail::get_instance();

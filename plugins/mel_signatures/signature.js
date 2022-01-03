@@ -161,7 +161,7 @@ function download_signature_outlook_zip() {
     // Download zip to browser
     zip.generateAsync({type:"base64"})
         .then(function(content) {
-            download('signature.zip', content, 'data:application/zip;base64');
+            download('signature.zip', content, 'application/zip', 'application/zip;base64');
         });
     window.location.hash = "#outlook2013";
 }
@@ -415,9 +415,10 @@ function formatPhoneNumber(number) {
 /**
  * Download file HTML from javascript
  */
-function download(filename, text, type = 'text/html;charset=utf-8') {
+function download(filename, text, contentype = 'text/html', type = 'text/html;charset=utf-8') {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:' + type + ',' + encodeURIComponent(text));
+    element.setAttribute('type', contentype);
     element.setAttribute('download', filename);
 
     element.style.display = 'none';

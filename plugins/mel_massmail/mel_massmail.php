@@ -169,11 +169,11 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
 
 2/ Si ces envois sont dus à une compromission de la boite aux lettres
 - Réinitialiser le mot de passe de l'utilisateur dans Amédée
-- Tenter avec l'utilisateur de comprendre l'origine de la compromission. Dans le cas d'un phishing, transmettre si possible en pièce jointe le courriel malveillant à la boite assistance-nationale-messagerie@developpement-durable.gouv.fr
+- Tenter avec l'utilisateur de comprendre l'origine de la compromission. Dans le cas d'un phishing, transmettre si possible en pièce jointe le courriel malveillant à l'assitance via SPS https://portail.centre-serveur.din.developpement-durable.gouv.fr/projects/assistance-messagerie-collaborative
 - Sensibiliser l'utilisateur sur le choix et la sécurisation de son mot de passe
 - Inviter l'utilisateur à activer la double authentification*, dans le but d'une meilleure sécurisation de son compte
 
-* Le guide d'utilisation de la double authentification est disponible à l'adresse suivante : http://bureautique.metier.e2.rie.gouv.fr/supports/messagerie/m2w2/co/8-Double%20authentification.html" . ($ldap_error ? "\r\n\r\nPour le PNE:\r\nUne erreur LDAP ($ldap_error) s'est produite, le mot de passe n'a pas pu être grillé automatiquement, merci de le faire au plus vite." : "");
+* Le guide d'utilisation de la double authentification est disponible à l'adresse suivante : http://bureautique.metier.e2.rie.gouv.fr/presentation-de-la-suite-mel-a293.html?id_rub=101#Double-authentification" . ($ldap_error ? "\r\n\r\nPour le PNE:\r\nUne erreur LDAP ($ldap_error) s'est produite, le mot de passe n'a pas pu être grillé automatiquement, merci de le faire au plus vite." : "");
 
             // Envoi du message d'information
             @mail($mail_dest, utf8_decode($mail_subject), $mail_text, implode("\r\n", $headers));

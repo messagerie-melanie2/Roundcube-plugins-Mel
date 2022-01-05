@@ -60,17 +60,14 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, onload = 
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
       window.current_onboarding = JSON.parse(json);
 
-      // if (onload) {
-      //   if (rcmail.env.is_framed) {
-      //     window.parent.onload = startIntro
-      //   } 
-      //   else {
-      //     window.onload = startIntro
-      //   }
-      // }
-      // else {
+      if (onload) {
+        if (rcmail.env.is_framed) {
+          window.parent.onload = startIntro
+        } 
+      }
+      else {
         startIntro();
-      // }
+      }
     });
   });
 };

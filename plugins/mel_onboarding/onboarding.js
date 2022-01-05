@@ -61,22 +61,41 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
       window.current_onboarding = JSON.parse(json);
 
       if (rcmail.env.is_framed) {
-        window.parent.onload = startIntro
+        window.parent.onload = startIntro(task)
+      }
+      if (task == "mail") {
+        rcmail.addEventListener('responsebefore', function (props) {
+          if (props.response && (props.response.action === 'list')) {
+            startIntro(task);
+          }
+        });
       }
       else {
-        startIntro();
+        startIntro(task);
       }
     });
   });
 };
 
-function startIntro() {
+function startIntro(task) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
 
   let intro = window.parent.introJs();
-
-  intro = bureau_intro(intro);
+  if (task == "bureau" && rcmail.env.is_framed) {
+    intro = bureau_intro(intro);
+  }
+  else {
+    intro.setOptions({
+      scrollToElement: window.current_onboarding.scrollToElement,
+      scrollTo: window.current_onboarding.scrollTo,
+      disableInteraction: window.current_onboarding.disableInteraction,
+      nextLabel: window.current_onboarding.nextLabel,
+      prevLabel: window.current_onboarding.prevLabel,
+      doneLabel: window.current_onboarding.doneLabel,
+      steps: window.current_onboarding.steps
+    })
+  }
 
   intro.onbeforechange(function () {
     //On ajoute le bouton permettant de lancer la démonstration
@@ -86,6 +105,11 @@ function startIntro() {
 
       this._introItems[this._currentStep].intro += buttonDetails;
       this._introItems[this._currentStep].passed = true;
+    }
+
+    if (this._introItems[this._currentStep].previewMail) {
+      rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+      //TODO Attendre que la page charge avant de lancer la suite intro 
     }
   }).onafterchange(function () {
     setTimeout(() => {
@@ -109,61 +133,48 @@ function startIntro() {
 }
 
 function bureau_intro(intro) {
-  if (rcmail.env.is_framed) {
-    var iframe = window.parent.$('iframe.bureau-frame')[0];
-    // if (iframe) {
-    //   window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
-    // }
-    let steps = window.current_onboarding.steps;
-    intro.setOptions({
-      scrollToElement: window.current_onboarding.scrollToElement,
-      scrollTo: window.current_onboarding.scrollTo,
-      disableInteraction: window.current_onboarding.disableInteraction,
-      nextLabel: window.current_onboarding.nextLabel,
-      prevLabel: window.current_onboarding.prevLabel,
-      doneLabel: window.current_onboarding.doneLabel,
-      steps: [steps[0], steps[1], steps[2],
-      {
-        "title": "Ma journée",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
-        "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
-        "tooltipClass": "iframed big-width-intro",
-        "highlightClass": "iframed"
-      },
-      {
-        "title": "Informations",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
-        "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
-        "tooltipClass": "iframed big-width-intro",
-        "highlightClass": "iframed"
-      },
-      {
-        "title": "Mes espaces de travail",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("..workspaces.module_parent"),
-        "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
-        "tooltipClass": "iframed big-width-intro",
-        "highlightClass": "iframed",
-        "tooltipPosition": "top"
-      },
-      {
-        "title": "Discussion ",
-        "element": ".tiny-rocket-chat",
-        "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
-        "tooltipPosition": "top"
-      }]
-    })
-  }
-  else {
-    intro.setOptions({
-      scrollToElement: window.current_onboarding.scrollToElement,
-      scrollTo: window.current_onboarding.scrollTo,
-      disableInteraction: window.current_onboarding.disableInteraction,
-      nextLabel: window.current_onboarding.nextLabel,
-      prevLabel: window.current_onboarding.prevLabel,
-      doneLabel: window.current_onboarding.doneLabel,
-      steps: window.current_onboarding.steps
-    })
-  }
+  var iframe = window.parent.$('iframe.bureau-frame')[0];
+  // if (iframe) {
+  //   window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
+  // }
+  let steps = window.current_onboarding.steps;
+  intro.setOptions({
+    scrollToElement: window.current_onboarding.scrollToElement,
+    scrollTo: window.current_onboarding.scrollTo,
+    disableInteraction: window.current_onboarding.disableInteraction,
+    nextLabel: window.current_onboarding.nextLabel,
+    prevLabel: window.current_onboarding.prevLabel,
+    doneLabel: window.current_onboarding.doneLabel,
+    steps: [steps[0], steps[1], steps[2],
+    {
+      "title": "Ma journée",
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
+      "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
+      "tooltipClass": "iframed big-width-intro",
+      "highlightClass": "iframed"
+    },
+    {
+      "title": "Informations",
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
+      "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
+      "tooltipClass": "iframed big-width-intro",
+      "highlightClass": "iframed"
+    },
+    {
+      "title": "Mes espaces de travail",
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("..workspaces.module_parent"),
+      "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
+      "tooltipClass": "iframed big-width-intro",
+      "highlightClass": "iframed",
+      "tooltipPosition": "top"
+    },
+    {
+      "title": "Discussion ",
+      "element": ".tiny-rocket-chat",
+      "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
+      "tooltipPosition": "top"
+    }]
+  })
 
   return intro;
 }

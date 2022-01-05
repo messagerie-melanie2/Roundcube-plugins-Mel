@@ -18,7 +18,7 @@ if (window.rcmail) {
     let current_task = rcmail.env.task;
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
-        rcmail.show_current_page_onboarding(current_task, false);
+        rcmail.show_current_page_onboarding(current_task);
         rcmail.env.hide_modal = 1;
       }
     });
@@ -42,7 +42,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
     window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
   }
   else {
-    window.parent.rcmail.show_current_page_onboarding(task, false);
+    window.parent.rcmail.show_current_page_onboarding(task);
     window.parent.rcmail.env.hide_modal = 1;
   }
 }
@@ -51,7 +51,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
 /**
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
-rcube_webmail.prototype.show_current_page_onboarding = function (task, onload = true) {
+rcube_webmail.prototype.show_current_page_onboarding = function (task) {
   let json_page = rcmail.env.help_page_onboarding[task];
 
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
@@ -60,7 +60,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, onload = 
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
       window.current_onboarding = JSON.parse(json);
 
-      if (onload && rcmail.env.is_framed) {
+      if (rcmail.env.is_framed) {
         window.parent.onload = startIntro
       }
       else {
@@ -127,27 +127,29 @@ function bureau_intro(intro) {
         "title": "Ma journée",
         "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
         "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
-        "tooltipClass": "iframed",
+        "tooltipClass": "iframed big-width-intro",
         "highlightClass": "iframed"
       },
       {
         "title": "Informations",
         "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
         "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
-        "tooltipClass": "iframed",
+        "tooltipClass": "iframed big-width-intro",
         "highlightClass": "iframed"
       },
       {
         "title": "Mes espaces de travail",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--col-dwp.--col-dwp-3"),
+        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("..workspaces.module_parent"),
         "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
-        "tooltipClass": "iframed",
-        "highlightClass": "iframed"
+        "tooltipClass": "iframed big-width-intro",
+        "highlightClass": "iframed",
+        "tooltipPosition": "top"
       },
       {
         "title": "Discussion ",
         "element": ".tiny-rocket-chat",
-        "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil"
+        "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
+        "tooltipPosition": "top"
       }]
     })
   }

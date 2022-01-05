@@ -323,7 +323,7 @@
     },
     {
       "title": "Mes espaces de travail",
-      "element": ".workspace",
+      "element": ".workspaces.module_parent",
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "big-width-intro"
     },

@@ -212,20 +212,25 @@ class mtes_driver_mel extends mce_driver_mel {
    * @return boolean Le mot de passe doit changer
    */
   public function isPasswordNeedsToChange(&$title) {
-    $needs_to_change = false;
-    if (!isset($_SESSION['plugin.show_password_change']) 
-        && !$_SESSION['plugin.show_password_change']) {
+    if (!isset($_SESSION['plugin.show_password_change'])) {
       // Récupération des informations sur l'utilisateur courant
       $infos = Ldap::GetUserInfos(rcmail::get_instance()->get_user_name(), null, array(
           'mineqpassworddoitchanger'
       ), \LibMelanie\Config\Ldap::$AUTH_LDAP);
       if (!empty($infos['mineqpassworddoitchanger'][0])) {
         $title = $infos['mineqpassworddoitchanger'][0];
-        $needs_to_change = true;
         $_SESSION['plugin.show_password_change'] = true;
+        $_SESSION['plugin.password_change_title'] = $title;
+      }
+      else {
+        $_SESSION['plugin.show_password_change'] = false;
+        unset($_SESSION['plugin.password_change_title']);
       }
     }
-    return $needs_to_change;
+    else if ($_SESSION['plugin.show_password_change'] && isset($_SESSION['plugin.password_change_title'])) {
+      $title = $_SESSION['plugin.password_change_title'];
+    }
+    return $_SESSION['plugin.show_password_change'];
   }
 
   /**

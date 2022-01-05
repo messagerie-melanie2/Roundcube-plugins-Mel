@@ -369,6 +369,11 @@ body.iframe.mail #filter-form
 	margin-bottom: 15px;
 }
 
+.texte_title {
+  padding: 10px 0;
+  font-weight: bold;
+}
+
 .texte_explic {
 	padding: 10px 15px;
 	border: 1px solid #FFFFE0;

@@ -56,8 +56,14 @@ class Changepassword extends Moncompteobject {
 			rcmail::get_instance()->output->send('mel_moncompte.changepassword_agri');
 		}
 		else {
+			// Gestion du mot de passe trop ancien
+			if (driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title = '')) {
+				rcmail::get_instance()->output->set_env('passwordchange_title', $passwordchange_title);
+			}
+
 			rcmail::get_instance()->output->set_env('moncompte_data_bureautique', $user->has_bureautique);
 			rcmail::get_instance()->output->set_env('moncompte_username', Moncompte::get_current_user_name());
+
 			// Envoi de la page
 			rcmail::get_instance()->output->send('mel_moncompte.changepassword');
 		}
@@ -106,6 +112,8 @@ class Changepassword extends Moncompteobject {
 				if ($ret->code === 0) {
 					// Succès du changement de mot de passe
 					$_SESSION['password'] = rcmail::get_instance()->encrypt($new_pwd);
+					$_SESSION['plugin.show_password_change'] = false;
+					unset($_SESSION['plugin.password_change_title']);
 					rcmail::get_instance()->output->show_message('mel_moncompte.changepassword_confirm', 'confirmation');
 					rcmail::get_instance()->output->add_script("parent.$('#changepasswordframe').dialog('close');");
 				} else {

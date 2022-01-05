@@ -61,7 +61,12 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task, onload = 
       window.current_onboarding = JSON.parse(json);
 
       if (onload) {
-        window.parent.onload = startIntro
+        if (rcmail.env.is_framed) {
+          window.parent.onload = startIntro
+        } 
+        else {
+          window.onload = startIntro
+        }
       }
       else {
         startIntro();

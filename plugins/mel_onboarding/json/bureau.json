@@ -1,7 +1,7 @@
 {
-  "scrollToElement": false,
-  "scrollTo": false,
+  "scrollToElement": true,
   "disableInteraction": true,
+  "scrollTo": "tooltip",
   "nextLabel": "Suivant",
   "prevLabel": "Précédent",
   "doneLabel": "Fermer",
@@ -323,7 +323,7 @@
     },
     {
       "title": "Mes espaces de travail",
-      "element": ".--col-dwp.--col-dwp-3",
+      "element": ".workspace",
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "big-width-intro"
     },

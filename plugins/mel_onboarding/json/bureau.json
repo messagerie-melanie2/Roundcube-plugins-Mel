@@ -1,5 +1,6 @@
 {
-  "scrollToElement": true,
+  "scrollToElement": false,
+  "scrollTo": false,
   "disableInteraction": true,
   "nextLabel": "Suivant",
   "prevLabel": "Précédent",

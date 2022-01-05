@@ -18,7 +18,7 @@ if (window.rcmail) {
     let current_task = rcmail.env.task;
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
-        rcmail.show_current_page_onboarding(current_task);
+        rcmail.show_current_page_onboarding(current_task, false);
         rcmail.env.hide_modal = 1;
       }
     });
@@ -42,7 +42,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
     window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
   }
   else {
-    window.parent.rcmail.show_current_page_onboarding(task);
+    window.parent.rcmail.show_current_page_onboarding(task, false);
     window.parent.rcmail.env.hide_modal = 1;
   }
 }
@@ -51,63 +51,69 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
 /**
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
-rcube_webmail.prototype.show_current_page_onboarding = function (task) {
+rcube_webmail.prototype.show_current_page_onboarding = function (task, onload = true) {
   let json_page = rcmail.env.help_page_onboarding[task];
 
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
-console.log(task);
-      json = json.replace("%%POSTER%%",location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + task + '.png')
-      json = json.replace("%%VIDEO%%",location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
+      json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + task + '.png')
+      json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
       window.current_onboarding = JSON.parse(json);
 
-      window.exit_main_intro = true;
-      window.exit_details_intro = true;
-
-      window.parent.onload = function () {
-      let intro = window.parent.introJs();
-
-      intro = bureau_intro(intro);
-
-      intro.onbeforechange(function () {
-        //On ajoute le bouton permettant de lancer la démonstration
-        if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
-          let item = this._introItems[this._currentStep];
-          let buttonDetails = '<div class="text-left"><button class="mel-button btn btn-secondary float-right" id="' + item.id + '-details">' + item.button + '</button></div><br/><br/><br/>'
-
-          this._introItems[this._currentStep].intro += buttonDetails;
-          this._introItems[this._currentStep].passed = true;
-        }
-      }).onafterchange(function () {
-        setTimeout(() => {
-          if (this._introItems[this._currentStep].passed) {
-            let item = this._introItems[this._currentStep];
-            window.parent.$('#' + item.id + '-details').on('click', function () {
-              if (item.details.hints) {
-                intro_hints(item, intro);
-              }
-              else if (item.details.steps) {
-                intro_details_tour(item, intro)
-              }
-            });
-          }
-        }, 500);
-      }).onexit(function () {
-        if (window.exit_main_intro) {
-          return window.parent.rcmail.onboarding_close()
-        }
-      }).start();
+      if (onload) {
+        window.parent.onload = startIntro
+      }
+      else {
+        startIntro();
       }
     });
   });
 };
 
+function startIntro() {
+  window.exit_main_intro = true;
+  window.exit_details_intro = true;
+
+  let intro = window.parent.introJs();
+
+  intro = bureau_intro(intro);
+
+  intro.onbeforechange(function () {
+    //On ajoute le bouton permettant de lancer la démonstration
+    if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
+      let item = this._introItems[this._currentStep];
+      let buttonDetails = '<div class="text-left"><button class="mel-button btn btn-secondary float-right" id="' + item.id + '-details">' + item.button + '</button></div><br/><br/><br/>'
+
+      this._introItems[this._currentStep].intro += buttonDetails;
+      this._introItems[this._currentStep].passed = true;
+    }
+  }).onafterchange(function () {
+    setTimeout(() => {
+      if (this._introItems[this._currentStep].passed) {
+        let item = this._introItems[this._currentStep];
+        window.parent.$('#' + item.id + '-details').on('click', function () {
+          if (item.details.hints) {
+            intro_hints(item, intro);
+          }
+          else if (item.details.steps) {
+            intro_details_tour(item, intro)
+          }
+        });
+      }
+    }, 500);
+  }).onexit(function () {
+    if (window.exit_main_intro) {
+      return window.parent.rcmail.onboarding_close()
+    }
+  }).start();
+}
+
 function bureau_intro(intro) {
   if (rcmail.env.is_framed) {
     var iframe = window.parent.$('iframe.bureau-frame')[0];
-    if (iframe) {
-      window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
-    }
+    // if (iframe) {
+    //   window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
+    // }
     let steps = window.current_onboarding.steps;
     intro.setOptions({
       scrollToElement: window.current_onboarding.scrollToElement,
@@ -116,7 +122,7 @@ function bureau_intro(intro) {
       nextLabel: window.current_onboarding.nextLabel,
       prevLabel: window.current_onboarding.prevLabel,
       doneLabel: window.current_onboarding.doneLabel,
-      steps: [steps[0],steps[1],steps[2],
+      steps: [steps[0], steps[1], steps[2],
       {
         "title": "Ma journée",
         "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
@@ -230,13 +236,13 @@ function intro_hints(item, intro_main) {
     intro.showHintDialog(0);
   }, 100);
 
- window.parent.$(document).on('click', function (e) {
+  window.parent.$(document).on('click', function (e) {
     if (e.target.id != "navigation-details" && (e.target.parentElement != undefined && e.target.parentElement.id != "navigation-details")) {
       intro.hideHints();
       if (window.parent.$('#layout-menu').hasClass('force-open')) {
         window.parent.$('#layout-menu').removeClass('force-open');
-          intro_main.goToStepNumber(1).start();
-        }
+        intro_main.goToStepNumber(1).start();
+      }
     }
   });
 }

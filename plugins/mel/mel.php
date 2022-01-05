@@ -223,9 +223,10 @@ class mel extends rcube_plugin {
         $this->api->add_content(html::div(null, $this->gettext('login_footer')) . html::br() . html::div(null, $this->gettext('login from') . ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"])), 'loginfooter');
       }
       // Gestion du mot de passe trop ancien
-      if ($this->rc->task == 'mail' 
+      $passwordchange_title = '';
+      if (!isset($_SESSION['plugin.show_password_change'])
           && !$this->rc->output->get_env('ismobile') 
-          && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title = '')) {
+          && driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title)) {
         $this->rc->output->set_env('passwordchange_title', $passwordchange_title);
         $this->rc->output->set_env('plugin.show_password_change', true);
       }

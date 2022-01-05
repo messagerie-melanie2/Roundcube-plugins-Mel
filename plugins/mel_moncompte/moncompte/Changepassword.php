@@ -57,7 +57,8 @@ class Changepassword extends Moncompteobject {
 		}
 		else {
 			// Gestion du mot de passe trop ancien
-			if (driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title = '')) {
+			$passwordchange_title = '';
+			if (driver_mel::get_instance()->isPasswordNeedsToChange($passwordchange_title)) {
 				rcmail::get_instance()->output->set_env('passwordchange_title', $passwordchange_title);
 			}
 

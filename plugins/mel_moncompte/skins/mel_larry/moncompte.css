@@ -370,8 +370,9 @@ body.iframe.mail #filter-form
 }
 
 .texte_title {
-  padding: 10px 0;
+  padding: 0 0 10px;
   font-weight: bold;
+  font-size: 14px;
 }
 
 .texte_explic {

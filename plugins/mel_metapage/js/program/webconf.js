@@ -1741,7 +1741,7 @@ class ListenerWebConfBar
         this.webconf.ariane.is_hide = false;
         this.webconf.update();
 
-        if (this.webconf.chat.length > 0 && this.webconf.ariane !== null && this.webconf.ariane !== undefined && this.webconf.ariane.room_name !== undefined)
+        if (this.webconf.chat.length > 0 && this.webconf.ariane !== null && this.webconf.ariane !== undefined && this.webconf.ariane.room_name !== undefined && this.webconf.ariane.room_name !== "@home")
         {
             try {
                 this.webconf.chat[0].contentWindow.postMessage({

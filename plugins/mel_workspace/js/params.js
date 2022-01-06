@@ -631,7 +631,7 @@
                     () => {
                         let val = $("#selectnewchannel select").val();
 
-                        const confirmation = confirm("Attention !\r\nSi vous changez de canal et que vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres pourrait ne pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimer automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?");
+                        const confirmation = confirm(rcmail.gettext("canal_change_confirmation", "mel_workspace"));
 
                         if (confirmation && val.includes(":"))
                         {

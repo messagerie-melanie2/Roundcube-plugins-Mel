@@ -396,7 +396,7 @@ if (rcmail)
         border-radius: 100%;
         margin-bottom: -0.1rem;
         margin-left: 0.35rem;
-        margin-right: 1rem;" class="mel-cal-icon"></span><span style=vertical-align:text-top><b>Status</b> : ${rcmail.gettext(event.free_busy, "calendar")}</span></div></div>`;
+        margin-right: 1rem;" class="mel-cal-icon"></span><span style=vertical-align:text-top><b>${rcmail.gettext("status", "calendar")}</b> : ${rcmail.gettext(event.free_busy, "calendar")}</span></div></div>`;
 
         //Affichage de la date de création
         const created = rcube_calendar.mel_metapage_misc.CapitalizeMonth(rcube_calendar.mel_metapage_misc.GetDateFr(moment(event.created).format("DD MMMM YYYY")));

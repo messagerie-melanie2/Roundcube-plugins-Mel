@@ -1,14 +1,14 @@
 {
-  "scrollToElement": false,
-  "scrollTo": false,
+  "scrollToElement": true,
   "disableInteraction": true,
+  "scrollTo": "tooltip",
   "nextLabel": "Suivant",
   "prevLabel": "Précédent",
   "doneLabel": "Fermer",
   "steps": [
     {
       "title": "Accueil",
-      "intro": "<h2>Découvrez votre Bureau numérique : l'Accueil</h2><br/><div class='video mt-2'><video controls width='500' poster='%%POSTER%%'><source src='%%VIDEO%%' type='video/mp4'>Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
+      "intro": "<h2>Découvrez votre Bureau numérique : l'Accueil</h2><br/><div class='video mt-2'><video controls poster='%%POSTER%%'><source src='%%VIDEO%%' type='video/mp4'>Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier aperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette fenêtre peut être fermée en cliquant sur la croix en haut à droite et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
       "tooltipClass": "accueil-intro text-center"
     },
     {
@@ -323,7 +323,7 @@
     },
     {
       "title": "Mes espaces de travail",
-      "element": ".--col-dwp.--col-dwp-3",
+      "element": ".workspaces.module_parent",
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "big-width-intro"
     },

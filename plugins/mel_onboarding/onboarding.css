@@ -176,10 +176,13 @@
 
 .accueil-intro
 {
-  width: 900px !important;
-  max-width: 900px !important;
+  width: 50vw !important;
+  max-width: 50vw !important;
 }
 
+.video video {
+  width: 40%;
+}
 .introjs-tooltiptext.mel-button {
   background-color: #000 !important;
 }

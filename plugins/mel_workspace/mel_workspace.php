@@ -1402,8 +1402,9 @@ class mel_workspace extends rcube_plugin
         $html = '<table id=table-apps class="table table-striped table-bordered">';
         $html .= "<thead><tr><td>Applications</td></tr></thead>";
 
+        $count = 0;
         foreach ($services as $key => $value) {
-            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
+            if ($value || $key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
                 continue;
 
             $info = $this->get_type_config($config, $key);
@@ -1425,6 +1426,7 @@ class mel_workspace extends rcube_plugin
             else {
                 $class = "btn btn-success mel-button no-button-margin";
                 $span = $icons["plus"];    
+                ++$count;
             }
 
             $func = "rcmail.command('workspace.update_app','$key')";
@@ -1438,7 +1440,7 @@ class mel_workspace extends rcube_plugin
 
         $html .= "</table>";
 
-        return $html;
+        return $count === 0 ? "" : $html;
 
     }
 

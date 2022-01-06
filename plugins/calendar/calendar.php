@@ -3976,7 +3976,11 @@ $("#rcmfd_new_category").keypress(function(event) {
         case 'driver':
             $this->load_driver();
             return $this->driver;
+        case 'settings':
+            return $this->load_settings();
         }
+
+
 
         return null;
     }

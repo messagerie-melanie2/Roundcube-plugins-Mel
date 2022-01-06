@@ -94,6 +94,7 @@ if (rcmail)
 
     });
 
+    //Calencdrier initialisé
     rcmail.addEventListener("plugin.calendar.initialized", (cal) => {
 
 
@@ -141,6 +142,7 @@ if (rcmail)
         mel_metapage.Storage.remove(mel_metapage.Storage.last_calendar_update);
     });
 
+    //Initialisation
     rcmail.addEventListener("init", () => {
         $('[data-popup]').each((i,e) => {
             $(e).on("show.bs.popover", () => {
@@ -185,7 +187,7 @@ if (rcmail)
 
     })
 
-
+    //Lorsqu'il y a un redimentionnement.
     rcmail.addEventListener("skin-resize", (datas)    => { 
 
         if ($("html").hasClass("framed"))
@@ -252,6 +254,41 @@ if (rcmail)
         else 
         {
             $logo.attr("src", $logo.data(element_data_name)).data(element_data_name, '');
+        }
+
+        if (window === parent)
+        {
+            $('iframe.mm-frame').each(async (i,e) => {
+                let $frame;
+                let contentWindow = e.contentWindow;
+                const task = contentWindow.rcmail.env.task;
+
+                switch (task) {
+                    case 'settings':
+                        $frame = contentWindow.$("iframe#preferences-frame")[0];
+                        break;
+                    case 'mail':
+                        $frame = contentWindow.$('iframe#messagecontframe')[0];
+                        break;
+                    case 'addressbook':
+                        $frame = contentWindow.$("iframe#contact-frame")[0];
+                        break;
+
+                    default:
+                        $frame = null;
+                        break;
+                }
+
+
+                try {
+                    if ($frame !== null && MEL_ELASTIC_UI.color_mode() !== $frame.contentWindow.MEL_ELASTIC_UI.color_mode())
+                    {
+                        $frame.contentWindow.MEL_ELASTIC_UI.switch_color();
+                    }
+                } catch (error) {
+                    
+                }
+            });
         }
     }
     
@@ -476,7 +513,10 @@ if (rcmail)
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = categoryExist && event.categories[0].includes("ws#") ? null : "@home";
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
-                    window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                    console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                    setTimeout(() => {
+                        window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                    }, 10);
                 });
 
             }
@@ -484,7 +524,6 @@ if (rcmail)
 
         function invited()
         {
-            console.log("invited", $("#event-rsvp"));
             return $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
             .find('.rsvp-buttons')
             .find('input[rel=accepted]')

@@ -588,3 +588,7 @@ a.button.icon.refresh::before, button.btn.refresh::before {
 {
     display: none;
 }
+
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type [aria-level="3"] .unreadcount {
+    top: unset;
+}

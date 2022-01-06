@@ -205,7 +205,6 @@ $(document).ready(() => {
 
         if (canContinue)
         {
-
             let querry = $("#eventedit").parent().parent().find(".ui-dialog-buttonset").find(".save.mainaction");
             
             //console.log("[rcube_calendar_ui.save]",querry);
@@ -232,6 +231,22 @@ $(document).ready(() => {
             return false;
         
     }
+
+    window.rcube_calendar_ui._beforeSave = (event) => {
+
+        if (event._notify === undefined || event._notify === null)
+        {
+            let checked = false;
+            $("#edit-attendees-table").find('input.edit-attendee-reply').each((i,e) => {
+                if (!checked && e.checked === true) checked = true; 
+            });
+
+            if (checked) event._notify = 1;
+
+        }
+
+        return event;
+    };
 
     window.rcube_calendar_ui.shuffle = function (array) {
         var currentIndex = array.length, temporaryValue, randomIndex;

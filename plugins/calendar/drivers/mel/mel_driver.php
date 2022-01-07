@@ -1289,9 +1289,29 @@ class mel_driver extends calendar_driver {
       else {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
-          $event_uid = $_event->uid;
           if ($_event->delete()) {
-            $this->remove_event_attachments($event_uid);
+            $this->remove_event_attachments($_event->uid);
+            // Tester si c'est une réunion et que l'organisateur est sur Mel pour refuser l'invitation
+            $organizer_calendar = $_event->organizer->calendar;
+            if (isset($organizer_calendar)) {
+              // L'organisateur existe on va modifier le statut du participant
+              $organizer_event = driver_mel::gi()->event();
+              $organizer_event->uid = $_event->uid;
+              $organizer_event->calendar = $_event->organizer->calendar;
+              if ($organizer_event->load()) {
+                $attendees = $organizer_event->attendees;
+                foreach ($attendees as $key => $attendee) {
+                  if ($attendee->uid == $this->calendars[$event['calendar']]->owner) {
+                    // Participant courant on le passe en décliné
+                    $attendees[$key]->response = mel_mapping::rc_to_m2_attendee_status('DECLINED');
+                    $organizer_event->attendees = $attendees;
+                    $organizer_event->modified += 1;
+                    $organizer_event->save();
+                    break;
+                  }
+                }
+              }
+            }
             return true;
           }
           else {

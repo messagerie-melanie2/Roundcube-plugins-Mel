@@ -21,6 +21,7 @@ if (window.rcmail) {
     rcmail.addEventListener('responseafter', function(evt) {
         if ((evt.response.action == 'getunread' 
                     || evt.response.action == 'refresh' 
+                    || evt.response.action == 'check-recent' 
                     || evt.response.action == 'mark' 
                     || evt.response.action == 'list')
                 && rcmail.treelist) {

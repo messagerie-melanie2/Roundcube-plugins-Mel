@@ -183,7 +183,8 @@ class mel_contacts extends rcube_plugin {
           'groups' => true,
           'autocomplete' => true,
           'class_name' => ($abook->owner != $this->user->uid ? ' other' : ''),
-          'mel' => true
+          'mel' => true,
+          'carddavurl' => $this->get_carddav_url($abook->id),
         ];
       }
       // Tri des carnets
@@ -231,6 +232,26 @@ class mel_contacts extends rcube_plugin {
     }
     return false;
   }
+
+  /**
+   * Retourne l'url carddav
+   * 
+   * @param string $id
+   * 
+   * @return string|boolean
+   */
+  private function get_carddav_url($id) {
+    $rcmail = rcmail::get_instance();
+    if ($template = $rcmail->config->get('addressbook_carddav_url', null)){
+      return strtr($template, array(
+        '%h' => $_SERVER['HTTP_HOST'],
+        '%u' => urlencode($rcmail->get_user_name()),
+        '%i' => urlencode($id),
+      ));
+    }
+    return false;
+  }
+
 
   /**
    * Sets autocomplete_addressbooks option according to

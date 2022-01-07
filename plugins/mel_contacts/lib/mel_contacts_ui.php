@@ -58,9 +58,9 @@ class mel_contacts_ui
             $options = array('book-create', 'book-edit', 'book-delete');
             $idx     = 0;
 
-            // if ($this->rc->config->get('kolab_addressbook_carddav_url')) {
-            //   $options[] = 'book-showurl';
-            // }
+            if ($this->rc->config->get('addressbook_carddav_url')) {
+              $options[] = 'book-showurl';
+            }
 
             foreach ($options as $command) {
                 $content = html::tag('li', $idx ? null : array('class' => 'separator_above'),

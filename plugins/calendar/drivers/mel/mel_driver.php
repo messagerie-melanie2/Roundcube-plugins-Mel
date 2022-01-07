@@ -1281,7 +1281,8 @@ class mel_driver extends calendar_driver {
           }
           else {
             $ret = $_event->save();
-            return ! is_null($ret);
+            // MANTIS 0006327: Problème avec la suppression d'une occurrence et les suivantes pour une invitation
+            return is_null($ret) ? false : $_event->uid;
           }
         }
       }

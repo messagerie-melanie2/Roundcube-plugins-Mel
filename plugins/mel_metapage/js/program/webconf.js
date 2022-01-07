@@ -272,7 +272,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             },
             userInfo: {
                 email: rcmail.env["webconf.user_datas"].email,
-                displayName: rcmail.env["webconf.user_datas"].name
+                displayName: rcmail.env["webconf.user_datas"].name.split("(")[0].split("-")[0]
             }
         };
 

@@ -692,9 +692,13 @@ async function ChangeFrame(_class, otherDatas = null)
     //Gestion de "l'encadrage"
     parent.$(".mwsp").each((i,e) => {
 
-        let $style = (e.nodeName === 'IFRAME' ? e.contentWindow.$(".mwsp-style") : $(".mwsp-style"));
+        try {
+            let $style = (e.nodeName === 'IFRAME' ? e.contentWindow.$(".mwsp-style") : $(".mwsp-style"));
 
-        if ($style.length > 0)  $style.remove();
+            if ($style.length > 0)  $style.remove();
+        } catch (error) {
+            
+        }
     });
 
     if (_class !== "rocket")

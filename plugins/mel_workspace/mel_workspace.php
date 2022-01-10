@@ -825,7 +825,11 @@ class mel_workspace extends rcube_plugin
 
             html.mwsp, #layout-content.mwsp, iframe.discussion-frame.mwsp
             {
-                border-color: $hex;
+                border-color: $hex!important;
+            }
+
+            iframe.discussion-frame.mwsp{
+                background-color: $hex!important;
             }
             </style>";
 

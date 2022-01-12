@@ -102,6 +102,9 @@ function setupMyDay(datas)
 
 			title = element.title;
 
+			if (element.free_busy === "free")
+				title += " (libre)";
+
 			if (element.attendees !== undefined && element.attendees.length > 0)
 			{
 				bool = false;
@@ -112,7 +115,7 @@ function setupMyDay(datas)
 						break;
 
 					case "ACCEPTED":
-						title += ` (Accepter)`;
+						title += ` (Accepté)`;
 						break;
 
 					case "TENTATIVE":
@@ -176,9 +179,11 @@ function setupMyDay(datas)
     html = `<ul class="ignore-bullet">${html}</ul>`;
 	$("#agenda").html(html);
 
-	if (datas.length > 0)
+	const count = Enumerable.from(datas).where(x => x.free_busy !== 'free').count();
+
+	if (count > 0)
 	{
-		$("#agendanew").html(datas.length);
+		$("#agendanew").html(count);
 		$("#agendanew").removeClass("hidden");
 	}
 	else

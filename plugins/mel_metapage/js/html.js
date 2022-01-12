@@ -227,9 +227,10 @@ html_helper.Calendars = function({datas, config = {
 		html += '<div class="html-calendar" data-config="'+html_helper.JSON.stringify(config)+'"  data-date="'+_date.format()+'">';
     if (config.add_day_navigation === true)
     {
+		const count = Enumerable.from(datas).where(x => x.free_busy !== "free").count();
         let nav_click = "rcube_calendar.change_calendar_date($('.mm-agenda-date'), ¤¤¤)";
         html += '<div class="row">';
-        html += '<div class="col-2"><span class="icon-mel-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || datas.length === 0 ? "style=display:none;" : "")+'>'+datas.length+'</span></span></div>';
+        html += '<div class="col-2"><span class="icon-mel-calendar mm-agenda-icon"><span class="notif roundbadge lightgreen edited" '+(typeof datas === "string" || count === 0 ? "style=display:none;" : "")+'>'+count+'</span></span></div>';
         html += '<div class="col-6"><span class="mm-agenda-date">'+rcube_calendar.mel_metapage_misc.GetDate(_date)+'</span></div>';
         html += '<div class="col-4"><div class="row">';
         html += '<div class="col-6"><button class="btn-mel-invisible btn-arrow btn btn-secondary" onclick="'+nav_click.replace("¤¤¤", "-1")+'"> <span class="icon-mel-arrow-left"><span class="sr-only">'+rcmail.gettext("last_day", "mel_metapage")+'</span></span> </button></div>';
@@ -258,6 +259,9 @@ html_helper.Calendars = function({datas, config = {
 
 			title = element.title;
 
+			if (element.free_busy === "free")
+				title += ' (libre)'
+
 			if (element.attendees !== undefined && element.attendees.length > 0)
 			{
 				bool = false;
@@ -268,7 +272,7 @@ html_helper.Calendars = function({datas, config = {
 						break;
 
 					case "ACCEPTED":
-						title += ` (Accepter)`;
+						title += ` (Accepté)`;
 						break;
 
 					case "TENTATIVE":

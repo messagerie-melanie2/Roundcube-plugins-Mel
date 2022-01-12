@@ -1057,6 +1057,18 @@ td.mel-fit-content{
     /* font-size: small; */
 }
 
+.mel-button-block.mel-button
+{
+    display: block;
+}
+
+html.layout-small .mel-button-block.mel-button,
+html.layout-phone .mel-button-block.mel-button
+{
+    display: inline-block;
+}
+
+
 .ignoreActive.mel-button{
     color: white!important;
     background-color: #363A5B!important;

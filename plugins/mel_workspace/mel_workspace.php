@@ -127,6 +127,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('PARAMS_update_toolbar', array($this, 'update_toolbar'));
         $this->register_action('PARAMS_update_services', array($this, 'update_services'));
         $this->register_action('PARAMS_update_end_date', array($this, 'update_end_date_setting'));
+        $this->register_action('PARAMS_change_primary', array($this, 'update_primary_parameters'));
         $this->register_action('join_user', array($this, 'join_user'));
         $this->register_action('leave_workspace', array($this, 'leave_workspace'));
         $this->register_action('delete_workspace', array($this, 'delete_workspace'));
@@ -1343,9 +1344,43 @@ class mel_workspace extends rcube_plugin
         else
             $html = str_replace("<users-rights/>", $this->setup_params_rights($this->currentWorkspace), $html); 
 
-        $html = str_replace("<end_date/>", $this->get_setting($this->currentWorkspace, "end_date"), $html);
+        //JJ/MM/YYYY HH:mm 
+        $endDate = $this->get_setting($this->currentWorkspace, "end_date") ?? "JJ/MM/YYYY HH:mm ";
+
+        if ($endDate === '')
+            $endDate = "JJ/MM/YYYY HH:mm ";
+
+        $html = str_replace("<end_date/>", $endDate, $html);
         $html = str_replace("<color/>", $this->get_setting($this->currentWorkspace, "color"), $html);
         $html = str_replace("<applications/>", $this->setup_params_apps($this->currentWorkspace), $html);
+
+        if ($user_rights === Share::RIGHT_OWNER)
+            $html = str_replace("<title/>", $this->currentWorkspace->title, $html);
+        else
+            $html = str_replace("<title/>", '', $html);
+
+        if ($user_rights === Share::RIGHT_OWNER)
+            $html = str_replace("<desc/>", ($this->currentWorkspace->description === '' ? 'Nouvelle description...' : ($this->currentWorkspace->description ?? 'Nouvelle description...')), $html);
+        else
+            $html = str_replace("<desc/>", '', $html);
+
+            //$workspace->hashtags = [$datas["hashtag"]];
+        $hashtag = $this->currentWorkspace->hashtags;
+
+        if (is_array($hashtag) && count($hashtag) > 0)
+        {
+            $hashtag = $hashtag[0];
+
+            if ($hashtag === '')
+                $hashtag = "Nouvelle thématique...";
+        }
+        else if ($hashtag !== "Nouvelle thématique...")
+            $hashtag = "Nouvelle thématique...";
+
+        if ($user_rights === Share::RIGHT_OWNER)
+            $html = str_replace("<current_hashtag/>", $hashtag, $html);
+        else
+            $html = str_replace("<current_hashtag/>", '', $html);
 
         if ($user_rights === Share::RIGHT_OWNER)
             $html = str_replace("<button-delete/>", '<button onclick="rcmail.command(`workspace.delete`)" class="btn btn-danger mel-button no-button-margin" style="margin-top:5px;margin-bottom:15px">Supprimer l\'espace de travail</button>', $html);
@@ -3694,6 +3729,42 @@ class mel_workspace extends rcube_plugin
     {
         $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
         echo self::edit_modified_date(self::get_workspace($uid));
+        exit;
+    }
+
+    function update_primary_parameters()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $type = rcube_utils::get_input_value("_type", rcube_utils::INPUT_POST);
+        $val = rcube_utils::get_input_value("_val", rcube_utils::INPUT_POST);
+
+        $wsp = self::get_workspace($uid);
+
+        if (self::is_admin($wsp))
+        {
+
+            switch ($type) {
+                case 'title':
+                    $wsp->title = $val;
+                    break;
+                case 'desc':
+                    $wsp->description = $val;
+                    break;
+                case 'hashtag':
+                    $wsp->hashtags = [$val];
+                    break;
+                    
+                default:
+                    # code...
+                    break;
+            } 
+
+            $wsp->save();
+            echo true;
+        }
+        else
+            echo "denied";
+    
         exit;
     }
 

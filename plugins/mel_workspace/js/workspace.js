@@ -368,6 +368,7 @@ function UpdateCalendar()
         const id = before + uid;
         let tmp = Enumerable.from(data).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id));
         array = tmp.toArray();
+        tmp = tmp.where(x => x.free_busy !== "free");
         if (tmp.any())
             return tmp.count();
         else
@@ -382,8 +383,9 @@ function UpdateCalendar()
             querry.html("Pas de réunion aujourd'hui !");
         else
         {
+            const count = Enumerable.from(array).where(x => x.free_busy !== "free").count();
             setup_calendar(array, querry);
-            UpdateSomething(array.length, "wsp-agenda-icon");
+            UpdateSomething(count, "wsp-agenda-icon");
             $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");
         }
     }
@@ -958,13 +960,14 @@ function setup_params()
 
 function m_wp_change_picture(img)
 {
-    //console.log(img, $("#worspace-avatar-a"));
     if (img === null)
     {
         $("#worspace-avatar-b").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
     }
     else
         $("#worspace-avatar-b").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
+
+    $("#wsp-param-chg-button-plz").removeAttr("disabled").removeClass("disabled");
 }
 
 function setup_end_date()

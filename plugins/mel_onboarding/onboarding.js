@@ -254,14 +254,17 @@ function intro_hints(item, intro_main, intro_main_step) {
   }, 100);
 
   window.parent.$(document).on('click', function (e) {
-    if (e.target.id.split('-')[1] != "details" && (e.target.parentElement != undefined && e.target.parentElement.id.split('-')[1] != "details") && !item.passed_hints) {
-      intro.hideHints();
-      if (window.parent.$('#layout-menu').hasClass('force-open')) {
-        window.parent.$('#layout-menu').removeClass('force-open');
+    if (!item.passed_hints) {
+      if (e.target.id.split('-')[1] != "details" && (e.target.parentElement != undefined && e.target.parentElement.id.split('-')[1] != "details")) {
+        intro.hideHints();
+        if (window.parent.$('#layout-menu').hasClass('force-open')) {
+          window.parent.$('#layout-menu').removeClass('force-open');
+        }
+        intro_main.goToStepNumber(intro_main_step).start();
+        item.passed_hints = true;
       }
-      intro_main.goToStepNumber(intro_main_step).start();
-      item.passed_hints = true;
     }
+
   });
 }
 

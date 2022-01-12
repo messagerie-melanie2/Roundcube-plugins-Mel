@@ -79,6 +79,7 @@ class ArianePopUp{
 
     _show()
     {
+        this.ariane.popUp.css("min-height", "");
         this.ariane.card.card.card.css("position", "absolute");
         this.ariane.card.card.card.css("right", "0");
         this.ariane.enable();
@@ -103,14 +104,15 @@ class ArianePopUp{
 
     hide()
     {
+        this.is_show = false;
+
         if (this.is_anchor())
             this.anchor();
-
-        this.is_show = false;
 
         this.ariane.popUp.contents().find("#rocket_chat_frame").css("padding-top", "");
         this.ariane.popUp.css("display", "none");
         this.ariane.popUp.css("height", "100%");
+        this.ariane.popUp.css("min-height", "100%");
         this.ariane.popUp.css("flex", "1 0 auto");
         this.ariane.popUp.removeClass("tiny-rocket-chat-card");
         this.button.button.css("display", "initial");
@@ -434,6 +436,10 @@ class ArianeFrame{
                     // }
                     //clearTimeout(prom_timeout);
                 });
+            }
+            else if (!mel_metapage.PopUp.ariane.is_show)
+            {
+                mel_metapage.PopUp.ariane.ariane.popUp.css("height", "100%");
             }
         }
         window.onresize();

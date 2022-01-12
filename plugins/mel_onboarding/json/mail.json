@@ -79,6 +79,16 @@
             "position": "bottom"
           },
           {
+            "element": "#melplusmails",
+            "intro": "Test.",
+            "checkSize": true,
+            "maxSize": 370,
+            "elementSize": "#layout-list",
+            "skipSize": 3,
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
             "element": ".select",
             "intro": "Test.",
             "hintPosition": "middle-right",

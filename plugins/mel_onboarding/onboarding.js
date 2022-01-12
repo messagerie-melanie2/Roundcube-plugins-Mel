@@ -69,6 +69,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
       if (task == "mail") {
         rcmail.addEventListener('responsebefore', function (props) {
           if (props.response && (props.response.action === 'list')) {
+
             rcmail.show_contentframe(true)
             startIntro(task);
             setTimeout(() => {
@@ -264,7 +265,6 @@ function intro_hints(item, intro_main, intro_main_step) {
         item.passed_hints = true;
       }
     }
-
   });
 }
 
@@ -287,11 +287,23 @@ function intro_details_tour(item, intro_main) {
     steps: Object.values(details.steps)
   }).onbeforechange(function () {
     //On ajoute le bouton permettant de lancer la démonstration
-    if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
-      let buttonDetails = '<div class="text-left"><button class="btn btn-secondary mt-4" id="' + item.id + '-details-open">' + this._introItems[this._currentStep].button + '</button></div>'
+    let item = this._introItems[this._currentStep];
+    if (item.button && !item.passed) {
+      let buttonDetails = '<div class="text-left"><button class="btn btn-secondary mt-4" id="' + item.id + '-details-open">' + item.button + '</button></div>'
+      item.intro += buttonDetails;
+      item.passed = true;
+    }
+    if (item.skip) {
+      intro_details.goToStepNumber(item.step + item.skip);
+    }
 
-      this._introItems[this._currentStep].intro += buttonDetails;
-      this._introItems[this._currentStep].passed = true;
+    if (item.checkSize) {
+      if ($(item.elementSize).width() < item.maxSize) {
+        this._introItems[this._currentStep + 1].skip = item.skipSize;
+      }
+      else {
+        intro_details.goToStepNumber(item.step + 1);
+      }
     }
   }).onafterchange(function () {
     setTimeout(() => {

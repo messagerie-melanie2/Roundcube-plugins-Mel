@@ -528,6 +528,67 @@ $(document).ready(() => {
                 }
             }
 
+            return this.setup_compose();
+        }
+
+        /**
+         * Met en place la rédaction d'un mail.
+         * @returns {Mel_Elastic} Chaînage
+         */
+        setup_compose()
+        {
+            //Si on se trouve au bon endroit.
+            if (rcmail.env.task === "mail" && rcmail.env.action === "compose")
+            {
+                const key = "bnum_last_fields";
+                //Sauvegarder le champs
+                $("a.input-group-text.icon.add").click(() => {
+                    $("#headers-menu ul.menu a.recipient.active").each((i,e) => {
+                        e = $(e);
+                        e.click(() => {
+                            let storage = mel_metapage.Storage.get(key);
+                            
+                            if (storage === undefined || storage === null)
+                                storage = [];
+
+                            const field = e.data("target");
+                            if (!storage.includes(field))
+                            {
+                                storage.push(field);
+                                mel_metapage.Storage.set(key, storage);
+                            }
+                            
+                        });
+                    });
+                });
+
+                //Supprimer le champ
+                $("a.input-group-text.icon.delete").each((i,e) => {
+                    e = $(e);
+                    e.click(() => {
+                        const field = e.parent().parent().find("textarea").attr("id").replace("_", "");
+                        let storage = mel_metapage.Storage.get(key);
+                        
+                        if (storage.includes(field))
+                        {
+                            storage = Enumerable.from(storage).where(x => x !== field).toArray();
+                            mel_metapage.Storage.set(key, storage);
+                        }
+                    });
+                });
+
+                const storage = mel_metapage.Storage.get(key);
+
+                //Afficher les champs
+                if (storage.length > 0)
+                {
+                    for (let index = 0; index < storage.length; ++index) {
+                        const element = storage[index];
+                        $(`#compose_${element}`).removeClass("hidden");
+                    }
+                }
+            }
+
             return this;
         }
 

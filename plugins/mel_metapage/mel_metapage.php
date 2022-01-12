@@ -107,6 +107,8 @@ class mel_metapage extends rcube_plugin
         if ($this->rc->task === "mail" && $this->rc->action === "compose")
         {
             $this->include_edited_editor();
+            $this->include_script('js/init/classes.js');
+            $this->include_script('js/init/constants.js');
         }
 
         if ($this->rc->task === "portail")

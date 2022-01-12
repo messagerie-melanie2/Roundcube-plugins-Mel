@@ -13,8 +13,10 @@ last_item_css = null;
 // Conserver en mémoire le css de l'iframe
 current_iframe_css = null;
 
-//TODO onboarding des mails en iframes
-//TODO Gérer click aprs J'ai compris des hints
+let current_window = null;
+
+//TODO Assistance pour mail
+//TODO Css pour hint au lieu de classe
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
@@ -45,8 +47,8 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
     window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
   }
   else {
-    window.parent.rcmail.show_current_page_onboarding(task);
-    window.parent.rcmail.env.hide_modal = 1;
+    rcmail.show_current_page_onboarding(task);
+    rcmail.env.hide_modal = 1;
   }
 }
 
@@ -56,12 +58,13 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
  */
 rcube_webmail.prototype.show_current_page_onboarding = function (task) {
   let json_page = rcmail.env.help_page_onboarding[task];
-
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
       json = json.replace("%%POSTER%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + task + '.png')
       json = json.replace("%%VIDEO%%", location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/Capsule-' + task + ".mp4")
       window.current_onboarding = JSON.parse(json);
+
+      current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
       if (rcmail.env.is_framed) {
         window.parent.onload = startIntro(task)
@@ -69,7 +72,6 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
       if (task == "mail") {
         rcmail.addEventListener('responsebefore', function (props) {
           if (props.response && (props.response.action === 'list')) {
-
             rcmail.show_contentframe(true)
             startIntro(task);
             setTimeout(() => {
@@ -88,8 +90,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
 function startIntro(task) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
-
-  let intro = window.parent.introJs();
+  let intro = current_window.introJs();
   if (task == "bureau" && rcmail.env.is_framed) {
     intro = bureau_intro(intro);
   }
@@ -98,6 +99,8 @@ function startIntro(task) {
       scrollToElement: window.current_onboarding.scrollToElement,
       scrollTo: window.current_onboarding.scrollTo,
       disableInteraction: window.current_onboarding.disableInteraction,
+      exitOnOverlayClick: window.current_onboarding.exitOnOverlayClick,
+      hidePrev: window.current_onboarding.hidePrev,
       nextLabel: window.current_onboarding.nextLabel,
       prevLabel: window.current_onboarding.prevLabel,
       doneLabel: window.current_onboarding.doneLabel,
@@ -118,10 +121,9 @@ function startIntro(task) {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let item = this._introItems[this._currentStep];
-        let item_step = this._currentStep;
-        window.parent.$('#' + item.id + '-details').on('click', function () {
+        current_window.$('#' + item.id + '-details').on('click', function () {
           if (item.details.hints) {
-            intro_hints(item, intro, item_step);
+            intro_hints(item);
           }
           else if (item.details.steps) {
             intro_details_tour(item, intro)
@@ -138,14 +140,12 @@ function startIntro(task) {
 
 function bureau_intro(intro) {
   var iframe = window.parent.$('iframe.bureau-frame')[0];
-  // if (iframe) {
-  //   window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
-  // }
   let steps = window.current_onboarding.steps;
   intro.setOptions({
     scrollToElement: window.current_onboarding.scrollToElement,
     scrollTo: window.current_onboarding.scrollTo,
     disableInteraction: window.current_onboarding.disableInteraction,
+    exitOnOverlayClick: window.current_onboarding.exitOnOverlayClick,
     nextLabel: window.current_onboarding.nextLabel,
     prevLabel: window.current_onboarding.prevLabel,
     doneLabel: window.current_onboarding.doneLabel,
@@ -166,7 +166,7 @@ function bureau_intro(intro) {
     },
     {
       "title": "Mes espaces de travail",
-      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("..workspaces.module_parent"),
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".workspaces.module_parent"),
       "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
       "tooltipClass": "iframed big-width-intro",
       "highlightClass": "iframed",
@@ -223,17 +223,13 @@ rcube_webmail.prototype.onboarding_close = function () {
 };
 
 
-function intro_hints(item, intro_main, intro_main_step) {
-  window.exit_main_intro = false;
-  intro_main.exit();
-  window.exit_main_intro = true;
-
+function intro_hints(item) {
   if (item.id === "navigation") {
     window.parent.$('#layout-menu').addClass('force-open');
   }
 
   let details = item.details;
-  let intro = window.parent.introJs();
+  let intro = current_window.introJs();
 
   item.passed_hints = false;
   intro.removeHints();
@@ -244,7 +240,6 @@ function intro_hints(item, intro_main, intro_main_step) {
     hints: Object.values(details.hints)
   }).onhintclose(function () {
     let nextStep = window.parent.$('[data-step="' + (parseInt(this._currentStep) + 1) + '"]')
-
     if (nextStep.length && !nextStep.attr('class').includes('hidehint')) {
       intro.showHintDialog(parseInt(this._currentStep) + 1);
     }
@@ -252,16 +247,20 @@ function intro_hints(item, intro_main, intro_main_step) {
 
   setTimeout(() => {
     intro.showHintDialog(0);
+    if (details.hintClass) {
+      current_window.$(".hide-hint").css('display', 'none');
+      current_window.$(".introjs-hint-dot").addClass(details.hintClass);
+    }
   }, 100);
 
-  window.parent.$(document).on('click', function (e) {
+  $(current_window.document).on('click', function (e) {
     if (!item.passed_hints) {
-      if (e.target.id.split('-')[1] != "details" && (e.target.parentElement != undefined && e.target.parentElement.id.split('-')[1] != "details")) {
+      if (current_window.$(e.target).attr('class') === "introjs-overlay") {
         intro.hideHints();
         if (window.parent.$('#layout-menu').hasClass('force-open')) {
           window.parent.$('#layout-menu').removeClass('force-open');
         }
-        intro_main.goToStepNumber(intro_main_step).start();
+        current_window.$(".hide-hint").css('display', 'block');
         item.passed_hints = true;
       }
     }
@@ -277,7 +276,7 @@ function intro_details_tour(item, intro_main) {
   window.exit_main_intro = true;
 
   let details = item.details;
-  let intro_details = window.parent.introJs();
+  let intro_details = current_window.introJs();
 
   intro_details.setOptions({
     nextLabel: details.nextLabel,
@@ -294,7 +293,9 @@ function intro_details_tour(item, intro_main) {
       item.passed = true;
     }
     if (item.skip) {
-      intro_details.goToStepNumber(item.step + item.skip);
+      setTimeout(() => {
+        intro_details.goToStepNumber(item.step + item.skip);
+      }, 10);
     }
 
     if (item.checkSize) {
@@ -302,14 +303,16 @@ function intro_details_tour(item, intro_main) {
         this._introItems[this._currentStep + 1].skip = item.skipSize;
       }
       else {
-        intro_details.goToStepNumber(item.step + 1);
+        setTimeout(() => {
+          intro_details.goToStepNumber(item.step + 1);
+        }, 10);
       }
     }
   }).onafterchange(function () {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let currentStep = this._introItems[this._currentStep];
-        window.parent.$('#' + item.id + '-details-open').on('click', { intro_details, currentStep, stepNumber: this._currentStep }, intro_details_popup)
+        window.parent.$('#' + this._introItems[this._currentStep].id + '-details-open').on('click', { intro_details, currentStep, stepNumber: this._currentStep }, intro_details_popup)
       }
     }, 500);
   }).onbeforeexit(function () {

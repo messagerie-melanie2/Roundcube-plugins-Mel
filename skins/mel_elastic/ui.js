@@ -528,7 +528,42 @@ $(document).ready(() => {
                 }
             }
 
-            return this.setup_compose();
+            return this.setup_mails_classes().setup_compose();
+        }
+
+        setup_mails_classes()
+        {
+            if (rcmail.env.task === "mail")
+            {
+                let action = ($querry, _class) => {
+                    if (!$querry.attr("id").includes("clone"))
+                    {
+                        $querry.addClass("mel").parent().addClass(`mel-li-${_class}`);
+                    }
+                };
+
+                let testing = (e, _class) => {
+                    const array = Enumerable.from(e.classList).toArray();
+                    const count = array.length;
+                    if (count === 1) action($(e), _class);
+                    else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
+                    {
+                        action($(e), _class);
+                    }
+                };
+
+                //Répondre
+                $("#toolbar-menu .reply").each((i,e) => {
+                    testing(e, "reply");
+                });
+
+                //transfert
+                $("#toolbar-menu .forward").each((i,e) => {
+                    testing(e, "forward");
+                });
+            }
+
+            return this;
         }
 
         /**

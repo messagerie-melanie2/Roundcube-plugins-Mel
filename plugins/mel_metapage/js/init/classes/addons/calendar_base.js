@@ -1065,7 +1065,10 @@ $(document).ready(() => {
 
          date = date.add(add, "d").startOf("day");
          rcube_calendar.mel_metapage_misc.SetCalendarDate(jquery_element, date);
+         let sw = new Stopwatch().start();
          const array = await rcube_calendar.block_change_date(jquery_element, add, where, date);
+         console.log("changedate : ", sw.ellapsed() /1000, "s");
+         sw = sw.stop().destroy();
 
          if (array !== false)
          {
@@ -1081,6 +1084,7 @@ $(document).ready(() => {
 
      rcube_calendar.block_change_date = async function (jquery_element, add, where = null, _date = null)
      {
+        var sw = new Stopwatch().start();
         //const SetCalendarDate = rcube_calendar.mel_metapage_misc.SetCalendarDate;
         const GetAgenda = rcube_calendar.mel_metapage_misc.GetAgenda;
         const check = (x, item) => {x.uid === item.uid};
@@ -1091,7 +1095,11 @@ $(document).ready(() => {
          //SetCalendarDate(jquery_element, date);
          if (jquery_element !== null)
             var querry = GetAgenda(jquery_element).html('<center><span class="spinner-border"></span></center>');
+         console.log("block_change_date/before await : ", sw.ellapsed() / 1000, "s");
+         sw.restart();
          const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
+         console.log("block_change_date/await : ", sw.ellapsed() / 1000, "s");
+         sw.restart();
          let events = where === null || where === undefined ? JSON.parse(datas) : Enumerable.from(JSON.parse(datas)).where(where).toArray();
          //console.log("change_calendar_date",events, JSON.parse(datas));
          if (events !== null || events.length !== 0)
@@ -1141,6 +1149,10 @@ $(document).ready(() => {
              events = Enumerable.from(array).where(x => !elementsToDelete.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
              //setup_calendar(array, querry, date);
          }
+
+         console.log("block_change_date/after await : ", sw.ellapsed() / 1000, "s");
+         sw = sw.stop().destroy();
+
          if (events === null || events.length === 0)
          {
             let _html;

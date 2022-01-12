@@ -14,10 +14,16 @@ async function WSPReady()
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     let end = End(uid, hasAriane, datas);
 
+    let sw = new Stopwatch().start();
     Start(uid, hasAriane, datas);
+    console.log("Start : ", sw.ellapsed() / 1000, "s");
+    sw.restart();
     Middle(uid, hasAriane, datas);
-
+    console.log("Middle : ", sw.ellapsed() / 1000, "s");
+    sw.restart();
     await end;
+    console.log("End : ", sw.ellapsed() / 1000, "s");
+    sw = sw.stop().destroy();
 }
 
 /**
@@ -213,6 +219,7 @@ function Middle(uid, hasAriane, datas) {
  * @param {*} datas Diverses données
  */
 async function End(uid, hasAriane, datas) {
+    let sw = new Stopwatch().start();
     let promises = [
         InitLinks()
     ];
@@ -255,8 +262,11 @@ async function End(uid, hasAriane, datas) {
                 }
             })));
     }
-
+    console.log("End|create all promises : ", sw.ellapsed() / 1000, "s");
+    sw.restart();
     await wait(() => rcmail.busy);
+    console.log("End|rcmail busy : ", sw.ellapsed() / 1000, "s");
+    sw = sw.stop().destroy();
     return Promise.all(promises);
 
 }

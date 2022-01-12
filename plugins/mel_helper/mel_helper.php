@@ -65,6 +65,11 @@ class mel_helper extends rcube_plugin
         return "mel_utils";
     }
 
+    public function include_js_debug()
+    {
+        $this->include_script('js/debug/watch.js');
+    }
+
     /**
      * Récupère un plugin.
      *

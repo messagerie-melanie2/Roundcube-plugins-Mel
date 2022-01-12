@@ -217,7 +217,7 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 			
 			if (rowobj.find('td.labels').length > 0) {
 				if (rowobj.find('td.labels').html() == "") {
-					rowobj.find('td.labels').html(label_name);
+					rowobj.find('td.labels').html(`<span>${label_name}</span>`);
 				} else {
 					rowobj.find('td.labels').append(`<span>${label_name}</span>`);
 				}

@@ -312,7 +312,7 @@
         {
             if (new_date === undefined || new_date === null || new_date === "")
             {
-                if (!confirm("Vous n'avez pas inscrit de nouvelle date, cela aurais pour effet de supprime la date de fin.\r\nSi c'est ce que voulez, appuyez sur \"Ok\"."))
+                if (!confirm("Vous n'avez pas inscrit de nouvelle date, cela aura pour effet de supprimer la date de fin.\r\nSi c'est ce que vous voulez, appuyez sur \"Ok\"."))
                     return;
             }
 
@@ -338,10 +338,88 @@
                         else
                             $("#wsp-end-date").html(`Date de fin : ${new_date}`);
                     }
+
+                    //$("#wsp-param-chg-button-enddate").attr("disabled", "disabled").addClass("disabled");
                 }
 
             }).always(() => {
                 this.busy(false);
+            });
+        }
+
+        update_primary_parameters(config = {
+            type:"",
+            input:$(),
+            checks:"empty;already-exist",
+            text_on_error:"Impossible de changer le paramètre.",
+            text_on_succes:"Paramètre changer avec succès.",
+            action:null
+        })
+        {
+            const empty = '';
+            const val = config.input.val();
+            if (config.checks !== undefined && config.checks !== null && config.checks !== empty)
+            {
+                const checks = config.checks.split(";");
+                for (let index = 0; index < checks.length; ++index) {
+                    const element = checks[index];
+                    switch (element) {
+                        case 'empty':
+                            if (val === empty)
+                            {
+                                rcmail.display_message('La valeur ne peut pas être vide.', 'error');
+                                return this;
+                            }
+                            break;
+
+                        case 'already-exist':
+                            if (val === config.input.attr("placeholder"))
+                            {
+                                rcmail.display_message('La valeur ne peut pas être la même que la précédente.', 'error');
+                                return this;
+                            }
+                    
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            this.busy();
+            return this.ajax(this.url("PARAMS_change_primary"), 
+            {
+                _uid:this.uid,
+                _type:config.type,
+                _val:val
+            },
+            (datas) => {
+                this.busy(false);
+                const denied = 'denied'
+                if (datas === denied)
+                {
+                    rcmail.display_message('Vous n\'avez pas les droits pour effectuer cette action.', 'error');
+                }
+                else {
+                    switch (config.type) {
+                        case 'title':
+                            $(".wsp-head .header-wsp").html(val);
+                            config.input.attr("placeholder", val);
+                            this.titleUpdated(empty);
+                            break;
+                    
+                        default:
+                            if (config.action !== null) 
+                                config.action(datas, config, val, empty);
+                            break;
+                    }
+
+                    rcmail.display_message(config.text_on_succes, "confirmation");
+                }
+            }, 
+            (xhr, ajaxOptions, error) => {
+                this.busy(false);
+                rcmail.display_message(config.text_on_error, "error");
+                console.error("###[update_primary_parameters]", error, ajaxOptions, xhr);
             });
         }
 
@@ -372,6 +450,8 @@
                             $("#worspace-avatar-b").html(`<img src="${new_logo}" />`);
                             $(".dwp-round.wsp-picture").html(`<img src="${new_logo}" />`);
                         }
+
+                        $("#wsp-param-chg-button-plz").attr("disabled", 'disabled').addClass("disabled");
                     }
                 }).always(() => {
                     this.busy(false);
@@ -631,7 +711,7 @@
                     () => {
                         let val = $("#selectnewchannel select").val();
 
-                        const confirmation = confirm("Attention !\r\nSi vous changez de canal et que vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres pourrait ne pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimer automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?");
+                        const confirmation = confirm(rcmail.gettext("canal_change_confirmation", "mel_workspace"));
 
                         if (confirmation && val.includes(":"))
                         {
@@ -752,6 +832,50 @@
             window.location.href = rcmail.env.current_workspace_back === undefined || rcmail.env.current_workspace_back === null ? this.url() : rcmail.env.current_workspace_back;
         }
 
+        endDateChanged()
+        {
+            //$("#wsp-param-chg-button-enddate").removeAttr("disabled").removeClass("disabled");
+            return this.updateButtonState($("#wsp-param-chg-button-enddate"));
+        }
+
+        updateButtonState(jquery, enable = true)
+        {
+            if (enable && jquery.hasClass("disabled"))
+            {
+                jquery.removeAttr("disabled").removeClass("disabled");
+            }
+            else if (!enable && !jquery.hasClass("disabled"))
+            {
+                jquery.attr("disabled", 'disabled').addClass("disabled");
+            }
+
+            return this;
+        }
+
+        paramUpdated($button, newVal = null, authorizeEmpty = false)
+        {
+            let $jquery = $button;
+            let $input = $jquery.parent().parent().find("input");
+
+            if ($input.length === 0)
+                $input = $jquery.parent().parent().find("textarea");
+
+            if (newVal !== null)
+                $input.val(newVal);
+
+            const val = $input.val();
+            const empty = '';
+            if ((val !== empty || authorizeEmpty) && val !== $input.attr("placeholder"))
+                return this.updateButtonState($jquery);
+            else
+                return this.updateButtonState($jquery, false);
+        }
+
+        titleUpdated(newVal = null)
+        {
+            return this.paramUpdated($("#wsp-param-btn-title"), newVal);
+        }
+
     }
     Object.defineProperty(Workspace_Param, 'data_null', {
         enumerable: false,
@@ -783,7 +907,82 @@
             rcmail.register_command('workspace.webconf.needParams', () => rcmail.env.WSP_Param.create_webconf(true), true);
             rcmail.register_command('workspace.update_end_date', (jquery) => rcmail.env.WSP_Param.update_end_date(jquery.val()), true);
             rcmail.register_command('workspace.toggle_bar_color', () => {rcmail.env.WSP_Param.toggle_nav_color()}, true);
-        })
+            rcmail.register_command('workspace.update_primary_parameter', (config) => {rcmail.env.WSP_Param.update_primary_parameters(config)}, true);
+            rcmail.register_command('workspace.update_title', () => {rcmail.env.WSP_Param.update_primary_parameters({
+                type:"title",
+                input:$("#spaceTitle"),
+                checks:"empty;already-exist",
+                text_on_error:'Une erreur est survenue.\r\nImpossible de changer le titre de l\'espace.',
+                text_on_succes:'Le titre a été changer avec succès.'
+            })}, true);
+            rcmail.register_command('workspace.update_desc', (isDelete = false) => {
+                let $input = $("#spaceDesc");
+                if (isDelete)
+                    $input.val('');
+
+                rcmail.env.WSP_Param.update_primary_parameters({
+                type:"desc",
+                input:$input,
+                checks:"already-exist",
+                text_on_error:'Une erreur est survenue.\r\nImpossible de changer la description de l\'espace.',
+                text_on_succes:'la description a été changer avec succès.',
+                action:(data, config, newValue, empty) => {
+                    $("#wsp-desc-desc").html(newValue);
+                    config.input.attr("placeholder", (newValue === empty ? "Nouvelle description...." : newValue));
+                    rcmail.env.WSP_Param.paramUpdated($('#wsp-param-btn-desc'), empty);
+                }
+            })}, true);
+            rcmail.register_command('workspace.update_hashtag', (isDelete = false) => {
+                let $input = $("#spaceHashtag");
+
+                if ($input.val().includes('#')) $input.val($input.val().replaceAll("#", ''));
+
+                if (isDelete)
+                    $input.val('');
+
+                $("#list-of-all-hashtag-param").css("display", "none");
+                    
+                rcmail.env.WSP_Param.update_primary_parameters({
+                type:"hashtag",
+                input:$input,
+                checks:"already-exist",
+                text_on_error:'Une erreur est survenue.\r\nImpossible de changer la thématique de l\'espace.',
+                text_on_succes:'la thématique a été changer avec succès.',
+                action:(data, config, newValue, empty) => {
+                    
+                    let $querry = $(".wsp-head .col-10");
+                    let $span = $querry.children()[0];
+
+                    if ($span.nodeName === "SPAN")
+                        $span = $($span);
+                    else
+                        $span = false;
+
+                    const hashtag = newValue.includes('#') || newValue === empty ? newValue : `#${newValue}`;
+
+                    if (hashtag !== empty)
+                    {
+                        if ($span !== false) $span.html(hashtag);
+                        else {
+                            $span = null;
+                            $querry.prepend(`<span>${hashtag}</span>`);
+                        }
+                    }
+                    else if ($span !== false) $span.remove();
+
+                    config.input.attr("placeholder", (newValue === empty ? "Nouvelle thématique...." : newValue));
+                    rcmail.env.WSP_Param.paramUpdated($('#wsp-param-btn-hashtag'), empty);
+                }
+            });}, true);
+
+            rcmail.addEventListener("onHashtagChange", (selector) => {
+                if (selector.input === "#spaceHashtag")
+                {
+                    rcmail.env.WSP_Param.paramUpdated($('#wsp-param-btn-hashtag'));
+                }
+            });
+
+        }); //init end
     })
 
 })();

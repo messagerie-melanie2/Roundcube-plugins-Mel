@@ -272,7 +272,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             },
             userInfo: {
                 email: rcmail.env["webconf.user_datas"].email,
-                displayName: rcmail.env["webconf.user_datas"].name
+                displayName: rcmail.env["webconf.user_datas"].name.split("(")[0].split("-")[0]
             }
         };
 
@@ -1741,7 +1741,7 @@ class ListenerWebConfBar
         this.webconf.ariane.is_hide = false;
         this.webconf.update();
 
-        if (this.webconf.chat.length > 0 && this.webconf.ariane !== null && this.webconf.ariane !== undefined && this.webconf.ariane.room_name !== undefined)
+        if (this.webconf.chat.length > 0 && this.webconf.ariane !== null && this.webconf.ariane !== undefined && this.webconf.ariane.room_name !== undefined && this.webconf.ariane.room_name !== "@home")
         {
             try {
                 this.webconf.chat[0].contentWindow.postMessage({

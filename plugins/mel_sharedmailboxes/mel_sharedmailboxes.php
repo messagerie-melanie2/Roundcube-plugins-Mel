@@ -373,7 +373,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                                 continue;
                             }
 
-                            $unseen_old = rcmail_get_unseen_count($mbox);
+                            $unseen_old = rcmail_action_mail_index::get_unseen_count($mbox);//rcmail_get_unseen_count($mbox);
 
                             if (!$check_all && $unseen_old !== null && $mbox != $current) {
                                 $unseen = $unseen_old;
@@ -390,7 +390,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                                 $this->rc->output->command('set_unread_count', $mbox, $unseen, $mbox_row == $data['folder']);
                             }
 
-                            rcmail_set_unseen_count($mbox, $unseen);
+                            rcmail_action_mail_index::set_unseen_count($mbox, $unseen);
 
                             // set trash folder state
                             if ($mbox === $trash) {

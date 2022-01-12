@@ -653,16 +653,15 @@ function m_mp_UpdateWorkspace_type(event, element) {
   document.activeElement.blur();
 }
 
-function m_mp_affiche_hashtag_if_exists() {
-  let querry = $("#list-of-all-hashtag");
-  if (querry.find("button").length > 0)
-    querry.css("display", "");
+function m_mp_affiche_hashtag_if_exists(containerSelector = '#list-of-all-hashtag') {
+  let querry = $(containerSelector);
+  if (querry.find("button").length > 0) querry.css("display", "");
 }
 
-async function m_mp_get_all_hashtag() {
-  const val = $("#workspace-hashtag").val();
+async function m_mp_get_all_hashtag(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
+  const val = $(inputSelector).val();
   if (val.length > 0) {
-    let querry = $("#list-of-all-hashtag").css("display", "");
+    let querry = $(containerSelector).css("display", "");
     querry.html("<center><span class=spinner-border></span></center>");
 
     await mel_metapage.Functions.get(
@@ -676,7 +675,7 @@ async function m_mp_get_all_hashtag() {
 
           for (let index = 0; index < datas.length; ++index) {
             const element = datas[index];
-            html += `<button onclick=m_mp_hashtag_select(this) class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
+            html += `<button onclick="m_mp_hashtag_select(this, '${inputSelector}', '${containerSelector}')" class="btn-block metapage-wsp-button btn btn-primary"><span class=icon-mel-pin style=margin-right:15px></span><text>${element}</text></button>`;
           }
 
           html += "</div>";
@@ -689,36 +688,68 @@ async function m_mp_get_all_hashtag() {
 
       }
     }
-    );
+    ).always(() => {
+      rcmail.triggerEvent("onHashtagChange", {input:inputSelector, container:containerSelector});
+    });
   }
   else
-    $("#list-of-all-hashtag").css("display", "none");
+    $(containerSelector).css("display", "none");
 
-  if (!mel_metapage.Functions.handlerExist($("body"), m_mp_hashtag_on_click))
-    $("body").click(m_mp_hashtag_on_click);
+  let tmpfunc = (event) => {
+    m_mp_hashtag_on_click(event, inputSelector, containerSelector);
+  };
+
+  // if (!mel_metapage.Functions.handlerExist($("body"), tmpfunc))
+  //   $("body").click(tmpfunc);
+  if (m_mp_get_all_hashtag.handlers === undefined) m_mp_get_all_hashtag.handlers = [];
+
+  if (m_mp_get_all_hashtag.handlers[containerSelector] === undefined)
+  {
+    m_mp_get_all_hashtag.handlers[containerSelector] = tmpfunc;
+  }
+
+  let clickFunction = (event) => {
+    for (const key in m_mp_get_all_hashtag.handlers) {
+      if (Object.hasOwnProperty.call(m_mp_get_all_hashtag.handlers, key)) {
+        const element = m_mp_get_all_hashtag.handlers[key];
+
+        if ($(key).css("display") !== "none")
+        {
+          element(event);
+        }
+      }
+    }
+  };
+
+  if (!mel_metapage.Functions.handlerExist($("body"), clickFunction))
+    $("body").click(clickFunction);
+
 }
 
-function m_mp_hashtag_select(e) {
-  $("#workspace-hashtag").val($(e).find("text").html());
-  $("#list-of-all-hashtag").css("display", "none");
+function m_mp_hashtag_select(e, inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
+  $(inputSelector).val($(e).find("text").html());
+  $(containerSelector).css("display", "none");
 }
 
-function m_mp_hashtag_on_click(event) {
+function m_mp_hashtag_on_click(event, inputSelector ,containerSelector) {
   try {
-    const id = "list-of-all-hashtag";
-    querry = $("#list-of-all-hashtag");
+    let querry = $(containerSelector);
+    const id = querry.attr("id");
+    const inputId = $(inputSelector).attr("id");
+
     if (querry.css("display") !== "none" && querry.find(".spinner-border").length === 0) {
       let target = event.target;
       while (target.nodeName !== "BODY") {
-        if (target.id === id || target.id === "workspace-hashtag")
+        if (target.id === id || target.id === inputId)
+        {
           return;
+        }
         else
           target = target.parentElement;
       }
       querry.css("display", "none");
     }
   } catch (error) {
-
   }
 }
 

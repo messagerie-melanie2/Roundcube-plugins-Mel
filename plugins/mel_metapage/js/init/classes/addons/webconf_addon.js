@@ -9,8 +9,8 @@
     {
         if (!webconf_is_active())
         {
-            if ($(".webconf-frame").length > 0)
-                $(".webconf-frame").remove();
+            if ((parent !== window ? parent : window).$(".webconf-frame").length > 0)
+                (parent !== window ? parent : window).$(".webconf-frame").remove();
 
             let config = null;
             if (key != null || wsp !== null || ariane !== null)

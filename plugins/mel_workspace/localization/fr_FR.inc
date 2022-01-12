@@ -43,3 +43,5 @@ $labels["mel-force-nav-color"] = "Espaces - Forcer la couleur";
 $labels["always"] = "Toujours";
 $labels["never"] = "Jamais";
 $labels["default"] = "Par défaut";
+
+$labels["canal_change_confirmation"] = "Attention !\r\nSi vous changez de canal et que vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres pourrait ne pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimé automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?";

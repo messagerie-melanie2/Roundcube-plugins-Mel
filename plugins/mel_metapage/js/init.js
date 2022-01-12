@@ -137,7 +137,7 @@ if (rcmail)
 
                         events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
                         try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
-                        update_badge(events.length, mel_metapage.Ids.menu.badge.calendar);
+                        update_badge(Enumerable.from(events).where(x => x.free_busy !== "free").count(), mel_metapage.Ids.menu.badge.calendar);
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar, events);
                         mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
@@ -648,7 +648,9 @@ if (rcmail)
         if (parent === window) //Si on est pas dans une frame
         {
             init_badge(local_storage.calendar, mel_metapage.Storage.calendar, rcmail.mel_metapage_fn.calendar_updated,
-                ".calendar", mel_metapage.Ids.menu.badge.calendar, true);
+                ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
+                    return Enumerable.from(storage).where(x => x.free_busy !== "free").count();
+                });
             init_badge(local_storage.tasks, mel_metapage.Storage.tasks, rcmail.mel_metapage_fn.tasks_updated,
                 ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);
             init_badge(local_storage.mails.unread_count, mel_metapage.Storage.mail, rcmail.mel_metapage_fn.mail_updated, 
@@ -783,7 +785,7 @@ if (rcmail)
  * - "false" = tableau (défaut)
  * - "true" = taille
  */
-function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc = false, isLength = false)
+function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc = false, isLength = false, editFunc = null)
 {
     try {
         if (storage === null)
@@ -794,7 +796,8 @@ function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc =
                     try {
                         try_add_round(selector, idBadge);
                         storage = mel_metapage.Storage.get(storage_key);
-                        update_badge((isLength ? storage : storage.length), idBadge);
+                        const val = (isLength ? storage : storage.length);
+                        update_badge((editFunc !== null ? editFunc(storage, val) : val), idBadge);
                     } catch (error) {
                         console.error(error);
                     }
@@ -804,13 +807,15 @@ function init_badge(storage, storage_key, func, selector, idBadge, isAsyncFunc =
                 func();
                 try_add_round(selector, idBadge);
                 storage = mel_metapage.Storage.get(storage_key);
-                update_badge((isLength ? storage : storage.length), idBadge);
+                const val = (isLength ? storage : storage.length);
+                update_badge((editFunc !== null ? editFunc(storage, val) : val), idBadge);
             }
         }
         else
         {
             try_add_round(selector, idBadge);
-            update_badge((isLength ? storage : storage.length), idBadge);
+            const val = (isLength ? storage : storage.length);
+            update_badge((editFunc !== null ? editFunc(storage, val) : val), idBadge);
         }       
     } catch (error) {
         console.error(error);

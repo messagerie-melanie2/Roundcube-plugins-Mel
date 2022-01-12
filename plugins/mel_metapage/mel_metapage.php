@@ -1064,6 +1064,7 @@ class mel_metapage extends rcube_plugin
         $event["attendees"] = [
             ["email" => driver_mel::gi()->getUser()->email, "name" => $user->fullname, "role" => "ORGANIZER"]
         ];
+        $settings = $calendar->__get("settings");
         
         foreach ($this->rc->user->list_emails() as $rec) {
 

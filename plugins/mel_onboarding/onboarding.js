@@ -13,6 +13,9 @@ last_item_css = null;
 // Conserver en mémoire le css de l'iframe
 current_iframe_css = null;
 
+//TODO onboarding des mails en iframes
+//TODO Gérer click aprs J'ai compris des hints
+
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
     let current_task = rcmail.env.task;
@@ -66,7 +69,11 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
       if (task == "mail") {
         rcmail.addEventListener('responsebefore', function (props) {
           if (props.response && (props.response.action === 'list')) {
+            rcmail.show_contentframe(true)
             startIntro(task);
+            setTimeout(() => {
+              rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+            }, 250);
           }
         });
       }
@@ -106,18 +113,14 @@ function startIntro(task) {
       this._introItems[this._currentStep].intro += buttonDetails;
       this._introItems[this._currentStep].passed = true;
     }
-
-    if (this._introItems[this._currentStep].previewMail) {
-      rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
-      //TODO Attendre que la page charge avant de lancer la suite intro 
-    }
   }).onafterchange(function () {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let item = this._introItems[this._currentStep];
+        let item_step = this._currentStep;
         window.parent.$('#' + item.id + '-details').on('click', function () {
           if (item.details.hints) {
-            intro_hints(item, intro);
+            intro_hints(item, intro, item_step);
           }
           else if (item.details.steps) {
             intro_details_tour(item, intro)
@@ -219,7 +222,7 @@ rcube_webmail.prototype.onboarding_close = function () {
 };
 
 
-function intro_hints(item, intro_main) {
+function intro_hints(item, intro_main, intro_main_step) {
   window.exit_main_intro = false;
   intro_main.exit();
   window.exit_main_intro = true;
@@ -231,6 +234,7 @@ function intro_hints(item, intro_main) {
   let details = item.details;
   let intro = window.parent.introJs();
 
+  item.passed_hints = false;
   intro.removeHints();
 
   intro.setOptions({
@@ -250,12 +254,13 @@ function intro_hints(item, intro_main) {
   }, 100);
 
   window.parent.$(document).on('click', function (e) {
-    if (e.target.id != "navigation-details" && (e.target.parentElement != undefined && e.target.parentElement.id != "navigation-details")) {
+    if (e.target.id.split('-')[1] != "details" && (e.target.parentElement != undefined && e.target.parentElement.id.split('-')[1] != "details") && !item.passed_hints) {
       intro.hideHints();
       if (window.parent.$('#layout-menu').hasClass('force-open')) {
         window.parent.$('#layout-menu').removeClass('force-open');
-        intro_main.goToStepNumber(1).start();
       }
+      intro_main.goToStepNumber(intro_main_step).start();
+      item.passed_hints = true;
     }
   });
 }

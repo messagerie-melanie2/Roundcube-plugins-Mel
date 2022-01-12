@@ -13,6 +13,9 @@ last_item_css = null;
 // Conserver en mémoire le css de l'iframe
 current_iframe_css = null;
 
+//TODO onboarding des mails en iframes
+//TODO Gérer click aprs J'ai compris des hints
+
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
     let current_task = rcmail.env.task;
@@ -61,22 +64,46 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
       window.current_onboarding = JSON.parse(json);
 
       if (rcmail.env.is_framed) {
-        window.parent.onload = startIntro
+        window.parent.onload = startIntro(task)
+      }
+      if (task == "mail") {
+        rcmail.addEventListener('responsebefore', function (props) {
+          if (props.response && (props.response.action === 'list')) {
+
+            rcmail.show_contentframe(true)
+            startIntro(task);
+            setTimeout(() => {
+              rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+            }, 250);
+          }
+        });
       }
       else {
-        startIntro();
+        startIntro(task);
       }
     });
   });
 };
 
-function startIntro() {
+function startIntro(task) {
   window.exit_main_intro = true;
   window.exit_details_intro = true;
 
   let intro = window.parent.introJs();
-
-  intro = bureau_intro(intro);
+  if (task == "bureau" && rcmail.env.is_framed) {
+    intro = bureau_intro(intro);
+  }
+  else {
+    intro.setOptions({
+      scrollToElement: window.current_onboarding.scrollToElement,
+      scrollTo: window.current_onboarding.scrollTo,
+      disableInteraction: window.current_onboarding.disableInteraction,
+      nextLabel: window.current_onboarding.nextLabel,
+      prevLabel: window.current_onboarding.prevLabel,
+      doneLabel: window.current_onboarding.doneLabel,
+      steps: window.current_onboarding.steps
+    })
+  }
 
   intro.onbeforechange(function () {
     //On ajoute le bouton permettant de lancer la démonstration
@@ -91,9 +118,10 @@ function startIntro() {
     setTimeout(() => {
       if (this._introItems[this._currentStep].passed) {
         let item = this._introItems[this._currentStep];
+        let item_step = this._currentStep;
         window.parent.$('#' + item.id + '-details').on('click', function () {
           if (item.details.hints) {
-            intro_hints(item, intro);
+            intro_hints(item, intro, item_step);
           }
           else if (item.details.steps) {
             intro_details_tour(item, intro)
@@ -109,61 +137,48 @@ function startIntro() {
 }
 
 function bureau_intro(intro) {
-  if (rcmail.env.is_framed) {
-    var iframe = window.parent.$('iframe.bureau-frame')[0];
-    // if (iframe) {
-    //   window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
-    // }
-    let steps = window.current_onboarding.steps;
-    intro.setOptions({
-      scrollToElement: window.current_onboarding.scrollToElement,
-      scrollTo: window.current_onboarding.scrollTo,
-      disableInteraction: window.current_onboarding.disableInteraction,
-      nextLabel: window.current_onboarding.nextLabel,
-      prevLabel: window.current_onboarding.prevLabel,
-      doneLabel: window.current_onboarding.doneLabel,
-      steps: [steps[0], steps[1], steps[2],
-      {
-        "title": "Ma journée",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
-        "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
-        "tooltipClass": "iframed big-width-intro",
-        "highlightClass": "iframed"
-      },
-      {
-        "title": "Informations",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
-        "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
-        "tooltipClass": "iframed big-width-intro",
-        "highlightClass": "iframed"
-      },
-      {
-        "title": "Mes espaces de travail",
-        "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("..workspaces.module_parent"),
-        "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
-        "tooltipClass": "iframed big-width-intro",
-        "highlightClass": "iframed",
-        "tooltipPosition": "top"
-      },
-      {
-        "title": "Discussion ",
-        "element": ".tiny-rocket-chat",
-        "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
-        "tooltipPosition": "top"
-      }]
-    })
-  }
-  else {
-    intro.setOptions({
-      scrollToElement: window.current_onboarding.scrollToElement,
-      scrollTo: window.current_onboarding.scrollTo,
-      disableInteraction: window.current_onboarding.disableInteraction,
-      nextLabel: window.current_onboarding.nextLabel,
-      prevLabel: window.current_onboarding.prevLabel,
-      doneLabel: window.current_onboarding.doneLabel,
-      steps: window.current_onboarding.steps
-    })
-  }
+  var iframe = window.parent.$('iframe.bureau-frame')[0];
+  // if (iframe) {
+  //   window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
+  // }
+  let steps = window.current_onboarding.steps;
+  intro.setOptions({
+    scrollToElement: window.current_onboarding.scrollToElement,
+    scrollTo: window.current_onboarding.scrollTo,
+    disableInteraction: window.current_onboarding.disableInteraction,
+    nextLabel: window.current_onboarding.nextLabel,
+    prevLabel: window.current_onboarding.prevLabel,
+    doneLabel: window.current_onboarding.doneLabel,
+    steps: [steps[0], steps[1], steps[2],
+    {
+      "title": "Ma journée",
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("#myday"),
+      "intro": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu.",
+      "tooltipClass": "iframed big-width-intro",
+      "highlightClass": "iframed"
+    },
+    {
+      "title": "Informations",
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector(".--row.--row-dwp--under"),
+      "intro": "<br/>\"Informations\" permet de visualiser les informations importantes diffusées par votre service ainsi que celles diffusées par votre ministère",
+      "tooltipClass": "iframed big-width-intro",
+      "highlightClass": "iframed"
+    },
+    {
+      "title": "Mes espaces de travail",
+      "element": window.parent.document.getElementById(iframe.id).contentWindow.document.querySelector("..workspaces.module_parent"),
+      "intro": "<br/>\"Mes espaces de travail\" vous affiche les trois derniers espaces de travail accessibles directement depuis le Bnum. Vous pouvez visualiser les informations de ces espaces et les ouvrir directement depuis ce menu.",
+      "tooltipClass": "iframed big-width-intro",
+      "highlightClass": "iframed",
+      "tooltipPosition": "top"
+    },
+    {
+      "title": "Discussion ",
+      "element": ".tiny-rocket-chat",
+      "intro": "Ce raccourci permet d'ouvrir directement votre onglet de discussion dans votre page d'accueil",
+      "tooltipPosition": "top"
+    }]
+  })
 
   return intro;
 }
@@ -208,7 +223,7 @@ rcube_webmail.prototype.onboarding_close = function () {
 };
 
 
-function intro_hints(item, intro_main) {
+function intro_hints(item, intro_main, intro_main_step) {
   window.exit_main_intro = false;
   intro_main.exit();
   window.exit_main_intro = true;
@@ -220,6 +235,7 @@ function intro_hints(item, intro_main) {
   let details = item.details;
   let intro = window.parent.introJs();
 
+  item.passed_hints = false;
   intro.removeHints();
 
   intro.setOptions({
@@ -239,11 +255,14 @@ function intro_hints(item, intro_main) {
   }, 100);
 
   window.parent.$(document).on('click', function (e) {
-    if (e.target.id != "navigation-details" && (e.target.parentElement != undefined && e.target.parentElement.id != "navigation-details")) {
-      intro.hideHints();
-      if (window.parent.$('#layout-menu').hasClass('force-open')) {
-        window.parent.$('#layout-menu').removeClass('force-open');
-        intro_main.goToStepNumber(1).start();
+    if (!item.passed_hints) {
+      if (e.target.id.split('-')[1] != "details" && (e.target.parentElement != undefined && e.target.parentElement.id.split('-')[1] != "details")) {
+        intro.hideHints();
+        if (window.parent.$('#layout-menu').hasClass('force-open')) {
+          window.parent.$('#layout-menu').removeClass('force-open');
+        }
+        intro_main.goToStepNumber(intro_main_step).start();
+        item.passed_hints = true;
       }
     }
   });
@@ -268,11 +287,23 @@ function intro_details_tour(item, intro_main) {
     steps: Object.values(details.steps)
   }).onbeforechange(function () {
     //On ajoute le bouton permettant de lancer la démonstration
-    if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
-      let buttonDetails = '<div class="text-left"><button class="btn btn-secondary mt-4" id="' + item.id + '-details-open">' + this._introItems[this._currentStep].button + '</button></div>'
+    let item = this._introItems[this._currentStep];
+    if (item.button && !item.passed) {
+      let buttonDetails = '<div class="text-left"><button class="btn btn-secondary mt-4" id="' + item.id + '-details-open">' + item.button + '</button></div>'
+      item.intro += buttonDetails;
+      item.passed = true;
+    }
+    if (item.skip) {
+      intro_details.goToStepNumber(item.step + item.skip);
+    }
 
-      this._introItems[this._currentStep].intro += buttonDetails;
-      this._introItems[this._currentStep].passed = true;
+    if (item.checkSize) {
+      if ($(item.elementSize).width() < item.maxSize) {
+        this._introItems[this._currentStep + 1].skip = item.skipSize;
+      }
+      else {
+        intro_details.goToStepNumber(item.step + 1);
+      }
     }
   }).onafterchange(function () {
     setTimeout(() => {

@@ -1,42 +1,188 @@
 {
-  "title": "Découvrez votre Bureau numérique : la messagerie Mél",
-  "addpadding": "#layout-content #contents",
-  "iframecss": "padding-top:0px;padding-left:0px;",
-  "stepper": {
-    "title": "Explorez les fonctionnalités de l'Accueil du Bnum",
-    "items": {
-      "video": {
-        "title": "Vidéo de présentation",
-        "description": "Présentation du Bnum en vidéo",
-        "bloc": {
-          "title": "Voir la vidéo de présentation",
-          "description": "<h2>Bienvenue sur votre messagerie Mél !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier apperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la messagerie Mél que vous pourrez découvrir grâce à cette page d'aide. Cette page peut être fermée via le bouton \"Fermer\" ci-desous et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
-          "video": "Capsule-1-Connexion.mp4",
-          "img": "accueil.png"
-        }
-      },
-      "navigation": {
-        "title": "Barre de navigation",
-        "description": "Permet de gérer les dossiers de la messagerie Mél",
-        "highlight": "#folderlist-content",
-        "css": "background-color: #363A5B; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
-        "bloccss": "margin-left: 45%;max-width:600px;text-align:start",
-        "bloc": {
-          "title": "Page d'accueil : Ma journée",
-          "description": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu."
-        }
-      },
-      "liste mail": {
-        "title": "Barre de navigation",
-        "description": "Permet de gérer les dossiers de la messagerie Mél",
-        "highlight": "#layout-list",
-        "css": "background-color: #363A5B; border-radius: 5px; z-index: 1001; box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.7);",
-        "bloccss": "margin-left: 45%;max-width:600px;text-align:start",
-        "bloc": {
-          "title": "Page d'accueil : Ma journée",
-          "description": "<br/>\"Ma journée\" permet de visualiser les rendez-vous de la journée ainsi que les tâches en cours. Si un rendez-vous possède un lien de visioconférence, ce lien sera directement cliquable depuis ce menu."
-        }
+  "scrollToElement": true,
+  "disableInteraction": true,
+  "scrollTo": "tooltip",
+  "nextLabel": "Suivant",
+  "prevLabel": "Précédent",
+  "doneLabel": "Fermer",
+  "steps": [
+    {
+      "title": "Messagerie Mél",
+      "intro": "<h2>Découvrez votre Bureau numérique : la messagerie Mel</h2><br/><div class='video mt-2'><video controls poster='%%POSTER%%'><source src='%%VIDEO%%' type='video/mp4'>Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><h2>Bienvenue sur votre méssagerie Mel !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier aperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de votre messagerie que vous pourrez découvrir grâce à cette page d'aide. Cette fenêtre peut être fermée en cliquant sur la croix en haut à droite et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
+      "tooltipClass": "accueil-intro text-center"
+    },
+    {
+      "title": "Barre de navigation",
+      "element": "#layout-sidebar",
+      "intro": "Cette barre de navigation vous permet de gérer les dossiers de votre messagerie Mél",
+      "tooltipClass": "big-width-intro",
+      "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
+      "details": {
+        "tooltipClass": "navigation-hint",
+        "hintButtonLabel": "J'ai compris",
+        "hints": [
+          {
+            "element": ".mailbox.inbox a",
+            "hint": "Test.",
+            "hintPosition": "middle-right",
+            "position": "right"
+          },
+          {
+            "element": ".mailbox.drafts a",
+            "hint": "Test.",
+            "hintPosition": "middle-right",
+            "position": "right"
+          },
+          {
+            "element": ".mailbox.models a",
+            "hint": "Test.",
+            "hintPosition": "middle-right",
+            "position": "right"
+          },
+          {
+            "element": ".mailbox.sent a",
+            "hint": "Test.",
+            "hintPosition": "middle-right",
+            "position": "right"
+          },
+          {
+            "element": ".mailbox.junk a",
+            "hint": "Test.",
+            "hintPosition": "middle-right",
+            "position": "right"
+          },
+          {
+            "element": ".mailbox.trash a",
+            "hint": "Test.",
+            "hintPosition": "middle-right",
+            "position": "right"
+          }
+        ]
       }
+    },
+    {
+      "title": "Barre de navigation",
+      "element": "#messagelist-header",
+      "intro": "Cette barre de navigation vous permet de gérer les dossiers de votre messagerie Mél",
+      "tooltipClass": "big-width-intro",
+      "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
+      "details": {
+        "nextLabel": "Suivant",
+        "prevLabel": "Précédent",
+        "doneLabel": "Fermer",
+        "tooltipClass": "average-width-intro",
+        "steps": [
+          {
+            "element": ".compose.options",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": "#melplusmails",
+            "intro": "Test.",
+            "checkSize": true,
+            "maxSize": 370,
+            "elementSize": "#layout-list",
+            "skipSize": 3,
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": ".select",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": ".threads.disabled",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": "#listmenulink",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": ".toolbar-button.refresh",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": "#mailsearchlist div",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Liste des mails",
+      "element": "#messagelist-content",
+      "intro": "Cette barre de navigation vous permet de gérer les dossiers de votre messagerie Mél",
+      "tooltipClass": ""
+    },
+    {
+      "title": "Barre d'outils des mails",
+      "element": "#layout-content .header",
+      "intro": "Cette barre de navigation vous permet de gérer les dossiers de votre messagerie Mél",
+      "tooltipClass": "",
+      "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
+      "details": {
+        "nextLabel": "Suivant",
+        "prevLabel": "Précédent",
+        "doneLabel": "Fermer",
+        "tooltipClass": "average-width-intro",
+        "steps": [
+          {
+            "element": ".compose.options",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": ".select",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": ".threads.disabled",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": "#listmenulink",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": ".toolbar-button.refresh",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          },
+          {
+            "element": "#mailsearchlist div",
+            "intro": "Test.",
+            "hintPosition": "middle-right",
+            "position": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Barre d'outils des mails",
+      "element": "#messagecontframe",
+      "intro": "Cette barre de navigation vous permet de gérer les dossiers de votre messagerie Mél",
+      "tooltipClass": ""
     }
-  }
+  ]
 }

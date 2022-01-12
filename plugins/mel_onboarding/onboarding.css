@@ -245,7 +245,7 @@
 }
 
 .navigation-hint {
-  box-shadow: rgb(33 33 33 / 80%) 2px 2px 10px 0px, rgb(33 33 33 / 50%) 999985px 0px 2px 1000000px !important;
+  /* box-shadow: rgb(33 33 33 / 80%) 2px 2px 10px 0px, rgb(33 33 33 / 50%) 1000000px 0px 2px 1000000px !important; */
 }
 
 .iframed {

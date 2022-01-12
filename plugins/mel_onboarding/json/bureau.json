@@ -15,7 +15,7 @@
       "id": "navigation",
       "title": "Barre de navigation",
       "element": "#layout-menu",
-      "intro": "<br/><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p><strong>Bon à savoir :</strong> Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dés qu'une application est ouverte elle est gardée en mémoire et peut être réouverte instantanement à tout moment, le travail en cours ne sera pas perdu.</p>",
+      "intro": "<br/><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p><strong>Bon à savoir :</strong> Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dès qu'une application est ouverte elle est gardée en mémoire et peut être rouverte instantanément à tout moment, le travail en cours ne sera pas perdu.</p>",
       "tooltipClass": "mt-4 big-width-intro",
       "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
       "details": {
@@ -36,13 +36,13 @@
           },
           {
             "element": ".button-mail",
-            "hint": "\"Ma messagerie Mél\" vous permet d'accéder à vos courriels.<br><br>Vous aurez la possiblité de consulter les messages venants de votre boîte personnelle ainsi que les messages des boîtes que l'on vous a partagé.",
+            "hint": "\"Ma messagerie Mél\" vous permet d'accéder à vos courriels.<br><br>Vous aurez la possibilité de consulter les messages venant de votre boîte personnelle ainsi que les messages des boîtes que l'on vous a partagées.",
             "position": "right",
             "hintPosition": "middle-right"
           },
           {
             "element": ".button-calendar",
-            "hint": "\"Mon agenda\" vous permet d'accéder à vos agendas.<br><br>Dans cette application vous retrouverez votre agenda personnel ainsi que tous les agendas que les autres utilisateurs de Mél vous ont partagé.",
+            "hint": "\"Mon agenda\" vous permet d'accéder à vos agendas.<br><br>Dans cette application vous retrouverez votre agenda personnel ainsi que tous les agendas que les autres utilisateurs de Mél vous ont partagés.",
             "position": "right",
             "hintPosition": "middle-right"
           },
@@ -66,7 +66,7 @@
           },
           {
             "element": ".button-tasklist",
-            "hint": "\"Mes tâches\" vous permet d'accéder à vos tâches et tâches partagées.<br><br>Dans cette applications vous retrouverez toutes vos listes de tâches personnelles ainsi que toutes les listes de tâches que les autres utilisateurs du Bureau Numérique vous ont partagé.",
+            "hint": "\"Mes tâches\" vous permet d'accéder à vos tâches et tâches partagées.<br><br>Dans cette application vous retrouverez toutes vos listes de tâches personnelles ainsi que toutes les listes de tâches que les autres utilisateurs du Bureau Numérique vous ont partagés.",
             "position": "right",
             "hintPosition": "middle-right"
           },
@@ -95,7 +95,7 @@
       "id": "outils",
       "title": "Barre d'outils",
       "element": ".barup",
-      "intro": "<p>Cette barre d'outils reste tout le temps accessible quelque soit la page du Bnum affichée.</p><p>Elle permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul class='onboarding-list'><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globales dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul>",
+      "intro": "<p>Cette barre d'outils reste tout le temps accessible quelle que soit la page du Bnum affichée.</p><p>Elle permet d'accéder rapidement aux fonctionnalités importantes du Bureau Numérique :</p><ul class='onboarding-list'><li>Créer des espaces de travail, des mails, des rendez-vous</li><li>Accéder à l'assistance</li><li>Les raccourcis vers l'affichage de \"Ma journée\"</li><li>La recherche globale dans les mails, contacts et rendez-vous</li><li>Le menu Bienvenue permettant de se déconnecter</li></ul>",
       "tooltipClass": "big-width-intro",
       "button": "<span>Découvrir la barre d'outils</span><span class='icon-mel-arrow-right plus'></span>",
       "details": {

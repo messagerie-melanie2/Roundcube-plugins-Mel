@@ -211,7 +211,7 @@ function Middle(uid, hasAriane, datas) {
  * @param {*} datas Diverses données
  */
 async function End(uid, hasAriane, datas) {
-    let sw = new Stopwatch().start();
+
     let promises = [
         InitLinks()
     ];
@@ -236,7 +236,6 @@ async function End(uid, hasAriane, datas) {
                 rcmail.set_busy(false);
                 rcmail.clear_messages();
 
-                //console.log("rcmail.env.current_workspace_file", rcmail.env.current_workspace_file)
                 if (rcmail.env.current_workspace_file !== undefined)
                 {
                     return wait(() => {
@@ -254,11 +253,9 @@ async function End(uid, hasAriane, datas) {
                 }
             })));
     }
-    console.log("End|create all promises : ", sw.ellapsed() / 1000, "s");
-    sw.restart();
+
     await wait(() => rcmail.busy);
-    console.log("End|rcmail busy : ", sw.ellapsed() / 1000, "s");
-    sw = sw.stop().destroy();
+
     return Promise.all(promises);
 
 }

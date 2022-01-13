@@ -1,0 +1,607 @@
+/**
+ * Main Styling for Web Application
+ * Author: Alexander Spieslechner
+ * Email: alexander.spieslechner@gmail.com;
+ * Website: https://at.linkedin.com/pub/alexander-spieslechner/51/198/39;
+ */
+
+
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+
+html {
+
+}
+
+body{
+    line-height : 1.6;
+}
+
+
+/*
+ * Remove text-shadow in selection highlight: h5bp.com/i
+ * These selection rule sets have to be separate.
+ * Customize the background color to match your design.
+ */
+
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+
+/*
+ * A better looking default horizontal rule
+ */
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+
+/*
+ * Remove the gap between images, videos, audio and canvas and the bottom of
+ * their containers: h5bp.com/i/440
+ */
+
+audio,
+canvas,
+img,
+video {
+    vertical-align: middle;
+}
+
+
+/*
+ * Remove default fieldset styles.
+ */
+
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.logo_pole{
+    width : 100%;
+}
+
+.flex-fieldset{
+    display : flex;
+    justify-content : space-between;
+    display: -webkit-flex;
+    display : -webkit-inline-box;
+    flex-direction : row;
+    width : 100%;
+}
+
+.flex-element{
+    width : 49%;
+    padding-bottom : 10px;
+    display : inline-block;
+}
+
+fieldset .flex-element:nth-child(even) label{
+    margin-left : 310px;
+}
+
+.input-field{
+    margin-bottom : 0px;
+    margin-top : 2rem;
+}
+
+.input-field .prefix ~ label{
+  width : auto;
+  left : 0px;
+}
+
+.fieldset-vertical{
+    margin-left : 45px; 
+    margin-right : 45px;
+    margin-top : 1rem;
+}
+
+.div-title{
+    display : flex;
+    flex-direction : row;
+}
+
+legend{
+    color : #2a4d69;
+}
+
+.fieldset-title{
+    margin-top : 3rem;
+    font-family : Arial;
+    color : #2a4d69;
+    font-weight : 400;
+    font-size : 1em;
+}
+
+.div-title i {
+    width : 3rem;
+    margin-top : 2.5rem;
+    font-size : 2rem;
+    top : auto!important;
+}
+
+.adresse{
+    margin-top : 0px;
+}
+
+/*
+ * Allow only vertical resizing of textareas.
+ */
+
+textarea {
+    resize: vertical;
+}
+
+
+/* ==========================================================================
+   Browse Happy prompt
+   ========================================================================== */
+
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+#main-body {
+    background-color: #fcfcfc;
+}
+
+h1 {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 100;
+    padding-left: 10px;
+}
+.sig-header {
+    padding: 30px;
+}
+
+.top-logo-img {
+    display: inline-block;
+}
+
+.container {
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 50px;
+    max-width: 680px;
+    width: 100%;
+}
+
+.top-logo {
+    padding-top: 30px;
+    width: 100%;
+}
+
+.title {
+    position: relative;
+    background-color : #2a4d69;
+    color : white;
+    margin-top: -20px;
+    margin-bottom : 0px;
+    text-align : center;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 30px;
+    font-weight: 300;
+}
+
+form{
+    background-color : rgba(87, 113, 190, 0.05);
+    margin-top : -10px;
+}
+
+.card-content{
+    padding-top : 0px;
+    padding-left : 20px;
+}
+
+
+.bloc_exp{
+    background-color : rgba(87, 113, 190, 0.05);
+    padding-left : 12px;
+}
+
+#signature {
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.input-field span{
+    font-size : 0px!important;
+}
+
+.dropdown-content li>a, .dropdown-content li>span {
+    color : #2a4d69;
+    font-size : 1rem!important;
+
+}
+
+input[type=text]:not(.browser-default):focus:not([readonly]){
+   border-bottom : #2a4d69!important;
+   box-shadow : 0 1px 0 0#2a4d69;
+}
+
+#signature p font {
+  line-height: unset;
+  margin: unset;
+  background: unset;
+  border: unset;
+  width: unset;
+  padding: unset;
+  overflow: unset;
+  outline: unset;
+}
+
+
+.sig-markup {
+    margin-top: 20px;
+    background: #eaeaea;
+    color: #929292;
+    border: solid 1px #e1e1e1;
+    min-height: 200px;
+    width: 100%;
+    font-size: 11px;
+    padding: 10px;
+    overflow: scroll;
+    outline: none;
+}
+.sig-markup:hover {
+    border: solid 1px #2a4d69 ;
+}
+
+.btn {
+    background-color: #2a4d69 ;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #5770BE ;
+}
+
+@media (max-width: 500px) {
+    .container {
+        width: 70%;
+        margin: 20px auto;
+    }
+    .pure-form .form-head {
+        text-align: center;
+    }
+}
+
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+
+/*
+ * Image replacement
+ */
+
+.ir {
+    background-color: transparent;
+    border: 0;
+    overflow: hidden;
+    /* IE 6/7 fallback */
+    *text-indent: -9999px;
+}
+
+.ir:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 150%;
+}
+
+
+/*
+ * Hide from both screenreaders and browsers: h5bp.com/u
+ */
+
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+
+
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+
+.invisible {
+    visibility: hidden;
+}
+
+
+/*
+ * Clearfix: contain floats
+ *
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    `contenteditable` attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that receive the `clearfix` class.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+
+/*
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+
+.clearfix {
+    *zoom: 1;
+}
+
+
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+(-o-min-device-pixel-ratio: 5/4),
+(-webkit-min-device-pixel-ratio: 1.25),
+(min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important;
+        /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+    thead {
+        display: table-header-group;
+        /* h5bp.com/t */
+    }
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+    img {
+        max-width: 100% !important;
+    }
+    @page {
+        margin: 0.5cm;
+    }
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+/* label color */
+   .input-field label {
+     color: #2a4d69 ;
+   }
+
+input[type=text]:not(.browser-default):focus:not([readonly])+label{
+    color: #2a4d69
+}
+
+   /* label focus color */
+   .input-field input[type=text]:focus + label {
+     color: #2a4d69 ;
+   }
+   /* label underline focus color */
+   .input-field input[type=text]:focus {
+       border-bottom: 1px solid #2a4d69 ;
+       box-shadow: 0 1px 0 0 #2a4d69 ;
+   }
+   /* valid color */
+   
+   .input-field input[type=text].valid {
+       border-bottom: 1px solid #2a4d69 ;
+       box-shadow: 0 1px 0 0 #2a4d69 ;
+   }
+   /* invalid color */
+   
+   .input-field input[type=text].invalid {
+       border-bottom: 1px solid #2a4d69 ;
+       box-shadow: 0 1px 0 0 #2a4d69 ;
+   }
+   /* icon prefix focus color */
+   
+   .input-field .prefix.active {
+       color: #2a4d69 ;
+   }
+
+   .fieldset-vertical label{
+    color : #424242;
+    font-size : 0.9rem;
+ }
+
+   
+   
+  .select-wrapper {
+    margin-left: 3rem;
+    width: 92%;
+    width: calc(100% - 3rem);
+     
+  }
+
+  .select-wrapper .caret {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    z-index: 0;
+    fill: rgba(0,0,0,0.87);
+  }
+
+/* styles checkboxes */
+
+.checkboxes{
+    margin-bottom : 3rem;
+    margin-top : 0;
+}
+
+.checkboxes label{
+    display : flex;
+    flex-direction : row-reverse;
+    display: -webkit-flex;
+    margin-left : 0;
+    justify-content : start;
+    position : relative;
+    font-size : 0.9rem;
+    font-family : sans-serif;
+}
+
+
+[type="checkbox"]:not(:checked), [type="checkbox"]:checked{
+    position : relative;
+    margin-left : -290px;
+    margin-right : auto;
+    opacity : 0.1%;
+    z-index : 100;
+    left : 0px;
+    width : 50px;
+    visibility : visible;
+    pointer-events: visible;
+    cursor : pointer;
+    
+}
+
+[type="checkbox"]:checked + span:not(.lever)::before{
+    border-right : 2px solid #2a4d69;
+    border-bottom: 2px solid #2a4d69;
+}
+
+#signature_template,
+#signature_outlook_template,
+#signature_html,
+.userinfos {
+    display: none;
+}
+
+.action {
+    text-align: center;
+}
+
+.userinfos {
+    padding-top: 20px;
+}
+
+#input-links {
+    margin-top: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    border-bottom: 1px solid #9e9e9e;
+    margin-bottom: 1rem;
+}

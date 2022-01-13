@@ -36,14 +36,18 @@ $config['oidc_field_eidas'] = 'acr';
 // -------------- Kerberos Activation -----------------
 
 // Kerberos activation based on client browser(s)
+// -- Activates if all conditions match (Use " " to target all browsers) 
 //
-//$config['kerb_browsers'] = ["Firefox", "Chrome"];
+//$config['kerb_browsers'] = [ " " => true, "libwww-perl" => false];
+//$config['kerb_browsers'] = ["Firefox" => true, "Chrome" => false];
 
 // Kerberos activation based on PHP ($_SERVER) header(s)
+// -- Activates if one header matches
 // 
 //$config['kerb_headers'] = [ "HTTP_X_MINEQPROVENANCE" => "intranet" ];
 
 // Kerberos activation based on IP Address (IN or NOT IN subnet(s))
+// -- Activates if all conditions match (Use '0.0.0.0/0' to target all addresses)
 //
 //$config['kerb_subnets'] = [ "0.0.0.0/0" => false, "100.0.0.0/8" => true ];
 //$config['kerb_subnets'] = [ "100.64.0.0/10" => false, "161.48.0.0/16" => false ];

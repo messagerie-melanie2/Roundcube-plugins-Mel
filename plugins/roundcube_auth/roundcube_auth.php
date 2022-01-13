@@ -29,7 +29,7 @@ abstract class AuthTypeEnum
 abstract class AuthCheckType
 {
     const KERB_COOKIES = "kerb_cookies"; // bool
-    const KERB_BROWSERS = "kerb_browsers"; // array (values)
+    const KERB_BROWSERS = "kerb_browsers"; // array (browser => bool)
     const KERB_HEADERS = "kerb_headers"; // array (header => value)
     const KERB_SUBNETS = "kerb_subnets"; // array (subnet => bool)
 }
@@ -187,6 +187,7 @@ class roundcube_auth extends rcube_plugin
                 ? new AuthCheck(AuthCheckType::KERB_SUBNETS, true, $cfg[AuthCheckType::KERB_SUBNETS], true) 
                 : new AuthCheck(AuthCheckType::KERB_SUBNETS, false);
 
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Méthodes de vérification actives :");
             foreach([$cookiesCheck, $browsersCheck, $headersCheck, $subnetsCheck] as $check)
             {
                 mel_logs::get_instance()->log(mel_logs::DEBUG, $check);
@@ -207,16 +208,24 @@ class roundcube_auth extends rcube_plugin
             
             if($browsersCheck->enabled)
             {
-                foreach($browsersCheck->values as $browser)
+                $browserCheckResults = [];
+
+                foreach($browsersCheck->values as $browser => $enable)
                 {
+                    $enable_str = $enable ? "autorisé" : "bloqué";
+                    $browser_str = ($browser == " ") ? "ALL" : $browser;
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "Vérification de la règle de type Browser : $browser ($enable_str)");
+                    
                     if(strpos($_SERVER['HTTP_USER_AGENT'], $browser) !== false)
                     {
-                        $browser_str = $browser == " " ? "ALL" : $browser;
-                        //
-                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client utilise le navigateur autorisé $browser_str");
-                        $browsersCheck->triggering = true;
+                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client utilise un navigateur $enable_str par la règle $browser_str !");
+                        //$browsersCheck->triggering = $enable;
+                        array_push($browserCheckResults, $enable);
                     }
                 }
+
+                // Returns true only if all checks are true
+                $browsersCheck->triggering = !in_array(false, $browserCheckResults, true);
             }
             else { mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Pas de vérification sur le navigateur du client."); }
             
@@ -242,21 +251,28 @@ class roundcube_auth extends rcube_plugin
             
             if($subnetsCheck->enabled)
             {
+                $subnetsCheckResults = [];
+
                 foreach($subnetsCheck->values as $subnet => $enable)
                 {
                     $enable_str = $enable ? "autorisé" : "bloqué";
-                    mel_logs::get_instance()->log(mel_logs::DEBUG, "Subnet $enable_str : $subnet");
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "Vérification de la règle de type Subnet $subnet ($enable_str)");
                     
                     if($this->ip_in_range($_SERVER['REMOTE_ADDR'], $subnet) || 
                         $this->ip_in_range($_SERVER['HTTP_X_FORWARDED_FOR'], $subnet))
                     {
-                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client arrive avec une IP dans un subnet $enable_str !");
-                        $subnetsCheck->triggering = $enable;
+                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Le client arrive avec une IP dans un subnet $enable_str par la règle $subnet !");
+                        //$subnetsCheck->triggering = $enable;
+                        array_push($subnetsCheckResults, $enable);
                     }
                 }
+
+                // Returns true only if all checks are true
+                $browsersCheck->triggering = !in_array(false, $subnetsCheckResults, true);
             }
             else { mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Kerberos - Pas de vérification sur l'adresse IP du client."); }
 
+            // Sum all checks
             $checks = [];
             foreach([$cookiesCheck, $browsersCheck, $headersCheck, $subnetsCheck] as $check)
             {
@@ -267,7 +283,9 @@ class roundcube_auth extends rcube_plugin
                 }
             }
 
-            if(in_array(false, $checks, true) === false)
+            // If 'checks' array is empty, do not use Kerberos (=> no checks have been enabled)
+            // If one of the 'checks' element is enabled AND false, do not use Kerberos (=> at least one check is false)
+            if(!empty($checks) && in_array(false, $checks, true) === false)
             {
                 $auth = AuthTypeEnum::KERBEROS; 
             }

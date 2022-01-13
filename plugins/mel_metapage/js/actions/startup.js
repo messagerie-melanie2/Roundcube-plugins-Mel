@@ -473,12 +473,16 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
-    $("."+eClass+"-frame").contents().find("#layout-menu").remove();
-    $("."+eClass+"-frame").contents().find(".barup").remove();
-    $("."+eClass+"-frame").contents().find("html").addClass("framed");
+
+    let querry_content = $("."+eClass+"-frame").contents();
+    querry_content.find("#layout-menu").remove();
+    querry_content.find(".barup").remove();
+    querry_content.find("html").addClass("framed");
+
     rcmail.set_busy(false);
     rcmail.clear_messages();
     rcmail.env.frame_created = true;
+
     if (changepage)
         $("#"+id).css("display", "");
     

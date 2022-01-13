@@ -1,6 +1,8 @@
 {
   "scrollToElement": true,
+  "exitOnOverlayClick": false,
   "disableInteraction": true,
+  "hidePrev": true,
   "scrollTo": "tooltip",
   "nextLabel": "Suivant",
   "prevLabel": "Précédent",
@@ -16,10 +18,12 @@
       "title": "Barre de navigation",
       "element": "#layout-menu",
       "intro": "<br/><p>Il s'agit de la télécommande du Bureau Numérique. Elle est tout le temps accessible depuis n'importe quel écran du Bnum et permet de naviguer entre les applications.</p><p><strong>Bon à savoir :</strong> Avec le Bnum, plus besoin d'ouvrir plusieurs onglets, dès qu'une application est ouverte elle est gardée en mémoire et peut être rouverte instantanément à tout moment, le travail en cours ne sera pas perdu.</p>",
-      "tooltipClass": "mt-4 big-width-intro",
+      "tooltipClass": "mt-4 big-width-intro hide-hint",
       "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
       "details": {
-        "tooltipClass": "navigation-hint",
+        "hintClass": "menu-hint-bureau",
+        "disableInteraction": false,
+        "tooltipClass": "menu-shadow-bureau",
         "hintButtonLabel": "J'ai compris",
         "hints": [
           {

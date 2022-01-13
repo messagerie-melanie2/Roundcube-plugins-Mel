@@ -70,8 +70,8 @@ if (rcmail)
                     parent.rcmail.env.ev_calendar_url = ev_calendar_url;
 
                 return $.ajax({ // fonction permettant de faire de l'ajax
-                type: "POST", // methode de transmission des données au fichier php
-                url: parent.rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
+                type: "GET", // methode de transmission des données au fichier php
+                url: parent.rcmail.env.ev_calendar_url+`&source=${mceToRcId(rcmail.env.username)}`+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
                 success: function (data) {
                     try {
                         let events = [];
@@ -144,12 +144,12 @@ if (rcmail)
                     
                     } catch (ex) {
                         console.error(ex);
-                        rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                        //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
                     console.error(xhr, ajaxOptions, thrownError);
-                    rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                    //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                 },
              }).always(() => {
                 // rcmail.set_busy(false);
@@ -207,12 +207,12 @@ if (rcmail)
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.after);
                     } catch (ex) {
                         console.error(ex, data);
-                        rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                        //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
                     console.error(xhr, ajaxOptions, thrownError);
-                    rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                    //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                 },
              }).always(() => {
                 // rcmail.set_busy(false);
@@ -268,12 +268,12 @@ if (rcmail)
                             Title.update($(".mail-frame")[0].id);
                     } catch (ex) {
                         console.error(ex);
-                        rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                        //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
                     console.error(xhr, ajaxOptions, thrownError);
-                    rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
+                    //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
                 },
                 });
             },

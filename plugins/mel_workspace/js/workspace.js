@@ -13,17 +13,9 @@ async function WSPReady()
 
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     let end = End(uid, hasAriane, datas);
-
-    let sw = new Stopwatch().start();
     Start(uid, hasAriane, datas);
-    console.log("Start : ", sw.ellapsed() / 1000, "s");
-    sw.restart();
     Middle(uid, hasAriane, datas);
-    console.log("Middle : ", sw.ellapsed() / 1000, "s");
-    sw.restart();
-    await end;
-    console.log("End : ", sw.ellapsed() / 1000, "s");
-    sw = sw.stop().destroy();
+    return end;
 }
 
 /**

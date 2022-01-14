@@ -193,6 +193,7 @@ const mel_metapage = {
          * Clé des données du calendrier.
          */
         calendar:"mel_metapage.calendar",
+        calendar_by_days:"mel_metapage.calendars.by_days",
         /**
          * Clé des données des tâches.
          */

@@ -952,6 +952,14 @@ $(document).ready(() => {
             event = rcmail.local_storage_get_item("tmp_calendar_event");
         }
 
+        if (window.create_event !== true)
+            window.create_event = true;
+        else
+        {
+            window.kolab_event_dialog_element.show()
+            return;
+        }
+
         var url = {
             _category: event === null || event.categories === undefined || event.categories === null || event.categories.length === 0 ? null : event.categories[0], 
             _framed: true,
@@ -1006,12 +1014,17 @@ $(document).ready(() => {
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
 
         kolab_event_dialog_element.footer.buttons.save.click(() => {
+            window.event_saved = true;
             if (kolab_event_dialog_element.modal.find("iframe")[0].contentWindow.rcube_calendar_ui.save())
             {
 
             }
         }).removeClass("btn-primary")
         .addClass("btn-secondary mel-button");
+
+        kolab_event_dialog_element.footer.buttons.exit.click(() => {
+            window.event_saved = true;
+        });
         //.append(`<span class="plus icon-mel-arrow-right"></span>`);
 
         if (kolab_event_dialog_element.footer.buttons.save.find(".plus").length === 0)
@@ -1029,12 +1042,20 @@ $(document).ready(() => {
         if (event.from === "barup")
         {
             // create_popUp.close();
-            window.kolab_event_dialog_element.setBeforeTitle('<a href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>Retour à la modale de création</span></a>');
+            window.kolab_event_dialog_element.setBeforeTitle('<a href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>Retour à la modale de création</span></a>');
         }
 
         window.kolab_event_dialog_element.autoHeight();
         window.kolab_event_dialog_element.onDestroy((globalModal) => {
-            globalModal.contents.find("iframe").remove();
+            globalModal.contents.find("iframe").remove();  
+        });
+
+        window.kolab_event_dialog_element.onClose(() => {
+            if (window.event_saved === true)
+            {
+                delete window.event_saved;
+                delete window.create_event;
+            }
         });
 
     // var sheet = window.document.styleSheets[0];
@@ -1065,10 +1086,10 @@ $(document).ready(() => {
 
          date = date.add(add, "d").startOf("day");
          rcube_calendar.mel_metapage_misc.SetCalendarDate(jquery_element, date);
-         let sw = new Stopwatch().start();
-         const array = await rcube_calendar.block_change_date(jquery_element, add, where, date);
-         console.log("changedate : ", sw.ellapsed() /1000, "s");
-         sw = sw.stop().destroy();
+
+         const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
+
+         const array = (storage !== null && storage[date.format('DD/MM/YYYY')] !== undefined ? storage[date.format('DD/MM/YYYY')] : await rcube_calendar.block_change_date(jquery_element, add, where, date));
 
          if (array !== false)
          {
@@ -1084,7 +1105,6 @@ $(document).ready(() => {
 
      rcube_calendar.block_change_date = async function (jquery_element, add, where = null, _date = null)
      {
-        var sw = new Stopwatch().start();
         //const SetCalendarDate = rcube_calendar.mel_metapage_misc.SetCalendarDate;
         const GetAgenda = rcube_calendar.mel_metapage_misc.GetAgenda;
         const check = (x, item) => {x.uid === item.uid};
@@ -1095,11 +1115,9 @@ $(document).ready(() => {
          //SetCalendarDate(jquery_element, date);
          if (jquery_element !== null)
             var querry = GetAgenda(jquery_element).html('<center><span class="spinner-border"></span></center>');
-         console.log("block_change_date/before await : ", sw.ellapsed() / 1000, "s");
-         sw.restart();
+
          const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
-         console.log("block_change_date/await : ", sw.ellapsed() / 1000, "s");
-         sw.restart();
+
          let events = where === null || where === undefined ? JSON.parse(datas) : Enumerable.from(JSON.parse(datas)).where(where).toArray();
          //console.log("change_calendar_date",events, JSON.parse(datas));
          if (events !== null || events.length !== 0)
@@ -1150,8 +1168,6 @@ $(document).ready(() => {
              //setup_calendar(array, querry, date);
          }
 
-         console.log("block_change_date/after await : ", sw.ellapsed() / 1000, "s");
-         sw = sw.stop().destroy();
 
          if (events === null || events.length === 0)
          {

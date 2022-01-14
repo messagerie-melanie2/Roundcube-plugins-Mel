@@ -38,6 +38,12 @@ function m_mp_Create() {
 
   const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
 
+  if (window.create_event === true)
+  {
+    eval(actions.event.action);
+    return;
+  }
+
   //Si la popup n'existe pas, on la créer.
   if (window.create_popUp === undefined) {
     let haveNextcloud = {

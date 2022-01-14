@@ -36,3 +36,9 @@ $labels['workspaces'] = "Mes espaces de travail";
 //Workspaces
 $labels['tak'] = "Épingler";
 $labels['untak'] = "Désépingler";
+
+$labels["no_event_today"] = "Pas de réunion prévue aujourd'hui.";
+$labels["next_agenda_event"] = "Prochaine réunion planifiée le : {date} à {horaire}";
+$labels["next_agenda_event_all_day"] = "Prochaine réunion planifiée le : {date} toute la journée";
+$labels["other_next_agenda_event"] = "Le {date} à {horaire}";
+$labels["other_next_agenda_event_all_day"] = "Le {date} toute la journée";

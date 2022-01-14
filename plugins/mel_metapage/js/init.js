@@ -71,13 +71,13 @@ if (rcmail)
 
                 return $.ajax({ // fonction permettant de faire de l'ajax
                 type: "GET", // methode de transmission des données au fichier php
-                url: parent.rcmail.env.ev_calendar_url+`&source=${mceToRcId(rcmail.env.username)}`+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php
+                url: parent.rcmail.env.ev_calendar_url+`&source=${mceToRcId(rcmail.env.username)}`+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+7)), // url du fichier php
                 success: function (data) {
                     try {
                         let events = [];
                         data = JSON.parse(data);
-                        //console.log("calendar", data);
-                        data = Enumerable.from(data).where(x =>  mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
+                        console.log("calendar", data);
+                        //data = Enumerable.from(data).where(x =>  mel_metapage.Functions.check_if_date_is_okay(x.start, x.end, moment()) ).toArray();
                         let startMoment;
                         let endMoment;
                         let element;
@@ -112,7 +112,7 @@ if (rcmail)
                             
                         }
 
-                        mel_metapage.Storage.set("all_events", events);
+                        mel_metapage.Storage.set("all_events", Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray());
                         data = null;
                         let ids = [];
 
@@ -136,10 +136,16 @@ if (rcmail)
                         }
 
                         events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
+                        const today = Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray();
                         try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
-                        update_badge(Enumerable.from(events).where(x => x.free_busy !== "free").count(), mel_metapage.Ids.menu.badge.calendar);
-                        mel_metapage.Storage.set(mel_metapage.Storage.calendar, events);
+                        update_badge(Enumerable.from(today).where(x => x.free_busy !== "free").count(), mel_metapage.Ids.menu.badge.calendar);
+
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar, today);
                         mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
+                        
+                        const byDays = Enumerable.from(events).groupBy(x => moment(x.start).format('DD/MM/YYYY')).toJsonDictionnary(x => x.key(), x => x.getSource());
+                        mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
+
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
                     
                     } catch (ex) {

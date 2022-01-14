@@ -1206,7 +1206,7 @@ class mel_driver extends calendar_driver {
       }
     }
     // Recurrence
-    if (isset($event['recurrence']) && strpos(get_class($_event), '\Exception') === false) {
+    if (isset($event['recurrence']) && !empty($event['recurrence']) && strpos(get_class($_event), '\Exception') === false) {
       $_event->recurrence->rrule = $event['recurrence'];
     }
     // Status
@@ -1394,16 +1394,37 @@ class mel_driver extends calendar_driver {
           }
           else {
             $ret = $_event->save();
-            return ! is_null($ret);
+            // MANTIS 0006327: Problème avec la suppression d'une occurrence et les suivantes pour une invitation
+            return is_null($ret) ? false : $_event->uid;
           }
         }
       }
       else {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
-          $event_uid = $_event->uid;
           if ($_event->delete()) {
-            $this->remove_event_attachments($event_uid);
+            $this->remove_event_attachments($_event->uid);
+            // Tester si c'est une réunion et que l'organisateur est sur Mel pour refuser l'invitation
+            $organizer_calendar = $_event->organizer->calendar;
+            if (isset($organizer_calendar)) {
+              // L'organisateur existe on va modifier le statut du participant
+              $organizer_event = driver_mel::gi()->event();
+              $organizer_event->uid = $_event->uid;
+              $organizer_event->calendar = $_event->organizer->calendar;
+              if ($organizer_event->load()) {
+                $attendees = $organizer_event->attendees;
+                foreach ($attendees as $key => $attendee) {
+                  if ($attendee->uid == $this->calendars[$event['calendar']]->owner) {
+                    // Participant courant on le passe en décliné
+                    $attendees[$key]->response = mel_mapping::rc_to_m2_attendee_status('DECLINED');
+                    $organizer_event->attendees = $attendees;
+                    $organizer_event->modified += 1;
+                    $organizer_event->save();
+                    break;
+                  }
+                }
+              }
+            }
             return true;
           }
           else {
@@ -1934,12 +1955,10 @@ class mel_driver extends calendar_driver {
 
           if ($event->alarm > 0) {
             $_event['alarms'] = "-PT" . $event->alarm . "M:DISPLAY";
-            //$_event['valarms'] = [['action' => 'DISPLAY','trigger' => "-PT" . $event->alarm . "M"]];
           }
           else {
             $_event['alarms'] = "+" . str_replace('-', '', "PT" . strval($event->alarm)) . "M:DISPLAY";
             $modifier = -1;
-            //$_event['valarms'] = [['action' => 'DISPLAY','trigger' => "+PT" . $tmp_alarm . $alarm_char]];
           }
 
           $tmp_alarm = $event->alarm * $modifier;
@@ -1957,7 +1976,6 @@ class mel_driver extends calendar_driver {
           }
 
           $_event['valarms'] = [['action' => 'DISPLAY','trigger' => ($modifier > 0 ? "-" : "+")."PT" . $tmp_alarm . $alarm_char]];
-          //$_event["char"] = ["modifier" => $modifier, "value" => ($modifier > 0 ? "-" : "+"), "alarm" => $event->alarm, "trigger" => ($modifier > 0 ? "-" : "+")."PT" . $tmp_alarm . $alarm_char, "tmp_alarm" => $tmp_alarm];
         }
 
         // Attendees
@@ -1972,6 +1990,13 @@ class mel_driver extends calendar_driver {
             $_event_attendee['role'] = mel_mapping::m2_to_rc_attendee_role($attendee->role);
             // status
             $_event_attendee['status'] = mel_mapping::m2_to_rc_attendee_status($attendee->response);
+            // is saved
+            if (is_bool($attendee->is_saved) && in_array($_event_attendee['status'], ['ACCEPTED', 'DECLINED'])) {
+              $_event_attendee['skip_notify'] = $attendee->is_saved;
+            }
+            else {
+              $_event_attendee['skip_notify'] = false;
+            }
             $_attendees[] = $_event_attendee;
           }
           $organizer = $event->organizer;
@@ -2083,99 +2108,6 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::pending_alarms()");
 
     return [];
-
-    try {      
-      // Récupération des evenements en cache
-      $events = \mel::getCache('events_alarm');
-      if (!isset($events)) {
-        if (!isset($calendars)) {
-          if (empty($this->calendars)) {
-            $this->_read_calendars();
-          }
-          $calendars = $this->calendars;
-        }
-        $calendars_id = array();
-        $alarm_calendars = $this->rc->config->get('alarm_calendars', array());
-        foreach ($calendars as $calendar) {
-          if (isset($alarm_calendars[$calendar->id])) {
-            $calendars_id[] = $calendar->id;
-          }
-        }
-        if (empty($calendars_id)) {
-          $calendars_id = [$this->rc->user->get_username()];
-        }        
-        $_event = driver_mel::gi()->event([$this->user]);
-        $_event->calendar = $calendars_id;
-        $_event->alarm = 0;
-        // Durée dans le passé maximum pour l'affichage des alarmes (5 jours)
-        $time_min = $time - 60 * 60 * 24 * 5;
-        // Durée dans le futur maximum, basé sur la configuration du refresh
-        $time_max = $time;
-        // Clause Where
-        $filter = "#calendar# AND #alarm# AND ((#start# - interval '1 minute' * k1.event_alarm) > '" . date('Y-m-d H:i:s', $time_min) . "') AND ((#start# - interval '1 minute' * k1.event_alarm) < '" . date('Y-m-d H:i:s', $time_max) . "')";
-        // Operateur
-        $operators = array('alarm' => MappingMce::diff, 'calendar' => MappingMce::in);
-        $fields = array('uid','title','calendar','start','end','location','alarm','owner');
-        $_events = $_event->getList($fields, $filter, $operators);
-        $events = [];
-        foreach ($_events as $_event) {
-          $_event->setCalendarMelanie($this->calendars[$_event->calendar]);
-
-          if (isset($_event->start)) {
-            $snoozetime = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_SNOOZE_TIME);
-            if (isset($snoozetime)) {
-              $snoozetime = strtotime($snoozetime);
-              if ($snoozetime > time()) {
-                continue;
-              }
-            }
-            $lastack = $_event->getAttribute(\LibMelanie\Lib\ICS::X_MOZ_LASTACK);
-            if (isset($lastack)) {
-              $lastack = strtotime($lastack);
-              if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
-                continue;
-              }
-            }
-          }
-          $_e = $this->_read_postprocess($_event);
-          
-          // Ajoute les exceptions
-          if (isset($_e['recurrence']) && isset($_e['recurrence']['EXCEPTIONS']) && count($_e['recurrence']['EXCEPTIONS']) > 0) {
-            foreach ($_e['recurrence']['EXCEPTIONS'] as $_ex) {
-              $snoozetime = $_ex['x_moz_snooze_time'];
-              if (isset($snoozetime)) {
-                $snoozetime = strtotime($snoozetime);
-                if ($snoozetime > time()) {
-                  continue;
-                }
-              }
-              $lastack = $_ex['x_moz_lastack'];
-              if (isset($lastack)) {
-                $lastack = strtotime($lastack);
-                if ($lastack > (strtotime($_event->start) - ($_event->alarm * 60))) {
-                  continue;
-                }
-              }
-              $events[] = $_ex;
-            }
-            unset($_e['recurrence']['EXCEPTIONS']);
-          }
-          if (isset($_e['title'])) {
-            $events[] = $_e;
-          }
-        }
-        \mel::setCache('events_alarm', $events);
-      }
-      return $events;
-    }
-    catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar] mel_driver::pending_alarms() Melanie2DatabaseException");
-      return false;
-    }
-    catch (\Exception $ex) {
-      return false;
-    }
-    return false;
   }
 
   /**
@@ -2256,7 +2188,7 @@ class mel_driver extends calendar_driver {
     try {
       $organizer = $event->organizer;
       // Ne pas ajouter de pièce jointe si on n'est pas organisateur (et que l'organisateur est au ministère
-      if (isset($organizer) && ! $organizer->extern && ! empty($organizer->email) && $organizer->uid != $this->calendars[$event->calendar]->owner) {
+      if (isset($organizer) && !$organizer->extern && ! empty($organizer->email) && $organizer->uid != $this->calendars[$event->calendar]->owner) {
         return true;
       }
       // Création de la pièce jointe

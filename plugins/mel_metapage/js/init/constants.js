@@ -193,6 +193,7 @@ const mel_metapage = {
          * Clé des données du calendrier.
          */
         calendar:"mel_metapage.calendar",
+        calendar_by_days:"mel_metapage.calendars.by_days",
         /**
          * Clé des données des tâches.
          */
@@ -320,8 +321,8 @@ const mel_metapage = {
                 rcmail.env.ev_calendar_url = ev_calendar_url;
 
             return $.ajax({ // fonction permettant de faire de l'ajax
-            type: "POST", // methode de transmission des données au fichier php
-            url: rcmail.env.ev_calendar_url+'&start='+start+'&end='+end, // url du fichier php
+            type: "GET", // methode de transmission des données au fichier php
+            url: rcmail.env.ev_calendar_url+`&source=${mceToRcId(rcmail.env.username)}`+'&start='+start+'&end='+end, // url du fichier php
             success: function (data) {
                 try {
                     let events = [];

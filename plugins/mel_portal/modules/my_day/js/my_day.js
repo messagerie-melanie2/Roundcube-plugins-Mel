@@ -174,7 +174,23 @@ function setupMyDay(datas)
 		}
 	}
 	else 
-		html += `<li>Pas d'évènements aujourd'hui !</li>`;
+	{
+		const storage = Enumerable.from(mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days));
+		const storage_count = storage.count();
+		if (storage_count > 0)
+		{
+			const storage_first = storage.first();
+			const value = storage_first.value[0];
+			const all_day = value.allDay ? "_all_day" : "";
+			html += `<li><span class="element-title element-no default-text bold element-block">${rcmail.gettext('mel_portal.no_event_today')}</span>
+			<a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(value)}">
+			<span class="element-title default-text bold element-block">${rcmail.gettext(`mel_portal.next_agenda_event${all_day}`).replace('{date}', storage_first.key).replace('{horaire}', moment(value.start).format('HH:mm'))}</span>
+			<span class="element-desc secondary-text element-block">${value.title}</span>
+			</a>
+			</li>`;
+		}
+		else html += `<li>Pas d'évènements aujourd'hui ainsi que dans les 7 prochains jours !</li>`;
+	}
 
     html = `<ul class="ignore-bullet">${html}</ul>`;
 	$("#agenda").html(html);

@@ -212,7 +212,7 @@ class mel_metapage extends rcube_plugin
             if (class_exists('mel_nextcloud'))
             {
                 $this->require_plugin('mel_helper');
-                $this->rc->plugins->get_plugin('mel_helper')->include_js_debug();
+                //$this->rc->plugins->get_plugin('mel_helper')->include_js_debug();
                 $this->rc->output->set_env("is_stockage_active", mel_helper::stockage_active());
                 $this->rc->output->set_env("why_is_not_active", [
                     "consts" => [

@@ -13,17 +13,9 @@ async function WSPReady()
 
     let datas = mel_metapage.Storage.get(mel_metapage.Storage.ariane);
     let end = End(uid, hasAriane, datas);
-
-    let sw = new Stopwatch().start();
     Start(uid, hasAriane, datas);
-    console.log("Start : ", sw.ellapsed() / 1000, "s");
-    sw.restart();
     Middle(uid, hasAriane, datas);
-    console.log("Middle : ", sw.ellapsed() / 1000, "s");
-    sw.restart();
-    await end;
-    console.log("End : ", sw.ellapsed() / 1000, "s");
-    sw = sw.stop().destroy();
+    return end;
 }
 
 /**
@@ -219,7 +211,7 @@ function Middle(uid, hasAriane, datas) {
  * @param {*} datas Diverses données
  */
 async function End(uid, hasAriane, datas) {
-    let sw = new Stopwatch().start();
+
     let promises = [
         InitLinks()
     ];
@@ -244,7 +236,6 @@ async function End(uid, hasAriane, datas) {
                 rcmail.set_busy(false);
                 rcmail.clear_messages();
 
-                //console.log("rcmail.env.current_workspace_file", rcmail.env.current_workspace_file)
                 if (rcmail.env.current_workspace_file !== undefined)
                 {
                     return wait(() => {
@@ -262,11 +253,9 @@ async function End(uid, hasAriane, datas) {
                 }
             })));
     }
-    console.log("End|create all promises : ", sw.ellapsed() / 1000, "s");
-    sw.restart();
+
     await wait(() => rcmail.busy);
-    console.log("End|rcmail busy : ", sw.ellapsed() / 1000, "s");
-    sw = sw.stop().destroy();
+
     return Promise.all(promises);
 
 }
@@ -390,7 +379,7 @@ function UpdateCalendar()
         const id = "wsp-block-" + agenda;
         let querry = $("#" + id).find(".block-body");
         if (array.length === 0)
-            querry.html("Pas de réunion aujourd'hui !");
+            setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
         else
         {
             const count = Enumerable.from(array).where(x => x.free_busy !== "free").count();
@@ -410,7 +399,18 @@ function setup_calendar(datas, querry, _date = moment())
     let html = html_helper.Calendars({
         datas:datas,
         _date:_date,
-        get_only_body:true
+        get_only_body:true,
+        config:{
+            add_day_navigation:false,
+            add_create:false,
+            create_function:null,
+            add_see_all:false,
+        next_when_empty_today_function: (storage) => {
+            const id = `ws#${rcmail.env.current_workspace_uid}`;
+            storage = Enumerable.from(storage).selectMany(x => Enumerable.from(x.value).select(s => s).toArray()).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories[0].includes(id) ).groupBy(x => moment(x.start).format('DD/MM/YYYY'), x => x).toJsonDictionnary(x => x.key(), x => x.getSource());
+            console.log("setup_calendar", id, storage);
+            return storage;
+        }}
     });
 	querry.html(html);
 
@@ -574,8 +574,9 @@ async function change_date(add)
     const date = moment($(".swp-agenda-date").data("current-date")).add(add, "d").startOf("day");
     SetCalendarDate(date);
     let querry = GetAgenda().html('<center><span class="spinner-border"></span></center>');
-    const datas = await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day"));
-    const events = Enumerable.from(JSON.parse(datas)).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).toArray();
+    const storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
+    const datas = (storage !== null && storage[date.format('DD/MM/YYYY')] !== undefined ? storage[date.format('DD/MM/YYYY')] : await mel_metapage.Functions.update_calendar(date, moment(date).endOf("day")) );
+    const events = Enumerable.from((typeof datas === "string" ? JSON.parse(datas) : datas)).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id)).toArray();
 
     if (events === null || events.length === 0)
     { 

@@ -958,3 +958,8 @@ html.dark-mode .list-of-all-hashtag {
 	background-color: #1F2933;
     border: solid #323F4B thin;
 }
+
+html.dark-mode #myday .element-no
+{
+    color:#c7dfff;
+}

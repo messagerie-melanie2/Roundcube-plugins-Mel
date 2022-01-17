@@ -155,7 +155,8 @@ html_helper.CalendarsAsync = async function(config = {
     add_day_navigation:false,
     add_create:false,
 	create_function:null,
-    add_see_all:false
+    add_see_all:false, 
+	next_when_empty_today_function:null,
 }, e = null, e_number = null, _date = moment())
 {
 	if (moment().format() === _date.format())
@@ -192,7 +193,8 @@ html_helper.Calendars = function({datas, config = {
     add_day_navigation:false,
     add_create:false,
 	create_function:null,
-    add_see_all:false
+    add_see_all:false,
+	next_when_empty_today_function:null
 }, e = null, e_number = null, _date = moment(), get_only_body = false} = {})
 {
 	const classes = {
@@ -336,7 +338,25 @@ html_helper.Calendars = function({datas, config = {
 			}
 		}
 		else 
-			html += `<li>Pas d'évènements aujourd'hui !</li>`;
+		{
+			const raw_storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
+			const storage = Enumerable.from(config.next_when_empty_today_function !== null ? config.next_when_empty_today_function(raw_storage) : raw_storage);
+			console.log(config.next_when_empty_today_function, raw_storage);
+			const storage_count = storage.count();
+			if (storage_count > 0)
+			{
+				const storage_first = storage.first();
+				const value = storage_first.value[0];
+				const all_day = value.allDay ? "_all_day" : "";
+				html += `<li><span class="element-title element-no default-text bold element-block">${rcmail.gettext('mel_portal.no_event_today')}</span>
+				<a href=# class="element-block mel-not-link mel-focus" onclick="${html_helper.Calendars.generate_link(value)}">
+				<span class="element-title default-text bold element-block">${rcmail.gettext(`mel_portal.next_agenda_event${all_day}`).replace('{date}', storage_first.key).replace('{horaire}', moment(value.start).format('HH:mm'))}</span>
+				<span class="element-desc secondary-text element-block">${value.title}</span>
+				</a>
+				</li>`;
+			}
+			else html += `<li>Pas d'évènements aujourd'hui ainsi que dans les 7 prochains jours !</li>`;
+		}
 	}
 
 	if (!get_only_body)

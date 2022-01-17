@@ -114,7 +114,7 @@ function files_api()
   this.request = function(action, data, func)
   {
     // Use POST for modification actions with probable big request size
-    var method = /(create|delete|move|edit|copy|update|auth)/.test(action) ? 'post' : 'get';
+    var method = /(create|delete|move|edit|copy|update|auth|add)/.test(action) ? 'post' : 'get';
     return this[method](action, data, func);
   };
 

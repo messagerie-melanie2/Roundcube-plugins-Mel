@@ -122,7 +122,6 @@ if (window.rcmail) {
   
   rcmail.addEventListener('responseafterplugin.update_progressbar', function(
       event) {
-    console.log('responseafterplugin.update_progressbar : ' + JSON.stringify(event.response.compose));
     $( "#send_melanissimo_dialog .progressbar" ).text(event.response.current_value + '%');
     $( "#send_melanissimo_dialog .current_action" ).text(event.response.current_action);
   });

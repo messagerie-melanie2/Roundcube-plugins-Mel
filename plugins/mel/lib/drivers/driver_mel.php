@@ -129,6 +129,17 @@ abstract class driver_mel {
   }
 
   /**
+   * Generate userprefs object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\UserPrefs
+   */
+  public function userprefs($params = []) {
+    return $this->object('UserPrefs', $params);
+  }
+
+  /**
    * Generate member object from the ORM with the right Namespace
    * 
    * @param array $params [Optionnal] parameters of the constructor

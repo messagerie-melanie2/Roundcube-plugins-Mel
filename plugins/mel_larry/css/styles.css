@@ -319,6 +319,13 @@ a.button,
 	margin: 0;
 }
 
+a.button.button-text {
+	text-indent: 0;
+	width: auto;
+	line-height: 28px;
+	padding: 0 10px;
+}
+
 .dropbutton {
 	margin-right: 16px;
 }
@@ -1834,7 +1841,7 @@ select.decorated option {
 	-webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: var(--popup-box-sahdow);
 	padding: 5px;
-	z-index: 90;
+	z-index: 1000;
 }
 
 #listselectmenu,
@@ -2174,6 +2181,36 @@ ul.treelist li.selected > div.collapsed {
 	background-position: 27px 1px;
 }
 
+.folderlist li.mailbox.local > a {
+	background: url(../images/mail/dossiers/dossier.png?v=e784.5000) 17px center no-repeat;
+	background-image: var(--image-dossier-local);
+}
+
+#mailboxlist.folderlist li.mailbox.local > a {
+	background-position: 31px 4px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.local > a {
+	background-position: 31px 4px;
+}
+
+.folderlist li.mailbox.local.selected > a, 
+.folderlist li.mailbox.local > a:focus {
+	background: url(../images/mail/dossiers/dossier_selectionne.png?v=e784.5000) 17px center no-repeat #fff;
+	background-image: var(--image-dossier-local_selectionne);
+    background-color: var(--listitem-selected-bg-color);
+}
+
+#mailboxlist.folderlist li.mailbox.local.selected > a, 
+#mailboxlist.folderlist li.mailbox.local > a:focus {
+	background-position: 31px 4px;
+}
+
+.minimal #mailboxlist.folderlist li.mailbox.local.selected > a, 
+.minimal #mailboxlist.folderlist li.mailbox.local > a:focus {
+	background-position: 31px 4px;
+}
+
 .folderlist li.mailbox.sent > a {
 	background: url(../images/mail/dossiers/envoyes.png?v=e784.5000) 17px center no-repeat;
 	background-image: var(--image-dossier-envoyes);
@@ -2417,6 +2454,10 @@ a.button.showcontacts {
 	position: relative;
 	top: -7px;
 	left: -2px;
+}
+
+#listview-float-right {
+	display: none;
 }
 
 

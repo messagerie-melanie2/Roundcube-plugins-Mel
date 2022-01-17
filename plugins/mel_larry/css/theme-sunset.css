@@ -62,6 +62,10 @@ html {
     --content-bg-color: #303335;
     --main-content-bg-color: #3e4042;
     --content-border-color: var(--global-border-color);
+
+    --box-warning-bg-color: #6e1010;
+    --box-warning-border-color: #604141;
+    --box-warning-text-color: #fff;
     
     --listbox-text-color: var(--global-text-color);
     --listbox-bg-color: #303335;
@@ -242,6 +246,7 @@ html {
     --image-send-format-texte: url("../images/envoyer/format-texte-dark.png?v=e784.5000");
     --image-send-orthographe: url("../images/envoyer/orthographe-dark.png?v=e784.5000");
     --image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000");
+    --image-send-remise_differee: url("../images/envoyer/envoi-differe-dark.png?v=e784.5000");
 
     --image-background: url("../images/background_dark.png?v=e784.5000");
     --image-icons: url("../images/icons-dark.png?v=e784.5000");
@@ -270,6 +275,8 @@ html {
     --image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000");
     --image-dossier-modeles: url("../images/mail/dossiers/modeles-dark.png?v=e784.5000");
     --image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne-dark.png?v=e784.5000");
+    --image-dossier-local: url("../images/mail/dossiers/dossier-dark.png?v=e784.5000");
+    --image-dossier-local_selectionne: url("../images/mail/dossiers/dossier_selectionne-dark.png?v=e784.5000");
     --image-dossier-envoyes: url("../images/mail/dossiers/envoyes-dark.png?v=e784.5000");
     --image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000");
     --image-dossier-indesirables: url("../images/mail/dossiers/indesirables-dark.png?v=e784.5000");

@@ -225,6 +225,20 @@ html .ui-button.ui-state-disabled:active {
 }
 
 .ui-dialog .ui-dialog-buttonpane {
-	border-color: var(--jquery-ui-border-color);
-	
+	border-color: var(--jquery-ui-border-color);	
+}
+
+.ui-state-default a, 
+.ui-state-default a:link, 
+.ui-state-default a:visited, 
+a.ui-button, 
+a:link.ui-button, 
+a:visited.ui-button, 
+.ui-button {
+  color: var(--buttons-text-color);
+}
+
+.ui-widget-overlay {
+  background: #000;
+  opacity: 0.8;
 }

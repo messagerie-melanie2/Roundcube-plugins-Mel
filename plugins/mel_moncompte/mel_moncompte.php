@@ -666,6 +666,15 @@ class mel_moncompte extends rcube_plugin {
 
     if (isset($mbox) && isset($type)) {
       $conf_name = 'hidden_' . $type . 's';
+      // MANTIS 0006340: Ajouter une prop CalDAV {DAV}hidden quand un calendrier est masqué
+      if ($type == 'calendar') {
+        $calendars_prop = $this->_get_caldav_properties();
+        if (!isset($calendars_prop[$mbox])) {
+          $calendars_prop[$mbox] = [];
+        }
+        $calendars_prop[$mbox]['{DAV:}hidden'] = true;
+        $this->_set_caldav_properties($calendars_prop);
+      }
       // Récupération des préférences de l'utilisateur
       $hidden = $this->rc->config->get($conf_name, array());
       $hidden[$mbox] = 1;
@@ -687,6 +696,14 @@ class mel_moncompte extends rcube_plugin {
 
     if (isset($mbox) && isset($type)) {
       $conf_name = 'hidden_' . $type . 's';
+      // MANTIS 0006340: Ajouter une prop CalDAV {DAV}hidden quand un calendrier est masqué
+      if ($type == 'calendar') {
+        $calendars_prop = $this->_get_caldav_properties();
+        if (isset($calendars_prop[$mbox]) && isset($calendars_prop[$mbox]['{DAV:}hidden'])) {
+          unset($calendars_prop[$mbox]['{DAV:}hidden']);
+          $this->_set_caldav_properties($calendars_prop);
+        }
+      }
       // Récupération des préférences de l'utilisateur
       $hidden = $this->rc->config->get($conf_name, array());
       unset($hidden[$mbox]);
@@ -699,6 +716,40 @@ class mel_moncompte extends rcube_plugin {
       $this->rc->output->show_message('mel_moncompte.modify_error', 'error');
     }
   }
+
+  /**
+   * Récupère les caldav properties de l'utilisateur courant
+   * 
+   * @return array
+   */
+  private function _get_caldav_properties() {
+    // Récupération des prefs supplémentaires
+    $pref = driver_mel::gi()->userprefs([driver_mel::gi()->getUser()]);
+    $pref->scope = \LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
+    $pref->name = "caldav_properties";
+    $calendars_prop = [];
+    if ($pref->load()) {
+      $calendars_prop = unserialize($pref->value);
+    }
+    return $calendars_prop;
+  }
+
+  /**
+   * Enregistre les caldav properties pour l'utilisateur courant
+   * 
+   * @param array $calendars_prop
+   * 
+   * @return null|boolean
+   */
+  private function _set_caldav_properties($calendars_prop) {
+    // Récupération des prefs supplémentaires
+    $pref = driver_mel::gi()->userprefs([driver_mel::gi()->getUser()]);
+    $pref->scope = \LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
+    $pref->name = "caldav_properties";
+    $pref->value = serialize($calendars_prop);
+    return $pref->save();
+  }
+
   /**
    * Trier la ressource pour l'affichage dans Roundcube
    */

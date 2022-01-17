@@ -30,10 +30,6 @@ class mel_signatures extends rcube_plugin
      * @var rcmail
      */
     private $rc;
-    /**
-     * Directions list
-     */
-    private $directions = ['SG' => 'Secrétariat Général'];
 
     /**
      * (non-PHPdoc)
@@ -72,7 +68,7 @@ class mel_signatures extends rcube_plugin
     {
         $args['actions'][] = array(
             'action' => 'plugin.mel_signatures',
-            'class'  => 'signatures identities',
+            'class'  => 'signatures',
             'label'  => 'task',
             'domain' => 'mel_signatures',
             'title'  => 'signaturestitle',
@@ -96,7 +92,7 @@ class mel_signatures extends rcube_plugin
             // Gestion du service
             if ($field == 'service' && !empty($value)) {
                 $tmp = explode('/', $value, 2);
-                $this->rc->output->set_env('department', $this->directions[$tmp[0]] ?: $tmp[0]);
+                $this->rc->output->set_env('department', $this->get_direction_name($tmp[0], $user->dn));
                 $this->rc->output->set_env($field, $tmp[1]);
             }
             else if ($field == 'roomnumber' && !empty($value) && strpos($value, $this->gettext('roomnumber')) === false) {
@@ -117,11 +113,55 @@ class mel_signatures extends rcube_plugin
             'identiteslist'         => array($this, 'identities'),
         ));
         // Gestion des images
+
+        // Marianne
         $this->rc->output->set_env('logo_source_marianne', $this->image_data($this->rc->config->get('signature_image_marianne')));
+        $this->rc->output->set_env('logo_url_marianne', $this->rc->config->get('signature_image_marianne'));
+        $this->rc->output->set_env('logo_url_marianne_outlook', $this->rc->config->get('signature_image_marianne_outlook'));
+
+        // Devise
         $this->rc->output->set_env('logo_source_devise', $this->image_data($this->rc->config->get('signature_image_devise')));
+        $this->rc->output->set_env('logo_url_devise', $this->rc->config->get('signature_image_devise'));
+        $this->rc->output->set_env('logo_url_devise_outlook', $this->rc->config->get('signature_image_devise_outlook'));
+
+        // Autres logos
+        $other_logo = $this->rc->config->get('signature_image_other_logo', null);
+        if (isset($other_logo)) {
+            $other_logo_outlook = $this->rc->config->get('signature_image_other_logo_outlook', null);
+            $this->rc->output->set_env('logo_source_other', $this->image_data($other_logo));
+            $this->rc->output->set_env('logo_url_other', $other_logo);
+            $this->rc->output->set_env('logo_url_other_outlook', isset($other_logo_outlook) ? $other_logo_outlook : $other_logo);
+            $this->rc->output->set_env('logo_title_other', $this->rc->config->get('signature_other_logo_title', 'Autre logo'));
+        }
+        
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('title'));
         $this->rc->output->send('mel_signatures.settings');
+    }
+
+    /**
+     * Retrouve le nom de la direction en fonction de l'acronyme et du DN de l'utilisateur
+     * 
+     * @param string $direction Acronyme de la direction
+     * @param string $dn DN de l'utilisateur
+     * 
+     * @return string Nom complet de la direction
+     */
+    private function get_direction_name($direction, $dn = null) {
+        $pos = strpos($dn, "ou=$direction,");
+        if ($pos !== false) {
+            $searchDN = substr($dn, $pos);
+            $ou = driver_mel::gi()->user();
+            $ou->dn = $searchDN;
+            if ($ou->load('observation')) {
+                $direction = $ou->observation;
+            }
+        }
+        else {
+            $directions = $this->rc->config->get('signature_directions', []);
+            $direction = $directions[$direction] ?: $direction;
+        }
+        return $direction;
     }
 
     /**
@@ -175,14 +215,35 @@ class mel_signatures extends rcube_plugin
         if (empty($attrib['id']))
             $attrib['id'] = 'input-logo';
 
-        $select = new html_select($attrib);
+        $content = "";
         $sources = [];
-        foreach ($this->rc->config->get('signature_images', []) as $name => $link) {
-            $select->add($name, $link);
-            $sources[$link] = $this->image_data($link);
+        $default_image = $this->get_default_image();
+        foreach ($this->rc->config->get('signature_images', []) as $name => $logo) {
+            if (is_array($logo)) {
+                $logo_html = "";
+                foreach ($logo as $n => $l) {
+                    if ($default_image == $n) {
+                        $params = ['value' => $l, 'selected' => 'selected'];
+                    }
+                    else {
+                        $params = ['value' => $l];
+                    }
+                    $logo_html .= html::tag('option', $params, $n);
+                }
+                $content .= html::tag('optgroup', ['label' => $name], $logo_html);
+            }
+            else {
+                if ($default_image == $name) {
+                    $params = ['value' => $logo, 'selected' => 'selected'];
+                }
+                else {
+                    $params = ['value' => $logo];
+                }
+                $content .= html::tag('option', $params, $name);
+            }
         }
         $this->rc->output->set_env('logo_sources', $sources);
-        return $select->show($this->get_default_image());
+        return html::tag('select', $attrib, $content);
     }
 
     /**
@@ -201,11 +262,12 @@ class mel_signatures extends rcube_plugin
 
         $default_url = $this->get_default_url();
         $links .= html::tag('li', [], $checkbox->show("", ['value' => 'custom-link', 'id' => "checkbox-custom-link", 'onchange' => 'onInputChange();']) . html::label(['for' => "checkbox-custom-link"], $this->gettext('customlink')));
-        foreach ($this->rc->config->get('signature_links', []) as $name => $link) {
+        $signature_links = $this->rc->config->get('signature_links', []);
+        foreach ($signature_links as $name => $link) {
             $id = "signature_links_$i";
             $i++;
             $env_links[$link] = $name;
-            $links .= html::tag('li', [], $checkbox->show($default_url, ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
+            $links .= html::tag('li', ['title' => $name], $checkbox->show($signature_links[$default_url], ['value' => $link, 'id' => $id, 'onchange' => 'onInputChange();']) . html::label(['for' => $id], $name));
         }
         $this->rc->output->set_env('signature_links', $env_links);
         return html::div($attrib,

@@ -66,4 +66,5 @@ $messages['bookcreateerror'] = 'Une erreur est survenue lors de la création du 
 $messages['nobooknamewarning'] = 'Merci de saisir un nom pour le carnet d\'adresse';
 $messages['noemailnamewarning'] = 'Merci de saisir une adresse de courriel ou un nom de contact.';
 
-?>
+$labels['bookshowurl'] = 'Voir le lien carddav';
+$labels['carddavurldescription'] = 'Copiez cette adresse dans une application cliente <a href="http://en.wikipedia.org/wiki/CardDAV" target="_blank">CardDAV</a> afin de sychroniser vos contacts avec votre ordinateur ou votre mobile.';

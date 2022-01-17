@@ -297,6 +297,15 @@ function UpdateMenu(_class, _picture, _toolbar)
 async function ChangeToolbar(_class, event, otherDatas = null)
 {
 
+    if (window.changed_toolbar_first === undefined)
+    {
+        window.changed_toolbar_first = true;
+        $(document).ready(() => {
+            ChangeToolbar(_class, event, otherDatas);
+        });
+    }
+
+
     const uid = $(event).data("uid");
 
     if(rcmail.busy)

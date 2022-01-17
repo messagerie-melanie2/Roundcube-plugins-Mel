@@ -82,8 +82,8 @@ class mel_doubleauth extends rcube_plugin {
      */
     public function login_after($args)
     {
-        if ($this->is_internal()) { 
-            // Connexion intranet => pas de double auth
+        //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_login_after");
+        if ($this->is_auth_strong()) {
             return $args;
         }
         
@@ -171,8 +171,8 @@ class mel_doubleauth extends rcube_plugin {
      */
     public function check_2FAlogin($p)
     {
-        if ($this->is_internal()) {
-            // Connexion intranet => pas de double auth
+        //mel_logs::get_instance()->log(mel_logs::DEBUG, "doubleauth_check_2FAlogin");
+        if ($this->is_auth_strong()) {
             return $p;
         }
         
@@ -835,7 +835,7 @@ class mel_doubleauth extends rcube_plugin {
     }
     
     /**
-     * Défini si on est dans une instance interne ou extene de l'application
+     * Défini si on est dans une instance interne ou externe de l'application
      * Permet la selection de la bonne url
      * 
      * @return boolean
@@ -844,6 +844,26 @@ class mel_doubleauth extends rcube_plugin {
     {
         return mel::is_internal() && !$this->rc->config->get('is_preprod');
     }
+
+    /**
+     * Définit si on est dans une situation où l'auth est assez forte
+     * Permet de ne pas déclencher la double auth
+     */
+    private function is_auth_strong() {
+
+        // TODO remove
+        //mel_logs::get_instance()->log(mel_logs::DEBUG, "is_auth_strong");
+        //mel_logs::get_instance()->log(mel_logs::DEBUG, $_COOKIE['eidas']);
+        //mel_logs::get_instance()->log(mel_logs::DEBUG, $_SESSION['eidas']);
+  
+        $eidas = $_SESSION['eidas'];
+        //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
+        //mel_logs::get_instance()->log(mel_logs::DEBUG, $cookie_eidas);
+  
+        return $this->is_internal() // Connexion intranet
+          || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
+          || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
+      }
     
     /**
      * Replacing specials characters to a specific encoding type

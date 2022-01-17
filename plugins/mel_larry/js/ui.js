@@ -197,6 +197,10 @@ function rcube_mail_ui()
             field.on('change', {v: v}, function(e) { if (this.value) show_header_row(e.data.v, true); });
             if (field.val() != '')
               show_header_row(v, true);
+            // Enregistrer l'état
+            else if (get_pref('compose-'+v)) {
+              show_header_row(v);
+            }
           }
         }
 
@@ -1154,6 +1158,11 @@ function rcube_mail_ui()
 
     layout_composeview();
     $('input,textarea', row).focus();
+
+    // Enregistrer l'état
+    if (!updated) {
+      save_pref('compose-' + which, 1);
+    }
     
     return false;
   }
@@ -1171,6 +1180,9 @@ function rcube_mail_ui()
     $('#compose-' + which).hide();
     $('#' + which + '-link').show();
     layout_composeview();
+
+    // Enregistrer l'état
+    save_pref('compose-' + which, 0);
     
     return false;
   }

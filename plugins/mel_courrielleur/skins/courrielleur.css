@@ -31,10 +31,31 @@
 	display: none;
 }
 
+#settingstabpluginmelnextcloud {
+	display: none;
+}
+
+#settingstabpluginmelroadmap {
+	display: none;
+}
+
 #mel_resources_elements_listbox .boxtitle span {
 	display: none;
 }
 
 #mel_resources_elements_listbox td.subscribed {
 	display: none;
+}
+
+.notice-container .courrielleur {
+	display: block !important;
+}
+
+.usersignature .courrielleur {
+	display: inline-block !important;
+}
+
+.notice-container .nocourrielleur,
+.usersignature .nocourrielleur {
+    display: none;
 }

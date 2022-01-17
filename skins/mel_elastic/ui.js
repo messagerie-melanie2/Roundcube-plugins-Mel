@@ -601,7 +601,12 @@ $(document).ready(() => {
                 $("a.input-group-text.icon.delete").each((i,e) => {
                     e = $(e);
                     e.click(() => {
-                        const field = e.parent().parent().find("textarea").attr("id").replace("_", "");
+                        let $input = e.parent().parent().find("textarea");
+
+                        if ($input.length === 0)
+                            $input = e.parent().parent().find("input");
+
+                        const field = $input.attr("id").replace("_", "");
                         let storage = mel_metapage.Storage.get(key);
                         
                         if (storage.includes(field))
@@ -623,6 +628,14 @@ $(document).ready(() => {
                     }
                 }
             }
+
+            rcmail.addEventListener('fileappended', (file) => {
+                console.log("file", file);
+                if (file.attachment.html.includes('class="delete"'))
+                {
+                    $('a.delete').html("");
+                }
+            });
 
             return this;
         }

@@ -87,8 +87,8 @@ $labels['mel_use_infinite_scroll'] = 'Utiliser le scroll infini pour parcourir l
 $labels['mel_default_task'] = 'Page d\'accueil après la connexion';
 
 $labels['portail'] = 'Bureau numérique';
-$labels['calendar'] = 'Agenda';
-$labels['discussion'] = 'Discussion';
+$labels['calendar'] = 'Mon agenda';
+$labels['discussion'] = 'Mes discussions';
 $labels['chat'] = $labels['discussion'];
 $labels['sondage'] = 'Sondage';
 $labels['stockage'] = 'Stockage';
@@ -146,4 +146,4 @@ $labels['sent'] = 'Éléments envoyés';
 
 $labels['mailboxselector'] = 'Liste des boites';
 
-$labels['bureau'] = 'Bureau';
+$labels['bureau'] = 'Accueil';

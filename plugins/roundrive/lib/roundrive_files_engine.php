@@ -779,7 +779,7 @@ class roundrive_files_engine
 
         foreach ($message->attachments as $attach_prop) {
             if (empty($id) || $id == $attach_prop->mime_id) {
-                $filename = strlen($name) ? $name : rcmail_attachment_name($attach_prop, true);
+                $filename = strlen($name) ? $name : rcmail_action_mail_index::attachment_name($attach_prop, true);
                 $attachments[$filename] = $attach_prop;
             }
         }

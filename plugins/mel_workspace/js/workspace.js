@@ -454,25 +454,34 @@ function SetupTasks(datas, id, where = null)
 	let html = ''
 
 	datas = Enumerable.from(datas).orderBy((x) => x.order).thenBy((x) => (x._hasdate === 1 ? x.datetime : Number.MAX_VALUE )).toArray();
-    html += `<ul class="ignore-bullet">`;
+    
+    if (datas.length > 0)
+    {
+        html += `<ul class="ignore-bullet">`;
 
-    for (let index = 0; index < datas.length; index++) {
-        const element = datas[index];
-		date = moment(parseInt(element.created + "000"));
-        html += "<li>";
-        html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
+        for (let index = 0; index < datas.length; index++) {
+            const element = datas[index];
+            date = moment(parseInt(element.created + "000"));
+            html += "<li>";
+            html += "<div class=row style=margin-bottom:15px;margin-right:15px;>";
 
-        if (date._isValid)
-            html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}', {source:'${rcmail.env.current_workspace_tasklist_uid}'})"><span class="element-title default-text bold element-block">${element.title} ${(element.created === undefined ? "" : '</span><span class="element-desc element-block">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )}</span></a></div>`;
-        else
-            html += "<div class=col-md-10></div>";
+            if (date._isValid)
+                html += `<div class=col-md-10><a href=# class="element-block mel-not-link mel-focus" onclick="open_task('${element.id}', {source:'${rcmail.env.current_workspace_tasklist_uid}'})"><span class="element-title default-text bold element-block">${element.title} ${(element.created === undefined ? "" : '</span><span class="element-desc element-block">Créée le ' + date.format("DD/MM/YYYY") + " à " + date.format("HH:mm") )}</span></a></div>`;
+            else
+                html += "<div class=col-md-10></div>";
 
-        html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
-        html += "</div>";
-        html += "</li>";
+            html += '<div class=col-md-2><a style=display:none; onclick="add_task_to_completed(`'+element.id+'`)" class="roundbadge large hover tick ' + (element.mel_metapage.order == 0 ? "icofont-warning warning" : "icofont-hour-glass clear") + '"></a></div>'
+            html += "</div>";
+            html += "</li>";
+        }
+
+        html += "</ul>";
     }
+    // else {
+    //     //html += "<span>Aucune tâche en cours.</span>"
+    // }
 
-    html += "</ul>";
+
 	querry.html(html);
     $("#nb-" + id).find(".nb").html(datas.length);
 

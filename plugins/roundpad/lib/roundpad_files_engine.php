@@ -268,7 +268,7 @@ class roundpad_files_engine
         $out = $this->rc->output->form_tag($attrib, $out);
       }
 
-      $this->plugin->add_label('filecreating', 'filecreatenotice', 'create', 'filecreate', 'cancel', 'open', 'filenoname', 'filenofolder');
+      $this->plugin->add_label('filecreating', 'filecreatenotice', 'fileaddnotice', 'create', 'filecreate', 'add', 'fileadd', 'cancel', 'open', 'filenoname', 'filenofolder');
       $this->rc->output->add_gui_object('file-create-form', $attrib['id']);
 
       return $out;

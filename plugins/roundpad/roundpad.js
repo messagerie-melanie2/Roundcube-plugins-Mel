@@ -349,7 +349,9 @@ function roundpad_file_create_dialog(url = null)
     input_url = $('input[name="url"]', dialog).val(''),
     input_owner = $('input[name="owner"]', dialog).val(rcmail.env.doc_owner);
 
-  buttons[rcmail.gettext('roundpad.create')] = function () {
+  var button_text = rcmail.env.doc_url ? rcmail.gettext('roundpad.add') : rcmail.gettext('roundpad.create');
+
+  buttons[button_text] = function () {
     var name = input_name.val(), folder = select_parent.val(), type = select_type.val(), url = input_url.val(), owner = input_owner.val();
 
     if (!name) {
@@ -361,7 +363,12 @@ function roundpad_file_create_dialog(url = null)
       return;
     }
 
-    file_api.file_create(folder, name, type, url, owner);
+    if (rcmail.env.doc_url) {
+      file_api.file_add(folder, name, type, url, owner);
+    }
+    else {
+      file_api.file_create(folder, name, type, url, owner);
+    }
   };
   
   if (rcmail.env.doc_url) {
@@ -376,7 +383,7 @@ function roundpad_file_create_dialog(url = null)
 
   // show dialog window
   roundpad_dialog_show(dialog, {
-    title: rcmail.gettext('roundpad.filecreate'),
+    title: rcmail.env.doc_url ? rcmail.gettext('roundpad.fileadd') : rcmail.gettext('roundpad.filecreate'),
     buttons: buttons,
     button_classes: ['mainaction'],
     close: function(event, ui) { 
@@ -1154,6 +1161,29 @@ function roundpad_ui()
     rcmail.env.doc_owner = null;
 
     this.display_message('roundpad.filecreatenotice', 'confirmation');
+
+    // refresh file list
+    this.file_list();
+  };
+
+  // file add request
+  this.file_add = function(folder, name, type, url, owner)
+  {
+    this.req = this.set_busy(true, 'roundpad.fileadding');
+    this.request('file_add', {folder: folder, name: name, type: type, url: url, owner: owner}, 'file_add_response');
+  };
+
+  // file add response handler
+  this.file_add_response = function(response)
+  {
+    if (!this.response(response)) {
+      return;
+    }
+    roundpad_dialog_close($('#files-file-create-dialog').closest('.ui-dialog-content'));
+    rcmail.env.doc_url = null;
+    rcmail.env.doc_owner = null;
+
+    this.display_message('roundpad.fileaddnotice', 'confirmation');
 
     // refresh file list
     this.file_list();

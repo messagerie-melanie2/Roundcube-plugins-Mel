@@ -2,7 +2,7 @@
 	left: 5px !important;
 }
 
-#mailboxlist.folderlist > li.mailbox.container > a {
+#mailboxlist.folderlist > li.mailbox.boite > a {
 	background: url(../images/mail/dossiers/reception.png?v=e784.5000) 17px 3px no-repeat;
 	background-image: var(--image-dossier-reception);
 }
@@ -11,8 +11,12 @@
 	background-position: 20px 3px !important;
 }
 
-#mailboxlist.folderlist > li.mailbox.container.selected > a, 
-#mailboxlist.folderlist > li.mailbox.container > a:focus {
+#mailboxlist.folderlist > li.mailbox.local > a {
+	background-position: 23px 5px !important;
+}
+
+#mailboxlist.folderlist > li.mailbox.boite.selected > a, 
+#mailboxlist.folderlist > li.mailbox.boite > a:focus {
 	background: url(../images/mail/dossiers/reception_selectionne.png?v=e784.5000) 17px 3px no-repeat #fff;
 	background-image: var(--image-dossier-reception_selectionne);
     background-color: var(--listitem-selected-bg-color);

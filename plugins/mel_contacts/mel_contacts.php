@@ -67,8 +67,6 @@ class mel_contacts extends rcube_plugin {
       $this->add_texts('localization');
       $this->add_hook('contact_form', array($this, 'contact_form'));
       $this->add_hook('saved_search_create', array($this, 'saved_search_create'));
-      // $this->add_hook("send_page", array($this, "book_gestions"));
-
 
       // Plugin actions
       $this->register_action('plugin.book', array($this,'book_actions'));
@@ -101,34 +99,6 @@ class mel_contacts extends rcube_plugin {
         $this->ui = new mel_contacts_ui($this);
       }
     }
-  }
-
-  public function book_gestions($args)
-  {
-    return $args;
-    $content = $args['content'];
-    if (strpos($content, '<html lang="fr" class="iframe') !== false)
-      return $args;
-    $var = '<ul id="directorylist"';
-    $tmp = explode($var, $content);
-    $size = strlen($tmp[1]);
-    $index = -1;
-    $text = "";
-    for ($i=0; $i < $size; ++$i) { 
-        if (strpos($text, "</ul></div>") !== false)
-        {
-            $index = $i-6;
-            unset($text);
-            break;
-        }
-        if ($tmp[1][$i] == ' ' || $tmp[1][$i] == PHP_EOL || $tmp[1][$i] == "\t")
-            continue;
-        $text .= $tmp[1][$i];
-    }
-    $temp = substr_replace($tmp[1], $this->rc->output->parse("mel_contacts.contact_option", false, false), $index, 0);
-    $temp = str_replace('[|¤¤¤|]', "Gestion des annuaires", $temp);
-    $args['content'] = $tmp[0].$var.$temp;
-    return $args;
   }
 
   /**
@@ -216,7 +186,8 @@ class mel_contacts extends rcube_plugin {
           'groups' => true,
           'autocomplete' => true,
           'class_name' => ($abook->owner != $this->user->uid ? ' other' : ''),
-          'mel' => true
+          'mel' => true,
+          'carddavurl' => $this->get_carddav_url($abook->id),
         ];
       }
       // Tri des carnets
@@ -266,6 +237,26 @@ class mel_contacts extends rcube_plugin {
   }
 
   /**
+   * Retourne l'url carddav
+   * 
+   * @param string $id
+   * 
+   * @return string|boolean
+   */
+  private function get_carddav_url($id) {
+    $rcmail = rcmail::get_instance();
+    if ($template = $rcmail->config->get('addressbook_carddav_url', null)){
+      return strtr($template, array(
+        '%h' => $_SERVER['HTTP_HOST'],
+        '%u' => urlencode($rcmail->get_user_name()),
+        '%i' => urlencode($id),
+      ));
+    }
+    return false;
+  }
+
+
+  /**
    * Sets autocomplete_addressbooks option according to
    * kolab_addressbook_prio setting extending list of address sources
    * to be used for autocompletion.
@@ -274,7 +265,13 @@ class mel_contacts extends rcube_plugin {
     if ($args['name'] != 'autocomplete_addressbooks') {
       return $args;
     }
-    $sources = array('amande');
+    if (is_array($args['result']) && count($args['result'])) {
+      $sources = $args['result'];
+    }
+    else {
+      // Default sources
+      $sources = array('amande');
+    }
     try {
       // Ne récupérer que le carnet d'adresse par défaut de l'utilisateur
       if (!isset($this->user)) {

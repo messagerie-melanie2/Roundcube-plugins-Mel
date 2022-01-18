@@ -9,7 +9,9 @@ window.onload = function() {
         else
             this.parentNode.classList.add('visible');
     };
-    document.getElementById('input-links').getElementsByClassName('anchor')[0].onclick = onclickFunc;
+    if (document.getElementById('input-links').getElementsByClassName('anchor').length) {
+        document.getElementById('input-links').getElementsByClassName('anchor')[0].onclick = onclickFunc;
+    }
 };
 
 if (window.rcmail) {
@@ -47,9 +49,9 @@ function copy_signature() {
     let success = document.execCommand("copy");
     if (success) {
         rcmail.display_message(rcmail.get_label('mel_signatures.signaturecopiedmessage'), 'confirmation');
-        document.querySelector(".action-button#copy-to-clipboard").value = rcmail.get_label('mel_signatures.signaturecopied');
+        document.querySelector("#copy-to-clipboard").value = rcmail.get_label('mel_signatures.signaturecopied');
         setTimeout(() => {
-            document.querySelector(".action-button#copy-to-clipboard").value = rcmail.get_label('mel_signatures.clictocopy');
+            document.querySelector("#copy-to-clipboard").value = rcmail.get_label('mel_signatures.clictocopy');
         }, 1000);
     }
 }
@@ -58,7 +60,12 @@ function copy_signature() {
  * Activer la modification de la signature
  */
 function modify_signature() {
-    document.querySelector(".userinfos").style.display = 'block';
+    var x = document.querySelector(".userinfos");
+    if (x.style.display === "block") {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+    }
 }
 
 /**
@@ -98,6 +105,83 @@ function use_signature() {
 }
 
 /**
+ * Téléchargement de la signature dans un fichier HTM pour Outlook
+ */
+function download_signature_outlook_htm() {
+    // HTML for Outlook
+    var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">';
+    html += '<head>';
+    html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
+    html += '</head>';
+    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += getSignatureHTML(true, '', true);
+    html += '</body>';
+    html += '</html>';
+    download('signature.htm', html);
+    window.location.hash = "#outlook2016";
+}
+
+/**
+ * Téléchargement de la signature dans un fichier zip pour Outlook
+ */
+function download_signature_outlook_zip() {
+    // HTML for Outlook
+    var html = '<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">';
+    html += '<head>';
+    html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
+    html += '</head>';
+    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += getSignatureHTML(false, '', true);
+    html += '</body>';
+    html += '</html>';
+
+    // Create the zip file
+    var zip = new JSZip();
+
+    // Add HTM file to zip
+    zip.file("signature.htm", html);
+
+    // Images folder
+    var img = zip.folder("images");
+
+    // Add images files
+    img.file(rcmail.env.logo_url_marianne_outlook.replace(/images\//, ''), rcmail.env.logo_sources[rcmail.env.logo_url_marianne].replace('data:image/png;base64,', ''), { base64: true });
+    img.file(rcmail.env.logo_url_devise_outlook.replace(/images\//, ''), rcmail.env.logo_sources[rcmail.env.logo_url_devise].replace('data:image/png;base64,', ''), { base64: true });
+
+    if (rcmail.env.logo_url_other) {
+        let filename = rcmail.env.logo_url_other_outlook.replace(/images\//, '');
+        if (filename.toLowerCase().indexOf('.png') !== -1) {
+            img.file(filename, rcmail.env.logo_sources[rcmail.env.logo_url_other].replace('data:image/png;base64,', ''), { base64: true });
+        }
+        else {
+            img.file(filename, rcmail.env.logo_sources[rcmail.env.logo_url_other].replace('data:image/jpeg;base64,', ''), { base64: true });
+        }
+    }
+
+    // Download zip to browser
+    zip.generateAsync({type:"base64"})
+        .then(function(content) {
+            download('signature.zip', content, 'application/zip', 'application/zip;base64');
+        });
+    window.location.hash = "#outlook2013";
+}
+
+/**
+ * Téléchargement de la signature dans un fichier HTM pour Outlook
+ */
+function download_signature_thunderbird() {
+    var html = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">';
+    html += '<HTML><HEAD><TITLE>Email Signature</TITLE>';
+    html += '<META content="text/html; charset=utf-8" http-equiv="Content-Type">';
+    html += '</HEAD>';
+    html += '<BODY style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += getSignatureHTML();
+    html += '</BODY>';
+    html += '</HTML>';
+    download('signature.html', html);
+}
+
+/**
  * Check/uncheck all identities checkbox
  */
 function checkAllIdentities(source) {
@@ -120,8 +204,14 @@ function checkOneIdentity(source) {
  * 
  * return HTML
  */
-function getSignatureHTML() {
-    let signature_html = document.getElementById("signature_template").innerHTML;
+function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = false) {
+    let signature_html = '';
+    if (isOutlook) {
+        signature_html = document.getElementById("signature_outlook_template").innerHTML;
+    }
+    else {
+        signature_html = document.getElementById("signature_template").innerHTML;
+    }
     // User name
     signature_html = signature_html.replace('%%TEMPLATE_NAME%%', document.getElementById("input-nom").value);
 
@@ -163,7 +253,7 @@ function getSignatureHTML() {
     signature_html = signature_html.replace(/%%TEMPLATE_DIRECTION%%/g, document.getElementById("input-department").value);
 
     // Gestion des liens
-    let checkboxes = document.querySelectorAll("#input-links .items input");
+    let checkboxes = document.querySelectorAll("#input-links input");
     let links = "";
     if (document.getElementById("checkbox-custom-link").checked) {
         document.querySelector(".grid-form .custom-link").style.display = 'block';
@@ -185,7 +275,7 @@ function getSignatureHTML() {
     for (const checkbox of checkboxes) {
         if (checkbox.checked && checkbox.id != 'checkbox-custom-link') {
             let a = document.createElement('a');
-            a.style = "color:#000000;font-size:8pt;font-family: Arial,sans-serif; font-weight : bold;";
+            a.style = "color:#000000;font-size:8pt;font-family:arial,sans-serif;font-weight:bold;text-decoration:none;";
             a.href = checkbox.value;
             a.innerText = rcmail.env.signature_links[checkbox.value];
             links += a.outerHTML + '<br>';
@@ -193,13 +283,110 @@ function getSignatureHTML() {
     }
     signature_html = signature_html.replace('%%TEMPLATE_LINKS%%', links);
 
-    let logo = document.createElement('img');
+    // Logo de la signature
     let select = document.getElementById("input-logo");
-    logo.src = rcmail.env.logo_sources[select.value];
-    logo.alt = select.options[select.selectedIndex].text;
-    signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', logo.outerHTML);
+    signature_html = signature_html.replace('%%TEMPLATE_LOGO%%', createLogo(select.options[select.selectedIndex].value));
+
+    // Logo Marianne
+    let logo_marianne = rcmail.env.logo_url_marianne;
+    if (rcmail.env.logo_sources[logo_marianne]) {
+        if (embeddedImage) {
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
+                    createImage(rcmail.env.logo_sources[logo_marianne], 'Marianne', isOutlook, 'marianne'));
+        }
+        else {
+            if (isOutlook) {
+                logo_marianne = rcmail.env.logo_url_marianne_outlook;
+            }
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', 
+                    createImage(images_url + logo_marianne, 'Marianne', isOutlook, 'marianne'));
+        }
+    }
+    else {
+        signature_html = signature_html.replace('%%TEMPLATE_LOGO_MARIANNE%%', '');
+    }
+
+    // Logo Devise
+    let logo_devise = rcmail.env.logo_url_devise;
+    if (rcmail.env.logo_sources[logo_devise]) {
+        if (embeddedImage) {
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
+                    createImage(rcmail.env.logo_sources[logo_devise], 'Liberté, Égalité, Fraternité', isOutlook, 'devise'));
+        }
+        else {
+            if (isOutlook) {
+                logo_devise = rcmail.env.logo_url_devise_outlook;
+            }
+            signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', 
+                    createImage(images_url + logo_devise, 'Liberté, Égalité, Fraternité', isOutlook, 'devise'));
+        }
+    }
+    else {
+        signature_html = signature_html.replace('%%TEMPLATE_LOGO_DEVISE%%', '');
+    }
+
+    // Gestion du logo supplémentaire
+    if (rcmail.env.logo_url_other) {
+        if (embeddedImage) {
+            signature_html = signature_html.replace('%%TEMPLATE_OTHER_LOGO%%', 
+                '<br>' + createImage(rcmail.env.logo_source_other ? rcmail.env.logo_source_other : rcmail.env.logo_sources[rcmail.env.logo_url_other], rcmail.env.logo_title_other, isOutlook, 'other'));
+        }
+        else {
+            let logo_other = rcmail.env.logo_url_other;
+            if (isOutlook) {
+                if (!rcmail.env.logo_url_other_outlook) {
+                    rcmail.env.logo_url_other_outlook = rcmail.env.logo_url_other;
+                }
+                logo_other = rcmail.env.logo_url_other_outlook;
+            }
+            signature_html = signature_html.replace('%%TEMPLATE_OTHER_LOGO%%', 
+                '<br>' + createImage(images_url + logo_other, rcmail.env.logo_title_other, isOutlook, 'other'));
+        }
+    }
+    else {
+        signature_html = signature_html.replace('%%TEMPLATE_OTHER_LOGO%%', '');
+    }
+    
     
     return signature_html.replace(/(\r\n|\n|\r)/gm,"").trim();
+}
+
+/**
+ * Retour le HTML d'une image en fonction de la source et du alt
+ * Pour Outlook fourni en plus du vml de l'image
+ */
+function createImage(src, alt, isOutlook = false, className = null) {
+    let img = document.createElement('img');
+    img.src = src;
+    img.alt = alt;
+    if (className) {
+        img.className = className;
+    }
+    // Pour outlook ajouter la taille des images
+    document.querySelector('#signature .' + className)
+    if (isOutlook && document.querySelector('#signature .' + className) !== null) {
+        img.width = document.querySelector('#signature .' + className).clientWidth;
+        img.height = document.querySelector('#signature .' + className).clientHeight;
+    }
+    return img.outerHTML;
+}
+
+/**
+ * Retourne le logo en html
+ */
+function createLogo(htmlLogo) {
+    if (htmlLogo == 'custom') {
+        document.querySelector(".grid-form .custom-logo").style.display = 'block';
+        htmlLogo = document.querySelector("#input-custom-logo").value.toUpperCase().replace(/\r?\n/g, '<br>');
+    }
+    else {
+        document.querySelector(".grid-form .custom-logo").style.display = 'none';
+        document.querySelector("#input-custom-logo").value = htmlLogo.replace(/<br>/gi, "\r\n");
+    }
+    let span = document.createElement('span');
+    span.style = "font-family:arial,sans-serif;font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
+    span.innerHTML = htmlLogo;
+    return span.outerHTML;
 }
 
 /**
@@ -223,4 +410,21 @@ function formatPhoneNumber(number) {
         number = number.replace(/(.{2})/g,"$1 ");
     }
     return number.trim();
+}
+
+/**
+ * Download file HTML from javascript
+ */
+function download(filename, text, contentype = 'text/html', type = 'text/html;charset=utf-8') {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:' + type + ',' + encodeURIComponent(text));
+    element.setAttribute('type', contentype);
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
 }

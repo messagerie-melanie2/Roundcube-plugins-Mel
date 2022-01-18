@@ -63,6 +63,10 @@
   	
   	--subsublistitem-selected-text-color: var(--global-text-color);
   	--subsublistitem-selected-bg-color: #fafafa;
+
+	--box-warning-bg-color: #ffe1e0;
+	--box-warning-border-color: #d8cebc;
+	--box-warning-text-color: #000;
   	
   	--box-text-color: var(--global-text-color);
   	--box-bg-color: #f2f2f2;
@@ -193,7 +197,7 @@
 	--jquery-buttons-focus-bg-color: #ededed;
 	
 	--image-gototree: url("images/goto.png?v=e784.5000");
-	--image-carnet: url("images/images/carnet.png?v=e784.5000");
+	--image-carnet: url("images/carnet.png?v=e784.5000");
 	--image-calendar: url("images/calendars.png?v=e784.5000");
 
 	--image-calendar-export: url("images/calendar/exporter.png?v=e784.5000");
@@ -230,6 +234,7 @@
 	--image-send-format-texte: url("../images/envoyer/format-texte.png?v=e784.5000");
 	--image-send-orthographe: url("../images/envoyer/orthographe.png?v=e784.5000");
 	--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre.png?v=e784.5000");
+	--image-send-remise_differee: url("../images/envoyer/envoi-differe.png?v=e784.5000");
 
 	--image-background: url("../images/background.png?v=e784.5000");
 	--image-icons: url("../images/icons.png?v=e784.5000");
@@ -258,6 +263,8 @@
 	--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000");
 	--image-dossier-modeles: url("../images/mail/dossiers/modeles.png?v=e784.5000");
 	--image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne.png?v=e784.5000");
+	--image-dossier-local: url("../images/mail/dossiers/dossier.png?v=e784.5000");
+	--image-dossier-local_selectionne: url("../images/mail/dossiers/dossier_selectionne.png?v=e784.5000");
 	--image-dossier-envoyes: url("../images/mail/dossiers/envoyes.png?v=e784.5000");
 	--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000");
 	--image-dossier-indesirables: url("../images/mail/dossiers/indesirables.png?v=e784.5000");
@@ -334,6 +341,10 @@
 	 	
 	 	--subsublistitem-selected-text-color: var(--global-text-color);
 	 	--subsublistitem-selected-bg-color: #1d1d1d;
+
+		--box-warning-bg-color: #6e1010;
+		--box-warning-border-color: #604141;
+		--box-warning-text-color: #fff;
 	 	
 	 	--box-text-color: var(--global-text-color);
 	 	--box-bg-color: #1d1d1d;
@@ -501,6 +512,7 @@
 		--image-send-format-texte: url("../images/envoyer/format-texte-dark.png?v=e784.5000");
 		--image-send-orthographe: url("../images/envoyer/orthographe-dark.png?v=e784.5000");
 		--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000");
+		--image-send-remise_differee: url("../images/envoyer/envoi-differe-dark.png?v=e784.5000");
 
 		--image-background: url("../images/background_dark.png?v=e784.5000");
 		--image-icons: url("../images/icons-dark.png?v=e784.5000");
@@ -529,6 +541,8 @@
 		--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000");
 		--image-dossier-modeles: url("../images/mail/dossiers/modeles-dark.png?v=e784.5000");
 		--image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne-dark.png?v=e784.5000");
+		--image-dossier-local: url("../images/mail/dossiers/dossier-dark.png?v=e784.5000");
+		--image-dossier-local_selectionne: url("../images/mail/dossiers/dossier_selectionne-dark.png?v=e784.5000");
 		--image-dossier-envoyes: url("../images/mail/dossiers/envoyes-dark.png?v=e784.5000");
 		--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000");
 		--image-dossier-indesirables: url("../images/mail/dossiers/indesirables-dark.png?v=e784.5000");

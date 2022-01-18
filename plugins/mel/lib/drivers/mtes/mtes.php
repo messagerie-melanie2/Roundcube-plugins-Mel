@@ -135,9 +135,11 @@ class mtes_driver_mel extends mce_driver_mel {
    * pour retourner le hostname de connexion IMAP et/ou SMTP
    * 
    * @param array $infos Entry LDAP
+   * @param string $function Nom de la fonction pour personnaliser les retours
+   * 
    * @return string $hostname de routage, null si pas de routage trouvé
    */
-  public function getRoutage($infos) {
+  public function getRoutage($infos, $function = '') {
     $hostname = null;
     if (is_array($infos)) {
       if (isset($infos['mineqmelroutage']) && count($infos['mineqmelroutage']) > 0) {
@@ -227,20 +229,25 @@ class mtes_driver_mel extends mce_driver_mel {
    * @return boolean Le mot de passe doit changer
    */
   public function isPasswordNeedsToChange(&$title) {
-    $needs_to_change = false;
-    if (!isset($_SESSION['plugin.show_password_change']) 
-        && !$_SESSION['plugin.show_password_change']) {
+    if (!isset($_SESSION['plugin.show_password_change'])) {
       // Récupération des informations sur l'utilisateur courant
       $infos = Ldap::GetUserInfos(rcmail::get_instance()->get_user_name(), null, array(
           'mineqpassworddoitchanger'
       ), \LibMelanie\Config\Ldap::$AUTH_LDAP);
       if (!empty($infos['mineqpassworddoitchanger'][0])) {
         $title = $infos['mineqpassworddoitchanger'][0];
-        $needs_to_change = true;
         $_SESSION['plugin.show_password_change'] = true;
+        $_SESSION['plugin.password_change_title'] = $title;
+      }
+      else {
+        $_SESSION['plugin.show_password_change'] = false;
+        unset($_SESSION['plugin.password_change_title']);
       }
     }
-    return $needs_to_change;
+    else if ($_SESSION['plugin.show_password_change'] && isset($_SESSION['plugin.password_change_title'])) {
+      $title = $_SESSION['plugin.password_change_title'];
+    }
+    return $_SESSION['plugin.show_password_change'];
   }
 
   /**
@@ -268,16 +275,16 @@ class mtes_driver_mel extends mce_driver_mel {
       $_user = $_user->objectshare->mailbox;
     }
     // Récupération de la configuration de la boite pour l'affichage
-    $host = $this->getRoutage($_user);
+    $host = $this->getRoutage($_user, 'unexpunge');
     // Ecriture du fichier unexpunge pour le serveur
     $server = explode('.', $host);
     $rep = '/var/pamela/unexpunge/' . $server[0];
     $dossier = str_replace('/', '^', $folder);
 
     if (isset($dossier)) {
-      $nom = $rep . '/' . $mbox . '^' . $dossier;
-    } else{
-      $nom = $rep . '/' . $mbox;
+      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
+    } else {
+      $nom = $rep . '/' . $_user->uid;
     }
 
     $fic = fopen($nom, 'w');

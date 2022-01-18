@@ -54,6 +54,7 @@ label {
 
 #input-links .items label {
     display: inline-block !important;
+    padding: 0 0 0 2px;
 }
 
 #identities-list .description {
@@ -122,6 +123,7 @@ label {
     margin-top: 20px;
 }
 
+.grid-form .custom-logo,
 .grid-form .custom-link {
     display: none;
 }
@@ -197,12 +199,25 @@ label {
     background-color: var(--inputs-bg-color);
     color: var(--inputs-text-color);
     border-top: none;
+    max-height: 150px;
+    width: 286px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
   
 .dropdown-check-list ul.items li {
     list-style: none;
+    padding: 2px 0;
+    width: 286px;
+    overflow: hidden;
+    white-space: nowrap;
 }
   
 .dropdown-check-list.visible .items {
     display: block;
+}
+
+.notice-container .courrielleur,
+.usersignature .courrielleur {
+    display: none;
 }

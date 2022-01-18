@@ -20,8 +20,9 @@
     <textarea id="signature_html" readonly="readonly" type="text"></textarea>
     <div class="action">
       <input type="button" class="action-button" id="modify-signature" title="<roundcube:label name="mel_signatures.modifytitle" />" value="<roundcube:label name="mel_signatures.modify" />" onclick="modify_signature();">
-      <input type="button" class="action-button" id="use-signature" title="<roundcube:label name="mel_signatures.usesignaturetitle" />" value="<roundcube:label name="mel_signatures.usesignature" />" onclick="use_signature();">
-      <input type="button" class="action-button" id="copy-to-clipboard" title="<roundcube:label name="mel_signatures.clictocopytitle" />" value="<roundcube:label name="mel_signatures.clictocopy" />" onclick="copy_signature();">
+      <input type="button" class="action-button nocourrielleur" id="use-signature" title="<roundcube:label name="mel_signatures.usesignaturetitle" />" value="<roundcube:label name="mel_signatures.usesignature" />" onclick="use_signature();">
+      <input type="button" class="action-button nocourrielleur" id="download-signature-thunderbird" title="<roundcube:label name="mel_signatures.downloadsignaturethunderbirdtitle" />" value="<roundcube:label name="mel_signatures.downloadsignaturethunderbird" />" onclick="download_signature_thunderbird();">
+      <input type="button" class="action-button courrielleur" id="copy-to-clipboard" title="<roundcube:label name="mel_signatures.clictocopytitle" />" value="<roundcube:label name="mel_signatures.clictocopy" />" onclick="copy_signature();">
     </div>
   </div>
   <div class="userinfos">
@@ -76,25 +77,41 @@
                   <label for="input-logo"><roundcube:label name="mel_signatures.logo" /></label>
                   <roundcube:object name="signaturelogo" id="input-logo" onchange="onInputChange();" />
                 </div>
+                <div class="form-section custom-logo">
+                  <label for="input-custom-logo"><roundcube:label name="mel_signatures.customlogo" /></label>
+                  <textarea type="text" id="input-custom-logo" onkeyup="onInputChange();" value=""></textarea>
+                </div>
             </div>
         </div>
     </div>
 </div>
 </div>
 <div class="notice-container">
-  <div class="texte">
+  <div class="texte nocourrielleur">
       <div>
-          <h2 class="emploi"> Mode d'emploi (Courrielleur Mél)</h2>
-          <p>- Cliquez sur "Copier la signature" pour copier le code généré</p>
+          <h2 class="emploi">Mode d'emploi (Courrielleur Mél)</h2>
+          <p>- Cliquez sur "Télécharger la signature" pour enregistrer le fichier signature</p>
           <p>- Dans le Courrielleur, cliquez sur "Outils", puis "Paramètres des comptes"</p>
-          <p>- Sélectionner son compte</p>
-          <p>- Si cochée, décocher l'option "Apposer la signature à partir d'un fichier"</p>
-          <p>- Texte de signature : cocher "Utiliser HTML"</p>
-          <p>- Coller le code généré dans la zone "Texte de signature"</p>
-          <p>- Cliquer sur OK</p>
+          <p>- Sélectionnez votre compte</p>
+          <p>- Si décochée, cochez l'option "Apposer la signature à partir d'un fichier"</p>
+          <p>- Cliquez sur le bouton "Choisir" puis sélectionnez le fichier signature précédemment téléchargé</p>
+          <p>- Cliquez sur OK</p>
           <p>Votre signature est en place. Faites un test rapide en essayant de rédiger un nouveau courriel.</p>
       </div>
   </div>
+  <div class="texte courrielleur">
+    <div>
+        <h2 class="emploi">Mode d'emploi</h2>
+        <p>- Cliquez sur "Copier la signature" pour copier la signature générée</p>
+        <p>- Cliquez sur "Outils", puis "Paramètres des comptes"</p>
+        <p>- Sélectionnez votre compte</p>
+        <p>- IMPORTANT : Si cochée, décochez l'option "Apposer la signature à partir d'un fichier"</p>
+        <p>- Dans la partie "Texte de signature", cochez "Utiliser HTML"</p>
+        <p>- Collez le code de la signature dans le cadre sous "Text de signature" (Ctrl + V)</p>
+        <p>- Cliquez sur OK</p>
+        <p>Votre signature est en place. Faites un test rapide en essayant de rédiger un nouveau courriel.</p>
+    </div>
+</div>
 </div>
 
 </div>
@@ -107,46 +124,46 @@
   </div>
 </div>
 
-
 <div id="signature_template">
-  <div style="line-height:10pt;margin:10px 0;font-family:marianne,Arial,Helvetica,sans-serif;">
-    <div style="font-size:9pt;">
-      <b>%%TEMPLATE_NAME%%</b>
-      <br>
-      <span style="font-size:8pt;">%%TEMPLATE_JOBTITLE%%%%TEMPLATE_SERVICE%%%%TEMPLATE_DIRECTION%%</span>
-    </div>
-    <p style="margin:15px 0;height:0px;"></p>
-    <p style="font-size:8pt;">%%TEMPLATE_ADDRESS%%%%TEMPLATE_OFFICE%%%%TEMPLATE_PHONE%%
-      <span>
-      %%TEMPLATE_LINKS%%
-      </span>
-    </p>
-    <table style="border:0;line-height:10pt;border-collapse:collapse;width:auto;background-color:#fff;">
-      <tbody>
-        <tr style="border:0">
-          <td style="padding:0;padding-bottom:5px;padding-top:15px">
-            <img src="<roundcube:var name="env:logo_source_marianne" />" alt="Marianne">
-          </td>
-        </tr>
-        <tr style="border:0">
-          <td style="border:0;border-right:1.5px solid #000;text-align:left;vertical-align:top;padding:0;padding-right:30px;" valign="top" align="left">
-            %%TEMPLATE_LOGO%%
-          </td>
-          <td style="border:0 solid #000;text-align:left;vertical-align:middle;padding:0px;padding-left:5px;" valign="center" align="left">
-            <span style="font-weight:bold;font-size:8pt;line-height:9pt;">
-            <p style="color:#000;font-size:8pt;font-weight:bold;max-width:180px;"> %%TEMPLATE_DIRECTION%%</p>
-          </span></td>
-        </tr>
-        <tr style="border:0">
-          <td style="border:0;text-align:left;vertical-align:top;padding:0;padding-right:30px" valign="top" align="left">
-            <img src="<roundcube:var name="env:logo_source_devise" />" alt="liberté, égalité, fraternité">
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div style="line-height:10pt;margin:10px 0;font-family:arial,sans-serif;">
+<div style="font-size:9pt;">
+<b>%%TEMPLATE_NAME%%</b>
+<br>
+<span style="font-size:8pt;">%%TEMPLATE_JOBTITLE%%%%TEMPLATE_SERVICE%%%%TEMPLATE_DIRECTION%%</span>
 </div>
-
+<p style="margin:15px 0;height:0px;"></p>
+<p style="font-size:8pt;">%%TEMPLATE_ADDRESS%%%%TEMPLATE_OFFICE%%%%TEMPLATE_PHONE%%
+<span>
+%%TEMPLATE_LINKS%%
+</span>
+</p>
+<table style="border:0;line-height:10pt;border-collapse:collapse;width:auto;background-color:#fff;font-family:marianne,arial,sans-serif;">
+<tbody>
+<tr style="border:0">
+<td style="padding:10px 0 0 0">
+<img src="<roundcube:var name="env:logo_source_marianne" />" alt="Marianne">
+</td>
+</tr>
+<tr style="border:0">
+<td style="border:0;border-right:1.5px solid #000;text-align:left;vertical-align:middle;padding:5px 30px 5px 0" valign="top" align="left">
+%%TEMPLATE_LOGO%%
+</td>
+<td style="border:0;text-align:left;vertical-align:middle;padding:0 0 0 5px" valign="center" align="left">
+<span style="font-weight:bold;font-size:7pt;line-height:9pt;max-width:180px;color:#000;">
+ %%TEMPLATE_DIRECTION%%
+</span>
+</td>
+</tr>
+<tr style="border:0">
+<td style="border:0;text-align:left;vertical-align:top;padding:3px 0 0 0" valign="top" align="left">
+<img src="<roundcube:var name="env:logo_source_devise" />" alt="liberté, égalité, fraternité">
+</td>
+</tr>
+</tbody>
+</table>
+%%TEMPLATE_OTHER_LOGO%%
+</div>
+</div>
 
 <roundcube:include file="/includes/footer.html" />
 

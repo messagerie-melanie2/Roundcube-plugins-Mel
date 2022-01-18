@@ -100,8 +100,8 @@ html.mozilla #mailboxlist > li:first-child {
 }
 
 .minimal .messagelist tr td {
-	padding-top: 6px;
-	padding-bottom: 6px;
+	padding-top: 4px;
+	padding-bottom: 4px;
 }
 
 .messagelist tbody td a {
@@ -170,7 +170,7 @@ html.mozilla #mailboxlist > li:first-child {
 }
 
 .minimal .messagelist tr:hover td.status span.msgicon {
-	height: 26px;
+	height: 22px;
 }
 
 .messagelist tr td.status span.unread,
@@ -183,7 +183,7 @@ html.mozilla #mailboxlist > li:first-child {
 
 .minimal .messagelist tr td.status span.unread,
 .minimal .messagelist tr td.status span.unread:hover {
-	height: 26px;
+	height: 22px;
 }
 
 .messagelist tr td.status span.status, 
@@ -875,6 +875,13 @@ td span.adr:hover .rcmaddcontact {
 	min-width: auto;
 }
 
+.toolbar a.button.mel_envoi_differe {
+	background: url(../images/envoyer/envoi-differe-dark.png?v=e784.5000) center center no-repeat #fff;
+	background-image: var(--image-send-remise_differee);
+	background-color: var(--buttons-bg-color);
+	min-width: auto;
+}
+
 .toolbar a.button.extwin {
 	position: absolute;
 	top: 0;
@@ -912,3 +919,7 @@ body.light #messagepreview div a.button,
 	white-space: break-spaces;
 }
 
+#filter-form .listelement input {
+	background-color: #fff;
+	background-color: var(--inputs-bg-color);
+}

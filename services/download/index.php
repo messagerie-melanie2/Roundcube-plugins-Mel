@@ -23,17 +23,29 @@
 // Configuration des logs
 define('LOG_PATH', '/var/log/roundcube');
 define('LOG_FILE', 'attachment.log');
+define('SESSION_PATH', '/m2/sessions');
+
+// Developpement ?
+define('DEV', false);
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
+
+if (DEV) {
+  $dir = str_replace('/services/download', '', dirname($_SERVER['SCRIPT_FILENAME']));
+}
+else {
+  $dir = __DIR__.'/../..';
+}
+
 // Inclusion de l'ORM
 @include_once 'includes/libm2.php';
 // Inclusion de rcube_utils
-require_once '../../program/lib/Roundcube/rcube_utils.php';
+require_once $dir.'/program/lib/Roundcube/rcube_utils.php';
 // Inclusion des vendors (pour l'ORM)
-require_once '../../vendor/autoload.php';
+require_once $dir.'/vendor/autoload.php';
 
 if (!is_internal()) {
   header('HTTP/1.0 403 Forbidden');
@@ -41,6 +53,9 @@ if (!is_internal()) {
   echo 'You are forbidden!';
 }
 else {
+  // Positionner le path de la sesion
+  session_save_path(SESSION_PATH);
+
   // Démarrage de session
   session_start();
 

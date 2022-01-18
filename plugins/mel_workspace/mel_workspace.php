@@ -1007,7 +1007,7 @@ class mel_workspace extends rcube_plugin
                         html::div(["id" => "wsp-task-urgence", "class" => "col-6 tab-task mel-tab mel-tabheader ".($affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
                             html::tag("span", [], "Tâches urgentes")
                         ).
-                        html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : "")], 
+                        html::div(["id" => "wsp-task-classik", "class" => "col-6 tab-task mel-tab mel-tabheader last ".(!$affiche_urgence ? "active" : ""), "style" => ($affiche_urgence ? "" : "display:none")], 
                             html::tag("span", [], "Tâches en cours")
                     ));
                     $header.=   html::div(["class" => "wsp-task-urgence nb-task tab-task mel-tab-content","style" => ($affiche_urgence ? "" : "display:none")], 

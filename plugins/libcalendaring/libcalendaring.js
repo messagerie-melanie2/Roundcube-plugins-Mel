@@ -1394,6 +1394,9 @@ rcube_libcalendaring.itip_rsvp_recurring = function(btn, callback, event)
 {
     var list, menu = $('#itip-rsvp-menu'), action = btn.attr('rel');
 
+    //PAMELA
+    rcube_libcalendaring.itip_rsvp_recurring.action = action;
+
     if (!menu.length) {
         menu = $('<div>').attr({'class': 'popupmenu', id: 'itip-rsvp-menu', 'aria-hidden': 'true'}).appendTo(document.body);
         list = $('<ul>').attr({'class': 'toolbarmenu menu', role: 'menu'}).appendTo(menu);
@@ -1401,7 +1404,7 @@ rcube_libcalendaring.itip_rsvp_recurring = function(btn, callback, event)
         $.each(['all','current'/*,'future'*/], function(i, mode) {
             var link = $('<a>').attr({'class': 'active', rel: mode})
                 .text(rcmail.get_label('rsvpmode' + mode))
-                .on('click', function() { callback(action, $(this).attr('rel')); });
+                .on('click', function() {callback((/* PAMELA */rcube_libcalendaring.itip_rsvp_recurring.action === undefined ? action : rcube_libcalendaring.itip_rsvp_recurring.action), $(this).attr('rel')); });
 
             $('<li>').attr({role: 'menuitem'}).append(link).appendTo(list);
         });

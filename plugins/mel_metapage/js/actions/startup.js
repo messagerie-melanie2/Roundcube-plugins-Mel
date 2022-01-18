@@ -474,10 +474,26 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
 
-    let querry_content = $("."+eClass+"-frame").contents();
-    querry_content.find("#layout-menu").remove();
-    querry_content.find(".barup").remove();
-    querry_content.find("html").addClass("framed");
+    try {
+        let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
+        const _$ = querry_content.$;
+
+        _$("#layout-menu").remove();
+        _$(".barup").remove();
+        _$("html").addClass("framed");
+                 
+        let menu_small = _$("#menu-small-li");
+
+        if (menu_small.length > 0) menu_small.remove();
+        else {
+            menu_small = _$("#menu-small-li");
+
+            if (menu_small.length > 0) menu_small.remove();
+        }
+        
+    } catch (error) {
+        console.error("###[onload|querry_content]", error);
+    }
 
     rcmail.set_busy(false);
     rcmail.clear_messages();

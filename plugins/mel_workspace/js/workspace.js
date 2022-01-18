@@ -15,7 +15,9 @@ async function WSPReady()
     let end = End(uid, hasAriane, datas);
     Start(uid, hasAriane, datas);
     Middle(uid, hasAriane, datas);
-    return end;
+    return end.then(() => {
+        WSPReady.started = moment();
+    });
 }
 
 /**

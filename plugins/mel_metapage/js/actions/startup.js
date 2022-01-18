@@ -348,7 +348,15 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     if (isAriane)
     {
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+        {
             mel_metapage.PopUp.ariane.hide();
+            window.bnum_chat_hidden = true;
+        }
+    }
+    else if (!isAriane && window.bnum_chat_hidden === true)
+    {
+        mel_metapage.PopUp.open_ariane();
+        delete window.bnum_chat_hidden;
     }
     
     if (isAriane)

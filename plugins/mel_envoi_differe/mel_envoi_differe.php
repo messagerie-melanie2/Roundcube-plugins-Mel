@@ -52,9 +52,9 @@ class mel_envoi_differe extends rcube_plugin
                 'type'     => 'link',
                 'label'    => 'buttontext',
                 'command'  => 'display_mel_envoi_differe',
-                'class'    => 'button mel_envoi_differe disabled',
+                'class'    => 'mel_envoi_differe disabled',
                 'id'       => 'mel_envoi_differe',
-                'classact' => 'button mel_envoi_differe',
+                'classact' => 'mel_envoi_differe',
                 'inner'    => 'icofont-clock-time',
                 'title'    => 'buttontitle',
                 'domain'   => 'mel_envoi_differe'

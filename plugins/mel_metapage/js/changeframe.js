@@ -297,33 +297,59 @@ function UpdateMenu(_class, _picture, _toolbar)
 async function ChangeToolbar(_class, event, otherDatas = null)
 {
 
-    // if (window.changed_toolbar_first === undefined)
-    // {
-    //     window.changed_toolbar_first = true;
-    //     $(document).ready(() => {
-    //         ChangeToolbar(_class, event, otherDatas);
-    //     });
-    // }
-
-
     const uid = $(event).data("uid");
 
-    if (window.WSPReady !== undefined)
-    {
-        const startedCompletly = 2000;
-        if (moment() - WSPReady.started < startedCompletly && WSPReady.created !== true)
-        {
-            rcmail.set_busy(true, "loading");
-            await delay(1000);
-            WSPReady.created = true;
-            rcmail.set_busy(false);
-            rcmail.clear_messages();
-        }
-    }
+    // if (window.WSPReady !== undefined && parent !== window)
+    // {
+    //     const startedCompletly = 5000;
+    //     const timed = moment() - WSPReady.started;
+    //     if (WSPReady.created !== true)
+    //     {
+    //         if (timed < startedCompletly)
+    //         {
+    //             rcmail.set_busy(true, "loading");
+    //             await delay(startedCompletly - timed);
+    //             setTimeout(() => {
+    //                 const okay = ["home", 'params', 'back'];
+    //                 if (!okay.includes(_class) && parent.$(".workspace-frame").css("display") !== "none")
+    //                 {
+    //                     ChangeToolbar(_class, event, otherDatas);
+    //                     WSPReady.stop = false;
+    //                 }
+    //             }, 1000);
+    //             WSPReady.created = true;
+    //             rcmail.set_busy(false);
+    //             rcmail.clear_messages();
+    //         }
 
+    //         setTimeout(async () => {
+    //             console.log("i'm here");
+    //             const finished = 120;
+    //             const okay = ["home", 'params', 'back'];
+    //             let it = 0;
+    //             await wait(() => {
+    //                 if (!okay.includes(_class) || it++ >= finished || WSPReady.stop === true)
+    //                     return false;
+                    
+    //                 return parent.$(".workspace-frame").css("display") === "none";
+    //             });
+
+    //             console.log("finish", parent.$(".workspace-frame").css("display"));
+
+    //             if (!okay.includes(_class) && parent.$(".workspace-frame").css("display") !== "none")
+    //             {
+    //                 console.log("calllllll", parent.$(".workspace-frame"));
+    //                 ChangeToolbar(_class, event, otherDatas);
+    //             }
+    //         }, 1000);
+    //     }
+    //     else {
+    //         if (WSPReady.stop !== true)
+    //             WSPReady.stop = true;
+    //     }
+    // }
     if(rcmail.busy)
         return;
-
     //$(".wsp-toolbar").css("z-index", "0");
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");;
     $(event).addClass("active");
@@ -856,6 +882,8 @@ async function ChangeFrame(_class, otherDatas = null)
 
 
     $(`#${id}`).css("display", "");
+    $(".workspace-frame").css("display", "none");
+
     rcmail.env.have_frame_positioned = true;
     rcmail.set_busy(false);
     rcmail.clear_messages();

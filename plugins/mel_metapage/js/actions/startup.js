@@ -348,7 +348,15 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     if (isAriane)
     {
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
+        {
             mel_metapage.PopUp.ariane.hide();
+            window.bnum_chat_hidden = true;
+        }
+    }
+    else if (!isAriane && window.bnum_chat_hidden === true)
+    {
+        mel_metapage.PopUp.open_ariane();
+        delete window.bnum_chat_hidden;
     }
     
     if (isAriane)
@@ -499,8 +507,11 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     rcmail.clear_messages();
     rcmail.env.frame_created = true;
 
-    if (changepage)
+    if (changepage && $("#"+id).data("loaded") != "true")
         $("#"+id).css("display", "");
+
+    if ($("#"+id).data("loaded") != "true")
+        $("#"+id).data("loaded", "true");
     
     if (mel_metapage.Storage.get(mel_metapage.Storage.wait_frame_loading) === mel_metapage.Storage.wait_frame_waiting)
         mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_loaded);

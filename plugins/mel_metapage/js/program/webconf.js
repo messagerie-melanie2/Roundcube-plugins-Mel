@@ -25,11 +25,11 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     if (this._is_framed)
         $(".webconf-fullscreen").css("top", "5px");
 
-    if ($("html").hasClass("layout-phone"))
-    {
-        wsp = null;
-        ariane = "@home";
-    }
+    // if ($("html").hasClass("layout-phone"))
+    // {
+    //     wsp = null;
+    //     ariane = "@home";
+    // }
 
     /**
      * Génère un string de la création d'une MasterBar qui sera évalué dans dans une fenêtre parente.

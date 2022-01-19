@@ -140,7 +140,7 @@ if (rcmail)
 
                     mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, false, true).then(() => {  
                         const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
-                        console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`), `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`);                     
+                        //console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`), `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`);                     
                         $(`iframe.${contract}-frame`)[0].src = `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`;
                         rcmail.set_busy(false);
                         rcmail.clear_messages();

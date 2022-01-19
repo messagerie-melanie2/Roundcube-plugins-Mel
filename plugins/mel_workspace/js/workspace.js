@@ -410,7 +410,7 @@ function setup_calendar(datas, querry, _date = moment())
         next_when_empty_today_function: (storage) => {
             const id = `ws#${rcmail.env.current_workspace_uid}`;
             storage = Enumerable.from(storage).selectMany(x => Enumerable.from(x.value).select(s => s).toArray()).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories[0].includes(id) ).groupBy(x => moment(x.start).format('DD/MM/YYYY'), x => x).toJsonDictionnary(x => x.key(), x => x.getSource());
-            console.log("setup_calendar", id, storage);
+            //console.log("setup_calendar", id, storage);
             return storage;
         }}
     });

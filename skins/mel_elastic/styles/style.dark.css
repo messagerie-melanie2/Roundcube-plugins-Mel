@@ -963,3 +963,11 @@ html.dark-mode #myday .element-no
 {
     color:#c7dfff;
 }
+
+html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
+    background-color: black;
+}
+
+html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
+    background-color: #323F4B !important;
+}

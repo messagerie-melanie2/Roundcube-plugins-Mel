@@ -597,3 +597,11 @@ html body.task-mail.action-show #layout-content
 {
     overflow: auto;
 }
+
+.messagelist:not(.threaded) tbody tr:nth-child(2n) td {
+    background-color: #fcfcfc;
+}
+
+.messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
+    background-color: #F0F0F0 !important;
+}

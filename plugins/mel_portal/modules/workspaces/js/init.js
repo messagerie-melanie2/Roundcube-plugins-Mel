@@ -131,6 +131,7 @@ async function wsp_action_notif(target, page)
      if (parent.$(`iframe.workspace-frame`).length > 0)
      {
          //delete config._action;
+         console.log("I GO HERE");
          await parent.$(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", $(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
          parent.$(`iframe.workspace-frame`).remove();
          config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
@@ -139,10 +140,12 @@ async function wsp_action_notif(target, page)
      }
      else if (parent.$(`.workspace-frame`).length > 0)
      {
+        console.log("I GO HERE 2");
          delete config._action;
          parent.location.href = mel_metapage.Functions.url("workspace", "workspace", config).replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, "");
      }
      else {
+        console.log("I GO HERE 3");
          config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
          mel_metapage.Functions.change_frame("wsp", true, false, config);
      }

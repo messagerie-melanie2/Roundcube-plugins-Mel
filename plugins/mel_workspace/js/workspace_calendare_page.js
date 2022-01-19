@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!$("html").hasClass("framed")) $('#workspace-calendar').css("height", 'calc(100% - 60px)');
     else $('#workspace-calendar').css("height", '100%');
     var settings = $.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings);
-    console.log(settings);
+    //console.log(settings);
     var fullcalendar_defaults = {
         theme: false,
         // //aspectRatio: 1,

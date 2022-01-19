@@ -200,7 +200,7 @@
                 _users:users,
                 _uid:this.uid,
             }, (datas) => {
-                console.log("datas", datas);
+                //console.log("datas", datas);
                 if (datas === 'no one was found')
                 {
                     this.busy(false);

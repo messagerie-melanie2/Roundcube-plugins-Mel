@@ -630,7 +630,7 @@ $(document).ready(() => {
             }
 
             rcmail.addEventListener('fileappended', (file) => {
-                console.log("file", file);
+                //console.log("file", file);
                 if (file.attachment.html.includes('class="delete"'))
                 {
                     $('a.delete').html("");

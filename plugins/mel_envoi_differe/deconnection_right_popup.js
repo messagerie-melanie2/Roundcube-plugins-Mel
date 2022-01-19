@@ -35,7 +35,9 @@ if (window.rcmail) {
     });
     // Gérer la pop up après le regresh
     rcmail.addEventListener('plugin.deconnection_right_popup', function (evt) {
-        rcmail.deconnection_right_popup();
+        if (window.top == window.self) {
+            rcmail.deconnection_right_popup();
+        }
     });
 }
 
@@ -79,7 +81,7 @@ rcube_webmail.prototype.deconnection_right_popup = function() {
     ];
 
     // Show pop up
-    window.dialog = this.show_popup_dialog(html, this.gettext('disco_popup_title', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 500 });
+    window.dialog = this.show_popup_dialog(html, this.gettext('disco_popup_title', 'mel_envoi_differe'), buttons, { width: 400, resizable: false, height: 350 });
     $('#disconnection_popup').parent().parent().addClass('disconnection_popup');
     window.localStorage.removeItem('disable_disconnection_popup');
 };

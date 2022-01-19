@@ -1,14 +1,17 @@
 ﻿textarea {
-    resize: none;
     width: 270px;
-    height: 35px;
+    height: 50px;
     padding: 5px 10px;
 }
 
+.custom-select,
 select {
-    width: 290px;
-    height: 35px;
-    padding: 5px 0;
+    width: 270px;
+}
+
+.table td, 
+.table th {
+    border: 0;
 }
 
 #signature_html {
@@ -48,8 +51,10 @@ select {
     opacity: 0.7;
 }
 
-label {
+.userinfos label {
     display: block !important;
+    margin: 0;
+    margin-top: 1em;
 }
 
 #input-links .items label {
@@ -136,9 +141,7 @@ label {
 .sign {
     padding: 20px;
     background: #fff;
-    background-color: var(--main-content-bg-color);
     border: 1px solid #e4e4e4;
-    border-color: var(--main-sepratator-color);
     margin-top: 20px;
 }
 
@@ -151,14 +154,12 @@ label {
     position: relative;
     cursor: pointer;
     display: inline-block;
-    padding: 10px 50px 10px 10px;
+    padding: 5px 50px 5px 10px;
     border: solid 1px #d5d5d5;
-    border-color: var(--inputs-border-color);
     background-color: #fff;
-    background-color: var(--inputs-bg-color);
-    color: var(--inputs-text-color);
+    color: #000;
     border-radius: 4px;
-    width: 230px;
+    width: 270px;
 }
   
 .dropdown-check-list .anchor:after {
@@ -194,13 +195,11 @@ label {
     display: none;
     margin: 0;
     border: solid 1px #d5d5d5;
-    border-color: var(--inputs-border-color);
     background-color: #fff;
-    background-color: var(--inputs-bg-color);
-    color: var(--inputs-text-color);
+    color: #000;
     border-top: none;
     max-height: 150px;
-    width: 286px;
+    width: 270px;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -208,13 +207,17 @@ label {
 .dropdown-check-list ul.items li {
     list-style: none;
     padding: 2px 0;
-    width: 286px;
+    width: 270px;
     overflow: hidden;
     white-space: nowrap;
 }
   
 .dropdown-check-list.visible .items {
     display: block;
+}
+
+div.notice-container {
+    margin-top: 20px;
 }
 
 .notice-container .courrielleur,

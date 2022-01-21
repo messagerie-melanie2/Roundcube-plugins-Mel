@@ -599,9 +599,13 @@ html body.task-mail.action-show #layout-content
 }
 
 .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
-    background-color: #fcfcfc;
+    background-color: #00000005;
 }
 
 .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
-    background-color: #F0F0F0 !important;
+    background-color: #F0F0F0;
+}
+
+.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
+    background-color: #2C3054;
 }

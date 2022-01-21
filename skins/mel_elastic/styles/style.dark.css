@@ -965,7 +965,7 @@ html.dark-mode #myday .element-no
 }
 
 html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
-    background-color: black;
+    background-color: #1A222B;
 }
 
 html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {

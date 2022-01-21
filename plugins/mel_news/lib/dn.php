@@ -2,15 +2,19 @@
 include_once "tree_dn.php";
 class user_dn
 {
+    public $user;
     private $dns;
     private $treeDn;
     private $cache;
+    private $rights;
 
     public function __construct($user) {
         $dn = $user->dn;
         $dn = str_replace('ou=organisation,dc=equipement,dc=gouv,dc=fr', '', $dn);
         $this->dns = array_map([$this, "map"], explode(",", $dn));
         $this->treeDn = new tree_dn($this->dns);
+        $this->user = $user;
+        $this->rights = $user->getUserNewsShares();
     }
 
     public function get_dn()

@@ -249,7 +249,7 @@ $(document).ready(async () => {
                     if (datas.id === "")
                         this.modal.editTitle("Ajouter les informations d'un site intranet (étape 2/2)");
 
-                    html += this.createSelect("Choisir le site Intranet à afficher", "news-intranet-select", "Sélectionner un site", [], "none");
+                    html += this.createSelect("Choisir le site Intranet à afficher", "news-intranet-select", "Sélectionner un site", Enumerable.from(rcmail.env.news_intranet_list).select(x => {return {value:x.key, text:x.value.name}}).toArray(), "none");
                     break;
 
                 case MelNews.type.twitter:

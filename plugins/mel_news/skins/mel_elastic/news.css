@@ -20,3 +20,9 @@
 .headlines-contents {
 	margin-top: 20px;
 }
+
+.square_div > .contents
+{
+	height: 340px;
+	overflow: auto;
+}

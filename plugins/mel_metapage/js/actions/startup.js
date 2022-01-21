@@ -349,6 +349,9 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     {
         if (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show)
         {
+            if (mel_metapage.PopUp.ariane.is_anchor())
+                window.bnum_chat_anchored = true;
+
             mel_metapage.PopUp.ariane.hide();
             window.bnum_chat_hidden = true;
         }
@@ -357,6 +360,12 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     {
         mel_metapage.PopUp.open_ariane();
         delete window.bnum_chat_hidden;
+
+        if (window.bnum_chat_anchored === true)
+        {
+            mel_metapage.PopUp.ariane.anchor();
+            delete window.bnum_chat_anchored;
+        }
     }
     
     if (isAriane)

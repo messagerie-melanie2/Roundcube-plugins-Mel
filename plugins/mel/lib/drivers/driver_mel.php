@@ -348,8 +348,48 @@ abstract class driver_mel {
     return $this->object('Workspaces\\Share', $params);
   }
 
+  /**
+   * Generate workspace hashtag object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Workspaces\Share
+   */
   public function workspace_hashtag($params = []) {
     return $this->object('Workspaces\\Hashtag', $params);
+  }
+
+  /**
+   * Generate news object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\News\News
+   */
+  public function news($params = []) {
+    return $this->object('News\\News', $params);
+  }
+
+  /**
+   * Generate rss object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\News\Rss
+   */
+  public function rss($params = []) {
+    return $this->object('News\\Rss', $params);
+  }
+
+  /**
+   * Generate newsshare object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\News\NewsShare
+   */
+  public function newsshare($params = []) {
+    return $this->object('News\\NewsShare', $params);
   }
 
   /**

@@ -30,7 +30,7 @@
         "hints": [
           {
             "element": ".mailbox.inbox a",
-            "hint": "Test.",
+            "hint": "\"Courrier entrant\" vous permet d'accéder à vos courriels. Vous aurez la possibilité de consulter les messages venant de votre boîte personnelle ainsi que les messages des boîtes que l'on vous a partagées.",
             "hintPosition": "middle-right",
             "position": "right"
           },
@@ -81,6 +81,7 @@
         "tooltipClass": "average-width-intro",
         "steps": [
           {
+            "title": "Espace de travail",
             "element": ".compose.options",
             "intro": "Test."
           },
@@ -131,62 +132,54 @@
       "disableInteraction": false,
       "button": "<span>Découvrir les applications de la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
       "details": {
-        "hintClass": "header-hint-mail",
-        "tooltipClass": "header-shadow-mail",
-        "hintButtonLabel": "J'ai compris",
-        "hints": [
+        "nextLabel": "Suivant",
+        "prevLabel": "Précédent",
+        "doneLabel": "Fermer",
+        "tooltipClass": "average-width-intro",
+        "steps": [
           {
             "element": ".close-visu",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": ".mel-li-reply",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": ".reply-all.disabled",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": ".mel-li-forward",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": ".delete.disabled",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": "#tb_label_popuplink",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": ".buttonPas.notjunk",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": "#markmessagemenulink",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           },
           {
             "element": "#messagemenulink",
-            "hint": "Test.",
-            "hintPosition": "bottom-middle",
+            "intro": "Test.",
             "position": "bottom"
           }
         ]

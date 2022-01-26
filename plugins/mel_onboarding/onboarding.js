@@ -15,15 +15,15 @@ current_iframe_css = null;
 
 let current_window = null;
 
-//TODO Assistance pour mail
 //TODO Css pour hint au lieu de classe
+//FIXME Hide modal 
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
     let current_task = rcmail.env.task;
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
-        rcmail.show_current_page_onboarding(current_task);
+        rcmail.show_current_page_onboarding(current_task, true);
         rcmail.env.hide_modal = 1;
       }
     });
@@ -47,7 +47,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
     window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
   }
   else {
-    rcmail.show_current_page_onboarding(task);
+    window.parent.rcmail.show_current_page_onboarding(task, true);
     rcmail.env.hide_modal = 1;
   }
 }
@@ -56,7 +56,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
 /**
  * Permet d'afficher l'onboarding de page courante en se basant sur la task
  */
-rcube_webmail.prototype.show_current_page_onboarding = function (task) {
+rcube_webmail.prototype.show_current_page_onboarding = function (task, assistance = false) {
   let json_page = rcmail.env.help_page_onboarding[task];
   fetch(window.location.pathname + 'plugins/mel_onboarding/json/' + json_page, { credentials: "include", cache: "no-cache" }).then((res) => {
     res.text().then((json) => {
@@ -66,19 +66,28 @@ rcube_webmail.prototype.show_current_page_onboarding = function (task) {
 
       current_window = rcmail.env.is_framed && task == "bureau" ? window.parent : window;
 
-      if (rcmail.env.is_framed) {
-        window.parent.onload = startIntro(task)
-      }
       if (task == "mail") {
-        rcmail.addEventListener('responsebefore', function (props) {
-          if (props.response && (props.response.action === 'list')) {
-            rcmail.show_contentframe(true)
-            startIntro(task);
-            setTimeout(() => {
-              rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
-            }, 250);
-          }
-        });
+        if (!assistance) {
+          rcmail.addEventListener('responsebefore', function (props) {
+            if (props.response && (props.response.action === 'list')) {
+              rcmail.show_contentframe(true)
+              current_window.startIntro(task);
+              setTimeout(() => {
+                rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+              }, 250);
+            }
+          });
+        }
+        else {
+          rcmail.show_contentframe(true)
+          current_window.startIntro(task);
+          setTimeout(() => {
+            rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+          }, 250);
+        }
+      }
+      else if (rcmail.env.is_framed) {
+        window.parent.onload = startIntro(task)
       }
       else {
         startIntro(task);

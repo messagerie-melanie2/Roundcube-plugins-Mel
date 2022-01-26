@@ -27,7 +27,7 @@ if (window.rcmail) {
             }
         });
         if (rcmail.env.action) {
-            current_task += "/" + rcmail.env.action;
+            current_task += "-" + rcmail.env.action;
         }
         if (rcmail.env.help_page_onboarding[current_task]) {
             if (!rcmail.env.onboarding) {
@@ -301,6 +301,7 @@ function intro_details_tour(item, intro_main) {
             }, 10);
         }
 
+        // TODO Skip item si il n'existe pas
         if (item.checkSize) {
             if ($(item.elementSize).width() < item.maxSize) {
                 this._introItems[this._currentStep + 1].skip = item.skipSize;

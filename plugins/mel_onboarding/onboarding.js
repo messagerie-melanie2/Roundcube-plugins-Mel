@@ -16,7 +16,6 @@ current_iframe_css = null;
 let current_window = null;
 
 //TODO Css pour hint au lieu de classe
-//FIXME Hide modal 
 
 if (window.rcmail) {
   rcmail.addEventListener('init', function (evt) {
@@ -24,7 +23,7 @@ if (window.rcmail) {
     window.addEventListener('message', (e) => {
       if (e.data == 'onboarding') {
         rcmail.show_current_page_onboarding(current_task, true);
-        rcmail.env.hide_modal = 1;
+        window.parent.rcmail.env.hide_modal = 1;
       }
     });
     if (rcmail.env.action) {
@@ -48,7 +47,7 @@ rcube_webmail.prototype.current_page_onboarding = function (task) {
   }
   else {
     window.parent.rcmail.show_current_page_onboarding(task, true);
-    rcmail.env.hide_modal = 1;
+    window.parent.rcmail.env.hide_modal = 1;
   }
 }
 
@@ -225,10 +224,10 @@ rcube_webmail.prototype.onboarding_close = function () {
 
   let title = rcmail.gettext('close help', 'mel_onboarding');
   // On n'ouvre pas la modal si l'onboarding est lancé depuis l'assistance
-  if (!rcmail.env.hide_modal) {
+  if (!window.parent.rcmail.env.hide_modal) {
     window.parent.rcmail.show_popup_dialog(content, title, buttons, { height: 100 })
   }
-  delete rcmail.env.hide_modal;
+  delete window.parent.rcmail.env.hide_modal;
 };
 
 

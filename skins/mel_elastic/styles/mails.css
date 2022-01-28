@@ -609,3 +609,7 @@ html body.task-mail.action-show #layout-content
 .messagelist:not(.threaded) tbody tr.unread td {
     background-color: white;
 }
+
+.messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
+    background-color: #2C3054;
+}

@@ -1,0 +1,21 @@
+{
+    "scrollToElement": true,
+    "disableInteraction": true,
+    "exitOnOverlayClick": false,
+    "hidePrev": true,
+    "scrollTo": "tooltip",
+    "nextLabel": "Suivant",
+    "prevLabel": "Précédent",
+    "doneLabel": "Fermer",
+    "steps": [{
+            "title": "Mon espace de travail",
+            "intro": "<h2>bienvenue dans votre espace de travail</h2>",
+            "tooltipClass": "big-width-intro"
+        },
+        {
+            "title": "mes réunions",
+            "element": ".wsp-services.wsp-object.wsp-home .row .col-md-6",
+            "intro": "Voici vos réunions"
+        }
+    ]
+}

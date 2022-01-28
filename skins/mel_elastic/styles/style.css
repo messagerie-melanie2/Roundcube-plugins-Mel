@@ -1680,6 +1680,28 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 	text-decoration: line-through;
 }
 
+/* MANTIS 0005115: Couleur des événements en fonction du statut */
+.fc-event.cal-event-status-cancelled,
+.fc-event.cal-event-status-tentative {
+	opacity: 0.5 !important;
+}
+
+.fc-event.cal-event-status-free .fc-title,
+.fc-event.cal-event-status-cancelled .fc-title,
+.fc-event.cal-event-status-tentative .fc-title {
+	font-weight: normal;
+	opacity: 1;
+}
+
+.fc-event.cal-event-status-tentative .fc-title,
+.fc-event.cal-event-status-free .fc-title {
+	font-style: italic;
+}
+
+.fc-event.cal-event-status-cancelled .fc-title {
+	text-decoration: line-through;
+}
+
 /* li.parent-close-visu
 {
     border-right-style: solid!important;

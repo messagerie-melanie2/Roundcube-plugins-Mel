@@ -610,6 +610,17 @@ html body.task-mail.action-show #layout-content
     background-color: white;
 }
 
+.messagelist tr.selected, 
+.messagelist tr.selected td,
+.messagelist:not(.threaded) tbody tr.unread.selected td,
 .messagelist:not(.threaded) tbody tr.selected:nth-child(2n) td {
     background-color: #2C3054;
+}
+
+.messagelist .unread.selected td.subject span.date, 
+.messagelist tr.unread.selected td.subject a, 
+.messagelist .unread.selected td.subject span.fromto, 
+.messagelist td.subject span.msgicon.status.unread.selected::before
+{
+    color: white;
 }

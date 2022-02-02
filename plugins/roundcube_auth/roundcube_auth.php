@@ -34,6 +34,14 @@ abstract class AuthCheckType
     const KERB_SUBNETS = "kerb_subnets"; // array (subnet => bool)
 }
 
+abstract class RedirectTypeEnum
+{
+    const NORMAL = "NORMAL";
+    const LOGOUT = "LOGOUT";
+    const OIDC = "OIDC";
+    const KERBEROS = "KERB";
+}
+
 class AuthCheck
 {
     public /*string*/ $name;
@@ -137,11 +145,58 @@ class roundcube_auth extends rcube_plugin
     	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
     }
 
-    function redirect($query)
+    // query : usually $_SERVER['QUERY_STRING']
+    // type : RedirectionTypeEnum (NORMAL, LOGOUT, OIDC, KERBEROS)
+    // rcmail : rcmail instance
+    function redirect($query, $type, $rcmail)
     {
-        if ($query)
+        // Query variables
+        $location = 'Location: ./?';
+        $prefixQuery = '&';
+        $finalQuery = $emptyQuery = "";
+
+        // Build query depending on type
+        switch($type)
         {
-            header('Location: ./?' . $query);
+            case RedirectTypeEnum::NORMAL:
+                //
+                $finalQuery = $location . $query;
+            break;
+            
+            case RedirectTypeEnum::LOGOUT:
+                // Logout task and CRSF token
+                $logout = "_task=logout&_token=" . $rcmail->get_request_token();
+                // Query content if not empty
+                $query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
+                // 
+                $finalQuery = $location . $logout . $query;
+            break;
+            
+            case RedirectTypeEnum::OIDC:
+                // OIDC query
+                $oidc = $rcmail->config->get('auth_oidc_keyword') . "=1";
+                // Query content if not empty
+                //$query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
+                // 
+                $finalQuery = $location . $oidc;// . $query;
+            break;
+
+            case RedirectTypeEnum::KERBEROS:
+                // OIDC query
+                $kerb = $rcmail->config->get('auth_kerb_keyword') . "=1";
+                // Query content if not empty
+                //$query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
+                // 
+                $finalQuery = $location . $kerb;// . $query;
+            break;
+        }
+
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Trying to redirect to $finalQuery ...");
+        //
+        if(!empty($finalQuery))
+        {
+            // Do the redirection and exit
+            header($finalQuery);
             exit;
         }
     }
@@ -156,7 +211,7 @@ class roundcube_auth extends rcube_plugin
         $auth = AuthTypeEnum::PASSWORD;
 
         // OIDC only
-        if($rcmail->config->get('oidc_auth_standalone'))
+        if($rcmail->config->get('auth_oidc_enabled'))
         {
             if(false) // TODO check if cookie contains OIDC
             {
@@ -165,7 +220,7 @@ class roundcube_auth extends rcube_plugin
         }
 
         // OIDC with Kerberos
-        if($rcmail->config->get('oidc_auth_kerberos'))
+        if($rcmail->config->get('auth_kerb_enabled'))
         {
             $cookiesCheck = isset($cfg[AuthCheckType::KERB_COOKIES]) && ($cfg[AuthCheckType::KERB_COOKIES] == true)
                 // new AuthCheck(name, enabled, values, triggering)
@@ -325,46 +380,37 @@ class roundcube_auth extends rcube_plugin
      */
     function startup($args)
     {
-        // TODO remove
-        //mel_logs::get_instance()->log(mel_logs::INFO, "roundcube_auth - startup");
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_auth - startup");
+        // Get Roundcube instance
+        $rcmail = rcmail::get_instance();
 
         // User not logged in && GET request only (to avoid triggering on login POST and making a loop)
         if(empty($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'GET')
         {
-            // Get Roundcube instance
-            $rcmail = rcmail::get_instance();
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Startup - Authentication process");
 
             // Variables
             $oidc = false;
             $enabled = '1';
 
-            $keyword_kerberos = 'kerb'; // TODO put in config
-            $query_kerberos = $_GET[$keyword_kerberos];
-            $rcube_kerberos = $rcmail->config->get('oidc_auth_kerberos');
+            // -- Kerberos
+            // TODO move to init ?
+            $kerb_enabled = $rcmail->config->get('auth_kerb_enabled'); // TODO add a if here ?
+            $kerb_keyword = $rcmail->config->get('auth_kerb_keyword');
+            $kerb_query = $_GET[$kerb_keyword];
 
-            $keyword_oidc = 'oidc'; // TODO put in config
-            $query_oidc = $_GET[$keyword_oidc];
-            $rcube_oidc = $rcmail->config->get('oidc_auth_standalone');
-
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] ----- KERB ----- ");
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] GET['kerb'] - " . $_GET['kerb']);
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] isset(GET['kerb']) - " . isset($_GET['kerb']));
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] config->get('oidc_auth_kerberos') - " . $rcmail->config->get('oidc_auth_kerberos'));
-
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] ----- OIDC ----- ");
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] GET['oidc'] - " . $_GET['oidc']);
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] isset(GET['oidc']) - " . isset($_GET['oidc']));
-            // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] config->get('oidc_auth_standalone') - " . $rcmail->config->get('oidc_auth_standalone'));
+            // -- OpenIDConnect
+            // TODO move to init ?
+            $oidc_enabled = $rcmail->config->get('auth_oidc_enabled'); // TODO add a if here ?
+            $oidc_keyword = $rcmail->config->get('auth_oidc_keyword');
+            $oidc_query = $_GET[$oidc_keyword];
 
             // Kerberos (triggered by query)
-            // if($rcmail->config->get('oidc_auth_kerberos') && isset($_GET['kerb']) && $_GET['kerb'] == '1')
-            if($rcube_kerberos && isset($query_kerberos))
+            if($kerb_enabled && isset($kerb_query))
             {
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [Kerberos] Déclenchement");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] PHP - REMOTE_USER : " . $_SERVER['REMOTE_USER']);
 
-                if(!empty($_SERVER['REMOTE_USER']) && $query_kerberos == $enabled)
+                if(!empty($_SERVER['REMOTE_USER']) && $kerb_query == $enabled)
                 {
                     $selected_auth = AuthTypeEnum::KERBEROS;
                 
@@ -382,12 +428,11 @@ class roundcube_auth extends rcube_plugin
             }
 
             // OIDC (triggered by query)
-            // else if($rcmail->config->get('oidc_auth_standalone') && isset($_GET['oidc']) && $_GET['oidc'] == '1')
-            else if($rcube_oidc && isset($query_oidc))
+            else if($oidc_enabled && isset($oidc_query))
             {
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement");
 
-                if($query_oidc == $enabled)
+                if($oidc_query == $enabled)
                 {
                     $selected_auth = AuthTypeEnum::OIDC;
                     $oidc = true;
@@ -406,22 +451,22 @@ class roundcube_auth extends rcube_plugin
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Selected : " . $selected_auth);
     
                 switch($selected_auth)
-                {
+                {   
                     case AuthTypeEnum::KERBEROS:
-                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $keyword_kerberos=$enabled");
-                        $this->redirect($keyword_kerberos."=".$enabled); // todo add task login ?
-                        break;
+                        // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $kerb_keyword=$enabled");
+                        $this->redirect("", RedirectTypeEnum::KERBEROS, $rcmail); // todo add task login ?
+                    break;
 
                     case AuthTypeEnum::OIDC:
-                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $keyword_oidc=$enabled");
-                        $this->redirect($keyword_oidc."=".$enabled); // todo add task login ?
-                        break;
+                        // mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Redirection vers $oidc_keyword=$enabled");
+                        $this->redirect("", RedirectTypeEnum::OIDC, $rcmail); // todo add task login ?
+                    break;
 
                     case AuthTypeEnum::PASSWORD:
                     default:
                         // do nothing
                         // $this->redirect("_task=login");
-                        break;
+                    break;
 
                 }
             }
@@ -448,6 +493,9 @@ class roundcube_auth extends rcube_plugin
                         false, // peer verification (TODO enable)
                         $rcmail->config->get('oidc_proxy')
                     );
+
+                    // Authenticate
+                    $this->oidc_helper->doAuth();
                 }
                 catch (\Exception $e)
                 {
@@ -461,6 +509,62 @@ class roundcube_auth extends rcube_plugin
             }
 
             //endregion =================================
+        }
+
+        elseif($rcmail->task != 'logout')
+        {
+            // TODO move to init
+            $oidc_keyword = $rcmail->config->get('auth_oidc_keyword');
+            $oidc_query = $_GET[$oidc_keyword];
+            $enabled = '1';
+
+            if($oidc_query != $enabled)
+            {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Startup - Expiration validity check");
+    
+                // Get expiration base (timestamp, ex: 1642764999)
+                $exp_base = $_SESSION['idtoken_exp']; // TODO rcmail::get_instance()->decrypt($VALUE);
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] idtoken_exp " . $exp_base);
+    
+                if($exp_base)
+                {
+                    // Get expiration delay (seconds, ex: 900)            
+                    $exp_delay = $rcmail->config->get('oidc_exp_delay'); // TODO check and make it 0 if null ?
+    
+                    if(isset($exp_base) && !empty($exp_base))
+                    {
+                        // Current time
+                        $curr_time = time();
+            
+                        // TODO remove
+                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] EXP - $curr_time - $exp_base - $exp_delay");
+                        $res = strval($curr_time - $exp_base);
+                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] EXP - RES $res");
+            
+                        // Check expiration (exp + delay)
+                        if( ($curr_time - $exp_base) > $exp_delay )
+                        {
+                            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnecting user (Expired token)");
+            
+                            // // Store the redirection query
+                            // $this->redirect_query = $_SERVER['QUERY_STRING'];
+            
+                            // Delete stored things ?
+                            unset($_SESSION['idtoken']);
+                            unset($_SESSION['idtoken_exp']);
+                            unset($_SESSION['user_id']);
+                            // $_SESSION['renew'] = 
+
+                            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnect " . $_SESSION['idtoken'] . $_SESSION['idtoken_exp'] . $_SESSION['user_id']);
+
+                            // Logout
+                            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] QUERY_STRING before redirect : " . $_SERVER['QUERY_STRING']); // TODO REMOVE
+                            //$this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::LOGOUT, $rcmail);
+                            $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+                        }
+                    }    
+                }
+            }
         }
 
         return $args;
@@ -487,6 +591,14 @@ class roundcube_auth extends rcube_plugin
                 // Parse fields
                 $uid = $token->{$rcmail->config->get('oidc_field_uid')};
                 $eidas = $token->{$rcmail->config->get('oidc_field_eidas')};
+                $exp = $token->{'exp'};
+                
+                // Store ID Token and its expiration
+                $_SESSION['idtoken'] = $token; //rcmail::get_instance()->encrypt($token);
+                $_SESSION['idtoken_exp'] = time();
+                // $_SESSION['idtoken_exp'] = $exp; //rcmail::get_instance()->encrypt($exp);
+
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - Stockage du token pour $uid et de son expiration $exp.");
 
                 if($this->check_ldap_oidc($uid))
                 {
@@ -515,8 +627,8 @@ class roundcube_auth extends rcube_plugin
             catch (\Exception $e)
             {
                 // TODO improve
-                echo '(2) OIDC Authentication Failed <br/>' . $e->getMessage();
-                mel_logs::get_instance()->log(mel_logs::ERROR, "(2) OIDC Authentication Failed <br/>" . $e->getMessage());
+                echo "[RC_Auth] OIDC - Échec de l'Authentification OIDC<br/>" . $e->getMessage();
+                mel_logs::get_instance()->log(mel_logs::ERROR, "[RC_Auth] OIDC - Échec de l'Authentification OIDC<br/>" . $e->getMessage());
             }
         }
 
@@ -529,15 +641,9 @@ class roundcube_auth extends rcube_plugin
     function login_after($args)
     {
         // Redirect to the previous QUERY_STRING
-        $this->redirect($this->redirect_query);
-        // if ($this->redirect_query)
-        // {
-        //     header('Location: ./?' . $this->redirect_query);
-        //     exit;
-        // }
+        $this->redirect($this->redirect_query, RedirectTypeEnum::NORMAL, null);
 
         return $args;
     }
 
 }
-

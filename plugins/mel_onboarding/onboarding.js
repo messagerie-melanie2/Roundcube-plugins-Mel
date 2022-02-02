@@ -114,12 +114,22 @@ function startIntro(task) {
 
     intro.onbeforechange(function() {
         //On ajoute le bouton permettant de lancer la démonstration
-        if (this._introItems[this._currentStep].button && !this._introItems[this._currentStep].passed) {
-            let item = this._introItems[this._currentStep];
+        let item = this._introItems[this._currentStep];
+        if (item.button && !item.passed) {
             let buttonDetails = '<div class="text-left"><button class="mel-button btn btn-secondary float-right" id="' + item.id + '-details">' + item.button + '</button></div><br/><br/><br/>'
 
             this._introItems[this._currentStep].intro += buttonDetails;
             this._introItems[this._currentStep].passed = true;
+        }
+
+        //On skip l'intro si l'élément n'existe pas
+        if (item.skippable) {
+            if (!$(item.skipElement).length) {
+                let step = intro._direction == "forward" ? 1 : -1;
+                setTimeout(() => {
+                    intro.goToStepNumber(item.step + step);
+                }, 10);
+            }
         }
     }).onafterchange(function() {
         setTimeout(() => {
@@ -302,7 +312,6 @@ function intro_details_tour(item, intro_main) {
             }, 10);
         }
 
-        // TODO Skip item si il n'existe pas
         if (item.checkSize) {
             if ($(item.elementSize).width() < item.maxSize) {
                 this._introItems[this._currentStep + 1].skip = item.skipSize;

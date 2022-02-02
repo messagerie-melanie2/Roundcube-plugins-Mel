@@ -21,6 +21,12 @@
             "skippable": true,
             "title": "mes tâches",
             "element": "#wsp-block-tasks",
+            "skipElement": "#wsp-block-tasks",
+            "intro": "Voici vos tâches"
+        },
+        {
+            "title": "mes tâches",
+            "element": ".mel-ui-tab-system",
             "intro": "Voici vos tâches"
         }
     ]

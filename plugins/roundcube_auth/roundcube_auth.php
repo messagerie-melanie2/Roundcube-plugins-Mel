@@ -525,36 +525,35 @@ class roundcube_auth extends rcube_plugin
                 // Get expiration base (timestamp, ex: 1642764999)
                 $exp_base = $_SESSION['idtoken_exp']; // TODO rcmail::get_instance()->decrypt($VALUE);
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] idtoken_exp " . $exp_base);
-    
+                
                 if($exp_base)
                 {
-                    // Get expiration delay (seconds, ex: 900)            
+                    // Get expiration delay (seconds, ex: 900)
                     $exp_delay = $rcmail->config->get('oidc_exp_delay'); // TODO check and make it 0 if null ?
     
                     if(isset($exp_base) && !empty($exp_base))
                     {
                         // Current time
                         $curr_time = time();
-            
+    
                         // TODO remove
                         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] EXP - $curr_time - $exp_base - $exp_delay");
                         $res = strval($curr_time - $exp_base);
                         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] EXP - RES $res");
-            
+    
                         // Check expiration (exp + delay)
                         if( ($curr_time - $exp_base) > $exp_delay )
                         {
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnecting user (Expired token)");
-            
+    
                             // // Store the redirection query
                             // $this->redirect_query = $_SERVER['QUERY_STRING'];
-            
+    
                             // Delete stored things ?
-                            unset($_SESSION['idtoken']);
-                            unset($_SESSION['idtoken_exp']);
-                            unset($_SESSION['user_id']);
-                            // $_SESSION['renew'] = 
-
+                            $rcmail->kill_session();
+                            // unset($_SESSION['idtoken']);
+                            // unset($_SESSION['idtoken_exp']);
+                            // unset($_SESSION['user_id']);
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnect " . $_SESSION['idtoken'] . $_SESSION['idtoken_exp'] . $_SESSION['user_id']);
 
                             // Logout

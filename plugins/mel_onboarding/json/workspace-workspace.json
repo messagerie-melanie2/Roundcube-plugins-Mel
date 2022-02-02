@@ -14,8 +14,14 @@
         },
         {
             "title": "mes réunions",
-            "element": ".wsp-services.wsp-object.wsp-home .row .col-md-6",
+            "element": "#wsp-block-calendar",
             "intro": "Voici vos réunions"
+        },
+        {
+            "skippable": true,
+            "title": "mes tâches",
+            "element": "#wsp-block-tasks",
+            "intro": "Voici vos tâches"
         }
     ]
 }

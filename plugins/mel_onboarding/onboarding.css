@@ -18,7 +18,8 @@
 }
 
 .video video {
-    width: 40%;
+    width: 60%;
+    border-radius: 3px;
 }
 
 .menu-hint-bureau {

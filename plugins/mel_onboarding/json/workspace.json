@@ -1,5 +1,6 @@
 {
     "scrollToElement": true,
+    "showBullets": false,
     "disableInteraction": true,
     "exitOnOverlayClick": false,
     "hidePrev": true,
@@ -9,7 +10,7 @@
     "doneLabel": "Fermer",
     "steps": [{
         "title": "Accueil",
-        "intro": "<h2>Découvrez votre Bureau numérique : l'espace de travail</h2><br/><div class='video mt-2'><video controls poster='%%POSTER%%'><source src='%%VIDEO%%' type='video/mp4'>Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><h2>Bienvenue sur votre Bureau Numérique !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interractive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier aperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalitées de la page d'accueil que vous pourrez découvrir grâce à cette page d'aide. Cette fenêtre peut être fermée en cliquant sur la croix en haut à droite et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
+        "intro": "<h2>Découvrez votre Bureau numérique : l'espace de travail</h2><br/><div class='video mt-2'><video controls poster='%%POSTER%%'><source src='%%VIDEO%%' type='video/mp4'>Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><br/><h4>Description de workspace</h4>",
         "tooltipClass": "accueil-intro text-center"
     }]
 }

@@ -101,6 +101,7 @@ function startIntro(task) {
         intro.setOptions({
             scrollToElement: window.current_onboarding.scrollToElement,
             scrollTo: window.current_onboarding.scrollTo,
+            showBullets: window.current_onboarding.showBullets,
             disableInteraction: window.current_onboarding.disableInteraction,
             exitOnOverlayClick: window.current_onboarding.exitOnOverlayClick,
             hidePrev: window.current_onboarding.hidePrev,

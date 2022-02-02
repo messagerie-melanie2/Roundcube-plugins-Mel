@@ -994,7 +994,7 @@ class mel_workspace extends rcube_plugin
     
                     $body = "";
                     $agenda = self::AGENDA;
-                    $col["right"].= html::tag("h2", [], "Mes réunions");
+                    $col["right"].= html::tag("h2", ["class"=> "reunions"], "Mes réunions");
                     $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)", $this->rc->gettext("create_event", "mel_workspace"));
                 }
     
@@ -1027,7 +1027,7 @@ class mel_workspace extends rcube_plugin
                             html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
     
                     $tasks = self::TASKS;
-                    $col["left"].= html::tag("h2", [], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
+                    $col["left"].= html::tag("h2", ["class" => "tasks"], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
                 }
                 
                 $tmp = $col["left"];
@@ -1122,7 +1122,7 @@ class mel_workspace extends rcube_plugin
                         $body_component
                     );
         
-                    $html_return.= html::tag("h2", [], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
+                    $html_return.= html::tag("h2", ["class" => "unread-exchanges"], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
                 }
             }
 
@@ -1265,7 +1265,7 @@ class mel_workspace extends rcube_plugin
                     $body_component
                 );
 
-                $html_return.= html::tag("h2", [], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left wsp-resources"], $body);
+                $html_return.= html::tag("h2", ["class" => "resources"], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left wsp-resources"], $body);
             }
     
     

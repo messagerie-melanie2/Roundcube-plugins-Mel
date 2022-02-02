@@ -14,20 +14,107 @@
         },
         {
             "title": "mes réunions",
-            "element": "#wsp-block-calendar",
+            "element": ".reunions",
             "intro": "Voici vos réunions"
         },
         {
             "skippable": true,
             "title": "mes tâches",
-            "element": "#wsp-block-tasks",
-            "skipElement": "#wsp-block-tasks",
+            "element": ".tasks",
+            "skipElement": ".tasks",
             "intro": "Voici vos tâches"
         },
         {
-            "title": "mes tâches",
-            "element": ".mel-ui-tab-system",
-            "intro": "Voici vos tâches"
+            "skippable": true,
+            "title": "mes échanges non lues",
+            "element": ".unread-exchanges",
+            "skipElement": ".unread-exchanges",
+            "intro": "Voici vos échanges non lues"
+        },
+        {
+            "title": "mes ressources",
+            "element": ".resources",
+            "intro": "Voici vos ressources"
+        },
+        {
+            "title": "Toolbar",
+            "element": ".wsp-toolbar.melw-wsp",
+            "intro": "Voici Toolbar"
+        },
+        {
+            "title": "Goback",
+            "element": ".wsp-toolbar-item.goback",
+            "intro": "Voici Goback",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "title": "Accueil",
+            "element": ".wsp-toolbar-item.wsp-home",
+            "intro": "Voici Accueil",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "skippable": true,
+            "skipElement": ".wsp-toolbar-item.wsp-mail",
+
+            "title": "mail",
+            "element": ".wsp-toolbar-item.wsp-mail",
+            "intro": "Voici mail",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "title": "Agenda",
+            "element": ".wsp-toolbar-item.wsp-agenda",
+            "intro": "Voici Agenda",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "skippable": true,
+            "skipElement": ".wsp-toolbar-item.wsp-ariane",
+
+            "title": "Ariane",
+            "element": ".wsp-toolbar-item.wsp-ariane",
+            "intro": "Voici Ariane",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "skippable": true,
+            "skipElement": ".wsp-toolbar-item.wsp-documents",
+
+            "title": "documents",
+            "element": ".wsp-toolbar-item.wsp-documents",
+            "intro": "Voici documents",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "skippable": true,
+            "skipElement": ".wsp-toolbar-item.wsp-wekan",
+
+            "title": "Kanban",
+            "element": ".wsp-toolbar-item.wsp-wekan",
+            "intro": "Voici Kanban",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "skippable": true,
+            "skipElement": ".wsp-toolbar-item.wsp-tasks",
+
+            "title": "Tâches",
+            "element": ".wsp-toolbar-item.wsp-tasks",
+            "intro": "Voici Tâches",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "title": "Lien utiles",
+            "element": ".wsp-toolbar-item.wsp-links",
+            "intro": "Voici Lien utiles",
+            "highlightClass": "wsp-toolbar-padding"
+        },
+        {
+            "title": "Param / infos",
+            "element": ".wsp-toolbar-item.wsp-item-params",
+            "intro": "Voici Param / infos",
+            "highlightClass": "wsp-toolbar-padding"
         }
     ]
 }

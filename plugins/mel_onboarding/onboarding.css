@@ -132,3 +132,7 @@
     margin-top: 60px !important;
     margin-left: 55px !important;
 }
+
+.wsp-toolbar-padding {
+    padding-bottom: 12px !important;
+}

@@ -193,7 +193,7 @@ class roundcube_auth extends rcube_plugin
             
             case RedirectTypeEnum::OIDC:
                 // OIDC query
-                $oidc = $rcmail->config->get('auth_oidc_keyword') . "=1";
+                $oidc = $this->oidc_keyword . "=1";
                 // Query content if not empty
                 //$query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
                 // 
@@ -202,7 +202,7 @@ class roundcube_auth extends rcube_plugin
 
             case RedirectTypeEnum::KERBEROS:
                 // OIDC query
-                $kerb = $rcmail->config->get('auth_kerb_keyword') . "=1";
+                $kerb = $this->kerb_keyword . "=1";
                 // Query content if not empty
                 //$query = !empty($query) ? $prefixQuery . $query : $emptyQuery;
                 // 
@@ -230,7 +230,7 @@ class roundcube_auth extends rcube_plugin
         $auth = AuthTypeEnum::PASSWORD;
 
         // OIDC only
-        if($rcmail->config->get('auth_oidc_enabled'))
+        if($this->oidc_enabled)
         {
             if(false) // TODO check if cookie contains OIDC
             {
@@ -239,7 +239,7 @@ class roundcube_auth extends rcube_plugin
         }
 
         // OIDC with Kerberos
-        if($rcmail->config->get('auth_kerb_enabled'))
+        if($this->kerb_enabled)
         {
             $cookiesCheck = isset($cfg[AuthCheckType::KERB_COOKIES]) && ($cfg[AuthCheckType::KERB_COOKIES] == true)
                 // new AuthCheck(name, enabled, values, triggering)

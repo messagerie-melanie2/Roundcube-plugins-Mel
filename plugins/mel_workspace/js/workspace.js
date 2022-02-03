@@ -984,10 +984,10 @@ function m_wp_change_picture(img)
 {
     if (img === null)
     {
-        $("#worspace-avatar-b").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
+        $("#spaceLogo").html(`<span>${$(".wsp-head h1.header-wsp").html().slice(0,3)}</span>`);
     }
     else
-        $("#worspace-avatar-b").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
+        $("#spaceLogo").html(`<img alt="${Enumerable.from(img.replace(".png", "").replace(".PNG", "").split("/")).last()}" src="${img}" /><p class="sr-only"> - Changer d'avatar</p>`);
 
     $("#wsp-param-chg-button-plz").removeAttr("disabled").removeClass("disabled");
 }

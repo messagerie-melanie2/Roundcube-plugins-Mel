@@ -1443,7 +1443,7 @@ class mel_workspace extends rcube_plugin
 
         $count = 0;
         foreach ($services as $key => $value) {
-            if ($value || $key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
+            if ($key === self::LINKS || $key === self::EMAIL || $key === self::AGENDA /*|| ($key === self::CLOUD && $value)*/ || $key === self::WEKAN)
                 continue;
 
             $info = $this->get_type_config($config, $key);
@@ -1459,16 +1459,18 @@ class mel_workspace extends rcube_plugin
                 if (false && $key === self::TASKS)
                     $html.= html::tag("button", ["id" => "update-kanban-button","class" => "mel-button param-button"], "Changer de kanban".html::tag("span", ["class" => "plus icon-mel-pencil"]));
 
-                $class = "btn btn-danger mel-button no-button-margin";
-                $span = $icons["minus"];               
+                $class = "btn btn-danger hidden mel-button no-button-margin";
+                $span = $icons["minus"];    
+                $func = '';           
             }
             else {
                 $class = "btn btn-success mel-button no-button-margin";
-                $span = $icons["plus"];    
+                $span = $icons["plus"];   
+                $func = "rcmail.command('workspace.update_app','$key')"; 
                 ++$count;
             }
 
-            $func = "rcmail.command('workspace.update_app','$key')";
+            
 
             if ($info === null)
                 $class.= " disabled";

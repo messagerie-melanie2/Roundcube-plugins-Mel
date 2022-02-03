@@ -1481,7 +1481,7 @@ class mel_workspace extends rcube_plugin
 
         $html .= "</table>";
 
-        return $count === 0 ? "" : $html;
+        return $html;
 
     }
 

@@ -1689,7 +1689,7 @@ class mel_workspace extends rcube_plugin
         }
     }
 
-    function create_services(&$workspace,$services, $users = null, $update_wsp = true)
+    function create_services(&$workspace,$services, $users = null, $update_wsp = true, $fromUpdateApp = false)
     {
         if ($users === null)
         {
@@ -1710,7 +1710,7 @@ class mel_workspace extends rcube_plugin
         $services = $this->create_tasklist($workspace,$services, $users, $update_wsp);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
         $services = $this->create_channel($workspace, $services, $users);
-        $services = $this->create_service_group($workspace, $services);
+        $services = $this->create_service_group($workspace, $services, $fromUpdateApp);
 
         $this->create_service_links($workspace);
 
@@ -1723,10 +1723,13 @@ class mel_workspace extends rcube_plugin
             $this->save_object($workspace, self::LINKS, []);
     }
 
-    function create_service_group(&$workspace, $services)
+    function create_service_group(&$workspace, $services, $fromUpdateApp = false)
     {
         $search = array_search(self::CLOUD, $services);
         $create_nc = $search !== false;
+
+        if (!$create_nc && $fromUpdateApp)
+            return $service;
 
         $this->create_group($workspace, $create_nc);
 
@@ -2616,7 +2619,7 @@ class mel_workspace extends rcube_plugin
                         break;
                     
                     default:
-                    $this->create_services($workspace, [$app]);
+                    $this->create_services($workspace, [$app], null, true, true);
                         break;
                 }
             }

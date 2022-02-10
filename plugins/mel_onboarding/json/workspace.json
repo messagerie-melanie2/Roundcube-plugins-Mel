@@ -9,7 +9,7 @@
     "prevLabel": "Précédent",
     "doneLabel": "Fermer",
     "steps": [{
-        "title": "Accueil",
+        "title": "Mes espaces de travail",
         "intro": "<h2>Découvrez votre Bureau numérique : Les espaces de travail</h2><br/><div class='video mt-2'><video controls poster='%%POSTER%%'><source src='%%VIDEO%%' type='video/mp4'>Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div><br/><br/>",
         "tooltipClass": "accueil-intro text-center"
     }]

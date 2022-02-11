@@ -31,14 +31,17 @@ $config['oidc_secret'] = 'OIDC_CLIENT_SECRET';
 // OIDC scopes ('openid' is automatically added, it should not be needed here)
 $config['oidc_scope'] = 'uid';
 
-// -------------- User Fields -----------------
+// -------------- OIDC -----------------
 
 // Field used as a login UID (email, uid, ...)
 $config['oidc_field_uid'] = 'uid';
 $config['oidc_field_eidas'] = 'acr';
 
-// ID Token expiration delay, in seconds
-$config['oidc_exp_delay'] = 300;
+// OIDC - Token expiration delay, in seconds
+$config['oidc_exp_delay'] = 600;
+
+// OIDC - Inactivity delay, in seconds
+$config['oidc_act_delay'] = 300;
 
 // -------------- Kerberos Activation -----------------
 

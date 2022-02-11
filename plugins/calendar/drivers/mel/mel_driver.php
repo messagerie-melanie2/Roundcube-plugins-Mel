@@ -1408,9 +1408,25 @@ class mel_driver extends calendar_driver {
           if (isset($_recurrence_date)) {
             $master = $this->_read_postprocess($_event);
             $recurrence_date = rcube_utils::anytodatetime(date("Y-m-d H:i:s", $_recurrence_date), $master['start']->getTimezone());
+
+            // Rechercher si on est pas sur une EXDATE
+            if (isset($master['recurrence']) 
+                && isset($master['recurrence']['EXDATE'])
+                && is_array($master['recurrence']['EXDATE'])) {
+              foreach ($master['recurrence']['EXDATE'] as $exdate) {
+                if ($exdate == $recurrence_date) {
+                  // Il s'agit d'une occurrence supprimée le get_event doit retourner false
+                  return false;
+                }
+              }
+            }
+
+            // Initialise l'event id avec le recurrence_date
             if (!isset($event['id'])) {
               $event['id'] = $event['uid'] . '@DATE-' . $_recurrence_date;
             }
+
+            // Est-ce qu'il s'agit d'une occurrence ?
             if (isset($master['recurrence']) 
                 && isset($master['recurrence']['EXCEPTIONS'])
                 && isset($master['recurrence']['EXCEPTIONS'][$event['id']])) {

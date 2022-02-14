@@ -661,17 +661,13 @@ class mel_driver extends calendar_driver {
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if (!$new && $_event->load()) {
         $loaded = true;
-        // // Test si l'utilisateur est seulement participant
-        // $organizer = $_event->organizer;
-        // if (isset($organizer) 
-        //     && !$organizer->extern
-        //     && !empty($organizer->uid)
-        //     && ($organizer->uid != $this->rc->get_user_name() 
-        //       || $this->currentUserIsOrganiser($organizer))) {
-        //   return true;
-        // }
+
         // Test si privé
-        $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
+        $is_private = (($_event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+              || $_event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+            && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+            && $_event->owner != $this->user->uid 
+            && !$this->calendars[$_event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
         if ($is_private) {
           return true;
@@ -747,7 +743,7 @@ class mel_driver extends calendar_driver {
             $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
             // Converti les données de l'évènement en évènement Mél
             $_event = $this->_write_postprocess($_event, $event, true);
-            $_event->uid = $event['uid'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@future';
+            $_event->uid = $this->cal->generate_uid();
         }
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
@@ -756,7 +752,7 @@ class mel_driver extends calendar_driver {
         $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, true);
-        $_event->uid = $event['uid'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@new';
+        $_event->uid = $this->cal->generate_uid();
       }
       else {
         if (isset($old) && strpos($event['id'], '@DATE-') !== false) {
@@ -815,13 +811,13 @@ class mel_driver extends calendar_driver {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::edit_event()");
     if (mel_logs::is(mel_logs::TRACE))
       mel_logs::get_instance()->log(mel_logs::TRACE, "[calendar] mel_driver::edit_event() : " . var_export($event, true));
-    if ($this->new_event($event, false)) {
+    if ($result = $this->new_event($event, false)) {
       if (isset($event['_fromcalendar'])) {
         $deleted_event = $event;
         $deleted_event['calendar'] = $event['_fromcalendar'];
         return $this->remove_event($deleted_event);
       }
-      return true;
+      return $result;
     }
     return false;
   }
@@ -897,20 +893,19 @@ class mel_driver extends calendar_driver {
       }
       // Chargement de l'évènement pour savoir s'il s'agit d'un évènement privé donc non modifiable
       if ($_event->load()) {
-        // Test si l'utilisateur est seulement participant
-        // $organizer = $_event->organizer;
-        // if (isset($organizer) 
-        //     && !$organizer->extern
-        //     && !empty($organizer->uid)
-        //     && ($organizer->uid != $this->rc->get_user_name() 
-        //       || $this->currentUserIsOrganiser($organizer))) {
-        //   return true;
-        // }
+
         // Test si privé
-        $is_private = (($event->class == LibMelanie\Api\Defaut\Event::CLASS_PRIVATE || $event->class == LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) && $this->calendars[$event->calendar]->owner != $this->user->uid && $event->owner != $this->user->uid && ! $this->calendars[$event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
+        $is_private = (($_event->class == \LibMelanie\Api\Defaut\Event::CLASS_PRIVATE 
+                || $_event->class == \LibMelanie\Api\Defaut\Event::CLASS_CONFIDENTIAL) 
+              && $this->calendars[$_event->calendar]->owner != $this->user->uid 
+              && $_event->owner != $this->user->uid 
+              && !$this->calendars[$_event->calendar]->asRight(\LibMelanie\Config\ConfigMelanie::PRIV));
+
+        // Retourner le résultat
+        $result = true;
 
         if ($is_private) {
-          return true;
+          return $result;
         }
         if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
@@ -950,7 +945,7 @@ class mel_driver extends calendar_driver {
         else if (isset($event['_savemode']) && $event['_savemode'] == 'future') {
           $e = $this->_read_postprocess($_event);
           // Génération de nouvel identifiant
-          $e['id'] = $e['id'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@rc_future';
+          $e['id'] = $this->cal->generate_uid();
           $e['uid'] = $e['id'];
           // Modification de la date
           $e['start'] = $event['start'];
@@ -967,16 +962,19 @@ class mel_driver extends calendar_driver {
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
+          $result = $_event->uid;
         }
         else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
           $e = $this->_read_postprocess($_event);
           // Génération de nouvel identifiant
-          $e['uid'] = $e['id'] . "-" . strtotime($event['start']->format(self::DB_DATE_FORMAT)) . '@rc_new';
+          $e['id'] = $this->cal->generate_uid();
+          $e['uid'] = $e['id'];
           // Création de la nouvelle
           $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
+          $result = $_event->uid;
         }
         else {
           if ($resize) {
@@ -987,7 +985,7 @@ class mel_driver extends calendar_driver {
           $_event = $this->_write_postprocess($_event, $event, false, true);
         }
         if ($_event->save() !== null) {
-          return true;
+          return $result;
         }
       }
     }
@@ -1386,7 +1384,7 @@ class mel_driver extends calendar_driver {
           $id = $event['id'];
           if (strpos($id, '@DATE-') !== false) {
             $id = explode('@DATE-', $id);
-            if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
+            if (isset($event['_savemode']) && ($event['_savemode'] == 'current' || $event['_savemode'] == 'future')) {
               $_recurrence_date = $id[1];
             }
             $id = $id[0];
@@ -1457,6 +1455,7 @@ class mel_driver extends calendar_driver {
               $result['end'] = clone $recurrence_date;
               $result['end']->add($interval);
             }
+            $result['recurrence_id'] = $_event->uid;
             $result['recurrence_date'] = $recurrence_date;
           }
           else {

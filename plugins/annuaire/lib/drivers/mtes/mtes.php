@@ -97,8 +97,14 @@ class mtes_driver_annuaire extends default_driver_annuaire {
       // Vérifier si l'entrée est un alias
       if (!$search
           && isset($info['seealso'])
-          && $key = array_search($this->base_dn, $info['seealso']) !== false) {
-        $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source . '-alias' . $key;
+          && in_array($this->base_dn, $info['seealso'])) {
+        $key = array_search($this->base_dn, $info['seealso']);
+        if ($key !== false) {
+          $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source . '-alias' . $key;
+        }
+        else {
+          $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source . '-alias';
+        }
       }
       else {
         $id = rcube_ldap::dn_encode($info['dn']) . '-' . $this->source; 

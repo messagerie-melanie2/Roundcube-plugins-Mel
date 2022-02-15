@@ -137,7 +137,7 @@ function startIntro(task) {
                 let item = this._introItems[this._currentStep];
                 current_window.$('#' + item.id + '-details').on('click', function() {
                     if (item.details.hints) {
-                        intro_hints(item);
+                        intro_hints(item, intro);
                     } else if (item.details.steps) {
                         intro_details_tour(item, intro)
                     }
@@ -237,10 +237,14 @@ rcube_webmail.prototype.onboarding_close = function() {
 };
 
 
-function intro_hints(item) {
+function intro_hints(item, intro_main) {
     if (item.id === "navigation") {
         window.parent.$('#layout-menu').addClass('force-open');
     }
+
+    // window.exit_main_intro = false;
+    // intro_main.exit();
+    // window.exit_main_intro = true;
 
     let details = item.details;
     let intro = current_window.introJs();

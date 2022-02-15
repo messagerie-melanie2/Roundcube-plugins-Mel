@@ -1,6 +1,6 @@
 {
     "scrollToElement": true,
-    "disableInteraction": true,
+    "disableInteraction": false,
     "exitOnOverlayClick": false,
     "hidePrev": true,
     "scrollTo": "tooltip",
@@ -39,82 +39,75 @@
         {
             "title": "Toolbar",
             "element": ".wsp-toolbar.melw-wsp",
-            "intro": "Voici Toolbar"
-        },
-        {
-            "title": "Goback",
-            "element": ".wsp-toolbar-item.goback",
-            "intro": "Voici Goback",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "title": "Accueil",
-            "element": ".wsp-toolbar-item.wsp-home",
-            "intro": "Voici Accueil",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "skippable": true,
-            "skipElement": ".wsp-toolbar-item.wsp-mail",
-
-            "title": "mail",
-            "element": ".wsp-toolbar-item.wsp-mail",
-            "intro": "Voici mail",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "title": "Agenda",
-            "element": ".wsp-toolbar-item.wsp-agenda",
-            "intro": "Voici Agenda",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "skippable": true,
-            "skipElement": ".wsp-toolbar-item.wsp-ariane",
-
-            "title": "Ariane",
-            "element": ".wsp-toolbar-item.wsp-ariane",
-            "intro": "Voici Ariane",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "skippable": true,
-            "skipElement": ".wsp-toolbar-item.wsp-documents",
-
-            "title": "documents",
-            "element": ".wsp-toolbar-item.wsp-documents",
-            "intro": "Voici documents",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "skippable": true,
-            "skipElement": ".wsp-toolbar-item.wsp-wekan",
-
-            "title": "Kanban",
-            "element": ".wsp-toolbar-item.wsp-wekan",
-            "intro": "Voici Kanban",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "skippable": true,
-            "skipElement": ".wsp-toolbar-item.wsp-tasks",
-
-            "title": "Tâches",
-            "element": ".wsp-toolbar-item.wsp-tasks",
-            "intro": "Voici Tâches",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "title": "Lien utiles",
-            "element": ".wsp-toolbar-item.wsp-links",
-            "intro": "Voici Lien utiles",
-            "highlightClass": "wsp-toolbar-padding"
-        },
-        {
-            "title": "Param / infos",
-            "element": ".wsp-toolbar-item.wsp-item-params",
-            "intro": "Voici Param / infos",
-            "highlightClass": "wsp-toolbar-padding"
+            "intro": "Voici Toolbar",
+            "button": "<span>Découvrir la barre de navigation</span><span class='icon-mel-arrow-right plus'></span>",
+            "tooltipClass": "mt-4 big-width-intro hide-hint",
+            "details": {
+                "hintButtonLabel": "J'ai compris",
+                "hintClass": "toolbar-hint-workspace",
+                "hints": [{
+                        "title": "Goback",
+                        "element": ".wsp-toolbar-item.goback",
+                        "hint": "Voici Goback",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Accueil",
+                        "element": ".wsp-toolbar-item.wsp-home",
+                        "hint": "Voici Accueil",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "mail",
+                        "element": ".wsp-toolbar-item.wsp-mail",
+                        "hint": "Voici mail",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Agenda",
+                        "element": ".wsp-toolbar-item.wsp-agenda",
+                        "hint": "Voici Agenda",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Ariane",
+                        "element": ".wsp-toolbar-item.wsp-ariane",
+                        "hint": "Voici Ariane",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "documents",
+                        "element": ".wsp-toolbar-item.wsp-documents",
+                        "hint": "Voici documents",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Kanban",
+                        "element": ".wsp-toolbar-item.wsp-wekan",
+                        "hint": "Voici Kanban",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Tâches",
+                        "element": ".wsp-toolbar-item.wsp-tasks",
+                        "hint": "Voici Tâches",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Lien utiles",
+                        "element": ".wsp-toolbar-item.wsp-links",
+                        "hint": "Voici Lien utiles",
+                        "hintPosition": "top-middle"
+                    },
+                    {
+                        "title": "Param / infos",
+                        "element": ".wsp-toolbar-item.wsp-item-params",
+                        "hint": "Voici Param / infos",
+                        "hintPosition": "top-middle"
+                    }
+                ]
+            }
         }
+
     ]
 }

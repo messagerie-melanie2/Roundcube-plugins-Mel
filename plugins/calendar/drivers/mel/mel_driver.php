@@ -876,7 +876,8 @@ class mel_driver extends calendar_driver {
       elseif (isset($event['id'])) {
         $id = $event['id'];
         if (strpos($id, '@DATE-') !== false) {
-          $id = explode('@DATE-', $id);
+          $id = explode('@DATE-', $id, 2);
+          $recurrence_date = $id[1];
           $id = $id[0];
         }
         else if (strpos($id, self::RECURRENCE_ID) !== false) {
@@ -975,6 +976,30 @@ class mel_driver extends calendar_driver {
           $_event = $this->_write_postprocess($_event, $e, true);
           $_event->uid = $e['uid'];
           $result = $_event->uid;
+        }
+        else if (isset($event['_savemode']) && $event['_savemode'] == 'all') {
+          // Nous sommes dans le cas ou une occurrence est déplacé/resizé pour toute la récurrence
+          // Il ne faut pas écraser le start/end de la récurrence mais le recalculer
+          if ($resize) {
+            // Dans le cas d'un resize on redimensionne juste l'événement maitre
+            $interval = $event['start']->diff($event['end']);
+            $dtend = clone $_event->dtstart;
+            $dtend->add($interval);
+            $_event->dtend = $dtend;
+          }
+          else if (isset($recurrence_date)) {
+            // Dans le cas d'un move on récupère l'interval de move et on l'applique
+            $date = new \DateTime('@'.$recurrence_date);
+            $interval = $date->diff($event['start']);
+
+            // Bug avec les setter/getter magic ?
+            $dtstart = $_event->dtstart;
+            $dtend = $_event->dtend;
+            $dtstart->add($interval);
+            $dtend->add($interval);
+            $_event->dtstart = $dtstart;
+            $_event->dtend = $dtend;
+          }
         }
         else {
           if ($resize) {

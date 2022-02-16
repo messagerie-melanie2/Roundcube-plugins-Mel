@@ -47,6 +47,7 @@ const ping = async function(url, useSSL = true)
     let ok;
     try {
         await $.ajax({
+            type: "GET",
             url: !url.includes("https") && !url.includes("http") ? (ssl + "://" + url) : url,
             success: function(result){
             ok = true;

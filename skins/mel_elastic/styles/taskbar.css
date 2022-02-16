@@ -158,11 +158,11 @@ html.layout-phone #taskmenu a
 
 .news
 {
-    order:10;
+    order:12;
 }
 
 .tasklist{
-    order:11;
+    order:10;
 }
 
 .menu.toolbar  a.tasklist::before
@@ -173,11 +173,11 @@ html.layout-phone #taskmenu a
 }
 
 .button-mel_sondage {
-    order:12;
+    order:13;
 }
 
 .contacts{
-    order:13;
+    order:11;
 }
 
 .menu.toolbar  a.contacts::before
@@ -187,13 +187,24 @@ html.layout-phone #taskmenu a
     font-weight: normal;
 }
 
+.useful_links 
+{
+    order:14
+}
+
+.wekan {
+    order:15;
+}
+
 .more-options{
-    order:14;
+    order:16;
 }
 
 .settings{
-    order:15;
+    order:17;
 }
+
+
 
 .menu.toolbar  a.settings::before
 {
@@ -313,6 +324,12 @@ a.menu-small.icofont-navigation-menu:before
 a.icon-mel-trello:before
 {
     content:"\e94c";
+    font-family: "DWP"!important;
+}
+
+a.icon-mel-newspaper:before
+{
+    content:"\e91a";
     font-family: "DWP"!important;
 }
 

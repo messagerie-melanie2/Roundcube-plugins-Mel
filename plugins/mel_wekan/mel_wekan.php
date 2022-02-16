@@ -52,7 +52,7 @@ class mel_wekan extends rcube_plugin
             'label'	=> 'mel_wekan.kanban',
             'title' => 'mel_wekan.kanban',
             'type'       => 'link'
-        ), "otherappsbar");
+        ), "taskbar");
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
 

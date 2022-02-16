@@ -49,6 +49,25 @@ class mel_helper extends rcube_plugin
         return new mel_fetch($user_agent, $ssl_verify_peer, $ssl_verify_host);
     }
 
+    public function twitterAccountExists($username, $proxy = null){
+
+/*        $PROXY_HOST = "pfrie-std.proxy.e2.rie.gouv.fr"; // Proxy server address
+        $PROXY_PORT = "8080";    // Proxy server port*/
+
+        $proxy_array = null;
+
+        if ($proxy !== null)
+            $proxy_array = [CURLOPT_PROXY => $proxy];
+
+        $content = $this->fetch("", "", "")->_get_url("https://twitter.com/$username", null, null, $proxy_array);
+
+        if($content["httpCode"] === 404) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Inclue amel_lib.php
      *
@@ -68,6 +87,11 @@ class mel_helper extends rcube_plugin
     public function include_js_debug()
     {
         $this->include_script('js/debug/watch.js');
+    }
+
+    public function include_js_annuaire_tree()
+    {
+        $this->include_script('js/annuaireTree.js');
     }
 
     /**
@@ -163,6 +187,20 @@ class mel_helper extends rcube_plugin
        $html = preg_replace(array('/<!--[^>]+-->/', '/<\/?body>/'), '', $html);
    
        return $html;
+    }
+
+    public static function settings($only_include = false)
+    {
+        include_once "lib/mel_settings.php";
+
+        if (!$only_include)
+            return settings_helper::Instance();
+    }
+
+    public static function Enumerable($arrayLike)
+    {
+        include_once "lib/mel_linq.php";
+        return Mel_Enumerator::from($arrayLike);
     }
     
 

@@ -624,6 +624,7 @@ framed_item > .framed_item{
 .roundbadge.clear
 {
   background-color: #F0F0F0;
+  border-color: #F0F0F0;
 }
 
 .roundbadge.dark
@@ -1117,6 +1118,12 @@ html.layout-phone .mel-button-block.mel-button
     border-width: thin;
     border-color: #363A5B;
 }
+
+.mel-button.bckg.true
+{
+    border-color: transparent;
+}
+
 .mel-button.bckg:hover{
     color: white;
 }
@@ -2269,4 +2276,19 @@ body.task-mail.action-none #layout-content {
 .wlp-header .mel-button:focus
 {
     box-shadow: 0 0 0 .2rem #EDEDF069;
+}
+
+.listing.iconized li a.news::before
+{
+    font-family: DWP!important;
+    content: "\e91a";
+}
+
+table.table-striped thead.mel_striped td
+{
+  background-color: white;  
+}
+
+.mel-r .name{
+    margin-right:5px;
 }

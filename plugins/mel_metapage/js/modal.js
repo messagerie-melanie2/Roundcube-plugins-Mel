@@ -295,3 +295,6 @@ GlobalModal.close = function ()
 {
     $("#globalModal").modal('hide');
 }
+
+window.GlobalModal = GlobalModal;
+window.GlobalModalConfig = GlobalModalConfig;

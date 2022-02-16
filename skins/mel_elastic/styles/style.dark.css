@@ -155,6 +155,11 @@ html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select
     background-color:#1F2933;
 }
 
+html.dark-mode .mel-button.bckg.true:hover
+{
+	border-color: #E1C58F;
+}
+
 html.dark-mode .mel-button.dark-no-border-default
 {
     border-color: transparent;
@@ -393,11 +398,13 @@ html.dark-mode .workspace-users-added button,
 html.dark-mode .task-mail #layout-content > .header #toolbar-menu li .dropbutton,
 html.dark-mode #layout > div > .header,
 html.dark-mode div#layout-sidebar,
-html.dark-mode .messagelist .unread
+html.dark-mode .messagelist .unread,
+html.dark-mode .mel-left-pannel
 {
     background-color: #323F4B !important
 }
 
+html.dark-mode .headlines-source,
 html.dark-mode .wsp-block,
 html.dark-mode .square_div > .contents,
 html.dark-mode .tablinks.selected,
@@ -528,6 +535,8 @@ html.dark-mode .fc .fc-day-number
     color:#96b9e7!important;
 }
 
+
+html.dark-mode .headlines-source,
 html.dark-mode .wsp-toolbar.webconf-toolbar .wsp-toolbar-item,
 html.dark-mode .task-addressbook .listing tbody td, 
 html.dark-mode .task-addressbook #layout-list .header,
@@ -969,9 +978,14 @@ html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
 }
 
 html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
-    background-color: #1A222B;
+    background-color: #323F4B !important;
 }
 
-html.dark-mode .messagelist:not(.threaded) tbody tr.unread td {
-    background-color: #1F2933;
+html.dark-mode .headlines-by.headlines-rss-type {
+	color: #36D2BD  !important;
+}
+
+html.dark-mode table.table-striped thead.mel_striped td
+{
+  background-color: #1F2933;  
 }

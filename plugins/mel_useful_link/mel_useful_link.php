@@ -70,7 +70,7 @@ class mel_useful_link extends rcube_plugin
           'title' => '',
           'type'       => 'link',
           'domain' => "mel_useful_link"
-      ), "otherappsbar");
+      ), "taskbar");
 
       $this->include_script('js/classes.js');
     }

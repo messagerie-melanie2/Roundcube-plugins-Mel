@@ -759,7 +759,7 @@ function m_mp_hashtag_on_click(event, inputSelector ,containerSelector) {
   }
 }
 
-function m_mp_autocoplete(element, action_after = null) {
+function m_mp_autocoplete(element, action_after = null, append = true) {
   // element = element.val === undefined ? $("#" + element.id) : $("#"+element[0].id);
   // const val = element.val();
   // if (val.length > 0)
@@ -777,7 +777,7 @@ function m_mp_autocoplete(element, action_after = null) {
 
   //<span class="name">delphin.tommy@gmail.com</span>
   element = element.val === undefined ? ("#" + element.id) : ("#" + element[0].id);
-  //console.log("auto", element, $(element));
+
   let val = $(element).val();
   if (val.includes(',')) {
     val = val.replace(",", "");
@@ -798,17 +798,25 @@ function m_mp_autocoplete(element, action_after = null) {
     }
     html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
     html += "</li>";
-    $("#wspf").append(html);
-    $(element).val("");
-    //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
-    html = $(element).parent()[0].outerHTML;
-    $(element).parent().remove();
-    $("#wspf").append(html);
-    rcmail.init_address_input_events($(element));
-    $(element).focus();
 
+    if (append === true)
+    {
+      $("#wspf").append(html);
+      $(element).val("");
+      //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
+      html = $(element).parent()[0].outerHTML;
+      console.log($(element).parent());
+      $(element).parent().remove();
+      rcmail.init_address_input_events($(element));
+      $(element).focus();
+    }
+
+    console.log("acf", action_after + "");
     if (action_after !== null) {
-      action_after();
+      action_after({
+        $element:$(element),
+        val
+      });
     }
 
   }

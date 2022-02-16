@@ -24,27 +24,42 @@
                 <roundcube:label name="mel_news.news" />
             </h2>
             <div style="float: right;">
-                <button id="news-button-publish" class="btn btn-secondary mel-button no-button-margin">Publier <span class="plus icon-mel-plus"></span></button>
+                <button id="news-button-publish" class="btn btn-secondary mel-button no-button-margin disabled" disabled>Publier <span class="plus icon-mel-plus"></span></button>
+                <button id="news-button-publish-flux" class="btn btn-secondary mel-button no-button-margin disabled" disabled>Publier un flux <span class="plus icon-mel-plus"></span></button>
             </div>
             <div>
                 <roundcube:object name="dnnews" />
             </div>
         </div>
         <div class="flux" style="margin-top:30px">
-            <h2 class="title-wsp bold" style="display: inline-block;">
-                <roundcube:label name="mel_news.my_strings_of_news" />
-            </h2>
-            <div style="float: right;">
-                <!-- <button id="news-button-sort" disabled class="disabled btn btn-secondary mel-button no-button-margin">Trier <span class="plus icofont-sort"></span></button> -->
-                <button id="news-button-filter" style="margin:0 15px;" class="btn btn-secondary mel-button no-button-margin">Filtrer <span class="plus icofont-filter"></span></button>
-                <button id="news-button-add" class=" btn btn-secondary mel-button no-button-margin">Ajouter <span class="plus icon-mel-plus"></span></button>
+            <div style="display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;">
+                <div class="left">
+                    <h2 class="title-wsp bold" style="display: inline-block;">
+                        <roundcube:label name="mel_news.my_strings_of_news" />
+                    </h2>
+                </div>
+                <div class="right">
+                    <!-- <button id="news-button-sort" disabled class="disabled btn btn-secondary mel-button no-button-margin">Trier <span class="plus icofont-sort"></span></button> -->
+                    <roundcube:object name="button_sort" />
+                    <button id="news-button-filter" style="margin:0 15px;" class="btn btn-secondary mel-button no-button-margin">Filtrer <span class="plus icofont-filter"></span></button>
+                    <button id="news-button-add" class=" btn btn-secondary mel-button no-button-margin">Ajouter <span class="plus icon-mel-plus"></span></button>
+                </div>
             </div>
-            <div>
+            <div id="i-custom-news">
                 <roundcube:object name="allnews" />
+                <!-- <a class="twitter-timeline" href="https://twitter.com/unkonwnusercreatedd?ref_src=twsrc%5Etfw">Tweets by Rotomeca</a>  -->
             </div>
         </div>
+        <div id="i-custom-news-temp">
+        </div>
+        <center>
+            <button id="seemoreorless" class="mel-button"><rotomeca>Voir plus</rotomeca> <span class="plus icon-mel-chevron-down"></span></button>
+        </center>
 
 	</div>
 </div>
 
 <roundcube:include file="includes/footer.html" />
+<!-- <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>  -->

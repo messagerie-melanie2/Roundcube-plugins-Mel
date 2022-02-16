@@ -234,7 +234,6 @@ MANTIS 0004215: Modification vue Ordre du jour
 .fc-view-agendaDay .fc-event-inner,
 .fc-view-agendaWeek .fc-event-inner,
 .fc-view-month .fc-event-hori .fc-event-inner {
-	background: #fff !important;
 	color: #000 !important;
 }
 

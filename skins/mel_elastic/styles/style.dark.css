@@ -981,6 +981,10 @@ html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
     background-color: #323F4B !important;
 }
 
+html.dark-mode .messagelist:not(.threaded) tbody tr.unread td {
+background-color: #1F2933;
+}
+
 html.dark-mode .headlines-by.headlines-rss-type {
 	color: #36D2BD  !important;
 }

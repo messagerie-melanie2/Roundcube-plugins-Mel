@@ -42,6 +42,11 @@
     left: -30px !important;
 }
 
+.toolbar-hint-workspace {
+    top: 0px !important;
+    width: 70px !important;
+}
+
 .big-width-intro {
     width: 600px !important;
     max-width: 600px !important;

@@ -43,7 +43,12 @@ $(document).ready(async () => {
         };
 
         script.onerror = function(e, a, b) {
-            rcmail.display_message("Votre navigateur ne permet pas de récupérer les flux twitter", "error");
+            if (setTwitterSrc.first === undefined)
+            {
+                rcmail.display_message("Votre navigateur ne permet pas de récupérer les flux twitter", "error");
+                setTwitterSrc.first = false;
+            }
+
             for (let index = 0; index < MelCustomNews.allCustomNews.length; index++) {
                 const element = MelCustomNews.allCustomNews[index];
                 
@@ -910,6 +915,8 @@ $(document).ready(async () => {
 
                 let $left = $html.find(".icon-mel-arrow-left").parent().addClass("disabled").attr("disabled", "disabled");
                 $left.click((e) => {
+
+                    let reclick = false;
                     let news_datas;
 
                     if (rcmail.env.news_vignette_all_news_datas[this.id] === undefined)
@@ -934,9 +941,16 @@ $(document).ready(async () => {
                     if (tmp === undefined)
                     {
                         return;
+                    
+                    }
+
+                    if (this.type === MelNews.type.intranet && this.$news.data("copy") === ($(tmp).children().data("copy") === undefined ? $(tmp).data("copy") : $(tmp).children().data("copy")))
+                    {
+                        reclick = true;
                     }
 
                     this.$right.removeClass("disabled").removeAttr("disabled");
+
 
                     this.$news.find(".square-contents").children().each((i,e) => {
                         e = $(e);
@@ -951,11 +965,14 @@ $(document).ready(async () => {
 
                     if (this.current === -1)
                         $(e.currentTarget).addClass("disabled").attr("disabled", "disabled");
+                    else if (reclick)
+                        this.$left.click();
                 });
 
                 let $right = $html.find(".icon-mel-arrow-right").parent();
                 $right.click((e) => {
 
+                    let reclick = false;
                     let news_datas;
 
                     if (rcmail.env.news_vignette_all_news_datas[this.id] === undefined)
@@ -976,6 +993,11 @@ $(document).ready(async () => {
                         return;
                     }
 
+                    if (this.type === MelNews.type.intranet && this.$news.data("copy") === ($(tmp).children().data("copy") === undefined ? $(tmp).data("copy") : $(tmp).children().data("copy")))
+                    {
+                        reclick = true;
+                    }
+
                     this.$left.removeClass("disabled").removeAttr("disabled");
 
                     this.$news.find(".square-contents").children().each((i,e) => {
@@ -991,6 +1013,8 @@ $(document).ready(async () => {
 
                     if (news_datas[this.current + 1] === undefined)
                         $(e.currentTarget).addClass("disabled").attr("disabled", "disabled");
+                    else if (reclick)
+                        this.$right.click();
                 });
 
                 this.$news.find(".square-contents").prepend($html);
@@ -1706,9 +1730,10 @@ else {
         rcmail.register_command('news.click', (x) => {
             if (x._event !== undefined)
             {
-                let $parent = $(x._event.originalTarget);
+                let $parent = $(x._event.originalTarget === undefined ? x._event.target : x._event.originalTarget);
                 let it = 0;
                 while (it < 3) {
+                    console
                     if ($parent.hasClass("vignette-arrows"))
                         return;
                     else {
@@ -1933,9 +1958,9 @@ else {
 
             //end
             for (let index = 0; index < MelCustomNews.allCustomNews.length; index++) {
-                if (MelCustomNews.allCustomNews.type !== MelNews.type.twitter && MelCustomNews.allCustomNews.$news.data("copy") !== "")
+                if (MelCustomNews.allCustomNews[index].type !== MelNews.type.twitter && MelCustomNews.allCustomNews[index].$news.data("copy") !== "")
                 {
-                    MelCustomNews.allCustomNews.$news.find(".square-contents").children().each((i, e) => {
+                    MelCustomNews.allCustomNews[index].$news.find(".square-contents").children().each((i, e) => {
                         if ($(e).hasClass("vignette-arrows"))
                             return;
 

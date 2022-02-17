@@ -673,10 +673,21 @@ class mel_driver extends calendar_driver {
           return true;
         }
         $old = $this->_read_postprocess($_event);
+
+        // Gérer la sequence
+        if (!empty($_event->sequence)) {
+          $_event->sequence = $_event->sequence + 1;
+        }
+        else {
+          $_event->sequence = 1;
+        }
       }
       else {
         $loaded = false;
         $_event->uid = str_replace('/', '', $_event->uid);
+
+        // Gérer la sequence
+        $_event->sequence = 1;
       }
       if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
         $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
@@ -908,6 +919,15 @@ class mel_driver extends calendar_driver {
         if ($is_private) {
           return $result;
         }
+
+        // Gérer la sequence
+        if (!empty($_event->sequence)) {
+          $_event->sequence = $_event->sequence + 1;
+        }
+        else {
+          $_event->sequence = 1;
+        }
+
         if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
@@ -1055,7 +1075,7 @@ class mel_driver extends calendar_driver {
     // Gestion des données de l'évènement
     if ($new) {
       $_event->created = time();
-    }    
+    }
     $_event->all_day = isset($event['allday']) && $event['allday'] == 1;
     if (isset($event['start'])) {
       if ($_event->all_day) {
@@ -1075,6 +1095,12 @@ class mel_driver extends calendar_driver {
         $_event->end = $event['end'];
       }
     }
+
+    // Gérer la sequence
+    if (isset($event['sequence'])) {
+      $_event->sequence = $event['sequence'];
+    }
+
     if ($new) {
       $_event->owner = $this->user->uid;
     }
@@ -1806,6 +1832,11 @@ class mel_driver extends calendar_driver {
     $_event['created'] = new DateTime(date('Y-m-d H:i:s', $event->created));
     $_event['changed'] = new DateTime(date('Y-m-d H:i:s', $event->modified));
     $_event['calendar'] = driver_mel::gi()->mceToRcId($event->calendar);
+
+    // Sequence
+    if (isset($event->sequence)) {
+      $_event['sequence'] = $event->sequence;
+    }
 
     if ($freebusy) {
       // Status

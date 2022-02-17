@@ -5,91 +5,6 @@ var mailviewleft_width = 0;
 var mailviewsplitterv_left = 0;
 var page_loading;
 var current_page_scroll;
-// Configure number of milliseconds before next refresh
-var UNSEEN_COUNT_REFRESH = 300000;
-
-$(document).on({
-  dblclick: function (e) {
-    if (hide_mailviewsplitterv) {
-      $('#mailview-left').css("width", mailviewleft_width);
-      $('#mailviewsplitterv').css("left", mailviewsplitterv_left);
-      $('#mailview-right').css("left", mailviewright_left);
-      hide_mailviewsplitterv = false;
-    }
-    else {
-      mailviewleft_width = $('#mailview-left').css("width");
-      mailviewsplitterv_left = $('#mailviewsplitterv').css("left");
-      mailviewright_left = $('#mailview-right').css("left");
-      $('#mailview-left').css("width", '0px');
-      $('#mailviewsplitterv').css("left", '3px');
-      $('#mailview-right').css("left", '12px');
-      hide_mailviewsplitterv = true;
-    }
-    
-  }
-}, "#mailviewsplitterv"); //pass the element as an argument to .on
-
-//register event handlers for UI elements
-$(document).on("click", '#sharesmailboxesul-first li.box.current',
-function(e) {
-  var obj = $(this).find('> a > div.treetoggle');
-  if (obj.hasClass('expanded')) {
-    $('#mailboxlist').hide();
-    var unread = parseInt($('#mailboxlist > li:first-child > a > span.unreadcount').text());
-    
-    if (unread > 0) {
-      $(this).addClass('unread');
-      $(this).find('> a > span.unreadcount').text(unread);
-    }
-    obj.removeClass('expanded').addClass('collapsed');
-    $(this).addClass('selected');
-  }
-  else {
-    $('#mailboxlist').show();
-    obj.addClass('expanded').removeClass('collapsed');
-    $(this).removeClass('unread');
-    $(this).find('> a > span.unreadcount').text('');
-    $(this).removeClass('selected');
-  }
-  return false;
-}
-);
-
-$('html').click(function() {
-  timeout_sharesmailboxeslist = setTimeout(function() {
-    var sharemailboxeslist = $("#sharesmailboxeslist-settings");
-    if (sharemailboxeslist.hasClass("sharesmailboxesshow")) {
-      sharemailboxeslist.addClass("sharesmailboxeshide")
-      .removeClass("sharesmailboxesshow");
-      $(".button-sharesmailboxes").removeClass("button-selected");
-      $("#folderlist-header-m2-settings span").removeClass("click");
-      $("#folderlist-header-m2-settings").removeClass("click");
-    }
-  }, 200);	
-});
-
-
-$(document).on({
-  click: function (e) {
-    clearTimeout(timeout_sharesmailboxeslist);
-    e.stopPropagation();
-    var sharemailboxeslist = $("#sharesmailboxeslist-settings");
-    if (sharemailboxeslist.hasClass("sharesmailboxesshow")) {
-      sharemailboxeslist.addClass("sharesmailboxeshide")
-      .removeClass("sharesmailboxesshow");
-      $("#folderlist-header-m2-settings span").removeClass("click");
-      $("#folderlist-header-m2-settings").removeClass("click");
-      $(".button-sharesmailboxes").removeClass("button-selected");
-    }
-    else {
-      sharemailboxeslist.addClass("sharesmailboxesshow")
-      .removeClass("sharesmailboxeshide");
-      $("#folderlist-header-m2-settings span").addClass("click");
-      $("#folderlist-header-m2-settings").addClass("click");
-      $(".button-sharesmailboxes").addClass("button-selected");
-    }
-  }
-}, ".folderlist-header-m2-settings"); //pass the element as an argument to .on
 
 // Changement d'utilisateur sur la page de login
 $(document).on({
@@ -127,32 +42,6 @@ if (window.rcmail) {
         window.location.href = '_task=login&_courrielleur=2';
       }
     }
-    
-    // Gestion des mails count pour toutes les boites
-    rcmail.mel_refresh_mails_count();
-    
-    rcmail.addEventListener('responseaftergetunread', function(props) {
-      // Refresh current mail count
-      rcmail.mel_refresh_current_mail_count();
-    });
-    rcmail.addEventListener('responseaftermark', function(props) {
-      // Refresh current mail count
-      rcmail.mel_refresh_current_mail_count();
-    });
-    rcmail.addEventListener('responseafterlist', function(props) {
-      // Refresh current mail count
-      if ($('#mailboxlist > li:first-child').hasClass('selected')) {
-        rcmail.mel_refresh_current_mail_count();
-      }
-    });
-    
-    window.addEventListener('storage', function(e) {
-      if (e.key.indexOf('mel.seen.') == 0) {
-        var id = e.key.replace(/mel\.seen\./, '')
-        var value = JSON.parse(e.newValue);
-        rcmail.mel_refresh_unseen_count($('.sharesmailboxesul li#' + id), value.unseen_count);
-      }
-    });
     
     if (rcmail.env.task == 'mail' 
         && (!rcmail.env.action || rcmail.env.action == "")) {
@@ -299,79 +188,6 @@ rcube_webmail.prototype.window_edit_folder = function() {
       $('#managemailboxfolder').dialog('close');
     }
   });
-};
-
-// Refresh current mails count
-rcube_webmail.prototype.mel_refresh_current_mail_count = function() {
-  if (rcmail.env.task == 'mail' 
-  && $('.sharesmailboxesul').length) {
-    var obj = $('.sharesmailboxesul li.current');
-    var res = {};
-    var unread = parseInt($('#mailboxlist > li:first-child > a > span.unreadcount').text());
-    if (unread) {
-      res.unseen_count = unread;
-    }
-    else {
-      res.unseen_count = 0;
-    }
-    res.timestamp = Date.now();
-    this.mel_storage_set('seen.' + obj.attr('id'), res, true);
-    this.mel_refresh_unseen_count(obj, res.unseen_count);
-  }
-};
-
-// Refresh mails count
-rcube_webmail.prototype.mel_refresh_mails_count = function() {
-  if (rcmail.env.task == 'mail' 
-  && $('.sharesmailboxesul').length) {
-    $('.sharesmailboxesul li').each(function() {
-      if (!$(this).hasClass('current') || !$(this).find('> a > div.treetoggle').hasClass('expanded')) {
-        var _this = $(this);
-        var res = rcmail.mel_storage_get('seen.' + _this.attr('id'));
-        if (res) {
-          rcmail.mel_refresh_unseen_count(_this, res.unseen_count);
-        }
-      }
-    });
-  }
-};
-
-// Refresh unseen count
-rcube_webmail.prototype.mel_refresh_unseen_count = function(obj, unseen_count) {
-  if (unseen_count > 0 && !obj.find('> a > div.treetoggle').hasClass('expanded')) {
-    obj.find('> a > .unreadcount').text(unseen_count);
-    obj.addClass('unread');
-  }
-  else {
-    obj.find('> a > .unreadcount').text('');
-    obj.removeClass('unread');
-  }
-  if (unseen_count > 0 && obj.hasClass('current') && $('#mailboxlist > li:first-child').hasClass('selected')) {
-    if (obj.find('> a > div.treetoggle').hasClass('expanded')) {
-      var unread = parseInt($('#mailboxlist > li:first-child > a > span.unreadcount').text()) || 0;
-    }
-    else {
-      var unread = parseInt(obj.find('> a > span.unreadcount').text()) || 0;
-    }
-    if (unseen_count > unread) {
-      this.refresh();
-    }
-  }
-  // Gestion du title
-  if (obj.hasClass('current') && document.title) {
-    reg = /^\([0-9]+\)\s+/i;
-    var new_title = '',
-    doc_title = String(document.title);
-    
-    if (unseen_count && doc_title.match(reg))
-    new_title = doc_title.replace(reg, '('+unseen_count+') ');
-    else if (unseen_count)
-    new_title = '('+unseen_count+') '+doc_title;
-    else
-    new_title = doc_title.replace(reg, '');
-    
-    this.set_pagetitle(new_title);
-  }
 };
 
 // Get value from cache

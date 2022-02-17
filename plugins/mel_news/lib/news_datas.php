@@ -143,6 +143,7 @@ class news_datas extends anews_datas
         $model = str_replace("<site/>", "", $model);
         $model = str_replace("<raw_date/>", $this->date->get_raw(), $model);
         $model = str_replace("<datalink/>", "", $model);
+        $model = str_replace("<datacopy/>", "", $model);
         $model = str_replace("<dataformat/>", "small", $model);
         $model = str_replace("<datatype/>", $this->_service, $model);
         $model = str_replace("<title/>", $this->title, $model);
@@ -203,6 +204,7 @@ class rss_datas extends anews_datas
         $model = str_replace("<additionnal_contents/>", "", $model);
         $model = str_replace("<headlines_other_classes/>", "", $model);
         $model = str_replace("<datalink/>", "", $model);
+        $model = str_replace("<datacopy/>", "", $model);
         $model = str_replace("<dataformat/>", "small", $model);
         $model = str_replace("<datatype/>", $this->source, $model);
         $model = str_replace("<type/>", "rss", $model);
@@ -246,10 +248,11 @@ class custom_news_datas extends rss_datas
         $model = str_replace("<datalink/>", $this->feedUrl, $model);
         $model = str_replace("<dataformat/>", $this->size, $model);
         $model = str_replace("<datatype/>", $this->source, $model);
+        $model = str_replace("<datacopy/>", $this->datas->link, $model);
         $model = str_replace("<headlines_other_classes/>", "headlines-rss-type", $model);
 
         $button_edit = '<button style="margin:0" title="Editer" onclick="rcmail.command(\'news.edit\', this)" class="mel-button roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>';
-        $button_copy = '<button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command(\'news.copy\', `'.($this->source === "twitter" ? 'https://twitter.com/'.$this->url : $this->datas->link).'`)" class="mel-button roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>';
+        $button_copy = '<button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command(\'news.copy\', '.($this->source === "twitter" ? '`https://twitter.com/'.$this->url."`" : '$(this)').')" class="mel-button roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>';
 
         if ($this->source === "twitter")
         {
@@ -333,7 +336,7 @@ class server_news_data extends custom_news_datas
         if ($this->loaded)
         {
             $button_edit = '<button style="margin:0" data-news="'.$this->getServerDatas().'" title="Editer" onclick="rcmail.command(\'news.edit\', this)" class="mel-button roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>';
-            $button_copy = '<button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command(\'news.copy\', `'.($this->source === "twitter" ? 'https://twitter.com/'.$this->url : $this->datas->link).'`)" class="mel-button roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>';
+            $button_copy = '<button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command(\'news.copy\', '.($this->source === "twitter" ? '`https://twitter.com/'.$this->url.'`' : '$(this)').')" class="mel-button roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>';
             $model = str_replace("<additionnal_contents/>", '<div style="position: absolute;bottom: 30px;" class="headlines-source"><p>Source : '.ucfirst($this->source)."</p><p class='p-buttons'>$button_copy $button_edit</p></div>", $model);
         }
         

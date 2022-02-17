@@ -611,6 +611,13 @@ if (rcmail)
                     $("#layout-menu").css("opacity", "").removeClass("hidden");
             }
 
+            if ($("#otherapps #listotherapps").children().length === 0)
+                $("#taskmenu .more-options").parent().css("display", "none");
+            else
+                $("#taskmenu .more-options").parent().css("display", "block");
+
+            MEL_ELASTIC_UI.setup_other_apps(true);
+
         });
 
         $(document).ready(() => {

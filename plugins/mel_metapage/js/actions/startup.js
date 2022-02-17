@@ -492,6 +492,7 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
 
     try {
+        //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
         let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
         const _$ = querry_content.$;
 

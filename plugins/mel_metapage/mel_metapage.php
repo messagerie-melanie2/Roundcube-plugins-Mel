@@ -262,6 +262,7 @@ class mel_metapage extends rcube_plugin
             }
             else
             {
+                $this->rc->output->set_env("melframed", true);
                 try {
                     $this->rc->output->set_env("mmp_modal",$this->rc->output->parse("mel_metapage.mel_modal", false, false));
                 } catch (\Throwable $th) {

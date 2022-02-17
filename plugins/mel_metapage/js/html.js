@@ -340,7 +340,7 @@ html_helper.Calendars = function({datas, config = {
 		else 
 		{
 			const raw_storage = mel_metapage.Storage.get(mel_metapage.Storage.calendar_by_days);
-			const storage = Enumerable.from(config.next_when_empty_today_function !== null ? config.next_when_empty_today_function(raw_storage) : raw_storage);
+			const storage = Enumerable.from(config.next_when_empty_today_function !== null && typeof config.next_when_empty_today_function === "function" ? config.next_when_empty_today_function(raw_storage) : raw_storage);
 			const storage_count = storage.count();
 			if (storage_count > 0)
 			{

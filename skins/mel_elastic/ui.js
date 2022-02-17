@@ -675,13 +675,16 @@ $(document).ready(() => {
          * Met en place la barre de navigation pour les autres applis.
          * @returns {Mel_Elastic} Chaînage
          */
-        setup_other_apps()
+        setup_other_apps(ignoreStart = false)
         {
-            //Enrobe les "a" par des "li".
-            $("#listotherapps").find("a").each((i,e) => {
-                let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
-                $(e).addClass("mel-focus").appendTo(tmp);
-            });
+            if (!ignoreStart)
+            {
+                //Enrobe les "a" par des "li".
+                $("#listotherapps").find("a").each((i,e) => {
+                    let tmp = $("<li style=width:100%></li>").appendTo($("#listotherapps"));
+                    $(e).addClass("mel-focus").appendTo(tmp);
+                });
+            }
 
             //Gestion de la barre.
             $("#listotherapps").find("a").on('focusout', (e) => {

@@ -83,6 +83,7 @@ class mel_news extends rcube_plugin {
       $this->register_action('delete_custom', array($this, 'delete_custom_flux'));
       $this->register_action('update_rights', array($this, 'update_rights'));
       $this->register_action('check_user', array($this, 'check_user'));
+      $this->register_action('get_rights', array($this, 'action_get_user_right'));
 
       //$this->register_action('setFilter', array($this, 'set_filter'));
       $this->include_stylesheet($this->local_skin_path() . '/news.css');
@@ -130,6 +131,12 @@ class mel_news extends rcube_plugin {
 
     $this->rc->output->set_pagetitle($this->gettext("my_news", "mel_news"));
     $this->rc->output->send('mel_news.news');
+  }
+
+  function action_get_user_right()
+  {
+    echo json_encode(self::get_user_service_list());
+    exit;
   }
 
   function check_user()
@@ -233,7 +240,7 @@ class mel_news extends rcube_plugin {
 
         $it = 1;
         foreach ($newsShares as $newShare) {
-          $exploded = explode(",", $newShare->service);
+          $exploded = explode(",", $newShare->service, 2);
 
           $table->addRow()->edit($it, 0, explode("=", $exploded[0])[1])
           ->edit($it, 1, $this->gettext('right_'.$newShare->right));
@@ -265,7 +272,7 @@ class mel_news extends rcube_plugin {
           $arrayFoJS = [];
 
           foreach ($newsShares as $newShare) {
-            $exploded = explode(",", $newShare->service);
+            $exploded = explode(",", $newShare->service, 2);
             $html .= "<br/><h5>Droits de ".explode("=", $exploded[0])[1]." : </h5>";
             $html .= '<button style="margin:5px" onclick="rcmail.command(\'news.settings.add.rights\', \''.$newShare->service.'\')" class="mel-button btn btn-secondary">Ajouter <span class="plus icon-mel-plus"></span></button>';
 
@@ -287,7 +294,7 @@ class mel_news extends rcube_plugin {
               $isPublish = $right->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER || $right->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_PUBLISHER;
 
               $table->addRow()->edit($it, 0, driver_mel::gi()->getUser($right->user)->name)
-              ->edit($it, 1, '<span class="news_o">'.explode('=', explode(",", $right->service)[0])[1].'</span>')
+              ->edit($it, 1, '<span class="news_o">'.explode('=', explode(",", $right->service, 2)[0])[1].'</span>')
               ->edit($it, 2, '<span class="'.($isAdmin ? "valid icon-mel-check" : "not-valid icofont-close-line").'"></span>')
               ->edit($it, 3, '<span class="'.($isPublish ? "valid icon-mel-check" : "not-valid icofont-close-line").'"></span>')
               ->edit($it, 4, '<button data-uid="'.$right->user.'" data-service="'.$right->service.'" style="margin:0" onclick="rcmail.command(`news.settings.edit.rights`, {service:`'.$right->service.'`, button:$(this)})" class="mel-button btn btn-secondary"><span class="icon-mel-pencil"></span></button>')
@@ -418,7 +425,7 @@ class mel_news extends rcube_plugin {
     $news->description = rcube_utils::get_input_value("_description", rcube_utils::INPUT_POST, true);
     $news->modified = date('Y-m-d H:i:s');
     $news->service = $service;
-    $news->service_name = explode('=', explode(',', $service)[0])[1];
+    $news->service_name = explode('=', explode(',', $service, 2)[0])[1];
 
     $news->save();
 
@@ -1296,7 +1303,7 @@ class mel_news extends rcube_plugin {
       foreach ($allParentRights as $newShare) {
         if ($newShare->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER || $newShare->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_PUBLISHER)
         {
-          $exploded = explode(",", $newShare->service);
+          $exploded = explode(",", $newShare->service, 2);
           $array[$newShare->service] = explode('=', $exploded[0])[1];
         }
       }

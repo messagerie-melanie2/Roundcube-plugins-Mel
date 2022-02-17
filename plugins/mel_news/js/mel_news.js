@@ -94,6 +94,27 @@ $(document).ready(async () => {
             return NewsPopup.cache;
         }
 
+        drawChoice(title, ...choices)
+        {
+            this.modal.footer.querry.html("");
+            this.modal.editTitle(title);
+
+            let $html = $('<div style="display:flex"></div>');
+            for (const key in choices) {
+                if (Object.hasOwnProperty.call(choices, key)) {
+                    const element = choices[key];
+                    $html.append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block ${element.classes === undefined ? "btn-secondary" : element.classes} btn-mel">
+                    <span class="block ${element.icon}"></span> ${element.title}
+                </button>`).click(element.action));
+                }
+            }
+
+            this.modal.editBody("");
+            this.modal.contents.append($html);
+
+            return this;
+        }
+
         createOrEditPublish(id = null, isFlux = false)
         {
             let obFields = '';//<p class="red-star-removed"><star class="red-star mel-before-remover">*</star>Champs obligatoires</p>';
@@ -529,7 +550,7 @@ $(document).ready(async () => {
                     break;
             }
 
-            html += this.createCheckBoxChoices("Choisir le format du block", "newsMelFormat", formats, datas.format, true);
+            html += this.createCheckBoxChoices("Choisir le format du bloc", "newsMelFormat", formats, datas.format, true);
 
             this.modal.editBody(html);
 
@@ -589,7 +610,7 @@ $(document).ready(async () => {
                         (isSettings ? parent.rcmail : rcmail).clear_messages();
                         if (response === "denied")
                         {
-                            if (data.type === "twitter")
+                            if (datas.type === "twitter")
                             {
                                 this.modal.show();
                                 (isSettings ? parent.rcmail : rcmail).display_message("Impossible d'atteindre l'utilisateur !", "error");
@@ -639,7 +660,7 @@ $(document).ready(async () => {
                         rcmail.clear_messages();
                         if (response === "denied")
                         {
-                            if (data.type === "twitter")
+                            if (datas.type === "twitter")
                             {
                                 this.modal.show();
                                 rcmail.display_message("Impossible d'atteindre l'utilisateur !", "error");
@@ -926,7 +947,7 @@ $(document).ready(async () => {
                         }
                     });
 
-                    this.$news.find(".square-contents").append($(tmp).find(".square-contents").html());
+                    this.$news.data("copy", $(tmp).children().data("copy")).find(".square-contents").append($(tmp).find(".square-contents").html());
 
                     if (this.current === -1)
                         $(e.currentTarget).addClass("disabled").attr("disabled", "disabled");
@@ -966,7 +987,7 @@ $(document).ready(async () => {
                         }
                     });
 
-                    this.$news.find(".square-contents").append($(tmp).find(".square-contents").html());
+                    this.$news.data("copy", $(tmp).children().data("copy")).find(".square-contents").append($(tmp).find(".square-contents").html());
 
                     if (news_datas[this.current + 1] === undefined)
                         $(e.currentTarget).addClass("disabled").attr("disabled", "disabled");
@@ -1059,13 +1080,14 @@ $(document).ready(async () => {
             replaceAll("<datalink/>", this.link).
             replaceAll("<dataformat/>", this.format).
             replaceAll("<datatype/>", this.type).
+            replaceAll("<datacopy/>", this.link).
             replaceAll("<div_title/>", "").
             replaceAll("<headlines_other_classes/>", "headlines-rss-type").
             replaceAll("<service/>", this.site).
             replaceAll("<title/>", content.title).
             replaceAll("<text/>", content.content).
             replaceAll("<additionnal_contents/>", `<div style="position: absolute;bottom: 30px;" class="headlines-source"><p>Source : ${strUcFirst(this.type)}</p><p class='p-buttons'>
-            <button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command('news.copy','${this.link}')" class="mel-button btn btn-secondary roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>
+            <button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command('news.copy', $(this))" class="mel-button btn btn-secondary roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>
             <button style="margin:0" title="Editer" onclick="rcmail.command(\'\')" class="mel-button btn btn-secondary roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>
             </p></div>`).
             replaceAll("<date/>", `Publié le ${this.tradDate(this.date.format('dddd DD MMMM YYYY'))}`)
@@ -1235,6 +1257,16 @@ $(document).ready(async () => {
                 else
                 {
                     array.push(new MelNews(uid).setNews($(e)).setup(uid));
+                }
+
+                if (array[array.length-1].type !== MelNews.type.twitter && array[array.length-1].$news.data("copy") !== "")
+                {
+                    array[array.length-1].$news.find(".square-contents").children().each((i, e) => {
+                        if ($(e).hasClass("vignette-arrows"))
+                            return;
+
+                        $(e).css("cursor", "pointer").attr("title", "Ouvrir dans un nouvel onglet");
+                    });
                 }
             });
             MelCustomNews.allCustomNews = array;
@@ -1608,10 +1640,11 @@ else {
         }, true);
 
         rcmail.register_command('news.copy', (x) => {
-            mel_metapage.Functions.copy(x);
+            if (typeof x === "string") mel_metapage.Functions.copy(x);
+            else mel_metapage.Functions.copy(x.parent().parent().parent().data("copy"));
         }, true);
 
-        rcmail.register_command('news.edit', (x) => {
+        rcmail.register_command('news.edit.action', (x) => {
             let $data = $(x).parent().parent().parent();
 
             try {
@@ -1624,9 +1657,77 @@ else {
 
         }, true);
 
+        rcmail.register_command('news.edit', (x) => {
+            NewsPopup.fabric().drawChoice("Que souhaitez-vous faire ?", 
+            {
+                icon:"icon-mel-pencil",
+                title:"Modifier le flux",
+                action:() => {
+                    rcmail.command('news.edit.action', x)
+                }
+            },
+            {
+                icon:"icon-mel-trash",
+                title:"Supprimer le flux",
+                action:() => {
+                    let text;
+
+                    if (mode === modes.all && $(x).parent().parent().parent().data("type") === MelNews.type.intranet)
+                    {
+                        text = "Attention, vous allez supprimer toutes les vignettes lié à ce flux, êtes-vous sûr de votre action ?";
+                    }
+                    else text = "Attention, vous allez supprimer ce flux, êtes-vous sûr de votre action ?";
+
+                    if (confirm(text))
+                    {
+                        parent.rcmail.set_busy(true, "loading");
+                        NewsPopup.fabric().modal.close();
+                        mel_metapage.Functions.post(
+                            mel_metapage.Functions.url("news", "delete_custom"),
+                            {
+                                _url:(new MelCustomNews($(x).parent().parent().parent().data("uid"))).id
+                            },
+                            (datas) => {          
+                                window.location.reload();
+                            }
+                        );
+                    }
+                }
+            }
+            ).modal.show();
+
+        }, true);
+
         rcmail.register_command('news.published.edit', (x) => {
             let $data = $(x).parent().parent().parent();
             NewsPopup.fabric().createOrEditPublish($data.data('uid'));
+        }, true);
+
+        rcmail.register_command('news.click', (x) => {
+            if (x._event !== undefined)
+            {
+                let $parent = $(x._event.originalTarget);
+                let it = 0;
+                while (it < 3) {
+                    if ($parent.hasClass("vignette-arrows"))
+                        return;
+                    else {
+                        $parent = $parent.parent();
+                        ++it;
+                    }
+                }
+            }
+
+            element = x.element.parent();
+
+            if (element.data("site") !== MelNews.type.twitter && element.data("copy") !== "")
+            {
+                window.open(element.data("copy"), '_blank').focus();
+            }
+        }, true);
+
+        rcmail.register_command('news.keydown', (x) => {
+            if (x._event.keyCode === 13) rcmail.command("news.click", {_event:undefined, element:x.element});
         }, true);
 
         let initial = true;
@@ -1671,8 +1772,8 @@ else {
 
         }
         else {
-            $("#news-button-publish").remove();
-            $("#news-button-publish-flux").remove();
+            $("#news-button-publish").hide();
+            $("#news-button-publish-flux").hide();
         }
 
         let it = 0;
@@ -1799,6 +1900,50 @@ else {
                 if (!ok)
                     rcmail.display_message("Une erreur est survenue lors du triage ! Êtes-vous connectez à internet ?", "error");
             })
+        });
+
+        rcmail.addEventListener("mel_metapage_refresh", async () => {
+            //start
+            rcmail.triggerEvent("news.refresh.before");
+            mel_metapage.Functions.get(
+                mel_metapage.Functions.url("news", "get_rights"), 
+                {},
+                (success) => {
+                    rcmail.env.news_service_for_publish = JSON.parse(success);
+
+                    if (rcmail.env.news_service_for_publish !== null && rcmail.env.news_service_for_publish !== undefined && Enumerable.from(rcmail.env.news_service_for_publish).any())
+                    {
+                        $("#news-button-publish").show();
+                        $("#news-button-publish-flux").show();
+                    }
+                    else {
+                        $("#news-button-publish").hide();
+                        $("#news-button-publish-flux").hide();
+                    }
+                }
+            );
+
+            //middle
+            rcmail.triggerEvent("news.refresh");
+            await MelCustomNews.Refresh();
+
+            if (mode === modes.all) await MelCustomNews.Reorder();
+
+            await MelCustomNews.Filter();
+
+            //end
+            for (let index = 0; index < MelCustomNews.allCustomNews.length; index++) {
+                if (MelCustomNews.allCustomNews.type !== MelNews.type.twitter && MelCustomNews.allCustomNews.$news.data("copy") !== "")
+                {
+                    MelCustomNews.allCustomNews.$news.find(".square-contents").children().each((i, e) => {
+                        if ($(e).hasClass("vignette-arrows"))
+                            return;
+
+                        $(e).css("cursor", "pointer").attr("title", "Ouvrir dans un nouvel onglet");
+                    });
+                }
+            }
+            rcmail.triggerEvent("news.refresh.after");
         });
 
         window.MelCustomNews = MelCustomNews;

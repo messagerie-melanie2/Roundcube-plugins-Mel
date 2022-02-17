@@ -1971,12 +1971,12 @@ else {
             rcmail.triggerEvent("news.refresh.after");
         });
 
-        window.MelCustomNews = MelCustomNews;
+        // window.MelCustomNews = MelCustomNews;
 
     }
 
-    rcmail.env.news_actions = {
-        reorder:MelCustomNews.Reorder
-    };
+    // rcmail.env.news_actions = {
+    //     reorder:MelCustomNews.Reorder
+    // };
 
 });

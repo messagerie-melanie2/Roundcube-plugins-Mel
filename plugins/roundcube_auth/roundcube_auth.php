@@ -116,6 +116,7 @@ class roundcube_auth extends rcube_plugin
     private $kerb_keyword;
     private $oidc_enabled;
     private $oidc_keyword;
+    private $oidc_exp_delay;
     private $config_init = false;
 
     /**
@@ -142,6 +143,7 @@ class roundcube_auth extends rcube_plugin
         if($this->oidc_enabled = $rcmail->config->get('auth_oidc_enabled'))
         {
             $this->oidc_keyword = $rcmail->config->get('auth_oidc_keyword');
+            $this->oidc_exp_delay = $rcmail->config->get('oidc_exp_delay');//, TODO_DEFAULT_VALUE);
         }
         $this->config_init = true;
     }
@@ -397,6 +399,18 @@ class roundcube_auth extends rcube_plugin
         }
     }
 
+    private function check_token_expiration()
+    {
+        $expiration_time = $_SESSION['idtoken_exp'];
+        $expiration_delay =  $this->oidc_exp_delay;
+        //
+        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Expiration validity check");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Expiration delay : " . strval(time() - $expiration_time) ."/$expiration_delay ($expiration_time)");
+
+        // Si on approche de l'expiration du token, retourne 'true'
+        return (isset($expiration_time) && (time() - $expiration_time) > $expiration_delay);
+    }
+
     /**
      * Startup hook handler
      */
@@ -529,8 +543,8 @@ class roundcube_auth extends rcube_plugin
         else if($rcmail->task != 'logout' && $oidc_query != $this->enabled)
         {
             // Action de l'utilisateur : requête qui affiche du HTML (ouverture d'une page, changement de task, ...)
-            // if($rcmail->output->type == 'html')
-            if($rcmail->task == 'roundpad')
+            if($rcmail->output->type == 'html')
+            //if($rcmail->task == 'roundpad')
             {
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Action utilisateur à " . time()); // TODO REMOVE
 
@@ -539,9 +553,11 @@ class roundcube_auth extends rcube_plugin
             }
 
             // Action automatique : refresh ou vide (clic sur une task ?)
-            // else if (($rcmail->action == 'refresh' || empty($rcmail->action))
-            if ($rcmail->action == 'refresh' || empty($rcmail->action))
+            // if (($rcmail->action == 'refresh' || empty($rcmail->action))
+            else if ($rcmail->action == 'refresh' || empty($rcmail->action))
             {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Refresh à " . time()); // TODO REMOVE
+
                 $activity_time = $_SESSION['last_user_action'];
                 $inactivity_delay = $rcmail->config->get('oidc_act_delay');//, TODO_DEFAULT_VALUE);
                 //
@@ -557,25 +573,17 @@ class roundcube_auth extends rcube_plugin
                     $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::LOGOUT, $rcmail);
                     return; // TODO exit
                 }
+            }
 
-                $expiration_time = $_SESSION['idtoken_exp'];
-                $expiration_delay = $rcmail->config->get('oidc_exp_delay');//, TODO_DEFAULT_VALUE);
-                //
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Expiration validity check");
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Expiration delay : " . strval(time() - $expiration_time) ."/$expiration_delay ($expiration_time)");
+            // Dans tous les cas, si le token est proche de l'expiration, on relance l'auth OIDC (utilisateur présent)
+            if($this->check_token_expiration())
+            {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Re-authenticating user (Token expiration)");
 
-                // Si on approche de l'expiration du token
-                if(isset($expiration_time) && (time() - $expiration_time) > $expiration_delay)
-                {
-                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Re-authenticating user (Token expiration)");
-                    
-                    // Delete stored things
-                    $rcmail->kill_session();
+                // Delete stored things
+                $rcmail->kill_session();
 
-                    // Restart OIDC process
-                    $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
-                    return; // TODO exit
-                }
+                $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
             }
         }
 

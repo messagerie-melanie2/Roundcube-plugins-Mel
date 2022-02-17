@@ -231,7 +231,7 @@ if (parent === window)
                     eval(datas.exec);
             }
         } catch (error) {
-            console.error(error, datas);
+            //console.error(error, datas);
         }
         //console.error("parent", datas, datas.child !== false);
         if (datas.child !== false)
@@ -264,7 +264,7 @@ else {
             else
                 eval(datas.exec);
         } catch (error) {
-            console.error(error, datas);
+            //console.error(error, datas);
         }
     }  
 }

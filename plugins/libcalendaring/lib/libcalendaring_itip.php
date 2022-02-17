@@ -31,7 +31,9 @@ class libcalendaring_itip
     protected $domain;
     protected $itip_send = false;
     protected $rsvp_actions = array('accepted','tentative','declined','delegated');
-    protected $rsvp_status  = array('accepted','tentative','declined','delegated');
+    // PAMELA - MANTIS 0006395: Evt avec invités, une modification avec envoi aux invités puis aussitôt correction sans envoi n'est pas prise en compte
+    // protected $rsvp_status  = array('accepted','tentative','declined','delegated');
+    protected $rsvp_status  = array('accepted','tentative','declined','delegated','needs-action');
 
     function __construct($plugin, $domain = 'libcalendaring')
     {

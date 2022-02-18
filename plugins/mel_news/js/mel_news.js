@@ -276,6 +276,7 @@ $(document).ready(async () => {
                 }).appendTo(this.modal.footer.querry);
 
                 setTimeout(async  () => {
+
                     if (rcmail.editor !== undefined && rcmail.editor.editor !== null)
                     {
                         rcmail.editor.editor.remove();
@@ -287,16 +288,18 @@ $(document).ready(async () => {
                     //   });image media 
                     let config = rcmail.env.editor_config;
                     config.disabled_buttons = ["image", "media"];
+
                     rcmail.editor_init(config, "mel-publish-body");
                     this.modal.show();
 
                     if (NewsPopup.corrected !== true)
                     {
                         $(document).on('focusin', function(e) {
-                            if ($(e.target).closest(".mce-window").length) {
+                            if ($(e.target).closest(".tox-dialog").length) {
                                 e.stopImmediatePropagation();
                             }
                         });
+
                         NewsPopup.corrected = true;
                     }
 

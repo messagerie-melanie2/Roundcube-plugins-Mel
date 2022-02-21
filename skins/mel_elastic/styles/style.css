@@ -1556,7 +1556,7 @@ html.layout-small body.task-settings.action-plugin-mel_resources_bal #layout-con
 /*********/
 
 body.task-mail .ui-dialog iframe, .ui-dialog .ui-dialog-content.iframe{
-    width: 97.9% !important;;
+    padding: 0;
 }
 
 /* .element-title{

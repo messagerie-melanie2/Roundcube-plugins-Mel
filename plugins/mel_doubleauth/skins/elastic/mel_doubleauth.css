@@ -1,12 +1,17 @@
 .texte_explic {
 	padding: 3px 15px;
-	border: 1px solid #FFFFE0;
-	border-color: var(--settings-warn-border-color);
 	background-color: #FFFFE0;
 	background-color: var(--settings-warn-bg-color);
 }
 
+div.table div.row {
+	padding: 10px 0;
+}
 
+div.table div.row input {
+	display: inline;
+	width: auto;
+}
 
 
 

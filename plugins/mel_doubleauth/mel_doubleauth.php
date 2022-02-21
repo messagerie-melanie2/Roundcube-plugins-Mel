@@ -311,39 +311,55 @@ class mel_doubleauth extends rcube_plugin {
     public function mel_doubleauth_form()
     {
         $this->add_texts('localization/', true);
-        $this->rc->output->set_env('product_name', $this->rc->config->get('product_name'));
+
+        /**
+         * Create a bootstrap row
+         */
+        function row($content, $class = 'row') { return html::div(['class' => "$class"], $content); }
+
+        /**
+         * Create a bootstrap col
+         */
+        function col($content, $class = 'col-sm my-auto') { return html::div(['class' => "$class"], $content); }
+
+        /**
+         * Create a bootstrap col in one row
+         */
+        function rowcol($content, $rowclass = 'row', $colclass = 'col-sm my-auto') { 
+            return html::div(['class' => "$rowclass"], html::div(['class' => "$colclass"], $content)); 
+        }
         
         $data = $this->__get2FAconfig();
         
-        // Fields will be positioned inside of a table
-        $table = new html_table(['cols' => 3]);
-        
         // info
-        $table->add(['class' => 'texte_explic', 'colspan' => '3'], $this->gettext('msg_infor'));
-        $table->add(['colspan' => '3'],'<br />');
-        
+        $div_container = rowcol(html::span(['class' => 'texte_explic'], $this->gettext('msg_infor')));
+
         // secret base
-        $field_id = '2FA_secret';
+        $field_id = 'p2FA_secret';
         $input_descsecret = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'hidden', 'value' => $data['secret']]);
-        $html_secret = $input_descsecret->show();
-        $table->add(['colspan' => '3'], $html_secret);
+
+        $hidden_fields = $input_descsecret->show();
         
         if (!$data['activate']) {
             // Activate/deactivate
-            $field_id = '2FA_activate_button';
+            $field_id = 'p2FA_activate_button';
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('activate')]);
-            $table->add(['width' => '20px'], '<span class="cercle">1</span>');
-            $table->add(['width' => '20%'],  html::label($field_id, $this->Q($this->gettext('label_activate'))));
 
-            // $checked = $data['activate'] ? null: 1; // :-?
-            $table->add(null, $bouton_active->show());
-            $table->add(null, "");
-            $table->add(['colspan' => '2'], $this->gettext('info_activer'));
+            $div_container .= row(
+                col(html::span(['class' => 'cercle'], '1'), 'col-sm-1 my-auto') . 
+                col(html::label($field_id, $this->Q($this->gettext('label_activate'))), 'col-sm-2 my-auto') .
+                col($bouton_active->show(), 'col-sm-3')
+            );
+
+            $div_container .= row(
+                col(' ', 'col-sm-1') . 
+                col($this->gettext('info_activer'))
+            );
             
-            $field_id = '2FA_activate';
+            $field_id = 'p2FA_activate';
             $input_descsecret = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'hidden', 'value' => '1', 'readonly' => 'readonly']);
-            $html_secret = $input_descsecret->show();
-            $table->add(['colspan' => '3'], $html_secret);
+
+            $hidden_fields .= $input_descsecret->show();
             
             $html_recovery_codes = '';
 
@@ -352,55 +368,58 @@ class mel_doubleauth extends rcube_plugin {
                 $html_recovery_codes .= ' <input type="hidden" readonly = "readonly" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
             }
 
-            $table->add(['colspan' => '3'], $html_recovery_codes);
-            
-            // Build the table with the divs around it
-            $out = html::div(['class' => 'settingsbox', 'style' => 'margin: 0;'],
-                html::div(['id' => 'prefs-title', 'class' => 'boxtitle'], $this->gettext('mel_doubleauth') . ' - ' . $this->rc->user->data['username']) .
-                html::div(['class' => 'boxcontent'], $table->show())
-            );
+            $hidden_fields .= $html_recovery_codes;
         } else {
-            $table->add(['colspan' => '3'], $this->gettext('info_active_ok'));
-            $html_check_code = '<input type="text" id="2FA_code_to_check" maxlength="10">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
-            $table->add(['colspan' => '3'], $this->gettext('info_check_code'));
-            $table->add(['colspan' => '3'], $html_check_code);
-            $table->add(['colspan' => '3'], '<br />');
+            $html_check_code = '<input type="text" id="2FA_code_to_check" class="form-control" maxlength="10">&nbsp;&nbsp;<input type="button" class="button mainaction" id="2FA_check_code" value="' . $this->gettext('check_code') . '">';
+
+            $div_container .= rowcol($this->gettext('info_active_ok'));
+            $div_container .= rowcol($this->gettext('info_check_code'));
+            $div_container .= rowcol($html_check_code);
+            $div_container .= rowcol('<br>');
 
             // recovery codes
-            $table->add(['class' => 'title', 'colspan' => '3'], $this->gettext('recovery_codes'));
+            $div_container .= rowcol($this->gettext('recovery_codes'));
+
             $html_recovery_codes = '<input type="button" class="button mainaction" id="2FA_show_recovery_codes" value="' . $this->gettext('show_recovery_codes').'">';
             
             for ($i = 0; $i < self::NUMBER_RECOVERY_CODES; $i++) {
                 $value = isset($data['recovery_codes'][$i]) ? $data['recovery_codes'][$i] : '';
-                $html_recovery_codes .= ' <input type="password" readonly = "readonly" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
+                $html_recovery_codes .= ' <input type="password" class="form-control" readonly = "readonly" name="2FA_recovery_codes[]" value="'.$value.'" maxlength="10"> &nbsp; ';
             }
 
-            $table->add(['colspan' => '3'], $html_recovery_codes);
-            $table->add(['colspan' => '3'], '<br />');
-            $table->add(['colspan' => '3'], $this->gettext('info_desactiver'));
-            
+            $div_container .= rowcol($html_recovery_codes);
+            $div_container .= rowcol('<br>');
+            $div_container .= rowcol($this->gettext('info_desactiver'));
+
             $field_id = '2FA_desactivate_button';
             $bouton_active = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'button', 'class' => 'button mainaction', 'value' => $this->gettext('desactivate')]);
-            // $checked = $data['activate'] ? null: 1; // :-?
-            $table->add(['colspan' => '3'], $bouton_active->show());
-            
-            $out = html::div(['class' => 'settingsbox', 'style' => 'margin: 0;'],
-                html::div(['id' => 'prefs-title', 'class' => 'boxtitle'], $this->gettext('mel_doubleauth') . ' - ' . $this->rc->user->data['username']) .
-                html::div(['class' => 'boxcontent'], $table->show())
-            );
+
+            $div_container .= rowcol($bouton_active->show());
         }
+
+        $field_id = '_username';
+        $input_username = new html_inputfield(['name' => $field_id, 'id' => $field_id, 'type' => 'hidden', 'value' => $this->rc->user->data['username'], 'readonly' => 'readonly']);
+
+        $hidden_fields .= $input_username->show();
+
+        // Build the table with the divs around it
+        $out = $hidden_fields . 
+            html::tag('fieldset', ['class' => 'main'], 
+                html::tag('legend', ['id' => 'prefs-title'], $this->gettext('mel_doubleauth')) .
+                html::div(['class' => 'table'], $div_container)
+        );
         
         // Construct the form
         $this->rc->output->add_gui_object('mel_doubleauthform', 'mel_doubleauth-form');
         
-        $out = $this->rc->output->form_tag([
+        $form = $this->rc->output->form_tag([
             'id' => 'mel_doubleauth-form',
             'name' => 'mel_doubleauth-form',
             'method' => 'post',
             'action' => './?_task=settings&_action=plugin.mel_doubleauth-save',
         ], $out);
         
-        return $out;
+        return html::div(['class' => 'formcontent'], $form);
     }
     
     //------------- appels ajax
@@ -849,16 +868,10 @@ class mel_doubleauth extends rcube_plugin {
      * Définit si on est dans une situation où l'auth est assez forte
      * Permet de ne pas déclencher la double auth
      */
-    private function is_auth_strong() {
-
-        // TODO remove
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, "is_auth_strong");
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, $_COOKIE['eidas']);
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, $_SESSION['eidas']);
-  
+    private function is_auth_strong() 
+    {
         $eidas = $_SESSION['eidas'];
         //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
-        //mel_logs::get_instance()->log(mel_logs::DEBUG, $cookie_eidas);
   
         return $this->is_internal() // Connexion intranet
           || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)

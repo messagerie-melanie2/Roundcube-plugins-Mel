@@ -16,7 +16,24 @@ if (window.rcmail) {
             });
             rcmail.treelist.addEventListener('expand', folder_expand);
         }
-    }); 
+    });
+
+    // MANTIS 0006400: création de dossiers de messagerie
+    rcmail.addEventListener('contextmenu_init', function(menu) {
+        // identify the folder list context menu
+        if (menu.menu_name == 'folderlist') {
+            // make sure this new shortcut is always active
+            menu.addEventListener('activate', function(p) {
+                if (p.command == 'window-edit-folder') {
+                    if (p.source.className.indexOf('virtual') !== -1) {
+                        // Sur un dossier virtuel par de création pour éviter les erreurs
+                        return false;
+                    }
+                }
+            });
+        }
+    });
+
     // After getcount
     rcmail.addEventListener('responseafter', function(evt) {
         if ((evt.response.action == 'getunread' 

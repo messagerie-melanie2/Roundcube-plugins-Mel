@@ -180,7 +180,7 @@ rcube_webmail.prototype.window_edit_folder = function() {
     },
     buttons: buttons,
     width: 450,
-    height: 380,
+    height: 480,
     rcmail: rcmail
   }).width(430);
   $(window).on("hashchange", function(e) {

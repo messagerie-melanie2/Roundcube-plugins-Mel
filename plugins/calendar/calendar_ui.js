@@ -81,6 +81,8 @@ function rcube_calendar_ui(settings)
       dayNames: settings.days,
       dayNamesShort: settings.days_short,
       weekNumbers: settings.show_weekno > 0,
+      // MANTIS 0006486: Bug du numéro de semaine dans le fullcalendar de l'agenda
+      weekNumberCalculation:'ISO',
       weekNumberTitle: rcmail.gettext('weekshort', 'calendar') + ' ',
       firstDay: settings.first_day,
       firstHour: settings.first_hour,

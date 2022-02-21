@@ -145,6 +145,49 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
     });
 }
 
+function mm_st_getNavClass(element)
+{
+    e = element;
+    if (e.classList.contains("more-options"))
+        return "more-options";
+
+    let cClass = "";
+    e.classList.forEach((a) => {
+        switch (a) {
+            case "mel-focus":
+                return;
+            case "selected":
+                return;
+            case "order1":
+                return;
+            case "mel":
+                return;
+            default:
+                break;
+        }
+        if (a.includes("icofont"))
+            return;
+        if (a.includes("icon-mel-"))
+            return;
+        if (a.includes("button"))
+            return;
+        cClass = a;
+    });
+    // switch (cClass) {
+    //     case "logout":
+    //     case "about":
+    //     case "compose":
+    //     case "menu-last-frame":
+    //         return;
+
+    //     default:
+    //         break;
+    // }
+
+    return cClass;
+}
+window.mm_st_getNavClass = mm_st_getNavClass;
+
 function mm_st_ClassContract(_class)
 {
     switch (_class) {
@@ -172,6 +215,8 @@ function mm_st_ClassContract(_class)
             return _class;
     }
 }
+
+window.mm_st_ClassContract = mm_st_ClassContract;
 
 function mm_st_CommandContract(_class)
 {
@@ -634,10 +679,16 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 });
 
-function m_mp_ChangeLasteFrameInfo()
+function m_mp_ChangeLasteFrameInfo(force = false)
 {
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
+
+    if (!isUndefined && (rcmail.env.current_frame_name === rcmail.env.last_frame_class || mm_st_ClassContract(rcmail.env.current_frame_name) === rcmail.env.last_frame_class) && !force)
+    {
+        rcmail.env.last_frame_name = undefined;
+        return m_mp_ChangeLasteFrameInfo();
+    }
 
     if (isUndefined)
         rcmail.env.last_frame_name = rcmail.gettext('nothing', "mel_metapage");
@@ -662,6 +713,7 @@ function m_mp_ChangeLasteFrameInfo()
     }
 
 }
+window.m_mp_ChangeLasteFrameInfo = m_mp_ChangeLasteFrameInfo;
 
 function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
 {

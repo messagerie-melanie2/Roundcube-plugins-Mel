@@ -668,6 +668,22 @@ class MasterWebconfBar {
         if ($(".workspace-frame").length > 0 && $("iframe.workspace-frame").length === 0)
             $(".workspace-frame").remove();
 
+        if (rcmail.webconf_from_modal !== true)
+        {
+            try {
+                if (rcmail.env.current_frame_name === undefined)
+                {
+                    let $element = $("#taskmenu li a.selected");
+                    rcmail.env.current_frame_name = mm_st_ClassContract(mm_st_getNavClass($element[0]));
+                }
+                rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
+                rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+                m_mp_ChangeLasteFrameInfo(true);
+            } catch (error) {
+                console.error('###[m_mp_ChangeLasteFrameInfo]', error);
+            }
+        }
+
         this.start().deletePopUpOnLaunch();
     }
 
@@ -1668,6 +1684,14 @@ class MasterWebconfBar {
 
         this.maximize_toolbar();
         $(".melw-wsp").remove();
+
+        try {
+            rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
+            rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+            m_mp_ChangeLasteFrameInfo(true);
+        } catch (error) {
+            console.error('###[m_mp_ChangeLasteFrameInfo]', error);
+        }
     }
 
     /**
@@ -2033,6 +2057,21 @@ $(document).ready(() => {
             }
             else
             {
+
+                try {
+                    if (parent.rcmail.env.current_frame_name === undefined)
+                    {
+                        let $element = parent.$("#taskmenu li a.selected");
+                        parent.rcmail.env.current_frame_name = parent.mm_st_ClassContract(parent.mm_st_getNavClass($element[0]));
+                    }
+                    parent.rcmail.env.last_frame_class = parent.mm_st_ClassContract(parent.rcmail.env.current_frame_name);
+                    parent.rcmail.env.last_frame_name = parent.$("." + parent.mm_st_ClassContract(parent.rcmail.env.current_frame_name)).find(".inner").html();
+                    parent.m_mp_ChangeLasteFrameInfo(true);
+                    parent.$("#taskmenu li a.selected").removeClass("selected");
+                } catch (error) {
+                    console.error('###[m_mp_ChangeLasteFrameInfo]', error);
+                }
+
                 rcmail.env.webconf.set_title();
                 rcmail.env.webconf.show_selector();
                 if (rcmail.env["webconf.key"] === "")
@@ -2047,6 +2086,7 @@ $(document).ready(() => {
                 }
 
             }
+            parent.rcmail.webconf_from_modal = true;
             //rcmail.env.webconf = webconf;
             rcmail.env.wb_listener = new ListenerWebConfBar(rcmail.env.webconf);   
 

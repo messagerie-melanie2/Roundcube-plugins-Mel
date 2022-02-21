@@ -425,7 +425,9 @@ html.touch #layout-menu  span > a > span.inner
 
  /* html.touch #layout-menu a > span.inner, */
 #layout-menu:hover a:hover > span.inner,
-#layout-menu.force-open a.force-hover > span.inner {
+#layout-menu.force-open a.force-hover > span.inner,
+#layout-menu:hover a.selected > span.inner,
+#layout-menu.force-open a.selected > span.inner {
 	background-color: #484D7A;
 	left: 65px;
 	/* margin-top: -2.2rem; */
@@ -598,3 +600,7 @@ li#menu-small-li
 {
     display: block!important;
 }
+
+/* #taskmenu a.selected {
+	pointer-events: none;
+} */

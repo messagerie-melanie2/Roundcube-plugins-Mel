@@ -61,6 +61,12 @@
 .twitter .headlines-contents
 {
 	margin: 0;
+	border: solid thin #F0F0F0;
+}
+
+html.dark-mode .twitter .headlines-contents
+{
+	border:none;
 }
 
 .twitter .square-contents {

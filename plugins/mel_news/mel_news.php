@@ -392,6 +392,8 @@ class mel_news extends rcube_plugin {
     $service = rcube_utils::get_input_value("_service", rcube_utils::INPUT_POST);
     $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
 
+    $service = str_replace(',dc=equipement,dc=gouv,dc=fr', '', $service);
+
     if ($uid === "")
       $uid = null;
 
@@ -439,6 +441,8 @@ class mel_news extends rcube_plugin {
     $service = rcube_utils::get_input_value("_service", rcube_utils::INPUT_POST);
     $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
     $news = driver_mel::gi()->rss([$user]);
+
+    $service = str_replace(',dc=equipement,dc=gouv,dc=fr', '', $service);
 
     if ($uid === "")
       $uid = null;
@@ -1067,6 +1071,9 @@ class mel_news extends rcube_plugin {
   {
     include_once "lib/flux_page.php";
     include_once "lib/news_datas.php";
+
+    driver_mel::gi()->getUser()->cleanNews();
+
     $raw_news = [
       driver_mel::gi()->getUser()->getUserNews(),
       driver_mel::gi()->getUser()->getUserRss()
@@ -1315,23 +1322,16 @@ class mel_news extends rcube_plugin {
     {
       $allParentRights = driver_mel::gi()->getUser($user)->getUserNewsShares();
 
-      // foreach ($allParentRights as $newShare) {
-      //   if (
-
-      //   )
-      //   {
-          
-      //   }
-      // }
-
       return mel_helper::Enumerable($allParentRights)->any(
         function ($v, $k) use ($service) {
-          return ($v->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER 
+          return (($v->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER 
         || $v->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_PUBLISHER)
-        && strpos($v->service, $service) !== false;
+        && strpos($service, $v->service) !== false);
         }
       );
 
     }
+
+
 
 }

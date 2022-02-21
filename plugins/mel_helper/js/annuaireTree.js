@@ -46,7 +46,7 @@ class AnnuaireTree{
     {
         let html = this.getAction(AnnuaireTree.actionsList.beforeSetup, '');
 
-        html += `<div>
+        html += `<div style="overflow:auto">
             <ul class="listing iconized settings-default-icon" style="width: max-content;width: -moz-fit-content;">
                 <button class="folder hidden deletePlz"><span class="icon-mel-chevron-right"></span></button>
             </ul>

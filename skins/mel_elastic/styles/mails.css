@@ -113,6 +113,11 @@ table.messagelist td.subject span.msgicon::before{
     font-size: 1rem !important;
 }
 
+table.messagelist .unread td.subject span.msgicon::before{
+    content:"\e94d"!important;
+    color:#363A5B!important;
+}
+
 table.messagelist td.subject span.msgicon.replied::before{
     content:"\e92a"!important;
 }
@@ -134,11 +139,6 @@ table.messagelist td.subject span.msgicon.replied.forwarded::after{
     font-style: normal!important;
     opacity: 1!important;
     color:#A8ACC0!important;
-}
-
-table.messagelist .unread td.subject span.msgicon::before{
-    content:"\e94d"!important;
-    color:#363A5B!important;
 }
 
 table.messagelist .contextRow.context-source td.subject span.msgicon::before,

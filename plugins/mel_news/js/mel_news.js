@@ -126,6 +126,7 @@ $(document).ready(async () => {
             const classes = "form-control input-mel required"
             let news = new MelPublishNew(id);
 
+            //console.log("if", rcmail.env.news_current_news_datas);
             if (rcmail.env.news_current_news_datas !== undefined)
             {
                 news.server_uid = rcmail.env.news_current_news_datas.uid;
@@ -139,8 +140,9 @@ $(document).ready(async () => {
             }
             else if (!isFlux && id !== null)
             {
+                //console.log("else", rcmail.env.news_service_for_publish, news);
                 if (rcmail.env.news_service_for_publish[news.type] === undefined && news.type !== null && news.type !== undefined && news.type !== "")
-                    rcmail.env.news_service_for_publish[news.type] = rcmail.env.news_service_for_publish[news.type].split(',', 2)[0].split("=")[1];
+                    rcmail.env.news_service_for_publish[news.type] = news.type.split(',', 2)[0].split("=")[1];
             }
 
             if (id === null) this.modal.editTitle("Créer une publication");
@@ -250,7 +252,14 @@ $(document).ready(async () => {
                                     {
                                         const btn = selected.parent();
                                         if (this.modal.modal.find("#mel-publish-service").find(`option[value="${btn.data("service")}"]`).length > 0) this.modal.modal.find("#mel-publish-service").val(btn.data("service"));
-                                        else this.modal.modal.find("#mel-publish-service").append(`<option value=${btn.data("service")}>${btn.find(".name").html()} - ${btn.find(".description").html()}</option>`).val(btn.data("service"));
+                                        else {
+                                            this.modal.modal.find("#mel-publish-service").append(`<option value=${btn.data("service")}>${btn.find(".name").html()} - ${btn.find(".description").html()}</option>`).val(btn.data("service"));
+                                            
+                                            if (rcmail.env.news_service_for_publish === undefined)
+                                                rcmail.env.news_service_for_publish = {};
+                                            
+                                            rcmail.env.news_service_for_publish[btn.data("service")] = btn.find(".name").html() + "-" + btn.find(".description").html();
+                                        }
                                     }
 
                                     arbre.panel.find("button.added-undo-button").click();

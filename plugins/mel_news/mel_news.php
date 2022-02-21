@@ -392,6 +392,8 @@ class mel_news extends rcube_plugin {
     $service = rcube_utils::get_input_value("_service", rcube_utils::INPUT_POST);
     $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
 
+    $service = str_replace(',dc=equipement,dc=gouv,dc=fr', '', $service);
+
     if ($uid === "")
       $uid = null;
 
@@ -439,6 +441,8 @@ class mel_news extends rcube_plugin {
     $service = rcube_utils::get_input_value("_service", rcube_utils::INPUT_POST);
     $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
     $news = driver_mel::gi()->rss([$user]);
+
+    $service = str_replace(',dc=equipement,dc=gouv,dc=fr', '', $service);
 
     if ($uid === "")
       $uid = null;

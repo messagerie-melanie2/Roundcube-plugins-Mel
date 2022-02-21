@@ -1,19 +1,54 @@
 $(document).ready(async () => {
 
+    /**
+     * @constant
+     * URL du site web
+     */
     const news_contact_url = window.location.origin + window.location.pathname;
 
+    /**
+     * @constant
+     * Enumération de tous les modes disponibles
+     */
     const modes = {
+        /**
+         * Mode "Toutes les informations" : Toutes les informations d'un même site est affiché sur la page. 
+         * Une modification entraîne la modification de toutes les informations lié au site modifié.
+         */
         all:"tout",
+        /**
+         * Mode "Vignette", chaque informations d'un site est encapsulé dans une vignette où l'on peut naviguer du plus récent au plus ancien.
+         */
         vignette:"un"
     };
 
+    /**
+     * @constant
+     * Enumération de tous les modes tris dsiponibles.
+     */
     const sort_modes = {
+        /**
+         * Tri par date - du plus ancien au plus récent
+         */
         date_asc:"date_asc",
+        /**
+         * Tri par date - du plus récent au plus ancien
+         */
         date_desc:"date_desc",
+        /**
+         * Tri par site
+         */
         site:"site",
+        /**
+         * Tri par source (intra/inter/twitter)
+         */
         source:"source"
     };
 
+    /**
+     * @constant
+     * Enumération des id de filtres disponibles.
+     */
     const filters = {
         types:{
             intranet:"#mel-new-filter-1",
@@ -27,10 +62,29 @@ $(document).ready(async () => {
         }
     }
 
+    /**
+     * @constant
+     * Mode de la page (Tout/Vignette)
+     * @type {number}
+     */
     const mode = rcmail.env.news_mode;
+    /**
+     * @constant
+     * Tri de la page (Date/Site/Source)
+     * @type {string}
+     */
     const sort_mode = rcmail.env.news_sort_mode;
+    /**
+     * @constant
+     * Nombres de lignes visibles pour commencer
+     * @type {string}
+     */
     const nbRows = rcmail.env.news_starting_nb_rows;
 
+    /**
+     * Ajoute les script twitter à la page avec gestion d'erreur.
+     * @returns Script créé
+     */
     function setTwitterSrc() {
         let script = document.createElement('script');
         // any script can be loading from any domain
@@ -62,11 +116,22 @@ $(document).ready(async () => {
                 }
             }
         };
+
+        return script;
     };
 
+    /**
+     * Met la première lettre de la chaîne de caractère en majuscule.
+     * @param {string} a 
+     * @returns String capitalisé
+     */
     function strUcFirst(a){return (a+'').charAt(0).toUpperCase()+a.substr(1)};
     window.strUcFirst = strUcFirst;
 
+    /**
+     * @class
+     * @classdesc gère les différentes popup de la pages des informations
+     */
     class NewsPopup
     {
         constructor()
@@ -88,7 +153,7 @@ $(document).ready(async () => {
         }
 
         /**
-         * 
+         * Permet de récupérer une instance statique de la classe.
          * @returns {NewsPopup}
          */
         static fabric()
@@ -99,6 +164,12 @@ $(document).ready(async () => {
             return NewsPopup.cache;
         }
 
+        /**
+         * 
+         * @param {string} title Titre de la modale
+         * @param  {...{classes:string, icon:string, title:string, action:Function}} choices Liste des choix disponibles
+         * @returns Permet le chaînage
+         */
         drawChoice(title, ...choices)
         {
             this.modal.footer.querry.html("");
@@ -120,13 +191,19 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * Ouvre la modale de publication de flux.
+         * @param {string} id Id du flux
+         * @param {boolean} isFlux Si vrai, il s'agit d'un flux rss, sinon, d'une publication
+         * @returns Chaînage
+         */
         createOrEditPublish(id = null, isFlux = false)
         {
-            let obFields = '';//<p class="red-star-removed"><star class="red-star mel-before-remover">*</star>Champs obligatoires</p>';
+            let obFields = '';
             const classes = "form-control input-mel required"
             let news = new MelPublishNew(id);
 
-            //console.log("if", rcmail.env.news_current_news_datas);
+            //Gère les données des flux
             if (rcmail.env.news_current_news_datas !== undefined)
             {
                 news.server_uid = rcmail.env.news_current_news_datas.uid;
@@ -137,7 +214,7 @@ $(document).ready(async () => {
                     rcmail.env.news_service_for_publish[rcmail.env.news_current_news_datas.service] = rcmail.env.news_current_news_datas.service.split(',', 2)[0].split("=")[1];
 
                 rcmail.env.news_current_news_datas = undefined;
-            }
+            }//Gère les données de l'édition/des flux enfants
             else if (!isFlux && id !== null)
             {
                 //console.log("else", rcmail.env.news_service_for_publish, news);
@@ -145,27 +222,34 @@ $(document).ready(async () => {
                     rcmail.env.news_service_for_publish[news.type] = news.type.split(',', 2)[0].split("=")[1];
             }
 
+            //Titre de la modale
             if (id === null) this.modal.editTitle("Créer une publication");
             else this.modal.editTitle(`Modifier "${news.title}"`);
 
-
+            //Si on modifie une vrai news
             if (id !== null && id !== "generated-tmp-id")
                 obFields = `<div style="text-align:right;"><button id="publish-delete-button" class="mel-button btn btn-danger" style="">Supprimer <span class="plus icon-mel-trash"></span></button></div>`;
 
+            //Affichage du texte
             let html = obFields + '<div><div class="row"><div class="service-left col-12">' + this.createSelect("Choisissez un service", "mel-publish-service", "Sélectionnez un service", Enumerable.from(rcmail.env.news_service_for_publish).select(x => {return {value:x.key,text:x.value}}).toArray(), id === null ? "none" : news.getService()) + '</div><div class="service-right hidden"><button id="np-select-child" class="mel-button btn btn-secondary" style="margin-top: 53px;">Choisir un sous-service</button></div></div></div>';
             
+            //Si on publie une publication
             if (!isFlux)
             {
                 html += '<div>' + this.createInput("Choisissez un titre", "mel-publish-title", "text", "Titre de la publication", news.title, "mel-publish-title", classes) + '</div>';
                 html += '<div>' + this.createTextarea("Ecrivez la publication", "mel-publish-body", "Voici les nouvelles....", news.body) + '</div>';
-            }
+            }//Si on publie un flux
             else {
                 html += this.createSelect("Choisir le site Intranet à afficher", "news-intranet-select", "Sélectionner un site", Enumerable.from(rcmail.env.news_intranet_list).select(x => {return {value:x.key, text:x.value.name}}).toArray(), (id === null ? "none" : news.id));
             }
 
+            //Modification de l'affichage de la modale (Voir la classe modal de mel_metapage)
             this.modal.editBody('<div class="np-content mel-r">'+html+'</div><div class="np-other mel-r"></div>');
+
+            //Affichage de pied de modal
             this.modal.footer.querry.html("");
 
+            //Suppression de la publicartion
             this.modal.modal.find("#publish-delete-button").click(() => {
                 if (confirm("Cela affectera tout ceux qui voient actuellement cette publication.\r\nÊtes-vous sûr de vouloir continuer ?"))
                 {
@@ -191,6 +275,7 @@ $(document).ready(async () => {
                 }
             });
 
+            //Affichage des sous-services ou non
             this.modal.modal.find("#mel-publish-service").on("change", () => {
                 const col_right = 3;
                 const col_left = 12 - col_right;
@@ -277,13 +362,15 @@ $(document).ready(async () => {
                 }
             });
 
-            if (!isFlux)
+            if (!isFlux)//Si publication
             {
+                //Bouton de sauvegarde
                 $(`<button class="mel-button" style="margin-right:15px">${(news.id === "" ? "Visualiser" : "Visualiser")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
                     if (this.check([$("#mel-publish-service"), $("#mel-publish-title"), $("#mel-publish-body")], {2:() => tinyMCE.activeEditor.getContent() === ""})) 
                         this.confirm("createOrEditPublish", {id:"news-generated-tmp-id", trueId:news.id});
                 }).appendTo(this.modal.footer.querry);
 
+                //Gestion de l'editeur html
                 setTimeout(async  () => {
 
                     if (rcmail.editor !== undefined && rcmail.editor.editor !== null)
@@ -324,13 +411,14 @@ $(document).ready(async () => {
 
                 }, 10);
             }
-            else{
+            else{//Si on publie un flux
 
                 if (this.modal.modal.find("#mel-publish-service").val() !== "none")
                 {
                     this.modal.modal.find("#mel-publish-service").change();
                 }
 
+                //Gestion de la sauvegarde
                 $(`<button class="mel-button" style="margin-right:15px">${(news.id === "" ? "Publier" : "Modifier")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
                     if (this.check([this.modal.modal.find("#mel-publish-service")])) 
                     {
@@ -360,12 +448,20 @@ $(document).ready(async () => {
                         );
                     }
                 }).appendTo(this.modal.footer.querry);
+
+                //Affichage de la modale
                 this.modal.show();
             }
 
             return this;
         }
 
+        /**
+         * Vérifie si plusieurs champs sont valides
+         * @param {array<JqueryElement>} itemToTest Champs à tester
+         * @param {JSON} specCond - Fonctions pour valider un champs spécifique
+         * @returns 
+         */
         check(itemToTest = [], specCond = {})
         {
             $(".fieldNotOkay").remove();
@@ -386,6 +482,12 @@ $(document).ready(async () => {
             return true;
         }
 
+        /**
+         * Page de confirmation d'une autre page. 
+         * @param {string} caller Page qui a appelé cette fonciton
+         * @param {*} args Divers arguments
+         * @returns Chaînage
+         */
         confirm(caller, args)
         {
             switch (caller) {
@@ -463,6 +565,12 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * Affiche la modale pour créer ou modifier un flux custom
+         * @param {string} id Id du flux 
+         * @param {boolean|string} isAdmin Si on est en mode administrateur
+         * @returns Chaînage
+         */
         createOrEdit(id = null, isAdmin = false)
         {
             if (id === null || id === "")
@@ -499,11 +607,22 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * Si on est appelé dans la modale des paramètres de rc.
+         * @returns 
+         */
         isSettings()
         {
             return window !== parent && parent.rcmail.env.task === "settings";
         }
 
+        /**
+         * Affiche la suite de @see createOrEdit.
+         * @param {MelNews} datas Données de la news
+         * @param {Boolean} isEdit Si on modifie une news existante
+         * @param {boolean} isAdmin Si on est en mode administrateur
+         * @returns Chaînage
+         */
         showStep2(datas, isEdit = false, isAdmin = false)
         {
 
@@ -707,6 +826,10 @@ $(document).ready(async () => {
             
         }
 
+        /**
+         * Affiche la modale de filtrage
+         * @returns Chaînage
+         */
         filter()
         {
             this.modal.editTitle("Que voulez-vous filtrer ?");
@@ -750,6 +873,10 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * @async Met à jours l'affichage lié au filtre.
+         * @returns Chaînage
+         */
         async updateFilter()
         {
             $('input[name="mel-news-filters"]').each((i,e) => {
@@ -781,6 +908,18 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * Retourne un input en html en string
+         * @param {string} title Label de l'input
+         * @param {string} id Id de l'input
+         * @param {string} type Type de l'input
+         * @param {string} placeholder Placeholder de l'input
+         * @param {string | number} value Valeur de l'input
+         * @param {string} name Nom de l'input
+         * @param {string} classes Classes de l'input
+         * @param {string} attrs Autres attributs de l'input
+         * @returns Input
+         */
         createInput(title, id, type, placeholder, value, name = "", classes = "",attrs="")
         {
             let html = title !== null ? `<label for="${id}" class="span-mel t1 first">${title}<span style="color:red">*</span> </label>` : "";
@@ -788,6 +927,15 @@ $(document).ready(async () => {
             return html;
         }
 
+        /**
+         * Retourne un select en html en string
+         * @param {string} title Label du select 
+         * @param {string} id Id du select 
+         * @param {string} placeholder Première valeur, non séléctionnable, du select
+         * @param {array<{value:*, text:string}>} values Valeurs disponibles du select
+         * @param {*} value Valeur par défaut
+         * @returns Select
+         */
         createSelect(title, id, placeholder, values, value)
         {
             let html = `<label for="${id}" class="span-mel t1 first">${title}<span style="color:red">*</span> </label>`;
@@ -808,6 +956,16 @@ $(document).ready(async () => {
             return html;    
         }
 
+        /**
+         * Créer une liste de checkboxes en html en string
+         * @param {string} title Légende
+         * @param {string} name Nom de toutes les checkboxes
+         * @param {array<{id:string, text:string, value:boolean}>} values 
+         * @param {boolean} value Valeur par défaut
+         * @param {boolean} format Si vrai, elles sont affichés horizontalement
+         * @param {boolean} isRadio Type de la checkboxes
+         * @returns Checkboxes
+         */
         createCheckBoxChoices(title, name, values, value, format = false, isRadio = true)
         {
             let html = `<fieldset>
@@ -839,6 +997,14 @@ $(document).ready(async () => {
             return html;
         }
 
+        /**
+         * Créer un textarea en html en string
+         * @param {string} title Label du textarea
+         * @param {string} id Id du textarea
+         * @param {string} placeholder Placeholder du textarea
+         * @param {string} value Valeur par défaut
+         * @returns Textarea
+         */
         createTextarea(title, id, placeholder, value)
         {
             let html = `<label for="${id}" class="span-mel t1 first">${title}<span style="color:red">*</span> </label>`;
@@ -846,6 +1012,14 @@ $(document).ready(async () => {
             return html;
         }
 
+        /**
+         * @async Retourne une requête ajax post
+         * @param {string} action Action roundcube
+         * @param {JSON} datas Données de la requête à envoyer au serveur
+         * @param {Function} onSuccess Fonction réalisé avec succès
+         * @param {Function} onError Fonction réalisé avec echec
+         * @returns {Promise<any>} Ajax
+         */
         post(action, datas, onSuccess, onError = (a,b,c) => {})
         {
             return mel_metapage.Functions.post(

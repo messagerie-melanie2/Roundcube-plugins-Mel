@@ -280,6 +280,9 @@ $labels['weeknonone'] = 'Jamais';
 $labels['weeknodatepicker'] = 'Seulement dans le sélecteur de date';
 $labels['weeknoall'] = 'Dans le sélecteur de date ainsi que dans la vue calendrier';
 
+// PAMEA - MANTIS 0006455: Texte non traduit + numéro de semaine incorrect
+$labels['weekshort'] = 'S';
+
 // PAMELA
 $labels['tabsharinggroup'] = 'Partage à un groupe';
 // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import

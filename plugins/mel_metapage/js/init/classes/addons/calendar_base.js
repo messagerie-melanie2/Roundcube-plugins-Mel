@@ -785,6 +785,9 @@ $(document).ready(() => {
                         }
                         $("#categories-event-all-cal-mm").val(event.categories[0]);
                     }
+
+                    $("#edit-categories").val(event.categories[0]);
+
                 }
                 else {
                     $(".have-workspace").css("display", "none");

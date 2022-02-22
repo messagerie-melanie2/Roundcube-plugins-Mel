@@ -91,10 +91,10 @@ html.touch .mm-shortcuts{
 .fullscreen-item {
 	position: absolute;
 	width: calc(100% - 60px);
-	height: 100%;
+	height: calc(100% - 60px);
 	background-color: #00000096;
 	top: 60px;
-    max-height: 100%;
+    max-height: calc(100% - 60px);
     overflow: auto;
     left: 60px;
     z-index: 999999

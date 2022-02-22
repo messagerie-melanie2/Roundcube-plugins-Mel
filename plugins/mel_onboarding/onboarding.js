@@ -1,21 +1,8 @@
 // Conserver en mémoire le onboarding courant
 current_onboarding = null;
 
-// Item courant
-current_item = null;
-
-// Dernier item modifié pour remettre le css
-last_modified_item = null;
-
-// Le css du dernier item modifié
-last_item_css = null;
-
-// Conserver en mémoire le css de l'iframe
-current_iframe_css = null;
-
+// Conserver en mémoire l'onboarding courant en iframe ou non
 let current_window = null;
-
-//TODO Css pour hint au lieu de classe
 
 if (window.rcmail) {
     rcmail.addEventListener('init', function(evt) {
@@ -101,7 +88,6 @@ function startIntro(task) {
         intro.setOptions({
             scrollToElement: window.current_onboarding.scrollToElement,
             scrollTo: window.current_onboarding.scrollTo,
-            showBullets: window.current_onboarding.showBullets,
             disableInteraction: window.current_onboarding.disableInteraction,
             exitOnOverlayClick: window.current_onboarding.exitOnOverlayClick,
             hidePrev: window.current_onboarding.hidePrev,

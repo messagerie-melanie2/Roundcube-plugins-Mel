@@ -349,6 +349,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         if (this._is_minimized)
         {
             $(".webconf-fullscreen").css("display", "");
+            $(".webconf-minimize").css("display", "none");
             this.conf.css("max-width", `${this.ariane.size}px`)
             .css("top", `${pixel_correction}px`)
             .css("right", '0')
@@ -376,6 +377,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         else
         {
             $(".webconf-fullscreen").css("display", "none");
+
+            if (parent.$(".menu-last-frame").hasClass("disabled")) $(".webconf-minimize").css("display", "none");
+            else $(".webconf-minimize").css("display", "");
+            
             this.conf.css("max-width", "")
             .css("top", "")
             .css("right", "")  
@@ -1694,6 +1699,11 @@ class MasterWebconfBar {
         }
     }
 
+    _minimize()
+    {
+        $(".menu-last-frame").click();
+    }
+
     /**
      * Passe en fullscreen en passant par top
      */
@@ -1701,6 +1711,17 @@ class MasterWebconfBar {
     {
         workspaces.sync.PostToParent({
             exec: "window.webconf_master_bar._fullscreen()",
+            child: false
+        });
+    }
+
+        /**
+     * Passe en fullscreen en passant par top
+     */
+    static minimize()
+    {
+        workspaces.sync.PostToParent({
+            exec: "window.webconf_master_bar._minimize()",
             child: false
         });
     }

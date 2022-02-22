@@ -31,6 +31,8 @@
 .mm-frame #mm-ariane {
 	height: calc(100% - 60px);
 }
+
+.webconf-minimize,
 .webconf-fullscreen {
 	position: absolute;
 	right: 5px;
@@ -42,6 +44,7 @@
 	transition: all 0.1s ease-in;
 }
 
+.webconf-minimize:hover,
 .webconf-fullscreen:hover {
 	background-color: #363A5B;
 }

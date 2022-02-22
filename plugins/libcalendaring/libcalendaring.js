@@ -776,11 +776,10 @@ function rcube_libcalendaring(settings)
 
         buttons.push({
             text: rcmail.gettext('close'),
-            click: function() {
-                // PAMELA - Problème de snooze sur un rappel
-                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
-
+            click: function(event) {
                 $(this).dialog('close');
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link, event);
             },
             'class': 'cancel'
         });
@@ -797,18 +796,16 @@ function rcube_libcalendaring(settings)
                 me.alarm_dialog.parent().find('button:not(.ui-dialog-titlebar-close)').first().focus();
               }, 5);
             },
-            close: function() {
-              // PAMELA - Problème de snooze sur un rappel
-              // $('#alarm-snooze-dropdown').hide();
-              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
-              $(this).dialog('destroy').remove();
-              me.alarm_dialog = null;
-              me.alarm_ids = null;
+            close: function(event) {
+                $(this).dialog('destroy').remove();
+                me.alarm_dialog = null;
+                me.alarm_ids = null;
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link, event);
             },
             drag: function(event, ui) {
-              // PAMELA - Problème de snooze sur un rappel
-              // $('#alarm-snooze-dropdown').hide();
-              rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link);
+                // PAMELA - Problème de snooze sur un rappel
+                rcmail.command('menu-close', 'alarm-snooze-dropdown', me.dismiss_link, event);
             }
         });
 

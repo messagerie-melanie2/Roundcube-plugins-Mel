@@ -345,7 +345,7 @@ if (rcmail)
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)
         {
-            let tmp = Enumerable.from(event.attendees).orderBy(x => (x.role==="ORGANIZER")).thenBy(x =>x.name).toArray();
+            let tmp = Enumerable.from(event.attendees).orderBy(x => (x.role!=="ORGANIZER")).thenBy(x =>x.name).toArray();
             let attendeesHtml = "";
             for (let index = 0; index < tmp.length && index < 3; ++index) {
                 const element = tmp[index];

@@ -178,7 +178,7 @@ $(document).ready(() => {
                 //Revenir à la liste des mails sans rafraîchir la page.
                 if (rcmail.env.task === "mail" && rcmail.env.action === "show" && !this.IS_EXTERNE)
                 {
-                    $(`<li role="menuitem"><a class="icon-mel-undo" href="#back title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
+                    $(`<li role="menuitem"><a class="icon-mel-close" href="#back" title="Revenir aux mails"><span style="font-family:Roboto,sans-serif" class="inner">Retour</span></a></li>`)
                     .on("click", () => {
                         window.location.href = this.url("mail");
                     })

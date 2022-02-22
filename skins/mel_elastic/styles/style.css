@@ -1740,6 +1740,7 @@ body.task-calendar .popup.ui-dialog-content  #showcontacts
 .icon-mel-close::before
 {
     content: "\e908"!important;
+    font-family: DWP!important;
 }
 
 a.roadmap::before

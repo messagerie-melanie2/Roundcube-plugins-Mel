@@ -1052,7 +1052,7 @@ function m_mp_Help() {
         let helppage_suggestion = `<li class="col-sd-4 col-md-4" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
         let helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
 
-        let html = "<div class=row>";
+        let html = "<div class='row' id='search_row'>";
         html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';
         html += '<div class="input-group mx-4 mb-5">';
         html += '<label class="sr-only" for="barup-search-input">Rechercher</label>';

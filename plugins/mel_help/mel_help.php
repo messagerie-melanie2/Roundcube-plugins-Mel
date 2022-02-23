@@ -80,6 +80,7 @@ class mel_help extends rcube_plugin
       $this->rc->output->set_env('help_action', $help_action);
     }
 
+
     // Si tache = help, on charge l'onglet
     if ($this->rc->task == 'help') {
       // Chargement de la conf
@@ -92,6 +93,9 @@ class mel_help extends rcube_plugin
       // Include js
       $this->include_script('mel_help.js');
     }
+    $this->load_config();
+    $this->rc->output->set_env('help_page', $this->rc->config->get('help_page', null));
+    $this->rc->output->set_env('help_suggestion_url', $this->rc->config->get('help_suggestion_url', null));
   }
 
   function action()

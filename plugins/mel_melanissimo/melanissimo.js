@@ -25,23 +25,12 @@ var total_size = 0;
 
 $(document).ready(function() {
   // binds to click event of your input send button
-  if (rcmail.env.ismobile) {
-    $(".jqm-compose a.send").bind('click', function(event) {
-      var lock = rcmail.display_message(rcmail.gettext('loading'), 'loading');
-      rcmail.http_post('plugin.test_melanissimo', {
-        _id : rcmail.env.compose_id
-      }, lock);
-    });
-  }
-  else {
-    $("#messagetoolbar a.send").bind('click', function(event) {
-      var lock = rcmail.display_message(rcmail.gettext('loading'), 'loading');
-      rcmail.http_post('plugin.test_melanissimo', {
-        _id : rcmail.env.compose_id
-      }, lock);
-    });
-  }
-  
+  $("#toolbar-menu a.send").bind('click', function(event) {
+    var lock = rcmail.display_message(rcmail.gettext('loading'), 'loading');
+    rcmail.http_post('plugin.test_melanissimo', {
+      _id : rcmail.env.compose_id
+    }, lock);
+  });
   
   // binds to onchange event of your input field
   $('#uploadformFrm input[type=\'file\']').bind('change', function() {
@@ -57,13 +46,7 @@ $(document).ready(function() {
 if (window.rcmail) {
   rcmail.addEventListener('init', function(evt) {
     // Supprime le onclick des boutons pour intercepter le click
-    if (rcmail.env.ismobile) {
-      $(".jqm-compose a.send").prop('onclick', null);
-    }
-    else {
-      $("#messagetoolbar a.send").prop('onclick', null);
-    }
-    
+    $("#toolbar-menu a.send").prop('onclick', null);
   });
 
   rcmail.addEventListener('responseafterplugin.test_melanissimo', function(
@@ -191,17 +174,6 @@ function send_melanissimo_message() {
     _subject: $('#compose-subject').val(),
     _message: $('#composebody').val(),
   });
-  
-//  var compose_id = rcmail.env.compose_id;
-//  timer = window.setInterval(function() {
-//    // call your function here
-//    rcmail.http_post('plugin.update_progressbar', {
-//      _id : compose_id,
-//    });
-//  }, 5000);
-//  rcmail.http_post('plugin.update_progressbar', {
-//    _id : compose_id,
-//  });
   
   var dialog_html = '<div id="send_melanissimo_dialog"><div class="dialog_title">' + rcmail.labels['mel_melanissimo.Send Melanissimo title'] + '</div>';
   dialog_html += '<span class="dialog_text">' + rcmail.labels['mel_melanissimo.Send Melanissimo message'] + '</span>';

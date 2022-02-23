@@ -265,6 +265,7 @@
     if (parent === window)
     {
         window.ariane = new Ariane(true);
+        window.ariane_reinit = () => {return new Ariane(true);};
     }
     else {
         window.ariane = new Ariane(true);

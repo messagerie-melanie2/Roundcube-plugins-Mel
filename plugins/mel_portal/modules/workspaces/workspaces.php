@@ -1,5 +1,7 @@
 <?php
 
+include_once "../module_action.php";
+
 use LibMelanie\Api\Defaut\Workspaces\Share;
 
 /**
@@ -46,6 +48,7 @@ class Workspaces extends Module
 
         // $res = $workspace->save();
         $this->edit_row_size(3);
+
         // $it = 0;
         // foreach ($this->workspaces as $key => $value) {
         //      if ($it > 2)
@@ -183,6 +186,19 @@ class Workspaces extends Module
     {
         $this->plugin->include_script($this->folder().'/workspaces/js/init.js');
         //$this->plugin->include_script($this->folder().'/flux_rss/js/main.js');
+    }
+
+    public function register_actions()
+    {
+        return [
+            new Module_Action("get_html_workspaces", $this, "get_workspaces")
+        ];
+    }
+
+    public function get_workspaces()
+    {
+        echo $this->generate_html();
+        exit;
     }
 
     // public static function is_epingle($loaded_workspace)

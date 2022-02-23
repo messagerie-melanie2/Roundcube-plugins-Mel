@@ -144,6 +144,7 @@
             },
             () => {
                 $(".dwp-round").css("background-color", color);
+                this.update_home();
             }
             ).always(() => {
                 this.busy(false);
@@ -413,6 +414,8 @@
                             break;
                     }
 
+                    this.update_home();
+
                     rcmail.display_message(config.text_on_succes, "confirmation");
                 }
             }, 
@@ -452,6 +455,8 @@
                         }
 
                         $("#wsp-param-chg-button-plz").attr("disabled", 'disabled').addClass("disabled");
+
+                        this.update_home();
                     }
                 }).always(() => {
                     this.busy(false);
@@ -509,6 +514,7 @@
                             rcmail.display_message("Vous êtes le seul administrateur, si vous souhaitez quittez, ajoutez un autre administrateur avant.", "error");
                         break;
                         default:
+                            this.update_home();
                             this.quit();
                             break;
                     }
@@ -604,6 +610,28 @@
             });
         }
 
+        async update_home()
+        {
+            let $querry = parent.$('iframe.bureau-frame');
+
+            if ($querry.length > 0)
+                $querry[0].contentWindow.location.reload();
+            else if (parent.$('.bureau-frame').length > 0)
+            {
+                await mel_metapage.Functions.get(
+                    mel_metapage.Functions.url('bureau', 'get_html_workspaces'),
+                    {},
+                    (datas) => {
+                        parent.$("#layout-content .--col-dwp .workspaces").html(datas);
+                        parent.rcmail.triggerEvent("init");
+                        parent.ariane = parent.ariane_reinit();
+                    }
+                )
+            }
+
+            return this;
+        }
+
         delete()
         {
             this.busy();
@@ -614,6 +642,7 @@
                     _uid:this.uid
                 },
                 (datas) => {
+                    this.update_home();
                     this.quit();
                 },
                 (a,b,c) => {

@@ -1159,7 +1159,7 @@ class mel_news extends rcube_plugin {
             if ($my_fluxs->isPublisher($value["url"]))
               yield (new server_news_data($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"], true, $value["datas"]["serverUid"], $value["datas"]["serverService"]))->setDatas($file, $intra[$value["url"]]["name"])->setId($it++);
             else 
-              yield (new custom_news_datas($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"]))->setDatas($file, $intra[$value["url"]]["name"])->setId($it++)->set_from_server($value["fromServer"]);
+              yield (new custom_news_datas($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"]))->setDatas($file, $intra[$value["url"]]["name"])->setId($it++)->set_from_server($value["datas"]["fromServer"]);
           }
           else if ($value["datas"]["source"] === "twitter")
             yield (new custom_news_datas($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"]))->setDatas(null, $intra[$value["url"]]["name"]);

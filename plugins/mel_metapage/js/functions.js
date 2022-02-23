@@ -247,8 +247,6 @@ function m_mp_input_uid_change(params) {
 }
 
 function m_mp_createworkspace() {
-
-
     try {
         let html = "";
         const object = m_mp_createworskpace_steps();
@@ -1001,8 +999,6 @@ function m_mp_Help() {
     window.help_popUp = undefined;
     window.create_popUp = undefined;
 
-    //Si problème de configuration, on gère.
-    window.mel_metapage_tmp = rcmail.env.is_stockage_active ? true : null;
     const actions = {
         helppage_general: get_action("mel_metapage.h_general", "icon-mel-help", "window.open('" + rcmail.env.help_page + "', '_blank');"),
         helppage_video: get_action("mel_metapage.h_video", "icon-mel-camera", "m_mp_createworkspace()"),
@@ -1019,10 +1015,29 @@ function m_mp_Help() {
 
     //Si la popup n'existe pas, on la créer.
     if (window.help_popUp === undefined) {
-        let haveNextcloud = {
-            style: (window.mel_metapage_tmp === null ? "display:none" : ""),
-            col: (window.mel_metapage_tmp === null) ? "4" : "3"
-        };
+        // Récupération du json
+        fetch(window.location.pathname + 'plugins/mel_help/public/help.json', { credentials: "include", cache: "no-cache" }).then((res) => {
+            res.json().then((help_array) => {
+
+                // Génération de l'index
+                let index = [];
+                help_array.forEach((help, k) => {
+                    help.keywords.forEach(word => {
+                        if (index[word]) {
+                            if (index[word] != k) {
+                                index[word].push(k);
+                            }
+                        } else {
+                            index[word] = [k]
+                        }
+                    });
+                });
+
+                // Positionnement des variables d'env
+                rcmail.env.help_array = help_array;
+                rcmail.env.help_index = index;
+            });
+        });
         let button = function(txt, font, click = "") {
             let disabled = click === "" ? "disabled" : "";
             return '<button class="btn btn-block btn-secondary btn-mel ' + disabled + '" onclick="' + click + '"' + disabled + '><span class="' + font + '"></span>' + txt + '</button>';
@@ -1036,8 +1051,18 @@ function m_mp_Help() {
         let helppage_suggestion = `<li class="col-sd-4 col-md-4" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion) + '</li>'
         let helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
 
+        let html = "<div class=row>";
+        html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';
+        html += '<div class="input-group mx-4 mb-5">';
+        html += '<label class="sr-only" for="barup-search-input">Rechercher</label>';
+        html += '<input id="barup-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
+        html += ' <div class="input-group-append">';
+        html += '<span class="icofont-search input-group-text"></span>';
+        html += "</div></div></div>"
+        html += '<div id="help-search-results"></div>'
+        html += '<div id="noresulthelp" name="no_result_help"></div>'
 
-        html = '<ul id=globallist class="row ignore-bullet">' + helppage_general + helppage_video + helppage_suggestion + helppage_current + '</ul>';
+        html += '<ul id=globallist class="row ignore-bullet">' + helppage_general + helppage_video + helppage_suggestion + helppage_current + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.assistance"), "default", html, '   ');
         help_popUp = new GlobalModal("globalModal", config, !isSmall);
     } else if (!isSmall) //Si elle existe, on l'affiche.

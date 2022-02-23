@@ -25,6 +25,7 @@ $labels["h_suggestion"] = "Proposer une amélioration";
 $labels["h_current"] = "Aide de la page";
 
 $labels["assistance"] = "Assistance";
+$labels["describe_your_need_in_few_words"] = 'Décrivez-nous votre besoin en quelques mots pour que l\'on puisse vous aider';
 
 $labels["what_do_you_want_create"] = "Que souhaitez-vous créer ?";
 $labels["choose_type_doc"] = "Choisissez le type de document :";

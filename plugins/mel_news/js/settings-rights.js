@@ -82,7 +82,7 @@ class PopUpSettings{
         </ul>
             <ul class="listing iconized settings-default-icon" style="width: max-content;width: -moz-fit-content;">
                 <li class="deleteplz">
-                    <button style="display:none" data-setter=${setter} data-service="${service}" class="mel-button no-button-margin true bckg folder"><span><span class="icon-mel-chevron-right"></span> <span class="currentRight"></span> ${service.split(",")[0].split("=")[1]}</span></button>
+                    <button style="display:none" data-setter=${setter} data-service="${service}" class="mel-button no-button-margin true bckg folder"><span><span class="icon-mel-chevron-right"></span> <span class="currentRight"></span> ${rcmail.env.services_names[service]/*service.split(",")[0].split("=")[1]*/}</span></button>
                 </li>
             </ul>
         </div>
@@ -164,7 +164,7 @@ class PopUpSettings{
         html += `<ul class="${ul_classes}">
             <li>
                     <button data-uid="${datas.uid}" data-parent=${service} data-service=${service} class="mel-button no-button-margin true bckg expanding"><span class="icon-mel-chevron-right"></span></button>
-                    <button data-uid="${datas.uid}" data-parent=${service} data-service=${service} class="mel-button no-button-margin true bckg action"><span class="btnright ${right_icon}"></span>${service.split(",")[0].split('=')[1]}</button>
+                    <button data-uid="${datas.uid}" data-parent=${service} data-service=${service} class="mel-button no-button-margin true bckg action"><span class="btnright ${right_icon}"></span>${rcmail.env.services_names[service]}</button>
             
         <ul class="${ul_classes}" style="display:none">`;
 
@@ -597,7 +597,6 @@ $(document).ready(() => {
                     _uid:val
                 }, 
                 (datas) => {
-                    //console.log(datas, "result");
                     if (datas !== "false")
                     {
                         //On affiche l'utilisateur

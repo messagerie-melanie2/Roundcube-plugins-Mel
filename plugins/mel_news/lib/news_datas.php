@@ -137,6 +137,9 @@ class news_datas extends anews_datas
             $button_edit = '<button style="margin:0" title="Editer" onclick="rcmail.command(\'news.published.edit\', this)" class="mel-button roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>';
         //$button_copy = '<button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command(\'news.copy\', `'.($this->source === "twitter" ? 'https://twitter.com/'.$this->url : $this->datas->link).'`)" class="mel-button roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>';
 
+        if ($this->service === "organisation") $this->service = $plugin->rc->config->get('ldap_organisation_name', $this->service);
+        //else if ($this->service === explode('=', explode(",", $this->_service, 2)[0])[1]) $this->service = mel_helper::get_service_name($this->_service);
+
         //<headlines_other_classes/>
         $model = str_replace("<type/>", "news", $model);
         $model = str_replace("<uid/>", $this->id, $model);

@@ -202,6 +202,30 @@ class mel_helper extends rcube_plugin
         include_once "lib/mel_linq.php";
         return Mel_Enumerator::from($arrayLike);
     }
+
+    public static function get_service_name($dn)
+    {
+        $end = ',dc=equipement,dc=gouv,dc=fr';
+        $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
+
+        if ($ldap->anonymous()) {
+
+            if (strpos($dn, $end) === false) $dn .= $end;
+
+            try {
+                $result = $ldap->read($dn, '(objectClass=*)', 'cn');
+
+                if (isset($result) && $ldap->count_entries($result) == 1) {
+                    $infos = $ldap->get_entries($result);
+                    return explode(' (', $infos[0]['cn'][0], 2)[0];
+                }
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+
+        return explode('=', explode(",", $dn, 2)[0])[1];
+    }
     
 
 }

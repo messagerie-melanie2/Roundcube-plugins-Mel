@@ -5,7 +5,7 @@ class mel_news extends rcube_plugin {
    * @var string
    */
   public $task = '?(?!login).*';
-  private $rc;
+  public $rc;
 
   public const TASK_NAME = "news";
 
@@ -118,7 +118,7 @@ class mel_news extends rcube_plugin {
     $this->rc->output->set_env("news_sort_mode", $this->get_sort_mode());
     $this->rc->output->set_env("news_mode", $this->get_news_mode());
     $this->rc->output->set_env("news_starting_nb_rows", $this->get_starting_nb_rows());
-    $this->rc->output->set_env("news_service_for_publish", self::get_user_service_list());
+    $this->rc->output->set_env("news_service_for_publish", self::get_user_service_list(null, $this));
 
     $this->rc->html_editor();
 
@@ -135,7 +135,7 @@ class mel_news extends rcube_plugin {
 
   function action_get_user_right()
   {
-    echo json_encode(self::get_user_service_list());
+    echo json_encode(self::get_user_service_list(null, $this));
     exit;
   }
 
@@ -239,14 +239,19 @@ class mel_news extends rcube_plugin {
           ->edit(0, 1, "Droits");
 
         $it = 1;
+        $env_shares_name = [];
         foreach ($newsShares as $newShare) {
-          $exploded = explode(",", $newShare->service, 2);
-
-          $table->addRow()->edit($it, 0, explode("=", $exploded[0])[1])
+          $currentService = mel_helper::get_service_name($newShare->service);//$exploded = explode(",", $newShare->service, 2);
+          $currentService = $currentService === "" ? $this->rc->config->get('ldap_organisation_name', explode("=", explode(",", $newShare->service, 2)[0])[1]) : $currentService;
+          $table->addRow()->edit($it, 0, $currentService)
           ->edit($it, 1, $this->gettext('right_'.$newShare->right));
+
+          $env_shares_name[$newShare->service] = $currentService;
 
           ++$it;
         }
+
+        $this->rc->output->set_env("services_names", $env_shares_name);
         
         $html =  "<h3>Vos droits</h3>";
 
@@ -272,8 +277,10 @@ class mel_news extends rcube_plugin {
           $arrayFoJS = [];
 
           foreach ($newsShares as $newShare) {
-            $exploded = explode(",", $newShare->service, 2);
-            $html .= "<br/><h5>Droits de ".explode("=", $exploded[0])[1]." : </h5>";
+
+            $currentService = mel_helper::get_service_name($newShare->service);//$exploded = explode(",", $newShare->service, 2);
+            $currentService = $currentService === "" ? $this->rc->config->get('ldap_organisation_name', explode("=", explode(",", $newShare->service, 2)[0])[1]) : $currentService;
+            $html .= "<br/><h5>Droits de $currentService : </h5>";
             $html .= '<button style="margin:5px" onclick="rcmail.command(\'news.settings.add.rights\', \''.$newShare->service.'\')" class="mel-button btn btn-secondary">Ajouter <span class="plus icon-mel-plus"></span></button>';
 
             $newsRights->service = '%'.$newShare->service;//'ou=GMCD,ou=DETN,ou=UNI,ou=SNUM,ou=SG,ou=AC,ou=melanie,ou=organisation';
@@ -293,8 +300,11 @@ class mel_news extends rcube_plugin {
               $isAdmin = $right->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER || $right->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN;
               $isPublish = $right->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER || $right->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_PUBLISHER;
 
+              $currentService = mel_helper::get_service_name($right->service);//$exploded = explode(",", $newShare->service, 2);
+              $currentService = $currentService === "" ? $this->rc->config->get('ldap_organisation_name', explode("=", explode(",", $right->service, 2)[0])[1]) : $currentService;
+
               $table->addRow()->edit($it, 0, driver_mel::gi()->getUser($right->user)->name)
-              ->edit($it, 1, '<span class="news_o">'.explode('=', explode(",", $right->service, 2)[0])[1].'</span>')
+              ->edit($it, 1, '<span class="news_o">'.$currentService.'</span>')
               ->edit($it, 2, '<span class="'.($isAdmin ? "valid icon-mel-check" : "not-valid icofont-close-line").'"></span>')
               ->edit($it, 3, '<span class="'.($isPublish ? "valid icon-mel-check" : "not-valid icofont-close-line").'"></span>')
               ->edit($it, 4, '<button data-uid="'.$right->user.'" data-service="'.$right->service.'" style="margin:0" onclick="rcmail.command(`news.settings.edit.rights`, {service:`'.$right->service.'`, button:$(this)})" class="mel-button btn btn-secondary"><span class="icon-mel-pencil"></span></button>')
@@ -428,6 +438,9 @@ class mel_news extends rcube_plugin {
     $news->modified = date('Y-m-d H:i:s');
     $news->service = $service;
     $news->service_name = explode('=', explode(',', $service, 2)[0])[1];
+
+    if ($news->service_name === "organisation") $news->service_name = $this->rc->config->get('ldap_organisation_name', $news->service_name);
+    else $news->service_name = mel_helper::get_service_name($service);
 
     $news->save();
 
@@ -1301,7 +1314,7 @@ class mel_news extends rcube_plugin {
         return $args;
     }
 
-    static function get_user_service_list($user = null)
+    static function get_user_service_list($user = null, $plugin = null)
     {
       $array = [];
       $allParentRights = driver_mel::gi()->getUser($user)->getUserNewsShares();
@@ -1310,8 +1323,9 @@ class mel_news extends rcube_plugin {
       foreach ($allParentRights as $newShare) {
         if ($newShare->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER || $newShare->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_PUBLISHER)
         {
-          $exploded = explode(",", $newShare->service, 2);
-          $array[$newShare->service] = explode('=', $exploded[0])[1];
+          //$exploded = explode(",", $newShare->service, 2);
+          if (explode('=', explode(",", $newShare->service, 2)[0])[1] === "organisation") $array[$newShare->service] = $plugin === null ? "organisation" : $plugin->rc->config->get("ldap_organisation_name", "organisation");
+          else $array[$newShare->service] = mel_helper::get_service_name($newShare->service);//explode('=', $exploded[0])[1];
         }
       }
 

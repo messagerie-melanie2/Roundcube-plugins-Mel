@@ -528,6 +528,32 @@ if (rcmail)
 
         function invited()
         {
+            // let a = $(`
+            //     <div id="event-rsvp-cloned">
+            //         <div class="rsvp-buttons itip-buttons">
+            //             <input type="button" class="button btn btn-secondary" rel="accepted" value="Accepter">
+            //             <input type="button" class="button btn btn-secondary" rel="tentative" value="Peut-être">
+            //             <input type="button" class="button btn btn-secondary" rel="declined" value="Refuser">
+            //             <input type="button" class="button btn btn-secondary" rel="delegated" value="Déléguer">
+            //             <div class="itip-reply-controls">
+            //                 <div class="custom-control custom-switch">
+            //                     <input type="checkbox" id="noreply-event-rsvp" value="1" class="pretty-checkbox form-check-input custom-control-input">
+            //                     <label class="custom-control-label" for="noreply-event-rsvp" title=""> Ne pas envoyer de réponse</label>
+            //                 </div>
+            //                 <a href="#toggle" class="reply-comment-toggle" onclick="$(this).hide().parent().find('textarea').show().focus()">Saisissez votre réponse</a>
+            //                 <div class="itip-reply-comment">
+            //                     <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="Commentaire d’invitation ou de notification"></textarea>
+            //                     </div>
+            //                 </div>
+            //             </div>
+            //     </div>
+            // `).appendTo($("#parenthtmlcalendar"))
+            // .find('input[rel=accepted]')
+            // .click((e) => {
+            //     ui_cal.event_rsvp(this, null, null, e.originalEvent);
+            // })
+            // ;
+            // return a;
             return $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
             .find('.rsvp-buttons')
             .find('input[rel=accepted]')

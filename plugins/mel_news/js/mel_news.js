@@ -1868,6 +1868,12 @@ else {
         }, true);
 
         rcmail.register_command('news.edit', (x) => {
+            if ($(x).data("news") !== undefined && $(x).data("news") !== null && $(x).data("news") !== "")
+            {
+                rcmail.command('news.edit.action', x);
+                return;
+            }
+
             NewsPopup.fabric().drawChoice("Que souhaitez-vous faire ?", 
             {
                 icon:"icon-mel-pencil",
@@ -1919,7 +1925,6 @@ else {
                 let $parent = $(x._event.originalTarget === undefined ? x._event.target : x._event.originalTarget);
                 let it = 0;
                 while (it < 3) {
-                    console
                     if ($parent.hasClass("vignette-arrows"))
                         return;
                     else {

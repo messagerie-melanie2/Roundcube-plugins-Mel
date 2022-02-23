@@ -221,7 +221,7 @@ class mel_news extends rcube_plugin {
           ->edit($it, 1, ucfirst($value["datas"]["source"]))
           ->edit($it, 2, $this->gettext($value["datas"]["format"], "mel_news"))
           ->edit($it, 3, '<button style="margin:0" class="mel-button btn btn-secondary" onclick="rcmail.command(\'news.settings.edit\', [\''.$value["url"].'\', \''.$value["datas"]["format"].'\', \''.$value["datas"]["source"].'\'])"><span class="icon-mel-pencil"></span></button>')
-          ->edit($it, 4, '<button style="margin:0" class="mel-button btn danger mel-danger mel-btn-danger btn-danger" onclick="rcmail.command(\'news.settings.delete\', \''.$value["url"].'\')"><span class="icon-mel-trash"></span></button>')
+          ->edit($it, 4, ($value["datas"]["fromServer"] === true ? "" : '<button style="margin:0" class="mel-button btn danger mel-danger mel-btn-danger btn-danger" onclick="rcmail.command(\'news.settings.delete\', \''.$value["url"].'\')"><span class="icon-mel-trash"></span></button>'))
           ;
           ++$it;
         }
@@ -1159,7 +1159,7 @@ class mel_news extends rcube_plugin {
             if ($my_fluxs->isPublisher($value["url"]))
               yield (new server_news_data($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"], true, $value["datas"]["serverUid"], $value["datas"]["serverService"]))->setDatas($file, $intra[$value["url"]]["name"])->setId($it++);
             else 
-              yield (new custom_news_datas($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"]))->setDatas($file, $intra[$value["url"]]["name"])->setId($it++);
+              yield (new custom_news_datas($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"]))->setDatas($file, $intra[$value["url"]]["name"])->setId($it++)->set_from_server($value["datas"]["fromServer"]);
           }
           else if ($value["datas"]["source"] === "twitter")
             yield (new custom_news_datas($value["url"], $value["datas"]["format"], $intra[$value["url"]]["feedUrl"], $value["datas"]["source"]))->setDatas(null, $intra[$value["url"]]["name"]);

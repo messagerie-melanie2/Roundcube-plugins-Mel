@@ -690,6 +690,8 @@ $(document).ready(async () => {
 
             this.modal.editBody(html);
 
+            //Actions faites après la mise en place du html
+
             if (datas.type === MelNews.type.intranet && isAdmin !== false && atob(isAdmin) == "true")
             {
                 html = $('<div style="text-align:right;"><button id="publishmode" class="mel-button" style="margin-top:0;margin-bottom:15px;float:">Passer en mode publieur</button></div>');
@@ -1032,6 +1034,10 @@ $(document).ready(async () => {
 
     }
 
+    /**
+     * @class MelNews
+     * @classdesc Représente une information
+     */
     class MelNews{
         constructor(id)
         {

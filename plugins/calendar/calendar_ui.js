@@ -2578,6 +2578,9 @@ function rcube_calendar_ui(settings)
       }
     };
 
+    //PAMELA - use custom event_rsvp
+    this.event_rsvp = event_rsvp;
+
     // add the given date to the RDATE list
     var add_rdate = function(date)
     {

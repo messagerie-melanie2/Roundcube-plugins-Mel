@@ -1164,7 +1164,7 @@ function m_mp_help_video_player(task) {
     try {
         help = rcmail.env.help_video[task];
         let html = '<div class="row">'
-        html += '<div class="max-video mb-3 p-3"><video controls><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/' + help.video + '" type="video/mp4">Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div></div><h2>' + help.title + '</h2><p>' + help.description + '</p></div>';
+        html += '<div class="max-video mb-3 p-3"><video controls autoplay><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/' + help.video + '" type="video/mp4">Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div></div><h2>' + help.title + '</h2><p>' + help.description + '</p></div>';
 
         html += '</div>'
 

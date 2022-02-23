@@ -1039,6 +1039,10 @@ $(document).ready(async () => {
      * @classdesc Représente une information
      */
     class MelNews{
+        /**
+         * Construit la classe
+         * @param {string} id Id de l'information
+         */
         constructor(id)
         {
             this.init();
@@ -1047,6 +1051,10 @@ $(document).ready(async () => {
                 this.setup(id);
         }
 
+        /**
+         * Initialise les variables de la classe
+         * @returns Chaînage
+         */
         init()
         {
             this.$news = null;
@@ -1057,6 +1065,11 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * Ajoutes des valeurs aux variables de la classe
+         * @param {string} id Id de l'information
+         * @returns Chaînage
+         */
         setup(id)
         {
             if (this.$news  === undefined || this.$news === null)
@@ -1085,26 +1098,34 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * En mode vignette, ajoute la gestion des informations au html de la vignette
+         * @returns Chaînage
+         */
         setup_vignette(){
 
-            
+            //Ne marche pas sur les flux twitter
             if (this.type === MelNews.type.twitter)
                 return this;
 
+            //Gestion de l'original
             if (this.current === undefined)
             {
                 this.original = this.$news[0].outerHTML
                 this.current = -1;
             }
 
+            //Si il n'y a pas les flèches
             if (this.$news.find(".vignette-arrows").length === 0 && (rcmail.env.news_vignette_all_news_datas[this.type] !== undefined || rcmail.env.news_vignette_all_news_datas[this.id] !== undefined))
             {
+                //Div qui contient les flèches
                 let $html = $(`<div class="vignette-arrows" style="text-align:right;">
                 <button style="margin-top:0;margin-bottom:15px" class="btn-mel-invisible btn-arrow btn btn-secondary"><span class="icon-mel-arrow-left"></span></button>
                 <button style="margin-top:0;margin-bottom:15px" class="btn-mel-invisible btn-arrow btn btn-secondary"><span class="icon-mel-arrow-right"></span></button>
                 </div>
                 `);
 
+                //Action de la flèche gauche
                 let $left = $html.find(".icon-mel-arrow-left").parent().addClass("disabled").attr("disabled", "disabled");
                 $left.click((e) => {
 
@@ -1161,6 +1182,7 @@ $(document).ready(async () => {
                         this.$left.click();
                 });
 
+                //Action de la flèche droite
                 let $right = $html.find(".icon-mel-arrow-right").parent();
                 $right.click((e) => {
 
@@ -1218,12 +1240,23 @@ $(document).ready(async () => {
             return this;
         }
 
+        /**
+         * Met à jour la querry html de la classe
+         * @param {JqueryElement} $querry Nouvelle querry
+         * @returns Chaînage
+         */
         setNews($querry)
         {
             this.$news = $querry;
             return this;
         }
 
+        /**
+         * Met à jours le type de la classe.  
+         * @see MelNews.type
+         * @param {string} type Type de la classe
+         * @returns Chaînage
+         */
         setType(type)
         {
             this.type = type;
@@ -1231,11 +1264,23 @@ $(document).ready(async () => {
         }
     }
 
+    /**
+     * Enumération des formats de la news
+     */
     MelNews.format = {
+        /**
+         * Petit format (col-md-3)
+         */
         small:"small",
+        /**
+         * Grand format (col-md-6)
+         */
         large:"large"
     };
 
+    /**
+     * Enumération des types de news
+     */
     MelNews.type = {
         internet:"internet",
         intranet:"intranet",

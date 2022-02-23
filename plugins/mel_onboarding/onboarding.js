@@ -39,8 +39,8 @@ if (window.rcmail) {
 
 //Ouvre l'onboarding depuis la fenêtre d'assistance
 rcube_webmail.prototype.current_page_onboarding = function(task) {
-    window.parent.help_popUp.close();
-
+    // window.parent.help_popUp.close();
+    window.help_popUp.close();
     var iframe = window.parent.$('iframe.' + task + '-frame')[0];
     if (iframe) {
         window.parent.document.getElementById(iframe.id).contentWindow.postMessage("onboarding")
@@ -375,26 +375,17 @@ function intro_details_popup(event) {
 
 
     let intro_details;
-    switch (event.data.currentStep.popup) {
-        case "Help":
-            window.parent.document.getElementById("helppageframe").onload = function() {
-                intro_details = window.parent.document.getElementById("helppageframe").contentWindow.introJs();
-                intro_details.iframe = true;
-                intro_popup_tour(event, intro_details);
-            }
-            break;
-        default:
-            intro_details = window.parent.introJs();
-            setTimeout(function() {
-                if (event.data.currentStep.details.hints) {
-                    intro_popup_hint(event, intro_details);
-                } else {
-                    intro_popup_tour(event, intro_details);
-                }
-            }, 400);
-            break;
-    }
+
+    intro_details = window.parent.introJs();
+    setTimeout(function() {
+        if (event.data.currentStep.details.hints) {
+            intro_popup_hint(event, intro_details);
+        } else {
+            intro_popup_tour(event, intro_details);
+        }
+    }, 400);
 }
+
 
 
 function intro_popup_tour(event, intro_details) {

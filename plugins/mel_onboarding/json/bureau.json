@@ -188,33 +188,33 @@
                             "doneLabel": "Fermer",
                             "steps": [{
                                     "title": "Barre de recherche",
-                                    "element": "#help-search",
+                                    "element": "#search_row",
                                     "intro": "Ce champ de recherche vous permet de rechercher votre besoin en quelques mots.",
                                     "position": "bottom"
                                 },
                                 {
                                     "title": "Aide générale",
-                                    "element": ".helppage.general a",
+                                    "element": "#helppage_general button",
                                     "intro": "\"Voir l'aide générale de Mél\" permet d'ouvrir la page d'aide de tous les outils en lien avec Mél.",
                                     "position": "bottom"
                                 },
                                 {
-                                    "title": "Aide page courante",
-                                    "element": ".helppage.current a",
-                                    "intro": "\"Voir l'aide de la page courante\" permet d'afficher l'aide dynamique liée à la page courant du Bureau Numérique.",
+                                    "title": "Vidéos",
+                                    "element": "#helppage_video button",
+                                    "intro": "\"Voir les vidéos\" permet d'ouvrir la liste de toutes les vidéos disponibles pour le Bnum",
                                     "position": "bottom"
                                 },
                                 {
                                     "title": "Proposer une amélioration",
-                                    "element": ".helppage.suggestion a",
+                                    "element": "#helppage_suggestion button",
                                     "intro": "Proposez une amélioration pour le Bureau Numérique (ou les outils Mel en général).",
                                     "position": "bottom",
                                     "tooltipClass": "big-width-intro"
                                 },
                                 {
-                                    "title": "Actualités",
-                                    "element": "#helpnews",
-                                    "intro": "L'onglet 'Actualité' affiche toutes les dernières nouveautés liées au Bureau Numérique.",
+                                    "title": "Aide page courante",
+                                    "element": "#helppage_current button",
+                                    "intro": "\"Voir l'aide de la page courante\" permet d'afficher l'aide dynamique liée à la page courant du Bureau Numérique.",
                                     "position": "bottom"
                                 }
                             ]

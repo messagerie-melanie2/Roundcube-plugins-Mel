@@ -92,6 +92,7 @@ class mel_help extends rcube_plugin
     $this->include_script('mel_help.js');
     $this->rc->output->set_env('help_page', $this->rc->config->get('help_page', null));
     $this->rc->output->set_env('help_suggestion_url', $this->rc->config->get('help_suggestion_url', null));
+    $this->rc->output->set_env('help_video', $this->rc->config->get('help_video', null));
 
   }
 

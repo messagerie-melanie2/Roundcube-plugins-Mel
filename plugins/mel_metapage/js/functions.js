@@ -287,7 +287,7 @@ function m_mp_createworkspace() {
 
         //create_popUp.contents.html(html);
         //create_popUp.editTitle();
-        create_popUp.editTitleAndSetBeforeTitle('<a href="#" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
+        create_popUp.editTitleAndSetBeforeTitle('<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
             'Création d\'un espace de travail');
         create_popUp.modal.focus();
         create_popUp.show();
@@ -1001,7 +1001,7 @@ function m_mp_Help() {
 
     const actions = {
         helppage_general: get_action("mel_metapage.h_general", "icon-mel-help", "window.open('" + rcmail.env.help_page + "', '_blank');"),
-        helppage_video: get_action("mel_metapage.h_video", "icon-mel-camera", "m_mp_createworkspace()"),
+        helppage_video: get_action("mel_metapage.h_video", "icon-mel-camera", "m_mp_help_video()"),
         helppage_suggestion: get_action("mel_metapage.h_suggestion", "icon-mel-notes", "window.open('" + rcmail.env.help_suggestion_url + "', '_blank');"),
         helppage_current: get_action("mel_metapage.h_current", "icon-mel-newspaper", "rcmail.current_page_onboarding(m_mp_DecodeUrl().task)")
     };
@@ -1038,17 +1038,18 @@ function m_mp_Help() {
                 rcmail.env.help_index = index;
             });
         });
-        let button = function(txt, font, click = "") {
+        let button = function(txt, font, click = "", external) {
             let disabled = click === "" ? "disabled" : "";
-            return '<button class="btn btn-block btn-secondary btn-mel ' + disabled + '" onclick="' + click + '"' + disabled + '><span class="' + font + '"></span>' + txt + '</button>';
+            let external_logo = external === true ? '<span class="icon-mel-external top-right"></span>' : "";
+            return '<button class="btn btn-block btn-secondary btn-mel ' + disabled + '" onclick="' + click + '"' + disabled + '>' + external_logo + '<span class="' + font + '"></span>' + txt + '</button>';
         }
-        const _button = function(action, block = true) {
-            return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action);
+        const _button = function(action, block = true, external = false) {
+            return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action, external);
         }
 
-        let helppage_general = `<li class="col-sd-4 col-md-4" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general) + '</li>'
+        let helppage_general = `<li class="col-sd-4 col-md-4" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general, true, true) + '</li>'
         let helppage_video = `<li class="col-sd-4 col-md-4" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
-        let helppage_suggestion = `<li class="col-sd-4 col-md-4" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion) + '</li>'
+        let helppage_suggestion = `<li class="col-sd-4 col-md-4" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
         let helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
 
         let html = "<div class=row>";
@@ -1121,6 +1122,64 @@ function m_mp_Help() {
 //     }, 10);
 // }
 
+/** 
+ * Affiche la liste des vidéos d'assistance
+ */
+
+function m_mp_help_video() {
+    try {
+        let html = '<ul id=globallist class="row ignore-bullet">';
+        let help_videos = Object.values(rcmail.env.help_video);
+
+        for (const [key, element] of Object.entries(rcmail.env.help_video)) {
+            html += '<li class="col-sd-12 col-md-12" id="helppage_video" title="Cliquer pour voir la vidéo">';
+            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
+            html += '</li>';
+        }
+
+
+        help_videos.forEach((element, index) => {
+
+        });
+        html += '</ul>';
+
+        help_popUp.contents.html(html);
+
+        help_popUp.editTitleAndSetBeforeTitle('<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_Help()"><span class=sr-only>Retour à la modale de création</span></a>',
+            'Vidéos du bureau numérique');
+
+
+        help_popUp.modal.focus();
+        help_popUp.show();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+/** 
+ * Affiche une vidéo d'assistance
+ */
+
+function m_mp_help_video_player(task) {
+    try {
+        help = rcmail.env.help_video[task];
+        let html = '<div class="row">'
+        html += '<div class="max-video mb-3 p-3"><video controls><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/' + help.video + '" type="video/mp4">Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div></div><h2>' + help.title + '</h2><p>' + help.description + '</p></div>';
+
+        html += '</div>'
+
+        help_popUp.contents.html(html);
+
+        help_popUp.editTitleAndSetBeforeTitle('<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_help_video()"><span class=sr-only>Retour à la modale de création</span></a>', help.title);
+
+
+        help_popUp.modal.focus();
+        help_popUp.show();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 /**
  * Change l'icône en classe en fonction du type.
  * @param {string} icon Icône à changer en classe.
@@ -1136,7 +1195,7 @@ function m_mp_CreateDocumentIconContract(icon, type) {
  * Affiche les données pour créer un document dans la modale de création.
  */
 async function m_mp_InitializeDocument(initPath = null) {
-    create_popUp.editTitleAndSetBeforeTitle('<a href=# class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>', 'Création d\'un nouveau document');
+    create_popUp.editTitleAndSetBeforeTitle('<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {})"><span class=sr-only>Retour à la modale de création</span></a>', 'Création d\'un nouveau document');
     create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
 
     let url_config = {

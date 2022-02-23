@@ -187,6 +187,7 @@ class PopUpSettings{
     {
         let html = '<table class="table table-striped table-bordered"><thead><tr><td>Service</td><td>Droit</td></tr></thead><tbody>';
 
+        let name = "";
         if (rcmail.env.news_settings_rights_edited !== undefined)
         {
             for (const key in rcmail.env.news_settings_rights_edited[uid]) {
@@ -196,7 +197,11 @@ class PopUpSettings{
                     if (element === null)
                         continue;
 
-                    html += `<tr><td>${key.split(",")[0].split("=")[1]}</td>
+                    name = rcmail.env.services_names[key];//rcmail.env.news_settings_names
+
+                    if (name === undefined) name = rcmail.env.news_settings_names[key];
+
+                    html += `<tr><td>${name}</td>
                     <td><span class="${this.showCurrentRight(key, key, uid)}"></span></td></tr>`;
                 }
             }
@@ -209,7 +214,11 @@ class PopUpSettings{
                 if (rcmail.env.news_settings_rights_edited !== undefined && rcmail.env.news_settings_rights_edited[uid] !== undefined && rcmail.env.news_settings_rights[uid][key] !== undefined)
                     continue;
 
-                html += `<tr><td>${key.split(",")[0].split("=")[1]}</td>
+                name = rcmail.env.services_names[key];//rcmail.env.news_settings_names
+
+                if (name === undefined) name = rcmail.env.news_settings_names[key];
+
+                html += `<tr><td>${name}</td>
                 <td><span class="${this.showCurrentRight(key, key, uid)}"></span></td></tr>`;
             }
         }
@@ -316,15 +325,18 @@ class PopUpSettings{
 
                 this.addVisuToChild(e, newRight);
 
-                 if (rcmail.env.news_settings_rights_edited === undefined)
-                     rcmail.env.news_settings_rights_edited = {};
+                if (rcmail.env.news_settings_rights_edited === undefined)
+                    rcmail.env.news_settings_rights_edited = {};
 
-                 if (rcmail.env.news_settings_rights_edited[uid] === undefined)
-                     rcmail.env.news_settings_rights_edited[uid] = {};
+                if (rcmail.env.news_settings_rights_edited[uid] === undefined)
+                    rcmail.env.news_settings_rights_edited[uid] = {};
 
                 rcmail.env.news_settings_rights_edited[uid][service] = newRight === undefined ? null : newRight;
 
-                console.log("settings", uid, service, rcmail.env.news_settings_rights_edited, newRight);
+                if (rcmail.env.news_settings_names === undefined)
+                    rcmail.env.news_settings_names = {};
+
+                rcmail.env.news_settings_names[service] = e.find(".name").html();
 
                 if (this.oooooooooooo === undefined)
                 {

@@ -799,19 +799,19 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
     html += '<a class="button icon remove" onclick=m_mp_remove_li(this)></a>';
     html += "</li>";
 
+    //console.log("auto", $(element).val(), html, append, element);
     if (append === true)
     {
       $("#wspf").append(html);
       $(element).val("");
-      //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
+
       html = $(element).parent()[0].outerHTML;
-      console.log($(element).parent());
+
       $(element).parent().remove();
       rcmail.init_address_input_events($(element));
       $(element).focus();
     }
 
-    console.log("acf", action_after + "");
     if (action_after !== null) {
       action_after({
         $element:$(element),
@@ -827,13 +827,18 @@ function m_mp_add_users() {
   $("#wspf .workspace-recipient").each((i, e) => {
     users.push($(e).find(".email").html());
   });
+
   let input = $("#workspace-user-list");
+
   if (input.val().length > 0)
-    users.push(input.val());
+    users.push(input.val().includes('<') ? input.val().split('<')[1].split('>')[0] : input.val());
+
   input.val("");
+
   $("#wspf .workspace-recipient").each((i, e) => {
     $(e).remove();
   });
+
   if (users.length > 0) {
     $("#mm-wsp-loading").css("display", "");
     return mel_metapage.Functions.post(

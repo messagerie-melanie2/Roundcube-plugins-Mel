@@ -808,12 +808,15 @@ function m_mp_add_users() {
         users.push($(e).find(".email").html());
     });
     let input = $("#workspace-user-list");
+
     if (input.val().length > 0)
-        users.push(input.val());
+      users.push(input.val().includes('<') ? input.val().split('<')[1].split('>')[0] : input.val());
+
     input.val("");
     $("#wspf .workspace-recipient").each((i, e) => {
         $(e).remove();
     });
+    
     if (users.length > 0) {
         $("#mm-wsp-loading").css("display", "");
         return mel_metapage.Functions.post(

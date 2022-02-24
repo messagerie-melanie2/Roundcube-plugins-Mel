@@ -104,7 +104,8 @@ rcube_webmail.prototype.help_search = function(event, object) {
                 document.getElementById("help-search-results").innerHTML += "<br/>";
                 document.getElementById("help-search-results").innerHTML += "<p>" + rcmail.get_label('help no result', 'mel_help') + "</p>";
                 document.getElementById("help-search-results").innerHTML += "<br/>";
-                document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='window.open(`" + rcmail.env.help_channel_support + "`, `_blank`)'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
+                // document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='window.open(`" + rcmail.env.help_channel_support + "`, `_blank`)'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
+                document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='rcmail.help_redirect()'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
             }
         }, 300);
     } else {
@@ -114,3 +115,14 @@ rcube_webmail.prototype.help_search = function(event, object) {
         document.getElementById("noresulthelp").style = "display: none;";
     }
 }
+
+
+rcube_webmail.prototype.help_redirect = function() {
+    help_popUp.close();
+    mel_metapage.Functions.change_frame('rocket', true, true).then(() => {
+        parent.$('.discussion-frame')[0].contentWindow.postMessage({
+            externalCommand: 'go',
+            path: `/channel/Bnum-infos`
+        }, '*')
+    });
+};

@@ -539,22 +539,11 @@ class roundcube_auth extends rcube_plugin
         }
 
         // En cas de déconnexion, on ne déclenche pas la mécanique
-        // En cas de connexion OIDC, idem
+        // En cas de connexion OIDC, on ne déclenche pas la mécanique
         else if($rcmail->task != 'logout' && $oidc_query != $this->enabled)
         {
-            // Action de l'utilisateur : requête qui affiche du HTML (ouverture d'une page, changement de task, ...)
-            if($rcmail->output->type == 'html')
-            //if($rcmail->task == 'roundpad')
-            {
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Action utilisateur à " . time()); // TODO REMOVE
-
-                // Stockage du timestamp de la dernière action utilisateur
-                $_SESSION['last_user_action'] = time();
-            }
-
-            // Action automatique : refresh ou vide (clic sur une task ?)
-            // if (($rcmail->action == 'refresh' || empty($rcmail->action))
-            else if ($rcmail->action == 'refresh' || empty($rcmail->action))
+            // Action automatique (refresh)
+            if ($rcmail->action == 'refresh' || $rcmail->action == 'plugin.list_contacts_recent' || $rcmail->action == 'load_events')
             {
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Refresh à " . time()); // TODO REMOVE
 
@@ -569,10 +558,21 @@ class roundcube_auth extends rcube_plugin
                 {
                     mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnecting user (Inactivity)");
 
-                    // Clean disconnection
-                    $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::LOGOUT, $rcmail);
-                    return; // TODO exit
+                    // Delete stored things
+                    $rcmail->kill_session();
+
+                    // Re-auth
+                    $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
                 }
+            }
+            
+            // Action de l'utilisateur
+            else
+            {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Action utilisateur à " . time()); // TODO REMOVE
+
+                // Stockage du timestamp de la dernière action utilisateur
+                $_SESSION['last_user_action'] = time();
             }
 
             // Dans tous les cas, si le token est proche de l'expiration, on relance l'auth OIDC (utilisateur présent)
@@ -583,10 +583,12 @@ class roundcube_auth extends rcube_plugin
                 // Delete stored things
                 $rcmail->kill_session();
 
+                // Re-auth
                 $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
             }
         }
 
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Return args : " . implode($args, ','));
         return $args;
     }
 

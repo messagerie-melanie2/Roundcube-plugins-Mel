@@ -84,7 +84,7 @@ class mel_help extends rcube_plugin
     // Chargement de la conf
     $this->load_config();
     $this->add_texts('localization/', false);
-    $this->add_texts('localization/', ['help search no result', 'help search open', 'help action open']);
+    $this->add_texts('localization/', ['help search no result','help no result', 'help search open', 'help action open']);
     $this->include_stylesheet($skin_path . '/mel_help.css');
     // Index
     $this->register_action('index', array($this, 'action'));
@@ -92,6 +92,7 @@ class mel_help extends rcube_plugin
     $this->include_script('mel_help.js');
     $this->rc->output->set_env('help_page', $this->rc->config->get('help_page', null));
     $this->rc->output->set_env('help_suggestion_url', $this->rc->config->get('help_suggestion_url', null));
+    $this->rc->output->set_env('help_channel_support', $this->rc->config->get('help_channel_support', null));
     $this->rc->output->set_env('help_video', $this->rc->config->get('help_video', null));
 
   }

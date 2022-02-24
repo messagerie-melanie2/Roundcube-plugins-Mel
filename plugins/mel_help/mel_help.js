@@ -78,8 +78,9 @@ rcube_webmail.prototype.help_search = function(event, object) {
                         help_url.href = _search[r.key].help_url;
                         help_url.target = "_blank";
                         help_url.title = _search[r.key].help_title;
-                        help_url.className = "help button";
-                        help_url.textContent = _search[r.key].help_name ? _search[r.key].help_name : rcmail.get_label('help search open', 'mel_help');
+                        // help_url.className = "help button";
+                        help_url.className = "hide-touch mel-button no-button-margin mel-before-remover mel-focus btn btn-secondary";
+                        help_url.innerHTML = _search[r.key].help_name ? "<span class='icon-mel-help mr-2'></span>" + _search[r.key].help_name : rcmail.get_label('help search open', 'mel_help');
                         buttons.appendChild(help_url);
                     }
                     // Url button
@@ -88,8 +89,9 @@ rcube_webmail.prototype.help_search = function(event, object) {
                         action_url.href = _search[r.key].action_url;
                         action_url.target = "_blank";
                         action_url.title = _search[r.key].action_title;
-                        action_url.className = _search[r.key].action_class ? (_search[r.key].action_class + " button") : "action button";
-                        action_url.textContent = _search[r.key].action_name;
+                        // action_url.className = _search[r.key].action_class ? (_search[r.key].action_class + " button") : "action button";
+                        action_url.className = "hide-touch bckg mel-button no-button-margin mel-before-remover mel-focus btn btn-secondary ml-4";
+                        action_url.innerHTML = _search[r.key].action_class ? "<span class='icon-mel-" + _search[r.key].action_class + " mr-2'></span>" + _search[r.key].action_name : "<span class='icon-mel-parameters-invert mr-2'></span>" + _search[r.key].action_name;
                         buttons.appendChild(action_url);
                     }
                     url.appendChild(buttons);
@@ -100,11 +102,29 @@ rcube_webmail.prototype.help_search = function(event, object) {
                 }
             } else {
                 document.getElementById("help-search-results").style = "display: block; text-align: center;";
-                document.getElementById("help-search-results").textContent = rcmail.get_label('help search no result', 'mel_help');
+                document.getElementById("help-search-results").innerHTML = "<p style='font-size:1.2rem'>" + rcmail.get_label('help search no result', 'mel_help') + "</p>";
+                document.getElementById("help-search-results").innerHTML += "<br/>";
+                document.getElementById("help-search-results").innerHTML += "<p>" + rcmail.get_label('help no result', 'mel_help') + "</p>";
+                document.getElementById("help-search-results").innerHTML += "<br/>";
+                // document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='window.open(`" + rcmail.env.help_channel_support + "`, `_blank`)'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
+                document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='rcmail.help_redirect()'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
             }
         }, 300);
     } else {
         document.getElementById("help-search-results").innerHTML = "";
         document.getElementById("help-search-results").style = "display: none;";
+        document.getElementById("noresulthelp").innerHTML = "";
+        document.getElementById("noresulthelp").style = "display: none;";
     }
 }
+
+
+rcube_webmail.prototype.help_redirect = function() {
+    help_popUp.close();
+    mel_metapage.Functions.change_frame('rocket', true, true).then(() => {
+        parent.$('.discussion-frame')[0].contentWindow.postMessage({
+            externalCommand: 'go',
+            path: `/channel/Bnum-infos`
+        }, '*')
+    });
+};

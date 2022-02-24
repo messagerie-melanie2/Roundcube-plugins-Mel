@@ -528,82 +528,56 @@ if (rcmail)
 
         function invited()
         {
-            // let a = $(`
-            //     <div id="event-rsvp-cloned">
-            //         <div class="rsvp-buttons itip-buttons">
-            //             <input type="button" class="button btn btn-secondary" rel="accepted" value="Accepter">
-            //             <input type="button" class="button btn btn-secondary" rel="tentative" value="Peut-être">
-            //             <input type="button" class="button btn btn-secondary" rel="declined" value="Refuser">
-            //             <input type="button" class="button btn btn-secondary" rel="delegated" value="Déléguer">
-            //             <div class="itip-reply-controls">
-            //                 <div class="custom-control custom-switch">
-            //                     <input type="checkbox" id="noreply-event-rsvp" value="1" class="pretty-checkbox form-check-input custom-control-input">
-            //                     <label class="custom-control-label" for="noreply-event-rsvp" title=""> Ne pas envoyer de réponse</label>
-            //                 </div>
-            //                 <a href="#toggle" class="reply-comment-toggle" onclick="$(this).hide().parent().find('textarea').show().focus()">Saisissez votre réponse</a>
-            //                 <div class="itip-reply-comment">
-            //                     <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="Commentaire d’invitation ou de notification"></textarea>
-            //                     </div>
-            //                 </div>
-            //             </div>
-            //     </div>
-            // `).appendTo($("#parenthtmlcalendar"))
-            // .find('input[rel=accepted]')
-            // .click((e) => {
-            //     ui_cal.event_rsvp(this, null, null, e.originalEvent);
-            // })
-            // ;
-            // return a;
-            return $("#event-rsvp").clone().attr("id", "event-rsvp-cloned").appendTo($("#parenthtmlcalendar"))
-            .find('.rsvp-buttons')
+            let a = $(`
+                <div id="event-rsvp-cloned">
+                    <div class="rsvp-buttons itip-buttons">
+                        <input type="button" class="button btn btn-secondary" rel="accepted" value="Accepter">
+                        <input type="button" class="button btn btn-secondary" rel="tentative" value="Peut-être">
+                        <input type="button" class="button btn btn-secondary" rel="declined" value="Refuser">
+                        <input type="button" class="button btn btn-secondary" rel="delegated" value="Déléguer">
+                        <div class="itip-reply-controls">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" id="noreply-event-rsvp" value="1" class="pretty-checkbox form-check-input custom-control-input">
+                                <label class="custom-control-label" for="noreply-event-rsvp" title=""> Ne pas envoyer de réponse</label>
+                            </div>
+                            <a href="#toggle" class="reply-comment-toggle" onclick="$(this).hide().parent().find('textarea').show().focus()">Saisissez votre réponse</a>
+                            <div class="itip-reply-comment">
+                                <textarea id="reply-comment-event-rsvp" name="_comment" cols="40" rows="4" class="form-control" style="display:none" placeholder="Commentaire d’invitation ou de notification"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            `).appendTo($("#parenthtmlcalendar"))
             .find('input[rel=accepted]')
             .click((e) => {
-                $("#event-rsvp").find('.rsvp-buttons').find('input[rel=accepted]')[0].click();
-                deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+                if (event.recurrence !== undefined) window.event_can_close = false;
+                ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
             })
             .parent().find('input[rel=tentative]')
             .click((e) => {
-                let $event = $("#event-rsvp").find('.rsvp-buttons').find('input[rel=tentative]');
-                $event[0].click();
-                deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
-                if ($event.attr("aria-haspopup") == 'true')
-                {
-                    window.event_can_close = false;
-                    // rcmail.env.bnum_itip_action = (_event) => {
-                    //     const closed = 'closed';
-                    //     let $this = $("#event-status-editor");
-                    //     // $this.data("state", closed).find("span").removeClass("icon-mel-pencil").addClass("icon-mel-close");
-                    //     rcmail.env.bnum_itip_action = undefined;
-                    // };
-                }
-
+                if (event.recurrence !== undefined) window.event_can_close = false;
+                ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
             })
             .parent().find('input[rel=delegated]')
             .click((e) => {
-                let $event = $("#event-rsvp").find('.rsvp-buttons').find('input[rel=delegated]');
-                $event[0].click();
-                if ($event.attr("aria-haspopup") == 'true')
+                if (event.recurrence !== undefined) 
                 {
-                    deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
                     window.event_can_close = false;
-                    rcmail.env.bnum_itip_action = (_event) => {
-                        modal.close();
-                        rcmail.env.bnum_itip_action = undefined;
-                    };
+                    ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
                 }
-                else
+                else 
+                {
+                    ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
                     modal.close();
+                }
             })
             .parent().find('input[rel=declined]')
             .click((e) => {
-                $("#event-rsvp").find('.rsvp-buttons').find('input[rel=declined]')[0].click();
-                deplace_popup_if_exist($(e.currentTarget)[0].getClientRects()[0]);
+                if (event.recurrence !== undefined) window.event_can_close = false;
+                ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
             })
-            .parent().find(".itip-reply-controls")
-            .find("input.form-check-input")
-            .click(() => {
-                $("#event-rsvp").find('.rsvp-buttons').find(".itip-reply-controls").find("input.form-check-input")[0].click();
-            });
+            ;
+            return a;
         }
 
         //Gestion des invitations
@@ -627,6 +601,8 @@ if (rcmail)
                     }
                     else
                         window.event_can_close = true;
+
+                    // modal.close();
                 });
                 $this.data("state", closed).find("span").removeClass("icon-mel-pencil").addClass("icon-mel-close");
             }

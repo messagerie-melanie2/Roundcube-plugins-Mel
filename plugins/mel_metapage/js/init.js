@@ -143,7 +143,7 @@ if (rcmail)
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar, today);
                         mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
                         
-                        const byDays = Enumerable.from(events).groupBy(x => moment(x.start).format('DD/MM/YYYY')).toJsonDictionnary(x => x.key(), x => x.getSource());
+                        const byDays = Enumerable.from(events).orderBy(x => moment(x.start) - moment()).groupBy(x => moment(x.start).format('DD/MM/YYYY')).toJsonDictionnary(x => x.key(), x => x.getSource());
                         mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
 
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);

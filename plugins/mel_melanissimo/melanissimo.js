@@ -88,6 +88,7 @@ if (window.rcmail) {
       $('#send_melanissimo_dialog .dialog_text').text(rcmail.labels['mel_melanissimo.Send Melanissimo success']);
       // Fermer la fenêtre d'envoi après 5sec
       setTimeout(function() {
+        rcmail.compose_skip_unsavedcheck = true;
         return rcmail.command('list', '', this, event)
       }, 5000);
     }

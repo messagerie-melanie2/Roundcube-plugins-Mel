@@ -78,8 +78,9 @@ rcube_webmail.prototype.help_search = function(event, object) {
                         help_url.href = _search[r.key].help_url;
                         help_url.target = "_blank";
                         help_url.title = _search[r.key].help_title;
-                        help_url.className = "help button";
-                        help_url.textContent = _search[r.key].help_name ? _search[r.key].help_name : rcmail.get_label('help search open', 'mel_help');
+                        // help_url.className = "help button";
+                        help_url.className = "hide-touch mel-button no-button-margin mel-before-remover mel-focus btn btn-secondary";
+                        help_url.innerHTML = _search[r.key].help_name ? "<span class='icon-mel-help mr-2'></span>" + _search[r.key].help_name : rcmail.get_label('help search open', 'mel_help');
                         buttons.appendChild(help_url);
                     }
                     // Url button
@@ -88,8 +89,9 @@ rcube_webmail.prototype.help_search = function(event, object) {
                         action_url.href = _search[r.key].action_url;
                         action_url.target = "_blank";
                         action_url.title = _search[r.key].action_title;
-                        action_url.className = _search[r.key].action_class ? (_search[r.key].action_class + " button") : "action button";
-                        action_url.textContent = _search[r.key].action_name;
+                        // action_url.className = _search[r.key].action_class ? (_search[r.key].action_class + " button") : "action button";
+                        action_url.className = "hide-touch bckg mel-button no-button-margin mel-before-remover mel-focus btn btn-secondary ml-4";
+                        action_url.innerHTML = _search[r.key].action_class ? "<span class='icon-mel-" + _search[r.key].action_class + " mr-2'></span>" + _search[r.key].action_name : "<span class='icon-mel-parameters-invert mr-2'></span>" + _search[r.key].action_name;
                         buttons.appendChild(action_url);
                     }
                     url.appendChild(buttons);

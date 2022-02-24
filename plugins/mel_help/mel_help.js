@@ -100,11 +100,17 @@ rcube_webmail.prototype.help_search = function(event, object) {
                 }
             } else {
                 document.getElementById("help-search-results").style = "display: block; text-align: center;";
-                document.getElementById("help-search-results").textContent = rcmail.get_label('help search no result', 'mel_help');
+                document.getElementById("help-search-results").innerHTML = "<p style='font-size:1.2rem'>" + rcmail.get_label('help search no result', 'mel_help') + "</p>";
+                document.getElementById("help-search-results").innerHTML += "<br/>";
+                document.getElementById("help-search-results").innerHTML += "<p>" + rcmail.get_label('help no result', 'mel_help') + "</p>";
+                document.getElementById("help-search-results").innerHTML += "<br/>";
+                document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='window.open(`" + rcmail.env.help_channel_support + "`, `_blank`)'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
             }
         }, 300);
     } else {
         document.getElementById("help-search-results").innerHTML = "";
         document.getElementById("help-search-results").style = "display: none;";
+        document.getElementById("noresulthelp").innerHTML = "";
+        document.getElementById("noresulthelp").style = "display: none;";
     }
 }

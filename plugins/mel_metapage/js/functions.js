@@ -1050,21 +1050,21 @@ function m_mp_Help() {
             return button(action.text, `${action.icon} ${block ? "block" : ""}`, action.action, external);
         }
 
-        let helppage_general = `<li class="col-sd-4 col-md-4" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general, true, true) + '</li>'
-        let helppage_video = `<li class="col-sd-4 col-md-4" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
-        let helppage_suggestion = `<li class="col-sd-4 col-md-4" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
+        let helppage_general = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general, true, true) + '</li>'
+        let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
+        let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
         let helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
 
         let html = "<div class='row' id='search_row'>";
         html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';
-        html += '<div class="input-group mx-4 mb-5">';
+        html += '<div class="input-group mx-4">';
         html += '<label class="sr-only" for="barup-search-input">Rechercher</label>';
         html += '<input id="barup-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
         html += ' <div class="input-group-append">';
         html += '<span class="icofont-search input-group-text"></span>';
         html += "</div></div></div>"
         html += '<div id="help-search-results"></div>'
-        html += '<div id="noresulthelp" name="no_result_help"></div>'
+        html += '<div id="noresulthelp"></div>'
 
         html += '<ul id=globallist class="row ignore-bullet">' + helppage_general + helppage_video + helppage_suggestion + helppage_current + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.assistance"), "default", html, '   ');

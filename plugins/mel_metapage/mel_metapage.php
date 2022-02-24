@@ -395,6 +395,39 @@ class mel_metapage extends rcube_plugin
             'type'       => 'link',
         ), "listcontrols");
 
+        $this->add_button(array(
+            'command' => "event-compose",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'compose mel-event-compose options',
+            'classsel' => 'compose mel-event-compose options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.event-compose',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "events-options-containers");
+
+        $this->add_button(array(
+            'command' => "event-self-invitation",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'export mel-event-self-invitation options',
+            'classsel' => 'export mel-event-self-invitation options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.event-self-invitation',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "events-options-containers");
+
+        $this->add_button(array(
+            'command' => "event-self-copy",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'copy mel-event-copy options',
+            'classsel' => 'copy mel-event-copy options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.copy_w_p',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "events-options-containers");
+
         //listcontrols
         $this->include_depedencies();
         $this->include_css();

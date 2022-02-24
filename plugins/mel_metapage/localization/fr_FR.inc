@@ -184,3 +184,8 @@ $labels["more"] = "Plus";
 $labels["toggle_chat"] = "Afficher/Fermer le chat interne";
 $labels["webconf_tile_help"] = "Affiche ou ferme le chat qui sert à communiquer avec les personnes externe au BNum";
 $labels["change_theme"] = "Changer de thème";
+
+$labels["event-compose"] = "Ecrire aux participants";
+$labels["event-self-invitation"] = "S'inviter";
+$labels["duplicate"] = "Dupliquer";
+$labels["copy_w_p"] = "Copier sans les participants";

@@ -108,6 +108,23 @@ if (rcmail)
                 }
             });
 
+            rcmail.register_command("event-compose", () => {
+                const event = ui_cal.selected_event;
+                parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(',')});
+            }, true);
+
+            rcmail.register_command("event-self-invitation", () => {
+                const event = ui_cal.selected_event;
+                rcmail.env.uid = event.uid;
+                rcube_libcalendaring.add_from_itip_mail('2:0', 'calendar', 'accepted', 'CFB1D9A7EC3F1B7C0E5CC3FAF2216EFF-5A655EB2FC8340E2')
+            }, true);
+
+            rcmail.register_command("event-self-copy", () => {
+                let event = $.extend(true, {}, ui_cal.selected_event);
+                delete event.attendees;
+                ui_cal.event_copy(event);
+            }, true);
+
             rcmail.register_command("refreshFrame", () => {
 
                 let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);

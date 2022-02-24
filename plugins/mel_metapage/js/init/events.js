@@ -586,6 +586,13 @@ if (rcmail)
             invited();
         }
 
+        if (event.attendees === undefined) $(".mel-event-compose").css("display", "none");
+        else $(".mel-event-compose").css("display", "");
+
+        if (event.calendar === mceToRcId(rcmail.env.username) || event.attendees === undefined) $(".mel-event-self-invitation").css("display", "none");
+        else $(".mel-event-self-invitation").css("display", "");
+
+
         //Button edit
         $("#event-status-editor").click(() => {
             const closed = 'closed';

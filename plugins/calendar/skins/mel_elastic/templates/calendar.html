@@ -185,7 +185,8 @@
 	<ul class="menu listing" role="menu" aria-labelledby="aria-label-eventoptions">
 		<roundcube:button type="link-menuitem" command="event-download" label="download" class="download disabled" classAct="download active" />
 		<roundcube:button type="link-menuitem" command="event-sendbymail" label="send" class="send disabled" classAct="send active" />
-		<roundcube:button type="link-menuitem" command="event-copy" label="copy" class="copy disabled" classAct="copy active" />
+		<roundcube:container name="events-options-containers" id="events-options-containers" />
+		<roundcube:button type="link-menuitem" command="event-copy" label="mel_metapage.duplicate" class="copy disabled" classAct="copy active" />
 		<roundcube:if condition="env:calendar_driver == 'kolab' && config:kolab_bonnie_api" />
 			<roundcube:button type="link-menuitem" command="event-history" label="calendar.eventhistory" class="history disabled" classAct="history active" />
 		<roundcube:endif />

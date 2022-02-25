@@ -25,6 +25,11 @@ class mce_driver_mel extends driver_mel {
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mce\\";
 
   /**
+   * Dossier pour l'utilisation des fichiers pour le unexpunge
+   */
+  protected static $_unexpungeFolder;
+
+  /**
    * Retourne l'objet User associé à l'utilisateur courant
    * Permet de retourner l'instance User en fonction du driver
    * 
@@ -91,10 +96,29 @@ class mce_driver_mel extends driver_mel {
    * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
    * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
    *
-   * @return \LibMelanie\Api\Mce\Group
+   * @return \LibMelanie\Api\Defaut\Group
    */
   public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
-    return null;
+    if (!$fromCache) {
+      $group = $this->group([null, $itemName]);
+      $group->dn = $group_dn;
+      if ($load && !$group->load()) {
+        $group = null;
+      }
+      return $group;
+    }
+    if (!isset(self::$_groups)) {
+      self::$_groups = [];
+    }
+    $keyCache = $group_dn . (isset($itemName) ? $itemName : '');
+    if (!isset(self::$_groups[$keyCache])) {
+      self::$_groups[$keyCache] = $this->group([null, $itemName]);
+      self::$_groups[$keyCache]->dn = $group_dn;
+      if ($load && !self::$_groups[$keyCache]->load()) {
+        self::$_groups[$keyCache] = null;
+      }
+    }
+    return self::$_groups[$keyCache];
   }
   
   /**
@@ -198,7 +222,7 @@ class mce_driver_mel extends driver_mel {
    * @return boolean true si c'est un groupe, false sinon
    */
   public function userIsGroup($user) {
-    return false;
+    return strpos($user, "mceRDN=") === 0;
   }
 
   /**
@@ -209,7 +233,45 @@ class mce_driver_mel extends driver_mel {
    * @param string $folder Dossier IMAP à restaurer
    */
   public function unexpunge($mbox, $folder, $hours) {
-    return false;
+    // Pas de dossier configuré dans le driver, par d'unexpunge
+    if (!isset(static::$_unexpungeFolder)) {
+      return false;
+    }
+
+    $_user = $this->getUser($mbox, false);
+    if ($_user->is_objectshare) {
+      $_user = $_user->objectshare->mailbox;
+    }
+    // Récupération de la configuration de la boite pour l'affichage
+    $host = $this->getRoutage($_user, 'unexpunge');
+    // Ecriture du fichier unexpunge pour le serveur
+    $server = explode('.', $host);
+    $rep = static::$_unexpungeFolder . $server[0];
+    $dossier = str_replace('/', '^', $folder);
+
+    if (isset($dossier)) {
+      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
+    } else {
+      $nom = $rep . '/' . $_user->uid;
+    }
+
+    $fic = fopen($nom, 'w');
+    if (flock($fic, LOCK_EX)) {
+      fputs($fic, 'recuperation:' . $hours);
+      flock($fic, LOCK_UN);
+    }
+    else {
+      return false;
+    }
+    fclose($fic);
+
+    if (file_exists($nom)) {
+      $res = chmod($nom, 0444);
+    }
+    else {
+      return false;
+    }
+    return $res;
   }
 
   /**

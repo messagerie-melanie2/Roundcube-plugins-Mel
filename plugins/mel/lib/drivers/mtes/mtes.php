@@ -63,38 +63,9 @@ class mtes_driver_mel extends mce_driver_mel {
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mel\\";
 
   /**
-   * Retourne l'objet Group
-   * Permet de retourner l'instance Group en fonction du driver
-   * 
-   * @param string $group_dn [Optionnel] DN du groupe a récupérer
-   * @param boolean $load [Optionnel] Le groupe doit-il être chargé ? Oui par défaut
-   * @param boolean $fromCache [Optionnel] Récupérer le groupe depuis le cache s'il existe ? Oui par défaut
-   * @param string $itemName [Optionnel] Nom de l'objet associé dans la configuration LDAP
-   *
-   * @return \LibMelanie\Api\Defaut\Group
+   * Dossier pour l'utilisation des fichiers pour le unexpunge
    */
-  public function getGroup($group_dn = null, $load = true, $fromCache = true, $itemName = null) {
-    if (!$fromCache) {
-      $group = $this->group([null, $itemName]);
-      $group->dn = $group_dn;
-      if ($load && !$group->load()) {
-        $group = null;
-      }
-      return $group;
-    }
-    if (!isset(self::$_groups)) {
-      self::$_groups = [];
-    }
-    $keyCache = $group_dn . (isset($itemName) ? $itemName : '');
-    if (!isset(self::$_groups[$keyCache])) {
-      self::$_groups[$keyCache] = $this->group([null, $itemName]);
-      self::$_groups[$keyCache]->dn = $group_dn;
-      if ($load && !self::$_groups[$keyCache]->load()) {
-        self::$_groups[$keyCache] = null;
-      }
-    }
-    return self::$_groups[$keyCache];
-  }
+  protected static $_unexpungeFolder = '/var/pamela/unexpunge/';
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée
@@ -241,52 +212,6 @@ class mtes_driver_mel extends mce_driver_mel {
    */
   public function userIsGroup($user) {
     return strpos($user, "mineqRDN=") === 0 && strpos($user, "ou=organisation,dc=equipement,dc=gouv,dc=fr") !== false;
-  }
-
-  /**
-   * Méthode permettant de déclencher une commande unexpunge sur les serveurs de messagerie
-   * Utilisé pour la restauration d'un dossier
-   * 
-   * @param string $mbox Identifiant de la boite concernée par la restauration
-   * @param string $folder Dossier IMAP à restaurer
-   * 
-   * @return boolean true si la commande s'est correctement lancée
-   */
-  public function unexpunge($mbox, $folder, $hours) {
-    $_user = $this->getUser($mbox, false);
-    if ($_user->is_objectshare) {
-      $_user = $_user->objectshare->mailbox;
-    }
-    // Récupération de la configuration de la boite pour l'affichage
-    $host = $this->getRoutage($_user, 'unexpunge');
-    // Ecriture du fichier unexpunge pour le serveur
-    $server = explode('.', $host);
-    $rep = '/var/pamela/unexpunge/' . $server[0];
-    $dossier = str_replace('/', '^', $folder);
-
-    if (isset($dossier)) {
-      $nom = $rep . '/' . $_user->uid . '^' . $dossier;
-    } else {
-      $nom = $rep . '/' . $_user->uid;
-    }
-
-    $fic = fopen($nom, 'w');
-    if (flock($fic, LOCK_EX)) {
-      fputs($fic, 'recuperation:' . $hours);
-      flock($fic, LOCK_UN);
-    }
-    else {
-      return false;
-    }
-    fclose($fic);
-
-    if (file_exists($nom)) {
-      $res = chmod($nom, 0444);
-    }
-    else {
-      return false;
-    }
-    return true;
   }
 
   /**

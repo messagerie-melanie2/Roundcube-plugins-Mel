@@ -32,6 +32,11 @@ class mce_mi_driver_mel extends mce_driver_mel {
    * Namespace for the objets
    */
   protected static $_objectsNS = "\\LibMelanie\\Api\\Mi\\";
+
+  /**
+   * Dossier pour l'utilisation des fichiers pour le unexpunge
+   */
+  protected static $_unexpungeFolder = '/var/mce/unexpunge/';
   
   /**
    * Retourne le MBOX par defaut pour une boite partagée donnée

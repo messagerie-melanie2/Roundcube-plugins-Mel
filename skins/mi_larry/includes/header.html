@@ -1,0 +1,48 @@
+<link rel="shortcut icon" href="/images/favicon-mi.png"/>
+
+<script type="text/javascript">
+var UI = new rcube_mail_ui();
+</script>
+
+<roundcube:if condition="!config:support_url" />
+	<style>
+		#taskbar a.button-help {
+			display: none;
+		}
+	</style>
+<roundcube:endif />
+
+
+<div id="header">
+<div id="topnav">
+<roundcube:if condition="!env:extwin &amp;&amp; !env:framed" />
+	<h2 id="aria-label-tasknav" class="voice"><roundcube:label name="arialabeltasknav" /></h2>
+	<div id="useroptions" class="popupmenu" aria-hidden="true" data-align="left">
+		<h3 id="aria-label-useroptions" class="voice"><roundcube:label name="arialabeluseroptions" /></h3>
+		<ul id="useroptionsmenu" class="toolbarmenu" role="menu" aria-labelledby="aria-label-useroptions">
+			<roundcube:container name="useroptionsitems" id="useroptionsitems" />
+			<li role="menuitem" id="useroptionsitemlogout"><roundcube:button command="logout" label="logout" class="button-logout active" classSel="button-logout active" innerClass="button-inner" /></li>
+		</ul>
+	</div>
+	<div id="taskbar" class="topright" role="navigation" aria-labelledby="aria-label-tasknav">
+		<roundcube:button command="mail" label="mail" title="mel_larry.mail_title" class="button-mail" classSel="button-mail button-selected" innerClass="button-inner" />
+		<roundcube:button command="addressbook" label="addressbook" title="mel_larry.contact_title" class="button-addressbook" classSel="button-addressbook button-selected" innerClass="button-inner" />
+		<roundcube:button command="discussion" label="mel_larry.discussion" title="mel_larry.discussion_title" class="button-discussion" classSel="button-discussion button-selected" innerClass="button-inner" />
+		<roundcube:container name="taskbar" id="taskbar" />
+		<roundcube:button command="settings" label="settings" title="mel_larry.settings_title" class="button-settings" classSel="button-settings button-selected" innerClass="button-inner" />
+		<roundcube:button command="logout" label="logout" class="button-logout" classSel="button-logout" innerClass="button-inner" />
+		<a class="button-help" target="_blank" role="button" href="<roundcube:var name='config:support_url' />">
+			<span class="button-inner"><roundcube:label name='mel_larry.help' /></span>
+		</a>
+		<span class="minmodetoggle" title="<roundcube:label name="mel_larry.min_toggle_title" />" role="presentation"></span>
+	</div>
+	<span class="logo">
+		<roundcube:object name="logo" title="mel_larry.logo_title" src="/images/MI.svg" id="toplogo" alt="Logo" onclick="if(window.rcmail)rcmail.command('switch-to-default-task')" />
+	</span>
+<roundcube:endif />
+<roundcube:if condition="env:extwin" />
+	<roundcube:button name="close" type="link" label="close" class="closelink" onclick="self.close()" />
+<roundcube:endif />
+</div>
+<br style="clear:both" />
+</div>

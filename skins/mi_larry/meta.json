@@ -1,0 +1,7 @@
+{
+	"name": "MinInt",
+	"author": "Minint Annuaire et Messagerie basée sur le skin Mèl Larry du MTE",
+	"license": "Creative Commons Attribution-ShareAlike",
+	"license-url": "http://creativecommons.org/licenses/by-sa/3.0/",
+	"extends": "mel_larry"
+}

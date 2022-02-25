@@ -1,0 +1,559 @@
+:root {
+	--global-text-color: #000;
+	--global-bg-color: #fff;
+	--global-action-color: #f50059;
+	--global-border-color: #d0d0d0;
+	--global-selected-bg-color: #dee9f6;
+
+	--main-text-color: var(--global-text-color);
+  	--main-bg-color: #eaeaea;
+  	--main-border-color: var(--global-border-color);
+	--main-sepratator-color: #e4e4e4;
+
+	--login-form-text-color: #2e3436;
+	--login-a-text-color: var(--global-text-color);
+	--login-title-text-color: var(--global-text-color);
+	--login-form-bg-color: rgba(0,0,0,0.05);
+	--login-form-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.5);
+	--login-left-bg-color: var(--global-bg-color);
+	--login-footer-text-color: var(--global-text-color);
+	--login-footer-bg-color: var(--global-bg-color);
+  --login-footer-border-color: #000091;
+	--login-left-bg-color: #4254AA;
+  --login-right-bg-color: rgb(240,240,255);
+
+  	--top-text-color: #000;
+  	--top-bg-color: var(--global-bg-color);
+  	--top-border-color: var(--main-border-color);
+
+  	--topitem-selected-text-color: var(--global-text-color);
+  	--topitem-selected-bg-color: var(--global-selected-bg-color);
+  	--topitem-selected-border-color: var(--global-action-color);
+
+  	--content-text-color: var(--global-text-color);
+  	--content-bg-color: #ececec;
+	--main-content-bg-color: var(--global-bg-color);
+  	--content-border-color: var(--global-border-color);
+
+  	--listbox-text-color: var(--global-text-color);
+  	--listbox-bg-color: #f2f2f2;
+  	--listbox-border-color: var(--global-border-color);
+
+  	--sublistbox-text-color: #2d2d2d;
+  	--sublistbox-bg-color: var(--global-bg-color);
+  	--sublistbox-border-color: var(--global-border-color);
+
+  	--subsublistbox-text-color: var(--global-text-color);
+  	--subsublistbox-bg-color: #fafafa;
+  	--subsublistbox-border-color: var(--global-border-color);
+
+  	--listitem-text-color: var(--global-text-color);
+  	--listitem-bg-color: #f2f2f2;
+	--listitem-focus-bg-color: #0d0d0d;
+	--listitem-droptarget-bg-color: var(--global-selected-bg-color);
+
+  	--sublistitem-text-color: var(--global-text-color);
+  	--sublistitem-bg-color: var(--global-bg-color);
+
+  	--subsublistitem-text-color: var(--global-text-color);
+  	--subsublistitem-bg-color: #fafafa;
+
+  	--listitem-selected-text-color: var(--global-text-color);
+  	--listitem-selected-bg-color: var(--global-bg-color);
+
+  	--sublistitem-selected-text-color: var(--global-text-color);
+  	--sublistitem-selected-bg-color: var(--global-selected-bg-color);
+
+  	--subsublistitem-selected-text-color: var(--global-text-color);
+  	--subsublistitem-selected-bg-color: #fafafa;
+
+	--box-warning-bg-color: #ffe1e0;
+	--box-warning-border-color: #d8cebc;
+	--box-warning-text-color: #000;
+
+  	--box-text-color: var(--global-text-color);
+  	--box-bg-color: #f2f2f2;
+
+  	--boxtitle-text-color: var(--global-text-color);
+  	--boxtitle-bg-color: #f2f2f2;
+
+  	--boxtitle-iframe-text-color: var(--global-text-color);
+  	--boxtitle-iframe-bg-color: var(--global-bg-color);
+
+  	--subboxtitle-text-color: var(--global-text-color);
+  	--subboxtitle-bg-color: #fff;
+
+  	--subsubboxtitle-text-color: var(--global-text-color);
+  	--subsubboxtitle-bg-color: #fafafa;
+
+  	--boxfooter-text-color: var(--global-text-color);
+  	--boxfooter-bg-color: #f2f2f2;
+  	--boxfooter-border-color: var(--main-border-color);
+  	--boxfooter-count-text-color: #656565;
+
+  	--table-head-text-color: #414141;
+  	--table-head-bg-color: var(--global-bg-color);
+  	--table-head-border-color: var(--main-border-color);
+  	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
+
+  	--table-body-text-color: #333;
+	--table-body-bg-color: #f8f8f8;
+	--table-body-bg-color-even: #f8f8f8;
+	--table-extanded-body-bg-color: #e0e0e0;
+  	--table-body-border-color: #e9e9e9;
+
+  	--table-item-selected-text-color: #333;
+  	--table-item-selected-bg-color: var(--global-selected-bg-color);
+
+  	--buttons-text-color: var(--global-text-color);
+  	--buttons-bg-color: var(--global-bg-color);
+  	--buttons-border-color: #d5d5d5;
+	--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+	--buttons-focus-bg-color: #e0e0e0;
+	--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+
+  	--inputs-text-color: #333;
+  	--inputs-placeholder-color: #a3a3a3;
+  	--inputs-bg-color: var(--global-bg-color);
+  	--inputs-border-color: #d5d5d5;
+	--inputs-decorated-text-color: #5e5e5e;
+	--inputs-decorated-bg-color: #c0c0c0;
+	--inputs-box-shadow: 0 1px 1px 0 #ccc;
+
+	--inputs-button-text-color: #525252;
+
+  	--inputs-mainaction-text-color: #fff;
+  	--inputs-mainaction-bg-color: var(--global-action-color);
+	--inputs-mainaction-border-color: rgba(0, 0, 0, 0.2);
+
+	--labels-text-color: #666;
+	--labels-date-text-color: #505050;
+
+	--popup-text-color: #2A2A2A;
+	--popup-bg-color: var(--global-bg-color);
+	--popup-box-sahdow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+	--popup-selected-text-color: #fff;
+	--popup-selected-bg-color: var(--global-action-color);
+
+  	--message-text-color: #fff;
+  	--message-bg-color: #242d38;
+	--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+	--message-list-header: #efefef;
+
+  	--mail-compose-options-border-color: #dfdfdf;
+  	--mail-blockquote-bg-color: #f6f6f6;
+  	--mail-blockquote-text-color: blue;
+ 	--mail-blockquote-border-color: blue;
+
+  	--contact-field-bg-color: #e8e8e8;
+  	--contact-field-text-color: #666;
+
+  	--annuaire-border-color: #d8d8d8;
+
+  	--calendar-eventdialog-text-color: #222222;
+  	--calendar-eventtabs-border-color: #fafafa;
+  	--calendar-dialog-message-bg-color: #fef8c8;
+  	--calendar-main-bg-color: #dcdce0;
+  	--calendar-url-bg-color: #fbfbfb;
+  	--calendar-today-bg-color: #e7f1f3;
+  	--calendar-ui-border-color: #ddd;
+  	--calendar-day-number-color: #578da5;
+  	--calendar-fc-event-border-color: #bbd3da;
+  	--calendar-table-border-color: #ccc;
+  	--calendar-buttons-text-shadow: 0px 1px 1px #EEE;
+  	--calendar-invitebox-bg-color: #fef893;
+  	--calendar-invitebox-border-color: #ffdf0e;
+  	--calendar-schedule-text-color: #004658;
+
+  	--settings-disconnect-border-color: #979797;
+  	--settings-disconnect-text-color: #f63267;
+  	--settings-warn-bg-color: #FFFFE0;
+  	--settings-warn-border-color: #BABA9B;
+
+  	--settings-mel-restaure-bg-color: #E6E6FA;
+  	--settings-mel-restaure-border-color: #E6E6FA;
+  	--settings-mel-folderlist-header-bg-color: #f2f2f2;
+
+  	--task-title-text-color: #656565;
+  	--task-complete-title-text-color: #000;
+
+  	--input-selector-text-color: #5a5959;
+  	--input-selector-bg-color: #eaeaea;
+  	--input-selector-selected-bg-color: #fff;
+
+  	--jquery-date-picker-header-text-color: #5a5959;
+  	--jquery-date-picker-text-color: #464646;
+  	--jquery-date-picker-active-range-text-color: #185d7a;
+  	--jquery-date-picker-active-range-bg-color: #d9f1fb;
+  	--jquery-date-picker-days-cell-over-text-color: #fff;
+  	--jquery-date-picker-days-cell-over-bg-color: rgba(73,180,210,0.6);
+  	--jquery-date-picker-days-cell-over-border-color: #2fa0c0;
+  	--jquery-date-picker-days-cell-over-text-shadow: 0px 1px 1px #666;
+
+  	--jquery-ui-border-color: #ddd;
+  	--jquery-tabs-bg-color: var(--global-bg-color);
+  	--jquery-tabs-text-color: #4f5863;
+  	--jquery-tabs-border-color: #dcdce0;
+  	--jquery-tabs-active-bg-color: #f4f4f4;
+  	--jquery-buttons-text-color: #323232;
+  	--jquery-buttons-focus-text-color: #2b2b2b;
+	--jquery-buttons-focus-bg-color: #ededed;
+
+	--image-gototree: url("images/goto.png?v=e784.5000");
+	--image-carnet: url("images/carnet.png?v=e784.5000");
+	--image-calendar: url("images/calendars.png?v=e784.5000");
+
+	--image-calendar-export: url("images/calendar/exporter.png?v=e784.5000");
+	--image-calendar-import: url("images/calendar/importer.png?v=e784.5000");
+	--image-calendar-print: url("images/calendar/imprimer.png?v=e784.5000");
+
+	--image-dossier: url("../images/dossier.png?v=e784.5000");
+	--image-dossier-selectionne: url("../images/dossier_selectionne.png?v=e784.5000");
+
+	--image-listclick: url("images/listclick.png?v=e784.5000");
+	--image-archiver: url("../images/archiver.png?v=e784.5000");
+
+	--image-contact-phone: url("../images/contact/phone.png?v=e784.5000");
+	--image-contact-mail: url("../images/contact/mail.png?v=e784.5000");
+	--image-contact-carnet: url("../images/contact/carnet.png?v=e784.5000");
+	--image-contact-groupe: url("../images/contact/groupe.png?v=e784.5000");
+	--image-contact-annuaire: url("../images/contact/annuaire.png?v=e784.5000");
+	--image-contact-rechercher: url("../images/contact/rechercher.png?v=e784.5000");
+	--image-contact-importer: url("../images/contact/importer.png?v=e784.5000");
+	--image-contact-exporter: url("../images/contact/exporter.png?v=e784.5000");
+	--image-contact-imprimer: url("../images/contact/imprimer.png?v=e784.5000");
+	--image-contact-supprimer: url("../images/contact/supprimer.png?v=e784.5000");
+
+	--image-messages-attachment: url("../images/attachement.png?v=e784.5000");
+	--image-messages-nonlu: url("../images/non-lu.png?v=e784.5000");
+	--image-messages-suivi: url("../images/suivi.png?v=e784.5000");
+
+	--display-message-switch-theme: none;
+
+	--image-send-retour: url("../images/envoyer/retour.png?v=e784.50000");
+	--image-send-brouillon: url("../images/envoyer/brouillon.png?v=e784.5000");
+	--image-send-piece_jointe: url("../images/envoyer/piece_jointe.png?v=e784.5000");
+	--image-send-options: url("../images/envoyer/options.png?v=e784.5000");
+	--image-send-format-texte: url("../images/envoyer/format-texte.png?v=e784.5000");
+	--image-send-orthographe: url("../images/envoyer/orthographe.png?v=e784.5000");
+	--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre.png?v=e784.5000");
+	--image-send-nouvelle_fenetre_dark: url("../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000")
+	--image-send-remise_differee: url("../images/envoyer/envoi-differe.png?v=e784.5000");
+
+	--image-background: url("../images/background.png?v=e784.5000");
+	--image-icons: url("../images/icons.png?v=e784.5000");
+	--image-plus: url("../images/plus-01.png?v=e784.5000");
+
+	--image-mail-archiver: url("../images/mail/archiver.png?v=e784.5000");
+	--image-mail-actualiser: url("../images/mail/actualiser.png?v=e784.5000");
+	--image-mail-pourriel: url("../images/mail/pourriel.png?v=e784.5000");
+	--image-mail-supprimer: url("../images/mail/supprimer.png?v=e784.5000");
+	--image-mail-imprimer: url("../images/mail/imprimer.png?v=e784.5000");
+	--image-mail-filtrer: url("../images/mail/filtrer.png?v=e784.5000");
+	--image-mail-evenement: url("../images/mail/evenement.png?v=e784.5000");
+	--image-mail-etiquettes: url("../images/mail/etiquettes.png?v=e784.5000");
+	--image-mail-repondre: url("../images/mail/repondre.png?v=e784.5000");
+	--image-mail-repondre_tous: url("../images/mail/repondre_tous.png?v=e784.5000");
+	--image-mail-transferer: url("../images/mail/transferer.png?v=e784.5000");
+	--image-mail-rediriger: url("../images/mail/rediriger.png?v=e784.5000");
+	--image-mail-retour: url("../images/mail/retour.png?v=e784.5000");
+
+	--image-rechercher: url("../images/tools/rechercher.png?v=e784.5000");
+	--image-rechercher-menu: url("../images/tools/rechercher_menu.png?v=e784.5000");
+
+	--image-dossier-reception: url("../images/mail/dossiers/reception.png?v=e784.5000");
+	--image-dossier-reception_selectionne: url("../images/mail/dossiers/reception_selectionne.png?v=e784.5000");
+	--image-dossier-brouillons: url("../images/mail/dossiers/brouillons.png?v=e784.5000");
+	--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne.png?v=e784.5000");
+	--image-dossier-modeles: url("../images/mail/dossiers/modeles.png?v=e784.5000");
+	--image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne.png?v=e784.5000");
+	--image-dossier-local: url("../images/mail/dossiers/dossier.png?v=e784.5000");
+	--image-dossier-local_selectionne: url("../images/mail/dossiers/dossier_selectionne.png?v=e784.5000");
+	--image-dossier-envoyes: url("../images/mail/dossiers/envoyes.png?v=e784.5000");
+	--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne.png?v=e784.5000");
+	--image-dossier-indesirables: url("../images/mail/dossiers/indesirables.png?v=e784.5000");
+	--image-dossier-indesirables_selectionne: url("../images/mail/dossiers/indesirables_selectionne.png?v=e784.5000");
+	--image-dossier-supprimes: url("../images/mail/dossiers/supprimes.png?v=e784.5000");
+	--image-dossier-supprimes_selectionne: url("../images/mail/dossiers/supprimes_selectionne.png?v=e784.5000");
+
+	--image-send-contacts: url("../images/envoyer/contact.png?v=e784.5000");
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--global-text-color: #fff;
+		--global-bg-color: #1e1e1e;
+		--global-action-color: #f50059;
+		--global-border-color: #2F2F2F;
+		--global-selected-bg-color: #323232;
+
+		--main-text-color: #ccc;
+	 	--main-bg-color: #171717;
+	 	--main-border-color: var(--global-border-color);
+	 	--main-sepratator-color: #1e1e1e;
+
+		--login-form-text-color: var(--main-text-color);
+		--login-a-text-color: var(--global-text-color);
+		--login-title-text-color: var(--global-text-color);
+		--login-form-bg-color: rgba(0,0,0,0.4);
+		--login-form-box-shadow: 0 2px 5px 0 rgba(255, 255, 255, 0.1);
+		--login-left-bg-color: var(--global-bg-color);
+		--login-footer-text-color: var(--global-text-color);
+		--login-footer-bg-color: var(--global-bg-color);
+
+	 	--top-text-color: var(--global-text-color);
+	 	--top-bg-color: var(--global-bg-color);
+	 	--top-border-color: var(--main-border-color);
+
+	 	--topitem-selected-text-color: var(--global-text-color);
+	 	--topitem-selected-bg-color: var(--global-selected-bg-color);
+	 	--topitem-selected-border-color: var(--global-action-color);
+
+	 	--content-text-color: var(--global-text-color);
+	 	--content-bg-color: #131313;
+	 	--main-content-bg-color: #1e1e1e;
+	 	--content-border-color: var(--global-border-color);
+
+	 	--listbox-text-color: var(--global-text-color);
+	 	--listbox-bg-color: #222222;
+	 	--listbox-border-color: var(--global-border-color);
+
+	 	--sublistbox-text-color: #CCCCCC;
+	 	--sublistbox-bg-color: var(--global-bg-color);
+	 	--sublistbox-border-color: var(--global-border-color);
+
+	 	--subsublistbox-text-color: var(--global-text-color);
+	 	--subsublistbox-bg-color: #1d1d1d;
+	 	--subsublistbox-border-color: var(--global-border-color);
+
+	 	--listitem-text-color: var(--global-text-color);
+	 	--listitem-bg-color: #222222;
+		--listitem-focus-bg-color: var(--global-text-color);
+		--listitem-droptarget-bg-color: var(--global-selected-bg-color);
+
+	 	--sublistitem-text-color: var(--global-text-color);
+	 	--sublistitem-bg-color: var(--global-bg-color);
+
+	 	--subsublistitem-text-color: var(--global-text-color);
+	 	--subsublistitem-bg-color: #1d1d1d;
+
+	 	--listitem-selected-text-color: var(--global-text-color);
+	 	--listitem-selected-bg-color: #121212;
+
+	 	--sublistitem-selected-text-color: var(--global-text-color);
+	 	--sublistitem-selected-bg-color: var(--global-selected-bg-color);
+
+	 	--subsublistitem-selected-text-color: var(--global-text-color);
+	 	--subsublistitem-selected-bg-color: #1d1d1d;
+
+		--box-warning-bg-color: #6e1010;
+		--box-warning-border-color: #604141;
+		--box-warning-text-color: #fff;
+
+	 	--box-text-color: var(--global-text-color);
+	 	--box-bg-color: #1d1d1d;
+
+	 	--boxtitle-text-color: var(--global-text-color);
+	 	--boxtitle-bg-color: #222222;
+
+	 	--boxtitle-iframe-text-color: var(--global-text-color);
+	 	--boxtitle-iframe-bg-color: var(--global-bg-color);
+
+	 	--subboxtitle-text-color: #CCCCCC;
+	 	--subboxtitle-bg-color: var(--global-bg-color);
+
+	 	--subsubboxtitle-text-color: var(--global-text-color);
+	 	--subsubboxtitle-bg-color: #1d1d1d;
+
+	 	--boxfooter-text-color: var(--global-text-color);
+	 	--boxfooter-bg-color: #222222;
+	 	--boxfooter-border-color: var(--main-border-color);
+	 	--boxfooter-count-text-color: #CCC;
+
+	 	--table-head-text-color: #BEBEBE;
+	 	--table-head-bg-color: #1d1d1d;
+	 	--table-head-border-color: var(--main-border-color);
+	 	--table-head-text-shadow: 0 1px 1px var(--global-bg-color);
+
+	 	--table-body-text-color: #D2D2D2;
+		--table-body-bg-color: #222222;
+		--table-body-bg-color-even: #1d1d1d;
+	 	--table-extanded-body-bg-color: #1d1d1d;
+	 	--table-body-border-color: #1d1d1d;
+
+	 	--table-item-selected-text-color: var(--global-text-color);
+	 	--table-item-selected-bg-color: var(--global-selected-bg-color);
+
+	 	--buttons-text-color: var(--global-text-color);
+	 	--buttons-bg-color: #373737;
+	 	--buttons-border-color: #2A2A2A;
+		--buttons-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+		--buttons-focus-bg-color: #e0e0e0;
+		--buttons-focus-box-shadow: 0 0 5px 2px rgba(71,135,177,.9);
+
+	 	--inputs-text-color: var(--global-text-color);
+	 	--inputs-placeholder-color: var(--global-text-color);
+	 	--inputs-bg-color: #333333;
+	 	--inputs-border-color: #2A2A2A;
+		--inputs-decorated-text-color: #ccc;
+		--inputs-decorated-bg-color: #121212;
+		--inputs-box-shadow: none;
+
+		--inputs-button-text-color: #fff;
+
+	 	--inputs-mainaction-text-color: #fff;
+	 	--inputs-mainaction-bg-color: var(--global-action-color);
+		--inputs-mainaction-border-color: rgba(0, 0, 0, 0.2);
+
+		--labels-text-color: var(--main-text-color);
+		--labels-date-text-color: #eee;
+
+		--popup-text-color: var(--global-text-color);
+		--popup-bg-color: #222222;
+		--popup-box-sahdow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+		--popup-selected-text-color: #fff;
+		--popup-selected-bg-color: var(--global-action-color);
+
+	 	--message-text-color: #fff;
+	 	--message-bg-color: #242d38;
+		--message-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+		--message-list-header: #121212;
+
+	 	--mail-compose-options-border-color: #1e1e1e;
+	 	--mail-blockquote-bg-color: #121212;
+	 	--mail-blockquote-text-color: #3fa8ca;
+	 	--mail-blockquote-border-color: #3fa8ca;
+
+	 	--contact-field-bg-color: #373737;
+	 	--contact-field-text-color: var(--global-text-color);
+
+	 	--annuaire-border-color: #747474;
+
+	 	--calendar-eventdialog-text-color: #eee;
+  		--calendar-eventtabs-border-color: #2A2A2A;
+  		--calendar-dialog-message-bg-color: #626257;
+  		--calendar-main-bg-color: #2A2A2A;
+  		--calendar-url-bg-color: #333333;
+  		--calendar-today-bg-color: #2A2A2F;
+  		--calendar-ui-border-color: #747474;
+  		--calendar-day-number-color: #d5d5d5;
+  		--calendar-fc-event-border-color: #2A2A2A;
+  		--calendar-table-border-color: #2A2A2A;
+  		--calendar-buttons-text-shadow: none;
+  		--calendar-invitebox-bg-color: #241E00;
+  		--calendar-invitebox-border-color: #785800;
+  		--calendar-schedule-text-color: #C4F3FF;
+
+	 	--settings-disconnect-border-color: #747474;
+	 	--settings-disconnect-text-color: #f63267;
+	 	--settings-warn-bg-color: #202003;
+	 	--settings-warn-border-color: #606041;
+
+	 	--settings-mel-restaure-bg-color: #26263A;
+  		--settings-mel-restaure-border-color: #424256;
+  		--settings-mel-folderlist-header-bg-color: #1e1e1e;
+
+	 	--task-title-text-color: var(--main-text-color);
+	 	--task-complete-title-text-color: #fff;
+
+	 	--input-selector-text-color: #d5d5d5;
+	 	--input-selector-bg-color: #333333;
+	 	--input-selector-selected-bg-color: #000;
+
+	 	--jquery-date-picker-header-text-color: #d0d0d0;
+	  	--jquery-date-picker-text-color: #d5d5d5;
+	  	--jquery-date-picker-active-range-text-color: #185d7a;
+  		--jquery-date-picker-active-range-bg-color: #d9f1fb;
+  		--jquery-date-picker-days-cell-over-text-color: #fff;
+	  	--jquery-date-picker-days-cell-over-bg-color: rgba(73,180,210,0.6);
+	  	--jquery-date-picker-days-cell-over-border-color: #2fa0c0;
+	  	--jquery-date-picker-days-cell-over-text-shadow: 0px 1px 1px #666;
+
+  		--jquery-ui-border-color: #2A2A2A;
+	  	--jquery-tabs-bg-color: var(--global-bg-color);
+	  	--jquery-tabs-text-color: #eeeeec;
+	  	--jquery-tabs-border-color: #4f5863;
+	  	--jquery-tabs-active-bg-color: #1e1e1e;
+	  	--jquery-buttons-text-color: var(--global-text-color);
+	  	--jquery-buttons-focus-text-color: var(--global-text-color);
+		--jquery-buttons-focus-bg-color: #373737;
+
+		--image-gototree: url("images/goto-dark.png?v=e784.5000");
+		--image-carnet: url("images/carnet-dark.png?v=e784.5000");
+		--image-calendar: url("images/calendars-dark.png?v=e784.5000");
+
+		--image-calendar-export: url("images/calendar/exporter-dark.png?v=e784.5000");
+		--image-calendar-import: url("images/calendar/importer-dark.png?v=e784.5000");
+		--image-calendar-print: url("images/calendar/imprimer-dark.png?v=e784.5000");
+
+		--image-dossier: url("../images/dossier-dark.png?v=e784.5000");
+		--image-dossier-selectionne: url("../images/dossier_selectionne-dark.png?v=e784.5000");
+
+		--image-listclick: url("images/listclick-dark.png?v=e784.5000");
+		--image-archiver: url("../images/archiver-dark.png?v=e784.5000");
+
+		--image-contact-phone: url("../images/contact/phone-dark.png?v=e784.5000");
+		--image-contact-mail: url("../images/contact/mail-dark.png?v=e784.5000");
+		--image-contact-carnet: url("../images/contact/carnet-dark.png?v=e784.5000");
+		--image-contact-groupe: url("../images/contact/groupe-dark.png?v=e784.5000");
+		--image-contact-annuaire: url("../images/contact/annuaire.png?v=e784.5000");
+		--image-contact-rechercher: url("../images/contact/rechercher-dark.png?v=e784.5000");
+		--image-contact-importer: url("../images/contact/importer-dark.png?v=e784.5000");
+		--image-contact-exporter: url("../images/contact/exporter-dark.png?v=e784.5000");
+		--image-contact-imprimer: url("../images/contact/imprimer-dark.png?v=e784.5000");
+		--image-contact-supprimer: url("../images/contact/supprimer-dark.png?v=e784.5000");
+
+		--image-messages-attachment: url("../images/attachement-dark.png?v=e784.5000");
+		--image-messages-nonlu: url("../images/non-lu-dark.png?v=e784.5000");
+		--image-messages-suivi: url("../images/suivi-dark.png?v=e784.5000");
+
+		--display-message-switch-theme: inline-block;
+
+		--image-send-retour: url("../images/envoyer/retour-dark.png?v=e784.5000");
+		--image-send-brouillon: url("../images/envoyer/brouillon-dark.png?v=e784.5000");
+		--image-send-piece_jointe: url("../images/envoyer/piece_jointe-dark.png?v=e784.5000");
+		--image-send-options: url("../images/envoyer/options-dark.png?v=e784.5000");
+		--image-send-format-texte: url("../images/envoyer/format-texte-dark.png?v=e784.5000");
+		--image-send-orthographe: url("../images/envoyer/orthographe-dark.png?v=e784.5000");
+		--image-send-nouvelle_fenetre: url("../images/envoyer/nouvelle_fenetre-dark.png?v=e784.5000");
+		--image-send-remise_differee: url("../images/envoyer/envoi-differe-dark.png?v=e784.5000");
+
+		--image-background: url("../images/background_dark.png?v=e784.5000");
+		--image-icons: url("../images/icons-dark.png?v=e784.5000");
+		--image-plus: url("../images/plus-01-dark.png?v=e784.5000");
+
+		--image-mail-archiver: url("../images/mail/archiver-dark.png?v=e784.5000");
+		--image-mail-actualiser: url("../images/mail/actualiser-dark.png?v=e784.5000");
+		--image-mail-pourriel: url("../images/mail/pourriel-dark.png?v=e784.5000");
+		--image-mail-supprimer: url("../images/mail/supprimer-dark.png?v=e784.5000");
+		--image-mail-imprimer: url("../images/mail/imprimer-dark.png?v=e784.5000");
+		--image-mail-filtrer: url("../images/mail/filtrer-dark.png?v=e784.5000");
+		--image-mail-evenement: url("../images/mail/evenement-dark.png?v=e784.5000");
+		--image-mail-etiquettes: url("../images/mail/etiquettes-dark.png?v=e784.5000");
+		--image-mail-repondre: url("../images/mail/repondre-dark.png?v=e784.5000");
+		--image-mail-repondre_tous: url("../images/mail/repondre_tous-dark.png?v=e784.5000");
+		--image-mail-transferer: url("../images/mail/transferer-dark.png?v=e784.5000");
+		--image-mail-rediriger: url("../images/mail/rediriger-dark.png?v=e784.5000");
+		--image-mail-retour: url("../images/mail/retour-dark.png?v=e784.5000");
+
+		--image-rechercher: url("../images/tools/rechercher-dark.png?v=e784.5000");
+		--image-rechercher-menu: url("../images/tools/rechercher_menu-dark.png?v=e784.5000");
+
+		--image-dossier-reception: url("../images/mail/dossiers/reception-dark.png?v=e784.5000");
+		--image-dossier-reception_selectionne: url("../images/mail/dossiers/reception_selectionne-dark.png?v=e784.5000");
+		--image-dossier-brouillons: url("../images/mail/dossiers/brouillons-dark.png?v=e784.5000");
+		--image-dossier-brouillons_selectionne: url("../images/mail/dossiers/brouillons_selectionne-dark.png?v=e784.5000");
+		--image-dossier-modeles: url("../images/mail/dossiers/modeles-dark.png?v=e784.5000");
+		--image-dossier-modeles_selectionne: url("../images/mail/dossiers/modeles_selectionne-dark.png?v=e784.5000");
+		--image-dossier-local: url("../images/mail/dossiers/dossier-dark.png?v=e784.5000");
+		--image-dossier-local_selectionne: url("../images/mail/dossiers/dossier_selectionne-dark.png?v=e784.5000");
+		--image-dossier-envoyes: url("../images/mail/dossiers/envoyes-dark.png?v=e784.5000");
+		--image-dossier-envoyes_selectionne: url("../images/mail/dossiers/envoyes_selectionne-dark.png?v=e784.5000");
+		--image-dossier-indesirables: url("../images/mail/dossiers/indesirables-dark.png?v=e784.5000");
+		--image-dossier-indesirables_selectionne: url("../images/mail/dossiers/indesirables_selectionne-dark.png?v=e784.5000");
+		--image-dossier-supprimes: url("../images/mail/dossiers/supprimes-dark.png?v=e784.5000");
+		--image-dossier-supprimes_selectionne: url("../images/mail/dossiers/supprimes_selectionne-dark.png?v=e784.5000");
+
+		--image-send-contacts: url("../images/envoyer/contact-dark.png?v=e784.5000");
+	}
+}

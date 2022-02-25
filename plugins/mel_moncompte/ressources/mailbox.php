@@ -298,23 +298,6 @@ class M2mailbox {
 
     return $table->show($attrib);
   }
-  /**
-   * Génération du nom court de l'identité en fonction du nom
-   *
-   * @param string $name
-   * @return string
-   */
-  private function m2_mailbox_shortname($name) {
-    if (strpos($name, ' emis par ') !== false) {
-      $name = explode(' emis par ', $name);
-      $name = $name[0] . " (partagée)";
-    }
-    elseif (strpos($name, ' - ') !== false) {
-      $name = explode(' - ', $name);
-      $name = $name[0];
-    }
-    return $name;
-  }
 
   /**
    * Handler to render ACL form for a calendar folder
@@ -379,25 +362,30 @@ class M2mailbox {
     }
     $folders = [];
     $imap = $this->rc->get_storage();
+    
     // Si c'est la boite de l'utilisateur connecté
-    if ($mbox->uid == $this->rc->get_user_name()) {
-      if ($imap->connect($this->rc->user->get_username('domain'), $mbox->uid, $this->rc->get_user_password(), 993, 'ssl')) {
-        $folders = $imap->list_folders_direct();
-      }
+    if ($id == $this->rc->get_user_name()) {
+      $host = $this->rc->user->get_username('domain');
     }
     else {
       // Récupération de la configuration de la boite pour l'affichage
       $host = driver_mel::gi()->getRoutage($mbox, 'restore_bal');
-      if (isset($host)) {
-        if (driver_mel::gi()->isSsl($host)) {
-          $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
-        }
-        else {
-          $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
-        }
-        $folders = $imap->list_folders_direct();
-      }
     }
+    if (driver_mel::gi()->isSsl($host)) {
+      $res = $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
+    }
+    else {
+      $res = $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
+    }
+
+    // Récupération des folders
+    if ($res) {
+      $folders = $imap->list_folders_direct();
+    }
+    else {
+      return 'Folders error';
+    }
+
     $input = new html_inputfield(array('name' => 'nbheures','size' => '2'));
     $select = new html_select(array('name' => 'folder'));
     $delimiter = $imap->get_hierarchy_delimiter();

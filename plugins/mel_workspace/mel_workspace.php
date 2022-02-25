@@ -530,7 +530,7 @@ class mel_workspace extends rcube_plugin
 
     function get_title()
     {
-        return html::tag("h1", ["class" => "header-wsp"], $this->currentWorkspace->title);
+        return html::tag("h1", ["class" => "header-wsp", "style" => "display:inline-block;"], $this->currentWorkspace->title);
     }
 
     function get_toolbar()
@@ -2473,10 +2473,15 @@ class mel_workspace extends rcube_plugin
         $workspace = self::get_workspace($uid);
         if(self::is_admin($workspace) || $user_to_delete === driver_mel::gi()->getUser()->uid)
         {
+            //Si il n'y a qu'un seul admin
             if (self::nb_admin($workspace) === 1 && !$forceDelete)
             {
-                echo "you are the alone";
-                exit;
+                //Et que l'on veut se supprimer
+                if ($user_to_delete === driver_mel::gi()->getUser()->uid)
+                {
+                    echo "you are the alone";
+                    exit;
+                }
             }
 
             $user_find = false;

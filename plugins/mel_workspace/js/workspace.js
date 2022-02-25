@@ -112,6 +112,11 @@ function Start(uid, hasAriane, datas) {
         parent.wsp_cf_d = true;
     }
 
+    $(".wsp-copy-button").click(() => {
+        const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:rcmail.env.current_workspace_uid}).replace(`&${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, '');
+        mel_metapage.Functions.copy(url);
+    });
+
     setup_end_date();
     rcmail.addEventListener("mail_wsp_updated", wsp_mail_updated);
     rcmail.env.nextcloudCopy = mel_metapage.Functions.url("workspace", "workspace", {

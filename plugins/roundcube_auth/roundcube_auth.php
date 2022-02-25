@@ -117,6 +117,8 @@ class roundcube_auth extends rcube_plugin
     private $oidc_enabled;
     private $oidc_keyword;
     private $oidc_exp_delay;
+    private $oidc_act_delay;
+    private $refresh_actions;
     private $config_init = false;
 
     /**
@@ -144,7 +146,9 @@ class roundcube_auth extends rcube_plugin
         {
             $this->oidc_keyword = $rcmail->config->get('auth_oidc_keyword');
             $this->oidc_exp_delay = $rcmail->config->get('oidc_exp_delay');//, TODO_DEFAULT_VALUE);
+            $this->oidc_act_delay = $rcmail->config->get('oidc_act_delay');//, TODO_DEFAULT_VALUE);
         }
+        $this->refresh_actions = $rcmail->config->get('refresh_actions');
         $this->config_init = true;
     }
 
@@ -543,12 +547,12 @@ class roundcube_auth extends rcube_plugin
         else if($rcmail->task != 'logout' && $oidc_query != $this->enabled)
         {
             // Action automatique (refresh)
-            if ($rcmail->action == 'refresh' || $rcmail->action == 'plugin.list_contacts_recent' || $rcmail->action == 'load_events')
+            if (in_array($rcmail->action, $this->refresh_actions))
             {
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Refresh à " . time()); // TODO REMOVE
 
                 $activity_time = $_SESSION['last_user_action'];
-                $inactivity_delay = $rcmail->config->get('oidc_act_delay');//, TODO_DEFAULT_VALUE);
+                $inactivity_delay = $this->oidc_act_delay;
                 //
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Inactivity delay check");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Inactivity delay : " . strval(time() - $activity_time) ."/$inactivity_delay ($activity_time)");

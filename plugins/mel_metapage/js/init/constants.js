@@ -479,6 +479,27 @@ const mel_metapage = {
         },
 
         /**
+         * Ouvre la page de chat, avec un can/group/tem associé ou non.
+         * @param {string} channel_or_group group/ ou channel/
+         * @returns {Promise}
+         */
+        open_chat(channel_or_group = null)
+        {
+            return mel_metapage.Functions.change_frame('rocket', true, true).then(() => {
+                if (channel_or_group !== null && channel_or_group !== undefined)
+                {
+                    if (channel_or_group[0] !== '/')
+                    channel_or_group = `/${channel_or_group}`;
+                    parent.$('.discussion-frame')[0].contentWindow.postMessage({
+                        externalCommand: 'go',
+                        path: channel_or_group
+                    }, '*')
+            }
+            });
+        },
+
+
+        /**
          * F5 une frame
          * @param {string} frame Classe de la frame à refresh
          * @returns Chaînage

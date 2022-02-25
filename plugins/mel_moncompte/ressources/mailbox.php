@@ -362,25 +362,30 @@ class M2mailbox {
     }
     $folders = [];
     $imap = $this->rc->get_storage();
+    
     // Si c'est la boite de l'utilisateur connecté
-    if ($mbox->uid == $this->rc->get_user_name()) {
-      if ($imap->connect($this->rc->user->get_username('domain'), $mbox->uid, $this->rc->get_user_password(), 993, 'ssl')) {
-        $folders = $imap->list_folders_direct();
-      }
+    if ($id == $this->rc->get_user_name()) {
+      $host = $this->rc->user->get_username('domain');
     }
     else {
       // Récupération de la configuration de la boite pour l'affichage
       $host = driver_mel::gi()->getRoutage($mbox, 'restore_bal');
-      if (isset($host)) {
-        if (driver_mel::gi()->isSsl($host)) {
-          $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
-        }
-        else {
-          $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
-        }
-        $folders = $imap->list_folders_direct();
-      }
     }
+    if (driver_mel::gi()->isSsl($host)) {
+      $res = $imap->connect($host, $id, $this->rc->get_user_password(), 993, 'ssl');
+    }
+    else {
+      $res = $imap->connect($host, $id, $this->rc->get_user_password(), $this->rc->config->get('default_port', 143));
+    }
+
+    // Récupération des folders
+    if ($res) {
+      $folders = $imap->list_folders_direct();
+    }
+    else {
+      return 'Folders error';
+    }
+
     $input = new html_inputfield(array('name' => 'nbheures','size' => '2'));
     $select = new html_select(array('name' => 'folder'));
     $delimiter = $imap->get_hierarchy_delimiter();
@@ -389,6 +394,7 @@ class M2mailbox {
       $foldersplit = explode($delimiter, $folder);
       $count = count($foldersplit);
       $name = rcube_charset::convert(array_pop($foldersplit), 'UTF7-IMAP');
+
       // MANTIS 3899: Récupération des courriels : la procédure n'est pas indiquée et le Courrier entrant est remplacé par INBOX
       if (strtoupper($name) == 'INBOX') {
         $name = $this->rc->gettext(strtoupper($name), 'mel_moncompte');
@@ -399,6 +405,7 @@ class M2mailbox {
       $select->add($name, $folder);
     }
     $imap->close();
+    
     return html::div(null, str_replace('%%NB_HEURES%%', $input->show(), $this->rc->gettext('imap_select', 'mel_moncompte')) . $select->show());
   }
 

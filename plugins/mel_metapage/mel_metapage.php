@@ -668,6 +668,12 @@ class mel_metapage extends rcube_plugin
 
     function ariane()
     {
+        
+        $chat_action = rcube_utils::get_input_value('_params', rcube_utils::INPUT_GET);
+
+        if ($chat_action !== null)
+            $this->rc->output->set_env('chat_go_action', $chat_action);
+
         $this->rc->output->send("mel_metapage.ariane");
     }
 

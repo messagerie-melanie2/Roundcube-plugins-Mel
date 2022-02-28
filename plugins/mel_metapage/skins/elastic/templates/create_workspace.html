@@ -1,13 +1,16 @@
-<div class="step" id="workspace-step1"> <!--Etape 1-->
-    <p class="red-star"><roundcube:label name='mel_metapage.required_fields' /></p>
+<div class="step" id="workspace-step1">
+    <!--Etape 1-->
+    <p class="red-star">
+        <roundcube:label name='mel_metapage.required_fields' />
+    </p>
 
     <!--Titre de l'espace-->
     <label for="workspace-title" class="red-star-after span-mel t1 first"><roundcube:label name='mel_metapage.worskpace_name' /></label>
-    <input aria-required="true" required oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=30 placeholder="Nom de l'espace"/>
-    
+    <input aria-required="true" required oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=30 placeholder="Nom de l'espace" />
+
     <span class="span-mel t1"><roundcube:label name='mel_metapage.choose_avatar' /></span>
     <div class="row">
-        <div class="col-2">    
+        <div class="col-2">
             <span id=tmpavatar></span>
         </div>
         <div class="col-10">
@@ -21,7 +24,7 @@
     <!--Description de l'espace de travail-->
     <label for="workspace-desc" class="span-mel t1"><roundcube:label name='mel_metapage.description' /></label>
     <textarea id=workspace-desc class="form-control input-mel" placeholder="Description de l'espace de travail"></textarea>
-    
+
     <!--Catégorie (#) de l'espace-->
     <label for="workspace-hashtag" class="span-mel t1"><roundcube:label name='mel_metapage.choose_hashtag' /></label>
     <div style="position: relative;">
@@ -42,7 +45,9 @@
         <!--Accessibilité de l'espace-->
         <div class="col-md-4">
             <fieldset>
-                <legend class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.authorized_access' /></legend>
+                <legend class="red-star-after span-mel t1">
+                    <roundcube:label name='mel_metapage.authorized_access' />
+                </legend>
                 <div class="custom-control custom-radio">
                     <input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required" checked>
                     <label class="custom-control-label" for="workspace-private"><roundcube:label name='mel_metapage.restricted' /></label>
@@ -61,7 +66,7 @@
             <input aria-required="true" required id="workspace-color" class="form-control input-mel" type=color value="#FFFFFF" />
         </div>
     </div>
- 
+
     <!--Bouton continuer-->
     <button style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="m_mp_check_w(1,`workspace-step2`)">
         <span><roundcube:label name='mel_metapage.continue' /></span>
@@ -69,27 +74,31 @@
     </button>
 </div>
 
-<div class="step" id="workspace-step2" style="display:none;"> <!--Etape 2-->
+<div class="step" id="workspace-step2" style="display:none;">
+    <!--Etape 2-->
     <label for="workspace-user-list" class="span-mel t1 first"><roundcube:label name='mel_metapage.select_attendees2' /></label>
     <div class="input-group">
         <textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>
         <ul id="wspf" class="form-control input-mel recipient-input ac-input rounded-left">
             <li class="input">
                 <!--Participants à ajouter-->
-                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this, m_mp_add_users, false)" oninput="m_mp_autocoplete(this, m_mp_add_users, false)" type="text" autocomplete="on" aria-autocomplete="list" aria-expanded="false" role="combobox">
+                <input class="form-control input-mel" placeholder="ajouter des participants, séparer par des virgules" id="workspace-user-list" onchange="m_mp_autocoplete(this, m_mp_add_users, false)" oninput="m_mp_autocoplete(this, m_mp_add_users, false)" type="text" autocomplete="on" 
+                        aria-autocomplete="list" aria-expanded="false" role="combobox">
             </li>
         </ul>
         <span class="input-group-append">
             <!--Ouvre l'annuaire-->
             <button href="#add-contact" onclick="m_mp_openTo(this, 'workspace-user-list')" class="btn btn-secondary mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact" ><span class="inner">Ajouter un contact</span></button>
-            <!--Ajoute les contacts de l'input-->
+        <!--Ajoute les contacts de l'input-->
         </span>
     </div>
 
     <!-- <button title="Ajouter le(s) contact(s)" type="button" onclick="m_mp_add_users()" class="mel-button create mel-before-remover">Ajouter <span class="icon-mel-plus plus"></span></button> -->
 
     <!--Liste des participants-->
-    <h3 class="span-mel t1"><roundcube:label name='mel_metapage.attendees_list' /></h3>
+    <h3 class="span-mel t1">
+        <roundcube:label name='mel_metapage.attendees_list' />
+    </h3>
     <div id="mm-wsp-loading" style="display:none">
         <center>
             <span class="spinner-border"></span>

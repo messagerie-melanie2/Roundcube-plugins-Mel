@@ -254,7 +254,7 @@ class custom_news_datas extends rss_datas
         $model = str_replace("<datacopy/>", $this->datas->link, $model);
         $model = str_replace("<headlines_other_classes/>", "headlines-rss-type", $model);
 
-        $button_edit = '<button style="margin:0" title="Editer" onclick="rcmail.command(\'news.edit\', this)" class="mel-button roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>';
+        $button_edit = '<button style="margin:0" title="Editer" '.($this->fromServer === true ? 'data-news="rotomeca"' : '').' onclick="rcmail.command(\'news.edit\', this)" class="mel-button roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>';
         $button_copy = '<button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command(\'news.copy\', '.($this->source === "twitter" ? '`https://twitter.com/'.$this->url."`" : '$(this)').')" class="mel-button roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>';
 
         if ($this->source === "twitter")
@@ -307,6 +307,16 @@ class custom_news_datas extends rss_datas
     public function get_datas()
     {
         return $this->datas;
+    }
+
+    public function set_from_server($is)
+    {
+
+        if ($is === null)
+            $is = false;
+
+        $this->fromServer = $is;
+        return $this;
     }
 }
 

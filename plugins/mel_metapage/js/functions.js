@@ -746,7 +746,7 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
     element = element.val === undefined ? ("#" + element.id) : ("#" + element[0].id);
 
     let val = $(element).val();
-    
+
     if (val.includes(',')) {
         val = val.replace(",", "");
         let html = '<li class="recipient workspace-recipient">';
@@ -797,6 +797,7 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
       });
     }
 }
+}
 
 function m_mp_add_users() {
   let users = [];
@@ -816,75 +817,40 @@ function m_mp_add_users() {
   });
 
   if (users.length > 0) {
-    $("#mm-wsp-loading").css("display", "");
-    return mel_metapage.Functions.post(
-      mel_metapage.Functions.url("mel_metapage", "check_users"),
-      {
-        _users: users
-      },
-      (datas) => {
-        datas = JSON.parse(datas);
-        let html;
-        let querry = $("#mm-cw-participants").css("height", `${window.innerHeight - 442}`);
-        for (let index = 0; index < datas.added.length; ++index) {
-          const element = datas.added[index];
-          html = "<li>";
-          html += "<div class=row style=margin-top:15px>";
-          html += '<div class="col-2">';
-          html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
-          html += "</div>";
-          html += '<div class="col-10 workspace-users-added">';
-          html += `<span class="name">${element.name}</span><br/>`;
-          html += `<span class="email">${element.email}</span>`;
-          html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></button>`;
-          html += "</div>";
-          html += "</div></li>";
-          querry.append(html);
-        }
-        for (let it = 0; it < datas.unexist.length; it++) {
-          const element = datas.unexist[it];
-          rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
-        }
-      }
-    ).always(() => {
-      $("#mm-wsp-loading").css("display", "none");
-    });
-    
-    if (users.length > 0) {
         $("#mm-wsp-loading").css("display", "");
         return mel_metapage.Functions.post(
-            mel_metapage.Functions.url("mel_metapage", "check_users"), {
-                _users: users
-            },
-            (datas) => {
-                datas = JSON.parse(datas);
-                let html;
-                let querry = $("#mm-cw-participants").css("height", `${window.innerHeight - 442}`);
-                for (let index = 0; index < datas.added.length; ++index) {
-                    const element = datas.added[index];
-                    html = "<li>";
-                    html += "<div class=row style=margin-top:15px>";
-                    html += '<div class="col-2">';
-                    html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
-                    html += "</div>";
-                    html += '<div class="col-10 workspace-users-added">';
-                    html += `<span class="name">${element.name}</span><br/>`;
-                    html += `<span class="email">${element.email}</span>`;
-                    html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></button>`;
-                    html += "</div>";
-                    html += "</div></li>";
-                    querry.append(html);
-                }
-                for (let it = 0; it < datas.unexist.length; it++) {
-                    const element = datas.unexist[it];
-                    rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
-                }
+        mel_metapage.Functions.url("mel_metapage", "check_users"),
+        {
+            _users: users
+        },
+        (datas) => {
+            datas = JSON.parse(datas);
+            let html;
+            let querry = $("#mm-cw-participants").css("height", `${window.innerHeight - 442}`);
+            for (let index = 0; index < datas.added.length; ++index) {
+            const element = datas.added[index];
+            html = "<li>";
+            html += "<div class=row style=margin-top:15px>";
+            html += '<div class="col-2">';
+            html += `<div class="dwp-round" style="background-color:transparent"><img alt="" src="${rcmail.env.rocket_chat_url}avatar/${element.uid}" /></div>`;
+            html += "</div>";
+            html += '<div class="col-10 workspace-users-added">';
+            html += `<span class="name">${element.name}</span><br/>`;
+            html += `<span class="email">${element.email}</span>`;
+            html += `<button onclick=m_mp_remove_user(this) class="mel-return mel-focus" style="border:none;float:right;margin-top:-10px;display:block;">Retirer <span class=icon-mel-minus></span></button>`;
+            html += "</div>";
+            html += "</div></li>";
+            querry.append(html);
             }
+            for (let it = 0; it < datas.unexist.length; it++) {
+            const element = datas.unexist[it];
+            rcmail.display_message("impossible d'ajouter " + element + " à l'espace de travail !");
+            }
+        }
         ).always(() => {
-            $("#mm-wsp-loading").css("display", "none");
+        $("#mm-wsp-loading").css("display", "none");
         });
-    } else
-        return new Promise((a, b) => {});
+    }
 }
 
 function m_mp_remove_user(e) {

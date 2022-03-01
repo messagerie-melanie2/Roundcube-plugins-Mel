@@ -974,25 +974,51 @@ if (rcmail)
 
 }
 
+//Gestion des liens internes
 $(document).ready(() => {
 
+    /**
+     * Liste des exceptions
+     */
     const plugins = {
+        /**
+         * Tâche lié au stockage
+         */
         drive:"drive",
+        /**
+         * Tâche lié à la discussion instantanée
+         */
         chat:"chat",
+        /**
+         * Tâche lié au sondage
+         */
         sondage:"sondage",
+        /**
+         * Tâche lié au Trello
+         */
         kanban:"kanban"
     }
 
     $(document).on("click", "a", (event) => {
         try {
+            //Vérification si on intercetpe le lien ou non
             const intercept = $(event.target).data("spied");
 
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
             else if ($(event.target).attr("onclick") !== undefined) return;
 
+            /**
+             * @constant
+             * @type {JSON|Enumerator} Liste des exceptions
+             */
             const spies = rcmail.env.enumerated_url_spies !== true ? Enumerable.from(rcmail.env.urls_spies) : rcmail.env.urls_spies;            
+            /**
+             * @constant
+             * @type {string} Adresse du lien
+             */
             const url = $(event.target).attr('href');
 
+            //Changement des liens en enumerable (optimisation)
             if (rcmail.env.enumerated_url_spies !== true) 
             {
                 rcmail.env.urls_spies = spies;
@@ -1001,25 +1027,56 @@ $(document).ready(() => {
 
             if (url !== undefined && url !== null)
             {
+                //Initialisation
                 let task = null;
                 let action = null;
                 let othersParams = null;
+                let actions = null;
 
                 let _switch = (spies !== undefined && spies !== null ? spies : Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
 
                 switch ((_switch === null ? ull : _switch.value)) {
                     case plugins.drive:
-                        task = "stockage";
-                        othersParams = {
-                            _url:url.replace(_switch.key, '')
-                        };
-                        //https://mel.din.developpement-durable.gouv.fr/mdrive/index.php/s/oQsyMEqbYsWY9nr
+                        let $querry = $("iframe.stockage-frame");
+                        task = "stockage";                                      
+
+                        if ($querry.length > 0) $querry[0].contentWindow.$("#mel_nextcloud_frame").src = url;                        
+                        else if ($(".stockage-frame") > 0) $("#mel_nextcloud_frame").src = url;
+                        else othersParams = { _params:url.replace(_switch.key, '') };
+
                         break;
                     case plugins.chat:
+
+                        let $querry = $("iframe.discussion-frame");
+                        task = "chat";                                      
+
+                        if ($querry.length > 0)
+                        {
+                            $querry[0].contentWindow.postMessage({
+                                externalCommand: 'go',
+                                path: url.replace(_switch.key, '')
+                            }, rcmail.env.rocket_chat_url);
+                        }                   
+                        else othersParams = { _params:url.replace(_switch.key, '') };
+
                         break;
                     case plugins.sondage:
+
+                        let $querry = $("iframe.sondage-frame");
+                        task = "sondage";                                      
+
+                        if ($querry.length > 0) $querry[0].contentWindow.$("#mel_sondage_frame").src = url;                        
+                        else if ($(".sondage-frame") > 0) $("#mel_sondage_frame").src = url;
+                        else othersParams = { _url:url };
+
                         break;
                     case plugins.kanban:
+                        let $querry = $("iframe.wekan-frame");
+                        task = "wekan";                                      
+
+                        if ($querry.length > 0) $querry[0].contentWindow.$("#wekan-iframe").src = url;                        
+                        else if ($(".wekan-frame") > 0) $("#wekan-iframe").src = url;
+                        else othersParams = { _url:url };
                         break;
                 
                     default:

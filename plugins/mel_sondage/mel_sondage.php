@@ -96,6 +96,10 @@ class mel_sondage extends rcube_plugin
         $rcmail->output->add_handlers(array(
         		'mel_sondage_frame'    => array($this, 'sondage_frame'),
         ));
+
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("sondage_startup_url", $startupUrl);
+
         // Chargement du template d'affichage
         $rcmail->output->set_pagetitle($this->gettext('title'));
         $rcmail->output->send('mel_sondage.mel_sondage');

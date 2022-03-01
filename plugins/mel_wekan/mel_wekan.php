@@ -62,6 +62,9 @@ class mel_wekan extends rcube_plugin
     function index()
     {
 
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("wekan_startup_url", $startupUrl);
+
         $this->rc->output->set_env("wekan_storage_end", $this->rc->config->get("wekan_storage_end"));
 
         $this->rc->output->set_pagetitle("Kanban");

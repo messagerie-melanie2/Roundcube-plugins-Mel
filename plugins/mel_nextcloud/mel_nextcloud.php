@@ -148,6 +148,7 @@ class mel_nextcloud extends rcube_plugin {
                     'nextcloud_frame'
             )
     ));
+
     // Chargement du template d'affichage
     $rcmail->output->set_pagetitle($this->gettext('title'));
     $rcmail->output->send('mel_nextcloud.mel_nextcloud');

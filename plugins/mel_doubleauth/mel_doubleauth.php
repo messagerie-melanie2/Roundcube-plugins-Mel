@@ -282,7 +282,7 @@ class mel_doubleauth extends rcube_plugin {
         $this->rc->output->set_pagetitle($this->gettext('mel_doubleauth'));
         
         // POST variables
-        $activate = rcube_utils::get_input_value('2FA_activate', rcube_utils::INPUT_POST);
+        $activate = rcube_utils::get_input_value('p2FA_activate', rcube_utils::INPUT_POST);
         $recovery_codes = (array)rcube_utils::get_input_value('2FA_recovery_codes', rcube_utils::INPUT_POST);
         
         // remove recovery codes without value

@@ -87,27 +87,27 @@ class rocket_chat extends rcube_plugin {
           $this->register_action('create_chanel', array(
             $this,
             'create_chanel'
-        ));
-        $this->register_action('add_users', array(
-          $this,
-          'add_users'
-      ));
-      $this->register_action('get_user_info', array(
-        $this,
-        'get_user_info'
-    ));
-    $this->register_action('get_channel_unread_count', array(
-      $this,
-      'get_channel_unread_count'
-  ));
-   $this->register_action('login', array(
-     $this,
-     'get_log'
- ));
- $this->register_action('logout', array(
-  $this,
-  'logout'
-));
+          ));
+          $this->register_action('add_users', array(
+            $this,
+            'add_users'
+          ));
+          $this->register_action('get_user_info', array(
+            $this,
+            'get_user_info'
+          ));
+          $this->register_action('get_channel_unread_count', array(
+            $this,
+            'get_channel_unread_count'
+          ));
+          $this->register_action('login', array(
+            $this,
+            'get_log'
+          ));
+          $this->register_action('logout', array(
+            $this,
+            'logout'
+          ));
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -395,7 +395,19 @@ EOF;
      * @return NULL|string
      */
     private function getUserId() {
-      return $this->rc->config->get('rocket_chat_user_id', null);
+      // MANTIS 0006224: Ajouter un mapping entre les utilisateurs Mél et les utilisateurs Rocket Chat
+      $mapping = $this->rc->config->get('rocket_chat_users_mapping', []);
+      if (isset($mapping[$this->rc->get_user_name()])) {
+        $userId = $mapping[$this->rc->get_user_name()];
+        // Enregistrer la nouvelle valeur en pref si jamais elle est différente
+        if ($userId != $this->rc->config->get('rocket_chat_user_id', null)) {
+          $this->setUserId($userId);
+        }
+      }
+      else {
+        $userId = $this->rc->config->get('rocket_chat_user_id', null);
+      }
+      return $userId;
     }
     /**
      * Positionne le user id en session

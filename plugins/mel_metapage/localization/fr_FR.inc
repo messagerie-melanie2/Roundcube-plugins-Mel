@@ -19,6 +19,14 @@ $labels["a_document"] = "Un document";
 $labels["a_wordpad"] = "Un bloc-note";
 $labels["a_survey"] = "Un sondage Pégase";
 
+$labels["h_general"] = "Aide générale";
+$labels["h_video"] = "Voir les vidéos";
+$labels["h_suggestion"] = "Proposer une amélioration";
+$labels["h_current"] = "Aide de la page";
+
+$labels["assistance"] = "Assistance";
+$labels["describe_your_need_in_few_words"] = 'Décrivez-nous votre besoin en quelques mots pour que l\'on puisse vous aider';
+
 $labels["what_do_you_want_create"] = "Que souhaitez-vous créer ?";
 $labels["choose_type_doc"] = "Choisissez le type de document :";
 $labels["document_folder"] = "Dossier du nouveau document";
@@ -148,6 +156,11 @@ $labels["menu_create_help_task"] = "Créer une nouvelle tâche";
 $labels["menu_create_help_doc"] = "Créer un nouveau document";
 $labels["menu_create_help_note"] = "Créer une nouvelle note";
 $labels["menu_create_help_survey"] = "Créer un nouveau sondage";
+
+$labels["menu_assistance_helppage_general"] = "Aide générale";
+$labels["menu_assistance_helppage_video"] = "Voir les vidéos";
+$labels["menu_assistance_helppage_suggestion"] = "Proposer une amélioration";
+$labels["menu_assistance_helppage_current"] = "Aide de la page";
 
 $labels["change_avatar"] = "Changer d'avatar";
 

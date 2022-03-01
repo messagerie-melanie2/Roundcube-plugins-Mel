@@ -55,6 +55,7 @@ class mel_wekan extends rcube_plugin
         ), "taskbar");
 
         $this->rc->output->set_env("wekan_base_url", $this->wekan_url(false));
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied('https://mel.din.developpement-durable.gouv.fr/kanban/', 'kanban');
 
     }
 

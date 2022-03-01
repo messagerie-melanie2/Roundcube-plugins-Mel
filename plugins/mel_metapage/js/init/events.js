@@ -974,97 +974,85 @@ if (rcmail)
 
 }
 
-// $(document).ready(() => {
+$(document).ready(() => {
 
-//     //Alarmes
-//     window.addEventListener('storage', (e) => {
-//         if ($("#alarm-display").length == 0)
-//             return;
+    const plugins = {
+        drive:"drive",
+        chat:"chat",
+        sondage:"sondage",
+        kanban:"kanban"
+    }
 
-//         const key = e.key;
+    $(document).on("click", "a", (event) => {
+        try {
+            const intercept = $(event.target).data("spied");
 
-//         switch (key) {
-//             case mel_metapage.Storage.calendar:
+            if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
+            else if ($(event.target).attr("onclick") !== undefined) return;
+
+            const spies = rcmail.env.enumerated_url_spies !== true ? Enumerable.from(rcmail.env.urls_spies) : rcmail.env.urls_spies;            
+            const url = $(event.target).attr('href');
+
+            if (rcmail.env.enumerated_url_spies !== true) 
+            {
+                rcmail.env.urls_spies = spies;
+                rcmail.env.enumerated_url_spies = true;
+            }
+
+            if (url !== undefined && url !== null)
+            {
+                let task = null;
+                let action = null;
+                let othersParams = null;
+
+                let _switch = (spies !== undefined && spies !== null ? spies : Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
+
+                switch ((_switch === null ? ull : _switch.value)) {
+                    case plugins.drive:
+                        task = "stockage";
+                        othersParams = {
+                            _url:url.replace(_switch.key, '')
+                        };
+                        //https://mel.din.developpement-durable.gouv.fr/mdrive/index.php/s/oQsyMEqbYsWY9nr
+                        break;
+                    case plugins.chat:
+                        break;
+                    case plugins.sondage:
+                        break;
+                    case plugins.kanban:
+                        break;
                 
-//                 break;
-        
-//             default:
-//                 break;
-//         }
+                    default:
+                        if (url.includes('/?_task='))
+                        {
+                            console.log("default");
+                            task = url.split('/?_task=', 2)[1].split('&')[0];
+                            action = url.includes('&_action=') ? url.split('&_action=')[1].split('&')[0] : null;
+                            let othersParams = {};
 
-//       });
+                            try {
+                                let tmp_othersParams = url.split('/?_task=', 2)[1];//.split('&_action=')[1].split('&')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
+                                if (tmp_othersParams.includes('&'))
+                                {
+                                    tmp_othersParams = tmp_othersParams.split('&_action=')[1];
 
-// });
+                                    if (tmp_othersParams.includes('&')) othersParams = Enumerable.from(tmp_othersParams).where(x => x.includes('=')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
+                                }
+                            } catch (error) {
+                            }
+                        }
+                        break;
+                }
 
-// const cookieEvent = new CustomEvent("cookieChanged", {
-//     bubbles: true,
-//     detail: {
-//       cookieValue: document.cookie,
-//       checkChange: () => {
-//         if (cookieEvent.detail.cookieValue != document.cookie) {
-        
-//             cookieEvent.detail.changedCookies = {};
-//             const last = Enumerable.from(cookieEvent.detail.cookieValue.split(";")).toDictionary(x => x.split("=")[0], x => x.split("=")[1]);
-//             const _new = Enumerable.from(document.cookie.split(";")).toDictionary(x => x.split("=")[0], x => x.split("=")[1]);
-
-//             const added = _new.toEnumerable().where(x => !last.contains(x.key));
-//             const removed = last.toEnumerable().where(x => !_new.contains(x.key));
-//             const changed = _new.toEnumerable().where(x => last.contains(x.key) && last.get(x.key) !== x.value);
-
-//             added.forEach((x) => {
-//                 cookieEvent.detail.changedCookies[x.key] = x.value;
-//             })
-//             removed.forEach((x) => {
-//                 cookieEvent.detail.changedCookies[x.key] = "removed";
-//             })
-//             changed.forEach((x) => {
-//                 cookieEvent.detail.changedCookies[x.key] = x.value;
-//             })
-
-//             cookieEvent.detail.cookieValue = document.cookie;
-//             return 1;
-//         } else {
-//           return 0;
-//         }
-//       },
-//       changedCookies:{},
-//       listenCheckChange: () => {
-//         setInterval(function () {
-//           if (cookieEvent.detail.checkChange() == 1) {
-//             cookieEvent.detail.changed = true;
-//             //fire the event
-//             cookieEvent.target.dispatchEvent(cookieEvent);
-//           } else {
-//             cookieEvent.detail.changed = false;
-//           }
-//         }, 1000);
-//       },
-//       changed: false
-//     }
-//   });
-  
-//   /*FIRE cookieEvent EVENT WHEN THE PAGE IS LOADED TO
-//    CHECK IF USER CHANGED THE COOKIE VALUE */
-  
-//   document.addEventListener("DOMContentLoaded", function (e) {
-//     e.target.dispatchEvent(cookieEvent);
-//   });
-  
-//   document.addEventListener("cookieChanged", function (e) {
-//     e.detail.listenCheckChange();
-//     if(e.detail.changed === true ){
-//         console.log(e, "event");
-//         return;
-//       for (const key in e.detail.changedCookies) {
-//           if (Object.hasOwnProperty.call(e.detail.changedCookies, key)) {
-//               const element = e.detail.changedCookies[key];
-//               try {
-//                 rcmail.triggerEvent("cookieChanged", {key:key, value:element});
-//               } catch (error) {
-                  
-//               }
-//           }
-//       }
-//     }
-//   });
+                if (task !== null)
+                {
+                    mel_metapage.Functions.change_page(task, action, othersParams === null ? {} : othersParams);
+                    event.preventDefault();
+                }
+            }
+        } catch (error) {
+            
+        }
+    });
+})
 

@@ -33,6 +33,26 @@ class mel_metapage extends rcube_plugin
      */
     public $task = '.*';
 
+    public const SPIED_TASK_DRIVE = "drive";
+    public const SPIED_TASK_CHAT = "chat";
+    public const SPIED_TASK_KANBAN = "kanban";
+    public const SPIED_TASK_SONDAGE = "sondage";
+    private static $urls_spies;
+
+    public static function add_url_spied($url, $task)
+    {
+        if (self::$urls_spies === null) self::$urls_spies = [];
+
+        self::$urls_spies[$url] = $task;
+    }
+
+    public static function get_urls_spied()
+    {
+        if (self::$urls_spies === null) self::$urls_spies = [];
+
+        return self::$urls_spies;
+    }
+
     function init()
     {
         $this->setup();
@@ -245,6 +265,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('check_maintenance', array($this, 'check_maintenance'));
             $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->add_hook('refresh', array($this, 'refresh'));
+            $this->add_hook("startup", array($this, "send_spied_urls"));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
@@ -352,6 +373,11 @@ class mel_metapage extends rcube_plugin
                 }
             }
         }
+    }
+
+    public function send_spied_urls()
+    {
+        $this->rc->output->set_env("urls_spies", self::get_urls_spied());
     }
 
     public function include_edited_editor()

@@ -37,13 +37,6 @@ $(document).ready(() => {
             }
         }
     
-        object.toEnumerable = function toEnumerable ()
-        {
-            let tmp = {...this};
-            delete tmp.toEnumerable;
-            return Enumerable.from(tmp);
-        };
-    
         return object;
     
     };

@@ -61,7 +61,7 @@ class rocket_chat extends rcube_plugin {
           $this->register_task('discussion');
         }
 
-
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied('https://ariane.din.developpement-durable.gouv.fr/', 'chat');
         
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {

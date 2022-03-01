@@ -1108,7 +1108,7 @@ $(document).ready(() => {
                 }
             }
         } catch (error) {
-            
+            console.error("###[DEBUG][ONCLICK]", error);
         }
     });
 })

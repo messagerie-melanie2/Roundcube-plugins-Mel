@@ -742,25 +742,11 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
 }
 
 function m_mp_autocoplete(element, action_after = null, append = true) {
-    // element = element.val === undefined ? $("#" + element.id) : $("#"+element[0].id);
-    // const val = element.val();
-    // if (val.length > 0)
-    // {
-    //     mel_metapage.Functions.post(
-    //         mel_metapage.Functions.url("mel_metapage", "check_users"),
-    //         {
-    //             _users:val.split(",")
-    //         },
-    //         (datas) => {
-    //             console.log("m_mp_autocoplete", datas);
-    //         }
-    //     );
-    // }
 
-    //<span class="name">delphin.tommy@gmail.com</span>
     element = element.val === undefined ? ("#" + element.id) : ("#" + element[0].id);
 
     let val = $(element).val();
+    
     if (val.includes(',')) {
         val = val.replace(",", "");
         let html = '<li class="recipient workspace-recipient">';

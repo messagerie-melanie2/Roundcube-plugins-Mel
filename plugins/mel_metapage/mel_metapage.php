@@ -193,6 +193,10 @@ class mel_metapage extends rcube_plugin
             $this->include_script('js/init/classes.js');
             $this->include_script('js/init/constants.js');
         }
+
+        $this->require_plugin('mel_helper');
+        //m2_get_account
+        $this->add_hook("m2_get_account", array($this, "m2_gestion_cache"));
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
         {
@@ -233,7 +237,6 @@ class mel_metapage extends rcube_plugin
 
             if (class_exists('mel_nextcloud'))
             {
-                $this->require_plugin('mel_helper');
                 //$this->rc->plugins->get_plugin('mel_helper')->include_js_debug();
                 $this->rc->output->set_env("is_stockage_active", mel_helper::stockage_active());
                 $this->rc->output->set_env("why_is_not_active", [
@@ -382,6 +385,14 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env("urls_spies", self::get_urls_spied());
     }
 
+    public function m2_gestion_cache()
+    {
+        if ($this->rc->task === "mail" && rcube_utils::get_input_value('_nocache', rcube_utils::INPUT_GPC) == "true")
+        {
+            mel_helper::clear_folders_cache($this->rc);
+        }
+    }
+
     public function include_edited_editor()
     {
         $this->include_script('js/actions/editor-dark-mode.js');
@@ -455,6 +466,18 @@ class mel_metapage extends rcube_plugin
             'title' => '',
             'type'       => 'link-menuitem',
         ), "events-options-containers");
+
+        //@@CURRENT
+        // $this->add_button(array(
+        //     'command' => "force-refresh",
+        //     // 'href' => './?_task=mail&_action=compose',
+        //     'class'	=> 'refresh mel-event-compose options',
+        //     'classsel' => 'refresh mel-event-compose options',
+        //     'innerclass' => 'inner',
+        //     'label'	=> 'mel_metapage.force-refresh',
+        //     'title' => '',
+        //     'type'       => 'link-menuitem',
+        // ), "mailboxoptions");
 
         //listcontrols
         $this->include_depedencies();

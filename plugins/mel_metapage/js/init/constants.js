@@ -478,6 +478,13 @@ const mel_metapage = {
             return this;
         },
 
+        /**
+         * Change de page en utilisant le combo tâche + action.
+         * @param {string} task  
+         * @param {string} action 
+         * @param {JSON} params 
+         * @returns 
+         */
         async change_page(task, action = null, params = {})
         {
             let contracted_task;

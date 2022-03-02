@@ -984,7 +984,7 @@ $(document).ready(() => {
         /**
          * Tâche lié au stockage
          */
-        drive:"drive",
+        drive:"stockage",
         /**
          * Tâche lié à la discussion instantanée
          */
@@ -1036,7 +1036,7 @@ $(document).ready(() => {
                 let after = null;
 
                 let _switch = (spies !== undefined && spies !== null ? spies : Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
-                console.log("init", _switch);
+
                 switch ((_switch === null ? null : _switch.value)) {
                     case plugins.drive:
                         $querry = top.$("iframe.stockage-frame");
@@ -1087,16 +1087,16 @@ $(document).ready(() => {
                         if (url.includes('/?_task='))
                         {
                             task = url.split('/?_task=', 2)[1].split('&')[0];
-                            action = url.includes('&_action=') ? url.split('&_action=')[1].split('&')[0] : null;
                             let othersParams = {};
 
                             try {
-                                let tmp_othersParams = url.split('/?_task=', 2)[1];//.split('&_action=')[1].split('&')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
+                                let tmp_othersParams = url.split('/?_task=', 2)[1];
                                 if (tmp_othersParams.includes('&'))
                                 {
-                                    tmp_othersParams = tmp_othersParams.split('&_action=')[1];
-
-                                    if (tmp_othersParams.includes('&')) othersParams = Enumerable.from(tmp_othersParams).where(x => x.includes('=')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
+                                    othersParams = Enumerable.from(tmp_othersParams.split('&'))
+                                                             .where(x => x.includes('='))
+                                                             .toJsonDictionnary(x => x.split('=')[0], 
+                                                                x => x.split('=')[1]);
                                 }
                             } catch (error) {
                             }
@@ -1114,7 +1114,7 @@ $(document).ready(() => {
                 }
             }
         } catch (error) {
-            console.error("###[DEBUG][ONCLICK]", error);
+            // console.error("###[DEBUG][ONCLICK]", error);
         }
     });
 })

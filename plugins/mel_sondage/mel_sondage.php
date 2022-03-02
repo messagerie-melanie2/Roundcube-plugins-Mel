@@ -105,7 +105,7 @@ class mel_sondage extends rcube_plugin
         ));
 
         $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
-        if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("sondage_startup_url", $startupUrl);
+        if ($startupUrl !== null && $startupUrl !== "") $rcmail->output->set_env("sondage_startup_url", $startupUrl);
 
         // Chargement du template d'affichage
         $rcmail->output->set_pagetitle($this->gettext('title'));

@@ -182,6 +182,7 @@ class mel_metapage extends rcube_plugin
         {
             $this->include_stylesheet($this->local_skin_path().'/modal.css');
             $this->include_script('js/init/events.js');
+            $this->add_hook("startup", array($this, "send_spied_urls"));
             return;
         }
 

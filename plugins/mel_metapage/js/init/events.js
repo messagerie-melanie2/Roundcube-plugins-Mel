@@ -21,7 +21,7 @@ const event_keys = {
 };
 
 
-if (rcmail)
+if (rcmail && window.mel_metapage)
 {
 
     //Initialise le bouton de chat
@@ -988,7 +988,7 @@ $(document).ready(() => {
         /**
          * Tâche lié à la discussion instantanée
          */
-        chat:"chat",
+        chat:"discussion",
         /**
          * Tâche lié au sondage
          */
@@ -1028,61 +1028,64 @@ $(document).ready(() => {
             if (url !== undefined && url !== null)
             {
                 //Initialisation
+                let $querry;
+
                 let task = null;
                 let action = null;
                 let othersParams = null;
-                let actions = null;
+                let after = null;
 
                 let _switch = (spies !== undefined && spies !== null ? spies : Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
-
-                switch ((_switch === null ? ull : _switch.value)) {
+                console.log("init", _switch);
+                switch ((_switch === null ? null : _switch.value)) {
                     case plugins.drive:
-                        let $querry = $("iframe.stockage-frame");
+                        $querry = top.$("iframe.stockage-frame");
                         task = "stockage";                                      
 
                         if ($querry.length > 0) $querry[0].contentWindow.$("#mel_nextcloud_frame").src = url;                        
-                        else if ($(".stockage-frame") > 0) $("#mel_nextcloud_frame").src = url;
+                        else if (top.$(".stockage-frame") > 0) top.$("#mel_nextcloud_frame").src = url;
                         else othersParams = { _params:url.replace(_switch.key, '') };
 
                         break;
                     case plugins.chat:
+                        $querry = top.$("iframe.discussion-frame");
+                        task = "discussion";     
 
-                        let $querry = $("iframe.discussion-frame");
-                        task = "chat";                                      
-
-                        if ($querry.length > 0)
-                        {
+                        if ($querry.length > 0) {
                             $querry[0].contentWindow.postMessage({
                                 externalCommand: 'go',
                                 path: url.replace(_switch.key, '')
                             }, rcmail.env.rocket_chat_url);
-                        }                   
-                        else othersParams = { _params:url.replace(_switch.key, '') };
+                        }                
+                        else {
+                            after = () => {
+                                top.$("iframe.discussion-frame")[0].src = url;
+                            };
+                        }
 
                         break;
                     case plugins.sondage:
 
-                        let $querry = $("iframe.sondage-frame");
+                        $querry = top.$("iframe.sondage-frame");
                         task = "sondage";                                      
 
                         if ($querry.length > 0) $querry[0].contentWindow.$("#mel_sondage_frame").src = url;                        
-                        else if ($(".sondage-frame") > 0) $("#mel_sondage_frame").src = url;
+                        else if (top.$(".sondage-frame") > 0) top.$("#mel_sondage_frame").src = url;
                         else othersParams = { _url:url };
 
                         break;
                     case plugins.kanban:
-                        let $querry = $("iframe.wekan-frame");
+                        $querry = top.$("iframe.wekan-frame");
                         task = "wekan";                                      
 
                         if ($querry.length > 0) $querry[0].contentWindow.$("#wekan-iframe").src = url;                        
-                        else if ($(".wekan-frame") > 0) $("#wekan-iframe").src = url;
+                        else if (top.$(".wekan-frame") > 0) top.$("#wekan-iframe").src = url;
                         else othersParams = { _url:url };
                         break;
                 
                     default:
                         if (url.includes('/?_task='))
                         {
-                            console.log("default");
                             task = url.split('/?_task=', 2)[1].split('&')[0];
                             action = url.includes('&_action=') ? url.split('&_action=')[1].split('&')[0] : null;
                             let othersParams = {};
@@ -1103,7 +1106,10 @@ $(document).ready(() => {
 
                 if (task !== null)
                 {
-                    mel_metapage.Functions.change_page(task, action, othersParams === null ? {} : othersParams);
+                    top.mel_metapage.Functions.change_page(task, action, othersParams === null ? {} : othersParams).then(() => {
+                        if (after !== null)
+                            after();
+                    });
                     event.preventDefault();
                 }
             }

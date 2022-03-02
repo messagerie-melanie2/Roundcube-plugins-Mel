@@ -496,7 +496,11 @@ const mel_metapage = {
                 params[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
                 action = mel_metapage.Functions.url(task, null, params);
 
+               try {
                 if ($querry[0].contentWindow.location.href !== action) $querry[0].src = action;
+               } catch (error) {
+                   
+               }
             }
             else if ($(`.${task}-frame`).length > 0)
             {

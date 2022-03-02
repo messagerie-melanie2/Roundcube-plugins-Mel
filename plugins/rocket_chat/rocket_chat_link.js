@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	$('a').click(function (event) 
 	{ 
+		return;
 	   var url = $(this).attr('href');
 	   if (url.indexOf(rcmail.env.rocket_chat_url) == 0) {
 	     var other_params = "";

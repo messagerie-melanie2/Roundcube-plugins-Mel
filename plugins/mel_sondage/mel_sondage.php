@@ -86,7 +86,7 @@ class mel_sondage extends rcube_plugin
                     || $rcmail->task == 'calendar'
                     || $rcmail->task == 'jappix') {
             // Appel le script de de gestion des liens vers le sondage
-            $this->include_script('sondage_link.js');
+            if (!class_exists("mel_metapage")) $this->include_script('sondage_link.js');
             $rcmail->output->set_env('sondage_apppoll_url', $rcmail->url(array("_task" => "sondage", "_params" => "%%other_params%%")));
             $rcmail->output->set_env('sondage_external_url', $rcmail->config->get('sondage_external_url'));
             $rcmail->output->set_env('sondage_create_sondage_url', $rcmail->config->get('sondage_create_sondage_url'));

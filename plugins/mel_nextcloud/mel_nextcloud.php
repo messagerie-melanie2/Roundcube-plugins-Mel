@@ -114,7 +114,7 @@ class mel_nextcloud extends rcube_plugin {
     }
     elseif ($rcmail->task == 'mail' || $rcmail->task == 'addressbook' || $rcmail->task == 'calendar') {
       // Appel le script de de gestion des liens vers le sondage
-      $this->include_script('nextcloud_link.js');
+      if (!class_exists("mel_metapage")) $this->include_script('nextcloud_link.js');
       $rcmail->output->set_env('nextcloud_file_url', $rcmail->url(array(
               "_task" => "stockage",
               "_params" => "%%other_params%%"

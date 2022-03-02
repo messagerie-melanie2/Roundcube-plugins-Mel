@@ -179,7 +179,7 @@ EOF;
           $this->include_script('rocket_chat_storage_event.js');
           // Appel le script de gestion des link
           $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
-          $this->include_script('rocket_chat_link.js');
+          if (!class_exists("mel_metapage")) $this->include_script('rocket_chat_link.js');
                         // Appel la lib pour la gestion du Favico
                         $this->include_script('favico.js');
                         // Appel le script de création du chat

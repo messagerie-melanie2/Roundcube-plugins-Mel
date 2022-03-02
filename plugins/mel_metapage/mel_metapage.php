@@ -181,6 +181,7 @@ class mel_metapage extends rcube_plugin
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
         {
             $this->include_stylesheet($this->local_skin_path().'/modal.css');
+            $this->include_script('js/init/events.js');
             return;
         }
 

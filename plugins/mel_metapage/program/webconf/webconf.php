@@ -15,6 +15,7 @@ class Webconf extends Program
     {
         $this->register_action("index", [$this, "index"]);
         $this->register_action("jwt", [$this, "get_jwt"]);
+        $this->register_action("onGo", [$this, "onGo"]);
         if ($this->action === "" || $this->action === "index")
         {
             $this->include_js("../../../rocket_chat/favico.js");
@@ -22,6 +23,11 @@ class Webconf extends Program
             $this->include_js("webconf.js");
             $this->include_css("webconf.css");
         }
+    }
+
+    function log_webconf($id)
+    {
+        mel_logs::get_instance()->log(mel_logs::INFO, "[Webconf]La webconf $id a été rejoint");
     }
 
     public function index()
@@ -60,8 +66,26 @@ class Webconf extends Program
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->add_handler("selectwsp", [$this, "get_all_workspaces"]);
         }
+        else if ($key !== null && ($wsp !== null || $ariane !== null))
+        {
+            $this->log_webconf($key);
+            $this->set_env_var("already_logged", "logged");
+        }
+
         $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");
+    }
+
+    public function onGo()
+    {
+        if (rcube_utils::get_input_value('_alreadyLogged', rcube_utils::INPUT_POST) === null)
+        {
+            $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_POST);
+            $this->log_webconf($room);
+        }
+
+        echo 0;
+        exit;
     }
 
     public function get_key()

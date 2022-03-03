@@ -301,6 +301,19 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
         if (parent.rcmail.task !== "webconf")
             parent.$("html").addClass("webconf-started");
+
+        let ongo_config = {
+            _room:this.key
+        };
+
+        if (rcmail.env.already_logged === "logged") ongo_config["_alreadyLogged"] = true;
+
+        mel_metapage.Functions.post(
+            mel_metapage.Functions.url("webconf", "onGo"),
+            ongo_config,
+            (datas) => {}
+        );
+        
         
     }
 

@@ -202,3 +202,5 @@ $labels["event-compose"] = "Ecrire aux participants";
 $labels["event-self-invitation"] = "S'inviter";
 $labels["duplicate"] = "Dupliquer";
 $labels["copy_w_p"] = "Copier sans les participants";
+
+$labels["force-refresh"] = "Recharger et actualiser les dossiers";

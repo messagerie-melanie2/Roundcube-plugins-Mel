@@ -999,11 +999,13 @@ $(document).ready(() => {
 
     $(document).on("click", "a", (event) => {
         try {
+
             //Vérification si on intercetpe le lien ou non
             const intercept = $(event.target).data("spied");
 
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
             else if ($(event.target).attr("onclick") !== undefined) return;
+            else if (Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
 
             /**
              * @constant

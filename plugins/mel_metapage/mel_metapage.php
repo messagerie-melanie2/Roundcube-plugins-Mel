@@ -467,17 +467,16 @@ class mel_metapage extends rcube_plugin
             'type'       => 'link-menuitem',
         ), "events-options-containers");
 
-        //@@CURRENT
-        // $this->add_button(array(
-        //     'command' => "force-refresh",
-        //     // 'href' => './?_task=mail&_action=compose',
-        //     'class'	=> 'refresh mel-event-compose options',
-        //     'classsel' => 'refresh mel-event-compose options',
-        //     'innerclass' => 'inner',
-        //     'label'	=> 'mel_metapage.force-refresh',
-        //     'title' => '',
-        //     'type'       => 'link-menuitem',
-        // ), "mailboxoptions");
+        $this->add_button(array(
+            'command' => "mail-force-refresh",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'refresh mel-event-compose options',
+            'classsel' => 'refresh mel-event-compose options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.force-refresh',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "mailboxoptions");
 
         //listcontrols
         $this->include_depedencies();

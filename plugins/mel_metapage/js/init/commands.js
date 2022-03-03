@@ -108,6 +108,11 @@ if (rcmail)
                 }
             });
 
+            rcmail.register_command("mail-force-refresh", () => {
+                rcmail.set_busy(true, "loading");
+                window.location.href = mel_metapage.Functions.url("mail", null, {_nocache:true});
+            }, true);
+
             rcmail.register_command("event-compose", () => {
                 const event = ui_cal.selected_event;
                 parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(',')});

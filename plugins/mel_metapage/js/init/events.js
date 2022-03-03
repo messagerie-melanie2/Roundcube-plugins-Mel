@@ -997,6 +997,26 @@ $(document).ready(() => {
         kanban:"kanban"
     }
 
+    /**
+     * Gère les interceptions de liens pour les exceptions de liens.
+     * @param {string} top_selector Selecteur lié à la tâche choisie
+     * @param {string} sub_frame_selector Selecteur de la frame qui contient le module externe
+     * @param {string} url Nouveau lien
+     * @returns Si vrai, une frame existe déjà
+     */
+    function intercept_exceptions(top_selector, sub_frame_selector, url)
+    {
+        let retour = true;
+        let $iframe_querry = top.$(`iframe${top_selector}`);
+        let $top_querry = top.$(top_selector);
+
+        if ($iframe_querry.length > 0) $iframe_querry[0].contentWindow.$(sub_frame_selector)[0].src = url;                        
+        else if ($top_querry > 0) top.$(sub_frame_selector)[0].src = url;
+        else retour = false;
+
+        return retour;
+    }
+
     $(document).on("click", "a", (event) => {
         try {
 
@@ -1029,84 +1049,93 @@ $(document).ready(() => {
             {
                 //Initialisation
                 let $querry;
+                let reloop;
 
                 let task = null;
                 let action = null;
                 let othersParams = null;
                 let after = null;
+                let update = false;
 
                 let _switch = (spies !== undefined && spies !== null ? spies : Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
 
-                switch ((_switch === null ? null : _switch.value)) {
-                    case plugins.drive:
-                        $querry = top.$("iframe.stockage-frame");
-                        task = "stockage";                                      
-
-                        if ($querry.length > 0) $querry[0].contentWindow.$("#mel_nextcloud_frame").src = url;                        
-                        else if (top.$(".stockage-frame") > 0) top.$("#mel_nextcloud_frame").src = url;
-                        else othersParams = { _params:url.replace(_switch.key, '') };
-
-                        break;
-                    case plugins.chat:
-                        $querry = top.$("iframe.discussion-frame");
-                        task = "discussion";     
-
-                        if ($querry.length > 0) {
-                            $querry[0].contentWindow.postMessage({
-                                externalCommand: 'go',
-                                path: url.replace(_switch.key, '')
-                            }, rcmail.env.rocket_chat_url);
-                        }                
-                        else {
-                            after = () => {
-                                top.$("iframe.discussion-frame")[0].src = url;
-                            };
-                        }
-
-                        break;
-                    case plugins.sondage:
-
-                        $querry = top.$("iframe.sondage-frame");
-                        task = "sondage";                                      
-
-                        if ($querry.length > 0) $querry[0].contentWindow.$("#mel_sondage_frame").src = url;                        
-                        else if (top.$(".sondage-frame") > 0) top.$("#mel_sondage_frame").src = url;
-                        else othersParams = { _url:url };
-
-                        break;
-                    case plugins.kanban:
-                        $querry = top.$("iframe.wekan-frame");
-                        task = "wekan";                                      
-
-                        if ($querry.length > 0) $querry[0].contentWindow.$("#wekan-iframe").src = url;                        
-                        else if (top.$(".wekan-frame") > 0) top.$("#wekan-iframe").src = url;
-                        else othersParams = { _url:url };
-                        break;
-                
-                    default:
-                        if (url.includes('/?_task='))
-                        {
-                            task = url.split('/?_task=', 2)[1].split('&')[0];
-                            let othersParams = {};
-
-                            try {
-                                let tmp_othersParams = url.split('/?_task=', 2)[1];
-                                if (tmp_othersParams.includes('&'))
-                                {
-                                    othersParams = Enumerable.from(tmp_othersParams.split('&'))
-                                                             .where(x => x.includes('='))
-                                                             .toJsonDictionnary(x => x.split('=')[0], 
-                                                                x => x.split('=')[1]);
-                                }
-                            } catch (error) {
+                do {
+                    reloop = false;
+                    switch ((_switch === null ? null : _switch.value)) {
+                        case plugins.drive:
+                            task = "stockage";                                      
+                            
+                            if (!intercept_exceptions(".stockage-frame", "#mel_nextcloud_frame", url)) othersParams = { _params:url.replace(_switch.key, '') }
+                            
+                            break;
+                        case plugins.chat:
+                            $querry = top.$("iframe.discussion-frame");
+                            task = "discussion";     
+    
+                            if ($querry.length > 0) {
+                                $querry[0].contentWindow.postMessage({
+                                    externalCommand: 'go',
+                                    path: url.replace(_switch.key, '')
+                                }, rcmail.env.rocket_chat_url);
+                            }                
+                            else {
+                                after = () => {
+                                    top.$("iframe.discussion-frame")[0].src = url;
+                                };
                             }
-                        }
-                        break;
-                }
+    
+                            break;
+                        case plugins.sondage:
+                            task = "sondage";                                      
+
+                            if (!intercept_exceptions(".sondage-frame", "#mel_sondage_frame", url)) othersParams = { _url:url };
+    
+                            break;
+                        case plugins.kanban:
+                            task = "wekan";                                      
+
+                            if (!intercept_exceptions(".wekan-frame", "#wekan-iframe", url)) othersParams = { _url:url };
+
+                            break;
+                    
+                        default:
+                            if (url.includes('/?_task='))
+                            {
+                                update = true;
+                                task = url.split('/?_task=', 2)[1].split('&')[0];
+    
+                                if (["ariane", "discussion", "chat"].includes(task))
+                                {
+                                    _switch = spies.firstOrDefault(x => x.value == plugins.chat, null);
+                                    
+                                    if (_switch !== null)
+                                    {
+                                        reloop = true;
+                                        break;
+                                    }
+                                }
+    
+                                let othersParams = {};
+    
+                                try {
+                                    let tmp_othersParams = url.split('/?_task=', 2)[1];
+                                    if (tmp_othersParams.includes('&'))
+                                    {
+                                        othersParams = Enumerable.from(tmp_othersParams.split('&'))
+                                                                 .where(x => x.includes('='))
+                                                                 .toJsonDictionnary(x => x.split('=')[0], 
+                                                                    x => x.split('=')[1]);
+                                    }
+                                } catch (error) {
+                                }
+                            }
+                            break;
+                    }
+                } while (reloop);
 
                 if (task !== null)
                 {
-                    top.mel_metapage.Functions.change_page(task, action, othersParams === null ? {} : othersParams).then(() => {
+                    top.mel_metapage.Functions.change_page(task, action, othersParams === null ? {} : othersParams, update).then(() => {
                         if (after !== null)
                             after();
                     });

@@ -1125,6 +1125,8 @@ $(document).ready(() => {
                                                                  .where(x => x.includes('='))
                                                                  .toJsonDictionnary(x => x.split('=')[0], 
                                                                     x => x.split('=')[1]);
+
+                                        if (task === "stockage" && othersParams["_params"] !== undefined) othersParams["_params"] = decodeURIComponent(othersParams["_params"]);
                                     }
                                 } catch (error) {
                                 }

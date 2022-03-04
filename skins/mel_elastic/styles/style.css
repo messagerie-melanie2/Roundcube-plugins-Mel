@@ -2293,3 +2293,18 @@ table.table-striped thead.mel_striped td
 .mel-r .name{
     margin-right:5px;
 }
+
+/* body.task-mail.action-compose #layout
+{
+    overflow-x: auto;
+} */
+
+.recipient-input .recipient{
+    max-width: 300px;
+}
+
+html.layout-small #compose-content,
+html.layout-phone #compose-content
+{
+    overflow-x: hidden;
+}

@@ -66,7 +66,7 @@ class mce_mi_driver_mel extends mce_driver_mel {
    */
   public function getRoutage($infos, $function = '') {
     // MANTIS 0006228: [Driver MI] Gérer la connexion sieve au serveur imap en direct
-    if ($function == 'managesieve_connect') {
+    if ($function == 'managesieve_connect' || $function == 'unexpunge') {
       if (is_array($infos)) {
         $hostname = isset($infos['mailhost']) ? $infos['mailhost'][0] : null;
       }

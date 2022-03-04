@@ -620,7 +620,7 @@ $(document).ready(() => {
                 const storage = mel_metapage.Storage.get(key);
 
                 //Afficher les champs
-                if (storage.length > 0)
+                if (storage !== null && storage.length > 0)
                 {
                     for (let index = 0; index < storage.length; ++index) {
                         const element = storage[index];

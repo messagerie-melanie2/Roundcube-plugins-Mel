@@ -627,6 +627,29 @@ $(document).ready(() => {
                         $(`#compose_${element}`).removeClass("hidden");
                     }
                 }
+
+                //Gestion des options
+                if (rcmail.env.compose_option !== undefined && rcmail.env.compose_option !== null && rcmail.env.compose_option !== "")
+                {
+                    switch (rcmail.env.compose_option) {
+                        case "empty":
+                            $("#compose-subject").val("");
+                            rcmail.addEventListener('editor-load', () => {
+                                if (rcmail.env.editor_emptied !== true)
+                                {
+                                    rcmail.editor.set_content("");
+                                    rcmail.env.editor_emptied = true;
+                                }
+                            });
+
+                                
+                            
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
             }
 
             rcmail.addEventListener('fileappended', (file) => {

@@ -724,6 +724,7 @@ if (rcmail && window.mel_metapage)
         if (menu.menu_name == 'messagelist') {
 
           // add a shortcut to the folder management screen to the end of the menu
+          menu.menu_source.push({label: rcmail.gettext('new-mail-from', "mel_metapage"), command: 'new-mail-from', classes: 'compose mel-new-compose options'});
           menu.menu_source.push({label: 'Gérer les étiquettes', command: 'gestion_labels', classes: 'ct-tb'});
       
           menu.addEventListener("beforeactivate", (p) => {
@@ -1064,10 +1065,11 @@ $(document).ready(() => {
                     reloop = false;
                     switch ((_switch === null ? null : _switch.value)) {
                         case plugins.drive:
-                            const stockage_url = _switch.url !== undefined ? decodeURIComponent(stockage_url) : decodeURIComponent(url);
+
+                            const stockage_url = _switch.url !== undefined ? decodeURIComponent(_switch.url) : decodeURIComponent(url);
                             task = "stockage";                                      
-                            
-                            if (url.includes('/s/')) return;
+
+                            if (stockage_url.includes('/s/')) return;
 
                             if (!intercept_exceptions(".stockage-frame", "#mel_nextcloud_frame", stockage_url)) othersParams = { _params:stockage_url.replace(_switch.key, '') }
                             
@@ -1107,7 +1109,7 @@ $(document).ready(() => {
                             {
                                 update = true;
                                 task = url.split('/?_task=', 2)[1].split('&')[0];
-    
+
                                 if (["ariane", "discussion", "chat"].includes(task))
                                 {
                                     _switch = spies.firstOrDefault(x => x.value == plugins.chat, null);
@@ -1123,15 +1125,17 @@ $(document).ready(() => {
     
                                 try {
                                     let tmp_othersParams = url.split('/?_task=', 2)[1];
+
                                     if (tmp_othersParams.includes('&'))
                                     {
                                         othersParams = Enumerable.from(tmp_othersParams.split('&'))
-                                                                 .where(x => x.includes('='))
-                                                                 .toJsonDictionnary(x => x.split('=')[0], 
-                                                                    x => x.split('=')[1]);
-
+                                        .where(x => x.includes('='))
+                                        .toJsonDictionnary(x => x.split('=')[0], 
+                                            x => x.split('=')[1]);
+      
                                         if (task === "stockage" && othersParams["_params"] !== undefined)
                                         {
+
                                             _switch = spies.firstOrDefault(x => x.value == plugins.drive, null);
 
                                             if (_switch !== null)

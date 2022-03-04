@@ -177,11 +177,17 @@ class mel_metapage extends rcube_plugin
         if ($this->rc->task !== "login" && $this->rc->task !== "logout")
             $this->include_script('js/actions/calendar_event.js');
 
+        if ($this->rc->task === "mail" && $this->rc->action === "compose")
+        {
+            $this->rc->output->set_env("compose_option", rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET));
+        }
+
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
         {
             $this->include_stylesheet($this->local_skin_path().'/modal.css');
             $this->include_script('js/init/events.js');
+            $this->include_script('js/init/classes/addons/array.js');
             $this->add_hook("startup", array($this, "send_spied_urls"));
             return;
         }
@@ -422,6 +428,17 @@ class mel_metapage extends rcube_plugin
             'title' => 'Toutes mes applications',
             'type'       => 'link',
         ), "taskbar");
+
+        $this->add_button(array(
+            'command' => "new-mail-from",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'compose mel-new-compose options',
+            'classsel' => 'compose mel-new-compose options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.new-mail-from',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "messagemenu");
 
         $this->add_button(array(
             'command' => "mel-compose",

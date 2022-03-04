@@ -130,6 +130,16 @@ if (rcmail)
                 ui_cal.event_copy(event);
             }, true);
 
+            rcmail.register_command("new-mail-from", () => {
+                let uid;
+                if (rcmail.task == 'mail' && (uid = rcmail.get_single_uid())) {
+                    url = { _mbox: rcmail.get_message_mailbox(uid) };
+                    url[url._mbox == rcmail.env.drafts_mailbox && props != 'new' ? '_draft_uid' : '_uid'] = uid;
+                    url["_option"] = "empty"; 
+                    rcmail.open_compose_step(url);
+                  }
+            }, true);
+
             rcmail.register_command("refreshFrame", () => {
 
                 let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);

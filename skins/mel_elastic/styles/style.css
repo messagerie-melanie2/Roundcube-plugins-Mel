@@ -2308,3 +2308,11 @@ html.layout-phone #compose-content
 {
     overflow-x: hidden;
 }
+
+#annuaire-list li{
+    cursor: unset!important;
+}
+
+#annuaire-list li .treetoggle{
+    cursor: pointer;
+}

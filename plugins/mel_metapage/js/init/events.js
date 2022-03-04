@@ -1026,6 +1026,7 @@ $(document).ready(() => {
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
             else if ($(event.target).attr("onclick") !== undefined) return;
             else if (Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
+            else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
 
             /**
              * @constant
@@ -1063,9 +1064,12 @@ $(document).ready(() => {
                     reloop = false;
                     switch ((_switch === null ? null : _switch.value)) {
                         case plugins.drive:
+                            const stockage_url = _switch.url !== undefined ? decodeURIComponent(stockage_url) : decodeURIComponent(url);
                             task = "stockage";                                      
                             
-                            if (!intercept_exceptions(".stockage-frame", "#mel_nextcloud_frame", url)) othersParams = { _params:url.replace(_switch.key, '') }
+                            if (url.includes('/s/')) return;
+
+                            if (!intercept_exceptions(".stockage-frame", "#mel_nextcloud_frame", stockage_url)) othersParams = { _params:stockage_url.replace(_switch.key, '') }
                             
                             break;
                         case plugins.chat:
@@ -1126,7 +1130,18 @@ $(document).ready(() => {
                                                                  .toJsonDictionnary(x => x.split('=')[0], 
                                                                     x => x.split('=')[1]);
 
-                                        if (task === "stockage" && othersParams["_params"] !== undefined) othersParams["_params"] = decodeURIComponent(othersParams["_params"]);
+                                        if (task === "stockage" && othersParams["_params"] !== undefined)
+                                        {
+                                            _switch = spies.firstOrDefault(x => x.value == plugins.drive, null);
+
+                                            if (_switch !== null)
+                                            {
+                                                action = null;
+                                                _switch.url = _switch.key + othersParams["_params"];
+                                                reloop = true;
+                                                break;
+                                            }
+                                        }
                                     }
                                 } catch (error) {
                                 }

@@ -65,7 +65,7 @@ class mel_nextcloud extends rcube_plugin {
     else {
       $nextcloud_url = $rcmail->config->get('nextcloud_external_url');
     }
-    // if (class_exists("mel_metapage")) mel_metapage::add_url_spied($nextcloud_url, 'stockage');
+     if (class_exists("mel_metapage")) mel_metapage::add_url_spied($nextcloud_url, 'stockage');
 
     $this->add_hook('logout_after', array(
             $this,

@@ -42,8 +42,73 @@ div#user-status{
     font-size: 12px;
 }
 
-.logout-color{
-    color:#ff5552 !important
+#groupoptions-user
+{
+    z-index: 10000;
+    display: none;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    top: 60px;
+    background-color: #F0F0F0;
+    width: 21.8%;
+    min-width: 350px;
+    box-shadow: -1px 2px 1px 1px rgba(0,0,0,.22);
+}
+
+#groupoptions-user
+{
+    white-space: normal;
+}
+
+html.dark-mode #groupoptions-user 
+{
+    background-color: #181C28;
+    box-shadow: -1px 2px 1px 1px rgba(255, 255, 255, 0.22);
+}
+
+#groupoptions-user .menu {
+    padding: 0 9px;
+    margin-bottom: 10px;
+}
+
+#groupoptions-user .menu .row {
+    margin: 0;
+}
+
+#groupoptions-user .menu .col-sm,
+#groupoptions-user .menu .col-sm-4 {
+    padding: 3px;
+}
+
+#groupoptions-user .menu a {
+    white-space: normal;
+    border-radius: 3px;
+    color: #363A5B;
+    border: 1px solid#363A5B;
+    background: #fff;
+    display: block;
+    padding: 2px;
+    height: 100%;
+    line-height: 1.6rem;
+}
+
+html.dark-mode #groupoptions-user .menu a {
+    color: #fff;
+    border: 1px solid #323F4B;
+    background: #323F4B;
+}
+
+#groupoptions-user .menu a.logout-color {
+    color: #ff5552;
+    border: 1px solid #ff5552;
+    background: #fff;
+}
+
+html.dark-mode #groupoptions-user .menu a.logout-color {
+    color: #ff5552;
+    border: 1px solid #ff5552;
+    background: none;
 }
 
 

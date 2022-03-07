@@ -1,0 +1,10 @@
+<?php
+
+// Configuration de la durée de rafraichissement des notifications par utilisateur (en seconde)
+$rcmail_config['notifications_refresh_interval'] = 60;
+
+// Durée d'affichage une notification quand est envoyée au Bnum (en seconde)
+$rcmail_config['notifications_show_duration'] = 3;
+
+// Liste des catégories utilisables pour les notifications (et libellés associés)
+$rcmail_config['notifications_categories'] = [];

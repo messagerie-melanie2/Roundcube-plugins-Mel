@@ -187,7 +187,7 @@ if (rcmail)
 
                             $(".tiny-rocket-chat").removeClass("layout-hidden");
 
-                            $(".toggleChatCommand").html("Cacher la bulle de discussion instantanée");
+                            $(".toggleChatCommand").html("Cacher la bulle de discussion");
                         }
                         //On cache
                         else {
@@ -202,7 +202,7 @@ if (rcmail)
                             }
 
                             $(".tiny-rocket-chat").addClass("layout-hidden");
-                            $(".toggleChatCommand").html("Afficher la bulle de discussion instantanée");
+                            $(".toggleChatCommand").html("Afficher la bulle de discussion");
                         }
                     }
                 );

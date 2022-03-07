@@ -47,11 +47,16 @@ if (rcmail && window.mel_metapage)
         }
     });
 
-    // //Response after
-    // rcmail.addEventListener("responseafter", (props) => {
-    //     if (props.response && props.response.action == 'plugin.alarms')
-    //         rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-    // });
+    rcmail.addEventListener("calendar.dismiss.after", (props) => {   
+        let navigator = window;
+
+        if (parent.rcmail.mel_metapage_fn !== undefined && parent.rcmail.mel_metapage_fn.calendar_updated !== undefined)
+            navigator = parent;
+        else if (top.rcmail.mel_metapage_fn !== undefined && top.rcmail.mel_metapage_fn.calendar_updated !== undefined)
+            navigator = top;
+        
+        navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+    });
 
     //Après la mise à jours du calendrier
     rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {

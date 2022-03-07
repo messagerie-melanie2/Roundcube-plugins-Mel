@@ -1737,3 +1737,23 @@ function open_task(id, config = {}) {
     else if ($(".tasks-frame").length > 0)
         rcmail.triggerEvent("plugin.data_ready");
 }
+
+/**
+ * Permet d'afficher masquer la pop up user Bienvenue
+ */
+function m_mp_ToggleGroupOptionsUser(opener) {
+    if ($("#groupoptions-user").is(":visible") == true) {
+        $("#groupoptions-user").hide();
+        $("#groupoptions-user").data('aria-hidden', 'true');
+        $("#groupoptions-user").data('opener', null);
+        $(opener).data('aria-expanded', 'false');
+    }
+    else {
+        $("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
+        $("#groupoptions-user").show();
+        $("#groupoptions-user").data('opener', opener);
+        $("#groupoptions-user").data('aria-hidden', 'false');
+        $(opener).data('aria-expanded', 'true');
+        rcmail.menu_stack.push("groupoptions-user");
+    }
+}

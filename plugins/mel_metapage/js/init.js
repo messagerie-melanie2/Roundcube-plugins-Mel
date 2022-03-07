@@ -911,5 +911,14 @@ $(document).ready(() => {
                 $("#user-picture").html("<span>" + rcmail.env.username.slice(0,2) + "</span>");
             };
         });
+
+        // Fermeture du bienvenue
+        rcmail.addEventListener("menu-close", function(p) {
+            if (p && p.name && p.name == 'groupoptions-user' 
+                    && p.originalEvent.target.parentNode.className != 'notification_button'
+                    && !$(p.originalEvent.target).parents().is("#groupoptions-user")) {
+                m_mp_ToggleGroupOptionsUser($("#groupoptions-user").data('opener'));
+            }
+        });
     }
 })

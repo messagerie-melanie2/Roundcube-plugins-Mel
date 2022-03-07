@@ -920,7 +920,9 @@ function rcube_libcalendaring(settings)
     {
         // PAMELA - Problème de snooze sur un rappel
         rcmail.command('menu-close', 'alarm-snooze-dropdown', this.dismiss_link, event);
-        rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:snooze } });
+        rcmail.http_post('utils/plugin.alarms', { action:'dismiss', data:{ id:id, snooze:snooze } }).always(() => {         
+            parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+        });
 
         // remove dismissed alarm from list
         if (this.dismiss_link) {

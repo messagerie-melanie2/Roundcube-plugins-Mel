@@ -46,7 +46,14 @@ class mel_sondage extends rcube_plugin
 
         // ajout de la tache
         $this->register_task('sondage');
-        if (class_exists("mel_metapage")) mel_metapage::add_url_spied('https://pegase.din.developpement-durable.gouv.fr/', 'sondage');
+
+        if (mel::is_internal()) {
+    	    $sondage_url = $rcmail->config->get('sondage_url');
+    	} else {
+    	    $sondage_url = $rcmail->config->get('sondage_external_url');
+    	}
+        
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($sondage_url, 'sondage');
         // Ajoute le bouton en fonction de la skin
         if ($rcmail->config->get('ismobile', false)) {
             $this->add_button(array(
@@ -79,7 +86,7 @@ class mel_sondage extends rcube_plugin
                     || $rcmail->task == 'calendar'
                     || $rcmail->task == 'jappix') {
             // Appel le script de de gestion des liens vers le sondage
-            $this->include_script('sondage_link.js');
+            if (!class_exists("mel_metapage")) $this->include_script('sondage_link.js');
             $rcmail->output->set_env('sondage_apppoll_url', $rcmail->url(array("_task" => "sondage", "_params" => "%%other_params%%")));
             $rcmail->output->set_env('sondage_external_url', $rcmail->config->get('sondage_external_url'));
             $rcmail->output->set_env('sondage_create_sondage_url', $rcmail->config->get('sondage_create_sondage_url'));
@@ -98,7 +105,7 @@ class mel_sondage extends rcube_plugin
         ));
 
         $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
-        if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("sondage_startup_url", $startupUrl);
+        if ($startupUrl !== null && $startupUrl !== "") $rcmail->output->set_env("sondage_startup_url", $startupUrl);
 
         // Chargement du template d'affichage
         $rcmail->output->set_pagetitle($this->gettext('title'));

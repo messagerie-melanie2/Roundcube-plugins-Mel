@@ -59,7 +59,13 @@ class mel_nextcloud extends rcube_plugin {
       }
     }
 
-    if (class_exists("mel_metapage")) mel_metapage::add_url_spied('https://mel.din.developpement-durable.gouv.fr/mdrive/index.php', 'stockage');
+    if (mel::is_internal()) {
+      $nextcloud_url = $rcmail->config->get('nextcloud_url');
+    }
+    else {
+      $nextcloud_url = $rcmail->config->get('nextcloud_external_url');
+    }
+     if (class_exists("mel_metapage")) mel_metapage::add_url_spied($nextcloud_url, 'stockage');
 
     $this->add_hook('logout_after', array(
             $this,
@@ -108,7 +114,7 @@ class mel_nextcloud extends rcube_plugin {
     }
     elseif ($rcmail->task == 'mail' || $rcmail->task == 'addressbook' || $rcmail->task == 'calendar') {
       // Appel le script de de gestion des liens vers le sondage
-      $this->include_script('nextcloud_link.js');
+      if (!class_exists("mel_metapage")) $this->include_script('nextcloud_link.js');
       $rcmail->output->set_env('nextcloud_file_url', $rcmail->url(array(
               "_task" => "stockage",
               "_params" => "%%other_params%%"

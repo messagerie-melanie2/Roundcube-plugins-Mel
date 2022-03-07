@@ -95,10 +95,14 @@ $(document).ready(async () => {
             if (await wekan.login())
             {             
                 window.addEventListener('storage', (e) => {
-
                     if (e.key === wekan.tokenId)
-                        $("#wekan-iframe")[0].contentWindow.location.reload();
+                    {
+                        if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
+                        else $("#wekan-iframe")[0].contentWindow.location.reload();
+                    }
                   });
+
+                  if (rcmail.env.wekan_startup_url != null && rcmail.env.wekan_startup_url !== undefined) $("#wekan-iframe")[0].src = rcmail.env.wekan_startup_url;
             }
             else
                 rcmail.display_message("Impossible de se connecter au kanban !", "error");

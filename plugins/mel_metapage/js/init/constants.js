@@ -478,7 +478,14 @@ const mel_metapage = {
             return this;
         },
 
-        async change_page(task, action = null, params = {})
+        /**
+         * Change de page en utilisant le combo tâche + action.
+         * @param {string} task  
+         * @param {string} action 
+         * @param {JSON} params 
+         * @returns 
+         */
+        async change_page(task, action = null, params = {}, update = true)
         {
             let contracted_task;
             let $querry;
@@ -491,17 +498,24 @@ const mel_metapage = {
 
             $querry = $(`iframe.${task}-frame`);
 
-            if ($querry.length > 0)
+            if (update)
             {
-                params[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-                action = mel_metapage.Functions.url(task, null, params);
+                if ($querry.length > 0)
+                {
+                    params[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+                    action = mel_metapage.Functions.url(task, null, params);
 
-                if ($querry[0].contentWindow.location.href !== action) $querry[0].src = action;
-            }
-            else if ($(`.${task}-frame`).length > 0)
-            {
-                action = mel_metapage.Functions.url(task, null, params);
-                if (window.location.href !== action) $(`.${task}-frame`).remove();
+                try {
+                    if ($querry[0].contentWindow.location.href !== action) $querry[0].src = action;
+                } catch (error) {
+                    
+                }
+                }
+                else if ($(`.${task}-frame`).length > 0)
+                {
+                    action = mel_metapage.Functions.url(task, null, params);
+                    if (window.location.href !== action) $(`.${task}-frame`).remove();
+                }
             }
 
             await this.change_frame(contracted_task, true, true, params);

@@ -226,6 +226,16 @@ class mel_helper extends rcube_plugin
 
         return explode('=', explode(",", $dn, 2)[0])[1];
     }
+
+    public static function clear_folders_cache(&$rc)
+    {
+        $array = ['', $_SESSION["list_attrib"]["folder_name"] ?? '*', isset($_SESSION["list_attrib"]['folder_filter']) ? $_SESSION["list_attrib"]['folder_filter'] : "mail", null];
+        $cache_key = rcube_cache::key_name('mailboxes', $array);
+        $rc->storage->clear_cache($cache_key);
+
+        $cache_key = rcube_cache::key_name('mailboxes.list', $array);
+        $rc->storage->clear_cache($cache_key);
+    }
     
 
 }

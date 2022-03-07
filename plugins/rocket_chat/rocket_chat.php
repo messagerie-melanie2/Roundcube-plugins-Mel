@@ -61,7 +61,7 @@ class rocket_chat extends rcube_plugin {
           $this->register_task('discussion');
         }
 
-        if (class_exists("mel_metapage")) mel_metapage::add_url_spied('https://ariane.din.developpement-durable.gouv.fr/', 'chat');
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->rc->config->get('rocket_chat_url'), 'discussion');
         
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
@@ -179,7 +179,7 @@ EOF;
           $this->include_script('rocket_chat_storage_event.js');
           // Appel le script de gestion des link
           $this->rc->output->set_env('rocket_chat_url', $this->rc->config->get('rocket_chat_url'));
-          $this->include_script('rocket_chat_link.js');
+          if (!class_exists("mel_metapage")) $this->include_script('rocket_chat_link.js');
                         // Appel la lib pour la gestion du Favico
                         $this->include_script('favico.js');
                         // Appel le script de création du chat

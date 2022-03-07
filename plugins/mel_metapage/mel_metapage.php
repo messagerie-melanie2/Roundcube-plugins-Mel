@@ -177,10 +177,18 @@ class mel_metapage extends rcube_plugin
         if ($this->rc->task !== "login" && $this->rc->task !== "logout")
             $this->include_script('js/actions/calendar_event.js');
 
+        if ($this->rc->task === "mail" && $this->rc->action === "compose")
+        {
+            $this->rc->output->set_env("compose_option", rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET));
+        }
+
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
         {
             $this->include_stylesheet($this->local_skin_path().'/modal.css');
+            $this->include_script('js/init/events.js');
+            $this->include_script('js/init/classes/addons/array.js');
+            $this->add_hook("startup", array($this, "send_spied_urls"));
             return;
         }
 
@@ -191,6 +199,10 @@ class mel_metapage extends rcube_plugin
             $this->include_script('js/init/classes.js');
             $this->include_script('js/init/constants.js');
         }
+
+        $this->require_plugin('mel_helper');
+        //m2_get_account
+        $this->add_hook("m2_get_account", array($this, "m2_gestion_cache"));
         
         if ($this->rc->task !== "login" && $this->rc->task !== "logout" && $this->rc->config->get('skin') == 'mel_elastic' && $this->rc->action !=="create_document_template" && $this->rc->action !== "get_event_html" && empty($_REQUEST['_extwin']))
         {
@@ -231,7 +243,6 @@ class mel_metapage extends rcube_plugin
 
             if (class_exists('mel_nextcloud'))
             {
-                $this->require_plugin('mel_helper');
                 //$this->rc->plugins->get_plugin('mel_helper')->include_js_debug();
                 $this->rc->output->set_env("is_stockage_active", mel_helper::stockage_active());
                 $this->rc->output->set_env("why_is_not_active", [
@@ -380,6 +391,14 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env("urls_spies", self::get_urls_spied());
     }
 
+    public function m2_gestion_cache()
+    {
+        if ($this->rc->task === "mail" && rcube_utils::get_input_value('_nocache', rcube_utils::INPUT_GPC) == "true")
+        {
+            mel_helper::clear_folders_cache($this->rc);
+        }
+    }
+
     public function include_edited_editor()
     {
         $this->include_script('js/actions/editor-dark-mode.js');
@@ -409,6 +428,17 @@ class mel_metapage extends rcube_plugin
             'title' => 'Toutes mes applications',
             'type'       => 'link',
         ), "taskbar");
+
+        $this->add_button(array(
+            'command' => "new-mail-from",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'compose mel-new-compose options',
+            'classsel' => 'compose mel-new-compose options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.new-mail-from',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "messagemenu");
 
         $this->add_button(array(
             'command' => "mel-compose",
@@ -453,6 +483,17 @@ class mel_metapage extends rcube_plugin
             'title' => '',
             'type'       => 'link-menuitem',
         ), "events-options-containers");
+
+        $this->add_button(array(
+            'command' => "mail-force-refresh",
+            // 'href' => './?_task=mail&_action=compose',
+            'class'	=> 'refresh mel-event-compose options',
+            'classsel' => 'refresh mel-event-compose options',
+            'innerclass' => 'inner',
+            'label'	=> 'mel_metapage.force-refresh',
+            'title' => '',
+            'type'       => 'link-menuitem',
+        ), "mailboxoptions");
 
         //listcontrols
         $this->include_depedencies();

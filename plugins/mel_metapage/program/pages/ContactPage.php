@@ -20,7 +20,7 @@ class ContactPage extends ParsedPage
 
     protected function before_call() {
         parent::before_call();
-        if (!($this->task === "mail" && $this->action === "compose") && $this->action !== "plugin.annuaire" && rcube_utils::get_input_value(mel_metapage::FROM_KEY, rcube_utils::INPUT_GET) !== mel_metapage::FROM_VALUE)
+        if (!($this->task === "mail" && $this->action === "compose") && $this->task !== "settings" && $this->action !== "plugin.annuaire" && rcube_utils::get_input_value(mel_metapage::FROM_KEY, rcube_utils::INPUT_GET) !== mel_metapage::FROM_VALUE)
         {
             try {
                 $this->register_handlers([

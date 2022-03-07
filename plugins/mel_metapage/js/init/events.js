@@ -47,11 +47,11 @@ if (rcmail && window.mel_metapage)
         }
     });
 
-    //Response after
-    rcmail.addEventListener("responseafter", (props) => {
-        if (props.response && props.response.action == 'plugin.alarms')
-            rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
-    });
+    // //Response after
+    // rcmail.addEventListener("responseafter", (props) => {
+    //     if (props.response && props.response.action == 'plugin.alarms')
+    //         rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
+    // });
 
     //Après la mise à jours du calendrier
     rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {

@@ -1,0 +1,322 @@
+#notificationstack {
+    position: fixed;
+    right: 15px;
+    top: 60px;
+    z-index: 10000;
+    min-width: 300px;
+    width: 20%;
+}
+
+#notifications-panel {
+    border-top: 1px solid rgba(46, 46, 46, 0.5);
+}
+
+html.dark-mode #notifications-panel {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+#notifications-panel .filters {
+    padding: 5px 15px;
+}
+
+#notifications-panel .filters .title {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#notifications-panel > .content {
+    padding: 0 10px 10px;
+    overflow-y: auto;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    top: 290px;
+}
+
+html.layout-small #notifications-panel > .content,
+html.layout-phone #notifications-panel > .content {
+    top: 265px;
+}
+
+@media screen and (min-width: 1900px) {
+    #notifications-panel > .content {
+        top: 265px;
+    }
+}
+
+html.layout-phone #notificationstack {
+    left: 15px;
+    width: auto;
+}
+
+#notifications-panel > .content > .nonotification {
+    padding: 10px;
+    text-align: center;
+}
+
+#notifications-panel .filters_button > a  {
+    margin: 0;
+    width: 38px;
+    height: 38px;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+#notifications-panel .filters_button > a::before  {
+    font-size: 1.15em;
+    margin: 0 1.6rem 0 0 !important;
+    font-style: normal;
+    text-decoration: inherit;
+    text-align: center;
+    font-family: Icons;
+    font-weight: normal;
+}
+
+#notifications-panel .filters_button > a.read::before  {
+    content: "\f2b6";
+}
+
+#notifications-panel .filters_button > a.manage::before  {
+    content: "\e925";
+    font-family: "DWP";
+}
+
+#notifications-panel .filters_button > a.delete::before  {
+    content: "\e934";
+    font-family: DWP;
+}
+
+#notifications-panel .filters select  {
+    border-color: #495057;
+    background-color: #fff;
+}
+
+#notifications-panel article,
+#notificationstack article {
+    border-radius: 10px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #F0F0F0;
+    cursor: pointer;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.22);
+}
+
+#notifications-panel article.hidden {
+    display: none;
+}
+
+#notifications-panel article {
+    opacity: .7;
+    background-color: #fff;
+}
+
+#notifications-panel article.workspace,
+#notificationstack article.workspace {
+    margin-bottom: 0;
+}
+
+#notifications-panel article:hover {
+    opacity: .9;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.4);
+}
+
+html.dark-mode #notifications-panel article:hover {
+    box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.22);
+}
+
+#notifications-panel article.unread {
+    border: 1px solid rgba(46, 46, 46, 0.3);
+    opacity: 1;
+}
+
+#notificationstack article {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.22);
+}
+
+html.dark-mode #notifications-panel article,
+html.dark-mode #notificationstack article {
+    background-color: #222222;
+}
+
+html.dark-mode #notifications-panel article.unread {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+html.dark-mode #notificationstack article {
+    box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.22);
+}
+
+#notifications-panel article h1,
+#notificationstack article h1 {
+    font-size: 14px;
+    font-weight: normal;
+    margin-top: 5px;
+}
+
+#notifications-panel article.unread h1,
+#notificationstack article h1 {
+    font-weight: bold;
+}
+
+#notifications-panel article div,
+#notifications-panel article p,
+#notificationstack article div,
+#notificationstack article p {
+    font-size: 12px;
+}
+
+#notifications-panel article span.date,
+#notifications-panel article span.category,
+#notificationstack article span.category {
+    font-size: 10px;
+    color: #444;
+    margin-bottom: 5px;
+}
+
+#notifications-panel article span.date {
+    width: 100%;
+    display: inline-block;
+    text-align: right;
+}
+
+#notificationstack article span.notification_button,
+#notifications-panel article span.notification_button {
+    display: block;
+    text-align: center;
+}
+
+#notificationstack article div.col-sm span.notification_button,
+#notifications-panel article div.col-sm span.notification_button {
+    margin-bottom: 5px;
+}
+
+#notificationstack article span.notification_button a,
+#notifications-panel article span.notification_button a {
+    color: #2c363a;
+}
+
+html.dark-mode #notificationstack article span.notification_button a,
+html.dark-mode #notifications-panel article span.notification_button a {
+    color: #96b9e7;
+}
+
+#notificationstack article span.notification_button a:hover,
+#notifications-panel article span.notification_button a:hover {
+    color: #1a1e20;
+    font-weight: bold;
+}
+
+html.dark-mode #notificationstack article span.notification_button a:hover,
+html.dark-mode #notifications-panel article span.notification_button a:hover {
+    color: #bbd4f5;
+}
+
+#notificationstack article span.category::before,
+#notifications-panel article span.category::before,
+#notificationstack article span.notification_button a::before,
+#notifications-panel article span.notification_button a::before {
+    font-size: 1.15em;
+    margin: 0 .25rem 0 0;
+    font-style: normal;
+    text-decoration: inherit;
+    text-align: center;
+    font-family: Icons;
+    font-weight: normal;
+}
+
+#notificationstack article span.category::before,
+#notifications-panel article span.category::before {
+    font-size: 1em;
+    font-family: "DWP";
+}
+
+#notifications-panel article span.notification_button a.read {
+    text-indent: -9999px;
+}
+
+#notifications-panel article span.notification_button a:hover::before {
+    font-weight: bold;
+}
+
+#notifications-panel article span.notification_button a.read::before {
+    content: "\f2b6";
+}
+
+#notifications-panel article.unread span.notification_button a.read::before {
+    content: "\f0e0";
+}
+
+#notifications-panel article span.notification_button a.delete::before {
+    content: "\e934";
+    font-family: DWP;
+}
+
+#notificationstack article.tests span.category::before,
+#notifications-panel article.tests span.category::before {
+    content: "\e918";
+}
+
+#notificationstack article.mail span.category::before,
+#notifications-panel article.mail span.category::before {
+    content: "\e91e";
+}
+
+#notificationstack article.calendar span.category::before,
+#notifications-panel article.calendar span.category::before {
+    content: "\e901";
+}
+
+#notificationstack article.news span.category::before,
+#notifications-panel article.news span.category::before {
+    content: "\e91a";
+}
+
+#notificationstack article.workspace span.category::before,
+#notifications-panel article.workspace span.category::before {
+    content: "\e93a";
+}
+
+#notificationstack article.stockage span.category::before,
+#notifications-panel article.stockage span.category::before {
+    content: "\e915";
+}
+
+#notificationstack article.sondage span.category::before,
+#notifications-panel article.sondage span.category::before {
+    content: "\e930";
+}
+
+#notificationstack article.webconf span.category::before,
+#notifications-panel article.webconf span.category::before {
+    font-family: DWP;
+    content: "\e938";
+}
+
+html.dark-mode #notifications-panel article h1,
+html.dark-mode #notifications-panel article p,
+html.dark-mode #notificationstack article h1,
+html.dark-mode #notificationstack article p {
+    color: #c7dfff;
+}
+
+html.dark-mode #notifications-panel article span.date,
+html.dark-mode #notifications-panel article span.category,
+html.dark-mode #notificationstack article span.category {
+    color : #90a8c8
+}
+
+#notificationunread.active {
+    height: 14px;
+    width: 14px;
+    background-color: rgb(170, 51, 51);
+    border-radius: 100%;
+    border: 1px solid #7c7c85;
+    top: 5px;
+    left: 47px;
+    position: absolute;
+    color: #fff;
+    font-size: 8px;
+    text-align: center;
+}

@@ -395,6 +395,7 @@ html.touch .hide-touch
     display:none!important;
 } 
 
+.show-row-touch,
 .show-touch {
     display: none;
 }
@@ -406,6 +407,10 @@ html.touch .hide-touch
 html.touch .show-touch
 {
     display: inline-block!important;
+}
+
+html.touch .show-row-touch {
+    display: block;
 }
 
 #touchmelmenu{

@@ -15,8 +15,6 @@ current_iframe_css = null;
 
 let current_window = null;
 
-//TODO Css pour hint au lieu de classe
-
 if (window.rcmail) {
     rcmail.addEventListener('init', function(evt) {
         let current_task = rcmail.env.task;

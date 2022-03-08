@@ -1053,7 +1053,10 @@ function m_mp_Help() {
         let helppage_general = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general, true, true) + '</li>'
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
         let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
-        let helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
+        let helppage_current = "";
+        if (rcmail.env.help_page_onboarding[m_mp_DecodeUrl().task]) {
+            helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
+        }
 
         let html = "<div class='row' id='search_row'>";
         html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';

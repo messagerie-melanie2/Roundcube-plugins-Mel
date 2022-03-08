@@ -247,6 +247,12 @@ class mce_driver_mel extends driver_mel {
     // Ecriture du fichier unexpunge pour le serveur
     $server = explode('.', $host);
     $rep = static::$_unexpungeFolder . $server[0];
+
+    // Créer le dossier s'il n'existe pas
+    if (!is_dir($rep) && !mkdir($rep, 0774, true)) {
+      return false;
+    }
+
     $dossier = str_replace('/', '^', $folder);
 
     if (isset($dossier)) {

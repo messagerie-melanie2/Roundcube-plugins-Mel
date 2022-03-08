@@ -1,8 +1,13 @@
 var handle;
+let initial_modal_height;
 
 rcube_webmail.prototype.help_search = function(event, object) {
     _search = rcmail.env.help_array;
     _index = rcmail.env.help_index;
+
+    if (!initial_modal_height) {
+        initial_modal_height = $(".global-modal-body").css("height");
+    }
 
     if (event.keyCode == 27) {
         object.value = "";
@@ -42,6 +47,7 @@ rcube_webmail.prototype.help_search = function(event, object) {
                 _res.sort((a, b) => (a.value < b.value) ? 1 : -1)
                 document.getElementById("help-search-results").style = "display: block;";
                 document.getElementById("help-search-results").innerHTML = "";
+
                 var i = 0;
                 for (const r of _res) {
                     if (i++ > 4) {
@@ -80,7 +86,7 @@ rcube_webmail.prototype.help_search = function(event, object) {
                         help_url.title = _search[r.key].help_title;
                         // help_url.className = "help button";
                         help_url.className = "hide-touch mel-button no-button-margin mel-before-remover mel-focus btn btn-secondary";
-                        help_url.innerHTML = _search[r.key].help_name ? "<span class='icon-mel-help mr-2'></span>" + _search[r.key].help_name : rcmail.get_label('help search open', 'mel_help');
+                        help_url.innerHTML = _search[r.key].help_name ? "<span class='icon-mel-help mr-2'></span>" + _search[r.key].help_name : "<span class='icon-mel-help mr-2'></span>" + rcmail.get_label('help search open', 'mel_help');
                         buttons.appendChild(help_url);
                     }
                     // Url button
@@ -99,6 +105,8 @@ rcube_webmail.prototype.help_search = function(event, object) {
                     result.className = "result";
                     result.appendChild(url);
                     document.getElementById("help-search-results").appendChild(result);
+                    $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+
                 }
             } else {
                 document.getElementById("help-search-results").style = "display: block; text-align: center;";
@@ -108,6 +116,8 @@ rcube_webmail.prototype.help_search = function(event, object) {
                 document.getElementById("help-search-results").innerHTML += "<br/>";
                 // document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='window.open(`" + rcmail.env.help_channel_support + "`, `_blank`)'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
                 document.getElementById("help-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='rcmail.help_redirect()'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
+                $(".global-modal-body").css("height", initial_modal_height).css("overflow-y", "auto").css("overflow-x", "hidden");
+
             }
         }, 300);
     } else {
@@ -115,6 +125,9 @@ rcube_webmail.prototype.help_search = function(event, object) {
         document.getElementById("help-search-results").style = "display: none;";
         document.getElementById("noresulthelp").innerHTML = "";
         document.getElementById("noresulthelp").style = "display: none;";
+        $(".global-modal-body").css("height", initial_modal_height).css("overflow-y", "auto").css("overflow-x", "hidden");
+
+
     }
 }
 

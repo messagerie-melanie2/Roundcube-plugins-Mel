@@ -810,13 +810,13 @@ function m_mp_add_users() {
     let input = $("#workspace-user-list");
 
     if (input.val().length > 0)
-      users.push(input.val().includes('<') ? input.val().split('<')[1].split('>')[0] : input.val());
+        users.push(input.val().includes('<') ? input.val().split('<')[1].split('>')[0] : input.val());
 
     input.val("");
     $("#wspf .workspace-recipient").each((i, e) => {
         $(e).remove();
     });
-    
+
     if (users.length > 0) {
         $("#mm-wsp-loading").css("display", "");
         return mel_metapage.Functions.post(
@@ -1058,8 +1058,8 @@ function m_mp_Help() {
         let html = "<div class='row' id='search_row'>";
         html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';
         html += '<div class="input-group mx-4">';
-        html += '<label class="sr-only" for="barup-search-input">Rechercher</label>';
-        html += '<input id="barup-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
+        html += '<label class="sr-only" for="helppage-search-input">Rechercher</label>';
+        html += '<input id="helppage-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
         html += ' <div class="input-group-append">';
         html += '<span class="icofont-search input-group-text"></span>';
         html += "</div></div></div>"
@@ -1073,7 +1073,7 @@ function m_mp_Help() {
     {
         window.help_popUp.show();
     }
-
+    // $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
     if ($("#globallist").length > 0 && !isSmall) {
         $("#globalModal .icon-mel-undo.mel-return").remove();
     }

@@ -905,7 +905,7 @@ const mel_metapage = {
             let current = $(".refresh-current-thing");
             switch (rcmail.env.current_frame_name) {
                 case "webconf":
-                case "discussion":
+                //case "discussion":
                     current.addClass("disabled").attr("disabled", "disabled");
                     break;
             

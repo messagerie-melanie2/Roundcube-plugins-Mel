@@ -143,6 +143,13 @@ if (rcmail)
             rcmail.register_command("refreshFrame", () => {
 
                 let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);
+
+                if (rcmail.env.current_frame_name === "discussion")
+                {
+                    iframe[0].src = iframe[0].src;
+                    return;
+                }
+
                 let parent = $(`.${rcmail.env.current_frame_name}-frame`);
 
                 // Frame déjà ouverte

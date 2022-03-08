@@ -593,7 +593,7 @@ if (rcmail && window.mel_metapage)
         else $(".mel-event-compose").css("display", "");
 
         if (event.calendar === mceToRcId(rcmail.env.username) || event.attendees === undefined) $(".mel-event-self-invitation").css("display", "none");
-        else $(".mel-event-self-invitation").css("display", "");
+        else $(".mel-event-self-invitation").css("display", "none"); /*TODO : Activer lorsque ça fonctoinnera*/
 
 
         //Button edit

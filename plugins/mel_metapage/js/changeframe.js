@@ -707,9 +707,24 @@ async function ChangeFrame(_class, otherDatas = null)
     let config = null;
 
     if (_class === "tasklist" && rcmail.env.current_workspace_tasklist_uid !== undefined && rcmail.env.current_workspace_tasklist_uid !== null)
+    {
         config = {
             source:rcmail.env.current_workspace_tasklist_uid
         }
+        await mel_metapage.Functions.post(
+            mel_metapage.Functions.url("tasks", "tasklist"),
+            {
+                action:"subscribe",
+                l:{
+                    id:rcmail.env.current_workspace_tasklist_uid,
+                    active:1
+                }
+            },
+            (success) => {
+                console.log("change task to ok", success);
+            }
+        );
+    }
     else if(_class === "links")
     {
 

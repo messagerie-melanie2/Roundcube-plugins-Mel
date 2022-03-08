@@ -393,6 +393,17 @@ abstract class driver_mel {
   }
 
   /**
+   * Generate notification object from the ORM with the right Namespace
+   * 
+   * @param array $params [Optionnal] parameters of the constructor
+   * 
+   * @return \LibMelanie\Api\Defaut\Notification
+   */
+  public function notification($params = []) {
+    return $this->object('Notification', $params);
+  }
+
+  /**
    * Return the object share delimiter from ObjectShare ORM object
    * 
    * @return string DELIMITER

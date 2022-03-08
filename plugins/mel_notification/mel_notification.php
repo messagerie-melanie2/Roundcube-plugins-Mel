@@ -42,6 +42,21 @@ class mel_notification extends rcube_plugin
      * @var boolean
      */
     private $notified = false;
+
+    /**
+     * Valeurs par défaut pour les prefs
+     * 
+     * @var array
+     */
+    public $defaults = [
+        'notifications_refresh_interval'        => 120,
+        'notifications_show_duration'           => 10,
+        'notifications_desktop_duration'        => 5,
+        'notifications_categories'              => [],
+        'notifications_icons'                   => [],
+        'notifications_set_read_on_click'       => false,
+        'notifications_set_read_on_panel_close' => false,
+    ];
     
     /**
      * Méthode d'initialisation du plugin mel_notification
@@ -67,11 +82,14 @@ class mel_notification extends rcube_plugin
                     
             if ($this->rc->output->type == 'html') {
                 // Ajouter la conf pour le js
-                $this->rc->output->set_env('notifications_refresh_interval',    $this->rc->config->get('notifications_refresh_interval', 60));
-                $this->rc->output->set_env('notifications_show_duration',       $this->rc->config->get('notifications_show_duration', 3));
-                $this->rc->output->set_env('notifications_categories',          $this->rc->config->get('notifications_categories', []));
-                $this->rc->output->set_env('notifications_icons',               $this->rc->config->get('notifications_icons', []));
-                $this->rc->output->set_env('notifications_set_read_on_click',   $this->rc->config->get('notifications_set_read_on_click', false));
+                $this->rc->output->set_env('notifications_refresh_interval',        $this->rc->config->get('notifications_refresh_interval',        $this->defaults['notifications_refresh_interval']));
+                $this->rc->output->set_env('notifications_show_duration',           $this->rc->config->get('notifications_show_duration',           $this->defaults['notifications_show_duration']));
+                $this->rc->output->set_env('notifications_desktop_duration',        $this->rc->config->get('notifications_desktop_duration',        $this->defaults['notifications_desktop_duration']));
+                $this->rc->output->set_env('notifications_categories',              $this->rc->config->get('notifications_categories',              $this->defaults['notifications_categories']));
+                $this->rc->output->set_env('notifications_icons',                   $this->rc->config->get('notifications_icons',                   $this->defaults['notifications_icons']));
+                $this->rc->output->set_env('notifications_set_read_on_click',       $this->rc->config->get('notifications_set_read_on_click',       $this->defaults['notifications_set_read_on_click']));
+                $this->rc->output->set_env('notifications_set_read_on_panel_close', $this->rc->config->get('notifications_set_read_on_panel_close', $this->defaults['notifications_set_read_on_panel_close']));
+                $this->rc->output->set_env('notifications_settings',                $this->rc->config->get('notifications_settings',                []));
                 
                 // Charger le js
                 $this->include_script('notifications.js');
@@ -115,6 +133,9 @@ class mel_notification extends rcube_plugin
         }
         
         if ($this->rc->task == 'settings') {
+            // Ajouter le texte
+            $this->add_texts('localization/', false);
+
             // add hooks for Notifications settings
             $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
             $this->add_hook('preferences_list',             [$this, 'preferences_list']);
@@ -315,6 +336,167 @@ class mel_notification extends rcube_plugin
         if ($p['section'] != 'notifications') {
             return $p;
         }
+
+        $no_override = array_flip((array) $this->rc->config->get('dont_override'));
+
+        $p['blocks']['general']['name'] = $this->gettext('mainoptions');
+
+        if (!isset($no_override['notifications_show_duration'])) {
+            if (empty($p['current'])) {
+                $p['blocks']['general']['content'] = true;
+                return $p;
+            }
+
+            $field_id = 'rcmfd_show_duration';
+            $default = $this->rc->config->get('notifications_show_duration', $this->defaults['notifications_show_duration']);
+
+            $select = new html_select(['name' => '_show_duration', 'id' => $field_id]);
+            for ($i=1; $i<=60; $i++) { 
+                $select->add("$i", $i);
+            }
+
+            $p['blocks']['general']['options']['show_duration'] = [
+                'title'   => html::label($field_id, rcube::Q($this->gettext('show_duration'))),
+                'content' => $select->show($default),
+            ];
+        }
+
+        if (!isset($no_override['notifications_desktop_duration'])) {
+            if (empty($p['current'])) {
+                $p['blocks']['general']['content'] = true;
+                return $p;
+            }
+
+            $field_id = 'rcmfd_desktop_duration';
+            $default = $this->rc->config->get('notifications_desktop_duration', $this->defaults['notifications_desktop_duration']);
+
+            $select = new html_select(['name' => '_desktop_duration', 'id' => $field_id]);
+            for ($i=1; $i<=60; $i++) { 
+                $select->add("$i", $i);
+            }
+
+            $p['blocks']['general']['options']['desktop_duration'] = [
+                'title'   => html::label($field_id, rcube::Q($this->gettext('desktop_duration'))),
+                'content' => $select->show($default),
+            ];
+        }
+
+        if (!isset($no_override['notifications_set_read_on_click'])) {
+            if (empty($p['current'])) {
+                $p['blocks']['general']['content'] = true;
+                return $p;
+            }
+
+            $field_id = 'rcmfd_set_read_on_click';
+            $default = $this->rc->config->get('notifications_set_read_on_click', $this->defaults['notifications_set_read_on_click']);
+
+            $checkbox = new html_checkbox(['name' => '_set_read_on_click', 'id' => $field_id, 'value' => 1]);
+
+            $p['blocks']['general']['options']['set_read_on_click'] = [
+                'title'   => html::label($field_id, rcube::Q($this->gettext('set_read_on_click'))),
+                'content' => $checkbox->show($default ? 1 : 0),
+            ];
+        }
+
+        if (!isset($no_override['notifications_set_read_on_panel_close'])) {
+            if (empty($p['current'])) {
+                $p['blocks']['general']['content'] = true;
+                return $p;
+            }
+
+            $field_id = 'rcmfd_set_read_on_panel_close';
+            $default = $this->rc->config->get('notifications_set_read_on_panel_close', $this->defaults['notifications_set_read_on_panel_close']);
+
+            $checkbox = new html_checkbox(['name' => '_set_read_on_panel_close', 'id' => $field_id, 'value' => 1]);
+
+            $p['blocks']['general']['options']['set_read_on_panel_close'] = [
+                'title'   => html::label($field_id, rcube::Q($this->gettext('set_read_on_panel_close'))),
+                'content' => $checkbox->show($default ? 1 : 0),
+            ];
+        }
+
+        // Block avancé pour les notifications
+        $p['blocks']['list']['name'] = $this->gettext('Notifications settings');
+
+        $table = new html_table(['id' => 'notificationssettings', 'cols' => 4]);
+
+        // Add headers
+        foreach (['notifications', 'inside_notification', 'desktop_notification', 'notifications_center'] as $name) {
+            $table->add_header(['class' => $name], $this->gettext($name));
+        }
+
+        $notifications_settings = $this->rc->config->get('notifications_settings', []);
+        
+        // Add rows
+        foreach ($this->rc->config->get('notifications_categories', $this->defaults['notifications_categories']) as $key => $name) {
+            // Configuration courante
+            $config = isset($notifications_settings[$key]) ? $notifications_settings[$key] : [];
+
+            // Colonne avec le nom du settings
+            $table->add([], $name);
+
+            // Parcours les configurations
+            foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
+                if (isset($config[$setting])) {
+                    $value = $config[$setting] ? 1 : 0;
+                }
+                else {
+                    $value = 1;
+                }
+                $checkbox = new html_checkbox(['name' => '_' . $setting . '_' . $key, 'value' => 1]);
+                $table->add([], $checkbox->show($value));
+            }
+
+            // Traiter les boites mails de l'utilisateur en plus
+            if ($key == 'mail' && in_array('mel_sharedmailboxes', $this->rc->plugins->active_plugins)) {
+                $config_mailboxes = isset($config['mailboxes']) ? $config['mailboxes'] : [];
+                $current_key = driver_mel::gi()->getUser()->uid;
+                $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
+
+                // Ajouter la BALI
+                $table->add([], $this->gettext('mailbox') . driver_mel::gi()->getUser()->fullname);
+
+                // Parcours les configurations
+                foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
+                    if (isset($config_mailbox[$setting])) {
+                        $value = $config_mailbox[$setting] ? 1 : 0;
+                    }
+                    else {
+                        $value = 1;
+                    }
+                    $checkbox = new html_checkbox(['name' => '_' . $setting . '_' . $key . '_' . driver_mel::gi()->mceToRcId($current_key), 'value' => 1]);
+                    $table->add([], $checkbox->show($value));
+                }
+
+                // Ajouter les boites partagées
+                $objects = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
+                foreach ($objects as $object) {
+                    $current_key = $object->mailbox->uid;
+                    $config_mailbox = isset($config_mailboxes[$current_key]) ? $config_mailboxes[$current_key] : [];
+
+                    // Colonne avec le nom du settings
+                    $table->add([], $this->gettext('mailbox') . $object->mailbox->fullname);
+
+                    // Parcours les configurations
+                    foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
+                        if (isset($config_mailbox[$setting])) {
+                            $value = $config_mailbox[$setting] ? 1 : 0;
+                        }
+                        else {
+                            $value = 1;
+                        }
+                        $checkbox = new html_checkbox(['name' => '_' . $setting . '_' . $key . '_' . driver_mel::gi()->mceToRcId($current_key), 'value' => 1]);
+                        $table->add([], $checkbox->show($value));
+                    }
+                }
+            }
+        }
+
+        $p['blocks']['list']['options']['notifications_settings'] = [
+            'content' => $table->show(),
+        ];
+
+        return $p;
     }
 
     /**
@@ -328,9 +510,51 @@ class mel_notification extends rcube_plugin
     public function preferences_save($p)
     {
         if ($p['section'] == 'notifications') {
+            // Paramètres globaux
+            $p['prefs']['notifications_show_duration'] = intval(rcube_utils::get_input_value('_show_duration', rcube_utils::INPUT_POST));
+            $p['prefs']['notifications_desktop_duration'] = intval(rcube_utils::get_input_value('_desktop_duration', rcube_utils::INPUT_POST));
+            $p['prefs']['notifications_set_read_on_panel_close'] = rcube_utils::get_input_value('_set_read_on_panel_close', rcube_utils::INPUT_POST) == "1";
+            $p['prefs']['notifications_set_read_on_click'] = rcube_utils::get_input_value('_set_read_on_click', rcube_utils::INPUT_POST) == "1";
 
+            // Paramètres spécifiques des notifications
+            $p['prefs']['notifications_settings'] = [];
+
+            foreach ($this->rc->config->get('notifications_categories', $this->defaults['notifications_categories']) as $key => $name) {
+                $settings = [];
+                // Parcours les configurations
+                foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
+                    $settings[$setting] = rcube_utils::get_input_value('_' . $setting . '_' . $key, rcube_utils::INPUT_POST) == "1";
+                }
+
+                // Cas des boites mails
+                if ($key == 'mail' && in_array('mel_sharedmailboxes', $this->rc->plugins->active_plugins)) {
+                    $current_key = driver_mel::gi()->getUser()->uid;
+
+                    $settings['mailboxes'] = [
+                        $current_key => [],
+                    ];
+
+                    // Parcours les configurations
+                    foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
+                        $settings['mailboxes'][$current_key][$setting] = rcube_utils::get_input_value('_' . $setting . '_' . $key . '_' . driver_mel::gi()->mceToRcId($current_key), rcube_utils::INPUT_POST) == "1";
+                    }
+
+                    // Ajouter les boites partagées
+                    $objects = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
+                    foreach ($objects as $object) {
+                        $current_key = $object->mailbox->uid;
+                        $settings['mailboxes'][$current_key] = [];
+
+                        // Parcours les configurations
+                        foreach (['inside_notification', 'desktop_notification', 'notifications_center'] as $setting) {
+                            $settings['mailboxes'][$current_key][$setting] = rcube_utils::get_input_value('_' . $setting . '_' . $key . '_' . driver_mel::gi()->mceToRcId($current_key), rcube_utils::INPUT_POST) == "1";
+                        }
+                    }
+                }
+                // Ajouter la conf aux settings
+                $p['prefs']['notifications_settings'][$key] = $settings;
+            }
         }
-
         return $p;
     }
 }

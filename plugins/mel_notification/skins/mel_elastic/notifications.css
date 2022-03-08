@@ -294,6 +294,12 @@ html.dark-mode #notifications-panel article span.notification_button a:hover {
     content: "\e938";
 }
 
+#notificationstack article.info span.category::before,
+#notifications-panel article.info span.category::before {
+    font-family: DWP;
+    content: "\e918";
+}
+
 html.dark-mode #notifications-panel article h1,
 html.dark-mode #notifications-panel article p,
 html.dark-mode #notificationstack article h1,

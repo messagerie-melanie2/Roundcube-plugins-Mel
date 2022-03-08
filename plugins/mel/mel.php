@@ -337,7 +337,7 @@ class mel extends rcube_plugin {
       else {
         $user = driver_mel::gi()->user();
         $user->email = $_SESSION['m2_from_identity'];
-        if ($user->load('uid')) {
+        if ($user->load(['uid'])) {
           $args['smtp_user'] = $user->uid;
         }
       }

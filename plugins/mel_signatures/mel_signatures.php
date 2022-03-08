@@ -153,7 +153,7 @@ class mel_signatures extends rcube_plugin
             $searchDN = substr($dn, $pos);
             $ou = driver_mel::gi()->user();
             $ou->dn = $searchDN;
-            if ($ou->load('observation')) {
+            if ($ou->load(['observation'])) {
                 $direction = $ou->observation;
             }
         }

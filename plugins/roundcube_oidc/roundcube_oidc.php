@@ -83,7 +83,7 @@ class roundcube_oidc extends rcube_plugin
                 $user = driver_mel::get_instance()->getUser($user_uid);
     
                 // Chargement de l'attribut du LDAP
-                $user->load('cerbere');
+                $user->load(['cerbere']);
     
                 //mel_logs::get_instance()->log(mel_logs::INFO, "Valeur du champ AUTH.Cerbere pour $user_uid : $user->cerbere");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "Valeur du champ AUTH.Cerbere pour $user_uid : $user->cerbere");

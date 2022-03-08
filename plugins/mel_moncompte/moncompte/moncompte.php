@@ -178,7 +178,7 @@ class Moncompte {
 		// MANTIS 0005002: [MAA] Modification de mdp pour les BALF
 		$password = rcmail::get_instance()->get_user_password();
 		if ($user->uid != self::get_current_user_name() 
-				&& $user->load('is_agriculture') 
+				&& $user->load(['is_agriculture']) 
 				&& $user->is_agriculture) {
 			$value = str_replace('AGRI.Lien: uid=', '', $user->liens_import);
 			$value = explode(',', $value, 2);

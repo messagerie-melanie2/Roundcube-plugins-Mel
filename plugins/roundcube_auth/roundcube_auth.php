@@ -385,7 +385,7 @@ class roundcube_auth extends rcube_plugin
         $user = driver_mel::get_instance()->getUser($user_uid);
 
         // Chargement de l'attribut du LDAP
-        $user->load('cerbere'); // TODO config plugin
+        $user->load(['cerbere']); // TODO config plugin
 
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] LDAP - AUTH.Cerbere pour $user_uid : $user->cerbere");
 

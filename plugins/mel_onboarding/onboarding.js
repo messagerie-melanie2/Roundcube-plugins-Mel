@@ -10,12 +10,12 @@ last_modified_item = null;
 // Le css du dernier item modifié
 last_item_css = null;
 
+launched_onboarding = false;
+
 // Conserver en mémoire le css de l'iframe
 current_iframe_css = null;
 
 let current_window = null;
-
-//TODO Css pour hint au lieu de classe
 
 if (window.rcmail) {
     rcmail.addEventListener('init', function(evt) {
@@ -68,11 +68,14 @@ rcube_webmail.prototype.show_current_page_onboarding = function(task, assistance
                 if (!assistance) {
                     rcmail.addEventListener('responsebefore', function(props) {
                         if (props.response && (props.response.action === 'list')) {
-                            rcmail.show_contentframe(true)
-                            current_window.startIntro(task);
-                            setTimeout(() => {
-                                rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
-                            }, 250);
+                            if (!launched_onboarding) {
+                                rcmail.show_contentframe(true)
+                                current_window.startIntro(task);
+                                setTimeout(() => {
+                                    rcmail.show_message(Object.keys(rcmail.env.messages)[0], false, true);
+                                }, 250);
+                                launched_onboarding = true;
+                            }
                         }
                     });
                 } else {
@@ -83,7 +86,7 @@ rcube_webmail.prototype.show_current_page_onboarding = function(task, assistance
                     }, 250);
                 }
             } else if (rcmail.env.is_framed) {
-                window.parent.onload = startIntro(task)
+                window.parent = startIntro(task)
             } else {
                 startIntro(task);
             }

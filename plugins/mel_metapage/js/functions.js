@@ -1052,13 +1052,16 @@ function m_mp_Help() {
         let helppage_general = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general, true, true) + '</li>'
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
         let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
-        let helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
+        let helppage_current = "";
+        if (rcmail.env.help_page_onboarding[m_mp_DecodeUrl().task]) {
+            helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
+        }
 
         let html = "<div class='row' id='search_row'>";
         html += '<label for="workspace-title" class="span-mel t2 first ml-4">' + rcmail.gettext("mel_metapage.describe_your_need_in_few_words") + '</label>';
         html += '<div class="input-group mx-4">';
-        html += '<label class="sr-only" for="barup-search-input">Rechercher</label>';
-        html += '<input id="barup-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
+        html += '<label class="sr-only" for="helppage-search-input">Rechercher</label>';
+        html += '<input id="helppage-search-input" type="text" title="Recherche globale" placeholder="Recherche globale..." class="form-control mel-focus" onkeyup="rcmail.help_search(event, this);">';
         html += ' <div class="input-group-append">';
         html += '<span class="icofont-search input-group-text"></span>';
         html += "</div></div></div>"
@@ -1104,6 +1107,7 @@ function m_mp_Help() {
     }
 }
 
+// Ancienne fonction d'aide
 // function m_mp_Help() {
 //     FullscreenItem.close_if_exist();
 
@@ -1130,19 +1134,44 @@ function m_mp_Help() {
 
 function m_mp_help_video() {
     try {
-        let html = '<ul id=globallist class="row ignore-bullet">';
-        let help_videos = Object.values(rcmail.env.help_video);
+        // Génération de l'index
+        let index = [];
+        let k = -1;
+        for (const [key, element] of Object.entries(rcmail.env.help_video)) {
+            k++
+            let keywords = element.description + ' ' + element.title;
+            let array = keywords.split(' ');
+
+            array.forEach(word => {
+                if (index[word]) {
+                    if (index[word] != k) {
+                        index[word].push(k);
+                    }
+                } else {
+                    index[word] = [k]
+                }
+            });
+        }
+
+        // Positionnement des variables d'env
+        rcmail.env.video_index = index;
+
+        let html = '<label for="workspace-title" class="span-mel t2 first">' + rcmail.gettext("mel_metapage.search_a_video") + '</label>';
+        html += '<input id="videos-search-input" type="text" title="Rechercher" placeholder="Accueil..." class="form-control mel-focus mb-4" onkeyup="rcmail.video_search(event, this);">';
+
+
+
+        html += '<div id="video-search-results"></div>'
+        html += '<div id="noresultvideo"></div>'
+
+        html += '<ul id="videolist" class="row ignore-bullet">';
+
 
         for (const [key, element] of Object.entries(rcmail.env.help_video)) {
             html += '<li class="col-sd-12 col-md-12" id="helppage_video" title="Cliquer pour voir la vidéo">';
-            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
+            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="rcmail.m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
             html += '</li>';
         }
-
-
-        help_videos.forEach((element, index) => {
-
-        });
         html += '</ul>';
 
         help_popUp.contents.html(html);
@@ -1153,6 +1182,7 @@ function m_mp_help_video() {
 
         help_popUp.modal.focus();
         help_popUp.show();
+
     } catch (error) {
         console.error(error);
     }
@@ -1162,7 +1192,7 @@ function m_mp_help_video() {
  * Affiche une vidéo d'assistance
  */
 
-function m_mp_help_video_player(task) {
+rcube_webmail.prototype.m_mp_help_video_player = function(task) {
     try {
         help = rcmail.env.help_video[task];
         let html = '<div class="row">'

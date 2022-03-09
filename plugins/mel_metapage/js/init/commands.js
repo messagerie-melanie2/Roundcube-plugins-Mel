@@ -146,6 +146,14 @@ if (rcmail)
                   }
             }, true);
 
+            rcmail.register_command("event.click", (params, obj, event) => {
+                rcmail.triggerEvent("event.click", {
+                    params,
+                    obj,
+                    e:event
+                });
+            }, true);
+
             rcmail.register_command("refreshFrame", () => {
 
                 let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);

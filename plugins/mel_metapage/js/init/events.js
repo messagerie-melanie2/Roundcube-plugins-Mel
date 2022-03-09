@@ -1023,14 +1023,14 @@ $(document).ready(() => {
         return retour;
     }
 
-    $(document).on("click", "a", (event) => {
+    function intercept_click(event)
+    {
         try {
-
             //Vérification si on intercetpe le lien ou non
             const intercept = $(event.target).data("spied");
 
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
-            else if ($(event.target).attr("onclick") !== undefined) return;
+            else if ($(event.target).attr("onclick") !== undefined && !$(event.target).attr("onclick").includes('event.click')) return;
             else if (Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
             else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
 
@@ -1126,7 +1126,7 @@ $(document).ready(() => {
                                     }
                                 }
     
-                                let othersParams = {};
+                                othersParams = {};
     
                                 try {
                                     let tmp_othersParams = url.split('/?_task=', 2)[1];
@@ -1169,8 +1169,16 @@ $(document).ready(() => {
                 }
             }
         } catch (error) {
-            // console.error("###[DEBUG][ONCLICK]", error);
+             //console.error("###[DEBUG][ONCLICK]", error);
         }
+    }
+
+    $(document).on("click", "a", (event) => {
+        intercept_click(event);
     });
+
+    rcmail.addEventListener("event.click", (params) => {
+        intercept_click(params.e === undefined ? params.obj : params.e);
+    })
 })
 

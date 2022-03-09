@@ -33,8 +33,6 @@ if (window.rcmail) {
 				else {
 					key = rcmail_tb_labels_key_to_css(rcmail.env.username);
 				}
-				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
-				$('#searchfilter option.labels.'+key).addClass('show');	
 
 				if (Enumerable.from(rcmail.options_labels).count() == 0)
 				{
@@ -66,6 +64,9 @@ if (window.rcmail) {
 					}
 
 				}
+
+				$('#tb_label_popup .toolbarmenu li.labels.'+key).addClass('show');
+				$('#searchfilter option.labels.'+key).addClass('show');
 			});
 		}
 	});

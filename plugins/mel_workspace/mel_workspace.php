@@ -1670,7 +1670,8 @@ class mel_workspace extends rcube_plugin
                             [
                                 'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
                                 'text' => $this->gettext("mel_workspace.open"),
-                                'title' => $this->gettext("mel_workspace.click_for_open")
+                                'title' => $this->gettext("mel_workspace.click_for_open"),
+                                'command' => "event.click"
                             ]
                         ], $tmp_user);
                     }           
@@ -2317,7 +2318,8 @@ class mel_workspace extends rcube_plugin
                         [
                             'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
                             'text' => $this->gettext("mel_workspace.open"),
-                            'title' => $this->gettext("mel_workspace.click_for_open")
+                            'title' => $this->gettext("mel_workspace.click_for_open"),
+                            'command' => "event.click"
                         ]
                     ], $users[$i]);
                 }
@@ -2522,7 +2524,11 @@ class mel_workspace extends rcube_plugin
             self::edit_modified_date($workspace, false);
 
             if ($user_find)
+            {
                 $workspace->save();
+
+                if ($exit === true) mel_notification::notify("webconf", 'Vous avez été supprimé de l\'espace de travail "'.$workspace->title.'"', '', null, $user_to_delete);
+            }
 
             echo "";
         }

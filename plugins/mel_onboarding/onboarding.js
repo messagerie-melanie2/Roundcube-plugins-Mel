@@ -212,7 +212,7 @@ rcube_webmail.prototype.onboarding_close = function() {
                     _onboarding: true,
                     _see_help_again: $('#see_help_again').is(":checked"),
                 });
-                window.parent.$('.ui-dialog-content:visible').dialog('close');
+                $(this).closest('.ui-dialog-content').dialog('close');
             }
         },
         {
@@ -223,7 +223,7 @@ rcube_webmail.prototype.onboarding_close = function() {
                     _onboarding: true,
                     _see_help_again: $('#see_help_again').is(":checked"),
                 });
-                window.parent.$('.ui-dialog-content:visible').dialog('close');
+                $(this).closest('.ui-dialog-content').dialog('close');
             }
         }
     ];

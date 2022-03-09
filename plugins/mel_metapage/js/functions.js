@@ -1747,6 +1747,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         $("#groupoptions-user").data('aria-hidden', 'true');
         $("#groupoptions-user").data('opener', null);
         $(opener).data('aria-expanded', 'false');
+        rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
         $("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
@@ -1755,5 +1756,6 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         $("#groupoptions-user").data('aria-hidden', 'false');
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
+        rcmail.triggerEvent('toggle-options-user', {show: true});
     }
 }

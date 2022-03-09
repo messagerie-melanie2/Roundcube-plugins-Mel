@@ -1108,6 +1108,7 @@ function m_mp_Help() {
     }
 }
 
+// Ancienne fonction d'aide
 // function m_mp_Help() {
 //     FullscreenItem.close_if_exist();
 
@@ -1134,19 +1135,45 @@ function m_mp_Help() {
 
 function m_mp_help_video() {
     try {
-        let html = '<ul id=globallist class="row ignore-bullet">';
-        let help_videos = Object.values(rcmail.env.help_video);
+        fetch(window.location.pathname + 'plugins/mel_help/public/video.json', { credentials: "include", cache: "no-cache" }).then((res) => {
+            res.json().then((video_array) => {
+
+                // Génération de l'index
+                let index = [];
+                video_array.forEach((help, k) => {
+                    help.keywords.forEach(word => {
+                        if (index[word]) {
+                            if (index[word] != k) {
+                                index[word].push(k);
+                            }
+                        } else {
+                            index[word] = [k]
+                        }
+                    });
+                });
+
+                // Positionnement des variables d'env
+                rcmail.env.video_array = video_array;
+                rcmail.env.video_index = index;
+            });
+        });
+
+        let html = '<label for="workspace-title" class="span-mel t2 first">' + rcmail.gettext("mel_metapage.search_a_video") + '</label>';
+        html += '<input id="videos-search-input" type="text" title="Rechercher" placeholder="Accueil..." class="form-control mel-focus mb-4" onkeyup="rcmail.video_search(event, this);">';
+
+
+
+        html += '<div id="video-search-results"></div>'
+        html += '<div id="noresultvideo"></div>'
+
+        html += '<ul id="videolist" class="row ignore-bullet">';
+
 
         for (const [key, element] of Object.entries(rcmail.env.help_video)) {
             html += '<li class="col-sd-12 col-md-12" id="helppage_video" title="Cliquer pour voir la vidéo">';
-            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
+            html += '<button class="btn btn-block btn-secondary btn-mel text-left" onclick="rcmail.m_mp_help_video_player(`' + key + '`)"><div class="row"><div class="col-4"><img src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/images/' + element.poster + '" class="img-fluid rounded-start" alt="..."></div><div class="col-8"><h2>' + element.title + '</h2><p>' + element.description + '</p></div></div></button>';
             html += '</li>';
         }
-
-
-        help_videos.forEach((element, index) => {
-
-        });
         html += '</ul>';
 
         help_popUp.contents.html(html);
@@ -1157,6 +1184,9 @@ function m_mp_help_video() {
 
         help_popUp.modal.focus();
         help_popUp.show();
+
+        $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+
     } catch (error) {
         console.error(error);
     }
@@ -1166,7 +1196,7 @@ function m_mp_help_video() {
  * Affiche une vidéo d'assistance
  */
 
-function m_mp_help_video_player(task) {
+rcube_webmail.prototype.m_mp_help_video_player = function(task) {
     try {
         help = rcmail.env.help_video[task];
         let html = '<div class="row">'

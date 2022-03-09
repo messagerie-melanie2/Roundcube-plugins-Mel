@@ -153,7 +153,7 @@ rcube_webmail.prototype.video_search = function(event, object) {
         return;
     }
     var results = {};
-    if (object.value.length > 3) {
+    if (object.value.length > 2) {
         if (handle) {
             clearTimeout(handle);
         }
@@ -162,7 +162,7 @@ rcube_webmail.prototype.video_search = function(event, object) {
             var values = object.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ');
             for (const word in _index) {
                 for (const value of values) {
-                    if (value.length > 3) {
+                    if (value.length > 2) {
                         if (word.indexOf(value) !== -1) {
                             for (const key of _index[word]) {
                                 if (results[key]) {

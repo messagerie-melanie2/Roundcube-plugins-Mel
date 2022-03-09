@@ -1076,7 +1076,7 @@ function m_mp_Help() {
     {
         window.help_popUp.show();
     }
-    // $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+
     if ($("#globallist").length > 0 && !isSmall) {
         $("#globalModal .icon-mel-undo.mel-return").remove();
     }
@@ -1184,8 +1184,6 @@ function m_mp_help_video() {
 
         help_popUp.modal.focus();
         help_popUp.show();
-
-        $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
 
     } catch (error) {
         console.error(error);

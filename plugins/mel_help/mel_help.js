@@ -240,8 +240,6 @@ rcube_webmail.prototype.video_search = function(event, object) {
                     document.getElementById("videolist").style = "display: none;";
 
                     document.getElementById("video-search-results").appendChild(result);
-                    $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
-
                 }
             } else {
                 document.getElementById("videolist").style = "display: none;";

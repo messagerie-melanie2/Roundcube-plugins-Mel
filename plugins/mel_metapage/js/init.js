@@ -467,6 +467,11 @@ if (rcmail)
                 FullscreenItem.close_if_exist();
         });
 
+        try {
+            if (rcmail.task === "settings") $('#settingstabidentities').after($('#settingstabpluginmelsignatures'));
+        } catch (error) {
+            
+        }
         //console.log(rcmail.env.mel_metapage_mail_configs, rcmail.gettext("up", "mel_metapage"));
 
         function ChatSetupConfig()

@@ -130,6 +130,12 @@ if (rcmail)
                 ui_cal.event_copy(event);
             }, true);
 
+            rcmail.register_command("test_notify", () => {
+                rcmail.http_post('plugin.notification_test', {
+
+                });
+            }, true);
+
             rcmail.register_command("new-mail-from", () => {
                 let uid;
                 if (rcmail.task == 'mail' && (uid = rcmail.get_single_uid())) {

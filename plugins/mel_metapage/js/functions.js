@@ -1135,28 +1135,27 @@ function m_mp_Help() {
 
 function m_mp_help_video() {
     try {
-        fetch(window.location.pathname + 'plugins/mel_help/public/video.json', { credentials: "include", cache: "no-cache" }).then((res) => {
-            res.json().then((video_array) => {
+        // Génération de l'index
+        let index = [];
+        let k = -1;
+        for (const [key, element] of Object.entries(rcmail.env.help_video)) {
+            k++
+            let keywords = element.description + ' ' + element.title;
+            let array = keywords.split(' ');
 
-                // Génération de l'index
-                let index = [];
-                video_array.forEach((help, k) => {
-                    help.keywords.forEach(word => {
-                        if (index[word]) {
-                            if (index[word] != k) {
-                                index[word].push(k);
-                            }
-                        } else {
-                            index[word] = [k]
-                        }
-                    });
-                });
-
-                // Positionnement des variables d'env
-                rcmail.env.video_array = video_array;
-                rcmail.env.video_index = index;
+            array.forEach(word => {
+                if (index[word]) {
+                    if (index[word] != k) {
+                        index[word].push(k);
+                    }
+                } else {
+                    index[word] = [k]
+                }
             });
-        });
+        }
+
+        // Positionnement des variables d'env
+        rcmail.env.video_index = index;
 
         let html = '<label for="workspace-title" class="span-mel t2 first">' + rcmail.gettext("mel_metapage.search_a_video") + '</label>';
         html += '<input id="videos-search-input" type="text" title="Rechercher" placeholder="Accueil..." class="form-control mel-focus mb-4" onkeyup="rcmail.video_search(event, this);">';

@@ -143,7 +143,7 @@ rcube_webmail.prototype.help_redirect = function() {
 };
 
 rcube_webmail.prototype.video_search = function(event, object) {
-    _search = rcmail.env.video_array;
+    _search = Object.values(rcmail.env.help_video);
     _index = rcmail.env.video_index;
 
     if (event.keyCode == 27) {
@@ -190,7 +190,7 @@ rcube_webmail.prototype.video_search = function(event, object) {
                     if (i++ > 4) {
                         break;
                     }
-                    let json_video = rcmail.env.help_video[_search[r.key].video];
+                    let json_video = _search[r.key];
 
                     let ul = document.createElement('ul');
                     ul.className = "row ignore-bullet";
@@ -246,7 +246,6 @@ rcube_webmail.prototype.video_search = function(event, object) {
                 document.getElementById("video-search-results").style = "display: block; text-align: center;";
                 document.getElementById("video-search-results").innerHTML = "<p style='font-size:1.2rem'>" + rcmail.get_label('video search no result', 'mel_help') + "</p>";
                 document.getElementById("video-search-results").innerHTML += "<br/>";
-                // document.getElementById("video-search-results").innerHTML += "<button class='hide-touch mel-button bckg no-button-margin mel-before-remover mel-focus btn btn-secondary' onclick='window.open(`" + rcmail.env.video_channel_support + "`, `_blank`)'>Ouvrir le salon de discussion<span class='icon-mel-unreads ml-3'></span></button>";
 
 
             }

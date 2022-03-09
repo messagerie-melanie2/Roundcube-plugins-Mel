@@ -1662,7 +1662,18 @@ class mel_workspace extends rcube_plugin
                     $share = driver_mel::gi()->workspace_share([$workspace]);
                     $share->user = $tmp_user;
                     $share->rights = Share::RIGHT_WRITE;
-                    $shares[] = $share;                
+                    $shares[] = $share;   
+
+                    if (class_exists("mel_notification"))
+                    {
+                        mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+                            [
+                                'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
+                                'text' => $this->gettext("mel_workspace.open"),
+                                'title' => $this->gettext("mel_workspace.click_for_open")
+                            ]
+                        ], $tmp_user);
+                    }           
                 }
             }
 
@@ -2299,6 +2310,17 @@ class mel_workspace extends rcube_plugin
                 $share->user = $users[$i];
                 $share->rights = Share::RIGHT_WRITE;
                 $shares[] = $share;   
+
+                if (class_exists("mel_notification"))
+                {
+                    mel_notification::notify('workspace', driver_mel::gi()->getUser()->name.$this->gettext("mel_workspace.notification_title").'"'.$workspace->title.'"', $this->gettext("mel_workspace.notification_content"), [
+                        [
+                            'href' => "./?_task=workspace&_action=workspace&_uid=".$workspace->uid,
+                            'text' => $this->gettext("mel_workspace.open"),
+                            'title' => $this->gettext("mel_workspace.click_for_open")
+                        ]
+                    ], $users[$i]);
+                }
             }                           
         }
 
@@ -3776,6 +3798,20 @@ class mel_workspace extends rcube_plugin
             echo "denied";
     
         exit;
+    }
+
+    public static function notify($workspace, $title, $content, $action = null, $include_current = false)
+    {
+        $users = $workspace->shares;
+        $current_user = driver_mel::gi()->getUser();
+
+        
+        foreach ($users as $user) {
+            if ($user->user !== $current_user->uid || $include_current)
+            {
+                mel_notification::notify("webconf", $title, $content, $action, $user->user);
+            }
+        }
     }
 
 }

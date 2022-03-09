@@ -173,7 +173,7 @@ html.layout-phone #taskmenu a
 }
 
 .button-mel_sondage {
-    order:13;
+    order:14;
 }
 
 .contacts{
@@ -189,7 +189,7 @@ html.layout-phone #taskmenu a
 
 .useful_links 
 {
-    order:14
+    order:13
 }
 
 .wekan {
@@ -331,6 +331,7 @@ a.icon-mel-newspaper:before
 {
     content:"\e91a";
     font-family: "DWP"!important;
+    font-weight: normal;
 }
 
 iframe.mm-frame/*,

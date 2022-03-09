@@ -89,7 +89,7 @@ if (window.rcmail) {
                     notifications[notification.uid].isread = notification.isread;
                     notifications[notification.uid].todelete = false;
                 }
-                else {
+                else if (m_mp_NotificationSettings('notifications_center', notification)) {
                     // Ajoute la notification à la liste des nouvelles notifications
                     newNotifications[notification.uid] = notification;
                 }
@@ -233,7 +233,7 @@ function m_mp_NotificationRun(notification) {
             // Enregistre les notifications dans le storage
             m_mp_NotificationsSet(notifications);
         }
-        else {
+        else if (m_mp_NotificationSettings('notifications_center', notification)) {
             // Ajoute la notification à la liste des nouvelles notifications
             newNotifications[notification.uid] = notification;
 
@@ -429,6 +429,10 @@ function m_mp_NotificationsAction(action, uids) {
         if (notifications[uid]) {
             let object = document.querySelector('#notif' + uid.replace(/\W/g,'_'));
 
+            if (!object) {
+                continue;
+            }
+
             // Traitement de l'action
             switch(action) {
                 case 'read':
@@ -530,11 +534,13 @@ function m_mp_NotificationsRefreshUnread(notifications) {
     for (const category in rcmail.env.notifications_categories) {
         if (Object.hasOwnProperty.call(rcmail.env.notifications_categories, category)) {
             let option = document.querySelector('#notifications-panel .filters select option[value="' + category + '"]');
-            if (unreadCat[category]) {
-                option.text = rcmail.env.notifications_categories[category] + ' (' + unreadCat[category] + ')';
-            }
-            else {
-                option.text = rcmail.env.notifications_categories[category];
+            if (option) {
+                if (unreadCat[category]) {
+                    option.text = rcmail.env.notifications_categories[category] + ' (' + unreadCat[category] + ')';
+                }
+                else {
+                    option.text = rcmail.env.notifications_categories[category];
+                }
             }
         }
     }

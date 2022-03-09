@@ -143,7 +143,7 @@ rcube_webmail.prototype.help_redirect = function() {
 };
 
 rcube_webmail.prototype.video_search = function(event, object) {
-    _search = Object.values(rcmail.env.help_video);
+    _search = Object.entries(rcmail.env.help_video);
     _index = rcmail.env.video_index;
 
     if (event.keyCode == 27) {
@@ -190,7 +190,7 @@ rcube_webmail.prototype.video_search = function(event, object) {
                     if (i++ > 4) {
                         break;
                     }
-                    let json_video = _search[r.key];
+                    let json_video = _search[r.key][1];
 
                     let ul = document.createElement('ul');
                     ul.className = "row ignore-bullet";
@@ -204,7 +204,7 @@ rcube_webmail.prototype.video_search = function(event, object) {
                     let button = document.createElement('button');
                     button.className = "btn btn-block btn-secondary btn-mel text-left";
                     button.onclick = function() {
-                        rcmail.m_mp_help_video_player(_search[r.key].video);
+                        rcmail.m_mp_help_video_player(_search[r.key][0]);
                     }
                     video.appendChild(button);
 

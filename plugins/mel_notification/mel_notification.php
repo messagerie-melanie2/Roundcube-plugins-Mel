@@ -86,6 +86,7 @@ class mel_notification extends rcube_plugin
             // Liste des actions js
             $this->register_action('plugin.notifications_action',   [$this, 'action']);
             $this->register_action('plugin.notifications_refresh',  [$this, 'refresh']);
+            $this->register_action('plugin.notification_test',   [$this, 'test']);
         }
         else if ($this->rc->task == 'mail') {
             // Cas particulier des mails pour les notifications
@@ -121,7 +122,14 @@ class mel_notification extends rcube_plugin
             $this->add_hook('preferences_save',             [$this, 'preferences_save']);
         }
     }
-    
+
+    public function test()
+    {
+        $a = $this->notify("webconf", "Rotomeca à lancer un test !", "Ceci est un test de notification lancer par rotomeca !", null);
+        echo json_encode($a);
+        exit;
+    }
+
     /**
      * Gestion des actions sur les notifications (passage en lu, suppression, ...)
      */
@@ -332,6 +340,22 @@ class mel_notification extends rcube_plugin
         }
 
         return $p;
+    }
+
+    public function notify($category, $title, $content, $action = null, $user = null)
+    {
+        $user = driver_mel::gi()->getUser($user);
+
+        $notification = driver_mel::gi()->notification([$this->user]);
+
+        $notification->category = $category;
+        $notification->title = $title;
+        $notification->content = $content;
+
+        if ($action !== null) $notification->action = serialize($action);
+    
+        // Ajouter la notification au User
+        return $this->user->addNotification($notification);
     }
 }
             

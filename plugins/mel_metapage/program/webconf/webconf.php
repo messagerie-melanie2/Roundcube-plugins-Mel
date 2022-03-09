@@ -16,6 +16,7 @@ class Webconf extends Program
         $this->register_action("index", [$this, "index"]);
         $this->register_action("jwt", [$this, "get_jwt"]);
         $this->register_action("onGo", [$this, "onGo"]);
+        $this->register_action("notify", [$this, "notify"]);
         if ($this->action === "" || $this->action === "index")
         {
             $this->include_js("../../../rocket_chat/favico.js");
@@ -86,6 +87,46 @@ class Webconf extends Program
 
         echo 0;
         exit;
+    }
+
+    public function notify()
+    {
+        if (class_exists("mel_notification"))
+        {
+            $uid = rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST);
+
+            if ($uid !== null)
+            {
+                $wsp = $this->workspace($uid);
+                $link = rcube_utils::get_input_value('_link', rcube_utils::INPUT_POST);
+
+                $current_user = driver_mel::gi()->getUser();
+                $users = $wsp->shares;
+
+                foreach ($users as $user) {
+                    if ($user->user !== $current_user->uid)
+                    {
+                        mel_notification::notify("webconf", $current_user->name.' vient de lancer une webconférence !', 'Vous pouvez rejoindre directement la webconférence en cours via le lien disponible ci-dessous.', 
+                        [
+                            [
+                                'href' => $link,
+                                'text' => "Rejoindre",
+                                'title' => "Cliquez pour rejoindre la webconférence"
+                            ]
+                        ]
+                        , $user->user);
+                    }
+                }
+            }
+
+            // mel_notification::notify("webconf", "Vous venez de lancer une webconférence.", "Vous pouvez partager en utilisant le lien ci-dessous.",                     [
+            //     [
+            //         'href' => rcube_utils::get_input_value('_original_link', rcube_utils::INPUT_POST),
+            //         'text' => "Lien externe",
+            //         'title' => "Copiez ce lien pour l'envoyer à d'autre personnes."
+            //     ]
+            // ]);
+        }
     }
 
     public function get_key()

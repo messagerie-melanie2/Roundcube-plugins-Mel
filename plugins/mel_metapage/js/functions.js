@@ -35,6 +35,7 @@ function m_mp_Create() {
         tache: get_action("mel_metapage.a_task", "icon-mel-survey", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)"),
         documents: get_action("mel_metapage.a_document", "icon-mel-folder", "m_mp_InitializeDocument()"),
         sondages: get_action("mel_metapage.a_survey", "icon-mel-sondage", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})"),
+        notes: get_action("mel_metapage.a_wordpad", "icon-mel-notes", "window.create_note()"),
     };
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
@@ -64,7 +65,7 @@ function m_mp_Create() {
         let viso = `<li class="col-sd-4 col-md-4" id="viso" title="${rcmail.gettext("mel_metapage.menu_create_help_webconf")}">` + _button(actions.visio) + "</li>";
         let tache = `<li class="col-md-${haveNextcloud.col}" id="tache" title="${rcmail.gettext("mel_metapage.menu_create_help_task")}">` + _button(actions.tache) + "</li>";
         let document = `<li class="col-md-3" style="${haveNextcloud.style}" id="document" title="${rcmail.gettext("mel_metapage.menu_create_help_doc")}">` + _button(actions.documents) + "</li>";
-        let blocnote = `<li class="col-md-${haveNextcloud.col}"  id="blocnote" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + button(rcmail.gettext("mel_metapage.a_wordpad"), "icon-mel-notes block") + "</li>";
+        let blocnote = `<li class="col-md-${haveNextcloud.col}"  id="blocnote" title="${rcmail.gettext("mel_metapage.menu_create_help_note")}">` + _button(actions.notes) + "</li>";
         let pega = `<li class="col-md-${haveNextcloud.col}" id="pega" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
@@ -1828,7 +1829,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
     else {
-        $("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
+        //$("#groupoptions-user").css('width', $('#user-up-panel').width() - 31);
         $("#groupoptions-user").show();
         $("#groupoptions-user").data('opener', opener);
         $("#groupoptions-user").data('aria-hidden', 'false');

@@ -149,3 +149,13 @@ html.dark-mode #groupoptions-user .menu a.logout-color {
 {
     height: 100%;
 }
+
+#groupoptions-user
+{
+    width: calc(25% - 60px);
+    min-width: unset;
+}
+
+.touch #groupoptions-user{
+    width:25%;
+}

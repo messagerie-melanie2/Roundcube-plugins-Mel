@@ -68,7 +68,7 @@ class Notes extends Page
         switch ($action) {
             case 'add':
                 $raw = $this->get_input_post("_raw");
-                $this->createAndAddNewSticker($raw["title"], $raw["text"], $raw["color"], $raw["textcolor"]);
+                $this->createAndAddNewSticker($raw["order"], $raw["title"], $raw["text"], $raw["color"], $raw["textcolor"]);
                 break;
 
             case 'del':
@@ -108,9 +108,16 @@ class Notes extends Page
         return $uid;
     }
 
-    public function createAndAddNewSticker($title, $text, $color, $textcolor)
+    public function createAndAddNewSticker($order, $title, $text, $color, $textcolor)
     {
-        $this->add(new Sticker($this->generate_uid(), count($this->notes), $title, $text, $color, $textcolor));
+        $order = intval($order);
+        if ($order != -1)
+        {
+            foreach ($this->notes as $key => $value) {
+                if ($value !== null && $value["order"] > $order) $this->notes[$key]["order"] += 1;
+            }
+        }
+        $this->add(new Sticker($this->generate_uid(), ($order === -1 ? count($this->notes) : $order + 1), $title, $text, $color, $textcolor));
         //$this->update_order();
     }
 

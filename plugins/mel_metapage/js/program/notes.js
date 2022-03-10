@@ -1,5 +1,5 @@
 $(document).ready(() => {
-    const base_color = "#ffff00";
+    const base_color = "#E6B905";
     const base_text_color = "#000000";
 
     function componentToHex(c) {
@@ -17,8 +17,8 @@ $(document).ready(() => {
         $("#button-shortcut").click();
         rcmail.set_busy(true, "loading");
         
-        if (rcmail.env.mel_metapages_notes["create"] !== undefined) await new Sticker("", 0, "", "").post_add();
-        new Sticker("", 0, "", "").post_add().then(() => {
+        if (rcmail.env.mel_metapages_notes["create"] !== undefined) await rcmail.env.mel_metapages_notes["create"].post_add();
+        new Sticker("", -1, "", "").post_add().then(() => {
             rcmail.set_busy(false);
 
             rcmail.clear_messages();
@@ -79,7 +79,10 @@ $(document).ready(() => {
 
                 if (this.uid === "create") await this.post_add();
 
-                await (new Sticker(null, 0, "", "")).post_add();
+                let sticker = Sticker.fromHtml(this.uid);
+                sticker.text = "";
+                sticker.title = "";
+                await sticker.post_add();
 
                 rcmail.set_busy(false);
                 $element.find(".change").removeClass("disabled").removeAttr("disabled");

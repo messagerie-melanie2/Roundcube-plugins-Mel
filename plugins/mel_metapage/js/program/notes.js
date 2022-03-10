@@ -2,6 +2,7 @@ $(document).ready(() => {
     const base_color = "#E6B905";
     const base_text_color = "#000000";
 
+
     function componentToHex(c) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
@@ -44,15 +45,17 @@ $(document).ready(() => {
             return `
             <div class="mel-note" style="background-color:${this.color};color:${this.textcolor}" ${this.get_datas()}>
                 <div class="note-header">
-                    <button class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button>
+                    <button title="Nouveau" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button>
                     <input class="change" type=text style="background-color:${this.color};color:${this.textcolor}" value="${this.title}" />
-                    <button class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button>
-                    <button class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button>
+                    <button title="Paramètres" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button>
+                    <button title="Supprimer" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button>
                 </div>
                 <div class="note-header-params" style="display:none">
                 <input title="Changer la couleur de fond" class="change bcgcolor" type="color" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
                 <input title="Changer la couleur du texte" class="change txtcolor" type="color" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <button class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
+                <button title="Quitter les paramètres" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
+                <button title="Déplacer en bas" class=" mel-button no-button-margin bckg true downb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-down"></span></button>
+                <button title="Déplacer en haut" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
                 </div>
                 <div class="note-body">
                     <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor}">${this.text}</textarea>
@@ -107,6 +110,12 @@ $(document).ready(() => {
 
                 if (rcmail.busy === true) return;
 
+                if (this.uid === "create")
+                {
+                    rcmail.display_message("Note réinitialisée avec succès !", "confirmation");
+                    return;
+                }
+
                 rcmail.set_busy(true, "loading");
                 $element.find(".change").addClass("disabled").attr("disabled", "disabled");
                 //$element.find("textarea").addClass("disabled").attr("disabled", "disabled");
@@ -159,6 +168,48 @@ $(document).ready(() => {
                 }
             });
 
+            let hasDown = Sticker.findByOrder(this.order + 1).uid !== undefined;
+            let hasUp = Sticker.findByOrder(this.order - 1).uid !== undefined;
+
+            if (hasDown)
+            {
+                $element.find('.downb').click(async () => {
+                    if (rcmail.busy === true) return;
+
+                    rcmail.set_busy(true, "loading");
+                    $(".shortcut-notes .change").addClass("disabled").attr("disabled", "disabled");
+                    //$element.find("textarea").addClass("disabled").attr("disabled", "disabled");
+
+                    await this.post_move_down(Sticker.findByOrder(this.order + 1).uid);
+    
+                    rcmail.set_busy(false);
+                    $(".shortcut-notes .change").removeClass("disabled").removeAttr("disabled");
+                    //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
+                    rcmail.clear_messages();
+                    rcmail.display_message("Notes déplacées avec succès !", "confirmation");
+                });
+            }
+            else $element.find('.downb').addClass("disabled").attr("disabled", "disabled");
+
+            if (hasUp)
+            {
+                $element.find('.upb').click(async () => {
+                    if (rcmail.busy === true) return;
+
+                    rcmail.set_busy(true, "loading");
+                    $(".shortcut-notes .change").addClass("disabled").attr("disabled", "disabled");
+                    //$element.find("textarea").addClass("disabled").attr("disabled", "disabled");
+                    await this.post_move_up(Sticker.findByOrder(this.order - 1).uid);
+    
+                    rcmail.set_busy(false);
+                    $(".shortcut-notes .change").removeClass("disabled").removeAttr("disabled");
+                    //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
+                    rcmail.clear_messages();
+                    rcmail.display_message("Notes déplacées avec succès !", "confirmation");
+                });
+            }
+            else $element.find('.upb').addClass("disabled").attr("disabled", "disabled");
+
         }
 
         get_datas(){
@@ -168,6 +219,26 @@ $(document).ready(() => {
         post_add()
         {
             return this.post("add", {_raw:this});
+        }
+
+        post_move_down($uid)
+        {
+            this.order += 1;
+            let other = Sticker.fromHtml($uid);
+            other.order -= 1;
+            return Promise.allSettled([this.post("move", {_uid:this.uid, _order:this.order}),
+            other.post("move", {_uid:other.uid, _order:other.order})]
+            );
+        }
+
+        post_move_up($uid)
+        {
+            this.order -= 1;
+            let other = Sticker.fromHtml($uid);
+            other.order += 1;
+            return Promise.allSettled([this.post("move", {_uid:this.uid, _order:this.order}),
+            other.post("move", {_uid:other.uid, _order:other.order})]
+            );
         }
 
         post_delete()
@@ -229,6 +300,12 @@ $(document).ready(() => {
             return new Sticker(uid, $element.data("order"), $element.find("input").val(), $element.find("textarea").val(), $element.css("background-color"), $element.css("color"));
         }
 
+        static findByOrder(order)
+        {
+            let id = $(`.mel-note[data-order=${order}]`).attr("id");
+            return Sticker.fromHtml(id === undefined ? undefined : id.replace('note-', ''));
+        }
+
 
     }  
 
@@ -244,4 +321,7 @@ $(document).ready(() => {
             Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
         });
     });
+
+    
+window.sticker = Sticker;
 });

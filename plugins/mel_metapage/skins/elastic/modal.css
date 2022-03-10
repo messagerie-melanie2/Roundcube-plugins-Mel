@@ -97,7 +97,7 @@ html.touch .mm-shortcuts{
     max-height: calc(100% - 60px);
     overflow: auto;
     left: 60px;
-    z-index: 999999
+    z-index: 9998;
 }
 
 html.touch .fullscreen-item {

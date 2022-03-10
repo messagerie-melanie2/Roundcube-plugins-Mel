@@ -55,6 +55,11 @@ abstract class Program{
             return $this->config->get($key, $default);
     }
 
+    protected function save_config($key, $value)
+    {
+        return $this->rc->user->save_prefs(array($key => $value));
+    }
+
     protected function add_handler($name, $callback)
     {
         $this->rc->output->add_handlers(array(
@@ -65,6 +70,11 @@ abstract class Program{
     protected function get_input($arg, $type = rcube_utils::INPUT_GPC)
     {
         return rcube_utils::get_input_value($arg, $type);
+    }
+
+    protected function get_input_post($arg)
+    {
+        return rcube_utils::get_input_value($arg, rcube_utils::INPUT_POST);
     }
 
     protected function parse($html, $plugin = "mel_metapage", $exit = false, $write = false)

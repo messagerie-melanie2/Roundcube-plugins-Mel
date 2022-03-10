@@ -1664,11 +1664,35 @@ async function m_mp_shortcuts() {
         let shortcuts = new FullscreenItem("body", true);
         shortcuts.generate_flex();
         html = "<div class=mm-shortcuts>";
+
+        if (rcmail.env.shortcuts_queue_before !== undefined)
+        {
+            for (const key in rcmail.env.shortcuts_queue_before) {
+                if (Object.hasOwnProperty.call(rcmail.env.shortcuts_queue_before, key)) {
+                    const element = rcmail.env.shortcuts_queue_before[key];
+                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key}`);
+                }
+            }
+        }
+
         html += html_helper(html_helper.options.block, await html_helper.TasksAsync(tab_tasks, null, null, "Toutes mes tâches"), "shortcut-task");
         html += html_helper(html_helper.options.block, await html_helper.CalendarsAsync(config), "shortcut-task shorcut-calendar");
+
+        if (rcmail.env.shortcuts_queue !== undefined)
+        {
+            for (const key in rcmail.env.shortcuts_queue) {
+                if (Object.hasOwnProperty.call(rcmail.env.shortcuts_queue, key)) {
+                    const element = rcmail.env.shortcuts_queue[key];
+                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key}`);
+                }
+            }
+        }
+
         html += "</div>";
         shortcuts.add_app("items", html);
         window.shortcuts = shortcuts;
+
+        rcmail.triggerEvent('apps.create');
     } else {
         if (window.shortcuts.is_open)
             window.shortcuts.close();
@@ -1679,6 +1703,30 @@ async function m_mp_shortcuts() {
     setTimeout(() => {
         $("#fullscreenreaderfocus").focus();
     }, 100);
+}
+
+function mm_add_shortcut(key, html, before = false)
+{
+    if (window.shortcuts !== undefined) delete window.shortcuts;
+    
+    if (!before)
+    {
+        if (rcmail.env.shortcuts_queue === undefined) rcmail.env.shortcuts_queue = [];
+
+        rcmail.env.shortcuts_queue.push({
+            key,
+            html
+        });
+    }
+    else {
+        if (rcmail.env.shortcuts_queue_before === undefined) rcmail.env.shortcuts_queue_before = [];
+
+        rcmail.env.shortcuts_queue_before.push({
+            key,
+            html
+        });
+    }
+    
 }
 
 function mm_create_calendar(e, existingEvent = null) {

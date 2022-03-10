@@ -2316,3 +2316,29 @@ html.layout-phone #compose-content
 #annuaire-list li .treetoggle{
     cursor: pointer;
 }
+
+.mel-note {
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.mel-note .note-header input{
+    border:none;
+}
+
+.mel-note .note-body{
+    padding: 5px;
+}
+
+.mel-note .note-body textarea
+{
+    border:none;
+}
+
+.shortcut-notes .square-contents{
+    padding: 0;
+}
+
+.shortcut-notes .contents{
+    background-color: transparent!important;
+}

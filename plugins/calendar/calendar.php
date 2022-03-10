@@ -228,6 +228,7 @@ class calendar extends rcube_plugin
         // add hooks to display alarms
         $this->add_hook('pending_alarms', [$this, 'pending_alarms']);
         $this->add_hook('dismiss_alarms', [$this, 'dismiss_alarms']);
+        $this->ui->calendar_list([], true);
     }
 
     /**

@@ -334,10 +334,13 @@ Alarm.enums = {
                 const element = events[index];
                 if (element.alarms !== undefined && element.alarms !== null && element.alarm_dismissed !== true)
                 {
-                    if (!element.alarm_dismissed || element.alarm_dismissed === false)
-                        this.create_alarm(element);
-                    else
-                        this.create_alarm(element, moment(element.alarm_dismissed*1000));
+                    if (rcmail.env.calendars[element.calendar].showalarms === 1)
+                    {
+                        if (!element.alarm_dismissed || element.alarm_dismissed === false)
+                            this.create_alarm(element);
+                        else
+                            this.create_alarm(element, moment(element.alarm_dismissed*1000));
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 $(document).ready(
     function ()
     {
+        if (parent.rcmail.env.calendars !== rcmail.env.calendars) parent.rcmail.env.calendars = rcmail.env.calendars;
         CalendarPageInit();
         rcmail.addEventListener("init", () => {
             rcmail.addEventListener('responsebefore', function(props) {

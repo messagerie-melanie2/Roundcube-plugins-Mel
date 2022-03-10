@@ -753,7 +753,15 @@ function rcube_libcalendaring(settings)
             records.push($('<div>').addClass('alarm-item').html(html).append(actions));
 
             // PAMELA - Display alarm notification
-            this.notification_alarm(Q(alarm.title), Q(this.event_date_text(alarm)), 'calendar');
+            top.rcmail.triggerEvent('plugin.push_notification', {
+                uid: 'calendar-' + alarm.id,
+                title: Q(alarm.title),
+                content: Q(this.event_date_text(alarm)),
+                category: 'agenda',
+                created: Math.floor(Date.now() / 1000),
+                isread: false,
+                local: true,
+            });
         }
 
         if (audio_alarms.length)
@@ -812,41 +820,6 @@ function rcube_libcalendaring(settings)
         this.alarm_dialog.closest('div[role=dialog]').attr('role', 'alertdialog');
 
         this.alarm_ids = event_ids;
-    };
-
-    /**
-     * PAMELA
-     * Show alarm desktop notification if enable
-     */
-    this.notification_alarm = function(title, body, icon, disabled_callback)
-    {
-        var timeout = rcmail.env.newmail_notifier_timeout || 10,
-        icon = rcmail.assets_path('plugins/newmail_notifier/' + icon + '.png'),
-        success_callback = function() {
-            var popup = new window.Notification(title, {
-                dir: "auto",
-                lang: "",
-                body: body,
-                tag: "alarm_notifier",
-                icon: icon
-            });
-            popup.onclick = function() { this.close(); };
-            setTimeout(function() { popup.close(); }, timeout * 1000);
-        };
-
-        try {
-            window.Notification.requestPermission(function(perm) {
-                if (perm == 'granted')
-                    success_callback();
-                else if (perm == 'denied' && disabled_callback)
-                    disabled_callback();
-            });
-
-            return true;
-        }
-        catch (e) {
-            return false;
-        }
     };
 
     /**

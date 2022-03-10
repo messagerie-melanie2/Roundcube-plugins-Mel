@@ -37,7 +37,6 @@ if (window.rcmail) {
             // Gérer les notifications venant des autres frames
             window.addEventListener("message", (event) => {
                 if (event.data && event.data.type && event.data.type == 'notification') {
-                    console.log('message notification');
                     m_mp_NotificationRun(event.data.notification);
                 }
             }, false);
@@ -45,7 +44,6 @@ if (window.rcmail) {
             // Tout passer en lu à la fermeture
             if (rcmail.env.notifications_set_read_on_panel_close) {
                 rcmail.addEventListener('toggle-options-user', (prop) => {
-                    console.log('toggle-options-user prop = ' + JSON.stringify(prop));
                     if (!prop.show) {
                         let notifications = m_mp_NotificationsGet(),
                             uids = [];
@@ -69,8 +67,6 @@ if (window.rcmail) {
 
     // Action plugin.notifications_refresh
     rcmail.addEventListener('responseafterplugin.notifications_refresh', function(evt) {
-        console.log('responseafterplugin.notifications_refresh');
-       
         if (evt.response.notifications.length) {
             // Récupération des notifications du storage
             let notifications = m_mp_NotificationsGet(),
@@ -89,7 +85,7 @@ if (window.rcmail) {
                     notifications[notification.uid].isread = notification.isread;
                     notifications[notification.uid].todelete = false;
                 }
-                else {
+                else if (m_mp_NotificationSettings('notifications_center', notification)) {
                     // Ajoute la notification à la liste des nouvelles notifications
                     newNotifications[notification.uid] = notification;
                 }
@@ -107,8 +103,6 @@ if (window.rcmail) {
 
     // Action plugin.notifications_action
     rcmail.addEventListener('responseafterplugin.notifications_action', function(evt) {
-        console.log('responseafterplugin.notifications_action');
-
         if (evt.response.success) {
             // Lancement du traitement
             m_mp_NotificationProcessAfterAction(m_mp_NotificationsGet(), evt.response.uids, evt.response.act);
@@ -205,11 +199,8 @@ function m_mp_NotificationsDelete(notifications) {
  * @param {*} notification 
  */
 function m_mp_NotificationRun(notification) {
-    console.log('m_mp_NotificationRun');
     // Est-ce qu'on est dans la metapage
     if (window == top) {
-        console.log('m_mp_NotificationRun page meta');
-
         // Récupération des notifications du storage
         let notifications = m_mp_NotificationsGet(),
             newNotifications = {};
@@ -233,7 +224,7 @@ function m_mp_NotificationRun(notification) {
             // Enregistre les notifications dans le storage
             m_mp_NotificationsSet(notifications);
         }
-        else {
+        else if (m_mp_NotificationSettings('notifications_center', notification)) {
             // Ajoute la notification à la liste des nouvelles notifications
             newNotifications[notification.uid] = notification;
 
@@ -242,7 +233,6 @@ function m_mp_NotificationRun(notification) {
         }
     }
     else {
-        console.log('m_mp_NotificationRun frame');
         top.m_mp_NotificationRun(notification);
     }
 }
@@ -284,7 +274,6 @@ function m_mp_NotificationsSort(notifications) {
  * Génère un timeout et le nettoie si nécessaire
  */
 function m_mp_NotificationProcess() {
-    console.log('m_mp_NotificationProcess');
     if (rcmail.env.notification_timeout) {
         clearTimeout(rcmail.env.notification_timeout);
     }
@@ -381,8 +370,6 @@ function m_mp_ShowDesktopNotification(notification) {
  * @param {*} uids 
  */
 function m_mp_NotificationsAction(action, uids) {
-    console.log('m_mp_NotificationsAction');
-
     // Récupération des notifications du storage
     let notifications = m_mp_NotificationsGet();
 
@@ -424,10 +411,13 @@ function m_mp_NotificationsAction(action, uids) {
  * @param {*} action 
  */
  function m_mp_NotificationProcessAfterAction(notifications, uids, action) {
-    console.log("m_mp_NotificationProcessAfterAction");
     for (const uid of uids) {
         if (notifications[uid]) {
             let object = document.querySelector('#notif' + uid.replace(/\W/g,'_'));
+
+            if (!object) {
+                continue;
+            }
 
             // Traitement de l'action
             switch(action) {
@@ -477,8 +467,6 @@ function m_mp_NotificationsAction(action, uids) {
  * @param {*} unread 
  */
 function m_mp_NotificationsShowUnread(unread) {
-    console.log('m_mp_NotificationsShowUnread');
-
     let notificationunread = document.getElementById("notificationunread");
 
     // Afficher les non lues ou non
@@ -502,8 +490,6 @@ function m_mp_NotificationsShowUnread(unread) {
  * @param {*} notifications 
  */
 function m_mp_NotificationsRefreshUnread(notifications) {
-    console.log('m_mp_NotificationsRefreshUnread');
-
     let unread = 0, unreadCat = [];
 
     for (const uid in notifications) {
@@ -530,11 +516,13 @@ function m_mp_NotificationsRefreshUnread(notifications) {
     for (const category in rcmail.env.notifications_categories) {
         if (Object.hasOwnProperty.call(rcmail.env.notifications_categories, category)) {
             let option = document.querySelector('#notifications-panel .filters select option[value="' + category + '"]');
-            if (unreadCat[category]) {
-                option.text = rcmail.env.notifications_categories[category] + ' (' + unreadCat[category] + ')';
-            }
-            else {
-                option.text = rcmail.env.notifications_categories[category];
+            if (option) {
+                if (unreadCat[category]) {
+                    option.text = rcmail.env.notifications_categories[category] + ' (' + unreadCat[category] + ')';
+                }
+                else {
+                    option.text = rcmail.env.notifications_categories[category];
+                }
             }
         }
     }
@@ -549,8 +537,6 @@ function m_mp_NotificationsRefreshUnread(notifications) {
  * @param {*} notifications 
  */
 function m_mp_NotificationsAppendToPanel(notifications) {
-    console.log('m_mp_NotificationsAppendToPanel');
-
     // Ajouter un element
     let e = (className, ...elements) => {
         let elem = document.createElement('div');

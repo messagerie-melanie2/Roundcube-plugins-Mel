@@ -84,7 +84,7 @@ class mel_help extends rcube_plugin
     // Chargement de la conf
     $this->load_config();
     $this->add_texts('localization/', false);
-    $this->add_texts('localization/', ['help search no result','help no result', 'help search open', 'help action open']);
+    $this->add_texts('localization/', ['help search no result','video search no result','help no result', 'help search open', 'help action open']);
     $this->include_stylesheet($skin_path . '/mel_help.css');
     // Index
     $this->register_action('index', array($this, 'action'));
@@ -127,9 +127,35 @@ class mel_help extends rcube_plugin
     $this->rc->output->set_env('help_array', json_encode($help_array));
     $this->rc->output->set_env('help_index', json_encode($index));
 
+    self::video_json();
+
     // Chargement du template d'affichage
     $this->rc->output->set_pagetitle($this->gettext('title'));
     $this->rc->output->send('mel_help.mel_help');
+  }
+
+  function video_json()
+  {
+    // Récupération du json
+    $video_array = json_decode(file_get_contents(__DIR__ . '/public/video.json'), true);
+
+    // Génération de l'index
+    $index = [];
+    foreach ($video_array as $k => $s) {
+      foreach ($s['keywords'] as $word) {
+        if (isset($index[$word])) {
+          if (!in_array($k, $index[$word])) {
+            $index[$word][] = $k;
+          }
+        } else {
+          $index[$word] = [$k];
+        }
+      }
+      unset($video_array[$k]['keywords']);
+    }
+    // Positionnement des variables d'env
+    $this->rc->output->set_env('video_array', json_encode($video_array));
+    $this->rc->output->set_env('video_index', json_encode($index));
   }
 
   /**

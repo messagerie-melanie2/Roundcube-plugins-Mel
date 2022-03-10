@@ -1,6 +1,6 @@
 $(document).ready(() => {
-    const base_color = "yellow";
-    const base_text_color = "black";
+    const base_color = "#ffff00";
+    const base_text_color = "#000000";
 
     function componentToHex(c) {
         var hex = c.toString(16);
@@ -10,6 +10,22 @@ $(document).ready(() => {
       function rgbToHex(r, g, b) {
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
       }
+
+      window.create_note = async () => {
+        if (window.create_popUp !== undefined) window.create_popUp.close();
+
+        $("#button-shortcut").click();
+        rcmail.set_busy(true, "loading");
+        
+        if (rcmail.env.mel_metapages_notes["create"] !== undefined) await new Sticker("", 0, "", "").post_add();
+        new Sticker("", 0, "", "").post_add().then(() => {
+            rcmail.set_busy(false);
+
+            rcmail.clear_messages();
+            rcmail.display_message("Note créée avec succès !", "confirmation");
+            $('.mel-note').last().find("textarea")[0].focus();
+        });
+      };
 
     class Sticker
     {
@@ -178,8 +194,6 @@ $(document).ready(() => {
                 mel_metapage.Functions.url("mel_metapage", "notes"),
                 params,
                 (datas) => {
-                    console.log("post", datas);
-
                     if (datas !== "break")
                     {
                         rcmail.env.mel_metapages_notes = JSON.parse(datas);

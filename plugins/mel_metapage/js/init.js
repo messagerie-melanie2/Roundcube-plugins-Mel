@@ -40,6 +40,15 @@ if (rcmail)
     $(document).ready(( )=> {
         if (rcmail.env.mailboxes_display === "unified")
             $("#folderlist-content ul#mailboxlist").addClass(rcmail.env.mailboxes_display);
+
+            rcmail.addEventListener("init", function()
+            {
+                try {
+                    if (rcmail.task === "settings") $('#settingstabidentities').after($('#settingstabpluginmelsignatures'));
+                } catch (error) {
+                    
+                }
+            });
     })
 
     if (parent != window && rcmail.mel_metapage_fn === undefined)
@@ -466,12 +475,6 @@ if (rcmail)
             if (!isFav)
                 FullscreenItem.close_if_exist();
         });
-
-        try {
-            if (rcmail.task === "settings") $('#settingstabidentities').after($('#settingstabpluginmelsignatures'));
-        } catch (error) {
-            
-        }
         //console.log(rcmail.env.mel_metapage_mail_configs, rcmail.gettext("up", "mel_metapage"));
 
         function ChatSetupConfig()

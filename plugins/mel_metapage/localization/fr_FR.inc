@@ -16,7 +16,7 @@ $labels["a_task"] = "Une tâche";
 $labels["a_meeting"] = "Un évènement";
 $labels["a_web_conf"] = "Une web-conférence";
 $labels["a_document"] = "Un document";
-$labels["a_wordpad"] = "Un bloc-note";
+$labels["a_wordpad"] = "Une note";
 $labels["a_survey"] = "Un sondage Pégase";
 
 $labels["h_general"] = "Aide générale";

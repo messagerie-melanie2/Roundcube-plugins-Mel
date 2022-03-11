@@ -1346,6 +1346,11 @@ class mel_news extends rcube_plugin {
 
     }
 
+    // static function notify($service, $title, $text)
+    // {
+
+    // }
+
 
 
 }

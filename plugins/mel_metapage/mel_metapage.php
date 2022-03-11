@@ -1267,14 +1267,14 @@ class mel_metapage extends rcube_plugin
         $lat = rcube_utils::get_input_value("_lat", rcube_utils::INPUT_POST);
         $lng =  rcube_utils::get_input_value("_lng", rcube_utils::INPUT_POST);
 
-        $url = "http://www.prevision-meteo.ch/services/json/lat=".$lat."lng=$lng";
+        $url = "https://www.prevision-meteo.ch/services/json/lat=".$lat."lng=$lng";
 
-        $json = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url);
+        $json = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url, null, null, [CURLOPT_PROXY => "pfrie-std.proxy.e2.rie.gouv.fr:8080"]);
 
         if ($json["httpCode"] !== 200)
         {
-            $url = "http://www.prevision-meteo.ch/services/json/lat=".round($lat)."lng=".round($lng);
-            $json = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url);
+            $url = "https://www.prevision-meteo.ch/services/json/lat=".round($lat)."lng=".round($lng);
+            $json = mel_helper::load_helper($this->rc)->fetch("", false, 0)->_get_url($url, null, null, [CURLOPT_PROXY => "pfrie-std.proxy.e2.rie.gouv.fr:8080"]);
         }
 
         echo json_encode([$url, $json]);

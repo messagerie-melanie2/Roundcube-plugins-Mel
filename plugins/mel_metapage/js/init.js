@@ -322,6 +322,28 @@ if (rcmail)
               const maxAge = 1000 * 60;
               const weatherKey = "weatherIcon";
 
+              let last_datas = mel_metapage.Storage.get(weatherKey);
+
+              if (last_datas !== null && $("#user-weather").html() === "")
+              {
+                $("#user-weather").html(`<img style="margin-top:6px" src="${last_datas.icon}" /><div style="position: absolute;
+                bottom: -10px;
+                right: 50%;
+                left: 50%;
+                text-shadow: -1px -1px 0px black;" class="weather-number">${last_datas.temp}°C</div>`);
+              }
+
+              let last_update = mel_metapage.Storage.get(weatherKey + "_last");
+
+              if (last_update !== null && last_datas !== null) 
+              {
+                  last_update = moment(last_update);
+
+                  if (last_update.format("DD/MM/YYYY HH") === moment().format("DD/MM/YYYY HH"))
+                    return;
+              }
+
+
               let options = {
                 enableHighAccuracy: true,
                 timeout: 5000,
@@ -331,17 +353,36 @@ if (rcmail)
               function success(pos) {
                 let crd = pos.coords;
               
-                console.log('Your current position is:');
-                console.log(`Latitude : ${crd.latitude}`);
-                console.log(`Longitude: ${crd.longitude}`);
-                console.log(`More or less ${crd.accuracy} meters.`);
+                // console.log('Your current position is:');
+                // console.log(`Latitude : ${crd.latitude}`);
+                // console.log(`Longitude: ${crd.longitude}`);
+                // console.log(`More or less ${crd.accuracy} meters.`);
 
                 mel_metapage.Functions.post(mel_metapage.Functions.url("mel_metapage", "weather"), {
                     _lat:crd.latitude,
                     _lng:crd.longitude
                 },
                 (datas) => {
-                    console.log("datas", datas);
+                    try {
+                        datas = JSON.parse(datas);
+                        datas[1].content = JSON.parse(datas[1].content)
+                        $("#user-weather").html(`<img style="margin-top:6px" src="${datas[1].content.current_condition.icon}" /><div style="position: absolute;
+                        bottom: -10px;
+                        right: 50%;
+                        left: 50%;
+                        text-shadow: -1px -1px 0px black;" class="weather-number">${datas[1].content.current_condition.tmp}°C</div>`);
+                        mel_metapage.Storage.set(weatherKey, {
+                            icon:datas[1].content.current_condition.icon,
+                            temp:datas[1].content.current_condition.tmp
+                        });
+                        mel_metapage.Storage.set(weatherKey + "_last", moment());
+                    } catch (error) {
+                        
+                    }
+
+                    //console.log("datas", datas);
+                }, () => {
+                    mel_metapage.Storage.remove(weatherKey);
                 });
 
               }
@@ -377,12 +418,15 @@ if (rcmail)
                 parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
                     parent.rcmail.mel_metapage_fn.tasks_updated();
                     parent.rcmail.mel_metapage_fn.mail_updated(true);
+                    parent.rcmail.mel_metapage_fn.weather();
                 });
 
                 refreshWorkspaceCloudNotification();
                 rcmail.triggerEvent("mel_metapage_refresh");
             }
         };
+
+        parent.rcmail.mel_metapage_fn.weather();
 
         //ajout des events listener
         parent.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.get, parent.rcmail.mel_metapage_fn.calendar_updated);

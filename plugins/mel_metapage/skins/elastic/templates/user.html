@@ -6,7 +6,7 @@ style="width: calc(100% - 30px);"
 
 <div class="user-child">
     <div class="row" style="margin: 0;">
-        <div class="col-6"
+        <div class="col-12"
                 role="button"
                 title="<roundcube:label name='mel_metapage.user_help' />"
                 href="#" 
@@ -18,15 +18,20 @@ style="width: calc(100% - 30px);"
                 onclick="m_mp_ToggleGroupOptionsUser(this);"
                 style="text-decoration: none;cursor: pointer;">
             <div class="row">
-                <div class="col-4">
+                <div class="col-2">
                     <div class="user-child" comment="Parent ariane, photo + dispo">
                         <div id="user-picture" comment="photo utilisateur"></div>
                         <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
                     </div>
                 </div>
-                <div class="col-8" style="color:white" class="hide-touch">
+                <div class="col-4" style="color:white" class="hide-touch">
                     <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue !</div>
                     <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
+                </div>
+                <div class="col-4" style="color:white" class="hide-touch">
+                    <center>
+                        <div id="user-weather" style="position: relative;" class="no-wrap-normal hide-touch"></div>
+                    </center>
                 </div>
             </div>
         </div>

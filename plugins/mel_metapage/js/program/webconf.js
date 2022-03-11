@@ -1389,6 +1389,9 @@ class MasterWebconfBar {
 
                 if ($("iframe.stockage-frame").length > 0)
                 {
+                    if (config === null) config = {_is_from:"iframe"};
+                    else if (config["_is_from"] === undefined) config["_is_from"] = "iframe";
+
                     $("iframe.stockage-frame")[0].src = mel_metapage.Functions.url("stockage", "", config);
                 }
                 else if ($(".stockage-frame").length > 0) $(".stockage-frame").remove();

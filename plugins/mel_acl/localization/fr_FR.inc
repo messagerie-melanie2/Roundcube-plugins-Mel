@@ -116,4 +116,19 @@ $labels['longobjectcalendar'] = 'Partager également le calendrier de la boite a
 $labels['longobjectcontact'] = 'Partager également le carnet d\'adresses de la boite aux lettres';
 $labels['longobjecttask'] = 'Partager également la liste de tâches de la boite aux lettres';
 
+$labels['m2calendar_private'] = "tous vos événements seront visibles en détail, y compris les privés";
+$labels['m2calendar_freebusy'] = "tous vos événements seront visibles sans aucun détail (disponibilité seulement)";
+$labels['m2calendar_read'] = "tous vos événements seront visibles en détail, exceptés les privés (disponibilité seulement)";
+$labels['m2calendar_write'] = "tous vos événements seront visibles, modifiables, supprimables et la création d'événement est possible pour le bénéficiaire";
+
+$labels['m2contacts_read'] = "tous vos contacts seront visibles en détail";
+$labels['m2contacts_write'] = "tous vos contacts seront visibles, modifiables, supprimables et la création de contacts est possible pour le bénéficiaire";
+
+$labels['m2tasks_read'] = "toutes vos tâches seront visibles en détail";
+$labels['m2tasks_write'] = "toutes vos tâches seront visibles, modifiables, supprimables et la création de contacts est possible pour le bénéficiaire";
+
+$labels['m2mailbox_full'] = "contrôle total, possibilité de créer des calendriers/carnets, modifications dans Mon compte";
+$labels['m2mailbox_send'] = "consultation, envoi, suppression et modification de messages";
+$labels['m2mailbox_read'] = "consultation de messages";
+$labels['m2mailbox_write'] = "consultation, suppression et modification de messages";
 ?>

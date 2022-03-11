@@ -227,21 +227,25 @@ $(document).ready(() => {
             other.post("move", {_uid:other.uid, _order:other.order})]
             ).then(() => {
 
-                rcmail.env.mel_metapages_notes[uid].order = order;
-                rcmail.env.mel_metapages_notes[other.uid].order = other.order;
+                this.post("get").done((e) => {
 
-                if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
-                rcmail.env.mel_metapages_notes = {
-                    "create":new Sticker("create", 0, "", "")
-                }
+                    rcmail.env.mel_metapages_notes = JSON.parse(e);
 
-                $('.shortcut-notes .square-contents').html(
-                    Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' ')
-                );
+                    if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
+                        rcmail.env.mel_metapages_notes = {
+                            "create":new Sticker("create", 0, "", "")
+                        }
+    
+                    $('.shortcut-notes .square-contents').html(
+                        Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' ')
+                    );
+    
+                    $('.mel-note').each((i, e) => {
+                        Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
+                    });
+                })
 
-                $('.mel-note').each((i, e) => {
-                    Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
-                });
+
             });
         }
 
@@ -281,14 +285,14 @@ $(document).ready(() => {
             }
         }
 
-        post(action, params = {})
+        post(action, params = {}, doAction = true)
         {
             params["_a"] = action;
             return mel_metapage.Functions.post(
                 mel_metapage.Functions.url("mel_metapage", "notes"),
                 params,
                 (datas) => {
-                    if (datas !== "break")
+                    if (datas !== "break" && doAction)
                     {
                         rcmail.env.mel_metapages_notes = JSON.parse(datas);
 

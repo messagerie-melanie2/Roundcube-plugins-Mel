@@ -88,6 +88,9 @@ class Notes extends Page
                 $this->save();
                 echo "break";
                 exit;
+            case 'get':
+                echo json_encode($this->notes);
+                exit;
             
             default:
                 break;

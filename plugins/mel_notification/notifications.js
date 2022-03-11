@@ -93,6 +93,10 @@ if (window.rcmail) {
             // Merge les notifications
             m_mp_NotificationsMerge(m_mp_NotificationsDelete(notifications), newNotifications);
         }
+        else {
+            // Rafraichir les notifications du panel pour actualiser les dates
+            m_mp_NotificationsAppendToPanel(m_mp_NotificationsGet());
+        }
 
         // Positionne le last dans le storage
         rcmail.mel_storage_set('notification_last', evt.response.last);

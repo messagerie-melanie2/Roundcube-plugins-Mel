@@ -221,13 +221,11 @@ $(document).ready(() => {
             return this.post("add", {_raw:this});
         }
 
-        _post_move(uid, order, other)
+        async _post_move(uid, order, other)
         {
-            return Promise.allSettled([this.post("move", {_uid:uid, _order:order}),
-            other.post("move", {_uid:other.uid, _order:other.order})]
-            ).then(() => {
-
-                this.post("get").done((e) => {
+            await this.post("move", {_uid:uid, _order:order});
+            await other.post("move", {_uid:other.uid, _order:other.order});
+            await this.post("get").done((e) => {
 
                     rcmail.env.mel_metapages_notes = JSON.parse(e);
 
@@ -243,10 +241,7 @@ $(document).ready(() => {
                     $('.mel-note').each((i, e) => {
                         Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
                     });
-                })
-
-
-            });
+            })
         }
 
         post_move_down($uid)

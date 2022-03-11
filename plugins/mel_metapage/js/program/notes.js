@@ -221,14 +221,36 @@ $(document).ready(() => {
             return this.post("add", {_raw:this});
         }
 
+        _post_move(uid, order, other)
+        {
+            return Promise.allSettled([this.post("move", {_uid:uid, _order:order}),
+            other.post("move", {_uid:other.uid, _order:other.order})]
+            ).then(() => {
+
+                rcmail.env.mel_metapages_notes[uid].order = order;
+                rcmail.env.mel_metapages_notes[other.uid].order = other.order;
+
+                if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
+                rcmail.env.mel_metapages_notes = {
+                    "create":new Sticker("create", 0, "", "")
+                }
+
+                $('.shortcut-notes .square-contents').html(
+                    Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' ')
+                );
+
+                $('.mel-note').each((i, e) => {
+                    Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
+                });
+            });
+        }
+
         post_move_down($uid)
         {
             this.order += 1;
             let other = Sticker.fromHtml($uid);
             other.order -= 1;
-            return Promise.allSettled([this.post("move", {_uid:this.uid, _order:this.order}),
-            other.post("move", {_uid:other.uid, _order:other.order})]
-            );
+            return this._post_move(this.uid, this.order, other);
         }
 
         post_move_up($uid)
@@ -236,9 +258,7 @@ $(document).ready(() => {
             this.order -= 1;
             let other = Sticker.fromHtml($uid);
             other.order += 1;
-            return Promise.allSettled([this.post("move", {_uid:this.uid, _order:this.order}),
-            other.post("move", {_uid:other.uid, _order:other.order})]
-            );
+            return this._post_move(this.uid, this.order, other);
         }
 
         post_delete()

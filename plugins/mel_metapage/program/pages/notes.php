@@ -77,6 +77,9 @@ class Notes extends Page
 
             case 'move':
                 $this->move($this->get_input_post("_uid"), $this->get_input_post("_order"));
+                $this->save();
+                echo "break";
+                exit;
                 break;
 
             case 'update':

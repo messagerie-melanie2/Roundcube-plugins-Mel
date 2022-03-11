@@ -709,6 +709,8 @@ async function ChangeFrame(_class, otherDatas = null)
 
     if (_class === "tasklist" && otherDatas !== undefined && otherDatas !== null)
     {
+        parent.$('.tasks-frame').remove();
+
         config = {
             source:otherDatas
         }

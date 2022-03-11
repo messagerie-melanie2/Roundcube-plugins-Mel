@@ -118,7 +118,7 @@
                 
                 querry = querry.find(".ariane-notif");
 
-                if (this.unreads[channel] === 0)
+                if (this.unreads[channel] === undefined || this.unreads[channel] === 0)
                     querry.css("display", "none").parent().parent().css("display", "none");
                 else
                     querry.css("display", "").html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");

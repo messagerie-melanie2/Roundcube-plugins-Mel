@@ -531,7 +531,8 @@ async function ChangeToolbar(_class, event, otherDatas = null)
             datas.push(
                 {
                     exec_info:"ChangeFrame",
-                    datas:_class
+                    datas:_class,
+                    args:rcmail.env.current_workspace_tasklist_uid
                 }
             );
             break;
@@ -706,17 +707,17 @@ async function ChangeFrame(_class, otherDatas = null)
     //Gestion de la config en fonction des dofférentes frame voulues
     let config = null;
 
-    if (_class === "tasklist" && rcmail.env.current_workspace_tasklist_uid !== undefined && rcmail.env.current_workspace_tasklist_uid !== null)
+    if (_class === "tasklist" && otherDatas !== undefined && otherDatas !== null)
     {
         config = {
-            source:rcmail.env.current_workspace_tasklist_uid
+            source:otherDatas
         }
         await mel_metapage.Functions.post(
             mel_metapage.Functions.url("tasks", "tasklist"),
             {
                 action:"subscribe",
                 l:{
-                    id:rcmail.env.current_workspace_tasklist_uid,
+                    id:otherDatas,
                     active:1
                 }
             },

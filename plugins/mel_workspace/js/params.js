@@ -937,13 +937,17 @@
             rcmail.register_command('workspace.update_end_date', (jquery) => rcmail.env.WSP_Param.update_end_date(jquery.val()), true);
             rcmail.register_command('workspace.toggle_bar_color', () => {rcmail.env.WSP_Param.toggle_nav_color()}, true);
             rcmail.register_command('workspace.update_primary_parameter', (config) => {rcmail.env.WSP_Param.update_primary_parameters(config)}, true);
-            rcmail.register_command('workspace.update_title', () => {rcmail.env.WSP_Param.update_primary_parameters({
-                type:"title",
-                input:$("#spaceTitle"),
-                checks:"empty;already-exist",
-                text_on_error:'Une erreur est survenue.\r\nImpossible de changer le titre de l\'espace.',
-                text_on_succes:'Le titre a été changer avec succès.'
-            })}, true);
+            rcmail.register_command('workspace.update_title', () => 
+            {
+                if (!confirm(rcmail.gettext('change_title_confirmation', 'mel_workspace'))) return;
+                rcmail.env.WSP_Param.update_primary_parameters({
+                    type:"title",
+                    input:$("#spaceTitle"),
+                    checks:"empty;already-exist",
+                    text_on_error:'Une erreur est survenue.\r\nImpossible de changer le titre de l\'espace.',
+                    text_on_succes:'Le titre a été changer avec succès.'
+                })
+            }, true);
             rcmail.register_command('workspace.update_desc', (isDelete = false) => {
                 let $input = $("#spaceDesc");
                 if (isDelete)

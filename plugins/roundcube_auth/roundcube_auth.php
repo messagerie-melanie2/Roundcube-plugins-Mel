@@ -452,7 +452,7 @@ class roundcube_auth extends rcube_plugin
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [Kerberos] Déclenchement");
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] PHP - REMOTE_USER : " . $_SERVER['REMOTE_USER']);
 
-                if(!empty($_SERVER['REMOTE_USER']) && $this->kerb_query == $this->enabled)
+                if(!empty($_SERVER['REMOTE_USER']) && $kerb_query == $this->enabled)
                 {
                     $selected_auth = AuthTypeEnum::KERBEROS;
                 

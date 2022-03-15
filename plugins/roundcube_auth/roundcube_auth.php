@@ -403,7 +403,7 @@ class roundcube_auth extends rcube_plugin
         }
     }
 
-    private function check_token_expiration()
+    private function check_token_expiration($rcmail)
     {
         $expiration_time = $_SESSION['idtoken_exp'];
         $expiration_delay =  $this->oidc_exp_delay;
@@ -411,8 +411,17 @@ class roundcube_auth extends rcube_plugin
         mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Expiration validity check");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Expiration delay : " . strval(time() - $expiration_time) ."/$expiration_delay ($expiration_time)");
 
-        // Si on approche de l'expiration du token, retourne 'true'
-        return (isset($expiration_time) && (time() - $expiration_time) > $expiration_delay);
+        // Si on a atteint ou dépassé le délai d'expiration du token, on relance l'auth OIDC (utilisateur présent)
+        if(isset($expiration_time) && (time() - $expiration_time) > $expiration_delay)
+        {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Re-authenticating user (Token expiration)");
+
+            // Delete stored things
+            $rcmail->kill_session();
+
+            // Re-auth
+            $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+        }
     }
 
     /**
@@ -425,7 +434,9 @@ class roundcube_auth extends rcube_plugin
 
         // Prepare variables
         $kerb_query = $_GET[$this->kerb_keyword];
+        //$kerb_param = $_SERVER['REMOTE_USER']; //TODO
         $oidc_query = $_GET[$this->oidc_keyword];
+        $oidc_param = $_GET['code'];
 
         // User not logged in && GET request only (to avoid triggering on login POST and making a loop)
         if(empty($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'GET')
@@ -460,11 +471,15 @@ class roundcube_auth extends rcube_plugin
 
             // OIDC (triggered by query)
             else if($this->oidc_enabled && isset($oidc_query))
-            {
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement");
-
+            {/*
+                if(isset($oidc_param))
+                {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement déjà réalisé");
+                }
+                else*/
                 if($oidc_query == $this->enabled)
                 {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement en cours");
                     $selected_auth = AuthTypeEnum::OIDC;
                     $oidc = true;
                 }
@@ -506,11 +521,13 @@ class roundcube_auth extends rcube_plugin
 
             if($oidc)
             {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, $_SERVER['QUERY_STRING']);
+
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Lancement/Execution");
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Connexion OIDC");
 
                 // Trigger login action
-                $args['action'] = 'login';
+               $args['action'] = 'login';
 
                 try
                 {    
@@ -542,53 +559,52 @@ class roundcube_auth extends rcube_plugin
             //endregion =================================
         }
 
-        // En cas de déconnexion, on ne déclenche pas la mécanique
-        // En cas de connexion OIDC, on ne déclenche pas la mécanique
-        else if($rcmail->task != 'logout' && $oidc_query != $this->enabled)
+        // Si la dernière connexion n'était pas en OIDC, on ne déclenche pas la mécanique inactivité/expiration
+        else if(isset($_SESSION['auth_type']) && $_SESSION['auth_type'] == 'oidc')
         {
-            // Action automatique (refresh)
-            if (in_array($rcmail->action, $this->refresh_actions))
+            // Lors de la déconnexion ou de la connexion OIDC, on ne déclenche pas la mécanique inactivité/expiration
+            if($rcmail->task != 'logout' && $oidc_query != $this->enabled)
             {
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Refresh à " . time()); // TODO REMOVE
-
-                $activity_time = $_SESSION['last_user_action'];
-                $inactivity_delay = $this->oidc_act_delay;
-                //
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Inactivity delay check");
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Inactivity delay : " . strval(time() - $activity_time) ."/$inactivity_delay ($activity_time)");
-
-                // Si le délai d'inactivité a été atteint
-                if(isset($activity_time) && (time() - $activity_time) > $inactivity_delay)
+                // Action automatique (refresh)
+                if (in_array($rcmail->action, $this->refresh_actions))
                 {
-                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnecting user (Inactivity)");
-
-                    // Delete stored things
-                    $rcmail->kill_session();
-
-                    // Re-auth
-                    $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Refresh à " . time()); // TODO REMOVE
+    
+                    $activity_time = $_SESSION['last_user_action'];
+                    $inactivity_delay = $this->oidc_act_delay;
+                    //
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Inactivity delay check");
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Inactivity delay : " . strval(time() - $activity_time) ."/$inactivity_delay ($activity_time)");
+    
+                    // Si le délai d'inactivité a été atteint
+                    if(isset($activity_time) && (time() - $activity_time) > $inactivity_delay)
+                    {
+                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnecting user (Inactivity)");
+    
+                        // Delete stored things
+                        $rcmail->kill_session();
+    
+                        // Re-auth
+                        $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+                    }
+                    else
+                    {
+                        // Si le token est proche de l'expiration, on relance l'auth OIDC (utilisateur présent)
+                        $this->check_token_expiration($rcmail);
+                    }
                 }
-            }
-            
-            // Action de l'utilisateur
-            else
-            {
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Action utilisateur à " . time()); // TODO REMOVE
+                
+                // Action de l'utilisateur
+                else if ($rcmail->output->type == 'html')
+                {
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Action utilisateur à " . time()); // TODO REMOVE
+    
+                    // Stockage du timestamp de la dernière action utilisateur
+                    $_SESSION['last_user_action'] = time();
 
-                // Stockage du timestamp de la dernière action utilisateur
-                $_SESSION['last_user_action'] = time();
-            }
-
-            // Dans tous les cas, si le token est proche de l'expiration, on relance l'auth OIDC (utilisateur présent)
-            if($this->check_token_expiration())
-            {
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Re-authenticating user (Token expiration)");
-
-                // Delete stored things
-                $rcmail->kill_session();
-
-                // Re-auth
-                $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+                    // Si le token est proche de l'expiration, on relance l'auth OIDC (utilisateur présent)
+                    $this->check_token_expiration($rcmail);
+                }
             }
         }
 
@@ -618,32 +634,35 @@ class roundcube_auth extends rcube_plugin
                 $uid = $token->{$rcmail->config->get('oidc_field_uid')};
                 $eidas = $token->{$rcmail->config->get('oidc_field_eidas')};
                 $exp = $token->{'exp'};
-                
-                // Store ID Token and its expiration
-                $_SESSION['idtoken'] = $token; //rcmail::get_instance()->encrypt($token);
-                $_SESSION['idtoken_exp'] = time();
-                // $_SESSION['idtoken_exp'] = $exp; //rcmail::get_instance()->encrypt($exp);
-
-                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - Stockage du token pour $uid et de son expiration $exp.");
 
                 if($this->check_ldap_oidc($uid))
                 {
-                    // Remove previous eidas value
+                    // Remove previously stored values
                     unset($_SESSION['eidas']);
+                    unset($_SESSION['auth_type']);
+                    unset($_SESSION['idtoken']);
+                    unset($_SESSION['idtoken_exp']);
 
-                    // Store eidas value
+                    // Store new values
                     $_SESSION['eidas'] = $eidas;
+                    $_SESSION['auth_type'] = 'oidc';
+                    $_SESSION['idtoken'] = $token; //rcmail::get_instance()->encrypt($token);
+                    $_SESSION['idtoken_exp'] = time();
+    
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - Stockage du token pour $uid et de son expiration $exp.");
     
                     // Set token as password
                     $password = $this->oidc_helper->getToken(TokenTypeEnum::ID_TOKEN);
                 
                     // Modify args values
-                    // mel_logs::get_instance()->log(mel_logs::DEBUG, "roundcube_oidc - ajout de l'eidas dans args : ".$eidas);
                     $args['user'] = $uid;
                     $args['pass'] = $password;
                     $args['cookiecheck'] = true;
                     $args['valid'] = true;
                     $args['eidas'] = $eidas;
+
+                    // Display args values
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - Login args : " . json_encode($args));
                 }
                 else
                 {

@@ -44,7 +44,7 @@ $config['oidc_exp_delay'] = 600;
 $config['oidc_act_delay'] = 300;
 
 // Actions that will count as refresh (inactivity)
-$config['refresh_actions'] = ['refresh', 'plugin.list_contacts_recent', 'load_events'];
+$config['refresh_actions'] = ['refresh', 'load_events', 'plugin.list_contacts_recent', 'plugin.get_unread_count'];
 
 // -------------- Kerberos Activation -----------------
 

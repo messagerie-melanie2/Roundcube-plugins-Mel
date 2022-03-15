@@ -68,7 +68,12 @@ use Jumbojett\OpenIDConnectClient;
             $this->oidc->setVerifyHost($hostVerification);
             $this->oidc->setVerifyPeer($peerVerification);
         
-            // Authenticate to get the tokens and get user information
+            //$this->doAuth()
+        }
+
+        function doAuth()
+        {
+            // Authenticate to get the tokens and user information
             $this->oidc->authenticate();
             $this->userInfo = $this->oidc->requestUserInfo();
         }

@@ -364,7 +364,6 @@ metapage_frames.addEvent("changepage.before", (eClass) => {
 });
 
 metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) => {
-
     rcmail.env.current_frame_name = eClass;
 
     mel_metapage.Functions.update_refresh_thing();

@@ -467,11 +467,12 @@ const mel_metapage = {
 
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
-            
-            workspaces.sync.PostToParent({
-                exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'), ${JSON.stringify(actions)})`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
-                child:false
-            });
+
+            top.mm_st_OpenOrCreateFrame(frame, changepage, args, actions);
+            // workspaces.sync.PostToParent({
+            //     exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'), ${JSON.stringify(actions)})`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
+            //     child:false
+            // });
             
             if (waiting)
             {
@@ -483,10 +484,9 @@ const mel_metapage = {
             {
                 if (initial_change_page)
                 {
-                    mel_metapage.Functions.call('display_webconf', false,{
-                        _integrated:true
-                    });
+                    top.mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
                 }
+                //this.update_refresh_thing();
             }
             
             return this;
@@ -916,17 +916,11 @@ const mel_metapage = {
 
         update_refresh_thing()
         {
-            let current = $(".refresh-current-thing");
-            switch (rcmail.env.current_frame_name) {
-                case "webconf":
-                //case "discussion":
-                    current.addClass("disabled").attr("disabled", "disabled");
-                    break;
-            
-                default:
-                    current.removeClass("disabled").removeAttr("disabled");
-                    break;
-            }
+            let current = top.$(".refresh-current-thing");
+            let action = window.webconf_helper.already() || top.rcmail.env.current_frame_name === "webconf";
+
+            if (action === true) current.addClass("disabled").attr("disabled", "disabled");
+            else current.removeClass("disabled").removeAttr("disabled");
 
             return this;
         },

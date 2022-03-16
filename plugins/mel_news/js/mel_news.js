@@ -1360,7 +1360,7 @@ $(document).ready(async () => {
             replaceAll("<text/>", content.content).
             replaceAll("<additionnal_contents/>", `<div style="position: absolute;bottom: 30px;" class="headlines-source"><p>Source : ${strUcFirst(this.type)}</p><p class='p-buttons'>
             <button style="margin-top:0;margin-right:5px;" title="Copier" onclick="rcmail.command('news.copy', $(this))" class="mel-button btn btn-secondary roundbadge large r-news"><span class=" icon-mel-copy"><span class="sr-only">Copier le lien</span></span></button>
-            <button style="margin:0" title="Editer" onclick="rcmail.command(\'\')" class="mel-button btn btn-secondary roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>
+            <button style="margin:0" title="Editer" onclick="rcmail.command(\'news.edit\', this)" class="mel-button btn btn-secondary roundbadge large r-news"><span class=" icon-mel-pencil"><span class="sr-only">Modifier</span></span></button>
             </p></div>`).
             replaceAll("<date/>", `Publié le ${this.tradDate(this.date.format('dddd DD MMMM YYYY'))}`)
             ;
@@ -1506,6 +1506,14 @@ $(document).ready(async () => {
                         if (!started)
                             started = true;
                     }
+                    else if (MelCustomNews.allCustomNews[key].type !== MelNews.type.twitter && MelCustomNews.allCustomNews[key].$news.data("copy") !== "") {
+                        MelCustomNews.allCustomNews[key].$news.find(".square-contents").children().each((i, e) => {
+                            if ($(e).hasClass("vignette-arrows"))
+                                return;
+    
+                            $(e).css("cursor", "pointer").attr("title", "Ouvrir dans un nouvel onglet");
+                        });
+                    }
 
                     $col.appendTo($parent);
                 }
@@ -1530,7 +1538,7 @@ $(document).ready(async () => {
                 {
                     array.push(new MelNews(uid).setNews($(e)).setup(uid));
                 }
-
+                
                 if (array[array.length-1].type !== MelNews.type.twitter && array[array.length-1].$news.data("copy") !== "")
                 {
                     array[array.length-1].$news.find(".square-contents").children().each((i, e) => {

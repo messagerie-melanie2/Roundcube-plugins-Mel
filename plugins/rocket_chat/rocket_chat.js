@@ -127,7 +127,6 @@ if (window.rcmail) {
 
 		if (e.data.eventName === undefined)
 			return;
-		console.log("chat_event", e);
 
 		if (e.data.eventName == 'login-error') {
 			rcmail.display_message(e.data.response, 'error');

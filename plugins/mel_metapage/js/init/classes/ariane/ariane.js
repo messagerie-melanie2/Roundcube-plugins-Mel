@@ -110,7 +110,7 @@
                 this.update_menu();
                 side_notification.chat.wsp(null, rcmail.env.task === 'workspace' && (rcmail.env.action === '' || rcmail.env.action === 'index'));
             } catch (error) {
-                console.error('###[update]', error);
+                // console.error('###[update]', error);
             }
         }
 
@@ -138,7 +138,11 @@
 
         update_menu()
         {
-            side_notification.chat.menu();
+            try {
+                side_notification.chat.menu();
+            } catch (error) {
+                
+            }
         }
 
         load(update = true)

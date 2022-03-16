@@ -299,6 +299,11 @@ if (rcmail && window.mel_metapage)
         on_switched_color_mode(MEL_ELASTIC_UI.color_mode());
     });
 
+    rcmail.addEventListener('storage.change', (datas) => {
+        //debugger;
+        rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
+    }, false);
+
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
 
@@ -343,7 +348,7 @@ if (rcmail && window.mel_metapage)
         if (event.description !== undefined && event.description !== "")
             html += `<div class=row style="margin-top:15px;"><div class=col-12 style=white-space:nowrap;><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
             vertical-align: top;
-            margin-top: 5px;"></span><p style="display:inline-block;white-space: break-spaces;">${linkify(event.description.replaceAll("\n", "<br/>"))}</p></div></div>`;
+            margin-top: 5px;"></span><p style="display:inline-block;white-space: break-spaces;width:100%;">${linkify(event.description.replaceAll("\n", "<br/>"))}</p></div></div>`;
 
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)

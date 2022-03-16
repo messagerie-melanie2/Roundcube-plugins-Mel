@@ -382,11 +382,6 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 
     window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
-
-    if (isAriane || $("."+eClass+"-frame").length > 1)
-        $("#layout-frames").css("display", "none");
-    else 
-        $("#layout-frames").css("display", "");
     
     let arianeIsOpen = mel_metapage.PopUp.ariane === undefined || mel_metapage.PopUp.ariane === null ? false : mel_metapage.PopUp.ariane.is_show;
     
@@ -582,6 +577,11 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
 
     metapage_frame_actions(actions, id, true);
 
+    if (isAriane || $("iframe."+eClass+"-frame").length === 0)
+        $("#layout-frames").css("display", "none");
+    else 
+        $("#layout-frames").css("display", "");
+
 });
 
 function metapage_frame_actions(actions, id, after_load) {
@@ -676,6 +676,11 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
     if (parent === window && $("html").hasClass("webconf-started"))
         $(window).resize();
+
+    if (isAriane || $("iframe."+eClass+"-frame").length === 0)
+        $("#layout-frames").css("display", "none");
+    else 
+        $("#layout-frames").css("display", "");
 
 });
 

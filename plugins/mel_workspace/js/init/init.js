@@ -1,19 +1,21 @@
 (() => {
      rcmail.addEventListener("init", () => {
-        WSPNotification.agenda().update();
+        side_notification.wsp_agenda(null, true);
 
         if (rcmail.env.task === "workspace" && (rcmail.env.action === "" || rcmail.env.action === "index"))
         {
             try {
-                if (rcmail.env.wsp_index === undefined)
-                    rcmail.env.wsp_index = {};
-                rcmail.env.wsp_index["wsp_doc"] = WSPNotification.documents();
-                rcmail.env.wsp_index.wsp_doc.update();
+                // if (rcmail.env.wsp_index === undefined)
+                //     rcmail.env.wsp_index = {};
+                // rcmail.env.wsp_index["wsp_doc"] = WSPNotification.documents();
+                // rcmail.env.wsp_index.wsp_doc.update();
+                side_notification.wsp_documents(null, true);
             } catch (error) {
                 console.error("###[WSPNotification.documents().update(true)]", error);
             }
 
-            WSPNotification.mails().update();
+            //debugger;
+            side_notification.wsp_mail(null, true);
 
             $("#wsp-search-input").on("input", (element) => {
                 const val = element.target.value.toUpperCase();

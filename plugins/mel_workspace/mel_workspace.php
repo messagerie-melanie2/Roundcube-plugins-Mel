@@ -913,7 +913,7 @@ class mel_workspace extends rcube_plugin
             self::CHANNEL => $is_in_wsp && $this->get_object($workspace, self::CHANNEL) !== null,
             self::AGENDA => $is_in_wsp && $this->get_object($workspace, self::AGENDA) === true,
             self::TASKS => $is_in_wsp && $this->get_object($workspace, self::TASKS) !== null,
-            self::EMAIL => /*true || */$is_in_wsp && $this->get_object($workspace, self::GROUP) === true,
+            self::EMAIL => $is_in_wsp && $this->get_object($workspace, self::GROUP) === true,
             self::CLOUD => $is_in_wsp && $this->get_object($workspace, self::CLOUD) === true,
             self::WEKAN => $is_in_wsp && $this->get_object($workspace, self::WEKAN) !== null,
             self::LINKS => $is_in_wsp && $this->get_object($workspace, self::LINKS) !== null
@@ -2119,6 +2119,7 @@ class mel_workspace extends rcube_plugin
             {
                 switch ($key) {
                     case self::CHANNEL:
+                        $tmp_html .= '<div class="wsp-notif-block" style=display:none;><span data-channel="'.$this->get_object($workspace, self::CHANNEL)->name.'" class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></div>';
                         break;
                     
                     default:

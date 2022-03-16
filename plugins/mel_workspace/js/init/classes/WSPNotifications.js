@@ -164,7 +164,7 @@ WSPNotification.documents = function()
     txt += `mel_metapage.Storage.set('wsp_doc_parent${rcmail.env.username}', true);})()`;
     txt = new WSPNotification("doc-notif", `wsp_have_news_${rcmail.env.username}`, txt, "icon-mel-folder", (item, id) => {
         
-        //console.log("LOG",item, id, item[id]);
+        console.log("LOG",item, id, item[id]);
         if (item !== undefined && item !== null && item[id])
             return "•";
 

@@ -166,7 +166,7 @@ class Workspaces extends Module
                         break;
 
                     case mel_workspace::CHANNEL:
-                        $tmp_html .= '<div class="wsp-notif-block"><span class=ariane><span style="display:none" class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>';  
+                        $tmp_html .= '<button data-channel="'.$ws->get_object($workspace, mel_workspace::CHANNEL)->name.'" onclick="wsp_action_notif(this, `fromphp_'.$key.'`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';
                         break;              
                     default:
                         $tmp_html .= '<button onclick="wsp_action_notif(this, `fromphp_'.$key.'`)" class="mel-hover btn-mel-invisible btn-text btn btn-secondary wsp-notif-block  mel-portail-displayed-wsp-notif" style=display:none;><span class='.$key.'><span class="'.$key.'-notif wsp-notif roundbadge lightgreen">0</span><span class="replacedClass"><span></span></button>';

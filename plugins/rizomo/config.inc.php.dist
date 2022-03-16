@@ -1,0 +1,7 @@
+<?php
+
+// URL vers Rizomo
+$rcmail_config['rizomo_url'] = '';
+
+// URL vers les API Rizomo
+$rcmail_config['rizomo_api_url'] = '';

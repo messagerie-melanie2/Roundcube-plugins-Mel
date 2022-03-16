@@ -38,7 +38,8 @@ class Windows_Like_PopUp extends MetapageObject
                 $minified.css("left", "60px").css("width", "calc(100% - 60px)");
             },
             width:"100%",
-            height:"100%"
+            height:"100%",
+            context:window
         };
 
         Windows_Like_PopUp.popUps[this.id] = this;
@@ -104,31 +105,31 @@ class Windows_Like_PopUp extends MetapageObject
                 settings.onminifiedListCreated(this.parent.find(".wlp-minifieds"));
         }
 
-        this.box.content = $(`${jid} .${class_contents}`);
-        this.box.header = $(`${jid} .${class_header}`);
-        this.box.title = $(`${jid} .${class_title}`);
-        this.box.get = $(`${jid}`);
-        this.box.close = $(`${jid} .${class_close}`).on("click", () => {
+        this.box.content = this.parent.find(`${jid} .${class_contents}`);
+        this.box.header = this.parent.find(`${jid} .${class_header}`);
+        this.box.title = this.parent.find(`${jid} .${class_title}`);
+        this.box.get = this.parent.find(`${jid}`);
+        this.box.close = this.parent.find(`${jid} .${class_close}`).on("click", () => {
             if (this.settings.onclose !== null)
                 this.settings.onclose();
 
             this.destroy();
             Windows_Like_PopUp.clean();
         });
-        this.box.minifier = $(`${jid} .${class_size}`).on("click", () => {
+        this.box.minifier = this.parent.find(`${jid} .${class_size}`).on("click", () => {
             let span = this.box.minifier.find('span');
             if (span.hasClass(this.settings.icon_minify))
             {
                 //minify
                 if (this.settings.onminify !== null)
-                    this.settings.onminify();
+                    this.settings.onminify(this);
 
                 this.minify();
             }
             else {
                 //expand
                 if (this.settings.onexpand !== null)
-                    this.settings.onexpand();
+                    this.settings.onexpand(this);
 
                 this.expand();
             }
@@ -136,15 +137,15 @@ class Windows_Like_PopUp extends MetapageObject
 
         //Ajout de actions
         if (settings.afterCreatingContent !== null)
-            settings.afterCreatingContent($(jid), this.box);
+            settings.afterCreatingContent(this.parent.find(jid), this.box);
 
         return this;
     }
 
     minify(){
         this.box.minifier.find("span").removeClass(this.settings.icon_minify).addClass(this.settings.icon_expend);
-        this.box.header.clone().appendTo($('.wlp-minifieds')).attr("id", `minified-${this.id}`).find(".wlp-close").click(() => {
-            $(`#minified-${this.id}`).remove();
+        this.box.header.clone().appendTo(this.settings.context.$('.wlp-minifieds')).attr("id", `minified-${this.id}`).find(".wlp-close").click(() => {
+            this.settings.context.$(`#minified-${this.id}`).remove();
             
             if (this.settings.onclose !== null)
                 this.settings.onclose();
@@ -162,7 +163,7 @@ class Windows_Like_PopUp extends MetapageObject
     }
 
     expand(){
-        $(`#minified-${this.id}`).remove();
+        this.settings.context.$(`#minified-${this.id}`).remove();
         this.box.minifier.find("span").addClass(this.settings.icon_minify).removeClass(this.settings.icon_expend);
         this.box.get.css("display", "");
     }
@@ -170,7 +171,7 @@ class Windows_Like_PopUp extends MetapageObject
     destroy()
     {
         try {
-            $(`#minified-${this.id}`).remove();
+            this.settings.context.$(`#minified-${this.id}`).remove();
         } catch (error) {
             
         }
@@ -212,8 +213,7 @@ class Windows_Like_PopUp extends MetapageObject
             }
         }
 
-        if (Enumerable.from(Windows_Like_PopUp.popUps).count() === 0)
-            $('.wlp-minifieds').remove();
+        if (Enumerable.from(Windows_Like_PopUp.popUps).count() === 0) $('.wlp-minifieds').remove();
     }
 
     static test()

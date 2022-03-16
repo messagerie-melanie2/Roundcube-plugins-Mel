@@ -359,9 +359,9 @@ font-family: 'IcoFont'!important;
     height: inherit!important; *
 } */
 
-.task-mail.action-compose #layout-content {
+/* .task-mail.action-compose #layout-content {
     margin-left: 60px!important;
-}
+} */
 
 html.touch .task-mail.action-compose #layout-content {
     margin-left: 0px!important;

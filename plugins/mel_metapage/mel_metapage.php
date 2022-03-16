@@ -139,7 +139,8 @@ class mel_metapage extends rcube_plugin
             return;
         }
 
-        $this->rc->output->set_env("plugin.mel_metapage", true);
+        $this->rc->output->set_env("plugin.mel_metapage", true);//compose_extwin
+        //$this->rc->output->set_env("compose_extwin", true);
         $this->rc->output->set_env("mel_metapage_chat_visible", $this->rc->config->get("mel_metapage_chat_visible", true));
 
         $icon = "mel-icon-size";
@@ -1399,6 +1400,9 @@ class mel_metapage extends rcube_plugin
             $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
         }
     }
+    // else if ($args['section'] == 'compose') {
+    //     unset($args['blocks']['main']['options']['compose_extwin']);
+    // }
 
     return $args;
   }

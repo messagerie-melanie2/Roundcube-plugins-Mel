@@ -660,6 +660,70 @@ $(document).ready(() => {
                 }
             });
 
+            rcmail._open_compose_step_parent = rcmail.open_compose_step;
+            rcmail.open_compose_step = (p) => {
+
+                if (window.create_popUp !== undefined) create_popUp.close();
+
+                if (rcmail.env.compose_extwin && !rcmail.env.extwin) rcmail._open_compose_step_parent(p);
+                else {
+                    const url = rcmail.url('mail/compose', p);
+                    let config = {
+                        title:"Mail",
+                        // onclose:() => {},
+                        // onminify:(popup) => {
+                        //     try {
+                        //         const val = popup.box.content.find("iframe")[0].contentWindow.$('#compose-subject').val();
+                        //         if ((val ?? "") === "") return;
+                        //         popup.box.title.find('h2').html(val);
+                        //     } catch (error) {
+                        //     }
+                        // },
+                        // onexpand:(popup) => {},
+                        // icon_close:"icon-mel-close",
+                        // icon_minify:'icon-mel-minus',
+                        // icon_expend:'icon-mel-expend',
+                        content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100% - 47px);"/>`,
+                        // onsetup:() => {},
+                        // aftersetup:() => {},
+                        // beforeCreatingContent:() => "",
+                        // onCreatingContent:(html) => html,
+                         afterCreatingContent:($html, box) => {
+                             console.log('box', box);
+                             box.get.css("left","60px").css("top", "60px");
+                             box.content.find("iframe").on('load', () => {
+
+                                try {
+                                    if (!box.content.find("iframe")[0].contentWindow.location.href.includes('compose'))
+                                        box.close.click();
+                                } catch (error) {
+                                    
+                                }
+
+                                box.content.find("iframe")[0].contentWindow.$('#compose-subject').on('input', (e) => {
+                                    box.title.find('h2').html('Mail : ' + $(e.currentTarget).val());
+                                }).on('change', (e) => {
+                                    box.title.find('h2').html('Mail : ' + $(e.currentTarget).val());
+                                });
+                                box.content.find("center").remove();
+
+                                const obj = box.content.find("iframe")[0].contentWindow.$('#compose-subject').val();
+                                if ((obj ?? "") !== "") box.title.find('h2').html('Mail : ' + obj);
+
+                             });
+                             box.content.find(".spinner-grow").css("width", '30%')
+                             .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
+                             
+                         },
+                        width:"calc(100% - 60px)",
+                        height:"calc(100% - 60px)",
+                        context:top
+                    };
+            
+                    return new Windows_Like_PopUp(top.$("body"), config);
+                }
+            };
+
             return this;
         }
 

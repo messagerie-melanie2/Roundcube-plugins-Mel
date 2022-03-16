@@ -210,7 +210,8 @@ function m_mp_NotificationRun(notification) {
             newNotifications = {};
 
         if (!notifications[notification.uid] 
-                && !notification.isread) {
+                && !notification.isread
+                && !notification.isdeleted) {
             // On ne fait poper que les nouvelles notifications
             m_mp_ShowNotification(notification);
         }

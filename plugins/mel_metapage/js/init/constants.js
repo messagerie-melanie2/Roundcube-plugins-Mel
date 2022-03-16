@@ -121,6 +121,7 @@ const mel_metapage = {
         set(key, item, stringify = true)
         {
             window.localStorage.setItem(key, stringify ? JSON.stringify(item) : item);
+            this.setStoreChange(key, item);
         },
         /**
          * Supprime une donnée dans le stockage local.
@@ -128,6 +129,19 @@ const mel_metapage = {
          */
         remove(key){
             window.localStorage.removeItem(key);
+            this.setStoreChange(key, undefined);
+        },
+        setStoreChange(key, item)
+        {
+            if (top.rcmail !== undefined) top.rcmail.triggerEvent('storage.change', {key, item});
+
+            top.$('iframe.mm-frame').each((i,e) => {
+                try {
+                    e.contentWindow.rcmail.triggerEvent('storage.change', {key, item});
+                } catch (error) {
+                    
+                }
+            });
         },
         check(storage = null)
         {

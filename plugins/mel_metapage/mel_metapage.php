@@ -899,14 +899,15 @@ class mel_metapage extends rcube_plugin
 
                 $annuaire_exists = $wsp->get_object($value, mel_workspace::GROUP);
                 //$annuaires[$value->uid] = $annuaire_exists;
-                if (/*true || */ $annuaire_exists)
+                if ($annuaire_exists)
                 {
+                    if ($mail === null) continue;
+                    
                     $lines .= "OR OR HEADER TO $mail HEADER CC $mail HEADER BCC $mail ";// HEADER BCC $before".$value->uid."$after ";
                     if ($first)
                         $first = false;
                     else
                         $or .= "OR ";
-                        //break;
                 }
             } catch (\Throwable $th) {
                 //$annuaires[$value->uid] = $th->getMessage();

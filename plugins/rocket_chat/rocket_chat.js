@@ -127,6 +127,7 @@ if (window.rcmail) {
 
 		if (e.data.eventName === undefined)
 			return;
+		console.log("chat_event", e);
 
 		if (e.data.eventName == 'login-error') {
 			rcmail.display_message(e.data.response, 'error');
@@ -202,7 +203,9 @@ if (window.rcmail) {
 					parent.ariane.update_menu();
 				}
 				else
+				{
 					rcmail.env.ariane_have_calls = true;
+				}
 				parent.ariane.update_channel(e);
 			}
 			else if (e.data.eventName === "status-changed" || e.data.eventName === "user-status-manually-set")

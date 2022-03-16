@@ -28,31 +28,31 @@
             this._some_unreads = ariane === null ? undefined : ariane._some_unreads;
         }
 
-        addEventListener(key, listener)
-        {
-            if (this.listeners[key] === undefined)
-                this.listeners[key] = [listener];
-            else
-                this.listeners[key].push(listener);
-        }
+        // addEventListener(key, listener)
+        // {
+        //     if (this.listeners[key] === undefined)
+        //         this.listeners[key] = [listener];
+        //     else
+        //         this.listeners[key].push(listener);
+        // }
 
-        triggerEvent(key, ...args)
-        {
-            if (this.listeners[key] === null || this.listeners[key] === undefined)
-                return;
+        // triggerEvent(key, ...args)
+        // {
+        //     if (this.listeners[key] === null || this.listeners[key] === undefined)
+        //         return;
 
-            for (let index = 0; index < this.listeners[key].length; index++) {
-                const element = this.listeners[key][index];
-                element(...args);
-            }
-        }
+        //     for (let index = 0; index < this.listeners[key].length; index++) {
+        //         const element = this.listeners[key][index];
+        //         element(...args);
+        //     }
+        // }
 
-        async post_message(datas)
-        {
-            $("iframe.mm-frame").each((i,e) => {
-                e.contentWindow.postMessage(datas);
-            });
-        }
+        // async post_message(datas)
+        // {
+        //     $("iframe.mm-frame").each((i,e) => {
+        //         e.contentWindow.postMessage(datas);
+        //     });
+        // }
 
         update_channel(event)
         {
@@ -60,7 +60,7 @@
             if (datas.unread != this.unreads[datas.name])
             {
                 this.unreads[datas.name] = datas.unread;
-                this.update(datas.name);
+                mel_metapage.Storage.set("ariane_datas", this);
             }
 
         }
@@ -103,50 +103,18 @@
             }
         }
 
-        update(channel, store = true, epingle = false)
+        update()
         {
             try {
-                let querry;// = $("#wsp-notifs-wsp-" + channel);
-
-                if (epingle)
-                    querry = $("#wsp-notifs-wsp-" + channel + "-epingle");
-                else
-                    querry = $("#wsp-notifs-wsp-" + channel);
-
-                if (querry.find(".ariane").length === 0)
-                    querry.append('<div class="wsp-notif-block"><span class=ariane><span class="ariane-notif roundbadge lightgreen">0</span><span class="icon-mel-message ariane-icon"><span></span></div>')
-                
-                querry = querry.find(".ariane-notif");
-
-                if (this.unreads[channel] === undefined || this.unreads[channel] === 0)
-                    querry.css("display", "none").parent().parent().css("display", "none");
-                else
-                    querry.css("display", "").html(this.unreads[channel] > 99 ? "99+" : this.unreads[channel]).parent().parent().css("display", "");
-                
-                if (store)
-                {
-                    mel_metapage.Storage.set("ariane_datas",this);
-                    this.update_menu();
-                }
-
-                this.post_message({
-                    ariane:this,
-                    channel:channel
-                });
-
-                if (!epingle)
-                    this.triggerEvent("update", channel, store, this.unreads[channel]);
-
-                if (!epingle)
-                    this.update(channel, false, true);
-
-                rcmail.triggerEvent("ariane.updated");
+                this.load(false);
+                this.update_menu();
+                side_notification.chat.wsp(null, rcmail.env.task === 'workspace' && (rcmail.env.action === '' || rcmail.env.action === 'index'));
             } catch (error) {
-                
+                console.error('###[update]', error);
             }
         }
 
-        menu()
+        getPersonalUnreads()
         {            
             let val = 0;
 
@@ -161,43 +129,23 @@
             }
 
             return val;
+        }
 
-            //return Enumerable.from(this.unreads).select(x => x.value).sum();
+        getChannel(channel)
+        {
+            return (this.unreads !== null && this.unreads !== undefined ? (this.unreads[channel] ?? 0) : 0);
         }
 
         update_menu()
         {
-            let querry = $("a.rocket");
-
-            if (querry.find("sup").length === 0)
-                querry.append(`<sup><span id="`+mel_metapage.Ids.menu.badge.ariane+`" class="roundbadge menu lightgreen" style="">?</span></sup>`);
-            
-            querry = $("#" + mel_metapage.Ids.menu.badge.ariane);
-            const menu = this.menu();
-
-            if (menu === 0)
-            {
-                querry.css("display", "none");
-
-                if (this.have_unreads())
-                    querry.html(`<span class="">•</span>`).css("display", ""); 
-            }
-            else
-                querry.html(menu).css("display", ""); 
+            side_notification.chat.menu();
         }
 
-        load()
+        load(update = true)
         {
             this.lastRoom = mel_metapage.Storage.get("ariane.lastRoom");
             this.init(mel_metapage.Storage.get("ariane_datas"));
-
-            for (const key in this.unreads) {
-                if (Object.hasOwnProperty.call(this.unreads, key)) {
-                    this.update(key, false);
-                }
-            }
-
-            this.update_menu();
+            if(update) this.update();
         }
 
         setLastRoom(event, save = true)
@@ -262,25 +210,9 @@
         }
     }
 
-    if (parent === window)
-    {
-        window.ariane = new Ariane(true);
-        window.ariane_reinit = () => {return new Ariane(true);};
-    }
-    else {
-        window.ariane = new Ariane(true);
-        window.addEventListener("message", receiveMessage, false);
 
-        function receiveMessage(event)
-        {
-            if (event.data.ariane === undefined)
-                return;
-                
-            const ariane = event.data.ariane;
-            window.ariane.init(ariane);
-            window.ariane.update(event.data.channel, false);
-        }
-
-    }
+    window.ariane_reinit = () => {return new Ariane(true);};
+    window.new_ariane = (ariane) => new Ariane(false, ariane);
+    window.ariane = new Ariane(true);
 
 })();

@@ -166,7 +166,11 @@ function Middle(uid, hasAriane, datas) {
         //console.log("c");
         let channel = $(".wsp-ariane")[0].id.replace("ariane-", "");
         //console.log("Init()", datas, channel, datas[channel]);
-        UpdateAriane(channel, false,(datas[channel] === undefined ? 0 : datas[channel]));
+        UpdateAriane(channel, false, (datas[channel] === undefined ? 0 : datas[channel]));
+
+        rcmail.addEventListener(`storage.change.${mel_metapage.Storage.ariane}`, (items) => {
+            UpdateAriane(channel, false, window.new_ariane(items).getChannel(channel));
+        });
     }
 
     UpdateCalendar();
@@ -226,14 +230,14 @@ async function End(uid, hasAriane, datas) {
     if (rcmail.env.current_workspace_services.wekan && !wekan.isLogged())
         promises.push(wekan.login());
 
-    if (hasAriane)
-    {
-        promises.push(wait(() => {
-                return window.ariane === undefined
-            })
-            .then(() => {window.ariane.addEventListener("update", UpdateAriane);})
-        );
-    }
+    // if (hasAriane)
+    // {
+    //     promises.push(wait(() => {
+    //             return window.ariane === undefined
+    //         })
+    //         .then(() => {window.ariane.addEventListener("update", UpdateAriane);})
+    //     );
+    // }
 
     if (rcmail.env.current_workspace_file !== undefined && rcmail.env.current_workspace_services.doc)
     {

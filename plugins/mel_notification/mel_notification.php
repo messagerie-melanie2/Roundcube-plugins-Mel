@@ -132,6 +132,8 @@ class mel_notification extends rcube_plugin
                 $this->add_hook('new_messages', [$this, 'notify_mail']);
             }
         }
+
+        if (class_exists('mel_metapage')) $this->include_script('side_notifications.js');
         
         if ($this->rc->task == 'settings') {
             // Ajouter le texte

@@ -1,22 +1,46 @@
-// Charger les notifications de Rizomo
-const url = rcmail.env.rizomo_api_url + '/notifications/' + rcmail.env.rizomo_user_id;
+/**
+ * Connexion aux API Rizomo et récupération des notifications
+ */
 
-let myHeaders = new Headers();
+/**
+ * URL vers les notifications
+ */
+const api_notifications = '/notifications/me';
 
-myHeaders.append("Content-Type", "application/json");
-myHeaders.append("Accept", "application/json");
-myHeaders.append("X-Auth-Token", rcmail.env.rizomo_token);
+// Initialise les notifications et lance le timeout
+// Pas de traitement si on est pas dans la metapage
+if (window.rcmail && window == top) {
+    console.log('Rizomo window top');
+    if (typeof m_mp_NotificationRun === "function") { 
+        console.log('Rizomo m_mp_NotificationRun function');
+        // Notification plugin is enable
+        rcmail.addEventListener('responseafterrefresh', function(props) {
+            console.log('Rizomo response after refresh');
+            m_mp_RizomoRefreshNotifications();
+        });
+    }
+}
 
-let myInit = { 
-    method: 'GET',
-    headers: myHeaders,
-    // mode: 'cors',
-    // cache: 'default' 
-};
+/**
+ * Lance le refresh des notifications depuis Rizomo
+ */
+function m_mp_RizomoRefreshNotifications() {
+    const url = rcmail.env.rizomo_api_url + api_notifications;
 
-let myRequest = new Request(url, myInit);
+    let myHeaders = new Headers();
 
-fetch(myRequest, myInit)
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Accept", "application/json");
+    myHeaders.append("X-Auth-Token", rcmail.env.rizomo_user_token);
+
+    let myInit = { 
+        method: 'GET',
+        headers: myHeaders,
+    };
+
+    let myRequest = new Request(url, myInit);
+
+    fetch(myRequest, myInit)
     .then(function(response) {
         var contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -24,7 +48,8 @@ fetch(myRequest, myInit)
                 if (json.status == 'success') {
                     // Nettoyer toutes les notifications Rizomo
                     // Récupération des notifications du storage
-                    let notifications = rcmail.mel_storage_get('notifications', true),
+                    let notifications = m_mp_NotificationsGet(),
+                        newNotifications = {},
                         hasChanged = false;
 
                     // Parcourir les notifs rizomo
@@ -42,12 +67,21 @@ fetch(myRequest, myInit)
 
                         if (notifications[uid]) {
                             notifications[uid].todelete = false;
-                            notifications[uid].isread = iterator.read ?? notifications[uid].isread;
+                            notifications[uid].isread = iterator.read === true ? true : notifications[uid].isread;
                             hasChanged = true;
                         }
                         else {
-                            // traitement du JSON
-                            m_mp_NotificationRun({
+                            // Définition de l'action
+                            let action = null;
+                            if (iterator.link) {
+                                action = [{
+                                    href: iterator.link,
+                                    newtab: true,
+                                }]
+                            }
+
+                            // Définition de la notification
+                            let notification = {
                                 uid: uid,
                                 category: iterator.type,
                                 title: iterator.title,
@@ -56,11 +90,16 @@ fetch(myRequest, myInit)
                                 isread: iterator.read,
                                 rizomo: true,
                                 local: true,
-                                action: [{
-                                    href: iterator.link,
-                                    newtab: true,
-                                }]
-                            });
+                                action: action
+                            };
+
+                            // Ajoute la notification à la liste des nouvelles notifications
+                            newNotifications[uid] = notification;
+
+                            // On ne fait poper que les nouvelles notifications
+                            m_mp_ShowNotification(notification);
+
+                            hasChanged = true;
                         }
                     }
 
@@ -76,17 +115,12 @@ fetch(myRequest, myInit)
 
                     // Mettre à jour le stockage
                     if (hasChanged) {
-                        // Affiche les notifications dans le panel
-                        m_mp_NotificationsAppendToPanel(notifications);
-
-                        // Filtrer les notifications au démarrage
-                        m_mp_NotificationFilter();
-
-                        // Enregistre les notifications dans le storage
-                        rcmail.mel_storage_set('notifications', notifications, true);
+                        // Merge les notifications
+                        m_mp_NotificationsMerge(notifications, newNotifications);
                     }
                 }
-                
             });
         }
-});
+    });
+}
+

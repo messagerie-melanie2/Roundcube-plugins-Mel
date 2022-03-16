@@ -263,8 +263,8 @@ html.dark-mode #notifications-panel article span.notification_button a:hover {
     content: "\e91e";
 }
 
-#notificationstack article.calendar span.category::before,
-#notifications-panel article.calendar span.category::before {
+#notificationstack article.agenda span.category::before,
+#notifications-panel article.agenda span.category::before {
     content: "\e901";
 }
 

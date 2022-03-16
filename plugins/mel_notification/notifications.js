@@ -62,6 +62,9 @@ if (window.rcmail) {
                         }
                         m_mp_NotificationsAction('read', uids);
                     }
+                    else {
+                        document.getElementById('notificationstack').innerHTML = '';
+                    }
                 });
             }
         }
@@ -335,7 +338,7 @@ function m_mp_NotificationSettings(key, notification) {
  */
 function m_mp_ShowNotification(notification) {
     // Gérer les notifications multiples
-    setTimeout(() => { 
+    setTimeout(() => {
         if (m_mp_NotificationSettings('inside_notification', notification)) {
             let notificationstack = document.getElementById("notificationstack"),
                 article = m_mp_NotificationGetElement(notification, false);

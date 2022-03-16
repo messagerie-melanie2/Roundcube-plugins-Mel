@@ -144,7 +144,12 @@ class Windows_Like_PopUp extends MetapageObject
 
     minify(){
         this.box.minifier.find("span").removeClass(this.settings.icon_minify).addClass(this.settings.icon_expend);
-        this.box.header.clone().appendTo(this.settings.context.$('.wlp-minifieds')).attr("id", `minified-${this.id}`).find(".wlp-close").click(() => {
+        let $header = this.box.header.clone();
+        let $h2 = $header.find('h2');
+
+        if ($h2.html().length > 20) $h2.html($h2.html().slice(0, 20) + '...');
+
+        $header.appendTo(this.settings.context.$('.wlp-minifieds')).attr("id", `minified-${this.id}`).find(".wlp-close").click(() => {
             this.settings.context.$(`#minified-${this.id}`).remove();
             
             if (this.settings.onclose !== null)

@@ -634,13 +634,18 @@ $(document).ready(() => {
                     switch (rcmail.env.compose_option) {
                         case "empty":
                             $("#compose-subject").val("");
-                            rcmail.addEventListener('editor-load', () => {
-                                if (rcmail.env.editor_emptied !== true)
-                                {
-                                    rcmail.editor.set_content("");
-                                    rcmail.env.editor_emptied = true;
-                                }
-                            });
+                            try {
+                                $("#compose-subject").change();
+                            } catch (error) {
+                                
+                            }
+                            // rcmail.addEventListener('editor-load', () => {
+                            //     if (rcmail.env.editor_emptied !== true)
+                            //     {
+                            //         rcmail.editor.set_content("");
+                            //         rcmail.env.editor_emptied = true;
+                            //     }
+                            // });
 
                                 
                             
@@ -669,7 +674,7 @@ $(document).ready(() => {
                 else {
                     const url = rcmail.url('mail/compose', p);
                     let config = {
-                        title:"Mail",
+                        title:"Rédaction",
                         // onclose:() => {},
                         // onminify:(popup) => {
                         //     try {
@@ -683,14 +688,14 @@ $(document).ready(() => {
                         // icon_close:"icon-mel-close",
                         // icon_minify:'icon-mel-minus',
                         // icon_expend:'icon-mel-expend',
-                        content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100% - 47px);"/>`,
+                        content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         // onsetup:() => {},
                         // aftersetup:() => {},
                         // beforeCreatingContent:() => "",
                         // onCreatingContent:(html) => html,
                          afterCreatingContent:($html, box) => {
                              console.log('box', box);
-                             box.get.css("left","60px").css("top", "60px");
+                             box.get.addClass('fullscreen');//.css("left","60px").css("top", "60px");
                              box.content.find("iframe").on('load', () => {
 
                                 try {
@@ -700,15 +705,17 @@ $(document).ready(() => {
                                     
                                 }
 
+                                box.content.find("iframe")[0].contentWindow.$('#layout-sidebar .scroller').css("max-height", '100%');
+
                                 box.content.find("iframe")[0].contentWindow.$('#compose-subject').on('input', (e) => {
-                                    box.title.find('h2').html('Mail : ' + $(e.currentTarget).val());
+                                    box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                                 }).on('change', (e) => {
-                                    box.title.find('h2').html('Mail : ' + $(e.currentTarget).val());
+                                    box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                                 });
                                 box.content.find("center").remove();
 
                                 const obj = box.content.find("iframe")[0].contentWindow.$('#compose-subject').val();
-                                if ((obj ?? "") !== "") box.title.find('h2').html('Mail : ' + obj);
+                                if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
 
                              });
                              box.content.find(".spinner-grow").css("width", '30%')

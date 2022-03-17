@@ -185,8 +185,8 @@ class OpenIDConnectClient
     private $wellKnown = false;
 
     /**
-     * @var mixed holds well-known opendid configuration parameters, like policy for MS Azure AD B2C User Flow  
-     * @see https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview 
+     * @var mixed holds well-known opendid configuration parameters, like policy for MS Azure AD B2C User Flow
+     * @see https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
      */
     private $wellKnownConfigParameters = array();
 
@@ -256,7 +256,7 @@ class OpenIDConnectClient
         $this->clientSecret = $client_secret;
 
         $this->issuerValidator = function($iss){
-	        return ($iss === $this->getIssuer() || $iss === $this->getWellKnownIssuer() || $iss === $this->getWellKnownIssuer(true));
+                return ($iss === $this->getIssuer() || $iss === $this->getWellKnownIssuer() || $iss === $this->getWellKnownIssuer(true));
         };
     }
 
@@ -309,7 +309,7 @@ class OpenIDConnectClient
 
             // Do an OpenID Connect session check
             if ($_REQUEST['state'] !== $this->getState()) {
-                throw new OpenIDConnectClientException('Unable to determine state');
+                throw new OpenIDConnectClientException('Unable to determine state' . "  --  " . $_REQUEST['state'] . "  --  " . $this->getState());
             }
 
             // Cleanup state
@@ -541,7 +541,7 @@ class OpenIDConnectClient
     }
 
     /**
-     * Set optionnal parameters for .well-known/openid-configuration 
+     * Set optionnal parameters for .well-known/openid-configuration
      *
      * @param string $param
      *
@@ -602,8 +602,12 @@ class OpenIDConnectClient
                 ?: @$_SERVER['SERVER_ADDR'];
 
         $port = (443 === $port) || (80 === $port) ? '' : ':' . $port;
+        $protocol='http'; // FBH tuning
 
-        return sprintf('%s://%s%s/%s', $protocol, $host, $port, @trim(reset(explode('?', $_SERVER['REQUEST_URI'])), '/'));
+        $res = sprintf('%s://%s%s/%s', $protocol, $host, $port, @trim(reset(explode('?', $_SERVER['REQUEST_URI'])), '/'));
+
+        $res = $res . "?oidc=1"; // TBG tuning
+        return $res;
     }
 
     /**
@@ -643,7 +647,7 @@ class OpenIDConnectClient
 
         $auth_params = array_merge($this->authParams, array(
             'response_type' => $response_type,
-            'redirect_uri' => $this->getRedirectURL(),
+            'redirect_uri' => $this->getRedirectURL(),// . "?oidc=1", // TBG tuning
             'client_id' => $this->clientID,
             'nonce' => $nonce,
             'state' => $state,
@@ -760,7 +764,7 @@ class OpenIDConnectClient
         $token_params = array(
             'grant_type' => $grant_type,
             'code' => $code,
-            'redirect_uri' => $this->getRedirectURL(),
+            'redirect_uri' => $this->getRedirectURL(),// . "?oidc=1",
             'client_id' => $this->clientID,
             'client_secret' => $this->clientSecret
         );
@@ -769,7 +773,7 @@ class OpenIDConnectClient
         if (in_array('client_secret_basic', $token_endpoint_auth_methods_supported, true)) {
             $headers = ['Authorization: Basic ' . base64_encode(urlencode($this->clientID) . ':' . urlencode($this->clientSecret))];
             unset($token_params['client_secret']);
-	        unset($token_params['client_id']);
+                unset($token_params['client_id']);
         }
 
         if (!empty($this->getCodeChallengeMethod()) && !empty($this->getCodeVerifier())) {
@@ -1760,7 +1764,7 @@ class OpenIDConnectClient
                 $this->enc_type = PHP_QUERY_RFC3986;
                 break;
 
-        	default:
+                default:
                 break;
         }
 

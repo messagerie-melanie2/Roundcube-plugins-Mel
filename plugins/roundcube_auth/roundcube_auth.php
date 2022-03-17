@@ -414,7 +414,7 @@ class roundcube_auth extends rcube_plugin
         // Si on a atteint ou dépassé le délai d'expiration du token, on relance l'auth OIDC (utilisateur présent)
         if(isset($expiration_time) && (time() - $expiration_time) > $expiration_delay)
         {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Re-authenticating user (Token expiration)");
+            mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [RC_Auth] Reconnexion OIDC déclenchée (Expiration du token)");
 
             // Delete stored things
             $rcmail->kill_session();
@@ -579,7 +579,7 @@ class roundcube_auth extends rcube_plugin
                     // Si le délai d'inactivité a été atteint
                     if(isset($activity_time) && (time() - $activity_time) > $inactivity_delay)
                     {
-                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Disconnecting user (Inactivity)");
+                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Reconnexion OIDC déclenchée (Inactivité)");
     
                         // Delete stored things
                         $rcmail->kill_session();

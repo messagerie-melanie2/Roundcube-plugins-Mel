@@ -277,11 +277,25 @@ const mel_metapage = {
         }
     },
     PopUp:{
-        open_ariane: function () {
+        /**
+         * Ouvre la popup de chat 
+         * @returns 
+         */
+        open_ariane() {
             if (rcmail.busy)
                 return;
+
             if (mel_metapage.PopUp.ariane === null)
+            {
                 mel_metapage.PopUp.ariane = new ArianePopUp(ArianeButton.default());
+                rcmail.addEventListener('toggle-options-user', (show) => {
+                    let $iframe =  mel_metapage.PopUp.ariane.ariane.card.body.card.find('iframe');
+
+                    if (show.show === true) $iframe.css("z-index", '1');
+                    else $iframe.css("z-index", '');
+                    
+                });
+            }
         
             if (mel_metapage.PopUp.ariane.is_show === true)
                 mel_metapage.PopUp.ariane.hide();
@@ -291,7 +305,7 @@ const mel_metapage = {
         ariane:null,
     },
     RCMAIL_Start:{
-        ping_nextcloud: async function ()
+        async ping_nextcloud()
         {
             if (rcmail.env.nextcloud_url !== undefined && rcmail.env.nextcloud_url !== null && rcmail.env.nextcloud_url !== "")
             {

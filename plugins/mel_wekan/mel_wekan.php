@@ -264,7 +264,14 @@ class mel_wekan extends rcube_plugin
     {
         $board = $this->check_board($board);
 
-        return $board["httpCode"] == 200 && $board["content"] !== "{}";
+        //TODO - Delete after test
+        try {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[WEKAN]".json_encode($board));
+        } catch (\Throwable $th) {
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[WEKAN]Impossible de convertir le board and json, probablement parce qu'il est null");
+        }
+
+        return $board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}";
     }
 
     /**

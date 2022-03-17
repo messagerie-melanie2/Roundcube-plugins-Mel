@@ -75,7 +75,7 @@ class Windows_Like_PopUp extends MetapageObject
         const class_contents = "wlp-contents";
         const class_size = "wlp-minixpand";
         const class_close = "wlp-close";
-        const h = "2";
+        const h = "3";
 
         let html = "";
 
@@ -86,7 +86,7 @@ class Windows_Like_PopUp extends MetapageObject
         //Création du header
         html += `<div class="${class_header}">`;
         html += `<span class="${class_title}"><h${h} style="display:inline-block;">${settings.title}</h${h}></span>`;
-        html += `<span style="float:right;margin-right: 15px;"><button class="${class_size} inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
+        html += `<span style="float:right;margin-right: 15px;"><button class="${class_size} mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_minify}"></span></button>
         <button class="${class_close} btn-danger danger inverse mel-button btn btn-secondary dark-no-border-default" style="margin:0"><span class="${settings.icon_close}"></span></button></span>`;
         html += '</div>';
 
@@ -231,31 +231,16 @@ class Windows_Like_PopUp extends MetapageObject
             // icon_close:"icon-mel-close",
             // icon_minify:'icon-mel-minus',
             // icon_expend:'icon-mel-expend',
-            content:"Salut bg",
+            content:"Test",
             // onsetup:() => {},
             // aftersetup:() => {},
             // beforeCreatingContent:() => "",
             // onCreatingContent:(html) => html,
              afterCreatingContent:($html, box) => {
-                 box.get.css("left","60px").css("top", "60px").addClass("questionnaireWebconf");
-                 setTimeout(() => {
-                    box.close.addClass("mel-focus focused");
-                    setTimeout(() => {
-                        box.close.removeClass("mel-focus").removeClass("focused");
-                        setTimeout(() => {
-                            box.close.addClass("mel-focus focused");
-                            setTimeout(() => {
-                                box.close.removeClass("mel-focus").removeClass("focused");
-                                setTimeout(() => {
-                                    box.close.focus();
-                                 }, 100);
-                             }, 100);
-                         }, 100);
-                     }, 200);
-                 }, 200);
+                 box.get.addClass("questionnaireWebconf fullscreen");
              },
-            width:"calc(100% - 60px)",
-            height:"calc(100% - 60px)"
+            // width:"calc(100% - 60px)",
+            // height:"calc(100% - 60px)"
         };
 
         return new Windows_Like_PopUp($("body"), config);

@@ -721,6 +721,7 @@ html.dark-mode .roundrive-folder-create-select
 
 /******** Modales ********/
 html.dark-mode .wlp_box,
+html.dark-mode .wlp-contents,
 html.dark-mode .wlp-minifieds .wlp-header,
 html.dark-mode .toolbar-popup,
 html.dark-mode .wsp-toolbar.webconf-toolbar,
@@ -994,4 +995,9 @@ html.dark-mode .headlines-by.headlines-rss-type {
 html.dark-mode table.table-striped thead.mel_striped td
 {
   background-color: #1F2933;  
+}
+
+html.dark-mode .wlp-contents
+{
+    border:none;
 }

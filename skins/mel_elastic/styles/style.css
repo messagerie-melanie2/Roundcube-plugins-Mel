@@ -2275,6 +2275,11 @@ html.touch .wlp_box.fullscreen{
     border-color: transparent;
 }
 
+.wlp-header h3{
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
 .wlp-contents {
     background-color: white;
     border: solid 4px #363A5B;
@@ -2293,7 +2298,7 @@ html.touch .wlp_box.fullscreen{
     display: inline-block;
     margin: 0;
     padding: 5px;
-    background-color: #484D7A;
+    background-color: #363A5B;
     border:solid thin #2C3054;
 }
 

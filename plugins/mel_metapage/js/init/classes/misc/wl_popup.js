@@ -39,7 +39,8 @@ class Windows_Like_PopUp extends MetapageObject
             },
             width:"100%",
             height:"100%",
-            context:window
+            context:window,
+            fullscreen:false
         };
 
         Windows_Like_PopUp.popUps[this.id] = this;
@@ -94,7 +95,7 @@ class Windows_Like_PopUp extends MetapageObject
         html += `<div class="${class_contents}" style="width:100%;height:100%;">${settings.content}</div>`;
 
         //Création de la box
-        html = `<div id="${id}" class="wlp_box" style="position:absolute;top:0;right:0;width:${settings.width};height:${settings.height};">${settings.onCreatingContent !== null ? settings.onCreatingContent(html) : html}</div>`;
+        html = `<div id="${id}" class="wlp_box ${this.settings.fullscreen === true ? 'fullscreen' : ''}" style="position:absolute;top:0;right:0;width:${settings.width};height:${settings.height};">${settings.onCreatingContent !== null ? settings.onCreatingContent(html) : html}</div>`;
             
         this.parent.append(html);
 
@@ -145,7 +146,7 @@ class Windows_Like_PopUp extends MetapageObject
     minify(){
         this.box.minifier.find("span").removeClass(this.settings.icon_minify).addClass(this.settings.icon_expend);
         let $header = this.box.header.clone();
-        let $h2 = $header.find('h2');
+        let $h2 = $header.find('h3');
 
         if ($h2.html().length > 20) $h2.html($h2.html().slice(0, 20) + '...');
 

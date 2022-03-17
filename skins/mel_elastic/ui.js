@@ -695,7 +695,7 @@ $(document).ready(() => {
                         // onCreatingContent:(html) => html,
                          afterCreatingContent:($html, box) => {
                              console.log('box', box);
-                             box.get.addClass('fullscreen');//.css("left","60px").css("top", "60px");
+                             //box.get.addClass('fullscreen');//.css("left","60px").css("top", "60px");
                              box.content.find("iframe").on('load', () => {
 
                                 try {
@@ -724,7 +724,8 @@ $(document).ready(() => {
                          },
                         width:"calc(100% - 60px)",
                         height:"calc(100% - 60px)",
-                        context:top
+                        context:top,
+                        fullscreen:true
                     };
             
                     return new Windows_Like_PopUp(top.$("body"), config);

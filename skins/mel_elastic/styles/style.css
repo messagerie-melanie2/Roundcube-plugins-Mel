@@ -2257,6 +2257,7 @@ body.task-mail.action-none #layout-content {
     height: calc(100% - 60px)!important;
 }
 
+.framed .wlp_box.fullscreen,
 html.touch .wlp_box.fullscreen{
     left:0!important;
     width: 100%!important;

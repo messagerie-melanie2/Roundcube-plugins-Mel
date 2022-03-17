@@ -1436,7 +1436,8 @@ class MasterWebconfBar {
                  }, 200);
              },
             width:"calc(100% - 60px)",
-            height:"calc(100% - 60px)"
+            height:"calc(100% - 60px)",
+            fullscreen:true
         };
 
         return new Windows_Like_PopUp($("body"), config);

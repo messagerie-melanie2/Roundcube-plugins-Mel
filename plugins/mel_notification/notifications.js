@@ -4,6 +4,8 @@
  * pour en faire plus régulièrement
  */
 
+var current_desktop_notification = 0;
+
 // Initialise les notifications et lance le timeout
 // Pas de traitement si on est pas dans la metapage
 if (window.rcmail) {
@@ -27,6 +29,9 @@ if (window.rcmail) {
                 notificationunread.id = "notificationunread";
                 document.querySelector('#user-up-popup > div.row > div > div.user-child').append(notificationunread);
             }
+
+            // Initialisation de la current
+            current_desktop_notification = 0;
 
             // Afficher les notifications depuis le storage
             setTimeout(() => {
@@ -57,6 +62,9 @@ if (window.rcmail) {
                         }
                         m_mp_NotificationsAction('read', uids);
                     }
+                    else {
+                        document.getElementById('notificationstack').innerHTML = '';
+                    }
                 });
             }
         }
@@ -71,6 +79,9 @@ if (window.rcmail) {
             // Récupération des notifications du storage
             let notifications = m_mp_NotificationsGet(),
                 newNotifications = {};
+
+            // Initialisation de la current
+            current_desktop_notification = 0;
 
             for (const notification of evt.response.notifications) {
                 if (!notifications[notification.uid] 
@@ -326,21 +337,24 @@ function m_mp_NotificationSettings(key, notification) {
  * @param {*} notification 
  */
 function m_mp_ShowNotification(notification) {
-    if (m_mp_NotificationSettings('inside_notification', notification)) {
-        let notificationstack = document.getElementById("notificationstack"),
-            article = m_mp_NotificationGetElement(notification, false);
+    // Gérer les notifications multiples
+    setTimeout(() => {
+        if (m_mp_NotificationSettings('inside_notification', notification)) {
+            let notificationstack = document.getElementById("notificationstack"),
+                article = m_mp_NotificationGetElement(notification, false);
 
-        // Ajoute la notification à la stack
-        notificationstack.append(article);
+            // Ajoute la notification à la stack
+            notificationstack.append(article);
 
-        // Timeout pour enlever la notification
-        setTimeout(() => {
-            article.remove();
-        }, rcmail.env.notifications_show_duration*1000);
-    }
+            // Timeout pour enlever la notification
+            setTimeout(() => {
+                article.remove();
+            }, rcmail.env.notifications_show_duration*1000);
+        }
 
-    // Envoyer la notification sur le desktop
-    m_mp_ShowDesktopNotification(notification);
+        // Envoyer la notification sur le desktop
+        m_mp_ShowDesktopNotification(notification);
+    }, current_desktop_notification++ * 1000);
 }
 
 /**
@@ -364,6 +378,9 @@ function m_mp_ShowDesktopNotification(notification) {
             });
             n.onclick = () => { this.close(); };
             setTimeout(() => { n.close(); }, timeout * 1000);
+        }
+        else {
+            Notification.requestPermission();
         }
     }
 }

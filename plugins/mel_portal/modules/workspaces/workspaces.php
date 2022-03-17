@@ -1,6 +1,6 @@
 <?php
 
-include_once "../module_action.php";
+include_once __DIR__."../module_action.php";
 
 use LibMelanie\Api\Defaut\Workspaces\Share;
 

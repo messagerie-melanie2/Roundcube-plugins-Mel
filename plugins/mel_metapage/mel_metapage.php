@@ -38,6 +38,7 @@ class mel_metapage extends rcube_plugin
     public const SPIED_TASK_KANBAN = "kanban";
     public const SPIED_TASK_SONDAGE = "sondage";
     private static $urls_spies;
+    private static $widgets;
 
     public static function add_url_spied($url, $task)
     {
@@ -51,6 +52,27 @@ class mel_metapage extends rcube_plugin
         if (self::$urls_spies === null) self::$urls_spies = [];
 
         return self::$urls_spies;
+    }
+
+    public static function add_widget($name ,$task, $arg)
+    {
+        if (self::$widgets === null) self::$widgets = [];
+
+        self::$widgets[$name] = "/_task=$task&_action=mel_widget&_is_from=iframe" . ($arg === null ? '' : "&_arg=$arg");
+    }
+
+    public static function get_widgets()
+    {
+        if (self::$widgets === null) self::$widgets = [];
+
+        return self::$widgets;
+    }
+
+    public static function can_add_widget()
+    {
+        $task = rcmail::get_instance()->task;
+
+        return false && ($task === 'bureau' ||  $task === 'settings');
     }
 
     function init()

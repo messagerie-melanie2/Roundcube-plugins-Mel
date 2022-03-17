@@ -25,6 +25,7 @@ class mel_useful_link extends rcube_plugin
         if ($this->rc->task === "useful_links")
         {
           $this->register_action('index', array($this, 'index'));  
+          $this->register_action('mel_widget', [$this, 'mel_widget']);
           $this->register_action('gpl', array($this, 'get_personal_links')); 
           $this->register_action('update', array($this, 'update_link'));  
           $this->register_action('correct', array($this, 'correct_links'));  
@@ -40,6 +41,12 @@ class mel_useful_link extends rcube_plugin
             $this->rc->output->set_env("mul_items", $this->rc->config->get('personal_useful_links', []));
             include_once "lib/hidden.php";
             $this->rc->output->set_env("mul_hiddens", mel_hidden_links::load($this->rc)->DEBUG());
+        }
+        else if (class_exists('mel_metapage') && mel_metapage::can_add_widget())
+        {
+            mel_metapage::add_widget("all_links" ,"useful_links");
+            mel_metapage::add_widget("not_taked_links" ,"useful_links", 'joined');
+            mel_metapage::add_widget("taked_links" ,"useful_links", 'epingle');
         }
 
         // $this->add_hook('preferences_list', array($this, 'prefs_list'));
@@ -77,14 +84,48 @@ class mel_useful_link extends rcube_plugin
 
     function index()
     {
-      $this->rc->output->add_handlers(array(
-          'epingle'    => array($this, 'index_epingle'),
-          'joined'    => array($this, 'index_joined'),
-          'showahl'    => array($this, 'show_button_all_hidden_link')
-      ));
+      $handler = [          
+        'epingle'    => array($this, 'index_epingle'),
+        'joined'    => array($this, 'index_joined'),
+        'showahl'    => array($this, 'show_button_all_hidden_link')
+      ];
+
+      $isWidget = rcube_utils::get_input_value("_mel", rcube_utils::INPUT_GPC) === 'widget';
+
+      if ($isWidget)
+      {
+        $isWidget = rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC);
+
+        switch ($isWidget) {
+          case 'epingle':
+            unset($handler['joined']);
+            unset($handler['showahl']);
+            break;
+
+          case 'joined':
+            unset($handler['epingle']);
+            unset($handler['showahl']);
+            break;
+          
+          default:
+            unset($handler['epingle']);
+            unset($handler['showahl']);
+            break;
+        }
+
+        $this->rc->output->set_env("is_widget", true);
+        $this->include_script('js/widget.js');
+      }
+
+      $this->rc->output->add_handlers($handler);
 
       $this->rc->output->set_pagetitle("Liens utiles");
       $this->rc->output->send('mel_useful_link.index');
+    }
+
+    public function mel_widget()
+    {
+      $this->rc->output->redirect(array("_action" => "index", "_task" => "useful_links", "_is_from" => "iframe", "_mel" => "widget", "_arg" => rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC)));
     }
 
     public function show_button_all_hidden_link()
@@ -113,11 +154,21 @@ class mel_useful_link extends rcube_plugin
 
     public function index_joined()
     {
-      $html = $this->index_show(false, 1);
+      $isWidget = rcube_utils::get_input_value("_mel", rcube_utils::INPUT_GPC) === 'widget' && 
+      rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC) !== 'joined' &&
+      rcube_utils::get_input_value("_arg", rcube_utils::INPUT_GPC) !== 'epingle';
+      
+      $html = '';
+
+      if ($isWidget)
+        $html .= $this->index_show(true, 1, !$isWidget);
+
+      $html .= $this->index_show(false, 1, !$isWidget);
+
       return $html === "" ? "Pas de liens, ajoutez en dès maintenant en cliquant sur le bouton \"Ajouter\" !" : $html;
     }
 
-    function index_show($pined, $page)
+    function index_show($pined, $page, $addInRow = true)
     {
       include_once "lib/xTuple.php";
 
@@ -172,9 +223,8 @@ class mel_useful_link extends rcube_plugin
             $divs .= html::div(["class" => "col-md-".$couples->get_md()], $value->html($this->rc));
           }
 
-          $html.=html::div(["class" => "row"], 
-            $divs
-          );
+          if ($addInRow) $html.=html::div(["class" => "row"], $divs);
+          else $html .= $divs;
         }
 
       }

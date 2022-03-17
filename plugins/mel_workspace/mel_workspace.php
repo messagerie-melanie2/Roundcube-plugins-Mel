@@ -2528,7 +2528,7 @@ class mel_workspace extends rcube_plugin
             {
                 $workspace->save();
 
-                if ($exit === true) mel_notification::notify("webconf", 'Vous avez été supprimé de l\'espace de travail "'.$workspace->title.'"', '', null, $user_to_delete);
+                if ($exit === true) mel_notification::notify("workspace", 'Vous avez été supprimé de l\'espace de travail "'.$workspace->title.'"', '', null, $user_to_delete);
             }
 
             echo "";

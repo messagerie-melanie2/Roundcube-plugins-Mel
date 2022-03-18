@@ -369,7 +369,8 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     mel_metapage.Functions.update_refresh_thing();
 
     $('.wlp_box').each((i,e) => {
-        $(e).find('.wlp-minixpand').click();
+        e = $(e);
+        if (!e.hasClass('questionnaireWebconf')) e.find('.wlp-minixpand').click();
     });
 
     $("."+mm_frame).each((i,e) => {

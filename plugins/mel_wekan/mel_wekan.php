@@ -264,7 +264,7 @@ class mel_wekan extends rcube_plugin
     {
         $board = $this->check_board($board);
 
-        return $board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && $board["content"] !== "";
+        return $board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"]);
     }
 
     /**

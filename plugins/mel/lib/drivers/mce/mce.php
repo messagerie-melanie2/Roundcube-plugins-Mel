@@ -249,8 +249,13 @@ class mce_driver_mel extends driver_mel {
     $rep = static::$_unexpungeFolder . $server[0];
 
     // Créer le dossier s'il n'existe pas
-    if (!is_dir($rep) && !mkdir($rep, 0774, true)) {
-      return false;
+    if (!is_dir($rep)) {
+      if (mkdir($rep, 0774, true)) {
+        chmod($rep, 0774);
+      }
+      else {
+        return false;
+      }
     }
 
     $dossier = str_replace('/', '^', $folder);

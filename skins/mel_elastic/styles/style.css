@@ -1010,6 +1010,13 @@ div{
 
 }
 
+p{
+
+    scrollbar-width: thin;
+    scrollbar-color: #363A5B #A3A7BC;
+
+}
+
  /* width */
  ::-webkit-scrollbar {
     width: 6px;

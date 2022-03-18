@@ -370,7 +370,10 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     $('.wlp_box').each((i,e) => {
         e = $(e);
-        if (!e.hasClass('questionnaireWebconf')) e.find('.wlp-minixpand').click();
+        if (!e.hasClass('questionnaireWebconf')) 
+        {
+            if (e.find('.wlp-minixpand .icon-mel-minus-roundless').length > 0) e.find('.wlp-minixpand').click();
+        }
     });
 
     $("."+mm_frame).each((i,e) => {

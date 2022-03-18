@@ -368,6 +368,10 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     mel_metapage.Functions.update_refresh_thing();
 
+    $('.wlp_box').each((i,e) => {
+        $(e).find('.wlp-minixpand').click();
+    });
+
     $("."+mm_frame).each((i,e) => {
         //console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
         //e.classList.contains("webconf-frame") , window.webconf_helper.already());

@@ -683,44 +683,71 @@ $(document).ready(() => {
                     let config = {
                         title:"Rédaction",
                         content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
-                         afterCreatingContent:($html, box) => {
-                             box.content.find("iframe").on('load', () => {
+                        onclose(popup) {
+                            if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
+                            {
+                                popup.waiting_save = true;
+                                popup.box.close.addClass('disabled').attr('disabled', 'disabled');
+                                popup.box.minifier.addClass('disabled').attr('disabled', 'disabled');
+                                popup.box.title.find('h3').html(popup.box.title.find('h3').html().replace('Rédaction : ', 'Sauvegarde de : '))
+                                
+                                if (popup.box.minifier.find("span").hasClass(popup.settings.icon_minify))
+                                    popup.minify();
 
-                                let frame_context = box.content.find("iframe")[0].contentWindow;
+                                let frame_context = popup.box.content.find("iframe")[0].contentWindow;
 
-                                frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
+                                const alias_mel_rcmail_compose_field_hash = frame_context.rcmail.compose_field_hash;
+                                frame_context.rcmail.compose_field_hash = function(save) {
+                                    alias_mel_rcmail_compose_field_hash.call(this, save);
+                                    popup.close();
+                                };
 
-                                frame_context.$('#compose-subject').on('input', (e) => {
-                                    box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
-                                }).on('change', (e) => {
-                                    box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
-                                });
+                                frame_context.rcmail.command('savedraft');
 
-                                box.content.find("center").css('display', 'none');
-                                const obj = frame_context.$('#compose-subject').val();
+                                return 'break';
+                            }
+                        },
+                        afterCreatingContent($html, box) {
+                            box.content.find("iframe").on('load', () => {
 
-                                if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+                            let frame_context = box.content.find("iframe")[0].contentWindow;
 
-                                frame_context.rcmail.addEventListener('message_submited', async (args) => {
+                            frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
+
+                            frame_context.$('#compose-subject').on('input', (e) => {
+                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
+                            }).on('change', (e) => {
+                                box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
+                            });
+
+                            box.content.find("center").css('display', 'none');
+                            const obj = frame_context.$('#compose-subject').val();
+
+                            if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+
+                            frame_context.rcmail.addEventListener('message_submited', async (args) => {
+                                if (args.draft !== true)
+                                {
                                     box.get.find('iframe').css("display", 'none');
                                     box.close.addClass('disabled').attr('disabled', 'disabled');
                                     box.title.find('h3').html(box.title.find('h3').html().replace('Rédaction : ', 'Envoi de : '));
                                     box.content.find("center").css('display', '');
-                                });
+                                }
+                            });
 
-                                frame_context.rcmail.addEventListener('message_sent', async (args) => {
-                                    rcmail.display_message(args.msg, args.type);
-                                    box.close.removeClass('disabled').removeAttr('disabled');
-                                    box.close.click();
-                                });
+                            frame_context.rcmail.addEventListener('message_sent', async (args) => {
+                                rcmail.display_message(args.msg, args.type);
+                                box.close.removeClass('disabled').removeAttr('disabled');
+                                box.close.click();
+                            });
 
-                                frame_context.$("#toolbar-menu a.send").removeAttr('href');
+                            frame_context.$("#toolbar-menu a.send").removeAttr('href');
 
-                             });
-                             box.content.find(".spinner-grow").css("width", '30%')
-                             .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
-                             
-                         },
+                            });
+                            box.content.find(".spinner-grow").css("width", '30%')
+                            .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
+                            
+                        },
                         width:"calc(100% - 60px)",
                         height:"calc(100% - 60px)",
                         context:top,

@@ -111,11 +111,7 @@ class Windows_Like_PopUp extends MetapageObject
         this.box.title = this.parent.find(`${jid} .${class_title}`);
         this.box.get = this.parent.find(`${jid}`);
         this.box.close = this.parent.find(`${jid} .${class_close}`).on("click", () => {
-            if (this.settings.onclose !== null)
-                this.settings.onclose();
-
-            this.destroy();
-            Windows_Like_PopUp.clean();
+            this.close();
         });
         this.box.minifier = this.parent.find(`${jid} .${class_size}`).on("click", () => {
             let span = this.box.minifier.find('span');
@@ -193,7 +189,11 @@ class Windows_Like_PopUp extends MetapageObject
     close()
     {
         if (this.settings.onclose !== null)
-            this.settings.onclose();
+        {
+            const action = this.settings.onclose(this);
+
+            if (action === 'break') return;
+        }
 
         this.destroy();
         Windows_Like_PopUp.clean();

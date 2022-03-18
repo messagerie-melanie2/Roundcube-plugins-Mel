@@ -665,57 +665,48 @@ $(document).ready(() => {
                 }
             });
 
-            rcmail._open_compose_step_parent = rcmail.open_compose_step;
-            rcmail.open_compose_step = (p) => {
+            const alias_mel_rcmail_open_compose_step = rcmail.open_compose_step;
+            rcmail.open_compose_step = function (p) {
 
                 if (window.create_popUp !== undefined) create_popUp.close();
 
-                if (rcmail.env.compose_extwin && !rcmail.env.extwin) rcmail._open_compose_step_parent(p);
+                if (rcmail.env.compose_extwin && !rcmail.env.extwin) alias_mel_rcmail_open_compose_step.call(this, p);
                 else {
+                    p['_extwin'] = 1;
                     const url = rcmail.url('mail/compose', p);
                     let config = {
                         title:"Rédaction",
-                        // onclose:() => {},
-                        // onminify:(popup) => {
-                        //     try {
-                        //         const val = popup.box.content.find("iframe")[0].contentWindow.$('#compose-subject').val();
-                        //         if ((val ?? "") === "") return;
-                        //         popup.box.title.find('h2').html(val);
-                        //     } catch (error) {
-                        //     }
-                        // },
-                        // onexpand:(popup) => {},
-                        // icon_close:"icon-mel-close",
-                        // icon_minify:'icon-mel-minus',
-                        // icon_expend:'icon-mel-expend',
                         content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
-                        // onsetup:() => {},
-                        // aftersetup:() => {},
-                        // beforeCreatingContent:() => "",
-                        // onCreatingContent:(html) => html,
                          afterCreatingContent:($html, box) => {
-                             console.log('box', box);
-                             //box.get.addClass('fullscreen');//.css("left","60px").css("top", "60px");
                              box.content.find("iframe").on('load', () => {
 
-                                try {
-                                    if (!box.content.find("iframe")[0].contentWindow.location.href.includes('compose'))
-                                        box.close.click();
-                                } catch (error) {
-                                    
-                                }
+                                let frame_context = box.content.find("iframe")[0].contentWindow;
 
-                                box.content.find("iframe")[0].contentWindow.$('#layout-sidebar .scroller').css("max-height", '100%');
+                                frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
 
-                                box.content.find("iframe")[0].contentWindow.$('#compose-subject').on('input', (e) => {
+                                frame_context.$('#compose-subject').on('input', (e) => {
                                     box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                                 }).on('change', (e) => {
                                     box.title.find('h3').html('Rédaction : ' + $(e.currentTarget).val());
                                 });
-                                box.content.find("center").remove();
 
-                                const obj = box.content.find("iframe")[0].contentWindow.$('#compose-subject').val();
+                                box.content.find("center").css('display', 'none');
+                                const obj = frame_context.$('#compose-subject').val();
+
                                 if ((obj ?? "") !== "") box.title.find('h3').html('Rédaction : ' + obj);
+
+                                frame_context.rcmail.addEventListener('message_submited', async (args) => {
+                                    box.get.find('iframe').css("display", 'none');
+                                    box.close.addClass('disabled').attr('disabled', 'disabled');
+                                    box.title.find('h3').html(box.title.find('h3').html().replace('Rédaction : ', 'Envoi de : '));
+                                    box.content.find("center").css('display', '');
+                                });
+
+                                frame_context.rcmail.addEventListener('message_sent', async (args) => {
+                                    rcmail.display_message(args.msg, args.type);
+                                    box.close.removeClass('disabled').removeAttr('disabled');
+                                    box.close.click();
+                                });
 
                              });
                              box.content.find(".spinner-grow").css("width", '30%')
@@ -731,6 +722,24 @@ $(document).ready(() => {
                     return new Windows_Like_PopUp(top.$("body"), config);
                 }
             };
+
+            const alias_mel_rcmail_submit_messageform = rcmail.submit_messageform;
+            rcmail.submit_messageform = function(draft, saveonly) {
+                alias_mel_rcmail_submit_messageform.call(this, draft, saveonly);
+
+                rcmail.triggerEvent('message_submited', {
+                    draft, saveonly
+                });
+            };
+
+            const alias_mel_rcmail_sent_successfully = rcmail.sent_successfully;
+            rcmail.sent_successfully = function (type, msg, folders, save_error) {
+                alias_mel_rcmail_sent_successfully.call(this, type, msg, folders, save_error);
+
+                rcmail.triggerEvent('message_sent', {
+                    type, msg, folders, save_error
+                });
+            }
 
             return this;
         }

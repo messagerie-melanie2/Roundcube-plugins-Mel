@@ -42,7 +42,8 @@ class Notes extends Page
 
     public function __construct($rc, $plugin) {
         parent::__construct($rc, $plugin, "notes", "");
-        $this->init();
+        if ($this->task !== 'mail' && $this->action !== 'compose' && $this->get_input('_extwin', rcube_utils::INPUT_GET) !== '1')
+            $this->init();
     }  
 
     protected function before_init() {

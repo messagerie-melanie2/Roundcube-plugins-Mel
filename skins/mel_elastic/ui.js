@@ -639,6 +639,7 @@ $(document).ready(() => {
                             } catch (error) {
                                 
                             }
+                            
                             // rcmail.addEventListener('editor-load', () => {
                             //     if (rcmail.env.editor_emptied !== true)
                             //     {
@@ -654,6 +655,11 @@ $(document).ready(() => {
                         default:
                             break;
                     }
+                }
+
+                if (top !== window)
+                {
+                    $("#toolbar-menu a.send").removeAttr('href');
                 }
             }
 
@@ -707,6 +713,8 @@ $(document).ready(() => {
                                     box.close.removeClass('disabled').removeAttr('disabled');
                                     box.close.click();
                                 });
+
+                                frame_context.$("#toolbar-menu a.send").removeAttr('href');
 
                              });
                              box.content.find(".spinner-grow").css("width", '30%')

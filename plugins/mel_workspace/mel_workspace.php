@@ -3061,11 +3061,7 @@ class mel_workspace extends rcube_plugin
                                 };
                                 $users = array_map($map, $workspace->shares);
 
-                                mel_logs::get_instance()->log(mel_logs::INFO, "[WORKSPACE]Creation en cours....");
-
                                 $this->create_wekan($workspace, $services, $users);
-
-                                mel_logs::get_instance()->log(mel_logs::INFO, "[WORKSPACE]Creation finie ! => ".json_encode($this->get_object($workspace, self::WEKAN) ?? '???'));
                             }
 
                             $needUpdate = true;

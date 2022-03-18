@@ -266,7 +266,7 @@ class mel_wekan extends rcube_plugin
 
         //TODO - Delete after test
         try {
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[WEKAN]".json_encode($board));
+            mel_logs::get_instance()->log(mel_logs::INFO, "[WEKAN]".json_encode($board));
         } catch (\Throwable $th) {
             mel_logs::get_instance()->log(mel_logs::ERROR, "[WEKAN]Impossible de convertir le board and json, probablement parce qu'il est null");
         }

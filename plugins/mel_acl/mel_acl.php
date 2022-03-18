@@ -107,18 +107,14 @@ class mel_acl extends rcube_plugin
             $result = $this->ldap->search('*', $search, $mode);
 
             foreach ($result->records as $record) {
-                if ($group) {
-                    $user = base64_decode($record['ID']);
-                } else {
-                    $user = $record['uid'];
-                }
+                $user = $record['uid'];
 
                 if (is_array($user)) {
                     $user = array_filter($user);
                     $user = $user[0];
                 }
 
-            		if ($user) {
+                if ($user) {
                     $display = rcube_addressbook::compose_search_name($record);
                     $user    = array('name' => $user, 'display' => $display);
                     $users[] = $user;
@@ -126,7 +122,7 @@ class mel_acl extends rcube_plugin
                 }
             }
 
-        		if ($this->rc->config->get('acl_groups')) {
+            if ($this->rc->config->get('acl_groups')) {
                 $prefix      = $this->rc->config->get('acl_group_prefix');
                 $group_field = $this->rc->config->get('acl_group_field', 'name');
                 $result      = $this->ldap->list_groups($search, $mode);

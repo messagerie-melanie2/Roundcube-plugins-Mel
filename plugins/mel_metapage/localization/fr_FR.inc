@@ -1,5 +1,6 @@
 <?php
 $labels = array();
+$labels['...'] = "...";
 $labels['mails'] = "Mails";
 $labels["contacts"] = "Contacts";
 $labels['create'] = "Créer";

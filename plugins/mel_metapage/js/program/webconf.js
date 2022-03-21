@@ -237,6 +237,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             }
         }
         else {
+            this.chat[0].src = rcmail.env.rocket_chat_url;
             parent.$("#touchmelmenu").attr("disabled", "disabled").addClass("disabled");
             parent.$("#user-up-panel").attr("disabled", "disabled").addClass("disabled").css("pointer-events", "none");
         }

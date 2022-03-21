@@ -56,6 +56,16 @@ class mce_mi_driver_mel extends mce_driver_mel {
   }
 
   /**
+   * Est-ce que le user est bien l'identifiant d'un groupe
+   *
+   * @param string $user Identifiant de l'objet group
+   * @return boolean true si c'est un groupe, false sinon
+   */
+  public function userIsGroup($user) {
+    return true;
+  }
+
+  /**
    * Récupère et traite les infos de routage depuis l'objet LDAP 
    * pour retourner le hostname de connexion IMAP et/ou SMTP
    * 

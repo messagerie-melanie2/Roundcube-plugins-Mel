@@ -8,25 +8,26 @@
         <div class="row" style="margin: 0;">
             <div class="col-12" role="button" title="<roundcube:label name='mel_metapage.user_help' />" href="#" aria-haspopup="true" aria-owns="groupoptions-user" data-original-title="" tabindex=-1 id="user-up-popup" onclick="m_mp_ToggleGroupOptionsUser(this);"
                 style="text-decoration: none;cursor: pointer;">
-                <div class="row">
+                <div class="row d-flex align-items-center">
                     <div class="col-2">
                         <div class="user-child" comment="Parent ariane, photo + dispo">
                             <div id="user-picture" comment="photo utilisateur"></div>
                             <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
                         </div>
                     </div>
-                    <div class="col-10" style="color:white" class="hide-touch">
+                    <div class="col-6" style="color:white" class="hide-touch ">
                         <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue
                             <roundcube:var name="env:firstname" /> !
                         </div>
                         <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
                     </div>
+                    <div class="col-4" style="color:white" class="hide-touch">
+                        <center>
+                            <div id="user-weather" style="position: relative;" class="no-wrap-normal hide-touch"></div>
+                        </center>
+                    </div>
                 </div>
-                <div class="col-4" style="color:white" class="hide-touch">
-                    <center>
-                        <div id="user-weather" style="position: relative;" class="no-wrap-normal hide-touch"></div>
-                    </center>
-                </div>
+
             </div>
         </div>
     </div>
@@ -46,14 +47,14 @@
             <div class="col-sm-4">
                 <div class="change_avatar_picture">
                     <div id="user-big-picture" class="mx-auto d-block" comment="photo utilisateur"></div>
-                    <a href="#" onclick="rcmail.command('change_avatar')"><span class="icon-mel-camera change-avatar"></span></a>
+                    <a href="javascript:void(0)" onclick="rcmail.command('change_avatar')"><span class="icon-mel-camera change-avatar"></span></a>
                 </div>
             </div>
             <div class="col-sm-8 pt-1">
-                <h4 class="mb-0">
+                <h5 class="mb-0">
                     <roundcube:var name="env:firstname" />
                     <roundcube:var name="env:lastname" />
-                </h4>
+                </h5>
                 <p class="mb-1">
                     <roundcube:var name="env:email" />
                 </p>
@@ -66,7 +67,7 @@
 
             </div>
             <div class="col-sm-4">
-                <a href="#" class="transparent-button more-options" data-popup="groupoptions-menu" tabindex=-1 id="user-up-popup" data-popup-pos="left"><span class="icon-mel-dots "></span></a>
+                <a href="javascript:void(0)" class="transparent-button more-options" data-popup="groupoptions-menu" tabindex=-1 id="user-up-popup" data-popup-pos="left"><span class="icon-mel-dots "></span></a>
             </div>
 
         </div>

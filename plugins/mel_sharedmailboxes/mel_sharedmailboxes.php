@@ -991,6 +991,14 @@ class mel_sharedmailboxes extends rcube_plugin {
 
                     $folders = array();
 
+                    // TODO: Gérer les dossiers virtuels pour les boites partagées
+                    $is_virtual = $this->rc->config->get('virtual_shared_mailboxes', false);
+                    if ($is_virtual) {
+                        foreach ($a_folders as $key => $folder) {
+                            $a_folders[$key] = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $mailbox->uid . $_SESSION['imap_delimiter'] . $folder;
+                        }
+                    }
+
                     foreach ($a_folders as $folder) {
                         // if ($folder == 'INBOX' || $folder == 'Corbeille' || $folder == driver_mel::gi()->getBalpLabel()) {
                         //     continue;
@@ -1174,6 +1182,15 @@ class mel_sharedmailboxes extends rcube_plugin {
             }
         }
         $this->prev_folder = $args['folder'];
+
+        // TODO: Ajouter le support pour les boites partagées virtuelle (sans partage imap)
+        $is_virtual = $this->rc->config->get('virtual_shared_mailboxes', false);
+        if ($is_virtual && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0) {
+            // On est sur un dossier virtuel
+            $folderTmp = explode($_SESSION['imap_delimiter'], $args['folder'], 3);
+            $args['folder'] = $folderTmp;
+        }
+
         return $args;
     }
 
@@ -1241,11 +1258,17 @@ class mel_sharedmailboxes extends rcube_plugin {
         // On est sur une balp
         $driver_mel = driver_mel::gi();
 
+        // Gérer les dossier virtuels (cas des balp sans partage imap)
+        $is_virtual = $this->rc->config->get('virtual_shared_mailboxes', false);
+
         if ($is_balp) {
             // Gestion des boites partagées
             $balp_label = $driver_mel->getBalpLabel();
             if (isset($balp_label)) {
-                unset($list['INBOX']);
+                if (!$is_virtual) {
+                    unset($list['INBOX']);
+                }
+                
                 $folders = $list[$balp_label]['folders'];
                 // Gestion de l'INBOX
                 $folders[$mailbox]['class'] = 'inbox';
@@ -1283,14 +1306,14 @@ class mel_sharedmailboxes extends rcube_plugin {
         }
         foreach ($defaults_folders as $default_folder) {
             if ($default_folder == 'INBOX') {
-                if ($is_balp) {
+                if ($is_balp && !$is_virtual) {
                     $folder = $mailbox;
                 }
                 else {
                     $folder = 'INBOX';
                 }
             }
-            else if ($default_folder == 'trash' && $is_balp) {
+            else if ($default_folder == 'trash' && $is_balp && !$is_virtual) {
                 $folder = $this->rc->config->get($default_folder.'_mbox');
                 if (!isset($folders[$folder]) && isset($list[$folder])) {
                     $trash_mbox_indiv = $folder . '-individuelle';
@@ -1344,7 +1367,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         }
         else if ($display == 'subfolders') {
             $_folders['subfolders'] = [
-                'id'        => $is_balp ? $balp_label . $delimiter . $mailbox . $delimiter . 'subfolders' : 'subfolders',
+                'id'        => $is_balp && !$is_virtual ? $balp_label . $delimiter . $mailbox . $delimiter . 'subfolders' : 'subfolders',
                 'name'      => $this->rc->gettext('mel.subfolders'),
                 'virtual'   => true,
                 'class'     => 'dossier',

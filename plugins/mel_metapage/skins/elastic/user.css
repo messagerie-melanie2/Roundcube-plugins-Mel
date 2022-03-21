@@ -89,6 +89,7 @@ div#user-status {
 }
 
 #groupoptions-user {
+    width: calc(25% - 60px);
     white-space: normal;
 }
 

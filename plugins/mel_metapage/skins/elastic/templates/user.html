@@ -1,32 +1,26 @@
-<a id=user-up-panel-a class="sr-only sr-only-focusable" href=# style="position: absolute;top:-1000px;"><p class="sr-only"><roundcube:label name='mel_metapage.user_help' /></p></a>
-<div 
-id="user-up-panel"
-style="width: calc(100% - 30px);"
->
-
-<div class="user-child">
-    <div class="row" style="margin: 0;">
-        <div class="col-12"
-                role="button"
-                title="<roundcube:label name='mel_metapage.user_help' />"
-                href="#" 
-                aria-haspopup="true" 
-                aria-owns="groupoptions-user" 
-                data-original-title=""
-                tabindex=-1
-                id="user-up-popup"
-                onclick="m_mp_ToggleGroupOptionsUser(this);"
+<a id=user-up-panel-a class="sr-only sr-only-focusable" href=# style="position: absolute;top:-1000px;">
+    <p class="sr-only">
+        <roundcube:label name='mel_metapage.user_help' />
+    </p>
+</a>
+<div id="user-up-panel" style="width: calc(100% - 30px);">
+    <div class="user-child">
+        <div class="row" style="margin: 0;">
+            <div class="col-12" role="button" title="<roundcube:label name='mel_metapage.user_help' />" href="#" aria-haspopup="true" aria-owns="groupoptions-user" data-original-title="" tabindex=-1 id="user-up-popup" onclick="m_mp_ToggleGroupOptionsUser(this);"
                 style="text-decoration: none;cursor: pointer;">
-            <div class="row">
-                <div class="col-2">
-                    <div class="user-child" comment="Parent ariane, photo + dispo">
-                        <div id="user-picture" comment="photo utilisateur"></div>
-                        <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
+                <div class="row">
+                    <div class="col-2">
+                        <div class="user-child" comment="Parent ariane, photo + dispo">
+                            <div id="user-picture" comment="photo utilisateur"></div>
+                            <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-4" style="color:white" class="hide-touch">
-                    <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue !</div>
-                    <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
+                    <div class="col-10" style="color:white" class="hide-touch">
+                        <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue
+                            <roundcube:var name="env:firstname" /> !
+                        </div>
+                        <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
+                    </div>
                 </div>
                 <div class="col-4" style="color:white" class="hide-touch">
                     <center>
@@ -37,48 +31,91 @@ style="width: calc(100% - 30px);"
         </div>
     </div>
 </div>
-</div>
 <div id="groupoptions-user" style="z-index: 1000;">
-	<!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
-	<div class="container menu" role="menu" aria-labelledby="user-up-panel">
-        <div class="row">
-            <div class="col-sm">
+    <!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
+    <div class="container menu" role="menu" aria-labelledby="user-up-panel">
+        <div class="row text-left mb-2">
+            <div class="col-sm-7 d-flex align-items-center">
+                <roundcube:var name="env:service" />
+            </div>
+            <div class="col-sm-5 text-center pr-0">
+                <roundcube:button type="link" command="logout" label="logout" class="transparent-button user-logout" />
+            </div>
+        </div>
+        <div class="row text-left">
+            <div class="col-sm-4">
+                <div class="change_avatar_picture">
+                    <div id="user-big-picture" class="mx-auto d-block" comment="photo utilisateur"></div>
+                    <a href="#" onclick="rcmail.command('change_avatar')"><span class="icon-mel-camera change-avatar"></span></a>
+                </div>
+            </div>
+            <div class="col-sm-8 pt-1">
+                <h4 class="mb-0">
+                    <roundcube:var name="env:firstname" />
+                    <roundcube:var name="env:lastname" />
+                </h4>
+                <p class="mb-1">
+                    <roundcube:var name="env:email" />
+                </p>
+                <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" />
+            </div>
+        </div>
+        <div class="row justify-content-between">
+            <div class="col-sm-4 d-flex justify-content-center">
+                <button title="<roundcube:label name='mel_metapage.change_theme' />" class="mel-focus theme-mode-switch btn btn-primary btn-block hide-small" onclick="MEL_ELASTIC_UI.switch_color()"></button>
+
+            </div>
+            <div class="col-sm-4">
+                <a href="#" class="transparent-button more-options" data-popup="groupoptions-menu" tabindex=-1 id="user-up-popup"><span class="icon-mel-dots "></span></a>
+            </div>
+
+        </div>
+        <div id="groupoptions-menu" class="popupmenu" aria-hidden="false">
+            <ul class=" menu listing " role="menu " aria-labelledby="user-up-panel ">
+                <li role="menuitem "><a title="Rafraîchir la page en cours " class="refresh refresh-current-thing active disabled " id="rcmbtn131 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
+            'refreshFrame', '',this,event) " disabled="disabled ">Rafraîchir la page en cours</a></li>
+
+                <li role="menuitem "><a title="Cacher la bulle de discussion instantée " class="settings active toggleChatCommand hide-touch " id="rcmbtn132 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
+            'toggleChat', '',this,event) ">Cacher la bulle de discussion instantée</a></li>
+            </ul>
+        </div>
+        <!-- <div class="row ">
+            <div class="col-sm ">
                 <center>
-                    <button title="<roundcube:label name='mel_metapage.change_theme' />" class="mel-focus theme-mode-switch btn btn-primary btn-block hide-small" onclick="MEL_ELASTIC_UI.switch_color()"></button>
-                </center>                
+                </center>
             </div>
         </div>
-        <div class="row show-row-touch">
-            <div class="col-sm">
-                <roundcube:button type="link" command="switch_theme" title="mel_metapage.change_theme" label="mel_metapage.change_theme" class="settings important active" classAct="active" /></li>
+        <div class="row show-row-touch ">
+            <div class="col-sm ">
+                <roundcube:button type="link " command="switch_theme " title="mel_metapage.change_theme " label="mel_metapage.change_theme " class="settings important active " classAct="active " />
+                </li>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm">
-                <roundcube:button type="link" command="refreshFrame" title="mel_metapage.refresh" label="mel_metapage.refresh" class="refresh refresh-current-thing active" classAct="active" />
+        <div class="row ">
+            <div class="col-sm ">
+                <roundcube:button type="link " command="refreshFrame " title="mel_metapage.refresh " label="mel_metapage.refresh " class="refresh refresh-current-thing active " classAct="active " />
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-4 hide-touch">
-                <roundcube:if condition="env:mel_metapage_chat_visible" />
-                    <roundcube:button type="link" command="toggleChat" title="mel_metapage.hide_bubble" label="mel_metapage.hide_bubble" class="settings active toggleChatCommand" classAct="active" />
+        <div class="row ">
+            <div class="col-sm-4 hide-touch ">
+                <roundcube:if condition="env:mel_metapage_chat_visible " />
+                <roundcube:button type="link " command="toggleChat " title="mel_metapage.hide_bubble " label="mel_metapage.hide_bubble " class="settings active toggleChatCommand " classAct="active " />
                 <roundcube:else />
-                    <roundcube:button type="link" command="toggleChat" title="mel_metapage.show_bubble" label="mel_metapage.show_bubble" class="settings active toggleChatCommand" classAct="active" />
+                <roundcube:button type="link " command="toggleChat " title="mel_metapage.show_bubble " label="mel_metapage.show_bubble " class="settings active toggleChatCommand " classAct="active " />
                 <roundcube:endif />
             </div>
-            <div class="col-sm-4">
-                <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="settings my_account active" classAct="active" />
+            <div class="col-sm-4 ">
+                <roundcube:button type="link " command="my_account " title="mel_moncompte.moncompte " label="mel_moncompte.moncompte " class="settings my_account active " classAct="active " />
             </div>
-            <div class="col-sm-4">
-                <roundcube:button type="link" command="change_avatar" title="mel_metapage.change_avatar" label="mel_metapage.change_avatar" class="settings avatar active" classAct="active" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                <roundcube:button type="link" command="logout" label="logout" class="logout logout-color active" classAct="active" />
+            <div class="col-sm-4 ">
+                <roundcube:button type="link " command="change_avatar " title="mel_metapage.change_avatar " label="mel_metapage.change_avatar " class="settings avatar active " classAct="active " />
             </div>
         </div>
-		<roundcube:container name="groupoptions" id="groupoptionsmenu" />
-	</div>
-    <div id="notifications-panel"></div>
+        <div class="row ">
+            <div class="col-sm ">
+                <roundcube:button type="link " command="logout " label="logout " class="logout logout-color active " classAct="active " />
+            </div>
+        </div> -->
+    </div>
+    <div id="notifications-panel "></div>
 </div>

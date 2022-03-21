@@ -112,11 +112,11 @@ html.dark-mode #groupoptions-user {
     padding: 3px;
 }
 
-.menu a:before {
+#groupoptions-user .menu a:before {
     content: none;
 }
 
-.menu a:not(.disabled):hover {
+#groupoptions-user .menu a.a_underline:not(.disabled):hover {
     background-color: transparent !important;
     color: #0476C4 !important;
     text-decoration: underline;

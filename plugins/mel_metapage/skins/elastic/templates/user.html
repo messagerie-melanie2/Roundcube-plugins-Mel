@@ -11,17 +11,17 @@
                 <div class="row d-flex align-items-center">
                     <div class="col-2">
                         <div class="user-child" comment="Parent ariane, photo + dispo">
-                            <div id="user-picture" comment="photo utilisateur"></div>
+                            <div id="user-picture" style="margin-top: 2px;" comment="photo utilisateur"></div>
                             <div id="user-dispo" class=" logout" comment="Disponibilitée"></div>
                         </div>
                     </div>
-                    <div class="col-6" style="color:white" class="hide-touch ">
+                    <div class="col-sm-4 col-6" style="color:white" class="hide-touch ">
                         <div id="user-welcome" class="no-wrap-normal hide-touch" comment="Bienvenue !">Bienvenue
                             <roundcube:var name="env:firstname" /> !
                         </div>
                         <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
                     </div>
-                    <div class="col-4" style="color:white" class="hide-touch">
+                    <div class="col-sm-6 col-4" style="color:white" class="hide-touch">
                         <center>
                             <div id="user-weather" style="position: relative;" class="no-wrap-normal hide-touch"></div>
                         </center>
@@ -46,8 +46,10 @@
         <div class="row text-left">
             <div class="col-sm-4">
                 <div class="change_avatar_picture">
-                    <div id="user-big-picture" class="mx-auto d-block" comment="photo utilisateur"></div>
-                    <a href="javascript:void(0)" onclick="rcmail.command('change_avatar')"><span class="icon-mel-camera change-avatar"></span></a>
+                    <a href="javascript:void(0)" class="a_underline" onclick="rcmail.command('change_avatar')">
+                        <div id="user-big-picture" class="mx-auto d-block" comment="photo utilisateur"></div>
+                        <span class="icon-mel-camera change-avatar"></span>
+                    </a>
                 </div>
             </div>
             <div class="col-sm-8 pt-1">
@@ -74,7 +76,7 @@
         <div id="groupoptions-menu" class="popupmenu" aria-hidden="false">
             <ul class=" menu listing " role="menu " aria-labelledby="user-up-panel ">
                 <li role="menuitem "><a title="Rafraîchir la page en cours " class="refresh refresh-current-thing active disabled " id="rcmbtn131 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
-            'refreshFrame', '',this,event) " disabled="disabled ">Rafraîchir la page en cours</a></li>
+            'refreshFrame', '',this,event) ">Rafraîchir la page en cours</a></li>
 
                 <li role="menuitem "><a title="Cacher la bulle de discussion instantée " class="settings active toggleChatCommand hide-touch " id="rcmbtn132 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
             'toggleChat', '',this,event) ">Cacher la bulle de discussion instantée</a></li>

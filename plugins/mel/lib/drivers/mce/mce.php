@@ -30,6 +30,16 @@ class mce_driver_mel extends driver_mel {
   protected static $_unexpungeFolder;
 
   /**
+   * Constructeur par défaut
+   */
+  public function __construct() {
+    $rcmail = rcmail::get_instance();
+    if ($rcmail->config->get('virtual_shared_mailboxes', false)) {
+      $this->BALP_LABEL = $rcmail->config->get('virtual_balp_label', $this->BALP_LABEL);
+    }
+  }
+
+  /**
    * Retourne l'objet User associé à l'utilisateur courant
    * Permet de retourner l'instance User en fonction du driver
    * 

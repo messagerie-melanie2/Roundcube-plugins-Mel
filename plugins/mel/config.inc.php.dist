@@ -31,3 +31,9 @@ $rcmail_config['is_internal'] = true;
 
 // Driver name configuration (mce, mtes, ...)
 $rcmail_config['mel_driver'] = 'mce';
+
+// Affichage des boites partagées sans partage imap (partage virtuel)
+$rcmail_config['virtual_shared_mailboxes'] = false;
+
+// Nom du préfixe a utiliser pour le partage virtuel
+$rcmail_config['virtual_balp_label'] = 'Virtual shared';

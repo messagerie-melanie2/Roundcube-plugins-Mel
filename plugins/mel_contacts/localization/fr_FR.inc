@@ -21,6 +21,10 @@ $labels['settings'] = 'Paramètres';
 $labels['copy_to_contact'] = 'Ajouter à mes contacts';
 
 $labels['categories'] = 'Catégories';
+$labels['function'] = 'Fonctions';
+$labels['jobtitle'] = 'Hiérarchique : ';
+$labels['assignments'] = 'Missions : ';
+$labels['jobs'] = 'Métiers : ';
 $labels['members'] = 'Membres';
 $labels['owners'] = 'Propriétaires';
 $labels['shares'] = 'Gestionnaires';

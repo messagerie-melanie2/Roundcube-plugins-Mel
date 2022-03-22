@@ -323,6 +323,15 @@ class mtes_driver_mel extends mce_driver_mel {
     // N'ajouter les informations sur Internet que si la double auth est activé (sinon sur intranet)
     else if (mel::is_internal() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable()) {
       $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
+      // Add fonction
+      $args['form']['function'] = [
+        'name'    => $plugin->gettext('function'),
+        'content' => [
+            'jobtitle'      => array('type' => 'text', 'label' => $plugin->gettext('jobtitle')),
+            'jobs'          => array('type' => 'text', 'label' => $plugin->gettext('jobs')),
+            'assignments'   => array('type' => 'text', 'label' => $plugin->gettext('assignments')),
+        ],
+      ];
       // Add members list
       $args['form']['members'] = [
           'name'    => $plugin->gettext('members'),

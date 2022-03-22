@@ -3437,7 +3437,7 @@ class mel_workspace extends rcube_plugin
             else
                 $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
         
-            self::notify($workspace, driver_mel::gi()->getUser()->name." a ajouté le lien : $title", $this->gettext("mel_workspace.notification_content"),                  [    [
+            self::notify($workspace, (driver_mel::gi()->getUser()->name." a ajouté le lien : $title"), str_replace('<wsp/>', $workspace->title, $this->gettext("mel_workspace.notification_content2")),                  [    [
                 'href' => "./?_task=workspace&_action=workspace&_page=links&_uid=".$workspace->uid,
                 'text' => $this->gettext("mel_workspace.open"),
                 'title' => $this->gettext("mel_workspace.click_for_open"),

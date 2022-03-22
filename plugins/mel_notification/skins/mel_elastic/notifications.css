@@ -31,17 +31,16 @@ html.dark-mode #notifications-panel {
     right: 0;
     bottom: 0;
     left: 0;
-    top: 290px;
+    top: 320px;
 }
 
-html.layout-small #notifications-panel > .content,
-html.layout-phone #notifications-panel > .content {
-    top: 265px;
-}
-
-@media screen and (min-width: 1900px) {
+@media (min-width:576px) {
     #notifications-panel > .content {
-        top: 265px;
+        top: 275px;
+    }
+
+    html.layout-small #notifications-panel > .content {
+        top: 225px;
     }
 }
 

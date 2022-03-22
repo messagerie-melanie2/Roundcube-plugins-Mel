@@ -50,5 +50,6 @@ $labels["open"] = "Ouvrir";
 $labels["click_for_open"] = "Cliquez pour ouvrir l'espace de travail";
 $labels["notification_title"] = ' vous a ajouté à l\'espace de travail ';
 $labels["notification_content"] = "Vous pouvez ouvrir l'espace en cliquant sur le lien ci-dessous";
+$labels["notification_content2"] = "Vous pouvez ouvrir l'espace \"<wsp/>\" en cliquant sur le lien ci-dessous";
 
 $labels["change_title_confirmation"] = "Attention, le changement de titre de l'espace de travail ne modifiera pas le titre des modules associés (canal de discussion, Drive T, liste de diffusion ...).\r\nConfirmez-vous la demande de changement du titre de votre espace ?";

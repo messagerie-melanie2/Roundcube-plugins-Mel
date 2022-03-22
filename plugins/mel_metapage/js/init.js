@@ -302,7 +302,7 @@
                     );
                 },
                 weather: async function() {
-                    //3600000  
+                    if (rcmail.env.mel_metapage_weather_enabled !== true) return;
 
                     const maxAge = 1000 * 60;
                     const weatherKey = "weatherIcon";

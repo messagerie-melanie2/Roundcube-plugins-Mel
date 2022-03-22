@@ -3442,7 +3442,7 @@ class mel_workspace extends rcube_plugin
                 'text' => $this->gettext("mel_workspace.open"),
                 'title' => $this->gettext("mel_workspace.click_for_open"),
                 'command' => "event.click"
-            ]], true);
+            ]]);
         }
         else {
             $newLink = mel_useful_link::toLink($config->$id);

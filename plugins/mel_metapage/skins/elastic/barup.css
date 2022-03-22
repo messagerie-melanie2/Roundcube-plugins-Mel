@@ -383,7 +383,11 @@ html.touch .ariane-card-body
 
 #layout-frames
 {
-    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 html.touch .barup .tiny-rocket-chat-icon.icon-mel-message::before,

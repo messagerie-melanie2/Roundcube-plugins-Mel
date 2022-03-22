@@ -2512,11 +2512,11 @@ class mel_workspace extends rcube_plugin
             $user_find = false;
             foreach ($workspace->shares as $key => $value) {
                 if ($value->user === $user_to_delete)
-                {
-                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true));
+                {             
                     $shares = $workspace->shares;
                     unset($shares[$key]);
                     $workspace->shares = $shares;
+                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true));
                     $user_find = true;
                     break;
                 }

@@ -3436,6 +3436,13 @@ class mel_workspace extends rcube_plugin
                 $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
             else
                 $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
+        
+            self::notify($workspace, driver_mel::gi()->getUser()->name." a ajouté le lien : $title", $this->gettext("mel_workspace.notification_content"),                  [    [
+                'href' => "./?_task=workspace&_action=workspace&_page=links&_uid=".$workspace->uid,
+                'text' => $this->gettext("mel_workspace.open"),
+                'title' => $this->gettext("mel_workspace.click_for_open"),
+                'command' => "event.click"
+            ]], true);
         }
         else {
             $newLink = mel_useful_link::toLink($config->$id);
@@ -3816,7 +3823,7 @@ class mel_workspace extends rcube_plugin
         foreach ($users as $user) {
             if ($user->user !== $current_user->uid || $include_current)
             {
-                mel_notification::notify("webconf", $title, $content, $action, $user->user);
+                mel_notification::notify("workspace", $title, $content, $action, $user->user);
             }
         }
     }

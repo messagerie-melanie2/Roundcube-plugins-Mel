@@ -252,6 +252,9 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#mm-webconf'),
+            onload(){
+                if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
+            },
             configOverwrite: { 
                 hideLobbyButton: true,
                 startWithAudioMuted: false,
@@ -273,16 +276,21 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             },
             userInfo: {
                 email: rcmail.env["webconf.user_datas"].email,
-                displayName: rcmail.env["webconf.user_datas"].name.split("(")[0].split("-")[0]
+                displayName: (rcmail.env["webconf.user_datas"].name === null ? (rcmail.env["webconf.user_datas"].email ? rcmail.env["webconf.user_datas"].email : 'Bnum user') : rcmail.env["webconf.user_datas"].name)//.split("(")[0].split("-")[0]
             }
         };
 
         await wait(() => window.JitsiMeetExternalAPI === undefined); //Attente que l'api existe
 
         this.jitsii = new JitsiMeetExternalAPI(domain, options);
-        $(this.jitsii._frame).on("load", () => {
-            mel_metapage.Storage.set("webconf_token", true);
+        this.jitsii.addListener('videoConferenceJoined', () => {
+            if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
+            this.jitsii.removeListener('videoConferenceJoined', () => {});
         });
+        // this.jitsii._frame.onreadystatechange = 
+        // $(this.jitsii._frame).on("load", () => {
+        //     mel_metapage.Storage.set("webconf_token", true);
+        // });
 
         await wait(() => mel_metapage.Storage.get("webconf_token") === null); //Attente que la frame sois chargée
 
@@ -654,6 +662,7 @@ class MasterWebconfBar {
      */
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
        // console.log("Master Webconf", key);
+       $("#layout-frames").css('position', 'initial').css('width', '100%');
         ariane = html_helper.JSON.parse(ariane);
         this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
@@ -1016,6 +1025,7 @@ class MasterWebconfBar {
      */
     async hangup()
     {
+        $("#layout-frames").css('position', '');
         //L'url à lancer en quittant la webconf
         const url = "https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
 
@@ -1707,7 +1717,7 @@ class MasterWebconfBar {
             $("#layout-frames").find("iframe").css("padding-left", "");
 
         $(".webconf-frame").css("display", "");
-        $("#layout-frames").css("width", "");
+        $("#layout-frames").css("width", "100%");
         this.send("fullscreen");
 
 
@@ -2084,7 +2094,6 @@ $(document).ready(() => {
             if (window.rcmail) {
                 // Call refresh panel
                 rcmail.addEventListener('responseafterjwt', function(evt) {
-                    //console.log("rcmail.addEventListener('responseafterwebconf_jwt')", evt);
                     if (evt.response.id) {
                         rcmail.env.webconf._jwt = evt.response.jwt;
                         //rcmail.portail_open_url(evt.response.id, rcmail.env.portail_items[evt.response.id].url + evt.response.room + '?jwt=' + evt.response.jwt);
@@ -2101,8 +2110,7 @@ $(document).ready(() => {
                 rcmail.env.webconf.remove_selector();
             }
             else
-            {//
-
+            {
                 try {
                     if (parent.rcmail.env.current_frame_name === undefined)
                     {

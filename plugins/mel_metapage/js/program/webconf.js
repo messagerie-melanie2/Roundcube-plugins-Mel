@@ -2101,7 +2101,7 @@ $(document).ready(() => {
                 rcmail.env.webconf.remove_selector();
             }
             else
-            {
+            {//
 
                 try {
                     if (parent.rcmail.env.current_frame_name === undefined)

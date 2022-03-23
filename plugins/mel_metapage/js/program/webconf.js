@@ -252,6 +252,9 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             width: "100%",
             height: "100%",
             parentNode: document.querySelector('#mm-webconf'),
+            onload(){
+                if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
+            },
             configOverwrite: { 
                 hideLobbyButton: true,
                 startWithAudioMuted: false,
@@ -280,8 +283,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         await wait(() => window.JitsiMeetExternalAPI === undefined); //Attente que l'api existe
 
         this.jitsii = new JitsiMeetExternalAPI(domain, options);
-        $(this.jitsii._frame).on("load", () => {
+        this.jitsii.addListener('videoConferenceJoined', () => {
             mel_metapage.Storage.set("webconf_token", true);
+            if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
+            this.jitsii.removeListener('videoConferenceJoined', () => {});
         });
 
         await wait(() => mel_metapage.Storage.get("webconf_token") === null); //Attente que la frame sois chargée
@@ -1179,6 +1184,11 @@ class MasterWebconfBar {
             this.mozaik.addClass("active")
     }
 
+    toggle_participantspane()
+    {
+        this.send('toggle_participantspane');
+    }
+
     /**
      * Passe en mode tile view ou inversement
      * @param {boolean} send Doit être envoyé à la frame webconf
@@ -1847,6 +1857,10 @@ class ListenerWebConfBar
     toggle_film_strip()
     {
         this.webconf.jitsii.executeCommand('toggleTileView');
+    }
+
+    toggle_participantspane() {
+        this.webconf.jitsii.executeCommand('toggleParticipantsPane');
     }
 
     nextcloud_open()

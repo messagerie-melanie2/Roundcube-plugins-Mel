@@ -22,7 +22,8 @@ div#user-picture {
 }
 
 div#user-big-picture {
-    background-color: aliceblue;
+    background-color: #9e9e9e;
+    color: white;
     /* border: 1px solid #777; */
     width: 88px;
     height: 88px;
@@ -32,7 +33,7 @@ div#user-big-picture {
 }
 
 html.dark-mode div#user-big-picture {
-    background-color: #181C28;
+    background-color: #323f4b;
     /* border: 1px solid aliceblue; */
 }
 
@@ -229,11 +230,17 @@ html.dark-mode #groupoptions-user .menu a.user-logout:hover {
     height: 100%;
 }
 
-.no-image-avatar {
+.no-image {
   position: absolute;
   top: 50%;
   left: 50%;
-  font-size: 30px;
-  /* color: white; */
+  
   transform: translate(-50%, -50%);
+}
+.no-image.avatar {
+  font-size: 30px;
+}
+
+.no-image.big-avatar {
+  font-size: 50px;
 }

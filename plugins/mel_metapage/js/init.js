@@ -905,14 +905,14 @@ $(document).ready(() => {
             querry.html('<img alt="" src=' + rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
             let image = querry.find("img")[0];
             image.onerror = function() {
-                $("#user-picture").html("<span class='no-image-avatar'>" + rcmail.env.username.slice(0, 1).toUpperCase() + "</span>");
+                $("#user-picture").html("<span class='no-image avatar'>" + rcmail.env.username.slice(0, 1).toUpperCase() + "</span>");
             };
 
             let querry_big = $("#user-big-picture");
             querry_big.html('<img alt="" src=' + rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
             let image_big = querry_big.find("img")[0];
             image_big.onerror = function() {
-                $("#user-big-picture").html("<span class='no-image-avatar'>" + rcmail.env.username.slice(0, 1).toUpperCase() + "</span>");
+                $("#user-big-picture").html("<span class='no-image big-avatar'>" + rcmail.env.username.slice(0, 1).toUpperCase() + "</span>");
             };
         });
 

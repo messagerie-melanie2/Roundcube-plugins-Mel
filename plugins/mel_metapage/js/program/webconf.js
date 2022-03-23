@@ -661,8 +661,6 @@ class MasterWebconfBar {
     * @param {boolean} is_framed Si la webconf est dans une frame ou non 
      */
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
-       // console.log("Master Webconf", key);
-       $("#layout-frames").css('position', 'initial').css('width', '100%');
         ariane = html_helper.JSON.parse(ariane);
         this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
@@ -1025,7 +1023,6 @@ class MasterWebconfBar {
      */
     async hangup()
     {
-        $("#layout-frames").css('position', '');
         //L'url à lancer en quittant la webconf
         const url = "https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
 
@@ -1717,7 +1714,7 @@ class MasterWebconfBar {
             $("#layout-frames").find("iframe").css("padding-left", "");
 
         $(".webconf-frame").css("display", "");
-        $("#layout-frames").css("width", "100%");
+        $("#layout-frames").css("width", "");
         this.send("fullscreen");
 
 

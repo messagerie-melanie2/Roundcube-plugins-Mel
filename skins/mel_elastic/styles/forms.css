@@ -482,3 +482,7 @@ input.input-mel.error {
 		margin-left: 3px;
 	}
 }
+
+#mailsearchform {
+  box-shadow: none;
+}

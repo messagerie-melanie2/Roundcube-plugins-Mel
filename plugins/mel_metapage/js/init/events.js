@@ -299,6 +299,15 @@ if (rcmail && window.mel_metapage)
         on_switched_color_mode(MEL_ELASTIC_UI.color_mode());
     });
 
+    rcmail.addEventListener('responseaftersearch', function() {
+      $('#mail-search-icon').addClass("success-search");
+      $('#mail-search-border').addClass("border-success-search");
+    })
+    rcmail.addEventListener('responseafterlist', function(){
+      $('#mail-search-icon').removeClass("success-search");
+      $('#mail-search-border').removeClass("border-success-search");
+    })
+
     rcmail.addEventListener('storage.change', (datas) => {
         //debugger;
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
@@ -936,8 +945,6 @@ if (rcmail && window.mel_metapage)
             new ResizeObserver(resize_mail).observe($("#layout-content")[0]);
             resize_mail();
         }
-
-
       });
 
       if (parent === window)

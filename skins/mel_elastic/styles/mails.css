@@ -635,3 +635,19 @@ html.dark-mode .mel-input-container.form-control.input-mel .icon-mel-search.succ
 html.dark-mode .mel-input-container.form-control.input-mel.border-success-search {
   border-color: #4bbc52 !important;
 }
+#mail-search-border {
+  height: calc(1.5em + .75rem + 2px);margin: 0 15px;
+	width: 92%;
+  position:relative;
+  border: none;
+}
+
+html.dark-mode #mail-search-border {
+  border: 1px solid #E1C58F
+}
+#mail-search-icon {
+  font-size: 1.5rem;
+  margin-top: 4px;
+	display: inline-block;
+	color: #2c363a;
+}

@@ -38,7 +38,7 @@ abstract class Mel implements IMel {
         return !empty(rcube::get_instance()->get_user_id());
     }
 
-    protected function redirect_to_rc($task, $action = '', ...$args)
+    protected function redirect_to_rc($task, $action = '', $args)
     {
         if (!empty($action)) $action = "&_action=$action";
 
@@ -58,6 +58,27 @@ abstract class Mel implements IMel {
     {
         header("Location: $url");
         exit();
+    }
+
+    protected function get_input($key, $default = null)
+    {
+        return utils::get_input_value($key, utils::INPUT_GET) ?? $default;
+    }
+
+    protected function include_file($path)
+    {
+        include_once INSTALL_PATH.$path;
+    }
+
+    protected function require_file($path)
+    {
+        require_once INSTALL_PATH.$path;
+    }
+
+    protected function get_config($plugin_name)
+    {
+        require_once INSTALL_PATH."/plugins/$plugin_name/config.inc.php";
+        return $config;
     }
 
     public abstract function run(...$args);

@@ -7,23 +7,29 @@ class Webconf extends Mel{
     
     public function __construct() {
         parent::__construct();
-        $this->key = utils::get_input_value('_key', utils::INPUT_GET);
-        $this->ariane = utils::get_input_value('_ariane', utils::INPUT_GET);
-        $this->wsp = utils::get_input_value('_wsp', utils::INPUT_GET);
+        $this->key = $this->get_input('_key');
+        $this->ariane = $this->get_input('_ariane');
+        $this->wsp = $this->get_input('_wsp');
     }
 
     public function run(...$args)
     {
-        //https://roundcube.ida.melanie2.i2/public/webconf/?_key=H8AU5QDX2NSK&_ariane=dev-du-bnum-1/group&
-        //https://mel.din.developpement-durable.gouv.fr/lab-bnum/?_task=webconf&_key=H8AU5QDX2NSK&_ariane=dev-du-bnum-1/group&
         if ($this->isConnected())
-            $this->redirect_to_rc('webconf', '', [
-                '_key' => $this->key,
-                '_ariane' => $this->ariane,
-                '_wsp' => $this->wsp
-            ]);
-        else
-            $this->redirect('https://webconf.numerique.gouv.fr/'.$this->key);
+        {
+            $config = ['_key' => $this->key];
+
+            if (!empty($this->ariane)) $config['_ariane'] = $this->ariane;
+            if (!empty($this->wsp)) $config['_wsp'] = $this->wsp;
+
+            $this->redirect_to_rc('webconf', '', $config);
+        }
+        else $this->redirect($this->get_webconf_url().$this->key);
+    }
+
+    private function get_webconf_url()
+    {
+        $config = $this->get_config('mel_metapage');
+        return $config['web_conf'] . ($config['web_conf'][strlen($config['web_conf']) - 1]  === '/' ? '' : '/');
     }
 }
 Mel::addPlugin(new Webconf());

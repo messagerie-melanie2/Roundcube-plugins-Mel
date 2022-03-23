@@ -14,6 +14,7 @@ div#user-picture {
     width: 50px;
     height: 50px;
     border-radius: 100%;
+    margin-top: 2px;
     /* padding-top: 5px; */
     position: absolute;
     top: 3px;
@@ -22,18 +23,20 @@ div#user-picture {
 
 div#user-big-picture {
     background-color: aliceblue;
-    border: 1px solid #777;
+    /* border: 1px solid #777; */
     width: 88px;
     height: 88px;
     border-radius: 100%;
     transition: .3s ease;
+  
 }
 
 html.dark-mode div#user-big-picture {
-    border: 1px solid aliceblue;
+    background-color: #181C28;
+    /* border: 1px solid aliceblue; */
 }
 
-.change_avatar_picture:hover user-big-picture {
+.change_avatar_picture:hover #user-big-picture {
     opacity: 0.4;
 }
 

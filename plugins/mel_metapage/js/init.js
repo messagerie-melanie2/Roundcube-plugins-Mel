@@ -905,7 +905,7 @@ $(document).ready(() => {
             querry.html('<img alt="" src=' + rcmail.env.rocket_chat_url + "avatar/" + rcmail.env.username + ' />');
             let image = querry.find("img")[0];
             image.onerror = function() {
-                $("#user-picture").html("<span>" + rcmail.env.username.slice(0, 2) + "</span>");
+                $("#user-picture").html("<span class='no-image-avatar'>" + rcmail.env.username.slice(0, 1).toUpperCase() + "</span>");
             };
         });
 

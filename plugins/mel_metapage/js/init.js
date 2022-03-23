@@ -337,10 +337,10 @@
                         // console.log("success", pos);
                         let crd = pos.coords;
 
-                        console.log('Your current position is:');
-                        console.log(`Latitude : ${crd.latitude}`);
-                        console.log(`Longitude: ${crd.longitude}`);
-                        console.log(`More or less ${crd.accuracy} meters.`);
+                        // console.log('Your current position is:');
+                        // console.log(`Latitude : ${crd.latitude}`);
+                        // console.log(`Longitude: ${crd.longitude}`);
+                        // console.log(`More or less ${crd.accuracy} meters.`);
 
                         mel_metapage.Functions.post(mel_metapage.Functions.url("mel_metapage", "weather"), {
                                 _lat: crd.latitude,
@@ -363,8 +363,6 @@
                                 } catch (error) {
 
                                 }
-
-                                console.log("datas", datas);
                             }, () => {
                                 mel_metapage.Storage.remove(weatherKey);
                             });

@@ -1,3 +1,2 @@
-$(document).ready(() => {
-    //m_mp_createworkspace();
-});
+// $(document).ready(() => {
+// });

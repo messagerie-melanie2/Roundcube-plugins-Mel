@@ -156,7 +156,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         else if (this.have_ariane())
             config["_ariane"] = (`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
         
-        const url = MEL_ELASTIC_UI.url("webconf", "", config);
+        const url = mel_metapage.Functions.public_url(rcmail.env['webconf.public_url'], config)//MEL_ELASTIC_UI.url("webconf", "", config);
         mel_metapage.Functions.title(url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
     }
 
@@ -634,7 +634,7 @@ Webconf.update_room_name = function()
     }
     else
     {
-        const url = MEL_ELASTIC_UI.url("webconf", "", {_key:val});
+        const url = mel_metapage.Functions.public_url(rcmail.env['webconf.public_url'], {_key:val});
         mel_metapage.Functions.title(url);
         
         $("#webconf-enter").removeClass("disabled").removeAttr("disabled", "disabled");
@@ -878,8 +878,9 @@ class MasterWebconfBar {
              document.execCommand ("copy"); 
              document.body.removeChild (tempInput); 
              }
-             copyOnClick(rcmail.env["webconf.base_url"] + "/" + this.webconf.key);
-             rcmail.display_message(`${rcmail.env["webconf.base_url"] + "/" + this.webconf.key} copier dans le presse-papier.`, "confirmation")
+             const url = mel_metapage.Functions.public_url('webconf', {_key:this.webconf.key});
+             copyOnClick(url);
+             rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
     }
 
     /**

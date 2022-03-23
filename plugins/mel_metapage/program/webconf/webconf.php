@@ -5,6 +5,7 @@ include_once __DIR__."/../program.php";
 
 class Webconf extends Program
 {
+    public const PUBLIC_URL = 'webconf';
     private $tmp_key;
 
     public function __construct($rc, $plugin) {
@@ -72,6 +73,8 @@ class Webconf extends Program
             $this->log_webconf($key);
             $this->set_env_var("already_logged", "logged");
         }
+
+        $this->set_env_var("webconf.public_url", self::PUBLIC_URL);
 
         $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");

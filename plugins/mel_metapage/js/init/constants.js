@@ -464,6 +464,23 @@ const mel_metapage = {
             return rcmail.get_task_url(url, window.location.origin + window.location.pathname)
         },
 
+        public_url(path, args = null)
+        {
+            let url = window.location.origin + window.location.pathname + (window.location.pathname[window.location.pathname.length - 1] === '/' ? '' : '/') + 'public/' + path;
+
+            if (args !== null)
+            {
+                for (const key in args) {
+                    if (Object.hasOwnProperty.call(args, key)) {
+                        const element = args[key];
+                        url += (url.includes('?') ? "&" : '?') + key + "=" + element
+                    }
+                }
+            }
+
+            return url;
+        },
+
         /**
          * Change de frame, même si l'on est pas depuis "TOP"
          * @param {string} frame Frame à ouvrir

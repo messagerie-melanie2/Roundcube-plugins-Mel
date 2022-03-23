@@ -42,6 +42,7 @@
 	cursor: pointer;
 	background-color: #5870BF;
 	transition: all 0.1s ease-in;
+	z-index: 5;
 }
 
 .webconf-minimize:hover,

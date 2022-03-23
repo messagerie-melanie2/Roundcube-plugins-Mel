@@ -2046,7 +2046,7 @@ $(document).ready(() => {
                         if ($(`iframe#${id}`).length > 0)
                         {
                             $(`iframe#${id}`).css("padding-right", `${window.webconf_master_bar.webconf.ariane.size}px`);
-                            $("#layout-frames").css("width", "");
+                            $("#layout-frames").css("width", "100%");
                         }
                         else
                         {

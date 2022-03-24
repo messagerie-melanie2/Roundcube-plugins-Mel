@@ -497,11 +497,10 @@ $(document).ready(() => {
                     const alias_mel_rcmail_show_message = rcmail.show_message
                     rcmail.show_message = function(id, safe, preview)
                     {
-                        const openInPopUp = !preview && this.env.message_extwin && !this.env.extwin;
+                        const openInPopUp = !preview && !this.env.message_extwin && !this.env.extwin;
 
                         if (openInPopUp) {
                             let url = this.params_from_uid(id, {_caps: this.browser_capabilities()});
-                            url._framed = 1;
 
                             if (safe) url._safe = 1;
                             url._extwin = 1;
@@ -509,10 +508,21 @@ $(document).ready(() => {
                             new Windows_Like_PopUp(top.$("body"), 
                             {
                                 title:"Ouverture d'un mail...",
-                                content:`<center><div class='spinner-grow'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
-                                afterCreatingContent($html, box) {
+                                content:`<center><div class='spinner-grow'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
+                                afterCreatingContent($html, box, popup) {
                                     box.content.find("iframe").on('load', () => {
+                                        let $iframe = box.content.find("iframe");
+                                        const title = $iframe[0].contentDocument.title;
+
+                                        box.title.find('h3').html(title);
                                         box.content.find(".spinner-grow").remove();
+                                        $iframe.css('display', '');
+                                        $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
+
+                                        if (popup._minified_header)
+                                        {
+                                            popup._minified_header.find('h3').html((title.length > 20 ? (title.slice(0, 20) + '...') : title));
+                                        }
                                     });
                                     box.content.find(".spinner-grow").css("width", '30%')
                                     .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');

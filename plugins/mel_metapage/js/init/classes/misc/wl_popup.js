@@ -134,7 +134,7 @@ class Windows_Like_PopUp extends MetapageObject
 
         //Ajout de actions
         if (settings.afterCreatingContent !== null)
-            settings.afterCreatingContent(this.parent.find(jid), this.box);
+            settings.afterCreatingContent(this.parent.find(jid), this.box, this);
 
         return this;
     }
@@ -162,10 +162,12 @@ class Windows_Like_PopUp extends MetapageObject
             this.expand();
         });
         this.box.get.css("display", "none");
+        this._minified_header = $header;
     }
 
     expand(){
-        this.settings.context.$(`#minified-${this.id}`).remove();
+        this._minified_header.remove();
+        this._minified_header = null;
         this.box.minifier.find("span").addClass(this.settings.icon_minify).removeClass(this.settings.icon_expend);
         this.box.get.css("display", "");
     }

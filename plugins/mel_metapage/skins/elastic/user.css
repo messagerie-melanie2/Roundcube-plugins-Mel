@@ -29,12 +29,16 @@ div#user-big-picture {
     height: 88px;
     border-radius: 100%;
     transition: .3s ease;
-  
+    overflow: hidden;
 }
 
 html.dark-mode div#user-big-picture {
     background-color: #323f4b;
     /* border: 1px solid aliceblue; */
+}
+
+div#user-big-picture img {
+    height: 100%;
 }
 
 .change_avatar_picture:hover #user-big-picture {

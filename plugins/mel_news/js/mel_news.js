@@ -371,7 +371,7 @@ $(document).ready(async () => {
                 }).appendTo(this.modal.footer.querry);
 
                 $('label[for="mel-publish-body"]').css("display", "inline-block").css("width", 'auto')
-                .parent().append(`<div id=div-publish-notify style="display:inline-block;float:right;margin-top:15px;"><input id=publish-notify type=checkbox /> <label for="publish-notify">Notifier ?</label></div>`);
+                .parent().append(`<div id=div-publish-notify style="display:none;/*inline-block*/;float:right;margin-top:15px;"><input id=publish-notify type=checkbox /> <label for="publish-notify">Notifier ?</label></div>`);
 
                 $('label[for="mel-publish-body"]').after($('#div-publish-notify'));
 
@@ -544,7 +544,7 @@ $(document).ready(async () => {
 
                         let _post = news.toPostDatas("news-generated-tmp-id");
 
-                        if ($("#publish-notify")[0].checked === true) _post["_notify"] = true;
+                        //if ($("#publish-notify")[0].checked === true) _post["_notify"] = true;
                             
                         mel_metapage.Functions.post(
                             mel_metapage.Functions.url("news", 'publish'),

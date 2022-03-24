@@ -492,6 +492,41 @@ $(document).ready(() => {
                         }
                         document.getElementsByTagName('head')[0].appendChild(style);
                     }
+
+                    //message_extwin @Rotomeca
+                    const alias_mel_rcmail_show_message = rcmail.show_message
+                    rcmail.show_message = function(id, safe, preview)
+                    {
+                        const openInPopUp = !preview && this.env.message_extwin && !this.env.extwin;
+
+                        if (openInPopUp) {
+                            let url = this.params_from_uid(id, {_caps: this.browser_capabilities()});
+                            url._framed = 1;
+
+                            if (safe) url._safe = 1;
+                            url._extwin = 1;
+                            url = this.url('show', url);
+                            new Windows_Like_PopUp(top.$("body"), 
+                            {
+                                title:"Ouverture d'un mail...",
+                                content:`<center><div class='spinner-grow'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
+                                afterCreatingContent($html, box) {
+                                    box.content.find("iframe").on('load', () => {
+                                        box.content.find(".spinner-grow").remove();
+                                    });
+                                    box.content.find(".spinner-grow").css("width", '30%')
+                                    .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
+                                    
+                                },
+                                width:"calc(100% - 60px)",
+                                height:"calc(100% - 60px)",
+                                context:top,
+                                fullscreen:true
+                            }
+                            );
+                        }
+                        else alias_mel_rcmail_show_message.call(this, id, safe, preview);
+                    };
                 
                 }
                 else if (rcmail.env.action ==="preview" || rcmail.env.action ==="show"){

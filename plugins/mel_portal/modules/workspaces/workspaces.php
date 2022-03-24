@@ -73,7 +73,7 @@ class Workspaces extends Module
         } 
         $title = html::div([],
             html::tag("h2", ["style" => "float:left;margin-top:15px;margin-bottom: -5px;"], $this->text("workspaces")).
-            html::tag("button", ["title" => "Afficher la liste des espaces de travail", "class" => "mel-button", "style" => "float:right;", "onclick" => "mel_metapage.Functions.change_frame('wsp')"], html::tag("span", [], "Voir tout").html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
+            html::tag("button", ["id" => "wsp-see-all","title" => "Afficher la liste des espaces de travail", "class" => "mel-button", "style" => "float:right;"], html::tag("span", [], "Voir tout").html::tag("span", ["class" => "icon-mel-arrow-right plus"]))
         );
 
         return $title.html::div(["class" => '--row'], $html);

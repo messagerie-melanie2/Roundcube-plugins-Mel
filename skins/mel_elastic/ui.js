@@ -518,6 +518,17 @@ $(document).ready(() => {
                                         box.content.find(".spinner-grow").remove();
                                         $iframe.css('display', '');
                                         $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
+                                        $iframe[0].contentWindow.rcmail.addEventListener('message.deleted', async (event) => {
+                                            await wait(() =>{
+                                                if (!$iframe[0].contentWindow.rcmail && !$iframe[0].contentWindow.rcmail.busy) return false;
+
+                                                return $iframe[0].contentWindow.rcmail.busy === true
+                                            });
+                                            try {
+                                                rcmail.command('checkmail');
+                                            } catch (error) { }
+                                            box.close.click();
+                                        });
 
                                         if (popup._minified_header)
                                         {
@@ -536,8 +547,7 @@ $(document).ready(() => {
                             );
                         }
                         else alias_mel_rcmail_show_message.call(this, id, safe, preview);
-                    };
-                
+                    };                
                 }
                 else if (rcmail.env.action ==="preview" || rcmail.env.action ==="show"){
                     $("#message-header .headers-table td").each((i,e) => {
@@ -571,6 +581,16 @@ $(document).ready(() => {
                         }
                     })
                 }
+            
+                const alias_mel_rcmail_delete_messages = rcmail.delete_messages;
+                rcmail.delete_messages = function(event) {
+                    let result = alias_mel_rcmail_delete_messages.call(this, event);
+
+                    rcmail.triggerEvent('message.deleted', event);
+
+                    return result;
+                }
+
             }
 
             return this.setup_mails_classes().setup_compose();

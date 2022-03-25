@@ -2301,6 +2301,17 @@ html.touch .wlp_box.fullscreen{
     overflow: auto;
 }
 
+.wlp-minifieds.auto
+{
+    left:60px;
+    width: auto;;
+}
+
+html.touch .wlp-minifieds.auto
+{
+    left:0;
+}
+
 .wlp-minifieds .wlp-header
 {
     display: inline-block;

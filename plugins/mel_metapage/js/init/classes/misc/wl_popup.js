@@ -35,7 +35,7 @@ class Windows_Like_PopUp extends MetapageObject
             onCreatingContent:(html) => html,
             afterCreatingContent:($html, box) => {},
             onminifiedListCreated:($minified) => {
-                $minified.css("left", "60px").css("width", "calc(100% - 60px)");
+                $minified.addClass('auto');//.css("left", "60px").css("width", "auto");
             },
             width:"100%",
             height:"100%",

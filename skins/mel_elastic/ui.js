@@ -513,21 +513,25 @@ $(document).ready(() => {
                                     box.content.find("iframe").on('load', () => {
                                         let $iframe = box.content.find("iframe");
                                         const title = $iframe[0].contentDocument.title;
+                                        const delete_action = function delete_action () {
+                                            try {
+                                                rcmail.command('checkmail');
+                                            } catch (error) { }
+                                            box.close.click();
+                                        };
 
                                         box.title.find('h3').html(title);
                                         box.content.find(".spinner-grow").remove();
                                         $iframe.css('display', '');
                                         $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
                                         $iframe[0].contentWindow.rcmail.addEventListener('message.deleted', async (event) => {
-                                            await wait(() =>{
-                                                if (!$iframe[0].contentWindow.rcmail && !$iframe[0].contentWindow.rcmail.busy) return false;
-
-                                                return $iframe[0].contentWindow.rcmail.busy === true
-                                            });
-                                            try {
-                                                rcmail.command('checkmail');
-                                            } catch (error) { }
-                                            box.close.click();
+                                            delete_action();
+                                        });
+                                        $iframe[0].contentWindow.rcmail.addEventListener('message.moved', async (event) => {
+                                            delete_action();
+                                        });
+                                        $iframe[0].contentWindow.rcmail.addEventListener('message.junk', async (event) => {
+                                            delete_action();
                                         });
 
                                         if (popup._minified_header)
@@ -581,15 +585,26 @@ $(document).ready(() => {
                         }
                     })
                 }
-            
-                const alias_mel_rcmail_delete_messages = rcmail.delete_messages;
-                rcmail.delete_messages = function(event) {
-                    let result = alias_mel_rcmail_delete_messages.call(this, event);
 
-                    rcmail.triggerEvent('message.deleted', event);
-
-                    return result;
+                const alias_mel_rcmail_permanently_remove_messages = rcmail.permanently_remove_messages;
+                rcmail.permanently_remove_messages = function() {
+                    alias_mel_rcmail_permanently_remove_messages.call(this);
+                    rcmail.triggerEvent('message.deleted');
                 }
+
+                const alias_mel_rcmail_move_messages = rcmail.move_messages;
+                rcmail.move_messages = function(mbox, event, uids) {
+                    alias_mel_rcmail_move_messages.call(this);
+                    rcmail.triggerEvent('message.moved', {mbox, uids, e:event});
+                }
+
+                rcmail.addEventListener('responsebeforeplugin.markasjunk.junk', () => {
+                    rcmail.triggerEvent('message.junk', {junk:true});
+                });
+
+                rcmail.addEventListener('responsebeforeplugin.markasjunk.not_junk', () => {
+                    rcmail.triggerEvent('message.junk', {junk:false});
+                });
 
             }
 

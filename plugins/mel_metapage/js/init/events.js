@@ -743,7 +743,7 @@ if (rcmail && window.mel_metapage)
         if (menu.menu_name == 'messagelist') {
 
           // add a shortcut to the folder management screen to the end of the menu
-          menu.menu_source.push({label: rcmail.gettext('new-mail-from', "mel_metapage"), command: 'new-mail-from', classes: 'compose mel-new-compose options'});
+          //menu.menu_source.push({label: rcmail.gettext('new-mail-from', "mel_metapage"), command: 'new-mail-from', classes: 'compose mel-new-compose options'});
           menu.menu_source.push({label: 'Gérer les étiquettes', command: 'gestion_labels', classes: 'ct-tb'});
       
           menu.addEventListener("beforeactivate", (p) => {

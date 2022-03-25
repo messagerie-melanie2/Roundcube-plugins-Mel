@@ -455,8 +455,8 @@ class mel_metapage extends rcube_plugin
         $this->add_button(array(
             'command' => "new-mail-from",
             // 'href' => './?_task=mail&_action=compose',
-            'class'	=> 'compose mel-new-compose options',
-            'classsel' => 'compose mel-new-compose options',
+            'class'	=> 'compose mel-new-compose options rcm-active',
+            'classsel' => 'compose mel-new-compose options rcm-active',
             'innerclass' => 'inner',
             'label'	=> 'mel_metapage.new-mail-from',
             'title' => '',

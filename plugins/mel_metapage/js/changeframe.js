@@ -667,6 +667,8 @@ async function ChangeToolbar(_class, event, otherDatas = null)
     {
         const url = mel_metapage.Functions.url("workspace", "workspace", {_uid:uid, _page:_class});
         window.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+        if (window !== top)
+            top.history.replaceState({}, document.title, url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
     }
 }
 

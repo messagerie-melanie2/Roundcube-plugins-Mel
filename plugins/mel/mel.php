@@ -183,7 +183,7 @@ class mel extends rcube_plugin
         && !isset($_GET['_extwin'])
         && !isset($_GET['_framed'])
         && $this->rc->task != 'login' 
-        && $this->rc->task == 'logout'
+        && $this->rc->task != 'logout'
       ) {
         if (driver_mel::gi()->getUser()->load(['lastname', 'firstname', 'email', 'service'])) {
           $this->rc->output->set_env('firstname', driver_mel::gi()->getUser()->firstname);

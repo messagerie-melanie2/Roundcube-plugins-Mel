@@ -191,14 +191,26 @@ if (rcmail)
 
                     parent.remove();
 
-                    mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, false, true).then(() => {  
+                    let args = null;
+
+                    try {
+                        if (url.includes('&'))
+                        {
+                            Enumerable.from(url.split('&')).where(x => x.includes('=') && !x.includes('task')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
+                            args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+                        }
+                    } catch (error) {
+                        
+                    }
+
+                    mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, true, false, args)/*.then(() => {  
                         const contract = mm_st_ClassContract(rcmail.env.current_frame_name);
                         //console.log("rcmail.env.current_frame_name", rcmail.env.current_frame_name, contract, $(`iframe.${contract}-frame`), `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`);                     
                         $(`iframe.${contract}-frame`)[0].src = `${url}${(url[url.length-1] === '&' ? '' : '&')}_is_from=iframe`;
                         rcmail.set_busy(false);
                         rcmail.clear_messages();
                         mel_metapage.Functions.change_frame(rcmail.env.current_frame_name, true);
-                    });
+                    })*/;
                     
 
                 }

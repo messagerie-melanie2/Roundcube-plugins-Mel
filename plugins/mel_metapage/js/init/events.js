@@ -1005,7 +1005,11 @@ $(document).ready(() => {
         /**
          * Tâche lié au Trello
          */
-        kanban:"kanban"
+        kanban:"kanban",
+        /**
+         * Tâche lié à la visioconférence
+         */
+        webconf:"webconf"
     }
 
     /**
@@ -1074,6 +1078,15 @@ $(document).ready(() => {
                 do {
                     reloop = false;
                     switch ((_switch === null ? null : _switch.value)) {
+                        case plugins.webconf:
+                            const key = url.replace(_switch.key, '').replaceAll('/', '');
+
+                            top.webconf_helper.go(key, null, '@home');
+
+                            if (after !== null) after();
+                            
+                            event.preventDefault();
+                            break;
                         case plugins.drive:
 
                             const stockage_url = _switch.url !== undefined ? decodeURIComponent(_switch.url) : decodeURIComponent(url);

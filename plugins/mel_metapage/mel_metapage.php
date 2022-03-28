@@ -206,6 +206,8 @@ class mel_metapage extends rcube_plugin
             $this->rc->output->set_env("compose_option", rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET));
         }
 
+        self::add_url_spied($this->rc->config->get("web_conf"), 'webconf');
+
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")
         {

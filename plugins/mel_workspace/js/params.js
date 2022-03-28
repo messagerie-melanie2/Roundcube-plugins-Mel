@@ -566,8 +566,8 @@
                     this.change_icons();
                 });
             }).always(async () => {
-                if (app === "doc")
-                    window.location.reload();
+                if (true || app === "doc")
+                    this.reload();
                 else {
                     await this.ajax(this.url("PARAMS_update_services"), {
                         _uid:this.uid
@@ -583,6 +583,17 @@
                     });
                 }
             });
+        }
+
+        reload()
+        {
+            if (window !== top) window.location.href = `${window.location.href}&_is_from=iframe`;
+            else
+            {
+                $('.workspace-frame').remove();
+                rcmail.set_busy(false);
+                rcmail.command('refreshFrame');
+            }
         }
 
         update_toolbar()

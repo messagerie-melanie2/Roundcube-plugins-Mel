@@ -376,14 +376,25 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
         }
     });
 
+    let _bool;
     $("."+mm_frame).each((i,e) => {
         //console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
         //e.classList.contains("webconf-frame") , window.webconf_helper.already());
 
-        if ((mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already()))
-            return;
+    try {
+        _bool = (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already());
+        if (!_bool) e.style.display = "none";
+    } catch (error) {
+        console.warn('/!\\[changepage]', error);
+        try {
+            if (!(mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame"))) e.style.display = "none";
+            if (!(window.webconf_helper && e.classList.contains("webconf-frame") && window.webconf_helper.already())) e.style.display = "none";
+        } catch (error) {
+            console.error('###[changepage]', error);
+        }
+    }
 
-        e.style.display = "none";
+        
     });//.css("display", "none");
 
     $(".a-frame").css("display", "none");
@@ -537,7 +548,6 @@ metapage_frames.addEvent("editFrame", (eClass, changepage, isAriane, frame) => {
 });
 
 metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, actions) => {
-
     try {
         //debugger;//console.log("context", $("."+eClass+"-frame")[0].contentWindow.location)
         let querry_content = $("."+eClass+"-frame")[0].contentWindow;//.contents();
@@ -557,7 +567,7 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
         }
         
     } catch (error) {
-        console.error("###[onload|querry_content]", error);
+        //console.error("###[onload|querry_content]", error);
     }
 
     rcmail.set_busy(false);

@@ -155,7 +155,6 @@ if (rcmail)
             }, true);
 
             rcmail.register_command("refreshFrame", () => {
-
                 let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);
 
                 if (rcmail.env.current_frame_name === "discussion")
@@ -188,6 +187,7 @@ if (rcmail)
                         parent = $(`.${mm_st_ClassContract(key)}-frame`);
 
                     }
+                    else rcmail.env.current_frame_name = mm_st_ClassContract(rcmail.env.current_frame_name)
 
                     parent.remove();
 
@@ -196,7 +196,7 @@ if (rcmail)
                     try {
                         if (url.includes('&'))
                         {
-                            Enumerable.from(url.split('&')).where(x => x.includes('=') && !x.includes('task')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
+                            args = Enumerable.from(url.split('&')).where(x => x.includes('=') && !x.includes('task')).toJsonDictionnary(x => x.split('=')[0], x => x.split('=')[1]);
                             args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
                         }
                     } catch (error) {

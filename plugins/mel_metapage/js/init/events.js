@@ -519,14 +519,17 @@ if (rcmail && window.mel_metapage)
         {
             if (querry.attr("href").includes(rcmail.env["webconf.base_url"]))
             {
+                querry.data("spied", true);
                 querry.click((e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     modal.close();
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = categoryExist && event.categories[0].includes("ws#") ? null : "@home";
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
                     console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     setTimeout(() => {
+                        rcmail.set_busy(false);
                         window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     }, 10);
                 });

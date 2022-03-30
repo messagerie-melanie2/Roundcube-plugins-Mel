@@ -959,8 +959,7 @@ html.dark-mode.iframe #eventedit .alarms-input .input-group-text
     color: #E1C58F;
 }
 
-html.dark-mode .ui.alert.boxinformation,
-html.dark-mode #mailsearchlist
+html.dark-mode .ui.alert.boxinformation
 {
     background-color: #323F4B !important;
 }

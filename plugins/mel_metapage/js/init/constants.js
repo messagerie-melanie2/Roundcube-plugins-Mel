@@ -763,7 +763,6 @@ const mel_metapage = {
          */
         webconf_url(url)
         {
-            debugger;
             let val = url.toUpperCase();
             
             if (val.includes(rcmail.env["webconf.base_url"].toUpperCase())) {

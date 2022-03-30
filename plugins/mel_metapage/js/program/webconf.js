@@ -207,7 +207,6 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
-        debugger;
         rcmail.triggerEvent("init_ariane", "mm-ariane");
         this.busy(); //loading
         mel_metapage.Storage.remove("webconf_token");
@@ -293,7 +292,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         await wait(() => mel_metapage.Storage.get("webconf_token") === null); //Attente que la frame sois chargée
 
         mel_metapage.Storage.remove("webconf_token");
-debugger;
+        
         if (this.have_ariane())
             $("#mm-ariane").css("display", "");
 

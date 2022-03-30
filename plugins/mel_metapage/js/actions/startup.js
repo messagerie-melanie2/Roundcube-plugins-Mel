@@ -693,7 +693,6 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 function m_mp_ChangeLasteFrameInfo(force = false)
 {
-    debugger;
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
 

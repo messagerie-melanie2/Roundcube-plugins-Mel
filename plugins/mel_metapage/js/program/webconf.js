@@ -868,6 +868,7 @@ class MasterWebconfBar {
                 this.toolbar_item("jitsi-select").css("display", "");  
             }
             this.logo.removeClass("hidden-toolbar");
+            $(".webconf-toolbar").css("border", '');
 
             if (MasterWebconfBar.isFirefox())
             {
@@ -881,6 +882,7 @@ class MasterWebconfBar {
             this.toolbar_item("empty").css("display", "");
             this.logo.addClass("hidden-toolbar");   
             this.toolbar_item("jitsi-select").css("display", "none");  
+            $(".webconf-toolbar").css("border", "none");
         }
 
         if (this.chevrons.video.hasClass("stop-rotate"))

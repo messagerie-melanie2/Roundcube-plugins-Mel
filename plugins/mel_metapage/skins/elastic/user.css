@@ -128,17 +128,21 @@ html.dark-mode #groupoptions-user {
     bottom: 5px;
     padding: 5px 10px;
     color: #363A5B;
+    border-style: solid;
+    border-width: thin;
+    border-color: transparent;
+    border-radius: 100%;
 }
 
 #groupoptions-user .menu a.more-options:hover {
-    background: #DBDBDB !important;
-    color: #363A5B !important;
+    background: #DBDBDB;
+    color: #363A5B;
 }
 
-html.dark-mode #groupoptions-user .menu a.more-options:hover {
+/* html.dark-mode #groupoptions-user .menu a.more-options:hover {
     background: #283540 !important;
     color: #363A5B !important;
-}
+} */
 
 .menu a.more-options:not(.disabled):focus {
     background-color: transparent !important;

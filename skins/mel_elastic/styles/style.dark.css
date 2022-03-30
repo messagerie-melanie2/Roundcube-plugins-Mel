@@ -207,6 +207,7 @@ html.dark-mode .btn:focus
     color: #E1C58F!important;
 }
 
+html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .roundbadge.icon-mel-videoconference:hover,
 html.dark-mode .tiny-webconf-menu.dwp-round:hover,
 html.dark-mode .wsp-toolbar.webconf-toolbar .roundbadge.jitsi-select:hover,
@@ -221,6 +222,7 @@ html.dark-mode .mel-button:hover {
     color: #E1C58F!important;
 }
 
+html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .mel-button.dark-no-border-default:hover
 {
     border-color: #E1C58F!important; 
@@ -382,6 +384,7 @@ html.dark-mode #tasklist span.date{
     color:#e4e7eb;
 }
 
+html.dark-mode #groupoptions-user .more-options,
 html.dark-mode .mel-not-link:hover
 {
     color:#E1C58F;

@@ -118,7 +118,7 @@ class Webconf extends Program
                 foreach ($users as $user) {
                     if ($user->user !== $current_user->uid)
                     {
-                        mel_notification::notify("webconf", $current_user->name.' vient de lancer une webconférence !', 'Vous pouvez rejoindre directement la webconférence en cours via le lien disponible ci-dessous.', 
+                        mel_notification::notify("webconf", $current_user->name.' vient de lancer une webconférence lié à l\'espace "'.$wsp->title.'" !', 'Vous pouvez rejoindre directement la webconférence en cours via le lien disponible ci-dessous.', 
                         [
                             [
                                 'href' => $link,

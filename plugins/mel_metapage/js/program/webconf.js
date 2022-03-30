@@ -658,7 +658,6 @@ class MasterWebconfBar {
     * @param {boolean} is_framed Si la webconf est dans une frame ou non 
      */
     constructor(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_size = 340, is_framed = null) {
-       // console.log("Master Webconf", key);
         ariane = html_helper.JSON.parse(ariane);
         this.webconf = new Webconf(frameconf_id, framechat_id, ask_id, key, ariane, (typeof wsp === "string" ? html_helper.JSON.parse(wsp) : wsp), ariane_size, is_framed);
         this.create_bar();
@@ -717,9 +716,37 @@ class MasterWebconfBar {
         this.start().deletePopUpOnLaunch();
     }
 
+
     start()
     {
         this.send("start");
+        return this.launch_timeout();
+    }
+
+    timeout_delay()
+    {
+        return 10;
+    }
+
+    show_masterbar() {
+        if ($(".webconf-toolbar").css('display') === 'none') $(".webconf-toolbar").css('display', '');
+        return this.launch_timeout();
+    }
+
+    hide_masterbar()
+    {
+        if ($(".webconf-toolbar").css('display') !== 'none') $(".webconf-toolbar").css('display', 'none');
+
+        if (this._timeout_id !== undefined) this._timeout_id = undefined;
+        
+        return this;
+    }
+
+    launch_timeout()
+    {
+        if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
+
+        this._timeout_id = setTimeout(this.hide_masterbar, this.timeout_delay() * 1000);
         return this;
     }
 
@@ -1022,6 +1049,8 @@ class MasterWebconfBar {
      */
     async hangup()
     {
+        if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
+
         //L'url à lancer en quittant la webconf
         const url = "https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
 
@@ -1801,6 +1830,10 @@ class ListenerWebConfBar
 
             this.webconf.jitsii.addEventListener("incomingMessage", (message) => {
                 parent.rcmail.display_message(`${message.nick} : ${message.message}`, (message.privateMessage ? "notice private" : "notice notif"));
+            });
+
+            this.webconf.jitsii.addEventListener("mouseMove", (MouseEvent) => {
+                this.send('show_masterbar');
             });
         }
     }

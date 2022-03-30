@@ -693,6 +693,7 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 
 function m_mp_ChangeLasteFrameInfo(force = false)
 {
+    debugger;
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
     const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
 
@@ -712,7 +713,7 @@ function m_mp_ChangeLasteFrameInfo(force = false)
     try {
         if (!isUndefined)
         {
-            m_mp_CreateOrUpdateIcon("." + rcmail.env.last_frame_class);
+            m_mp_CreateOrUpdateIcon("#taskmenu ." + rcmail.env.last_frame_class);
             $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
         }
         else

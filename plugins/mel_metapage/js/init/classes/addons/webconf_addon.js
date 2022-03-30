@@ -5,7 +5,7 @@
         return window.webconf_master_bar !== undefined || parent.webconf_master_bar !== undefined;
     }
 
-    async function go_to_webconf(key = null, wsp = null, ariane = null)
+    async function go_to_webconf(key = null, wsp = null, ariane = null, show_config_popup = false)
     {
         if (!webconf_is_active())
         {
@@ -13,18 +13,20 @@
                 (parent !== window ? parent : window).$(".webconf-frame").remove();
 
             let config = null;
-            if (key != null || wsp !== null || ariane !== null)
+            if (key != null || wsp !== null || ariane !== null || show_config_popup)
             {
                 config = {};
-                if (key !== null)
-                    config["_key"] = key;
-                if (wsp !== null)
-                    config["_wsp"] = wsp;
-                else if (ariane !== null)
-                    config["_ariane"] = ariane;
+                if (key !== null) config["_key"] = key;
+
+                if (wsp !== null) config["_wsp"] = wsp;
+                else if (ariane !== null) config["_ariane"] = ariane;
+                
+                if (show_config_popup) config['_need_config'] = 1;
 
                 config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
-            }
+            } 
+
+
             mel_metapage.Functions.call("ArianeButton.default().hide_button()", false);
             mel_metapage.Functions.call(() => {
                 if (window.create_popUp !== undefined)

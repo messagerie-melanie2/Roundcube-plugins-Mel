@@ -18,6 +18,7 @@ class Webconf extends Program
         $this->register_action("jwt", [$this, "get_jwt"]);
         $this->register_action("onGo", [$this, "onGo"]);
         $this->register_action("notify", [$this, "notify"]);
+        
         if ($this->action === "" || $this->action === "index")
         {
             $this->include_js("../../../rocket_chat/favico.js");
@@ -34,15 +35,20 @@ class Webconf extends Program
 
     public function index()
     {
-        $key = $this->get_input("_key") ?? $this->generate_key();// ?? "B5LMKJPOIUI9POI4KL";
-        $this->tmp_key = $key;
+        $need_config = $this->get_input("_need_config") ?? false;
+        $key = $this->get_input("_key");
+        $this->tmp_key = $key;// ?? $this->generate_key();
         $this->set_env_var("webconf.key", $key);
         $wsp = $this->get_input("_wsp");// ?? "webconf-1";
         $ariane = null;
+
         if ($wsp === null)
         {
-            $ariane = $this->get_input("_ariane");
-            $this->set_env_var("webconf.ariane", $ariane);
+            // if ($key !== null)
+            // {
+                $ariane = $this->get_input("_ariane") ?? '@home';
+                $this->set_env_var("webconf.ariane", $ariane);
+            //}
         }
         else
         {
@@ -56,17 +62,20 @@ class Webconf extends Program
             ];
             $this->set_env_var("webconf.wsp", $wsp);
         }
+
         $user = driver_mel::gi()->getUser();
         $this->set_env_var("webconf.user_datas", [
             "name" => $user->fullname,
             "email" => $user->email
         ]);
         $this->set_env_var("webconf.bar", $this->parse("webconf_bar"));
-        if (($wsp === null && $ariane === null) || $key === "")
+
+        if ($need_config == 1 || $key === null || $key === '')
         {
             $this->add_handler("roomkey", [$this, "get_key"]);
             $this->add_handler("selectrooms", [$this, "get_ariane_rooms"]);
             $this->add_handler("selectwsp", [$this, "get_all_workspaces"]);
+            $this->set_env_var("webconf.need_config", true);
         }
         else if ($key !== null && ($wsp !== null || $ariane !== null))
         {
@@ -122,13 +131,7 @@ class Webconf extends Program
                 }
             }
 
-            // mel_notification::notify("webconf", "Vous venez de lancer une webconférence.", "Vous pouvez partager en utilisant le lien ci-dessous.",                     [
-            //     [
-            //         'href' => rcube_utils::get_input_value('_original_link', rcube_utils::INPUT_POST),
-            //         'text' => "Lien externe",
-            //         'title' => "Copiez ce lien pour l'envoyer à d'autre personnes."
-            //     ]
-            // ]);
+
         }
     }
 
@@ -159,15 +162,6 @@ class Webconf extends Program
         $html .= "</select>";
 
         return $html;
-        /*
-                    $wsp = [
-            "objects" => json_decode($workspace->objects), 
-            "datas" => ["logo" => $workspace->logo,"ispublic" => $workspace->ispublic, 'uid' => $wsp, "allow_ariane" => $workspace->ispublic || mel_workspace::is_in_workspace($workspace)
-                ,"title" => $workspace->title,
-                "color" => json_decode($workspace->settings)->color
-                ]
-            ];
-        */
     }
 
     public function get_ariane_rooms($classes = "")
@@ -179,12 +173,15 @@ class Webconf extends Program
             $list["group"] = json_decode($list["group"]["content"]);
             $html = '<select class="ariane_select input-mel '.$classes.'">';
             $html .= "<option value=home>".$this->rc->gettext("nothing", "mel_metapage")."</option>";
+
             foreach ($list["channel"]->channels as $key => $value) {
                 $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';
             } 
+
             foreach ($list["group"]->groups as $key => $value) {
                 $html.='<option value="false:'.$value->name.'">'.$value->name.'</option>';
             } 
+            
             $html .= "</select>";
         } catch (\Throwable $th) {
             $html = '<select class="ariane_select input-mel '.$classes.'">';
@@ -200,6 +197,7 @@ class Webconf extends Program
             $size = rand(10 , 20);
         $type = rand(0 , 3);
         $key = "";
+
         for ($i=0; $i < $size; ++$i) { 
             switch ($type) {
                 case 0:
@@ -229,6 +227,7 @@ class Webconf extends Program
             } 
 
         } 
+
         return $key;
     }
 
@@ -248,36 +247,39 @@ class Webconf extends Program
         echo json_encode(self::jwt());
         exit;
     }
-  /**
-   * Génère le code jwt
-   */
-  public static function jwt() {
-    $rcmail = rcmail::get_instance();
-    $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
-    //$id = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GET);
-    $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
-    $payload = $rcmail->config->get('webconf_jwt_payload', null);
+    /**
+     * Génère le code jwt
+     */
+    public static function jwt() {
+        $rcmail = rcmail::get_instance();
+        $room = rcube_utils::get_input_value('_room', rcube_utils::INPUT_GET);
+        $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_GPC);
+        $payload = $rcmail->config->get('webconf_jwt_payload', null);
 
-    $result = null;
-    if (isset($payload)) {
-        $payload['room'] = $room;
-        $payload['exp'] = time() + 12*60*60; // Expiration dans 12h
-        $key = $rcmail->config->get('webconf_jwt_key', null);
+        $result = null;
+        if (isset($payload)) {
+            $payload['room'] = $room;
+            $payload['exp'] = time() + 12*60*60; // Expiration dans 12h
+            $key = $rcmail->config->get('webconf_jwt_key', null);
 
-        $jwt = JWT::encode($payload, $key);
-        $result = array(
-            'action'  => 'jwt',
-            'id'      => "webconf",
-            'room'    => $room,
-            'jwt'     => $jwt,
-            'unlock'  => $unlock,
-        );
+            $jwt = JWT::encode($payload, $key);
+            $result = array(
+                'action'  => 'jwt',
+                'id'      => "webconf",
+                'room'    => $room,
+                'jwt'     => $jwt,
+                'unlock'  => $unlock,
+            );
+        }
+        return $result;
     }
-    return $result;
-    //   // send output
-    //   header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
-    //   echo json_encode($result);
-    // //}
-    // exit();
-  }
+
+    public static function validWebconfKey($key)
+    {
+        $isValid = true;
+
+        if (strlen($key) < 10) $isValid = false;
+
+        return $isValid;
+    }
 }

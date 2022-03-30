@@ -153,10 +153,10 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
         if (this.wsp !== undefined)
             config["_wsp"] = this.wsp.datas.uid;
-        else if (this.have_ariane())
+        else if (this.have_ariane() && this.ariane.room_name !== '@home')
             config["_ariane"] = (`${this.ariane.room_name}${(this.ariane.ispublic !== true ? private_key : "")}`);
         
-        const url = mel_metapage.Functions.public_url(rcmail.env['webconf.public_url'], config)//MEL_ELASTIC_UI.url("webconf", "", config);
+        const url = MEL_ELASTIC_UI.url("webconf", "", config);
         mel_metapage.Functions.title(url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
     }
 
@@ -207,6 +207,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
+        debugger;
         rcmail.triggerEvent("init_ariane", "mm-ariane");
         this.busy(); //loading
         mel_metapage.Storage.remove("webconf_token");
@@ -214,7 +215,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         $("#mm-webconf").css("display", "");
         $("#mm-ariane").css("display", "none");
 
-        if (!this.isPhone())
+        if (true && !this.isPhone())
         {
             if (this.have_ariane() && this.ariane.room_name !== "@home") //Si on a une room ariane
             {
@@ -276,7 +277,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             },
             userInfo: {
                 email: rcmail.env["webconf.user_datas"].email,
-                displayName: rcmail.env["webconf.user_datas"].name.split("(")[0].split("-")[0]
+                displayName: rcmail.env["webconf.user_datas"].name ? rcmail.env["webconf.user_datas"].name.split("(")[0].split("-")[0] : rcmail.env["webconf.user_datas"].email
             }
         };
 
@@ -292,7 +293,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         await wait(() => mel_metapage.Storage.get("webconf_token") === null); //Attente que la frame sois chargée
 
         mel_metapage.Storage.remove("webconf_token");
-
+debugger;
         if (this.have_ariane())
             $("#mm-ariane").css("display", "");
 
@@ -634,7 +635,7 @@ Webconf.update_room_name = function()
     }
     else
     {
-        const url = mel_metapage.Functions.public_url(rcmail.env['webconf.public_url'], {_key:val});
+        const url = mel_metapage.Functions.url('webconf', '', {_key:val});
         mel_metapage.Functions.title(url);
         
         $("#webconf-enter").removeClass("disabled").removeAttr("disabled", "disabled");
@@ -1996,6 +1997,7 @@ class ListenerWebConfBar
 
 $(document).ready(() => {
     const tmp = async () => {
+        if (!rcmail.env["webconf.key"]) rcmail.env["webconf.key"] = '';
 
         workspaces.sync.PostToParent({
             exec:"window.have_webconf = true",
@@ -2109,7 +2111,7 @@ $(document).ready(() => {
             rcmail.env.webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
             rcmail.env.webconf.set_title();
 
-            if ((rcmail.env.webconf.have_ariane() || rcmail.env["webconf.wsp"] !== undefined) && rcmail.env["webconf.key"] !== "")
+            if (!rcmail.env['webconf.need_config'] && (rcmail.env.webconf.have_ariane() || rcmail.env["webconf.wsp"] !== undefined) && rcmail.env["webconf.key"] !== "")
             {
                 await rcmail.env.webconf.go();
 
@@ -2134,14 +2136,30 @@ $(document).ready(() => {
 
                 rcmail.env.webconf.set_title();
                 rcmail.env.webconf.show_selector();
-                if (rcmail.env["webconf.key"] === "")
+
+                if (rcmail.env["webconf.key"] === "" || rcmail.env['webconf.need_config'])
                 {
+                    let $querry;
                     if (rcmail.env["webconf.wsp"] !== undefined)
                     {
                         $(".mel-radio-1").css("display", "none");
-                        $(".webconf-wsp").css("display", "").find(".wsp_select").addClass("disabled").attr("disabled", "disabled");
                         $(".webconf-ariane").css("display", "none");
+                        $querry = $(".webconf-wsp").css("display", "").find(".wsp_select");
+
+                        if (rcmail.env['webconf.need_config'] && rcmail.env["webconf.key"] === "") $querry.addClass("disabled").attr("disabled", "disabled");
                     }
+                    else if (rcmail.env["webconf.ariane"] !== undefined && rcmail.env["webconf.ariane"] !== '@home')
+                    {
+                        $(".mel-radio-1").css("display", "none");
+                        $(".webconf-wsp").css("display", "none");//.find(".wsp_select").addClass("disabled").attr("disabled", "disabled");
+                        $querry = $(".webconf-ariane").css("display", "").find('.ariane_select').val(`${rcmail.env["webconf.ariane"].includes('&') ? 'false' : 'true'}:${rcmail.env["webconf.ariane"]}`);
+
+                        if (rcmail.env['webconf.need_config'] && rcmail.env["webconf.key"] === "") $querry.addClass("disabled").attr("disabled", "disabled");
+                    }
+                    else {
+                        $('#webconf-room-name').val(mel_metapage.Functions.generateWebconfRoomName());
+                    }
+
                     Webconf.update_room_name();
                 }
 

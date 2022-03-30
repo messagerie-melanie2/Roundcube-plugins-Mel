@@ -249,27 +249,11 @@ $(document).ready(() => {
     };
 
     window.rcube_calendar_ui.shuffle = function (array) {
-        var currentIndex = array.length, temporaryValue, randomIndex;
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-        return array;
+        return mel_metapage.Functions._shuffle(array);
     };
 
     window.rcube_calendar_ui.generateRoomName = function() {
-        var charArray= ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-        var digitArray= ["0","1","2","3","4","5","6","7","8","9"];
-        var roomName = window.rcube_calendar_ui.shuffle(digitArray).join("").substring(0,3) + window.rcube_calendar_ui.shuffle(charArray).join("").substring(0,7);
-        return window.rcube_calendar_ui.shuffle(roomName.split("")).join("");
+        return mel_metapage.Functions.generateWebconfRoomName();
     };
 
     window.rcube_calendar_ui.edit = function(event)
@@ -311,14 +295,14 @@ $(document).ready(() => {
                 //Visio
                 if ($("#eb-mm-wm-e")[0].checked)
                 {
-                    // let config = {
-                    //     _key:$("#key-visio-cal").val()//generateRoomName(),
-                    // };
-                    // if ($("#wsp-event-all-cal-mm").val() !== "#none")
-                    //     config["_wsp"] = $("#wsp-event-all-cal-mm").val();
+                    let config = {
+                        _key:$("#key-visio-cal").val()//generateRoomName(),
+                    };
+                    if ($("#wsp-event-all-cal-mm").val() !== "#none")
+                        config["_wsp"] = $("#wsp-event-all-cal-mm").val();
                     // else
                     //     config["_ariane"] = "@home";
-                    $("#edit-location").val(`${rcmail.env["webconf.base_url"]}/${$("#key-visio-cal").val()}`);
+                    $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));//`${rcmail.env["webconf.base_url"]}/${$("#key-visio-cal").val()}`);
                 }
                 else
                     $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
@@ -487,11 +471,15 @@ $(document).ready(() => {
                         $(".have-workspace").css("display", "none");
                     else
                         $(".have-workspace").css("display", "");
+                    
+                    $("#wsp-event-all-cal-mm").change();
                 }
                 else {
                     $("#div-events-wsp").css("display", "none");
                     $("#div-events-category").css("display", "");
                     $(".have-workspace").css("display", "none");
+
+                    $('#categories-event-all-cal-mm').change();
                 }
             });
             $("#wsp-event-all-cal-mm").on("change", () => {
@@ -505,8 +493,8 @@ $(document).ready(() => {
                 {
                     $(".have-workspace").css("display", "none");
                     $("#edit-categories").val("");
-                    update_location();
                 }
+                update_location();
             });
             $("#categories-event-all-cal-mm").on("change", () => {
                 const val = $("#categories-event-all-cal-mm").val();
@@ -552,16 +540,16 @@ $(document).ready(() => {
                         $("#tel-input-cal-location").val(audio[0]);
                         $("#num-audio-input-cal-location").val(audio[1]);
                     }
-                    else if (description.includes("#visio") || description.includes("@visio") )
+                    else if (description.includes("#visio") || description.includes("@visio") || description.includes('public/webconf'))
                     {
-                        const isRc = description.includes("#visio");
+                        const isRc = description.includes("#visio") || description.includes('public/webconf');
                         $("#eb-mm-em-v").click();
                         if (isRc)
                         {
                             $("#eb-mm-wm-e").click();
                             $("#url-visio-cal").addClass("hidden");
                             $("#row-for-key-visio-cal").removeClass("hidden");
-                            $("#key-visio-cal").val(description.split("&_key=")[1].split("&")[0]);
+                            $("#key-visio-cal").val(description.split("_key=")[1].split("&")[0]);
                         }
                         else
                         {
@@ -1324,6 +1312,26 @@ $(document).ready(() => {
             `)
             create_popUp.show();
         });
+     }
+
+     rcube_calendar.is_desc_webconf = function(text)
+     {
+        return text.includes('@visio') || rcube_calendar.is_desc_bnum_webconf(text) || rcube_calendar.is_desc_frame_webconf(text);
+     };
+
+     rcube_calendar.is_desc_bnum_webconf = function(text)
+     {
+        return text.includes('#visio') || text.includes('public/webconf');
+     };
+
+     rcube_calendar.is_desc_frame_webconf = function(text)
+     {
+         return text.includes(rcmail.env["webconf.base_url"])
+     };
+
+     rcube_calendar.is_valid_for_bnum_webconf = function(text)
+     {
+         return rcube_calendar.is_desc_frame_webconf(text) || rcube_calendar.is_desc_bnum_webconf(text);
      }
 
 });

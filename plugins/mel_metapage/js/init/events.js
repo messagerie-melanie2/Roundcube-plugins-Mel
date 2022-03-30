@@ -526,16 +526,18 @@ if (rcmail && window.mel_metapage)
         let querry = $("#location-mel-edited-calendar").find("a");
         if (querry.length > 0)
         {
-            if (querry.attr("href").includes(rcmail.env["webconf.base_url"]))
+            if (rcube_calendar.is_valid_for_bnum_webconf(querry.attr("href") ?? ''))
             {
                 querry.click((e) => {
+                    debugger;
                     e.preventDefault();
                     modal.close();
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
-                    const ariane = categoryExist && event.categories[0].includes("ws#") ? null : "@home";
+                    const ariane = null;//categoryExist && event.categories[0].includes("ws#") ? null : "";
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
                     console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     setTimeout(() => {
+                        debugger;
                         window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     }, 10);
                 });

@@ -2390,3 +2390,42 @@ html.layout-phone #compose-content
 .shortcut-notes .contents{
     background-color: transparent!important;
 }
+
+
+/************************************/
+.folderlist li.mailbox .unreadcount {
+    background: #779bd6;
+  
+    font-weight: normal;
+    color: #000;
+  }
+      
+  ul.folderlist.treelist li ul li a {
+      font-weight: 200;
+  }
+      
+  .messagelist td.subject .adr {
+      font-weight: lighter;
+  }
+      
+  table.messagelist .unread td.subject span.msgicon::before {
+      content: "\e94d" !important;
+      color: #779bd6 !important;
+  }
+      
+      .roundbadge.lightgreen, .roundbadge.hover.tick:hover {
+    background-color: #779bd6;
+  }
+      
+      .task-mail .quota-widget .bar {
+    background-color: #779bd6;
+    border-color: #779bd6;
+    margin-left: 0;
+  }
+      
+      
+      a.rcmContactAddress {
+      color: #333;/*#96b9e7 */
+      font-weight: lighter;
+  }
+  

@@ -319,6 +319,9 @@ if (rcmail && window.mel_metapage)
         if (datas.showed.start.format === undefined)
             datas.showed.start = moment(datas.showed.start);
 
+        if (datas.showed.end === null)
+            datas.showed.end = moment(datas.showed.start)
+
         if (datas.showed.end.format === undefined)
             datas.showed.end = moment(datas.showed.end);
 
@@ -329,8 +332,20 @@ if (rcmail && window.mel_metapage)
 
         let html = "";
         html += "<div id=parenthtmlcalendar>";
+        const reserved_all_day = '¤¤*_RESERVED:ADLL_DAY_*¤¤';
         //Date / Horaire
-        html += `<div class="row"><div class=col-6><b>${event.start.format("dddd D MMMM")}</b></div><div class="col-6"><span class="icon-mel-clock mel-cal-icon"></span>${event.allDay ? rcmail.gettext("all-day", "mel_metapage") : `${event.start.format("HH:mm")} - ${event.end.format("HH:mm")}`}</div></div>`;
+        html += `<div class="row"><div class=col-6><b>${event.start.format("dddd D MMMM")}</b></div><div class="col-6"><span class="icon-mel-clock mel-cal-icon"></span>${event.allDay ? rcmail.gettext("all-day", "mel_metapage") + reserved_all_day : (event.start.format("DD/MM/YYYY") === event.end.format("DD/MM/YYYY") ? `${event.start.format("HH:mm")} - ${event.end.format("HH:mm")}` : `${event.start.format("DD/MM/YYYY HH:mm")} - ${event.end.format("DD/MM/YYYY HH:mm")}`)}</div></div>`;
+
+        if (event.allDay)
+        {
+            if (event.start.format("DD/MM/YYYY") !== moment(event.end).subtract(1, 'days').format("DD/MM/YYYY"))
+            {
+                html = html.replace(reserved_all_day, `<br/><span style='font-size:smaller'>${event.start.format("DD/MM/YYYY")} - ${moment(event.end).subtract(1, 'days').format("DD/MM/YYYY")}</span>`)
+            }
+            else {
+                html = html.replace(reserved_all_day, '');
+            }
+        }
 
         //Affichage de la récurrence puis de l'alarme
         let rec = event.recurrence_text === undefined ? null : event.recurrence_text;

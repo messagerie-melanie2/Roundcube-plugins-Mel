@@ -320,7 +320,13 @@ $(document).ready(() => {
             $("#edit-enddate").val(val[0]);
             $("#edit-endtime").val(val[1]);
         };
-        let onChangeDateTime = (date, isEndDate = false, doShow = true) => {
+        let onChangeDateTime = (date, isEndDate = false, doShow = false) => {
+            if (onChangeDateTime.from_start_do_show !== undefined)
+            {
+                doShow = onChangeDateTime.from_start_do_show;
+                onChangeDateTime.from_start_do_show = undefined;
+            }
+
             let bool;
             let querry = $(".input-mel-datetime .input-mel.end");
             const end_val = isEndDate ? moment(date) : getDate(querry.val());
@@ -337,13 +343,16 @@ $(document).ready(() => {
 
             if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
             {
+                onChangeDateTime.from_start_do_show = doShow;
                 const allday = $("#edit-allday")[0].checked;
                 const dif = window.rcube_calendar_ui.difTime === undefined || allday || isEndDate ? 3600 : window.rcube_calendar_ui.difTime;
                 querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(allday ? format.split(' ')[0] : format) );
                 update_date();
                 bool = start_val.format('DD/MM/YYYY') === getDate($(".input-mel-datetime .input-mel.start").val()).format('DD/MM/YYYY');
             }
-            else bool = start_val.format('DD/MM/YYYY') === end_val.format('DD/MM/YYYY');
+            else {
+                bool = start_val.format('DD/MM/YYYY') === end_val.format('DD/MM/YYYY');
+            }
 
             let min_time;
             if (start_val_raw.includes(' ') && bool) min_time = moment(start_val).add(1, 'm').format('HH:mm');
@@ -352,8 +361,8 @@ $(document).ready(() => {
             if (onChangeDateTime.minTime !== min_time)
             {
                 querry.datetimepicker('setOptions', {minTime:min_time});
+                if (doShow && onChangeDateTime.minTime !== undefined) querry.datetimepicker('hide').datetimepicker('show');
                 onChangeDateTime.minTime = min_time;
-                if (doShow) querry.datetimepicker('hide').datetimepicker('show');
             }
         };
         const format = "DD/MM/YYYY HH:mm";
@@ -366,7 +375,9 @@ $(document).ready(() => {
                 lang:"fr",
                 step:15,
                 dayOfWeekStart:1,
-                onChangeDateTime:onChangeDateTime
+                onChangeDateTime:(date) => {
+                    onChangeDateTime(date, false, false);
+                }
             });
             $(".input-mel-datetime .input-mel.end").datetimepicker({
                 format: 'd/m/Y H:i',
@@ -374,7 +385,7 @@ $(document).ready(() => {
                 step:15,
                 dayOfWeekStart:1,
                 onChangeDateTime:(date) => {
-                    onChangeDateTime(date, true);
+                    onChangeDateTime(date, true, true);
                 }
             });
             $(".input-mel-datetime .input-mel.start").on("change", () => {

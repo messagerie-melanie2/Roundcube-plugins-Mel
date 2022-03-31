@@ -278,7 +278,7 @@ $(document).ready(() => {
         {
             string = string.split(" ");
             const date = string[0].split("/");
-            const time = string[1].split(":");
+            const time = string.length > 1 ? string[1].split(":") : ['00','00'];
 
             return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
         };
@@ -319,7 +319,43 @@ $(document).ready(() => {
             val = $(".input-mel-datetime .input-mel.end").val().split(" ");
             $("#edit-enddate").val(val[0]);
             $("#edit-endtime").val(val[1]);
-        }
+        };
+        let onChangeDateTime = (date, isEndDate = false, doShow = true) => {
+            let bool;
+            let querry = $(".input-mel-datetime .input-mel.end");
+            const end_val = isEndDate ? moment(date) : getDate(querry.val());
+            const start_val_raw = $(".input-mel-datetime .input-mel.start").val();
+            const start_val = getDate(start_val_raw);
+
+            const min_date = start_val_raw.split(' ')[0];
+
+            if (onChangeDateTime.minDate !== min_date)
+            {
+                querry.datetimepicker('setOptions', {minDate:min_date, formatDate:'d/m/Y'});
+                onChangeDateTime.minDate = min_date;
+            }
+
+            if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
+            {
+                const allday = $("#edit-allday")[0].checked;
+                const dif = window.rcube_calendar_ui.difTime === undefined || allday || isEndDate ? 3600 : window.rcube_calendar_ui.difTime;
+                querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(allday ? format.split(' ')[0] : format) );
+                update_date();
+                bool = start_val.format('DD/MM/YYYY') === getDate($(".input-mel-datetime .input-mel.start").val()).format('DD/MM/YYYY');
+            }
+            else bool = start_val.format('DD/MM/YYYY') === end_val.format('DD/MM/YYYY');
+
+            let min_time;
+            if (start_val_raw.includes(' ') && bool) min_time = moment(start_val).add(1, 'm').format('HH:mm');
+            else min_time = false;
+
+            if (onChangeDateTime.minTime !== min_time)
+            {
+                querry.datetimepicker('setOptions', {minTime:min_time});
+                onChangeDateTime.minTime = min_time;
+                if (doShow) querry.datetimepicker('hide').datetimepicker('show');
+            }
+        };
         const format = "DD/MM/YYYY HH:mm";
         const have_created_callback = $("#eventedit").data("callbacks") === "ok";
         if (!have_created_callback)
@@ -330,47 +366,49 @@ $(document).ready(() => {
                 lang:"fr",
                 step:15,
                 dayOfWeekStart:1,
-                onChangeDateTime:() => {
-                    let querry = $(".input-mel-datetime .input-mel.end");
-                    const end_val = getDate(querry.val());
-                    const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
-
-                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    {
-                        const dif = window.rcube_calendar_ui.difTime === undefined ? 3600 : window.rcube_calendar_ui.difTime;
-                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(format) );
-                        update_date();
-                    }
-                }
+                onChangeDateTime:onChangeDateTime
             });
             $(".input-mel-datetime .input-mel.end").datetimepicker({
                 format: 'd/m/Y H:i',
                 lang:"fr",
                 step:15,
                 dayOfWeekStart:1,
-                onChangeDateTime:() => {
-                    let querry = $(".input-mel-datetime .input-mel.end");
-                    const end_val = getDate(querry.val());
-                    const start_val = getDate($(".input-mel-datetime .input-mel.start").val());
-
-                    if (end_val === "" || end_val === undefined || end_val === null || end_val <= start_val)
-                    {
-                        const dif = window.rcube_calendar_ui.difTime === undefined ? 3600 : window.rcube_calendar_ui.difTime;
-                        querry.val(getDate($(".input-mel-datetime .input-mel.start").val()).add(dif,"s").format(format) );
-                        update_date();
-                    }
+                onChangeDateTime:(date) => {
+                    onChangeDateTime(date, true);
                 }
             });
             $(".input-mel-datetime .input-mel.start").on("change", () => {
                 const val = $(".input-mel-datetime .input-mel.start").val().split(" ");
                 $("#edit-startdate").val(val[0]);
-                $("#edit-starttime").val(val[1]);
+                if (val.length > 1) $("#edit-starttime").val(val[1]);
+                else $("#edit-starttime").val('00:00');
             });
             $(".input-mel-datetime .input-mel.end").on("change", () => {
                 const val = $(".input-mel-datetime .input-mel.end").val().split(" ");
                 $("#edit-enddate").val(val[0]);
-                $("#edit-endtime").val(val[1]);
+                if (val.length > 1) $("#edit-endtime").val(val[1]);
+                else $("#edit-endtime").val('00:00');
             });
+            $("#edit-allday").on("click", (e) => {
+                e = e.target;
+
+                if (e.checked)
+                {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y', timepicker:false});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y', timepicker:false});
+
+                    $(".input-mel-datetime .input-mel.start").val($(".input-mel-datetime .input-mel.start").val().split(' ')[0]);
+                    $(".input-mel-datetime .input-mel.end").val($(".input-mel-datetime .input-mel.end").val().split(' ')[0]);
+                }
+                else {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+
+                    $(".input-mel-datetime .input-mel.start").val($(".input-mel-datetime .input-mel.start").val() + ' 00:00');
+                    $(".input-mel-datetime .input-mel.end").val($(".input-mel-datetime .input-mel.end").val() + ' 00:00');
+                    onChangeDateTime(null, false, false);
+                }
+            })
             // $("#edit-allday").on("click", (e) => {
             //     e = e.target;
             //     let moment = getDate($(".input-mel-datetime .input-mel.start").val());
@@ -461,6 +499,7 @@ $(document).ready(() => {
                 update_location();
             });
 
+            //Check wsp ou catégorie
             $("#edit-wsp").on("click", (e) => {
                 e = e.target;
                 if (e.checked)
@@ -601,8 +640,11 @@ $(document).ready(() => {
 
                 $("#fake-event-rec").val("")
 
-                // if ($("#edit-allday")[0].checked)
-                //     $("#edit-allday").click().click();
+                if ($("#edit-allday")[0].checked) $("#edit-allday").click().click();
+                else {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                }
                 // else
                 // {
                 //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
@@ -645,8 +687,12 @@ $(document).ready(() => {
                 if (window.rcube_calendar_ui.difTime === 0)
                     window.rcube_calendar_ui.difTime = undefined;
 
-                // if ($("#edit-allday")[0].checked)
-                //     $("#edit-allday").click().click();
+                if ($("#edit-allday")[0].checked) $("#edit-allday").click().click();
+                else {
+                    $(".input-mel-datetime .input-mel.start").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
+                    onChangeDateTime(null, false, false);
+                }
                 // else
                 // {
                 //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 

@@ -2428,4 +2428,15 @@ html.layout-phone #compose-content
       color: #333;/*#96b9e7 */
       font-weight: lighter;
   }
+
+  #stockage-space-text::before
+  {
+    content: "\e94f";
+    font-family: DWP;
+    margin-right:5px;
+  }
+
+  .quota-widget::before {
+	display: none;
+}
   

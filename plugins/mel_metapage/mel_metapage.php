@@ -277,11 +277,6 @@ class mel_metapage extends rcube_plugin
                     "value" => mel_helper::why_stockage_not_active()
                 ]);
             }
-
-            // if ($this->rc->task === "settings")
-            // {
-
-            //}
             
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
@@ -300,6 +295,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
+            if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
 
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
@@ -1526,6 +1522,13 @@ class mel_metapage extends rcube_plugin
   {
       include_once 'program/eventSystem.php';
       return mel_event_system::Instance();
+  }
+
+  public function open_section($args)
+  {
+      $section = rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET);
+      $this->include_script('js/actions/settings_events.js');
+      $this->rc->output->set_env("open_section", $section);
   }
 
   public function get_maintenance_text($during = false)

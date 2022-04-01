@@ -733,7 +733,7 @@ function m_mp_NotificationsAppendFilters() {
             e('col-sm', select),
             e('col-md-auto hide-touch',
                 b(
-                    rcmail.url('settings/settings') + '#notifications', 
+                    rcmail.url('settings/settings') + '&_open_section=notifications', 
                     'manage', 
                     rcmail.get_label('mel_notification.Manage notifications'),
                     rcmail.get_label('mel_notification.Manage notifications title')

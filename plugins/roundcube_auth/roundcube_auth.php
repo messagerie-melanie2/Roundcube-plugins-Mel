@@ -126,6 +126,9 @@ class roundcube_auth extends rcube_plugin
      */
     function init()
     {
+        // Get Roundcube instance
+        $rcmail = rcmail::get_instance();
+
         // Load plugin's config file
         $this->load_config();
 
@@ -133,9 +136,6 @@ class roundcube_auth extends rcube_plugin
         $this->add_hook('startup', array($this, 'startup'));
         $this->add_hook('authenticate', array($this, 'authenticate'));
         $this->add_hook('login_after', array($this, 'login_after'));
-
-        // Get Roundcube instance
-        $rcmail = rcmail::get_instance();
 
         // Get variables from config
         if($this->kerb_enabled = $rcmail->config->get('auth_kerb_enabled'))
@@ -150,6 +150,9 @@ class roundcube_auth extends rcube_plugin
         }
         $this->refresh_actions = $rcmail->config->get('refresh_actions');
         $this->config_init = true;
+
+        // JS link
+        $this->include_script('roundcube_auth.js');
     }
 
     /**
@@ -420,7 +423,8 @@ class roundcube_auth extends rcube_plugin
             $rcmail->kill_session();
 
             // Re-auth
-            $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+            //$this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+            $rcmail->output->command('plugin.auth_redirect', $this->oidc_keyword . "=" . $this->enabled);
         }
     }
 
@@ -585,7 +589,8 @@ class roundcube_auth extends rcube_plugin
                         $rcmail->kill_session();
     
                         // Re-auth
-                        $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+                        // $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+                        $rcmail->output->command('plugin.auth_redirect', $this->oidc_keyword . "=" . $this->enabled);
                     }
                     else
                     {

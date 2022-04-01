@@ -446,6 +446,8 @@
                     }, '*')
                 };
 
+                $('#groupoptions-user').css('display', 'none');
+
                 if (rcmail.env.current_frame_name === "discussion")
                     func();
                 else

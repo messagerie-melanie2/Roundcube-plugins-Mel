@@ -635,7 +635,7 @@ Webconf.update_room_name = function()
     else
     {
         const url = mel_metapage.Functions.url('webconf', '', {_key:val});
-        mel_metapage.Functions.title(url);
+        mel_metapage.Functions.title(url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
         
         $("#webconf-enter").removeClass("disabled").removeAttr("disabled", "disabled");
         $(".webconf-error-text").css("display", "none").css("color", "black");

@@ -806,6 +806,65 @@ class RocketChatClient {
     return $list;
   }
 
+  public function get_all_moderator_joined_generator($user)
+  {
+    $headers = array(
+      "X-Auth-Token: " . $this->getAuthToken(),
+      "X-User-Id: " . $this->getUserId(),
+      //"Content-type: application/json",
+    );
+
+    $params = [];
+
+    $list = $this->get_all_joined();
+    $list["channel"] = json_decode($list["channel"]["content"]);
+    $list["group"] = json_decode($list["group"]["content"]);
+
+    foreach ($list["channel"]->channels as $key => $channel) {
+      $params = ['roomId' => $channel->_id];
+      $roles = $this->_get_url($this->_api_url.'channels.roles', $params, $headers);
+      $roles = json_decode($roles['content'])->roles;
+
+      foreach ($roles as $channelUser) {
+        if ($channelUser->u->username === $user && in_array('owner', $channelUser->roles))
+        {
+          yield ['channel' => $channel];
+          break;
+        }
+      }
+    }
+
+    foreach ($list["group"]->groups as $key => $group) {
+      $params = ['roomId' => $group->_id];
+      $roles = $this->_get_url($this->_api_url.'groups.roles', $params, $headers);
+      $roles = json_decode($roles['content'])->roles;
+
+      foreach ($roles as $groupUser) {
+        if ($groupUser->u->username === $user && in_array('owner', $groupUser->roles))
+        {
+          yield ['group' => $group];
+          break;
+        }
+      }
+    } 
+
+  }
+
+  public function get_all_moderator_joined($user)
+  {
+    $list = [
+      "channel" => [],
+      "group" => []
+    ];
+
+    foreach ($this->get_all_moderator_joined_generator($user) as $value) {
+      if (isset($value['channel'])) $list['channel'][] = $value['channel'];
+      else $list['group'][] = $value['group'];
+    }
+
+    return $list;
+  }
+
   /**
    * Récupère le nombre de pessages non-lu
    *

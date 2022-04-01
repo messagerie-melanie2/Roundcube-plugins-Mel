@@ -44,7 +44,7 @@ $labels["always"] = "Toujours";
 $labels["never"] = "Jamais";
 $labels["default"] = "Par défaut";
 
-$labels["canal_change_confirmation"] = "Attention !\r\nSi vous changez de canal et que vous n'êtes pas administrateur de celui-ci, l'ajout/la suppression des membres pourrait ne pas fonctionner correctement.\r\nDe plus, le canal ne sera pas supprimé automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?";
+$labels["canal_change_confirmation"] = "Attention !\r\nCe canal sera synchronisé avec cet espace.\r\nDe plus, le canal ne sera pas supprimé automatiquement à la supression de l'espace.\r\nÊtes-vous sûr de vouloir continuer ?";
 
 $labels["open"] = "Ouvrir";
 $labels["click_for_open"] = "Cliquez pour ouvrir l'espace de travail";

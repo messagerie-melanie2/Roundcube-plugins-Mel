@@ -674,6 +674,13 @@ EOF;
       return $rocketClient->get_all_joined();
     }
 
+    public function get_all_moderator_joined($user = null)
+    {
+      $rocketClient = $this->get_rc_client();
+
+      return $rocketClient->get_all_moderator_joined($user ?? driver_mel::gi()->getUser()->uid);
+    }
+
     public function check_if_room_exist($room_id)
     {
       return $this->get_rc_client()->room_exist($room_id);

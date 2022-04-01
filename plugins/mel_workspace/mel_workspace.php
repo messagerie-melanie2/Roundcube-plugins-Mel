@@ -3528,8 +3528,10 @@ class mel_workspace extends rcube_plugin
 
     function get_arianes_rooms()
     {
+        $uid =  rcube_utils::get_input_value("_uid", rcube_utils::INPUT_GPC);
+        $wsp = self::get_workspace($uid);
         $html_ariane = "<div id=selectnewchannel>".
-        mel_helper::get_rc_plugin($this->rc, "mel_metapage")->get_program("webconf")->get_ariane_rooms(" custom-select pretty-select form-control input-mel ").
+        mel_helper::get_rc_plugin($this->rc, "mel_metapage")->get_program("webconf")->get_ariane_rooms(" custom-select pretty-select form-control input-mel ", true, $this->currentWorkspace->ispublic == 1 ? 1 : 2).
         "</div>";
         echo $html_ariane;
         exit;
@@ -3544,12 +3546,28 @@ class mel_workspace extends rcube_plugin
         $datas = ["id" => $name["content"]->room->_id, "name" => $name["content"]->room->name, "edited" => true];
 
         $wsp = self::get_workspace($uid);
+        $this->sync_workspace_chat($wsp, $name["content"]->room);
         $this->save_object($wsp, self::CHANNEL, $datas);
         self::edit_modified_date($wsp, false);
         $wsp->save();
 
         echo json_encode($datas);
         exit;
+    }
+
+    function sync_workspace_chat($wsp, $room)
+    {
+        //p => group / c => channel
+        $shares = $wsp->shares;
+
+        $rocket = $this->get_ariane();
+
+        foreach ($shares as $key => $user) {
+            $room_id = $room->_id;
+            $isPrivate = $room->t === 'p';
+            $rocket->add_users([$key], $room_id, $isPrivate);
+            $rocket->update_owner($key, $room_id, $isPrivate, !self::is_admin($wsp, $key));
+        }
     }
 
     function stockage_user_updated()

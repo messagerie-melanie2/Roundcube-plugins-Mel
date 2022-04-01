@@ -724,7 +724,7 @@
                 globalModal = Promise.resolve();
 
             return this.ajax(this.url("PARAMS_get_arianes_rooms"),
-            {},
+            {_uid:this.uid},
             (datas) => {
                 globalModal.then(() => {
 

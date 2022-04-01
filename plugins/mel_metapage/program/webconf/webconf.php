@@ -164,21 +164,42 @@ class Webconf extends Program
         return $html;
     }
 
-    public function get_ariane_rooms($classes = "")
+    public function get_ariane_rooms($classes = "", $ownerOnly = false, $only = 0)
     {
         try {
+            $list = null;
             $chat = $this->get_plugin("rocket_chat");
-            $list = $chat->get_joined();
-            $list["channel"] = json_decode($list["channel"]["content"]);
-            $list["group"] = json_decode($list["group"]["content"]);
+            if ($ownerOnly)
+            {
+                $list = $chat->get_all_moderator_joined();
+                switch ($only) {
+                    case 1:
+                        $list["group"] = [];
+                        break;
+
+                    case 2:
+                        $list["channel"] = [];
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }
+            }
+            else {
+                $list = $chat->get_joined();
+                $list["channel"] = json_decode($list["channel"]["content"]);
+                $list["group"] = json_decode($list["group"]["content"]);
+            }
+
             $html = '<select class="ariane_select input-mel '.$classes.'">';
             $html .= "<option value=home>".$this->rc->gettext("nothing", "mel_metapage")."</option>";
 
-            foreach ($list["channel"]->channels as $key => $value) {
+            foreach (($ownerOnly ? $list["channel"] : $list["channel"]->channels) as $key => $value) {
                 $html.='<option value="true:'.$value->name.'">'.$value->name.'</option>';
             } 
 
-            foreach ($list["group"]->groups as $key => $value) {
+            foreach (($ownerOnly ? $list["group"] : $list["group"]->groups) as $key => $value) {
                 $html.='<option value="false:'.$value->name.'">'.$value->name.'</option>';
             } 
             

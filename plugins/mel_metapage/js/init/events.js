@@ -313,6 +313,14 @@ if (rcmail && window.mel_metapage)
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
     }, false);
 
+    rcmail.addEventListener('intercept.click.ok', (args) => 
+    {
+        if ($("#groupoptions-user").is(":visible") == true)
+        {
+            m_mp_ToggleGroupOptionsUser($("#groupoptions-user").data('opener'));
+        }
+    });
+
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
 
@@ -1192,6 +1200,7 @@ $(document).ready(() => {
                         if (after !== null)
                             after();
                     });
+                    rcmail.triggerEvent('intercept.click.ok', {task, action, othersParams, update});
                     event.preventDefault();
                 }
             }

@@ -1825,6 +1825,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         $("#groupoptions-user").hide();
         $("#groupoptions-user").data('aria-hidden', 'true');
         $("#groupoptions-user").data('opener', null);
+        $('#menu-gu-black').remove();
         $(opener).data('aria-expanded', 'false');
         rcmail.triggerEvent('toggle-options-user', {show: false});
     }
@@ -1833,6 +1834,7 @@ function m_mp_ToggleGroupOptionsUser(opener) {
         $("#groupoptions-user").show();
         $("#groupoptions-user").data('opener', opener);
         $("#groupoptions-user").data('aria-hidden', 'false');
+        $('<div id="menu-gu-black"></div>').appendTo('#layout');
         $(opener).data('aria-expanded', 'true');
         rcmail.menu_stack.push("groupoptions-user");
         rcmail.triggerEvent('toggle-options-user', {show: true});

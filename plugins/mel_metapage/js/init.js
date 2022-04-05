@@ -430,9 +430,9 @@
                         config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
                         $("iframe.settings-frame")[0].src = mel_metapage.Functions.url("settings", "plugin.mel_moncompte", config);
                         mel_metapage.Functions.change_frame("settings", true, false);
-                    } else
-                        window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
+                    } else window.location.href = mel_metapage.Functions.url("settings", "plugin.mel_moncompte");
 
+                    rcmail.triggerEvent('intercept.click.ok', {});
                 }
             });
 

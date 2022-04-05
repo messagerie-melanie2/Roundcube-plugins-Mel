@@ -446,7 +446,7 @@
                     }, '*')
                 };
 
-                $('#groupoptions-user').css('display', 'none');
+                rcmail.triggerEvent('intercept.click.ok', {});
 
                 if (rcmail.env.current_frame_name === "discussion")
                     func();

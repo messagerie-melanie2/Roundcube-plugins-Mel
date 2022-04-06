@@ -994,10 +994,11 @@ class mel_metapage extends rcube_plugin
     /**
      * Recherche un texte dans les mails.
      */
-    public function search_mail()
+    public function search_mail($input = null)
     {
+        $called = !isset($input);
         include_once "program/search_result/search_result_mail.php";
-        $input = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
+        $input = $input ?? rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
         $msgs = $this->rc->storage->list_messages();
         $tmp = $this->rc->storage->search(null, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
         $array = $tmp->get();
@@ -1012,8 +1013,14 @@ class mel_metapage extends rcube_plugin
             if (count($retour) >= 5)
                 break;
         }
-        echo rcube_output::json_serialize(SearchResultMail::create_from_array($retour)->get_array($this->gettext("mails")));
-        exit;
+
+        $datas = SearchResultMail::create_from_array($retour)->get_array($this->gettext("mails"));
+        if ($called)
+        {
+            echo rcube_output::json_serialize($datas);
+            exit;
+        }
+        else return $datas;
 
     }
 
@@ -1040,11 +1047,12 @@ class mel_metapage extends rcube_plugin
     /**
      * Recherche un texte dans les contacts.
      */
-    public function search_contact()
+    public function search_contact($search = null, $fields = null)
     {
+        $called = !isset($search);
         include_once "program/search_result/search_result_contact.php";
-        $search = rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
-        $fields = explode(',', rcube_utils::get_input_value('_headers', rcube_utils::INPUT_GET));
+        $search = $search ?? rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
+        $fields = $fields ?? explode(',', rcube_utils::get_input_value('_headers', rcube_utils::INPUT_GET));
         $sources = $this->rc->get_address_sources();
         $search_set = array();
         $records    = array();
@@ -1100,8 +1108,13 @@ class mel_metapage extends rcube_plugin
             unset($result);
             // $search_set[$s['id']] = $source->get_search_set();
         }
-        echo rcube_output::json_serialize($retour->get_array($this->gettext('contacts')));
-        exit;
+        $datas = $retour->get_array($this->gettext('contacts'));
+        if ($called)
+        {
+            echo rcube_output::json_serialize($datas);
+            exit;
+        }
+        else return $datas;
 
     }
 

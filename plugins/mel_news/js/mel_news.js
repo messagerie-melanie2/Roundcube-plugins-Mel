@@ -1743,22 +1743,22 @@ $(document).ready(async () => {
                                     switch (name) {
                                         case "headlines": //defaults/customs
                                             promises.push(new Promise((a, b) => {
-                                                enum_news.where(x => x.type === "").forEach(x => {
+                                                enum_news.where(x => x.type.includes('ou=')).forEach(x => {
                                                     x.$news.parent().css("display", "none")
                                                 });
                                                 a();
                                             }));
-                                            enum_news = enum_news.where(x => x.type !== "");
+                                            enum_news = enum_news.where(x => x.type.includes('ou='));
                                             break;
 
                                         case "customs": 
                                             promises.push(new Promise((a, b) => {
-                                                enum_news.where(x => x.type !== "").forEach(x => {
+                                                enum_news.where(x => x.type === "twitter" || x.type === 'intranet').forEach(x => {
                                                     x.$news.parent().css("display", "none")
                                                 });
                                                 a();
                                             }));
-                                            enum_news = enum_news.where(x => x.type === "");
+                                            enum_news = enum_news.where(x => x.type === "twitter" || x.type === 'intranet');
                                             break;
                                     
                                         default:

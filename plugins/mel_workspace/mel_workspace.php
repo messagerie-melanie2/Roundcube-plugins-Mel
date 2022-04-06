@@ -2496,10 +2496,10 @@ class mel_workspace extends rcube_plugin
         if ($user_to_delete === null)
             $user_to_delete = rcube_utils::get_input_value("_user_to_delete", rcube_utils::INPUT_POST);
         $workspace = self::get_workspace($uid);
-        if(self::is_admin($workspace) || $user_to_delete === driver_mel::gi()->getUser()->uid)
+        if(self::is_admin($workspace) || $user_to_delete === driver_mel::gi()->getUser()->uid )
         {
             //Si il n'y a qu'un seul admin
-            if (self::nb_admin($workspace) === 1 && !$forceDelete)
+            if (self::is_admin($workspace) && self::nb_admin($workspace) === 1 && !$forceDelete)
             {
                 //Et que l'on veut se supprimer
                 if ($user_to_delete === driver_mel::gi()->getUser()->uid)

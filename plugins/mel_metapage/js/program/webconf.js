@@ -276,7 +276,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             },
             userInfo: {
                 email: rcmail.env["webconf.user_datas"].email,
-                displayName: rcmail.env["webconf.user_datas"].name ? rcmail.env["webconf.user_datas"].name.split("(")[0].split("-")[0] : rcmail.env["webconf.user_datas"].email
+                displayName: (rcmail.env["webconf.user_datas"].name === null ? (rcmail.env["webconf.user_datas"].email ? rcmail.env["webconf.user_datas"].email : 'Bnum user') : rcmail.env["webconf.user_datas"].name)//.split("(")[0].split("-")[0]
             }
         };
 
@@ -284,10 +284,13 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
         this.jitsii = new JitsiMeetExternalAPI(domain, options);
         this.jitsii.addListener('videoConferenceJoined', () => {
-            mel_metapage.Storage.set("webconf_token", true);
             if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
             this.jitsii.removeListener('videoConferenceJoined', () => {});
         });
+        // this.jitsii._frame.onreadystatechange = 
+        // $(this.jitsii._frame).on("load", () => {
+        //     mel_metapage.Storage.set("webconf_token", true);
+        // });
 
         await wait(() => mel_metapage.Storage.get("webconf_token") === null); //Attente que la frame sois chargée
 
@@ -2087,7 +2090,7 @@ $(document).ready(() => {
                         if ($(`iframe#${id}`).length > 0)
                         {
                             $(`iframe#${id}`).css("padding-right", `${window.webconf_master_bar.webconf.ariane.size}px`);
-                            $("#layout-frames").css("width", "");
+                            $("#layout-frames").css("width", "100%");
                         }
                         else
                         {
@@ -2135,7 +2138,6 @@ $(document).ready(() => {
             if (window.rcmail) {
                 // Call refresh panel
                 rcmail.addEventListener('responseafterjwt', function(evt) {
-                    //console.log("rcmail.addEventListener('responseafterwebconf_jwt')", evt);
                     if (evt.response.id) {
                         rcmail.env.webconf._jwt = evt.response.jwt;
                         //rcmail.portail_open_url(evt.response.id, rcmail.env.portail_items[evt.response.id].url + evt.response.room + '?jwt=' + evt.response.jwt);
@@ -2153,7 +2155,6 @@ $(document).ready(() => {
             }
             else
             {
-
                 try {
                     if (parent.rcmail.env.current_frame_name === undefined)
                     {

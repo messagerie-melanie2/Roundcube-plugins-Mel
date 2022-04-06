@@ -384,6 +384,7 @@ html.touch .ariane-card-body
 #layout-frames
 {
     width: 100%;
+    height: 100%;
 }
 
 html.touch .barup .tiny-rocket-chat-icon.icon-mel-message::before,

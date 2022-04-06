@@ -182,13 +182,14 @@ class mel extends rcube_plugin
       if ((!isset($_GET['_is_from']) || $_GET['_is_from'] != 'iframe')
         && !isset($_GET['_extwin'])
         && !isset($_GET['_framed'])
+        && $this->rc->task != 'login' 
+        && $this->rc->task != 'logout'
       ) {
-        $user = driver_mel::gi()->getUser(null, false);
-        if ($user->load(['lastname', 'firstname', 'email', 'service'])) {
-          $this->rc->output->set_env('firstname', $user->firstname);
-          $this->rc->output->set_env('lastname', $user->lastname);
-          $this->rc->output->set_env('email', $user->email);
-          $this->rc->output->set_env('service', self::format_service($user->service));
+        if (driver_mel::gi()->getUser()->load(['lastname', 'firstname', 'email', 'service'])) {
+          $this->rc->output->set_env('firstname', driver_mel::gi()->getUser()->firstname);
+          $this->rc->output->set_env('lastname', driver_mel::gi()->getUser()->lastname);
+          $this->rc->output->set_env('email', driver_mel::gi()->getUser()->email);
+          $this->rc->output->set_env('service', self::format_service(driver_mel::gi()->getUser()->service));
         }
       }
       if ($this->rc->task == 'mail') {

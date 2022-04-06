@@ -70,7 +70,7 @@ class mtes_driver_mel extends mce_driver_mel {
     'dn'                => 'mineqRDN=%%workspace%%,ou=Groupes,ou=BNUM,ou=applications,ou=ressources,dc=equipement,dc=gouv,dc=fr',
     'service'           => 'BNUM/Groupes',
     'email'             => 'edt.%%workspace%%@%%domain%%',
-    'reponse'          => 'edt.%%workspace%%@%%domain%%',
+    'reponse'           => 'edt.%%workspace%%@%%domain%%',
     'name'              => 'Liste edt %%workspace%%',
     'lastname'          => '%%workspace%%',
     'fullname'          => 'Liste edt %%workspace%% - BNUM/Groupes',
@@ -78,6 +78,12 @@ class mtes_driver_mel extends mce_driver_mel {
     'restrictions'      => '00+ LDAP:(&(mail=edt.%%workspace%%@%%domain%%)(mineqMelMembres=%s))',
     'gestion'           => 'AUTO/BNUM',
   ];
+
+  /**
+   * Domaine par défaut à utiliser dans les groupes
+   * 
+   */
+  const GROUP_DEFAULT_DOMAIN = 'i-carre.net';
 
   /**
    * Retourne l'objet Group
@@ -323,6 +329,15 @@ class mtes_driver_mel extends mce_driver_mel {
     // N'ajouter les informations sur Internet que si la double auth est activé (sinon sur intranet)
     else if (mel::is_internal() || !class_exists('mel_doubleauth') || mel_doubleauth::is_double_auth_enable()) {
       $plugin = rcmail::get_instance()->plugins->get_plugin('mel_contacts');
+      // Add fonction
+      $args['form']['function'] = [
+        'name'    => $plugin->gettext('function'),
+        'content' => [
+            'jobtitle'      => array('type' => 'text', 'label' => $plugin->gettext('jobtitle')),
+            'jobs'          => array('type' => 'text', 'label' => $plugin->gettext('jobs')),
+            'assignments'   => array('type' => 'text', 'label' => $plugin->gettext('assignments')),
+        ],
+      ];
       // Add members list
       $args['form']['members'] = [
           'name'    => $plugin->gettext('members'),
@@ -478,11 +493,21 @@ class mtes_driver_mel extends mce_driver_mel {
     if (!$group->load(['fullname', 'email', 'members', 'members_email', 'mdrive'])) {
       // Ajout des attributs
       foreach (self::WS_GROUP as $key => $value) {
-        $group->$key = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], $value);
+        $group->$key = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, self::GROUP_DEFAULT_DOMAIN], $value);
       }
       // Attributs particuliers
-      $group->email_list = [$group->email];
+      $email_list = [$group->email];
       $group->unique_identifier = $this->uuidv4();
+
+      // MANTIS 0006539: Règles sur les adresses mail des listes associées aux espaces de travail compatibles avec les domaines départementaux
+      if ($domain != self::GROUP_DEFAULT_DOMAIN) {
+        $group->reponse = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['reponse']);
+        $group->email = str_replace(['%%workspace%%', '%%domain%%'], [$workspace_id, $domain], self::WS_GROUP['email']);
+        $email_list[] = $group->email;
+      }
+
+      // Récupération des emails
+      $group->email_list = $email_list;
     }
 
     // Gestion du MDrive

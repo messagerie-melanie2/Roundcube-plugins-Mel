@@ -165,6 +165,7 @@ class mel_metapage extends rcube_plugin
         $this->rc->output->set_env("plugin.mel_metapage", true);//compose_extwin
         //$this->rc->output->set_env("compose_extwin", true);
         $this->rc->output->set_env("mel_metapage_chat_visible", $this->rc->config->get("mel_metapage_chat_visible", true));
+        $this->rc->output->set_env("mel_metapage_weather_enabled", $this->rc->config->get("enable_weather", false));
 
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
@@ -205,6 +206,8 @@ class mel_metapage extends rcube_plugin
         {
             $this->rc->output->set_env("compose_option", rcube_utils::get_input_value('_option', rcube_utils::INPUT_GET));
         }
+
+        self::add_url_spied($this->rc->config->get("web_conf"), 'webconf');
 
         if (rcube_utils::get_input_value('_framed', rcube_utils::INPUT_GET) === "1"
         || rcube_utils::get_input_value('_extwin', rcube_utils::INPUT_GET) === "1")

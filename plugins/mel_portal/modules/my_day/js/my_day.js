@@ -108,26 +108,33 @@ function setupMyDay(datas)
 			if (element.attendees !== undefined && element.attendees.length > 0)
 			{
 				bool = false;
-				const item = Enumerable.from(element.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
-				switch (item.status) {
-					case "NEEDS-ACTION":
-						title += ` (En attente)`;
-						break;
-
-					case "ACCEPTED":
-						title += ` (Accepté)`;
-						break;
-
-					case "TENTATIVE":
-						title += ` (Peut-être)`;
-						break;
-
-					case "CANCELLED":
-						bool = true;
-						break;
-				
-					default:
-						break;
+				const item = Enumerable.from(element.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).firstOrDefault(null);
+				if (item !== null)
+				{
+					try {
+						switch (item.status) {
+							case "NEEDS-ACTION":
+								title += ` (En attente)`;
+								break;
+	
+							case "ACCEPTED":
+								title += ` (Accepté)`;
+								break;
+	
+							case "TENTATIVE":
+								title += ` (Peut-être)`;
+								break;
+	
+							case "CANCELLED":
+								bool = true;
+								break;
+						
+							default:
+								break;
+						}
+					} catch (error) {
+						
+					}
 				}
 
 				if (bool)

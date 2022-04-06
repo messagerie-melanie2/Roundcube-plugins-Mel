@@ -65,7 +65,7 @@ class Webconf extends Program
 
         $user = driver_mel::gi()->getUser();
         $this->set_env_var("webconf.user_datas", [
-            "name" => $user->fullname,
+            "name" => $user->name,
             "email" => $user->email
         ]);
         $this->set_env_var("webconf.bar", $this->parse("webconf_bar"));

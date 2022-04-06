@@ -551,14 +551,17 @@ if (rcmail && window.mel_metapage)
         {
             if (rcube_calendar.is_valid_for_bnum_webconf(querry.attr("href") ?? ''))
             {
+                querry.data("spied", true);
                 querry.click((e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     modal.close();
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = null;//categoryExist && event.categories[0].includes("ws#") ? null : "";
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
                     console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     setTimeout(() => {
+                        rcmail.set_busy(false);
                         window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     }, 10);
                 });
@@ -1035,7 +1038,11 @@ $(document).ready(() => {
         /**
          * Tâche lié au Trello
          */
-        kanban:"kanban"
+        kanban:"kanban",
+        /**
+         * Tâche lié à la visioconférence
+         */
+        webconf:"webconf"
     }
 
     /**
@@ -1105,6 +1112,15 @@ $(document).ready(() => {
                 do {
                     reloop = false;
                     switch ((_switch === null ? null : _switch.value)) {
+                        case plugins.webconf:
+                            const key = url.replace(_switch.key, '').replaceAll('/', '');
+
+                            top.webconf_helper.go(key, null, '@home');
+
+                            if (after !== null) after();
+                            
+                            event.preventDefault();
+                            break;
                         case plugins.drive:
 
                             const stockage_url = _switch.url !== undefined ? decodeURIComponent(_switch.url) : decodeURIComponent(url);

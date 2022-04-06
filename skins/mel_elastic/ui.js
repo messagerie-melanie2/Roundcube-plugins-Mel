@@ -782,6 +782,7 @@ $(document).ready(() => {
                         title:"Rédaction",
                         content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
+                            if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
                             {
                                 popup.waiting_save = true;
@@ -806,8 +807,9 @@ $(document).ready(() => {
                             }
                         },
                         afterCreatingContent($html, box) {
+                            box.close.data('force', '1');
                             box.content.find("iframe").on('load', () => {
-
+                            box.close.data('force', '');
                             let frame_context = box.content.find("iframe")[0].contentWindow;
 
                             frame_context.$('#layout-sidebar .scroller').css("max-height", '100%');
@@ -835,6 +837,7 @@ $(document).ready(() => {
 
                             frame_context.rcmail.addEventListener('message_sent', async (args) => {
                                 rcmail.display_message(args.msg, args.type);
+                                box.close.data('force', '1');
                                 box.close.removeClass('disabled').removeAttr('disabled');
                                 box.close.click();
                             });

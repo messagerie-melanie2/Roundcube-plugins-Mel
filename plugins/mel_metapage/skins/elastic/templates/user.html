@@ -36,8 +36,10 @@
     <!-- <h3 id="aria-label-groupoptions-user" class="voice"><roundcube:label name="arialabelausergroupoptions" /></h3> -->
     <div class="container menu" role="menu" aria-labelledby="user-up-panel">
         <div class="row text-left mb-2">
-            <div class="col-sm-7 col-lg-8 d-flex align-items-center">
-                <roundcube:var name="env:service" />
+            <div class="col-sm-7 col-lg-8 d-flex align-items-center" title='<roundcube:var name="env:service" />'>
+                <div style="overflow:hidden;text-overflow:ellipsis;">
+                    <roundcube:var name="env:service" />
+                </div>
             </div>
             <div class="col-sm-5 col-lg-4 text-center pr-0">
                 <roundcube:button type="link" command="logout" label="logout" class="transparent-button user-logout" />
@@ -58,7 +60,9 @@
                     <roundcube:var name="env:lastname" />
                 </h5>
                 <p class="mb-1">
+                    <a id="mail-user-gp" style="display: block;" href='mailto:<roundcube:var name="env:email" />' title='<roundcube:var name="env:email" />'>
                     <roundcube:var name="env:email" />
+                    </a>
                 </p>
                 <roundcube:button type="link" command="my_account" title="mel_moncompte.moncompte" label="mel_moncompte.moncompte" class="a_underline" />
             </div>

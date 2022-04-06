@@ -1065,6 +1065,7 @@ $(document).ready(() => {
             const intercept = $(event.target).data("spied");
 
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
+            else if ($(event.target).attr('href').includes('mailto:')) return intercept_mailto(event);
             else if ($(event.target).attr("onclick") !== undefined && !$(event.target).attr("onclick").includes('event.click')) return;
             else if (Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
             else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
@@ -1207,6 +1208,15 @@ $(document).ready(() => {
         } catch (error) {
              //console.error("###[DEBUG][ONCLICK]", error);
         }
+    }
+
+    function intercept_mailto(event)
+    {
+        event.preventDefault();
+        rcmail.triggerEvent('intercept.click.ok', {event});
+        const url = $(event.target).attr('href').replace('mailto:', '');
+        if (url == rcmail.env.email) rcmail.open_compose_step({});
+        else rcmail.open_compose_step({to:url});
     }
 
     $(document).on("click", "a", (event) => {

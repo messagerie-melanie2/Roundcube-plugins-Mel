@@ -2450,3 +2450,14 @@ html.layout-phone #compose-content
     top: 0;
     left: 0;
 }
+
+#mail-user-gp
+{
+    color:#363A5B;
+}
+
+#mail-user-gp:hover
+{
+    color:#363A5B!important;
+    background-color: transparent!important;
+}

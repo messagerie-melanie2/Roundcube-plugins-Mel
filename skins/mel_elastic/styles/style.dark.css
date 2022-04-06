@@ -914,6 +914,7 @@ html.dark-mode  body.task-calendar select.mel-input.calendar:active
 	border-color: #2E2E2E!important;
 }
 
+html.dark-mode #mail-user-gp:hover,
 html.dark-mode  body.task-calendar select.mel-input.calendar:focus
 {
     color:#E1C58F!important;
@@ -973,6 +974,7 @@ html.dark-mode .list-of-all-hashtag {
     border: solid #323F4B thin;
 }
 
+html.dark-mode #mail-user-gp,
 html.dark-mode #myday .element-no
 {
     color:#c7dfff;

@@ -524,6 +524,7 @@ $(document).ready(() => {
                                         box.content.find(".spinner-grow").remove();
                                         $iframe.css('display', '');
                                         $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
+                                        $iframe[0].contentWindow.rcmail.env.is_in_popup_mail = true;
                                         $iframe[0].contentWindow.rcmail.addEventListener('message.deleted', async (event) => {
                                             delete_action();
                                         });
@@ -753,10 +754,27 @@ $(document).ready(() => {
 
             const alias_mel_rcmail_open_compose_step = rcmail.open_compose_step;
             rcmail.open_compose_step = function (p) {
-
                 if (window.create_popUp !== undefined) create_popUp.close();
 
-                if (rcmail.env.compose_extwin && !rcmail.env.extwin) alias_mel_rcmail_open_compose_step.call(this, p);
+                if ((rcmail.env.compose_extwin && !rcmail.env.extwin) || (rcmail.env.extwin)) 
+                {
+                    if (rcmail.env.extwin && rcmail.env.is_in_popup_mail === true)
+                    {
+                        var last_ext_win = rcmail.env.extwin;
+                        rcmail.env.extwin = 0;
+
+                        if (!rcmail.env.compose_extwin)
+                        {
+                            rcmail.open_compose_step(p);
+                            rcmail.env.extwin = last_ext_win
+                            return;
+                        }
+                    }
+
+                    alias_mel_rcmail_open_compose_step.call(this, p);
+
+                    if (last_ext_win !== undefined) rcmail.env.extwin = last_ext_win;
+                }
                 else {
                     p['_extwin'] = 1;
                     const url = rcmail.url('mail/compose', p);
@@ -817,6 +835,14 @@ $(document).ready(() => {
 
                             frame_context.rcmail.addEventListener('message_sent', async (args) => {
                                 rcmail.display_message(args.msg, args.type);
+                                box.close.removeClass('disabled').removeAttr('disabled');
+                                box.close.click();
+                            });
+
+                            frame_context.rcmail.addEventListener('plugin.message_send_error', ($args) =>
+                            {
+                                console.error('###[plugin.message_send_error]', $args);
+                                rcmail.display_message("Impossible d'envoyer le mail !", 'error');
                                 box.close.removeClass('disabled').removeAttr('disabled');
                                 box.close.click();
                             });
@@ -922,6 +948,11 @@ $(document).ready(() => {
                     }
                 }
             });
+
+            // rcmail.addEventListener('plugin.message_send_error', ($args) =>
+            // {
+            //     top.rcmail.command('message_send_error', $args);
+            // });
 
             return this;
         }

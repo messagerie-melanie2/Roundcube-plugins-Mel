@@ -154,6 +154,10 @@ if (rcmail)
                 });
             }, true);
 
+            rcmail.register_command('message_send_error', (args) => {
+                console.log("mm",args);
+            }, true);
+
             rcmail.register_command("refreshFrame", () => {
 
                 let iframe = $(`iframe.${rcmail.env.current_frame_name}-frame`);

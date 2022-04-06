@@ -145,6 +145,7 @@ class mel_metapage extends rcube_plugin
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
         $this->add_hook("send_page", array($this, "appendTo"));
+        $this->add_hook("message_send_error", [$this, 'message_send_error']);
 
         if ($this->rc->task === "mail" && $this->rc->action === "compose")
         {
@@ -1546,6 +1547,13 @@ class mel_metapage extends rcube_plugin
 //<h2 style="text-align: center;/*! text-decoration: blink; */color: #F71E1E;/*! text-decoration: underline; */">Une maintenance aura lieu le 09/12/2021 durant l'après-midi pendant environs moins d'une heure
 //.</h2>
         return $text;
+  }
+
+  public function message_send_error($args)
+  {
+    $this->rc->output->command('plugin.message_send_error', $args);
+    //$this->rc->output->add_script('parent.rcmail.env["message_send_error.value"] = '.json_encode($args));
+    return $args;
   }
 
 }

@@ -47,6 +47,12 @@ if (window.rcmail) {
         && (!rcmail.env.action || rcmail.env.action == "")) {
       rcmail.enable_command('window-edit-folder', true);
 
+      let ul = $('#folderlist-content').find('a[rel="'+rcmail.env.mailbox+'"]').closest('ul');
+      let isHidden = ul.attr('style');
+      if (isHidden) {
+        ul.prev().click();
+      }
+      
       rcmail.addEventListener('contextmenu_init', function(menu) {
         // identify the folder list context menu
         if (menu.menu_name == 'folderlist') {

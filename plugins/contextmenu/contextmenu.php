@@ -35,7 +35,7 @@ class contextmenu extends rcube_plugin
     {
         $this->rcube = rcube::get_instance();
 
-        if ($this->rcube->output->type == 'html') {
+        if (is_object($this->rcube->output) && $this->rcube->output->type == 'html') {
             $this->include_script('contextmenu.js');
             $this->include_stylesheet($this->local_skin_path() . '/contextmenu.css');
             $this->include_script($this->local_skin_path() . '/functions.js');
@@ -68,7 +68,7 @@ class contextmenu extends rcube_plugin
     public function messagecount()
     {
         $storage = $this->rcube->get_storage();
-        $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_POST);
+        $mbox = rcube_utils::get_input_string('_mbox', rcube_utils::INPUT_POST);
 
         // send output
         header("Content-Type: application/json; charset=" . RCUBE_CHARSET);
@@ -84,6 +84,13 @@ class contextmenu extends rcube_plugin
         $rel_path = $this->local_skin_path() . '/includes/' . $file;
         // path to skin folder relative to Roundcube root for template engine
         $template_include_path = 'plugins/' . $this->ID;
+
+        // check if the skin dir is in the plugin folder or in the core skins
+        // folder (external to this plugin) see RC #7445 for more info
+        if (strpos($rel_path, 'plugins/') !== false) {
+            $base_path = slashify(RCUBE_INSTALL_PATH);
+            $template_include_path = '.';
+        }
 
         if (is_file($base_path . $rel_path) && is_readable($base_path . $rel_path)) {
             $file_info = [$rel_path, $template_include_path];

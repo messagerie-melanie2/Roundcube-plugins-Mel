@@ -46,3 +46,37 @@ font-family: 'IcoFont'!important;
     width: inherit!important;
     height: inherit!important; */
 }
+
+.menu a.bookcreate:before {
+  content: "\e929";
+  font-family: DWP;
+  font-weight: normal;
+}
+
+.menu a.bookedit:before {
+  content: "\f303";
+}
+
+.menu a.bookdelete:before {
+  content: "\f2ed";
+}
+
+.menu a.manageresources:before {
+  content: "\f2b9";
+}
+
+div.popupmenu ul li.separator_above,
+ul.toolbarmenu li.separator_above
+{
+  border-top: 1px solid #ccc !important;
+  margin-top: 2px;
+  padding-top: 2px;
+}
+
+html.dark-mode div.popupmenu ul li.separator_above,
+html.dark-mode ul.toolbarmenu li.separator_above
+{
+  border-top: 1px solid #c7dfff;
+  margin-top: 2px;
+  padding-top: 2px;
+}

@@ -159,7 +159,7 @@ async function wsp_action_notif(target, page)
      {
          //delete config._action;
          console.log("I GO HERE");
-         await parent.$(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", $(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
+         await parent.$(`iframe.workspace-frame`)[0].contentWindow.ChangeToolbar("home", parent.$(`iframe.workspace-frame`)[0].contentWindow.$(".wsp-home "));
          parent.$(`iframe.workspace-frame`).remove();
          config[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
          await mel_metapage.Functions.change_frame("wsp", true, true, config);

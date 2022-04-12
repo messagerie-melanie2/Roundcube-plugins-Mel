@@ -1,3 +1,30 @@
+class SearchAction
+{
+    constructor(text, onclick)
+    {
+        this.init().setup(text, onclick);
+    }
+
+    init()
+    {
+        this.text = '';
+        this.onclick = () => {};
+        return this;
+    }
+
+    setup(text, onclick)
+    {
+        this.text = text;
+        this.onclick = onclick;
+    }
+
+    html(classes = '')
+    {
+        if (this.text === '') return '';
+        return $(`<button class="$${classes} mel-button btn btn-secondary">${this.text}<span class="plus icon-mel-arrow-right"></span></button>`).click(this.onclick);
+    }
+}
+
 /**
  * Représentation d'un résultat de recherche.
  */
@@ -8,12 +35,44 @@ class SearchResult {
      * @param {string} sub_header Corps du résultat
      * @param {string} link Action à faire lorsque l'on clique sur le résultat
      */
-    constructor(header, sub_header, link)
+    constructor(icon = '', action = null, datas = {})
     {
-        this.header = header;
-        this.sub_header = sub_header;
-        this.link = link;
+        this.init().setup(icon, action, datas);
     }
+
+    init()
+    {
+        this.icon = '';
+        this.html = '';
+        this.datas = {date:null};
+        this.action = new SearchAction('', null);
+        return this;
+    }
+
+    setup(icon, action, datas)
+    {
+        this.icon = icon;
+        this.action = action ?? this.action;
+        this.datas = Object.assign(this.datas, datas);
+        this.html = this.GenerateHtml();
+    }
+
+    GenerateHtml()
+    {
+        return `
+            <div class="mel-block-list">
+                <div style="display:inline-block;vertical-align:top">
+                    <span class='icon ${this.icon || 'no-icon'}'></span>
+                </div>
+                ${this._html()}
+            </div>
+        `;
+    }
+
+    _html()
+    {
+        return '';
+    };
 }
 
 /**
@@ -27,11 +86,27 @@ class SearchResultCalendar extends SearchResult
      */
     constructor(cal)
     {
-        const format = "DD/MM/YYYY HH:mm";
-        super(moment(cal.start).format(format) + " - " + moment(cal.end).format(format) + " : " + cal.title, cal.description, "#");
-        this.onclick = "SearchResultCalendar.CreateOrOpen('"+JSON.stringify(cal).replace(/"/g, "£¤£").replaceAll("'", "µ¤¤µ")+"')";//'mm_s_Calendar(`'+JSON.stringify(cal).replace(/"/g, "£¤£")+'`)';
+        super('icon-mel-calendar', null, {cal, date:cal.start});
+        //this.datas.date = cal.start;
+        //a.select(x => Enumerable.from(x.value.raw).where(w => w.key === 'datas').select(s => s.value.date).toArray()).toArray()
+
+        //const format = "DD/MM/YYYY HH:mm";
+        //super(moment(cal.start).format(format) + " - " + moment(cal.end).format(format) + " : " + cal.title, cal.description, "#");
+        //this.onclick = "SearchResultCalendar.CreateOrOpen('"+JSON.stringify(cal).replace(/"/g, "£¤£").replaceAll("'", "µ¤¤µ")+"')";//'mm_s_Calendar(`'+JSON.stringify(cal).replace(/"/g, "£¤£")+'`)';
         //JSON.stringify(cal).replace(/"/g, "£¤£")
-    }    
+    }   
+    
+    _html()
+    {
+        const cal = this.datas.cal;
+        let html = super._html();
+        html += `<div style='display:inline-block'>${rcube_calendar.mel_metapage_misc.GetDateFr(moment(cal.start).format("dddd D MMMM"))}</div>`;
+        html += html_helper.Calendars({
+            datas:[cal],
+            get_only_body:true
+        });
+        return html;
+    };
 }
 
 /**

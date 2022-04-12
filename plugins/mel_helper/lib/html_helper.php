@@ -171,3 +171,44 @@ class html_mel_table extends html {
         return html::tag($this->tagname, $this->attrib, $html);
     }
 }
+
+abstract class html_helper extends html
+{
+    protected function __construct()
+    {
+        throw new Exception("It's a static class", 1);       
+    }
+
+    private static function _set_attribs($currentAttribs, $attribs)
+    {
+        if (!empty($attribs))
+        {
+            foreach ($attribs as $key => $value) {
+                if ($currentAttribs[$key] !== null) $currentAttribs[$key] .= ' '.$value;
+                else $currentAttribs[$key] = $value;
+            }
+        }
+
+        return $currentAttribs;
+    }
+
+    public static function row($attribs = [], $contents = '')
+    {
+        return html::div(self::_set_attribs(['class' => "row"], $attribs), $contents);
+    }
+
+    private static function _col($format, $value, $attribs = [], $contents = '')
+    {
+        return html::div(self::_set_attribs(['class' => "col$format-$value"], $attribs), $contents);
+    }
+
+    public static function md_col($col, $attribs = [], $contents = '')
+    {
+        return self::_col('-md', $col, $attribs, $contents);
+    }
+
+    public static function col($col, $attribs = [], $contents = '')
+    {
+        return self::_col('', $col, $attribs, $contents);
+    }
+}

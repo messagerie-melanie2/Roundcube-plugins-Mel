@@ -7,7 +7,7 @@ require_once ('lib/mel_addressbook.php');
 require_once ('lib/all_addressbook.php');
 
 class mel_contacts extends rcube_plugin {
-  public $task = 'mail|settings|addressbook|calendar|ariane|sondage';
+  public $task = 'mail|settings|addressbook|calendar|ariane|sondage|mel_metapage';
 
   // Mél
   /**
@@ -56,7 +56,8 @@ class mel_contacts extends rcube_plugin {
         || $this->rc->task == 'calendar'
         || $this->rc->task == 'ariane'
         || $this->rc->task == 'discussion'
-        || $this->rc->task == 'sondage') {
+        || $this->rc->task == 'sondage'
+        || $this->rc->task == 'mel_metapage') {
       // register hooks
       $this->add_hook('addressbooks_list', array($this,'address_sources'));
       $this->add_hook('addressbook_get', array($this,'get_address_book'));

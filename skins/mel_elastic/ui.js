@@ -898,18 +898,19 @@ $(document).ready(() => {
             {
                 let $tmp = $(`<button type="button" class="btn btn-secondary mel-button create mel-before-remover">Retour <span class="plus icon-mel-undo "></span></button>`)
                 .on("click", () => {
-                    let $args = {
-                        _source:rcmail.env.annuaire_source
-                    };
+                    return top.rcmail.command('mel.metapage.contacts.back');
+                    // let $args = {
+                    //     _source:rcmail.env.annuaire_source
+                    // };
 
-                    parent.postMessage({
-                        exec:"searchToAddressbook",
-                        _integrated:true,
-                        child:false
-                    }, '*');
+                    // parent.postMessage({
+                    //     exec:"searchToAddressbook",
+                    //     _integrated:true,
+                    //     child:false
+                    // }, '*');
 
-                    rcmail.set_busy(true, "loading");
-                    window.location.href = this.url("addressbook", "plugin.annuaire", $args);
+                    // rcmail.set_busy(true, "loading");
+                    // window.location.href = this.url("addressbook", "plugin.annuaire", $args);
 
 
                 });

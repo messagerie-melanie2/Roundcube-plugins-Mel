@@ -104,6 +104,12 @@ class mel_metapage extends rcube_plugin
             $conf = new Webconf($this->rc, $this);
             $conf->init();
         }
+        else if ($this->rc->task === "search")
+        {
+            include_once "program/search_page/search.php";
+            $conf = new SearchPage($this->rc, $this);
+            $conf->init();
+        }
         else if ($this->rc->task === "chat")
             $this->register_action('index', array($this, 'ariane'));
 
@@ -242,6 +248,8 @@ class mel_metapage extends rcube_plugin
             $this->rc->get_storage();
             if ($this->rc->task === "webconf")
                 $this->register_task("webconf");
+            else if ($this->rc->task === 'search')
+                $this->register_task("search");
             else if ($this->rc->task === "chat")
                 $this->register_task("chat");
             else if ($this->rc->task === "questionswebconf")
@@ -730,6 +738,8 @@ class mel_metapage extends rcube_plugin
         $source = rcube_utils::get_input_value('_source', rcube_utils::INPUT_GET);
         $url = "?_task=addressbook&_framed=1&_cid=".$id."&_action=show&_source=".$source;
         $this->rc->output->set_env("contact_url", $url);
+        $this->include_script('js/init/constants.js');
+        $this->include_script('js/init/commands.js');
         $this->include_script('js/actions/set_iframe_contact.js');
         $this->rc->output->send("mel_metapage.contact");
     }
@@ -997,27 +1007,37 @@ class mel_metapage extends rcube_plugin
     /**
      * Recherche un texte dans les mails.
      */
-    public function search_mail($input = null)
+    public function search_mail($input = null, $folder = null)
     {
         $called = !isset($input);
         include_once "program/search_result/search_result_mail.php";
         $input = $input ?? rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
-        $msgs = $this->rc->storage->list_messages();
-        $tmp = $this->rc->storage->search(null, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
-        $array = $tmp->get();
-        $size = count($array);
-        $index = null;
-        $retour = [];
-        $it = 0;
-        for ($i=$size; $i >= 0; --$i) { 
-            $index = $this->mail_where($array[$i], $msgs);
-            if ($index !== false)
-                $retour[$it++] = $msgs[$index];
-            if (count($retour) >= 5)
-                break;
+        $folder = ($folder ?? rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET)) ?? 'INBOX';
+
+        // $folders = $this->rc->storage->list_folders_subscribed($folder, '*', 'mail');
+        $this->rc->storage->set_folder($folder);
+        $search = $this->rc->storage->search($folder, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
+        $msgs = $this->rc->storage->list_messages($folder);
+
+        foreach ($msgs as $key => $value) {
+            $retour[] = $value;
         }
 
-        $datas = SearchResultMail::create_from_array($retour)->get_array($this->gettext("mails"));
+        // $msgs = $this->rc->storage->list_messages();
+        // $tmp = $this->rc->storage->search(null, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
+        // $array = $tmp->get();
+        // $size = count($array);
+        // $index = null;
+        // $retour = [];
+        // $it = 0;
+        // for ($i=$size; $i >= 0; --$i) { 
+        //     $index = $this->mail_where($array[$i], $msgs);
+        //     if ($index !== false)
+        //         $retour[$it++] = $msgs[$index];
+        //     // if (count($retour) >= 5)
+        //     //     break;
+        // }
+        $datas = SearchResultMail::create_from_array($retour, $this)->get_array($this->gettext("mails")."/$folder");
         if ($called)
         {
             echo rcube_output::json_serialize($datas);
@@ -1087,7 +1107,7 @@ class mel_metapage extends rcube_plugin
     
             // reset page
             $source->set_page(1);
-            $source->set_pagesize(5);
+            // $source->set_pagesize(5);
     
             // get contacts count
             $result = $source->search($fields, $search, $mode, false);
@@ -1102,8 +1122,8 @@ class mel_metapage extends rcube_plugin
             while ($row = $result->next()) {
                 $row['sourceid'] = $s['id'];
                 $retour->add(new SearchResultContact($row, $search, $this->rc));
-                if ($retour->count() >= 5)
-                    break;
+                // if ($retour->count() >= 5)
+                //     break;
                 // $key = rcube_addressbook::compose_contact_key($row, $sort_col);
                 // $records[$key] = $row;
             }

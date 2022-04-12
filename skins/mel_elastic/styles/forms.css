@@ -486,3 +486,8 @@ input.input-mel.error {
 #mailsearchform {
   box-shadow: none;
 }
+
+.mel-input.search-like{
+	background-color:white;
+	border-color: #424665;
+}

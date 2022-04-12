@@ -17,73 +17,66 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+mel_helper::html_helper();
 include_once "search_result.php";
 /**
  * Représente un mail une fois rechercher, ainsi que les actions à effectuer.
  */
 class SearchResultMail extends ASearchResult
 {
-    /**
-     * Action à faire.
-     */
-    public $onclick;
 
-    public function __construct($msg) {
-        //$a  = rcube_mime::decode_header($msg->date, $msg->charset);
-        $a1 = rcube_mime::decode_header($msg->from, $msg->charset);
-        $date = new DateTime($msg->date);
-        $up = '<div style="display:flex;">'.
-        '<span '.$this->style_up().'>'.$date->format('H:i d/m/Y').'</span>'.$this->space().'<span  '.$this->style_up(false).'>'.$a1.'<span>'
-        .'</div>';
-        $down = '<div '.$this->style_down().'>'.rcube_mime::decode_header($msg->subject, $msg->charset).'</div>';
-        parent::__construct( $up
-        , $down,
-         "#");
+    private $msg;
+    public function __construct($msg, $plugin = null) {
+        $this->msg = $msg;
 
-         $args = [
-            "_action" => "show",
-            "_uid" => $msg->uid,
-            "_mbox" => "INBOX"
-        ];
+        if (isset($plugin)) $this->set_plugin($plugin);
 
-        $function = "mm_s_CreateOrUpdateFrame('mail', ".str_replace('"', "'", json_encode($args)).")";
-
-         $this->onclick = $function;//"mm_s_CreateOrUpdateFrame('mail', '?_task=mail&_mbox=INBOX&_uid=".$msg->uid."&_action=show')";
-    }  
-
-    /**
-     * Style du titre.
-     */
-    function style_up($b = true)
-    {
-        return 'style="font-size:smaller;flex: '.(($b) ? '0' : '1'). ' 0 auto"';
+        parent::__construct('icon-mel-mail', $this->_create_action());
     }
 
-    /**
-     * Correspond à un espace.
-     */
-    function space()
+    protected function _html()
     {
-        return '<space style="flex:100 0 auto"></space>';
+        $msg = $this->msg;
+        $this->datas['date'] = $msg->date;
+
+        $folderName = $msg->folder;
+
+        if ($folderName === 'INBOX') $folderName = driver_mel::gi()->getUser()->fullname;
+        else {
+            $folderName = driver_mel::gi()->getUser(explode('/', $msg->folder)[1])->fullname;
+            
+            if (strpos($folderName, ' (') !== false) $folderName = explode(' (', $folderName)[0];
+            else if (strpos($folderName, ' -') !== false) $folderName = explode(' -', $folderName)[0];
+        }
+        
+        return html::div(['style' => 'display:inline-block;width:98%'], 
+            html_helper::row([], html_helper::col(4, ['class' => 'col-item'], $folderName).
+            html_helper::col(6, ['class' => 'col-item'], rcube_mime::decode_header($msg->subject, $msg->charset)).
+            html_helper::col(2, ['class' => 'col-item', 'style' => 'text-align:right'], (new DateTime($this->datas['date']))->format('d/m/Y H:i'))
+            )
+        );
     }
 
-    /**
-     * Style du corps.
-     */
-    function style_down()
+    private function _create_action()
     {
-        return 'style="font-size:initial;width:100%;text-align:center;"';
+        $text = '';
+        $onclick = 'rcmail.command(`mel.showMail`, '.json_encode(["_uid" => $this->msg->uid, "_mbox" => $this->msg->folder]).')';
+
+        if (false && isset($this->plugin)) $text = $this->plugin->gettext('seemail', 'mel_metapage');
+        else $text = 'Voir le courrier sur mail';
+
+        return $this->create_action($text, $onclick);
     }
 
     /**
      * Renvoie une liste de SearchResultMail via une liste de mails.
      */
-    public static function create_from_array($msgs)
+    public static function create_from_array($msgs, $plugin)
     {
         $retour = new SearchResults();
         $count = count($msgs);
         for ($i=0; $i < $count; ++$i) { 
-            $retour->add(new SearchResultMail($msgs[$i]));
+            $retour->add(new SearchResultMail($msgs[$i], $plugin));
         }
         return $retour;
     }

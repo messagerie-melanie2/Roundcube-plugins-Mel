@@ -1,0 +1,73 @@
+<roundcube:include file="includes/layout.html" />
+<roundcube:include file="includes/menu.html" />
+
+<h1 class="voice"><roundcube:label name="workspaces" /></h1>
+
+<!-- contact details frame -->
+<div id="layout-content" class="wsp-content wsp-index" style="overflow: auto;" role="main">
+	<!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>-->
+	<div class="wsp-header" style="background-color: white;height: auto;color: inherit;display:block;text-align: center;" role="toolbar" aria-labelledby="aria-label-toolbar">
+        <div class=row>
+            <div class=col-12>
+                <div class="header-wsp">
+                    <span class="icon-mel-search no-weight roundbadge"></span>
+                    <h1><roundcube:object name="label" /></h1>
+                </div>
+            </div>
+        </div>
+        <div class=row>
+            <div class=col-12>
+                <div class="wsp-search-wsp">
+                    <!-- <span class="title-wsp text-header bold">Rechercher un espace de travail</span> -->
+                    <div class="input-group mel-search-group mel-centered">
+                        <input id="wsp-search-input" disabled type="text" onmousedown="" value="<roundcube:object name="word_searched" />" class="form-control disabled mel-max-width-500" />
+                        <div class="input-group-append">
+                            <span class="icon-mel-search input-group-text"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div> 
+
+    <div class="row">
+        <div class="col-6">
+            <h2>Filtrer par : </h2>
+            <br/>
+            <h3>Type de contenu</h3>
+            <select id="search-filter" class="pretty-select input-mel mel-input search-like disabled" disabled>
+                <roundcube:object name="content_options" />
+            </select>
+        </div>
+    </div>
+
+    <separate class="wsp"></separate>
+	<!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
+    <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
+	<div class="body" style="padding-bottom: 15px;">
+
+        <div class="datas-and-orders">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 style="display:inline-block" id="search-result-number">0</h2> résultats pour <b id="mel-serach-word">"<roundcube:object name="word_searched" />"</b>
+                </div>
+                <div class="col-md-6" style="text-align:right">
+                    <span>Trier par : </span>
+                    <select id="search-order" class="pretty-select input-mel mel-input search-like disabled" disabled style="max-width:150px">
+                        <option value="none" selected disabled class="disabled" style="display:none">Rien</option>
+                        <option value="desc">Le plus récent</option>
+                        <option value="asc">Le plus ancien</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="loading">
+            <center><div style="width: 90px; height: 90px;" class="spinner-grow"></div></center>
+        </div>
+        <div class="results" style="display:none;"></div>
+
+        <roundcube:object name="pagination" />
+	</div>
+</div>
+
+<roundcube:include file="includes/footer.html" />

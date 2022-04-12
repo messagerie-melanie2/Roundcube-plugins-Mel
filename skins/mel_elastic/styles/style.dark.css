@@ -1009,3 +1009,7 @@ html.dark-mode .wlp-contents
 a.rcmContactAddress {
     color: #96b9e7;
 }
+
+html.dark-mode .mel-block-list {
+	background-color: #323F4B;
+}

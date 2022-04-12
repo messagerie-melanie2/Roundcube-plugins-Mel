@@ -2461,3 +2461,38 @@ html.layout-phone #compose-content
     color:#363A5B!important;
     background-color: transparent!important;
 }
+
+.mel-block-list
+{
+    white-space: nowrap;
+}
+
+.mel-block-list .icon
+{
+    margin-right: 5px;
+}
+
+.mel-block-list .icon.no-icon
+{
+    margin-right: 0;
+    display: none;
+}
+
+.mel-block-list .col-item {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mel-block-list {
+	background-color: #F0F0F0;
+	width: 100%;
+	padding: 15px;
+	margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.touch .col-2.col-item, .touch .col-6.col-item {
+	-ms-flex: 0 0 33.333333%;
+	flex: 0 0 33.333333%;
+	max-width: 33.333333%;
+}

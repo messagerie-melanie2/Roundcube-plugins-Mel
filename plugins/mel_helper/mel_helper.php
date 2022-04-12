@@ -140,6 +140,11 @@ class mel_helper extends rcube_plugin
         return new Mel_Color_Helper();
     }
 
+    public static function html_helper()
+    {
+        include_once "lib/html_helper.php";
+    }
+
     public static function build_folder_tree(&$arrFolders, $folder, $delm = '/', $path = '')
     {
         include_once "lib/mel_rcmail_action.php";

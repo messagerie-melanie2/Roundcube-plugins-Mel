@@ -2,7 +2,9 @@
 $labels = array();
 $labels['...'] = "...";
 $labels['mails'] = "Mails";
+$labels['mail'] = $labels['mails'];
 $labels["contacts"] = "Contacts";
+$labels["contact"] = $labels["contacts"];
 $labels['create'] = "Créer";
 $labels['support'] = "Assistance";
 $labels['my_favorites'] = "Mes raccourcis";
@@ -207,3 +209,5 @@ $labels["copy_w_p"] = "Copier sans les participants";
 
 $labels["force-refresh"] = "Recharger et actualiser les dossiers";
 $labels["new-mail-from"] = "Nouveau message aux mêmes destinataires";
+
+$labels['calendar'] = 'Agenda';

@@ -146,12 +146,108 @@ if (rcmail)
                   }
             }, true);
 
+            rcmail.register_command("mel.showMail", (datas) => {
+                for (const key in datas) {
+                    if (Object.hasOwnProperty.call(datas, key)) {
+                        datas[key] = encodeURIComponent(datas[key]);
+                    }
+                }
+
+                if (top.$(`iframe.mail-frame`).length > 0) {
+                    top.$(`iframe.mail-frame`)[0].contentWindow.location.href = mel_metapage.Functions.url('mail', '', datas);
+                } //frame déjà ouverte
+                else if (top.$(`.mail-frame`).length > 0) {
+                    top.$(`.mail-frame`).remove();
+                } // top
+
+                mel_metapage.Functions.change_frame('mail', true, false, datas);
+            }, true);
+
+            rcmail.register_command("mel.show_contact", (datas) => {
+                for (const key in datas) {
+                    if (Object.hasOwnProperty.call(datas, key)) {
+                        datas[key] = encodeURIComponent(datas[key]);
+                    }
+                }
+
+                if (top.$(`iframe.addressbook-frame`).length > 0) {
+                    top.$(`iframe.addressbook-frame`)[0].contentWindow.location.href = mel_metapage.Functions.url('mel_metapage', 'contact', datas);
+                } //frame déjà ouverte
+                else if (top.$(`.addressbook-frame`).length > 0) {
+                    top.$(`.addressbook-frame`).remove();
+                } // top
+
+                mel_metapage.Functions.change_frame('contacts', true, false, datas);
+            }, true);
+
+            rcmail.register_command("mel.metapage.contacts.back", () => {
+                let $args = {
+                    _source:rcmail.env.annuaire_source
+                };
+
+                $args[rcmail.env.mel_metapage_const.key] = rcmail.env.mel_metapage_const.value;
+                rcmail.set_busy(true, 'loading');
+                //console.log('test', mel_metapage.Functions.url("addressbook", "plugin.annuaire", $args), top.$('.addressbook-frame'));
+                top.$('.addressbook-frame')[0].contentWindow.location.href = mel_metapage.Functions.url("addressbook", "plugin.annuaire", $args);
+                // rcmail.set_busy(false);
+                // rcmail.clear_messages();
+            }, true);
+
+
             rcmail.register_command("event.click", (params, obj, event) => {
                 rcmail.triggerEvent("event.click", {
                     params,
                     obj,
                     e:event
                 });
+            }, true);
+
+            rcmail.register_command("mel.search.global", async (event) => {
+                event = $(event);
+                const word = event.val();
+
+                event.addClass('disabled').attr('disabled', 'disabled');
+
+                if ($('iframe.search-frame').length > 0)
+                {
+                    $('.mm-frame').css('display', 'none');
+                    $('#layout-frames').css('display', '');
+                    $('iframe.search-frame').css('display', '')[0].contentWindow.rcmail.command('mel.search', {word});
+                }
+                else if ($('.search-frame').length > 0)
+                {
+                    $('.mm-frame').css('display', 'none');
+                    $('#layout-frames').css('display', 'none');
+                    $('.search-frame').css('display', '');
+                    rcmail.command('mel.search', {word});
+                }
+                else{
+                    await mel_metapage.Functions.change_frame('search', false, true, {_word:word});
+                    $('.mm-frame').css('display', 'none');
+                    $('#layout-frames').css('display', '');
+                    $('iframe.search-frame').css('display', '');
+                }
+                
+
+
+
+            }, true);
+
+            rcmail.register_command("mel.search.global.show", async (event) => {
+                event = $(event);
+
+                if ($('iframe.search-frame').length > 0)
+                {
+                    $('.mm-frame').css('display', 'none');
+                    $('#layout-frames').css('display', '');
+                    $('iframe.search-frame').css('display', '');//[0].contentWindow.rcmail.command('mel.search', {word});
+                }
+                else if ($('.search-frame').length > 0)
+                {
+                    $('.mm-frame').css('display', 'none');
+                    $('#layout-frames').css('display', 'none');
+                    $('.search-frame').css('display', '');
+                }
             }, true);
 
             rcmail.register_command('message_send_error', (args) => {

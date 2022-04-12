@@ -1197,7 +1197,7 @@ rcube_webmail.prototype.m_mp_help_video_player = function(task) {
     try {
         help = rcmail.env.help_video[task];
         let html = '<div class="row">'
-        html += '<div class="max-video mb-3 p-3"><video controls autoplay><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/' + help.video + '" type="video/mp4">Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div></div><h2>' + help.title + '</h2><p>' + help.description + '</p></div>';
+        html += '<div class="max-video mb-3 p-3"><video controls autoplay id="help_video"><source src="' + location.protocol + '//' + location.host + location.pathname + '/plugins/mel_onboarding/videos/' + help.video + '" type="video/mp4">Désolé, votre navigateur ne prend pas en charge les vidéos intégrées.</video></div></div><h2>' + help.title + '</h2><p>' + help.description + '</p></div>';
 
         html += '</div>'
 
@@ -1208,6 +1208,11 @@ rcube_webmail.prototype.m_mp_help_video_player = function(task) {
 
         help_popUp.modal.focus();
         help_popUp.show();
+
+        $("#globalModal").on("hide.bs.modal", function(e) {
+          let video = document.getElementById("help_video");
+          video.pause();
+        });
     } catch (error) {
         console.error(error);
     }

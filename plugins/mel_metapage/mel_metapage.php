@@ -557,6 +557,7 @@ class mel_metapage extends rcube_plugin
         if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) === self::FROM_VALUE)
         {
             $args["content"] = $this->from_iframe($args["content"]);
+            $args["content"] = $this->add_html($args["content"]);
         }
         else {
             $tmp = explode('<div id="layout">', $args["content"]);

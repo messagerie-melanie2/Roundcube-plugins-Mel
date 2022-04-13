@@ -65,11 +65,11 @@ $(document).ready(() => {
             return this;
         }
 
-        setup(word, config)
+        setup(word, config, then = null)
         {
             this.word = word;
             this.config = config;
-            return this._search(word, config);
+            return this._search(word, config, then);
         }
 
         _launch_timeout(count)
@@ -114,10 +114,10 @@ $(document).ready(() => {
             $('.body .loading').css('display', '').find('.spinner-grow').removeClass('text-success').removeClass('text-danger');
             $('.body .results').css('display', 'none');
 
-            return this.setup(word, config).order().filter();
+            return this.setup(word, config, () => {this.order().filter();});
         }
 
-        _search(word, config)
+        _search(word, config, then = null)
         {
             const settings = this.settings;
             let _this = this;
@@ -157,6 +157,8 @@ $(document).ready(() => {
                     if (++howManyFinished >= config.length)
                     {
                         _this._showDatas();
+
+                        if (!!then) then();
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
@@ -177,7 +179,7 @@ $(document).ready(() => {
             }
         }
 
-        _showDatas()
+        _showDatas(then = null)
         {
             for (const key in this.blocks) {
                 if (Object.hasOwnProperty.call(this.blocks, key)) {
@@ -197,6 +199,10 @@ $(document).ready(() => {
                     delete this._current_count;
                     delete this._text_timeout;
                 }, 1000);
+            }
+            else {
+                delete this._current_count;
+                delete this._text_timeout;
             }
 
             this.settings.$globaSearchInput.removeClass('disabled').removeAttr("disabled");
@@ -241,6 +247,23 @@ $(document).ready(() => {
                     }
                 }
             }
+
+            if (this._text_timeout === undefined)
+            {
+                if (filter === 'all') this.settings.$resultNumber.html(Enumerable.from(this.blocks).count());
+                else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
+            }
+            else {
+                let interval = setInterval(() => {
+                    if (this._text_timeout === undefined)
+                    {
+                        clearInterval(interval);
+                        if (filter === 'all') this.settings.$resultNumber.html(Enumerable.from(this.blocks).count());
+                        else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
+                    }
+                }, 100);
+            }
+
             return this;
         }
 
@@ -278,4 +301,6 @@ $(document).ready(() => {
 
         search.search.research(word, config);
     }, true);
+
+    top._current_search = search.search;
 });

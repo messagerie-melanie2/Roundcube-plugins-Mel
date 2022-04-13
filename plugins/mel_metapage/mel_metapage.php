@@ -1014,10 +1014,15 @@ class mel_metapage extends rcube_plugin
         include_once "program/search_result/search_result_mail.php";
         $input = $input ?? rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
         $folder = ($folder ?? rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET)) ?? 'INBOX';
-
-        // $folders = $this->rc->storage->list_folders_subscribed($folder, '*', 'mail');
+        $isInbox = $folder === 'INBOX';
         $this->rc->storage->set_folder($folder);
-        $search = $this->rc->storage->search($folder, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
+        $folders;
+        
+        $this->rc->storage->set_pagesize(9999);
+        if ($isInbox) $folders = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
+        else $folders = $folder;
+
+        $search = $this->rc->storage->search($folders, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
         $msgs = $this->rc->storage->list_messages($folder);
 
         foreach ($msgs as $key => $value) {

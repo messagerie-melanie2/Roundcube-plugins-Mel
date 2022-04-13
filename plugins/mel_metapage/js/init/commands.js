@@ -210,12 +210,14 @@ if (rcmail)
 
                 if ($('iframe.search-frame').length > 0)
                 {
+                    $('.a-frame').css('display', 'none');
                     $('.mm-frame').css('display', 'none');
                     $('#layout-frames').css('display', '');
                     $('iframe.search-frame').css('display', '')[0].contentWindow.rcmail.command('mel.search', {word});
                 }
                 else if ($('.search-frame').length > 0)
                 {
+                    $('.a-frame').css('display', 'none');
                     $('.mm-frame').css('display', 'none');
                     $('#layout-frames').css('display', 'none');
                     $('.search-frame').css('display', '');
@@ -223,6 +225,7 @@ if (rcmail)
                 }
                 else{
                     await mel_metapage.Functions.change_frame('search', false, true, {_word:word});
+                    $('.a-frame').css('display', 'none');
                     $('.mm-frame').css('display', 'none');
                     $('#layout-frames').css('display', '');
                     $('iframe.search-frame').css('display', '');
@@ -238,12 +241,14 @@ if (rcmail)
 
                 if ($('iframe.search-frame').length > 0)
                 {
+                    $('.a-frame').css('display', 'none');
                     $('.mm-frame').css('display', 'none');
                     $('#layout-frames').css('display', '');
                     $('iframe.search-frame').css('display', '');//[0].contentWindow.rcmail.command('mel.search', {word});
                 }
                 else if ($('.search-frame').length > 0)
                 {
+                    $('.a-frame').css('display', 'none');
                     $('.mm-frame').css('display', 'none');
                     $('#layout-frames').css('display', 'none');
                     $('.search-frame').css('display', '');

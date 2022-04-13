@@ -595,7 +595,7 @@ $(document).ready(() => {
 
                 const alias_mel_rcmail_move_messages = rcmail.move_messages;
                 rcmail.move_messages = function(mbox, event, uids) {
-                    alias_mel_rcmail_move_messages.call(this);
+                    alias_mel_rcmail_move_messages.call(this, mbox, event, uids);
                     rcmail.triggerEvent('message.moved', {mbox, uids, e:event});
                 }
 

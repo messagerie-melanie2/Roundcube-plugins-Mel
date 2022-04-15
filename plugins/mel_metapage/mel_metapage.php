@@ -148,10 +148,16 @@ class mel_metapage extends rcube_plugin
             }
         }
 
+        $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
+
+        if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs" &&  rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch')
+        {
+            $this->include_script('js/actions/settings_gs.js');
+        }
 
         if ($this->rc->task === "mail" && $this->rc->action === "compose")
         {
@@ -1011,16 +1017,62 @@ class mel_metapage extends rcube_plugin
     public function search_mail($input = null, $folder = null)
     {
         $called = !isset($input);
+
         include_once "program/search_result/search_result_mail.php";
+
         $input = $input ?? rcube_utils::get_input_value('_q', rcube_utils::INPUT_GET);
         $folder = ($folder ?? rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GET)) ?? 'INBOX';
+
         $isInbox = $folder === 'INBOX';
         $this->rc->storage->set_folder($folder);
+
         $folders;
-        
-        $this->rc->storage->set_pagesize(9999);
-        if ($isInbox) $folders = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
-        else $folders = $folder;
+
+        $max_size_page = $this->rc->config->get('search_mail_max', 9999);
+
+        if ($isInbox) 
+        {
+            $search_on_all_bali_folders = 'search_on_all_bali_folders';
+            $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
+            $folders = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
+
+            if (!$search_on_all_bali_folders_config)
+            {
+                $folders_datas = $this->rc->config->get('global_search_bali_folders_configs', []);
+
+                foreach ($folders as $index => $_folder) {
+                    $_folder = rcube_charset::convert($_folder, 'UTF7-IMAP');
+                    $_folder = str_replace('INBOX', 'Courrier entrant', $_folder);
+                    
+                    if (!($folders_datas[$_folder] ?? true)) unset($folders[$index]);
+                }
+            }
+
+            $max_size_page *= count($folders);
+            if ($max_size_page > 9999) $max_size_page = 9999;
+        }
+        else 
+        {
+            $search_on_all_bal = 'search_on_all_bal';
+            $search_on_all_bal_config = $this->rc->config->get($search_on_all_bal, true);
+
+            if (!$search_on_all_bal_config)
+            {
+                $balps = $this->rc->config->get('global_search_balp_configs', []);
+
+                $current_balp_id = driver_mel::gi()->getUser()->uid.'.-.'.explode('/', $folder)[1];
+
+                if (!($balps[$current_balp_id] ?? true))
+                {
+                    echo json_encode([]);
+                    exit;
+                }
+            }
+
+            $folders = $folder;
+        }
+
+        $this->rc->storage->set_pagesize($max_size_page);
 
         $search = $this->rc->storage->search($folders, "OR HEADER FROM ".$input." HEADER SUBJECT ".$input, RCUBE_CHARSET, "arrival");
         $msgs = $this->rc->storage->list_messages($folder);
@@ -1384,6 +1436,20 @@ class mel_metapage extends rcube_plugin
         return $program;
     }
 
+    public function preferences_sections_list($p)
+    {
+        $dir = __DIR__;
+        if (is_dir("$dir/program/search_page") && file_exists("$dir/program/search_page/search.php"))
+        {
+            $p['list']['globalsearch'] = [
+                'id'      => 'globalsearch',
+                'section' => $this->gettext('globalsearch', 'mel_metapage'),
+            ];
+        }
+
+        return $p;
+    }
+    
   /**
    * Handler for user preferences form (preferences_list hook)
    */
@@ -1463,11 +1529,99 @@ class mel_metapage extends rcube_plugin
             $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
         }
     }
-    // else if ($args['section'] == 'compose') {
-    //     unset($args['blocks']['main']['options']['compose_extwin']);
-    // }
+    else if ($args['section'] == 'globalsearch')
+    {
+        $this->add_texts('localization/');
+        mel_helper::settings(true);
+
+        //Max search mail
+        $search_mail_max = 'search_mail_max';
+        $search_mail_max_config = $this->rc->config->get($search_mail_max, 9999);
+        $search_input = (new setting_option_value_input(0, setting_option_value_input::INFINITY))->html($search_mail_max, $search_mail_max_config, ['name' => $search_mail_max], $this);//new html_inputfield(['name' => $search_mail_max, 'id' => $search_mail_max]);
+
+        $args['blocks']['general']['options'][$search_mail_max] = $search_input;/*[
+            'title'   => html::label($search_mail_max, rcube::Q($this->gettext($search_mail_max))),
+            'content' => $search_input->show($search_mail_max_config),
+        ];*/
+
+        //Search on all bal
+        $search_on_all_bal = 'search_on_all_bal';
+        $search_on_all_bal_config = $this->rc->config->get($search_on_all_bal, true);
+        $search_check = new html_checkbox(['name' => $search_on_all_bal, 'id' => $search_on_all_bal, 'value' => 1]);
+
+        $args['blocks']['general']['options'][$search_on_all_bal] = [
+            'title'   => html::label($search_on_all_bal, rcube::Q($this->gettext($search_on_all_bal))),
+            'content' => $search_check->show($search_on_all_bal_config ? 1 : 0),
+        ];
+
+        $args['blocks']['general']['options']['balp_settings'] = [
+            'content' => $this->create_balp_selection($this->rc->config->get('global_search_balp_configs', []))->show(['style' => ($search_on_all_bal_config ? 'display:none' : '')]),
+        ];
+
+        //Search on all bali
+        $search_on_all_bali_folders = 'search_on_all_bali_folders';
+        $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
+        $search_check = new html_checkbox(['name' => $search_on_all_bali_folders, 'id' => $search_on_all_bali_folders, 'value' => 1]);
+
+        $args['blocks']['general']['options'][$search_on_all_bali_folders] = [
+            'title'   => html::label($search_on_all_bali_folders, rcube::Q($this->gettext($search_on_all_bali_folders))),
+            'content' => $search_check->show($search_on_all_bali_folders_config ? 1 : 0),
+        ];
+
+        $args['blocks']['general']['options']['bali_settings'] = [
+            'content' => $this->create_bali_folders_selection($this->rc->config->get('global_search_bali_folders_configs', []))->show(['style' => ($search_on_all_bali_folders_config ? 'display:none' : '')]),
+        ];
+        
+    }
 
     return $args;
+  }
+
+    function create_bali_folders_selection($config)
+    {
+        if (!isset($config)) $config = [];
+
+        $storage = $this->rc->storage;
+
+        if (!isset($storage)) $storage = $this->rc->get_storage();
+
+        $folders = $storage->list_folders_subscribed('', '*', 'mail');
+        $table = new html_table(['id' => 'bali-select', 'cols' => 2]);
+
+        // Add headers
+        foreach (['folders', 'search-in-this-folder'] as $name) {
+            $table->add_header(['class' => $name], $this->gettext($name));
+        }
+
+        foreach ($folders as $folder_name) {
+            $folder_name = rcube_charset::convert($folder_name, 'UTF7-IMAP');
+            $folder_name = str_replace('INBOX', 'Courrier entrant', $folder_name);
+            $table->add([], $folder_name);
+            $checkbox = new html_checkbox(['name' => "bali_folders_$folder_name", 'value' => 1]);
+            $table->add([], $checkbox->show(($config[$folder_name] ?? true) ? 1 : 0));
+        }
+
+        return $table;
+    }
+
+  function create_balp_selection($config)
+  {
+    $mails = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
+    $table = new html_table(['id' => 'balp-select', 'cols' => 2]);
+
+    // Add headers
+    foreach (['balp', 'search-in-this-balp'] as $name) {
+        $table->add_header(['class' => $name], $this->gettext($name));
+    }
+
+    foreach ($mails as $key => $mail) {
+        $folder_name = $mail->mailbox->fullname;
+        $table->add([], $folder_name);
+        $checkbox = new html_checkbox(['name' => "balp_folders_$key", 'value' => 1]);
+        $table->add([], $checkbox->show(($config[$key] ?? true) ? 1 : 0));
+    }
+
+    return $table;
   }
 
   function create_pref_select($field_id, $current, $options, $attrib = null)
@@ -1547,9 +1701,66 @@ class mel_metapage extends rcube_plugin
           
           $this->rc->output->set_env("mel_metapage_calendar_configs", $config);
     }
+    else if ($args['section'] == 'globalsearch')
+    {
+        $op_search_mail_max = 'search_mail_max';
+        $op_search_on_all_bal = 'search_on_all_bal';
+        $op_search_on_all_bali_folders = 'search_on_all_bali_folders';
+        $op_table_balp = 'global_search_balp_configs';
+        $op_table_bali = 'global_search_bali_folders_configs';
+
+        $config_search_mail_max = $this->rc->config->get($op_search_mail_max, 9999);
+        $config_search_on_all_balp = $this->rc->config->get($op_search_on_all_bal, true);
+        $config_search_on_all_bali_folders = $this->rc->config->get($op_search_on_all_bali_folders, true);
+        $config_balp = $this->rc->config->get('global_search_balp_configs', []);
+        $config_bali = $this->rc->config->get('global_search_bali_folders_configs', []);
+
+        $config_search_mail_max = intval(rcube_utils::get_input_value($op_search_mail_max, rcube_utils::INPUT_POST) ?? $config_search_mail_max);
+        $args['prefs'][$op_search_mail_max] = $config_search_mail_max;
+
+        $config_search_on_all_balp = rcube_utils::get_input_value($op_search_on_all_bal, rcube_utils::INPUT_POST) === '1';
+        $args['prefs'][$op_search_on_all_bal] = $config_search_on_all_balp;
+
+        $config_search_on_all_bali_folders = rcube_utils::get_input_value($op_search_on_all_bali_folders, rcube_utils::INPUT_POST) === '1';
+        $args['prefs'][$op_search_on_all_bali_folders] = $config_search_on_all_bali_folders;
+
+        if (!$config_search_on_all_balp)
+        {
+            $balps = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
+            $args['prefs'][$op_table_balp] = $this->_save_pref_update_config($config_balp, $balps, 'balp_folders_');
+        }
+
+        if (!$config_search_on_all_bali_folders)
+        {
+            $storage = $this->rc->storage;
+
+            if (!isset($storage)) $storage = $this->rc->get_storage();
+    
+            $bali_folders = $storage->list_folders_subscribed('', '*', 'mail');
+            $args['prefs'][$op_table_bali] = $this->_save_pref_update_config($config_bali, $bali_folders, 'bali_folders_');
+        }
+    }
 
 
     return $args;
+  }
+
+  function _save_pref_update_config($config, $datas, $prefix)
+  {
+    $folders = [];
+    foreach ($datas as $key => $data) {
+        $folder_name = is_string($data) ? rcube_charset::convert($data, 'UTF7-IMAP') : $key;
+        $folder_name = str_replace('INBOX', 'Courrier entrant', $folder_name);
+        $val = rcube_utils::get_input_value($prefix.str_replace(' ', '_', str_replace('.', '_', $folder_name)), rcube_utils::INPUT_POST) === '1';
+        $config[$folder_name] = $val;
+        $folders[] = $folder_name;
+    }
+
+    foreach ($config as $folder => $value) {
+        if (!in_array($folder, $folders)) unset($config[$folder]);
+    }
+
+    return $config;
   }
 
   function toggleChat()

@@ -211,3 +211,11 @@ $labels["force-refresh"] = "Recharger et actualiser les dossiers";
 $labels["new-mail-from"] = "Nouveau message aux mêmes destinataires";
 
 $labels['calendar'] = 'Agenda';
+
+$labels['globalsearch'] = 'Recherche globale';
+$labels['search_mail_max'] = 'Nombre de résultats max depuis les mails';
+$labels['search_on_all_bal'] = 'Rechercher dans toutes les boites partagées ?';
+$labels['search_on_all_bali_folders'] = 'Rechercher dans tous les sous dossiers de la bali ?';
+$labels['balp'] = 'Boite partagée';
+$labels['search-in-this-balp'] = 'Rechercher dans cette boite ?';
+$labels['search-in-this-folder'] = 'Rechercher dans ce dossier ?';

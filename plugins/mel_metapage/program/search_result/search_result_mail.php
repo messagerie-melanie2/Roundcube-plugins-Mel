@@ -40,6 +40,7 @@ class SearchResultMail extends ASearchResult
         $this->datas['date'] = $msg->date;
 
         $folderName = $this->get_folder_name($msg->folder);
+        //$divs = '';//'<div style="'.($folderName['na'] ? 'display:flex;height:100%' : '').'"><div style="'.($folderName['na'] ? 'align-self:end' : '').'">';
 
         // if ($folderName === 'INBOX') $folderName = driver_mel::gi()->getUser()->fullname;
         // else {
@@ -50,7 +51,8 @@ class SearchResultMail extends ASearchResult
         // }
         
         return html::div(['style' => 'display:inline-block;width:98%'], 
-            html_helper::row([], html_helper::col(4, ['class' => 'col-item'], $folderName).
+            html::div([], $folderName['ba']).
+            html_helper::row([], html_helper::col(4, ['class' => 'col-item'], $folderName['text']).
             html_helper::col(6, ['class' => 'col-item'], rcube_mime::decode_header($msg->subject, $msg->charset)).
             html_helper::col(2, ['class' => 'col-item', 'style' => 'text-align:right'], (new DateTime($this->datas['date']))->format('d/m/Y H:i'))
             )
@@ -59,20 +61,37 @@ class SearchResultMail extends ASearchResult
 
     private function get_folder_name($name)
     {
-        if ($name === 'INBOX') return driver_mel::gi()->getUser()->fullname;
+        $boxname = '';
+        $text = '';
+        $needAlign = false;
+        if ($name === 'INBOX') 
+        {
+            $boxname = driver_mel::gi()->getUser()->fullname;
+            $text = 'Courrier entrant';
+            //$needAlign = true;
+        }
         else if (strpos($name, 'INBOX') !== false)
         {
             $username = 'Courrier entrant';
-            return str_replace('INBOX', $username, $name);
+            $boxname = driver_mel::gi()->getUser()->fullname;
+            $text = str_replace('INBOX', $username, $name);
+            $needAlign = true;
         }
-        else if (strpos($name, 'Boite partag&AOk-e') !== false) return driver_mel::gi()->getUser(explode('/', $name)[1])->fullname;
+        else if (strpos($name, 'Boite partag&AOk-e') !== false) 
+        {
+            $boxname = driver_mel::gi()->getUser(explode('/', $name)[1])->fullname;
+            $text = 'Courrier entrant';
+            $needAlign = true;
+        }
         else {
             $username = driver_mel::gi()->getUser()->fullname;
-            if (strlen($username) > 20) $username = substr($username, 0, 20).'...';
-            return "$username/$name";
+            $name = rcube_charset::convert($name, 'UTF7-IMAP');
+            $boxname = $username;
+            $text = $name;
+            $needAlign = true;
         }
 
-       // return $name;
+        return ['ba' => $boxname, 'text' => $text, 'na' => false];
     }
 
     private function _create_action()

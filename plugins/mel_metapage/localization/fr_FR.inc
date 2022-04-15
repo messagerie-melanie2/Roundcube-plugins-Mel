@@ -214,8 +214,8 @@ $labels['calendar'] = 'Agenda';
 
 $labels['globalsearch'] = 'Recherche globale';
 $labels['search_mail_max'] = 'Nombre de résultats max depuis les mails';
-$labels['search_on_all_bal'] = 'Rechercher dans toutes les boites partagées ?';
+$labels['search_on_all_bal'] = 'Rechercher dans toutes les boîtes partagées ?';
 $labels['search_on_all_bali_folders'] = 'Rechercher dans tous les sous dossiers de la bali ?';
-$labels['balp'] = 'Boite partagée';
-$labels['search-in-this-balp'] = 'Rechercher dans cette boite ?';
+$labels['balp'] = 'Boîte partagée';
+$labels['search-in-this-balp'] = 'Rechercher dans cette boîte ?';
 $labels['search-in-this-folder'] = 'Rechercher dans ce dossier ?';

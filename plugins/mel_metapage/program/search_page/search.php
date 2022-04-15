@@ -27,6 +27,7 @@ class SearchPage extends Program
         
         $this->add_handler("label", [$this, "label"]);
         $this->add_handler("content_options", [$this, "content_options"]);
+        $this->add_handler("folders_options", [$this, "folders_options"]);
         $this->add_handler("word_searched", [$this, "word_searched"]);
 
         $this->set_env_var("word_searched", $search_key_word);
@@ -49,13 +50,19 @@ class SearchPage extends Program
     {
         $options = '<option value="all">Tous</option>';
 
-        $config = $this->get_config('search', []);
+        $config = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
 
         foreach ($config as $key => $value) {
-            $options .= "<option value=\"".$this->plugin->gettext($key, 'mel_metapage')."\">".$this->plugin->gettext($key, 'mel_metapage')."</option>";
+            $value = rcube_charset::convert($value, 'UTF7-IMAP');
+            $options .= "<option value=\"$value\">".$value."</option>";
         }
 
         return $options;
+    }
+
+    public function folders_options()
+    {
+        $options = '<option value="all">Tous</option>';
     }
 
     public function word_searched()

@@ -30,14 +30,27 @@
         </div>
 	</div> 
 
+    <h2>Filtrer par : </h2>
     <div class="row">
         <div class="col-6">
-            <h2>Filtrer par : </h2>
-            <br/>
             <h3>Type de contenu</h3>
             <select id="search-filter" class="pretty-select input-mel mel-input search-like disabled" disabled>
                 <roundcube:object name="content_options" />
             </select>
+        </div>
+        <div class="col-4">
+            <div id="folder-filter" style="display:none">
+                <h3>Dossier</h3>
+                <select id="search-filter-folder" class="pretty-select input-mel mel-input search-like disabled" disabled>
+                    <roundcube:object name="folders_options" />
+                </select>
+            </div>
+            <div id="folder-balp" style="display:none">
+                <h3>Boîte partagée</h3>
+                <select id="search-filter-balp" class="pretty-select input-mel mel-input search-like disabled" disabled>
+                    <option value="all">Toutes</option>
+                </select>
+            </div>
         </div>
     </div>
 

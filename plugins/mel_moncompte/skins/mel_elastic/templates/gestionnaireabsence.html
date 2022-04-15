@@ -1,68 +1,174 @@
 <roundcube:include file="includes/layout.html" />
 <link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
 <div class="iframe floatingbuttons">
-	<h1 class="boxtitle">
-		<roundcube:label name="mel_moncompte.gestionnaireabsence" />
-	</h1>
-	<div id="preferences-details" class="boxcontent">
-		<roundcube:object name="moncompte_balp_list" />
-		<form name="valide" action="#" method="post" class="propform" id="form_gest_abs">
-			<ul>
-				<li id="edit-tab-absences"><a href="#absence-panel-principal"><roundcube:label name="mel_moncompte.tababsences" /></a></li>
-				<li id="edit-tab-recurrence"><a href="#absence-panel-recurrence"><roundcube:label name="mel_moncompte.tabrecurrence" /></a></li>
-			</ul>
-			<div id="absence-panel-principal">
-				<fieldset>
-					<legend><roundcube:label name="mel_moncompte.absence_date" /></legend>
-					<div>
-						<label for="abs_date_debut" style="display: block; width: 100px; float: left;">
-							<roundcube:label name="mel_moncompte.absence_date_debut" />
-						</label>
-						<input type="text" name="absence_date_debut" id="abs_date_debut" value="<roundcube:var name="env:moncompte_absence_debut_interne" />" />
-					</div>
-					<div>
-						<label for="abs_date_fin" style="display: block; width: 100px; float: left;">
-							<roundcube:label name="mel_moncompte.absence_date_fin" />
-						</label>
-						<input type="text" name="absence_date_fin" id="abs_date_fin" value="<roundcube:var name="env:moncompte_absence_fin_interne" />" />
-					</div>
-				</fieldset>
-				<fieldset>
-					<legend><roundcube:label name="mel_moncompte.absence_interne_legende" /></legend>
-					<div>
-						<input type="checkbox" name="absence_status_interne" value="1" id="abs_texte_intra" <roundcube:var name="env:moncompte_absence_status_interne" /> />
-						<label for="abs_texte_intra"><roundcube:label name="mel_moncompte.absence_texte_interne" /></label>
-						<br><br>
-						<textarea class="Saisie" rows=3 cols=100 name="absence_message_interne" id="abs_msg_mel"><roundcube:var name="env:moncompte_absence_texte_interne" /></textarea>
-						<br><br>
-						<roundcube:label name="mel_moncompte.absence_texte_mot_cle" />
-					</div>
-				</fieldset>
-				<fieldset>
-					<legend><roundcube:label name="mel_moncompte.absence_externe_legende" /></legend>
-					<div>
-						<input type="checkbox" name="absence_texte_externe" value="1" id="abs_texte_inter" <roundcube:var name="env:moncompte_absence_status_externe" /> />
-						<label for="abs_texte_inter"><roundcube:label name="mel_moncompte.absence_texte_externe" /></label>
-						<br><br>
-						<input type="radio" name="absence_reponse_externe" value="abs_texte_nodiff" id="abs_texte_nodiff" <roundcube:var name="env:moncompte_abs_radio_same" /> >
-						<label for="abs_texte_nodiff"><roundcube:label name="mel_moncompte.absence_texte_interne_identique"></roundcube:label></label>
-						<br>
-						<input type="radio" name="absence_reponse_externe" value="abs_texte_diff" id="abs_texte_diff" <roundcube:var name="env:moncompte_abs_radio_diff" /> >
-						<label for="abs_texte_diff"><roundcube:label name="mel_moncompte.absence_texte_interne_different"></roundcube:label></label>
-						<br><br>
-						<textarea class="Saisie" rows=3 cols=100 name="absence_message_externe" id="abs_msg_inter" style="<roundcube:var name="env:moncompte_absence_texte_externe_style" />"><roundcube:var name="env:moncompte_absence_texte_externe" /></textarea>
-					</div>
-				</fieldset>
-			</div>
-			<div id="absence-panel-recurrence">
-				<fieldset>
-					<legend><roundcube:label name="mel_moncompte.absence_hebdomadaire_legende" /></legend>
-					<roundcube:object name="moncompte_absence_hebdomadaire" />
-				</fieldset>
-				<a href="#" id="add_new_absence" class="button button-text" onclick="add_new_absence();"><roundcube:label name="mel_moncompte.add_new_absence" /></a>
-			</div>
-			<input type="hidden" value="1" name="gestionnaireabsence" />
-			<input type="submit" class="button mainaction" name="save" value="<roundcube:label name="save" />" />
-		</form>
-	</div>
+  <div id="preferences-details" class="formcontent">
+    <legend>
+      <roundcube:label name="mel_moncompte.gestionnaireabsence" />
+    </legend>
+    <roundcube:object name="moncompte_balp_list" class="form-control" style="margin-bottom: 4rem;" />
+    <!-- <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" role="tab" href="#tab0-0" aria-selected="true">Propriétés</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" role="tab" href="#tab0-1" aria-selected="false">Personnel</a>
+      </li>
+      <li class="nav-item"><a class="nav-link" role="tab" href="#tab0-2">Notes</a></li>
+      <li class="nav-item"><a class="nav-link" role="tab" href="#tab0-3">Fonctions</a></li>
+    </ul> -->
+
+    <form name="valide" action="#" method="post" class="propform" id="form_gest_abs">
+      <ul class="nav nav-tabs gestionnaireabsence-tabs" role="tablist">
+        <li id="edit-tab-absences" class="nav-item">
+          <a class="nav-link" href="#absence-panel-principal">
+            <roundcube:label name="mel_moncompte.tababsences" />
+          </a>
+        </li>
+        <li id="edit-tab-recurrence" class="nav-item">
+          <a class="nav-link" href="#absence-panel-recurrence">
+            <roundcube:label name="mel_moncompte.tabrecurrence" />
+          </a>
+        </li>
+      </ul>
+      <div id="absence-panel-principal">
+        <fieldset>
+          <legend>
+            <roundcube:label name="mel_moncompte.absence_date" />
+          </legend>
+          <table class="propform cols-sm-6-6">
+            <tbody>
+              <tr class="form-group row">
+                <td class="title col-sm-6">
+                  <label for="abs_date_debut">
+                    <roundcube:label name="mel_moncompte.absence_date_debut" />
+                  </label>
+                </td>
+                <td class="col-sm-6">
+                  <input type="text" name="absence_date_debut" id="abs_date_debut" class="form-control"
+                    value="<roundcube:var name=" env:moncompte_absence_debut_interne" />" />
+                </td>
+              </tr>
+              <tr class="form-group row">
+                <td class="title col-sm-6">
+                  <label for="abs_date_fin">
+                    <roundcube:label name="mel_moncompte.absence_date_fin" />
+                  </label>
+                </td>
+                <td class="col-sm-6">
+                  <input type="text" name="absence_date_fin" id="abs_date_fin" class="form-control"
+                    value="<roundcube:var name=" env:moncompte_absence_fin_interne" />" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+
+        <fieldset>
+          <legend>
+            <roundcube:label name="mel_moncompte.absence_interne_legende" />
+          </legend>
+
+          <table class="propform cols-sm-6-6">
+            <tbody>
+              <tr class="form-group row form-check">
+                <td class="col-sm-1">
+                  <div class="custom-control custom-switch">
+                    <input name="absence_status_interne" id="abs_texte_intra" value="1" type="checkbox"
+                      class="form-check-input custom-control-input" <roundcube:var
+                      name="env:moncompte_absence_status_interne" /> />
+                    <label for="abs_texte_intra" class="custom-control-label" title="">
+                    </label>
+                  </div>
+                </td>
+                <td class="title col-sm-11">
+                  <label for="abs_texte_intra" class="col-form-label">
+                    <roundcube:label name="mel_moncompte.absence_texte_interne" />
+                  </label>
+                </td>
+              </tr>
+              <tr class="form-group row">
+                <td class="col-sm-12">
+                  <textarea class="Saisie form-control" rows=6 cols=100 name="absence_message_interne"
+                    id="abs_msg_mel"><roundcube:var name="env:moncompte_absence_texte_interne" /></textarea>
+                  <br>
+                  <roundcube:label name="mel_moncompte.absence_texte_mot_cle" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <roundcube:label name="mel_moncompte.absence_externe_legende" />
+          </legend>
+          <table class="propform cols-sm-6-6">
+            <tbody>
+              <tr class="form-group row form-check">
+                <td class="col-sm-1">
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" name="absence_texte_externe" value="1" id="abs_texte_inter"
+                      class="form-check-input custom-control-input" <roundcube:var
+                      name="env:moncompte_absence_status_externe" /> />
+                    <label for="abs_texte_inter" class="custom-control-label" title="">
+                    </label>
+                  </div>
+                </td>
+                <td class="title col-sm-11">
+                  <label for="abs_texte_inter" class="col-form-label">
+                    <roundcube:label name="mel_moncompte.absence_texte_externe" />
+                  </label>
+                </td>
+              </tr>
+              <tr class="form-group row form-check">
+                <td class="col-sm-1 ml-2">
+                  <input class="form-check-input" type="radio" name="absence_reponse_externe" value="abs_texte_nodiff"
+                    id="abs_texte_nodiff" <roundcube:var name="env:moncompte_abs_radio_same" /> >
+                </td>
+                <td class="title col-sm-11">
+                  <label for="abs_texte_nodiff" class="form-check-label">
+                    <roundcube:label name="mel_moncompte.absence_texte_interne_identique"></roundcube:label>
+                  </label>
+                </td>
+              </tr>
+              <tr class="form-group row form-check">
+                <td class="col-sm-1 ml-2">
+                  <input class="form-check-input" type="radio" name="absence_reponse_externe" value="abs_texte_diff"
+                    id="abs_texte_diff" <roundcube:var name="env:moncompte_abs_radio_diff" /> >
+                </td>
+                <td class="title col-sm-11">
+                  <label for="abs_texte_nodiff" class="form-check-label">
+                    <roundcube:label name="mel_moncompte.absence_texte_interne_different"></roundcube:label>
+                  </label>
+                </td>
+              </tr>
+              <tr class="form-group row">
+                <td class="col-sm-12">
+                  <textarea class="Saisie form-control" rows=6 cols=100 name="absence_message_externe"
+                    id="abs_msg_inter" style="<roundcube:var name=" env:moncompte_absence_texte_externe_style" />">
+                  <roundcube:var name="env:moncompte_absence_texte_externe" /></textarea>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+      <div id="absence-panel-recurrence">
+        <fieldset>
+          <legend>
+            <roundcube:label name="mel_moncompte.absence_hebdomadaire_legende" />
+          </legend>
+          <roundcube:object name="moncompte_absence_hebdomadaire" />
+        </fieldset>
+        <a href="#" id="add_new_absence" class="btn btn-secondary" onclick="add_new_absence();">
+          <roundcube:label name="mel_moncompte.add_new_absence" />
+        </a>
+      </div>
+      <div class="formbuttons">
+        <input type="hidden" value="1" name="gestionnaireabsence" />
+        <button type="submit" class="btn btn-primary submit" name="save" />
+        <roundcube:label name="save" /></button>
+      </div>
+
+    </form>
+  </div>
 </div>

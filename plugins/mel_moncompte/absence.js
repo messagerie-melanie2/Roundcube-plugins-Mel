@@ -155,7 +155,7 @@ var init_time_autocomplete = function(elem, props)
 
 // Quand l'utilisateur check/uncheck la journée entière
 function all_day_check(object) {
-    var container = object.parentNode.parentNode;
+    var container = object.parentNode.parentNode.parentNode.parentNode.parentNode;
     if (object.checked) {
         container.querySelector('.hourstart > input').disabled = true;
         container.querySelector('.hourend > input').disabled = true;
@@ -187,7 +187,7 @@ function add_new_absence() {
 
 // Supprimer une absence hebdo
 function delete_absence(object) {
-    var container = object.parentNode.parentNode;
+    var container = object.parentNode.parentNode.parentNode.parentNode.parentNode;
     container.querySelector('.message textarea').value = '';
     $(container).find('input').val('');
     $(container).find('input').prop('checked', false);

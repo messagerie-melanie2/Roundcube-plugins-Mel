@@ -81,3 +81,12 @@ div.restore_contacts_expl {
 	text-indent: -9999px;	
 }
 
+.gestionnaireabsence-tabs {
+  position: absolute;
+  top: -40px;
+  left: 0;
+}
+
+.gestionnaireabsence-tabs li {
+  border-radius: 0.2rem 0.2rem 0 0;
+}

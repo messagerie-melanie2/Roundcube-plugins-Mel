@@ -412,7 +412,7 @@ class mel_contacts extends rcube_plugin {
           && $addressbook->delete()) {
         $this->rc->output->show_message('mel_contacts.bookdeleted', 'confirmation');
         $this->rc->output->set_env('pagecount', 0);
-        $this->rc->output->command('set_rowcount', rcmail_get_rowcount_text(new rcube_result_set()));
+        // $this->rc->output->command('set_rowcount', rcmail_get_rowcount_text(new rcube_result_set()));
         $this->rc->output->command('list_contacts_clear');
         $this->rc->output->command('book_delete_done', $addressbook->id);
       }

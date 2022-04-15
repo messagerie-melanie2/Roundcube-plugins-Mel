@@ -194,6 +194,13 @@ rcube_webmail.prototype.book_update = function(data, type, recur)
     row = $(this.treelist.get_item(data.id));
     row.append($('<ul class="groups">').hide());
 
+    if (rcmail.env.is_framed) {
+      parent.rcmail.command('refreshFrame');
+    }
+    else {
+      window.location.reload();
+    }
+
     // we need to sort rows because treelist can't sort by property
     $.each(sources, function(i, v) {
         if (v.mel && v.realname)

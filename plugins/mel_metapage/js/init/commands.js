@@ -282,6 +282,7 @@ if (rcmail)
                     if (rcmail.env.current_frame_name === undefined)
                     {
                         const _includes = ["mel-focus", "selected", "order1", "mel"];
+                        console.log($("#taskmenu .selected")[0].classList);
                         const key = Enumerable.from($("#taskmenu .selected")[0].classList).where((x) => !_includes.includes(x) && !x.includes("icofont") && !x.includes("icon-mel-") && !x.includes("button")).first();
                         rcmail.env.current_frame_name = key;
                         parent = $(`.${mm_st_ClassContract(key)}-frame`);

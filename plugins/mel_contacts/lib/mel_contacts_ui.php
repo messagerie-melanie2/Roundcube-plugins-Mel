@@ -71,7 +71,7 @@ class mel_contacts_ui
                         'command'  => $command,
                         'type'       => 'link'
                 )));
-                $this->plugin->api->add_content($content, 'groupoptions');
+                $this->plugin->api->add_content($content, 'groupoptions-book');
                 $idx++;
             }
             
@@ -84,7 +84,7 @@ class mel_contacts_ui
                         'command'  => 'plugin.mel_resources_contacts',
                         'task'     => 'settings',
                     )));
-            $this->plugin->api->add_content($content, 'groupoptions');
+            $this->plugin->api->add_content($content, 'groupoptions-book');
 
             $this->rc->output->add_label('mel_contacts.bookdeleteconfirm',
                 'mel_contacts.bookdeleting', 'mel_contacts.bookshowurl',

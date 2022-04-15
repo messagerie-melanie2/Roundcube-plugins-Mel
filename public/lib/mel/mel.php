@@ -1,6 +1,7 @@
 <?php
+$root = realpath(dirname(dirname(dirname($_SERVER["SCRIPT_FILENAME"]))));
 if (!defined('INSTALL_PATH')) {
-    define('INSTALL_PATH', $_SERVER['DOCUMENT_ROOT'].'/');
+    define('INSTALL_PATH', "$root/");
 }
 if (!defined('RCMAIL_CONFIG_DIR')) {
     define('RCMAIL_CONFIG_DIR', getenv('ROUNDCUBE_CONFIG_DIR') ?: (INSTALL_PATH . 'config'));
@@ -38,6 +39,25 @@ abstract class Mel implements IMel {
         return !empty(rcube::get_instance()->get_user_id());
     }
 
+    protected function get_website_url()
+    {
+        //parse_url( $_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH );
+        $path = explode('/', parse_url( $_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH ));
+        $count = count($path);
+
+        for ($i=$count-1; $i > 0 ; --$i) { 
+            if ($i === $count - 4)
+            {
+                $path = $path[$i];
+                break;
+            }
+        }
+
+        if (is_array($path)) $path = '';
+
+        return $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST']."/$path";
+    }
+
     protected function redirect_to_rc($task, $action = '', $args)
     {
         if (!empty($action)) $action = "&_action=$action";
@@ -51,7 +71,7 @@ abstract class Mel implements IMel {
             }
         }
 
-        $this->redirect("/?_task=$task$action$others");
+        $this->redirect($this->get_website_url()."?_task=$task$action$others");
     }
 
     protected function redirect($url)

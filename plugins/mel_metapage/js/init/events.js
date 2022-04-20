@@ -1077,6 +1077,10 @@ $(document).ready(() => {
             else if (Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
             else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
 
+            //On ferme la modal
+            $('#globalModal').modal('hide')
+
+
             /**
              * @constant
              * @type {JSON|Enumerator} Liste des exceptions

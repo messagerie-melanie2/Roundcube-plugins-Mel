@@ -310,7 +310,7 @@
                     let last_datas = mel_metapage.Storage.get(weatherKey);
 
                     if (last_datas !== null && $("#user-weather").html() === "") {
-                        $("#user-weather").html(`<img src="${last_datas.icon}" /><div style="position: absolute;
+                        $("#user-weather").html(`<img src="${last_datas.icon}" alt="Icone de la météo du jour"/><div style="position: absolute;
                 bottom: -2px;
                 right: 50%;
                 left: 50%;

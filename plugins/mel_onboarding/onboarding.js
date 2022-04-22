@@ -107,6 +107,7 @@ function startIntro(task) {
       showBullets: window.current_onboarding.showBullets,
       disableInteraction: window.current_onboarding.disableInteraction,
       exitOnOverlayClick: window.current_onboarding.exitOnOverlayClick,
+      // exitOnEsc: true,
       hidePrev: window.current_onboarding.hidePrev,
       nextLabel: window.current_onboarding.nextLabel,
       prevLabel: window.current_onboarding.prevLabel,
@@ -123,6 +124,8 @@ function startIntro(task) {
 
       this._introItems[this._currentStep].intro += buttonDetails;
       this._introItems[this._currentStep].passed = true;
+      console.log(this._introItems[this._currentStep]);
+
     }
 
     //On skip l'intro si l'élément n'existe pas
@@ -140,7 +143,7 @@ function startIntro(task) {
         let item = this._introItems[this._currentStep];
         current_window.$('#' + item.id + '-details').on('click', function () {
           if (item.details.hints) {
-            intro_hints(item, intro);
+            intro_hints(item, intro);          
           } else if (item.details.steps) {
             intro_details_tour(item, intro)
           }
@@ -152,7 +155,6 @@ function startIntro(task) {
       return window.parent.rcmail.onboarding_close()
     }
   }).start();
-
   addBulletTitle();
 }
 
@@ -247,9 +249,7 @@ function intro_hints(item, intro_main) {
     window.parent.$('#layout-menu').addClass('force-open');
   }
 
-  // window.exit_main_intro = false;
-  // intro_main.exit();
-  // window.exit_main_intro = true;
+  intro_main.setOptions({ exitOnEsc: false})
 
   let details = item.details;
   let intro = current_window.introJs();
@@ -267,7 +267,6 @@ function intro_hints(item, intro_main) {
       intro.showHintDialog(parseInt(this._currentStep) + 1);
     }
   }).addHints();
-
   setTimeout(() => {
     intro.showHintDialog(0);
     if (details.hintClass) {
@@ -286,6 +285,18 @@ function intro_hints(item, intro_main) {
         current_window.$(".hide-hint").css('display', 'block');
         item.passed_hints = true;
       }
+    }
+  });
+
+  $(current_window.document).on('keyup', function (e) {
+    if (e.key === "Escape") {
+      intro.hideHints();
+      if (window.parent.$('#layout-menu').hasClass('force-open')) {
+        window.parent.$('#layout-menu').removeClass('force-open');
+      }
+      current_window.$(".hide-hint").css('display', 'block');
+      item.passed_hints = true;
+      intro_main.setOptions({ exitOnEsc: true})
     }
   });
 }

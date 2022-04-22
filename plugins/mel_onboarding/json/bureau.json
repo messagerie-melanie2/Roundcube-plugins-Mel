@@ -1,7 +1,8 @@
 {
   "scrollToElement": true,
+  "showBullets": true,
   "exitOnOverlayClick": false,
-  "disableInteraction": true,
+  "disableInteraction": false,
   "hidePrev": true,
   "scrollTo": "tooltip",
   "nextLabel": "Suivant",
@@ -30,67 +31,78 @@
             "element": ".button-home",
             "hint": "Il s'agit de la page d'accueil par défaut de votre Bureau Numérique.<br/><br/>L'accueil affiche les évènements et tâches du jour, les informations de votre ministère et de votre service ainsi que les trois derniers espaces de travail modifiés.",
             "hintPosition": "middle-right",
+            "hintTitle": "Bureau",
             "position": "right"
           },
           {
             "element": ".button-menu-last-frame",
             "hint": "Le bouton \"Revenir à\" vous permet de revenir instantanément à la dernière application que vous avez ouverte dans le Bureau Numérique.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Rafraîchir"
           },
           {
             "element": ".button-mail",
             "hint": "\"Ma messagerie Mél\" vous permet d'accéder à vos courriels.<br><br>Vous aurez la possibilité de consulter les messages venant de votre boîte personnelle ainsi que les messages des boîtes que l'on vous a partagées.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Ma messagerie Mèl"
           },
           {
             "element": ".button-calendar",
             "hint": "\"Mon agenda\" vous permet d'accéder à vos agendas.<br><br>Dans cette application vous retrouverez votre agenda personnel ainsi que tous les agendas que les autres utilisateurs de Mél vous ont partagés.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Mon agenda"
           },
           {
             "element": ".button-rocket",
             "hint": "\"Mes discussions\" vous permet d'accéder à la messagerie instantanée du Bureau Numérique.<br><br>Dans cette application vous retrouvez tous vos salons de messagerie instantanée ainsi que vos échanges en direct avec les autres utilisateurs du Bureau Numérique.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Mes discussions"
           },
           {
             "element": ".button-wsp",
             "hint": "\"Mes espaces de travail\" vous permet d'accéder à tous vos espaces de travail du Bureau Numérique.<br><br>Dans un espace de travail vous pourrez alors retrouver un espace de stockage pour vos documents, un salon de messagerie instantanée, une liste de diffusion, un kanban et bien d'autres fonctionnalités à découvrir.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Mes espaces de travail"
           },
           {
             "element": ".button-stockage",
             "hint": "\"Mes documents\" vous permet d'accéder au stockage de tous vos documents.<br><br>Dans cette application vous pourrez accéder à tous vos documents personnels, ainsi que tous les documents que les autres utilisateurs du Bureau Numérique vous ont partagés.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Mes documents"
           },
           {
             "element": ".button-tasklist",
             "hint": "\"Mes tâches\" vous permet d'accéder à vos tâches et tâches partagées.<br><br>Dans cette application vous retrouverez toutes vos listes de tâches personnelles ainsi que toutes les listes de tâches que les autres utilisateurs du Bureau Numérique vous ont partagés.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Mes tâches"
           },
           {
             "element": ".button-contacts",
             "hint": "\"Annuaire\" vous permet d'accéder à l'annuaire ministériel ainsi qu'à vos contacts personnels.<br><br>Dans cette application vous pourrez parcourir l'annuaire ministériel pour retrouver un utilisateur ou un service. Vous pourrez également créer vos propres contacts personnels et les partager avec les autres utilisateurs du Bureau Numérique.",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Annuaires"
           },
           {
             "element": ".button-more-options",
             "hint": "\"Plus d'applications\" vous permet de déplier la barre d'outils afin d'accéder aux outils supplémentaires proposés dans le Bureau Numérique.<br><br>Vous pourrez retrouver un outil de Kanban, un outil de Sondage et vos liens utiles du Bureau Numérique.",
             "hintPosition": "middle-right",
-            "position": "right"
+            "position": "right",
+            "hintTitle": "Plus d'applications"
           },
           {
             "element": ".button-settings",
             "hint": "La \"Configuration du Bureau Numérique\" vous permet de personnaliser et de configurer le comportement de votre Bureau Numérique. Vous retrouverez également ici toute la configuration de votre compte (gestionnaire d'absence, gestion du mot de passe, etc.).",
             "position": "right",
-            "hintPosition": "middle-right"
+            "hintPosition": "middle-right",
+            "hintTitle": "Configuration du Bureau Numérique"
           }
         ]
       }
@@ -299,7 +311,13 @@
                   "element": ".more-options",
                   "intro": "Ouvre un menu permettant de rafraichir la page en cours ou de cacher la bulle de discussion située en bas à droite de votre écran.",
                   "position": "left"
-                }        
+                },
+                {
+                  "title": "Changer de thème",
+                  "element": ".theme-mode-switch",
+                  "intro": "Permet de passer facilement du thème clair au thème sombre et vice versa",
+                  "position": "bottom"
+                }
               ]
             },
             "position": "bottom"

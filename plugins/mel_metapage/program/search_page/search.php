@@ -28,7 +28,9 @@ class SearchPage extends Program
         $this->add_handler("label", [$this, "label"]);
         $this->add_handler("content_options", [$this, "content_options"]);
         $this->add_handler("folders_options", [$this, "folders_options"]);
+        $this->add_handler("balps_options", [$this, "balps_options"]);
         $this->add_handler("word_searched", [$this, "word_searched"]);
+        $this->add_handler("bali_name", [$this, "bali_name"]);
 
         $this->set_env_var("word_searched", $search_key_word);
         $this->send("search");
@@ -50,11 +52,10 @@ class SearchPage extends Program
     {
         $options = '<option value="all">Tous</option>';
 
-        $config = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
+        $config = $this->get_config('search', []);
 
         foreach ($config as $key => $value) {
-            $value = rcube_charset::convert($value, 'UTF7-IMAP');
-            $options .= "<option value=\"$value\">".$value."</option>";
+            $options .= "<option value=\"".$this->plugin->gettext($key, 'mel_metapage')."\">".$this->plugin->gettext($key, 'mel_metapage')."</option>";
         }
 
         return $options;
@@ -62,7 +63,36 @@ class SearchPage extends Program
 
     public function folders_options()
     {
+        $folders = $this->rc->storage->list_folders_subscribed('', '*', 'mail');
         $options = '<option value="all">Tous</option>';
+
+        foreach ($folders as $key => $value) {
+            $value = rcube_charset::convert($value, 'UTF7-IMAP');
+            $key = $value;
+            $value = str_replace('INBOX', 'Courrier entrant', $value);
+            $options .= "<option value=\"$key\">".$value."</option>";
+        }
+
+        return $options;
+    }
+
+    public function balps_options()
+    {
+        $mails = $this->rc->plugins->get_plugin('mel_sharedmailboxes')->get_user_sharedmailboxes_list();
+        $options = '';
+
+        foreach ($mails as $key => $value) {
+            $value = $value->mailbox->fullname;
+            $value = rcube_charset::convert($value, 'UTF7-IMAP');
+            $options .= "<option value=\"$key\">".$value."</option>";
+        }
+
+        return $options;
+    }
+
+    public function bali_name()
+    {
+        return driver_mel::gi()->getUser()->fullname;
     }
 
     public function word_searched()

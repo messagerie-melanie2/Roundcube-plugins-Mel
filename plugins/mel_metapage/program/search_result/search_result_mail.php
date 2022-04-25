@@ -31,7 +31,7 @@ class SearchResultMail extends ASearchResult
 
         if (isset($plugin)) $this->set_plugin($plugin);
 
-        parent::__construct('icon-mel-mail', $this->_create_action());
+        parent::__construct('icon-mel-mail', $this->_create_action(), ['folder' => rcube_charset::convert($msg->folder, 'UTF7-IMAP')]);
     }
 
     protected function _html()

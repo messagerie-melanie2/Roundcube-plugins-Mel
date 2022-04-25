@@ -38,17 +38,21 @@
                 <roundcube:object name="content_options" />
             </select>
         </div>
-        <div class="col-4">
+        <div class="col-3">
+            <div id="folder-balp" style="display:none">
+                <h3>Boîte</h3>
+                <select id="search-filter-balp" class="pretty-select input-mel mel-input search-like disabled" disabled>
+                    <option value="all">Toutes</option>
+                    <option value="bali"><roundcube:object name="bali_name" /></option>
+                    <roundcube:object name="balps_options" />
+                </select>
+            </div>
+        </div>
+        <div class="col-3">
             <div id="folder-filter" style="display:none">
                 <h3>Dossier</h3>
                 <select id="search-filter-folder" class="pretty-select input-mel mel-input search-like disabled" disabled>
                     <roundcube:object name="folders_options" />
-                </select>
-            </div>
-            <div id="folder-balp" style="display:none">
-                <h3>Boîte partagée</h3>
-                <select id="search-filter-balp" class="pretty-select input-mel mel-input search-like disabled" disabled>
-                    <option value="all">Toutes</option>
                 </select>
             </div>
         </div>
@@ -63,6 +67,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <h2 style="display:inline-block" id="search-result-number">0</h2> résultats pour <b id="mel-serach-word">"<roundcube:object name="word_searched" />"</b>
+                    <button title="Etendre la recherche" id="mel-search-parameter-button" disabled class="disabled btn btn-secondary mel-button bckg true" style="margin: 0;display: inline-block;"><span class="icon-mel-parameters-invert"></span></button>
                 </div>
                 <div class="col-md-6" style="text-align:right">
                     <span>Trier par : </span>

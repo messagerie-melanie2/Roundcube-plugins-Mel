@@ -1,5 +1,6 @@
 $(document).ready(() => {
 
+    const original_search = rcmail.env.word_searched;
     const replaced = rcmail.env.REPLACED_SEARCH;
 
     //=======================================//
@@ -57,8 +58,13 @@ $(document).ready(() => {
                 $searchInput:$('#wsp-search-input'),
                 $globaSearchInput:top.$('#barup-search-input'),
                 $body:$('.body .results'),
+                buttons:{
+                    $params:$('#mel-search-parameter-button')
+                },
                 selects:{
                     $filter:$('#search-filter'),
+                    $filterBal:$('#search-filter-balp'),
+                    $filterBaliFolder:$("#search-filter-folder"),
                     $order:$('#search-order')
                 }
             };
@@ -108,8 +114,22 @@ $(document).ready(() => {
             this.settings.$searchWord.html(`"${word}"`);
             this.settings.$globaSearchInput.val(word).addClass('disabled').attr("disabled", 'disabled');
             this.settings.$searchInput.val(word).addClass('disabled').attr("disabled", 'disabled');
-            this.settings.selects.$filter.addClass('disabled').attr("disabled", 'disabled');
-            this.settings.selects.$order.addClass('disabled').attr("disabled", 'disabled');
+            // this.settings.selects.$filter.addClass('disabled').attr("disabled", 'disabled');
+            // this.settings.selects.$order.addClass('disabled').attr("disabled", 'disabled');
+            // this.settings.sel
+            for (const key in this.settings.selects) {
+                if (Object.hasOwnProperty.call(this.settings.selects, key)) {
+                    const element = this.settings.selects[key];
+                    element.addClass('disabled').attr("disabled", 'disabled')
+                }
+            }
+
+            for (const key in this.settings.buttons) {
+                if (Object.hasOwnProperty.call(this.settings.buttons, key)) {
+                    const element = this.settings.buttons[key];
+                    element.addClass('disabled').attr("disabled", 'disabled')
+                }
+            }
 
             $('.body .loading').css('display', '').find('.spinner-grow').removeClass('text-success').removeClass('text-danger');
             $('.body .results').css('display', 'none');
@@ -235,39 +255,135 @@ $(document).ready(() => {
 
         filter() {
             const filter = this.settings.selects.$filter.val();
+            const filter_bal = this.settings.selects.$filterBal.val();
+            const filter_folder = this.settings.selects.$filterBaliFolder.val();
+            const mail = rcmail.gettext('mail', 'mel_metapage');
+            const isMail = filter === mail;
+            let count = 0;
             
             for (const key in this.blocks) {
                 if (Object.hasOwnProperty.call(this.blocks, key)) {
                     const element = this.blocks[key];
 
-                    if (filter === 'all') element.$block.css('display', '')
-                    else {
-                        if (!key.includes(filter)) element.$block.css('display', 'none');
-                        else element.$block.css('display', '');
-                    }
+                    if (this._filter_action(element, key, filter, filter_bal, filter_folder, isMail)) ++count;
+                    // if (filter === 'all') element.$block.css('display', '')
+                    // else {
+                    //     if (!key.includes(filter)) element.$block.css('display', 'none');
+                    //     else element.$block.css('display', '');
+                    // }
                 }
             }
 
             if (this._text_timeout === undefined)
             {
-                if (filter === 'all') this.settings.$resultNumber.html(Enumerable.from(this.blocks).count());
-                else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
+                /*if (filter === 'all') */this.settings.$resultNumber.html(count);
+                //else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
             }
             else {
                 let interval = setInterval(() => {
                     if (this._text_timeout === undefined)
                     {
                         clearInterval(interval);
-                        if (filter === 'all') this.settings.$resultNumber.html(Enumerable.from(this.blocks).count());
-                        else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
+                        /*if (filter === 'all')*/ this.settings.$resultNumber.html(count);
+                        //else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
                     }
                 }, 100);
+            }
+
+            switch (filter) {
+                case mail:
+                    $("#folder-balp").css('display', '');
+                    switch (filter_bal) {
+                        case 'bali':
+                            $("#folder-filter").css('display', '');
+                            break;
+                    
+                        default:
+                            $("#folder-filter").css('display', 'none');
+                            break;
+                    }
+                    break;
+            
+                default:
+                    $("#folder-filter").css('display', 'none');
+                    $("#folder-balp").css('display', 'none');
+                    break;
             }
 
             return this;
         }
 
-        changePage() {}
+        _filter_action(element, key, filter, filter_bal, filter_bali_folder, isMail, include = true)
+        {
+            let showed = false;
+
+            //Pas de recherche
+            if (filter === 'all') 
+            {
+                element.$block.css('display', '');
+                showed = true;
+            }
+            else //Recherche spécifique
+            {
+                if (isMail && filter_bal !== 'all') { //Recherche sur la bali ou les balp
+                    if (filter_bal === 'bali') { //Recherche sur la bali
+                        if (filter_bali_folder === 'all') showed = this._filter_action(element, key, `${rcmail.gettext('mail', 'mel_metapage')}/INBOX`, 'all', 'all', false, true);
+                        else { //Recherche sur une dossier de la bali
+                            if (key.includes(`${rcmail.gettext('mail', 'mel_metapage')}/INBOX`) && element.raw.datas.folder === filter_bali_folder) 
+                            {
+                                element.$block.css('display', '');
+                                showed = true;
+                            }
+                            else element.$block.css('display', 'none');
+                        }
+                    }
+                    //Recherche sur une balp
+                    else showed = this._filter_action(element, key, `${rcmail.gettext('mail', 'mel_metapage')}/Boite partag&AOk-e/${filter_bal.split('.-.')[1]}`, 'all', 'all', false, true);
+                }
+                //Recherche tout les mails + autres
+                else if ((include ? !key.includes(filter) : key !== filter)) element.$block.css('display', 'none');
+                else 
+                {
+                    element.$block.css('display', '');
+                    showed = true;
+                }
+            }
+
+            return showed;
+        }
+
+        openParams() {
+
+            const paramUrl = 'https://roundcube.ida.melanie2.i2/?_task=settings&_action=edit-prefs&_section=globalsearch&_framed=1';
+
+            let modal;
+
+            let $html = $(`<iframe style='width:100%;min-height:300px' src=${paramUrl}></iframe>`).on('load', (e) => {
+                $('#search-param-loading').css('display', 'none');
+                console.log(e, 'e');
+                e = $(e.currentTarget);      
+                e[0].contentWindow.$('.formbuttons button').css('display', 'none');
+                if (rcmail.env.params_updated === true)
+                {
+                    delete rcmail.env.params_updated;
+                    this.settings.$globaSearchInput.addClass('disabled').attr("disabled", 'disabled');
+                    modal.close();
+                    rcmail.set_busy(true, 'loading');
+                    window.location.href = window.location.href.replace(original_search, this.settings.$searchInput.val());
+                }        
+            });
+
+            $html = $(`<div><center id=search-param-loading><span class='spinner-grow'></span></center></div>`).append($html);
+
+            const config = new GlobalModalConfig('Paramètres de la recherche', 'default', $html);
+            modal = new GlobalModal('globalModal', config);
+            modal.footer.buttons.save.click(() => {
+                rcmail.env.params_updated = true;
+                modal.contents.find('iframe')[0].contentWindow.$('.formbuttons button').click();
+            });
+            modal.show();
+            console.log('modal', modal);
+        }
     }
 
     if (Enumerable.from(rcmail.env.mm_search_config).where(x => x.includes('search_mail')).any())
@@ -291,9 +407,21 @@ $(document).ready(() => {
         search.search.filter();
     });
 
+    search.search.settings.selects.$filterBal.on('change', () => {
+        search.search.filter();
+    });
+
+    search.search.settings.selects.$filterBaliFolder.on('change', () => {
+        search.search.filter();
+    });
+
     search.search.settings.$searchInput.on('change', () => {
         rcmail.command('mel.search', {word:search.search.settings.$searchInput.val()});
     });
+
+    search.search.settings.buttons.$params.click(() => {
+        search.search.openParams()
+    })
 
     rcmail.register_command('mel.search', (datas) => {
         const word = datas?.word ?? search.search.word;

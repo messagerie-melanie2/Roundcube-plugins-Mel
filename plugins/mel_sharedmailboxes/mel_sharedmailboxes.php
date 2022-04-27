@@ -276,6 +276,9 @@ class mel_sharedmailboxes extends rcube_plugin {
                             else {
                                 $href = "?_task=" . $this->rc->task . "&_action=" . $this->rc->action . "&_account=" . $uid;
                             }
+
+                            if (rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GET) === 'iframe') $href.='&_is_from=iframe';
+
                             // MANTIS 3987: La gestion des BALP ne conserve pas le paramètre _courrielleur=1
                             if (isset($_GET['_courrielleur'])) {
                                 $href .= "&_courrielleur=1";

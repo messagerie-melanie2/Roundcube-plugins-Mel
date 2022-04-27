@@ -67,6 +67,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     //room webconf
     this.key = key;
 
+    this.feedback_url = rcmail.env['webconf.feedback_url'];
+
     if ((ariane === null  || ariane === undefined)) //Si on est en mode espace de travail
     {
         if (wsp !== undefined && wsp !== null) //Si il n'y a pas de bugs
@@ -1057,7 +1059,7 @@ class MasterWebconfBar {
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
         //L'url à lancer en quittant la webconf
-        const url = "https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
+        const url = this.webconf.feedback_url;//"https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
 
         //Permet de gérer correctement la barre de navigation d'un espace (Fait revenir sur l'accueil de l'espace)
         if ($(".melw-wsp.webconfstarted").length > 0)

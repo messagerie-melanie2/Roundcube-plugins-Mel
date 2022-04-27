@@ -85,6 +85,8 @@ class Webconf extends Program
 
         $this->set_env_var("webconf.public_url", self::PUBLIC_URL);
 
+        $this->set_env_var("webconf.feedback_url", $this->get_config("webconf_feedback_url"));
+
         $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");
     }

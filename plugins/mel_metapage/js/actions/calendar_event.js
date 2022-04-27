@@ -46,7 +46,7 @@ $(document).ready(
             $("#datepicker-onoff").remove();
             $("#datepicker").addClass("showed").css("margin-bottom", "");
             $("#datepicker").prepend(
-                $(`<button class="btn btn-block" id=datepicker-onoff><span class="icon-mel-chevron-down"></span></button>`)
+                $(`<button class="btn btn-block" title="Cacher l'agenda" id=datepicker-onoff><span class="icon-mel-chevron-down"></span></button>`)
                 .click(() => {
                     try {
                         const size = $("#datepicker .ui-datepicker")[0].getClientRects()[0].height;
@@ -55,11 +55,13 @@ $(document).ready(
                             mel_metapage.Storage.set("datepicker_state", false);
                             $("#datepicker").css("margin-bottom", `-${size}px`).removeClass("showed");
                             $("#datepicker-onoff .icon-mel-chevron-down").removeClass("icon-mel-chevron-down").addClass("icon-mel-chevron-up")
+                            $("#datepicker-onoff").prop('title', "Afficher l'agenda");
                         }
                         else {
                             mel_metapage.Storage.set("datepicker_state", true);
                             $("#datepicker").css("margin-bottom", ``).addClass("showed");
                             $("#datepicker-onoff .icon-mel-chevron-up").removeClass("icon-mel-chevron-up").addClass("icon-mel-chevron-down")
+                            $("#datepicker-onoff").prop('title', "Cacher l'agenda");
                         }
                     } catch (error) {
                         

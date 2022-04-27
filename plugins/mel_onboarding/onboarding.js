@@ -124,8 +124,6 @@ function startIntro(task) {
 
       this._introItems[this._currentStep].intro += buttonDetails;
       this._introItems[this._currentStep].passed = true;
-      console.log(this._introItems[this._currentStep]);
-
     }
 
     //On skip l'intro si l'élément n'existe pas

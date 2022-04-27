@@ -739,7 +739,7 @@ class libvcalendar implements Iterator
         }
 
         // minimal validation
-        if (empty($event['uid']) || ($event['_type'] == 'event' && empty($event['start']) != empty($event['end']))) {
+        if (empty($event['uid'])/* PAMELA MANTIS 0004453: Import sans uid */ && $_GET['_action'] !== "import_events" || ($event['_type'] == 'event' && empty($event['start']) != empty($event['end']))) {
             throw new VObject\ParseException('Object validation failed: missing mandatory object properties');
         }
 

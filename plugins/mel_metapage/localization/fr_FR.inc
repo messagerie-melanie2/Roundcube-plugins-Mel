@@ -219,3 +219,16 @@ $labels['search_on_all_bali_folders'] = 'Rechercher dans tous les sous dossiers 
 $labels['balp'] = 'Boîte partagée';
 $labels['search-in-this-balp'] = 'Rechercher dans cette boîte ?';
 $labels['search-in-this-folder'] = 'Rechercher dans ce dossier ?';
+
+$labels['main_nav'] = 'Navigation principale';
+$labels['secondary_nav'] = 'Navigation Secondaire';
+$labels['main_contents'] = 'Contenu principal';
+
+$labels['to_search'] = 'Rechercher';
+$labels['global_search_title'] = 'Recherche globale : recherche dans les contacts, les mails ansi que l\'agenda.';
+
+$labels['open_chat_popup'] = 'Ouvrir la discussion instantanée';
+$labels['other_actions'] = 'Autres actions';
+$labels['avatars'] = 'Avatars';
+$labels['open_create_popup'] = 'Ouvrir la popup de création';
+$labels['create_things'] = 'Création';

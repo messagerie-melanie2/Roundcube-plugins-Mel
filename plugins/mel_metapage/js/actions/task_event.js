@@ -1,11 +1,3 @@
-// $(document).ready(
-//     function ()
-//     {
-        
-
-//     }  
-// );
-
 rcmail.addEventListener('responsebefore', function(props) {
 
     if (props.response && props.response.action == 'task') {
@@ -30,18 +22,10 @@ if (rcmail.env.task === "tasks")
 
         m_mp_action_from_storage('task_create', async () => {
 
-            //let tmp = setTimeout(async () => {
-
                 await wait(() => rcmail.busy);
 
                 rcmail.command('newtask');
-                //clearTimeout(tmp);
-
                 rcmail.triggerEvent("pamella.editTask.after", undefined);
-
-
-            //}, 100);
-
         });
         
     });
@@ -58,17 +42,4 @@ if (rcmail.env.task === "tasks")
             }, 100);
         }
     });
-    // new Promise(async (i,e) => {
-    //     let event = rcmail.local_storage_get_item("task_id");
-
-    //     if (event === null || event === undefined)
-    //         return;
-    //     else
-    //     {
-    //         //await wait(() => $("#taskedit").hasClass("hidden"));
-    //         $("#taskedit-tasklist").val(event);
-    //         rcmail.local_storage_remove_item("task_id");
-    //     }
-        
-    // });
 }

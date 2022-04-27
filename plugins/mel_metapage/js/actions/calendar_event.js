@@ -79,7 +79,6 @@ $(document).ready(
                     querry = $(`iframe#${id}`);
                     if (querry.length > 0)
                     {
-                        //querry[0].contentWindow.$('#calendar').fullCalendar( 'refetchEvents' );
                         try {
                             querry[0].contentWindow.$('#calendar').fullCalendar('rerenderEvents');
                         } catch (error) {
@@ -89,7 +88,6 @@ $(document).ready(
                     else
                     {
                         try {
-                            //$('#calendar').fullCalendar( 'refetchEvents' );
                             $('#calendar').fullCalendar('rerenderEvents');
                         } catch (error) {
                             

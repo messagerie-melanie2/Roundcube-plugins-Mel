@@ -10,8 +10,6 @@ $(document).ready(function() {
     $(".startup").addClass(rcmail.env.task + "-frame");
     $(".startup").addClass(mm_frame);
 
-    //rcmail.addEventListener("init", async () => {
-
     if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
     {
         mel_metapage.Storage.set("open_frame", "rocket");
@@ -26,11 +24,10 @@ $(document).ready(function() {
         });
     }
 
-    //await wait(() => $("#layout-menu a.selected").length === 0);
     const task = mm_st_ClassContract(rcmail.env.task);
 
-    rcmail.env.last_frame_class = task;//[0] == "selected" ? $("#layout-menu a.selected")[0].classList[1] : $("#layout-menu a.selected")[0].classList[0];
-    //rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
+    rcmail.env.last_frame_class = task;
+
     if ($("#layout-menu a.selected").length === 0)
     {
         rcmail.env.last_frame_name = document.title;
@@ -62,7 +59,6 @@ $(document).ready(function() {
         }); 
 
     rcmail.env.can_backward = true;
-    //});
 
     
     if (rcmail.env.task === "addressbook")
@@ -173,16 +169,6 @@ function mm_st_getNavClass(element)
             return;
         cClass = a;
     });
-    // switch (cClass) {
-    //     case "logout":
-    //     case "about":
-    //     case "compose":
-    //     case "menu-last-frame":
-    //         return;
-
-    //     default:
-    //         break;
-    // }
 
     return cClass;
 }
@@ -378,8 +364,6 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
 
     let _bool;
     $("."+mm_frame).each((i,e) => {
-        //console.log(e.classList.contains("webconf-frame") && window.webconf_helper.already(),
-        //e.classList.contains("webconf-frame") , window.webconf_helper.already());
 
     try {
         _bool = (mel_metapage.PopUp.ariane !== null && mel_metapage.PopUp.ariane.is_show && e.classList.contains("discussion-frame") ) || (e.classList.contains("webconf-frame") && window.webconf_helper.already());
@@ -395,7 +379,7 @@ metapage_frames.addEvent("changepage", (eClass, changepage, isAriane, querry) =>
     }
 
         
-    });//.css("display", "none");
+    });
 
     $(".a-frame").css("display", "none");
     const url = rcmail.get_task_url((isAriane ? "chat" : mm_st_CommandContract(eClass)), window.location.origin + window.location.pathname); 

@@ -956,7 +956,7 @@ class mel_driver extends calendar_driver {
   protected function currentUserIsOrganiser($organizer) {
     $bal = driver_mel::gi()->user();
     $bal->email = $organizer->email;
-    return $bal->load('shares') 
+    return $bal->load(['shares']) 
         && isset($bal->shares[$this->rc->get_user_name()])
         && ($bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN 
           || $bal->shares[$this->rc->get_user_name()]->type == \LibMelanie\Api\Defaut\Users\Share::TYPE_SEND

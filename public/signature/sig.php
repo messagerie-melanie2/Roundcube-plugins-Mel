@@ -60,7 +60,7 @@ function get_direction_name($direction, $dn = null) {
       $searchDN = substr($dn, $pos);
       $ou = new LibMelanie\Api\Mel\User();
       $ou->dn = $searchDN;
-      if ($ou->load('observation')) {
+      if ($ou->load(['observation'])) {
           $direction = $ou->observation;
       }
   }

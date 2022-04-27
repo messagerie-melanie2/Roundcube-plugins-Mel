@@ -182,7 +182,7 @@ class roundcube_auth extends rcube_plugin
     function redirect($query, $type, $rcmail)
     {
         // Query variables
-        $location = 'Location: ./?';
+        $location = 'Location: ?';
         $prefixQuery = '&';
         $finalQuery = $emptyQuery = "";
 
@@ -406,6 +406,18 @@ class roundcube_auth extends rcube_plugin
         }
     }
 
+    private function reconnect_oidc($reason, $rcmail)
+    {
+        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Reconnexion OIDC déclenchée ($reason)");
+
+        // Delete stored things
+        $rcmail->kill_session();
+
+        // Force re-auth
+        // // $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
+        // $rcmail->output->command('plugin.auth_redirect', $this->oidc_keyword . "=" . $this->enabled);
+    }
+
     private function check_token_expiration($rcmail)
     {
         $expiration_time = $_SESSION['idtoken_exp'];
@@ -417,14 +429,7 @@ class roundcube_auth extends rcube_plugin
         // Si on a atteint ou dépassé le délai d'expiration du token, on relance l'auth OIDC (utilisateur présent)
         if(isset($expiration_time) && (time() - $expiration_time) > $expiration_delay)
         {
-            mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [RC_Auth] Reconnexion OIDC déclenchée (Expiration du token)");
-
-            // Delete stored things
-            $rcmail->kill_session();
-
-            // Re-auth
-            //$this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
-            $rcmail->output->command('plugin.auth_redirect', $this->oidc_keyword . "=" . $this->enabled);
+            $this->reconnect_oidc("Expiration du token", $rcmail);
         }
     }
 
@@ -583,14 +588,7 @@ class roundcube_auth extends rcube_plugin
                     // Si le délai d'inactivité a été atteint
                     if(isset($activity_time) && (time() - $activity_time) > $inactivity_delay)
                     {
-                        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Reconnexion OIDC déclenchée (Inactivité)");
-    
-                        // Delete stored things
-                        $rcmail->kill_session();
-    
-                        // Re-auth
-                        // $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
-                        $rcmail->output->command('plugin.auth_redirect', $this->oidc_keyword . "=" . $this->enabled);
+                        $this->reconnect_oidc("Inactivité utilisateur", $rcmail);
                     }
                     else
                     {

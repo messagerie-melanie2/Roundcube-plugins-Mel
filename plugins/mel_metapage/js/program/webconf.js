@@ -67,6 +67,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     //room webconf
     this.key = key;
 
+    if (top.rcmail.env['webconf.feedback_url'] === undefined) top.rcmail.env['webconf.feedback_url'] = rcmail.env['webconf.feedback_url'];
+    
     this.feedback_url = rcmail.env['webconf.feedback_url'];
 
     if ((ariane === null  || ariane === undefined)) //Si on est en mode espace de travail

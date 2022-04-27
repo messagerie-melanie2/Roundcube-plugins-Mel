@@ -78,7 +78,6 @@ class mel_metapage extends rcube_plugin
     function init()
     {
         $this->setup();
-
         $dir = __DIR__;
         $files = scandir(__DIR__."/program/pages");
         $size = count($files);
@@ -639,7 +638,7 @@ class mel_metapage extends rcube_plugin
                     $wsp->load_workspaces();
                     $workpaces = $wsp->workspaces;
                     $html = '<select id=wsp-event-all-cal-mm class="form-control input-mel">';
-                    $html .= "<option value=\"#none\">Aucun</option>";
+                    $html .= "<option value=\"#none\">".$this->gettext('none')."</option>";
                     foreach ($workpaces as $key => $value) {
                         $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
                     }
@@ -727,7 +726,7 @@ class mel_metapage extends rcube_plugin
 
     function loadingFrame()
     {
-        $this->rc->output->set_pagetitle("Chargement...");
+        $this->rc->output->set_pagetitle($this->gettext('loading'));
         $this->rc->output->send("mel_metapage.loading");
     }
 
@@ -1218,7 +1217,7 @@ class mel_metapage extends rcube_plugin
             $wsp->load_workspaces();
             $workpaces = $wsp->workspaces;
             $html = '<select class="form-control input-mel">';
-            $html .= "<option value=none>Aucun</option>";
+            $html .= "<option value=none>".$this->gettext('none')."</option>";
             foreach ($workpaces as $key => $value) {
                 $html .= '<option value="'.$value->uid.'">'.$value->title.'</option>';
             }

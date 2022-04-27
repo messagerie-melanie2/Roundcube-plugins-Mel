@@ -30,19 +30,19 @@
         </div>
 	</div> 
 
-    <h2>Filtrer par : </h2>
+    <h2><roundcube:label name='mel_metapage.filter_by' /> : </h2>
     <div class="row">
         <div class="col-6">
-            <h3>Type de contenu</h3>
+            <h3><roundcube:label name='mel_metapage.content_type' /></h3>
             <select id="search-filter" class="pretty-select input-mel mel-input search-like disabled" disabled>
                 <roundcube:object name="content_options" />
             </select>
         </div>
         <div class="col-3">
             <div id="folder-balp" style="display:none">
-                <h3>Boîte</h3>
+                <h3><roundcube:label name='mel_metapage.mel_box' /></h3>
                 <select id="search-filter-balp" class="pretty-select input-mel mel-input search-like disabled" disabled>
-                    <option value="all">Toutes</option>
+                    <option value="all"><roundcube:label name='mel_metapage.all_mel_boxes' /></option>
                     <option value="bali"><roundcube:object name="bali_name" /></option>
                     <roundcube:object name="balps_options" />
                 </select>
@@ -50,7 +50,7 @@
         </div>
         <div class="col-3">
             <div id="folder-filter" style="display:none">
-                <h3>Dossier</h3>
+                <h3><roundcube:label name='folder' /></h3>
                 <select id="search-filter-folder" class="pretty-select input-mel mel-input search-like disabled" disabled>
                     <roundcube:object name="folders_options" />
                 </select>
@@ -66,15 +66,15 @@
         <div class="datas-and-orders">
             <div class="row">
                 <div class="col-md-6">
-                    <h2 style="display:inline-block" id="search-result-number">0</h2> résultats pour <b id="mel-serach-word">"<roundcube:object name="word_searched" />"</b>
+                    <h2 style="display:inline-block" id="search-result-number">0</h2> <roundcube:label name='mel_metapage.results_for' /> <b id="mel-serach-word">"<roundcube:object name="word_searched" />"</b>
                     <button title="Etendre la recherche" id="mel-search-parameter-button" disabled class="disabled btn btn-secondary mel-button bckg true" style="margin: 0;display: inline-block;"><span class="icon-mel-parameters-invert"></span></button>
                 </div>
                 <div class="col-md-6" style="text-align:right">
-                    <span>Trier par : </span>
+                    <span><roundcube:label name='mel_metapage.order_by' /> : </span>
                     <select id="search-order" class="pretty-select input-mel mel-input search-like disabled" disabled style="max-width:150px">
-                        <option value="none" selected disabled class="disabled" style="display:none">Rien</option>
-                        <option value="desc">Le plus récent</option>
-                        <option value="asc">Le plus ancien</option>
+                        <option value="none" selected disabled class="disabled" style="display:none"><roundcube:label name='mel_metapage.empty_nothing' /></option>
+                        <option value="desc"><roundcube:label name='mel_metapage.desc' /></option>
+                        <option value="asc"><roundcube:label name='mel_metapage.asc' /></option>
                     </select>
                 </div>
             </div>

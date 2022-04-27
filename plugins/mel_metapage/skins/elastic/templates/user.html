@@ -16,7 +16,7 @@
                         </div>
                     </div>
                     <div class="col-sm-4 col-6" style="color:white" class="hide-touch ">
-                        <div id="user-welcome" class="no-wrap-normal hide-touch noselect" comment="Bienvenue !">Bienvenue
+                        <div id="user-welcome" class="no-wrap-normal hide-touch noselect" comment="Bienvenue !"><roundcube:label name='mel_metapage.welcome' />
                             <roundcube:var name="env:firstname" /> !
                         </div>
                         <!-- <div id="user-status" class="hide-normal" comment="Status de l'utilisateur">Télétravail</div> -->
@@ -80,11 +80,11 @@
         </div>
         <div id="groupoptions-user-submenu" class="popupmenu" aria-hidden="false">
             <ul class=" menu listing " role="menu " aria-labelledby="user-up-panel ">
-                <li role="menuitem "><a title="Rafraîchir la page en cours " class="refresh refresh-current-thing active disabled " id="rcmbtn131 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
-            'refreshFrame', '',this,event) ">Rafraîchir la page en cours</a></li>
+                <li role="menuitem "><a title="<roundcube:label name='mel_metapage.refresh' />" class="refresh refresh-current-thing active disabled " id="rcmbtn131 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
+            'refreshFrame', '',this,event) "><roundcube:label name='mel_metapage.refresh' /></a></li>
 
-                <li role="menuitem "><a title="Cacher la bulle de discussion instantée " class="settings active toggleChatCommand hide-touch " id="rcmbtn132 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
-            'toggleChat', '',this,event) ">Cacher la bulle de discussion instantée</a></li>
+                <li role="menuitem "><a title="<roundcube:label name='mel_metapage.hide_chat_popup_button' />" class="settings active toggleChatCommand hide-touch " id="rcmbtn132 " role="button " tabindex="-1 " aria-disabled="true " href="# " onclick="return rcmail.command(
+            'toggleChat', '',this,event) "><roundcube:label name='mel_metapage.hide_chat_popup_button' /></a></li>
             </ul>
         </div>
     </div>

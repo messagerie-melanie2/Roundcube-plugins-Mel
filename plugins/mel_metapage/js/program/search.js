@@ -3,10 +3,15 @@ $(document).ready(() => {
     const original_search = rcmail.env.word_searched;
     const replaced = rcmail.env.REPLACED_SEARCH;
 
-    //=======================================//
-    // ** searchBlock **                     
-    //=======================================//
+    /**
+     * Contient les données brut d'une recherche ainsi que son html associé
+     */
     class searchBlock {
+        /**
+         * 
+         * @param {string} type Type de la données
+         * @param {JSON} data Données brut des résultats de la recherche
+         */
         constructor(type, data)
         {
             this.init().setup(type, data);
@@ -38,15 +43,25 @@ $(document).ready(() => {
         }
     }
 
-    //=======================================//
-    // ** search **                     
-    //=======================================//
+    /**
+     * Gère la page de recherche
+     */
     class search {
+        /**
+         * 
+         * @param {string} word Mot à rechercher
+         * @param {Array<string>} config Liste des urls
+         * @param {{}} otherConfigs Obsolète
+         */
         constructor(word, config, otherConfigs = {})
         {
             this.init().setup(word, config);
         }
 
+        /**
+         * Initialise la classe
+         * @returns Chaînage
+         */
         init() {
             this.word = '';
             this.config = [];
@@ -71,6 +86,13 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Implémente les variables de la classe
+         * @param {string} word Mot rechercher 
+         * @param {Array<string>} config Liste des urls
+         * @param {Function} then Action à faire après l'éxécution de cette fonction
+         * @returns Chaînage
+         */
         setup(word, config, then = null)
         {
             this.word = word;
@@ -78,6 +100,10 @@ $(document).ready(() => {
             return this._search(word, config, then);
         }
 
+        /**
+         * Lance l'animation d'affichage du nombre de résultats dans la requête
+         * @param {number} count Nombre de résultat
+         */
         _launch_timeout(count)
         {   
             //debugger;
@@ -97,6 +123,12 @@ $(document).ready(() => {
             }
         }
 
+        /**
+         * Relance une recherche
+         * @param {string} word Nouveau mot à rechercher 
+         * @param {Array<string>} config Liste des urls
+         * @returns Chaînage
+         */
         research(word, config)
         {
             for (const key in this.blocks) {
@@ -114,9 +146,7 @@ $(document).ready(() => {
             this.settings.$searchWord.html(`"${word}"`);
             this.settings.$globaSearchInput.val(word).addClass('disabled').attr("disabled", 'disabled');
             this.settings.$searchInput.val(word).addClass('disabled').attr("disabled", 'disabled');
-            // this.settings.selects.$filter.addClass('disabled').attr("disabled", 'disabled');
-            // this.settings.selects.$order.addClass('disabled').attr("disabled", 'disabled');
-            // this.settings.sel
+
             for (const key in this.settings.selects) {
                 if (Object.hasOwnProperty.call(this.settings.selects, key)) {
                     const element = this.settings.selects[key];
@@ -137,6 +167,13 @@ $(document).ready(() => {
             return this.setup(word, config, () => {this.order().filter();});
         }
 
+        /**
+         * Lance une recherche
+         * @param {string} word Mot à rechercher
+         * @param {Array<string>} config Liste des urls
+         * @param {Function} then Action à faire après la recherche
+         * @returns Chaînage
+         */
         _search(word, config, then = null)
         {
             const settings = this.settings;
@@ -145,7 +182,6 @@ $(document).ready(() => {
             let howManyFinished = 0;
             for (let index = 0; index < config.length; ++index) {
                 const element = config[index];
-               // mm_s_array.push({index:index,ajax:
                 $.ajax({ // fonction permettant de faire de l'ajax
                 type: "GET", // methode de transmission des données au fichier php
                 url: element.replace(replaced, word), // url du fichier php
@@ -157,8 +193,6 @@ $(document).ready(() => {
         
                         if (data.datas !== undefined && data.datas.length > 0)
                         {
-                            // count += data.datas.length;
-                            // settings.$resultNumber.html(count);
                             _this._launch_timeout(data.datas.length);
                             console.log('result',data, data.datas);
                             _this._addBlock(data.label, data.datas);
@@ -190,6 +224,11 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Créer un block et l'ajoute à la liste des blocks
+         * @param {string} label Label de la recherche
+         * @param {JSON} datas Données de la recherche
+         */
         _addBlock(label, datas)
         {
             for (let index = 0; index < datas.length; ++index) {
@@ -199,6 +238,10 @@ $(document).ready(() => {
             }
         }
 
+        /**
+         * Affiche les données
+         * @param {Function} then Action à faire après avoir afficher les données
+         */
         _showDatas(then = null)
         {
             for (const key in this.blocks) {
@@ -231,10 +274,18 @@ $(document).ready(() => {
             $('.body .results').css('display', '');
         }
 
+        /**
+         * Récupère le nombre de résultats de la recherche
+         * @returns {number} Nombre de résultats
+         */
         count() {
             return this._count ?? 0;
         }
 
+        /**
+         * Ordonne les résultats
+         * @returns CHaînage
+         */
         order() {
             let _enum = Enumerable.from(this.blocks);//.toJsonDictionnary(x => x.key, x => x.value);
             let order;
@@ -253,6 +304,10 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Filtre les résultats
+         * @returns Chaînage
+         */
         filter() {
             const filter = this.settings.selects.$filter.val();
             const filter_bal = this.settings.selects.$filterBal.val();
@@ -266,26 +321,19 @@ $(document).ready(() => {
                     const element = this.blocks[key];
 
                     if (this._filter_action(element, key, filter, filter_bal, filter_folder, isMail)) ++count;
-                    // if (filter === 'all') element.$block.css('display', '')
-                    // else {
-                    //     if (!key.includes(filter)) element.$block.css('display', 'none');
-                    //     else element.$block.css('display', '');
-                    // }
                 }
             }
 
             if (this._text_timeout === undefined)
             {
-                /*if (filter === 'all') */this.settings.$resultNumber.html(count);
-                //else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
+                this.settings.$resultNumber.html(count);
             }
             else {
                 let interval = setInterval(() => {
                     if (this._text_timeout === undefined)
                     {
                         clearInterval(interval);
-                        /*if (filter === 'all')*/ this.settings.$resultNumber.html(count);
-                        //else this.settings.$resultNumber.html(Enumerable.from(this.blocks).where(x => x.key.includes(filter)).count());
+                        this.settings.$resultNumber.html(count);
                     }
                 }, 100);
             }
@@ -313,6 +361,17 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Gère si un block doit être affiché ou non.
+         * @param {searchBlock} element Block en cours 
+         * @param {string} key Clé du block 
+         * @param {string} filter Filtre en cous
+         * @param {string} filter_bal Filtre sur bal en cours
+         * @param {string} filter_bali_folder Filtre sur dossier de la bali en cours
+         * @param {Boolean} isMail Si on filtre sur les mails
+         * @param {boolean} include La vérification passe par une inclusion ou une égalitée ?
+         * @returns {boolean} Block affiché ou non
+         */
         _filter_action(element, key, filter, filter_bal, filter_bali_folder, isMail, include = true)
         {
             let showed = false;
@@ -354,7 +413,8 @@ $(document).ready(() => {
 
         openParams() {
 
-            const paramUrl = 'https://roundcube.ida.melanie2.i2/?_task=settings&_action=edit-prefs&_section=globalsearch&_framed=1';
+            const paramUrl = mel_metapage.Functions.url('settings', 'edit-prefs', {_section:'globalsearch', _framed:1});
+            //'https://roundcube.ida.melanie2.i2/?_task=settings&_action=edit-prefs&_section=globalsearch&_framed=1';
 
             let modal;
 

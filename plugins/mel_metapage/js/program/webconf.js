@@ -291,10 +291,6 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             if (this._frame_loaded !== true)  mel_metapage.Storage.set("webconf_token", true);
             this.jitsii.removeListener('videoConferenceJoined', () => {});
         });
-        // this.jitsii._frame.onreadystatechange = 
-        // $(this.jitsii._frame).on("load", () => {
-        //     mel_metapage.Storage.set("webconf_token", true);
-        // });
 
         await wait(() => mel_metapage.Storage.get("webconf_token") === null); //Attente que la frame sois chargée
 
@@ -763,7 +759,7 @@ class MasterWebconfBar {
     }
 
     /**
-     * Affcihe et met en place la toolbar
+     * Affihhe et met en place la toolbar
      */
     create_bar() {
         
@@ -818,18 +814,9 @@ class MasterWebconfBar {
             micro:element("wsp-icon-micro"),
             video:element("wsp-icon-video")
         }
+ 
+        $("#wmap").appendTo($(".wsp-toolbar.webconf-toolbar"))
 
-        // let $webconf = $("iframe.webconf-frame");
-
-        // if ($webconf.length > 0 && $webconf.attr("id") !== 'mm-ariane')    
-        // {
-        //     $webconf[0].contentWindow.$("#wmap").appendTo($(".wsp-toolbar.webconf-toolbar"));
-        //     $webconf[0].contentWindow.$("#webconfmoreactions").appendTo($(".wsp-toolbar.webconf-toolbar").parent());
-        // }
-        // else {
-            $("#wmap").appendTo($(".wsp-toolbar.webconf-toolbar"))
-        //     $("#webconfmoreactions").appendTo($(".wsp-toolbar.webconf-toolbar").parent());
-        // }
         this.more = $("#wmap").removeClass("hidden").removeClass("active").click(() => {
             this.more.removeClass("active");
         });
@@ -1061,7 +1048,7 @@ class MasterWebconfBar {
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
         //L'url à lancer en quittant la webconf
-        const url = this.webconf.feedback_url;//"https://webconf.numerique.gouv.fr/questionnaireSatisfaction.html";
+        const url = this.webconf.feedback_url;
 
         //Permet de gérer correctement la barre de navigation d'un espace (Fait revenir sur l'accueil de l'espace)
         if ($(".melw-wsp.webconfstarted").length > 0)
@@ -1153,20 +1140,6 @@ class MasterWebconfBar {
 
         //Affiche le questionnaire
         this.showEndPageOnPopUp("Questionnaire satisfaction", url);
-        // if (!parent.$("body").hasClass("task-webconf"))
-        // {
-        //     parent.$("#layout-frames").css("display", "");
-        //     parent.$(".mm-frame").css("display", "none");
-        //     parent.$("iframe.webconf-frame").css("max-width", "100%").css("display", "")[0].src = url;
-        // }
-        // else {
-        //     parent.$(".questionswebconf-frame").remove();
-        //     $(".webconf-frame").remove();
-        //     mel_metapage.Functions.change_frame("questionswebconf", true, true, {_action:"loading"}).then(() => {
-        //         parent.$(".questionswebconf-frame")[0].src = url;
-        //         Title.set("Questionnaire Satisfaction", true);
-        //     });
-        // }
 
         //Gère le placement de la bulle de tchat
         if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
@@ -1183,7 +1156,6 @@ class MasterWebconfBar {
             parent.$("#user-up-panel").removeAttr("disabled").removeClass("disabled").css("pointer-events", "");
         }
 
-        // mm_st_CreateOrOpenModal("home");
     }
 
     /**
@@ -1788,8 +1760,8 @@ class MasterWebconfBar {
         });
     }
 
-        /**
-     * Passe en fullscreen en passant par top
+    /**
+     * Minimise en passant par top
      */
     static minimize()
     {

@@ -28,32 +28,6 @@
             this._some_unreads = ariane === null ? undefined : ariane._some_unreads;
         }
 
-        // addEventListener(key, listener)
-        // {
-        //     if (this.listeners[key] === undefined)
-        //         this.listeners[key] = [listener];
-        //     else
-        //         this.listeners[key].push(listener);
-        // }
-
-        // triggerEvent(key, ...args)
-        // {
-        //     if (this.listeners[key] === null || this.listeners[key] === undefined)
-        //         return;
-
-        //     for (let index = 0; index < this.listeners[key].length; index++) {
-        //         const element = this.listeners[key][index];
-        //         element(...args);
-        //     }
-        // }
-
-        // async post_message(datas)
-        // {
-        //     $("iframe.mm-frame").each((i,e) => {
-        //         e.contentWindow.postMessage(datas);
-        //     });
-        // }
-
         update_channel(event)
         {
             const datas = event.data.data;

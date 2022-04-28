@@ -35,7 +35,7 @@
             await mel_metapage.Functions.change_frame('webconf', true, true, config);
         }
         else {
-            rcmail.display_message("Une visioconférence est déja en cours, finissez celle en cours avant d'en démarrer une nouvelle !", "warning");
+            rcmail.display_message(rcmail.gettext('webconf_already_running', 'mel_metapage'), "warning");
         }
     }
 

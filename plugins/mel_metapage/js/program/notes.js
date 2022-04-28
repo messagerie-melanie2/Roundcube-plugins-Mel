@@ -1,4 +1,10 @@
 $(document).ready(() => {
+
+    /**
+     * Plugin qui contient la localization pour rcmail.gettext
+     */
+    const plugin_text = 'mel_metapage';
+
     /**
      * Couleur d'arrière plan de base
      */
@@ -52,7 +58,7 @@ $(document).ready(() => {
             rcmail.set_busy(false);
 
             rcmail.clear_messages();
-            rcmail.display_message("Note créée avec succès !", "confirmation");
+            rcmail.display_message(rcmail.gettext('note_created_success', plugin_text), "confirmation");
             $('.mel-note').last().find("textarea")[0].focus();
         });
     };
@@ -90,17 +96,17 @@ $(document).ready(() => {
             return `
             <div class="mel-note" style="background-color:${this.color};color:${this.textcolor}" ${this.get_datas()}>
                 <div class="note-header">
-                    <button title="Nouveau" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button>
+                    <button title="${rcmail.gettext('new_n', plugin_text)}" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button>
                     <input class="change" type=text style="background-color:${this.color};color:${this.textcolor}" value="${this.title}" />
-                    <button title="Paramètres" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button>
-                    <button title="Supprimer" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button>
+                    <button title="${rcmail.gettext('settings', plugin_text)}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button>
+                    <button title="${rcmail.gettext('delete')}" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button>
                 </div>
                 <div class="note-header-params" style="display:none">
-                <input title="Changer la couleur de fond" class="change bcgcolor" type="color" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <input title="Changer la couleur du texte" class="change txtcolor" type="color" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <button title="Quitter les paramètres" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
-                <button title="Déplacer en bas" class=" mel-button no-button-margin bckg true downb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-down"></span></button>
-                <button title="Déplacer en haut" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
+                <input title="${rcmail.gettext('change_background_color', plugin_text)}" class="change bcgcolor" type="color" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
+                <input title="${rcmail.gettext('change_text_color', plugin_text)}" class="change txtcolor" type="color" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
+                <button title="${rcmail.gettext('quit_settings', plugin_text)}" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
+                <button title="${rcmail.gettext('move_down', plugin_text)}" class=" mel-button no-button-margin bckg true downb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-down"></span></button>
+                <button title="${rcmail.gettext('move_up', plugin_text)}" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
                 </div>
                 <div class="note-body">
                     <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor}">${this.text}</textarea>
@@ -145,7 +151,7 @@ $(document).ready(() => {
                 $element.find(".change").removeClass("disabled").removeAttr("disabled");
                 //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
                 rcmail.clear_messages();
-                rcmail.display_message("Note créée avec succès !", "confirmation");
+                rcmail.display_message(rcmail.gettext('note_created_success', plugin_text), "confirmation");
             });
 
             //Handler pour le bouton paramètre
@@ -169,7 +175,7 @@ $(document).ready(() => {
 
                 if (this.uid === default_note_uid)
                 {
-                    rcmail.display_message("Note réinitialisée avec succès !", "confirmation");
+                    rcmail.display_message(rcmail.gettext('note_reinit_success', plugin_text), "confirmation");
                     return;
                 }
 
@@ -183,7 +189,7 @@ $(document).ready(() => {
                 $element.find(".change").removeClass("disabled").removeAttr("disabled");
                 //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
                 rcmail.clear_messages();
-                rcmail.display_message("Note supprimée avec succès !", "confirmation");
+                rcmail.display_message(rcmail.gettext('note_deleted_success', plugin_text), "confirmation");
             });
 
             //Handler pour les modifications
@@ -222,7 +228,7 @@ $(document).ready(() => {
                     rcmail.set_busy(false);
                     $element.find(".change").removeClass("disabled").removeAttr("disabled");
                     rcmail.clear_messages();
-                    rcmail.display_message("Note créée avec succès !", "confirmation");
+                    rcmail.display_message(rcmail.gettext('note_created_success', plugin_text), "confirmation");
                 }
             });
 
@@ -245,7 +251,7 @@ $(document).ready(() => {
                     $(".shortcut-notes .change").removeClass("disabled").removeAttr("disabled");
                     //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
                     rcmail.clear_messages();
-                    rcmail.display_message("Notes déplacées avec succès !", "confirmation");
+                    rcmail.display_message(rcmail.gettext('note_move_success', plugin_text), "confirmation");
                 });
             }
             else $element.find('.downb').addClass("disabled").attr("disabled", "disabled");
@@ -265,7 +271,7 @@ $(document).ready(() => {
                     $(".shortcut-notes .change").removeClass("disabled").removeAttr("disabled");
                     //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
                     rcmail.clear_messages();
-                    rcmail.display_message("Notes déplacées avec succès !", "confirmation");
+                    rcmail.display_message(rcmail.gettext('note_move_success', plugin_text), "confirmation");
                 });
             }
             else $element.find('.upb').addClass("disabled").attr("disabled", "disabled");

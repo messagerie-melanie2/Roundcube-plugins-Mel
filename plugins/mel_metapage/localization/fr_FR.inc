@@ -37,6 +37,7 @@ $labels["choose_type_doc"] = "Choisissez le type de document :";
 $labels["document_folder"] = "Dossier du nouveau document";
 $labels["document_name"] = "Nom du nouveau document :";
 $labels["create_doc"] = "Créer un document";
+$labels['create_event'] = 'Créer un évènement';
 
 $labels["text_document"] = "Document texte";
 $labels["text_office_document"] = "Document office";
@@ -85,6 +86,7 @@ $labels["webconf_round_help"] = "Affiche ou cache la barre d'outil";
 
 $labels["saloon"] = "Salon";
 $labels["webconf_saloon_name_error"] = "Le nom du salon doit faire au moins 10 caractères avec au moins 3 chiffres. Alphanumérique seulement.";
+$labels["webconf_saloon_name_error_small"] = 'Le nom du salon doit faire au moins 10 caractères !';
 $labels["webconf_saloon_incorrect_format_number"] = 'Il doit y avoir au moins 3 chiffres dans le nom du salon !';
 $labels["webconf_saloon_incorrect_format"] = 'Alphanumérique seulement !';
 $labels["attach_to"] = "Rattacher à";
@@ -138,6 +140,7 @@ $labels["add_all_member_from_a_workspace"] = "Ajouter tous les membres de l'espa
 $labels["add_all"] = "Ajouter tous les membres de l'espace";
 $labels["select_attendees"] = "Sélectionner les participants";
 $labels["back"] = "Retour";
+$labels['create_modal_back'] = 'Retour à la modale de création';
 $labels["save_event"] = "Sauvegarder l'évènement";
 
 $labels["worskpace_name"] = "Nom de l'espace de travail";
@@ -251,3 +254,30 @@ $labels['title_needed'] = 'Vous devez mettre un titre !';
 $labels['startdate_needed'] = 'Vous devez mettre une date de début !';
 $labels['enddate_needed'] = 'Vous devez mettre une date de fin !';
 $labels['bad_format_date'] = 'Vous devez mettre une date au format jj/MM/yyyy HH:mm !';
+
+$labels['add_user_button_title'] = 'Ajoute le participant saisi dans le champ précédent.';
+$labels['add_user_to_event'] = 'Ajouter un participant'; 
+$labels['add_user_to_event_title'] = "Saisissez le nom de l'utilisateur pour afficher l'autocomplétion ou saisissez une adresse email puis cliquez sur 'Ajouter'";
+
+$labels['no_events_today'] = "Pas de réunion aujourd'hui !";
+$labels['no_events_this_day'] = 'Pas de réunion à cette date !';
+
+$labels['webconf_already_running'] = "Une visioconférence est déja en cours, finissez celle en cours avant d'en démarrer une nouvelle !";
+$labels['see_plus'] = 'Voir plus';
+
+$labels['note_created_success'] = 'Note créée avec succès !';
+$labels['note_reinit_success'] = 'Note réinitialisée avec succès !';
+$labels['note_deleted_success'] = 'Note supprimée avec succès !';
+$labels['note_move_success'] = 'Notes déplacées avec succès !';
+
+$labels['settings'] = 'Paramètres';
+
+$labels['change_background_color'] = 'Changer la couleur de fond';
+$labels['change_text_color'] = 'Changer la couleur du texte';
+
+$labels['quit_settings'] = 'Quitter les paramètres';
+
+$labels['move_up'] = 'Déplacer en haut';
+$labels['move_down'] = 'Déplacer en bas';
+
+$labels['search_settings'] = 'Paramètres de la recherche';

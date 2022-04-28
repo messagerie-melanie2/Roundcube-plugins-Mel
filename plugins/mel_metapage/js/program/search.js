@@ -435,7 +435,7 @@ $(document).ready(() => {
 
             $html = $(`<div><center id=search-param-loading><span class='spinner-grow'></span></center></div>`).append($html);
 
-            const config = new GlobalModalConfig('Paramètres de la recherche', 'default', $html);
+            const config = new GlobalModalConfig(rcmail.gettext('search_settings', 'mel_metapage'), 'default', $html);
             modal = new GlobalModal('globalModal', config);
             modal.footer.buttons.save.click(() => {
                 rcmail.env.params_updated = true;

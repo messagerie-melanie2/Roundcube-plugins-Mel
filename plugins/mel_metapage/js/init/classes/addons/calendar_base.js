@@ -5,20 +5,123 @@ $(document).ready(() => {
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
         
-    window.rcube_calendar_ui.continue = function()
+    // window.rcube_calendar_ui.continue = function()
+    // {
+    //     let canContinue = true;
+
+    //     if ($("#edit-title").val() === "")
+    //     {
+    //         canContinue = false;
+    //         $("#edit-title").focus();
+    //         if ($("#edit-title").parent().find(".required-text").length > 0)
+    //             $("#edit-title").parent().find(".required-text").css("display", "");
+    //         else
+    //             $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*${rcmail.gettext('title_needed', plugin_text)}</span>`);
+        
+    //         $('li > a[href="#event-panel-summary"]').click();
+    //     }
+    //     else {
+    //         if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
+    //             $(".have-workspace").css("display", "");
+    //         else
+    //             $(".have-workspace").css("display", "none");
+        
+    //         if ($("#edit-title").parent().find(".required-text").length > 0)
+    //             $("#edit-title").parent().find(".required-text").remove();
+    //     }
+
+    //     let date = {
+    //         start:{
+    //             querry:$("#mel-metapage-added-input-mel-start-datetime"),
+    //             val:null,
+    //             text_id:"edit-start-error-text"
+    //         },
+    //         end:{
+    //             querry:$("#mel-metapage-added-input-mel-end-datetime"),
+    //             val:null,
+    //             text_id:"edit-end-error-text"
+    //         }
+    //     }
+
+    //     date.start.val = date.start.querry.val();
+    //     date.end.val = date.end.querry.val();
+
+    //     if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
+    //     {
+    //         canContinue = false;
+    //         date.start.querry.focus();
+
+    //         const text_id = date.start.text_id;
+    //         let parent = date.start.querry.parent();
+    //         if ($(`#${text_id}`).length > 0)
+    //             $(`#${text_id}`).remove();
+
+    //         const text = date.start.val === "" ? rcmail.gettext('startdate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
+    //         parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+
+    //     }
+    //     else if ($(`#${date.start.text_id}`).length > 0)
+    //         $(`#${date.start.text_id}`).remove();
+
+    //     if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
+    //     {
+    //         canContinue = false;
+    //         date.end.querry.focus();
+
+    //         const text_id = date.end.text_id;
+    //         let parent = date.end.querry.parent();
+    //         if ($(`#${text_id}`).length > 0)
+    //             $(`#${text_id}`).remove();
+
+    //         const text = date.end.val === "" ? rcmail.gettext('enddate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
+    //         parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+
+    //     }
+    //     else if ($(`#${date.end.text_id}`).length > 0)
+    //         $(`#${date.end.text_id}`).remove();
+
+
+    //     if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
+    //     {
+    //         const text_id = "key-error-cal";
+    //         let val = $("#key-visio-cal").val();
+
+    //         $(`#${text_id}`).remove();
+
+    //         if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+    //         {
+
+    //             const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
+    //             //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
+    //             //$(".webconf-error-text").css("display", "").css("color", "red");
+    //             $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+    //             canContinue = false;
+    //         }
+    //     }
+
+    //     if (canContinue)
+    //         $(".nav-link.nav-icon.attendees").click();
+    // }
+
+    window.rcube_calendar_ui.back = function()
     {
+        $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
+    }
+
+    rcube_calendar_ui.save = function()
+    {
+
         let canContinue = true;
 
         if ($("#edit-title").val() === "")
         {
+            $('li > a[href="#event-panel-summary"]').click();
             canContinue = false;
             $("#edit-title").focus();
             if ($("#edit-title").parent().find(".required-text").length > 0)
                 $("#edit-title").parent().find(".required-text").css("display", "");
             else
                 $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*${rcmail.gettext('title_needed', plugin_text)}</span>`);
-        
-            $('li > a[href="#event-panel-summary"]').click();
         }
         else {
             if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
@@ -49,6 +152,7 @@ $(document).ready(() => {
         if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
         {
             canContinue = false;
+            $('li > a[href="#event-panel-summary"]').click();
             date.start.querry.focus();
 
             const text_id = date.start.text_id;
@@ -65,6 +169,7 @@ $(document).ready(() => {
 
         if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
         {
+            $('li > a[href="#event-panel-summary"]').click();
             canContinue = false;
             date.end.querry.focus();
 
@@ -89,115 +194,10 @@ $(document).ready(() => {
             $(`#${text_id}`).remove();
 
             if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
-            {
-
-                const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
-                //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
-                //$(".webconf-error-text").css("display", "").css("color", "red");
-                $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-                canContinue = false;
-            }
-        }
-
-        if (canContinue)
-            $(".nav-link.nav-icon.attendees").click();
-    }
-
-    window.rcube_calendar_ui.back = function()
-    {
-        $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
-    }
-
-    rcube_calendar_ui.save = function()
-    {
-
-        let canContinue = true;
-
-        if ($("#edit-title").val() === "")
-        {
-            $('li > a[href="#event-panel-summary"]').click();
-            canContinue = false;
-            $("#edit-title").focus();
-            if ($("#edit-title").parent().find(".required-text").length > 0)
-                $("#edit-title").parent().find(".required-text").css("display", "");
-            else
-                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>`);
-        }
-        else {
-            if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
-                $(".have-workspace").css("display", "");
-            else
-                $(".have-workspace").css("display", "none");
-        
-            if ($("#edit-title").parent().find(".required-text").length > 0)
-                $("#edit-title").parent().find(".required-text").remove();
-        }
-
-        let date = {
-            start:{
-                querry:$("#mel-metapage-added-input-mel-start-datetime"),
-                val:null,
-                text_id:"edit-start-error-text"
-            },
-            end:{
-                querry:$("#mel-metapage-added-input-mel-end-datetime"),
-                val:null,
-                text_id:"edit-end-error-text"
-            }
-        }
-
-        date.start.val = date.start.querry.val();
-        date.end.val = date.end.querry.val();
-
-        if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
-        {
-            canContinue = false;
-            $('li > a[href="#event-panel-summary"]').click();
-            date.start.querry.focus();
-
-            const text_id = date.start.text_id;
-            let parent = date.start.querry.parent();
-            if ($(`#${text_id}`).length > 0)
-                $(`#${text_id}`).remove();
-
-            const text = date.start.val === "" ? "Vous devez mettre une date de début !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
-            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
-        }
-        else if ($(`#${date.start.text_id}`).length > 0)
-            $(`#${date.start.text_id}`).remove();
-
-        if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
-        {
-            $('li > a[href="#event-panel-summary"]').click();
-            canContinue = false;
-            date.end.querry.focus();
-
-            const text_id = date.end.text_id;
-            let parent = date.end.querry.parent();
-            if ($(`#${text_id}`).length > 0)
-                $(`#${text_id}`).remove();
-
-            const text = date.end.val === "" ? "Vous devez mettre une date de fin !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
-            parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
-        }
-        else if ($(`#${date.end.text_id}`).length > 0)
-            $(`#${date.end.text_id}`).remove();
-
-
-        if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
-        {
-            const text_id = "key-error-cal";
-            let val = $("#key-visio-cal").val();
-
-            $(`#${text_id}`).remove();
-
-            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
             {            
                 $('li > a[href="#event-panel-detail"]').click();
 
-                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : /^[0-9a-zA-Z]+$/.test(val) ? "Il doit y avoir au moins 3 chiffres dans le nom du salon !" : "Alphanumérique seulement !";
+                const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
                 //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
                 //$(".webconf-error-text").css("display", "").css("color", "red");
                 $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
@@ -568,8 +568,8 @@ $(document).ready(() => {
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             
-            $("#edit-attendee-add").attr("title", 'Ajoute le participant saisi dans le champ précédent.');
-            $("#edit-attendee-name").attr("placeholder", 'Ajouter un participant...').attr("title", "Saisissez le nom de l'utilisateur pour afficher l'autocomplétion ou saisissez une adresse email puis cliquez sur 'Ajouter'");
+            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text));
+            $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text));
 
             //ok
             $("#eventedit").data("callbacks", "ok");
@@ -1060,7 +1060,7 @@ $(document).ready(() => {
         if ($("#globalModal .modal-close-footer").length == 0)
             await GlobalModal.resetModal();
 
-        const config = new GlobalModalConfig(`Créer un évènement`, "default", dialog, null);
+        const config = new GlobalModalConfig(rcmail.gettext('create_event', plugin_text), "default", dialog, null);
         window.kolab_event_dialog_element = dialog = new GlobalModal("globalModal", config, true);
 
         kolab_event_dialog_element.footer.buttons.save.click(() => {
@@ -1092,7 +1092,7 @@ $(document).ready(() => {
         if (event.from === "barup")
         {
             // create_popUp.close();
-            window.kolab_event_dialog_element.setBeforeTitle('<a href=# title="Retour" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$(`iframe#kolabcalendarinlinegui`).remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>Retour à la modale de création</span></a>');
+            window.kolab_event_dialog_element.setBeforeTitle(`<a href=# title="${rcmail.gettext('back')}" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$('iframe#kolabcalendarinlinegui').remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>${rcmail.gettext('create_modal_back', plugin_text)}</span></a>`);
         }
 
         window.kolab_event_dialog_element.autoHeight();
@@ -1223,9 +1223,9 @@ $(document).ready(() => {
          {
             let _html;
             if (date === moment().startOf("day"))
-                _html = "Pas de réunion aujourd'hui !";
+                _html = rcmail.gettext('no_events_today', plugin_text);
             else
-                _html = "Pas de réunion à cette date !";
+                _html = rcmail.gettext('no_events_this_day', plugin_text);
             if (jquery_element !== null)
             {
                 querry.html(_html);

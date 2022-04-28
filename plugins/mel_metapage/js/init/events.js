@@ -756,7 +756,7 @@ if (rcmail && window.mel_metapage)
         if (querry.hasClass("hidden"))
         {
             querry.removeClass("hidden");
-            element.html("Voir moins...");
+            element.html(`${rcmail.gettext('see_plus', 'mel_metapage')}...`);
         }
         else {
             querry.addClass("hidden");
@@ -781,33 +781,17 @@ if (rcmail && window.mel_metapage)
                     if (Object.hasOwnProperty.call(rcmail.env.labels_translate, key)) {
                         const element = rcmail.env.labels_translate[key];
                         const haveLabel = Enumerable.from(menu.selected_object.classList).toArray().includes("label_"+key);
-                        //console.log("boucle", key, haveLabel, menu.selected_object.classList);
+
                         source.push({label: element, command: (haveLabel ? "remove_label" :'add_label'), props:{label:key, message:menu.selected_object}, classes: (haveLabel ? "selected" : "")+' label '+key+" label_"+key})
                     }
                 }
-                
-                // if (menu.labels_submenu)
-                // {
-                //     menu.labels_submenu.destroy();
-                //     delete menu.labels_submenu;
-                // }
-                // if (menu.submenus["undefined"] !== undefined && menu.submenus["undefined"] !== null)
-                // {
-                //     menu.submenus["undefined"].menu_source = source;
-                //     menu.submenus["undefined"].show_menu(null, e);
-                //     //console.log(menu, menu.submenus["gestion_labels"]);
-                // }
-                // else {
 
                     var a = rcmail.contextmenu.init(
                         {'menu_name': 'labellist', 'menu_source': source,
                     });
-                    //menu.submenu($(".ct-tb"), e);
+
                     a.show_menu($(".ct-tb"), e);
                     menu.labels_submenu = a;
-                    //console.log(menu, a);
-                //}
-
           }).on("mouseout", (e) => {
               
             let target = $(e.relatedTarget);
@@ -865,46 +849,6 @@ if (rcmail && window.mel_metapage)
         }
       });
 
-    //   $(window).on("resize", (e) => {
-    //     //console.log("e", window.innerHeight, !$("html").hasClass("layout-phone"), !$("html").hasClass("layout-small"));
-    //     if (rcmail.env.task !== "calendar")
-    //         return;
-
-    //     if (!$("html").hasClass("layout-phone") && !$("html").hasClass("layout-small") && window.innerHeight <= 500)
-    //     {
-    //         $("#datepicker-onoff").remove();
-    //         $("#datepicker").addClass("showed").css("margin-bottom", "");
-    //         $("#datepicker").prepend(
-    //             $(`<button class="btn btn-block" id=datepicker-onoff><span class="icon-mel-chevron-down"></span></button>`)
-    //             .click(() => {
-    //                 //console.log("clicked");
-    //                 const size = $("#datepicker .ui-datepicker")[0].getClientRects()[0].height;
-    //                 if ($("#datepicker").hasClass("showed")) //est pas affiché
-    //                 {
-    //                     $("#datepicker").css("margin-bottom", `-${size}px`).removeClass("showed");
-    //                     $("#datepicker-onoff .icon-mel-chevron-down").removeClass("icon-mel-chevron-down").addClass("icon-mel-chevron-up")
-    //                 }
-    //                 else {
-    //                     $("#datepicker").css("margin-bottom", ``).addClass("showed");
-    //                     $("#datepicker-onoff .icon-mel-chevron-up").removeClass("icon-mel-chevron-up").addClass("icon-mel-chevron-down")
-    //                 }
-    //             })
-    //         );
-
-    //         setTimeout(() => {
-    //             if ($("#datepicker").hasClass("showed"))
-    //                 $("#datepicker-onoff").click();
-    //         }, 1);
-    //     }
-    //     else {
-    //         $("#datepicker-onoff").remove();
-    //         $("#datepicker").addClass("showed").css("margin-bottom", "");
-    //         // setTimeout(() => {
-    //         //     $(window).resize();
-    //         // }, 100);
-    //     }
-    //   });
-
       function resize_mail()
       {
         if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))
@@ -956,14 +900,6 @@ if (rcmail && window.mel_metapage)
         }
       }
 
-
-    //   function resize_taskbar_wsp()
-    //   {
-    //       if ($(".layout-small").length > 0 && $(".layout-ultra-small").length === 0 && !$(".wsp-toolbar").hasClass("") && $(".wsp-toolbar"))
-    //       {
-    //         $(".wsp-toolbar")
-    //       }
-    //   }
 
       $(document).ready(async () => {
         if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))

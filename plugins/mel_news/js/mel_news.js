@@ -234,19 +234,19 @@ $(document).ready(async () => {
 
             //Si on modifie une vrai news
             if (id !== null && id !== "generated-tmp-id")
-                obFields = `<div style="text-align:right;"><button id="publish-delete-button" class="mel-button btn btn-danger" style="">Supprimer <span class="plus icon-mel-trash"></span></button></div>`;
+                obFields = `<div style="text-align:right;"><button id="publish-delete-button" class="mel-button btn btn-danger" style="">${rcmail.gettext('delete')} <span class="plus icon-mel-trash"></span></button></div>`;
 
             //Affichage du texte
-            let html = obFields + '<div><div class="row"><div class="service-left col-12">' + this.createSelect("Choisissez un service", "mel-publish-service", "Sélectionnez un service", Enumerable.from(rcmail.env.news_service_for_publish).select(x => {return {value:x.key,text:x.value}}).toArray(), id === null ? "none" : news.getService()) + '</div><div class="service-right hidden"><button id="np-select-child" class="mel-button btn btn-secondary" style="margin-top: 53px;">Choisir un sous-service</button></div></div></div>';
+            let html = obFields + '<div><div class="row"><div class="service-left col-12">' + this.createSelect(rcmail.gettext('choose_service', plugin_text), "mel-publish-service", rcmail.gettext('select_service', plugin_text), Enumerable.from(rcmail.env.news_service_for_publish).select(x => {return {value:x.key,text:x.value}}).toArray(), id === null ? "none" : news.getService()) + '</div><div class="service-right hidden"><button id="np-select-child" class="mel-button btn btn-secondary" style="margin-top: 53px;">Choisir un sous-service</button></div></div></div>';
             
             //Si on publie une publication
             if (!isFlux)
             {
-                html += '<div>' + this.createInput("Choisissez un titre", "mel-publish-title", "text", "Titre de la publication", news.title, "mel-publish-title", classes) + '</div>';
-                html += '<div>' + this.createTextarea("Ecrivez la publication", "mel-publish-body", "Voici les nouvelles....", news.body) + '</div>';
+                html += '<div>' + this.createInput(rcmail.gettext('choose_title', plugin_text), "mel-publish-title", "text", rcmail.gettext('admin_news_title', plugin_text), news.title, "mel-publish-title", classes) + '</div>';
+                html += '<div>' + this.createTextarea(rcmail.gettext('write_admin_news', plugin_text), "mel-publish-body", rcmail.gettext('admin_news_placeholder', plugin_text), news.body) + '</div>';
             }//Si on publie un flux
             else {
-                html += this.createSelect("Choisir le site Intranet à afficher", "news-intranet-select", "Sélectionner un site", Enumerable.from(rcmail.env.news_intranet_list).select(x => {return {value:x.key, text:x.value.name}}).toArray(), (id === null ? "none" : news.id));
+                html += this.createSelect(rcmail.gettext('choose_intranet', plugin_text), "news-intranet-select", rcmail.gettext('select_website', plugin_text), Enumerable.from(rcmail.env.news_intranet_list).select(x => {return {value:x.key, text:x.value.name}}).toArray(), (id === null ? "none" : news.id));
             }
 
             //Modification de l'affichage de la modale (Voir la classe modal de mel_metapage)
@@ -257,11 +257,11 @@ $(document).ready(async () => {
 
             //Suppression de la publicartion
             this.modal.modal.find("#publish-delete-button").click(() => {
-                if (confirm("Cela affectera tout ceux qui voient actuellement cette publication.\r\nÊtes-vous sûr de vouloir continuer ?"))
+                if (confirm(rcmail.gettext('delete_confirm', plugin_text)))
                 {
                     this.modal.close();
                     rcmail.set_busy(true);
-                    rcmail.display_message("Suppression...", "loading");
+                    rcmail.display_message(rcmail.gettext('deleting', plugin_text), "loading");
                     this.post((isFlux ? "delete_rss" : "delete"), {
                         _uid:(isFlux ? news.server_uid : id)
                     },
@@ -270,10 +270,10 @@ $(document).ready(async () => {
                         rcmail.set_busy(false);
                         if (datas === "denied")
                         {
-                            rcmail.display_message("Vous n'avez pas les droits pour faire cette action !", "error");
+                            rcmail.display_message(rcmail.gettext('action_denied', plugin_text), "error");
                         }
                         else {
-                            rcmail.display_message("Publié avec succès !", "confirmation");
+                            rcmail.display_message(rcmail.gettext('succefuly_published', plugin_text), "confirmation");
                             rcmail.set_busy(true, "loading");
                             window.location.reload();
                         }
@@ -325,7 +325,7 @@ $(document).ready(async () => {
                             $button.find(".icon").addClass("icon-mel-check");
                         })
                         .setAction(AnnuaireTree.actionsList.afterSetup, (arbre) => {
-                            arbre.panel.append($(`<button class="added-undo-button mel-button btn btn-primary">Retour <span class="plus icon-mel-undo"></span></button>`).click(() => {
+                            arbre.panel.append($(`<button class="added-undo-button mel-button btn btn-primary">${rcmail.gettext('back')} <span class="plus icon-mel-undo"></span></button>`).click(() => {
                                 this.modal.modal.find(".np-other").html("");
                                 this.modal.modal.find(".np-content").css("display", "");
                                 this.modal.footer.querry.css("display", "");
@@ -334,10 +334,10 @@ $(document).ready(async () => {
                             if (arbre.panel.find("li").length === 0)
                             {
                                 arbre.panel.find("button.added-undo-button").click();
-                                rcmail.display_message("Pas de sous-services pour ce service.");
+                                rcmail.display_message(rcmail.gettext('no_sub_services', plugin_text));
                             }
                             else {
-                                arbre.panel.append($(`<button style="float:right" class="mel-button btn btn-primary">Valider <span class="plus icon-mel-check"></span></button>`).click(() => {
+                                arbre.panel.append($(`<button style="float:right" class="mel-button btn btn-primary">${rcmail.gettext('validate', plugin_text)} <span class="plus icon-mel-check"></span></button>`).click(() => {
                                     const selected = arbre.panel.find("button.nbtn-action .icon-mel-check");
                                     if (selected.length > 0)
                                     {
@@ -357,7 +357,7 @@ $(document).ready(async () => {
 
                                 }));
 
-                                arbre.panel.prepend(`<h4>Choisir un sous-service</h4>`);
+                                arbre.panel.prepend(`<h4>${rcmail.gettext('choose_sub_service', plugin_text)}</h4>`);
                             }
 
 
@@ -371,13 +371,13 @@ $(document).ready(async () => {
             if (!isFlux)//Si publication
             {
                 //Bouton de sauvegarde
-                $(`<button class="mel-button" style="margin-right:15px">${(news.id === "" ? "Visualiser" : "Visualiser")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
+                $(`<button class="mel-button" style="margin-right:15px">${rcmail.gettext('visualize', plugin_text)} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
                     if (this.check([$("#mel-publish-service"), $("#mel-publish-title"), $("#mel-publish-body")], {2:() => tinyMCE.activeEditor.getContent() === ""})) 
                         this.confirm("createOrEditPublish", {id:"news-generated-tmp-id", trueId:news.id});
                 }).appendTo(this.modal.footer.querry);
 
                 $('label[for="mel-publish-body"]').css("display", "inline-block").css("width", 'auto')
-                .parent().append(`<div id=div-publish-notify style="display:none;/*inline-block*/;float:right;margin-top:15px;"><input id=publish-notify type=checkbox /> <label for="publish-notify">Notifier ?</label></div>`);
+                .parent().append(`<div id=div-publish-notify style="display:none;/*inline-block*/;float:right;margin-top:15px;"><input id=publish-notify type=checkbox /> <label for="publish-notify">${rcmail.gettext('ask_notify', plugin_text)}</label></div>`);
 
                 $('label[for="mel-publish-body"]').after($('#div-publish-notify'));
 
@@ -390,9 +390,7 @@ $(document).ready(async () => {
                         rcmail.editor.editor = null;
                         delete rcmail.editor;
                     }
-                    // tinymce.init({
-                    //     selector: '#mel-publish-body'
-                    //   });image media 
+
                     let config = rcmail.env.editor_config;
                     config.disabled_buttons = ["image", "media"];
 
@@ -430,12 +428,12 @@ $(document).ready(async () => {
                 }
 
                 //Gestion de la sauvegarde
-                $(`<button class="mel-button" style="margin-right:15px">${(news.id === "" ? "Publier" : "Modifier")} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
+                $(`<button class="mel-button" style="margin-right:15px">${(news.id === "" ? rcmail.gettext('publish', plugin_text) : rcmail.gettext('edit', plugin_text))} <span class="plus icon-mel-${(news.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
                     if (this.check([this.modal.modal.find("#mel-publish-service")])) 
                     {
                         this.modal.close();
                         rcmail.set_busy(true);
-                        rcmail.display_message("Ajout en cours...", "loading");
+                        rcmail.display_message(rcmail.gettext('adding', plugin_text), "loading");
                         mel_metapage.Functions.post(
                             mel_metapage.Functions.url("news", 'publish_rss'),
                             {
@@ -448,10 +446,10 @@ $(document).ready(async () => {
                                 rcmail.set_busy(false);
                                 if (datas === "denied")
                                 {
-                                    rcmail.display_message("Vous n'avez pas les droits pour faire cette action !", "error");
+                                    rcmail.display_message(rcmail.gettext('action_denied', plugin_text), "error");
                                 }
                                 else {
-                                    rcmail.display_message("Publié avec succès !", "confirmation");
+                                    rcmail.display_message(rcmail.gettext('succefuly_published', plugin_text), "confirmation");
                                     rcmail.set_busy(true, "loading");
                                     window.location.reload();
                                 }
@@ -485,7 +483,7 @@ $(document).ready(async () => {
 
                 if (valid)
                 {
-                    element.parent().append('<span class="fieldNotOkay" style="color:red;">*Vous devez renseigner ce champs !</span>');
+                    element.parent().append(`<span class="fieldNotOkay" style="color:red;">*${rcmail.gettext('error_field_required', plugin_text)}</span>`);
                     return false;
                 }
             }
@@ -514,16 +512,19 @@ $(document).ready(async () => {
                     .setId(args.id);
 
                     //Modification du titre de la modale
-                    this.modal.editTitle("Visualisation de la publication");
+                    this.modal.editTitle(rcmail.gettext('visualize_admin_news', plugin_text));
+
+                    const today = moment();
+                    const today_formated = `${rcmail.gettext(today.format('dddd'), plugin_text)} ${today.format('DD')} ${rcmail.gettext(today.format('MMMM'), plugin_text)}, ${today.format('YYYY')}`;
 
                     //Modification du corps de la modale
                     this.modal.editBody(`
                     <div class="square_div">
                         <div class="contents " id="${args.id}" data-service="${$("#mel-publish-service").val()}" style=overflow:auto>
                             <div class="square-contents">
-                                <p class="headlines-by">Information ${news.getService().split(",")[0].split("=")[1]}</p>
+                                <p class="headlines-by">${rcmail.gettext('information', plugin_text)} ${news.getService().split(",")[0].split("=")[1]}</p>
                                 <h3 class="headlines-title bold title">${news.title}</h3>
-                                <p class="headlines-publish">Publié le Mercredi 05 mai 2021</p>
+                                <p class="headlines-publish">${rcmail.gettext('published_at', plugin_text)} ${today_formated}</p>
                                 <div class="headlines-contents body">${tinyMCE.activeEditor.getContent()}</div>
                             </div>
                         </div>
@@ -531,7 +532,7 @@ $(document).ready(async () => {
 
                     //Modification du pied de la modale
                     this.modal.footer.querry.html("");
-                    $('<button class="mel-button white" style="position:absolute;left:40px">Retour <span class="plus icon-mel-undo"></span></button>').click(() => {
+                    $(`<button class="mel-button white" style="position:absolute;left:40px">${rcmail.gettext('back')} <span class="plus icon-mel-undo"></span></button>`).click(() => {
                         this.createOrEditPublish(args.id.replace("news-", ''));
                         let select = this.modal.modal.find("#mel-publish-service");
                         if (select.find(`option[value="${service_datas.value}"]`).length === 0)
@@ -539,14 +540,14 @@ $(document).ready(async () => {
                             select.append(`<option value="${service_datas.value}">${service_datas.name}</option>`).val(service_datas.value);
                         }
                     }).appendTo(this.modal.footer.querry);
-                    $(`<button class="mel-button" style="margin-right:40px">Confirmer <span class="plus icon-mel-plus"></span></button>`).click(() => {
+                    $(`<button class="mel-button" style="margin-right:40px">${rcmail.gettext('confirmation', plugin_text)} <span class="plus icon-mel-plus"></span></button>`).click(() => {
                     
                         if (args.trueId !== "" && args.trueId !== null && args.trueId !== undefined)
                             news.id = args.trueId;
 
                         this.modal.close();
                         rcmail.set_busy(true);
-                        rcmail.display_message("Publication...", "loading");
+                        rcmail.display_message(rcmail.gettext('publishing', plugin_text), "loading");
 
                         let _post = news.toPostDatas("news-generated-tmp-id");
 
@@ -561,10 +562,10 @@ $(document).ready(async () => {
                                 rcmail.set_busy(false);
                                 if (datas === "denied")
                                 {
-                                    rcmail.display_message("Vous n'avez pas les droits pour faire cette action !", "error");
+                                    rcmail.display_message(rcmail.gettext('action_denied', plugin_text), "error");
                                 }
                                 else {
-                                    rcmail.display_message("Publié avec succès !", "confirmation");
+                                    rcmail.display_message(rcmail.gettext('succefuly_published', plugin_text), "confirmation");
                                     rcmail.set_busy(true, "loading");
                                     window.location.reload();
                                 }
@@ -592,16 +593,16 @@ $(document).ready(async () => {
         {
             if (id === null || id === "")
             {
-                this.modal.editTitle("Quel type d'information ajouter ? (étape 1/2)");
+                this.modal.editTitle(rcmail.gettext('personal_create_title', plugin_text));
 
                 let $flex = $('<div style="display:flex"></div>')
                 // Intranet
-                .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-intranet"></span>Site intranet</button>`).click(() => {
+                .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-intranet"></span>${rcmail.gettext('intranet_website', plugin_text)}</button>`).click(() => {
                         this.showStep2(new MelNews(null).setType(MelNews.type.intranet));
                     })
                 )               
                 // Twitter
-                .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-twitter"></span>Compte twitter</button>`).click(() => {
+                .append($(`<button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block icon-mel-twitter"></span>${rcmail.gettext('twitter_account', plugin_text)}</button>`).click(() => {
                         this.showStep2(new MelNews(null).setType(MelNews.type.twitter));
                     })
                 )
@@ -643,17 +644,17 @@ $(document).ready(async () => {
         showStep2(datas, isEdit = false, isAdmin = false)
         {
 
-            const obFields = '<p class="red-star-removed"><star class="red-star mel-before-remover">*</star>Champs obligatoires</p>';
+            const obFields = `<p class="red-star-removed"><star class="red-star mel-before-remover">*</star>${rcmail.gettext('required_fields', plugin_text)}</p>`;
             const formats = [
                 {
                     id:"mel-news-format-check-1",
                     value:"small",
-                    text:"Petit format"
+                    text:rcmail.gettext('small_format', plugin_text)
                 },
                 {
                     id:"mel-news-format-check-2",
                     value:"large",
-                    text:"Grand format"
+                    text:rcmail.gettext('large_format', plugin_text)
                 }
             ];
             let html = obFields;
@@ -662,7 +663,7 @@ $(document).ready(async () => {
             {
                 html = `
                 <div class="alert alert-warning" role="alert">
-                    <span class="icon-mel-warning"></span> Toutes les vignettes liés à cet adresse seront impactés !
+                    <span class="icon-mel-warning"></span> ${rcmail.gettext('intra_edit_alert', plugin_text)}
                 </div>` + html;
             }
 
@@ -672,21 +673,21 @@ $(document).ready(async () => {
                 case MelNews.type.intranet:
 
                     if (!isEdit)
-                        this.modal.editTitle("Ajouter les informations d'un site intranet (étape 2/2)");
+                        this.modal.editTitle(rcmail.gettext('personal_add_intranet_title', plugin_text));
                     else
-                        this.modal.editTitle("Modifier les informations d'un site intranet");
+                        this.modal.editTitle(rcmail.gettext('personal_edit_intranet_title', plugin_text));
 
-                    html += this.createSelect("Choisir le site Intranet à afficher", "news-intranet-select", "Sélectionner un site", Enumerable.from(rcmail.env.news_intranet_list).select(x => {return {value:x.key, text:x.value.name}}).toArray(), datas.id);
+                    html += this.createSelect(rcmail.gettext('choose_intranet', plugin_text), "news-intranet-select", rcmail.gettext('select_website', plugin_text), Enumerable.from(rcmail.env.news_intranet_list).select(x => {return {value:x.key, text:x.value.name}}).toArray(), datas.id);
                     
                     break;
 
                 case MelNews.type.twitter:
                     if (!isEdit)
-                        this.modal.editTitle("Ajouter un fil Twitter (étape 2/2)");
+                        this.modal.editTitle(rcmail.gettext('personal_add_twitter_title', plugin_text));
                     else
-                        this.modal.editTitle("Modifier un fil Twitter");
+                        this.modal.editTitle(rcmail.gettext('personal_edit_twitter_title', plugin_text));
 
-                    html += this.createInput("Entrez l'identifiant du compte Twitter à afficher", "news-twitter-input", "text", "@NomDuCompte", datas.id, "mel-twitter", "form-control input-mel required");
+                    html += this.createInput(rcmail.gettext('enter_twitter_account', plugin_text), "news-twitter-input", "text", `@${rcmail.gettext('enter_twitter_account_placeholder', plugin_text)}`, datas.id, "mel-twitter", "form-control input-mel required");
                     break;
 
                 case MelNews.type.internet:
@@ -703,7 +704,7 @@ $(document).ready(async () => {
                     break;
             }
 
-            html += this.createCheckBoxChoices("Choisir le format du bloc", "newsMelFormat", formats, datas.format, true);
+            html += this.createCheckBoxChoices(rcmail.gettext('choose_block_format', plugin_text), "newsMelFormat", formats, datas.format, true);
 
             this.modal.editBody(html);
 
@@ -711,7 +712,7 @@ $(document).ready(async () => {
 
             if (datas.type === MelNews.type.intranet && isAdmin !== false && atob(isAdmin) == "true")
             {
-                html = $('<div style="text-align:right;"><button id="publishmode" class="mel-button" style="margin-top:0;margin-bottom:15px;float:">Passer en mode publieur</button></div>');
+                html = $(`<div style="text-align:right;"><button id="publishmode" class="mel-button" style="margin-top:0;margin-bottom:15px;float:">${rcmail.gettext('go_to_publisher_mode', plugin_text)}</button></div>`);
                 html.find("button").click(() => {
                     this.createOrEditPublish(datas.$news.data('uid'), true);
                 });
@@ -721,14 +722,14 @@ $(document).ready(async () => {
 
             this.modal.footer.querry.html("");
 
-            $(`<button class="mel-button white" style="position:absolute;left:40px">${(isEdit ? "Annuler" : 'Retour' )} <span class="plus icon-mel-undo"></span></button>`).click(() => {
+            $(`<button class="mel-button white" style="position:absolute;left:40px">${(isEdit ? rcmail.gettext('cancel') : rcmail.gettext('back') )} <span class="plus icon-mel-undo"></span></button>`).click(() => {
                 if (!isEdit)
                     this.createOrEdit(datas.id);
                 else
                     this.modal.close();
             }).appendTo(this.modal.footer.querry);
 
-            $(`<button class="mel-button" style="margin-right:40px">${(!isEdit ? "Ajouter" : "Modifier")} <span class="plus icon-mel-${(datas.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
+            $(`<button class="mel-button" style="margin-right:40px">${(!isEdit ? rcmail.gettext('add', plugin_text) : rcmail.gettext('edit', plugin_text))} <span class="plus icon-mel-${(datas.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
 
                 let url;//= (datas.type === intranet ? $("#news-intranet-select") : $("#news-twitter-input")).val();
                 
@@ -743,7 +744,7 @@ $(document).ready(async () => {
 
                 if (url === "" || url === "none")
                 {
-                    rcmail.display_message("Vous devez mettre une valeur valide !", "error");
+                    rcmail.display_message(rcmail.gettext('error_invalid_value', plugin_text), "error");
                     return;
                 }
 
@@ -768,13 +769,13 @@ $(document).ready(async () => {
                             if (datas.type === "twitter")
                             {
                                 this.modal.show();
-                                (isSettings ? parent.rcmail : rcmail).display_message("Impossible d'atteindre l'utilisateur !", "error");
+                                (isSettings ? parent.rcmail : rcmail).display_message(rcmail.gettext('error_invalid_account', plugin_text), "error");
                             }
                         }
                         else if (response === "nok")
                         {
                             this.modal.show();
-                            (isSettings ? parent.rcmail : rcmail).display_message("Impossible de faire la mise à jours !", "error");  
+                            (isSettings ? parent.rcmail : rcmail).display_message(rcmail.gettext('error_maj', plugin_text), "error");  
                         }
                         else {
                             if (mode === modes.all)
@@ -818,7 +819,7 @@ $(document).ready(async () => {
                             if (datas.type === "twitter")
                             {
                                 this.modal.show();
-                                rcmail.display_message("Impossible d'atteindre l'utilisateur !", "error");
+                                rcmail.display_message(rcmail.gettext('error_invalid_account', plugin_text), "error");
                             }
                         }
                         else {
@@ -851,16 +852,16 @@ $(document).ready(async () => {
          */
         filter()
         {
-            this.modal.editTitle("Que voulez-vous filtrer ?");
+            this.modal.editTitle(rcmail.gettext('filter_modal_title', plugin_text));
 
             const filters = {
                 type:{
-                    name:"Par type",
-                    array:[{value:"intranet", text:"Sites intranet", id:"mel-new-filter-1"}, {value:"twitter", text:"Comptes Twitter", id:"mel-new-filter-2"}/*, {value:"rss", text:"Flux RSS", id:"mel-new-filter-3"}*/]
+                    name:rcmail.gettext('by_type', plugin_text),
+                    array:[{value:"intranet", text:rcmail.gettext('intranet_websites', plugin_text), id:"mel-new-filter-1"}, {value:"twitter", text:rcmail.gettext('twitter_accounts', plugin_text), id:"mel-new-filter-2"}/*, {value:"rss", text:"Flux RSS", id:"mel-new-filter-3"}*/]
                 },
                 category:{
-                    name:"Par catégorie",
-                    array:[{value:"news", text:"Fils d'informations", id:"mel-new-filter-4"}, /*{value:"defaults", text:"Sites par défauts", id:"mel-new-filter-5"},*/ {value:"custom", text:"Vos ajouts", id:"mel-new-filter-6"}]
+                    name:rcmail.gettext('by_category', plugin_text),
+                    array:[{value:"news", text:rcmail.gettext('headlines'), id:"mel-new-filter-4"}, /*{value:"defaults", text:"Sites par défauts", id:"mel-new-filter-5"},*/ {value:"custom", text:rcmail.gettext('your_personal'), id:"mel-new-filter-6"}]
                 }
             }
 
@@ -883,7 +884,7 @@ $(document).ready(async () => {
             this.modal.editBody(html);
 
             this.modal.footer.querry.html("");
-            $(`<button class="mel-button" style="margin-right:40px">Filtrer <span class="plus icofont-filter"></span></button>`).click(async () => {
+            $(`<button class="mel-button" style="margin-right:40px">${rcmail.gettext('Filtrer', plugin_text)} <span class="plus icofont-filter"></span></button>`).click(async () => {
                (await this.updateFilter()).modal.close();
             }).appendTo(this.modal.footer.querry);
 
@@ -1417,18 +1418,7 @@ $(document).ready(async () => {
 
 
                 }
-                // datas = JSON.parse(datas);
-                // this.$news.find(".headlines-by").html(rcmail.env.news_intranet_list[this.id].name);
-                // this.$news.find(".headlines-title").html(datas.title);
-                // this.$news.find(".headlines-publish").html(`Publié le ${moment(datas.date).format('dddd DD MMMM YYYY')}`);
-                // this.$news.find(".headlines-contents").html(datas.content);
 
-                // let $headlines_source = this.$news.find('.headlines-source');
-
-                // if ($headlines_source.length === 0)
-                //     this.$news.find(".square-contents").append(`<div style="position: absolute;bottom: 30px;" class="headlines-source">Source : ${strUcFirst(this.type)}</div>`);
-                // else
-                //     this.$news.find('.headlines-source').html(`Source : ${strUcFirst(this.type)}`);
             });
         }
 
@@ -1551,7 +1541,7 @@ $(document).ready(async () => {
                         if ($(e).hasClass("vignette-arrows"))
                             return;
 
-                        $(e).css("cursor", "pointer").attr("title", "Ouvrir dans un nouvel onglet");
+                        $(e).css("cursor", "pointer").attr("title", rcmail.gettext('open_in_new_tab', plugin_text));
                     });
                 }
             });
@@ -1886,7 +1876,7 @@ else {
     }, true);
 
     rcmail.register_command("news.settings.delete", (id) => {
-        if (confirm("Êtes-vous sûr de vouloir supprimer ce flux ?"))
+        if (confirm(rcmail.gettext('delete_confirmation', plugin_text)))
         {
             parent.rcmail.set_busy(true, "loading");
             mel_metapage.Functions.post(

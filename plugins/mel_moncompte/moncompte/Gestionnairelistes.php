@@ -152,7 +152,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user)) {
 					$list_emails = array_map('strtolower', $group->members_email);
 					sort($list_emails);
@@ -182,7 +182,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user)) {
 					if (!$group->is_dynamic) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
@@ -190,7 +190,7 @@ class Gestionnairelistes extends Moncompteobject {
 						if ($group->authentification(null, true)) {
 							$new_member = driver_mel::gi()->member();
 							$new_member->email = $new_smtp;
-							if ($new_member->load('uid')) {
+							if ($new_member->load(['uid'])) {
 								if (!isset($list_members[$new_member->uid])) {
 									$list_members[$new_member->uid] = $new_member;
 									$group->members = $list_members;
@@ -234,7 +234,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user)) {
 					if (!$group->is_dynamic) {
 						$list_emails = array_map('strtolower', is_array($group->members_email) ? $group->members_email : []);
@@ -243,7 +243,7 @@ class Gestionnairelistes extends Moncompteobject {
 						if ($group->authentification(null, true)) {
 							$member_to_delete = driver_mel::gi()->member();
 							$member_to_delete->email = $address;
-							if ($member_to_delete->load('uid')) {
+							if ($member_to_delete->load(['uid'])) {
 								$member_uid = strtolower($member_to_delete->uid);
 								// MANTIS 3570: Problème dans la suppression d'un membre d'une liste
 								if (isset($list_members[$member_uid])) {
@@ -287,7 +287,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'members', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'members', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) 
 						&& !$group->is_dynamic 
 						&& $group->authentification(null, true)) {
@@ -317,7 +317,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'fullname', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					$members = implode("\r\n", $group->members_email);
 
@@ -349,7 +349,7 @@ class Gestionnairelistes extends Moncompteobject {
 			// Authentification
 			if ($user->authentification(Moncompte::get_current_user_password(), true)) {
 				$group = driver_mel::gi()->getGroup($dn_list, false, true, 'webmail.moncompte.grouplistes');
-				if ($group->load('owners', 'fullname', 'members_email', 'is_dynamic') 
+				if ($group->load(['owners', 'fullname', 'members_email', 'is_dynamic']) 
 						&& $group->isOwner($user) && !$group->is_dynamic) {
 					if ($filepath = $_FILES['_listes_csv']['tmp_name']) {
 						$lines = file($filepath);
@@ -376,7 +376,7 @@ class Gestionnairelistes extends Moncompteobject {
 							}
 							$member_to_add = driver_mel::gi()->member();
 							$member_to_add->email = $member;
-							if ($member_to_add->load('uid') 
+							if ($member_to_add->load(['uid']) 
 									&& !isset($list_members[$member_to_add->uid])) {
 								$list_members[$member_to_add->uid] = $member_to_add;
 							}

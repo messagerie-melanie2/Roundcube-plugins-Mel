@@ -160,7 +160,7 @@ class mtes_driver_mel extends mce_driver_mel {
       }
     }
     else {
-      $infos->load('server_host');
+      $infos->load(['server_host']);
       $hostname = $infos->server_host;
     }
     return $hostname;

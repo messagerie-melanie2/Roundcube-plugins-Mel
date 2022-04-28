@@ -194,6 +194,7 @@ class mel_metapage extends rcube_plugin
         ]);
 
         $this->rc->output->set_env("mel_metapage_mail_configs", $config);
+        $this->rc->output->set_env("mel_metapage_audio_url", $this->rc->config->get("audio_event_url", 'https://audio.mtes.fr/'));
 
         $calendar_space = "mel-calendar-space";
 

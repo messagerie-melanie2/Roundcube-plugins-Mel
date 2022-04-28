@@ -1,6 +1,7 @@
 $(document).ready(() => {
 
     const plugin_text = 'mel_metapage';
+    const audio_url = rcmail.env.mel_metapage_audio_url;
 
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
@@ -311,7 +312,7 @@ $(document).ready(() => {
             }
             else {
                 //Audio
-                $("#edit-location").val(`https://audio.mtes.fr/ : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
+                $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
             }
         };
         const update_date = () => {
@@ -585,10 +586,10 @@ $(document).ready(() => {
 
                 if (description !== undefined && description !== "")
                 {
-                    if (description.includes("https://audio.mtes.fr/ : "))
+                    if (description.includes(`${audio_url} : `))
                     {
                         $("#eb-mm-em-a")[0].click();
-                        const audio = description.replace("https://audio.mtes.fr/ : ", "").split(" - ");
+                        const audio = description.replace(`${audio_url} : `, "").split(" - ");
                         $("#tel-input-cal-location").val(audio[0]);
                         $("#num-audio-input-cal-location").val(audio[1]);
                     }
@@ -720,32 +721,6 @@ $(document).ready(() => {
 
                 const description = event.location;
                 update_desc(description);
-                // if (description !== undefined)
-                // {
-                //     if (description.includes("https://audio.mtes.fr/ : "))
-                //     {
-                //         $("#eb-mm-em-a")[0].click();
-                //         const audio = description.replace("https://audio.mtes.fr/ : ", "").split(" - ");
-                //         $("#tel-input-cal-location").val(audio[0]);
-                //         $("#num-audio-input-cal-location").val(audio[1]);
-                //     }
-                //     else if (description.includes("#visio") || description.includes("@visio") )
-                //     {
-                //         const isRc = description.includes("#visio");
-                //         $("#eb-mm-em-v").click();
-                //         if (isRc)
-                //             $("#eb-mm-wm-e").click();
-                //         else
-                //         {
-                //             $("#eb-mm-wm-a").click();
-                //             $("#url-visio-cal").removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
-                //         }
-                //     }
-                //     else {
-                //         $("#eb-mm-em-p").click();
-                //         $("#presential-cal-location").val(description);
-                //     }
-                // }
 
                 if (event.alarms !== undefined && event.alarms !== null)
                 {

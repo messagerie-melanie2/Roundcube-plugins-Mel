@@ -85,6 +85,8 @@ $labels["webconf_round_help"] = "Affiche ou cache la barre d'outil";
 
 $labels["saloon"] = "Salon";
 $labels["webconf_saloon_name_error"] = "Le nom du salon doit faire au moins 10 caractères avec au moins 3 chiffres. Alphanumérique seulement.";
+$labels["webconf_saloon_incorrect_format_number"] = 'Il doit y avoir au moins 3 chiffres dans le nom du salon !';
+$labels["webconf_saloon_incorrect_format"] = 'Alphanumérique seulement !';
 $labels["attach_to"] = "Rattacher à";
 $labels["a_workspace"] = "un espace de travail";
 $labels["choose"] = "Choisissez";
@@ -244,3 +246,8 @@ $labels['desc'] = 'Le plus récent';
 $labels['asc'] = 'Le plus ancien';
 $labels['hide_chat_popup_button'] = 'Cacher la bulle de discussion instantée';
 $labels['to_participate'] = 'Participer';
+
+$labels['title_needed'] = 'Vous devez mettre un titre !';
+$labels['startdate_needed'] = 'Vous devez mettre une date de début !';
+$labels['enddate_needed'] = 'Vous devez mettre une date de fin !';
+$labels['bad_format_date'] = 'Vous devez mettre une date au format jj/MM/yyyy HH:mm !';

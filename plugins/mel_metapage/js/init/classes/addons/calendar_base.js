@@ -1,5 +1,7 @@
 $(document).ready(() => {
 
+    const plugin_text = 'mel_metapage';
+
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
         
@@ -14,7 +16,7 @@ $(document).ready(() => {
             if ($("#edit-title").parent().find(".required-text").length > 0)
                 $("#edit-title").parent().find(".required-text").css("display", "");
             else
-                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>`);
+                $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*${rcmail.gettext('title_needed', plugin_text)}</span>`);
         
             $('li > a[href="#event-panel-summary"]').click();
         }
@@ -54,7 +56,7 @@ $(document).ready(() => {
             if ($(`#${text_id}`).length > 0)
                 $(`#${text_id}`).remove();
 
-            const text = date.start.val === "" ? "Vous devez mettre une date de début !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
+            const text = date.start.val === "" ? rcmail.gettext('startdate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
             parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
 
         }
@@ -71,7 +73,7 @@ $(document).ready(() => {
             if ($(`#${text_id}`).length > 0)
                 $(`#${text_id}`).remove();
 
-            const text = date.end.val === "" ? "Vous devez mettre une date de fin !" : "Vous devez mettre une date au format jj/MM/yyyy HH:mm !";
+            const text = date.end.val === "" ? rcmail.gettext('enddate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
             parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
 
         }
@@ -89,7 +91,7 @@ $(document).ready(() => {
             if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
             {
 
-                const text = val.length < 10 ? "Le nom du salon doit faire 10 caractères minimum !" : /^[0-9a-zA-Z]+$/.test(val) ? "Il doit y avoir au moins 3 chiffres dans le nom du salon !" : "Alphanumérique seulement !";
+                const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
                 //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
                 //$(".webconf-error-text").css("display", "").css("color", "red");
                 $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);

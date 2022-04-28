@@ -1,7 +1,7 @@
 <roundcube:include file="includes/layout.html" />
 <roundcube:include file="includes/menu.html" />
 
-<h1 class="voice"><roundcube:label name="workspaces" /></h1>
+<h1 class="voice"><roundcube:label name="mel_news.my_news" /></h1>
 
 <!-- contact details frame -->
 <div id="layout-content" class="wsp-content wsp-index" style="overflow: auto;" role="main">
@@ -24,8 +24,8 @@
                 <roundcube:label name="mel_news.news" />
             </h2>
             <div style="float: right;">
-                <button id="news-button-publish" class="btn btn-secondary mel-button no-button-margin disabled" disabled>Publier <span class="plus icon-mel-plus"></span></button>
-                <button id="news-button-publish-flux" class="btn btn-secondary mel-button no-button-margin disabled" disabled>Publier un flux <span class="plus icon-mel-plus"></span></button>
+                <button id="news-button-publish" class="btn btn-secondary mel-button no-button-margin disabled" disabled><roundcube:label name="mel_news.publish" /> <span class="plus icon-mel-plus"></span></button>
+                <button id="news-button-publish-flux" class="btn btn-secondary mel-button no-button-margin disabled" disabled><roundcube:label name="mel_news.publish_flux" /> <span class="plus icon-mel-plus"></span></button>
             </div>
             <div>
                 <roundcube:object name="dnnews" />
@@ -43,8 +43,8 @@
                 <div class="right">
                     <!-- <button id="news-button-sort" disabled class="disabled btn btn-secondary mel-button no-button-margin">Trier <span class="plus icofont-sort"></span></button> -->
                     <roundcube:object name="button_sort" />
-                    <button id="news-button-filter" style="margin:0 15px;" class="btn btn-secondary mel-button no-button-margin">Filtrer <span class="plus icofont-filter"></span></button>
-                    <button id="news-button-add" class=" btn btn-secondary mel-button no-button-margin">Ajouter <span class="plus icon-mel-plus"></span></button>
+                    <button id="news-button-filter" style="margin:0 15px;" class="btn btn-secondary mel-button no-button-margin"><roundcube:label name="mel_news.filter" /> <span class="plus icofont-filter"></span></button>
+                    <button id="news-button-add" class=" btn btn-secondary mel-button no-button-margin"><roundcube:label name="mel_news.add" /> <span class="plus icon-mel-plus"></span></button>
                 </div>
             </div>
             <div id="i-custom-news">
@@ -55,7 +55,7 @@
         <div id="i-custom-news-temp">
         </div>
         <center>
-            <button id="seemoreorless" class="mel-button"><rotomeca>Voir plus</rotomeca> <span class="plus icon-mel-chevron-down"></span></button>
+            <button id="seemoreorless" class="mel-button"><rotomeca><roundcube:label name="mel_news.see_more" /></rotomeca> <span class="plus icon-mel-chevron-down"></span></button>
         </center>
 
 	</div>

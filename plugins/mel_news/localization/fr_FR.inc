@@ -44,3 +44,15 @@ $labels["large"] = "Grand format";
 $labels["right_q"] = "Administrateur et publieur";
 $labels["right_a"] = "Administrateur";
 $labels["right_p"] = "Publieur";
+
+$labels['publish'] = 'Publier';
+$labels['publish_flux'] = 'Publier un flux';
+$labels['filter'] = 'Filtrer';
+$labels['add'] = 'Ajouter';
+$labels['see_more'] = 'Voir plus';
+
+$labels['twitter_navigator_error'] = 'Votre navigateur ne permet pas de récupérer les flux ';
+$labels['open_in_new_tab'] = 'Ouvrir dans un nouvel onglet';
+
+$labels['create_publish'] = 'Créer une publication';
+$labels['edit'] = 'Modifier';

@@ -2,6 +2,12 @@ $(document).ready(async () => {
 
     /**
      * @constant
+     * Plugin qui contient la localisation des textes
+     */
+    const plugin_text = 'mel_news';
+
+    /**
+     * @constant
      * URL du site web
      */
     const news_contact_url = window.location.origin + window.location.pathname;
@@ -99,7 +105,7 @@ $(document).ready(async () => {
         script.onerror = function(e, a, b) {
             if (setTwitterSrc.first === undefined)
             {
-                rcmail.display_message("Votre navigateur ne permet pas de récupérer les flux twitter", "error");
+                rcmail.display_message(rcmail.gettext('twitter_navigator_error', plugin_text), "error");
                 setTwitterSrc.first = false;
             }
 
@@ -110,7 +116,7 @@ $(document).ready(async () => {
                 {
                     element.$news.find(".square-contents .headlines-title").css("display", "block").html(`Twitter de ${element.id}`);
                     element.$news.find(".square-contents .headlines-contents").css("display", "block").html(
-                        `<a href="https://twitter.com/${element.id}" target="_blank">Ouvrir dans un nouvel onglet <span class="icon-mel-external"></span></a>`
+                        `<a href="https://twitter.com/${element.id}" target="_blank">${rcmail.gettext('open_in_new_tab', plugin_text)} <span class="icon-mel-external"></span></a>`
                     );
                     element.$news.find(".square-contents").css("padding", "30px");
                 }
@@ -143,8 +149,8 @@ $(document).ready(async () => {
             const _GlobalModal = this.isSettings() ? parent.GlobalModal : GlobalModal;
 
             let config = new _GlobalModalConfig();
-            config.title = 'Chargement...';
-            config.content = `<center><span class="spinner-grow"><span class="sr-only">Chargement....</span></span></center>`;
+            config.title = rcmail.gettext('loading');
+            config.content = `<center><span class="spinner-grow"><span class="sr-only">${rcmail.gettext('loading')}</span></span></center>`;
             config.footer = "";
             this.modal = new _GlobalModal("globalModal", config);
             this.symbols = {
@@ -223,8 +229,8 @@ $(document).ready(async () => {
             }
 
             //Titre de la modale
-            if (id === null) this.modal.editTitle("Créer une publication");
-            else this.modal.editTitle(`Modifier "${news.title}"`);
+            if (id === null) this.modal.editTitle(rcmail.gettext('create_publish', plugin_text));
+            else this.modal.editTitle(`${rcmail.gettext('edit', plugin_text)} "${news.title}"`);
 
             //Si on modifie une vrai news
             if (id !== null && id !== "generated-tmp-id")

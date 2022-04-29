@@ -244,10 +244,10 @@ $(document).ready(() => {
                         $("#layout-list").removeClass("initial");
 
                         //On réduit la recherche au besoin
-                        $("#mailsearchlist").addClass("hoverable").on("mouseover", () => {
+                        $("#mailsearchlist").addClass("hoverable").on("mouseover focusin", () => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
-                        }).on("mouseleave", () => {
+                        }).on("mouseleave focusout", () => {
 
                             if (document.activeElement === $("#mailsearchform")[0])
                                 return;

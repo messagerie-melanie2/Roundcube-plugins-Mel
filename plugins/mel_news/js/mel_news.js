@@ -1744,7 +1744,7 @@ $(document).ready(async () => {
                                                 });
                                                 a();
                                             }));
-                                            enum_news = enum_news.where(x => x.type.includes('ou='));
+                                            enum_news = enum_news.where(x => !x.type.includes('ou='));
                                             break;
 
                                         case "customs": 
@@ -1754,7 +1754,7 @@ $(document).ready(async () => {
                                                 });
                                                 a();
                                             }));
-                                            enum_news = enum_news.where(x => x.type === "twitter" || x.type === 'intranet');
+                                            enum_news = enum_news.where(x => x.type !== "twitter" && x.type !== 'intranet');
                                             break;
                                     
                                         default:

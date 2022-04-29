@@ -1940,25 +1940,25 @@ else {
                 return;
             }
 
-            NewsPopup.fabric().drawChoice("Que souhaitez-vous faire ?", 
+            NewsPopup.fabric().drawChoice(rcmail.gettext('draw_choice_title', plugin_text), 
             {
                 icon:"icon-mel-pencil",
-                title:"Modifier le flux",
+                title:rcmail.gettext('edit_flux', plugin_text),
                 action:() => {
                     rcmail.command('news.edit.action', x)
                 }
             },
             {
                 icon:"icon-mel-trash",
-                title:"Supprimer le flux",
+                title:rcmail.gettext('delete_flux', plugin_text),
                 action:() => {
                     let text;
 
                     if (mode === modes.all && $(x).parent().parent().parent().data("type") === MelNews.type.intranet)
                     {
-                        text = "Attention, vous allez supprimer toutes les vignettes lié à ce flux, êtes-vous sûr de votre action ?";
+                        text = rcmail.gettext('delete_flux_warning_all_intra', plugin_text);
                     }
-                    else text = "Attention, vous allez supprimer ce flux, êtes-vous sûr de votre action ?";
+                    else text = rcmail.gettext('delete_flux_warning', plugin_text);
 
                     if (confirm(text))
                     {
@@ -2020,7 +2020,7 @@ else {
             initial = false;
             mel_metapage.Storage.set("news_last_day_refresh", moment());
             rcmail.set_busy(true);
-            rcmail.display_message("Mise à jours des actualités....", "loading");
+            rcmail.display_message(rcmail.gettext('update_news', plugin_text), "loading");
         }
 
         MelCustomNews.CreateAndSetup(initial).then(() => {
@@ -2028,7 +2028,7 @@ else {
             {
                 rcmail.set_busy(false);
                 rcmail.clear_messages();
-                rcmail.display_message("Actualités mises à jours avec succès !", "confirmation");
+                rcmail.display_message(rcmail.gettext('new_successfuly_updated', plugin_text), "confirmation");
             }
 
             if (Enumerable.from(MelCustomNews.allCustomNews).any(x => x.type === MelNews.type.twitter))
@@ -2180,7 +2180,7 @@ else {
             }),
             MelCustomNews.Reorder()]).then(() => {
                 if (!ok)
-                    rcmail.display_message("Une erreur est survenue lors du triage ! Êtes-vous connectez à internet ?", "error");
+                    rcmail.display_message(rcmail.gettext('error_reorder', plugin_text), "error");
             })
         });
 
@@ -2221,7 +2221,7 @@ else {
                         if ($(e).hasClass("vignette-arrows"))
                             return;
 
-                        $(e).css("cursor", "pointer").attr("title", "Ouvrir dans un nouvel onglet");
+                        $(e).css("cursor", "pointer").attr("title", rcmail.gettext('open_in_new_tab', plugin_text));
                     });
                 }
             }

@@ -89,7 +89,7 @@ $labels['published_at'] = 'Publier le';
 $labels['confirmation'] = 'Confirmer';
 $labels['publishing'] = 'Publication...';
 
-$labels['personal_create_title'] = 'Quel type d'information ajouter ? (étape 1/2)';
+$labels['personal_create_title'] = "Quel type d'information ajouter ? (étape 1/2)";
 $labels['intranet_website'] = 'Site intranet';
 $labels['intranet_websites'] = 'Sites intranet';
 $labels['twitter_account'] = 'Compte twitter'; 
@@ -100,12 +100,12 @@ $labels['large_format'] = 'Grand format';
 
 $labels['intra_edit_alert'] = 'Toutes les vignettes liés à cet adresse seront impactés !';
 
-$labels['personal_add_intranet_title'] = 'Ajouter les informations d'un site intranet (étape 2/2)';
-$labels['personal_edit_intranet_title'] = 'Modifier les informations d'un site intranet';
+$labels['personal_add_intranet_title'] = "Ajouter les informations d'un site intranet (étape 2/2)";
+$labels['personal_edit_intranet_title'] = "Modifier les informations d'un site intranet";
 $labels['personal_add_twitter_title'] = 'Ajouter un fil Twitter (étape 2/2)';
 $labels['personal_edit_twitter_title'] = 'Modifier un fil Twitter';
 
-$labels['enter_twitter_account'] = 'Entrez l'identifiant du compte Twitter à afficher';
+$labels['enter_twitter_account'] = "Entrez l'identifiant du compte Twitter à afficher";
 $labels['enter_twitter_account_placeholder'] = 'NomDuCompte';
 
 $labels['choose_block_format'] = 'Choisir le format du bloc';
@@ -122,3 +122,11 @@ $labels['headlines'] = 'Fils d\'informations';
 $labels['your_personal'] = 'Vos ajouts';
 
 $labels['delete_confirmation'] = 'Êtes-vous sûr de vouloir supprimer ce flux ?';
+$labels['draw_choice_title'] = 'Que souhaitez-vous faire ?';
+$labels['edit_flux'] = 'Modifier le flux';
+$labels['delete_flux'] = 'Supprimer le flux';
+$labels['delete_flux_warning_all_intra'] = 'Attention, vous allez supprimer toutes les vignettes lié à ce flux, êtes-vous sûr de votre action ?';
+$labels['delete_flux_warning'] = 'Attention, vous allez supprimer ce flux, êtes-vous sûr de votre action ?';
+$labels['update_news'] = 'Mise à jours des actualités....';
+$labels['new_successfuly_updated'] = 'Actualités mises à jours avec succès !';
+$labels['error_reorder'] = 'Une erreur est survenue lors du triage ! Êtes-vous connectez à internet ?';

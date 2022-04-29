@@ -657,3 +657,14 @@ html.dark-mode #mail-search-border {
 html.dark-mode #searchmenu {
  background-color: #323f4b !important;
 }
+
+.button.icon.toolbar-button.refresh:focus {
+  border-left: 2px solid #80D5C6 !important;
+  background-color: #2C3054 !important;
+  color: #fff !important;
+ 
+}
+
+html.dark-mode .button.icon.toolbar-button.refresh:focus {
+  color: #c7dfff !important;
+}

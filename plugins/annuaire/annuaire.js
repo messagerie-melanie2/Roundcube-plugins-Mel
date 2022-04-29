@@ -163,7 +163,7 @@ window.rcmail
 
 				});
 
-				let $filter = $('<a href="#search-filter" class="button options" title="Options" tabindex="0" data-target="searchmenu" id="rcmbtn133" role="button"><span class="inner">Options</span></a>')
+				let $filter = $('<a href="#search-filter" class="button options" title="Filtre" tabindex="0" data-target="searchmenu" id="rcmbtn133" role="button"><span class="inner">Options</span></a>')
 				.click(() => {
 					$('#annuaireselector').mousedown();
 				});

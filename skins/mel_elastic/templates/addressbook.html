@@ -5,38 +5,14 @@
 
 <!-- sources/groups list -->
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="directorylist-header">
-	<div class="header">
+	<div class="header" style="height: auto;">
 		 <a id="button-back-adressbook2" class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
 		<!--<span id="directorylist-header" class="header-title"><roundcube:label name="groups" /></span>
 		<roundcube:button name="groupoptions" type="link" title="arialabelabookgroupoptions" label="actions"
-			class="button icon sidebar-menu" innerClass="inner" data-popup="groupoptions-menu" /> -->
-			<div class="searchgroup" id="#mainscreen.annuaire">
-				<center><span>Rechercher un contact</span></center>
-				<!-- <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
-					<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
-					label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
-				</div> -->
-				<roundcube:object name="searchform" id="searchform" wrapper="searchbar menu"
-				label="contactsearchform" buttontitle="findcontacts" options="searchmenu" ariatag="h2" />
-			</div>
-			
+			class="button icon sidebar-menu" innerClass="inner" data-popup="groupoptions-menu" /> -->	
+			<span style="font-size: larger">Annuaires</span>		
 	</div>
-	<separate></separate>
-	<div id="searchmenu" class="hidden searchoptions scroller propform formcontainer" aria-labelledby="aria-label-search-menu">
-		<h3 id="aria-label-search-menu" class="voice"><roundcube:label name="searchmod" /></h3>
-		<div class="formcontent">
-			<ul class="proplist">
-				<li><label><input type="checkbox" name="s_mods[]" value="name" /><roundcube:label name="name" /></label></li>
-				<li><label><input type="checkbox" name="s_mods[]" value="firstname" /><roundcube:label name="firstname" /></label></li>
-				<li><label><input type="checkbox" name="s_mods[]" value="surname" /><roundcube:label name="surname" /></label></li>
-				<li><label><input type="checkbox" name="s_mods[]" value="email" /><roundcube:label name="email" /></label></li>
-				<li><label><input type="checkbox" name="s_mods[]" value="*" /><roundcube:label name="allfields" /></label></li>
-			</ul>
-		</div>
-		<div class="formbuttons">
-			<button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')"><roundcube:label name="search" /></button>
-		</div>
-	</div>
+	<separate style="margin-top:5px"></separate>
 	<div class="scroller">
 		<roundcube:object name="directorylist" id="directorylist" class="treelist listing iconized" />
 		<h3 class="voice"><roundcube:label name="savedsearches" /></h3>
@@ -57,7 +33,16 @@
 			<roundcube:container name="listcontrols" id="listcontrols" />
 		</div>
 		<a class="button hidden icon toolbar-menu-button" href="#list-menu"><span class="inner"><roundcube:label name="menu" /></span></a>
-		<div class="filtergroup" style="width:100%">
+		<div class="searchgroup" id="#mainscreen.annuaire">
+			<center><span>Rechercher un contact</span></center>
+			<!-- <div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
+				<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
+				label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
+			</div> -->
+			<roundcube:object name="searchform" id="searchform" wrapper="searchbar menu"
+			label="contactsearchform" buttontitle="findcontacts" options="searchmenu" ariatag="h2" />
+		</div>
+		<!-- <div class="filtergroup" style="width:100%">
 			<center><span>Filtrer par</span></center>
 			<div class="row">
 				<div class="col-1"></div>
@@ -65,6 +50,21 @@
 				</select></div>
 				<div class="col-1"></div>
 			</div>
+		</div> -->
+	</div>
+	<div id="searchmenu" class="hidden searchoptions scroller propform formcontainer" aria-labelledby="aria-label-search-menu">
+		<h3 id="aria-label-search-menu" class="voice"><roundcube:label name="searchmod" /></h3>
+		<div class="formcontent">
+			<ul class="proplist">
+				<li><label><input type="checkbox" name="s_mods[]" value="name" /><roundcube:label name="name" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="firstname" /><roundcube:label name="firstname" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="surname" /><roundcube:label name="surname" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="email" /><roundcube:label name="email" /></label></li>
+				<li><label><input type="checkbox" name="s_mods[]" value="*" /><roundcube:label name="allfields" /></label></li>
+			</ul>
+		</div>
+		<div class="formbuttons">
+			<button type="button" class="btn btn-primary icon search" onclick="return rcmail.command('search')"><roundcube:label name="search" /></button>
 		</div>
 	</div>
 	<separate></separate>

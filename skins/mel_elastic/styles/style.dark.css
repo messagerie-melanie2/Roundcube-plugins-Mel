@@ -1013,3 +1013,8 @@ a.rcmContactAddress {
 html.dark-mode .mel-block-list {
 	background-color: #323F4B;
 }
+
+html.dark-mode #quicksearchbar .button.options.annuaire-filter-selected
+{
+    background-color:green;
+}

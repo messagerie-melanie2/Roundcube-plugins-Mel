@@ -149,6 +149,29 @@ window.rcmail
 					$('#mainscreen-annuaire #quicksearchbar form').submit();
 				});
 
+				$('#annuaireselector').on('change', () => {
+					window.annuaireSelector = $('#annuaireselector').val();
+					rcmail.annuaire_filter_list();
+
+					if (window.annuaireSelector !== 'all')
+					{
+						$('#quicksearchbar .button.options').addClass('annuaire-filter-selected');
+					}
+					else {
+						$('#quicksearchbar .button.options').removeClass('annuaire-filter-selected');
+					}
+
+				});
+
+				let $filter = $('<a href="#search-filter" class="button options" title="Options" tabindex="0" data-target="searchmenu" id="rcmbtn133" role="button"><span class="inner">Options</span></a>')
+				.click(() => {
+					$('#annuaireselector').mousedown();
+				});
+
+				$('.filtergroup').appendTo($('#quicksearchbar .button.reset'));
+
+				$('#quicksearchbar .menu').append($filter);
+
 			}
 			
 			// init treelist widget
@@ -223,6 +246,9 @@ window.rcmail
 				        	$('#annuaire-list li.added').removeClass('added');
 						});
 			}
+
+
+
 		});
 
 // Node gototree

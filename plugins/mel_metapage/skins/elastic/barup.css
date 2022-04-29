@@ -618,3 +618,11 @@ html.layout-phone #barup-wrapper-row
 {
     margin-right: 0!important;
 }
+
+html.layout-large .show-normal-and-inf{
+    display: none;
+}
+
+html.layout-large .show-normal-and-inf.important{
+    display: none!important;
+}

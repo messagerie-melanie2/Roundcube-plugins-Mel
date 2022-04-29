@@ -5,28 +5,16 @@
 
 <!-- sources/groups list -->
 <div id="layout-sidebar" class="listbox" role="navigation" aria-labelledby="directorylist-header">
-	<div class="header">
+	<div class="header" style="height: auto;">
 		<a id="button-back-adressbook2" class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
 		<!-- <a class="button icon back-list-button" href="#back"><span class="inner"><roundcube:label name="back" /></span></a>
 		<span id="directorylist-header" class="header-title"><roundcube:label name="groups" /></span>
 		<roundcube:button name="groupoptions" type="link" title="arialabelabookgroupoptions" label="actions"
 			class="button icon sidebar-menu" innerClass="inner" data-popup="groupoptions-menu" /> -->
 		<!-- <roundcube:object name="searchform" id="quicksearchbox" /> -->
-
-
-
-		<div class="searchgroup" id="mainscreen-annuaire">
-			<center><span>Rechercher un contact</span></center>
-			<div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
-				<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
-				label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
-			</div>
-		</div>
-
-
-		
+		<span style="font-size: larger">Annuaires</span>		
 	</div>
-	<separate></separate>
+	<separate style="margin-top:5px"></separate>
 	<div class="scroller">
 		<roundcube:object name="directorylist" id="directorylist" class="treelist listing iconized" />
 		<h3 class="voice"><roundcube:label name="savedsearches" /></h3>
@@ -39,23 +27,33 @@
 <div id="layout-list" class="listbox selected" aria-labelledby="aria-label-contactslist">
 	<div class="header">
 		<a id="button-back-adressbook" class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="groups" /></span></a>
-		<div class="filtergroup" style="width:100%">
-			<center><span>Filtrer par</span></center>
-			<div class="row">
-				<div class="col-1"></div>
-				<div class="col-10"><select id="annuaireselector" class="form-control">
-					<option value="all" class="all selected" role="radio" aria-checked="true" aria-labelledby="aria-radio-all"><a href="#all" id="aria-radio-all"><span class="inner"><roundcube:label name="annuaire.all" /></span></a></li>
-					<option value="person" class="persons" role="radio" aria-checked="false" aria-labelledby="aria-radio-persons"><a href="#person" id="aria-radio-persons"><span class="inner"><roundcube:label name="annuaire.persons" /></span></a></li>
-					<option value="list" class="groups" role="radio" aria-checked="false" aria-labelledby="aria-radio-groups"><a href="#list" id="aria-radio-groups"><span class="inner"><roundcube:label name="annuaire.groups" /></span></a></li>
-					<option value="service" class="services" role="radio" aria-checked="false" aria-labelledby="aria-radio-services"><a href="#service" id="aria-radio-services"><span class="inner"><roundcube:label name="annuaire.services" /></span></a></li>
-					<option value="function" class="functions" role="radio" aria-checked="false" aria-labelledby="aria-radio-functions"><a href="#function" id="aria-radio-functions"><span class="inner"><roundcube:label name="annuaire.functions" /></span></a></li>
-					<option value="unit" class="units" role="radio" aria-checked="false" aria-labelledby="aria-radio-units"><a href="#unit" id="aria-radio-units"><span class="inner"><roundcube:label name="annuaire.units" /></span></a></li>
-					<option value="resource"class="resources" role="radio" aria-checked="false" aria-labelledby="aria-radio-resources"><a href="#resource" id="aria-radio-resources"><span class="inner"><roundcube:label name="annuaire.resources" /></span></a></li>
-					<option value="application" class="applications" role="radio" aria-checked="false" aria-labelledby="aria-radio-applications"><a href="#application" id="aria-radio-applications"><span class="inner"><roundcube:label name="annuaire.applications" /></span></a></li>
-				</select></div>
-				<div class="col-1"></div>
+		<div class="searchgroup" id="mainscreen-annuaire">
+			<center><span>Rechercher un contact</span></center>
+			<div id="quicksearchbar" class="searchbox" role="search" aria-labelledby="aria-label-searchform">
+				<roundcube:object name="searchform" id="quicksearchbox" wrapper="searchbar menu"
+				label="contactsearchform" buttontitle="findcontacts" ariatag="h2" />
+
+				<div class="filtergroup sr-only" style="width:100%">
+					<center><span>Filtrer par</span></center>
+					<div class="row">
+						<div class="col-1"></div>
+						<div class="col-10"><select id="annuaireselector" class="form-control">
+							<option value="all" class="all selected" role="radio" aria-checked="true" aria-labelledby="aria-radio-all"><a href="#all" id="aria-radio-all"><span class="inner"><roundcube:label name="annuaire.all" /></span></a></li>
+							<option value="person" class="persons" role="radio" aria-checked="false" aria-labelledby="aria-radio-persons"><a href="#person" id="aria-radio-persons"><span class="inner"><roundcube:label name="annuaire.persons" /></span></a></li>
+							<option value="list" class="groups" role="radio" aria-checked="false" aria-labelledby="aria-radio-groups"><a href="#list" id="aria-radio-groups"><span class="inner"><roundcube:label name="annuaire.groups" /></span></a></li>
+							<option value="service" class="services" role="radio" aria-checked="false" aria-labelledby="aria-radio-services"><a href="#service" id="aria-radio-services"><span class="inner"><roundcube:label name="annuaire.services" /></span></a></li>
+							<option value="function" class="functions" role="radio" aria-checked="false" aria-labelledby="aria-radio-functions"><a href="#function" id="aria-radio-functions"><span class="inner"><roundcube:label name="annuaire.functions" /></span></a></li>
+							<option value="unit" class="units" role="radio" aria-checked="false" aria-labelledby="aria-radio-units"><a href="#unit" id="aria-radio-units"><span class="inner"><roundcube:label name="annuaire.units" /></span></a></li>
+							<option value="resource"class="resources" role="radio" aria-checked="false" aria-labelledby="aria-radio-resources"><a href="#resource" id="aria-radio-resources"><span class="inner"><roundcube:label name="annuaire.resources" /></span></a></li>
+							<option value="application" class="applications" role="radio" aria-checked="false" aria-labelledby="aria-radio-applications"><a href="#application" id="aria-radio-applications"><span class="inner"><roundcube:label name="annuaire.applications" /></span></a></li>
+						</select></div>
+						<div class="col-1"></div>
+					</div>
+				</div>
+
 			</div>
 		</div>
+
 		<!-- <a class="button icon task-menu-button" href="#menu"><span class="inner"><roundcube:label name="menu" /></span></a>
 		<a class="button icon back-sidebar-button folders" href="#sidebar"><span class="inner"><roundcube:label name="groups" /></span></a>
 		<roundcube:object name="addresslisttitle" label="contacts" tag="span" class="header-title" />

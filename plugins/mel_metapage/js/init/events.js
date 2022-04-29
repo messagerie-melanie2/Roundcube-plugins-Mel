@@ -230,8 +230,18 @@ if (rcmail && window.mel_metapage)
     {
         rcmail.addEventListener("calendar.renderEvent", (args) => {
 
-            if ($("html").hasClass("mwsp"))
-                return args.eventDatas.categories !== undefined && args.eventDatas.categories[0] === `ws#${mel_metapage.Storage.get("current_wsp")}`;
+            if ($("html").hasClass("mwsp")) return args.eventDatas.categories !== undefined && args.eventDatas.categories[0] === `ws#${mel_metapage.Storage.get("current_wsp")}`;
+
+            if (args.eventDatas.allDay === true && args.eventDatas.sensitivity && args.eventDatas.sensitivity != 'public')
+            {
+                let $title = args.element.find('.fc-content');
+
+                // if (args.eventDatas.sensitivity && args.eventDatas.sensitivity != 'public')
+                // {
+                    $title.prepend('<i class="fc-icon-sensitive"></i>').addClass('sensible');
+                //}
+            }
+
 
             return true;
 
@@ -407,6 +417,25 @@ if (rcmail && window.mel_metapage)
             }
 
             html += `<div class=row style="max-width:100%;${(event.description === undefined || event.description === "" ? "margin-top:15px;" : "")}"><div class="col-12 mel-calendar-col"><span class="mel-calendar-left-element icon-mel-user mel-cal-icon"></span><div class="mel-calendar-right-element" style="">${attendeesHtml}</div></div></div>`;
+            html += `
+            <div class="attendees-cout">${tmp.length - 1} Invité${(tmp.length - 1 > 1 ? 's' : '')}</div>
+         <div class="attendees-details">
+            `;
+
+            tmp = Enumerable.from(tmp).groupBy(x => x.status).where(x => x.key() !== undefined).toJsonDictionnary(x => x.key(), x => x.getSource());
+
+            for (const key in tmp) {
+                if (Object.hasOwnProperty.call(tmp, key)) {
+                    const element = tmp[key];
+                    
+                    if (!!element && element.length > 0)
+                    {
+                        html += `${element.length} ${rcmail.gettext(`itip${key.toLowerCase()}`, 'libcalendaring')}, `;
+                    }
+                }
+            }
+
+            html = `${html.slice(0, html.length-2)} </div>`;
         
             //Affichage du status
             try {

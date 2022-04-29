@@ -702,3 +702,31 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
 {
     display: none!important;
 }
+
+.fc .fc-event .fc-content.sensible .fc-icon-sensitive
+{
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: .25rem;
+}
+
+.fc .fc-event .fc-content.sensible .fc-icon-sensitive::before {
+	content: "\f023";
+    /* font-size: 1.25em; */
+    display: block;
+    /* float: left; */
+    margin: 0 .25rem 0 0;
+    margin-top: 0px;
+    /* width: 1.18em;
+    height: 1em; */
+    font-family: 'Icons';
+    font-style: normal;
+    font-weight: 900;
+    text-decoration: inherit;
+    text-align: center;
+    speak: none;
+    font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}

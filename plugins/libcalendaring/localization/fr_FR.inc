@@ -98,7 +98,8 @@ $labels['itipaccepted'] = 'Accepter';
 $labels['itiptentative'] = 'Peut-être';
 $labels['itipdeclined'] = 'Refuser';
 $labels['itipdelegated'] = 'Déléguer';
-$labels['itipneeds-action'] = 'Reporter';
+// Pamela correction de reporter à 'en attente'
+$labels['itipneeds-action'] = 'En attente';
 $labels['itipcomment'] = 'Votre réponse';
 $labels['itipeditresponse'] = 'Saisissez votre réponse';
 $labels['itipsendercomment'] = 'Commentaire des expéditeurs';

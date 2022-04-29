@@ -1764,7 +1764,8 @@ a.roadmap::before
     content: "\eedc"!important;
 }
 
-.layout-hidden{
+.layout-hidden,
+html.layout-normal .show-normal.layout-hidden{
     display: none!important;
 }
 

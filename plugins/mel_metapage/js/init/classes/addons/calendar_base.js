@@ -5,117 +5,25 @@ $(document).ready(() => {
 
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
-        
-    // window.rcube_calendar_ui.continue = function()
+
+    // window.rcube_calendar_ui.back = function()
     // {
-    //     let canContinue = true;
-
-    //     if ($("#edit-title").val() === "")
-    //     {
-    //         canContinue = false;
-    //         $("#edit-title").focus();
-    //         if ($("#edit-title").parent().find(".required-text").length > 0)
-    //             $("#edit-title").parent().find(".required-text").css("display", "");
-    //         else
-    //             $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*${rcmail.gettext('title_needed', plugin_text)}</span>`);
-        
-    //         $('li > a[href="#event-panel-summary"]').click();
-    //     }
-    //     else {
-    //         if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
-    //             $(".have-workspace").css("display", "");
-    //         else
-    //             $(".have-workspace").css("display", "none");
-        
-    //         if ($("#edit-title").parent().find(".required-text").length > 0)
-    //             $("#edit-title").parent().find(".required-text").remove();
-    //     }
-
-    //     let date = {
-    //         start:{
-    //             querry:$("#mel-metapage-added-input-mel-start-datetime"),
-    //             val:null,
-    //             text_id:"edit-start-error-text"
-    //         },
-    //         end:{
-    //             querry:$("#mel-metapage-added-input-mel-end-datetime"),
-    //             val:null,
-    //             text_id:"edit-end-error-text"
-    //         }
-    //     }
-
-    //     date.start.val = date.start.querry.val();
-    //     date.end.val = date.end.querry.val();
-
-    //     if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
-    //     {
-    //         canContinue = false;
-    //         date.start.querry.focus();
-
-    //         const text_id = date.start.text_id;
-    //         let parent = date.start.querry.parent();
-    //         if ($(`#${text_id}`).length > 0)
-    //             $(`#${text_id}`).remove();
-
-    //         const text = date.start.val === "" ? rcmail.gettext('startdate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
-    //         parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
-    //     }
-    //     else if ($(`#${date.start.text_id}`).length > 0)
-    //         $(`#${date.start.text_id}`).remove();
-
-    //     if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
-    //     {
-    //         canContinue = false;
-    //         date.end.querry.focus();
-
-    //         const text_id = date.end.text_id;
-    //         let parent = date.end.querry.parent();
-    //         if ($(`#${text_id}`).length > 0)
-    //             $(`#${text_id}`).remove();
-
-    //         const text = date.end.val === "" ? rcmail.gettext('enddate_needed', plugin_text) : rcmail.gettext('bad_format_date', plugin_text);
-    //         parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-
-    //     }
-    //     else if ($(`#${date.end.text_id}`).length > 0)
-    //         $(`#${date.end.text_id}`).remove();
-
-
-    //     if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
-    //     {
-    //         const text_id = "key-error-cal";
-    //         let val = $("#key-visio-cal").val();
-
-    //         $(`#${text_id}`).remove();
-
-    //         if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
-    //         {
-
-    //             const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
-    //             //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
-    //             //$(".webconf-error-text").css("display", "").css("color", "red");
-    //             $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-    //             canContinue = false;
-    //         }
-    //     }
-
-    //     if (canContinue)
-    //         $(".nav-link.nav-icon.attendees").click();
+    //     $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
     // }
 
-    window.rcube_calendar_ui.back = function()
-    {
-        $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
-    }
-
+    /**
+     * Sauvegarde l'évènement
+     * @returns {boolean} Faux si il y a des champs invalides
+     */
     rcube_calendar_ui.save = function()
     {
 
         let canContinue = true;
 
+        //Si l'évènement n'a pas de titre
         if ($("#edit-title").val() === "")
         {
+            //On se met sur le bon onglet, on focus le champs, puis on affiche le texte d'erreur.
             $('li > a[href="#event-panel-summary"]').click();
             canContinue = false;
             $("#edit-title").focus();
@@ -124,7 +32,9 @@ $(document).ready(() => {
             else
                 $("#edit-title").parent().append(`<span class="required-text" style="color:red;display:block">*${rcmail.gettext('title_needed', plugin_text)}</span>`);
         }
+        //Sinon, ok
         else {
+            //Suppression du message d'erreur
             if ($("#wsp-event-all-cal-mm").val() !== "#none" && $("#wsp-event-all-cal-mm").val() !== "")
                 $(".have-workspace").css("display", "");
             else
@@ -134,12 +44,17 @@ $(document).ready(() => {
                 $("#edit-title").parent().find(".required-text").remove();
         }
 
+        /**
+         * Données des dates
+         */
         let date = {
+            /**Date de début */
             start:{
                 querry:$("#mel-metapage-added-input-mel-start-datetime"),
                 val:null,
                 text_id:"edit-start-error-text"
             },
+            /**Date de fin */
             end:{
                 querry:$("#mel-metapage-added-input-mel-end-datetime"),
                 val:null,
@@ -150,14 +65,17 @@ $(document).ready(() => {
         date.start.val = date.start.querry.val();
         date.end.val = date.end.querry.val();
 
+        //Si la date de début n'est pas valide
         if (date.start.val === "" || !moment(date.start.val, "DD/MM/YYYY hh:mm")._isValid)
         {
+            //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur
             canContinue = false;
             $('li > a[href="#event-panel-summary"]').click();
             date.start.querry.focus();
 
             const text_id = date.start.text_id;
             let parent = date.start.querry.parent();
+
             if ($(`#${text_id}`).length > 0)
                 $(`#${text_id}`).remove();
 
@@ -165,11 +83,13 @@ $(document).ready(() => {
             parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
 
         }
-        else if ($(`#${date.start.text_id}`).length > 0)
-            $(`#${date.start.text_id}`).remove();
+        //Suppression du message d'erreur
+        else if ($(`#${date.start.text_id}`).length > 0) $(`#${date.start.text_id}`).remove();
 
+        //Si la date de fin est invalide
         if (date.end.val === "" || !moment(date.end.val, "DD/MM/YYYY hh:mm")._isValid)
         {
+            //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur
             $('li > a[href="#event-panel-summary"]').click();
             canContinue = false;
             date.end.querry.focus();
@@ -183,34 +103,36 @@ $(document).ready(() => {
             parent.append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
 
         }
-        else if ($(`#${date.end.text_id}`).length > 0)
-            $(`#${date.end.text_id}`).remove();
+        //Suppression du message d'erreur
+        else if ($(`#${date.end.text_id}`).length > 0) $(`#${date.end.text_id}`).remove();
 
-
+        //Si la visio de l'état est activée
         if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
         {
+            //On supprime le message d'erreur est on récupère les données.
             const text_id = "key-error-cal";
             let val = $("#key-visio-cal").val();
 
             $(`#${text_id}`).remove();
 
+            //Si l'url est invalide
             if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
-            {            
+            {      
+                //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur   
                 $('li > a[href="#event-panel-detail"]').click();
 
                 const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
-                //$("#webconf-enter").addClass("disalbled").attr("disabled", "disabled");
-                //$(".webconf-error-text").css("display", "").css("color", "red");
+                
                 $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
                 canContinue = false;
             }
         }
 
+        //Si il n'y a pas d'erreurs
         if (canContinue)
         {
+            //On sauvegarde l'évènement
             let querry = $("#eventedit").parent().parent().find(".ui-dialog-buttonset").find(".save.mainaction");
-            
-            //console.log("[rcube_calendar_ui.save]",querry);
 
             if (querry.length > 0)
                 querry.click();
@@ -230,8 +152,8 @@ $(document).ready(() => {
 
             return true;
         }
-        else
-            return false;
+        //Si erreur(s)
+        else return false;
         
     }
 
@@ -251,16 +173,30 @@ $(document).ready(() => {
         return event;
     };
 
+    /**
+     * Mélange un texte
+     * @param {Array<any>} array 
+     * @returns {string}
+     */
     window.rcube_calendar_ui.shuffle = function (array) {
         return mel_metapage.Functions._shuffle(array);
     };
 
+    /**
+     * Génère le nom de la room d'une visio
+     * @returns {string} Nom de la room
+     */
     window.rcube_calendar_ui.generateRoomName = function() {
         return mel_metapage.Functions.generateWebconfRoomName();
     };
 
+    /**
+     * Affiche la modale d'édition d'un évènement
+     * @param {JSON} event Event plugin calendar
+     */
     window.rcube_calendar_ui.edit = function(event)
     {
+        //Récupération de l'évènement mis en mémoire si l'évènement passé en paramètre est vide.
         if (event === "" && rcmail.env.event_prop !== undefined)
         {
             event = rcmail.env.event_prop;
@@ -273,10 +209,15 @@ $(document).ready(() => {
             else if (event.end === undefined)
                 event.end = moment().add(30, "m");
         }
-        //console.log("copy event", event, rcmail.env.event_prop);
-        //Shuffle array elements
+
+        //Initialisation des fonctions
         const shuffle = window.rcube_calendar_ui.shuffle;
         const generateRoomName = rcube_calendar_ui.generateRoomName;
+        /**
+         * Récupère une date "string" sous forme de "moment"
+         * @param {string} string Date 
+         * @returns {moment} Date
+         */
         const getDate = function(string)
         {
             string = string.split(" ");
@@ -285,6 +226,9 @@ $(document).ready(() => {
 
             return new moment(`${date[2]}-${date[1]}-${date[0]}T${time[0]}:${time[1]}:00`);
         };
+        /**
+         * Met à jour le champ de location
+         */
         const update_location = function()
         {
             if ($("#eb-mm-em-p")[0].checked)
@@ -299,13 +243,13 @@ $(document).ready(() => {
                 if ($("#eb-mm-wm-e")[0].checked)
                 {
                     let config = {
-                        _key:$("#key-visio-cal").val()//generateRoomName(),
+                        _key:$("#key-visio-cal").val()
                     };
+
                     if ($("#wsp-event-all-cal-mm").val() !== "#none")
                         config["_wsp"] = $("#wsp-event-all-cal-mm").val();
-                    // else
-                    //     config["_ariane"] = "@home";
-                    $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));//`${rcmail.env["webconf.base_url"]}/${$("#key-visio-cal").val()}`);
+
+                    $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));
                 }
                 else
                     $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
@@ -315,6 +259,7 @@ $(document).ready(() => {
                 $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
             }
         };
+        /**Met à jour le champs date */
         const update_date = () => {
             let val = $(".input-mel-datetime .input-mel.start").val().split(" ");
             $("#edit-startdate").val(val[0]);
@@ -323,13 +268,21 @@ $(document).ready(() => {
             $("#edit-enddate").val(val[0]);
             $("#edit-endtime").val(val[1]);
         };
+        /**
+         * Actions à faire lors du changement de date
+         * @param {*} date 
+         * @param {boolean} isEndDate 
+         * @param {boolean} doShow 
+         */
         let onChangeDateTime = (date, isEndDate = false, doShow = false) => {
+            //Empêche les erreurs d'affichages
             if (onChangeDateTime.from_start_do_show !== undefined)
             {
                 doShow = onChangeDateTime.from_start_do_show;
                 onChangeDateTime.from_start_do_show = undefined;
             }
 
+            //Initialisatoins des variables
             let bool;
             let querry = $(".input-mel-datetime .input-mel.end");
             const end_val = isEndDate ? moment(date) : getDate(querry.val());
@@ -337,6 +290,8 @@ $(document).ready(() => {
             const start_val = getDate(start_val_raw);
 
             const min_date = start_val_raw.split(' ')[0];
+
+            //L'heure de fin est changée lorsque la date de fin est identique à la date de début.
 
             if (onChangeDateTime.minDate !== min_date)
             {
@@ -370,9 +325,10 @@ $(document).ready(() => {
         };
         const format = "DD/MM/YYYY HH:mm";
         const have_created_callback = $("#eventedit").data("callbacks") === "ok";
+        //Création des actions
         if (!have_created_callback)
         {
-            //Update datetime
+            //Initialisation des champs dates
             $(".input-mel-datetime .input-mel.start").datetimepicker({
                 format: 'd/m/Y H:i',
                 lang:"fr",
@@ -403,6 +359,8 @@ $(document).ready(() => {
                 if (val.length > 1) $("#edit-endtime").val(val[1]);
                 else $("#edit-endtime").val('00:00');
             });
+
+            //Initalisation du bouton "Toute la journée"
             $("#edit-allday").on("click", (e) => {
                 e = e.target;
 
@@ -423,81 +381,64 @@ $(document).ready(() => {
                     onChangeDateTime(null, false, false);
                 }
             })
-            // $("#edit-allday").on("click", (e) => {
-            //     e = e.target;
-            //     let moment = getDate($(".input-mel-datetime .input-mel.start").val());
-            //     if (e.checked)
-            //     {
-            //         $(".input-mel-datetime .input-mel.start").addClass("disabled").attr("disabled", "disabled"); 
-            //         $(".input-mel-datetime .input-mel.end").addClass("disabled").attr("disabled", "disabled"); 
-            //         $(".input-mel-datetime .input-mel.start").val(moment.startOf("day").format(format));
-            //         $(".input-mel-datetime .input-mel.end").val(moment.endOf("day").format(format));
-            //         update_date();
-            //     }
-            //     else
-            //     {
-            //         $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-            //         $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-            //         update_date();
-            //     }
-            // })
-            //update locations
+
+            //Initialisation des localisations
+            //Actions à faire lors de l'appuie d'un bouton radio
             $(".form-check-input.event-mode").on("click", (e) => {
                 e = e.target;
                 $(".content.event-mode").css("display", "none");
                 $(`.${e.id}`).css("display", "");
                 update_location();
             });
+            //Action à faire lors de l'écriture du lieu
             $("#edit-location").on("change", () => {
                 update_location();
             });
+            //Actions à faire lors de l'appuie d'un bouton radio pour la séléction d'une webconf
             $("#eb-mm-wm-e").on("change", () => {
                 update_location();
-                //console.log($("#eb-mm-wm-e")[0].checked, "checked");
-                if (!$("#eb-mm-wm-e")[0].checked)
+
+                if (!$("#eb-mm-wm-e")[0].checked) //Visio custom
                 {
-                    $("#url-visio-cal").removeClass("hidden");//.removeClass("disabled").removeAttr("disabled");
+                    $("#url-visio-cal").removeClass("hidden");
                     $("#row-for-key-visio-cal").addClass("hidden");
                 }
-                else
+                else //Visio de l'état
                 {
-                    $("#url-visio-cal").addClass("hidden");//addClass("disabled").attr("disabled", "disabled");
+                    $("#url-visio-cal").addClass("hidden");
                     $("#row-for-key-visio-cal").removeClass("hidden");
                 }
             });
             $("#eb-mm-wm-a").on("change", () => {
                 update_location();
-                //console.log($("#eb-mm-wm-e")[0].checked, "checked");
-                // if (!$("#eb-mm-wm-e")[0].checked)
-                //     $("#url-visio-cal").removeClass("disabled").removeAttr("disabled");
-                // else
-                //     $("#url-visio-cal").addClass("disabled").attr("disabled", "disabled");
-                if (!$("#eb-mm-wm-e")[0].checked)
+
+                if (!$("#eb-mm-wm-e")[0].checked) //Visio custom
                 {
-                    $("#url-visio-cal").removeClass("hidden");//.removeClass("disabled").removeAttr("disabled");
+                    $("#url-visio-cal").removeClass("hidden");
                     $("#row-for-key-visio-cal").addClass("hidden");
                 }
-                else
+                else //Visio de l'état
                 {
-                    $("#url-visio-cal").addClass("hidden");//addClass("disabled").attr("disabled", "disabled");
+                    $("#url-visio-cal").addClass("hidden");
                     $("#row-for-key-visio-cal").removeClass("hidden");
                 }
             });
+            //Maj de l'url d'un visio custom
             $("#url-visio-cal").on("change", () => {
                 update_location();
             });
+            //Maj de la localisation
             $("#presential-cal-location").on("change", () => {
                 update_location();
             });
-            $("#tel-input-cal-location").on("change", () => {
-                update_location();
-            });
+            //Maj du tel
             $("#tel-input-cal-location").on("change", () => {
                 update_location();
             });
             $("#num-audio-input-cal-location").on("change", () => {
                 update_location();
             });
+            //Maj de l'url de la visio de l'état
             $("#key-visio-cal").on("input", () => {
                 let val = $("#key-visio-cal").val().toUpperCase();
                 if (val.includes(rcmail.env["webconf.base_url"].toUpperCase()))
@@ -580,12 +521,15 @@ $(document).ready(() => {
         setTimeout(() => {
             $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
             $("#edit-wsp").removeClass("disabled").removeAttr("disabled");
+            /**
+             * Met à jours la localisation via un évènement déjà existant.
+             * @param {string} description Nouvelle localisation
+             */
             const update_desc = function (description) 
             {
-                //$("#key-visio-cal").val(generateRoomName());
-
                 if (description !== undefined && description !== "")
                 {
+                    //Si c'est un localisation audio
                     if (description.includes(`${audio_url} : `))
                     {
                         $("#eb-mm-em-a")[0].click();
@@ -593,25 +537,26 @@ $(document).ready(() => {
                         $("#tel-input-cal-location").val(audio[0]);
                         $("#num-audio-input-cal-location").val(audio[1]);
                     }
+                    //Si c'est un localisation visio
                     else if (description.includes("#visio") || description.includes("@visio") || description.includes('public/webconf'))
                     {
                         const isRc = description.includes("#visio") || description.includes('public/webconf');
                         $("#eb-mm-em-v").click();
-                        if (isRc)
+                        if (isRc) //Visio de l'état
                         {
                             $("#eb-mm-wm-e").click();
                             $("#url-visio-cal").addClass("hidden");
                             $("#row-for-key-visio-cal").removeClass("hidden");
                             $("#key-visio-cal").val(description.split("_key=")[1].split("&")[0]);
                         }
-                        else
+                        else // Visio custom
                         {
                             $("#eb-mm-wm-a").click();
                             $("#url-visio-cal").removeClass("hidden").val(description.replace("@visio:", ""));
                             $("#row-for-key-visio-cal").addClass("hidden");
-                            //.removeAttr("disabled").removeClass("disabled").val(description.replace("@visio:", ""));
                         }
                     }
+                    //Si c'est une visio de l'état
                     else if (description.includes(rcmail.env["webconf.base_url"]))
                     {
                         $("#eb-mm-em-v").click();
@@ -620,6 +565,7 @@ $(document).ready(() => {
                         $("#row-for-key-visio-cal").removeClass("hidden");
                         $("#key-visio-cal").val(mel_metapage.Functions.webconf_url(description));
                     }
+                    //Si c'est un lieu
                     else {
                         $("#eb-mm-em-p").click();
                         $("#presential-cal-location").val(description);
@@ -693,6 +639,7 @@ $(document).ready(() => {
 
             }
             else{ //ancien event
+                //Gestion des dats
                 $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
                 $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
                 update_date();
@@ -707,21 +654,19 @@ $(document).ready(() => {
                     $(".input-mel-datetime .input-mel.end").datetimepicker('setOptions', {format: 'd/m/Y H:i', timepicker:true});
                     onChangeDateTime(null, false, false);
                 }
-                // else
-                // {
-                //     $(".input-mel-datetime .input-mel.start").removeClass("disabled").removeAttr("disabled"); 
-                //     $(".input-mel-datetime .input-mel.end").removeClass("disabled").removeAttr("disabled"); 
-                // }
 
+                //Gestion de la récurence
                 const req = event.recurrence;
                 if (req !== undefined && req !== null)
                 {
                     $("#fake-event-rec").val(req.FREQ);
                 }
 
+                //Gestion de la localisation
                 const description = event.location;
                 update_desc(description);
 
+                //Gestion des alarmes
                 if (event.alarms !== undefined && event.alarms !== null)
                 {
 
@@ -770,6 +715,7 @@ $(document).ready(() => {
                     {}
                 }
 
+                //Gestion des catégories
                 if (parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").length > 0  && parent.$(".wsp-toolbar.wsp-toolbar-edited.melw-wsp").css("display") !== "none")
                 {
                     if (event._id === undefined) event.categories = [`ws#${mel_metapage.Storage.get("current_wsp")}`];
@@ -820,10 +766,11 @@ $(document).ready(() => {
             $('li > a[href="#event-panel-attendees"]').parent().css("display", "");
             update_location();
         }, 10);
+
         //Suppression text
-        //$("#eventedit").find(".nav.nav-tabs").css("display", "");
         $("#eventedit").find(".create_poll_link").css("display", "none");
         $("#edit-recurrence-frequency").parent().parent().find("label").css("display", "none");
+
         //maj des boutons
         let button_toolbar = $("#eventedit").parent().parent().find(".ui-dialog-buttonset");
         if (rcmail.env.task !== "calendar")
@@ -831,13 +778,6 @@ $(document).ready(() => {
             if (button_toolbar.length > 0)
             {
                 button_toolbar.find(".btn").css("display", "none");
-                // if (button_toolbar.find(".continue").length > 0)
-                //     button_toolbar.find(".continue").css("display", "");
-                // else
-                // {
-                //     button_toolbar.append(`<button class="btn btn-primary continue" onclick="rcube_calendar_ui.continue()">Continuer</button>`);
-                //     button_toolbar.append(`<button style="display:none;" class="btn btn secondary back" onclick="rcube_calendar_ui.back()">Retour</button>`);
-                // }
             }
         }
         else {
@@ -862,14 +802,9 @@ $(document).ready(() => {
             button_toolbar.find(".save").css("display", "none");
         }
 
+        //Maj des onglets
         $('li > a[href="#event-panel-summary"]').html("Résumé");
         $('li > a[href="#event-panel-detail"]').html("Détails");
-    //     $("#eventedit ul.nav.nav-tabs #saveeventbutton").remove();
-    //     $("#eventedit ul.nav.nav-tabs").append(`<li>
-    //     <button id="saveeventbutton" type="button" style="margin-top: 0.5rem" class="mel-button invite-button mel-before-remover create" onclick="window.rcube_calendar_ui.save()">
-    //     <span class="icon-pencil"><span class="sr-only>${rcmail.gettext("mel_metapage.save_event")}</span></span>
-    // </button></li>
-    //     `)
     }
 
         rcmail.addEventListener("edit-event", (event) =>{

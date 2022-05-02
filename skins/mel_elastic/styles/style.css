@@ -2496,3 +2496,7 @@ html.layout-phone #compose-content
 	flex: 0 0 33.333333%;
 	max-width: 33.333333%;
 }
+
+.task-settings.action-plugin-mel_statistics_mobile .listing tbody td {
+    color: #363A5B;
+}

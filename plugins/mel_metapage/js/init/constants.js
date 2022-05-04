@@ -756,6 +756,12 @@ const mel_metapage = {
             return props;
         },
 
+        updateRichText(html)
+        {
+            //debugger;
+            return html.replace(/</g,'&lt;');//.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        },
+
         /**
          * 
          * @param {string} url 

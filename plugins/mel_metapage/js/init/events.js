@@ -365,7 +365,7 @@ if (rcmail && window.mel_metapage)
         if (event.location !== undefined && event.location !== null && event.location !== "")
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
             white-space: nowrap;
-            text-overflow: ellipsis;"><span class="icon-mel-pin-location mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@visio:", ""))}</span></div></div>`;
+            text-overflow: ellipsis;"><span class="icon-mel-pin-location mel-cal-icon"></span><span>${linkify(mel_metapage.Functions.updateRichText(event.location.replaceAll("#visio:", "").replaceAll("@visio:", ""))).replaceAll("\n", "<br/>")}</span></div></div>`;
 
 
         if (event.categories !== undefined && event.categories.length > 0)
@@ -380,7 +380,7 @@ if (rcmail && window.mel_metapage)
         if (event.description !== undefined && event.description !== "")
             html += `<div class=row style="margin-top:15px;"><div class=col-12 style=white-space:nowrap;><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
             vertical-align: top;
-            margin-top: 5px;"></span><p style="overflow:auto;display:inline-block;white-space: break-spaces;width:95%;">${linkify(event.description.replaceAll("\n", "<br/>"))}</p></div></div>`;
+            margin-top: 5px;"></span><p style="overflow:auto;display:inline-block;white-space: break-spaces;width:95%;">${linkify(mel_metapage.Functions.updateRichText(event.description).replaceAll("\n", "<br/>"))}</p></div></div>`;
 
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)
@@ -456,7 +456,7 @@ if (rcmail && window.mel_metapage)
         html += "</div></div>";
 
         const cancelled = event.status === "CANCELLED";
-        const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title}` : (cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title);
+        const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${mel_metapage.Functions.updateRichText(event.title)}</span> (Annulé)` : mel_metapage.Functions.updateRichText(event.title)}` : (cancelled ? `<span style="text-decoration-line: line-through;">${mel_metapage.Functions.updateRichText(event.title)}</span> (Annulé)` : mel_metapage.Functions.updateRichText(event.title));
         
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);

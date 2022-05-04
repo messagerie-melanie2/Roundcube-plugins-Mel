@@ -82,7 +82,7 @@ function rcube_calendar_ui(settings)
       dayNamesShort: settings.days_short,
       weekNumbers: settings.show_weekno > 0,
       // MANTIS 0006486: Bug du numéro de semaine dans le fullcalendar de l'agenda
-      weekNumberCalculation:'ISO',
+      weekNumberCalculation:'ISO',     
       weekNumberTitle: rcmail.gettext('weekshort', 'calendar') + ' ',
       firstDay: settings.first_day,
       firstHour: settings.first_hour,
@@ -273,7 +273,10 @@ function rcube_calendar_ui(settings)
 
     var format_date = function(date, format)
     {
-      return $.fullCalendar.formatDate('toDate' in date ? date : moment(date), format);
+    //   moment.locale('fr', {
+    //     weekdaysShort : 'Dim_Lun_Mar_Mer_Jeu_Ven_Sam.'.split('_'),  
+    // });
+      return $.fullCalendar.formatDate('toDate' in date ? date.locale('fr-FR') : moment(date), format);
     };
 
     var format_datetime = function(date, mode, voice)

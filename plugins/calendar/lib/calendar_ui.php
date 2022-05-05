@@ -135,6 +135,7 @@ class calendar_ui
     public function addJS()
     {
         $this->cal->include_script('lib/js/moment.js');
+        $this->cal->include_script('lib/js/moment_fr.js');
         $this->cal->include_script('lib/js/fullcalendar.js');
 
         if ($this->rc->task == 'calendar' && $this->rc->action == 'print') {

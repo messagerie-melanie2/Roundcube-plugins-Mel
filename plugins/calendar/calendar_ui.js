@@ -82,7 +82,7 @@ function rcube_calendar_ui(settings)
       dayNamesShort: settings.days_short,
       weekNumbers: settings.show_weekno > 0,
       // MANTIS 0006486: Bug du numéro de semaine dans le fullcalendar de l'agenda
-      weekNumberCalculation:'ISO',
+      weekNumberCalculation:'ISO',     
       weekNumberTitle: rcmail.gettext('weekshort', 'calendar') + ' ',
       firstDay: settings.first_day,
       firstHour: settings.first_hour,
@@ -1986,7 +1986,8 @@ function rcube_calendar_ui(settings)
           name = item.replace(email, '').replace(/^["\s<>]+/, '').replace(/["\s<>]+$/, '');
         }
         if (email) {
-          add_attendee($.extend({ email:email, name:name }, params));
+          //Pamela 
+          add_attendee($.extend({ email:email.toLowerCase(), name:name }, params));
           success = true;
         }
         else {

@@ -146,7 +146,22 @@
 					<input type="text" name="endtime" size="6" id="edit-endtime" class="form-control" aria-label="<roundcube:label name='calendar.endtime' />" />
 				</div>
 			</div> -->
-            <div class="row">
+			<div id="em-locations">
+				<!-- <div class="col-6">
+					<span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.event_mode' /></span>
+					<select class="form-control input-mel">
+						<option value="basic">En présentiel</option>
+						<option value="visio">Par visioconférence</option>
+						<option value="audio">Par audio</option>
+					</select>
+				</div>
+				<div class="col-6">
+					<label for="presential-cal-location" class="span-mel t2 margin"><roundcube:label name='mel_metapage.choose_location' /></label>
+					<span class="red-star-after span-mel t2 margin"><roundcube:label name='mel_metapage.choose_visio_tool' /></span>
+					<span class="red-star-after span-mel t2 margin" style="margin-bottom: 5px;"><roundcube:label name='mel_metapage.reserve' /> <roundcube:label name='mel_metapage.a_niche' /></span>
+				</div> -->
+			</div>
+            <div class="row" style="display: none;">
                 <div class="col-6">
                     <span class="red-star-after span-mel t1"><roundcube:label name='mel_metapage.event_mode' /></span>
                     <div class="form-check"> <!--Présentiel-->
@@ -191,7 +206,6 @@
 							<div class="col-10">
 								<input type="text" id="key-visio-cal" pattern="^(?=(?:[a-zA-Z0-9]*[a-zA-Z]))(?=(?:[a-zA-Z0-9]*[0-9]){3})[a-zA-Z0-9]{10,}$" class="form-control input-mel" title="Le nom de la conférence doit contenir un minimum de 10 caractères dont au moins 3 chiffres. Ces caractères sont exclusivement des lettres de l’alphabet et des chiffres, la casse (Min/Maj) n’a pas d’importance." placeholder="Saisir le nom du salon" />
 							</div>
-
 						</div>
                         <div class="form-check"> <!--autre-->
                             <input class="form-check-input custom-control-input" type="radio" name="webconf-mode" id="eb-mm-wm-a" value="2">

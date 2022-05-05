@@ -241,11 +241,35 @@ if (rcmail && window.mel_metapage)
                     $title.prepend('<i class="fc-icon-sensitive"></i>').addClass('sensible');
                 //}
             }
-
-
             return true;
 
         });
+
+        rcmail.addEventListener("calendar.renderEvent.after", (args) => {
+            let desc = args.element.find('.fc-event-location');
+
+            if (desc.length > 0 && args.eventDatas.location.includes('{mel.newline}')) 
+            {
+                let text = '';
+                const splited = args.eventDatas.location.split('{mel.newline}');
+
+                for (let index = 0; index < splited.length; index++) {
+                    const element = splited[index] || null;
+
+                    if (element === null) continue;
+
+                    text += '@&nbsp;' + mel_metapage.Functions.updateRichText(element);
+
+                    if (index !== splited.length - 1) text += '<br/>';
+                }
+                //let text = mel_metapage.Functions.updateRichText(desc.html()).replaceAll('{mel.newline}', ' | ');
+                desc.html(text);
+            }
+            //desc.html(desc.text(desc.html()).replaceAll('{mel.newline}', ' | '))
+
+            return true;
+        });
+
     }
 
     // au changement de couleur
@@ -374,8 +398,9 @@ if (rcmail && window.mel_metapage)
         //Affichage du lieu
         if (event.location !== undefined && event.location !== null && event.location !== "")
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;"><span class="icon-mel-pin-location mel-cal-icon"></span><span>${linkify(event.location.replaceAll("#visio:", "").replaceAll("@visio:", ""))}</span></div></div>`;
+            /*white-space: nowrap;*/
+            text-overflow: ellipsis;"><span style="display: inline-block;
+            vertical-align: top;margin-top:5px" class="icon-mel-pin-location mel-cal-icon"></span><span style='display:inline-block'>${linkify(mel_metapage.Functions.updateRichText(event.location.replaceAll("#visio:", "").replaceAll("@visio:", "")).replaceAll('{mel.newline}', '<br/>'))}</span></div></div>`;
 
 
         if (event.categories !== undefined && event.categories.length > 0)
@@ -390,7 +415,7 @@ if (rcmail && window.mel_metapage)
         if (event.description !== undefined && event.description !== "")
             html += `<div class=row style="margin-top:15px;"><div class=col-12 style=white-space:nowrap;><span class="icon-mel-descri mel-cal-icon" style="display: inline-block;
             vertical-align: top;
-            margin-top: 5px;"></span><p style="overflow:auto;display:inline-block;white-space: break-spaces;width:95%;">${linkify(event.description.replaceAll("\n", "<br/>"))}</p></div></div>`;
+            margin-top: 5px;"></span><p style="overflow:auto;display:inline-block;white-space: break-spaces;width:95%;">${linkify(mel_metapage.Functions.updateRichText(event.description).replaceAll("\n", "<br/>"))}</p></div></div>`;
 
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)
@@ -485,7 +510,8 @@ if (rcmail && window.mel_metapage)
         html += "</div></div>";
 
         const cancelled = event.status === "CANCELLED";
-        const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title}` : (cancelled ? `<span style="text-decoration-line: line-through;">${event.title}</span> (Annulé)` : event.title);
+        const okTitle = mel_metapage.Functions.updateRichText(event.title);
+        const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle}` : (cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle);
         
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);

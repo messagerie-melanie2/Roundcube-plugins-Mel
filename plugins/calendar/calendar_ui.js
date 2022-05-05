@@ -151,7 +151,6 @@ function rcube_calendar_ui(settings)
       },
       // event rendering
       eventRender: function(event, element, view) {
-
         //PAMELLA
         let eventDatas = event;
         if (rcmail.triggerEvent('calendar.renderEvent', {eventDatas, element, view}) === false)
@@ -186,8 +185,11 @@ function rcube_calendar_ui(settings)
           element.addClass('cal-event-status-' + String(event.status).toLowerCase());
         }
 
+        rcmail.triggerEvent('calendar.renderEvent.after', {eventDatas, element, view})
+
         set_event_colors(element, event, view.name);
         element.attr('aria-label', event.title + ', ' + me.event_date_text(event, true));
+
       },
       // callback when a specific event is clicked
       eventClick: function(event, ev, view) {

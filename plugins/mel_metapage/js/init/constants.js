@@ -755,6 +755,10 @@ const mel_metapage = {
             mel_metapage.Storage.remove("mel.ask");
             return props;
         },
+        
+        updateRichText (html) {
+            return html.replace(/</g,'&lt;');
+        },
 
         /**
          * 

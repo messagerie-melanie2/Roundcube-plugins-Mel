@@ -6,10 +6,599 @@ $(document).ready(() => {
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
 
-    // window.rcube_calendar_ui.back = function()
-    // {
-    //     $($("#eventedit").find(".nav.nav-tabs").find(".nav-link")[0]).click();
-    // }
+    class AEventLocation extends MetapageObject{
+        constructor(...args)
+        {
+            super(...args);
+            this.init().setup(...args);
+        }
+
+        init()
+        {
+            return this;
+        }
+
+        setup(...args)
+        {
+            return this;
+        }
+
+        setValue(val) {
+            return this;
+        }
+
+        getValue(){
+            return '';
+        }
+
+        check() {
+            return false;
+        }
+
+        checkError()
+        {
+            if (this.check()) this._onValid();
+            else this._onError();
+            return this;
+        }
+
+        _onError() {}
+        _onValid() {}
+    }
+
+    class PlaceEventLocation extends AEventLocation
+    {
+        constructor($place){
+            super($place)
+        }
+
+        init()
+        {
+            super.init();
+            this.$place = null;
+            return this;
+        }
+
+        setup($place)
+        {
+            super.setup($place);
+            this.$place = $place;
+            return this;
+        }
+
+        getValue()
+        {
+            let val = super.getValue();
+            
+            return val + this.$place.val();
+        }
+
+        setValue(val)
+        {
+            super.setValue(val);
+            this.$place.val(val);
+            return this;
+        }
+
+        check() {
+            return true;
+        }
+        
+
+    }
+
+    class AudioEventLocation extends AEventLocation
+    {
+        constructor(audioUrl, $audioPhone, $audioNumber){
+            super(audioUrl, $audioPhone, $audioNumber)
+        }
+
+        init()
+        {
+            super.init();
+            this.$phone = null;
+            this.$number = null;
+            this.url = '';
+            return this;
+        }
+
+        setup(audioUrl, $audioPhone, $audioNumber)
+        {
+            super.setup(audioUrl, $audioPhone, $audioNumber);
+            this.$phone = $audioPhone;
+            this.$number = $audioNumber;
+            this.url = audioUrl;
+            return this;
+        }
+
+        getValue()
+        {
+            let val = super.getValue();
+            
+            return val + `${this.url} : ${this.$phone.val()} - ${this.$number.val()}`;
+        }
+
+        setValue(val)
+        {
+            super.setValue(val);
+            val = val.split(':');
+            switch (val[0]) {
+                case 'url':
+                    this.url = val[1];
+                    break;
+
+                case 'phone':
+                    this.$phone.val(val[1]);
+                    break;
+
+                case 'number':
+                    this.$number.val(val[1]);
+                    break;
+            
+                default:
+                    break;
+            }
+            return this;
+        }
+
+        setAudioUrl(url)
+        {
+            return this.setValue(`url:${url}`);
+        }
+
+        setAudioNumber(number)
+        {
+            return this.setValue(`number:${number}`);
+        }
+
+        setAudioPhone(number)
+        {
+            return this.setValue(`phone:${number}`);
+        }
+
+        check()
+        {
+            return this.$phone.val() !== '';
+        }
+
+        _onError() {
+            super._onError();
+            this.$phone.parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre une valeur !</span>`);
+        }
+        _onValid() {
+            super._onValid();
+            this.$phone.parent().find('.required-text').remove();
+        }
+    }
+
+    class VisioEventLocation extends AEventLocation
+    {
+        constructor($visioType, $visioIntegrated, $visioCustom, $haveWsp, $wsp)
+        {
+            super($visioType, $visioIntegrated, $visioCustom, $haveWsp, $wsp);
+        }
+
+        init()
+        {
+            super.init();
+            this.$type = null;
+            this.$visioState = null;
+            this.$visioCustom = null;
+            this.$haveWorkspace = null;
+            this.$workspace = null;
+            return this;
+        }
+
+        setup($visioType, $visioState, $visioCustom, $haveWorkspace, $workspace)
+        {
+            super.setup($visioType, $visioState, $visioCustom);
+            this.$type = $visioType;
+            this.$visioState = $visioState;
+            this.$visioCustom = $visioCustom;
+            //lecture seul
+            this.$haveWorkspace = $haveWorkspace;
+            this.$workspace = $workspace;
+            return this;
+        }
+
+        getValue()
+        {
+            let val = super.getValue();
+            
+            switch (this.$type.val()) {
+                case 'intregrated': //visio intégrée
+                    let config = {
+                        _key:this.$visioState.val()
+                    };
+
+                    if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
+                        config["_wsp"] = this.$workspace.val();
+
+                    val += mel_metapage.Functions.public_url('webconf', config);
+                    break;
+
+                case 'custom':
+                    val += `@visio:${this.$visioState.val()}`;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return val;
+        }
+
+        setValue(val)
+        {
+            val = val.split(':');
+            const key = val[0];
+            const value = val[1];
+
+            switch(key)
+            {
+                case 'type':
+                    this.$type.val(value);
+                    break;
+
+                case 'key':
+                    this.$visioState.val(value);
+                    break;
+
+                case 'custom':
+                    this.$visioCustom.val(value);
+                    break;
+
+                default:
+                    break;
+            }
+
+            return this;
+        }
+
+        setType(val)
+        {
+            return this.setValue(`type:${val}`);
+        }
+
+        setIntegratedKey(key)
+        {
+            return this.setValue(`key:${key}`);
+        }
+
+        setCustomVisio(url)
+        {
+            return this.setValue(`custom:${url}`);
+        }
+
+        check()
+        {
+            switch (this.$type.val()) {
+                case 'intregrated': //visio intégrée
+                    {
+                        const val = this.$visioState.val();
+                        //Si l'url est invalide
+                        if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+                        {      
+                            return false;
+                        }
+                    }
+                    break;
+
+                case 'custom':
+                    return this.$visioCustom.val() !== '';
+            
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        //<span class="required-text" style="color:red;display:block">*Vous devez mettre un titre !</span>
+        _onError() {
+            super._onError();
+            switch (this.$type.val()) {
+                case 'intregrated': //visio intégrée
+                    {
+                        const val = this.$visioState.val();
+                        const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
+                        this.$visioState.parent().append(`<span class="required-text" style="color:red;display:block">*${text}</span>`);
+                    }
+                    break;
+
+                case 'custom':
+                    this.$visioCustom.parent().append(`<span class="required-text" style="color:red;display:block">*Vous devez mettre une valeur !</span>`);
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+        _onValid() {
+            super._onValid();
+            this.$visioCustom.parent().find('.required-text').remove();
+            this.$visioState.parent().find('.required-text').remove();
+        }
+    }
+
+    class EventsLocation extends AEventLocation
+    {
+        constructor(id, placeEvent, audioEvent, visioEvent, $select)
+        {
+            super(id, placeEvent, audioEvent, visioEvent, $select);
+        }
+
+        init()
+        {
+            super.init();
+            this.id = '';
+            /**
+             * @type {AEventLocation}
+             */
+            this.placeEvent = null;
+                        /**
+             * @type {AEventLocation}
+             */
+            this.audioEvent = null;
+                        /**
+             * @type {AEventLocation}
+             */
+            this.visioEvent = null;
+            this.$selectEventType = null;
+            return this;
+        }
+
+        setup(id, placeEvent, audioEvent, visioEvent, $select)
+        {
+            super.setup(id, placeEvent, audioEvent, visioEvent, $select);
+            this.placeEvent = placeEvent;
+            this.audioEvent = audioEvent;
+            this.visioEvent = visioEvent;
+            this.$selectEventType = $select;
+            this.id = id;
+            return this;
+        }
+
+        getValue()
+        {
+            let val = super.getValue();
+
+            switch (this.$selectEventType.val()) {
+                case 'default':
+                    val += this.placeEvent.getValue();
+                    break;
+
+                case 'visio':
+                    val += this.visioEvent.getValue();
+                    break;
+
+                case 'audio':
+                val += this.audioEvent.getValue();
+                    break;
+            
+                default:
+                    break;
+            }
+
+            return val;
+        }
+
+        check()
+        {
+            switch (this.$selectEventType.val()) {
+                case 'default':
+                    return this.placeEvent.check();
+
+                case 'visio':
+                    return this.visioEvent.check();
+
+                case 'audio':
+                    return this.audioEvent.check();
+            
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        checkError()
+        {
+            switch (this.$selectEventType.val()) {
+                case 'default':
+                    return this.placeEvent.checkError();
+
+                case 'visio':
+                    return this.visioEvent.checkError();
+
+                case 'audio':
+                    return this.audioEvent.checkError();
+            
+                default:
+                    break;
+            }
+           return this;
+        }
+    }
+
+    class EventLocation extends AEventLocation
+    {
+        constructor($haveWorkspace, $workspace, ...events)
+        {
+            super($haveWorkspace, $workspace, ...events);
+        }
+
+        init()
+        {
+            super.init();
+            /**
+             * @type {Array<EventsLocation>}
+             */
+            this.locations = {};
+            this.$haveWorkspace = null;
+            this.$workspace = null;
+            this._count = 0;
+            return this;
+        }
+
+        setup($haveWorkspace, $workspaceSelect, ...events)
+        {
+            super.setup($haveWorkspace, $workspaceSelect, ...events);
+            this.$haveWorkspace = $haveWorkspace;
+            this.$workspace = $workspaceSelect;
+
+            for (let index = 0; index < events.length; ++index) {
+                const element = events[index];
+                this.addEvent(element);
+            }
+        }
+
+        addEvent(eventsLocation)
+        {
+            if ((eventsLocation ?? null) === null || this.locations[eventsLocation.id] !== undefined) return this;
+
+            ++this._count;
+            this.locations[eventsLocation.id] = eventsLocation;
+            return this;
+        }
+
+        delete(id)
+        {
+            const tmp = this.locations[id];
+            delete this.locations[id];
+            --this._count;
+            return tmp;
+        }
+
+        restart()
+        {
+            this.locations = {};
+            this._count = 0;
+            return this;
+        }
+
+        count()
+        {
+            return this._count;
+        }
+
+        getValue()
+        {
+            let val = super.getValue();
+
+            for (const key in this.locations) {
+                if (Object.hasOwnProperty.call(this.locations, key)) {
+                    const element = this.locations[key];
+                    val += `${element.getValue()}{mel.newline}`;
+                }
+            }
+
+            return val;
+        }
+
+        check()
+        {
+            return !Enumerable.from(this.locations).any(x => !x.value.check());
+        }
+
+        each(func)
+        {
+            for (const key in this.locations) {
+                if (Object.hasOwnProperty.call(this.locations, key)) {
+                    const element = this.locations[key];
+                    func(key, element);
+                }
+            }
+
+            return this;
+        }
+
+        checkError()
+        {
+            return this.each((key, value) => {
+                value.checkError();
+            });
+        }
+
+        static InitFromEvent(location, $mainDiv, init_function, $haveWsp, $wsp, update_location)
+        {
+            $mainDiv.html('');
+            update_location('restart');
+
+            if ((location || false) !== false)
+            {
+                location = location.split('{mel.newline}');
+
+                for (let index = 0; index < location.length; index++) {
+                    const currentString = location[index] || null;
+
+                    if (currentString === null) continue;
+
+                    //Si c'est un localisation audio
+                    if (currentString.includes(`${audio_url} : `))
+                    {
+                        const audio = currentString.replace(`${audio_url} : `, "").split(" - ");
+                        init_function($haveWsp, $wsp, update_location, 0, {
+                            audio:{
+                                tel:audio[0],
+                                num:audio[1]
+                            },
+                            type:'audio'
+                        });
+                    }
+                    //Si c'est un localisation visio
+                    else if (currentString.includes("#visio") || currentString.includes("@visio") || currentString.includes('public/webconf'))
+                    {
+                        const isRc = currentString.includes("#visio") || currentString.includes('public/webconf');
+
+                        if (isRc) //Visio de l'état
+                        {
+                            init_function($haveWsp, $wsp, update_location, 0, {
+                                visio:{
+                                    type:'integrated',
+                                    val:currentString.split("_key=")[1].split("&")[0]
+                                },
+                                type:'visio'
+                            });
+                        }
+                        else // Visio custom
+                        {
+                            init_function($haveWsp, $wsp, update_location, 0, {
+                                visio:{
+                                    type:'custom',
+                                    val:currentString.replace("@visio:", "")
+                                },
+                                type:'visio'
+                            });
+                        }
+                    }
+                    //Si c'est une visio de l'état
+                    else if (currentString.includes(rcmail.env["webconf.base_url"]))
+                    {
+                        init_function($haveWsp, $wsp, update_location, 0, {
+                            visio:{
+                                type:'integrated',
+                                val:mel_metapage.Functions.webconf_url(currentString)
+                            },
+                            type:'visio'
+                        });
+                    }
+                    //Si c'est un lieu
+                    else {
+                        init_function($haveWsp, $wsp, update_location, 0, {
+                            place:currentString,
+                            type:'default'
+                        });
+                    }
+                }
+            }
+            else {
+                init_function($haveWsp, $wsp, update_location);
+            }
+
+            update_location(null);
+        }
+    }
 
     /**
      * Sauvegarde l'évènement
@@ -106,26 +695,32 @@ $(document).ready(() => {
         //Suppression du message d'erreur
         else if ($(`#${date.end.text_id}`).length > 0) $(`#${date.end.text_id}`).remove();
 
-        //Si la visio de l'état est activée
-        if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
-        {
-            //On supprime le message d'erreur est on récupère les données.
-            const text_id = "key-error-cal";
-            let val = $("#key-visio-cal").val();
+        // //Si la visio de l'état est activée
+        // if ($("#eb-mm-em-v")[0].checked && $("#eb-mm-wm-e")[0].checked)
+        // {
+        //     //On supprime le message d'erreur est on récupère les données.
+        //     const text_id = "key-error-cal";
+        //     let val = $("#key-visio-cal").val();
 
-            $(`#${text_id}`).remove();
+        //     $(`#${text_id}`).remove();
 
-            //Si l'url est invalide
-            if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
-            {      
-                //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur   
-                $('li > a[href="#event-panel-detail"]').click();
+        //     //Si l'url est invalide
+        //     if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))
+        //     {      
+        //         //On se met sur le bon onglet, on focus le champ, puis, on affiche le message d'erreur   
+        //         $('li > a[href="#event-panel-detail"]').click();
 
-                const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
+        //         const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', plugin_text) : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', plugin_text) : rcmail.gettext('webconf_saloon_incorrect_format', plugin_text);
                 
-                $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
-                canContinue = false;
-            }
+        //         $("#key-visio-cal").focus().parent().append(`<span id="${text_id}" class="required-text" style="color:red;display:block">*${text}</span>`);
+        //         canContinue = false;
+        //     }
+        // }
+  
+        if (!window.rcube_calendar_ui.edit._events.checkError().check())
+        {
+            $('li > a[href="#event-panel-detail"]').click();
+            canContinue = false;
         }
 
         //Si il n'y a pas d'erreurs
@@ -229,36 +824,66 @@ $(document).ready(() => {
         /**
          * Met à jour le champ de location
          */
-        const update_location = function()
+        // const update_location = function()
+        // {
+        //     if ($("#eb-mm-em-p")[0].checked)
+        //     {
+        //         //Si présentiel
+        //         $("#edit-location").val($("#presential-cal-location").val());
+
+        //     }
+        //     else if ($("#eb-mm-em-v")[0].checked)
+        //     {
+        //         //Visio
+        //         if ($("#eb-mm-wm-e")[0].checked)
+        //         {
+        //             let config = {
+        //                 _key:$("#key-visio-cal").val()
+        //             };
+
+        //             if ($("#wsp-event-all-cal-mm").val() !== "#none")
+        //                 config["_wsp"] = $("#wsp-event-all-cal-mm").val();
+
+        //             $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));
+        //         }
+        //         else
+        //             $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
+        //     }
+        //     else {
+        //         //Audio
+        //         $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
+        //     }
+        // };
+        
+        /**
+         * 
+         * @param {EventsLocation} events 
+         */
+        const update_location = function (events)
         {
-            if ($("#eb-mm-em-p")[0].checked)
-            {
-                //Si présentiel
-                $("#edit-location").val($("#presential-cal-location").val());
-
-            }
-            else if ($("#eb-mm-em-v")[0].checked)
-            {
-                //Visio
-                if ($("#eb-mm-wm-e")[0].checked)
+            if (typeof events === 'string' ) {
+                if (!!window.rcube_calendar_ui.edit._events)
                 {
-                    let config = {
-                        _key:$("#key-visio-cal").val()
-                    };
-
-                    if ($("#wsp-event-all-cal-mm").val() !== "#none")
-                        config["_wsp"] = $("#wsp-event-all-cal-mm").val();
-
-                    $("#edit-location").val(mel_metapage.Functions.public_url('webconf', config));
+                    if (events.includes('remove'))
+                    {
+                        window.rcube_calendar_ui.edit._events.delete(events.split(':')[1]);
+                    }
+                    else if (events.includes('restart')){
+                        window.rcube_calendar_ui.edit._events.restart();
+                    }
                 }
-                else
-                    $("#edit-location").val(`@visio:${$("#url-visio-cal").val()}`);
+                events = null;
             }
-            else {
-                //Audio
-                $("#edit-location").val(`${audio_url} : ${$("#tel-input-cal-location").val()} - ${$("#num-audio-input-cal-location").val()}`);
-            }
-        };
+
+            if (window.rcube_calendar_ui.edit._events === undefined) window.rcube_calendar_ui.edit._events = new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+            
+            /**
+             * @type {EventLocation}
+             */
+            const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
+            $("#edit-location").val(current_location.getValue());
+        }
+        
         /**Met à jour le champs date */
         const update_date = () => {
             let val = $(".input-mel-datetime .input-mel.start").val().split(" ");
@@ -382,21 +1007,22 @@ $(document).ready(() => {
                 }
             })
 
-            //Initialisation des localisations
+            // //Initialisation des localisations
+            // rcube_calendar_ui._init_location($('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
             //Actions à faire lors de l'appuie d'un bouton radio
             $(".form-check-input.event-mode").on("click", (e) => {
                 e = e.target;
                 $(".content.event-mode").css("display", "none");
                 $(`.${e.id}`).css("display", "");
-                update_location();
+                //update_location();
             });
             //Action à faire lors de l'écriture du lieu
             $("#edit-location").on("change", () => {
-                update_location();
+                //update_location();
             });
             //Actions à faire lors de l'appuie d'un bouton radio pour la séléction d'une webconf
             $("#eb-mm-wm-e").on("change", () => {
-                update_location();
+                //update_location();
 
                 if (!$("#eb-mm-wm-e")[0].checked) //Visio custom
                 {
@@ -410,7 +1036,7 @@ $(document).ready(() => {
                 }
             });
             $("#eb-mm-wm-a").on("change", () => {
-                update_location();
+                //update_location();
 
                 if (!$("#eb-mm-wm-e")[0].checked) //Visio custom
                 {
@@ -425,18 +1051,18 @@ $(document).ready(() => {
             });
             //Maj de l'url d'un visio custom
             $("#url-visio-cal").on("change", () => {
-                update_location();
+                //update_location();
             });
             //Maj de la localisation
             $("#presential-cal-location").on("change", () => {
-                update_location();
+                //update_location();
             });
             //Maj du tel
             $("#tel-input-cal-location").on("change", () => {
-                update_location();
+                //update_location();
             });
             $("#num-audio-input-cal-location").on("change", () => {
-                update_location();
+               // update_location();
             });
             //Maj de l'url de la visio de l'état
             $("#key-visio-cal").on("input", () => {
@@ -451,7 +1077,7 @@ $(document).ready(() => {
             });
 
             $("#key-visio-cal").on("change", () => {
-                update_location();
+               // update_location();
             });
 
             //Check wsp ou catégorie
@@ -488,7 +1114,7 @@ $(document).ready(() => {
                     $(".have-workspace").css("display", "none");
                     $("#edit-categories").val("");
                 }
-                update_location();
+                update_location(null);
             });
             $("#categories-event-all-cal-mm").on("change", () => {
                 const val = $("#categories-event-all-cal-mm").val();
@@ -497,7 +1123,7 @@ $(document).ready(() => {
                 else
                     $("#edit-categories").val("");
                 $("#wsp-event-all-cal-mm").val("#none");
-                update_location();
+                update_location(null);
             });
             $("#fake-event-rec").on("change", (e) => {
                 $("#edit-recurrence-frequency").val(e.target.value);
@@ -521,59 +1147,59 @@ $(document).ready(() => {
         setTimeout(() => {
             $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
             $("#edit-wsp").removeClass("disabled").removeAttr("disabled");
-            /**
-             * Met à jours la localisation via un évènement déjà existant.
-             * @param {string} description Nouvelle localisation
-             */
-            const update_desc = function (description) 
-            {
-                if (description !== undefined && description !== "")
-                {
-                    //Si c'est un localisation audio
-                    if (description.includes(`${audio_url} : `))
-                    {
-                        $("#eb-mm-em-a")[0].click();
-                        const audio = description.replace(`${audio_url} : `, "").split(" - ");
-                        $("#tel-input-cal-location").val(audio[0]);
-                        $("#num-audio-input-cal-location").val(audio[1]);
-                    }
-                    //Si c'est un localisation visio
-                    else if (description.includes("#visio") || description.includes("@visio") || description.includes('public/webconf'))
-                    {
-                        const isRc = description.includes("#visio") || description.includes('public/webconf');
-                        $("#eb-mm-em-v").click();
-                        if (isRc) //Visio de l'état
-                        {
-                            $("#eb-mm-wm-e").click();
-                            $("#url-visio-cal").addClass("hidden");
-                            $("#row-for-key-visio-cal").removeClass("hidden");
-                            $("#key-visio-cal").val(description.split("_key=")[1].split("&")[0]);
-                        }
-                        else // Visio custom
-                        {
-                            $("#eb-mm-wm-a").click();
-                            $("#url-visio-cal").removeClass("hidden").val(description.replace("@visio:", ""));
-                            $("#row-for-key-visio-cal").addClass("hidden");
-                        }
-                    }
-                    //Si c'est une visio de l'état
-                    else if (description.includes(rcmail.env["webconf.base_url"]))
-                    {
-                        $("#eb-mm-em-v").click();
-                        $("#eb-mm-wm-e").click();
-                        $("#url-visio-cal").addClass("hidden");
-                        $("#row-for-key-visio-cal").removeClass("hidden");
-                        $("#key-visio-cal").val(mel_metapage.Functions.webconf_url(description));
-                    }
-                    //Si c'est un lieu
-                    else {
-                        $("#eb-mm-em-p").click();
-                        $("#presential-cal-location").val(description);
-                    }
-                }
-                else
-                    $("#eb-mm-em-p").click();         
-            };        
+            // /**
+            //  * Met à jours la localisation via un évènement déjà existant.
+            //  * @param {string} description Nouvelle localisation
+            //  */
+            // const update_desc = function (description) 
+            // {
+            //     if (description !== undefined && description !== "")
+            //     {
+            //         //Si c'est un localisation audio
+            //         if (description.includes(`${audio_url} : `))
+            //         {
+            //             $("#eb-mm-em-a")[0].click();
+            //             const audio = description.replace(`${audio_url} : `, "").split(" - ");
+            //             $("#tel-input-cal-location").val(audio[0]);
+            //             $("#num-audio-input-cal-location").val(audio[1]);
+            //         }
+            //         //Si c'est un localisation visio
+            //         else if (description.includes("#visio") || description.includes("@visio") || description.includes('public/webconf'))
+            //         {
+            //             const isRc = description.includes("#visio") || description.includes('public/webconf');
+            //             $("#eb-mm-em-v").click();
+            //             if (isRc) //Visio de l'état
+            //             {
+            //                 $("#eb-mm-wm-e").click();
+            //                 $("#url-visio-cal").addClass("hidden");
+            //                 $("#row-for-key-visio-cal").removeClass("hidden");
+            //                 $("#key-visio-cal").val(description.split("_key=")[1].split("&")[0]);
+            //             }
+            //             else // Visio custom
+            //             {
+            //                 $("#eb-mm-wm-a").click();
+            //                 $("#url-visio-cal").removeClass("hidden").val(description.replace("@visio:", ""));
+            //                 $("#row-for-key-visio-cal").addClass("hidden");
+            //             }
+            //         }
+            //         //Si c'est une visio de l'état
+            //         else if (description.includes(rcmail.env["webconf.base_url"]))
+            //         {
+            //             $("#eb-mm-em-v").click();
+            //             $("#eb-mm-wm-e").click();
+            //             $("#url-visio-cal").addClass("hidden");
+            //             $("#row-for-key-visio-cal").removeClass("hidden");
+            //             $("#key-visio-cal").val(mel_metapage.Functions.webconf_url(description));
+            //         }
+            //         //Si c'est un lieu
+            //         else {
+            //             $("#eb-mm-em-p").click();
+            //             $("#presential-cal-location").val(description);
+            //         }
+            //     }
+            //     else
+            //         $("#eb-mm-em-p").click();         
+            // };        
 
             if (event === "") //nouvel event
             {
@@ -630,7 +1256,7 @@ $(document).ready(() => {
                     }
                 }
 
-                update_desc($("#edit-location").val());
+                EventLocation.InitFromEvent($("#edit-location").val(), $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
 
                 $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
 
@@ -664,7 +1290,7 @@ $(document).ready(() => {
 
                 //Gestion de la localisation
                 const description = event.location;
-                update_desc(description);
+                EventLocation.InitFromEvent(description, $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
 
                 //Gestion des alarmes
                 if (event.alarms !== undefined && event.alarms !== null)
@@ -806,6 +1432,218 @@ $(document).ready(() => {
         $('li > a[href="#event-panel-summary"]').html("Résumé");
         $('li > a[href="#event-panel-detail"]').html("Détails");
     }
+
+    window.rcube_calendar_ui._init_location = function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
+    {
+        const mainDivId = `em-locations-base-id-${baseId}`;
+
+        if ($(`#${mainDivId}`).length > 0) return rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
+
+        const locationTypeOptions = {
+            default_selected:'En présentiel',
+            visio:'Par visioconférence',
+            audio:'Par audio'
+        };
+
+        const visioTypeOptions = {
+            intregrated_selected:rcmail.gettext('mel_metapage.state_tool_conf'),
+            custom:rcmail.gettext('mel_metapage.other_tool_conf'),
+        };
+
+        let $parentDiv = $('#em-locations').append(`<div id="${mainDivId}" class="row locations"></div>`);
+        let $mainDiv = $parentDiv.find(`#${mainDivId}`);
+        
+        let $leftCol = $( `<div class="col-6"> <label for="presential-cal-location" class="span-mel t1 margin ${baseId === 0 ? '' : 'hidden'}" style="margin-bottom:10px"><span class="">${rcmail.gettext('mel_metapage.event_mode')}</span></label></div>`).appendTo($mainDiv);
+        let $rightCol = $('<div class="col-6"></div>').appendTo($mainDiv);
+
+        let $audioDiv = $(`
+        <div class="audio-${mainDivId}">
+        <span class="span-mel t2 margin red-star-after ${baseId === 0 ? '' : 'hidden'}">Choix de l'option</span>
+            <center><div class="abutton"></div></center>
+            <div class="rrow">
+                <div class="rcol-md-6 aphone">
+                <label>Téléphone de l'audio</label>
+                </div>
+                <div class="rcol-md-6 anum">
+                <label>Numéro de l'audio</label>
+                </div>
+            </div>
+        </div>
+        `).appendTo($rightCol);
+        let $audioButton = $(`<button type="button" style="margin-top:0" class="mel-button mel-before-remover invite-button create btn btn-secondary">
+        <span>Réserver</span>
+        <span class="icofont-hand-right  plus" style="vertical-align: top;margin-left: 15px;"></span>
+    </button>`).click(() => window.open('https://audio.mtes.fr/', '_blank').focus())
+    .appendTo($audioDiv.find('.abutton'));
+        let $audioCode = $('<input type="text" class="form-control input-mel">').appendTo($audioDiv.find('.anum'));
+        let $audioPhone = $('<input type="tel" class="form-control input-mel" />').appendTo($audioDiv.find('.aphone'));
+        let $visioDiv = $(`<div class="visio-${mainDivId}">
+        <span class="span-mel t2 red-star-after margin ${baseId === 0 ? '' : 'hidden'}">Choix de l'option</span>
+            <div class="">
+                <div class="rcol-6 vselect">
+                </div>
+                <div class="rcol-6 vinput">
+                    <div class="vintegrated">
+                        <div class="input-group viinput">
+                        <!--TODO : input group -->
+                            <div class="vbutton input-group-prepend"></div>
+                            <!-- <div class="viinput"></div> -->
+                        </div>
+                    </div>
+                    <div class="vcustom">
+                    </div>
+                </div>
+            </div>
+        </div>`).appendTo($rightCol);
+        let $visioSelect = $('<select class="form-control input-mel"></select>').appendTo($visioDiv.find('.vselect'));
+        let $visioButton = $('<button type="button" style="margin-top:0" title="Générer le nom du salon au hasard" class="mel-button create mel-before-remover btn btn-secondary"><span class="icofont-refresh"></span></button>').click(() => {
+            $visioWebconfInput.val(mel_metapage.Functions.generateWebconfRoomName());
+        }).appendTo($visioDiv.find('.vinput .vintegrated .vbutton'));
+        let $visioWebconfInput = $(`<input type="text" pattern="^(?=(?:[a-zA-Z0-9]*[a-zA-Z]))(?=(?:[a-zA-Z0-9]*[0-9]){3})[a-zA-Z0-9]{10,}$" class="form-control input-mel" title="Le nom de la conférence doit contenir un minimum de 10 caractères dont au moins 3 chiffres. Ces caractères sont exclusivement des lettres de l’alphabet et des chiffres, la casse (Min/Maj) n’a pas d’importance." placeholder="Saisir le nom du salon" />`).appendTo($visioDiv.find('.vinput .vintegrated .viinput'));
+        let $visioCustomInput = $(`                        <input type="text" id="url-visio-cal" class="form-control input-mel" placeholder="Saisir l'url de visioconférence" />`)
+        .appendTo($visioDiv.find('.vinput .vcustom'));
+        let $placeInput = $(`<div class="place-${mainDivId}"><label for="presential-cal-location-${mainDivId}" class="${baseId === 0 ? '' : 'hidden'} span-mel t2 margin">Choix de l'option</label>
+        <input type="text" id="presential-cal-location-${mainDivId}" class="form-control input-mel" placeholder="Nom du lieu" /></div>`).appendTo($rightCol);
+        
+        let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
+        let $optionSelect = $('<select class="form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+
+        if (baseId !== 0)
+        {
+            $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-trash"></span></button>`)
+            .appendTo($divSelect.find('.input-group-prepend'))
+            .click(() => {
+                update_location(`remove:${mainDivId}`);
+                $mainDiv.remove();
+            });
+        }
+        else {
+            $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-plus"></span></button>`).appendTo($divSelect.find('.input-group-prepend'))
+            .click(() => {
+                window.rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId);
+            });
+        }
+
+        for (const key in locationTypeOptions) {
+            if (Object.hasOwnProperty.call(locationTypeOptions, key)) {
+                const element = locationTypeOptions[key];
+                $optionSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+            }
+        }
+
+        for (const key in visioTypeOptions) {
+            if (Object.hasOwnProperty.call(visioTypeOptions, key)) {
+                const element = visioTypeOptions[key];
+                $visioSelect.append(`<option value=${key.replace('_selected', '')} ${(key.includes('_selected') ? 'selected' : '')}>${element}</option>`)
+            }
+        }
+
+        if (_default !== null)
+        {
+            for (const key in _default) {
+                if (Object.hasOwnProperty.call(_default, key)) {
+                    const element = _default[key];
+                    switch (key) {
+                        case 'place':
+                            $placeInput.find('input').val(element);
+                            break;
+
+                        case 'visio':
+                            switch (element.type) {
+                                case 'integrated':
+                                    $visioSelect.val('intregrated');
+                                    $visioWebconfInput.val(element.val);
+                                    break;
+
+                                case 'custom':
+                                    $visioSelect.val('custom');
+                                    $visioCustomInput.val(element.val);
+                                    break;
+                            
+                                default:
+                                    break;
+                            }
+                            break;
+
+                        case 'audio':
+                            $audioPhone.val(element.tel);
+                            $audioCode.val(element.num);
+                            break;
+
+                        case 'type':
+                            $optionSelect.val(element);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        let placeLocation = new PlaceEventLocation($placeInput.find('input'));
+        let audioLocation = new AudioEventLocation(audio_url, $audioPhone, $audioCode);
+        let visioLocation = new VisioEventLocation($visioSelect, $visioWebconfInput, $visioCustomInput, $haveWorkspace, $workspaceSelect);
+
+        [$audioCode, $audioPhone, $visioSelect, $visioWebconfInput, $visioCustomInput, $placeInput, $optionSelect].forEach(item => {
+            item.on('change', () => {
+                update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+            });
+        });
+
+        $visioButton.click(() => {
+            update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
+        });
+
+        $optionSelect.on('change', (e) => {
+            e = $(e.currentTarget);
+
+            $visioDiv.css('display', 'none');
+            $placeInput.css('display', 'none');
+            $audioDiv.css('display', 'none');
+
+            switch (e.val()) {
+                case 'default':
+                    $placeInput.css('display', '');
+                    break;
+
+                case 'visio':
+                    $visioDiv.css('display', '');
+                    break;
+
+                case 'audio':
+                    $audioDiv.css('display', '');
+                    break;
+            
+                default:
+                    break;
+            }
+        });
+
+        $visioSelect.on('change', (e) => {
+            let $integrated = $visioDiv.find('.vinput .vintegrated').css('display', 'none');
+            let $custom = $visioDiv.find('.vinput .vcustom').css('display', 'none');
+
+            switch ($(e.currentTarget).val()) {
+                case 'intregrated':
+                    $integrated.css('display', '');
+                    break;
+
+                case 'custom':
+                    $custom.css('display', '');
+                    break;
+
+            
+                default:
+                    break;
+            }
+        })
+
+        $optionSelect.change();
+        $visioSelect.change();
+
+        return $mainDiv;
+    };
 
         rcmail.addEventListener("edit-event", (event) =>{
             window.rcube_calendar_ui.edit(event);

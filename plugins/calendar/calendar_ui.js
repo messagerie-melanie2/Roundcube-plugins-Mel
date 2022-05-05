@@ -273,10 +273,7 @@ function rcube_calendar_ui(settings)
 
     var format_date = function(date, format)
     {
-    //   moment.locale('fr', {
-    //     weekdaysShort : 'Dim_Lun_Mar_Mer_Jeu_Ven_Sam.'.split('_'),  
-    // });
-      return $.fullCalendar.formatDate('toDate' in date ? date.locale('fr-FR') : moment(date), format);
+      return $.fullCalendar.formatDate('toDate' in date ? date : moment(date), format);
     };
 
     var format_datetime = function(date, mode, voice)
@@ -1987,7 +1984,8 @@ function rcube_calendar_ui(settings)
           name = item.replace(email, '').replace(/^["\s<>]+/, '').replace(/["\s<>]+$/, '');
         }
         if (email) {
-          add_attendee($.extend({ email:email, name:name }, params));
+          //Pamela 
+          add_attendee($.extend({ email:email.toLowerCase(), name:name }, params));
           success = true;
         }
         else {

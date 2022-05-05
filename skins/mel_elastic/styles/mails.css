@@ -668,3 +668,7 @@ html.dark-mode #searchmenu {
 html.dark-mode .button.icon.toolbar-button.refresh:focus {
   color: #c7dfff !important;
 }
+
+html.touch .messagelist td.flags {
+  position: initial;
+}

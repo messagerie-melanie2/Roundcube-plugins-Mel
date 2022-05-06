@@ -281,3 +281,6 @@ $labels['move_up'] = 'Déplacer en haut';
 $labels['move_down'] = 'Déplacer en bas';
 
 $labels['search_settings'] = 'Paramètres de la recherche';
+
+$labels['webconf_toggle_participantspane_help'] = "Ouvrir ou fermer la boîte des participants";
+$labels['toggle_participantspane'] = 'Participants';

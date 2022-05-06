@@ -1778,6 +1778,7 @@ class ListenerWebConfBar
     {
         this.webconf = webconf;
         this.alreadyListening = false;
+        this.participantPan = false;
     }
 
     start()
@@ -1875,7 +1876,10 @@ class ListenerWebConfBar
     }
 
     toggle_participantspane() {
-        this.webconf.jitsii.executeCommand('toggleParticipantsPane');
+        this.webconf.jitsii.isParticipantsPaneOpen().then(state => {
+            this.participantPan = !state;
+            this.webconf.jitsii.executeCommand('toggleParticipantsPane', this.participantPan);
+        });
     }
 
     nextcloud_open()

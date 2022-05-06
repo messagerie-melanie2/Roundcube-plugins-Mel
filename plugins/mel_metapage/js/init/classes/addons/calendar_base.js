@@ -1139,6 +1139,8 @@ $(document).ready(() => {
             $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text));
             $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text));
 
+            $('#edit-sensitivity option[value="confidential"]').remove();
+
             //ok
             $("#eventedit").data("callbacks", "ok");
 

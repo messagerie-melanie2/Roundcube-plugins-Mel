@@ -333,14 +333,37 @@ if (rcmail && window.mel_metapage)
         on_switched_color_mode(MEL_ELASTIC_UI.color_mode());
     });
 
+    rcmail.addEventListener('rcmail.addrow.update_html', (args) => {
+        switch (args.c) {
+            case 'fromto':
+                if (rcmail.env._insearch && rcmail.env.current_search_scope !== 'base' && !!args.cols.folder) args.html = `<div class="mel-search-location">${args.cols.folder.replace('INBOX', 'Courrier entrant')}</div>${args.html}`;
+                break;
+        
+            default:
+                break;
+        }
+        
+        return args.html;
+    });
+    rcmail.addEventListener('responsebeforesearch', function() {
+        rcmail.env._insearch = true;
+      });
     rcmail.addEventListener('responseaftersearch', function() {
       $('#mail-search-icon').addClass("success-search");
       $('#mail-search-border').addClass("border-success-search");
-    })
+      delete rcmail.env._insearch;
+    });
     rcmail.addEventListener('responseafterlist', function(){
       $('#mail-search-icon').removeClass("success-search");
       $('#mail-search-border').removeClass("border-success-search");
-    })
+
+        try {
+            delete rcmail.env._insearch;
+            delete rcmail.env.current_search_scope;
+        } catch (error) {
+            
+        }
+    });
 
     rcmail.addEventListener('storage.change', (datas) => {
         //debugger;

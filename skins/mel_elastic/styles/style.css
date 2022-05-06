@@ -2502,3 +2502,7 @@ html.layout-phone #compose-content
 {
     background-color:lightgreen;
 }
+
+.subject .mel-search-location {
+	font-size: smaller;
+}

@@ -28,9 +28,11 @@ class mel_useful_link extends rcube_plugin
           $this->register_action('mel_widget', [$this, 'mel_widget']);
           $this->register_action('gpl', array($this, 'get_personal_links')); 
           $this->register_action('update', array($this, 'update_link'));  
+          $this->register_action('update_default_color', array($this, 'update_default_color'));  
           $this->register_action('correct', array($this, 'correct_links'));  
           $this->register_action('delete', array($this, 'delete_link'));  
           $this->register_action('tak', array($this, 'pin_link'));
+          $this->register_action('tak_default', array($this, 'pin_default'));
           $this->register_action('get_joined_links', array($this, 'get_joined_links'));
           $this->register_action('hideOrShow', array($this, 'HideOrShow'));
 
@@ -326,6 +328,8 @@ class mel_useful_link extends rcube_plugin
 
         if (count($items) > 0)
         {
+          $paramDefault = $this->rc->config->get('personal_default_useful_links', []);
+
           $k = function ($k, $x) {
               return strpos($x["type"], "website") !== false;//$x["type"] === "website" || $x["type"] === "website_button" || $x["type"] === "website_links";
           };
@@ -360,6 +364,12 @@ class mel_useful_link extends rcube_plugin
                       "parent" => $key,
                       "id" => $keyLink
                     ]);
+
+                    if (!$tmpLink->personal)
+                    {
+                      mel_link::updateDefaultConfig($tmpLink, $paramDefault);
+                    }
+
                     $tmpLink->hidden = $hiddened->check_old($keyLink, $key);
 
                     if (end($links) != $tmpLink)  
@@ -380,6 +390,10 @@ class mel_useful_link extends rcube_plugin
                 continue;
 
               $tmpLink = mel_link::fromOldPortail($key, $value);
+              if (!$tmpLink->personal)
+              {
+                mel_link::updateDefaultConfig($tmpLink, $paramDefault);
+              }
               $tmpLink->hidden = $hiddened->check_old($key);
 
               if (end($links) == $tmpLink)
@@ -472,6 +486,51 @@ class mel_useful_link extends rcube_plugin
       echo true;
       exit;
 
+    }
+
+    public function update_default_color()
+    {
+      include_once "lib/link.php";
+      $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+      $subId = rcube_utils::get_input_value("_sub_id", rcube_utils::INPUT_GPC);
+      $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
+
+      $paramDefault = $this->rc->config->get('personal_default_useful_links', []);
+      $configKey = isset($subId) ? "$id|$subId" : $id;
+
+      $link;
+
+      if ($paramDefault[$configKey] === null) $link = mel_default_link_sub_item::create($id, $subId);
+      else $link = mel_default_link::load($paramDefault[$configKey]);
+
+      $paramDefault[$configKey] = $link->setColor($color)->serialize();
+
+      $this->rc->user->save_prefs(array('personal_default_useful_links' => $paramDefault));
+
+      echo true;
+      exit;
+    }
+
+    function pin_default()
+    {
+      include_once "lib/link.php";
+      $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
+      $subId = rcube_utils::get_input_value("_sub_id", rcube_utils::INPUT_GPC);
+
+      $paramDefault = $this->rc->config->get('personal_default_useful_links', []);
+      $configKey = isset($subId) ? "$id|$subId" : $id;
+
+      $link;
+
+      if ($paramDefault[$configKey] === null) $link = mel_default_link_sub_item::create($id, $subId);
+      else $link = mel_default_link::load($paramDefault[$configKey]);
+
+      $paramDefault[$configKey] = $link->setPin(!$link->pin)->serialize();
+
+      $this->rc->user->save_prefs(array('personal_default_useful_links' => $paramDefault));
+
+      echo true;
+      exit;
     }
 
     function pin_link()

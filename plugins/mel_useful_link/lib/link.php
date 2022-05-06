@@ -1,4 +1,67 @@
 <?php
+class mel_default_link
+{
+    public $pin;
+    public $color;
+    public $id;
+
+    public function __construct($id)
+    {
+        $this->id = $id;
+        $this->pin = false;
+        $this->color = null;
+    }
+
+    public function setColor($color)
+    {
+        $this->color = $color;
+        return $this;
+    }
+
+    public function setPin($pin)
+    {
+        $this->pin = $pin;
+        return $this;
+    }
+
+    public function serialize()
+    {
+        return json_encode($this);
+    }
+
+    public static function load($serialized)
+    {
+        $serialized = json_decode($serialized);
+        $link = $serialized->subId === null ? new mel_default_link($serialized->id) : new mel_default_link_sub_item($serialized->id, $serialized->subId);
+
+        return $link->setColor($serialized->color)->setPin($serialized->pin);
+    }
+
+    public function isSubItem() {
+        return false;
+    }
+}
+
+class mel_default_link_sub_item extends mel_default_link
+{
+    public $subId;
+
+    public function __construct($id, $subId)
+    {
+        parent::__construct($id);
+        $this->subId = $subId;
+    }
+
+    public function isSubItem() {
+        return true;
+    }
+
+    public static function create($id, $subId)
+    {
+        return isset($subId) ? new mel_default_link_sub_item($id, $subId) : new mel_default_link($id);
+    }
+}
+
 class mel_link
 {
 
@@ -50,7 +113,7 @@ class mel_link
 
         $html = str_replace("<color/>", $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.($this->hidden ? "6b" : "") : "", $html);
 
-        if (!$this->personal)
+        if (false && !$this->personal)
             $html = str_replace("<personal/>", ' style="display:none;" ', $html);
         else
             $html = str_replace("<personal/>", '', $html);
@@ -70,7 +133,8 @@ class mel_link
         '" data-id="'.$this->configKey.
         '" data-isHidden="'.$this->hidden.
         '" data-color="'.$this->color.
-        '" data-subItem="'.($isSubItem ? "true" : "false").'"';
+        '" data-subItem="'.($isSubItem ? "true" : "false").
+        '" data-personal="'.($this->personal ? 'true' : 'false').'"';
 
         if ($isSubItem)
             $html .= ' data-subparent="'.$this->subItemData["parent"].
@@ -172,6 +236,17 @@ class mel_link
         }
 
         return $link;
+    }
+
+    public static function updateDefaultConfig(&$noPersonalLink, $config)
+    {
+        $configKey = $noPersonalLink->subItem() ? $noPersonalLink->configKey.'|'.$noPersonalLink->subItemData["id"] : $noPersonalLink->configKey;
+        if ($config[$configKey] !== null)
+        {
+            $no_personal = mel_default_link::load($config[$configKey]);
+            $noPersonalLink->pin = $no_personal->pin;
+            $noPersonalLink->color = $no_personal->color;
+        }
     }
 
     function localEn($txt)

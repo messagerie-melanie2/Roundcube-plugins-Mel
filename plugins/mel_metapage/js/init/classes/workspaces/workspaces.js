@@ -21,7 +21,11 @@ SynchroniseWorkspaces.PostToChilds = function (datas)
 {
     $("iframe.mm-frame").each((i,e) => {
         ////console.error("SynchroniseWorkspaces.PostToChilds", e, datas);
-        SynchroniseWorkspaces.Post(e.contentWindow, datas)
+        try {
+            SynchroniseWorkspaces.Post(e.contentWindow, datas)
+        } catch (error) {
+            
+        }
     });
 }
 

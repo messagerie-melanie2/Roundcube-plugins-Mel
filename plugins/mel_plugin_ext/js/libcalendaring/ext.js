@@ -14,15 +14,6 @@ if (window.rcube_libcalendaring)
             
             alias_mel_this_snooze_dropdown.call(this, link, event);
         };
-
-        const alias_mel_this_init_recurrence_edit = this.init_recurrence_edit;
-        this.init_recurrence_edit = function(prefix) {
-            alias_mel_this_init_recurrence_edit.call(this, prefix);
-            $('#edit-recurrence-enddate').click(() => {
-                $('#edit-recurrence-repeat-until')[0].checked = true;
-            });
-        };
-
     };
 
     //setup static

@@ -245,7 +245,7 @@ $(document).ready(() => {
     });
 
     $("#wsp-see-all").click(() => {
-        let $frames = $('.workspace-frame');
+        let $frames = top.$('.workspace-frame');
         if ($frames.length > 0) $frames.remove();
         mel_metapage.Functions.change_frame('wsp');
     });

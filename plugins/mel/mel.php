@@ -98,6 +98,7 @@ class mel extends rcube_plugin
     $this->add_hook('identities_list',      array($this, 'identities_list'));
     $this->add_hook('identity_update',      array($this, 'identity_update'));
     $this->add_hook('message_before_send',  array($this, 'message_before_send'));
+    $this->add_hook('imap_search_before', [$this, 'imap_search_before']);
 
     // Template
     $this->add_hook('template_object_loginform',  array($this, 'login_form'));
@@ -446,14 +447,65 @@ class mel extends rcube_plugin
    *
    * @return string Account
    */
-  public function m2_get_account()
+  public function m2_get_account($args = [])
   {
     if (mel_logs::is(mel_logs::DEBUG)) {
       mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
     }
+
+    if (!isset($this->get_account) && isset($args['folder']) && strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0)
+    {
+      $bal = driver_mel::gi()->user();
+      $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $args['folder']);
+      $bal->load();
+      $uid = driver_mel::gi()->getUser()->uid . driver_mel::gi()->objectShareDelimiter() . $bal->uid;
+      $this->set_account(urlencode($uid) . '@' . driver_mel::gi()->getRoutage($bal, 'm2_get_account'));
+    }
+
+
     return array(
       "account" => $this->get_account
     );
+  }
+
+  public function imap_search_before($args)
+  {
+
+    if (is_array($args['folder']))
+    {
+      $isBalp = false;
+      $bal = driver_mel::gi()->user();
+      foreach ($args['folder'] as $key => $value) {
+        if (strpos($value, driver_mel::gi()->getBalpLabel()) === 0)
+        {
+          $bal->uid = str_replace(driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'], '', $value);
+          if ($bal->load())
+          {
+            $isBalp = true;
+            $hostname = driver_mel::gi()->getRoutage($bal, 'imap_search_before');
+            $uid = driver_mel::gi()->getUser()->uid . driver_mel::gi()->objectShareDelimiter() . $bal->uid;
+            $this->rc->storage->connect($hostname, 
+                              $uid, 
+                              $this->rc->decrypt($_SESSION['password']), 
+                              $_SESSION['storage_port'], 
+                              $_SESSION['storage_ssl']);
+            break;
+          }
+        }
+      }
+
+      if ($isBalp)
+      {
+        foreach ($args['folder'] as $key => $value) {
+          if (strpos($value, driver_mel::gi()->getBalpLabel()) !== 0)
+          {
+            unset($args['folder'][$key]);
+          }
+        }
+      }
+    }
+
+    return $args;
   }
 
   /**

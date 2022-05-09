@@ -430,7 +430,8 @@ class mel_metapage extends rcube_plugin
 
     public function m2_gestion_cache()
     {
-        if ($this->rc->task === "mail" && rcube_utils::get_input_value('_nocache', rcube_utils::INPUT_GPC) == "true")
+        if ($this->rc->task === "mail" && (rcube_utils::get_input_value('_nocache', rcube_utils::INPUT_GPC) == "true"/* || 
+        $this->rc->action === 'search')*/))
         {
             mel_helper::clear_folders_cache($this->rc);
         }

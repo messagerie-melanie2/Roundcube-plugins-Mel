@@ -336,7 +336,7 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('rcmail.addrow.update_html', (args) => {
         switch (args.c) {
             case 'fromto':
-                if (rcmail.env._insearch && rcmail.env.current_search_scope !== 'base' && !!args.cols.folder) args.html = `<div class="mel-search-location">${args.cols.folder.replace('INBOX', 'Courrier entrant')}</div>${args.html}`;
+                if (rcmail.env._insearch && rcmail.env.current_search_scope !== 'base' && !!args.flags.mbox) args.html = `<div class="mel-search-location">${show_mail_path(args.flags.mbox)}</div>${args.html}`;
                 break;
         
             default:
@@ -345,6 +345,19 @@ if (rcmail && window.mel_metapage)
         
         return args.html;
     });
+
+    function show_mail_path(text)
+    {
+        if (text.includes(rcmail.env.balp_label))
+        {
+            text = text.split('/');
+            text[1] = text[1].split('.')[0];
+            text = text.join('/');
+        }
+
+        return decode_imap_utf7(text.replace('INBOX', 'Courrier entrant').replaceAll('/', ' » '));
+    }
+
     rcmail.addEventListener('responsebeforesearch', function() {
         rcmail.env._insearch = true;
       });

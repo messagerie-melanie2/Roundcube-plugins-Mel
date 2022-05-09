@@ -862,7 +862,8 @@ $(document).ready(() => {
                         fullscreen:true
                     };
             
-                    return new Windows_Like_PopUp(top.$("body"), config);
+                    const popup_class = window.Windows_Like_PopUp ?? top.Windows_Like_PopUp;
+                    return new popup_class(top.$("body"), config);
                 }
             };
 

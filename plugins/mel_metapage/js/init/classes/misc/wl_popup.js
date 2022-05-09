@@ -251,3 +251,5 @@ class Windows_Like_PopUp extends MetapageObject
 }
 
 Windows_Like_PopUp.popUps = {};
+
+window.Windows_Like_PopUp = Windows_Like_PopUp;

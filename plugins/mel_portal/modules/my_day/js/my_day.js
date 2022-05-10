@@ -100,7 +100,7 @@ function setupMyDay(datas)
 			if (element.status === "CANCELLED")
 				continue;
 
-			title = element.title;
+			title = mel_metapage.Functions.updateRichText(element.title);
 
 			if (element.free_busy === "free")
 				title += " (libre)";

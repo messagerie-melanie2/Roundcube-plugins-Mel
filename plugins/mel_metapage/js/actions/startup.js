@@ -701,7 +701,7 @@ function m_mp_ChangeLasteFrameInfo(force = false)
 
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
-    window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+    window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html() ?? window.document.title;
 
     try {
         if (!isUndefined)

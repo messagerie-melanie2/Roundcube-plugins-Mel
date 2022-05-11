@@ -2506,3 +2506,108 @@ html.layout-phone #compose-content
 .subject .mel-search-location {
 	font-size: smaller;
 }
+
+body.task-tasks .searchbar form::before {
+	content: none;
+}
+
+body.task-tasks .searchbar form::after {
+	content: "\e92d";
+    font-family: DWP!important;
+}
+
+.mel-search-margin{
+    margin: 0 15px;
+    width: auto;
+}
+
+.listing li > div.tasklist .listname::before {
+	content: "\e932"!important;
+    font-family: DWP!important;
+}
+
+body.task-tasks .listing li > div > a:first-child {
+    cursor: pointer;
+}
+
+body.task-tasks .listing li:hover > div > a:first-child:hover {
+    background-color: #484D7A !important;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+body.task-tasks .listing li.selected:hover > div > a:first-child:hover {
+    background-color: #484D7A !important;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+body.task-tasks .taskhead {
+	cursor: pointer;
+}
+
+body.task-tasks .taskhead:hover {
+	cursor: pointer;
+	background-color: #363A5B ;
+}
+
+#tasklist span.date
+{
+	color: #fff !important;
+	font-style: italic;
+	font-size: smaller;
+}
+
+ul#tasklist li.taskitem:nth-child(2n)
+{
+	background-color:#52588C;
+}
+
+#tasklist li.taskitem > div, #tasklist li.taskitem > span {
+	border-color:#9592b7!important;
+}
+
+body.task-tasks .menu.pagenav.pagenav-list
+{
+    background-color: transparent;
+    color: white;
+    border:none;
+}
+
+body.task-tasks .menu.pagenav.pagenav-list a,
+body.task-tasks .menu.pagenav.pagenav-list .pagenav-text
+{
+    color:white;
+}
+
+.mel-button.iconized-mel-button:after
+{
+    margin-left: 15px;
+    font-family: DWP;
+}
+
+.mel-button.iconized-mel-button.edit:after
+{
+    content: '\e95c';
+
+}
+
+.mel-button.iconized-mel-button.create:after
+{
+    content: '\e929';
+}
+
+.button.down-icon::before{
+    content: '\e907';
+    font-family: DWP!important;
+}
+
+.button.up-icon::before{
+    content: '\e906';
+    font-family: DWP!important;
+}
+
+.button.search-icon::before{
+    content: '\e92d';
+    font-family: DWP!important;
+}

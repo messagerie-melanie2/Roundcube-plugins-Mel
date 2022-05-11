@@ -207,6 +207,7 @@ html.dark-mode .btn:focus
     color: #E1C58F!important;
 }
 
+html.dark-mode .custom-switch .custom-control-label::after,
 html.dark-mode #groupoptions-user .more-options:hover,
 html.dark-mode .roundbadge.icon-mel-videoconference:hover,
 html.dark-mode .tiny-webconf-menu.dwp-round:hover,
@@ -875,6 +876,7 @@ html.dark-mode #edit-identities-list,
 html.dark-mode .edit-attendee-role, 
 html.dark-mode textarea.input-mel, 
 html.dark-mode select.input-mel, 
+html.dark-mode #edit-alarm-item,
 html.dark-mode input.input-mel,
 html.dark-mode #annuaireselector
 {
@@ -920,6 +922,7 @@ html.dark-mode  body.task-calendar select.mel-input.calendar:focus
     color:#E1C58F!important;
 }
 
+html.dark-mode .ui-slider,
 html.dark-mode .task-calendar #layout-content .searchbar.menu
 {
     border: solid #E1C58F thin!important;
@@ -933,12 +936,16 @@ html.dark-mode select.input-mel.custom-select {
 	background-image: url("../fonts/mel_icons/Chevron_down_dark.svg");
 }
 
+html.dark-mode .custom-switch .custom-control-label::before,
 html.dark-mode .mel-radio-1 span
 {
     border-color: #E1C58F;
     background-color: black;
 }
 
+html.dark-mode .ui-slider .ui-slider-handle,
+html.dark-mode .custom-switch .custom-control-label::after,
+html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
 html.dark-mode  .mel-radio-1 input[type="checkbox"] + label span::before
 {
     border-color: #E1C58F;
@@ -946,6 +953,9 @@ html.dark-mode  .mel-radio-1 input[type="checkbox"] + label span::before
     /*#3e4c59*/
 }
 
+html.dark-mode .ui-slider .ui-slider-handle.ui-state-active,
+html.dark-mode .ui-slider .ui-slider-range,
+html.dark-mode .custom-switch .custom-control-input:checked ~ .custom-control-label::before,
 html.dark-mode  .mel-radio-1 input[type="checkbox"]:checked + label span
 {
     background-color: #3e4c59;
@@ -1017,4 +1027,16 @@ html.dark-mode .mel-block-list {
 html.dark-mode #quicksearchbar .button.options.annuaire-filter-selected
 {
     background-color:green;
+}
+
+ul#tasklist li.taskitem:nth-child(2n)
+{
+    background-color:#4B5C6C;
+}
+
+html.dark-mode body.task-tasks .listing li:hover > div > a:first-child:hover {
+	border: #E1C58F solid thin !important;
+    background-color: initial!important;
+	border-top-right-radius: 15px;
+	border-bottom-right-radius: 15px;
 }

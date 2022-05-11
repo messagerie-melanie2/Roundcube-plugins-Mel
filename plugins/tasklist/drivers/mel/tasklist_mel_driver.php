@@ -866,7 +866,7 @@ class tasklist_mel_driver extends tasklist_driver {
       $object->completed = 1;
     }
     else if ($task['status'] == LibMelanie\Api\Defaut\Task::STATUS_IN_PROCESS) {
-      $object->completed = 0;
+      $object->completed = $task['complete'];;
     }
     else if (isset($task['complete'])) {
       if ($task['complete'] == 1) {
@@ -874,6 +874,7 @@ class tasklist_mel_driver extends tasklist_driver {
       }
       $object->completed = $task['complete'];
     }
+    else $object->completed = $task['complete'];
     
     // TODO: Mettre à jour le plugin taskslist pour la gestion des alarmes
     if (isset($task['valarms']) && !empty($task['valarms'])) {

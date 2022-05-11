@@ -42,4 +42,20 @@ if (rcmail.env.task === "tasks")
             }, 100);
         }
     });
-}
+
+    rcmail.addEventListener('init', () => {
+        $('#layout-list .searchbar.menu').append(
+            $(`<a href="#" class="button down-icon" style="" title="Afficher les filtres" role="button"></a>`).click((e) => {
+                $('#layout-list .pagenav.pagenav-list.menu').click();
+                e = $(e.currentTarget);
+                
+                if (e.hasClass('down-icon')) e.removeClass('down-icon').addClass('up-icon');
+                else e.addClass('down-icon').removeClass('up-icon');
+            })
+        ).append(
+            $(`<a href="#" class="button search-icon" style="pointer-events:none" title="Rechercher" role="button"></a>`).click((e) => {
+                $('#searchform').change();
+            })
+        ).find('form').addClass('mel-after-remover');
+    });
+}//mel-after-remover

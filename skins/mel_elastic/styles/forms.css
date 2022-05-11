@@ -92,11 +92,14 @@ legend.span-mel.t1 {
 	margin-top: 6px;
 	display: inline-block;
 }
+
+#edit-alarm-item,
 #edit-attendees-comment,
 #edit-attendee-name,
 #edit-identities-list,
 .edit-attendee-role,
 textarea.input-mel,
+.fake-input.input-mel,
 select.input-mel,
 input.input-mel {
 	border-radius: 60px;
@@ -164,7 +167,7 @@ input.input-mel {
 }
 
 
-
+#edit-alarm-item:focus,
 #edit-attendees-comment:focus,
 #edit-attendee-name:focus,
 #edit-identities-list:focus,
@@ -176,6 +179,7 @@ input.input-mel:focus {
 	border-color: #484D7A;
 	box-shadow: 0 0 0 .2rem #C8CDFC59;
 }
+#edit-alarm-item,
 select.input-mel{
 	cursor: pointer;
 }
@@ -322,6 +326,7 @@ textarea.input-mel{
 	cursor: unset;
 }
 
+#edit-alarm-item,
 select.input-mel.custom-select
 {
 	background-image: url("../fonts/mel_icons/Chevron_down.svg");
@@ -490,4 +495,63 @@ input.input-mel.error {
 .mel-input.search-like{
 	background-color:white;
 	border-color: #424665;
+}
+
+.custom-switch .custom-control-label::before {
+	border-color: black;
+	background-color: #F0F0F0;
+}
+
+.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	border-color: black;
+	background-color: #484D7A;
+}
+
+.inverted .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	background-color: #363A5B;
+}
+
+.selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	border-color: black;
+	background-color: #363A5B ;
+}
+
+.inverted .selected .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+	background-color: #484D7A ;
+}
+
+.custom-switch .custom-control-label::after
+{
+	border-style: solid;
+	border-width: thin;
+	border-color: black;
+	background-color:white;
+	left: 2px;
+	top: 0.3rem;
+	width: 15px;
+	height: 15px;
+}
+
+.datetime input.input-mel.small-input
+{
+	width: 10em !important;
+}
+
+.ui-slider {
+	border-color: black;
+}
+
+.ui-slider .ui-slider-range
+{
+	background-color: #484D7A;
+}
+
+.ui-slider .ui-slider-handle {
+	border-radius: 100%;
+	background-color: #F0F0F0;
+}
+
+.ui-slider .ui-slider-handle.ui-state-active {
+	border-color: black;
+	background-color: #484D7A;
 }

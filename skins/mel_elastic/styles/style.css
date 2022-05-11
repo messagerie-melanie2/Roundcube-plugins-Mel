@@ -897,10 +897,10 @@ html:not(.touch) .listing.focus:not(.withselection) tbody tr.focused > td.select
     border-left: 2px solid #80D5C6 !important;
 }
 
-.custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+/* .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
     border-color: #80D5C6;
     background-color: #80D5C6;
-}
+} */
 
 .form-control:focus {
     border-color: #80D5C6;

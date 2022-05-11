@@ -555,3 +555,9 @@ input.input-mel.error {
 	border-color: black;
 	background-color: #484D7A;
 }
+
+#calendars-content .custom-switch .custom-control-label::after
+{
+	border:none;
+	background-color: transparent!important;
+}

@@ -1029,7 +1029,7 @@ html.dark-mode #quicksearchbar .button.options.annuaire-filter-selected
     background-color:green;
 }
 
-ul#tasklist li.taskitem:nth-child(2n)
+html.dark-mode ul#tasklist li.taskitem:nth-child(2n)
 {
     background-color:#4B5C6C;
 }
@@ -1039,4 +1039,12 @@ html.dark-mode body.task-tasks .listing li:hover > div > a:first-child:hover {
     background-color: initial!important;
 	border-top-right-radius: 15px;
 	border-bottom-right-radius: 15px;
+}
+
+html.dark-mode ul ul li.mailbox:hover > a:first-of-type {
+	background-color: transparent;
+}
+
+html.dark-mode ul ul li.mailbox:hover > a:first-of-type{
+    border: #E1C58F solid thin !important;
 }

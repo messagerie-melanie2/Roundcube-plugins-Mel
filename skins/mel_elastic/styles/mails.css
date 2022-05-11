@@ -672,3 +672,9 @@ html.dark-mode .button.icon.toolbar-button.refresh:focus {
 html.touch .messagelist td.flags {
   position: initial;
 }
+
+ul ul li.mailbox:hover > a:first-of-type {
+	cursor: pointer !important;
+	background-color: #2C3054;
+    border-radius: 5px;
+}

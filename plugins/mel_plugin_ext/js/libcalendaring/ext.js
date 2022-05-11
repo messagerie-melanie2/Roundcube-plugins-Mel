@@ -14,7 +14,6 @@ if (window.rcube_libcalendaring)
             
             alias_mel_this_snooze_dropdown.call(this, link, event);
         };
-
     };
 
     //setup static

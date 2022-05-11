@@ -1141,6 +1141,9 @@ $(document).ready(() => {
 
             $('#edit-sensitivity option[value="confidential"]').remove();
 
+            $('#edit-recurrence-enddate').on('mousedown',() => {
+                $('#edit-recurrence-repeat-until')[0].checked = true;
+            });
             //ok
             $("#eventedit").data("callbacks", "ok");
 

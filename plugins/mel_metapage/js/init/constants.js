@@ -813,6 +813,12 @@ const mel_metapage = {
             return html.replace(/</g,'&lt;');
         },
 
+        updateRichText(html)
+        {
+            //debugger;
+            return html.replace(/</g,'&lt;');//.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        },
+
         /**
          * 
          * @param {string} url 

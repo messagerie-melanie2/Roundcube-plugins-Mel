@@ -248,7 +248,6 @@ $(document).ready(() => {
                             if ($("#mailsearchlist").hasClass("hoverable") && !$("#layout-list").hasClass("full"))
                                 $("#mailsearchlist").removeClass("hoverable");
                         }).on("mouseleave focusout", () => {
-
                             if (document.activeElement === $("#mailsearchform")[0])
                                 return;
 

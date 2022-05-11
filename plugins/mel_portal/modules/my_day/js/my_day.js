@@ -153,24 +153,28 @@ function setupMyDay(datas)
 				html += `<div class=col-8><a href=# class="element-block mel-not-link mel-focus" onclick="${my_day_generate_link(element)}"><span class="element-title default-text bold element-block">` + style_date.start + " - " + style_date.end + `</span><span class="element-desc secondary-text element-block">` + title +"</span></a></div>";
 			}
 
-			if (element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
+			if (rcube_calendar.is_desc_webconf(element.location))//element.location.includes("@visio") || element.location.includes("#visio") || element.location.includes(rcmail.env["webconf.base_url"]))
 			{
 				style = "";
 				if (element.location.includes("@visio"))
 					link = `target="_blank" href="${element.location.replace("@visio:", "")}"`;
-				else if (element.location.includes("#visio"))
-				{
-					var tmp_link = new WebconfLink(element.location);
-					link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+				else {
+					var tmp_link = WebconfLink.create(element);
+					link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;	
 				}
-				else
-				{
-					const categoryExist = element.categories !== undefined && element.categories !== null && element.categories.length > 0;
-					const isWsp = categoryExist && element.categories[0].includes("ws#");
-					const ariane = isWsp ? "null" : "'@home'";
-					const wsp = isWsp ? `'${element.categories[0].replace("ws#", "")}'` : "null";
-					link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(element.location)}', ${wsp}, ${ariane})"`;
-				}
+				// else if (element.location.includes("#visio"))
+				// {
+				// 	var tmp_link = new WebconfLink(element.location);
+				// 	link = `href="#" onclick="window.webconf_helper.go('${tmp_link.key}', ${tmp_link.get_wsp_string()}, ${tmp_link.get_ariane_string()})"`;
+				// }
+				// else
+				// {
+				// 	const categoryExist = element.categories !== undefined && element.categories !== null && element.categories.length > 0;
+				// 	const isWsp = categoryExist && element.categories[0].includes("ws#");
+				// 	const ariane = isWsp ? "null" : "'@home'";
+				// 	const wsp = isWsp ? `'${element.categories[0].replace("ws#", "")}'` : "null";
+				// 	link = `href="#" onclick="window.webconf_helper.go('${mel_metapage.Functions.webconf_url(element.location)}', ${wsp}, ${ariane})"`;
+				// }
 			}
 			else
 				style = "display:none;";

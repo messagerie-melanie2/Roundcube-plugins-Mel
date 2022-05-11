@@ -2611,3 +2611,10 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text
     content: '\e92d';
     font-family: DWP!important;
 }
+.task-settings.action-plugin-mel_statistics_mobile #layout-list .listing tbody td {
+    color: white;
+}
+
+.task-settings.action-plugin-mel_statistics_mobile .listing tbody td {
+    color: #363A5B;
+}

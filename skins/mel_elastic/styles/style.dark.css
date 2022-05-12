@@ -1052,7 +1052,8 @@ html.dark-mode ul ul li.mailbox:hover > a:first-of-type{
 }
 
 html.dark-mode ul ul li.mailbox.selected:hover > a:first-of-type{
-    border: none !important;
+	background-color: transparent!important;
+    border-radius: 0;
 }
 
 html.dark-mode .messagelist tr.message:hover{

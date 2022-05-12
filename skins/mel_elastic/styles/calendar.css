@@ -730,3 +730,35 @@ html body.task-calendar .ui-dialog .ui-datepicker-inline .ui-datepicker-activera
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
 }
+
+ul#calendarslist .calendar
+{
+    cursor: pointer;
+}
+
+ul#calendarslist li.selected > .calendar
+{
+    cursor: default;
+}
+
+ul#calendarslist .calendar:hover {
+	background-color: #31365B;
+}
+
+ul#calendarslist.treelist li div.treetoggle::before {
+	margin-left: 6.5px;
+}
+
+ul#calendarslist.treelist li div.treetoggle:hover
+{
+    background-color: #31365B;
+    border-radius: 5px;
+}
+
+.task-calendar .listing li > div a.quickview:hover:before {
+    opacity: 1;
+}
+
+.task-calendar .listing li > div.focusview a.quickview:hover:before {
+	opacity: 0.2;
+}

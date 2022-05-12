@@ -994,12 +994,12 @@ html.dark-mode .messagelist:not(.threaded) tbody tr:nth-child(2n) td {
     background-color: #1A222B;
 }
 
-html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
+/* html.dark-mode .messagelist:not(.threaded) tbody tr.unread:nth-child(2n) td {
     background-color: #323F4B !important;
-}
+} */
 
 html.dark-mode .messagelist:not(.threaded) tbody tr.unread td {
-background-color: #1F2933;
+    background-color: #323F4B !important;
 }
 
 html.dark-mode .headlines-by.headlines-rss-type {
@@ -1040,11 +1040,95 @@ html.dark-mode body.task-tasks .listing li:hover > div > a:first-child:hover {
 	border-top-right-radius: 15px;
 	border-bottom-right-radius: 15px;
 }
-
+/***Survol***/
 html.dark-mode ul ul li.mailbox:hover > a:first-of-type {
 	background-color: transparent;
 }
 
 html.dark-mode ul ul li.mailbox:hover > a:first-of-type{
-    border: #E1C58F solid thin !important;
+    /* border: #E1C58F solid thin !important; */
+    background-color: #2E2E2E!important;
+    /* color: #E1C58F!important; */
+}
+
+html.dark-mode ul ul li.mailbox.selected:hover > a:first-of-type{
+    border: none !important;
+}
+
+html.dark-mode .messagelist tr.message:hover{
+    box-shadow: 0px 2px 2px #8FABE147;
+}
+
+html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.status::before {
+	color: #96b9e7  !important;
+}
+
+html.dark-mode .messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
+	color: #E1C58F !important;
+    /* text-shadow: 1px 1px 0px #000; */
+}
+
+html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.status:hover::before {
+    color: #E1C58F  !important;
+}
+
+html.dark-mode .messagelist tr.message:hover td.subject span.msgicon.unread.status:hover::before {
+    color: #E1C58F  !important;
+}
+
+html.dark-mode .messagelist tr.message:hover td.flags span.unflagged:hover::before {
+    color: #E1C58F  !important;
+}
+
+html.dark-mode .messagelist tr.message:hover td.flags span.flagged:hover::before {
+    color: #E1C58F  !important;
+}
+/**calendar survol**/
+html.dark-mode ul#calendarslist.treelist li div.treetoggle:hover
+{
+    background-color: #2E2E2E!important;
+    /* color: #E1C58F!important; */
+}
+
+html.dark-mode ul#calendarslist .calendar:hover {
+    background-color: #2E2E2E!important;
+    border-radius: 5px;
+}
+
+html.dark-mode ul#calendarslist li.selected > .calendar:hover {
+    background-color: transparent!important;
+}
+
+/**anuaire*/
+html.dark-mode .gestion-options:hover,
+html.dark-mode ul#directorylist.treelist li:hover > div > a, 
+html.dark-mode ul#directorylist.treelist li:hover > a,
+html.dark-mode #contacts-table.listing li:hover, 
+html.dark-mode #contacts-table.listing tr:hover td, 
+html.dark-mode .popupmenu #contacts-table.listing li:hover {
+    background-color: #2E2E2E!important;
+    /* color: #E1C58F!important; */
+    border-radius: 5px;
+}
+
+html.dark-mode ul#directorylist.treelist li.selected:hover > div > a, 
+html.dark-mode ul#directorylist.treelist li.selected:hover > a,
+html.dark-mode #contacts-table.listing li.selected:hover, 
+html.dark-mode #contacts-table.listing tr.selected:hover td, 
+html.dark-mode .popupmenu #contacts-table.listing li.selected:hover {
+    background-color: transparent!important;
+    border-radius: 0;
+}
+
+/**settings**/
+html.dark-mode .task-settings .listing tbody td:hover,
+html.dark-mode .task-settings .scroller > .listing li:hover {
+    background-color: #2E2E2E!important;
+    border-radius: 5px;
+}
+
+html.dark-mode .task-settings .listing tbody .selected td:hover,
+html.dark-mode .task-settings .scroller > .listing li.selected:hover {
+    background-color: transparent!important;
+    border-radius: 5px;
 }

@@ -673,8 +673,83 @@ html.touch .messagelist td.flags {
   position: initial;
 }
 
-ul ul li.mailbox:hover > a:first-of-type {
+/*Survol*/
+
+ul ul li.mailbox > a {
 	cursor: pointer !important;
+}
+
+ul ul li.mailbox.selected > a:first-of-type {
+	cursor: default !important;
+}
+
+ul ul li.mailbox:hover > a:first-of-type {
+	/* cursor: pointer !important; */
 	background-color: #2C3054;
     border-radius: 5px;
+}
+
+.messagelist tr.message td span,
+.messagelist tr.message td{
+    cursor: pointer !important;
+}
+
+.messagelist tr.message:hover{
+    /* background-color: #2C3054!important; */
+    /* border-bottom: thick solid #3E4261!important; */
+    box-shadow: 0px 2px 2px #26283b47;
+    position: relative;
+}
+
+/* .messagelist tr.message:hover td span{
+    color:white!important;
+} */
+
+ .messagelist tr.message:hover td.subject span.msgicon.status::before {
+	color: #363A5B !important;
+    /* text-shadow: 1px 1px 0px #000; */
+}
+
+.messagelist tr.message.selected:hover td.subject span.msgicon.status::before {
+	color: white !important;
+    /* text-shadow: 1px 1px 0px #000; */
+}
+
+.messagelist tr.message:hover td.subject span.msgicon.status:hover::before {
+    color: #779bd6  !important;
+}
+
+.messagelist tr.message:hover td.subject span.msgicon.unread.status:hover::before {
+    color: #A8ACC0  !important;
+}
+
+.messagelist tr.message:hover td.flags span.unflagged:hover::before {
+    color: #779bd6  !important;
+}
+
+.messagelist tr.message:hover td.flags span.flagged:hover::before {
+    color: #A8ACC0  !important;
+}
+/*
+.messagelist tr:hover span.flag:hover
+{
+    background-color:#484D7A;
+    border-radius: 100%;
+} */
+
+.mail-show-hover{
+
+    background-color: #4f4f4f33;
+    animation: mail-show-hover 0.05s linear forwards;
+    width: 30px;
+    height: 30px;
+}
+
+@keyframes mail-show-hover {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
 }

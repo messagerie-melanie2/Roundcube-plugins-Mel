@@ -2618,3 +2618,56 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text
 .task-settings.action-plugin-mel_statistics_mobile .listing tbody td {
     color: #363A5B;
 }
+/*survol annuaire*/
+ul#directorylist.treelist li > div > a, 
+ul#directorylist.treelist li > a {
+    cursor: pointer;
+}
+
+ul#directorylist.treelist li.selected > div > a, 
+ul#directorylist.treelist li.selected > a {
+    cursor: default;
+}
+
+ul#directorylist.treelist li:hover > div > a, 
+ul#directorylist.treelist li:hover > a {
+	background-color: #484D7A;
+}
+
+.task-addressbook ul.treelist.iconized li div.treetoggle:hover
+{
+    text-shadow: 1px 3px 0px #0b0b0b;
+}
+
+#contacts-table tr td{
+    cursor: pointer;
+}
+
+#contacts-table.listing li.selected, 
+#contacts-table.listing tr.selected td, 
+.popupmenu #contacts-table.listing li.selected {
+    cursor: default;
+}
+
+#contacts-table.listing li:hover, 
+#contacts-table.listing tr:hover td, 
+.popupmenu #contacts-table.listing li:hover {
+	background-color: #2C3054;
+
+}
+/*survol params*/
+
+.task-settings .listing tbody td,
+.task-settings .scroller > .listing li a {
+	cursor: pointer;
+}
+
+.task-settings .listing tbody .selected td,
+.task-settings .scroller > .listing li.selected a {
+	cursor: default;
+}
+
+.task-settings .listing tbody td:hover,
+.task-settings .scroller > .listing li:hover {
+	background-color: #2C3054;
+}

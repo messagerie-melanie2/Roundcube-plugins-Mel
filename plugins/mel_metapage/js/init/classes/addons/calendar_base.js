@@ -218,7 +218,7 @@ $(document).ready(() => {
                     break;
 
                 case 'custom':
-                    val += `@visio:${this.$visioState.val()}`;
+                    val += `@visio:${this.$visioCustom.val()}`;
                     break;
 
                 default:
@@ -460,6 +460,11 @@ $(document).ready(() => {
             ++this._count;
             this.locations[eventsLocation.id] = eventsLocation;
             return this;
+        }
+
+        have(type)
+        {
+            return Enumerable.from(this.locations).any(x => x.value.$selectEventType.val() === type);
         }
 
         delete(id)
@@ -861,6 +866,8 @@ $(document).ready(() => {
          */
         const update_location = function (events)
         {
+            if (window.rcube_calendar_ui.edit._events === undefined) window.rcube_calendar_ui.edit._events = new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+
             if (typeof events === 'string' ) {
                 if (!!window.rcube_calendar_ui.edit._events)
                 {
@@ -871,11 +878,13 @@ $(document).ready(() => {
                     else if (events.includes('restart')){
                         window.rcube_calendar_ui.edit._events.restart();
                     }
+                    else if (events.includes('get'))
+                    {
+                        return window.rcube_calendar_ui.edit._events;// ?? new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
+                    }
                 }
                 events = null;
             }
-
-            if (window.rcube_calendar_ui.edit._events === undefined) window.rcube_calendar_ui.edit._events = new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
             
             /**
              * @type {EventLocation}
@@ -1444,7 +1453,7 @@ $(document).ready(() => {
 
         if ($(`#${mainDivId}`).length > 0) return rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
 
-        const locationTypeOptions = {
+        let locationTypeOptions = {
             default_selected:'En présentiel',
             visio:'Par visioconférence',
             audio:'Par audio'
@@ -1511,7 +1520,7 @@ $(document).ready(() => {
         <input type="text" id="presential-cal-location-${mainDivId}" class="form-control input-mel" placeholder="Nom du lieu" /></div>`).appendTo($rightCol);
         
         let $divSelect = $('<div class="input-group">  <div class="input-group-prepend"></div></div>').appendTo($leftCol);
-        let $optionSelect = $('<select class="form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
+        let $optionSelect = $('<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>').appendTo($divSelect);
 
         if (baseId !== 0)
         {
@@ -1606,6 +1615,21 @@ $(document).ready(() => {
             $visioDiv.css('display', 'none');
             $placeInput.css('display', 'none');
             $audioDiv.css('display', 'none');
+
+            const haveVisio = update_location('get').have('visio');
+
+            if (haveVisio || (!haveVisio && e.val() === 'visio')) 
+            {
+                $('.custom-calendar-option-select').each((i, e) => {
+                    e = $(e);
+
+                    if (e.val() !== 'visio')
+                    {
+                        e.find('option[value="visio"]').css('display', 'none');
+                    }
+                });
+            }
+            else $('.custom-calendar-option-select option[value="visio"]').css('display', '');
 
             switch (e.val()) {
                 case 'default':

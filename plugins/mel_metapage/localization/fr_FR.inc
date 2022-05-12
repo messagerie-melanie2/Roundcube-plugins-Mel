@@ -264,6 +264,7 @@ $labels['no_events_this_day'] = 'Pas de réunion à cette date !';
 
 $labels['webconf_already_running'] = "Une visioconférence est déja en cours, finissez celle en cours avant d'en démarrer une nouvelle !";
 $labels['see_plus'] = 'Voir plus';
+$labels['see_minus'] = 'Voir moins';
 
 $labels['note_created_success'] = 'Note créée avec succès !';
 $labels['note_reinit_success'] = 'Note réinitialisée avec succès !';

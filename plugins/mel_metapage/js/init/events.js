@@ -435,6 +435,7 @@ if (rcmail && window.mel_metapage)
         if (event.location !== undefined && event.location !== null && event.location !== "")
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
             /*white-space: nowrap;*/
+            display:flex;
             text-overflow: ellipsis;"><span style="display: inline-block;
             vertical-align: top;margin-top:5px" class="icon-mel-pin-location mel-cal-icon"></span><span style='display:inline-block'>${linkify(mel_metapage.Functions.updateRichText(event.location.replaceAll("#visio:", "").replaceAll("@visio:", "")).replaceAll('{mel.newline}', '<br/>'))}</span></div></div>`;
 
@@ -847,7 +848,7 @@ if (rcmail && window.mel_metapage)
         if (querry.hasClass("hidden"))
         {
             querry.removeClass("hidden");
-            element.html(`${rcmail.gettext('see_plus', 'mel_metapage')}...`);
+            element.html(`${rcmail.gettext('see_minus', 'mel_metapage')}...`);
         }
         else {
             querry.addClass("hidden");

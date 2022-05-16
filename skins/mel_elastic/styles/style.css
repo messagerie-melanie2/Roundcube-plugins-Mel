@@ -2393,7 +2393,7 @@ html.layout-phone #compose-content
 }
 
 
-/************************************/
+/******************ADDED******************/
 .folderlist li.mailbox .unreadcount {
     background: #779bd6;
   
@@ -2425,11 +2425,11 @@ html.layout-phone #compose-content
   }
       
       
-      a.rcmContactAddress {
+       a.rcmContactAddress {
       color: #333;/*#96b9e7 */
       font-weight: lighter;
-  }
-
+  } 
+/**********************end added**************************/
   #stockage-space-text::before
   {
     content: "\e94f";

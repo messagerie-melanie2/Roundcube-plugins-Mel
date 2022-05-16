@@ -1016,9 +1016,9 @@ html.dark-mode .wlp-contents
     border:none;
 }
 
-a.rcmContactAddress {
+html.dark-mode a.rcmContactAddress {
     color: #96b9e7;
-}
+} 
 
 html.dark-mode .mel-block-list {
 	background-color: #323F4B;

@@ -2,6 +2,7 @@ $(document).ready(() => {
 
     const plugin_text = 'mel_metapage';
     const audio_url = rcmail.env.mel_metapage_audio_url;
+    const newline = '{mel.newline}';
 
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
@@ -494,11 +495,11 @@ $(document).ready(() => {
             for (const key in this.locations) {
                 if (Object.hasOwnProperty.call(this.locations, key)) {
                     const element = this.locations[key];
-                    val += `${element.getValue()}{mel.newline}`;
+                    val += `${element.getValue()}${newline}`;
                 }
             }
 
-            return val;
+            return val === newline ? '' : val;
         }
 
         check()
@@ -527,12 +528,13 @@ $(document).ready(() => {
 
         static InitFromEvent(location, $mainDiv, init_function, $haveWsp, $wsp, update_location)
         {
+            debugger;
             $mainDiv.html('');
             update_location('restart');
 
-            if ((location || false) !== false)
+            if ((location || false) !== false && location !== newline)
             {
-                location = location.split('{mel.newline}');
+                location = location.split(newline);
 
                 for (let index = 0; index < location.length; index++) {
                     const currentString = location[index] || null;
@@ -2169,6 +2171,13 @@ $(document).ready(() => {
      {
          return rcube_calendar.is_desc_frame_webconf(text) || rcube_calendar.is_desc_bnum_webconf(text);
      }
+
+     Object.defineProperty(rcube_calendar, 'newline_key', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value:newline
+      });
 
 });
 

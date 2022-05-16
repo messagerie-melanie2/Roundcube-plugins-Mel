@@ -246,12 +246,13 @@ if (rcmail && window.mel_metapage)
         });
 
         rcmail.addEventListener("calendar.renderEvent.after", (args) => {
+            const newline = rcube_calendar.newline_key;
             let desc = args.element.find('.fc-event-location');
 
-            if (desc.length > 0 && args.eventDatas.location.includes('{mel.newline}')) 
+            if (desc.length > 0 && args.eventDatas.location.includes(newline)) 
             {
                 let text = '';
-                const splited = args.eventDatas.location.split('{mel.newline}');
+                const splited = args.eventDatas.location.split(newline);
 
                 for (let index = 0; index < splited.length; index++) {
                     const element = splited[index] || null;

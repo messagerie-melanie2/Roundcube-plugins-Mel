@@ -9,7 +9,7 @@ class WebconfLink
         if (link.includes("#visio:"))
         {
             //let tmp = link.split("_key=")[1].split("_");
-            this.key = link.split("_key=")[1].split("&_")[0].split('{mel.newline}')[0];
+            this.key = link.split("_key=")[1].split("&_")[0].split(rcube_calendar.newline_key)[0];
 
             if (link.includes("_ariane="))
             {
@@ -47,7 +47,7 @@ class IntegratedWebconfLink extends WebconfLink
     constructor(location, category)
     {
         super('');
-        this.key = mel_metapage.Functions.webconf_url(location).split('{MEL.NEWLINE}')[0];
+        this.key = mel_metapage.Functions.webconf_url(location).split(rcube_calendar.newline_key.toUpperCase())[0];
         this.ariane = null;
 
         if (Array.isArray(category) && category.length > 0) category = category[0];

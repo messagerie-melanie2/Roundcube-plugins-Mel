@@ -126,7 +126,7 @@ class mel_sharedmailboxes extends rcube_plugin {
             $this->assoc_identity_bal();
             // Ajout d'un champ hidden pour stocker l'account
             $hidden_account = new html_hiddenfield(array('id' => '_compose_hidden_account', 'name' => '_account'));
-            $this->api->add_content($hidden_account->show($this->get_account), 'composeoptions');
+            $this->api->add_content($hidden_account->show($this->get_account), 'composeoptionsaccount');
             // Modification de l'affichage des dossiers imap
             $this->set_compose_sent_folder();
         }

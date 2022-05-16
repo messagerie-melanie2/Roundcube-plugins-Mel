@@ -155,9 +155,9 @@ if (window.rcmail) {
   });
   rcmail.addEventListener('responseafterplugin.refresh_store_target_selection', function(evt) {
     // @rotomeca
-    $("#compose-options select[name=\"_store_target\"]").replaceWith(evt.response.select_html);
+    $("#compose-options select[name=\"_store_target\"]").html($(evt.response.select_html).html());
     setTimeout(() => {
-      $("#compose-options select[name=\"_store_target\"]").addClass("form-control custom-select pretty-select");
+      $("#compose-options select[name=\"_store_target\"]").addClass("form-control custom-select pretty-select").change();
     }, 100);  
     $('#_compose_hidden_account').val(rcmail.env.identities_to_bal[rcmail.env.identity]);
   });

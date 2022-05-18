@@ -262,9 +262,19 @@ class mel_wekan extends rcube_plugin
      */
     public function board_exist($board)
     {
+        $board_exist = false;
         $board = $this->check_board($board);
 
-        return $board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"]);
+        if($board["httpCode"] !== null && $board["httpCode"] == 200 && $board["content"] !== "{}" && !empty($board["content"])
+        || $board["httpCode"] !== null && $board["httpCode"] != 200) 
+        {
+            $board_exist = true;
+        }
+        else {
+            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist]Recréation d'un board ! ".json_encode($board));
+        }
+
+        return $board_exist;
     }
 
     /**

@@ -271,7 +271,7 @@ class mel_wekan extends rcube_plugin
             $board_exist = true;
         }
         else {
-            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist]Recréation d'un board ! ".json_encode($board));
+            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[mel_wekan->board_exist|".driver_mel::gi()->getUser()->uid."]Recréation d'un board ! : ".json_encode($board));
         }
 
         return $board_exist;

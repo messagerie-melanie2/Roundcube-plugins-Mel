@@ -285,3 +285,8 @@ $labels['search_settings'] = 'Paramètres de la recherche';
 
 $labels['webconf_toggle_participantspane_help'] = "Ouvrir ou fermer la boîte des participants";
 $labels['toggle_participantspane'] = 'Participants';
+$labels['save_model'] = 'Modèle';
+$labels['save_model_title'] = 'Sauvegarder comme un nouveau modèle';
+$labels['is_model'] = 'Ce message est un modèle';
+$labels['use'] = 'Utiliser';
+$labels['model_saved'] = 'Modèle enregistré avec succès !';

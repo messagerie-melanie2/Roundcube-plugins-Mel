@@ -2671,3 +2671,16 @@ ul#directorylist.treelist li:hover > a {
 .task-settings .scroller > .listing li:hover {
 	background-color: #2C3054;
 }
+/*****************************************/
+
+#message-model {
+	width: 100%;
+	text-align: center;
+	background-color: #f0f0f0;
+	padding: 5px 0;
+	border-radius: 5px;
+}
+
+html.dark-mode #message-model {
+	background-color: #323F4B;
+}

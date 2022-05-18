@@ -15,6 +15,9 @@
 		</div>
 	<roundcube:endif />
 	<div class="content frame-content" role="main">
+		<roundcube:if condition="env:is_model" />
+		<div id="message-model"><h3 style="display: inline-block;"><roundcube:label name="mel_metapage.is_model" /></h3> <button onclick="return rcmail.command('edit','new',this,event)" class="mel-button no-button-margin" style="margin-left:15px"><roundcube:label name="mel_metapage.use" /> <span style="margin-left:10px" class="icon-mel-send"></span></button> <button onclick="return rcmail.command('edit','new',this,event)" class="mel-button no-button-margin" style="margin-left:15px"><roundcube:label name="edit" /> <span style="margin-left:10px" class="icon-mel-pencil"></span></button></div>
+		<roundcube:endif />
 		<div id="message-header">
 			<h2 class="subject">
 				<span class="voice"><roundcube:label name="subject" />: </span>

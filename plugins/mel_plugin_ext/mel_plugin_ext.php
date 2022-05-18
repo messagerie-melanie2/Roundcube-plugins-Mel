@@ -3,7 +3,7 @@ class mel_plugin_ext extends rcube_plugin
 {
     public $task = '.*';
 
-    public const PLUGINS = ['libcalendaring'];
+    public const PLUGINS = ['rcube', 'libcalendaring'];
 
     public function init()
     {

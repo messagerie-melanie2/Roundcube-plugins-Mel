@@ -152,17 +152,42 @@ class mel_metapage extends rcube_plugin
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
+        $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs" &&  rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch')
         {
             $this->include_script('js/actions/settings_gs.js');
         }
 
-        if ($this->rc->task === "mail" && $this->rc->action === "compose")
+        if ($this->rc->task === "mail" )
         {
-            $this->include_edited_editor();
-            $this->include_script('js/init/classes.js');
-            $this->include_script('js/init/constants.js');
+            $model_mbox = $this->rc->config->get('models_mbox');
+            switch ($this->rc->action) {
+                case 'compose':
+                    $this->include_edited_editor();
+                    $this->include_script('js/init/classes.js');
+                    $this->include_script('js/init/constants.js');
+
+                    if ($_COOKIE['current_model_id'] !== null)
+                    {
+                        $this->rc->output->set_env("is_model", true);
+                        $this->rc->output->set_env("model_id", $_COOKIE['current_model_id']);
+                        $this->include_script('js/actions/mail_compose_event.js');
+                    }
+                    break;
+
+                case 'preview':
+                case 'show':
+                    if (rcube_charset::convert(rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC), 'UTF7-IMAP') === $this->rc->config->get('models_mbox'))
+                    {
+                        $this->rc->output->set_env("is_model", true);
+                    }
+                    break;
+                
+                default:
+                    $this->rc->output->set_env("model_mbox", $model_mbox);
+                    break;
+            }
         }
 
         if ($this->rc->task === "portail")
@@ -1809,6 +1834,16 @@ class mel_metapage extends rcube_plugin
   {
     $this->rc->output->command('plugin.message_send_error', $args);
     //$this->rc->output->add_script('parent.rcmail.env["message_send_error.value"] = '.json_encode($args));
+    return $args;
+  }
+
+  public function message_draftsaved($args)
+  {
+    if ($args['folder'] === $this->rc->config->get('models_mbox'))
+    {
+        $args['message'] = $this->gettext('model_saved', 'mel_metapage');
+    }
+
     return $args;
   }
 

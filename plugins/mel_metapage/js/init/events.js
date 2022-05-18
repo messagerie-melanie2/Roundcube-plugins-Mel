@@ -894,12 +894,32 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('contextmenu_init', function(menu) {
         // identify the folder list context menu
         if (menu.menu_name == 'messagelist') {
-
+            //debugger;
           // add a shortcut to the folder management screen to the end of the menu
           //menu.menu_source.push({label: rcmail.gettext('new-mail-from', "mel_metapage"), command: 'new-mail-from', classes: 'compose mel-new-compose options'});
+
+            menu.menu_source.unshift(
+                {label: 'Editer le modèle', command: 'edit_model', classes: 'ct-em'}
+            );
+            menu.menu_source.unshift(
+                {label: 'Utiliser comme modèle', command: 'use_as_new', classes: 'ct-m'}
+            );
+          
+
           menu.menu_source.push({label: 'Gérer les étiquettes', command: 'gestion_labels', classes: 'ct-tb'});
       
           menu.addEventListener("beforeactivate", (p) => {
+
+            if (decode_imap_utf7(rcmail.env.mailbox) === rcmail.env.model_mbox)
+            {
+                $(".ct-em").css('display', '');
+                $(".ct-m").css('display', '');
+            }
+            else {
+                $(".ct-em").css('display', 'none');
+                $(".ct-m").css('display', 'none');
+            }
+
             $(".ct-tb").on("mouseover", (e) => {
                 
                 let source = [];

@@ -61,6 +61,18 @@ if (rcmail)
 
             }, true);
 
+            rcmail.register_command("use_as_new",
+            (a,b,c,d) => {
+                rcmail.enable_command('edit', true);
+                rcmail.command('edit','new', c, d);
+            }, true);
+
+            rcmail.register_command("edit_model",
+            (a,b,c,d) => {
+                setCookie('current_model_id', rcmail.get_single_uid(), 7);
+                rcmail.command('use_as_new');
+            }, true);
+
             rcmail.register_command("mel_metapage_manage_mail_box",
             () => {
 

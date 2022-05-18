@@ -851,7 +851,10 @@ $(document).ready(() => {
 
                             frame_context.$("#toolbar-menu a.send").removeAttr('href');
 
+                            if (frame_context.rcmail.env.is_model) box.close.data('force', '1');
+
                             });
+
                             box.content.find(".spinner-grow").css("width", '30%')
                             .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
                             

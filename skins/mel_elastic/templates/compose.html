@@ -77,6 +77,8 @@
 			</a>
 			<roundcube:button command="savedraft" type="link" class="save draft disabled" classAct="save draft"
 				label="save" title="savemessage" tabindex="2" innerclass="inner" data-content-button="true" />
+			<roundcube:button type="link" command="unexist" class="save model" classAct="save model"
+				label="mel_metapage.save_model" title="mel_metapage.save_model_title" tabindex="2" innerclass="inner" data-content-button="true" />
 			<span class="spacer"></span>
 			<roundcube:button name="addattachment" type="link" class="attach"
 				label="attach" title="addattachment" data-hidden="small"
@@ -115,6 +117,7 @@
 		<div id="compose-headers" role="region" aria-labelledby="aria-label-composeheaders">
 			<h2 id="aria-label-composeheaders" class="voice"><roundcube:label name="arialabelmessageheaders" /></h2>
 			<div class="compose-headers">
+				<input type="hidden" name="_model" value="">
 				<div id="compose_from" class="form-group row">
 					<label for="_from" class="col-2 col-form-label"><roundcube:label name="from" /></label>
 					<div class="col-10">

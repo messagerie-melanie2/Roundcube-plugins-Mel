@@ -45,7 +45,7 @@
                 </td>
                 <td class="col-sm-6">
                   <input type="text" name="absence_date_debut" id="abs_date_debut" class="form-control"
-                    value="<roundcube:var name=" env:moncompte_absence_debut_interne" />" />
+                    value="<roundcube:var name="env:moncompte_absence_debut_interne" />" />
                 </td>
               </tr>
               <tr class="form-group row">
@@ -56,7 +56,7 @@
                 </td>
                 <td class="col-sm-6">
                   <input type="text" name="absence_date_fin" id="abs_date_fin" class="form-control"
-                    value="<roundcube:var name=" env:moncompte_absence_fin_interne" />" />
+                    value="<roundcube:var name="env:moncompte_absence_fin_interne" />" />
                 </td>
               </tr>
             </tbody>
@@ -144,8 +144,8 @@
               <tr class="form-group row">
                 <td class="col-sm-12">
                   <textarea class="Saisie form-control" rows=6 cols=100 name="absence_message_externe"
-                    id="abs_msg_inter" style="<roundcube:var name=" env:moncompte_absence_texte_externe_style" />">
-                  <roundcube:var name="env:moncompte_absence_texte_externe" /></textarea>
+                    style="<roundcube:var name="env:moncompte_absence_texte_externe_style" />" 
+                    id="abs_msg_inter"><roundcube:var name="env:moncompte_absence_texte_externe" /></textarea>
                 </td>
               </tr>
             </tbody>

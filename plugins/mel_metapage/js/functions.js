@@ -34,7 +34,7 @@ function m_mp_Create() {
         visio: get_action("mel_metapage.a_web_conf", "icon-mel-videoconference", "window.webconf_helper.go()"),
         tache: get_action("mel_metapage.a_task", "icon-mel-survey", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)"),
         documents: get_action("mel_metapage.a_document", "icon-mel-folder", "m_mp_InitializeDocument()"),
-        sondages: get_action("mel_metapage.a_survey", "icon-mel-sondage", "m_mp_CreateOrOpenFrame('sondage', () => {$('.modal-close ').click();}, () => {$('.sondage-frame')[0].src=rcmail.env.sondage_create_sondage_url;})"),
+        sondages: get_action("mel_metapage.a_survey", "icon-mel-sondage", "m_mp_sondage()"),
         notes: get_action("mel_metapage.a_wordpad", "icon-mel-notes", "window.create_note()"),
     };
 
@@ -1555,7 +1555,10 @@ async function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, 
     await mel_metapage.Functions.change_frame(frameClasse, changepage, true);
 
     if (func !== null)
-        func();
+    {
+        if (isAsync(func)) await func();
+        else func();
+    }
     // new Promise(async (a,b) => {
     //     while (parent.rcmail.env.frame_created === false) {
     //         await delay(1000);
@@ -1564,6 +1567,21 @@ async function m_mp_CreateOrOpenFrame(frameClasse, funcBefore, func = () => {}, 
     //         func();
     // });
 }
+
+async function m_mp_sondage()
+{
+    $('.modal-close ').click();
+    let $querry = $('iframe.sondage-frame');
+
+    if ($querry.length > 0) $querry[0].src = rcmail.env.sondage_create_sondage_url;
+    else if($('.sondage-frame').length > 0) $('.sondage-frame')[0].contentWindow.$('#mel_sondage_frame')[0].src = rcmail.env.sondage_create_sondage_url;
+    else
+    {
+        await mel_metapage.Functions.change_frame('sondage', true, true, {
+            _url:rcmail.env.sondage_create_sondage_url
+        });
+    }
+} 
 
 /**
  * Action de créer un évènement.

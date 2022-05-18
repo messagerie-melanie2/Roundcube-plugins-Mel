@@ -18,6 +18,7 @@ $(document).ready(function() {
 			   window.document.getElementById('mel_sondage_frame').src = url;
 			}
 		   $("#wait_box").hide();
+		   top.rcmail.env.sondage_loaded = true;
 	   },
 	   error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
 		   $("#wait_box").hide();

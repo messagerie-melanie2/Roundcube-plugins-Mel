@@ -69,6 +69,40 @@ if (rcmail && window.mel_metapage)
         }
     });
 
+    rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.before, () => {
+        if (rcmail.env.task === 'bureau')
+        {
+            mel_item_in_update('#tab-for-agenda-content .icon-mel-calendar', 'icon-mel-calendar', 'spinner-grow');  
+            mel_item_in_update('#tab-for-tasks-contents .icon-mel-task', 'icon-mel-task', 'spinner-grow'); 
+        }
+
+    });
+    
+    rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
+        if (rcmail.env.task === 'bureau')
+        {
+            mel_item_in_update('#tab-for-agenda-content .spinner-grow', 'icon-mel-calendar', 'spinner-grow', false); 
+            mel_item_in_update('#tab-for-tasks-contents .spinner-grow', 'icon-mel-task', 'spinner-grow', false); 
+        }
+    });
+
+    function mel_item_in_update(selector, oldClass, newClass, start = true)
+    {
+        if (start)
+        {
+            $(selector)
+            .removeClass(oldClass)
+            .addClass(newClass)
+            .children().first().addClass('hidden');
+        }
+        else {
+            $(selector)
+            .addClass(oldClass)
+            .removeClass(newClass)
+            .children().first().removeClass('hidden');  
+        }
+    }
+
     rcmail.addEventListener("mel_update", (args) => {
 
         if (args.type !== undefined)

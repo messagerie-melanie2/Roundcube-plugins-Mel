@@ -69,7 +69,6 @@
             parent.rcmail.mel_metapage_fn = {
                 calendar_updated: function() {
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.before);
-                    //rcmail.set_busy(true, "loading");
 
                     if (parent.rcmail.env.ev_calendar_url === undefined)
                         parent.rcmail.env.ev_calendar_url = ev_calendar_url;
@@ -166,9 +165,8 @@
                     });
                 },
                 tasks_updated: function() {
-                    //rcmail.set_busy(true, "loading");
-                    //?_task=tasks&_action=fetch&filter=0&lists=tommy_-P-_delphin_-P-_i&_remote=1&_unlock=true&_=1613118450180
                     parent.rcmail.triggerEvent(mel_metapage.EventListeners.tasks_updated.before);
+
                     return $.ajax({ // fonction permettant de faire de l'ajax
                         type: "POST", // methode de transmission des données au fichier php
                         url: '?_task=tasks&_action=fetch&filter=0&_remote=1&_unlock=true&_=1613118450180', //rcmail.env.ev_calendar_url+'&start='+dateNow(new Date())+'&end='+dateNow(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1)), // url du fichier php

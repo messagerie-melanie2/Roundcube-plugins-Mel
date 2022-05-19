@@ -136,6 +136,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('refresh_documents', array($this, 'refresh_documents'));
         $this->register_action('get_date_stockage_user_updated', array($this, 'stockage_user_updated'));
         $this->register_action('toggle_nav_color', array($this, 'toggle_nav_color'));
+        $this->register_action('get_wekan_admin_boards', [$this, 'get_wekan_admin_boards']);
+        $this->register_action('update_wekan_board', [$this, 'update_wekan_board']);
         //stockage_user_updated
         //toggle_nav_color
     }
@@ -1455,9 +1457,8 @@ class mel_workspace extends rcube_plugin
 
                 if ($key === self::CHANNEL)
                     $html.= html::tag("button", ["title" => ($this->channel_enabled === false ? "Vous n'avez pas accès au canal courant ! Demandez à ce que l'on vous rajoute ou changez de canal avec ce bouton !" : "Choisissez un nouveau canal !"),  "id" => "update-channel-button","class" => "mel-button param-button ".($this->channel_enabled === false ? "btn-danger btn" : "") ], "Changer de canal".html::tag("span", ["class" => "plus icon-mel-pencil"]));
-
-                if (false && $key === self::TASKS)
-                    $html.= html::tag("button", ["id" => "update-kanban-button","class" => "mel-button param-button"], "Changer de kanban".html::tag("span", ["class" => "plus icon-mel-pencil"]));
+                else if ($key === self::TASKS)
+                    $html.= html::tag("button", ["title" => "Choisissez un nouveau tableau !",  "id" => "update-wekan-button","class" => "mel-button param-button " ], "Changer de tableau".html::tag("span", ["class" => "plus icon-mel-pencil"]));
 
                 $class = "btn btn-danger hidden mel-button no-button-margin";
                 $span = $icons["minus"];    
@@ -2585,7 +2586,10 @@ class mel_workspace extends rcube_plugin
                     driver_mel::gi()->workspace_group($workspace->uid, [], false);  
 
                 if ($services[self::WEKAN])
-                    $this->wekan()->delete_board($this->get_object($workspace, self::WEKAN)->id);
+                {
+                    $wekan = $this->get_object($workspace, self::WEKAN);
+                    if ($wekan->updated !== true) $this->wekan()->delete_board($wekan->id);
+                }
 
                 if ($services[self::CHANNEL])
                 {
@@ -3830,6 +3834,49 @@ class mel_workspace extends rcube_plugin
             echo "denied";
     
         exit;
+    }
+
+    public function get_wekan_admin_boards()
+    {
+        $wsp_id = rcube_utils::get_input_value("_wsp", rcube_utils::INPUT_POST);
+        $wsp = self::get_workspace($wsp_id);
+        $wekan = $this->get_object($wsp, self::WEKAN)->id;
+        $boards_min = [];
+        
+        $html = '<select id="select-update-wekan" class="input-mel mel-input form-control">';
+
+        foreach ($this->wekan()->get_user_admin_board_generator(driver_mel::gi()->getUser()->uid) as $value) {
+            if (($wsp->ispublic && $value->permission === 'public') || 
+            (!$wsp->ispublic && $value->permission === 'private'))
+                //$boards_min[] = ["id" => $value->id, "title" => $value->title];
+                $html .= '<option value="'.$value->id.'" '.($value->id === $wekan ? 'selected' : '').'>'.$value->title.'</option>';
+        }
+
+        $html .= '</select>';
+
+        echo $html;
+        exit;
+    }
+
+    public function update_wekan_board()
+    {
+        $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_POST);
+        $wsp_id = rcube_utils::get_input_value("_wsp", rcube_utils::INPUT_POST);
+
+        $wsp = self::get_workspace($wsp_id);
+
+        if (self::is_admin($wsp))
+        {
+            $wekan = $this->get_object($wsp, self::WEKAN);
+            $wekan->id = $id;
+            $wekan->updated = true;
+            $this->save_object($wsp, self::WEKAN, $wekan);
+            $wsp->save();
+            echo true;
+        }
+        else echo "denied";
+
+         exit;
     }
 
     public static function notify($workspace, $title, $content, $action = null, $include_current = false)

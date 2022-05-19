@@ -25,6 +25,11 @@
                 $("#update-channel-button").on("click", () => {
                     this.change_canal();
                 });
+
+            if ($("#update-wekan-button").length > 0)
+                $("#update-wekan-button").on("click", () => {
+                    this.change_wekan();
+                });
         }
 
         change_icons()
@@ -833,7 +838,118 @@
             },
             (a,b,c) => {},
             "GET");
-        }          
+        }     
+        
+        change_wekan()
+        {
+            if (this.is_busy())
+                return Promise.resolve();
+            else
+                this.busy(true);
+
+            let globalModal;
+            if ($("#globalModal .modal-close-footer").length == 0)
+                globalModal = GlobalModal.resetModal();
+            else
+                globalModal = Promise.resolve();
+
+            return this.ajax(this.url("get_wekan_admin_boards"),
+            {_wsp:this.uid},
+            (datas) => {
+                globalModal.then(() => {
+
+                if (Workspace_Param.PopUp !== undefined)
+                    delete Workspace_Param.PopUp;
+
+                const config = new GlobalModalConfig("Changer de tableau",
+                "default",
+                datas,
+                null,
+                "default",
+                "default",
+                    () => {
+                        let val = $("#select-update-wekan").val();
+
+                        const confirmation = confirm(`Attention !\r\nCe tableau sera synchroniser avec votre espace.\r\nCelui-ci ne sera pas supprimer si l'espace est supprimé.\r\nÊtes-vous sûr de vouloir continuer ?`);
+
+                        if (confirmation)
+                        {
+                            if (val === rcmail.env.wekan_datas.id)
+                            {
+                                let querry = $("#select-update-wekan").parent();
+                                querry.find("#addederrorsn").remove();
+                                querry.append(`<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal différent !</div>`) 
+                                return;
+                            }
+                            
+                            this.busy(true);
+                            this.ajax(this.url("update_wekan_board"), {
+                                _id:val,
+                                _wsp:this.uid
+                            }, (datas) => {
+                                window.location.reload();
+                            },
+                                (a,b,c) => {
+                                    console.error("###[change_canal]une erreur est survenue ! ", a, b, c);
+                                    this.busy(false);
+                                    rcmail.display_message("impossible de mettre à jour le tableau !", "error");
+                                }).always(() => {
+                                this.busy(false);
+                                Workspace_Param.PopUp.close();
+                            });
+                        }
+                        // else if (confirmation)
+                        // {
+                        //     if (!val.includes(":"))
+                        //     {
+                        //         let querry = $("#selectnewchannel");
+                        //         querry.find("#addederrorsn").remove();
+                        //         querry.append(`<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal !</div>`)
+                        //     }
+                        // }
+                    }
+                );
+    
+                Workspace_Param.PopUp = new GlobalModal("globalModal", config, false);
+
+                // let querry = $("#selectnewchannel select");
+                // querry.find(`option[value="home"]`).remove();
+                // querry = querry.find("option")
+
+                // for (let index = 0; index < querry.length; ++index) {
+                //     const element = querry[index];
+
+                //     try {
+                //         if ($(element).attr("value").split(":")[1] === rcmail.env.current_workspace_channel.name)
+                //         {
+                //             $(element).attr("selected", "selected");
+                //             break;
+                //         }
+                //     } catch (error) {
+                //         console.warn(error);
+                //         continue;
+                //     }
+                // }
+
+                Workspace_Param.PopUp.footer.buttons.save.addClass("mel-button btn-secondary").removeClass("btn-primary").html(
+                    rcmail.gettext("save") + 
+                    '<span class="plus icon-mel-plus"></span>'
+                );
+
+                Workspace_Param.PopUp.footer.buttons.exit.addClass("mel-button btn-danger").removeClass("btn-secondary").html(
+                    rcmail.gettext("close") + 
+                    '<span class="plus icon-mel-close"></span>'
+                );
+                //console.log("popup", Workspace_Param.PopUp);
+               
+
+                this.busy(false);
+                Workspace_Param.PopUp.show();
+                });
+            },
+            (a,b,c) => {},
+            "GET");
+        }    
 
         archive(archive = true)
         {

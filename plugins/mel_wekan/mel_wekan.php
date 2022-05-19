@@ -310,4 +310,14 @@ class mel_wekan extends rcube_plugin
     {
         return $server ? $this->wekanApi->get_url() : $this->rc->config->get("wekan_url");
     }
+
+    public function get_user_admin_board($username)
+    {
+        return $this->wekanApi->get_user_boards_admin($username);
+    }
+
+    public function get_user_admin_board_generator($username)
+    {
+        return $this->wekanApi->get_user_boards_admin_generator($username);
+    }
 }

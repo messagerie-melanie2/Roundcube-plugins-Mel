@@ -124,6 +124,24 @@ class Mel_Enumerator implements Mel_Module_Enumerable{
         return true;
     }
 
+    public function first()
+    {
+        foreach ($this->generateArray() as $value) {
+            return $value;
+        }
+
+        throw new Exception("Rien n'a été trouvé !");
+    }
+
+    public function firstOrDefault($default = null)
+    {
+        try {
+            return $this->first();
+        } catch (\Throwable $th) {
+            return $default;
+        }
+    }
+
     public static function from($arrayLike)
     {
         return new Mel_Enumerator($arrayLike);

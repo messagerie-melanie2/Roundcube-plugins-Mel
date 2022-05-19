@@ -127,13 +127,39 @@ if (rcmail)
 
             rcmail.register_command("event-compose", () => {
                 const event = ui_cal.selected_event;
+                window.current_event_modal.close();
                 parent.rcmail.open_compose_step({to:Enumerable.from(event.attendees).select(x => x.email).toArray().join(',')});
             }, true);
 
             rcmail.register_command("event-self-invitation", () => {
-                const event = ui_cal.selected_event;
-                rcmail.env.uid = event.uid;
-                rcube_libcalendaring.add_from_itip_mail('2:0', 'calendar', 'accepted', 'CFB1D9A7EC3F1B7C0E5CC3FAF2216EFF-5A655EB2FC8340E2')
+                let event = ui_cal.selected_event;
+                delete event.source;
+                event.start = cal.date2ISO8601(event.start.toDate());
+                event.end = cal.date2ISO8601(event.end.toDate());
+
+                if (!event.allDay) delete event.allDay;
+                window.current_event_modal.close();
+                let b = true;
+                rcmail.set_busy(true, "loading");
+                mel_metapage.Functions.post(
+                    mel_metapage.Functions.url('calendar', 'event'),
+                    {
+                        e:event,
+                        action:'invite-self'
+                    },
+                    () => {
+                        rcmail.set_busy(false);
+                        b = false;
+                        rcmail.clear_messages();
+                        rcmail.command('refreshcalendar');
+                    }
+                ).always(() => {
+                    if (b) {
+                        rcmail.set_busy(false);
+                        rcmail.clear_messages();
+                    }
+                });
+
             }, true);
 
             rcmail.register_command("event-self-copy", () => {

@@ -1067,9 +1067,27 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         switch ($action) {
+                    //PAMELA
+        case "invite-self":
+            //Récupération des infos de l'utilisateurs
+            $user = driver_mel::gi()->getUser();
+
+            //Ajouts des infos de l'utilisateur dans l'évènement
+            if (isset($event['attendees']) && is_array($event['attendees']))
+            {
+                $event['attendees'][] = [
+                    'email' => $user->email,
+                    'name' => $user->fullname,
+                    'role' => 'REQ-PARTICIPANT',
+                    'status' => 'ACCEPTED',
+                    'skip_notify' => 'true'
+                ];
+                //Changement du calendrier
+                $event['calendar'] = driver_mel::mceToRcId($user->uid);
+            }
         case "new":
             // create UID for new event
-            $event['uid'] = $this->generate_uid();
+            if ($action === "new") $event['uid'] = $this->generate_uid();
             if (!$this->write_preprocess($event, $action)) {
                 $got_msg = true;
             }
@@ -1083,7 +1101,6 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;
             break;
-
         case "edit":
             if (!$this->write_preprocess($event, $action)) {
                 $got_msg = true;
@@ -1095,6 +1112,7 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && (!empty($event['recurrence']) || !empty($event['_savemode']) || !empty($event['_fromcalendar'])) ? 2 : 1;
             break;
+
 
         case "resize":
             if (!$this->write_preprocess($event, $action)) {
@@ -2377,7 +2395,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         // check for organizer in attendees
-        if ($action == 'new' || $action == 'edit') {
+        if ($action == 'new' || $action == 'edit' || $action == 'invite-self') {
             if (empty($event['attendees'])) {
                 $event['attendees'] = [];
             }

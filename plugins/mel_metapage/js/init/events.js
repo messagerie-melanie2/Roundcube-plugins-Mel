@@ -669,6 +669,8 @@ if (rcmail && window.mel_metapage)
         if(window.create_popUp !== undefined)
             delete window.create_popUp;
 
+        if (!!window.current_event_modal) delete window.current_event_modal;
+
     });
 
     //Gestion des liens
@@ -760,7 +762,7 @@ if (rcmail && window.mel_metapage)
         else $(".mel-event-compose").css("display", "");
 
         if (event.calendar === mceToRcId(rcmail.env.username) || event.attendees === undefined) $(".mel-event-self-invitation").css("display", "none");
-        else $(".mel-event-self-invitation").css("display", "none"); /*TODO : Activer lorsque ça fonctoinnera*/
+        else $(".mel-event-self-invitation").css("display", ""); /*TODO : Activer lorsque ça fonctoinnera*/
 
 
         //Button edit
@@ -825,6 +827,7 @@ if (rcmail && window.mel_metapage)
             }
         }
         //fin
+        window.current_event_modal = modal;
     });
 
     async function deplace_popup_if_exist(rec)

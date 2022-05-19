@@ -528,7 +528,6 @@ $(document).ready(() => {
 
         static InitFromEvent(location, $mainDiv, init_function, $haveWsp, $wsp, update_location)
         {
-            debugger;
             $mainDiv.html('');
             update_location('restart');
 

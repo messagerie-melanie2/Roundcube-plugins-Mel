@@ -89,6 +89,11 @@ class Notes extends Page
                 $this->save();
                 echo "break";
                 exit;
+
+            case 'update_height':
+                $this->update_height($this->get_input_post("_uid"), $this->get_input_post("_height"));
+                break;
+
             case 'get':
                 echo json_encode($this->notes);
                 exit;
@@ -154,6 +159,12 @@ class Notes extends Page
     public function move($uid, $newOrder)
     {
         $this->notes[$uid]["order"] = $newOrder;
+    }
+
+    public function update_height($uid, $newHeight)
+    {
+        if ($newHeight <= 0) unset($this->notes[$uid]["height"]);
+        else $this->notes[$uid]["height"] = $newHeight;
     }
 
     private function update_order()

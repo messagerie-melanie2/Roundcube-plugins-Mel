@@ -99,6 +99,7 @@ $(document).ready(() => {
                     <button title="${rcmail.gettext('new_n', plugin_text)}" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button>
                     <input class="change" type=text style="background-color:${this.color};color:${this.textcolor}" value="${this.title}" />
                     <button title="${rcmail.gettext('settings', plugin_text)}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button>
+                    <button title="Réinitialiser la taille de la note" class="  mel-button no-button-margin bckg true rsb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-paragraph-extend"></span></button>
                     <button title="${rcmail.gettext('delete')}" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button>
                 </div>
                 <div class="note-header-params" style="display:none">
@@ -109,7 +110,7 @@ $(document).ready(() => {
                 <button title="${rcmail.gettext('move_up', plugin_text)}" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
                 </div>
                 <div class="note-body">
-                    <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor}">${this.text}</textarea>
+                    <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}">${this.text}</textarea>
                 </div>
             </div>
             `;
@@ -131,6 +132,25 @@ $(document).ready(() => {
         set_handlers()
         {
             let $element = this.get_html();
+
+            $element.on('mousedown', () => {
+                this._tmp_height = $element.find('textarea').height();
+            })
+            .on('mouseup', () => {
+                const th = $element.find('textarea').height();
+                if (th !== this._tmp_height)
+                {
+                    this.post_height_updated(th);
+                }
+
+                delete this._tmp_height;
+            }); 
+
+            $element.find('button.rsb').click(() => {
+                $element.find('textarea').css('height', '');
+                if (this.uid !== default_note_uid) this.post_height_updated(-1);
+            });
+
             //Handler pour le bouton créer
             $element.find("button.nb").click(async () => {
 
@@ -364,6 +384,16 @@ $(document).ready(() => {
             return this.post('del', {_uid:this.uid});
         }
 
+        post_height_updated(newHeight)
+        {
+            if (this.uid === default_note_uid) return;
+
+            return this.post('update_height', {
+                _uid:this.uid,
+                _height:newHeight
+            });
+        }
+
         /**
          * @async Met à jours la note
          */
@@ -423,7 +453,11 @@ $(document).ready(() => {
          */
         static from(element)
         {
-            return new Sticker(element.uid, element.order, element.title, element.text, element.color, element.textcolor);
+            let s = new Sticker(element.uid, element.order, element.title, element.text, element.color, element.textcolor);
+            
+            if (!!element.height) s.height = element.height;
+
+            return s;
         }
 
         /**

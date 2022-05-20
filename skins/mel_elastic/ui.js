@@ -95,6 +95,7 @@ $(document).ready(() => {
             .setup_html()
             .setup_nav()
             .setup_tasks()
+            .setup_search()
             .setup_other_apps();
         }
 
@@ -919,6 +920,18 @@ $(document).ready(() => {
                 });
                 $("#contacthead").append($tmp);
             }
+
+            return this;
+        }
+
+        setup_search() {
+            let $sbox = $('#quicksearchbox');
+
+            if ($sbox.length === 0) $sbox = $('#searchform');
+
+            if ($sbox.length > 0) $sbox.on('change', () => {
+                $sbox.parent().submit();
+            });
 
             return this;
         }

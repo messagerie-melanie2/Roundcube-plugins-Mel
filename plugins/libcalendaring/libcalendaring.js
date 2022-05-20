@@ -1229,6 +1229,9 @@ rcube_libcalendaring.attendee_html = function(data)
  */
 rcube_libcalendaring.add_from_itip_mail = function(mime_id, task, status, dom_id)
 {
+    // PAMELA - Toujours avoir le message séléctionnée
+    rcmail.env.itip_current_mail_selected = rcmail.message_list ? rcmail.message_list.get_selection() : [];
+
     // ask user to delete the declined event from the local calendar (#1670)
     var del = false;
     if (rcmail.env.rsvp_saved && status == 'declined') {
@@ -1507,7 +1510,7 @@ rcube_libcalendaring.update_itip_object_status = function(p)
 rcube_libcalendaring.itip_message_processed = function(metadata)
 {
   if (metadata.after_action) {
-    setTimeout(function(){ rcube_libcalendaring.itip_after_action(metadata.after_action); }, 1200);
+    rcube_libcalendaring.itip_after_action(metadata.after_action);//setTimeout(function(){  }, 1200);
   }
   // PAMELA - Mark as read and rdvtraite
   if (!metadata.after_action || metadata.after_action === 5) {

@@ -268,8 +268,15 @@ function rcm_tb_label_unflag_msgs(unflag_uids, toggle_label)
 function rcm_tb_label_get_selection()
 {
 	var selection = rcmail.message_list ? rcmail.message_list.get_selection() : [];
-	if (selection.length == 0 && rcmail.env.uid)
-		selection = [rcmail.env.uid, ];
+
+	if (selection.length === 0 && !!rcmail.env.itip_current_mail_selected)
+	{
+		selection = rcmail.env.itip_current_mail_selected;
+		delete rcmail.env.itip_current_mail_selected;
+	}
+
+	if (selection.length == 0 && rcmail.env.uid) selection = [rcmail.env.uid, ];
+	
 	return selection;
 }
 
@@ -452,7 +459,11 @@ rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
 		}
 	});
 	// Fermer le pop up au click
-	closeAction();
+	try {
+		closeAction();
+	} catch (error) {
+		
+	}
 	//rcmail.hide_menu('tb_label_popup');
 };
 

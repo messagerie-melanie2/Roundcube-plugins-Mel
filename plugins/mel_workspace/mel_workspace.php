@@ -2517,7 +2517,7 @@ class mel_workspace extends rcube_plugin
                     $shares = $workspace->shares;
                     unset($shares[$key]);
                     $workspace->shares = $shares;
-                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true));
+                    $this->delete_services_for_user($workspace, $user_to_delete, $this->get_worskpace_services($workspace, true, true));
                     $user_find = true;
                     break;
                 }

@@ -1067,7 +1067,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         switch ($action) {
-                    //PAMELA
+        //PAMELA
         case "invite-self":
             //Récupération des infos de l'utilisateurs
             $user = driver_mel::gi()->getUser();
@@ -1085,6 +1085,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                 //Changement du calendrier
                 $event['calendar'] = driver_mel::mceToRcId($user->uid);
             }
+            mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar->event_action]".json_encode($event));
         case "new":
             // create UID for new event
             if ($action === "new") $event['uid'] = $this->generate_uid();
@@ -2395,7 +2396,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         // check for organizer in attendees
-        if ($action == 'new' || $action == 'edit' || $action == 'invite-self') {
+        if ($action == 'new' || $action == 'edit' /*PAMELA*/|| $action == 'invite-self') {
             if (empty($event['attendees'])) {
                 $event['attendees'] = [];
             }

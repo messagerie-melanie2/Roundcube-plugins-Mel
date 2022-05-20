@@ -898,15 +898,6 @@
                                 Workspace_Param.PopUp.close();
                             });
                         }
-                        // else if (confirmation)
-                        // {
-                        //     if (!val.includes(":"))
-                        //     {
-                        //         let querry = $("#selectnewchannel");
-                        //         querry.find("#addederrorsn").remove();
-                        //         querry.append(`<div id="addederrorsn" style="color:red;">*Vous devez choisir un canal !</div>`)
-                        //     }
-                        // }
                     }
                 );
     

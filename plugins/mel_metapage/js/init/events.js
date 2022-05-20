@@ -670,7 +670,6 @@ if (rcmail && window.mel_metapage)
             delete window.create_popUp;
 
         if (!!window.current_event_modal) delete window.current_event_modal;
-
     });
 
     //Gestion des liens

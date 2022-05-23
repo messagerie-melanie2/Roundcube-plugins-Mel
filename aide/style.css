@@ -3,7 +3,7 @@ html {
   height: 100%;
 }
 body {
-  background-color: #eaeaea; /* New design */
+  background-color: #F0F0F0; /* New design */
   color: #464545;
   padding: 0px;
   margin: 0px;
@@ -16,10 +16,11 @@ a {
 }
 h1 {
   background: url("images/help.png") no-repeat left center;
-  padding-left: 35px;
-  color: #505050;
+  padding-left: 50px;
+  color: #363A5B;
   font: 'LeagueGothicRegular' bold;
   font-size: 24px;
+  line-height: 40px;
 }
 h2 {
   font-size: 20px;
@@ -35,7 +36,6 @@ h3 {
 #content {
   background-color: #fff;
   padding: 10px 10px;
-  box-shadow: 0px 0px 9px rgba(0,0,0,0.15);
   min-width: 800px;
   min-height: 400px;
 }
@@ -98,6 +98,7 @@ h3 {
 }
 #help-details .details .name {
   font-weight: bold;
+  color: #363A5B;
 }
 #help-details .details .list ul {
   padding-left: 20px;
@@ -112,6 +113,10 @@ h3 {
 }
 #help-search .help-search-input input {
   width: 350px;
+  height: 30px;
+  border-radius: 15px;
+  border: 1px solid #424665;
+  padding: 0 10px;
 }
 #help-search-results {
 	display: none;

@@ -629,7 +629,7 @@ const mel_metapage = {
                 }
             }
 
-            await this.change_frame(contracted_task, true, true, params);
+            return await this.change_frame(contracted_task, true, true, params);
         },
 
         /**

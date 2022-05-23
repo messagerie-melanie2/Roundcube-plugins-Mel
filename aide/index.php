@@ -10,9 +10,9 @@ require_once 'config.php';
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" href="style.css" />
-<link rel="stylesheet" href="custom.css" />
-<link rel="icon" type="image/png" href="images/favicon_help.png" />
+<link rel="stylesheet" href="style.css?v=202205231203" />
+<link rel="stylesheet" href="custom.css?v=202205231203" />
+<link rel="icon" type="image/png" href="images/favicon_help.png?v=202205231203" />
 <title><?= $config['title'] ?></title>
 </head>
 <body>

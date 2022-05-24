@@ -1085,7 +1085,6 @@ $("#rcmfd_new_category").keypress(function(event) {
                 //Changement du calendrier
                 $event['calendar'] = driver_mel::mceToRcId($user->uid);
             }
-            mel_logs::get_instance()->log(mel_logs::ERROR, "[calendar->event_action]".json_encode($event));
         case "new":
             // create UID for new event
             if ($action === "new") $event['uid'] = $this->generate_uid();

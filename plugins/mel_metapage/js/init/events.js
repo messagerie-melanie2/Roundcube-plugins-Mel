@@ -527,7 +527,7 @@ if (rcmail && window.mel_metapage)
                     
                     if (!!element && element.length > 0)
                     {
-                        html += `${element.length} ${rcmail.gettext(`itip${key.toLowerCase()}`, 'libcalendaring')}, `;
+                        html += `${element.length} ${rcmail.gettext(`itip${key.toLowerCase()}`, (key === 'ACCEPTED' ? 'mel_metapage' : 'libcalendaring'))}, `;
                     }
                 }
             }

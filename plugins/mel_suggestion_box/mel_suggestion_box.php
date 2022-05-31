@@ -59,6 +59,15 @@ class mel_suggestion_box extends rcube_plugin
    */
   public function init_settings() {
     $this->rc->output->set_pagetitle($this->gettext('suggestionbox'));
+    
+    $settings_url =  $this->rc->config->get('suggestion_url');
+
+    if (isset($settings_url) && $settings_url !== '')
+    {
+      $this->rc->output->set_env('settings_frame_url', $settings_url);
+      $this->rc->output->send('mel_suggestion_box.suggestionbox_settings');
+    }
+    else
     $this->rc->output->send('mel_suggestion_box.suggestionbox_settings');
   }
   /**

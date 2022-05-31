@@ -493,7 +493,7 @@ $(document).ready(() => {
     }
 
     //Ajout des notes au bouton "Mes raccourcis"
-    mm_add_shortcut("notes", Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' '), true);
+    mm_add_shortcut("notes", Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' '), true, 'Notes');
     
     //Lorsque l'on appuie sur le bouton "Mes raccourcis" pour la première fois
     rcmail.addEventListener("apps.create", () => {

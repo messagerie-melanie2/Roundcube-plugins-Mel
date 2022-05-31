@@ -17,7 +17,8 @@ $(document).ready(() => {
          * @returns {Mel_Elastic} Chaînage
          */
         init(){
-            return this.init_const();
+            this.screen_type = null;
+            return this.init_const().initResponsive();
         }
 
         /**
@@ -1727,6 +1728,216 @@ $(document).ready(() => {
                 this.pagination_page($(".pagination-number-" + (current-1))[0], current - 1);
 
             return this;
+        }
+
+        initResponsive(key = null, changeReturn = false)
+        {
+
+            const each = ($tn, tn, t, d, ptl, namespace) => {
+                const $tabName = $tn;//$(e).find('.rTabName');
+                const tabName = tn;//$(e).data('tab-name');
+                const tab = t;//$(e).data('selector-tab');
+                const _default = d;//$(e).data('is-default-tab');
+                const parentTabList = ptl;//$(e).data('parent-tabs');
+
+                const item = {
+                    $tabName:($tabName.length === 0 ? tabName:$tabName),
+                    $tab:$(tab),
+                    default:_default,
+                    $parentTabList:$(parentTabList),
+                    isTabNameString() {
+                        return typeof this.$tabName === 'string';
+                    }
+                };
+
+                this.initTabResponsive(namespace, item);
+            }
+
+            const tab_class = 'mel-responsive-tab';
+            const tab_header_class = 'mel-responsive-tabheader';
+            const tab_content = 'mel-responsive-tab-content';
+
+            if (!key && rcmail.env.task === 'bureau')
+            {
+                const namespace = 'namespace-reponsive-tab-desk';
+                if ($(`.${namespace}`).length === 0)
+                {
+                    $('.module_parent').each((i,e) => {
+                        e = $(e);
+                        each(
+                            e.find('h2').first(),
+                            '',
+                            e,
+                            i === 0,
+                            '#contents',
+                            namespace
+                        );
+                    });
+                    $('#contents').find(`.${tab_class}.${tab_header_class}`).last().addClass('last');
+                }
+
+            }
+            else {
+                let namespace = null;
+
+                switch (key) {
+                    case 'shortcut':
+                        namespace = 'namespace-reponsive-tab-' + key;
+                        break;
+                
+                    default:
+                        break;
+                }
+
+                $(`.${tab_content}${(!!namespace ? `.${namespace}` : '')}`).each((i, e) => {
+                    each(
+                        $(e).find('.rTabName'),
+                        $(e).data('tab-name'),
+                        $(e).data('selector-tab'),
+                        $(e).data('is-default-tab'),
+                        $(e).data('parent-tabs'),
+                        namespace ?? $(e).parent().data('namespace')
+                    );
+                });
+            }
+
+            rcmail.addEventListener("skin-resize", (datas) => { 
+                const small = 'small';
+                const phone = 'phone';
+                //const header_to_hide = 'mel-header-to-hidden';
+                const hide_button = 'responsive-hide-button';
+                const tab_list = 'responsiveTabList';
+                const selected_item_class = 'selected';
+                // const tab_content = 'mel-responsive-tab-content';
+                datas = datas.mode;
+
+                if (datas === small) datas = phone;
+
+                if (this.screen_type !== (datas ?? this.screen_type))
+                {
+                    if ((this.screen_type !== phone && this.screen_type !== small) && (datas === phone || datas === small)) //On passe en mode phone
+                    {
+                        $(`.${tab_list}`)
+                        .css('display', '')
+                        .find(`.${selected_item_class}`)
+                        .click();
+
+                        if (rcmail.env.task === "bureau")
+                        {
+                            $("#welcome-text").find('.col-3')
+                            .css('display', 'none')
+                            .parent().find('.col-6').first()
+                            .removeClass('col-6').addClass('col-12').children()
+                            .css('font-size','30px')
+                            .css('margin-top', 0);
+                        }
+                    }
+                    else {
+                        $(`.${tab_list}`)
+                        .css('display', 'none')
+                        .find(`.${hide_button}`)
+                        .click();
+
+                        if (rcmail.env.task === "bureau")
+                        {
+                            $("#welcome-text").find('.col-3')
+                            .css('display', '')
+                            .parent().find('.col-12').first()
+                            .removeClass('col-12').addClass('col-6').children()
+                            .css('font-size','40px')
+                            .css('margin-top','55px');
+                        }
+                    }
+
+                    this.screen_type = datas ?? this.screen_type;
+                }
+            });
+
+            if (!changeReturn) return this;
+            else{
+                const screen_type = this.screen_type;
+                const update_screen_type = (x) => {
+                    this.screen_type = x;
+                };
+                return {
+                    update() {
+                        const tab_list = 'responsiveTabList';
+                        const selected_item_class = 'selected';
+                        const last = screen_type;
+                        update_screen_type(null);
+                        rcmail.triggerEvent('skin-resize', {mode:last});
+
+                        if (last === 'small' || last === 'phone') 
+                            $(`.${tab_list}`)
+                            .css('display', '')
+                            .find(`.${selected_item_class}`)
+                            .click();
+                    }
+                };
+            }
+        }
+
+        initTabResponsive(namespace, item = {isTabNameString:() => {return true;},$parentTabList:$(), $tabName:$(), $tab:$(), default:false})
+        {
+            const header_to_hide = 'mel-header-to-hidden';
+            const hide_button = 'responsive-hide-button';
+            const tab_list = 'responsiveTabList';
+            const selected_item_class = 'selected';
+            const tab_class = 'mel-responsive-tab';
+            const tab_header_class = 'mel-responsive-tabheader';
+            const tab_content = 'mel-responsive-tab-content';
+
+            let tabName = '';
+
+            //Gestion de l'onglet
+            if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est à l'intérieur du corps
+            {
+                tabName = item.$tabName.html();
+                item.$tabName.addClass(header_to_hide);
+            }
+            else tabName = item.$tabName; //Si c'est juste le nom
+
+            //Id généré depuis son nom
+            const tab_id = 'responsive-generated-' + tabName.replace(/[^0-9a-z]/gi, '').toLowerCase();
+
+            let $tabList = item.$parentTabList.find(`.${tab_list}.${namespace}`);
+
+            //Création de la liste d'onglet si elle n'éxiste pas
+            if ($tabList.length === 0)
+            {
+                $tabList = item.$parentTabList
+                .prepend(`<div class='row ${tab_list} ${namespace}' data-namespace="${namespace}" style="flex-wrap: nowrap;"></div>`)
+                .find(`.${tab_list}.${namespace}`);
+            }
+
+            //Ajout du bouton si il n'éxiste pas
+            if ($tabList.find(`#${tab_id}`).length === 0)
+            {
+                $tabList.append($(`
+                    <button id="${tab_id}" class="${(item.default ? selected_item_class : '')} ${tab_class} ${tab_header_class} ${namespace}">${tabName}</button>
+                `).click(() => {
+                    $(`.${header_to_hide}`).css('display', 'none');
+                    $(`.${tab_content}.${namespace}`).css('display', 'none');
+                    $(`.${tab_class}.${tab_header_class}.${selected_item_class}.${namespace}`).removeClass(selected_item_class);
+                    item.$tab.css('display', '');
+                    $(`#${tab_id}`).addClass(selected_item_class);
+                })
+                );
+            }
+
+            //Création du bouton de "désaffichage"
+            if ($tabList.find(`.${hide_button}`).length === 0)
+            {
+                $tabList.append(`<button class="${hide_button} ${namespace} hidden"></button>`);
+            }
+
+            $tabList.find(`.${hide_button}.${namespace}`).click(() => {
+                item.$tab.css('display', '');
+
+                if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) item.$tabName.css('display', '');
+            });
+
+            item.$tab.addClass(tab_content).addClass(namespace);
         }
 
     }

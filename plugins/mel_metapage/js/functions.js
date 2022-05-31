@@ -126,72 +126,9 @@ function m_mp_createworskpace_steps() {
                 }
             }
             $("#ul-wsp").html(html);
-            // rcmail.register_menu_button($("#worspace-avatar-a")[0], $("#worspace-avatar-a").data('popup'))
-            // UI.popup_init($("#worspace-avatar-a")[0]);
 
             return "";
         },
-        // step1:() => {
-        //     let html = "<div class=row>";
-        //     html += '<div class=col-2>';
-        //     html += "Avatar<br/>"
-        //     html += '<span id=tmpavatar></span>'
-        //     html += "</div><div class=col-"+(enable_custom_uid ? "5" : "10")+">"
-        //     html += "Titre<span class=red-star></span><br/>"
-        //     html += '<input oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control required" maxlength=40 placeholder="Titre de l\'espace"/>';
-        //     html += '</div>';
-        //     html += "<div class=col-5 "+(!enable_custom_uid ? 'style=display:none;' : "")+" >";
-        //     html += "Id<span class=red-star></span><br/>"
-        //     html += '<input maxlength=37 oninput="m_mp_input_uid_change(this)" id=workspace-uid class="form-control required" placeholder="Id unique de l\'espace"/>';
-        //     html += "</div></div>";
-        //     html += "<div class=row style=margin-top:5px><div class=col-12>";
-        //     html += '<span style=margin-top:5px>Description</span><br/>'
-        //     html += '<textarea id=workspace-desc class=form-control placeholder="Description de l\'espace"></textarea>';
-        //     html += "</div></div>"
-        //     html += "<div class=row style=margin-top:5px><div class=col-4>";
-        //     html += '<span style=margin-top:5px>Date de fin</span><br/>'
-        //     html += '<input class=form-control id=workspace-date-end type=datetime-local />';
-        //     html += "</div><div class=col-5>";
-        //     html += '<span style=margin-top:5px>Thématique</span><br/>'
-        //     html += '<input class=form-control id=workspace-hashtag type=text placeholder="Thématique de l\'espace." />';
-        //     html += "</div>"
-        //     html += "<div class=col-3>";
-        //     html += '<span class=red-star-after style=margin-top:5px>Couleur</span><br/>'
-        //     html += '<input id="workspace-color" class=form-control type=color value='+MEL_ELASTIC_UI.getRandomColor()+" />"
-        //     html += "</div>"
-        //     html += "</div>";
-        //     html += '<div class=row style=margin-top:5px><div class=col-12>';
-        //     html += '<span class=red-star-after>Accès</span><br/>'
-        //     html += '<div class="custom-control custom-radio">';
-        //     html += '<input type="radio" checked id="workspace-private" name="customRadio" class="custom-control-input required">';
-        //     html += '<label class="custom-control-label" for="workspace-private">Restreint</label>';
-        //     html += '</div>';
-        //     html += '<div class="custom-control custom-radio">'
-        //     html += '<input type="radio" id="workspace-public" name="customRadio" class="custom-control-input required">';
-        //     html += '<label class="custom-control-label" for="workspace-public">Public</label>';
-        //     html += '</div></div></div>';
-        //     html += '<div style=margin:15px></div>'
-        //     html += '<button style="float:left;display:none;" class="btn btn-warning btn-workspace-left" onclick=m_mp_reinitialize_popup()>Retour</button><button onclick="m_mp_check_w(1,`workspace-step2`)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
-        //     return html;
-        // },
-        // step2:() => {
-        //     let html = "Participants<span class=red-star></span>";
-        //     html += '<div class="input-group">';
-        //     html += '<textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>';
-        //     html += '<ul id="wspf" class="form-control recipient-input ac-input rounded-left">'
-        //                         /* <li class="recipient">
-        //                             <span class="name">delphin.tommy@gmail.com</span>
-        //                             <span class="email">,</span>
-        //                             <a class="button icon remove"></a></li> */
-        //     html += '<li class="input"><input id="workspace-user-list" onchange="m_mp_autocoplete(this)" oninput="m_mp_autocoplete(this)" type="text" tabindex="1" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></li></ul>';
-        // 	html += '<span class="input-group-append">';
-        //     html += `<a href="#add-contact" onclick="m_mp_openTo()" class="input-group-text icon add recipient" title="Ajouter un contact" tabindex="1"><span class="inner">Ajouter un contact</span></a>`;
-        // 	html +=	'			</span>';
-        // 	html += '			</div>';
-        //     html += '<div style=margin:15px></div>'
-        //     html += '<button style="float:left" class="btn btn-warning btn-workspace-left" onclick=m_mp_switch_step(`workspace-step1`)>Retour</button><button onclick="m_mp_check_w(2, `workspace-step3`)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
-        //     return html;
-        // },
         step3: () => {
             let html = "";
             html += `<h3 class="span-mel t1 first">Sélectionner les services à intégrer à l’espace de travail</h3>`;
@@ -228,7 +165,6 @@ function m_mp_input_change(event) {
         },
         url: "/?_task=workspace&_action=get_uid",
         success: function(ariane) {
-            //console.log("uid", ariane);
             $("#workspace-uid").val(ariane);
         },
         error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
@@ -285,9 +221,6 @@ function m_mp_createworkspace() {
                     MEL_ELASTIC_UI.redStars();
                 }, 10);
             });
-
-        //create_popUp.contents.html(html);
-        //create_popUp.editTitle();
         create_popUp.editTitleAndSetBeforeTitle('<a href="javascript:void(0)" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="m_mp_reinitialize_popup(() => {$(`#worspace-avatar-a`).css(`display`, `none`).appendTo($(`#layout`));})"><span class=sr-only>Retour à la modale de création</span></a>',
             'Création d\'un espace de travail');
         create_popUp.modal.focus();
@@ -295,20 +228,9 @@ function m_mp_createworkspace() {
     } catch (error) {
         console.error(error);
     }
-    // $.ajax({ // fonction permettant de faire de l'ajax
-    //     type: "GET", // methode de transmission des données au fichier php
-    //     url: "/?_task=discussion&_action=chanel_create",
-    //     success: function (data) {
-    //         console.log("yeay", data);
-    //     },
-    //     error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-    //         console.error(xhr, ajaxOptions, thrownError);
-    //     },
-    // });//}); 
 }
 
 function m_mp_change_picture(img) {
-    //console.log(img, $("#worspace-avatar-a"));
     if (img === null) {
         $("#worspace-avatar-a").html("");
         m_mp_input($("#workspace-title")[0]);
@@ -317,11 +239,9 @@ function m_mp_change_picture(img) {
 }
 
 async function m_mp_avatarOnSelect(e) {
-    //console.log(e, "e");
     if (e.type === "keydown") {
         if (e.originalEvent.code === "Enter" || e.originalEvent.code === "Space") {
             $("#user-up-panel").focus().popover('show').data("event", "key"); //.trigger("click", e);
-            //$("#groupoptions-user").find("a.active").first().focus();
         }
     }
 }
@@ -863,29 +783,7 @@ function m_mp_remove_li(event) {
     $("#workspace-user-list").focus();
 }
 
-function m_mp_openTo(e, idInput) {
-    // if (rcmail.contact_list === undefined)
-    // {
-    //     rcmail.contact_list = new rcube_list_widget(rcmail.gui_objects.contactslist,
-    //         {multiselect:true, draggable:rcmail.gui_objects.folderlist?true:false, keyboard:true});
-    //     rcmail.contact_list
-    //         .addEventListener('initrow', function(o) { ref.triggerEvent('insertrow', { cid:o.uid, row:o }); })
-    //         .addEventListener('keypress', function(o) { ref.contactlist_keypress(o); })
-    //         .addEventListener('select', function(o) { ref.contactlist_select(o); })
-    //         .addEventListener('dragstart', function(o) { ref.drag_start(o); })
-    //         .addEventListener('dragmove', function(e) { ref.drag_move(e); })
-    //         .addEventListener('dragend', function(e) { ref.drag_end(e); })
-    //         .init();     
-
-    //     if (rcmail.gui_objects.addressbookslist) {
-    //         rcmail.gui_objects.folderlist = rcmail.gui_objects.addressbookslist;
-    //         rcmail.enable_command('list-addresses', true);
-    //         }
-    // }
-
-    // UI.recipient_selector('to');
-    // $(".popup.ui-dialog-content").css("max-height", (window.innerHeight-120) + "px")
-    // .parent().css("top", "60px");
+function m_mp_openTo(e, idInput, actions = null) {
     if (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined)) {
         new Promise(async() => {
             $("#layout").append(await rcmail.env.mel_metapage_call_parsed.contact_list());
@@ -912,6 +810,8 @@ function m_mp_openTo(e, idInput) {
                         })
                         .addEventListener('select', function(node) {
                             rcmail.annuaire_node_select(node)
+
+                            if (!!actions && !!actions.onselect) actions.onselect(node, idInput);
                         });
 
                     if (rcmail.env.annuaire_list) {
@@ -951,14 +851,62 @@ function m_mp_openTo(e, idInput) {
                     create_popUp.modal.css("z-index", "");
                 else if ($("#globalModal").length > 0)
                     $("#globalModal").css("z-index", "");
+
+                    if (rcmail.env.task === 'calendar') $('.ui-dialog').css("display", '');
+                    delete rcmail.env.annuaire_select_actions;
             });
         }
+
+        if (!!(actions?.onselect))
+        {
+            if (!rcmail.env.annuaire_select_actions) rcmail.env.annuaire_select_actions = {};
+            rcmail.env.annuaire_select_actions.onselect = actions.onselect;
+        }
+        
     }
 
     if (window.create_popUp !== undefined)
         create_popUp.modal.css("z-index", 1);
     else if ($("#globalModal").length > 0)
         $("#globalModal").css("z-index", 1);
+
+        if (rcmail.env.task === 'calendar') $('.ui-dialog').css("display", 'none');
+
+
+}
+
+function m_mp_on_open_select_calendar_contacts(node, node_id, fieldId)
+{
+    console.log(node, fieldId);
+
+    if (node.email === rcmail.env.email)
+    {
+        rcmail.display_message('Vous êtes déjà l\'organisateur !', 'error');
+        $('#rcmrow' + node_id).removeClass('added');
+    }
+    else {
+        let can = true;
+        let title = '';
+        $('#edit-attendees-table .attendee-name span').each((i,e) => {
+            if (can)
+            {
+                title = $(e).attr('title');
+
+                if (title === node.email) can = false;
+            }
+        });
+
+        if (can)
+        {
+            $(`#edit-attendee-add`).click();
+            $('#compose-contact-close-modal').click();
+        }
+        else {
+            rcmail.display_message('Vous avez déjà ajouté cet utilisateur !', 'error');
+            $('#rcmrow' + node_id).removeClass('added');
+        }
+    }
+
 
 }
 
@@ -1701,7 +1649,6 @@ function m_mp_anchor_ariane() {
 
 async function m_mp_shortcuts() {
     if (window.shortcuts === undefined) {
-
         if ($(".fullscreen-item").length > 0)
             $(".fullscreen-item").remove();
 
@@ -1715,6 +1662,24 @@ async function m_mp_shortcuts() {
             create_function: `html_helper.Calendars.create({selector:'.fullscreen-item .mm-agenda-date'});window.shortcuts.close();`,
             add_see_all: true
         };
+        const tab_content = 'mel-responsive-tab-content';
+        const tab_namespace = 'namespace-reponsive-tab-shortcut';
+        const parent_selector = '.mm-shortcuts.apps';
+        const attribs = {
+            tasks:{
+                'data-tab-name':'Tâches', 
+                'data-selector-tab':'.square_div.shortcut-task.t',
+                'data-is-default-tab':false,
+                'data-parent-tabs':parent_selector
+            },
+            calendar:{
+                'data-tab-name':'Agenda', 
+                'data-selector-tab':'.square_div.shorcut-calendar',
+                'data-is-default-tab':true,
+                'data-parent-tabs':parent_selector
+            },
+        };
+
         let shortcuts = new FullscreenItem("body", true);
         shortcuts.generate_flex();
         html = "<div class=mm-shortcuts>";
@@ -1724,20 +1689,33 @@ async function m_mp_shortcuts() {
             for (const key in rcmail.env.shortcuts_queue_before) {
                 if (Object.hasOwnProperty.call(rcmail.env.shortcuts_queue_before, key)) {
                     const element = rcmail.env.shortcuts_queue_before[key];
-                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key}`);
+                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key} ${tab_content} ${tab_namespace}`, 
+                    {
+                        'data-tab-name':element?.name ?? element.key, 
+                        'data-selector-tab':`.square_div.shortcut-task.shortcut-${element.key}`,
+                        'data-is-default-tab':false,
+                        'data-parent-tabs':parent_selector
+                    }
+                    );
                 }
             }
         }
 
-        html += html_helper(html_helper.options.block, await html_helper.TasksAsync(tab_tasks, null, null, "Toutes mes tâches"), "shortcut-task");
-        html += html_helper(html_helper.options.block, await html_helper.CalendarsAsync(config), "shortcut-task shorcut-calendar");
+        html += html_helper(html_helper.options.block, await html_helper.TasksAsync(tab_tasks, null, null, "Toutes mes tâches"), tab_namespace + " shortcut-task t " + tab_content, attribs.tasks);
+        html += html_helper(html_helper.options.block, await html_helper.CalendarsAsync(config), tab_namespace + " shortcut-task shorcut-calendar " + tab_content, attribs.calendar);
 
         if (rcmail.env.shortcuts_queue !== undefined)
         {
             for (const key in rcmail.env.shortcuts_queue) {
                 if (Object.hasOwnProperty.call(rcmail.env.shortcuts_queue, key)) {
                     const element = rcmail.env.shortcuts_queue[key];
-                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key}`);
+                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key} ${tab_content} ${tab_namespace}`,
+                    {
+                        'data-tab-name':element?.name ?? element.key, 
+                        'data-selector-tab':`.square_div.shortcut-task.shortcut-${element.key}`,
+                        'data-is-default-tab':false,
+                        'data-parent-tabs':parent_selector
+                    });
                 }
             }
         }
@@ -1745,6 +1723,9 @@ async function m_mp_shortcuts() {
         html += "</div>";
         shortcuts.add_app("items", html);
         window.shortcuts = shortcuts;
+
+        //debugger;
+        MEL_ELASTIC_UI.initResponsive('shortcut', true).update();
 
         rcmail.triggerEvent('apps.create');
     } else {
@@ -1759,7 +1740,7 @@ async function m_mp_shortcuts() {
     }, 100);
 }
 
-function mm_add_shortcut(key, html, before = false)
+function mm_add_shortcut(key, html, before = false, name = null)
 {
     if (window.shortcuts !== undefined) delete window.shortcuts;
     
@@ -1769,7 +1750,8 @@ function mm_add_shortcut(key, html, before = false)
 
         rcmail.env.shortcuts_queue.push({
             key,
-            html
+            html,
+            name
         });
     }
     else {
@@ -1777,7 +1759,8 @@ function mm_add_shortcut(key, html, before = false)
 
         rcmail.env.shortcuts_queue_before.push({
             key,
-            html
+            html,
+            name
         });
     }
     

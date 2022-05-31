@@ -211,7 +211,15 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
-        rcmail.triggerEvent("init_ariane", "mm-ariane");
+        this.chat.on('load', () => {
+            const inertval = setInterval(() => {
+                if (this.chat_launched === true)
+                {
+                    rcmail.triggerEvent("init_ariane", "mm-ariane");
+                    clearInterval(inertval);
+                }
+            });
+        });
         this.busy(); //loading
         mel_metapage.Storage.remove("webconf_token");
         this.update(); //Maj1
@@ -246,6 +254,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             parent.$("#user-up-panel").attr("disabled", "disabled").addClass("disabled").css("pointer-events", "none");
         }
 
+        this.chat_launched = true;
         this.set_title();
 
         //Init jitsi
@@ -1139,7 +1148,7 @@ class MasterWebconfBar {
         }
 
         //Affiche le questionnaire
-        this.showEndPageOnPopUp("Questionnaire satisfaction", url);
+        if (rcmail.env['webconf.have_feed_back'] === true) this.showEndPageOnPopUp("Questionnaire satisfaction", url);
 
         //Gère le placement de la bulle de tchat
         if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
@@ -2124,6 +2133,9 @@ $(document).ready(() => {
                     }
                 });
             }
+
+            if (top.rcmail.env['webconf.have_feed_back'] !== rcmail.env['webconf.have_feed_back']) top.rcmail.env['webconf.have_feed_back'] = rcmail.env['webconf.have_feed_back'];
+
             rcmail.env.webconf = new Webconf("mm-webconf", "mm-ariane", "room-selector", rcmail.env["webconf.key"], rcmail.env["webconf.ariane"], rcmail.env["webconf.wsp"]);
             rcmail.env.webconf.set_title();
 

@@ -1146,8 +1146,12 @@ $(document).ready(() => {
             $("#edit-attendee-add").addClass("mel-button").css("margin", "0 5px");
             $("#edit-attendee-schedule").addClass("mel-button").css("margin", "0 5px");
             
-            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text));
-            $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text));
+            $("#edit-attendee-add").attr("title", rcmail.gettext('add_user_button_title', plugin_text)).before($('#showcontacts_edit-attendee-name'));
+            $("#edit-attendee-name").attr("placeholder", `${rcmail.gettext('add_user_to_event', plugin_text)}...`).attr("title", rcmail.gettext('add_user_to_event_title', plugin_text))
+            .css('border-bottom-right-radius', 0)
+            .css('border-top-right-radius', 0);
+
+
 
             $('#edit-sensitivity option[value="confidential"]').remove();
 

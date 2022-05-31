@@ -320,6 +320,13 @@ class mel_metapage extends rcube_plugin
                     "value" => mel_helper::why_stockage_not_active()
                 ]);
             }
+
+            if (class_exists('rocket_chat'))
+            {
+                $startup = 'chat_startup';
+                $startup_config = $this->rc->config->get($startup, false);
+                $this->rc->output->set_env("launch_chat_frame_at_startup", $startup_config);
+            }
             
             $this->register_action('search_mail', array($this, 'search_mail'));
             $this->register_action('get_unread_mail_count', array($this, 'get_unread_mail_count'));
@@ -1474,136 +1481,209 @@ class mel_metapage extends rcube_plugin
                 'section' => $this->gettext('globalsearch', 'mel_metapage'),
             ];
         }
+         
+        if (is_dir("$dir/program/webconf") && file_exists("$dir/program/webconf/webconf.php"))
+        {
+            $p['list']['visio'] = [
+                'id'      => 'visio',
+                'section' => $this->gettext('visio', 'mel_metapage'),
+            ];
+        }
+
+        if (class_exists("rocket_chat"))
+        {
+            $p['list']['chat'] = [
+                'id'      => 'chat',
+                'section' => $this->gettext('chat', 'mel_metapage'),
+            ];
+        }
+
 
         return $p;
     }
     
-  /**
-   * Handler for user preferences form (preferences_list hook)
-   */
-  public function prefs_list($args) {
+    /**
+     * Handler for user preferences form (preferences_list hook)
+     */
+    public function prefs_list($args) {
 
-    if ($args['section'] == 'general') {
-      // Load localization and configuration
-      $this->add_texts('localization/');
+        if ($args['section'] == 'general') {
+            // Load localization and configuration
+            $this->add_texts('localization/');
 
-      $icon = "mel-icon-size";
-      $folder_space = "mel-folder-space";
-      $message_space = "mel-message-space";
-      $mel_column = "mel-3-columns";
-      $chat_placement = "mel-chat-placement";
+            $icon = "mel-icon-size";
+            $folder_space = "mel-folder-space";
+            $message_space = "mel-message-space";
+            $mel_column = "mel-3-columns";
+            $chat_placement = "mel-chat-placement";
 
-      // Check that configuration is not disabled
-      $config = $this->rc->config->get('mel_mail_configuration', [
-          $icon => $this->gettext("normal", "mel_metapage"),
-          $folder_space => $this->gettext("normal", "mel_metapage"),
-          $message_space => $this->gettext("normal", "mel_metapage"),
-          $mel_column => $this->gettext("yes", "mel_metapage"),
-          $chat_placement => $this->gettext("down", "mel_metapage")
-      ]);
+            // Check that configuration is not disabled
+            $config = $this->rc->config->get('mel_mail_configuration', [
+                $icon => $this->gettext("normal", "mel_metapage"),
+                $folder_space => $this->gettext("normal", "mel_metapage"),
+                $message_space => $this->gettext("normal", "mel_metapage"),
+                $mel_column => $this->gettext("yes", "mel_metapage"),
+                $chat_placement => $this->gettext("down", "mel_metapage")
+            ]);
 
-      $options = [
-            $icon => [
-                $this->gettext("smaller", "mel_metapage"),
-                $this->gettext("normal", "mel_metapage")
-            ],
-            $folder_space => [
-                $this->gettext("smaller", "mel_metapage"),
-                $this->gettext("normal", "mel_metapage"),
-                $this->gettext("larger", "mel_metapage")
-            ],
-            $message_space => [
-                $this->gettext("smaller", "mel_metapage"),
-                $this->gettext("normal", "mel_metapage"),
-                $this->gettext("larger", "mel_metapage")
-            ],
-            $mel_column => [
-                $this->gettext("yes", "mel_metapage"),
-                $this->gettext("no", "mel_metapage")
-            ],
-            $chat_placement => [
-                $this->gettext("up", "mel_metapage"),
-                $this->gettext("down", "mel_metapage")
-            ]
-        ];
+            $options = [
+                $icon => [
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage")
+                ],
+                $folder_space => [
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("larger", "mel_metapage")
+                ],
+                $message_space => [
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("larger", "mel_metapage")
+                ],
+                $mel_column => [
+                    $this->gettext("yes", "mel_metapage"),
+                    $this->gettext("no", "mel_metapage")
+                ],
+                $chat_placement => [
+                    $this->gettext("up", "mel_metapage"),
+                    $this->gettext("down", "mel_metapage")
+                ]
+            ];
 
-        if ($config[$chat_placement] === null || $config[$chat_placement] === "")
-            $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            if ($config[$chat_placement] === null || $config[$chat_placement] === "")
+                $config[$chat_placement] = $this->gettext("down", "mel_metapage");
 
-        foreach ($config as $key => $value) {
-            $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+            foreach ($config as $key => $value) {
+                if ($key === $chat_placement) continue;
+                $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+            }
+            
         }
-      
-    }
-    else if($args['section'] == 'calendar'){
-        $this->add_texts('localization/');
+        else if($args['section'] == 'calendar'){
+            $this->add_texts('localization/');
 
-        $calendar_space = "mel-calendar-space";
+            $calendar_space = "mel-calendar-space";
 
-        $config = $this->rc->config->get('mel_calendar_configuration', [
-            $calendar_space => $this->gettext("normal", "mel_metapage"),
-        ]);
+            $config = $this->rc->config->get('mel_calendar_configuration', [
+                $calendar_space => $this->gettext("normal", "mel_metapage"),
+            ]);
 
-        $options = [
-            $calendar_space => [
-                $this->gettext("without_spaces", "mel_metapage"),
-                $this->gettext("smaller", "mel_metapage"),
-                $this->gettext("normal", "mel_metapage"),
-                $this->gettext("larger", "mel_metapage")
-            ]
-        ];
+            $options = [
+                $calendar_space => [
+                    $this->gettext("without_spaces", "mel_metapage"),
+                    $this->gettext("smaller", "mel_metapage"),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("larger", "mel_metapage")
+                ]
+            ];
 
-        foreach ($config as $key => $value) {
-            $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
+            foreach ($config as $key => $value) {
+                $args['blocks']['view']['options'][$key] = $this->create_pref_select($key, $value, $options[$key]);
+            }
         }
+        else if ($args['section'] == 'globalsearch')
+        {
+            $this->add_texts('localization/');
+            mel_helper::settings(true);
+
+            //Max search mail
+            $search_mail_max = 'search_mail_max';
+            $search_mail_max_config = $this->rc->config->get($search_mail_max, 9999);
+            $search_input = (new setting_option_value_input(0, setting_option_value_input::INFINITY))->html($search_mail_max, $search_mail_max_config, ['name' => $search_mail_max], $this);//new html_inputfield(['name' => $search_mail_max, 'id' => $search_mail_max]);
+
+            $args['blocks']['general']['options'][$search_mail_max] = $search_input;/*[
+                'title'   => html::label($search_mail_max, rcube::Q($this->gettext($search_mail_max))),
+                'content' => $search_input->show($search_mail_max_config),
+            ];*/
+
+            //Search on all bal
+            $search_on_all_bal = 'search_on_all_bal';
+            $search_on_all_bal_config = $this->rc->config->get($search_on_all_bal, true);
+            $search_check = new html_checkbox(['name' => $search_on_all_bal, 'id' => $search_on_all_bal, 'value' => 1]);
+
+            $args['blocks']['general']['options'][$search_on_all_bal] = [
+                'title'   => html::label($search_on_all_bal, rcube::Q($this->gettext($search_on_all_bal))),
+                'content' => $search_check->show($search_on_all_bal_config ? 1 : 0),
+            ];
+
+            $args['blocks']['general']['options']['balp_settings'] = [
+                'content' => $this->create_balp_selection($this->rc->config->get('global_search_balp_configs', []))->show(['style' => ($search_on_all_bal_config ? 'display:none' : '')]),
+            ];
+
+            //Search on all bali
+            $search_on_all_bali_folders = 'search_on_all_bali_folders';
+            $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
+            $search_check = new html_checkbox(['name' => $search_on_all_bali_folders, 'id' => $search_on_all_bali_folders, 'value' => 1]);
+
+            $args['blocks']['general']['options'][$search_on_all_bali_folders] = [
+                'title'   => html::label($search_on_all_bali_folders, rcube::Q($this->gettext($search_on_all_bali_folders))),
+                'content' => $search_check->show($search_on_all_bali_folders_config ? 1 : 0),
+            ];
+
+            $args['blocks']['general']['options']['bali_settings'] = [
+                'content' => $this->create_bali_folders_selection($this->rc->config->get('global_search_bali_folders_configs', []))->show(['style' => ($search_on_all_bali_folders_config ? 'display:none' : '')]),
+            ];
+            
+        }
+        else if ($args['section'] == 'visio')
+        {
+            $this->add_texts('localization/');
+            $askOnEnd = 'visio_ask_on_end';
+            $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
+
+            $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
+            $args['blocks']['general']['options'][$askOnEnd] = [
+                'title'   => html::label($askOnEnd, rcube::Q($this->gettext($askOnEnd))),
+                'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
+            ];
+        }
+        else if ($args['section'] == 'chat')
+        {
+            $this->add_texts('localization/');
+            $startup = 'chat_startup';
+            $startup_config = $this->rc->config->get($startup, false);
+
+            $startup_check = new html_checkbox(['name' => $startup, 'id' => $startup, 'value' => 1]);
+            $args['blocks']['general']['options'][$askOnEnd] = [
+                'title'   => html::label($startup, rcube::Q($this->gettext($startup))),
+                'content' => $startup_check->show($startup_config ? 1 : 0),
+            ];
+
+            $icon = "mel-icon-size";
+            $folder_space = "mel-folder-space";
+            $message_space = "mel-message-space";
+            $mel_column = "mel-3-columns";
+            $chat_placement = "mel-chat-placement";
+
+            // Check that configuration is not disabled
+            $config = $this->rc->config->get('mel_mail_configuration', [
+                $icon => $this->gettext("normal", "mel_metapage"),
+                $folder_space => $this->gettext("normal", "mel_metapage"),
+                $message_space => $this->gettext("normal", "mel_metapage"),
+                $mel_column => $this->gettext("yes", "mel_metapage"),
+                $chat_placement => $this->gettext("down", "mel_metapage")
+            ]);
+
+            if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+            $options = [
+                $chat_placement => [
+                    $this->gettext("up", "mel_metapage"),
+                    $this->gettext("down", "mel_metapage")
+                ]
+            ];
+
+            foreach ($config as $key => $value) {
+                if ($options[$key] !== null)
+                {
+                    $args['blocks']['main']['options'][$key] = $this->create_pref_select($key, $value, $options[$key], ($key === $mel_column ? ["style" => "display:none;"] : null));
+                }
+            }
+        }
+
+        return $args;
     }
-    else if ($args['section'] == 'globalsearch')
-    {
-        $this->add_texts('localization/');
-        mel_helper::settings(true);
-
-        //Max search mail
-        $search_mail_max = 'search_mail_max';
-        $search_mail_max_config = $this->rc->config->get($search_mail_max, 9999);
-        $search_input = (new setting_option_value_input(0, setting_option_value_input::INFINITY))->html($search_mail_max, $search_mail_max_config, ['name' => $search_mail_max], $this);//new html_inputfield(['name' => $search_mail_max, 'id' => $search_mail_max]);
-
-        $args['blocks']['general']['options'][$search_mail_max] = $search_input;/*[
-            'title'   => html::label($search_mail_max, rcube::Q($this->gettext($search_mail_max))),
-            'content' => $search_input->show($search_mail_max_config),
-        ];*/
-
-        //Search on all bal
-        $search_on_all_bal = 'search_on_all_bal';
-        $search_on_all_bal_config = $this->rc->config->get($search_on_all_bal, true);
-        $search_check = new html_checkbox(['name' => $search_on_all_bal, 'id' => $search_on_all_bal, 'value' => 1]);
-
-        $args['blocks']['general']['options'][$search_on_all_bal] = [
-            'title'   => html::label($search_on_all_bal, rcube::Q($this->gettext($search_on_all_bal))),
-            'content' => $search_check->show($search_on_all_bal_config ? 1 : 0),
-        ];
-
-        $args['blocks']['general']['options']['balp_settings'] = [
-            'content' => $this->create_balp_selection($this->rc->config->get('global_search_balp_configs', []))->show(['style' => ($search_on_all_bal_config ? 'display:none' : '')]),
-        ];
-
-        //Search on all bali
-        $search_on_all_bali_folders = 'search_on_all_bali_folders';
-        $search_on_all_bali_folders_config = $this->rc->config->get($search_on_all_bali_folders, true);
-        $search_check = new html_checkbox(['name' => $search_on_all_bali_folders, 'id' => $search_on_all_bali_folders, 'value' => 1]);
-
-        $args['blocks']['general']['options'][$search_on_all_bali_folders] = [
-            'title'   => html::label($search_on_all_bali_folders, rcube::Q($this->gettext($search_on_all_bali_folders))),
-            'content' => $search_check->show($search_on_all_bali_folders_config ? 1 : 0),
-        ];
-
-        $args['blocks']['general']['options']['bali_settings'] = [
-            'content' => $this->create_bali_folders_selection($this->rc->config->get('global_search_bali_folders_configs', []))->show(['style' => ($search_on_all_bali_folders_config ? 'display:none' : '')]),
-        ];
-        
-    }
-
-    return $args;
-  }
 
     function create_bali_folders_selection($config)
     {
@@ -1767,6 +1847,46 @@ class mel_metapage extends rcube_plugin
             $bali_folders = $storage->list_folders_subscribed('', '*', 'mail');
             $args['prefs'][$op_table_bali] = $this->_save_pref_update_config($config_bali, $bali_folders, 'bali_folders_');
         }
+    }
+    else if ($args['section'] == 'visio')
+    {
+        $this->add_texts('localization/');
+        $askOnEnd = 'visio_ask_on_end';
+        $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
+        $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
+        $args['prefs'][$askOnEnd] = $askOnEnd_config;
+    }
+    else if ($args['section'] == 'chat')
+    {
+        $this->add_texts('localization/');
+        $startup = 'chat_startup';
+        $startup_config = $this->rc->config->get($startup, false);
+        $startup_config = rcube_utils::get_input_value($startup, rcube_utils::INPUT_POST) === '1';
+        $args['prefs'][$startup] = $startup_config;
+
+        $icon = "mel-icon-size";
+        $folder_space = "mel-folder-space";
+        $message_space = "mel-message-space";
+        $mel_column = "mel-3-columns";
+        $chat_placement = "mel-chat-placement";
+        
+      // Check that configuration is not disabled
+        $config = $this->rc->config->get('mel_mail_configuration', [
+            $icon => $this->gettext("normal", "mel_metapage"),
+            $folder_space => $this->gettext("normal", "mel_metapage"),
+            $message_space => $this->gettext("normal", "mel_metapage"),
+            $mel_column => $this->gettext("yes", "mel_metapage"),
+            $chat_placement => $this->gettext("down", "mel_metapage")
+        ]);
+
+        if ($config[$chat_placement] === null || $config[$chat_placement] === "")
+            $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+        $config[$chat_placement] = rcube_utils::get_input_value($chat_placement, rcube_utils::INPUT_POST);
+
+        $args['prefs']["mel_mail_configuration"] = $config;
+      
+        $this->rc->output->set_env("mel_metapage_mail_configs", $config);
     }
 
 

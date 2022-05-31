@@ -97,7 +97,6 @@
                  this.setLoading();
 
                  link.callUpdate(task, action, addonConfig).then((result) => {
-                    debugger;
                     if (afterCreate !== null)
                         afterCreate(result);
                     else {

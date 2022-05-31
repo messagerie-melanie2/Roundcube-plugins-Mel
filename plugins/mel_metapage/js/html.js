@@ -1,8 +1,24 @@
 
-function html_helper(option, html, optional_classes = ""){
+function html_helper(option, html, optional_classes = "", attribs = null){
+
+	if (!!attribs)
+	{
+		const tmp = attribs;
+		attribs = '';
+
+		for (const key in tmp) {
+			if (Object.hasOwnProperty.call(tmp, key)) {
+				const element = tmp[key];
+				attribs += `${key}="${element}" `;
+			}
+		}
+
+	}
+	else attribs = '';
+
     switch (option) {
         case html_helper.options["block"]:   
-            return '<div class="square_div '+optional_classes+'"><div class=contents><div class=square-contents>'+html+'</div></div></div>';
+            return  `<div class="square_div ${optional_classes}" ${attribs}><div class=contents><div class=square-contents>${html}</div></div></div>`;
         case html_helper.options.create_button:
 
 			let onclick = "";
@@ -27,7 +43,7 @@ function html_helper(option, html, optional_classes = ""){
 			if (classes !== "")
 				classes = `class="${classes}"`;
 
-			return `<button ${id} ${classes} ${onclick} >${html}</button>`;
+			return `<button ${id} ${classes} ${onclick} ${attribs} >${html}</button>`;
 		default:
             return html;
     }

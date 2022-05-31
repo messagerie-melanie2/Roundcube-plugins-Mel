@@ -961,6 +961,7 @@ table.listing td.subscribed {
     justify-content: center;
 }
 
+.mel-responsive-tabheader,
 .mel-tabheader{
     font-size: larger;
     white-space: nowrap;
@@ -971,17 +972,21 @@ table.listing td.subscribed {
     border-radius: 0px!important;
 }
 
+.mel-responsive-tabheader.last,
 .mel-tabheader.last
 {
     border: none!important;
 }
 
+.mel-responsive-tab,
 .mel-tab{
     cursor: pointer;
     padding: 0 15px;
     display: inline-block;
 }
 
+.mel-responsive-tab,
+button.btn.mel-responsive-tab,
 button.btn.mel-tab
 {
     background-color: transparent!important;
@@ -989,6 +994,9 @@ button.btn.mel-tab
     color:#363A5B!important;
 }
 
+.mel-responsive-tab:hover,
+.mel-responsive-tab.active,
+.mel-responsive-tab.selected,
 .mel-tab:hover,
 .mel-tab.active,
 button.btn.mel-tab:hover,
@@ -999,8 +1007,43 @@ button.btn.mel-tab:active
     text-decoration: underline;
 }
 
+.mel-responsive-tab.selected,
+.mel-responsive-tab.active,
 .mel-tab.active{
     cursor: initial;
+}
+
+.row.responsiveTabList.namespace-reponsive-tab-shortcut {
+	margin-left: 15px;
+}
+
+.responsiveTabList
+{
+    margin-bottom: 15px;
+}
+
+.responsiveTabList button{
+    white-space: break-spaces;
+}
+
+.row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab{
+	color:white!important;
+}
+
+.row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab:hover,
+.row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab.selected
+{
+    color:#ADD4EC !important
+}
+
+html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab{
+	color:#E1C58F !important;
+}
+
+/* html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab:hover, */
+html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab.selected
+{
+    color:#2E2E2E !important;
 }
 
 div{

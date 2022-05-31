@@ -563,7 +563,10 @@
 
             ChatSetupConfig();
 
-
+            if (rcmail.env.launch_chat_frame_at_startup === true)
+            {
+                mel_metapage.Functions.change_frame('rocket', false);
+            }
 
             //Ajustement de la barre des tâches
             $(window).on("resize", () => {

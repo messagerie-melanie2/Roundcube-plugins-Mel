@@ -255,7 +255,8 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
         .append(metapage_frames.triggerEvent("frame", eClass, changepage, isAriane, querry, id, args) /* Récupération de la frame */);
         //Mise à jours de la frame
         metapage_frames.triggerEvent("editFrame", eClass, changepage, isAriane, $("#"+id));
-        rcmail.set_busy(true, "loading");
+
+        if (changepage) rcmail.set_busy(true, "loading");
 
         $("."+eClass+"-frame").on("load", () =>
         {
@@ -508,7 +509,7 @@ metapage_frames.addEvent("frame", (eClass, changepage, isAriane, querry, id, arg
     if (eClass === "discussion")
     {
         html = "";
-        html += '<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;">';
+        html += `<div class="card-disabled frame-card a-frame" style="height:100%;width:100%;${(!changepage ? 'display:none;' : '')}">`;
         html += '<div class="card-header-disabled frame-header" >';
         // html += '<span>Ariane</span>';
         html += `<a data-toggle="tooltip" data-placement="left" title="${rcmail.gettext("close", "mel_metapage")}" href="close_ariane" onclick="m_mp_close_ariane()" class="icon-mel-popup-cose card-close mel-focus"></a>`;

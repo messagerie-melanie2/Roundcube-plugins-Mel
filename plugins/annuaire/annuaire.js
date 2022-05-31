@@ -386,6 +386,13 @@ rcube_webmail.prototype.annuaire_node_select = function(node) {
 		}
 
 	}
+
+	const action = !!rcmail.env.annuaire_select_actions?.onselect ? rcmail.env.annuaire_select_actions.onselect : null;
+	
+	if (!!action) 
+	{
+		action(node, node_id, window.field);
+	}
 };
 
 // Node expand

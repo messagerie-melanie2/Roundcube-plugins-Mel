@@ -53,15 +53,20 @@ class SearchResultContact extends ASearchResult
             }
         }
 
-        $this->username = "$nom $prenom";
-        $this->mail = $mail;
-        $this->phone = $tel;
+        $this->username = $this->wash_html("$nom $prenom");
+        $this->mail = $this->wash_html($mail);
+        $this->phone = $this->wash_html($tel);
         $this->picture = "./?_task=addressbook&_action=photo&_email=$email&_cid=".$contact['ID']."&_source=".$contact["sourceid"].'&_error=1';
         $this->cid = $contact['ID'];
         $this->source = $contact["sourceid"];
 
         parent::__construct('', $this->_create_action(), ['date' => null, 'raw' => $contact, 'picture', $this->pitcure]);
     }  
+
+    protected function wash_html($text)
+    {
+        return str_replace('<', '&lt;', $text);
+    }
 
     protected function _html()
     {

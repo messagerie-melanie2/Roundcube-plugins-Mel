@@ -663,7 +663,7 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
 }
 
 function m_mp_autocoplete(element, action_after = null, append = true) {
-
+//debugger;
     element = element.val === undefined ? ("#" + element.id) : ("#" + element[0].id);
 
     let val = $(element).val();
@@ -693,7 +693,7 @@ function m_mp_autocoplete(element, action_after = null, append = true) {
             //console.log("html", $($("#wspf").children()[$("#wspf").children().length-1])[0].outerHTML,     $(element).parent()[0].outerHTML);
             html = $(element).parent()[0].outerHTML;
             console.log($(element).parent());
-            $(element).parent().remove();
+            //$(element).parent().remove();
             rcmail.init_address_input_events($(element));
             $(element).focus();
         }

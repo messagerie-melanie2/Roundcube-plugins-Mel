@@ -840,6 +840,13 @@ $(document).ready(() => {
                                 rcmail.display_message(args.msg, args.type);
                                 box.close.data('force', '1');
                                 box.close.removeClass('disabled').removeAttr('disabled');
+                                const interval = setInterval(() => {
+                                    if (rcmail.busy === false)
+                                    {
+                                        rcmail.command('checkmail', '');
+                                        clearTimeout(interval);
+                                    }
+                                }, 100);
                                 box.close.click();
                             });
 
@@ -849,6 +856,7 @@ $(document).ready(() => {
                                 rcmail.display_message("Impossible d'envoyer le mail !", 'error');
                                 box.close.removeClass('disabled').removeAttr('disabled');
                                 box.close.click();
+
                             });
 
                             frame_context.$("#toolbar-menu a.send").removeAttr('href');

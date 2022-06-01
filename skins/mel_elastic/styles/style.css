@@ -1015,6 +1015,10 @@ button.btn.mel-tab:active
 
 .row.responsiveTabList.namespace-reponsive-tab-shortcut {
 	margin-left: 15px;
+	margin-right: 15px;
+	background-color: #F0F0F0;
+	padding: 15px 0;
+	border-radius: 5px;
 }
 
 .responsiveTabList
@@ -1026,7 +1030,7 @@ button.btn.mel-tab:active
     white-space: break-spaces;
 }
 
-.row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab{
+/* .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab{
 	color:white!important;
 }
 
@@ -1040,11 +1044,11 @@ html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.me
 	color:#E1C58F !important;
 }
 
-/* html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab:hover, */
+/* html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab:hover, *
 html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut button.mel-responsive-tab.selected
 {
     color:#2E2E2E !important;
-}
+} */
 
 div{
 

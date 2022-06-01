@@ -1137,3 +1137,8 @@ html.dark-mode .task-settings .scroller > .listing li.selected:hover {
     background-color: transparent!important;
     border-radius: 5px;
 }
+
+html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut
+{
+    background-color: #323F4B;
+}

@@ -996,7 +996,7 @@ class mel_workspace extends rcube_plugin
     
                     $body = "";
                     $agenda = self::AGENDA;
-                    $col["right"].= html::tag("h2", ["class"=> "reunions"], "Mes réunions");
+                    $col["right"].= html::tag("h2", ["class"=> "reunions responsive-tab-name"], "Mes réunions");
                     $col["right"].= $this->block("wsp-block-$agenda", "wsp-block-$agenda wsp-block", $header, $body, "create_calendar(`$uid`, this)", $this->rc->gettext("create_event", "mel_workspace"));
                 }
     
@@ -1029,7 +1029,7 @@ class mel_workspace extends rcube_plugin
                             html::div(["id" => "waiting-task", "class" => "wsp-task-waiting tab-task mel-tab-content", "style" => (!$affiche_urgence ? "" : "display:none;")]);
     
                     $tasks = self::TASKS;
-                    $col["left"].= html::tag("h2", ["class" => "tasks"], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
+                    $col["left"].= html::tag("h2", ["class" => "tasks responsive-tab-name"], "Mes tâches").$this->block("wsp-block-$tasks", "wsp-block-$tasks wsp-block", $header, $body, "create_tasks(`$uid`, this)", $this->rc->gettext("create_task", "mel_workspace"));
                 }
                 
                 $tmp = $col["left"];
@@ -1042,8 +1042,15 @@ class mel_workspace extends rcube_plugin
                     $col["right"] = "";
                 }
                 $html_return .= html::div(["class" => "row"], 
-                    html::div(["class" => "col-md-6"], $col["left"]).
-                    ($col["right"] === "" ? "" : html::div(["class" => "col-md-6"], $col["right"]))
+                    html::div(["class" => "col-md-6 ta-left mel-responsive-tab-content",                    
+                        "data-selector-tab" => '.ta-left',
+                        'data-is-default-tab' => true,
+                        'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'
+                    ], $col["left"]).
+                    ($col["right"] === "" ? "" : html::div(["class" => "col-md-6 ta-right mel-responsive-tab-content",                         
+                    "data-selector-tab" => '.ta-right',
+                    'data-is-default-tab' => false,
+                    'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home'], $col["right"]))
                 );
             }
     
@@ -1124,7 +1131,14 @@ class mel_workspace extends rcube_plugin
                         $body_component
                     );
         
-                    $html_return.= html::tag("h2", ["class" => "unread-exchanges"], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body);
+                    $html_return.= 
+                    html::div(                    [
+                        "data-selector-tab" => '.unread-exchanges-div',
+                        'data-is-default-tab' => false,
+                        'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home',
+                        'class' => 'unread-exchanges-div mel-responsive-tab-content'
+                    ],
+                    html::tag("h2", ["class" => "unread-exchanges responsive-tab-name"], "Mes échanges non lus").$header.html::div(["class" => "wsp-block wsp-left"], $body));
                 }
             }
 
@@ -1267,7 +1281,14 @@ class mel_workspace extends rcube_plugin
                     $body_component
                 );
 
-                $html_return.= html::tag("h2", ["class" => "resources"], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left wsp-resources"], $body);
+                $html_return.= html::div([
+                    "data-selector-tab" => '.response-resources-div',
+                    'data-is-default-tab' => false,
+                    'data-parent-tabs' => '.wsp-services.wsp-object.wsp-home',
+                    'class' => 'response-resources-div mel-responsive-tab-content'
+                ]
+                    ,
+                html::tag("h2", ["class" => "resources responsive-tab-name"], "Mes ressources").$header.$before_body.html::div(["class" => "wsp-block wsp-left wsp-resources"], $body));
             }
     
     
@@ -1583,7 +1604,7 @@ class mel_workspace extends rcube_plugin
         }
     }
 
-    function block($id,$class, $header, $body, $onclick, $title_button)
+    function block($id,$class, $header, $body, $onclick, $title_button, $attribs = null)
     {
         $html = $this->rc->output->parse("mel_workspace.block", false, false);
         $html = str_replace("<id/>", $id, $html);
@@ -1592,6 +1613,23 @@ class mel_workspace extends rcube_plugin
         $html = str_replace("<body/>", $body, $html);
         $html = str_replace("<onclick/>", $onclick, $html);
         $html = str_replace("<title-button/>", $title_button, $html);
+
+        if (isset($attribs) && is_array($attribs)) $attribs = mel_helper::array($attribs);
+
+        if (isset($attribs) && !$attribs->isEmpty())
+        {
+            $string = '';
+
+            foreach ($attribs as $key => $value) {
+                $string .= "$key=\"$value\" ";
+            }
+
+            $attribs = $string;
+        }
+        else $attribs = '';
+
+        $html = str_replace("<attribs/>", $attribs, $html);
+
         return $html;
     }
 

@@ -1732,7 +1732,6 @@ $(document).ready(() => {
 
         initResponsive(key = null, changeReturn = false)
         {
-
             const each = ($tn, tn, t, d, ptl, namespace) => {
                 const $tabName = $tn;//$(e).find('.rTabName');
                 const tabName = tn;//$(e).data('tab-name');
@@ -1750,7 +1749,7 @@ $(document).ready(() => {
                     }
                 };
 
-                this.initTabResponsive(namespace, item);
+                return this.initTabResponsive(namespace, item);
             }
 
             const tab_class = 'mel-responsive-tab';
@@ -1789,15 +1788,24 @@ $(document).ready(() => {
                         break;
                 }
 
+                let $querry = $(`.${tab_content}${(!!namespace ? `.${namespace}` : '')}`);
+
+                if ($querry.length === 0) $querry = $(`.${tab_content}.no-namespace`);
+
+                const size = $querry.length - 1;
+
                 $(`.${tab_content}${(!!namespace ? `.${namespace}` : '')}`).each((i, e) => {
-                    each(
-                        $(e).find('.rTabName'),
+                    let $tab = each(
+                        $(e).find('.responsive-tab-name'),
                         $(e).data('tab-name'),
                         $(e).data('selector-tab'),
                         $(e).data('is-default-tab'),
                         $(e).data('parent-tabs'),
-                        namespace ?? $(e).parent().data('namespace')
+                        namespace ?? $(e).parent().data('namespace') ?? 'no-namespace'
                     );
+
+                    if (!!$tab && $tab.length > 0 && i === size) $tab.addClass('last');
+                    
                 });
             }
 
@@ -1888,6 +1896,7 @@ $(document).ready(() => {
             const tab_content = 'mel-responsive-tab-content';
 
             let tabName = '';
+            let $tab = null;
 
             //Gestion de l'onglet
             if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est à l'intérieur du corps
@@ -1911,9 +1920,10 @@ $(document).ready(() => {
             }
 
             //Ajout du bouton si il n'éxiste pas
-            if ($tabList.find(`#${tab_id}`).length === 0)
+            $tab = $tabList.find(`#${tab_id}`);
+            if ($tab.length === 0)
             {
-                $tabList.append($(`
+                $tab = $tabList.append($(`
                     <button id="${tab_id}" class="${(item.default ? selected_item_class : '')} ${tab_class} ${tab_header_class} ${namespace}">${tabName}</button>
                 `).click(() => {
                     $(`.${header_to_hide}`).css('display', 'none');
@@ -1922,7 +1932,7 @@ $(document).ready(() => {
                     item.$tab.css('display', '');
                     $(`#${tab_id}`).addClass(selected_item_class);
                 })
-                );
+                ).find(`#${tab_id}`);
             }
 
             //Création du bouton de "désaffichage"
@@ -1938,6 +1948,8 @@ $(document).ready(() => {
             });
 
             item.$tab.addClass(tab_content).addClass(namespace);
+
+            return $tab;
         }
 
     }

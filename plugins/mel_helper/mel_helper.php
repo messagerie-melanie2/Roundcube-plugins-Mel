@@ -241,6 +241,12 @@ class mel_helper extends rcube_plugin
         $cache_key = rcube_cache::key_name('mailboxes.list', $array);
         $rc->storage->clear_cache($cache_key);
     }
+
+    public static function array($array = [])
+    {
+        include_once 'lib/mel_array.php';
+        return new MelArray($array);
+    }
     
 
 }

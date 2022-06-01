@@ -44,11 +44,8 @@ class Webconf extends Program
 
         if ($wsp === null)
         {
-            // if ($key !== null)
-            // {
                 $ariane = $this->get_input("_ariane") ?? '@home';
                 $this->set_env_var("webconf.ariane", $ariane);
-            //}
         }
         else
         {

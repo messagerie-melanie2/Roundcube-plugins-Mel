@@ -1331,5 +1331,25 @@ $(document).ready(() => {
     rcmail.addEventListener("event.click", (params) => {
         intercept_click(params.e === undefined ? params.obj : params.e);
     })
-})
+});
+
+(() => {
+
+    window.addEventListener("message", receiveMessage, false);
+    function receiveMessage(event)
+    {
+        //Evènement venant d'une visio
+        if(event.origin.includes(rcmail.env['webconf.base_url']))
+        {
+            const datas_accepted = 'feedbackSubmitted';
+            let $querry = $('.wlp_box.questionnaireWebconf');
+
+            if (event.data === datas_accepted && $querry.length > 0)
+            {
+                $querry.find('.wlp-close').click()
+            } 
+        }
+    }  
+
+})();
 

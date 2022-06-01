@@ -2731,3 +2731,15 @@ ul#directorylist.treelist li:hover > a {
 html.dark-mode #message-model {
 	background-color: #323F4B;
 }
+
+.menu a.phone::before {
+	content: "\e927" !important;
+	font-family: 'DWP' !important;
+	font-weight: normal !important;
+}
+
+.menu a.background::before {
+	content: "\e968" !important;
+	font-family: 'DWP' !important;
+	font-weight: normal !important;
+}

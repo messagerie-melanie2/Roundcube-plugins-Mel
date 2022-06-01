@@ -55,16 +55,52 @@
         );
     }
 
-    if (window.Webconf !== undefined)
-        window.Webconf.helpers = {
-            go:go_to_webconf,
-            already:webconf_is_active,
-            notify:notify
-        };
+    async function getWebconfPhoneNumber(webconf)
+    {
+        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/phoneNumbers?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        let phoneNumber = null;
+        await mel_metapage.Functions.get(
+            url,
+            {},
+            (datas) => {
+                if (!!datas && datas.numbersEnabled && !!datas.numbers.FRA && datas.numbers.FRA.length > 0) phoneNumber = datas.numbers.FRA[0];
+            }
+        );
+
+        return phoneNumber;
+    }
+
+    async function getWebconfPhonePin(webconf)
+    {
+        const url = `https://voxapi.joona.fr/api/v1/conn/jitsi/conference/code?conference=${webconf}@conference.webconf.numerique.gouv.fr`;
+        let phoneNumber = null;
+        await mel_metapage.Functions.get(
+            url,
+            {},
+            (datas) => {
+                if (!!datas && !!datas.id ) phoneNumber = datas.id;
+            }
+        );
+
+        return phoneNumber;
+    }
+
     window.webconf_helper = {
         go:go_to_webconf,
         already:webconf_is_active,
-        notify:notify
+        notify:notify,
+        phone:{
+            get:getWebconfPhoneNumber,
+            pin:getWebconfPhonePin,
+            async getAll(webconf){
+                const datas = await Promise.allSettled([this.get(webconf), this.pin(webconf)]);
+
+                return {
+                    number:datas[0].value,
+                    pin:datas[1].value
+                }
+            }
+        }
     };
 
 })();

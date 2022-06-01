@@ -531,12 +531,35 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
         );
     }
 
+    this.get_phone_number = async function() {
+        if (!!this.phone_number) return this.phone_number;
+    
+        return await webconf_helper.phone.get(this.key);
+    };
+    
+    this.get_phone_pin = async function() {
+        if (!!this.phone_pin) return this.phone_pin;
+    
+        return await webconf_helper.phone.pin(this.key);
+    };
+    
+    this.get_phone_datas = async function() {
+        
+        return {
+            number:await this.get_phone_number(),
+            pin:await this.get_phone_pin()
+        }
+    
+    };
+
 }
+
+
 
 Webconf.prototype.isPhone = function()
 {
     return $("html").hasClass("layout-phone");
-}
+};
 
 /**
  * Appelé depuis la div de paramétrage, lance la webconf
@@ -900,7 +923,7 @@ class MasterWebconfBar {
     /**
      * Copie l'url de la conf
      */
-    copy()
+    copy(value = '', text = '')
     {
         function copyOnClick (val) {
             var tempInput = document.createElement ("input"); 
@@ -910,9 +933,9 @@ class MasterWebconfBar {
              document.execCommand ("copy"); 
              document.body.removeChild (tempInput); 
              }
-             const url = mel_metapage.Functions.public_url('webconf', {_key:this.webconf.key});
+             const url = value || mel_metapage.Functions.public_url('webconf', {_key:this.webconf.key});
              copyOnClick(url);
-             rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
+             rcmail.display_message((text || `${url} copier dans le presse-papier.`), "confirmation")
     }
 
     /**
@@ -975,6 +998,14 @@ class MasterWebconfBar {
         }
 
         return this;
+    }
+
+    async get_phone_datas()
+    {
+        const datas = await this.webconf.get_phone_datas();
+        const copy_value = `Numéro : ${datas.number} - PIN : ${datas.pin}`;
+        this.copy(copy_value, 'Numéro et code pin copier dans le presse-papier');
+        this.send('sendChatMessage', `'${copy_value}', 'personal'`);
     }
 
     minify_toolbar()
@@ -1788,6 +1819,7 @@ class ListenerWebConfBar
         this.webconf = webconf;
         this.alreadyListening = false;
         this.participantPan = false;
+        this.chatOpen = false;
     }
 
     start()
@@ -1825,6 +1857,10 @@ class ListenerWebConfBar
 
             this.webconf.jitsii.addEventListener("mouseMove", (MouseEvent) => {
                 this.send('show_masterbar');
+            });
+
+            this.webconf.jitsii.addEventListener("chatUpdated", (datas) => {
+                this.chatOpen = datas.isOpen;
             });
         }
     }
@@ -2012,6 +2048,21 @@ class ListenerWebConfBar
     toggle_chat()
     {
         this.webconf.jitsii.executeCommand('toggleChat');
+    }
+
+    sendChatMessage(message, to = ''){
+        switch (to) {
+            case 'personal':
+                to = this.webconf.jitsii.getParticipantsInfo()[0].participantId;
+                break;
+        
+            default:
+                break;
+        }
+
+        this.webconf.jitsii.executeCommand('sendChatMessage', message, to);
+
+        if (!this.chatOpen) this.toggle_chat();
     }
 
 

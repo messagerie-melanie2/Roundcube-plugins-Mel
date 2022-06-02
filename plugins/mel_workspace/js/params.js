@@ -870,7 +870,7 @@
                     () => {
                         let val = $("#select-update-wekan").val();
 
-                        const confirmation = confirm(`Attention !\r\nCe tableau sera synchroniser avec votre espace.\r\nCelui-ci ne sera pas supprimer si l'espace est supprimé.\r\nÊtes-vous sûr de vouloir continuer ?`);
+                        const confirmation = confirm(`Attention !\r\nCe tableau sera synchronisé avec votre espace.\r\nCelui-ci ne sera pas supprimé si l'espace est supprimé.\r\nÊtes-vous sûr de vouloir continuer ?`);
 
                         if (confirmation)
                         {

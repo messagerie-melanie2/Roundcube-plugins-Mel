@@ -26,10 +26,10 @@
         },
         {
             "skippable": true,
-            "title": "mes échanges non lues",
+            "title": "mes échanges non lus",
             "element": ".unread-exchanges",
             "skipElement": ".unread-exchanges",
-            "intro": "Voici vos échanges non lues"
+            "intro": "Voici vos échanges non lus"
         },
         {
             "title": "mes ressources",

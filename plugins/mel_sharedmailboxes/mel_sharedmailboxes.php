@@ -75,6 +75,9 @@ class mel_sharedmailboxes extends rcube_plugin {
 
         $this->add_hook('mel_move_message',     array($this, 'move_message'));
         $this->add_hook('mel_copy_message',     array($this, 'copy_message'));
+
+        // MANTIS 0006769: Problème de localisation des dossiers créés sur des balp
+        $this->add_hook('folder_create',        array($this, 'folder_create'));
         
         if ($this->rc->task == 'mail' && empty($this->rc->action)) {
             $this->add_hook('render_mailboxlist',   array($this, 'render_mailboxlist'));
@@ -877,6 +880,22 @@ class mel_sharedmailboxes extends rcube_plugin {
         if ($this->is_individual_trash($mbox)) {
             $this->get_user_from_folder($mbox);
             $_POST['_mbox'] = $this->get_trash_folder_name($mbox);
+        }
+        return $args;
+    }
+
+    /**
+     * Creation folder in shared mailboxes root
+     *
+     * @param array $args
+     * @return array
+     */
+    public function folder_create($args) {
+        if (isset($this->get_account) 
+                && strpos($args['record']['name'], driver_mel::gi()->getBalpLabel()) !== 0 
+                && strpos($args['record']['name'], driver_mel::gi()->getMboxTrash()) !== 0) {
+            // MANTIS 0006769: Problème de localisation des dossiers créés sur des balp
+            $args['record']['name'] = driver_mel::gi()->getBalpLabel() . $_SESSION['imap_delimiter'] . $this->mel->get_user_bal() . $_SESSION['imap_delimiter'] . $args['record']['name'];
         }
         return $args;
     }

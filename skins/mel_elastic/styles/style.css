@@ -2743,3 +2743,8 @@ html.dark-mode #message-model {
 	font-family: 'DWP' !important;
 	font-weight: normal !important;
 }
+
+#barup-user
+{
+    height: 100%;
+}

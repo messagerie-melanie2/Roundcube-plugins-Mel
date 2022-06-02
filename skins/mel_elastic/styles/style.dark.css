@@ -1142,3 +1142,12 @@ html.dark-mode .row.responsiveTabList.namespace-reponsive-tab-shortcut
 {
     background-color: #323F4B;
 }
+
+html.dark-mode .input-group-text.mel {
+	border-top-left-radius: 60px;
+	border-bottom-left-radius: 60px;
+	border-right: none;
+	background-color: transparent;
+	border-color: #E1C58F;
+	color: #E1C58F;
+}

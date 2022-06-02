@@ -466,15 +466,46 @@ if (rcmail && window.mel_metapage)
 
         html += `<div class=row style="margin-top:5px">${(rec !== null ? `<div class=col-6>${rec}</div>` : "")}${(alarm !== null ? `<div class=col-6><span class="icon-mel-notif mel-cal-icon"></span>Rappel : ${alarm}</div>` : "")}</div>`;
 
+        const hasLocation = event.location !== undefined && event.location !== null && event.location !== "";
+        let location_phone = '';
+        let location = '';
+
+        if (hasLocation)
+        {
+            const tmp_location = event.location.split('{mel.newline}');
+
+            let element;
+            for (let index = 0; index < tmp_location.length; ++index) {
+                element = tmp_location[index];
+
+                if (element.includes('(') && element.includes('|') && element.includes('/public/webconf')) 
+                {
+                    location_phone = element.split('(');
+                    element = location_phone[0];
+                    location_phone = location_phone[1].replace(')', '').split('|');
+                }
+
+                location += mel_metapage.Functions.updateRichText(element).replaceAll("#visio:", "").replaceAll("@visio:", "");
+
+                if (index !== tmp_location.length -1) location += '<br/>';
+
+            }
+        }
+
         //Affichage du lieu
         if (event.location !== undefined && event.location !== null && event.location !== "")
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
             /*white-space: nowrap;*/
             display:flex;
             text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-pin-location mel-cal-icon"></span><span style='display:inline-block'>${linkify(mel_metapage.Functions.updateRichText(event.location.replaceAll("#visio:", "").replaceAll("@visio:", "")).replaceAll('{mel.newline}', '<br/>'))}</span></div></div>`;
+            vertical-align: top;margin-top:5px" class="icon-mel-pin-location mel-cal-icon"></span><span style='display:inline-block'>${linkify(location)}</span></div></div>`;
 
-
+        if (location_phone !== '')
+            html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
+            /*white-space: nowrap;*/
+            display:flex;
+            text-overflow: ellipsis;"><span style="display: inline-block;
+            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]}">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
         if (event.categories !== undefined && event.categories.length > 0)
         {
             const isWsp = event.categories[0].includes("ws#");

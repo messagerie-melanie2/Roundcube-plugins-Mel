@@ -561,3 +561,16 @@ input.input-mel.error {
 	border:none;
 	background-color: transparent!important;
 }
+
+.input-group .input-group-prepend .form-control.input-mel {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.input-group-text.mel {
+	border-top-left-radius: 60px;
+	border-bottom-left-radius: 60px;
+	border-right: none;
+	background-color: #F0F0F0;
+	border-color: #F0F0F0;
+}

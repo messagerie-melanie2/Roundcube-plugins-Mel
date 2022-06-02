@@ -343,6 +343,17 @@ $(document).ready(() => {
                         });
                     });
 
+                    $('#mailsearchlist .searchbar .unread').before($(`<a class="button flag" href="#" role="button" title="Afficher les courriels suivis"></a>`).click((e) => {
+                        const item = $(e.target);
+
+                        if (item.hasClass('selected')) item.removeClass('selected');
+                        else item.addClass('selected');
+                        
+
+                        $(rcmail.gui_objects.search_filter).val(!item.is('.selected') ? 'ALL' : 'FLAGGED');
+                        rcmail.command('search');
+                    }));
+
                     $("#toolbar-list-menu .compose").parent().prependTo($("#toolbar-list-menu .compose").parent().parent());
                 
                     //Ajout de "plus"

@@ -493,7 +493,7 @@ if (rcmail && window.mel_metapage)
         }
 
         //Affichage du lieu
-        if (event.location !== undefined && event.location !== null && event.location !== "")
+        if (hasLocation)
             html += `<div id="location-mel-edited-calendar" class=row style="margin-top:15px"><div class=col-12 style="overflow: hidden;
             /*white-space: nowrap;*/
             display:flex;

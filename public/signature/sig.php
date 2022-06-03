@@ -274,7 +274,7 @@ else {
     <div class="container card hoverable">
       <div class="row sig-header">
         <div class="col s6 valign top-logo-img">
-        <img src="img/logo_pole.png" alt="Ministères de la Transition écologique, de la Cohésion des Territoires et de la Mer" class="logo_pole">
+        <img src="img/logo_pole.png?v=20220603153155" alt="Ministères de la Transition écologique, de la Cohésion des Territoires, de la Transition énergétique et de la Mer" class="logo_pole">
         </div>
       </div>
 

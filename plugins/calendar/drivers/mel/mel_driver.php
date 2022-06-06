@@ -1947,6 +1947,10 @@ class mel_driver extends calendar_driver {
             $_event_organizer['email'] = strtolower($organizer->email);
             $_event_organizer['name'] = $organizer->name;
             $_event_organizer['role'] = 'ORGANIZER';
+            // MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+            if (!$organizer->extern) {
+              $_event_organizer['internal'] = true;
+            }
             $_attendees[] = $_event_organizer;
           }
           $_event['attendees'] = $_attendees;

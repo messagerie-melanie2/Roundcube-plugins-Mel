@@ -857,7 +857,7 @@ class mel_driver extends calendar_driver {
             $enddate->sub(new DateInterval('P1D'));
 
             $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
-            $_event->recurrence->count = '';
+            $_event->recurrence->count = null;
             $_event->save();
             // Création de la nouvelle
             $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
@@ -1089,6 +1089,7 @@ class mel_driver extends calendar_driver {
             // Définition de la date de fin pour la récurrence courante
           $enddate = clone ($event['start']);
           $enddate->sub(new DateInterval('P1D'));
+          $_event->recurrence->count = null;
           $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
           $_event->save();
           // Création de la nouvelle

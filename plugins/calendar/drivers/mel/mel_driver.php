@@ -669,8 +669,11 @@ class mel_driver extends calendar_driver {
             && $_event->owner != $this->user->uid 
             && !$this->calendars[$_event->calendar]->asRight(LibMelanie\Config\ConfigMelanie::PRIV));
 
+        // Retourner le résultat
+        $result = true;
+
         if ($is_private) {
-          return true;
+          return $result;
         }
         $old = $this->_read_postprocess($_event);
 
@@ -741,21 +744,22 @@ class mel_driver extends calendar_driver {
           $enddate = clone ($event['start']);
         }
         if ($enddate->getTimestamp() == strtotime($_event->start)) {
-            // Converti les données de l'évènement en évènement Mél
-            $_event = $this->_write_postprocess($_event, $event, false);
+          // Converti les données de l'évènement en évènement Mél
+          $_event = $this->_write_postprocess($_event, $event, false);
         }
         else {
-            $enddate->sub(new DateInterval('P1D'));
+          $enddate->sub(new DateInterval('P1D'));
 
-            $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
-            $_event->recurrence->count = null;
-            $_event->save();
-            // Création de la nouvelle
-            $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
-            // Converti les données de l'évènement en évènement Mél
-            $_event = $this->_write_postprocess($_event, $event, true);
-            $_event->uid = $this->cal->generate_uid();
+          $_event->recurrence->enddate = $enddate->format(self::DB_DATE_FORMAT);
+          $_event->recurrence->count = null;
+          $_event->save();
+          // Création de la nouvelle
+          $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);
+          // Converti les données de l'évènement en évènement Mél
+          $_event = $this->_write_postprocess($_event, $event, true);
+          $_event->uid = $this->cal->generate_uid();
         }
+        $result = $_event->uid;
       }
       else if (isset($event['_savemode']) && $event['_savemode'] == 'new') {
         $event['uid'] = $_event->uid;
@@ -764,6 +768,7 @@ class mel_driver extends calendar_driver {
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, true);
         $_event->uid = $this->cal->generate_uid();
+        $result = $_event->uid;
       }
       else {
         if (isset($old) && strpos($event['id'], '@DATE-') !== false) {
@@ -776,6 +781,7 @@ class mel_driver extends calendar_driver {
         }
         // Converti les données de l'évènement en évènement Mél
         $_event = $this->_write_postprocess($_event, $event, $new);
+        $result = $_event->uid;
       }
 
       if ($_event->save() !== null) {
@@ -793,7 +799,7 @@ class mel_driver extends calendar_driver {
             $this->remove_attachment($attachment, $_event->uid);
           }
         }
-        return $_event->uid;
+        return $result;
       }
     }
     catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

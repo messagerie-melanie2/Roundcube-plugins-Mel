@@ -648,7 +648,7 @@ class mel_metapage extends rcube_plugin
                 if ($final_div >= 2)
                     break;
                 $textToReplace.=$content[$i];
-                if (!$final_start && strpos($textToReplace,'<div id="edit-localchanges-warning"') !== false)
+                if (!$final_start && strpos($textToReplace,'<div id="edit-internallocalchanges-warning"') !== false)
                 {
                     $final_start = true;
                 }

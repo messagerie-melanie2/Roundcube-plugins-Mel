@@ -796,7 +796,13 @@ function rcube_calendar_ui(settings)
       attendees_list = $('#edit-attendees-table > tbody').html('');
       resources_list = $('#edit-resources-table > tbody').html('');
       $('#edit-attendees-notify')[(action != 'new' && allow_invitations && me.has_attendees(event) && (settings.itip_notify & 2) ? 'show' : 'hide')]();
-      $('#edit-localchanges-warning')[(action != 'new' && me.has_attendees(event) && !(allow_invitations || (calendar.owner && me.is_organizer(event, calendar.owner))) ? 'show' : 'hide')]();
+      // MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+      if (me.is_internal_organizer(event)) {
+        $('#edit-internallocalchanges-warning')[(action != 'new' && me.has_attendees(event) && !(allow_invitations || (calendar.owner && me.is_organizer(event, calendar.owner))) ? 'show' : 'hide')]();
+      }
+      else {
+        $('#edit-localchanges-warning')[(action != 'new' && me.has_attendees(event) && !(allow_invitations || (calendar.owner && me.is_organizer(event, calendar.owner))) ? 'show' : 'hide')]();
+      }
 
       var load_attendees_tab = function()
       {

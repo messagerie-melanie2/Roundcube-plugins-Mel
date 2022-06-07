@@ -139,6 +139,34 @@ function rcube_libcalendaring(settings)
     };
 
     /**
+     * Get event organizer
+     * 
+     * MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+     */
+    this.get_organizer = function(event)
+    {
+        var i;
+
+        for (i=0; event.attendees && i < event.attendees.length; i++) {
+            if (event.attendees[i].role == 'ORGANIZER') {
+                return event.attendees[i];
+            }
+        }
+
+        return false;
+    };
+ 
+    /**
+     * Checks if the event organizer is internal
+     * 
+     * MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+     */
+    this.is_internal_organizer = function(event)
+    {
+        return this.get_organizer(event).internal || false;
+    };
+
+    /**
      * Check permissions on the given folder object
      */
     this.has_permission = function(folder, perm)

@@ -399,11 +399,13 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener('responseaftersearch', function() {
       $('#mail-search-icon').addClass("success-search");
       $('#mail-search-border').addClass("border-success-search");
+      $('#mailsearchlist a.button').addClass("success-search");
       delete rcmail.env._insearch;
     });
     rcmail.addEventListener('responseafterlist', function(){
       $('#mail-search-icon').removeClass("success-search");
       $('#mail-search-border').removeClass("border-success-search");
+      $('#mailsearchlist a.button').removeClass("success-search");
 
         try {
             delete rcmail.env._insearch;
@@ -718,7 +720,7 @@ if (rcmail && window.mel_metapage)
                     const categoryExist = event.categories !== undefined && event.categories !== null && event.categories.length > 0;
                     const ariane = null;//categoryExist && event.categories[0].includes("ws#") ? null : "";
                     const wsp = categoryExist && event.categories[0].includes("ws#") ? event.categories[0].replace("ws#", "") : null;
-                    console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
+                    //console.log("test : ", querry.attr("href"), mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
                     setTimeout(() => {
                         rcmail.set_busy(false);
                         window.webconf_helper.go(mel_metapage.Functions.webconf_url(querry.attr("href")), wsp, ariane);
@@ -730,6 +732,7 @@ if (rcmail && window.mel_metapage)
 
         function invited()
         {
+            $('#noreply-event-rsvp')?.attr('id', 'noreply-event-rsvp-old');
             let a = $(`
                 <div id="event-rsvp-cloned">
                     <div class="rsvp-buttons itip-buttons">
@@ -1373,11 +1376,12 @@ $(document).ready(() => {
         if(event.origin.includes(rcmail.env['webconf.base_url']))
         {
             const datas_accepted = 'feedbackSubmitted';
-            let $querry = $('.wlp_box.questionnaireWebconf');
+            let $querry = $('.webconf-frame');
 
             if (event.data === datas_accepted && $querry.length > 0)
             {
-                $querry.find('.wlp-close').click()
+                $querry.remove();
+                mel_metapage.Frames.back();
             } 
         }
     }  

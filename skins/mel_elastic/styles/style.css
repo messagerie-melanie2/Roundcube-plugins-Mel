@@ -1178,6 +1178,11 @@ html.layout-phone .mel-button-block.mel-button
     border-color: transparent;
 }
 
+.mel-button.bckg.color-for-dark
+{
+    color: white;
+}
+
 .mel-button.bckg:hover{
     color: white;
 }
@@ -2747,4 +2752,25 @@ html.dark-mode #message-model {
 #barup-user
 {
     height: 100%;
+}
+
+#frame-mel-history {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 120px;
+	height: 100%;
+    z-index: 999999;
+    background-color: #2C3054;
+    overflow: auto;
+}
+
+#black-frame-mel-history {
+	position: absolute;
+	top: 0;
+	left: 120px;
+	width: 100%;
+	height: 100%;
+	background-color: #0006;
+	z-index: 9999999;
 }

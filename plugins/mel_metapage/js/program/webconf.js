@@ -1087,9 +1087,6 @@ class MasterWebconfBar {
     {
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
-        //L'url à lancer en quittant la webconf
-        const url = this.webconf.feedback_url;
-
         //Permet de gérer correctement la barre de navigation d'un espace (Fait revenir sur l'accueil de l'espace)
         if ($(".melw-wsp.webconfstarted").length > 0)
             $(".melw-wsp.webconfstarted").removeClass("webconfstarted").find(".wsp-home").click();
@@ -1103,8 +1100,6 @@ class MasterWebconfBar {
             {
                 await ChangeToolbar("home");
 
-                window.open(url, '_blank');
-
                 if ($("iframe.workspace-frame").length > 0)
                     $("iframe.workspace-frame").css("padding-right", "");
             }
@@ -1117,37 +1112,6 @@ class MasterWebconfBar {
         //Envoie la déconnexion à la Jitsii
         this.send("hangup");
 
-        //Remet les frames en place.
-        if (!this.webconf._is_minimized)
-        {
-             if (rcmail.env.last_frame_class === undefined)
-                 await mel_metapage.Functions.change_frame("home");
-            else if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
-            {
-                if ($("#taskmenu .selected").length > 0)
-                    $("#taskmenu .selected").click();
-                else
-                    await mel_metapage.Functions.change_frame("home");
-            }
-            else
-                rcmail.command("last_frame");
-        }          
-        else
-        {
-            let querry = $(`#${rcmail.env.current_frame}`);
-
-            if (querry.length > 0)
-                querry.css("padding-right", "");
-            else
-                $("#layout-frames").css("width", "");
-
-            if (!this.webconf.is_framed())
-            {
-                if (querry.length > 0)
-                    querry.css("padding-left", "");
-            }
-        }
-
         try {
             //Supprime 'mwvcs' pour que tout fonctionne correctement avec les espaces de travail
             $('iframe.mwsp').removeClass("mwsp").each((i,e) => {
@@ -1157,29 +1121,6 @@ class MasterWebconfBar {
         } catch (error) {
             
         }
-
-        //Gère correctement les frames puis affiche la frame en cours
-        $("#layout-frames").find("iframe").css("padding-left", "").css("padding-right", "");
-        $(".webconf-frame").css("display", "none");
-
-        if ($("#layout-frames").css("width") !== undefined)
-        {
-            $("#layout-frames").css("width", "");
-            let haveFrameOpen = false;
-
-            $("#layout-frames").find("iframe").each((i,e) => {
-                if (!haveFrameOpen && $(e).css("display") !== "none")
-                    haveFrameOpen = true;
-            });
-
-            if ($("#layout-frames").find("iframe").length > 0 && haveFrameOpen)
-                $("#layout-frames").css("display", "");
-            else
-                $("#layout-frames").css("display", "none");
-        }
-
-        //Affiche le questionnaire
-        if (rcmail.env['webconf.have_feed_back'] === true) this.showEndPageOnPopUp("Questionnaire satisfaction", url);
 
         //Gère le placement de la bulle de tchat
         if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] == rcmail.gettext("up", "mel_metapage"))
@@ -1196,6 +1137,18 @@ class MasterWebconfBar {
             parent.$("#user-up-panel").removeAttr("disabled").removeClass("disabled").css("pointer-events", "");
         }
 
+        if (this._is_minimized === true) this._fullscreen();
+
+        let $querry = $("iframe.webconf-frame")[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
+
+        if (!$querry || $querry.length === 0) $querry = $(".webconf-minimize");
+
+        $querry.css("display", "")
+        .click(() => {
+            this.send("dispose");
+        })
+        .find('span').removeClass('icon-mel-undo').addClass('icon-mel-close');
+        
     }
 
     /**
@@ -1963,7 +1916,18 @@ class ListenerWebConfBar
     async hangup()
     {
         this.webconf.jitsii.executeCommand('hangup');
-        this.webconf.jitsii.dispose();
+        //this.webconf.jitsii.dispose();
+    }
+
+    dispose()
+    {
+        try {
+            this.webconf.jitsii.dispose();
+        } catch (error) {
+            
+        }
+        
+        mel_metapage.Frames.back();
     }
 
     async open_virtual_background()

@@ -1,83 +1,135 @@
 const mm_frame = "mm-frame";
-$(document).ready(function() {
-
-    $("#layout-list").addClass(rcmail.env.task + "-frame");
-    $("#layout-list").addClass(mm_frame);
-    $("#layout-sidebar").addClass(rcmail.env.task + "-frame");
-    $("#layout-content").addClass(rcmail.env.task + "-frame");
-    $("#layout-sidebar").addClass(mm_frame);
-    $("#layout-content").addClass(mm_frame);
-    $(".startup").addClass(rcmail.env.task + "-frame");
-    $(".startup").addClass(mm_frame);
-
-    if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
-    {
-        mel_metapage.Storage.set("open_frame", "rocket");
-        window.location.href = "./?_task=bureau";
-        return;
-    }
-    else if (parent === window && mel_metapage.Storage.get("open_frame") !== null)
-    {
-        $(document).ready(() =>{
-            mm_st_CreateOrOpenModal(mel_metapage.Storage.get("open_frame"));
-            mel_metapage.Storage.remove("open_frame");
-        });
-    }
-
-    const task = mm_st_ClassContract(rcmail.env.task);
-
-    rcmail.env.last_frame_class = task;
-
-    if ($("#layout-menu a.selected").length === 0)
-    {
-        rcmail.env.last_frame_name = document.title;
-    }
-    else
-        rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
-
-    event_keys.init.chat_button.trigger();
-
-    let querry = $(".menu-last-frame").find(".inner");
-    querry.html(`<span class=menu-last-frame-inner-up>`+rcmail.gettext('last_frame_opened', "mel_metapage")+` :</span><span class=menu-last-frame-inner-down>`+rcmail.gettext('nothing', "mel_metapage")+`</span>`); 
-    rcmail.enable_command('last_frame', true);
-
-    rcmail.register_command('last_frame', function() {
-        try {
-            event.preventDefault();
-        } catch (error) {
-            
-        }
-
-        if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
+rcmail.addEventListener('init', () => {
+    $(document).ready(function() {
+        $("#layout-list").addClass(rcmail.env.task + "-frame");
+        $("#layout-list").addClass(mm_frame);
+        $("#layout-sidebar").addClass(rcmail.env.task + "-frame");
+        $("#layout-content").addClass(rcmail.env.task + "-frame");
+        $("#layout-sidebar").addClass(mm_frame);
+        $("#layout-content").addClass(mm_frame);
+        $(".startup").addClass(rcmail.env.task + "-frame");
+        $(".startup").addClass(mm_frame);
+    
+        if (parent === window && (rcmail.env.task === "discussion" || rcmail.env.task === "ariane"))
         {
-            rcmail.display_message("Vous ne pouvez pas revenir en arrière si vous n'avez pas déjà changer de page.");
-            $("#taskmenu .menu-last-frame").attr("disabled", "disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            mel_metapage.Storage.set("open_frame", "rocket");
+            window.location.href = "./?_task=bureau";
+            return;
+        }
+        else if (parent === window && mel_metapage.Storage.get("open_frame") !== null)
+        {
+            $(document).ready(() =>{
+                mm_st_CreateOrOpenModal(mel_metapage.Storage.get("open_frame"));
+                mel_metapage.Storage.remove("open_frame");
+            });
+        }
+    
+        const task = rcmail.env.task;//mm_st_ClassContract(rcmail.env.task);
+    
+        rcmail.env.last_frame_class = rcmail.env.current_frame_name = task;
+    
+        if ($("#layout-menu a.selected").length === 0)
+        {
+            rcmail.env.last_frame_name = document.title;
         }
         else
-            mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
-
-        }); 
-
-    rcmail.env.can_backward = true;
-
+            rcmail.env.last_frame_name = $("#layout-menu a.selected").find(".inner").html();
     
-    if (rcmail.env.task === "addressbook")
-    {
-        $(".task-addressbook").children().each((i,e) => {
-
-            if (e.classList.contains("modal"))
-                return;
-
-            if (e.id == "layout")
-                return;
-
-            e.classList.add(rcmail.env.task + "-frame");
-            e.classList.add(mm_frame);
+        //mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class));
+    
+        event_keys.init.chat_button.trigger();
+    
+        let querry = $(".menu-last-frame").find(".inner");
+        querry.html(`<span class=menu-last-frame-inner-up>`+rcmail.gettext('last_frame_opened', "mel_metapage")+` :</span><span class=menu-last-frame-inner-down>`+rcmail.gettext('nothing', "mel_metapage")+`</span>`); 
+        
+        const last_action = () => {
+            const quit = () => {
+                $('#frame-mel-history').remove();
+                $('#black-frame-mel-history').remove();
+                $('#layout-menu').css('left', '0');
+            };
+    
+            //console.log('history', mel_metapage.Frames.lastFrames);
+    
+            if ($('#frame-mel-history').length > 0) 
+            {
+                $('#frame-mel-history').remove();
+                $('#black-frame-mel-history').remove();
+            }
+    
+            let $history = $('<div id="frame-mel-history"><div><center><h3>Historique</h3></center></div></div>');
+            let $buttons = $('<div id="frame-buttons-history"></div>').appendTo($history);
+    
+            for (let index = mel_metapage.Frames.lastFrames.length - 1; index >= 0; --index) {
+                const element = mel_metapage.Frames.lastFrames[index];
+                $buttons.append($(`<button class="history-button mel-button btn btn-secondary no-button-margin color-for-dark bckg true"><span class="history-icon ${element.icon}"></span><span class="history-text">${element.name}</span></button>`).click(() => {
+                    mel_metapage.Functions.change_frame(element.task, true);
+                    quit();
+                }));
+            }
+    
+            $('#layout').append($history).append($('<div id="black-frame-mel-history"></div>').click(() => {
+                quit();
+            }));
+    
+            $('#layout-menu').css('left', '120px');
+    
+    
+    
+            return false;
+        };
+    
+        querry.parent().on('contextmenu', (ev) => {
+            ev.preventDefault();
+            return last_action();
+        }).click((e) => {
+            if (e.which == 2) {
+                e.preventDefault();
+                return last_action();
+             }
         });
-    }
-
-    mm_st_ChangeClicks();
-    mm_st_ChangeClicks("#otherapps");
+        
+        rcmail.enable_command('last_frame', true);
+    
+        rcmail.register_command('last_frame', function() {
+            try {
+                event.preventDefault();
+            } catch (error) {
+                
+            }
+    
+            if ($("#taskmenu .menu-last-frame").hasClass("disabled"))
+            {
+                rcmail.display_message("Vous ne pouvez pas revenir en arrière si vous n'avez pas déjà changer de page.");
+                $("#taskmenu .menu-last-frame").attr("disabled", "disabled").attr("aria-disabled", true).attr("tabIndex", "-1");
+            }
+            else
+                //mm_st_CreateOrOpenModal(rcmail.env.last_frame_class, true);
+                mel_metapage.Frames.back();
+            }
+        ); 
+    
+        rcmail.env.can_backward = true;
+    
+        
+        if (rcmail.env.task === "addressbook")
+        {
+            $(".task-addressbook").children().each((i,e) => {
+    
+                if (e.classList.contains("modal"))
+                    return;
+    
+                if (e.id == "layout")
+                    return;
+    
+                e.classList.add(rcmail.env.task + "-frame");
+                e.classList.add(mm_frame);
+            });
+        }
+    
+        mm_st_ChangeClicks();
+        mm_st_ChangeClicks("#otherapps");
+    });
 });
 
 function mm_st_GetClass(classlist)
@@ -227,8 +279,9 @@ function mm_st_OpenOrCreateFrame(eClass, changepage = true, args = null, actions
     if (args === null || args === undefined)
         args = {};
 
-    if (rcmail.busy)
+    if (rcmail.busy && rcmail.env.can_change_while_busy !== true)
         return "busy";
+    else if (rcmail.env.can_change_while_busy === true) rcmail.env.can_change_while_busy = false;
 
     //Actions à faire avant de traiter la classe.
     metapage_frames.triggerEvent("before", eClass, changepage);
@@ -302,11 +355,28 @@ metapage_frames.addEvent("before", (eClass, changepage) => {
     {
         if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
         {
+            const querry_selector =  "." + mm_st_ClassContract(rcmail.env.current_frame_name);
             rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
-            rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+
+            if (!m_mp_s_is_valid_class(rcmail.env.last_frame_class)) rcmail.env.last_frame_class = undefined;
+
+            rcmail.env.last_frame_name = $(querry_selector).find(".inner").html();
+            const icon = Enumerable.from($(querry_selector)[0].classList).firstOrDefault(x => x.includes('icon-mel'), '');
+            mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
         }
     }
 });
+
+function m_mp_s_is_valid_class(_class)
+{
+    switch (_class) {
+        case "webconf":
+            return false
+    
+        default:
+            return true;
+    }
+}
 
 metapage_frames.addEvent("changepage.before", (eClass) => {
     if ($(".ui-dialog-titlebar-close").length > 0)
@@ -689,12 +759,26 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
 function m_mp_ChangeLasteFrameInfo(force = false)
 {
     const text = rcmail.gettext('last_frame_opened', "mel_metapage");
-    const isUndefined = rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
+    const isUndefined = rcmail.env.last_frame_class === undefined || rcmail.env.last_frame_name === undefined || rcmail.env.last_frame_name === "undefined";
 
     if (!isUndefined && (rcmail.env.current_frame_name === rcmail.env.last_frame_class || mm_st_ClassContract(rcmail.env.current_frame_name) === rcmail.env.last_frame_class) && !force)
     {
-        rcmail.env.last_frame_name = undefined;
-        return m_mp_ChangeLasteFrameInfo();
+        mel_metapage.Frames.pop();
+        return;
+    }
+    
+    if (rcmail.env.last_frame_class === undefined)
+    {
+        let it = 0;
+        let pop
+        do {
+            pop = mel_metapage.Frames.last(it);
+            rcmail.env.last_frame_class = pop?.task;
+            rcmail.env.last_frame_name = pop?.name;
+            ++it;
+        } while (!rcmail.env.last_frame_class && !!pop);
+
+        if (!!pop) return m_mp_ChangeLasteFrameInfo(force);
     }
 
     if (isUndefined)

@@ -381,6 +381,70 @@ const mel_metapage = {
             }
         }
     },
+    Frames:{
+        max:10,
+        lastFrames:[],
+        add(frame)
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.add(frame);
+
+            if (frame?.task === 'webconf') return this;
+
+            if (this.lastFrames.length + 1 > 5) this.lastFrames.pop();
+
+            this.lastFrames.push(frame);
+            return this;
+        },
+        reset()
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.reset();
+
+            this.lastFrames = [];
+            return this;
+        },
+        pop()
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.pop();
+
+            if (this.lastFrames.length === 0) return null;
+
+            return this.lastFrames.pop();
+        },
+        last(it = 0)
+        {
+            if (parent !== window) return parent.mel_metapage.Frames.last(it);
+
+            if (this.lastFrames.length === 0) return null;
+
+            return this.lastFrames[this.lastFrames.length - 1 - it];
+        },
+        back(_default = "home")
+        {
+            
+            if (parent !== window) return parent.mel_metapage.Frames.back(_default);
+
+            const unexist = mel_metapage.Storage.unexist;
+            let last = this.pop()?.task || _default;
+
+            if (last === unexist) last = _default;
+
+            return mel_metapage.Functions.change_frame(last, true, true).then(() => {
+                if ($('.menu-last-frame').hasClass('disabled'))
+                {
+                    debugger;
+                    m_mp_ChangeLasteFrameInfo();
+                }
+            });
+        },
+        create_frame(name, task, icon)
+        {
+            return {
+                name,
+                task,
+                icon
+            };
+        }
+    },
     Functions:{
         /**
          * Copie un texte dans le press-papier
@@ -556,6 +620,8 @@ const mel_metapage = {
          */
         async change_frame(frame, changepage = true, waiting = false, args = null, actions = [])
         {
+            if (changepage) top.rcmail.set_busy(true, 'loading');
+
             if (frame === "webconf")
             {
                 var initial_change_page = changepage;
@@ -565,11 +631,8 @@ const mel_metapage = {
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
 
+            top.rcmail.env.can_change_while_busy = true;
             top.mm_st_OpenOrCreateFrame(frame, changepage, args, actions);
-            // workspaces.sync.PostToParent({
-            //     exec:`mm_st_OpenOrCreateFrame('${frame}', ${changepage}, JSON.parse('${JSON.stringify(args)}'), ${JSON.stringify(actions)})`,//"mm_st_OpenOrCreateFrame('"+frame+"', "+changepage+", )",
-            //     child:false
-            // });
             
             if (waiting)
             {
@@ -584,6 +647,12 @@ const mel_metapage = {
                     top.mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
                 }
                 //this.update_refresh_thing();
+            }
+
+            if (changepage && top.rcmail.busy) 
+            {
+                top.rcmail.set_busy(false);
+                rcmail.clear_messages();
             }
             
             return this;

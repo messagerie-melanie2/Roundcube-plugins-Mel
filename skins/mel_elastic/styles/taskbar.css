@@ -605,3 +605,23 @@ li#menu-small-li
 /* #taskmenu a.selected {
 	pointer-events: none;
 } */
+
+.history-icon {
+	display: block;
+	font-size: xx-large;
+}
+
+.history-button {
+	width: 100%;
+	/* overflow: hidden; */
+	/* text-overflow: ellipsis; */
+	/* white-space: nowrap; */
+}
+
+.history-text {
+	display: block;
+	/* white-space: nowrap; */
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

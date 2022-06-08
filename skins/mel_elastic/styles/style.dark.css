@@ -32,6 +32,11 @@ html.dark-mode #layout-menu {
     color:#c7dfff;
 }
 
+html.dark-mode #frame-mel-history
+{
+    background-color:#1f2933;
+}
+
 html.dark-mode nav.otherapps
 {
     border-right: 1px solid rgb(77, 96, 102);
@@ -139,6 +144,11 @@ html.dark-mode .mel-button {
 	color: #E1C58F;
 	border-color: #E1C58F;
     border-width: thin;
+}
+
+html.dark-mode .mel-button.bckg.color-for-dark
+{
+    color: #E1C58F;
 }
 
 html.dark-mode .tiny-webconf-menu.dwp-round.hidden-toolbar

@@ -625,9 +625,11 @@ html body.task-mail.action-show #layout-content
     color: white;
 }
 
+.success-search::before,
 .success-search {
   color: #4bbc52 !important;
 }
+
 
 html.dark-mode .mel-input-container.form-control.input-mel .icon-mel-search.success-search {
   color: #4bbc52 !important;

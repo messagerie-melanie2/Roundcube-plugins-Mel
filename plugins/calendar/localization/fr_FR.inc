@@ -234,6 +234,8 @@ $labels['itipresponseerror'] = 'Échec de l\'envoi d\'une réponse à cette invi
 $labels['itipinvalidrequest'] = 'C\'est invitation n\'est plus valide';
 $labels['sentresponseto'] = 'La réponse à l\'invitation a été envoyée à $mailto';
 $labels['localchangeswarning'] = 'Vous êtes sur le point d\'effectuer des modifications qui seront effectives dans votre calendrier mais qui ne seront pas envoyées à l\'organisateur de l’événement.';
+// MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+$labels['internallocalchangeswarning'] = 'Cette invitation est gérée en interne par l\'organisateur, vous ne pouvez pas modifier sa date, son titre, son lieu ou sa description. Toutes les autres modifications resteront dans votre calendrier et ne seront pas envoyées à l\'organisateur.';
 $labels['importsuccess'] = '$nr événements importés.';
 $labels['importnone'] = 'Pas d\'événement à importer';
 $labels['importerror'] = 'Une erreur s\'est produite lors de l\'importation';

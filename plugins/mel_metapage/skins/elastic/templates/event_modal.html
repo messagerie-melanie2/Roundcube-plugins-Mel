@@ -407,6 +407,8 @@
 	<roundcube:object name="plugin.edit_recurring_warning" class="dialog-message edit-recurring-warning" style="display:none" />
 	<roundcube:object name="plugin.attachments_form" id="event-attachment-form" mode="smart" />
 	<div id="edit-localchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.localchangeswarning" /></div>
+	<!-- MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement -->
+	<div id="edit-internallocalchanges-warning" class="dialog-message" style="display:none"><roundcube:label name="calendar.internallocalchangeswarning" /></div>
 </div>
 
 <roundcube:if condition="in_array(env:task, array('mel_metapage'))" />

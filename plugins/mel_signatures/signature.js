@@ -113,7 +113,7 @@ function download_signature_outlook_htm() {
     html += '<head>';
     html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</head>';
-    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += '<body lang=FR>';
     html += getSignatureHTML(true, '', true);
     html += '</body>';
     html += '</html>';
@@ -130,7 +130,7 @@ function download_signature_outlook_zip() {
     html += '<head>';
     html += '<meta content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</head>';
-    html += '<body lang=FR style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += '<body lang=FR>';
     html += getSignatureHTML(false, '', true);
     html += '</body>';
     html += '</html>';
@@ -174,7 +174,7 @@ function download_signature_thunderbird() {
     html += '<HTML><HEAD><TITLE>Email Signature</TITLE>';
     html += '<META content="text/html; charset=utf-8" http-equiv="Content-Type">';
     html += '</HEAD>';
-    html += '<BODY style="font-size:10pt;font-family:Arial,Helvetica,sans-serif;">';
+    html += '<BODY>';
     html += getSignatureHTML();
     html += '</BODY>';
     html += '</HTML>';
@@ -259,7 +259,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
         document.querySelector(".grid-form .custom-link").style.display = 'block';
         let customlink = document.getElementById("input-custom-link").value;
         let a = document.createElement('a');
-        a.style = "color:#000000;font-size:8pt;font-family: Arial,sans-serif; font-weight : bold;";
+        a.style = "color:#000000;font-size:8pt;font-weight:bold;";
         if (customlink.indexOf('://') === -1) {
             a.href = 'http://' + customlink;
         }
@@ -275,7 +275,7 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     for (const checkbox of checkboxes) {
         if (checkbox.checked && checkbox.id != 'checkbox-custom-link') {
             let a = document.createElement('a');
-            a.style = "color:#000000;font-size:8pt;font-family:arial,sans-serif;font-weight:bold;text-decoration:none;";
+            a.style = "color:#000000;font-size:8pt;font-weight:bold;text-decoration:none;";
             a.href = checkbox.value;
             a.innerText = rcmail.env.signature_links[checkbox.value];
             links += a.outerHTML + '<br>';
@@ -384,7 +384,7 @@ function createLogo(htmlLogo) {
         document.querySelector("#input-custom-logo").value = htmlLogo.replace(/<br>/gi, "\r\n");
     }
     let span = document.createElement('span');
-    span.style = "font-family:arial,sans-serif;font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
+    span.style = "font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
     span.innerHTML = htmlLogo;
     return span.outerHTML;
 }

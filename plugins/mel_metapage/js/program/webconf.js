@@ -1139,6 +1139,12 @@ class MasterWebconfBar {
 
         if (this._is_minimized === true) this._fullscreen();
 
+        if (!rcmail.env['webconf.have_feed_back'])
+        {
+            this.send("dispose");
+            return;
+        }
+
         let $querry = $("iframe.webconf-frame")[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
 
         if (!$querry || $querry.length === 0) $querry = $(".webconf-minimize");

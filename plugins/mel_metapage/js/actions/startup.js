@@ -23,8 +23,11 @@ rcmail.addEventListener('init', () => {
                 mel_metapage.Storage.remove("open_frame");
             });
         }
-    
-        const task = rcmail.env.task;//mm_st_ClassContract(rcmail.env.task);
+        
+        let task = rcmail.env.task;//mm_st_ClassContract(rcmail.env.task);
+        task = $(`.${task}`).length > 0 ? task : mm_st_ClassContract(task);
+
+        if (task === 'chat') task = 'discussion';
     
         rcmail.env.last_frame_class = rcmail.env.current_frame_name = task;
     
@@ -82,8 +85,8 @@ rcmail.addEventListener('init', () => {
         querry.parent().on('contextmenu', (ev) => {
             ev.preventDefault();
             return last_action();
-        }).click((e) => {
-            if (e.which == 2) {
+        }).on('mousedown', (e) => {
+            if (e.button === 1) {
                 e.preventDefault();
                 return last_action();
              }

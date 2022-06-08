@@ -1071,7 +1071,7 @@ $(document).ready(() => {
                 const interval = setInterval(async () => {
                     const val = window.rcube_calendar_ui.edit._events.getValue();
 
-                    if (val !== 'reload')
+                    if (val !== 'reload' && val.includes('|'))
                     {
                         $("#edit-location").val(val);
                         clearInterval(interval);

@@ -431,7 +431,6 @@ const mel_metapage = {
             return mel_metapage.Functions.change_frame(last, true, true).then(() => {
                 if ($('.menu-last-frame').hasClass('disabled'))
                 {
-                    debugger;
                     m_mp_ChangeLasteFrameInfo();
                 }
             });

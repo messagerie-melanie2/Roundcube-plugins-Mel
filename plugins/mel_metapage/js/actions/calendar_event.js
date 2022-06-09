@@ -1,6 +1,16 @@
 $(document).ready(
     function ()
     {
+
+        function calendar_waiting_number()
+        {
+            const number = rcube_calendar.get_number_waiting_events() || 0;
+            let $querry = $("#layout-sidebar .waiting-events-number");
+    
+            if (number === 0) $querry.addClass('hidden');
+            else $querry.removeClass('hidden').children().html(number)
+        }
+
         if (parent.rcmail.env.calendars !== rcmail.env.calendars) parent.rcmail.env.calendars = rcmail.env.calendars;
         CalendarPageInit();
         rcmail.addEventListener("init", () => {
@@ -43,6 +53,12 @@ $(document).ready(
     
             });
 
+            top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
+                calendar_waiting_number();
+            });
+
+            calendar_waiting_number();
+            
             $("#datepicker-onoff").remove();
             $("#datepicker").addClass("showed").css("margin-bottom", "");
             $("#datepicker").prepend(

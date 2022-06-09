@@ -401,6 +401,7 @@ html.dark-mode .mel-not-link:hover
     color:#E1C58F;
 }
 
+html.dark-mode .waiting-events-number,
 html.dark-mode #mm-cw-participants,
 html.dark-mode .task-calendar .fc .fc-header-toolbar,
 html.dark-mode .workspace,
@@ -739,7 +740,8 @@ html.dark-mode .wlp-contents,
 html.dark-mode .wlp-minifieds .wlp-header,
 html.dark-mode .toolbar-popup,
 html.dark-mode .wsp-toolbar.webconf-toolbar,
-html.dark-mode .modal-content
+html.dark-mode .modal-content,
+html.dark-mode #waiting-events-list-items
 {
     background-color: #1F2933;
     color:#96b9e7;

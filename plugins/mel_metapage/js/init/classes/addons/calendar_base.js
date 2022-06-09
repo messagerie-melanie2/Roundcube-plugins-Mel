@@ -2249,11 +2249,11 @@ $(document).ready(() => {
 
      }
 
-     /**
-      * Ouvre la fenêtre qui permet de créer un évènement.
-      */
-     rcube_calendar.mel_create_event = function()
-     {
+    /**
+     * Ouvre la fenêtre qui permet de créer un évènement.
+     */
+    rcube_calendar.mel_create_event = function()
+    {
         const format = "DD/MM/YYYY HH:mm";
         const getDate = function(string)
         {
@@ -2267,8 +2267,10 @@ $(document).ready(() => {
         var create_popUp = new GlobalModal();
 
         create_popUp = window.create_popUp;
-         if (create_popUp === undefined)
-            create_popUp = new GlobalModal();
+
+            if (create_popUp === undefined)
+                create_popUp = new GlobalModal();
+
         create_popUp.editTitle("Créer une réunion (étape 1/2)");
         create_popUp.editBody("<center><span class=spinner-border></span></center>");
         mel_metapage.Functions.get(mel_metapage.Functions.url("mel_metapage", "get_event_html"), mel_metapage.Symbols.null, (datas) => {
@@ -2314,34 +2316,87 @@ $(document).ready(() => {
             `)
             create_popUp.show();
         });
-     }
+    }
 
-     rcube_calendar.is_desc_webconf = function(text)
-     {
-        return text.includes('@visio') || rcube_calendar.is_desc_bnum_webconf(text) || rcube_calendar.is_desc_frame_webconf(text);
-     };
+    rcube_calendar.is_desc_webconf = function(text)
+    {
+    return text.includes('@visio') || rcube_calendar.is_desc_bnum_webconf(text) || rcube_calendar.is_desc_frame_webconf(text);
+    };
 
-     rcube_calendar.is_desc_bnum_webconf = function(text)
-     {
-        return text.includes('#visio') || text.includes('public/webconf');
-     };
+    rcube_calendar.is_desc_bnum_webconf = function(text)
+    {
+    return text.includes('#visio') || text.includes('public/webconf');
+    };
 
-     rcube_calendar.is_desc_frame_webconf = function(text)
-     {
-         return text.includes(rcmail.env["webconf.base_url"])
-     };
+    rcube_calendar.is_desc_frame_webconf = function(text)
+    {
+        return text.includes(rcmail.env["webconf.base_url"])
+    };
 
-     rcube_calendar.is_valid_for_bnum_webconf = function(text)
-     {
-         return rcube_calendar.is_desc_frame_webconf(text) || rcube_calendar.is_desc_bnum_webconf(text);
-     }
+    rcube_calendar.is_valid_for_bnum_webconf = function(text)
+    {
+        return rcube_calendar.is_desc_frame_webconf(text) || rcube_calendar.is_desc_bnum_webconf(text);
+    }
 
-     Object.defineProperty(rcube_calendar, 'newline_key', {
+    Object.defineProperty(rcube_calendar, 'newline_key', {
         enumerable: false,
         configurable: false,
         writable: false,
         value:newline
-      });
+    });
+
+    rcube_calendar.number_waiting_events = function (events = [], get_number = true)
+    {
+        const user = top.rcmail.env.email;
+        let numbers = (get_number ? 0 : []);
+
+        for (const key in events) {
+            if (Object.hasOwnProperty.call(events, key)) {
+                const element = events[key];
+
+                if (Array.isArray(element)) 
+                {
+                    if (get_number) numbers += rcube_calendar.number_waiting_events(element, get_number);
+                    else numbers = numbers.concat(rcube_calendar.number_waiting_events(element, get_number));
+                }
+                else if (!!element?.attendees && element.attendees.length > 0)
+                {
+                    if (Enumerable.from(element.attendees).any(x => x.email === user && x.status === 'NEEDS-ACTION'))
+                    {
+                        if (get_number) ++numbers;
+                        else numbers.push(element);
+                    }
+                }
+            }
+        }
+
+        return numbers;
+    }
+
+    rcube_calendar.get_number_waiting_events = function(get_number = true) {
+        const events_key = mel_metapage.Storage.calendar_by_days;
+
+        if (get_number)
+        {
+            const key = mel_metapage.Storage.calendars_number_wainting;
+
+            let number = mel_metapage.Storage.get(key);
+
+            if (!mel_metapage.Storage.exists(number))
+            {
+                const events = mel_metapage.Storage.get(events_key);
+                number = rcube_calendar.number_waiting_events(mel_metapage.Storage.exists(events) ? events : []);
+                mel_metapage.Storage.set(number);
+            }
+
+            return number;
+        }
+        else 
+        {
+            const events = mel_metapage.Storage.get(events_key);
+            return rcube_calendar.number_waiting_events(mel_metapage.Storage.exists(events) ? events : [], get_number);
+        } 
+    };
 
 });
 

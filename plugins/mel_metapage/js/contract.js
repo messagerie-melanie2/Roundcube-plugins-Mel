@@ -183,7 +183,7 @@ SearchResultCalendar.CreateOrOpen= function (json)
         return;
     }
 
-    cal = SearchResult.parse(json)//JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
+    cal = typeof json === 'string' ? SearchResult.parse(json) : json;//JSON.parse(json.replace(/£¤£/g, '"').replaceAll("µ¤¤µ", "'"));
     // mm_create_calendar(this, cal);
     // return;
     m_mp_set_storage('calendar_redirect', json.replaceAll("µ¤¤µ", "'"), false)
@@ -261,3 +261,5 @@ SearchResultCalendar.after_loading = function (event)
         //console.log(event);
     }
 }
+
+window.SearchResultCalendar = SearchResultCalendar;

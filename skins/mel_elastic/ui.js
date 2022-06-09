@@ -97,7 +97,8 @@ $(document).ready(() => {
             .setup_nav()
             .setup_tasks()
             .setup_search()
-            .setup_other_apps();
+            .setup_other_apps()
+            .setup_calendar();
         }
 
         /**
@@ -1007,6 +1008,59 @@ $(document).ready(() => {
                 $('meta[name=viewport]').attr("content", $('meta[name=viewport]').attr("content").replace(", maximum-scale=1.0", ""));
             } catch (error) {
                 
+            }
+
+            return this;
+        }
+
+        setup_calendar()
+        {
+            if (rcmail.env.task === "calendar")
+            {
+                let $waiting_events = $("#layout-sidebar .waiting-events-number");
+
+                if ($waiting_events.length > 0)
+                {
+                    $waiting_events.on('mouseenter', () => {
+                        const id = 'waiting-events-list';
+                        const id_child = 'waiting-events-list-items';
+                        const id_selector = `#${id}`;
+                        if ($(id_selector).length > 0) $(id_selector).remove();
+
+                        const events = rcube_calendar.get_number_waiting_events(false)
+
+                        if (!!events && events.length > 0)
+                        {
+                            let $we_list = $(`<div id="${id}"><div id="${id_child}"></div></div>`)
+
+                            let $wel_items = $we_list.find(`#${id_child}`);
+
+                            const format = 'DD/MM/YYYY HH:mm';
+                            const size = events.length;
+                            for (let index = 0; index < size; ++index) {
+                                const element = events[index];
+                                $wel_items.append($(`
+                                <button title="Evènement ${element.title}, cliquez pour afficher l'évènement" class="waiting-event-button mel-button">
+                                    <span class="waiting-event-title">${element.title}</span>
+                                    <span class="waiting-event-horodate">${moment(element.start).format(format)} - ${moment(element.end).format(format)}</span>
+                                </button>
+                                `).click(() => {
+                                    top.SearchResultCalendar.CreateOrOpen(JSON.stringify(element));
+                                }));
+                            }
+
+                            $waiting_events.append($we_list);
+                        }
+
+
+                    })
+                    .on('mouseleave', (e) => {
+                        const id = 'waiting-events-list';
+                        const id_selector = `#${id}`;
+
+                        if ($(id_selector).length > 0) $(id_selector).remove();
+                    });
+                }
             }
 
             return this;

@@ -168,6 +168,10 @@ const mel_metapage = {
      */
     Storage: {
         unexist:Symbol("unexist"),
+        exists(val)
+        {
+            return (val ?? this.unexist) !== this.unexist;
+        },
         /**
          * Récupère une donnée depuis le stockage local.
          * @param {string} key Clé de la donnée à récupérer.
@@ -275,6 +279,7 @@ const mel_metapage = {
          */
         calendar:"mel_metapage.calendar",
         calendar_by_days:"mel_metapage.calendars.by_days",
+        calendars_number_wainting:"mel_metapage.calendars.by_days.waiting",
         /**
          * Clé des données des tâches.
          */

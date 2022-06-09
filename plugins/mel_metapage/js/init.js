@@ -147,6 +147,12 @@
 
                                 const byDays = Enumerable.from(events).orderBy(x => moment(x.start) - moment()).groupBy(x => moment(x.start).format('DD/MM/YYYY')).toJsonDictionnary(x => x.key(), x => x.getSource());
                                 mel_metapage.Storage.set(mel_metapage.Storage.calendar_by_days, byDays);
+                                
+                                try {
+                                    mel_metapage.Storage.set(mel_metapage.Storage.calendars_number_wainting, rcube_calendar.number_waiting_events(byDays));
+                                } catch (error) {
+                                    console.warn('calendar byday', error);                                    
+                                }
 
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.after);
 
@@ -748,28 +754,6 @@
                 $(".barup").css("display", "");
             });
 
-            // new Promise(async (a,b) => {
-            //     while (rcmail.env.last_frame_class === undefined) {
-            //         await delay(500);
-            //     }
-            //     let eClass = mm_st_ClassContract(rcmail.env.last_frame_class);
-            //     let btn = ArianeButton.default();
-            //     //console.log(parent.rcmail, rcmail);
-            //     if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass] !== undefined)
-            //     {
-            //         if (parent.rcmail.env.mel_metapage_ariane_button_config[eClass].hidden === true)
-            //             btn.hide_button();
-            //         else {
-            //             btn.show_button();
-            //             btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config[eClass].bottom, parent.rcmail.env.mel_metapage_ariane_button_config[eClass].right);
-            //         }
-            //     }
-            //     else {
-            //         btn.show_button();
-            //         btn.place_button(parent.rcmail.env.mel_metapage_ariane_button_config["all"].bottom, parent.rcmail.env.mel_metapage_ariane_button_config["all"].right);
-            //     }
-            // });
-
             window.addEventListener("message", receiveMessage, false);
 
             function receiveMessage(event) {
@@ -780,16 +764,6 @@
                     case "update_calendar":
                         rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
                         break;
-                        // case "ChangeMenu()":
-                        //     rcmail.env.wsp_from_child = true;
-                        //     ChangeMenu(datas.hide,datas.picture, datas.toolbar);
-                        //     break;
-                        // case "_ChangeFrameWorkspace()":
-                        //     _ChangeFrameWorkspace(datas);
-                        //     break;
-                        // case "_OpenHome()":
-                        //     _OpenHome();
-                        // break;
                     default:
                         break;
                 }

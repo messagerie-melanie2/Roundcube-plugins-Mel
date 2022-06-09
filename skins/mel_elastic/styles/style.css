@@ -2774,3 +2774,39 @@ html.dark-mode #message-model {
 	background-color: #0006;
 	z-index: 9999999;
 }
+
+.waiting-events-number
+{
+    text-align: center;
+    padding: 5px 0;
+    background-color: #5870BF;
+    position: relative;
+}
+
+#waiting-events-list {
+	position: absolute;
+	padding: 15px;
+	/* margin: 15px;
+	background-color: #f0f0f0;
+	border-radius: 5px; */
+    bottom: 30px;
+}
+
+#waiting-events-list-items {
+	/* margin: 15px; */
+	background-color: #f0f0f0;
+	border-radius: 5px;
+	padding: 15px;
+}
+
+#waiting-events-list-items .waiting-event-button span
+{
+    display: block;
+}
+
+#waiting-events-list-items .waiting-event-button
+{
+    border-radius: 5px;
+    margin-top:5px;
+    width: 100%;
+}

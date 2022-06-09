@@ -3646,7 +3646,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             $this->rc->output->command('display_message', $msg, 'confirmation');
         }
 
-        if ($success || $dontsave) {
+        if ($success || $dontsave || /* PAMELA */ ($status == 'declined' && !isset($error_msg))) {
             $metadata['calendar'] = isset($event['calendar']) ? $event['calendar'] : null;
             $metadata['nosave']   = $dontsave;
             $metadata['rsvp']     = !empty($metadata['rsvp']);

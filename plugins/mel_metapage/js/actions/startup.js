@@ -23,11 +23,12 @@ rcmail.addEventListener('init', () => {
                 mel_metapage.Storage.remove("open_frame");
             });
         }
-        
+
         let task = rcmail.env.task;//mm_st_ClassContract(rcmail.env.task);
-        task = $(`.${task}`).length > 0 ? task : mm_st_ClassContract(task);
+        //task = $(`.${task}`).length > 0 ? task : mm_st_ClassContract(task);
 
         if (task === 'chat') task = 'discussion';
+        else if (task === "home") task = 'bureau';
     
         rcmail.env.last_frame_class = rcmail.env.current_frame_name = task;
     
@@ -358,12 +359,20 @@ metapage_frames.addEvent("before", (eClass, changepage) => {
     {
         if (rcmail.env.current_frame_name !== undefined && rcmail.env.current_frame_name !== null)
         {
-            const querry_selector =  "." + mm_st_ClassContract(rcmail.env.current_frame_name);
+            let querry_selector =  "." + mm_st_ClassContract(rcmail.env.current_frame_name);
             rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
 
             if (!m_mp_s_is_valid_class(rcmail.env.last_frame_class)) rcmail.env.last_frame_class = undefined;
 
             rcmail.env.last_frame_name = $(querry_selector).find(".inner").html();
+
+            if (!rcmail.env.last_frame_name)
+            {
+                querry_selector = `.${rcmail.env.current_frame_name}`;
+                rcmail.env.last_frame_name = $(querry_selector).find(".inner").html();
+
+            }
+
             const icon = Enumerable.from($(querry_selector)[0].classList).firstOrDefault(x => x.includes('icon-mel'), '');
             mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
         }
@@ -794,7 +803,11 @@ function m_mp_ChangeLasteFrameInfo(force = false)
     try {
         if (!isUndefined)
         {
-            m_mp_CreateOrUpdateIcon("#taskmenu ." + rcmail.env.last_frame_class);
+            let selector = "#taskmenu ." + rcmail.env.last_frame_class;
+
+            if ($(selector).length === 0) selector = "#taskmenu ." + mm_st_ClassContract(rcmail.env.last_frame_class);
+           
+            m_mp_CreateOrUpdateIcon(selector);
             $(".menu-last-frame").removeClass("disabled").removeAttr("disabled").attr("aria-disabled", false).attr("tabIndex", "0");
         }
         else

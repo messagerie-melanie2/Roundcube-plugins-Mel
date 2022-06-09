@@ -60,7 +60,7 @@ rcmail.addEventListener('init', () => {
                 $('#black-frame-mel-history').remove();
             }
     
-            let $history = $('<div id="frame-mel-history"><div><center><h3>Historique</h3></center></div></div>');
+            let $history = $('<div id="frame-mel-history"><div style="margin-top:5px"><center><h3>Historique</h3></center></div></div>');
             let $buttons = $('<div id="frame-buttons-history"></div>').appendTo($history);
     
             for (let index = mel_metapage.Frames.lastFrames.length - 1; index >= 0; --index) {

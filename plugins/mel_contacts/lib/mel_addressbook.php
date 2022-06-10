@@ -225,15 +225,23 @@ class mel_addressbook extends rcube_addressbook
             $operators = array();
             $case_unsensitive_fields = array();
             $mode  = intval($mode);
+
             if (!isset($fields) || $fields == '*') $fields = array("name","firstname","surname","email","birthday");
             else if (!is_array($fields)) $fields = array($fields);
+            
             $searchfields = array("name","firstname","lastname","email","email1","email2","id","birthday");
+
+            if ($this->rc->action === 'export') $searchfields = '*';
+
             foreach($fields as $key => $field) {
                 if (isset(mel_contacts_mapping::$mapping_contact_cols[$field])) {
                     $mapfield = mel_contacts_mapping::$mapping_contact_cols[$field];
+
                     if ($filter != "(") $filter .= " OR ";
+
                     $filter .= "#$mapfield#";
                     $case_unsensitive_fields[] = $mapfield;
+
                     if ($mode == 0 || $mode > 2) {
                         if (is_array($value)) {
                             foreach ($value as $kval => $val) {
@@ -244,6 +252,7 @@ class mel_addressbook extends rcube_addressbook
                         else {
                             $_contact->$mapfield = '%'.$value.'%';
                         }
+
                         $operators[$mapfield] = LibMelanie\Config\MappingMce::like;
                     } elseif ($mode == 1) {
                         $_contact->$mapfield = $value;
@@ -258,10 +267,12 @@ class mel_addressbook extends rcube_addressbook
                         else {
                             $_contact->$mapfield = $value.'%';
                         }
+
                         $operators[$mapfield] = LibMelanie\Config\MappingMce::like;
                     }
                 }
             }
+
             $filter .= ") AND ";
             $filter .= "#addressbook# AND #type#";
             $operators["addressbook"] = LibMelanie\Config\MappingMce::eq;
@@ -269,11 +280,13 @@ class mel_addressbook extends rcube_addressbook
 
             $i=0;
             $this->result = new rcube_result_set();
+
             foreach ($_contact->getList($searchfields, $filter, $operators, "object_lastname, object_firstname", true, null, null, $case_unsensitive_fields) as $_contact) {
                 $this->result->add(mel_contacts_mapping::m2_to_rc_contact(null, $_contact));
                 $i++;
             }
             $this->result->count = $i;
+
             return $this->result;
         }
         catch (LibMelanie\Exceptions\Melanie2DatabaseException $ex) {

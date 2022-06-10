@@ -373,7 +373,7 @@ metapage_frames.addEvent("before", (eClass, changepage) => {
 
             }
 
-            const icon = Enumerable.from($(querry_selector)[0].classList).firstOrDefault(x => x.includes('icon-mel'), '');
+            const icon = Enumerable.from($(querry_selector)[0]?.classList ?? []).firstOrDefault(x => x.includes('icon-mel'), '');
             mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
         }
     }

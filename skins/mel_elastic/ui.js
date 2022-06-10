@@ -1025,7 +1025,10 @@ $(document).ready(() => {
                         const id = 'waiting-events-list';
                         const id_child = 'waiting-events-list-items';
                         const id_selector = `#${id}`;
-                        if ($(id_selector).length > 0) $(id_selector).remove();
+                        if ($(id_selector).length > 0) 
+                        {
+                            return;
+                        }
 
                         const events = rcube_calendar.get_number_waiting_events(false)
 

@@ -2797,6 +2797,8 @@ html.dark-mode #message-model {
 	background-color: #f0f0f0;
 	border-radius: 5px;
 	padding: 15px;
+    max-height: 400px;
+    overflow: auto;
 }
 
 #waiting-events-list-items .waiting-event-button span

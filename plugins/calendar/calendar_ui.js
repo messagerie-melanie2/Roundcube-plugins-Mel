@@ -4300,7 +4300,11 @@ window.rcmail && rcmail.addEventListener('init', function(evt) {
   rcmail.register_command('print', function(){ cal.print_calendars(); }, true);
 
   // PAMELA - MANTIS 0004466: Ajouter un bouton pour rafraichir l'agenda
-  rcmail.register_command('refreshcalendar', function(){ rcmail.refresh(); }, true);
+  rcmail.register_command('refreshcalendar', function(){ 
+    rcmail.refresh();
+
+    if (top != window) top.rcmail.refresh();
+   }, true);
 
   // configure list operations
   rcmail.register_command('calendar-create', function(){ cal.calendar_edit_dialog(null); }, true);

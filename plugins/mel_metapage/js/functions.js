@@ -1742,7 +1742,11 @@ async function m_mp_shortcuts() {
 
 function mm_add_shortcut(key, html, before = false, name = null)
 {
-    if (window.shortcuts !== undefined) delete window.shortcuts;
+    let restart_shortcut = false;
+    if (window.shortcuts !== undefined) 
+    {
+        restart_shortcut = true;
+    }
     
     if (!before)
     {
@@ -1762,6 +1766,12 @@ function mm_add_shortcut(key, html, before = false, name = null)
             html,
             name
         });
+    }
+
+    if (restart_shortcut)
+    {
+        delete window.shortcuts;
+        m_mp_shortcuts();
     }
     
 }

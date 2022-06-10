@@ -2470,7 +2470,7 @@ class mel_workspace extends rcube_plugin
                     break;
 
                 case self::EMAIL:
-                    $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $this->get_worskpace_services($workspace)[self::CLOUD]);               
+                    $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $this->get_worskpace_services($workspace, false, true)[self::CLOUD]);               
                     break;
 
                 default:

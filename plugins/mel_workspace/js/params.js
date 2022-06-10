@@ -635,15 +635,16 @@
                 $querry[0].contentWindow.location.reload();
             else if (parent.$('.bureau-frame').length > 0)
             {
-                await mel_metapage.Functions.get(
-                    mel_metapage.Functions.url('bureau', 'get_html_workspaces'),
-                    {},
-                    (datas) => {
-                        parent.$("#layout-content .--col-dwp .workspaces").html(datas);
-                        parent.rcmail.triggerEvent("init");
-                        parent.ariane = parent.ariane_reinit();
-                    }
-                )
+                // await mel_metapage.Functions.get(
+                //     mel_metapage.Functions.url('bureau', 'get_html_workspaces'),
+                //     {},
+                //     (datas) => {
+                //         parent.$("#layout-content .--col-dwp .workspaces").html(datas);
+                //         parent.rcmail.triggerEvent("init");
+                //         parent.ariane = parent.ariane_reinit();
+                //     }
+                // )
+                parent.$('.bureau-frame').remove();
             }
 
             return this;

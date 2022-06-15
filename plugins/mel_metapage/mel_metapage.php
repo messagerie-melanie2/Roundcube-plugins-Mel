@@ -161,6 +161,9 @@ class mel_metapage extends rcube_plugin
 
         if ($this->rc->task === "mail" )
         {
+            $this->add_hook("messages_list", [$this, 'hook_messages_list']);
+            $this->add_hook('message_part_body_after', [$this, 'hook_message_part_get']);
+            $this->add_hook('message_objects', [$this, 'hook_message_objects']);
             $model_mbox = $this->rc->config->get('models_mbox');
             switch ($this->rc->action) {
                 case 'compose':
@@ -1965,6 +1968,102 @@ class mel_metapage extends rcube_plugin
     }
 
     return $args;
+  }
+
+    public function hook_message_objects($args)
+    {
+        $message = $this->rc->storage->get_body($args['message']->uid);
+
+        if (isset($message))
+        {
+            if ($this->check_message_is_bloqued($message))
+                $args['content'][] = '<div class="alert alert-danger boxdanger"><center>Ce message a été bloqué par le Bnum car il contient des liens dangereux.</center></div>';
+            else if ($this->check_message_is_suspect($message))
+                $args['content'][] = '<div class="alert alert-warning boxwarning">Ce message contient des liens potentiellement dangereux, cliquez sur ces liens seulement si vous êtes sûr de ce que vous faites !</div>';
+        }
+
+        return $args;
+    }
+
+  public function hook_message_part_get($args)
+  {
+    
+    if ($this->check_message_is_bloqued($args['body'])){
+        $args['body'] = '';//"Ce message est bloqué par le Bnum car il contient des liens de phishing !";
+    }
+
+    return $args;
+  }
+
+  public function hook_messages_list($args)
+  {
+    $config = $this->rc->config->get('mel_suspect_url', []);
+    $config_bloqued = $this->rc->config->get('mel_bloqued_url', []);
+
+    foreach ($args['messages'] as $key => $message) {
+        $message = $this->rc->storage->get_body($message->uid);
+
+        if (isset($message))
+        {
+            if ($this->check_message_is_bloqued($message, $config_bloqued)){
+                $args['messages'][$key]->list_flags['extra_flags']['BLOQUED'] = true;
+            }
+            else if ($this->check_message_is_suspect($message, $config))
+            {
+                $args['messages'][$key]->list_flags['extra_flags']['SUSPECT'] = true;
+            }
+        }
+    }
+
+    return $args;
+  }
+
+  /**
+   * Vérifie si un message contient une url frauduleuse ou non.
+   *
+   * @param [*] $message Message à vérifier
+   * @param [Array<string>] $config Configuration qui contient la liste des urls à bloquer
+   * @return bool Vrai si le message est pas ok, faux sinon.
+   */
+  private function check_message_is_suspect($message, $config = null)
+  {
+      if (!isset($config)) $config = $this->rc->config->get('mel_suspect_url', []);
+
+      return mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
+        if (strpos($message, $v) === false)
+        {
+            if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
+            else $v = str_replace('https', 'http', $v);
+
+            return strpos($message, $v) !== false;
+        }
+
+        return true;
+      });
+  }
+
+    /**
+   * Vérifie si un message contient une url frauduleuse ou non.
+   *
+   * @param [*] $message Message à vérifier
+   * @param [Array<string>] $config Configuration qui contient la liste des urls à bloquer
+   * @return bool Vrai si le message est pas ok, faux sinon.
+   */
+  private function check_message_is_bloqued($message, $config = null)
+  {
+      if (!isset($config)) $config = $this->rc->config->get('mel_bloqued_url', []);
+
+      return mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
+        if (strpos($message, $v) === false)
+        {
+            if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
+            else $v = str_replace('https', 'http', $v);
+
+            return strpos($message, $v) !== false;
+        }
+
+        return true;
+      });
   }
 
 }

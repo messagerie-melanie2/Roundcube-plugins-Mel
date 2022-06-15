@@ -1089,6 +1089,19 @@ if (rcmail && window.mel_metapage)
         {
             new ResizeObserver(resize_mail).observe($("#layout-content")[0]);
             resize_mail();
+
+            //Gère les différents cas de phishing
+            rcmail.addEventListener('insertrow', function(event) { 
+                if (event.row.flags.BLOQUED === true)
+                {
+                    $(event.row.obj).addClass('bloqued').attr('title', 'Ce message est bloqué sur le Bnum car il s\'agit de phishing !');
+                }
+                else if (event.row.flags.SUSPECT === true)
+                {
+                    $(event.row.obj).addClass('suspect').attr('title', 'Ce message est suspect et peut possiblement être du phishing !');
+                }
+                
+            });
         }
       });
 

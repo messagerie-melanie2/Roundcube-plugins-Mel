@@ -2812,3 +2812,7 @@ html.dark-mode #message-model {
     margin-top:5px;
     width: 100%;
 }
+
+.alert.boxdanger.ui.boxalert {
+	background-color: #f8d7da;
+}

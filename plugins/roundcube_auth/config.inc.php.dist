@@ -5,12 +5,10 @@ $config = array();
 // --------------- AUTH Methods --------------
 
 // OIDC only (?oidc=1 triggers OIDC auth)
-//$config['oidc_auth_standalone'] = true;
 $config['auth_oidc_enabled'] = true;
 $config['auth_oidc_keyword'] = "oidc";
 
 // OIDC + Kerberos (Kerberos triggers OIDC auth, after LDAP check)
-//$config['oidc_auth_kerberos'] = true;
 $config['auth_kerb_enabled'] = true;
 $config['auth_kerb_keyword'] = "kerb";
 

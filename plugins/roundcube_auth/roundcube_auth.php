@@ -653,6 +653,7 @@ class roundcube_auth extends rcube_plugin
                     $_SESSION['idtoken_exp'] = time();
     
                     mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - Stockage du token pour $uid et de son expiration $exp.");
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [login] Connexion réussie de l'utilisateur $uid via OIDC.");
     
                     // Set token as password
                     $password = $this->oidc_helper->getToken(TokenTypeEnum::ID_TOKEN);

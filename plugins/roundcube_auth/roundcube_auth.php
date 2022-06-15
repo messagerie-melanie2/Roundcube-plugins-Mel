@@ -182,7 +182,7 @@ class roundcube_auth extends rcube_plugin
     function redirect($query, $type, $rcmail)
     {
         // Query variables
-        $location = 'Location: ?';
+        $location = 'Location: ./?';
         $prefixQuery = '&';
         $finalQuery = $emptyQuery = "";
 

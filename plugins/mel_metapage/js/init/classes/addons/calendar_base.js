@@ -3,6 +3,7 @@ $(document).ready(() => {
     const plugin_text = 'mel_metapage';
     const audio_url = rcmail.env.mel_metapage_audio_url;
     const newline = '{mel.newline}';
+    const reload = '{¤reload¤mel}';
 
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
@@ -273,7 +274,7 @@ $(document).ready(() => {
                 rcmail.set_busy(true, 'loading');
                 this.loading = true;
                 webconf_helper.phone.getAll(this.parentLocation.$visioState.val()).then((datas) => {
-                    console.log("here", this.parentLocation.$visioState.val());
+                    //console.log("here", this.parentLocation.$visioState.val());
                     this.$phoneNumber.val(datas.number);
                     this.$phonePin.val(datas.pin);
                     rcmail.set_busy(false);
@@ -281,7 +282,7 @@ $(document).ready(() => {
                     this.update();
                     this.loading = false;
                 });
-                val = 'reload';
+                val = reload;
             }
 
             return val;
@@ -353,9 +354,9 @@ $(document).ready(() => {
                     if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
                         config["_wsp"] = this.$workspace.val();
 
-                    const tmp = this.ignore_phone ? '' : this.visioPhone.getValue();
+                    const tmp = !this.visioPhone.enabled() ? '' : this.visioPhone.getValue();
 
-                    if (tmp === 'reload') val = tmp;
+                    if (tmp === reload) val = tmp;
                     else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `(${tmp})`);
 
                     break;
@@ -651,7 +652,7 @@ $(document).ready(() => {
                     const element = this.locations[key];
                     const _val = element.getValue();
 
-                    if (_val === 'reload' && element.isVisio()) 
+                    if (_val === reload && element.isVisio()) 
                     {
                         return _val;
                     }
@@ -659,6 +660,8 @@ $(document).ready(() => {
                     val += _val + newline;
                 }
             }
+
+            val = val.slice(0, val.length - newline.length);
 
             return val === newline ? '' : val;
         }
@@ -890,10 +893,10 @@ $(document).ready(() => {
             canContinue = false;
         }
 
-        if (canContinue && $('#edit-location').val() === 'reload')
+        if (canContinue && $('#edit-location').val() === reload)
         {
             const i = setInterval(() => {
-                if ($('#edit-location').val() !== 'reload')
+                if ($('#edit-location').val() !== reload)
                 {
                     clearInterval(i);
                     rcube_calendar_ui.save();
@@ -1066,12 +1069,12 @@ $(document).ready(() => {
             const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
             const val = current_location.getValue();
 
-            if (val === 'reload')
+            if (val === reload)
             {
                 const interval = setInterval(async () => {
                     const val = window.rcube_calendar_ui.edit._events.getValue();
 
-                    if (val !== 'reload' && val.includes('|'))
+                    if (val !== reload && val.includes('|'))
                     {
                         $("#edit-location").val(val);
                         clearInterval(interval);
@@ -1344,6 +1347,8 @@ $(document).ready(() => {
                     $('.visio-phone-datas').css('display', '');
                 else
                     $('.visio-phone-datas').css('display', 'none');
+
+                update_location(null);
             });
 
             $('#edit-sensitivity option[value="confidential"]').remove();
@@ -1692,6 +1697,9 @@ $(document).ready(() => {
             $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-plus"></span></button>`).appendTo($divSelect.find('.input-group-prepend'))
             .click(() => {
                 window.rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId);
+                $('.custom-calendar-option-select').each((i,e) => {
+                    if (e.value === 'visio') $(e).change();
+                })
             });
         }
 

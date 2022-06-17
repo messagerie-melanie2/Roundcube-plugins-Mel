@@ -731,7 +731,6 @@ function m_mp_autocomplete_startup($element, val = '')
         </ul>
         <span class="input-group-append">
             <!--Ouvre l'annuaire-->
-            <button href="#add-contact" class="add-contact btn btn-secondary mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact"><span class="inner">Ajouter un contact</span></button>
         <!--Ajoute les contacts de l'input-->
         </span>
     </div>`);
@@ -744,11 +743,13 @@ function m_mp_autocomplete_startup($element, val = '')
             m_mp_autocomplete(e.currentTarget, true);
         }).appendTo( $div.find('ul .input')).val(val);
 
-        rcmail.init_address_input_events($element);
+        top.rcmail.init_address_input_events($element);
 
-        $div.find('button.add-contact').click((e) => {
-            m_mp_openTo(e.currentTarget, $element.attr('id'));
-        })
+        top.$('<button href="#add-contact" class="add-contact btn btn-secondary mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact"><span class="inner">Ajouter un contact</span></button>')
+        .appendTo($div.find('.input-group-append'))
+        .click((e) => {
+            top.m_mp_openTo(e.currentTarget, $element.attr('id'));
+        });
 
         $parent.append($div);
 
@@ -877,9 +878,14 @@ function m_mp_remove_li(event) {
     $("#workspace-user-list").focus();
 }
 
+// function m_mp_open_contact(e, idInput, actions = null)
+// {
+    
+// }
+
 function m_mp_openTo(e, idInput, actions = null) {
 
-    if (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined)) {
+    if ($('#compose-contacts').length === 0 || (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined))) {
         new Promise(async() => {
             $("#layout").append(await rcmail.env.mel_metapage_call_parsed.contact_list());
             $("head").append(`<script src="plugins/mel_metapage/js/program/../../../annuaire/annuaire.js"></script>`);

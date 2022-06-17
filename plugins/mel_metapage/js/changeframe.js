@@ -1,7 +1,10 @@
 (() => {
-    window.addEventListener("message", receiveMessage, false);
-    function receiveMessage(event)
+    //window.addEventListener("message", receiveMessage, false);
+    function mel_wsp_changeframe(event)
     {
+
+        if (window !== top) top.mel_wsp_changeframe(event);
+
        // console.log("exec_info", event, event.data);
         if (event.data.exec_info === undefined)
             return;
@@ -130,6 +133,9 @@
                 break;
         }
     }
+
+    window.mel_wsp_changeframe = mel_wsp_changeframe;
+
 })();
 
 function InitialiseDatas()
@@ -296,61 +302,11 @@ function UpdateMenu(_class, _picture, _toolbar)
 
 async function ChangeToolbar(_class, event, otherDatas = null)
 {
-
     const uid = $(event).data("uid");
 
-    // if (window.WSPReady !== undefined && parent !== window)
-    // {
-    //     const startedCompletly = 5000;
-    //     const timed = moment() - WSPReady.started;
-    //     if (WSPReady.created !== true)
-    //     {
-    //         if (timed < startedCompletly)
-    //         {
-    //             rcmail.set_busy(true, "loading");
-    //             await delay(startedCompletly - timed);
-    //             setTimeout(() => {
-    //                 const okay = ["home", 'params', 'back'];
-    //                 if (!okay.includes(_class) && parent.$(".workspace-frame").css("display") !== "none")
-    //                 {
-    //                     ChangeToolbar(_class, event, otherDatas);
-    //                     WSPReady.stop = false;
-    //                 }
-    //             }, 1000);
-    //             WSPReady.created = true;
-    //             rcmail.set_busy(false);
-    //             rcmail.clear_messages();
-    //         }
-
-    //         setTimeout(async () => {
-    //             console.log("i'm here");
-    //             const finished = 120;
-    //             const okay = ["home", 'params', 'back'];
-    //             let it = 0;
-    //             await wait(() => {
-    //                 if (!okay.includes(_class) || it++ >= finished || WSPReady.stop === true)
-    //                     return false;
-                    
-    //                 return parent.$(".workspace-frame").css("display") === "none";
-    //             });
-
-    //             console.log("finish", parent.$(".workspace-frame").css("display"));
-
-    //             if (!okay.includes(_class) && parent.$(".workspace-frame").css("display") !== "none")
-    //             {
-    //                 console.log("calllllll", parent.$(".workspace-frame"));
-    //                 ChangeToolbar(_class, event, otherDatas);
-    //             }
-    //         }, 1000);
-    //     }
-    //     else {
-    //         if (WSPReady.stop !== true)
-    //             WSPReady.stop = true;
-    //     }
-    // }
     if(rcmail.busy)
         return;
-    //$(".wsp-toolbar").css("z-index", "0");
+
     $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");;
     $(event).addClass("active");
     if (_class !== "rocket")
@@ -367,7 +323,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
 
     switch (_class) {
         case "calendar":
-            //let picture = $(".wsp-picture");
+
             datas.push({
                 exec_info:"change_environnement",
                 datas:_class
@@ -391,7 +347,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
             );
             break;
             case "mail":
-                //let picture = $(".wsp-picture");
+
                 datas.push({
                     exec_info:"change_environnement",
                     datas:_class
@@ -416,7 +372,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                 );
                 break;
                 case "stockage":
-                    //let picture = $(".wsp-picture");
+
                     datas.push({
                         exec_info:"change_environnement",
                         datas:_class
@@ -512,7 +468,7 @@ async function ChangeToolbar(_class, event, otherDatas = null)
             break;
 
         case "tasklist":
-            //let picture = $(".wsp-picture");
+ 
             datas.push({
                 exec_info:"change_environnement",
                 datas:_class
@@ -562,27 +518,6 @@ async function ChangeToolbar(_class, event, otherDatas = null)
                     );
             break;
         case "links":
-            // datas.push({
-            //     exec_info:"change_environnement",
-            //     datas:"inpage"
-            // })
-            // datas.push({
-            //     exec_info:"UpdateMenu",
-            //     datas:{
-            //         class:"inpage",
-            //         picture:{
-            //             color:null,
-            //             picture:null
-            //         },
-            //         toolbar:null
-            //     }
-            // });
-            // datas.push(
-            //     {
-            //         exec_info:"ChangePage",
-            //         datas:_class
-            //     }
-            // );
             datas.push({
                 exec_info:"change_environnement",
                 datas:_class
@@ -658,9 +593,16 @@ async function ChangeToolbar(_class, event, otherDatas = null)
             break;
     }
 
-    for (let index = 0; index < datas.length; index++) {
-        const element = datas[index];
-        parent.postMessage(element);
+    try {
+        for (let index = 0; index < datas.length; index++) {
+            const element = datas[index];
+            mel_wsp_changeframe({
+                data:element
+            })
+            
+        }
+    } catch (error) {
+        console.error('###Une erreur c\'est produite lors du changement de page.', error, datas);
     }
 
     if (uid !== undefined)
@@ -752,6 +694,9 @@ async function ChangeFrame(_class, otherDatas = null)
 
     if (_class === 'calendar')
         rcmail.env.have_calendar_frame = parent.$(".calendar-frame").length !== 0;
+
+    rcmail.set_busy(true, 'loading');
+    rcmail.env.can_change_while_busy = true;
 
     //Ouverture de la frame
     const id = mm_st_OpenOrCreateFrame(_class, false, config);

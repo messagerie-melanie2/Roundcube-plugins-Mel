@@ -181,6 +181,7 @@ class GlobalModal
     appendToBody(querry)
     {
         querry.appendTo(this.contents);
+        return this;
     }
 
     /**

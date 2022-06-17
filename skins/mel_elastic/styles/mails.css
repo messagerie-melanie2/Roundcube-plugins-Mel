@@ -795,3 +795,13 @@ ul ul li.mailbox:hover > a:first-of-type {
     color:red!important;
 }
 
+html body .messagelist tr.message td.labels {
+    background-color: transparent!important;
+    border:none!important;
+    padding-top: 0px!important;
+}
+
+.messagelist td.labels span {
+	border-radius: 5px;
+	padding: 2px;
+}

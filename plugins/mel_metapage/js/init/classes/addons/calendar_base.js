@@ -2,7 +2,7 @@ $(document).ready(() => {
 
     const plugin_text = 'mel_metapage';
     const audio_url = rcmail.env.mel_metapage_audio_url;
-    const newline = '{mel.newline}';
+    const newline = String.fromCharCode('8199');
     const reload = '{¤reload¤mel}';
 
     if (window.rcube_calendar_ui === undefined)
@@ -2351,6 +2351,13 @@ $(document).ready(() => {
         configurable: false,
         writable: false,
         value:newline
+    });
+
+    Object.defineProperty(rcube_calendar, 'old_newline_key', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value:'{mel.newline}'
     });
 
     rcube_calendar.number_waiting_events = function (events = [], get_number = true)

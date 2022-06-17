@@ -280,8 +280,11 @@ if (rcmail && window.mel_metapage)
         });
 
         rcmail.addEventListener("calendar.renderEvent.after", (args) => {
+            const old_newline = rcube_calendar.old_newline_key
             const newline = rcube_calendar.newline_key;
             let desc = args.element.find('.fc-event-location');
+            
+            if (!!args.eventDatas.location && args.eventDatas.location.includes(old_newline)) args.eventDatas.location = args.eventDatas.location.replaceAll(old_newline, newline);
 
             if (desc.length > 0 && args.eventDatas.location.includes(newline)) 
             {
@@ -474,7 +477,9 @@ if (rcmail && window.mel_metapage)
 
         if (hasLocation)
         {
-            const tmp_location = event.location.split('{mel.newline}');
+            const old_new_line = '{mel.newline}';
+            const newline = String.fromCharCode('8199');
+            const tmp_location = event.location.replaceAll(old_new_line, newline).split(newline);
 
             let element;
             for (let index = 0; index < tmp_location.length; ++index) {

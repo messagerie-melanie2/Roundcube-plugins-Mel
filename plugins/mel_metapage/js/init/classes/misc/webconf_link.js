@@ -9,7 +9,7 @@ class WebconfLink
         if (link.includes("#visio:"))
         {
             //let tmp = link.split("_key=")[1].split("_");
-            this.key = link.split("_key=")[1].split("&_")[0].split(rcube_calendar.newline_key)[0];
+            this.key = link.split("_key=")[1].split("&_")[0].replaceAll(rcube_calendar.old_newline_key, rcube_calendar.newline_key).split(rcube_calendar.newline_key)[0];
 
             if (link.includes("_ariane="))
             {

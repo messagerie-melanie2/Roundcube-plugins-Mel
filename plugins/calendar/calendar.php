@@ -1127,6 +1127,7 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             foreach ($users_email as $mail) {
                 $user = driver_mel::gi()->getUser(null, true, false, null, $mail);
+                
                 if (isset($user))
                 {
                     $event['attendees'][] = [

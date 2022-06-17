@@ -693,6 +693,14 @@ if (rcmail && window.mel_metapage)
 
                     if (!cloned_event.allDay) delete cloned_event.allDay;
 
+                    if (users.length === 0)
+                    {
+                        rcmail.set_busy(false);
+                        rcmail.clear_messages();
+                        top.rcmail.display_message('Vous devez mettre des utilisateurs !', 'error');
+                        return;
+                    }
+
                     mel_metapage.Functions.post(
                         mel_metapage.Functions.url('calendar', 'event'),
                         {

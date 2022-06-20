@@ -650,7 +650,7 @@ $(document).ready(function() {
 			}
 
 			#messagelist tr.label_${id} td{
-				background-color:${val}54;
+				background-color:${val}20;
 			}
 
 			#messagelist tr.label_${id} td.labels::before

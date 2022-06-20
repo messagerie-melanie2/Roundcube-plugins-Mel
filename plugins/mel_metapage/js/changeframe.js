@@ -888,80 +888,90 @@ async function ChangePage(_class)
     $(".workspace-frame").css("display", "");
     let frame = $("iframe.workspace-frame");
 
-    if (frame.length >= 1 && Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
-        frame[0].contentWindow.postMessage({
-            exec_info:"ChangeToolbarPage",
-            datas:_class
-        })
+    if (frame.length >= 1 )//&& Enumerable.from(frame.parent()).any(x => x.id === "layout-frames"))
+    {
+        const context = frame[0].contentWindow;
+        context.ChangeToolbarPage(_class);
+        context.rcmail.set_busy(false);
+        context.rcmail.clear_messages();
+    }
     else
         ChangeToolbarPage(_class);
 
 }
 
+window.ChangeToolbarPage = ChangeToolbarPage;
+
 async function ChangeToolbarPage(_class)
 {
+    let layout_frame = $("#layout-frames");
+    let workspace_frame = layout_frame.find(".workspace-frame");
+
+    const _$ = workspace_frame.length === 0 ? $ : workspace_frame[0].contentWindow.$;
+
+
     if (rcmail.env.mel_metapage_mail_configs["mel-chat-placement"] === rcmail.gettext("up", "mel_metapage"))
         ArianeButton.default().show_button()
 
-    $(".wsp-toolbar").css("z-index", "");
-    $(".wsp-object").css("display", "none");
-    $(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");
+    _$(".wsp-toolbar").css("z-index", "");
+    _$(".wsp-object").css("display", "none");
+    _$(".wsp-toolbar-item").removeClass("active").removeAttr("disabled").removeAttr("aria-disabled");
 
     if (window.webconf_master_bar !== undefined)
         window.webconf_master_bar.minify_toolbar();
     //console.log($(".wsp-object"), $(".wsp-toolbar-item.first"), $(".wsp-home"));
     switch (_class) {
         case "home":
-            $(".wsp-toolbar-item.wsp-home").addClass("active")
+            _$(".wsp-toolbar-item.wsp-home").addClass("active")
             .attr("disabled", "disabled")
             .attr("aria-disabled", "true");
-            $(".wsp-home").css("display", "");
+            _$(".wsp-home").css("display", "");
             break;
         case "wekan":
-            $(".wsp-toolbar-item.wsp-wekan").addClass("active")
+            _$(".wsp-toolbar-item.wsp-wekan").addClass("active")
             .attr("disabled", "disabled")
             .attr("aria-disabled", "true");
 
-            if ($("iframe.wsp-wekan-frame").length === 0)
+            if (_$("iframe.wsp-wekan-frame").length === 0)
             {
-                $(".body").append(`
+                _$(".body").append(`
                 <div class="wsp-services wsp-object wsp-wekan">
                 <iframe style=width:100%;min-height:500px;margin-top:30px; title="wekan" class="wsp-wekan-frame" src="${rcmail.env.wekan_base_url}/b/${rcmail.env.wekan_datas.id}/${rcmail.env.wekan_datas.title}"></iframe>
                 </div>
                 `);
             }
             else
-                $(".wsp-wekan").css("display", "");
+                _$(".wsp-wekan").css("display", "");
 
             //console.log("wekan_url", `${rcmail.env.wekan_base_url}/b/${rcmail.env.wekan_datas.id}/${rcmail.env.wekan_datas.title}`);
             break;
         case "links":
-            $(".wsp-toolbar-item.wsp-links").addClass("active")
+            _$(".wsp-toolbar-item.wsp-links").addClass("active")
             .attr("disabled", "disabled")
             .attr("aria-disabled", "true");
 
-            if ($("iframe.wsp-links-frame").length === 0)
+            if (_$("iframe.wsp-links-frame").length === 0)
             {
-                $(".body").append(`
+                _$(".body").append(`
                 <div class="wsp-services wsp-object wsp-links">
                 <iframe style=width:100%;min-height:500px;margin-top:30px; title="Liens utiles" class="wsp-links-frame" src="${mel_metapage.Functions.url("workspace", "show_links", {"_is_from":"iframe", "_id":rcmail.env.current_workspace_uid})}"></iframe>
                 </div>
                 `);
             }
             else
-                $(".wsp-links").css("display", "");
+                _$(".wsp-links").css("display", "");
 
             //console.log("wekan_url", `${rcmail.env.wekan_base_url}/b/${rcmail.env.wekan_datas.id}/${rcmail.env.wekan_datas.title}`);
             break;
         case "params":
-            $(".wsp-toolbar-item.wsp-item-params").addClass("active")
+            _$(".wsp-toolbar-item.wsp-item-params").addClass("active")
             .attr("disabled", "disabled")
             .attr("aria-disabled", "true");
-            $(".wsp-params").css("display", "");
+            _$(".wsp-params").css("display", "");
             break;
         case "back":
             rcmail.set_busy(false);
-            $(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
+            _$(".body").html($('<span style="margin-top:30px;width:200px;height:200px" class=spinner-border></span>')).css("display", "grid").css("justify-content", "center");
             rcmail.command("workspace.go");
 
             if (parent.webconf_master_bar !== undefined)

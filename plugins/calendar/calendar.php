@@ -1082,7 +1082,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'name' => $user->fullname,
                         'role' => 'REQ-PARTICIPANT',
                         'status' => 'ACCEPTED',
-                        'skip_notify' => 'true'
+                        'skip_notify' => 'true',
+                        'noreply' => '1'
                     ];
                     //Changement du calendrier
                     $event['calendar'] = driver_mel::mceToRcId($user->uid);
@@ -1116,13 +1117,15 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'email' => $organizer->email,
                         'name' => $organizer->fullname,
                         'role' => 'ORGANIZER',
-                        'internal' => 'true'
+                        'internal' => 'true',
+                        'noreply' => '1'
                     ]
                 ];
             }
 
             foreach ($event['attendees'] as $key => $a) {
                 $event['attendees'][$key]['skip_notify'] = 'true';
+                $event['attendees'][$key]['noreply'] = '1';
             } 
 
             foreach ($users_email as $mail) {
@@ -1135,7 +1138,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'name' => $user->fullname,
                         'role' => 'REQ-PARTICIPANT',
                         'status' => 'NEEDS-ACTION',
-                        'skip_notify' => 'false'
+                        'skip_notify' => 'false',
+                       // 'noreply' => '1'
                     ];
                 }
                 else {
@@ -1144,7 +1148,8 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'name' => $mail,
                         'role' => 'REQ-PARTICIPANT',
                         'status' => 'NEEDS-ACTION',
-                        'skip_notify' => 'false'
+                        'skip_notify' => 'false',
+                        //'noreply' => '1'
                     ];
                 }
             }
@@ -1549,6 +1554,11 @@ $("#rcmfd_new_category").keypress(function(event) {
         //PAMELA 
         $isShare = $event['share'] === true;
         $body_message_append = $event['message_body_before'];
+        $attendees_default = [];
+
+        foreach ($event['attendees'] as $key => $value) {
+            $attendees_default[$value['email']] = $value['noreply'] == '1';
+        }
 
         // send out notifications
         if (!empty($event['_notify']) && (!empty($event['attendees']) || !empty($old['attendees']))) {
@@ -1573,13 +1583,30 @@ $("#rcmfd_new_category").keypress(function(event) {
             else {
                 // make sure we have the complete record
                 $event = $action == 'remove' ? $old : $this->driver->get_event($event, 0, true);
+
+                //pamela
+
+                if (isset($event['attendees']))
+                {
+                    for ($i=0; $i < count($event['attendees']); ++$i) { 
+                        foreach ($attendees_default as $key => $value) {
+                            if ($event['attendees'][$i]['email'] === $key)
+                            {
+                                $event['attendees'][$i]['noreply'] = $value;
+                                break;
+                            }
+                        }
+                    }
+                }
+
             }
 
             $event['_savemode'] = $_savemode;
 
             //PAMELA
             $event['share'] = $isShare;
-            $event['message_body_before'] = $body_message_append;
+
+            if (isset($body_message_append)) $event['message_body_before'] = $body_message_append;
 
             if ($old) {
                 $old['thisandfuture'] = $_savemode == 'future';

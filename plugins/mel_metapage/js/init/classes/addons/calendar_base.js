@@ -2,7 +2,7 @@ $(document).ready(() => {
 
     const plugin_text = 'mel_metapage';
     const audio_url = rcmail.env.mel_metapage_audio_url;
-    const newline = String.fromCharCode('8232');
+    const newline = String.fromCharCode('8199');
     const reload = '{¤reload¤mel}';
     const visio_phone_start = ' (';
     const visio_phone_end = ')';

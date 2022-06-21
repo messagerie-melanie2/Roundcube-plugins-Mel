@@ -2,8 +2,11 @@ $(document).ready(() => {
 
     const plugin_text = 'mel_metapage';
     const audio_url = rcmail.env.mel_metapage_audio_url;
-    const newline = String.fromCharCode('8199');
+    const newline = String.fromCharCode('8232');
     const reload = '{¤reload¤mel}';
+    const visio_phone_start = ' (';
+    const visio_phone_end = ')';
+    const visio_phone_separator = ' | ';
 
     if (window.rcube_calendar_ui === undefined)
         window.rcube_calendar_ui = () => {};
@@ -223,17 +226,17 @@ $(document).ready(() => {
             {
                 let parentVal = this.parentLocation.$visioState.val();
 
-                if (parentVal.includes('('))
+                if (parentVal.includes(visio_phone_start))
                 {
-                    let tmp = parentVal.split('(')[1].split('|');
+                    let tmp = parentVal.split(visio_phone_start)[1].split(visio_phone_separator);
                     const phone = tmp[0];
-                    const pin = tmp[1].replace(')', '');
+                    const pin = tmp[1].replace(visio_phone_end, '');
 
                     this.$phoneNumber.val(phone);
                     this.$phonePin.val(pin);
 
-                    this.parentLocation.$visioState.val(parentVal.split('(')[0]);
-                    parentVal = parentVal.split('(')[0];
+                    this.parentLocation.$visioState.val(parentVal.split(visio_phone_start)[0]);
+                    parentVal = parentVal.split(visio_phone_start)[0];
                 }
                 
                 if (this.$phoneNumber.val() !== '' && parentVal !== '')
@@ -268,7 +271,7 @@ $(document).ready(() => {
             
             if (this.$phoneNumber.val() !== '' && this.parentLocation.$visioState.val() === this.lastRoomName)
             {
-                val = `${this.$phoneNumber.val()}|${this.$phonePin.val()}`;
+                val = `${this.$phoneNumber.val()}${visio_phone_separator}${this.$phonePin.val()}`;
             }
             else if(this.enabled() && this.parentLocation.$visioState.val() !== '' && this.loading !== true) {
                 rcmail.set_busy(true, 'loading');
@@ -290,9 +293,9 @@ $(document).ready(() => {
 
         setValue(val)
         {
-            val = val.split('|');
+            val = val.split(visio_phone_separator);
             const phone = val[0];
-            const pin = val[1].replace(')', '');
+            const pin = val[1].replace(visio_phone_end, '');
 
             this.$phoneNumber.val(phone);
             this.$phonePin.val(pin);
@@ -357,7 +360,7 @@ $(document).ready(() => {
                     const tmp = !this.visioPhone.enabled() ? '' : this.visioPhone.getValue();
 
                     if (tmp === reload) val = tmp;
-                    else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `(${tmp})`);
+                    else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `${visio_phone_start}${tmp}${visio_phone_end}`);
 
                     break;
 

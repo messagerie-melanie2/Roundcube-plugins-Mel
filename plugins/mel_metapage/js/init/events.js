@@ -477,8 +477,8 @@ if (rcmail && window.mel_metapage)
 
         if (hasLocation)
         {
-            const old_new_line = '{mel.newline}';
-            const newline = String.fromCharCode('8199');
+            const old_new_line = rcube_calendar?.old_newline_key ?? '{mel.newline}';
+            const newline = rcube_calendar?.newline_key ?? String.fromCharCode('8232');
             const tmp_location = event.location.replaceAll(old_new_line, newline).split(newline);
 
             let element;

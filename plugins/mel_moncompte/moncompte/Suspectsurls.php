@@ -21,7 +21,7 @@ require_once 'Moncompteobject.php';
 
 class SuspectsUrls extends Moncompteobject
 {
-
+    private static $plugin;
     public static function isEnabled() {
         return mel::is_internal() || (class_exists('mel_doubleauth') && mel_doubleauth::is_double_auth_enable());
 	}
@@ -31,6 +31,7 @@ class SuspectsUrls extends Moncompteobject
 	*/
 	public static function load($plugin = null) {
         $plugin->include_script('suspectsurls.js');
+        self::$plugin = $plugin;
 		rcmail::get_instance()->output->add_handlers([
 			'defaultlinks' => array(__CLASS__, 'defaultlinks'),
             'customlinks' => array(__CLASS__, 'customlinks')
@@ -46,7 +47,7 @@ class SuspectsUrls extends Moncompteobject
         $col_middle = 3;
         $col_right = 12 - ($col_left + $col_middle);
 
-        return '<div class="row"><div class="col-'.$col_left.'"><h3>Adresses suspicieuses</h3></div><div class="col-'.$col_middle.'"><h3>Est bloqué</h3></div>'.($isSuspect ? '<div class="col-'.$col_right.'"><h3>Supprimer</h3></div>' : '').'</div>';
+        return '<div class="row"><div class="col-'.$col_left.'"><h3>'.self::$plugin->gettext('mel_moncompte.suspects_websites').'</h3></div><div class="col-'.$col_middle.'"><h3>'.self::$plugin->gettext('mel_moncompte.bloqued').'</h3></div>'.($isSuspect ? '<div class="col-'.$col_right.'"><h3>'.self::$plugin->gettext('delete').'</h3></div>' : '').'</div>';
     }
 
     public static function create_title($url)
@@ -133,7 +134,7 @@ class SuspectsUrls extends Moncompteobject
         $html = '';
         $html .= '<div class="row" style="margin-top:15px"><div class="col-1"><button type="button" id="su-mel-custom-button"></button></div><div class="col-11"><h2>Adresses suspectes ajoutées</h2></div></div>';
         $html .= '<div id="su-mel-custom_list">';
-        $html .= '<button id="add-custom-su" type="button"></button>'.self::starting_html(true);
+        $html .= '<button id="add-custom-su" style="margin-bottom:5px" type="button"></button>'.self::starting_html(true);
         $checkbox = null;
         $isBloqued = false;
         

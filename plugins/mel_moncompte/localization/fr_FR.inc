@@ -389,4 +389,7 @@ $labels['success_DeleteUserDeviceZP1'] = "Le compte vient d'être supprimé de l
 $labels['Webservice error'] = "Une erreur s'est produite, il est possible que le serveur de synchronisation mobile soit injoignable. Veuillez réessayer.";
 $labels['Missing arguments'] = "Une erreur s'est produite, essayez de vous déconnecter/reconnecter.";
 $labels['suspectsurls'] = 'Liens suspects';
+$labels['suspects_websites'] = 'Adresses suspicieuses';
+$labels['bloqued'] = 'Est bloqué';
+$labels['text_suspects'] = "Vous trouverez ici la liste des adresses de site web potentiellement dangereux. Les adresses définie par défaut ne peuvent pas être supprimé mais peuvent être bloqué ou débloqué. Si une adresse est bloqué, si celle-ci ce trouve dans le corps d'un des messages, celui-ci ne pourra pas être ouvert. Dans le cas contraire, le message s'affichera correctement, mais vous aurez une alerte indiquant que le message contient un lieu probablement dangereux.";
 ?>

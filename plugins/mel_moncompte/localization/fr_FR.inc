@@ -388,4 +388,5 @@ $labels['success_DeleteUserDeviceZP1'] = "Le compte vient d'être supprimé de l
 
 $labels['Webservice error'] = "Une erreur s'est produite, il est possible que le serveur de synchronisation mobile soit injoignable. Veuillez réessayer.";
 $labels['Missing arguments'] = "Une erreur s'est produite, essayez de vous déconnecter/reconnecter.";
+$labels['suspectsurls'] = 'Liens suspects';
 ?>

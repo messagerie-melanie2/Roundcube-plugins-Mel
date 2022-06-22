@@ -150,6 +150,7 @@ class mel_metapage extends rcube_plugin
         $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
         $this->add_hook('preferences_save',     array($this, 'prefs_save'));
+        $this->add_hook('settings_actions', array($this, 'settings_actions'));
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
@@ -161,6 +162,8 @@ class mel_metapage extends rcube_plugin
 
         if ($this->rc->task === "mail" )
         {
+            $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
+            $this->add_hook('mel_config_bloqued_url', [$this,'check_message_is_bloqued_custom']);
             $this->add_hook("messages_list", [$this, 'hook_messages_list']);
             $this->add_hook('message_part_body_after', [$this, 'hook_message_part_get']);
             $this->add_hook('message_objects', [$this, 'hook_message_objects']);
@@ -2024,6 +2027,32 @@ class mel_metapage extends rcube_plugin
     return $args;
   }
 
+  public function check_message_is_suspect_custom($args)
+  {
+    $args['config'] = array_merge($args['config'], $this->_check_message_is_custom(true));
+    return $args;
+  }
+
+  public function check_message_is_bloqued_custom($args)
+  {
+    $args['config'] = array_merge($args['config'], $this->_check_message_is_custom(false));
+    return $args;
+  }
+
+
+  private function _check_message_is_custom($isSuspect)
+  {
+    $array = [];
+    $custom = $this->rc->config->get('mel_custom_suspected_url', []);
+
+    foreach ($custom as $url => $datas) {
+        if ($isSuspect && $datas['bloqued'] === false) $array[] = $url;
+        else if (!$isSuspect && $datas['bloqued'] === true) $array[] = $url;
+    }
+
+    return $array;
+  }
+
 
   /**
    * Vérifie si un message contient une url frauduleuse ou non.
@@ -2042,10 +2071,12 @@ class mel_metapage extends rcube_plugin
       }
 
       $is_suspect = mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
-        if (strpos($message, $v) === false)
+        if (strpos($message, $v) === false && !mel_helper::parse_url($v)->not_have_path_and_check_base_url($message))
         {
             if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
-            else $v = str_replace('https', 'http', $v);
+            else {
+                $v = str_replace('https', 'http', $v);
+            }
 
             return strpos($message, $v) !== false;
         }

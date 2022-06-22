@@ -299,3 +299,4 @@ $labels['chat'] = 'Discussions';
 
 $labels['visio_ask_on_end'] = 'Afficher le questionnaire satisfaction ?';
 $labels['chat_startup'] = 'Connexion automatique au démarrage ?';
+

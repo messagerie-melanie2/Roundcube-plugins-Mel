@@ -1,0 +1,25 @@
+<roundcube:include file="includes/layout.html" />
+<link rel="stylesheet" type="text/css" href="/this/moncompte.css" />
+<framed_item>
+	<div class="framed_item">
+		<h1 class="boxtitle">
+			<roundcube:label name="mel_moncompte.suspectsurls" />
+		</h1>
+		<div id="preferences-details" class="boxcontent">
+			<!-- <roundcube:object name="moncompte_balp_list" /> -->
+			<p>Vous trouverez ici la liste des adresses de site web potentiellement dangereux.
+			Les adresses définie par défaut ne peuvent pas être supprimé mais peuvent être bloqué ou débloqué.
+			Si une adresse est bloqué, si celle-ci ce trouve dans le corps d'un des messages, celui-ci ne pourra pas être ouvert.
+			Dans le cas contraire, le message s'affichera correctement, mais vous aurez une alerte indiquant que le message contient un lieu probablement dangereux.</p>
+			<form name="customlinks" action="#" method="post" class="propform">
+				<input type="hidden" value="1" name="suspectsurls" />
+				<roundcube:object name="defaultlinks" id="defaultlinks" />
+                <roundcube:object name="customlinks" id="customlinks" />
+				<div style="margin-top:30px" class="formbuttons">
+					<button type="submit" id="su-save" class=" btn btn-primary submit" name="save" />
+					<roundcube:label name="save" /></button>
+				  </div>
+			</form>
+		</div>
+	</div>
+</framed_item>

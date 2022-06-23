@@ -1,0 +1,60 @@
+// out: false
+
+.mel-no-border{
+    border: none;
+}
+
+.mel-clickable {
+    cursor: pointer;
+}
+
+.noselect
+{
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.titanic{
+    float: none;
+}
+
+.restore-font{
+    font-family: @default-fonts;
+}
+
+.mel-all-ease-in-animation{
+    transition: @mel-default-animation;
+}
+
+.mel-main-colors{
+    background-color: var(--main-bckg-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-main-colors-important{
+    .mel-main-colors()!important;
+}
+
+.mel-secondary-colors{
+    background-color: var(--secondary-bckg-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-secondary-colors-important{
+    .mel-secondary-colors()!important;
+}
+
+.mel-tiercary-colors{
+    background-color: var(--tierciary-bckg-color);
+    color:var(--secondary-text-color);
+}
+
+.mel-tiercary-colors-important{
+    .mel-tiercary-colors()!important;
+}
+

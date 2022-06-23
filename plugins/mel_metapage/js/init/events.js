@@ -706,39 +706,41 @@ if (rcmail && window.mel_metapage)
                         return;
                     }
 
-                    mel_metapage.Functions.post(
-                        mel_metapage.Functions.url('calendar', 'event'),
-                        {
-                            action:'share',
-                            e:cloned_event,
-                            _users_to_share:users,
-                            _comment:comment,
-                            _organizer:event.source.ajaxSettings.owner
-                        },
-                        (datas) => {
-                            rcmail.set_busy(false);
-                            rcmail.clear_messages();
-                            rcmail.display_message('Evènement mis à jours et partagé avec succès !', 'confirmation');
-                            rcmail.command('refreshcalendar');
+                    // mel_metapage.Functions.post(
+                    //     mel_metapage.Functions.url('calendar', 'event'),
+                    //     {
+                    //         action:'share',
+                    //         e:cloned_event,
+                    //         _users_to_share:users,
+                    //         _comment:comment,
+                    //         _organizer:event.source.ajaxSettings.owner
+                    //     },
+                    //     (datas) => {
+                    //         console.log(datas, 'datas partage');
 
-                            if (top !== window) top.rcmail.refresh();
-                        },
-                        (a,b,c) => {
-                            rcmail.set_busy(false);
-                            rcmail.clear_messages();
-                            rcmail.display_message('Une erreur est survenue !', 'error');
-                            console.error('###[PARTAGER]',a,b,c);
-                        }
-                    );
+                    //         rcmail.set_busy(false);
+                    //         rcmail.clear_messages();
+                    //         rcmail.display_message('Evènement mis à jours et partagé avec succès !', 'confirmation');
+                    //         rcmail.command('refreshcalendar');
+
+                    //         if (top !== window) top.rcmail.refresh();
+                    //     },
+                    //     (a,b,c) => {
+                    //         rcmail.set_busy(false);
+                    //         rcmail.clear_messages();
+                    //         rcmail.display_message('Une erreur est survenue !', 'error');
+                    //         console.error('###[PARTAGER]',a,b,c);
+                    //     }
+                    // );
                     //rcmail.triggerEvent('calendar.event_show_dialog.custom', datas);
                     modal.close();
-                    // rcmail.http_post('event', {
-                    //             action:'share',
-                    //             e:cloned_event,
-                    //             _users_to_share:users,
-                    //             _comment:comment,
-                    //             _organizer:event.source.ajaxSettings.owner
-                    //         }, loading);
+                    rcmail.http_post('event', {
+                                action:'share',
+                                e:cloned_event,
+                                _users_to_share:users,
+                                _comment:comment,
+                                _organizer:event.source.ajaxSettings.owner
+                            }, loading);
                 })
             ).append(
                 $('<button class="btn btn-secondary mel-button">Annuler <span class="plus icon-mel-undo"></span></button>')

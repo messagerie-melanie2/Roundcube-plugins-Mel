@@ -1518,6 +1518,10 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
             $this->rc->output->command('plugin.refresh_calendar', $args);
         }
+        else if ($action === 'share') 
+        {
+            $this->rc->output->command('plugin.refresh_calendar', $args);
+        }
     }
 
     /**

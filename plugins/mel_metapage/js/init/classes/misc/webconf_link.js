@@ -21,6 +21,8 @@ class WebconfLink
                 this.wsp = link.split("_wsp=")[1].split("&_")[0];
                 this.ariane = null;
             }
+
+            if (this.key.includes(' ')) this.key = this.key.split(' ')[0];
         }
     }
 

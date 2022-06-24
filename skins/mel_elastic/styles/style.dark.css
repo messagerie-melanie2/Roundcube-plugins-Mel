@@ -1167,3 +1167,7 @@ html.dark-mode .input-group-text.mel {
 html.dark-mode .messagelist tr.message.bloqued .msgicon.status::before{
     color:red!important;
 }
+
+html.dark-mode #message-model {
+	background-color: #323F4B;
+}

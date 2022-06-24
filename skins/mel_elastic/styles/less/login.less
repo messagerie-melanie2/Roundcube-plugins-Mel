@@ -1,0 +1,215 @@
+@import "root.less";
+
+@screen-width: {
+    W1:795px;
+    W2:1200px;
+    W3:1236px;
+    W4:1285px;
+    W5:1385px;
+
+}
+
+#mel-login-form{
+    margin: 0 auto;
+    top: 10vh;
+    width: 95%;
+    max-width: 54%;
+    position: relative;
+
+
+
+}
+
+.card{
+    &-body{
+        &.mel_correction{
+            padding: 50px 100px;
+
+            @media screen and (max-width: @screen-width[W1]) {
+                &{
+                    padding: 30px 15px;
+                }
+            }
+        }
+    }
+
+    &.clear{
+        background-color: #F8F8F8;
+        border:none!important;
+    }
+
+}
+
+.login_div
+{
+    text-align: center;
+
+    &>.name{
+        position: absolute;
+        bottom: 0;
+        max-width: 800px;
+        left: 24%;
+
+        display: none;
+    }
+}
+
+#formlogintable 
+{
+    color: #363A5B;
+
+    td {
+        border: none;
+    }
+
+    label{
+        font-weight: bold;
+
+        &[for="rcmloginuser"]{
+            font-weight: bold;
+        }
+
+        &[for="rcmloginpwd"]{
+            font-weight: bold;
+        }
+    }
+}
+
+#mel-login-form{
+    p.formbuttons
+    {
+        text-align: center;
+    }
+
+    @media screen and (max-width: @screen-width[W1]) {
+        &{
+            top:0;
+            max-width: 100%;
+        }
+    }
+}
+
+#rcmloginsubmit
+{
+    color: #fff;
+    background-color: var(--main-bckg-color);
+    border-color: #363A5B;
+    border-radius: 60px;
+    width: unset !important;
+    font-size: small;
+    text-transform: none !important;
+
+    &:hover{
+        background-color: var(--tierciary-bckg-color);
+        border-color: #484D7A;
+    }
+
+    &::after{
+        font-family: var(--main-icon-font)!important;
+        content: "\e900";
+        padding-left: 30px;
+    }
+}
+
+.mel-logo{
+    position: absolute;
+    margin: 30px;
+    left: 0px;
+    max-width: 250px;
+
+    @media screen and (max-width: @screen-width[W2]) {
+        &{
+            display: none;
+        }
+    }
+}
+
+.login-title{
+    margin-bottom: 30px;
+}
+
+._login-logo(){
+    position: absolute;
+    bottom: 0px;
+    max-height: 57%;
+}
+
+.login-logo{
+    &-footer{
+        &-right{
+            ._login-logo();
+            left: 61px;
+
+            @media screen and (max-width: @screen-width[W2]) {
+                &{
+                    display: none;
+                }
+            }
+        }
+
+        &-left{
+            ._login-logo();
+            right: 61px;
+
+            @media screen and (max-width: @screen-width[W2]) {
+                &{
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+#loginfooter{
+    position: absolute;
+    bottom: 0;
+    max-width: 800px;
+    left: 24%;
+
+    @media screen and (max-width: @screen-width[W5]) {
+        &{
+            left:21%
+        }
+    }
+
+    @media screen and (max-width: @screen-width[W4]) {
+        &{
+            left:19%
+        }
+    }
+
+    @media screen and (max-width: @screen-width[W3]) {
+        &{
+            max-width: 640px;
+        }
+    }
+
+    @media screen and (max-width: @screen-width[W2]) {
+        &{
+            position: initial; 
+            display: block;
+            margin-top: 75px;
+            max-width: initial;
+            text-align: center;
+        }
+    }
+
+    @media screen and (max-width: @screen-width[W1]) {
+        &{
+            margin-top: 15px;
+            padding: 0 15px;
+        }
+    }
+}
+
+.task-login{
+    @media screen and (max-width: @screen-width[W2]) {
+        &{
+            overflow: auto;
+
+            &>#layout{
+                display: initial;
+            }
+        }
+    }
+}

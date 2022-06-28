@@ -884,10 +884,11 @@ function m_mp_remove_li(event) {
 // }
 
 function m_mp_openTo(e, idInput, actions = null) {
-
     if ($('#compose-contacts').length === 0 || (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined))) {
         new Promise(async() => {
-            $("#layout").append(await rcmail.env.mel_metapage_call_parsed.contact_list());
+            let list = await rcmail.env.mel_metapage_call_parsed.contact_list();
+            ($("#layout").length === 0 ? $('body') : $("#layout")).append(list);
+            list = null;
             $("head").append(`<script src="plugins/mel_metapage/js/program/../../../annuaire/annuaire.js"></script>`);
             $("head").append(`<script src="program/js/treelist.min.js"></script>`)
                 .append(`<link rel="stylesheet" type="text/css" href="plugins/mel_metapage/skins/elastic/annuaire_part.css">`);

@@ -1833,6 +1833,15 @@ class ListenerWebConfBar
             this.webconf.jitsii.addEventListener("chatUpdated", (datas) => {
                 this.chatOpen = datas.isOpen;
             });
+
+            this.webconf.jitsii.addEventListener("errorOccurred", (datas) =>{
+                console.error('###[VISIO]', datas);
+            });
+
+            
+            this.webconf.jitsii.addEventListener("readyToClose", () =>{
+                console.log("[VISIO]La visio est prête à être fermée !");
+            });
         }
     }
 

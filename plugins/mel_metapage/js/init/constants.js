@@ -298,6 +298,7 @@ const mel_metapage = {
         wait_frame_waiting:"waiting...",
         wait_frame_loaded:"loaded",
         wait_call_loading:"mel_metapage.call.loading",
+        color_mode:'colorMode'
     },
     /**
      * Liste des symboles.

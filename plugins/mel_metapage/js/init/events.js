@@ -365,6 +365,8 @@ if (rcmail && window.mel_metapage)
                 }
             });
         }
+
+        mel_metapage.Storage.set(mel_metapage.Storage.color_mode, color_mode);
     }
     
     $(document).ready(() => {

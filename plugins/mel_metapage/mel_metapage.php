@@ -163,7 +163,7 @@ class mel_metapage extends rcube_plugin
         {
             $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
             $this->add_hook('mel_config_bloqued_url', [$this,'check_message_is_bloqued_custom']);
-            $this->add_hook("messages_list", [$this, 'hook_messages_list']);
+            // $this->add_hook("messages_list", [$this, 'hook_messages_list']);
             $this->add_hook('message_part_body_after', [$this, 'hook_message_part_get']);
             $this->add_hook('message_objects', [$this, 'hook_message_objects']);
             $model_mbox = $this->rc->config->get('models_mbox');
@@ -1999,29 +1999,29 @@ class mel_metapage extends rcube_plugin
 
   public function hook_messages_list($args)
   {
-    $config = $this->rc->config->get('mel_suspect_url', []);
-    $config_bloqued = $this->rc->config->get('mel_bloqued_url', []);
+    // $config = $this->rc->config->get('mel_suspect_url', []);
+    // $config_bloqued = $this->rc->config->get('mel_bloqued_url', []);
 
-    $plugin = $this->rc->plugins->exec_hook('mel_config_suspect_url', ['config' => $config]);
-    $config = $plugin['config'] ?? $config;
-    $plugin = $this->rc->plugins->exec_hook('mel_config_bloqued_url', ['config' => $config_bloqued]);
-    $config_bloqued = $plugin['config'] ?? $config_bloqued;
+    // $plugin = $this->rc->plugins->exec_hook('mel_config_suspect_url', ['config' => $config]);
+    // $config = $plugin['config'] ?? $config;
+    // $plugin = $this->rc->plugins->exec_hook('mel_config_bloqued_url', ['config' => $config_bloqued]);
+    // $config_bloqued = $plugin['config'] ?? $config_bloqued;
     
 
-    foreach ($args['messages'] as $key => $message) {
-        $message = $this->rc->storage->get_body($message->uid);
+    // foreach ($args['messages'] as $key => $message) {
+    //     $message = $this->rc->storage->get_body($message->uid);
 
-        if (isset($message))
-        {
-            if ($this->check_message_is_bloqued($message, $args['messages'][$key], $config_bloqued)){
-                $args['messages'][$key]->list_flags['extra_flags']['BLOQUED'] = true;
-            }
-            else if ($this->check_message_is_suspect($message, $args['messages'][$key], $config))
-            {
-                $args['messages'][$key]->list_flags['extra_flags']['SUSPECT'] = true;
-            }
-        }
-    }
+    //     if (isset($message))
+    //     {
+    //         if ($this->check_message_is_bloqued($message, $args['messages'][$key], $config_bloqued)){
+    //             $args['messages'][$key]->list_flags['extra_flags']['BLOQUED'] = true;
+    //         }
+    //         else if ($this->check_message_is_suspect($message, $args['messages'][$key], $config))
+    //         {
+    //             $args['messages'][$key]->list_flags['extra_flags']['SUSPECT'] = true;
+    //         }
+    //     }
+    // }
 
     return $args;
   }

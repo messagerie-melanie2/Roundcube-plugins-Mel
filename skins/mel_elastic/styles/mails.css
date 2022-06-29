@@ -11,6 +11,14 @@ html.layout-large .task-mail #layout-sidebar > .header
     background-color:#484D7A!important;
 }
 
+/* .task-mail.action-compose #layout-content{
+    margin-left:60px;
+}
+
+.framed .task-mail.action-compose #layout-content{
+    margin-left:0;
+} */
+
 .task-mail #layout-sidebar,
 .task-mail #layout-list
 {

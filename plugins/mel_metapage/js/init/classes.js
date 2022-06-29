@@ -668,20 +668,19 @@ var metapage_frames = new MetapageFrames();
 
 
 
-class Roundcube_Mel_Color extends MetapageObject{
+class Roundcube_Mel_Color{
 
     constructor() {
-        super();
         this.init().setup();
     }
 
-    init(...args)
+    init()
     {
         this.color = '';
         return this;
     }
 
-    setup(...args)
+    setup()
     {
         this.color = mel_metapage.Storage.get(Roundcube_Mel_Color.storageKey);
 
@@ -772,3 +771,35 @@ Object.defineProperty(Roundcube_Mel_Color, 'switch_theme_function', {
         MEL_ELASTIC_UI.switch_color();
     }
 });
+
+class MelEnum
+{
+	constructor(json)
+	{
+		for (const key in json) {
+			if (Object.hasOwnProperty.call(json, key)) {
+				const element = json[key];
+				Object.defineProperty(this, key, {
+					enumerable: true,
+					configurable: false,
+					writable: false,
+					value:element
+				});
+			}
+		}
+	}
+
+	static createEnum(name, json)
+	{
+		if (MelEnum.createEnum.enums === undefined) MelEnum.createEnum.enums = {};
+		
+		if (MelEnum.createEnum.enums[name] !== undefined) throw 'Already exist';
+		else MelEnum.createEnum.enums[name] = new MelEnum(json);
+
+		return MelEnum.createEnum.enums[name];
+	}
+
+	static get(name) {
+		return MelEnum.createEnum.enums[name];
+	}
+}

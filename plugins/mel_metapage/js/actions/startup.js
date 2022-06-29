@@ -167,6 +167,8 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
                     return;
                 case "order1":
                     return;
+                case 'disabled':
+                    return;
                 case "mel":
                     return;
                 default:

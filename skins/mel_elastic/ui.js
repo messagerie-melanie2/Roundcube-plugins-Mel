@@ -758,6 +758,52 @@ $(document).ready(() => {
                 {
                     $("#toolbar-menu a.send").removeAttr('href');
                 }
+
+                if (window === top && rcmail.env.extwin !== 1)
+                {
+                    let $tmp_quit = $(`<a style="margin-right:15px" class="back" href="#" >Messages</a>`).click(() => {
+                        rcmail.env.action='index';
+                        rcmail.action = 'index';
+                        rcmail.compose_skip_unsavedcheck = true;
+                        const _$ = top.$;
+        
+                        _$('.task-mail.action-compose #taskmenu li a').removeClass('disabled').removeAttr('disabled');
+                        _$('.barup button').removeClass('disabled').removeAttr('disabled');
+                        _$('#barup-search-input').removeClass('disabled').removeAttr('disabled');
+                        _$('#user-up-popup').css('pointer-events', 'all');
+                        _$('.tiny-rocket-chat').removeClass('disabled').removeAttr('disabled');
+                        _$('.task-mail.action-compose #taskmenu li a.menu-last-frame').addClass('disabled').attr('disabled', 'disabled');
+        
+                        if (_$('iframe.mail-frame').length > 0) mel_metapage.Functions.change_frame('mail', true, true);
+                        else if (_$('.mail-frame').length > 0) {
+                            _$('.mail-frame').remove();
+                            mel_metapage.Functions.change_frame('mail', true, true);
+                        }
+                        else mel_metapage.Functions.change_frame('mail', true, true);
+        
+                        _$('body').removeClass('action-compose').addClass('action-none');
+                    });
+        
+                    $("ul#toolbar-menu").prepend($(`<li role="menuitem">
+                    
+                    </li>`).append($tmp_quit));
+    
+                    $('.task-mail.action-compose #taskmenu li a').addClass('disabled').attr('disabled', 'disabled');
+                    $('.barup button').addClass('disabled').attr('disabled', 'disabled');
+                    $('#barup-search-input').addClass('disabled').attr('disabled', 'disabled');
+                    $('#user-up-popup').css('pointer-events', 'none');
+                    const interval = setInterval(() => {
+    
+                        if (!$('.tiny-rocket-chat').hasClass('disabled'))
+                        {
+                            $('.tiny-rocket-chat').addClass('disabled').attr('disabled', 'disabled');
+                        }
+                        else clearInterval(interval);
+                    }, 100);
+    
+                    $("#layout-content").css('margin-left', '60px');
+                }
+
             }
 
             rcmail.addEventListener('fileappended', (file) => {
@@ -923,51 +969,6 @@ $(document).ready(() => {
                 rcmail.triggerEvent('message_sent', {
                     type, msg, folders, save_error
                 });
-            }
-
-            if (window === top && rcmail.env.extwin !== 1)
-            {
-                let $tmp_quit = $(`<a style="margin-right:15px" class="back" href="#" >Messages</a>`).click(() => {
-                    rcmail.env.action='index';
-                    rcmail.action = 'index';
-                    rcmail.compose_skip_unsavedcheck = true;
-                    const _$ = top.$;
-    
-                    _$('.task-mail.action-compose #taskmenu li a').removeClass('disabled').removeAttr('disabled');
-                    _$('.barup button').removeClass('disabled').removeAttr('disabled');
-                    _$('#barup-search-input').removeClass('disabled').removeAttr('disabled');
-                    _$('#user-up-popup').css('pointer-events', 'all');
-                    _$('.tiny-rocket-chat').removeClass('disabled').removeAttr('disabled');
-                    _$('.task-mail.action-compose #taskmenu li a.menu-last-frame').addClass('disabled').attr('disabled', 'disabled');
-    
-                    if (_$('iframe.mail-frame').length > 0) mel_metapage.Functions.change_frame('mail', true, true);
-                    else if (_$('.mail-frame').length > 0) {
-                        _$('.mail-frame').remove();
-                        mel_metapage.Functions.change_frame('mail', true, true);
-                    }
-                    else mel_metapage.Functions.change_frame('mail', true, true);
-    
-                    _$('body').removeClass('action-compose').addClass('action-none');
-                });
-    
-                $("ul#toolbar-menu").prepend($(`<li role="menuitem">
-                
-                </li>`).append($tmp_quit));
-
-                $('.task-mail.action-compose #taskmenu li a').addClass('disabled').attr('disabled', 'disabled');
-                $('.barup button').addClass('disabled').attr('disabled', 'disabled');
-                $('#barup-search-input').addClass('disabled').attr('disabled', 'disabled');
-                $('#user-up-popup').css('pointer-events', 'none');
-                const interval = setInterval(() => {
-
-                    if (!$('.tiny-rocket-chat').hasClass('disabled'))
-                    {
-                        $('.tiny-rocket-chat').addClass('disabled').attr('disabled', 'disabled');
-                    }
-                    else clearInterval(interval);
-                }, 100);
-
-                $("#layout-content").css('margin-left', '60px');
             }
 
             return this;

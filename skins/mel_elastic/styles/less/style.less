@@ -61,15 +61,13 @@ a{
     }
 }
 
+p,
+span,
 div {
     scrollbar-width: thin;
     scrollbar-color: #363A5B #A3A7BC;
 }
 
-p{
-    scrollbar-width: thin;
-    scrollbar-color: #363A5B #A3A7BC;
-}
 
 main {
 	display: flex;
@@ -80,23 +78,24 @@ main {
 /* width */
 ::-webkit-scrollbar {
     width: 6px;
-}
 
-/* Track */
-::-webkit-scrollbar-track {
-    background: #A3A7BC;
-    border-radius: 15px;
-}
+    /* Track */
+    &-track {
+        background: #A3A7BC;
+        border-radius: 15px;
+    }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: var(--main-bckg-color);
-    border-radius: 15px;
-}
+    /* Handle */
+    &-thumb {
+        background: var(--main-bckg-color);
+        border-radius: 15px;
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #070B2D;
+        &:hover{
+            background: #070B2D;
+
+            width: 12px;
+        }
+    }
 }
 
 

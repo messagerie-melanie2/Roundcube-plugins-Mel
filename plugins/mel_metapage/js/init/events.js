@@ -331,37 +331,19 @@ if (rcmail && window.mel_metapage)
             $logo.attr("src", $logo.data(element_data_name)).data(element_data_name, '');
         }
 
-        if (window === parent)
+        if (true || window === parent)
         {
             $('iframe.mm-frame').each(async (i,e) => {
-                let $frame;
                 let contentWindow = e.contentWindow;
-                const task = contentWindow.rcmail.env.task;
-
-                switch (task) {
-                    case 'settings':
-                        $frame = contentWindow.$("iframe#preferences-frame")[0];
-                        break;
-                    case 'mail':
-                        $frame = contentWindow.$('iframe#messagecontframe')[0];
-                        break;
-                    case 'addressbook':
-                        $frame = contentWindow.$("iframe#contact-frame")[0];
-                        break;
-
-                    default:
-                        $frame = null;
-                        break;
-                }
-
-
-                try {
-                    if ($frame !== null && MEL_ELASTIC_UI.color_mode() !== $frame.contentWindow.MEL_ELASTIC_UI.color_mode())
-                    {
-                        $frame.contentWindow.MEL_ELASTIC_UI.switch_color();
-                    }
+                //const task = contentWindow.rcmail.env.task;
+                contentWindow.postMessage('colorMode', '*');
+                 try {
+                        if (MEL_ELASTIC_UI.color_mode() !== contentWindow.MEL_ELASTIC_UI.color_mode())
+                        {
+                            contentWindow.MEL_ELASTIC_UI.switch_color();
+                        }
                 } catch (error) {
-                    
+                    //console.error('###', error);
                 }
             });
         }

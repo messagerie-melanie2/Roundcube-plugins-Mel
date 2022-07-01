@@ -333,7 +333,7 @@ if (rcmail && window.mel_metapage)
 
         if (true || window === parent)
         {
-            $('iframe.mm-frame').each(async (i,e) => {
+            $('iframe').each(async (i,e) => {
                 let contentWindow = e.contentWindow;
                 //const task = contentWindow.rcmail.env.task;
                 contentWindow.postMessage('colorMode', '*');

@@ -181,6 +181,54 @@ class mel_mapping {
   }
 
   /**
+   * Mapping du type d'un participant RoundCube vers Mél
+   *
+   * @param string $attendee_type_rc
+   * @return string
+   */
+  public static function rc_to_m2_attendee_type($attendee_type_rc) {
+    $mapping = array(
+            self::DEFAULT_VALUE                   => LibMelanie\Api\Defaut\Attendee::TYPE_INDIVIDUAL,
+            LibMelanie\Lib\ICS::CUTYPE_INDIVIDUAL => LibMelanie\Api\Defaut\Attendee::TYPE_INDIVIDUAL,
+            LibMelanie\Lib\ICS::CUTYPE_GROUP      => LibMelanie\Api\Defaut\Attendee::TYPE_GROUP,
+            LibMelanie\Lib\ICS::CUTYPE_RESOURCE   => LibMelanie\Api\Defaut\Attendee::TYPE_RESOURCE,
+            LibMelanie\Lib\ICS::CUTYPE_ROOM       => LibMelanie\Api\Defaut\Attendee::TYPE_ROOM,
+            LibMelanie\Lib\ICS::CUTYPE_UNKNOWN    => LibMelanie\Api\Defaut\Attendee::TYPE_UNKNOWN,
+    );
+    if (isset($mapping[$attendee_type_rc])) {
+      $attendee_type_m2 = $mapping[$attendee_type_rc];
+    }
+    else {
+      $attendee_type_m2 = $mapping[self::DEFAULT_VALUE];
+    }
+    return $attendee_type_m2;
+  }
+
+  /**
+   * Mapping du type d'un participant Mél vers RoundCube
+   *
+   * @param string $attendee_type_m2
+   * @return string
+   */
+  public static function m2_to_rc_attendee_type($attendee_type_m2) {
+    $mapping = array(
+            self::DEFAULT_VALUE                             => LibMelanie\Lib\ICS::CUTYPE_INDIVIDUAL,
+            LibMelanie\Api\Defaut\Attendee::TYPE_INDIVIDUAL => LibMelanie\Lib\ICS::CUTYPE_INDIVIDUAL,
+            LibMelanie\Api\Defaut\Attendee::TYPE_GROUP      => LibMelanie\Lib\ICS::CUTYPE_GROUP,
+            LibMelanie\Api\Defaut\Attendee::TYPE_RESOURCE   => LibMelanie\Lib\ICS::CUTYPE_RESOURCE,
+            LibMelanie\Api\Defaut\Attendee::TYPE_ROOM       => LibMelanie\Lib\ICS::CUTYPE_ROOM,
+            LibMelanie\Api\Defaut\Attendee::TYPE_UNKNOWN    => LibMelanie\Lib\ICS::CUTYPE_UNKNOWN,
+    );
+    if (isset($mapping[$attendee_type_m2])) {
+      $attendee_type_rc = $mapping[$attendee_type_m2];
+    }
+    else {
+      $attendee_type_rc = $mapping[self::DEFAULT_VALUE];
+    }
+    return $attendee_type_rc;
+  }
+
+  /**
    * Mapping du role d'un participant RoundCube vers Mél
    *
    * @param string $attendee_role_rc

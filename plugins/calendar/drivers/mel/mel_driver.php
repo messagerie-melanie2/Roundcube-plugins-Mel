@@ -2072,11 +2072,26 @@ class mel_driver extends calendar_driver {
         // Attendees
         $attendees = $event->attendees;
         if (isset($attendees) && is_array($attendees) && ! empty($attendees)) {
-          $_attendees = array();
+          $_attendees = [];
+          $organizer = $event->organizer;
+          if (isset($organizer)) {
+            $_event_organizer = [];
+            $_event_organizer['email'] = strtolower($organizer->email);
+            $_event_organizer['name'] = $organizer->name;
+            $_event_organizer['role'] = 'ORGANIZER';
+            // MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
+            if (!$organizer->extern) {
+              $_event_organizer['internal'] = true;
+            }
+            $_attendees[] = $_event_organizer;
+          }
+          
           foreach ($attendees as $attendee) {
-            $_event_attendee = array();
+            $_event_attendee = [];
             $_event_attendee['name'] = $attendee->name;
             $_event_attendee['email'] = strtolower($attendee->email);
+            // type
+            $_event_attendee['cutype'] = mel_mapping::m2_to_rc_attendee_type($attendee->type);
             // role
             $_event_attendee['role'] = mel_mapping::m2_to_rc_attendee_role($attendee->role);
             // status
@@ -2089,18 +2104,6 @@ class mel_driver extends calendar_driver {
               $_event_attendee['skip_notify'] = false;
             }
             $_attendees[] = $_event_attendee;
-          }
-          $organizer = $event->organizer;
-          if (isset($organizer)) {
-            $_event_organizer = array();
-            $_event_organizer['email'] = strtolower($organizer->email);
-            $_event_organizer['name'] = $organizer->name;
-            $_event_organizer['role'] = 'ORGANIZER';
-            // MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
-            if (!$organizer->extern) {
-              $_event_organizer['internal'] = true;
-            }
-            $_attendees[] = $_event_organizer;
           }
           $_event['attendees'] = $_attendees;
         }

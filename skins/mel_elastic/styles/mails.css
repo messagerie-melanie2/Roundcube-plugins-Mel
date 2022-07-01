@@ -699,6 +699,10 @@ ul ul li.mailbox:hover > a:first-of-type {
     border-radius: 5px;
 }
 
+ul ul li.mailbox.droptarget:hover > a:first-of-type {
+    background-color: #a39bff2e!important;
+}
+
 .messagelist tr.message td span,
 .messagelist tr.message td{
     cursor: pointer !important;

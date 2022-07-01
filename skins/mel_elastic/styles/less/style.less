@@ -4,7 +4,7 @@
 
 body{
     .restore-font();
-    color:var(--main-text-color-base);
+    color:var(--main-text-color);
     
     &>#layout {
         &>div.sidebar{
@@ -64,8 +64,8 @@ a{
 p,
 span,
 div {
-    scrollbar-width: thin;
-    scrollbar-color: #363A5B #A3A7BC;
+    scrollbar-width: var(--scrollbar-width-moz);
+    scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
 }
 
 
@@ -77,23 +77,21 @@ main {
 
 /* width */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: var(--scrollbar-width-webkit);
 
     /* Track */
     &-track {
-        background: #A3A7BC;
-        border-radius: 15px;
+        background: var(--scrollbar-background-color);
+        border-radius: var(--scollbar-border-radius);
     }
 
     /* Handle */
     &-thumb {
-        background: var(--main-bckg-color);
-        border-radius: 15px;
+        background: var(--scrollbar-handler-color);
+        border-radius: var(--scollbar-border-radius);
 
         &:hover{
-            background: #070B2D;
-
-            width: 12px;
+            background: var(--scrollbar-handler-hover-color);
         }
     }
 }
@@ -165,7 +163,7 @@ main {
         &>.header{
             a{
                 &.button{
-                    color: black;
+                    color: var(--secondary-text-color);
                 }
             }
         }
@@ -297,7 +295,7 @@ ul.treelist{
 
         &.droptarget{
             &>a{
-                background-color: #a39bff2e;
+                background-color: var(--drag-n-drop-color);
             }
         }
     }
@@ -394,7 +392,7 @@ ul.treelist{
                             /** CALENDRIER **/
                             font-size: .8em !important;
                             .mel-invisible-background();
-                            color: #80D5C6 !important;
+                            color: var(--fourth-text-color) !important;
                         }
                     }
                 }
@@ -404,7 +402,7 @@ ul.treelist{
                 &.quickview{
                     &::before{
                         /** CALENDRIER **/
-                        color: #80D5C6 !important;
+                        color: var(--fourth-text-color) !important;
                     }
                 }
             }
@@ -427,7 +425,7 @@ ul.treelist{
                             /** CALENDRIER **/
                             font-size: .8em !important;
                             .mel-invisible-background();
-                            color: #80D5C6 !important;
+                            color: var(--fourth-text-color) !important;
                         }
                     }
                 }
@@ -452,7 +450,7 @@ ul.treelist{
         }
 
         &.disabled{
-            color:#ffffff80;
+            color:var(--disabled-text-color-listing);
         }
 
         
@@ -468,7 +466,7 @@ ul.treelist{
 
         &.disabled{
             td{
-                color:#ffffff80;
+                color:var(--disabled-text-color-listing);
             }
         }
     }
@@ -521,7 +519,7 @@ li {
     &#settingstabpluginmel_doubleauth{
         &>a{
             &::before{
-                content: " ";
+                content: var(--empty-content);
             }
         }
     }
@@ -529,7 +527,7 @@ li {
     &#settingstabpluginmel_suggestion_box{
         &>a{
             &::before{
-                content: " ";
+                content: var(--empty-content);
             }
         }
     }
@@ -537,7 +535,7 @@ li {
     &.mel{
         &>a{
             &::before{
-                content: " ";
+                content: var(--empty-content);
             }
         }
     }
@@ -576,7 +574,7 @@ li {
         }
 
         &:hover{
-            background-color: #A1AAFF30;
+            background-color: var(--document-create-list-folder-bckg-color);
         }
     }
 
@@ -622,7 +620,7 @@ a.button.icon:not(.disabled):focus{
 {
     width: 100%;
     height: 100%;
-    background-color: #00000069;
+    background-color: var(--ghost-div-background);
     z-index: 1;
     position: absolute;
     top: 0;
@@ -772,7 +770,7 @@ a.button.icon:not(.disabled):focus{
         &.mailbox{
             .unreadcount {
                 background: var(--roundbadge-bckg-color);
-                color: #484D7A;
+                color: var(--tierciary-text-color);
                 font-size: 0.9rem;
                 border-radius: 5rem;
             }
@@ -1612,7 +1610,7 @@ framed_item {
     #_button-back-adressbook();
 
     &:hover{
-        color:#484D7A !important;
+        color:var(--tierciary-text-color) !important;
         .mel-invisible-background();
     }
 }
@@ -1844,7 +1842,7 @@ ul#directorylist{
         &:hover {
             &>sup{
                 &>span{
-                    color:#484D7A;
+                    color:var(--tierciary-text-color);
                 }
             }
         }
@@ -1853,14 +1851,14 @@ ul#directorylist{
             &:hover{
                 &>sup {
                     &>span{
-                        color:#484D7A;
+                        color:var(--tierciary-text-color);
                     }
                 }
             }
 
             &>sup {
                 &>span{
-                    color:#484D7A;
+                    color:var(--tierciary-text-color);
                 }
             }
         }
@@ -1871,7 +1869,7 @@ ul#directorylist{
             &:hover{
                 &>sup {
                     &>span{
-                        color:#484D7A;
+                        color:var(--tierciary-text-color);
                     }
                 }    
             }
@@ -2224,12 +2222,12 @@ body{
 }
 
 .btn-primary{
-    color: #484D7A;
+    color: var(--tierciary-text-color);
     background: var(--roundbadge-bckg-color);
     border-color: #80D5C6;
 
     &:hover{
-        color: #484D7A;
+        color: var(--tierciary-text-color);
         background: #8FE4D5;
         border-color: #8FE4D5;
     }
@@ -2406,14 +2404,14 @@ body{
             border-color: var(--invisible) !important;
 
             &:hover{
-                color:#484D7A;
+                color:var(--tierciary-text-color);
             }
 
         }
     }
 
     &:hover{
-        color:#484D7A;
+        color:var(--tierciary-text-color);
     }
 }
 
@@ -2430,7 +2428,7 @@ button{
             }
 
             &:hover{
-                color: #484D7A;
+                color: var(--tierciary-text-color);
             }
 
             &:active{
@@ -2450,7 +2448,7 @@ button{
         border-radius: 15px!important;
 
         &:hover{
-            color: #484D7A;
+            color: var(--tierciary-text-color);
         }
     }
 }
@@ -2658,7 +2656,7 @@ tr.elementmoveup > td{
 
     &.input-group-append{
         &>.input-group-text{
-            background-color: white;
+            background-color: var(--default-background);
             border-bottom-right-radius: 15px;
             border-top-right-radius: 15px;
             border-color: #424665;
@@ -3341,7 +3339,7 @@ html .menu a.selection::before {
                 &:after{
                     content: "";
                     border: solid #3A3E5E thin;
-                    background-color: white;
+                    background-color: var(--default-background);
                     width: 28px;
                     height: 28px;
                     display: block;
@@ -3419,7 +3417,7 @@ table{
         thead{
             &.mel_striped{
                 td{
-                    background-color: white;  
+                    background-color: var(--default-background);  
                 }
             }
         }
@@ -3537,7 +3535,7 @@ table{
     &.ui{
         &.boxalert{
             &.boxdanger{
-                background-color: #f8d7da;
+                background-color: var(--danger-color-2);
             }
         }
     }

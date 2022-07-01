@@ -1,0 +1,37 @@
+//compress:false, out:false
+@import "main.less";
+
+._layout-border()
+{
+    border-right-color: white;
+    border-right-style: solid;
+    border-right-width: thin;
+}
+
+.task-mail{
+    #layout-sidebar{
+        ._layout-border();
+        background-color:#484D7A!important;
+
+        &>.header {
+            background-color:#484D7A!important;
+
+            html@{layout-large} &{
+                display: none;
+            }
+        }
+    }
+
+    #layout-content {
+        &>.header
+        {
+            background-color:#484D7A!important;
+        }
+    }
+
+    #layout-list
+    {
+        ._layout-border();
+        background-color:#484D7A!important;
+    }
+}

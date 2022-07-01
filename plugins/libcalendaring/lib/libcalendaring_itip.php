@@ -109,7 +109,7 @@ class libcalendaring_itip
 
         $headers = $message->headers();
         $headers['To'] = format_email_recipient($mailto, $recipient['name']);
-        $headers['Subject'] = $this->gettext(array(
+        $headers['Subject'] = /**PAMELA**/ ($event['share'] === true ? '[PARTAGE]' : '') /**/ . $this->gettext(array(
             'name' => $subject,
             'vars' => array(
                 'title' => $event['title'],
@@ -143,7 +143,14 @@ class libcalendaring_itip
             $recurrence_info = sprintf("\n%s: %s", $this->gettext('recurring'), $this->lib->recurrence_text($event['recurrence']));
         }
 
-        $mailbody = $this->gettext(array(
+        // PAMELA
+        $mailbody = '';
+        if ($event['share'] === true && isset($event['message_body_before']) && !empty('message_body_before'))
+        {
+            $mailbody = $event['message_body_before'] . "\n\n\n";
+        }//
+
+        $mailbody .= $this->gettext(array(
             'name' => $bodytext,
             'vars' => array(
                 'title'       => $event['title'],

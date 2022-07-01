@@ -706,7 +706,7 @@ class Horde_Date_Recurrence
 
             // We've gone past the end of recurrence; give up.
             if ($this->recurCount &&
-                $offset >= $this->recurCount) {
+                $offset >= $this->recurCount * /* PAMELA */ $this->recurInterval) {
                 return false;
             }
             if ($this->hasRecurEnd() &&

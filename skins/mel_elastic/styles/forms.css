@@ -122,7 +122,7 @@ input.input-mel {
     border-top-left-radius: 60px;
     border-bottom-left-radius: 60px;
 	height: 51px;
-	background-color: #fbfbfb;
+	/* background-color: #fbfbfb; */
 }
 
 .mel-input-container.form-control.input-mel input,
@@ -166,6 +166,10 @@ input.input-mel {
 	color:white;
 }
 
+.input-group .form-control.input-mel.mel-input-container:not(:last-child) {
+	border-top-right-radius: 0!important;
+   border-bottom-right-radius: 0!important;
+ }
 
 #edit-alarm-item:focus,
 #edit-attendees-comment:focus,

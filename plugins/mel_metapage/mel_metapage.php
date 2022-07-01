@@ -161,6 +161,11 @@ class mel_metapage extends rcube_plugin
 
         if ($this->rc->task === "mail" )
         {
+            $this->add_hook('mel_config_suspect_url', [$this,'check_message_is_suspect_custom']);
+            $this->add_hook('mel_config_bloqued_url', [$this,'check_message_is_bloqued_custom']);
+            // $this->add_hook("messages_list", [$this, 'hook_messages_list']);
+            $this->add_hook('message_part_body_after', [$this, 'hook_message_part_get']);
+            $this->add_hook('message_objects', [$this, 'hook_message_objects']);
             $model_mbox = $this->rc->config->get('models_mbox');
             switch ($this->rc->action) {
                 case 'compose':
@@ -1966,5 +1971,176 @@ class mel_metapage extends rcube_plugin
 
     return $args;
   }
+
+    public function hook_message_objects($args)
+    {
+        $message = $this->rc->storage->get_body($args['message']->uid);
+
+        if (isset($message))
+        {
+            if ($this->check_message_is_bloqued($message, $args['message']))
+                $args['content'][] = '<div class="alert alert-danger boxdanger"><center>Ce message a été bloqué par le Bnum car il contient des liens dangereux.</center></div>';
+            else if ($this->check_message_is_suspect($message, $args['message']))
+                $args['content'][] = '<div class="alert alert-warning boxwarning">Ce message contient des liens potentiellement dangereux, cliquez sur ces liens seulement si vous êtes sûr de ce que vous faites !</div>';
+        }
+
+        return $args;
+    }
+
+  public function hook_message_part_get($args)
+  {
+    
+    if ($this->check_message_is_bloqued($args['body'], $args['object']->headers)){
+        $args['body'] = '';//"Ce message est bloqué par le Bnum car il contient des liens de phishing !";
+    }
+
+    return $args;
+  }
+
+  public function hook_messages_list($args)
+  {
+    // $config = $this->rc->config->get('mel_suspect_url', []);
+    // $config_bloqued = $this->rc->config->get('mel_bloqued_url', []);
+
+    // $plugin = $this->rc->plugins->exec_hook('mel_config_suspect_url', ['config' => $config]);
+    // $config = $plugin['config'] ?? $config;
+    // $plugin = $this->rc->plugins->exec_hook('mel_config_bloqued_url', ['config' => $config_bloqued]);
+    // $config_bloqued = $plugin['config'] ?? $config_bloqued;
+    
+
+    // foreach ($args['messages'] as $key => $message) {
+    //     $message = $this->rc->storage->get_body($message->uid);
+
+    //     if (isset($message))
+    //     {
+    //         if ($this->check_message_is_bloqued($message, $args['messages'][$key], $config_bloqued)){
+    //             $args['messages'][$key]->list_flags['extra_flags']['BLOQUED'] = true;
+    //         }
+    //         else if ($this->check_message_is_suspect($message, $args['messages'][$key], $config))
+    //         {
+    //             $args['messages'][$key]->list_flags['extra_flags']['SUSPECT'] = true;
+    //         }
+    //     }
+    // }
+
+    return $args;
+  }
+
+  public function check_message_is_suspect_custom($args)
+  {
+    $args['config'] = array_merge($args['config'], $this->_check_message_is_custom(true));
+    return $args;
+  }
+
+  public function check_message_is_bloqued_custom($args)
+  {
+    $args['config'] = array_merge($args['config'], $this->_check_message_is_custom(false));
+    return $args;
+  }
+
+
+  private function _check_message_is_custom($isSuspect)
+  {
+    $array = [];
+    $custom = $this->rc->config->get('mel_custom_suspected_url', []);
+
+    foreach ($custom as $url => $datas) {
+        if ($isSuspect && $datas['bloqued'] === false) $array[] = $url;
+        else if (!$isSuspect && $datas['bloqued'] === true) $array[] = $url;
+    }
+
+    return $array;
+  }
+
+
+  /**
+   * Vérifie si un message contient une url frauduleuse ou non.
+   *
+   * @param [*] $message Message à vérifier
+   * @param [Array<string>] $config Configuration qui contient la liste des urls à bloquer
+   * @return bool Vrai si le message est pas ok, faux sinon.
+   */
+  private function check_message_is_suspect($message, $rcube_message_header = null, $config = null)
+  {
+      if (!isset($config)) 
+      {
+        $config = $this->rc->config->get('mel_suspect_url', []);
+        $plugin = $this->rc->plugins->exec_hook('mel_config_suspect_url', ['config' => $config]);
+        $config = $plugin['config'] ?? $config;
+      }
+
+      $is_suspect = mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
+        if (strpos($message, $v) === false && !mel_helper::parse_url($v)->not_have_path_and_check_base_url($message))
+        {
+            if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
+            else {
+                $v = str_replace('https', 'http', $v);
+            }
+
+            return strpos($message, $v) !== false;
+        }
+
+        return true;
+      });
+
+        if (!$is_suspect)
+        {
+            $plugin = $this->rc->plugins->exec_hook('mel_check_suspect_url', 
+                [
+                    'config' => $config,
+                    'is_suspect' => $is_suspect,
+                    'message' => $message,
+                    'header' => $rcube_message_header
+                ]);
+
+            if (isset($plugin) && isset($plugin['is_suspect'])) $is_suspect = $plugin['is_suspect'];
+        }
+
+      return $is_suspect;
+  }
+
+    /**
+     * Vérifie si un message contient une url frauduleuse ou non.
+     *
+     * @param [*] $message Message à vérifier
+     * @param [Array<string>] $config Configuration qui contient la liste des urls à bloquer
+     * @return bool Vrai si le message est pas ok, faux sinon.
+     */
+    private function check_message_is_bloqued($message, $rcube_message_header = null, $config = null)
+    {
+        if (!isset($config)) 
+        {
+            $config = $this->rc->config->get('mel_bloqued_url', []);
+            $plugin = $this->rc->plugins->exec_hook('mel_config_bloqued_url', ['config' => $config]);
+            $config = $plugin['config'] ?? $config;
+        }
+
+        $is_bloqued = mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
+            if (strpos($message, $v) === false)
+            {
+                if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
+                else $v = str_replace('https', 'http', $v);
+
+                return strpos($message, $v) !== false;
+            }
+
+            return true;
+        });
+
+        if (!$is_bloqued)
+        {
+            $plugin = $this->rc->plugins->exec_hook('mel_check_bloqued_url', 
+            [
+                'config' => $config,
+                'is_bloqued' => $is_bloqued,
+                'message' => $message,
+                'header' => $rcube_message_header
+            ]);
+
+            if (isset($plugin) && isset($plugin['is_bloqued'])) $is_bloqued = $plugin['is_bloqued'];
+        }
+
+        return $is_bloqued;
+    }
 
 }

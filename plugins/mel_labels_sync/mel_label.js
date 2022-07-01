@@ -111,7 +111,7 @@ function rcm_tb_label_insert(uid, row)
 		var rowobj = $(row.obj);
 		for (idx in message.flags.tb_labels) {
 			rowobj.addClass('label_' + message.flags.tb_labels[idx].replace('~', ''));
-			html += `<span>${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
+			html += `<span class="text_${'label_' + message.flags.tb_labels[idx].replace('~', '')}">${rcmail.env.labels_translate[message.flags.tb_labels[idx].replace('~', '')]}</span>`;
 		}
 		if (html !== "")
 			rowobj.find("td.subject").prepend(`<td class="labels">${html}</td>`);
@@ -218,9 +218,9 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 			
 			if (rowobj.find('td.labels').length > 0) {
 				if (rowobj.find('td.labels').html() == "") {
-					rowobj.find('td.labels').html(`<span>${label_name}</span>`);
+					rowobj.find('td.labels').html(`<span class="text_${'label_' + toggle_label.replace('~','')}">${label_name}</span>`);
 				} else {
-					rowobj.find('td.labels').append(`<span>${label_name}</span>`);
+					rowobj.find('td.labels').append(`<span class="text_${'label_' + toggle_label.replace('~','')}">${label_name}</span>`);
 				}
 			}
 			else if (rowobj.find('span.labels').length > 0) {
@@ -242,7 +242,7 @@ function rcm_tb_label_flag_toggle(flag_uids, toggle_label, onoff)
 				message.flags.tb_labels.splice(pos, 1);
 			
 			if (rowobj.find('td.labels').length > 0) {
-				rowobj.find('td.labels').html(rowobj.find('td.labels').html().replace(`<span>${label_name}</span>`, ''));
+				rowobj.find('td.labels').html(rowobj.find('td.labels').html().replace(`<span class="text_${'label_' + toggle_label.replace('~','')}">${label_name}</span>`, ''));
 			}
 			else if (rowobj.find('span.labels').length > 0) {
 				rowobj.find('span.labels').text(rowobj.find('span.labels').text().replace(label_name + ', ','').replace(', ' + label_name,'').replace(label_name,''));
@@ -467,6 +467,86 @@ rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
 	//rcmail.hide_menu('tb_label_popup');
 };
 
+function kMel_Luminance(rgb) {
+	//    console.log("kMel_Luminance")
+	
+		let R = rgb[0] / 255
+		let G = rgb[1] / 255
+		let B = rgb[2] / 255
+	
+		if (R <= 0.04045) { R = R /12.92 } else { R = ((R +0.055)/1.055) ** 2.4 }
+		if (G <= 0.04045) { G = G /12.92 } else { G = ((G +0.055)/1.055) ** 2.4 }
+		if (B <= 0.04045) { B = B /12.92 } else { B = ((B +0.055)/1.055) ** 2.4 }
+	
+		const L = 0.2126 * R + 0.7152 * G + 0.0722 * B
+	
+	//    console.log('Luminance (' + rgb[0] + "," + rgb[1] + "," + rgb[2] + ') = ' + L)
+	
+		return L
+	}
+	
+	function kMel_CompareLuminance(rgb1, rgb2) {
+	//    console.log("kMel_CompareLuminance")
+	
+		const l1 = kMel_Luminance(rgb1)
+		const l2 = kMel_Luminance(rgb2)
+	
+		let ratio
+		if (l1 > l2) { ratio = l1 / l2 } else { ratio = l2 / l1 }
+	
+	//    console.log("Ratio = " + ratio + ":1")
+	
+		return ratio
+	}
+	
+	function kMel_LuminanceRatioAAA(rgb1, rgb2) {
+	//    console.log("kMel_LuminanceRatioAAA")
+		// AAA =  7:1
+		// AA = 4.5:1
+	
+		const isAAA = kMel_CompareLuminance(rgb1, rgb2) > 7
+	
+	//    console.log('Luminance ratio is AAA (> 7:1) : ' + isAAA)
+	
+		return isAAA
+	}
+	
+	function kMel_extractRGB (color) {
+	//    console.log("kMel_extractRGB")
+	
+		let regexp = /#[a-fA-F\d]{6}/g
+		let rgbArray = color.match(regexp)
+	
+		if (rgbArray) {
+			rgbArray[0] = parseInt(color.slice(1,3), 16)
+			rgbArray[1] = parseInt(color.slice(3,5), 16)
+			rgbArray[2] = parseInt(color.slice(5,7), 16)
+	//        console.log('rgbArray = ' + rgbArray)
+			return rgbArray
+		}
+	
+		regexp = /#[a-fA-F\d]{3}/g
+		rgbArray = color.match(regexp)
+	
+		if (rgbArray) {
+			rgbArray[0] = parseInt(color.slice(1,2), 16)
+			rgbArray[1] = parseInt(color.slice(2,3), 16)
+			rgbArray[2] = parseInt(color.slice(3,4), 16)
+	//        console.log('rgbArray = ' + rgbArray)
+			return rgbArray
+		}
+	
+		regexp = /\d+/g;
+		rgbArray = color.match(regexp);
+	
+		if (rgbArray.length === 3 || rgbArray.length === 4) {
+	//        console.log('rgbArray = ' + rgbArray)
+			return rgbArray
+		}
+	}
+	
+	//kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)')) 
+
 $(document).ready(function() {
 	rcm_tb_label_init_onclick();
 	
@@ -543,47 +623,17 @@ $(document).ready(function() {
 			return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 		  }
 		  
+		
 
 		$.each(rcmail.env.labels_color, function(id, val) {
 
-			if (val === null)
-				val = "#737373";
-			else {
-				let hex = hexToRgb(val);
-				if (hex !== null)
-				{
-					let _contrast = contrast([hex.r, hex.g, hex.b], [255, 255, 255]);
-					if (_contrast === 1) //same color
-						val = "#737373";
-					// else if (_contrast < 4.5)
-					// {
-					// 	let max = Math.max(hex.r, hex.g, hex.b);
-					// 	let index = max === hex.r ? "r" : max === hex.g ? "g" : "b";
+			if (val === null) val = "#737373";
 
-					// 	while (contrast([hex.r, hex.g, hex.b], [255, 255, 255]) < 4.5) {
-							
-					// 		if (max >= 255)
-					// 			break;
+			const default_h = "#FFFFFF";
+			let textcolor = default_h;
 
-					// 		max += 10;
-					// 		if (max > 255)
-					// 			max = 255;
+			if (!kMel_LuminanceRatioAAA(kMel_extractRGB(val), kMel_extractRGB(textcolor)))	textcolor = 'black'; 
 
-					// 		hex[index] = max;
-					// 		console.log(val, hex, max, index);
-					// 	}
-
-					// 	console.log("old", val, "new", rgbToHex(hex.r, hex.g, hex.b), "ratio", contrast([hex.r, hex.g, hex.b], [255, 255, 255]));
-					// 	val = rgbToHex(hex.r, hex.g, hex.b);
-					// }
-				}
-
-				
-
-				// if (hex !== null && contrast([hex.r, hex.g, hex.b], [255, 255, 255]) <= 4.5)
-				// 	val = "grey";
-			}
-				
 			id = id.replace('~', '').replace(/\./g,'\\.');
 			css += "#messagelist tr.label_" + id + " td,\n";
 			// css += "#messagelist tr.label_" + id + " td a,\n";
@@ -593,6 +643,21 @@ $(document).ready(function() {
 			css += "{\n";
 			css += "  color: " + val + ";\n";
 			css += "}\n";
+			css += `#messagelist tr.label_${id} td.labels span.text_label_${id} {
+				color:${textcolor};
+				background-color:${val};
+				border:thin solid ${textcolor};
+			}
+
+			#messagelist tr.label_${id} td{
+				background-color:${val}20;
+			}
+
+			#messagelist tr.label_${id} td.labels::before
+			{
+				text-shadow: ${textcolor} 1px 0px 0px, ${textcolor} 0.540302px 0.841471px 0px, ${textcolor} -0.416147px 0.909297px 0px, ${textcolor} -0.989993px 0.14112px 0px, ${textcolor} -0.653644px -0.756803px 0px, ${textcolor} 0.283662px -0.958924px 0px, ${textcolor} 0.96017px -0.279416px 0px;
+			}
+			`;
 			css += "#messagelist tr.selected.label_" + id + " td,\n";
 			css += "#messagelist tr.selected.label_" + id + " td a\n";
 			css += "{\n";

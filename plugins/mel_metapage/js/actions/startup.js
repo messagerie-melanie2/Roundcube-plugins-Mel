@@ -167,6 +167,8 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
                     return;
                 case "order1":
                     return;
+                case 'disabled':
+                    return;
                 case "mel":
                     return;
                 default:
@@ -373,8 +375,9 @@ metapage_frames.addEvent("before", (eClass, changepage) => {
 
             }
 
-            const icon = Enumerable.from($(querry_selector)[0].classList).firstOrDefault(x => x.includes('icon-mel'), '');
-            mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
+            const icon = Enumerable.from($(querry_selector)[0]?.classList ?? []).firstOrDefault(x => x.includes('icon-mel'), '');
+            
+            if (rcmail.env.last_frame_class !== undefined) mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
         }
     }
 });

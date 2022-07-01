@@ -1087,6 +1087,8 @@ class MasterWebconfBar {
     {
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
+        this.hide_ariane();
+
         //Permet de gérer correctement la barre de navigation d'un espace (Fait revenir sur l'accueil de l'espace)
         if ($(".melw-wsp.webconfstarted").length > 0)
             $(".melw-wsp.webconfstarted").removeClass("webconfstarted").find(".wsp-home").click();
@@ -1137,7 +1139,11 @@ class MasterWebconfBar {
             parent.$("#user-up-panel").removeAttr("disabled").removeClass("disabled").css("pointer-events", "");
         }
 
-        if (this._is_minimized === true) this._fullscreen();
+        this._fullscreen();
+
+        $('iframe.mm-frame').each((i,e) => {
+            $(e).css('padding-left', '60px');
+        });
 
         if (!rcmail.env['webconf.have_feed_back'])
         {
@@ -1737,7 +1743,13 @@ class MasterWebconfBar {
         try {
             rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
             rcmail.env.last_frame_name = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html();
+            const icon = Enumerable.from($("." + mm_st_ClassContract(rcmail.env.current_frame_name))[0]?.classList ?? []).firstOrDefault(x => x.includes('icon-mel'), '');
+            
+            if (rcmail.env.last_frame_class !== undefined) mel_metapage.Frames.add(mel_metapage.Frames.create_frame(rcmail.env.last_frame_name, rcmail.env.last_frame_class, icon));
+            
             m_mp_ChangeLasteFrameInfo(true);
+
+            rcmail.env.last_frame_class = rcmail.env.current_frame_name = 'webconf';
         } catch (error) {
             console.error('###[m_mp_ChangeLasteFrameInfo]', error);
         }
@@ -1820,6 +1832,15 @@ class ListenerWebConfBar
 
             this.webconf.jitsii.addEventListener("chatUpdated", (datas) => {
                 this.chatOpen = datas.isOpen;
+            });
+
+            this.webconf.jitsii.addEventListener("errorOccurred", (datas) =>{
+                console.error('###[VISIO]', datas);
+            });
+
+            
+            this.webconf.jitsii.addEventListener("readyToClose", () =>{
+                console.log("[VISIO]La visio est prête à être fermée !");
             });
         }
     }
@@ -2168,19 +2189,19 @@ $(document).ready(() => {
             }
             else
             {
-                try {
-                    if (parent.rcmail.env.current_frame_name === undefined)
-                    {
-                        let $element = parent.$("#taskmenu li a.selected");
-                        parent.rcmail.env.current_frame_name = parent.mm_st_ClassContract(parent.mm_st_getNavClass($element[0]));
-                    }
-                    parent.rcmail.env.last_frame_class = parent.mm_st_ClassContract(parent.rcmail.env.current_frame_name);
-                    parent.rcmail.env.last_frame_name = parent.$("." + parent.mm_st_ClassContract(parent.rcmail.env.current_frame_name)).find(".inner").html();
-                    parent.m_mp_ChangeLasteFrameInfo(true);
-                    parent.$("#taskmenu li a.selected").removeClass("selected");
-                } catch (error) {
-                    console.error('###[m_mp_ChangeLasteFrameInfo]', error);
-                }
+                // try {
+                //     if (parent.rcmail.env.current_frame_name === undefined)
+                //     {
+                //         let $element = parent.$("#taskmenu li a.selected");
+                //         parent.rcmail.env.current_frame_name = parent.mm_st_ClassContract(parent.mm_st_getNavClass($element[0]));
+                //     }
+                //     parent.rcmail.env.last_frame_class = parent.mm_st_ClassContract(parent.rcmail.env.current_frame_name);
+                //     parent.rcmail.env.last_frame_name = parent.$("." + parent.mm_st_ClassContract(parent.rcmail.env.current_frame_name)).find(".inner").html();
+                //     parent.m_mp_ChangeLasteFrameInfo(true);
+                //     parent.$("#taskmenu li a.selected").removeClass("selected");
+                // } catch (error) {
+                //     console.error('###[m_mp_ChangeLasteFrameInfo]', error);
+                // }
 
                 rcmail.env.webconf.set_title();
                 rcmail.env.webconf.show_selector();

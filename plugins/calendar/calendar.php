@@ -1069,21 +1069,25 @@ $("#rcmfd_new_category").keypress(function(event) {
         switch ($action) {
         //PAMELA
         case "invite-self":
-            //Récupération des infos de l'utilisateurs
-            $user = driver_mel::gi()->getUser();
-
-            //Ajouts des infos de l'utilisateur dans l'évènement
-            if (isset($event['attendees']) && is_array($event['attendees']))
+            if ($action === "invite-self")
             {
-                $event['attendees'][] = [
-                    'email' => $user->email,
-                    'name' => $user->fullname,
-                    'role' => 'REQ-PARTICIPANT',
-                    'status' => 'ACCEPTED',
-                    'skip_notify' => 'true'
-                ];
-                //Changement du calendrier
-                $event['calendar'] = driver_mel::mceToRcId($user->uid);
+                //Récupération des infos de l'utilisateurs
+                $user = driver_mel::gi()->getUser();
+
+                //Ajouts des infos de l'utilisateur dans l'évènement
+                if (isset($event['attendees']) && is_array($event['attendees']))
+                {
+                    $event['attendees'][] = [
+                        'email' => $user->email,
+                        'name' => $user->fullname,
+                        'role' => 'REQ-PARTICIPANT',
+                        'status' => 'ACCEPTED',
+                        'skip_notify' => 'true',
+                        'noreply' => '1'
+                    ];
+                    //Changement du calendrier
+                    $event['calendar'] = driver_mel::mceToRcId($user->uid);
+                }
             }
         case "new":
             // create UID for new event
@@ -1101,11 +1105,71 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;
             break;
+        case 'share':
+            $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
+
+            if (!isset($event['attendees']) || !is_array($event['attendees']))
+            {
+                $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
+                $organizer = driver_mel::gi()->getUser($organizer);
+                $event['attendees'] = [
+                    [
+                        'email' => $organizer->email,
+                        'name' => $organizer->fullname,
+                        'role' => 'ORGANIZER',
+                        'internal' => 'true',
+                        'noreply' => '1'
+                    ]
+                ];
+            }
+
+            foreach ($event['attendees'] as $key => $a) {
+                $event['attendees'][$key]['skip_notify'] = 'true';
+                $event['attendees'][$key]['noreply'] = '1';
+            } 
+
+            foreach ($users_email as $mail) {
+                $user = driver_mel::gi()->getUser(null, true, false, null, $mail);
+                
+                if (isset($user))
+                {
+                    $event['attendees'][] = [
+                        'email' => $user->email,
+                        'name' => $user->fullname,
+                        'role' => 'REQ-PARTICIPANT',
+                        'status' => 'NEEDS-ACTION',
+                        'skip_notify' => 'false',
+                       // 'noreply' => '1'
+                    ];
+                }
+                else {
+                    $event['attendees'][] = [
+                        'email' => $mail,
+                        'name' => $mail,
+                        'role' => 'REQ-PARTICIPANT',
+                        'status' => 'NEEDS-ACTION',
+                        'skip_notify' => 'false',
+                        //'noreply' => '1'
+                    ];
+                }
+            }
+            $event['_comment'] = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+            $event['_notify'] = "3";
+            $event['share'] = true;
+
         case "edit":
             if (!$this->write_preprocess($event, $action)) {
                 $got_msg = true;
             }
             else if ($success = $this->driver->edit_event($event)) {
+
+                //PAMELA
+                if ($action === 'share')
+                {
+                    $event['message_body_before'] = $event['_comment'];//rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+                    $event['share'] = true;
+                }
+
                 $this->cleanup_event($event);
                 $this->event_save_success($event, $old, $action, $success);
             }
@@ -1454,6 +1518,10 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
             $this->rc->output->command('plugin.refresh_calendar', $args);
         }
+        else if ($action === 'share') 
+        {
+            $this->rc->output->command('plugin.refresh_calendar', $args);
+        }
     }
 
     /**
@@ -1487,6 +1555,15 @@ $("#rcmfd_new_category").keypress(function(event) {
             $event['_savemode'] = 'all';
         }
 
+        //PAMELA 
+        $isShare = $event['share'] === true;
+        $body_message_append = $event['message_body_before'];
+        $attendees_default = [];
+
+        foreach ($event['attendees'] as $key => $value) {
+            $attendees_default[$value['email']] = $value['noreply'] == '1';
+        }
+
         // send out notifications
         if (!empty($event['_notify']) && (!empty($event['attendees']) || !empty($old['attendees']))) {
             $_savemode = $event['_savemode'];
@@ -1510,9 +1587,30 @@ $("#rcmfd_new_category").keypress(function(event) {
             else {
                 // make sure we have the complete record
                 $event = $action == 'remove' ? $old : $this->driver->get_event($event, 0, true);
+
+                //pamela
+
+                if (isset($event['attendees']))
+                {
+                    for ($i=0; $i < count($event['attendees']); ++$i) { 
+                        foreach ($attendees_default as $key => $value) {
+                            if ($event['attendees'][$i]['email'] === $key)
+                            {
+                                $event['attendees'][$i]['noreply'] = $value;
+                                break;
+                            }
+                        }
+                    }
+                }
+
             }
 
             $event['_savemode'] = $_savemode;
+
+            //PAMELA
+            $event['share'] = $isShare;
+
+            if (isset($body_message_append)) $event['message_body_before'] = $body_message_append;
 
             if ($old) {
                 $old['thisandfuture'] = $_savemode == 'future';
@@ -2395,7 +2493,7 @@ $("#rcmfd_new_category").keypress(function(event) {
         }
 
         // check for organizer in attendees
-        if ($action == 'new' || $action == 'edit' /*PAMELA*/|| $action == 'invite-self') {
+        if ($action == 'new' || $action == 'edit' /*PAMELA*/|| $action == 'invite-self' || $action == 'share') {
             if (empty($event['attendees'])) {
                 $event['attendees'] = [];
             }

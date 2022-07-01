@@ -662,6 +662,101 @@ function m_mp_hashtag_on_click(event, inputSelector, containerSelector) {
     } catch (error) {}
 }
 
+function m_mp_autocomplete(element, force = false)
+{
+    element = element.val === undefined ? $(element) : element;
+
+    let val = element.val();
+    const defaultValue = val;
+
+    m_mp_autocomplete_startup(element, val);
+
+    if ((val.includes(',') || force) && val.includes('@'))
+    {
+        val = val.replaceAll(',', '');
+
+        let email = '';
+        let name = '';
+        if (val.includes('<') && val.includes('>'))
+        {
+            val = val.split('<');
+            name = val[0];
+            email = val[1].replace('>', '');
+        }
+        else email = name = val;
+
+        html = '<li class="recipient workspace-recipient">';
+        html += `<span class="email">${email}</span>`;
+        html += `<span class="name">${name}</span>`;
+        html += '<a class="button icon remove" </a>';
+        html += '</li>';
+
+        html = $(html);
+
+        const remove = () => {
+            html.remove();
+        };
+
+        html.attr('title', email).find('span').click(() => {
+            element.val(defaultValue.replace(',', ''));
+            remove();
+            element.focus();
+        });
+
+        html.find('a').click(() => {
+            remove();
+        });
+
+        element.parent().parent().prepend(html);
+
+        element.val('');
+    }
+
+    return element;
+}
+
+function m_mp_autocomplete_startup($element, val = '')
+{
+    if ($element.parent().length > 0 && $element.parent()[0].nodeName !== 'LI')
+    {
+        let $parent = $element.parent();
+
+        let $div = $(`                <div class="input-group">
+        <textarea name="_to_workspace" spellcheck="false" id="to-workspace" tabindex="-1" data-recipient-input="true" style="position: absolute; opacity: 0; left: -5000px; width: 10px;" autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"></textarea>
+        <ul style="height:auto" class="form-control input-mel mel-input-container recipient-input ac-input rounded-left">
+            <li class="input">
+                <!--Participants à ajouter-->
+               
+            </li>
+        </ul>
+        <span class="input-group-append">
+            <!--Ouvre l'annuaire-->
+        <!--Ajoute les contacts de l'input-->
+        </span>
+    </div>`);
+
+       $element.on('change', (e) => {
+            m_mp_autocomplete(e.currentTarget);
+        }).on('input', (e) => {
+            m_mp_autocomplete(e.currentTarget);
+        }).on('focusout', (e) => {
+            m_mp_autocomplete(e.currentTarget, true);
+        }).appendTo( $div.find('ul .input')).val(val);
+
+        top.rcmail.init_address_input_events($element);
+
+        top.$('<button href="#add-contact" class="add-contact btn btn-secondary mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact"><span class="inner">Ajouter un contact</span></button>')
+        .appendTo($div.find('.input-group-append'))
+        .click((e) => {
+            top.m_mp_openTo(e.currentTarget, $element.attr('id'));
+        });
+
+        $parent.append($div);
+
+        return $parent;
+    }
+}
+
 function m_mp_autocoplete(element, action_after = null, append = true) {
 //debugger;
     element = element.val === undefined ? ("#" + element.id) : ("#" + element[0].id);
@@ -783,10 +878,17 @@ function m_mp_remove_li(event) {
     $("#workspace-user-list").focus();
 }
 
+// function m_mp_open_contact(e, idInput, actions = null)
+// {
+    
+// }
+
 function m_mp_openTo(e, idInput, actions = null) {
-    if (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined)) {
+    if ($('#compose-contacts').length === 0 || (parent !== window && (window.mmp_open_contact === undefined || window.mmp_open_contact[idInput] === undefined))) {
         new Promise(async() => {
-            $("#layout").append(await rcmail.env.mel_metapage_call_parsed.contact_list());
+            let list = await rcmail.env.mel_metapage_call_parsed.contact_list();
+            ($("#layout").length === 0 ? $('body') : $("#layout")).append(list);
+            list = null;
             $("head").append(`<script src="plugins/mel_metapage/js/program/../../../annuaire/annuaire.js"></script>`);
             $("head").append(`<script src="program/js/treelist.min.js"></script>`)
                 .append(`<link rel="stylesheet" type="text/css" href="plugins/mel_metapage/skins/elastic/annuaire_part.css">`);

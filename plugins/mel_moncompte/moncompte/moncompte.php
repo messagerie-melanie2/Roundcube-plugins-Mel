@@ -91,7 +91,7 @@ class Moncompte {
 		
 		$result = array();
 		// Liste des pages Mon compte à afficher
-		$pages = $this->rc->config->get('mel_moncompte_pages', ['informationspersonnelles','changepassword','gestionnaireabsence','accesinternet','synchronisationmobile','gestionnairelistes']);
+		$pages = $this->rc->config->get('mel_moncompte_pages', ['informationspersonnelles','changepassword','gestionnaireabsence','accesinternet','synchronisationmobile','gestionnairelistes', 'suspectsurls']);
 		// Génération de l'affichage
 		foreach ($pages as $page) {
 			$class = ucfirst(strtolower($page));

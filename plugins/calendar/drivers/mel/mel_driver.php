@@ -718,7 +718,7 @@ class mel_driver extends calendar_driver {
       $event['calendar'] = driver_mel::gi()->rcToMceId($event['calendar']);
 
       if (!$this->validate($event) || empty($this->calendars) || !isset($this->calendars[$event['calendar']]) || ! $this->calendars[$event['calendar']]->asRight(LibMelanie\Config\ConfigMelanie::WRITE)) {
-        return false;
+        if ($event['share'] !== true) return false;
       }
       // Génère l'évènement
       $_event = driver_mel::gi()->event([$this->user, $this->calendars[$event['calendar']]]);

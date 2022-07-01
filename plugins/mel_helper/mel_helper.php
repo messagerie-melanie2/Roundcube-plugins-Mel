@@ -248,5 +248,10 @@ class mel_helper extends rcube_plugin
         return new MelArray($array);
     }
     
+    public static function parse_url($url)
+    {
+        include_once 'lib/mel_url.php';
+        return new mel_url($url);
+    }
 
 }

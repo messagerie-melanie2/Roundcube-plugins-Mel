@@ -4,6 +4,8 @@ $(document).ready(
 
         function calendar_waiting_number()
         {
+            if (!window.rcube_calendar || !rcube_calendar.get_number_waiting_events) return;
+
             const number = rcube_calendar.get_number_waiting_events() || 0;
             let $querry = $("#layout-sidebar .waiting-events-number");
     
@@ -53,9 +55,12 @@ $(document).ready(
     
             });
 
-            top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
-                calendar_waiting_number();
-            });
+            if (!!window.mel_metapage)
+            {
+                top.rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
+                    calendar_waiting_number();
+                });
+            }
 
             calendar_waiting_number();
             

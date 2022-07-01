@@ -298,6 +298,7 @@ const mel_metapage = {
         wait_frame_waiting:"waiting...",
         wait_frame_loaded:"loaded",
         wait_call_loading:"mel_metapage.call.loading",
+        color_mode:'colorMode'
     },
     /**
      * Liste des symboles.
@@ -626,11 +627,11 @@ const mel_metapage = {
         {
             if (changepage) top.rcmail.set_busy(true, 'loading');
 
-            if (frame === "webconf")
-            {
-                var initial_change_page = changepage;
-                changepage = false;
-            }
+            // if (frame === "webconf")
+            // {
+            //     var initial_change_page = changepage;
+            //     changepage = false;
+            // }
 
             if (waiting)
                 mel_metapage.Storage.set(mel_metapage.Storage.wait_frame_loading, mel_metapage.Storage.wait_frame_waiting);
@@ -644,14 +645,14 @@ const mel_metapage = {
                 mel_metapage.Storage.remove(mel_metapage.Storage.wait_frame_loading);
             }
 
-            if (frame === "webconf")
-            {
-                if (initial_change_page)
-                {
-                    top.mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
-                }
-                //this.update_refresh_thing();
-            }
+            // if (frame === "webconf")
+            // {
+            //     if (initial_change_page)
+            //     {
+            //         top.mm_st_OpenOrCreateFrame(frame, initial_change_page, args, actions);
+            //     }
+            //     //this.update_refresh_thing();
+            // }
 
             if (changepage && top.rcmail.busy) 
             {

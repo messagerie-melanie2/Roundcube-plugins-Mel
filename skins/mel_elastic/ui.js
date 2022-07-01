@@ -521,7 +521,7 @@ $(document).ready(() => {
                             new Windows_Like_PopUp(top.$("body"), 
                             {
                                 title:"Ouverture d'un mail...",
-                                content:`<center><div class='spinner-grow'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
+                                content:`<center><div class='spinner-border'></div></center><iframe title="Ouverture d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);display:none;"/>`,
                                 afterCreatingContent($html, box, popup) {
                                     box.content.find("iframe").on('load', () => {
                                         let $iframe = box.content.find("iframe");
@@ -534,7 +534,7 @@ $(document).ready(() => {
                                         };
 
                                         box.title.find('h3').html(title);
-                                        box.content.find(".spinner-grow").remove();
+                                        box.content.find(".spinner-border").remove();
                                         $iframe.css('display', '');
                                         $iframe[0].contentWindow.Windows_Like_PopUp = Windows_Like_PopUp;
                                         $iframe[0].contentWindow.rcmail.env.is_in_popup_mail = true;
@@ -553,8 +553,11 @@ $(document).ready(() => {
                                             popup._minified_header.find('h3').html((title.length > 20 ? (title.slice(0, 20) + '...') : title));
                                         }
                                     });
-                                    box.content.find(".spinner-grow").css("width", '30%')
-                                    .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
+
+                                    let spinner = box.content.find(".spinner-border").css("width", '30%');
+                                    let spinner_size = Math.round(spinner.width());
+                                    spinner.css("width", `${spinner_size}px`)
+                                    .css('height', `${spinner_size}px`).css('margin', '15px');
                                     
                                 },
                                 width:"calc(100% - 60px)",
@@ -755,6 +758,52 @@ $(document).ready(() => {
                 {
                     $("#toolbar-menu a.send").removeAttr('href');
                 }
+
+                if (window === top && rcmail.env.extwin !== 1)
+                {
+                    let $tmp_quit = $(`<a style="margin-right:15px" class="back" href="#" >Messages</a>`).click(() => {
+                        rcmail.env.action='index';
+                        rcmail.action = 'index';
+                        rcmail.compose_skip_unsavedcheck = true;
+                        const _$ = top.$;
+        
+                        _$('.task-mail.action-compose #taskmenu li a').removeClass('disabled').removeAttr('disabled');
+                        _$('.barup button').removeClass('disabled').removeAttr('disabled');
+                        _$('#barup-search-input').removeClass('disabled').removeAttr('disabled');
+                        _$('#user-up-popup').css('pointer-events', 'all');
+                        _$('.tiny-rocket-chat').removeClass('disabled').removeAttr('disabled');
+                        _$('.task-mail.action-compose #taskmenu li a.menu-last-frame').addClass('disabled').attr('disabled', 'disabled');
+        
+                        if (_$('iframe.mail-frame').length > 0) mel_metapage.Functions.change_frame('mail', true, true);
+                        else if (_$('.mail-frame').length > 0) {
+                            _$('.mail-frame').remove();
+                            mel_metapage.Functions.change_frame('mail', true, true);
+                        }
+                        else mel_metapage.Functions.change_frame('mail', true, true);
+        
+                        _$('body').removeClass('action-compose').addClass('action-none');
+                    });
+        
+                    $("ul#toolbar-menu").prepend($(`<li role="menuitem">
+                    
+                    </li>`).append($tmp_quit));
+    
+                    $('.task-mail.action-compose #taskmenu li a').addClass('disabled').attr('disabled', 'disabled');
+                    $('.barup button').addClass('disabled').attr('disabled', 'disabled');
+                    $('#barup-search-input').addClass('disabled').attr('disabled', 'disabled');
+                    $('#user-up-popup').css('pointer-events', 'none');
+                    const interval = setInterval(() => {
+    
+                        if (!$('.tiny-rocket-chat').hasClass('disabled'))
+                        {
+                            $('.tiny-rocket-chat').addClass('disabled').attr('disabled', 'disabled');
+                        }
+                        else clearInterval(interval);
+                    }, 100);
+    
+                    $("#layout-content").css('margin-left', '60px');
+                }
+
             }
 
             rcmail.addEventListener('fileappended', (file) => {
@@ -793,7 +842,7 @@ $(document).ready(() => {
                     const url = rcmail.url('mail/compose', p);
                     let config = {
                         title:"Rédaction",
-                        content:`<center><div class='spinner-grow'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
+                        content:`<center><div class='spinner-border'></div></center><iframe title="Rédaction d'un mail" src="${url + "&_is_from=iframe"}" style="width:100%;height:calc(100%);"/>`,
                         onclose(popup) {
                             if (popup.box.close.data('force') == '1') return;
                             if (popup.waiting_save !== true && confirm('Voulez-vous sauvegarder le message comme brouillon ?'))
@@ -855,6 +904,14 @@ $(document).ready(() => {
                                 const interval = setInterval(() => {
                                     if (rcmail.busy === false)
                                     {
+
+                                        let frame = top.$('iframe.mail-frame');
+                                        if (frame.length > 0)
+                                        {
+                                            frame[0].contentWindow.rcmail.command('checkmail', '');
+                                        }
+                                        frame = null;
+
                                         rcmail.command('checkmail', '');
                                         clearTimeout(interval);
                                     }
@@ -877,8 +934,12 @@ $(document).ready(() => {
 
                             });
 
-                            box.content.find(".spinner-grow").css("width", '30%')
-                            .css('height', `${box.content.find(".spinner-grow").width()}px`).css('margin', '15px');
+                            let spinner = box.content.find(".spinner-border").css("width", '30%');
+
+                            let spinner_size = Math.round(box.content.find(".spinner-border").width()); 
+
+                            spinner.css("width", `${spinner_size}px`)
+                            .css('height', `${spinner_size}px`).css('margin', '15px');
                             
                         },
                         width:"calc(100% - 60px)",

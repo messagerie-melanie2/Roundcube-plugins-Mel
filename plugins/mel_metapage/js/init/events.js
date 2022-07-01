@@ -280,8 +280,11 @@ if (rcmail && window.mel_metapage)
         });
 
         rcmail.addEventListener("calendar.renderEvent.after", (args) => {
+            const old_newline = rcube_calendar.old_newline_key
             const newline = rcube_calendar.newline_key;
             let desc = args.element.find('.fc-event-location');
+            
+            if (!!args.eventDatas.location && args.eventDatas.location.includes(old_newline)) args.eventDatas.location = args.eventDatas.location.replaceAll(old_newline, newline);
 
             if (desc.length > 0 && args.eventDatas.location.includes(newline)) 
             {
@@ -362,6 +365,8 @@ if (rcmail && window.mel_metapage)
                 }
             });
         }
+
+        mel_metapage.Storage.set(mel_metapage.Storage.color_mode, color_mode);
     }
     
     $(document).ready(() => {
@@ -474,7 +479,9 @@ if (rcmail && window.mel_metapage)
 
         if (hasLocation)
         {
-            const tmp_location = event.location.split('{mel.newline}');
+            const old_new_line = rcube_calendar?.old_newline_key ?? '{mel.newline}';
+            const newline = rcube_calendar?.newline_key ?? String.fromCharCode('8232');
+            const tmp_location = event.location.replaceAll(old_new_line, newline).split(newline);
 
             let element;
             for (let index = 0; index < tmp_location.length; ++index) {
@@ -619,7 +626,7 @@ if (rcmail && window.mel_metapage)
         const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle}` : (cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle);
         
         const config = new GlobalModalConfig(title, "default", html);
-        let modal = new GlobalModal("globalModal", config, true);
+        let modal = new top.GlobalModal("globalModal", config, true);
         modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem");
         
         //Gérer le titre
@@ -640,7 +647,109 @@ if (rcmail && window.mel_metapage)
 
         modal.footer.querry.html("")
         .append($(`<button class="mel-calendar-button" id="-mel-send-event"><span class="icon-mel-send"></span><span class=inner>Partager</span></button>`).click((e) => {
-            datas.object.event_sendbymail(event, e);
+
+            if (rcmail.busy)
+            {
+                rcmail.display_message("Une action est déjà en cours....");
+                return;
+            }
+            
+            modal.editTitle('Partager l\'évènement');
+
+            modal.editBody('');
+
+            let $userInput = top.$(`<input id="tmp-generated-input-user" class="form-control input-mel" type="text"
+            autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"
+            placeholder="Liste d'adresses emails..." 
+            style="margin-top: 8px;
+            margin-left: -1px;"/>`);
+
+            let $commentArea = $(`<textarea placeholder="Message optionel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
+
+            let $userInputParent = $(`<div></div>`).append($userInput);
+
+            $userInputParent = m_mp_autocomplete_startup($userInput);
+
+            modal.appendToBody($(`<p class="red-star-removed"><star class="red-star mel-before-remover">*</star>
+            Champs obligatoires
+        </p>`))
+
+            modal.appendToBody($(`<div><label class="red-star-after span-mel t1 first">Participants</label></div>`).append($userInputParent));
+
+            modal.appendToBody($(`<div><label class="span-mel t1">Message</label></div>`).append($commentArea));
+
+            modal.footer.querry.html('');
+            modal.footer.querry.append(
+                $('<button class="btn btn-secondary mel-button" style="position: absolute;bottom: 14px;right: 65px;">Envoyer <span class="plus icon-mel-send"></span></button>')
+                .click(() => {
+                    let loading = rcmail.set_busy(true, 'loading');
+                    const comment = $commentArea.val();
+
+                    let users = [];
+
+                    $userInputParent.find('.recipient').each((i,e) => {
+                        const datas = $(e).find('.email').html();
+                        if (!!datas) users.push(datas);
+                    });
+
+                    let cloned_event = Object.assign({}, event);
+                    delete cloned_event['source'];
+
+                    if (typeof cloned_event.start !== 'string') cloned_event.start = cal.date2ISO8601(cloned_event.start.toDate());
+                    if (typeof cloned_event.end !== 'string') cloned_event.end = cal.date2ISO8601(cloned_event.end.toDate());
+
+                    if (!cloned_event.allDay) delete cloned_event.allDay;
+
+                    if (users.length === 0)
+                    {
+                        rcmail.set_busy(false);
+                        rcmail.clear_messages();
+                        top.rcmail.display_message('Vous devez mettre des utilisateurs !', 'error');
+                        return;
+                    }
+
+                    // mel_metapage.Functions.post(
+                    //     mel_metapage.Functions.url('calendar', 'event'),
+                    //     {
+                    //         action:'share',
+                    //         e:cloned_event,
+                    //         _users_to_share:users,
+                    //         _comment:comment,
+                    //         _organizer:event.source.ajaxSettings.owner
+                    //     },
+                    //     (datas) => {
+                    //         console.log(datas, 'datas partage');
+
+                    //         rcmail.set_busy(false);
+                    //         rcmail.clear_messages();
+                    //         rcmail.display_message('Evènement mis à jours et partagé avec succès !', 'confirmation');
+                    //         rcmail.command('refreshcalendar');
+
+                    //         if (top !== window) top.rcmail.refresh();
+                    //     },
+                    //     (a,b,c) => {
+                    //         rcmail.set_busy(false);
+                    //         rcmail.clear_messages();
+                    //         rcmail.display_message('Une erreur est survenue !', 'error');
+                    //         console.error('###[PARTAGER]',a,b,c);
+                    //     }
+                    // );
+                    //rcmail.triggerEvent('calendar.event_show_dialog.custom', datas);
+                    modal.close();
+                    rcmail.http_post('event', {
+                                action:'share',
+                                e:cloned_event,
+                                _users_to_share:users,
+                                _comment:comment,
+                                _organizer:event.source.ajaxSettings.owner
+                            }, loading);
+                })
+            ).append(
+                $('<button class="btn btn-secondary mel-button">Annuler <span class="plus icon-mel-undo"></span></button>')
+                .click(() => {
+                    rcmail.triggerEvent('calendar.event_show_dialog.custom', datas);
+                })
+                );
         }));
 
         if (rcmail.env.calendars[event.calendar].editable)
@@ -1089,6 +1198,19 @@ if (rcmail && window.mel_metapage)
         {
             new ResizeObserver(resize_mail).observe($("#layout-content")[0]);
             resize_mail();
+
+            //Gère les différents cas de phishing
+            rcmail.addEventListener('insertrow', function(event) { 
+                if (event.row.flags.BLOQUED === true)
+                {
+                    $(event.row.obj).addClass('bloqued').attr('title', 'Ce message est bloqué sur le Bnum car il s\'agit de phishing !');
+                }
+                else if (event.row.flags.SUSPECT === true)
+                {
+                    $(event.row.obj).addClass('suspect').attr('title', 'Ce message est suspect et peut possiblement être du phishing !');
+                }
+                
+            });
         }
       });
 

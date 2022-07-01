@@ -317,6 +317,7 @@ if (rcmail && window.mel_metapage)
 
     function on_switched_color_mode(color_mode)
     {
+        console.log('YOLO', window);
         const dark_logo = 'skins/mel_elastic/images/taskbar-logo.svg';
         const element_data_name = 'initsrc';
 
@@ -331,23 +332,24 @@ if (rcmail && window.mel_metapage)
             $logo.attr("src", $logo.data(element_data_name)).data(element_data_name, '');
         }
 
-        if (true || window === parent)
-        {
-            $('iframe').each(async (i,e) => {
-                let contentWindow = e.contentWindow;
-                //const task = contentWindow.rcmail.env.task;
-                contentWindow.postMessage('colorMode', '*');
-                 try {
-                        if (MEL_ELASTIC_UI.color_mode() !== contentWindow.MEL_ELASTIC_UI.color_mode())
-                        {
-                            contentWindow.MEL_ELASTIC_UI.switch_color();
-                        }
-                } catch (error) {
-                    //console.error('###', error);
-                }
-            });
-        }
 
+        $('iframe').each( (i,e) => {
+            console.log('iframe', e);
+            let contentWindow = e.contentWindow;
+            //const task = contentWindow.rcmail.env.task;
+            contentWindow.postMessage('colorMode', '*');
+            try {
+                if (!!contentWindow.MEL_ELASTIC_UI && MEL_ELASTIC_UI.color_mode() !== contentWindow.MEL_ELASTIC_UI.color_mode())
+                {
+                    contentWindow.MEL_ELASTIC_UI.switch_color();
+                }
+                else contentWindow.rcmail.triggerEvent('switched_color_theme', color_mode);
+
+            } catch (error) {
+                console.error('###', error, contentWindow, e, e.contentWindow);
+            }
+        });
+        
         mel_metapage.Storage.set(mel_metapage.Storage.color_mode, color_mode);
     }
     

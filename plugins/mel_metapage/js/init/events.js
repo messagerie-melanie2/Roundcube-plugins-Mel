@@ -346,7 +346,7 @@ if (rcmail && window.mel_metapage)
                 else contentWindow.rcmail.triggerEvent('switched_color_theme', color_mode);
 
             } catch (error) {
-                console.error('###', error, contentWindow, e, e.contentWindow);
+
             }
         });
         

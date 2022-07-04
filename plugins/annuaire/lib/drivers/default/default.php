@@ -122,7 +122,7 @@ class default_driver_annuaire extends driver_annuaire {
   public function get_elements($search = false) {
     $elements = [];
     
-    $this->ldap->anonymous();
+    $this->ldap->bind4lookup();
     if ($search) {
       $sr = $this->ldap->search($this->base_dn, $this->filter, $this->attributes, 0, 200);
     } else {

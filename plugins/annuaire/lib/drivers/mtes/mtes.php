@@ -439,7 +439,7 @@ class mtes_driver_annuaire extends default_driver_annuaire {
       $base_filter = "(mineqTypeEntree=NSER)";
       // Récupération de l'instance depuis l'ORM
       $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-      if ($ldap->anonymous()) {
+      if ($ldap->bind4lookup()) {
         do {
           $tmp = explode(',', $base_dn, 2);
           $filter = "(&(" . $tmp[0] . ")$base_filter)";

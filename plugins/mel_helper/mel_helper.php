@@ -213,7 +213,7 @@ class mel_helper extends rcube_plugin
         $end = ',dc=equipement,dc=gouv,dc=fr';
         $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
 
-        if ($ldap->anonymous()) {
+        if ($ldap->bind4lookup()) {
 
             if (strpos($dn, $end) === false) $dn .= $end;
 

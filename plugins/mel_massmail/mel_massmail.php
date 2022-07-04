@@ -205,7 +205,7 @@ Nous vous invitons à vérifier auprès de l'utilisateur s'il est ou non à l'or
     $mail = null;
     // Récupération de l'instance depuis l'ORM
     $ldap = LibMelanie\Ldap\Ldap::GetInstance(LibMelanie\Config\Ldap::$SEARCH_LDAP);
-    if ($ldap->anonymous()) {
+    if ($ldap->bind4lookup()) {
       do {
         // Search LDAP
         $result = $ldap->ldap_list($base_dn, $filter, ['mail', 'mailpr']);

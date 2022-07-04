@@ -1,5 +1,7 @@
 $(document).ready(() => {
 
+    if (top.$('.mel-note').length > 0 || window !== top) return;
+
     /**
      * Plugin qui contient la localization pour rcmail.gettext
      */
@@ -493,12 +495,24 @@ $(document).ready(() => {
     }
 
     //Ajout des notes au bouton "Mes raccourcis"
-    mm_add_shortcut("notes", Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' '), true, 'Notes');
-    
+    top.mm_add_shortcut("notes", Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' '), true, 'Notes');
+
     //Lorsque l'on appuie sur le bouton "Mes raccourcis" pour la première fois
-    rcmail.addEventListener("apps.create", () => {
-        $('.mel-note').each((i, e) => {
-            Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
-        });
+    top.rcmail.addEventListener("apps.create", () => {
+        if (top.$('.mel-note').length > 0)
+        {
+            top.$('.mel-note').each((i, e) => {
+                Sticker.fromHtml(top.$(e).attr("id").replace('note-', '')).set_handlers();
+            });
+        }
+        else {
+            const interval = setInterval(() => {
+                if (!!top.shortcuts)
+                {
+                    if (top.$('.mel-note').length === 0) top.mm_add_shortcut("notes", Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' '), true, 'Notes');
+                    else clearInterval(interval);
+                }
+            }, 100);
+        }
     });
 });

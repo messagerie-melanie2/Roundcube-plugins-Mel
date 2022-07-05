@@ -607,7 +607,7 @@ if (rcmail && window.mel_metapage)
         const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle}` : (cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle);
         
         const config = new GlobalModalConfig(title, "default", html);
-        let modal = new top.GlobalModal("globalModal", config, true);
+        let modal = new GlobalModal("globalModal", config, true);
         modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem");
         
         //Gérer le titre

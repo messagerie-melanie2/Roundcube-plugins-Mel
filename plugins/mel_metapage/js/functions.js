@@ -745,10 +745,10 @@ function m_mp_autocomplete_startup($element, val = '')
 
         top.rcmail.init_address_input_events($element);
 
-        top.$('<button href="#add-contact" class="add-contact btn btn-secondary mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact"><span class="inner">Ajouter un contact</span></button>')
+        $('<button href="#add-contact" class="add-contact btn btn-secondary mel-focus input-group-text mel-text-center icon add recipient mel-text" title="Ajouter un contact"><span class="inner">Ajouter un contact</span></button>')
         .appendTo($div.find('.input-group-append'))
         .click((e) => {
-            top.m_mp_openTo(e.currentTarget, $element.attr('id'));
+            m_mp_openTo(e.currentTarget, $element.attr('id'));
         });
 
         $parent.append($div);

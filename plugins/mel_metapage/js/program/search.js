@@ -176,6 +176,7 @@ $(document).ready(() => {
          */
         _search(word, config, then = null)
         {
+            top.rcmail.set_busy(true, 'loading');
             const settings = this.settings;
             let _this = this;
             let count = 0;
@@ -213,6 +214,9 @@ $(document).ready(() => {
                         _this._showDatas();
 
                         if (!!then) then();
+
+                        top.rcmail.set_busy(false);
+                        top.rcmail.clear_messages();
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response

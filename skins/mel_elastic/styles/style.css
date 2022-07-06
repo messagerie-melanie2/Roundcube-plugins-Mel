@@ -1679,7 +1679,7 @@ tr.elementmoveup > td {
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
 }
-.mel-search-group.input-group-append > .input-group-text {
+.mel-search-group .input-group-append > .input-group-text {
   background-color: var(--default-background);
   border-bottom-right-radius: 15px;
   border-top-right-radius: 15px;

@@ -262,11 +262,14 @@ if (rcmail)
                     rcmail.command('mel.search', {word});
                 }
                 else{
+                    top.rcmail.set_busy(true, 'loading');
                     await mel_metapage.Functions.change_frame('search', false, true, {_word:word});
                     $('.a-frame').css('display', 'none');
                     $('.mm-frame').css('display', 'none');
                     $('#layout-frames').css('display', '');
                     $('iframe.search-frame').css('display', '');
+                    //top.rcmail.set_busy(false);
+                    //rcmail.clear_messages();
                 }
                 
 

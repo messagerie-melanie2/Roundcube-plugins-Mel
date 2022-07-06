@@ -321,6 +321,18 @@ html.dark-mode .watermark::before
     color:#96b9e7;
 }
 
+html.dark-mode .message-htmlpart blockquote
+{
+    color: #c7dfff;
+    background-color: #323F4B;
+}
+
+html.dark-mode .message-htmlpart blockquote *, 
+html.dark-mode .message-part blockquote * {
+    color: #c7dfff!important;
+    background-color: #323F4B!important;
+}
+
 html.dark-mode .frame-header
 {
     box-shadow: -2px 0px 3px #96b9e745;
@@ -1183,4 +1195,8 @@ html.dark-mode #message-model {
 
 html.dark-mode separate.device{
     border-color:#4c4d50;
+}
+
+html.dark-mode .message-htmlpart table td {
+	background-color: white;
 }

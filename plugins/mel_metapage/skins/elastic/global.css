@@ -244,6 +244,19 @@ bottom: 21px; */
     right: 165px;
 }
 
+.mozilla .toolbar-popup {
+    right: 120px;
+}
+
+.toolbar-popup.large-toolbar {
+	top: unset;
+	border-radius: 15px;
+	height: 450px;
+	bottom: 100px;
+	width: 300px;
+	right: 164px;
+}
+
 .toolbar-popup>.toolbar-datas {
     height: 100%;
     overflow-y: auto;

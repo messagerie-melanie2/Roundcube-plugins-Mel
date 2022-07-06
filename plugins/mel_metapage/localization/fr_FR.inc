@@ -298,5 +298,9 @@ $labels['visio'] = 'Visioconférences';
 $labels['chat'] = 'Discussions';
 
 $labels['visio_ask_on_end'] = 'Afficher le questionnaire satisfaction ?';
+$labels['visio_audio_parameters'] = 'Affichage des options micro et vidéo';
 $labels['chat_startup'] = 'Connexion automatique au démarrage ?';
+
+$labels['compact'] = "Compact";
+$labels['large'] = 'Large';
 

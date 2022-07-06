@@ -1,10 +1,3 @@
-/* html.dark-mode .barup .user-child .mel-icofont-theme::before
-{
-    font-family: "Icofont";
-    content: "\ee81";
-    color:#e4e7eb;
-} */
-
 html.dark-mode .theme-mode-switch.btn.btn-primary.btn-block {
 	border-color: #E1C58F;
 	background-color: #181C28;
@@ -269,6 +262,22 @@ html.dark-mode .mel-button:active {
 
 html.dark-mode .barup > .wrapper > .user #user-welcome{
     color:#c7dfff!important;
+}
+
+html.dark-mode .large-toolbar .mel-ui-button.btn{
+    color:#96b9e7
+}
+
+html.dark-mode .large-toolbar .mel-ui-button.btn:hover {
+    background-color: #36383c;
+    color: #E1C58F;
+    border-color:transparent;
+}
+
+html.dark-mode .large-toolbar .mel-ui-button.btn.disabled {
+    background-color: #131519;
+    color: #E1C58F;
+    opacity: 1!important;
 }
 /******** Navigation des espaces *********/
 /*#4d6066*/
@@ -1170,4 +1179,8 @@ html.dark-mode .messagelist tr.message.bloqued .msgicon.status::before{
 
 html.dark-mode #message-model {
 	background-color: #323F4B;
+}
+
+html.dark-mode separate.device{
+    border-color:#4c4d50;
 }

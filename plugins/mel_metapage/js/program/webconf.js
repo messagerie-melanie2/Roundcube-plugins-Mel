@@ -68,8 +68,11 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     this.key = key;
 
     if (top.rcmail.env['webconf.feedback_url'] === undefined) top.rcmail.env['webconf.feedback_url'] = rcmail.env['webconf.feedback_url'];
+
+    if (top.rcmail.env['webconf.audio_style_params'] === undefined) top.rcmail.env['webconf.audio_style_params'] = rcmail.env['webconf.audio_style_params'];
     
     this.feedback_url = rcmail.env['webconf.feedback_url'];
+    this.audio_style_params = rcmail.env['webconf.audio_style_params'];
 
     if ((ariane === null  || ariane === undefined)) //Si on est en mode espace de travail
     {
@@ -864,6 +867,16 @@ class MasterWebconfBar {
             $(".wsp-toolbar").css("border-radius", 0).css("width", "100%").css("left","0").css("transform", "none");
         }
 
+        if (this.webconf.audio_style_params == 'large')
+        {
+            this.popup.addClass('large-toolbar');
+            this.popup.css('height', `${window.innerHeight / 2}px`);
+            
+            $(window).resize(() => {
+                this.popup.css('height', `${window.innerHeight / 2}px`);
+            });
+        }
+
         return this;
     }
 
@@ -1557,10 +1570,11 @@ class MasterWebconfBar {
                     html += `<button onclick="window.webconf_master_bar.set_device('${html_helper.JSON.stringify(element)}')" class="mel-ui-button btn btn-primary btn-block ${disabled}" ${disabled}>${element.label}</button>`;
                 }
                 html += "</div>";
+                if (this.webconf.audio_style_params == 'large') html += '<separate class="device"></separate>';
             }
         }
 
-        this.popup.find(".toolbar-datas").html(html);
+        this.popup.find(".toolbar-datas").html(html).find('separate').last().remove();
     }
 
     _empty_popup()

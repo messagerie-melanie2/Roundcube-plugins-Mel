@@ -6,6 +6,9 @@ include_once __DIR__."/../program.php";
 class Webconf extends Program
 {
     public const PUBLIC_URL = 'webconf';
+    private const DEFAULT_VA_PARAM = 'large';
+    private const VA_PARAM = 'visio_audio_parameters';
+    private const ASK_ON_END_PARAM = 'visio_ask_on_end';
     private $tmp_key;
 
     public function __construct($rc, $plugin) {
@@ -26,6 +29,54 @@ class Webconf extends Program
             $this->include_js("webconf.js");
             $this->include_css("webconf.css");
         }
+    }
+
+    public function program_task()
+    {
+        return 'webconf';
+    }
+
+    public function public()
+    {
+        $askOnEnd = self::ASK_ON_END_PARAM;
+        $visio_audio_video_parameters = self::VA_PARAM;
+        $visio_audio_video_parameters_default = self::DEFAULT_VA_PARAM;
+
+        $this->add_parameters(function ($args) use($askOnEnd, $visio_audio_video_parameters, $visio_audio_video_parameters_default) {
+            if ($args['section'] == 'visio')
+            {
+                $this->plugin->add_texts('localization/');
+                $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
+                $visio_audio_video_parameters_config = $this->rc->config->get($visio_audio_video_parameters, $visio_audio_video_parameters_default);
+    
+                $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
+                $args['blocks']['general']['options'][$askOnEnd] = [
+                    'title'   => html::label($askOnEnd, rcube::Q($this->plugin->gettext($askOnEnd))),
+                    'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
+                ];
+
+                $args['blocks']['general']['options'][$visio_audio_video_parameters] = $this->create_pref_select($visio_audio_video_parameters, $visio_audio_video_parameters_config, [
+                        $this->plugin->gettext("compact", "mel_metapage"),
+                        $this->plugin->gettext("large", "mel_metapage"),
+                ], ['compact', 'large']);
+            }
+
+            return $args;
+        }, function ($args) use($askOnEnd, $visio_audio_video_parameters, $visio_audio_video_parameters_default) {
+            if ($args['section'] == 'visio')
+            {
+                $this->plugin->add_texts('localization/');
+                $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
+                $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
+                $args['prefs'][$askOnEnd] = $askOnEnd_config;
+
+                $visio_audio_video_parameters_config = $this->rc->config->get($visio_audio_video_parameters, $visio_audio_video_parameters_default);
+                $visio_audio_video_parameters_config = rcube_utils::get_input_value($visio_audio_video_parameters, rcube_utils::INPUT_POST);
+                $args['prefs'][$visio_audio_video_parameters] = $visio_audio_video_parameters_config;
+            }
+            
+            return $args;
+        });
     }
 
     function log_webconf($id)
@@ -84,6 +135,7 @@ class Webconf extends Program
 
         $this->set_env_var("webconf.feedback_url", $this->get_config("webconf_feedback_url"));
         $this->set_env_var("webconf.have_feed_back", $this->get_config("visio_ask_on_end", true));
+        $this->set_env_var("webconf.audio_style_params", $this->get_config(self::VA_PARAM, self::DEFAULT_VA_PARAM));
         $this->rc->output->set_pagetitle("Visioconférence");
         $this->send("webconf");
     }
@@ -303,3 +355,5 @@ class Webconf extends Program
         return $isValid;
     }
 }
+
+Program::add_class_to_load('Webconf');

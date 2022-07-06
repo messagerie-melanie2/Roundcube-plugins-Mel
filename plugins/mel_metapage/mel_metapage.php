@@ -68,16 +68,55 @@ class mel_metapage extends rcube_plugin
         return self::$widgets;
     }
 
-    public static function can_add_widget()
+    public static function can_add_widget($exception = [])
     {
         $task = rcmail::get_instance()->task;
 
         return false && ($task === 'bureau' ||  $task === 'settings');
     }
 
-    function init()
+    function init_sub_modules()
     {
-        $this->setup();
+        $dir = __DIR__;
+        $folders = scandir(__DIR__."/program");
+
+        foreach ($folders as $folder) {
+           if (is_dir(__DIR__."/program/".$folder) && $folder !== '.' && $folder !== '..')
+           {
+                if ($folder === 'pages') 
+                {
+                    $this->init_sub_pages();
+                    continue;
+                }
+                else if (in_array($folder, $exception)) continue;
+                else {
+                    $files = scandir(__DIR__."/program/".$folder);
+
+                    foreach ($files as $file) {
+                        if (strpos($file, ".php") !== false)
+                        {
+                            include_once __DIR__.'/program/'.$folder.'/'.$file;
+                        }
+                    }
+                }
+           }
+        }
+
+        if (class_exists('Program'))
+        {
+            foreach (Program::generate($this->rc, $this) as $submodule) {
+                if ($this->rc->task === $submodule->program_task())
+                {
+                    $submodule->init();
+                }
+
+                $submodule->public();
+            }
+        }
+    }
+
+    function init_sub_pages()
+    {
         $dir = __DIR__;
         $files = scandir(__DIR__."/program/pages");
         $size = count($files);
@@ -96,8 +135,14 @@ class mel_metapage extends rcube_plugin
 
             }
         }
+    }
 
-        if ($this->rc->task === "webconf")
+    function init()
+    {
+        $this->setup();
+        $this->init_sub_modules();
+
+        /*if ($this->rc->task === "webconf")
         {
             include_once "program/webconf/webconf.php";
             $conf = new Webconf($this->rc, $this);
@@ -109,7 +154,7 @@ class mel_metapage extends rcube_plugin
             $conf = new SearchPage($this->rc, $this);
             $conf->init();
         }
-        else if ($this->rc->task === "chat")
+        else */if ($this->rc->task === "chat")
             $this->register_action('index', array($this, 'ariane'));
 
 
@@ -126,6 +171,7 @@ class mel_metapage extends rcube_plugin
         $this->rc = rcmail::get_instance();
         $this->add_texts('localization/', true);
         $this->load_config();
+        $this->require_plugin('mel_helper');
  
         if ($this->rc->config->get('maintenance', false) && ($this->rc->action === 'index' || $this->rc->action === '') && rcube_utils::get_input_value('_is_from', rcube_utils::INPUT_GPC)  !== 'iframe' && $this->rc->task !== "login")
         {
@@ -268,8 +314,6 @@ class mel_metapage extends rcube_plugin
             $this->include_script('js/init/classes.js');
             $this->include_script('js/init/constants.js');
         }
-
-        $this->require_plugin('mel_helper');
         //m2_get_account
         $this->add_hook("m2_get_account", array($this, "m2_gestion_cache"));
         
@@ -1631,18 +1675,18 @@ class mel_metapage extends rcube_plugin
             ];
             
         }
-        else if ($args['section'] == 'visio')
-        {
-            $this->add_texts('localization/');
-            $askOnEnd = 'visio_ask_on_end';
-            $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
+        // else if ($args['section'] == 'visio')
+        // {
+        //     $this->add_texts('localization/');
+        //     $askOnEnd = 'visio_ask_on_end';
+        //     $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
 
-            $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
-            $args['blocks']['general']['options'][$askOnEnd] = [
-                'title'   => html::label($askOnEnd, rcube::Q($this->gettext($askOnEnd))),
-                'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
-            ];
-        }
+        //     $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
+        //     $args['blocks']['general']['options'][$askOnEnd] = [
+        //         'title'   => html::label($askOnEnd, rcube::Q($this->gettext($askOnEnd))),
+        //         'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
+        //     ];
+        // }
         else if ($args['section'] == 'chat')
         {
             $this->add_texts('localization/');
@@ -1853,14 +1897,14 @@ class mel_metapage extends rcube_plugin
             $args['prefs'][$op_table_bali] = $this->_save_pref_update_config($config_bali, $bali_folders, 'bali_folders_');
         }
     }
-    else if ($args['section'] == 'visio')
-    {
-        $this->add_texts('localization/');
-        $askOnEnd = 'visio_ask_on_end';
-        $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
-        $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
-        $args['prefs'][$askOnEnd] = $askOnEnd_config;
-    }
+    // else if ($args['section'] == 'visio')
+    // {
+    //     $this->add_texts('localization/');
+    //     $askOnEnd = 'visio_ask_on_end';
+    //     $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
+    //     $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
+    //     $args['prefs'][$askOnEnd] = $askOnEnd_config;
+    // }
     else if ($args['section'] == 'chat')
     {
         $this->add_texts('localization/');

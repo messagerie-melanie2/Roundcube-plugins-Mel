@@ -19,6 +19,11 @@ class SearchPage extends Program
         }
     }
 
+    public function program_task()
+    {
+        return 'search';
+    }
+
     public function index()
     {
         //$this->add_texts('localization/', true);
@@ -100,3 +105,5 @@ class SearchPage extends Program
         return $this->word;
     }
 }
+
+Program::add_class_to_load('SearchPage');

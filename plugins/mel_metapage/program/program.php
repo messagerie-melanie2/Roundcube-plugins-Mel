@@ -2,6 +2,8 @@
 
 abstract class Program{
     
+    private static $CLASSES_TO_LOAD;
+
     protected $rc;
     protected $plugin;
     protected $config;
@@ -17,7 +19,10 @@ abstract class Program{
         $this->action = $this->rc->action;
     }  
 
+    abstract public function program_task(); 
     abstract public function init();
+
+    public function public() {}
 
     protected function send($html, $plugin = "mel_metapage")
     {
@@ -85,6 +90,70 @@ abstract class Program{
     protected function get_plugin($name)
     {
         return $this->rc->plugins->get_plugin($name);
+    }
+
+    protected function add_hook($name, $callback)
+    {
+        $this->plugin->add_hook($name, $callback);
+    }
+
+    protected function add_parameters($onLoad, $onSave)
+    {
+        $this->add_hook('preferences_list', $onLoad);
+        $this->add_hook('preferences_save', $onSave);
+    }
+
+    protected function create_pref_select($field_id, $current, $names, $values = null, $attrib = null)
+    {
+  
+      if ($attrib === null)
+          $attrib = [];
+  
+      $attrib['name'] = $field_id;
+      $attrib['id'] = $field_id;
+  
+      $input = new html_select($attrib);
+  
+    //   foreach ($options as $key => $value) {
+    //       $input->add();
+    //   }
+    $input->add($names, $values);
+  
+      unset($attrib['name']);
+      unset($attrib['id']);
+      $attrib["for"] = $field_id;
+  
+      return array(
+          'title' => html::label($attrib, rcube::Q($this->plugin->gettext($field_id))),
+          'content' => $input->show($current),
+        );
+    }
+  
+    
+
+    public static function load_classes($rc, $plugin)
+    {   
+        $loaded = [];
+        foreach (self::generate($rc, $plugin) as $value) {
+            $loaded[] = $value;
+        }
+
+        return $loaded;
+    }
+
+    public static function generate($rc, $plugin)
+    {
+        if (self::$CLASSES_TO_LOAD === null) self::$CLASSES_TO_LOAD = [];
+
+        foreach (self::$CLASSES_TO_LOAD as $classname) {
+            yield new $classname($rc, $plugin);
+        }
+    }
+
+    public static function add_class_to_load($classname)
+    {
+        if (self::$CLASSES_TO_LOAD === null) self::$CLASSES_TO_LOAD = [$classname];
+        else self::$CLASSES_TO_LOAD[] = $classname;
     }
 
 }

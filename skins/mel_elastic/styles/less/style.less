@@ -607,16 +607,6 @@ a.button.icon:not(.disabled):focus{
 	width: 0;
 }
 
-.show-on-small
-{
-    display: none;
-
-    html@{layout-phone} &,
-    html@{layout-small} &{
-        display: initial;
-    }
-}
-
 #menu-gu-black
 {
     width: 100%;
@@ -3639,5 +3629,25 @@ table{
                 .element-block();
             }
         }
+    }
+}
+
+/** END **/
+
+.show-on-small
+{
+    display: none;
+
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        display: initial;
+    }
+}
+
+.hide-on-small
+{
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        display: none;
     }
 }

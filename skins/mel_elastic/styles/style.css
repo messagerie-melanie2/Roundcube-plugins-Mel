@@ -393,13 +393,6 @@ a.button.icon:not(.disabled):focus {
 .hidden-item-mt {
   width: 0;
 }
-.show-on-small {
-  display: none;
-}
-html.layout-phone .show-on-small,
-html.layout-small .show-on-small {
-  display: initial;
-}
 #menu-gu-black {
   width: 100%;
   height: 100%;
@@ -2344,4 +2337,16 @@ a.rcmContactAddress {
 }
 #waiting-events-list-items .waiting-event-button span {
   display: block;
+}
+/** END **/
+.show-on-small {
+  display: none;
+}
+html.layout-phone .show-on-small,
+html.layout-small .show-on-small {
+  display: initial;
+}
+html.layout-phone .hide-on-small,
+html.layout-small .hide-on-small {
+  display: none;
 }

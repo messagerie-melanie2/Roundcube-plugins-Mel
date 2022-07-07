@@ -1105,57 +1105,57 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;
             break;
-        case 'share':
-            $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
+        // case 'share':
+        //     $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
 
-            if (!isset($event['attendees']) || !is_array($event['attendees']))
-            {
-                $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
-                $organizer = driver_mel::gi()->getUser($organizer);
-                $event['attendees'] = [
-                    [
-                        'email' => $organizer->email,
-                        'name' => $organizer->fullname,
-                        'role' => 'ORGANIZER',
-                        'internal' => 'true',
-                        'noreply' => '1'
-                    ]
-                ];
-            }
+        //     if (!isset($event['attendees']) || !is_array($event['attendees']))
+        //     {
+        //         $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
+        //         $organizer = driver_mel::gi()->getUser($organizer);
+        //         $event['attendees'] = [
+        //             [
+        //                 'email' => $organizer->email,
+        //                 'name' => $organizer->fullname,
+        //                 'role' => 'ORGANIZER',
+        //                 'internal' => 'true',
+        //                 'noreply' => '1'
+        //             ]
+        //         ];
+        //     }
 
-            foreach ($event['attendees'] as $key => $a) {
-                $event['attendees'][$key]['skip_notify'] = 'true';
-                $event['attendees'][$key]['noreply'] = '1';
-            } 
+        //     foreach ($event['attendees'] as $key => $a) {
+        //         $event['attendees'][$key]['skip_notify'] = 'true';
+        //         $event['attendees'][$key]['noreply'] = '1';
+        //     } 
 
-            foreach ($users_email as $mail) {
-                $user = driver_mel::gi()->getUser(null, true, false, null, $mail);
+        //     foreach ($users_email as $mail) {
+        //         $user = driver_mel::gi()->getUser(null, true, false, null, $mail);
                 
-                if (isset($user))
-                {
-                    $event['attendees'][] = [
-                        'email' => $user->email,
-                        'name' => $user->fullname,
-                        'role' => 'REQ-PARTICIPANT',
-                        'status' => 'NEEDS-ACTION',
-                        'skip_notify' => 'false',
-                       // 'noreply' => '1'
-                    ];
-                }
-                else {
-                    $event['attendees'][] = [
-                        'email' => $mail,
-                        'name' => $mail,
-                        'role' => 'REQ-PARTICIPANT',
-                        'status' => 'NEEDS-ACTION',
-                        'skip_notify' => 'false',
-                        //'noreply' => '1'
-                    ];
-                }
-            }
-            $event['_comment'] = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
-            $event['_notify'] = "3";
-            $event['share'] = true;
+        //         if (isset($user))
+        //         {
+        //             $event['attendees'][] = [
+        //                 'email' => $user->email,
+        //                 'name' => $user->fullname,
+        //                 'role' => 'REQ-PARTICIPANT',
+        //                 'status' => 'NEEDS-ACTION',
+        //                 'skip_notify' => 'false',
+        //                // 'noreply' => '1'
+        //             ];
+        //         }
+        //         else {
+        //             $event['attendees'][] = [
+        //                 'email' => $mail,
+        //                 'name' => $mail,
+        //                 'role' => 'REQ-PARTICIPANT',
+        //                 'status' => 'NEEDS-ACTION',
+        //                 'skip_notify' => 'false',
+        //                 //'noreply' => '1'
+        //             ];
+        //         }
+        //     }
+        //     $event['_comment'] = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+        //     $event['_notify'] = "3";
+        //     $event['share'] = true;
 
         case "edit":
             if (!$this->write_preprocess($event, $action)) {

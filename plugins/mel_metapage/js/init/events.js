@@ -645,6 +645,7 @@ if (rcmail && window.mel_metapage)
             style="margin-top: 8px;
             margin-left: -1px;"/>`);
 
+            let $subject = $(`<input class="form-control input-mel" type="text" placeholder="Sujet du message..." value="${rcmail.env.firstname} ${rcmail.env.lastname} vous partage l'évènement ${event.title}"/>`);
             let $commentArea = $(`<textarea placeholder="Message optionel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
 
             let $userInputParent = $(`<div></div>`).append($userInput);
@@ -657,6 +658,8 @@ if (rcmail && window.mel_metapage)
 
             modal.appendToBody($(`<div><label class="red-star-after span-mel t1 first">Participants</label></div>`).append($userInputParent));
 
+            modal.appendToBody($(`<div><label class="span-mel t1">Objet</label></div>`).append($subject));
+
             modal.appendToBody($(`<div><label class="span-mel t1">Message</label></div>`).append($commentArea));
 
             modal.footer.querry.html('');
@@ -665,6 +668,7 @@ if (rcmail && window.mel_metapage)
                 .click(() => {
                     let loading = rcmail.set_busy(true, 'loading');
                     const comment = $commentArea.val();
+                    const subject = $subject.val();
 
                     let users = [];
 
@@ -689,39 +693,24 @@ if (rcmail && window.mel_metapage)
                         return;
                     }
 
-                    // mel_metapage.Functions.post(
-                    //     mel_metapage.Functions.url('calendar', 'event'),
-                    //     {
-                    //         action:'share',
-                    //         e:cloned_event,
-                    //         _users_to_share:users,
-                    //         _comment:comment,
-                    //         _organizer:event.source.ajaxSettings.owner
-                    //     },
-                    //     (datas) => {
-                    //         console.log(datas, 'datas partage');
+                    if (subject.length === 0)
+                    {
+                        if (!confirm('Êtes-vous sûr de vouloir envoyer un message sans objet ?'))
+                        {
+                            rcmail.set_busy(false);
+                            rcmail.clear_messages();
+                            top.rcmail.display_message('Vous devez mettre des utilisateurs !', 'error');
+                            return;
+                        }
+                    }
 
-                    //         rcmail.set_busy(false);
-                    //         rcmail.clear_messages();
-                    //         rcmail.display_message('Evènement mis à jours et partagé avec succès !', 'confirmation');
-                    //         rcmail.command('refreshcalendar');
-
-                    //         if (top !== window) top.rcmail.refresh();
-                    //     },
-                    //     (a,b,c) => {
-                    //         rcmail.set_busy(false);
-                    //         rcmail.clear_messages();
-                    //         rcmail.display_message('Une erreur est survenue !', 'error');
-                    //         console.error('###[PARTAGER]',a,b,c);
-                    //     }
-                    // );
-                    //rcmail.triggerEvent('calendar.event_show_dialog.custom', datas);
                     modal.close();
                     rcmail.http_post('event', {
                                 action:'share',
                                 e:cloned_event,
                                 _users_to_share:users,
                                 _comment:comment,
+                                _subject:subject,
                                 _organizer:event.source.ajaxSettings.owner
                             }, loading);
                 })

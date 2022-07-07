@@ -109,13 +109,19 @@ class libcalendaring_itip
 
         $headers = $message->headers();
         $headers['To'] = format_email_recipient($mailto, $recipient['name']);
-        $headers['Subject'] = /**PAMELA**/ ($event['share'] === true ? '[PARTAGE]' : '') /**/ . $this->gettext(array(
+        $headers['Subject'] = $this->gettext(array(
             'name' => $subject,
             'vars' => array(
                 'title' => $event['title'],
                 'name' => $this->sender['name'],
             )
         ));
+
+        // PAMELA
+        if ($event['share'] === true)
+        {
+            $headers['Subject'] = $event['_subject'] ?? '';
+        }
 
         // compose a list of all event attendees
         $attendees_list = array();
@@ -145,24 +151,25 @@ class libcalendaring_itip
 
         // PAMELA
         $mailbody = '';
-        if ($event['share'] === true && isset($event['message_body_before']) && !empty('message_body_before'))
+        if ($event['share'] === true)
         {
-            $mailbody = $event['message_body_before'] . "\n\n\n";
-        }//
-
-        $mailbody .= $this->gettext(array(
-            'name' => $bodytext,
-            'vars' => array(
-                'title'       => $event['title'],
-                'date'        => $this->lib->event_date_text($event, true) . $recurrence_info,
-                'attendees'   => join(",\n ", $attendees_list),
-                'sender'      => $this->sender['name'],
-                // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
-                'organizer'   => $organizer,
-                'description' => isset($event['description']) ? $event['description'] : '',
-            )
-        ));
-
+            $mailbody = $event['_comment'];
+        }
+        else 
+        {
+            $mailbody = $this->gettext(array(
+                'name' => $bodytext,
+                'vars' => array(
+                    'title'       => $event['title'],
+                    'date'        => $this->lib->event_date_text($event, true) . $recurrence_info,
+                    'attendees'   => join(",\n ", $attendees_list),
+                    'sender'      => $this->sender['name'],
+                    // 0006234: Ajouter une ligne "Organisateur :" dans le msg réponse d'un invité
+                    'organizer'   => $organizer,
+                    'description' => isset($event['description']) ? $event['description'] : '',
+                )
+            ));
+        }
         // remove redundant empty lines (e.g. when an event description is empty)
         $mailbody = preg_replace('/\n{3,}/', "\n\n", $mailbody);
 

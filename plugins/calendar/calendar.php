@@ -1105,21 +1105,22 @@ $("#rcmfd_new_category").keypress(function(event) {
 
             $reload = $success && !empty($event['recurrence']) ? 2 : 1;
             break;
+        //PAMELA
         case 'share':
-            $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
+             $users_email = rcube_utils::get_input_value('_users_to_share', rcube_utils::INPUT_POST);
 
             if (!isset($event['attendees']) || !is_array($event['attendees']))
             {
-                $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
-                $organizer = driver_mel::gi()->getUser($organizer);
-                $event['attendees'] = [
-                    [
-                        'email' => $organizer->email,
-                        'name' => $organizer->fullname,
-                        'role' => 'ORGANIZER',
-                        'internal' => 'true',
-                        'noreply' => '1'
-                    ]
+                // $organizer = rcube_utils::get_input_value('_organizer', rcube_utils::INPUT_POST);
+                $organizer = driver_mel::gi()->getUser();
+                $event['attendees'] = [ ];
+
+                $event['organizer'] = [ 
+                    'email' => $organizer->email,
+                    'name' => $organizer->fullname,
+                    'role' => 'ORGANIZER',
+                    'internal' => 'true',
+                    'noreply' => '1'          
                 ];
             }
 
@@ -1139,6 +1140,7 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'role' => 'REQ-PARTICIPANT',
                         'status' => 'NEEDS-ACTION',
                         'skip_notify' => 'false',
+                        'share' => true
                        // 'noreply' => '1'
                     ];
                 }
@@ -1149,27 +1151,46 @@ $("#rcmfd_new_category").keypress(function(event) {
                         'role' => 'REQ-PARTICIPANT',
                         'status' => 'NEEDS-ACTION',
                         'skip_notify' => 'false',
+                        'share' => true
                         //'noreply' => '1'
                     ];
                 }
             }
+            
+            $event['_subject'] = rcube_utils::get_input_value('_subject', rcube_utils::INPUT_POST) ?? '';
             $event['_comment'] = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
             $event['_notify'] = "3";
             $event['share'] = true;
+
+            $event['created'] = new Datetime($event['created']);
+            $event['changed'] = new Datetime($event['changed']);
+            // $event['start'] = new Datetime($event['start']);
+            // $event['end'] = new Datetime($event['end']);
+
+            if ($event['allDay'] == 'true') 
+            {
+                $event['allday'] = $event['allDay'];
+                $event['end'] = $event['start'];
+            }
+            $this->write_preprocess($event, $action);
+
+            $sent = $this->notify_attendees($event, null, $action);
+
+            if ($sent > 0) {
+                $this->rc->output->show_message('calendar.itipsendsuccess', 'confirmation');
+            }
+            else if ($sent < 0) {
+                $this->rc->output->show_message('calendar.errornotifying', 'error');
+            }
+
+            $got_msg = true;
+            break;
 
         case "edit":
             if (!$this->write_preprocess($event, $action)) {
                 $got_msg = true;
             }
             else if ($success = $this->driver->edit_event($event)) {
-
-                //PAMELA
-                if ($action === 'share')
-                {
-                    $event['message_body_before'] = $event['_comment'];//rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
-                    $event['share'] = true;
-                }
-
                 $this->cleanup_event($event);
                 $this->event_save_success($event, $old, $action, $success);
             }
@@ -1518,10 +1539,10 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
             $this->rc->output->command('plugin.refresh_calendar', $args);
         }
-        else if ($action === 'share') 
-        {
-            $this->rc->output->command('plugin.refresh_calendar', $args);
-        }
+        // else if ($action === 'share') 
+        // {
+        //     $this->rc->output->command('plugin.refresh_calendar', $args);
+        // }
     }
 
     /**
@@ -2586,9 +2607,24 @@ $("#rcmfd_new_category").keypress(function(event) {
         // set a valid recurrence-id if this is a recurrence instance
         libcalendaring::identify_recurrence_instance($event);
 
+        //PAMELA
+        $temp_attendees = unserialize(serialize($event['attendees']));
+        if ($action === 'share')
+        {
+            foreach ($event['attendees'] as $key => $value) {
+                if ($value['share'] === true)  unset($event['attendees'][$key]);
+            }
+
+            if (count($event['attendees']) === 0) unset($event['attendees']);
+        }
+
         // compose multipart message using PEAR:Mail_Mime
         $method  = $action == 'remove' ? 'CANCEL' : 'REQUEST';
         $message = $itip->compose_itip_message($event, $method, $rsvp);
+
+        // PAMELA 
+        $event['attendees'] = $temp_attendees;
+        unset($temp_attendees);
 
         // list existing attendees from $old event
         $old_attendees = [];

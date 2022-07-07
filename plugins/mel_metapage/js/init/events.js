@@ -628,7 +628,6 @@ if (rcmail && window.mel_metapage)
 
         modal.footer.querry.html("")
         .append($(`<button class="mel-calendar-button" id="-mel-send-event"><span class="icon-mel-send"></span><span class=inner>Partager</span></button>`).click((e) => {
-
             if (rcmail.busy)
             {
                 rcmail.display_message("Une action est déjà en cours....");

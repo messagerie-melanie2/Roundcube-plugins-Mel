@@ -77,9 +77,14 @@ class SuspectsUrls extends Moncompteobject
         $html .= '<div class="row" style="margin-top:15px"><div class="col-1"><button type="button" id="su-mel-default-button"></button></div><div class="col-11"><h2>Adresses suspectes par défaut</h2></div></div>';
         $html .= '<div id="supects-urls-list" style="display:none">'.self::starting_html();
 
+        $alreadyExists = [];
+
         $checkbox = null;
         $isBloqued = false;
         foreach ($config as $url) {  
+
+            if (in_array($url, $alreadyExists)) continue;
+
             if (in_array($url, $config_bloqued))
             {
                 unset($config_bloqued[array_search($url, $config_bloqued)]);
@@ -100,10 +105,16 @@ class SuspectsUrls extends Moncompteobject
 
             $isBloqued = false;
             $checkbox = null;
+
+            $alreadyExists[] = $url;
         }
 
+        $alreadyExists = [];
         $isBloqued = true;
         foreach ($config_bloqued as $url) {
+
+            if (in_array($url, $alreadyExists)) continue;
+
             if (isset($custom_config[$url]))
             {
                 $isBloqued = $custom_config[$url]['bloqued'];
@@ -118,6 +129,8 @@ class SuspectsUrls extends Moncompteobject
 
             $isBloqued = true;
             $checkbox = null;
+
+            $alreadyExists[] = $url;
         }
 
         $html .= '</div>';
@@ -165,6 +178,14 @@ class SuspectsUrls extends Moncompteobject
         return $html;
     }
 
+    public static function reinit($config)
+    {
+        foreach ($config as $key => $value) {
+            $config[$key]['bloqued'] = false;
+        }
+
+        return $config;
+    }
     
 	/**
 	 * Modification des données de l'utilisateur depuis l'annuaire
@@ -172,6 +193,7 @@ class SuspectsUrls extends Moncompteobject
     public static function change()
     {
         $custom_config = rcmail::get_instance()->config->get('mel_custom_suspected_url', []);
+        $custom_config = self::reinit($custom_config);
         
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'created_') !== false)
@@ -202,6 +224,7 @@ class SuspectsUrls extends Moncompteobject
                 $id = str_replace('{mel-point}', '.', str_replace('default_mel_', '', $key));
                 
                 if (!isset($custom_config[$id])) $custom_config[$id] = ["bloqued" => $value == '1'];
+                else $custom_config[$id]['bloqued'] = $value == '1';
             }
             else if (strpos($key, 'custom_mel_blocked_') !== false)
             {

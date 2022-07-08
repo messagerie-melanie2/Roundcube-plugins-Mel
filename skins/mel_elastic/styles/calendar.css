@@ -762,3 +762,7 @@ ul#calendarslist.treelist li div.treetoggle:hover
 .task-calendar .listing li > div.focusview a.quickview:hover:before {
 	opacity: 0.2;
 }
+
+.fc a.fc-event {
+	margin: 1px 0px;
+}

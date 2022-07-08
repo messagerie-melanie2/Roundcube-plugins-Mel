@@ -253,6 +253,7 @@ class mel_metapage extends rcube_plugin
         //$this->rc->output->set_env("compose_extwin", true);
         $this->rc->output->set_env("mel_metapage_chat_visible", $this->rc->config->get("mel_metapage_chat_visible", true));
         $this->rc->output->set_env("mel_metapage_weather_enabled", $this->rc->config->get("enable_weather", false));
+        $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
 
         $icon = "mel-icon-size";
         $folder_space = "mel-folder-space";
@@ -1547,6 +1548,14 @@ class mel_metapage extends rcube_plugin
             ];
         }
 
+        if (!class_exists('mel_notification'))
+        {
+            $p['list']['notifications'] = [
+                'id'      => 'notifications',
+                'section' => $this->gettext('notifications'),
+            ];
+        }
+
 
         return $p;
     }
@@ -1730,6 +1739,23 @@ class mel_metapage extends rcube_plugin
                 }
             }
         }
+        else if ($args['section'] == 'notifications')
+        {
+            $this->add_texts('localization/');
+            $tab_title_style = 'tab_title_style';
+            $value = $this->rc->config->get($tab_title_style, 'page');
+
+            $options = ['all', 'page', 'nothing'];
+            $texts = [];
+
+            foreach ($options as $txt) {
+                $texts[] = $this->gettext("notif-$txt");
+            }
+
+            $args['blocks']['main_nav']['name'] = 'Navigation principale';
+            $args['blocks']['main_nav']['options'][$tab_title_style] = $this->create_pref_select_more($tab_title_style, $value, $texts, $options, ['title' => str_replace('<all/>', $this->gettext("notif-all"), str_replace('<page/>', $this->gettext("notif-page"), $this->gettext('tab_title_style_help')))]);
+            
+        }
 
         return $args;
     }
@@ -1805,6 +1831,30 @@ class mel_metapage extends rcube_plugin
         'content' => $input->show($current),
       );
 
+  }
+
+  function create_pref_select_more($field_id, $current, $names, $values = null, $attrib = null)
+  {
+
+    if ($attrib === null)
+        $attrib = [];
+
+    $attrib['name'] = $field_id;
+    $attrib['id'] = $field_id;
+
+    $input = new html_select($attrib);
+
+
+    $input->add($names, $values);
+
+    unset($attrib['name']);
+    unset($attrib['id']);
+    $attrib["for"] = $field_id;
+
+    return array(
+        'title' => html::label($attrib, rcube::Q($this->gettext($field_id))),
+        'content' => $input->show($current),
+      );
   }
 
     /**
@@ -1897,14 +1947,6 @@ class mel_metapage extends rcube_plugin
             $args['prefs'][$op_table_bali] = $this->_save_pref_update_config($config_bali, $bali_folders, 'bali_folders_');
         }
     }
-    // else if ($args['section'] == 'visio')
-    // {
-    //     $this->add_texts('localization/');
-    //     $askOnEnd = 'visio_ask_on_end';
-    //     $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
-    //     $askOnEnd_config = rcube_utils::get_input_value($askOnEnd, rcube_utils::INPUT_POST) === '1';
-    //     $args['prefs'][$askOnEnd] = $askOnEnd_config;
-    // }
     else if ($args['section'] == 'chat')
     {
         $this->add_texts('localization/');
@@ -1936,6 +1978,15 @@ class mel_metapage extends rcube_plugin
         $args['prefs']["mel_mail_configuration"] = $config;
       
         $this->rc->output->set_env("mel_metapage_mail_configs", $config);
+    }
+    else if ($args['section'] == 'notifications')
+    {
+        $this->add_texts('localization/');
+        $tab_title_style = 'tab_title_style';
+        $value = $this->rc->config->get($tab_title_style, 'page');
+        $value = rcube_utils::get_input_value($tab_title_style, rcube_utils::INPUT_POST);
+        $args['prefs']["tab_title_style"] = $value;
+        $this->rc->output->set_env('mel_metapage.tab.notification_style', $value);
     }
 
 

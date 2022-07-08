@@ -200,6 +200,12 @@ if (rcmail && window.mel_metapage)
                 else
                     parent.parent.rcmail.command("chat.reinit");
             }
+
+            if (rcmail.env["mel_metapage.tab.notification_style"] !== top.rcmail.env["mel_metapage.tab.notification_style"])
+            {
+                top.rcmail.env["mel_metapage.tab.notification_style"] = rcmail.env["mel_metapage.tab.notification_style"];
+                m_mp_e_on_storage_change_notifications(true);
+            }
         }
 
         //tasklistsearch
@@ -402,9 +408,111 @@ if (rcmail && window.mel_metapage)
     });
 
     rcmail.addEventListener('storage.change', (datas) => {
-        //debugger;
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
+
+        if (window === top) m_mp_e_on_storage_change_notifications(datas.key);
     }, false);
+
+    function m_mp_e_on_storage_change_notifications(key)
+    {
+        const accepted_changes = ['mel_metapage.mail.count', 'mel_metapage.tasks', 'mel_metapage.calendar', 'ariane_datas', true];
+
+        if (!accepted_changes.includes(key)) return;
+
+        const delimiter = ') ';
+        const config = rcmail.env["mel_metapage.tab.notification_style"];
+        const get = mel_metapage.Storage.get;
+        const current_task = top.rcmail.env.current_task;
+        const current_title = top.document.title;//mel_metapage.Functions.get_current_title(current_task);
+
+        let temp= null;
+        let numbers = 0;
+        switch (config) {
+            case 'all':
+
+                temp = get('ariane_datas');
+
+                if (!!temp)
+                {
+                    numbers = Enumerable.from(temp.unreads).sum(x => x.key);
+
+                    if (numbers === 0 && temp._some_unreads === true)
+                    {
+                        numbers = '•';
+                        break;
+                    }
+                }
+
+                numbers += parseInt(get('mel_metapage.mail.count') ?? 0) + 
+                           (get('mel_metapage.tasks') ?? []).length + 
+                           (get('mel_metapage.calendar') ?? []).length;
+
+                break;
+
+            case 'page':
+                switch (current_task) {
+                    case 'chat':
+                        temp = get('ariane_datas');
+                        numbers = Enumerable.from(temp.unreads).sum(x => x.key);
+
+                        if (numbers === 0 && temp._some_unreads === true) numbers = '•';
+                        break;
+
+                    case 'calendar':
+                        numbers = (get('mel_metapage.calendar') ?? []).length;
+                        break;
+
+                    case 'tasks':
+                        numbers = (get('mel_metapage.tasks') ?? []).length;
+                        break;        
+                    
+                    case 'mail':
+                        return;
+                        // numbers += parseInt(get('mel_metapage.mail.count') ?? 0);
+                        // break;
+
+                    default:
+                        break;
+                }
+
+                break;
+        
+            default:
+                return;
+        }
+
+        numbers = numbers || null;
+
+        let title = "";
+        if (current_title.includes(delimiter))
+        {
+            title = current_title.split(delimiter);
+            title = title.pop();
+        }
+
+        if (numbers !== null)
+        {
+            title = `(${numbers}) ${title || current_title}`;
+        }
+
+        //top.document.title = title;
+        rcmail.set_pagetitle(title);
+        //console.log('true title', title, top.document.title);
+
+        return title;
+    }
+    m_mp_e_on_storage_change_notifications(true);
+    
+    window.update_notification_title = () => {
+        return m_mp_e_on_storage_change_notifications(true);
+    };
+
+    rcmail.addEventListener('set_unread_count_display.after', (args) => {
+        if (args.set_title)
+        {
+            update_notification_title();
+        }
+    });
 
     rcmail.addEventListener('intercept.click.ok', (args) => 
     {
@@ -644,7 +752,7 @@ if (rcmail && window.mel_metapage)
             style="margin-top: 8px;
             margin-left: -1px;"/>`);
 
-            let $subject = $(`<input class="form-control input-mel" type="text" placeholder="Sujet du message..." value="${rcmail.env.firstname} ${rcmail.env.lastname} vous partage l'évènement ${event.title}"/>`);
+            let $subject = $(`<input class="form-control input-mel" type="text" placeholder="Sujet du message..." value="${top.rcmail.env.firstname ?? ''} ${top.rcmail.env.lastname ?? ''}${(!!top.rcmail.env.firstname && !!top.rcmail.env.lastname ? '' : 'On')} vous partage l'évènement ${event.title}"/>`);
             let $commentArea = $(`<textarea placeholder="Message optionel ici...." class="input-mel mel-input form-control" row=10 style="width:100%"></textarea>`);
 
             let $userInputParent = $(`<div></div>`).append($userInput);

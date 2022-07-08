@@ -304,3 +304,10 @@ $labels['chat_startup'] = 'Connexion automatique au démarrage ?';
 $labels['compact'] = "Compact";
 $labels['large'] = 'Large';
 
+$labels['tab_title_style'] = "Affichage des notifications de la navigation pricipale sur l'onglet en cours";
+
+$labels['notif-all'] = "Somme des notifications";
+$labels['notif-page'] = "Notifications de la page en cours";
+$labels['notif-nothing'] = "Rien/Fonctionnement par défaut";
+
+$labels['tab_title_style_help'] = "\"<all/>\" affiche sur l'onglet la somme des notifications sur la navigation principal (ex : 5 mail, 3 évènements => (8) Paramètres)\r\n\"<page/>\" affiche seulement les notifications de la page en cours (ex : (3) Agenda).\r\nFonctionnement par défaut sinon.";

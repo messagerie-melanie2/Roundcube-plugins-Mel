@@ -763,6 +763,23 @@ const mel_metapage = {
             return (await this.change_frame(last, true, wait));
         },
 
+        get_current_title(current_task = null, _default = document.title){
+            if (parent !== window) return parent.mel_metapage.Function.get_current_title(current_task, _default);
+
+            if (current_task === null) current_task = top.rcmail.env.current_task;
+
+            if (current_task === 'chat')
+            {
+                return 'Discussion';
+            }
+            else {
+                const frame = $(`iframe.${current_task}-frame`);
+                if (frame.length > 0) return frame[0].contentDocument.title || _default;
+                else if($(`.${current_task}-frame`).length > 0) return document.title;
+                else return _default;
+            }
+        },
+
         /**
          * Execute un string depuis "TOP"
          * @param {string} exec String à éxécuter

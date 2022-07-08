@@ -133,6 +133,8 @@ rcmail.addEventListener('init', () => {
     
         mm_st_ChangeClicks();
         mm_st_ChangeClicks("#otherapps");
+
+        rcmail.env.current_task = rcmail.env.task;
     });
 });
 
@@ -660,7 +662,11 @@ metapage_frames.addEvent("onload", (eClass, changepage, isAriane, querry, id, ac
     }
 
     if (changepage)
-        Title.update(id, true);
+    {
+        Title.updateAsync(id, true).then(() => {
+            window.update_notification_title();
+        });
+    }
 
     metapage_frame_actions(actions, id, true);
 
@@ -713,23 +719,28 @@ function metapage_frame_actions(actions, id, after_load) {
 }
 
 metapage_frames.addEvent("changepage.after", (eClass, changepage, isAriane, querry, id) => {
-    if (rcmail.env.can_backward === true)
-        m_mp_ChangeLasteFrameInfo();
+    top.rcmail.env.current_task = rcmail.env.current_task = eClass;
+    if (rcmail.env.can_backward === true) m_mp_ChangeLasteFrameInfo();
 
-        if (isAriane)
-        {
-            setTimeout(() => {
-                Title.update(id, true);
-            }, 10);
-        }
+    if (isAriane)
+    {
+        setTimeout(() => {
+            Title.updateAsync(id, true).then(() => {
+                window.update_notification_title();
+            });
+        }, 10);
+    }
 });
 
 metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, actions) => {
-
     if ($(`iframe#${id}`).length === 0)
-        Title.set(Title.defaultTitle, true);
+        Title.set(Title.defaultTitle, true).then(() => {
+            window.update_notification_title();
+        });
     else
-        Title.update(id, true);
+        Title.updateAsync(id, true).then(()=> {
+            window.update_notification_title();
+        });
 
     try {
         if (window.FrameUpdate === undefined)
@@ -752,6 +763,8 @@ metapage_frames.addEvent("open", (eClass, changepage, isAriane, querry, id, acti
                 await Title.set(Title.defaultTitle, true);
             else
                 await Title.updateAsync(id, true);
+
+            window.update_notification_title();
             Title.focusHidden();
         }, 10);
     }
@@ -801,7 +814,8 @@ function m_mp_ChangeLasteFrameInfo(force = false)
 
     let querry = $(".menu-last-frame").find(".inner");
     querry.html(`<span class=menu-last-frame-inner-up>`+text+` :</span><span class=menu-last-frame-inner-down>`+rcmail.env.last_frame_name+`</span>`);   
-    window.document.title = $("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html() ?? window.document.title;
+    window.document.title = mel_metapage.Functions.get_current_title(null, ($("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html() ?? window.document.title));//$("." + mm_st_ClassContract(rcmail.env.current_frame_name)).find(".inner").html() ?? window.document.title;
+    top.update_notification_title();
 
     try {
         if (!isUndefined)

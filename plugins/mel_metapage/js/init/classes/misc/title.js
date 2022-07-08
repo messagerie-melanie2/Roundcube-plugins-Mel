@@ -36,7 +36,7 @@ window.Title = (() => {
                 if (id !== null)
                 {
                     if (this.is_framed)
-                        mel_metapage.Functions.call(`Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
+                        top.Title.set(top.$("iframe#${id}")[0].contentWindow.document.title, focus);//mel_metapage.Functions.call(`Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
                     else
                         this.set($(`iframe#${id}`)[0].contentWindow.document.title, focus);
                 }
@@ -58,31 +58,32 @@ window.Title = (() => {
 
         async updateAsync(id = null, focus = false)
         {
-            let doFocus = false;
+            // let doFocus = false;
 
-            try {
+            // try {
 
-                if (id !== null)
-                {
-                    if (this.is_framed)
-                        await mel_metapage.Functions.callAsync(`await Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
-                    else
-                        await this.set($(`iframe#${id}`)[0].contentWindow.document.title, focus);
-                }
-                else if (this.is_framed)
-                    await this.set(window.document.title, focus);
-                else
-                {
-                    $(`#${Title.idQuery}`).html(window.document.title);
-                    doFocus = true;
-                }
+            //     if (id !== null)
+            //     {
+            //         if (this.is_framed)
+            //             await mel_metapage.Functions.callAsync(`await Title.set($("iframe#${id}")[0].contentWindow.document.title, ${focus})`);
+            //         else
+            //             await this.set($(`iframe#${id}`)[0].contentWindow.document.title, focus);
+            //     }
+            //     else if (this.is_framed)
+            //         await this.set(window.document.title, focus);
+            //     else
+            //     {
+            //         $(`#${Title.idQuery}`).html(window.document.title);
+            //         doFocus = true;
+            //     }
 
-            } catch (error) {
-                //console.error("###[Title.update]",error, this);
-            }
+            // } catch (error) {
+            //     //console.error("###[Title.update]",error, this);
+            // }
 
-            if (focus && doFocus)
-                this.focusHidden();
+            // if (focus && doFocus)
+            //     this.focusHidden();
+            this.update();
         }
 
         /**
@@ -93,7 +94,9 @@ window.Title = (() => {
          */
         async set(title, focus = false)
         {
-            await mel_metapage.Functions.callAsync(`window.document.title = '${title}';$('#${Title.idQuery}').html('${title}');`);
+            //await mel_metapage.Functions.callAsync(`window.document.title = '${title}';$('#${Title.idQuery}').html('${title}');`);
+            top.document.title = title;
+            top.$(`#${Title.idQuery}`).html('${title}');
 
             if (focus)
                 this.focusHidden();

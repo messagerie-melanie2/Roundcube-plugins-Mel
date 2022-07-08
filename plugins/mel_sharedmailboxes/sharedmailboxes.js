@@ -99,6 +99,10 @@ function set_title(mycount) {
         new_title = doc_title.replace(reg, '');
 
     rcmail.set_pagetitle(new_title);
+
+    setTimeout(() => {
+        rcmail.triggerEvent('set_unread_count_display.after', {set_title:true});
+    }, 100);
 }
 
 /**

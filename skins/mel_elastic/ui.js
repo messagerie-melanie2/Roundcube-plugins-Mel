@@ -325,6 +325,16 @@ $(document).ready(() => {
                 }
                 else if (rcmail.env.action === "" || rcmail.env.action === "index")
                 {
+                    rcmail.addEventListener('init', () => { 
+                        let i = 7;
+                        let $aria = null;
+                        
+                        for (i; ($aria = $(`li[aria-level="${i}"] a`)).length > 0; ++i)
+                        {
+                            $aria.css('padding-left', `${i*1.5-2}em`);
+                        }   
+                    });
+
                     //Gestion de l'apparence et de l'affichage des mails.
                     	// add roundcube events
                     rcmail.addEventListener('insertrow', function(event) { 

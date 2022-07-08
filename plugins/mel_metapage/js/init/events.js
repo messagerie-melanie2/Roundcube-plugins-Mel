@@ -434,7 +434,7 @@ if (rcmail && window.mel_metapage)
 
                 if (!!temp)
                 {
-                    numbers = Enumerable.from(temp.unreads).sum(x => x.key);
+                    numbers = Enumerable.from(temp.unreads).sum(x => typeof x.value === "string" ? parseInt(x.value) : x.value);
 
                     if (numbers === 0 && temp._some_unreads === true)
                     {
@@ -451,7 +451,7 @@ if (rcmail && window.mel_metapage)
 
             case 'page':
                 switch (current_task) {
-                    case 'chat':
+                    case 'discussion':
                         temp = get('ariane_datas');
                         numbers = Enumerable.from(temp.unreads).sum(x => x.key);
 

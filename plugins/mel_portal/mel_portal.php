@@ -256,8 +256,8 @@ class mel_portal extends rcube_plugin
      */
     function include_depedencies()
     {
-        $this->include_script('lib/js/moment.js');
-        $this->include_script('lib/js/linq.min.js');
+        // $this->include_script('lib/js/moment.js');
+        // $this->include_script('lib/js/linq.min.js');
     }
 
     /**

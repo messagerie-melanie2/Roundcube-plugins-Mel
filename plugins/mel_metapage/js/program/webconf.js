@@ -877,6 +877,11 @@ class MasterWebconfBar {
             });
         }
 
+        if ($('.webconf-minimize').length > 0)
+        {
+            $('.webconf-minimize').css('top', '65px');
+        }
+
         return this;
     }
 
@@ -1098,6 +1103,7 @@ class MasterWebconfBar {
      */
     async hangup()
     {
+        debugger;
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
         this.hide_ariane();
@@ -1164,9 +1170,13 @@ class MasterWebconfBar {
             return;
         }
 
-        let $querry = $("iframe.webconf-frame")[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
+        console.log('iframe', $("iframe.webconf-frame"));
+        let $querry = $("iframe.webconf-frame");//[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
 
-        if (!$querry || $querry.length === 0) $querry = $(".webconf-minimize");
+        if ($querry.attr('id') === 'mm-ariane') $querry = null;
+        else $("iframe.webconf-frame")[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
+
+        if (!$querry || $querry.length === 0) $querry = $(".webconf-minimize").css('top', '65px');
 
         $querry.css("display", "")
         .click(() => {
@@ -1748,7 +1758,7 @@ class MasterWebconfBar {
 
         $(".webconf-frame").css("display", "");
         $("#layout-frames").css("width", "");
-        this.send("fullscreen");
+        this.send("fullscreen", true);
 
 
         this.maximize_toolbar();
@@ -1948,10 +1958,14 @@ class ListenerWebConfBar
         this.webconf.update();
     }
 
-    fullscreen()
+    fullscreen(minifier_always_visible = false)
     {
         this.webconf.ariane.is_full = false;
         this.webconf.full_screen();
+
+        if (minifier_always_visible) {
+            $(".webconf-minimize").css('display', '');
+        }
     }
 
     async hangup()

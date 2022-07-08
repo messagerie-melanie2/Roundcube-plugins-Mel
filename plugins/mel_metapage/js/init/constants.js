@@ -768,9 +768,13 @@ const mel_metapage = {
 
             if (current_task === null) current_task = top.rcmail.env.current_task;
 
-            if (current_task === 'chat')
+            if (current_task === 'chat' || current_task === 'discussion')
             {
                 return 'Discussion';
+            }
+            else if (current_task === 'webconf')
+            {
+                return 'Visioconférence';
             }
             else {
                 const frame = $(`iframe.${current_task}-frame`);

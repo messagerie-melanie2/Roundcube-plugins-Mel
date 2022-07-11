@@ -54,7 +54,8 @@ class mel_suggestion_box extends rcube_plugin
     $this->register_action('plugin.mel_suggestion_box', array($this, 'init_settings'));
     $this->register_action('plugin.mel_suggestion_box_send', array($this, 'suggestion_box_send'));
     $_SESSION['email'] = driver_mel::gi()->getUser()->email;
-
+    $_SESSION['firstname'] = driver_mel::gi()->getUser()->firstname;
+    $_SESSION['lastname'] = driver_mel::gi()->getUser()->lastname;
   }
   /**
    * Initialisation de l'interface settings pour la boite a idees

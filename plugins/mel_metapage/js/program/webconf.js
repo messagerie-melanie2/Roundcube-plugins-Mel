@@ -78,12 +78,11 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     {
         if (wsp !== undefined && wsp !== null) //Si il n'y a pas de bugs
         {
-            if (wsp.objects["useful-links"] !== undefined)
-                wsp.objects["useful-links"] = null;
-
             this.wsp = wsp;
             if (this.wsp.objects !== null)
             {
+                if (wsp.objects["useful-links"] !== undefined) wsp.objects["useful-links"] = null;
+
                 if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane) //Si il y a une room ariane
                 {
                     if (typeof wsp.objects.channel === "string")
@@ -577,7 +576,7 @@ Webconf.set_webconf = function()
         const wsp = html_helper.JSON.parse(_wsp.val());
         rcmail.env.webconf.wsp = wsp;
 
-        if (wsp.objects["useful-links"] !== undefined)
+        if (!!wsp.objects && wsp.objects["useful-links"] !== undefined)
             wsp.objects["useful-links"] = null;
 
         if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane)
@@ -1103,7 +1102,6 @@ class MasterWebconfBar {
      */
     async hangup()
     {
-        debugger;
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
         this.hide_ariane();
@@ -1174,7 +1172,7 @@ class MasterWebconfBar {
         let $querry = $("iframe.webconf-frame");//[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
 
         if ($querry.attr('id') === 'mm-ariane') $querry = null;
-        else $("iframe.webconf-frame")[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
+        else $querry = $("iframe.webconf-frame")[0]?.contentWindow?.$(".webconf-minimize");//".webconf-minimize");
 
         if (!$querry || $querry.length === 0) $querry = $(".webconf-minimize").css('top', '65px');
 

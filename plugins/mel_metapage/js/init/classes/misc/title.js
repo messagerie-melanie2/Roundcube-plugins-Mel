@@ -27,7 +27,7 @@ window.Title = (() => {
          * @param {boolean} focus si vrai, focus le titre html de la page après avoir mis à jours le titre.
          * @returns {void}
          */
-        update(id = null, focus = false)
+        update(id = null, focus = true)
         {
             let doFocus = false;
 
@@ -92,7 +92,7 @@ window.Title = (() => {
          * @param {string} title Nouveau titre.
          * @param {boolean} focus Si vrai, le titre html est focus après le changement de titre.
          */
-        async set(title, focus = false)
+        async set(title, focus = true)
         {
             //await mel_metapage.Functions.callAsync(`window.document.title = '${title}';$('#${Title.idQuery}').html('${title}');`);
             top.document.title = title;
@@ -108,7 +108,7 @@ window.Title = (() => {
         focusHidden()
         {
             if (this.is_framed)
-                mel_metapage.Functions.call('Title.focusHidden()');
+                top.Title.focusHidden();//mel_metapage.Functions.call('Title.focusHidden()');
             else
                 $(`#${Title.idQuery}`).focus();
             

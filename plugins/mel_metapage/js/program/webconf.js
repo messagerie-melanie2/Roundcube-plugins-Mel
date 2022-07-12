@@ -1018,11 +1018,14 @@ class MasterWebconfBar {
     }
 
     async get_phone_datas()
-    {
-        const datas = await this.webconf.get_phone_datas();
+    {   
+        let datas = null;
+
+        if (!this.phone_datas) datas = await this.webconf.get_phone_datas();
+        else datas = this.phone_datas;
+
         const copy_value = `Numéro : ${datas.number} - PIN : ${datas.pin}`;
         this.copy(copy_value, 'Numéro et code pin copier dans le presse-papier');
-        this.send('sendChatMessage', `'${copy_value}', 'personal'`);
     }
 
     minify_toolbar()

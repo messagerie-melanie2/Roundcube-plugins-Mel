@@ -10,7 +10,7 @@
     "steps": [{
             "id": "accueil",
             "title": "Messagerie Mél",
-            "intro": "<h2>Découvrez votre Bureau numérique : la messagerie Mel</h2><br/><h2>Bienvenue sur votre méssagerie Mel !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interactive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier aperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalités de votre messagerie que vous pourrez découvrir grâce à cette page d'aide. Cette fenêtre peut être fermée en cliquant sur la croix en haut à droite et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
+            "intro": "<h2>Découvrez votre Bureau numérique : la messagerie Mel</h2><br/><h2>Bienvenue sur votre messagerie Mel !</h2><br/><p>Vous vous situez actuellement sur la page d'aide interactive du Bnum. Vous pouvez cliquer sur la vidéo pour découvrir un premier aperçu des fonctionnalités proposées par ce dernier.</p><p>Ci-dessous vous retrouvez le détail des fonctionnalités de votre messagerie que vous pourrez découvrir grâce à cette page d'aide. Cette fenêtre peut être fermée en cliquant sur la croix en haut à droite et réouverte à tout moment en passant par le bouton \"Assistance\".</p>",
             "tooltipClass": "accueil-intro text-center"
         },
         {

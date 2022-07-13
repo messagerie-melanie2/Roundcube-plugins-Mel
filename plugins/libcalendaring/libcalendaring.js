@@ -1309,6 +1309,8 @@ rcube_libcalendaring.add_from_itip_mail = function(mime_id, task, status, dom_id
  */
 rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
 {
+    // PAMELLA
+    rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.before', {callback, selector});
     // show dialog for entering the delegatee address and comment
     var dialog, buttons = [];
     var form = $('<form class="itip-dialog-form propform" action="javascript:void()">' +
@@ -1361,6 +1363,8 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
         text: rcmail.gettext('cancel'),
         'class': 'cancel',
         click: function() {
+            // PAMELLA
+            rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.close', {item:this});
             dialog.dialog('close');
         }
     });
@@ -1381,8 +1385,12 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
             }
             rcm.init_address_input_events($(this).find('#itip-delegate-to').focus(), ac_props);
             rcm.env.recipients_delimiter = '';
+            // PAMELLA
+            rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.open', {item:this, function_event:event, ui});
         },
         close: function(event, ui) {
+            // PAMELLA
+            rcmail.triggerEvent('rcube_libcalendaring.itip_delegate_dialog.close', {item:this, function_event:event, ui});
             rcm = rcmail.is_framed() ? parent.rcmail : rcmail;
             rcm.ksearch_blur();
             $(this).remove();

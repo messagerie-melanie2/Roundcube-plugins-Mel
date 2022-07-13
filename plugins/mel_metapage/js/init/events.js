@@ -1113,6 +1113,19 @@ if (rcmail && window.mel_metapage)
         }
     }
 
+    rcmail.addEventListener('rcube_libcalendaring.itip_delegate_dialog.open', (datas) => {
+        //datas = $(datas.item);
+        window.current_event_modal.modal.css('display', 'none');
+        $('.modal-backdrop').css('display', 'none');
+
+    });
+
+    rcmail.addEventListener('rcube_libcalendaring.itip_delegate_dialog.close', (datas) => {
+        window.current_event_modal.modal.css('display', 'block');
+        $('.modal-backdrop').css('display', '');
+
+    });
+
     rcmail.addEventListener('contextmenu_init', function(menu) {
         // identify the folder list context menu
         if (menu.menu_name == 'messagelist') {

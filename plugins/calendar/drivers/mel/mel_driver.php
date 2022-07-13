@@ -2467,7 +2467,7 @@ class mel_driver extends calendar_driver {
       $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $id;
-      $attachment->path = $event['id'] . '/%';
+      $attachment->path = (strpos($event['id'], '@') !== false ? explode('@', $event['id'])[0] : $event['id'])   . '/%';
       foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
         $ret = array('id' => $att->id,'name' => $att->name,'mimetype' => $att->contenttype,'size' => $att->size);
         $this->attachment = $att;

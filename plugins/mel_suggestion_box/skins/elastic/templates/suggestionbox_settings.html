@@ -21,10 +21,8 @@
 		<span class="header-title" style="display:block;"></span>
 	</div>
 	<div id="mel_suggestion_box_option_box" class="uibox contentbox" style="    margin: 15px;">
-		<div class="suggestion-box">
-			<roundcube:if condition="env:settings_frame_url!==null && env:settings_frame_url!==''">
-				<iframe id="settings-suggest-frame" style="width:100%;height:100%;"></iframe>
-			<roundcube:else>
+		<iframe id="settings-suggest-frame" style="width:100%;height:100%;" style="display:none;"></iframe>
+		<div class="suggestion-box" style="display:none;">
 				<h1 class="boxtitle"><roundcube:label name="mel_suggestion_box.suggestionbox" /></h1>
 			<div id="preferences-details" class="boxcontent">
 				<form name="form" method="post" action="#" class="propform" id="suggestion_box_form">
@@ -36,11 +34,20 @@
 			<div class="footerleft formbuttons" style="margin-top:15px">
 				<roundcube:button command="send-suggestion-message" type="input" class="button mainaction" label="send" />
 			</div>
-		</roundcube:endif>
 		</div>
 		<div class="sent_message"></div>
 		  <roundcube:object name="message" id="message" class="statusbar" />
 	</div>
 </div>
+
+<script>
+	rcmail.addEventListener('init', () => {
+		if ((rcmail.env.settings_frame_url || false) !== false)
+		{
+			$('#settings-suggest-frame').css('display', '');
+		}
+		else $('.suggestion-box').css('display', '');
+	});
+</script>
 
 <roundcube:include file="includes/footer.html" />

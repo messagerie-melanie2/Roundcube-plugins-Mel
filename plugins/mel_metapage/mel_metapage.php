@@ -260,6 +260,7 @@ class mel_metapage extends rcube_plugin
         $message_space = "mel-message-space";
         $mel_column = "mel-3-columns";
         $chat_placement = "mel-chat-placement";
+        $scrollbar_size = 'mel-scrollbar-size';
   
         // Check that configuration is not disabled
         $config = $this->rc->config->get('mel_mail_configuration', [
@@ -267,7 +268,8 @@ class mel_metapage extends rcube_plugin
             $folder_space => $this->gettext("normal", "mel_metapage"),
             $message_space => $this->gettext("normal", "mel_metapage"),
             $mel_column => $this->gettext("yes", "mel_metapage"),
-            $chat_placement => $this->gettext("down", "mel_metapage")
+            $chat_placement => $this->gettext("down", "mel_metapage"),
+            $scrollbar_size => $this->gettext("auto", "mel_metapage")
         ]);
 
         $this->rc->output->set_env("mel_metapage_mail_configs", $config);
@@ -1574,6 +1576,7 @@ class mel_metapage extends rcube_plugin
             $message_space = "mel-message-space";
             $mel_column = "mel-3-columns";
             $chat_placement = "mel-chat-placement";
+            $scrollbar_size = 'mel-scrollbar-size';
 
             // Check that configuration is not disabled
             $config = $this->rc->config->get('mel_mail_configuration', [
@@ -1581,7 +1584,8 @@ class mel_metapage extends rcube_plugin
                 $folder_space => $this->gettext("normal", "mel_metapage"),
                 $message_space => $this->gettext("normal", "mel_metapage"),
                 $mel_column => $this->gettext("yes", "mel_metapage"),
-                $chat_placement => $this->gettext("down", "mel_metapage")
+                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $scrollbar_size => $this->gettext("auto", "mel_metapage")
             ]);
 
             $options = [
@@ -1606,11 +1610,20 @@ class mel_metapage extends rcube_plugin
                 $chat_placement => [
                     $this->gettext("up", "mel_metapage"),
                     $this->gettext("down", "mel_metapage")
+                ],
+                $scrollbar_size => [
+                    $this->gettext('auto', 'mel_metapage'),
+                    $this->gettext("default", 'mel_metapage'),
+                    $this->gettext("normal", "mel_metapage"),
+                    $this->gettext("large", "mel_metapage")
                 ]
             ];
 
             if ($config[$chat_placement] === null || $config[$chat_placement] === "")
                 $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+
+            if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "")
+                $config[$scrollbar_size] = $this->gettext("auto", "mel_metapage");
 
             foreach ($config as $key => $value) {
                 if ($key === $chat_placement) continue;
@@ -1713,6 +1726,7 @@ class mel_metapage extends rcube_plugin
             $message_space = "mel-message-space";
             $mel_column = "mel-3-columns";
             $chat_placement = "mel-chat-placement";
+            $scrollbar_size = 'mel-scrollbar-size';
 
             // Check that configuration is not disabled
             $config = $this->rc->config->get('mel_mail_configuration', [
@@ -1720,10 +1734,12 @@ class mel_metapage extends rcube_plugin
                 $folder_space => $this->gettext("normal", "mel_metapage"),
                 $message_space => $this->gettext("normal", "mel_metapage"),
                 $mel_column => $this->gettext("yes", "mel_metapage"),
-                $chat_placement => $this->gettext("down", "mel_metapage")
+                $chat_placement => $this->gettext("down", "mel_metapage"),
+                $scrollbar_size => $this->gettext("auto", "mel_metapage")
             ]);
 
             if ($config[$chat_placement] === null || $config[$chat_placement] === "") $config[$chat_placement] = $this->gettext("down", "mel_metapage");
+            if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "") $config[$scrollbar_size] = $this->gettext("auto", "mel_metapage");
 
             $options = [
                 $chat_placement => [
@@ -1870,6 +1886,7 @@ class mel_metapage extends rcube_plugin
         $message_space = "mel-message-space";
         $mel_column = "mel-3-columns";
         $chat_placement = "mel-chat-placement";
+        $scrollbar_size = 'mel-scrollbar-size';
         
       // Check that configuration is not disabled
         $config = $this->rc->config->get('mel_mail_configuration', [
@@ -1877,15 +1894,24 @@ class mel_metapage extends rcube_plugin
             $folder_space => $this->gettext("normal", "mel_metapage"),
             $message_space => $this->gettext("normal", "mel_metapage"),
             $mel_column => $this->gettext("yes", "mel_metapage"),
-            $chat_placement => $this->gettext("down", "mel_metapage")
+            $chat_placement => $this->gettext("down", "mel_metapage"),
+            $scrollbar_size => $this->gettext("auto", "mel_metapage")
         ]);
 
         if ($config[$chat_placement] === null || $config[$chat_placement] === "")
             $config[$chat_placement] = $this->gettext("down", "mel_metapage");
 
+        if ($config[$scrollbar_size] === null || $config[$scrollbar_size] === "")
+            $config[$scrollbar_size] = $this->gettext("auto", "mel_metapage");
+
+        $chat = $config[$chat_placement];
+
       foreach ($config as $key => $value) {
         $config[$key] = rcube_utils::get_input_value($key, rcube_utils::INPUT_POST);
       }
+
+      $config[$chat_placement] = $chat;
+      
 
       $args['prefs']["mel_mail_configuration"] = $config;
       

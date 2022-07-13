@@ -1,4 +1,4 @@
-//compress:true
+//compress:false
 @import "main.less";
 @import "mixin.less";
 /** BODY **/
@@ -65,8 +65,12 @@ a{
 p,
 span,
 div {
-    scrollbar-width: var(--scrollbar-width-moz);
+    scrollbar-width: var(--scrollbar-width-moz)!important;
     scrollbar-color: var(--scrollbar-handler-color) var(--scrollbar-background-color);
+
+    &.more-width{
+        scrollbar-width: var(--scrollbar-width-hover-moz)!important;
+    }
 }
 
 
@@ -78,7 +82,10 @@ main {
 
 /* width */
 ::-webkit-scrollbar {
-    width: var(--scrollbar-width-webkit);
+    width: var(--scrollbar-width-webkit)!important;
+    .more-width&{
+        width: var(--scrollbar-width-hover-webkit)!important;
+    }
 
     /* Track */
     &-track {

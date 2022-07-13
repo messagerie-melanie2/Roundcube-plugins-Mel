@@ -301,6 +301,9 @@ $labels['visio_ask_on_end'] = 'Afficher le questionnaire satisfaction ?';
 $labels['visio_audio_parameters'] = 'Affichage des options micro et vidéo';
 $labels['chat_startup'] = 'Connexion automatique au démarrage ?';
 
+$labels['mel-scrollbar-size'] = 'Taille de la barre de défilement';
+$labels['default'] = 'Défaut';
+$labels['auto'] = 'Automatique';
 $labels['compact'] = "Compact";
 $labels['large'] = 'Large';
 

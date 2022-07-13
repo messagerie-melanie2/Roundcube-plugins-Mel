@@ -934,8 +934,9 @@ $(document).ready(() => {
                                 console.error('###[plugin.message_send_error]', $args);
                                 rcmail.display_message("Impossible d'envoyer le mail !", 'error');
                                 box.close.removeClass('disabled').removeAttr('disabled');
-                                box.close.click();
-
+                                box.get.find('iframe').css("display", '');
+                                box.title.find('h3').html(box.title.find('h3').html().replace('Envoi de : ', 'Rédaction : '));
+                                box.content.find("center").css('display', 'none');
                             });
 
                             frame_context.$("#toolbar-menu a.send").removeAttr('href');
@@ -1140,6 +1141,67 @@ $(document).ready(() => {
             return this;
         }
 
+        isScollBarAuto()
+        {
+            if (!this.auto_text) this.auto_text = rcmail.gettext('auto', 'mel_metapage');
+
+            return rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === this.auto_text;
+        }
+
+        updateScollBarMode()
+        {
+            //debugger;
+            if (!!this.updateScollBarMode.hasSheet)
+            {
+                document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+                document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+            }
+
+            if (this.isScollBarAuto() && !this.updateScollBarMode.initialized)
+            {
+                let ele;
+                let distance;
+                let last_target = null;
+                document.addEventListener("mousemove", function(e){
+                    if (UI.is_touch() === false && MEL_ELASTIC_UI.isScollBarAuto())
+                    {
+                        ele = e.target;
+    
+                        if (!!last_target) {
+                            if (ele !== last_target) {
+                                $('.more-width').removeClass('more-width');
+                                last_target = ele;
+                            }
+                        }
+                        else last_target = ele;
+        
+                        distance = ele.offsetLeft + ele.offsetWidth - e.pageX;
+                        distance < 15 && distance > -15 ? ele.classList.add('more-width') : ele.classList.remove('more-width');
+                    }
+                });
+                
+                this.updateScollBarMode.initialized = true;
+            }
+            else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('default', 'mel_metapage'))
+            {
+                this.updateScollBarMode.hasSheet = false;
+            }
+            else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('normal', 'mel_metapage'))
+            {
+                document.styleSheets[0].addRule(':root', '--scrollbar-width-webkit:var(--scrollbar-width-webkit-normal)!important');
+                document.styleSheets[0].addRule(':root', '--scrollbar-width-moz:var(--scrollbar-width-moz-normal)!important');
+                this.updateScollBarMode.hasSheet = true;
+            }
+            else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('large', 'mel_metapage'))
+            {
+                document.styleSheets[0].addRule(':root', '--scrollbar-width-webkit:var(--scrollbar-width-webkit-large)!important');
+                document.styleSheets[0].addRule(':root', '--scrollbar-width-moz:var(--scrollbar-width-moz-large)!important');
+                this.updateScollBarMode.hasSheet = true;
+            }
+
+            return this;
+        }
+
         /**
          * Met à jours la page.
          * @returns {Mel_Elastic} Chaînage
@@ -1149,6 +1211,7 @@ $(document).ready(() => {
             return this
             .update_tabs()
             .update_pagination()
+            .updateScollBarMode()
             .redStars();
         }
 

@@ -16,14 +16,26 @@
 @mel-default-animation:all 0.1s ease-in;
 
 /** WIDTH **/
+@scrollbar-webkit-width:{
+    SMALL:6px;
+    NORMAL:12px;
+    LARGE:18px;
+}
+
+@scrollbar-moz-width:{
+    SMALL:thin;
+    NORMAL:initial;
+    LARGE:initial;
+}
+
 @scrollbar-width:{
-    WEBKIT:6px;
-    MOZ:thin;
+    WEBKIT:@scrollbar-webkit-width[SMALL];
+    MOZ:@scrollbar-moz-width[SMALL];
 }
 
 @scrollbar-hover-width:{
-    WEBKIT:12px;
-    MOZ:thick;
+    WEBKIT:@scrollbar-webkit-width[NORMAL];
+    MOZ:@scrollbar-moz-width[NORMAL];
 }
 
 /** BORDER **/

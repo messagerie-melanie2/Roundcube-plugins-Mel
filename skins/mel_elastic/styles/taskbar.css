@@ -1,6 +1,6 @@
 #layout-menu {
     background-color:#2C3054;
-    position: absolute;
+    position: fixed;
     height: 100%;
     z-index: 999;
     /* overflow-y: auto;

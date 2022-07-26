@@ -2454,7 +2454,9 @@ class mel_workspace extends rcube_plugin
                             $mel->deleteAcl($user);
                     }
                     break;
-
+                case self::AGENDA:
+                    $this->delete_calendar_workspace($workspace, $user);
+                    break;
                 case self::WEKAN:
                     $wekan = $this->wekan();
                     $board_id = $this->get_object($workspace, self::WEKAN)->id; 
@@ -3915,6 +3917,38 @@ class mel_workspace extends rcube_plugin
         else echo "denied";
 
          exit;
+    }
+
+    public function delete_calendar_workspace($workspace, $user)
+    {
+        $now = date(LibMelanie\Api\Defaut\Event::DB_DATE_FORMAT);
+        $time = strtotime($now);
+        $calendar = driver_mel::gi()->calendar([$user]);
+        $events = $calendar->getRangeEvents($now);
+
+        foreach ($events as $e) {
+            if ($e->category === 'ws#'.$workspace->uid) 
+            {
+                if ($e->recurrence->type !== LibMelanie\Api\Defaut\Recurrence::RECURTYPE_NORECUR)
+                {
+                    $e->recurrence->enddate = $now;
+                    
+                    if (isset($e->exceptions))
+                    {
+                        foreach ($e->exceptions as $exception) {
+                            if (strtotime($exception->start) > $time)
+                            {
+                                $exception->delete();
+                            }
+                        }
+                    }
+                    $e->save();
+                }
+                else $e->delete();
+            }
+        }
+        
+        $calendar->save();     
     }
 
     public static function notify($workspace, $title, $content, $action = null, $include_current = false)

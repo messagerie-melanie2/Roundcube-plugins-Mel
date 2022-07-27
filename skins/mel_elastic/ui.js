@@ -1,5 +1,199 @@
 $(document).ready(() => {
 
+    class Mel_CSS_Rule {
+        constructor(rule)
+        {
+            this.rule = rule;
+            this.id = null;
+        }
+
+        set()
+        {
+            this.id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
+            return this;
+        }
+
+        delete()
+        {
+            Mel_CSS_Rule.component().deleteRule(this.id);
+            this.id = null;
+            return this;
+        }
+
+        toString()
+        {
+            return this.rule;
+        }
+
+        static component()
+        {
+            return document.styleSheets[0];
+        }
+
+        static lastIndex()
+        {
+            return Mel_CSS_Rule.component().cssRules.length
+        }
+    }
+
+    class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
+        constructor(selector, ...rules)
+        {
+            super(rules),
+            this.selector = selector;
+        }
+
+        set()
+        {
+            this.id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
+            return this;
+        }
+
+        add(rule, force_set = true)
+        {
+            this.rule.push(rule);
+            return this._update_rule(force_set);
+        }
+
+        _update_rule(force_set = true)
+        {
+            if (!!this.id)
+            {
+                this.delete();
+
+                if (force_set) this.set();
+            }
+
+            return this;
+        }
+
+        remove(index, force_set = true)
+        {
+            this.rule.splice(index, 1);
+            return this._update_rule(force_set);
+        }
+
+        update(index, new_rule, force_set = true)
+        {
+            this.rule[index] = new_rule;
+            return this._update_rule(); 
+        }
+
+        rules()
+        {
+            return this.rule;
+        }
+
+        toString()
+        {
+            return `${this.selector}{${this.rule.join(';\r\n')}}`;
+        }
+    }
+
+    class Mel_CSS_Style_Sheet {
+        constructor()
+        {
+            this.css = {};
+        }
+
+        /**
+         * 
+         * @param {string} key 
+         * @param {Mel_CSS_Rule} rule 
+         * @returns {Mel_CSS_Style_Sheet} Chaînage
+         */
+        _add(key, rule)
+        {
+            if (!this.ruleExist()) this.css[key] = rule.set();
+            else {
+                throw Mel_CSS_Style_Sheet.exception(`###[Mel_CSS_Style_Sheet] ${key} existe déjà !`);
+            }
+            return this;
+        }
+
+        add(key, rule)
+        {
+            return this._add(key, new Mel_CSS_Rule(rule));
+        }
+
+        addAdvanced(key, selector, ...rules)
+        {
+            return this._add(key, new Mel_CSS_Advanced_Rule(selector, ...rules));
+        }
+
+        addRules(...rules)
+        {
+            for (const key in rules) {
+                if (Object.hasOwnProperty.call(rules, key)) {
+                    const element = rules[key];
+                    this.add(element.key, element.rule);
+                }
+            }
+
+            return this;
+        }
+
+        remove(key)
+        {
+            if (this.ruleExist(key))
+            {
+                this.css[key].delete();
+                delete this.css[key];
+            }
+            
+            return this;
+        }
+
+        removeRules(...keys)
+        {
+            for (const key in keys) {
+                if (Object.hasOwnProperty.call(keys, key)) {
+                    const element = keys[key];
+                    this.remove(element);
+                }
+            }
+
+            return this;
+        }
+
+        ruleExist(key)
+        {
+            return !!this.css[key];
+        }
+
+        getKeys()
+        {
+            return Enumerable.from(this.css).select(x => x.key).toArray();
+        }
+
+        getStyleSheet()
+        {
+            return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n');
+        }
+
+        reset()
+        {
+            for (const key in this.css) {
+                if (Object.hasOwnProperty.call(this.css, key)) {
+                    const element = this.css[key];
+                    element.delete();
+                }
+            }
+
+            this.css = {};
+            return this;
+        }
+
+        static exception(message, ...datas)
+        {
+            return {
+                message,
+                datas
+            };
+        }
+
+    }
+
     /**
      * Classe qui sert à gérer les différentes interfaces
      */
@@ -18,6 +212,7 @@ $(document).ready(() => {
          */
         init(){
             this.screen_type = null;
+            this.css_rules = new Mel_CSS_Style_Sheet(); 
             return this.init_const().initResponsive();
         }
 
@@ -1150,11 +1345,10 @@ $(document).ready(() => {
 
         updateScollBarMode()
         {
-            //debugger;
-            if (!!this.updateScollBarMode.hasSheet)
+            const css_key = 'scroll_bar_size';
+            if (this.css_rules.ruleExist(css_key))
             {
-                document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
-                document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+                this.css_rules.remove(css_key);
             }
 
             if (this.isScollBarAuto() && !this.updateScollBarMode.initialized)
@@ -1182,21 +1376,17 @@ $(document).ready(() => {
                 
                 this.updateScollBarMode.initialized = true;
             }
-            else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('default', 'mel_metapage'))
-            {
-                this.updateScollBarMode.hasSheet = false;
-            }
             else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('normal', 'mel_metapage'))
             {
-                document.styleSheets[0].addRule(':root', '--scrollbar-width-webkit:var(--scrollbar-width-webkit-normal)!important');
-                document.styleSheets[0].addRule(':root', '--scrollbar-width-moz:var(--scrollbar-width-moz-normal)!important');
-                this.updateScollBarMode.hasSheet = true;
+                this.css_rules.addAdvanced(css_key, ':root',  
+                    '--scrollbar-width-moz:var(--scrollbar-width-moz-normal)!important', 
+                    '--scrollbar-width-webkit:var(--scrollbar-width-webkit-normal)!important');
             }
             else if (rcmail.env.mel_metapage_mail_configs['mel-scrollbar-size'] === rcmail.gettext('large', 'mel_metapage'))
             {
-                document.styleSheets[0].addRule(':root', '--scrollbar-width-webkit:var(--scrollbar-width-webkit-large)!important');
-                document.styleSheets[0].addRule(':root', '--scrollbar-width-moz:var(--scrollbar-width-moz-large)!important');
-                this.updateScollBarMode.hasSheet = true;
+                this.css_rules.addAdvanced(css_key, ':root', 
+                    '--scrollbar-width-webkit:var(--scrollbar-width-webkit-large)!important',
+                    '--scrollbar-width-moz:var(--scrollbar-width-moz-large)!important');
             }
 
             return this;

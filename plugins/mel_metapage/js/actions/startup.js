@@ -841,15 +841,13 @@ window.m_mp_ChangeLasteFrameInfo = m_mp_ChangeLasteFrameInfo;
 
 function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
 {
-
-    //console.error("querry-selector", querry_selector, default_content);
+    const css_key = 'm_mp_CreateOrUpdateIcon';
 
     if ($(".menu-last-frame").find(".menu-last-frame-item").length == 0)
         $(".menu-last-frame").append(`<span class="menu-last-frame-item"></span>`);
     else
     {
-        document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
-        document.styleSheets[0].removeRule(document.styleSheets[0].rules.length-1);
+        MEL_ELASTIC_UI.css_rules.remove(css_key);
     }
 
     var font;
@@ -877,8 +875,9 @@ function m_mp_CreateOrUpdateIcon(querry_selector, default_content = null)
         font = "DWP";
     }
 
-    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'content: "\\' + content + '"; font-family: "'+font+'"');
-    document.styleSheets[0].addRule('.menu-last-frame-item:before', 'font-family: '+font+';');
+    MEL_ELASTIC_UI.css_rules.addAdvanced(css_key, '.menu-last-frame-item:before', 
+    `content:"\\${content}"`,
+    `font-family:${font}`);
 }
 
 function m_mp_focus_current_frame($this)

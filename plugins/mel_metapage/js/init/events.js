@@ -47,14 +47,14 @@ if (rcmail && window.mel_metapage)
         }
     });
 
-    rcmail.addEventListener("calendar.dismiss.after", (props) => {   
+    rcmail.addEventListener("calendar.dismiss.after", (props) => {
         let navigator = window;
 
         if (parent.rcmail.mel_metapage_fn !== undefined && parent.rcmail.mel_metapage_fn.calendar_updated !== undefined)
             navigator = parent;
         else if (top.rcmail.mel_metapage_fn !== undefined && top.rcmail.mel_metapage_fn.calendar_updated !== undefined)
             navigator = top;
-        
+
         navigator.rcmail.triggerEvent(mel_metapage.EventListeners.calendar_updated.get);
     });
 
@@ -72,17 +72,17 @@ if (rcmail && window.mel_metapage)
     rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.before, () => {
         if (rcmail.env.task === 'bureau')
         {
-            mel_item_in_update('#tab-for-agenda-content .icon-mel-calendar', 'icon-mel-calendar', 'spinner-grow');  
-            mel_item_in_update('#tab-for-tasks-contents .icon-mel-task', 'icon-mel-task', 'spinner-grow'); 
+            mel_item_in_update('#tab-for-agenda-content .icon-mel-calendar', 'icon-mel-calendar', 'spinner-grow');
+            mel_item_in_update('#tab-for-tasks-contents .icon-mel-task', 'icon-mel-task', 'spinner-grow');
         }
 
     });
-    
+
     rcmail.addEventListener(mel_metapage.EventListeners.calendar_updated.after, () => {
         if (rcmail.env.task === 'bureau')
         {
-            mel_item_in_update('#tab-for-agenda-content .spinner-grow', 'icon-mel-calendar', 'spinner-grow', false); 
-            mel_item_in_update('#tab-for-tasks-contents .spinner-grow', 'icon-mel-task', 'spinner-grow', false); 
+            mel_item_in_update('#tab-for-agenda-content .spinner-grow', 'icon-mel-calendar', 'spinner-grow', false);
+            mel_item_in_update('#tab-for-tasks-contents .spinner-grow', 'icon-mel-task', 'spinner-grow', false);
         }
     });
 
@@ -99,7 +99,7 @@ if (rcmail && window.mel_metapage)
             $(selector)
             .addClass(oldClass)
             .removeClass(newClass)
-            .children().first().removeClass('hidden');  
+            .children().first().removeClass('hidden');
         }
     }
 
@@ -173,7 +173,7 @@ if (rcmail && window.mel_metapage)
          }
     });
 
-    
+
     rcmail.addEventListener('calendar-delete-all', function() {
         mel_metapage.Storage.remove(mel_metapage.Storage.calendar);
         mel_metapage.Storage.remove(mel_metapage.Storage.last_calendar_update);
@@ -206,6 +206,22 @@ if (rcmail && window.mel_metapage)
                 top.rcmail.env["mel_metapage.tab.notification_style"] = rcmail.env["mel_metapage.tab.notification_style"];
                 m_mp_e_on_storage_change_notifications(true);
             }
+
+            if (rcmail.env.mel_metapage_mail_configs["mel-scrollbar-size"] !== top.rcmail.env.mel_metapage_mail_configs["mel-scrollbar-size"])
+            {
+                const data = rcmail.env.mel_metapage_mail_configs["mel-scrollbar-size"];
+                top.rcmail.env.mel_metapage_mail_configs["mel-scrollbar-size"] = data;
+                top.MEL_ELASTIC_UI.updateScollBarMode();
+
+                top.$('iframe.mm-frame').each((i,e) => {
+                    try {
+                        e.contentWindow.rcmail.env.mel_metapage_mail_configs["mel-scrollbar-size"] = data;
+                        e.contentWindow.MEL_ELASTIC_UI.updateScollBarMode();
+                    } catch (error) {
+                        
+                    }
+                });
+            }
         }
 
         //tasklistsearch
@@ -213,10 +229,10 @@ if (rcmail && window.mel_metapage)
         let initSearches = (selector) => {
             $(selector).on("focus", () => {//.mel-animated
                 let $parent = $(selector).parent().parent();
-    
+
                 if (!$parent.hasClass("mel-animated"))
                     $parent.addClass("mel-animated");
-                    
+
                 $parent.addClass("mel-focus focused");
             }).on("focusout", () => {
                 $(selector).parent().parent().removeClass("focused").removeClass("mel-focus");
@@ -231,7 +247,7 @@ if (rcmail && window.mel_metapage)
     })
 
     //Lorsqu'il y a un redimentionnement.
-    rcmail.addEventListener("skin-resize", (datas)    => { 
+    rcmail.addEventListener("skin-resize", (datas)    => {
 
         if ($("html").hasClass("framed"))
             return;
@@ -259,8 +275,8 @@ if (rcmail && window.mel_metapage)
             else {
                 $("#barup-buttons").removeClass("col-3").addClass("col-6");
                 $("#barup-search-col .col-12").removeClass("col-12").addClass("col-7");
-                $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3"); 
-            }  
+                $("#barup-search-col").removeClass("col-6").removeClass("col-7").addClass("col-3");
+            }
         }
 
         $("window").resize();
@@ -289,10 +305,10 @@ if (rcmail && window.mel_metapage)
             const old_newline = rcube_calendar.old_newline_key
             const newline = rcube_calendar.newline_key;
             let desc = args.element.find('.fc-event-location');
-            
+
             if (!!args.eventDatas.location && args.eventDatas.location.includes(old_newline)) args.eventDatas.location = args.eventDatas.location.replaceAll(old_newline, newline);
 
-            if (desc.length > 0 && args.eventDatas.location.includes(newline)) 
+            if (desc.length > 0 && args.eventDatas.location.includes(newline))
             {
                 let text = '';
                 const splited = args.eventDatas.location.split(newline);
@@ -328,11 +344,11 @@ if (rcmail && window.mel_metapage)
 
         let $logo = $(".logo-mel");
 
-        if (MEL_ELASTIC_UI.color_mode() === 'dark') 
+        if (MEL_ELASTIC_UI.color_mode() === 'dark')
         {
             $logo.data(element_data_name, $logo.attr('src')).attr("src", dark_logo);
         }
-        else 
+        else
         {
             $logo.attr("src", $logo.data(element_data_name)).data(element_data_name, '');
         }
@@ -352,10 +368,10 @@ if (rcmail && window.mel_metapage)
 
             }
         });
-        
+
         mel_metapage.Storage.set(mel_metapage.Storage.color_mode, color_mode);
     }
-    
+
     $(document).ready(() => {
         on_switched_color_mode(MEL_ELASTIC_UI.color_mode());
     });
@@ -365,11 +381,11 @@ if (rcmail && window.mel_metapage)
             case 'fromto':
                 if (rcmail.env._insearch && rcmail.env.current_search_scope !== 'base' && !!args.flags.mbox) args.html = `<div class="mel-search-location">${show_mail_path(args.flags.mbox)}</div>${args.html}`;
                 break;
-        
+
             default:
                 break;
         }
-        
+
         return args.html;
     });
 
@@ -403,7 +419,7 @@ if (rcmail && window.mel_metapage)
             delete rcmail.env._insearch;
             delete rcmail.env.current_search_scope;
         } catch (error) {
-            
+
         }
     });
 
@@ -443,8 +459,8 @@ if (rcmail && window.mel_metapage)
                     }
                 }
 
-                numbers += parseInt(get('mel_metapage.mail.count') ?? 0) + 
-                           (get('mel_metapage.tasks') ?? []).length + 
+                numbers += parseInt(get('mel_metapage.mail.count') ?? 0) +
+                           (get('mel_metapage.tasks') ?? []).length +
                            (get('mel_metapage.calendar') ?? []).length;
 
                 break;
@@ -464,8 +480,8 @@ if (rcmail && window.mel_metapage)
 
                     case 'tasks':
                         numbers = (get('mel_metapage.tasks') ?? []).length;
-                        break;        
-                    
+                        break;
+
                     case 'mail':
                         return;
                         // numbers += parseInt(get('mel_metapage.mail.count') ?? 0);
@@ -476,7 +492,7 @@ if (rcmail && window.mel_metapage)
                 }
 
                 break;
-        
+
             default:
                 return;
         }
@@ -502,7 +518,7 @@ if (rcmail && window.mel_metapage)
         return title;
     }
     m_mp_e_on_storage_change_notifications(true);
-    
+
     window.update_notification_title = () => {
         return m_mp_e_on_storage_change_notifications(true);
     };
@@ -514,7 +530,7 @@ if (rcmail && window.mel_metapage)
         }
     });
 
-    rcmail.addEventListener('intercept.click.ok', (args) => 
+    rcmail.addEventListener('intercept.click.ok', (args) =>
     {
         if ($("#groupoptions-user").is(":visible") == true)
         {
@@ -523,7 +539,7 @@ if (rcmail && window.mel_metapage)
     });
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
-    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => { 
+    rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
 
         if (datas.showed.start.format === undefined)
             datas.showed.start = moment(datas.showed.start);
@@ -576,7 +592,7 @@ if (rcmail && window.mel_metapage)
             for (let index = 0; index < tmp_location.length; ++index) {
                 element = tmp_location[index];
 
-                if (element.includes('(') && element.includes('|') && element.includes('/public/webconf')) 
+                if (element.includes('(') && element.includes('|') && element.includes('/public/webconf'))
                 {
                     location_phone = element.split('(');
                     element = location_phone[0];
@@ -653,7 +669,7 @@ if (rcmail && window.mel_metapage)
             for (const key in tmp) {
                 if (Object.hasOwnProperty.call(tmp, key)) {
                     const element = tmp[key];
-                    
+
                     if (!!element && element.length > 0)
                     {
                         html += `${element.length} ${rcmail.gettext(`itip${key.toLowerCase()}`, (key === 'ACCEPTED' ? 'mel_metapage' : 'libcalendaring'))}, `;
@@ -662,7 +678,7 @@ if (rcmail && window.mel_metapage)
             }
 
             html = `${html.slice(0, html.length-2)} </div>`;
-        
+
             //Affichage du status
             try {
                 const me = Enumerable.from(event.attendees).where(x => x.email === rcmail.env.mel_metapage_user_emails[0]).first();
@@ -713,11 +729,11 @@ if (rcmail && window.mel_metapage)
         const cancelled = event.status === "CANCELLED";
         const okTitle = mel_metapage.Functions.updateRichText(event.title);
         const title = event.sensitivity === "private" ? `<span class="icon-mel-lock mel-cal-icon"><span class="sr-only">Privé : </span></span>${cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle}` : (cancelled ? `<span style="text-decoration-line: line-through;">${okTitle}</span> (Annulé)` : okTitle);
-        
+
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);
         modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem");
-        
+
         //Gérer le titre
         modal.header.querry.css("position", "sticky")
         .css("top", "0")
@@ -741,14 +757,14 @@ if (rcmail && window.mel_metapage)
                 rcmail.display_message("Une action est déjà en cours....");
                 return;
             }
-            
+
             modal.editTitle('Partager l\'évènement');
 
             modal.editBody('');
 
             let $userInput = top.$(`<input id="tmp-generated-input-user" class="form-control input-mel" type="text"
             autocomplete="off" aria-autocomplete="list" aria-expanded="false" role="combobox"
-            placeholder="Liste d'adresses emails..." 
+            placeholder="Liste d'adresses emails..."
             style="margin-top: 8px;
             margin-left: -1px;"/>`);
 
@@ -951,12 +967,12 @@ if (rcmail && window.mel_metapage)
             })
             .parent().find('input[rel=delegated]')
             .click((e) => {
-                if (event.recurrence !== undefined) 
+                if (event.recurrence !== undefined)
                 {
                     window.event_can_close = false;
                     ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
                 }
-                else 
+                else
                 {
                     ui_cal.event_rsvp(e.currentTarget, null, null, e.originalEvent);
                     modal.close();
@@ -1016,16 +1032,16 @@ if (rcmail && window.mel_metapage)
         if ($.isArray(event.attachments)) {
             libkolab.list_attachments(event.attachments, $('#mel-event-attachments').find('.mel-event-text'), undefined, event,
                 function(id) { rcmail.env.deleted_attachments.push(id); },
-                function(data) { 
+                function(data) {
                     var event = data.record,
                     query = {_id: data.attachment.id, _event: event.recurrence_id || event.id, _cal: event.calendar};
-            
+
                   if (event.rev)
                     query._rev = event.rev;
-            
+
                   if (event.calendar == "--invitation--itip")
                     $.extend(query, {_uid: event._uid, _part: event._part, _mbox: event._mbox});
-            
+
                   libkolab.load_attachment(query, data.attachment);
 
                  }
@@ -1038,10 +1054,10 @@ if (rcmail && window.mel_metapage)
                     const splited = txt.split(".");
                     const ext = splited[splited.length-1];
                     const name = Enumerable.from(splited).where((x, i) => i < splited.length-1).toArray().join(".");
-                    
+
                     $(e).prepend(`<div class=row><div class=col-8>${name}</div><div class=col-2>${ext}</div><div class="col-2 r-gm-col-temp" ></div></div>`);
                     $(e).find("a").addClass("mel-calendar-button mel-calendar-button-sm").appendTo($(".r-gm-col-temp").removeClass("r-gm-col-temp")).find("span").html("").addClass("icon-mel-download");
-                    
+
                 });
             }
         }
@@ -1139,10 +1155,10 @@ if (rcmail && window.mel_metapage)
             menu.menu_source.unshift(
                 {label: 'Utiliser comme modèle', command: 'use_as_new', classes: 'ct-m'}
             );
-          
+
 
           menu.menu_source.push({label: 'Gérer les étiquettes', command: 'gestion_labels', classes: 'ct-tb'});
-      
+
           menu.addEventListener("beforeactivate", (p) => {
 
             if (decode_imap_utf7(rcmail.env.mailbox) === rcmail.env.model_mbox)
@@ -1156,7 +1172,7 @@ if (rcmail && window.mel_metapage)
             }
 
             $(".ct-tb").on("mouseover", (e) => {
-                
+
                 let source = [];
 
                 for (const key in rcmail.env.labels_translate) {
@@ -1175,14 +1191,14 @@ if (rcmail && window.mel_metapage)
                     a.show_menu($(".ct-tb"), e);
                     menu.labels_submenu = a;
           }).on("mouseout", (e) => {
-              
+
             let target = $(e.relatedTarget);
             while (target[0].nodeName !== "BODY") {
                 if (target[0].id == "rcm_labellist")
                     return;
                 target = target.parent();
             }
-            
+
             menu.labels_submenu.destroy();
             delete menu.labels_submenu;
 
@@ -1209,24 +1225,24 @@ if (rcmail && window.mel_metapage)
             menu.addEventListener("beforeactivate", (p) => {
                 rcm_tb_label_init_onclick($("#rcm_labellist li a"), () => {menu.triggerEvent("hide_menu"); menu.destroy();});
                 $("#rcm_labellist").on("mouseout", (e) => {
-                  
+
                 let target = $(e.relatedTarget);
                 while (target[0].nodeName !== "BODY") {
                     if (target[0].id == "rcm_labellist" || target.hasClass("ct-tb"))
                         return;
                     target = target.parent();
                 }
-                
+
                 menu.destroy();
               });
-    
-    
-    
+
+
+
             });
-    
+
               menu.addEventListener("hide_menu", (p) => {
               $("#rcm_labellist").off("mouseout");
-    
+
             });
         }
       });
@@ -1277,7 +1293,7 @@ if (rcmail && window.mel_metapage)
                         $(array[it]).addClass("hidden-item-mt");
                     }
                 }
-                
+
             }
         }
       }
@@ -1290,7 +1306,7 @@ if (rcmail && window.mel_metapage)
             resize_mail();
 
             //Gère les différents cas de phishing
-            rcmail.addEventListener('insertrow', function(event) { 
+            rcmail.addEventListener('insertrow', function(event) {
                 if (event.row.flags.BLOQUED === true)
                 {
                     $(event.row.obj).addClass('bloqued').attr('title', 'Ce message est bloqué sur le Bnum car il s\'agit de phishing !');
@@ -1299,7 +1315,7 @@ if (rcmail && window.mel_metapage)
                 {
                     $(event.row.obj).addClass('suspect').attr('title', 'Ce message est suspect et peut possiblement être du phishing !');
                 }
-                
+
             });
         }
       });
@@ -1313,7 +1329,7 @@ if (rcmail && window.mel_metapage)
                     {
                         for (const key in datas.tests) {
                             if (Object.hasOwnProperty.call(datas.tests, key)) {
-                                datas.tests[key] += 324;                            
+                                datas.tests[key] += 324;
                             }
                         }
                     }
@@ -1321,11 +1337,11 @@ if (rcmail && window.mel_metapage)
                     {
                         for (const key in datas.tests) {
                             if (Object.hasOwnProperty.call(datas.tests, key)) {
-                                datas.tests[key] += (datas.tests[key] * (25/100));                            
+                                datas.tests[key] += (datas.tests[key] * (25/100));
                             }
                         }
                     }
-                    
+
                     return datas.tests;
                   });
 
@@ -1338,12 +1354,12 @@ if (rcmail && window.mel_metapage)
                         $("html").removeClass("layout-ultra-small");
                   })
                   break;
-          
+
               default:
                   break;
           }
       }
-    
+
 
 }
 
@@ -1389,7 +1405,7 @@ $(document).ready(() => {
         let $iframe_querry = top.$(`iframe${top_selector}`);
         let $top_querry = top.$(top_selector);
 
-        if ($iframe_querry.length > 0) $iframe_querry[0].contentWindow.$(sub_frame_selector)[0].src = url;                        
+        if ($iframe_querry.length > 0) $iframe_querry[0].contentWindow.$(sub_frame_selector)[0].src = url;
         else if ($top_querry > 0) top.$(sub_frame_selector)[0].src = url;
         else retour = false;
 
@@ -1416,7 +1432,7 @@ $(document).ready(() => {
              * @constant
              * @type {JSON|Enumerator} Liste des exceptions
              */
-            const spies = rcmail.env.enumerated_url_spies !== true ? Enumerable.from(rcmail.env.urls_spies) : rcmail.env.urls_spies;            
+            const spies = rcmail.env.enumerated_url_spies !== true ? Enumerable.from(rcmail.env.urls_spies) : rcmail.env.urls_spies;
             /**
              * @constant
              * @type {string} Adresse du lien
@@ -1424,7 +1440,7 @@ $(document).ready(() => {
             const url = $(event.target).attr('href');
 
             //Changement des liens en enumerable (optimisation)
-            if (rcmail.env.enumerated_url_spies !== true) 
+            if (rcmail.env.enumerated_url_spies !== true)
             {
                 rcmail.env.urls_spies = spies;
                 rcmail.env.enumerated_url_spies = true;
@@ -1453,49 +1469,49 @@ $(document).ready(() => {
                             top.webconf_helper.go(key, null, '@home');
 
                             if (after !== null) after();
-                            
+
                             event.preventDefault();
                             break;
                         case plugins.drive:
 
                             const stockage_url = _switch.url !== undefined ? decodeURIComponent(_switch.url) : decodeURIComponent(url);
-                            task = "stockage";                                      
+                            task = "stockage";
 
                             if (stockage_url.includes('/s/')) return;
 
                             if (!intercept_exceptions(".stockage-frame", "#mel_nextcloud_frame", stockage_url)) othersParams = { _params:stockage_url.replace(_switch.key, '') }
-                            
+
                             break;
                         case plugins.chat:
                             $querry = top.$("iframe.discussion-frame");
-                            task = "discussion";     
-    
+                            task = "discussion";
+
                             if ($querry.length > 0) {
                                 $querry[0].contentWindow.postMessage({
                                     externalCommand: 'go',
                                     path: url.replace(_switch.key, '')
                                 }, rcmail.env.rocket_chat_url);
-                            }                
+                            }
                             else {
                                 after = () => {
                                     top.$("iframe.discussion-frame")[0].src = url;
                                 };
                             }
-    
+
                             break;
                         case plugins.sondage:
-                            task = "sondage";                                      
+                            task = "sondage";
 
                             if (!intercept_exceptions(".sondage-frame", "#mel_sondage_frame", url)) othersParams = { _url:url };
-    
+
                             break;
                         case plugins.kanban:
-                            task = "wekan";                                      
+                            task = "wekan";
 
                             if (!intercept_exceptions(".wekan-frame", "#wekan-iframe", url)) othersParams = { _url:url };
 
                             break;
-                    
+
                         default:
                             if (url.includes('/?_task='))
                             {
@@ -1505,16 +1521,16 @@ $(document).ready(() => {
                                 if (["ariane", "discussion", "chat"].includes(task))
                                 {
                                     _switch = spies.firstOrDefault(x => x.value == plugins.chat, null);
-                                    
+
                                     if (_switch !== null)
                                     {
                                         reloop = true;
                                         break;
                                     }
                                 }
-    
+
                                 othersParams = {};
-    
+
                                 try {
                                     let tmp_othersParams = url.split('/?_task=', 2)[1];
 
@@ -1522,9 +1538,9 @@ $(document).ready(() => {
                                     {
                                         othersParams = Enumerable.from(tmp_othersParams.split('&'))
                                         .where(x => x.includes('='))
-                                        .toJsonDictionnary(x => x.split('=')[0], 
+                                        .toJsonDictionnary(x => x.split('=')[0],
                                             x => x.split('=')[1]);
-      
+
                                         if (task === "stockage" && othersParams["_params"] !== undefined)
                                         {
 
@@ -1594,9 +1610,9 @@ $(document).ready(() => {
             {
                 $querry.remove();
                 mel_metapage.Frames.back();
-            } 
+            }
         }
-    }  
+    }
 
 })();
 

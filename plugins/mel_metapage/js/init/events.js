@@ -1632,7 +1632,7 @@ function sendMessageToAriane (data) {
         else if(chat_urls_origin.includes(event.origin))
         {
             const datas_accepted = 'isBNumEmbedded';
-            if (message.data === datas_accepted) {
+            if (event.data === datas_accepted) {
                 sendMessageToAriane({'bNumEmbedded': true, 'isDarkTheme': new Roundcube_Mel_Color().isDarkMode()});
             }
         }

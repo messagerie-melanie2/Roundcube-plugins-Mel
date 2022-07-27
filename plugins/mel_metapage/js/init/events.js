@@ -335,6 +335,7 @@ if (rcmail && window.mel_metapage)
     // au changement de couleur
     rcmail.addEventListener('switched_color_theme', (color_mode) => {
         on_switched_color_mode(color_mode);
+        sendMessageToAriane({'isDarkTheme': color_mode === 'dark'});
     });
 
     function on_switched_color_mode(color_mode)
@@ -1595,7 +1596,23 @@ $(document).ready(() => {
     })
 });
 
+function sendMessageToAriane (data) {
+    if (top !== window) return top.sendMessageToAriane(data);
+
+    let iframe = $('iframe.discussion-frame');
+
+    if (iframe.length > 0)
+    {
+        iframe[0].contentWindow.postMessage(data, "*");
+    }
+}
+
 (() => {
+
+    const chat_urls_origin = [
+        'https://ariane.preprod.m2.e2.rie.gouv.fr',
+        'https://ariane.din.developpement-durable.gouv.fr'
+    ];
 
     window.addEventListener("message", receiveMessage, false);
     function receiveMessage(event)
@@ -1610,6 +1627,13 @@ $(document).ready(() => {
             {
                 $querry.remove();
                 mel_metapage.Frames.back();
+            }
+        }
+        else if(chat_urls_origin.includes(event.origin))
+        {
+            const datas_accepted = 'isBNumEmbedded';
+            if (message.data === datas_accepted) {
+                sendMessageToAriane({'bNumEmbedded': true, 'isDarkTheme': new Roundcube_Mel_Color().isDarkMode()});
             }
         }
     }

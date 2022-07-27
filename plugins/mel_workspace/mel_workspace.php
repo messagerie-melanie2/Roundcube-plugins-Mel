@@ -3919,6 +3919,13 @@ class mel_workspace extends rcube_plugin
          exit;
     }
 
+    /**
+     * Supprime les évènements futur lié à un espace de travail.
+     *
+     * @param LibMelanie\Api\Defaut\Workspace $workspace
+     * @param LibMelanie\Api\Defaut\User $user
+     * @return void
+     */
     public function delete_calendar_workspace($workspace, $user)
     {
         $now = date(LibMelanie\Api\Defaut\Event::DB_DATE_FORMAT);

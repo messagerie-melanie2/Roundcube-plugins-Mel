@@ -35,9 +35,14 @@ if (window.rcmail) {
 				$('#pasBALI').remove();
 
 				// change task & action
+				let action = './';
+				if (!!rcmail.env._url) action += '?' + rcmail.env._url;
+				else {
+					$('input[name=_task]').attr('value', 'mail');
+					$('input[name=_action]').attr('value', '');
+				}
+
 				$('form').attr('action', './');
-				$('input[name=_task]').attr('value', 'mail');
-				$('input[name=_action]').attr('value', '');
 
 				var text = '';
 				text += '<tr>';

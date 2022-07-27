@@ -140,6 +140,8 @@ class mel_doubleauth extends rcube_plugin {
         
         $this->add_texts('localization', true);
         $this->include_script('mel_doubleauth_form.js');
+
+        $this->rc->output->set_env("_url", rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC));
         
         $this->rc->output->send('login');
     }

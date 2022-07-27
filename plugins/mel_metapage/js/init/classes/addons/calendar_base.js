@@ -907,6 +907,26 @@ $(document).ready(() => {
             }, 10);
             canContinue = false;
         }
+        else if (canContinue && $('#edit-location').val().includes( mel_metapage.Functions.public_url('webconf', '')))
+        {
+            const link = new IntegratedWebconfLink($('#edit-location').val());
+
+            if (link.key === '')
+            {
+                let interval_link = null;
+                const i = setInterval(() => {
+                    interval_link = new IntegratedWebconfLink($('#edit-location').val());
+                    if (interval_link.key !== '')
+                    {
+                        interval_link = null;
+                        clearInterval(i);
+                        rcube_calendar_ui.save();
+                    }
+                }, 10);
+                canContinue = false;
+
+            }
+        }
 
         //Si il n'y a pas d'erreurs
         if (canContinue)
@@ -1071,12 +1091,10 @@ $(document).ready(() => {
              */
             const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
             const val = current_location.getValue();
-
             if (val === reload)
             {
                 const interval = setInterval(async () => {
                     const val = window.rcube_calendar_ui.edit._events.getValue();
-
                     if (val !== reload && val.includes('|'))
                     {
                         $("#edit-location").val(val);

@@ -2,6 +2,8 @@ $(document).ready(() => {
 
     if (top.$('.mel-note').length > 0 || window !== top) return;
 
+    if (rcmail.env.task === 'login' || rcmail.env.task === 'logout') return;
+
     /**
      * Plugin qui contient la localization pour rcmail.gettext
      */

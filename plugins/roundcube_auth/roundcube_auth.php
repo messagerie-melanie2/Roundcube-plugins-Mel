@@ -412,6 +412,7 @@ class roundcube_auth extends rcube_plugin
 
         // Delete stored things
         $rcmail->kill_session();
+        // $rcmail->logout_actions();
 
         // Force re-auth
         // // $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
@@ -663,6 +664,9 @@ class roundcube_auth extends rcube_plugin
                     $args['cookiecheck'] = true;
                     $args['valid'] = true;
                     $args['eidas'] = $eidas;
+
+                    // Garder/stocker le login (cf. 'Gestion du keep login' dans 'mel_ldap_auth.php')
+                    $_POST['_keeplogin'] = true;
 
                     // Display args values
                     mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] OIDC - Login args : " . json_encode($args));

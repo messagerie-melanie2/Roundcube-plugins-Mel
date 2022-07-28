@@ -91,6 +91,10 @@ class mel_doubleauth extends rcube_plugin {
         
         $config_2FA = $this->__get2FAconfig();
         
+        $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
+
+        if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
+
         if (isset($_COOKIE['roundcube_login'])) {
             // Vérifier la présence du cookies
             if (isset($_COOKIE['roundcube_doubleauth'])) {
@@ -106,7 +110,9 @@ class mel_doubleauth extends rcube_plugin {
                             rcube_utils::setcookie('roundcube_doubleauth', $info_doubleauth[0] . "###" . $info_doubleauth[1] . "###" . $expiration . "###roundcube", $expiration);
                             // envoi des données au webservice pour sauvegarde en base
                             $this->__modifyCookie($info_doubleauth[0], $info_doubleauth[1], intval($expiration), "roundcube");
-                            $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
+
+                            if (isset($url) && $url !== '') $this->__goingToUrl($url);
+                            else $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
                         } else {
                             mel_logs::get_instance()->log(mel_logs::DEBUG, "__ValidateCookie : false");
                             unset($_COOKIE['roundcube_doubleauth']);
@@ -141,7 +147,7 @@ class mel_doubleauth extends rcube_plugin {
         $this->add_texts('localization', true);
         $this->include_script('mel_doubleauth_form.js');
 
-        $this->rc->output->set_env("_url", rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC));
+       $this->rc->output->set_env("_url", $url);
         
         $this->rc->output->send('login');
     }
@@ -199,7 +205,12 @@ class mel_doubleauth extends rcube_plugin {
                         unset($_COOKIE['roundcube_doubleauth']);
                         rcube_utils::setcookie('roundcube_doubleauth', null, - 1);
                     }
-                    $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
+                    $url = rcube_utils::get_input_value('_url', rcube_utils::INPUT_GPC);
+
+                    if (isset($url) && (strpos($url, 'login') !== false || strpos($url, 'logout') !== false)) $url = '';
+
+                    if (isset($url) && $url !== '') $this->__goingToUrl($url);
+                    else $this->__goingRoundcubeTask($this->rc->config->get('default_task', 'mail'));
                 }
                 else {
                     $this->__exitSession();
@@ -492,10 +503,27 @@ class mel_doubleauth extends rcube_plugin {
     /**
      * Redirige vers la tache roundcube demandée
      */
-    private function __goingRoundcubeTask($task = 'mail', $action = null) 
+    private function __goingRoundcubeTask($task = 'mail', $action = null, $other_params = null) 
+    {
+        if (is_array($other_params))
+        {
+            $tmp = '';
+            foreach ($other_params as $key => $value) {
+                $tmp .= "&$key=$value";
+            }
+            $other_params = $tmp;
+        }
+
+        $this->__goingToUrl("?_task=$task". (isset($action) ? "&_action=$action" : ''). ($other_params ?? ''));
+    }
+
+    private function __goingToUrl($url)
     {
         $_SESSION['mel_doubleauth_2FA_login'] = time();
-        header('Location: ?_task=' . $task . (isset($action) ? '&_action=' . $action : ''));
+
+        if (isset($url) && $url !== "" && strpos($url, '_task=') !== false && $url[0] !== '?') $url = "?$url";
+
+        header("Location: $url");
         exit;
     }
     

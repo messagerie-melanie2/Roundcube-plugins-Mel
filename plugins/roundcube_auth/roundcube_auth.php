@@ -108,7 +108,7 @@ class roundcube_auth extends rcube_plugin
 {
     private $enabled = '1';
     private $selected_auth = AuthTypeEnum::PASSWORD;
-    private $redirect_query;
+    // private $redirect_query;
     private $auth_helper;
     private $oidc_helper;
 
@@ -181,6 +181,8 @@ class roundcube_auth extends rcube_plugin
     // rcmail : rcmail instance
     function redirect($query, $type, $rcmail)
     {
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] TEMP_REDIRECT $query ...");
+
         // Query variables
         $location = 'Location: ./?';
         $prefixQuery = '&';
@@ -221,8 +223,8 @@ class roundcube_auth extends rcube_plugin
                 $finalQuery = $location . $kerb;// . $query;
             break;
         }
-
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Trying to redirect to $finalQuery ...");
+        
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Trying to redirect to $finalQuery");
         //
         if(!empty($finalQuery))
         {
@@ -452,6 +454,7 @@ class roundcube_auth extends rcube_plugin
         if(empty($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'GET')
         {
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Startup - Authentication process");
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] TEMP_STARTUP ".$_SERVER['QUERY_STRING']." ...");
 
             // Variables
             $oidc = false;
@@ -531,14 +534,32 @@ class roundcube_auth extends rcube_plugin
 
             if($oidc)
             {
-                mel_logs::get_instance()->log(mel_logs::DEBUG, $_SERVER['QUERY_STRING']);
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Incoming with query : ".$_SERVER['QUERY_STRING']);
 
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Lancement/Execution");
-                mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Connexion OIDC");
+                if(isset($oidc_param))  // retour de connexion OIDC (oidc=1&code=...)
+                {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Retour de la connexion OIDC");
 
-                // Trigger login action
-               $args['action'] = 'login';
+                    // Retrieve (and move) the redirection query
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Retrieving RQ : ".$_SESSION['redirect_query']);
+                    $_COOKIE['redirect_query'] = $_SESSION['redirect_query'];
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Retrieving RQ : ".$_COOKIE['redirect_query']);
 
+                    // Trigger login action
+                   $args['action'] = 'login';
+                }
+                else // déclenchement de connexion OIDC à effectuer
+                {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement de la connexion OIDC");
+
+                    // Store the redirection query
+                    $_SESSION['redirect_query'] = $_SERVER['QUERY_STRING'];
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Storing RQ : ".$_SESSION['redirect_query']);
+                }
+              
+                // Dans les deux cas, on exécute le code suivant
+                //      soit pour crééer un nouvel objet TokenHelper et déclencher l'auth
+                //      soit pour recréer cet objet et récupérer l'auth
                 try
                 {    
                     // Setup a new TokenHelper (wrapping OIDC)
@@ -562,8 +583,6 @@ class roundcube_auth extends rcube_plugin
                     mel_logs::get_instance()->log(mel_logs::ERROR, "(1) OIDC Authentication Failed <br/>" . $e->getMessage());
                 }
 
-                // Store the redirection query
-                $this->redirect_query = $_SERVER['QUERY_STRING'];
             }
 
             //endregion =================================
@@ -665,6 +684,10 @@ class roundcube_auth extends rcube_plugin
                     $args['valid'] = true;
                     $args['eidas'] = $eidas;
 
+                    // L'URL de la requête est stockée dans $_COOKIE['redirect_query']
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Stored query for login_after : ".$_SESSION['redirect_query']);
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Stored query for login_after : ".$_COOKIE['redirect_query']);
+
                     // Garder/stocker le login (cf. 'Gestion du keep login' dans 'mel_ldap_auth.php')
                     $_POST['_keeplogin'] = true;
 
@@ -692,9 +715,22 @@ class roundcube_auth extends rcube_plugin
      */
     function login_after($args)
     {
-        // Redirect to the previous QUERY_STRING
-        $this->redirect($this->redirect_query, RedirectTypeEnum::NORMAL, null);
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] login_after : ".$_COOKIE['redirect_query']);
 
+        /*
+        $str_to_replace = [
+            $this->kerb_keyword."=".$this->enabled."&",
+            $this->oidc_keyword."=".$this->enabled."&",
+            '_task=',
+        ];
+        $redirect = str_replace($str_to_replace, ['','',''], $_COOKIE['redirect_query']);
+        */
+
+        // Extract elements from the query
+        parse_str($_COOKIE['redirect_query'] , $args);
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] login_after : ".json_encode($args));
+        
+        // Roundcube will redirect to that URL
         return $args;
     }
 

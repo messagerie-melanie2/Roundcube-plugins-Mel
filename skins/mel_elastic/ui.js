@@ -1,18 +1,33 @@
 $(document).ready(() => {
 
+    /**
+     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     */
     class Mel_CSS_Rule {
+        /**
+         * 
+         * @param {string} rule Règle css style "p{color:red;}"
+         */
         constructor(rule)
         {
             this.rule = rule;
             this.id = null;
         }
 
+        /**
+         * Intègre le style à la page web
+         * @returns {Mel_CSS_Rule} Chaînage
+         */
         set()
         {
             this.id = Mel_CSS_Rule.component().insertRule(rule, Mel_CSS_Rule.lastIndex());
             return this;
         }
 
+        /**
+         * Supprime le style de la page web
+         * @returns {Mel_CSS_Rule} Chaînage
+         */
         delete()
         {
             Mel_CSS_Rule.component().deleteRule(this.id);
@@ -20,35 +35,66 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Retourne la règle css sous forme de string
+         * @returns {string}
+         */
         toString()
         {
             return this.rule;
         }
 
+        /**
+         * Récupère la première feuille de style du document
+         * @returns {StyleSheetList}
+         */
         static component()
         {
             return document.styleSheets[0];
         }
 
+        /**
+         * Récupère le prochain index de la feuille de style
+         * @returns {number}
+         */
         static lastIndex()
         {
             return Mel_CSS_Rule.component().cssRules.length
         }
     }
 
+    /**
+     * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
+     * Gère un sélécteur ainsi qu'une liste de modificateur css.
+     */
     class Mel_CSS_Advanced_Rule extends Mel_CSS_Rule{
+        /**
+         * 
+         * @param {string} selector Selector html (exemple: p.maclass)
+         * @param  {...string} rules Liste de règles html (exemple : color:red) sans les ';'
+         */
         constructor(selector, ...rules)
         {
             super(rules),
             this.selector = selector;
         }
 
+        /**
+         * Intègre le style à la page web
+         * @returns {Mel_CSS_Advanced_Rule} Chaînage
+         */
         set()
         {
             this.id = Mel_CSS_Rule.component().insertRule(this.toString(), Mel_CSS_Rule.lastIndex());
             return this;
         }
 
+        /**
+         * Ajoute une règle à la liste des règles
+         * @param {string} rule Règle à ajouté (sans les ;)
+         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
+         */
         add(rule, force_set = true)
         {
             this.rule.push(rule);
@@ -67,29 +113,53 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Supprime une règle
+         * @param {number} index Index de la règle à supprimer 
+         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
+         */
         remove(index, force_set = true)
         {
             this.rule.splice(index, 1);
             return this._update_rule(force_set);
         }
 
+        /**
+         * Met à jour une règle
+         * @param {number} index Index de la règle à modifier
+         * @param {string} new_rule Nouvelle règle
+         * @param {boolean} force_set Si vrai, met à jour la règle dans la page web
+         * @returns Chaînage
+         */
         update(index, new_rule, force_set = true)
         {
             this.rule[index] = new_rule;
-            return this._update_rule(); 
+            return this._update_rule(force_set); 
         }
 
+        /**
+         * Récupère les règles
+         * @returns {string} Règles
+         */
         rules()
         {
             return this.rule;
         }
 
+        /**
+         * Retourne la règle css sous forme de string
+         * @returns {string}
+         */
         toString()
         {
             return `${this.selector}{${this.rule.join(';\r\n')}}`;
         }
     }
 
+    /**
+     * Gère les différentes règles qu'on ajoute à cette classe.
+     */
     class Mel_CSS_Style_Sheet {
         constructor()
         {
@@ -97,9 +167,9 @@ $(document).ready(() => {
         }
 
         /**
-         * 
-         * @param {string} key 
-         * @param {Mel_CSS_Rule} rule 
+         * Ajoute une règle à la liste de règles
+         * @param {string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {Mel_CSS_Rule} rule Règle qui sera ajouté
          * @returns {Mel_CSS_Style_Sheet} Chaînage
          */
         _add(key, rule)
@@ -111,16 +181,34 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Ajoute une règle à la liste de règle
+         * @param {string} key Clé qui permettra de récupérer la règle ajouté
+         * @param {string} rule Règle qui sera ajouté (ex : p{color:red;}) 
+         * @returns Chaînage
+         */
         add(key, rule)
         {
             return this._add(key, new Mel_CSS_Rule(rule));
         }
 
+        /**
+         * Ajoute une règle à la liste des règles.
+         * @param {string} key  Clé qui permettra de récupérer la règle ajouté
+         * @param {string} selector Sélécteur html
+         * @param  {...any} rules Liste de règles (ex : 'color:red', 'background-color:blue')
+         * @returns Chaînage
+         */
         addAdvanced(key, selector, ...rules)
         {
             return this._add(key, new Mel_CSS_Advanced_Rule(selector, ...rules));
         }
 
+        /**
+         * Ajoute plusieurs règles
+         * @param  {...{key:string, rule:string}} rules Règles à ajouter
+         * @returns Chaînage
+         */
         addRules(...rules)
         {
             for (const key in rules) {
@@ -133,6 +221,11 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Supprime une règle
+         * @param {string} key 
+         * @returns Chaînage
+         */
         remove(key)
         {
             if (this.ruleExist(key))
@@ -156,21 +249,38 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Vérifie si une règle éxiste
+         * @param {string} key 
+         * @returns 
+         */
         ruleExist(key)
         {
             return !!this.css[key];
         }
 
+        /**
+         * Récupère les clés de la classe
+         * @returns {string[]}
+         */
         getKeys()
         {
             return Enumerable.from(this.css).select(x => x.key).toArray();
         }
 
+        /**
+         * Récupère la feuille de styme
+         * @returns {string}
+         */
         getStyleSheet()
         {
             return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n');
         }
 
+        /**
+         * Remise à zéro de la feuille de style
+         * @returns Chaînage
+         */
         reset()
         {
             for (const key in this.css) {
@@ -833,6 +943,10 @@ $(document).ready(() => {
             return this.setup_mails_classes().setup_compose();
         }
 
+        /**
+         * Met en place les actions relative aux mails 
+         * @returns 
+         */
         setup_mails_classes()
         {
             if (rcmail.env.task === "mail")
@@ -1212,6 +1326,10 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Met en place la recherche
+         * @returns 
+         */
         setup_search() {
             let $sbox = $('#quicksearchbox');
 
@@ -1280,6 +1398,10 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Met en place le calendrier
+         * @returns 
+         */
         setup_calendar()
         {
             if (rcmail.env.task === "calendar")
@@ -1336,6 +1458,10 @@ $(document).ready(() => {
             return this;
         }
 
+        /**
+         * Renvoie vrai si les barre de défilements sont en mode automatique
+         * @returns 
+         */
         isScollBarAuto()
         {
             if (!this.auto_text) this.auto_text = rcmail.gettext('auto', 'mel_metapage');

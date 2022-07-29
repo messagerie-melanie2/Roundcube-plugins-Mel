@@ -2383,7 +2383,7 @@ $(document).ready(() => {
 
     rcube_calendar.number_waiting_events = function (events = [], get_number = true)
     {
-        const user = top.rcmail.env.email;
+        const user = top.rcmail.env.email.toUpperCase();
         let numbers = (get_number ? 0 : []);
 
         for (const key in events) {
@@ -2397,7 +2397,7 @@ $(document).ready(() => {
                 }
                 else if (!!element?.attendees && element.attendees.length > 0)
                 {
-                    if (Enumerable.from(element.attendees).any(x => x.email === user && x.status === 'NEEDS-ACTION'))
+                    if (Enumerable.from(element.attendees).any(x => x.email.toUpperCase() === user && x.status === 'NEEDS-ACTION'))
                     {
                         if (get_number) ++numbers;
                         else numbers.push(element);

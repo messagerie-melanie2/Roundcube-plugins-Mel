@@ -97,6 +97,11 @@ abstract class Program{
         $this->plugin->add_hook($name, $callback);
     }
 
+    protected function trigger_hook($name, $args = [])
+    {
+        $this->plugin->api->exec_hook($name, $args);
+    }
+
     protected function add_parameters($onLoad, $onSave)
     {
         $this->add_hook('preferences_list', $onLoad);

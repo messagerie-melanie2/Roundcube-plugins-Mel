@@ -156,7 +156,7 @@ class Chat extends Program implements iChatBnum
 
     function have_chat_plugin($arg = false)
     {
-        $argg = $this->trigger_hook('chat.have_chat_plugin', $arg);
+        $arg = $this->trigger_hook('chat.have_chat_plugin', $arg);
         return $arg;
     }
 

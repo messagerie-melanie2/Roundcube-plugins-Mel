@@ -176,6 +176,46 @@ class roundcube_auth extends rcube_plugin
     	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
     }
 
+    function str_contains($haystack, $needle)
+    {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+    
+    function contains($str, array $arr)
+    {
+        foreach($arr as $a)
+        {
+            if($this->str_contains($str,$a) !== false) return true;
+        }
+        return false;
+    }
+
+    /**
+     * 
+     */
+    function storeQuery()
+    {
+        if(empty($_SESSION['redirect_query']) == false)
+        {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Redirection Query is already stored : ".$_SESSION['redirect_query']);
+        }
+        else
+        {
+            $avoid = ['task=login', 'task=logout', 'kerb=1'];
+
+            if(empty($_SERVER['QUERY_STRING']) == false && $this->contains($_SERVER['QUERY_STRING'], $avoid) == false)
+            {
+                $_SESSION['redirect_query'] = $_SERVER['QUERY_STRING'];
+
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Redirection Query has been stored : ".$_SESSION['redirect_query']);
+            }
+            else
+            {
+                mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Redirection Query NOT stored : ".$_SERVER['QUERY_STRING']);  
+            }
+        }
+    }
+
     // query : usually $_SERVER['QUERY_STRING']
     // type : RedirectionTypeEnum (NORMAL, LOGOUT, OIDC, KERBEROS)
     // rcmail : rcmail instance
@@ -508,6 +548,9 @@ class roundcube_auth extends rcube_plugin
                 // Détermine la méthode d'auth
                 $selected_auth = $this->select_auth();
                 mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Selected : " . $selected_auth);
+
+                // Store the redirection query
+                $this->storeQuery();
     
                 switch($selected_auth)
                 {   
@@ -553,8 +596,7 @@ class roundcube_auth extends rcube_plugin
                     mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] [OIDC] Déclenchement de la connexion OIDC");
 
                     // Store the redirection query
-                    $_SESSION['redirect_query'] = $_SERVER['QUERY_STRING'];
-                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Storing RQ : ".$_SESSION['redirect_query']);
+                    $this->storeQuery();
                 }
               
                 // Dans les deux cas, on exécute le code suivant
@@ -716,15 +758,6 @@ class roundcube_auth extends rcube_plugin
     function login_after($args)
     {
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] login_after : ".$_COOKIE['redirect_query']);
-
-        /*
-        $str_to_replace = [
-            $this->kerb_keyword."=".$this->enabled."&",
-            $this->oidc_keyword."=".$this->enabled."&",
-            '_task=',
-        ];
-        $redirect = str_replace($str_to_replace, ['','',''], $_COOKIE['redirect_query']);
-        */
 
         // Extract elements from the query
         parse_str($_COOKIE['redirect_query'] , $args);

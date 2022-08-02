@@ -201,11 +201,15 @@ class roundcube_auth extends rcube_plugin
         }
         else
         {
+            // if the query contains these values, we do no store it
             $avoid = ['task=login', 'task=logout', 'kerb=1'];
 
             if(empty($_SERVER['QUERY_STRING']) == false && $this->contains($_SERVER['QUERY_STRING'], $avoid) == false)
             {
-                $_SESSION['redirect_query'] = $_SERVER['QUERY_STRING'];
+                // if the query contains these values, we remove them before storing it
+                $replace = ['&_action=refresh'];
+
+                $_SESSION['redirect_query'] = str_replace($replace, [''], $_SERVER['QUERY_STRING']);
 
                 mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] Redirection Query has been stored : ".$_SESSION['redirect_query']);
             }
@@ -221,8 +225,6 @@ class roundcube_auth extends rcube_plugin
     // rcmail : rcmail instance
     function redirect($query, $type, $rcmail)
     {
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] TEMP_REDIRECT $query ...");
-
         // Query variables
         $location = 'Location: ./?';
         $prefixQuery = '&';
@@ -456,6 +458,9 @@ class roundcube_auth extends rcube_plugin
         $rcmail->kill_session();
         // $rcmail->logout_actions();
 
+        // Store the redirection query
+        $this->storeQuery();
+
         // Force re-auth
         // // $this->redirect(""/* $_SERVER['QUERY_STRING'] */, RedirectTypeEnum::OIDC, $rcmail);
         // $rcmail->output->command('plugin.auth_redirect', $this->oidc_keyword . "=" . $this->enabled);
@@ -472,6 +477,7 @@ class roundcube_auth extends rcube_plugin
         // Si on a atteint ou dépassé le délai d'expiration du token, on relance l'auth OIDC (utilisateur présent)
         if(isset($expiration_time) && (time() - $expiration_time) > $expiration_delay)
         {
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] reconnect_oidc ". json_encode($args));
             $this->reconnect_oidc("Expiration du token", $rcmail);
         }
     }
@@ -494,7 +500,6 @@ class roundcube_auth extends rcube_plugin
         if(empty($_SESSION['user_id']) && $_SERVER['REQUEST_METHOD'] === 'GET')
         {
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Startup - Authentication process");
-            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] TEMP_STARTUP ".$_SERVER['QUERY_STRING']." ...");
 
             // Variables
             $oidc = false;
@@ -650,6 +655,7 @@ class roundcube_auth extends rcube_plugin
                     // Si le délai d'inactivité a été atteint
                     if(isset($activity_time) && (time() - $activity_time) > $inactivity_delay)
                     {
+                        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] reconnect_oidc ". json_encode($args));
                         $this->reconnect_oidc("Inactivité utilisateur", $rcmail);
                     }
                     else
@@ -757,11 +763,13 @@ class roundcube_auth extends rcube_plugin
      */
     function login_after($args)
     {
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] login_after : ".$_COOKIE['redirect_query']);
+        if(empty($_COOKIE['redirect_query']) == false)
+        {
+            // Extract elements from the query
+            parse_str($_COOKIE['redirect_query'] , $args);
 
-        // Extract elements from the query
-        parse_str($_COOKIE['redirect_query'] , $args);
-        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] login_after : ".json_encode($args));
+            mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] [OIDC] login_after : ".json_encode($args));
+        }
         
         // Roundcube will redirect to that URL
         return $args;

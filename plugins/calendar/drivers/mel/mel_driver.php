@@ -1319,7 +1319,9 @@ class mel_driver extends calendar_driver {
           $_attendees[] = $attendee;
         }
       }
-      $_event->attendees = $_attendees;
+      if (!isset($event['_method']) || $event['_method'] != 'REQUEST' || $event['calendar'] != $_event->organizer->calendar) {
+        $_event->attendees = $_attendees;
+      }
     }
     // Modified time
     $_event->modified = time();

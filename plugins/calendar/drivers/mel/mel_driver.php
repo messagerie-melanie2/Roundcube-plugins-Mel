@@ -1379,24 +1379,7 @@ class mel_driver extends calendar_driver {
       else {
         return false;
       }
-      if ($event['_savemode'] == 'all') {
-        if ($_event->load()) {
-          foreach ($_event->exceptions as $exception) {
-            $exception_uid = $exception->uid;
-            $exception->delete();
-            $this->remove_event_attachments($exception_uid);
-          }
-        }
-        $event_uid = $_event->uid;
-        if ($_event->delete()) {
-          $this->remove_event_attachments($event_uid);
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
-      elseif ($event['_savemode'] == 'current') {
+      if ($event['_savemode'] == 'current') {
         if ($_event->load()) {
           $_exception = driver_mel::gi()->exception([$_event, $this->user, $this->calendars[$event['calendar']]]);
           // Converti les données de l'évènement en exception Mél
@@ -1464,6 +1447,12 @@ class mel_driver extends calendar_driver {
       else {
         // 0005105: La suppression d'un événement simple ne le charge pas
         if ($_event->load()) {
+          // MANTIS 0006615: L'exception d'une invitation est toujours présente sur le téléphone après suppression de la récurrence complète
+          foreach ($_event->exceptions as $exception) {
+            $exception_uid = $exception->uid;
+            $exception->delete();
+            $this->remove_event_attachments($exception_uid);
+          }
           if ($_event->delete()) {
             $this->remove_event_attachments($_event->uid);
             // Tester si c'est une réunion et que l'organisateur est sur Mel pour refuser l'invitation
@@ -1483,6 +1472,24 @@ class mel_driver extends calendar_driver {
                     $organizer_event->modified += 1;
                     $organizer_event->save();
                     break;
+                  }
+                }
+                // Gérer les exceptions
+                foreach ($organizer_event->exceptions as $organizer_exception) {
+                  // Ne garder que les occurrences modifiées
+                  if ($organizer_exception->deleted) {
+                    continue;
+                  }
+                  $attendees = $organizer_exception->attendees;
+                  foreach ($attendees as $key => $attendee) {
+                    if ($attendee->uid == $this->calendars[$event['calendar']]->owner) {
+                      // Participant courant on le passe en décliné
+                      $attendees[$key]->response = mel_mapping::rc_to_m2_attendee_status('DECLINED');
+                      $organizer_exception->attendees = $attendees;
+                      $organizer_exception->modified += 1;
+                      $organizer_exception->save();
+                      break;
+                    }
                   }
                 }
               }
@@ -2083,6 +2090,7 @@ class mel_driver extends calendar_driver {
             $_event_organizer['email'] = strtolower($organizer->email);
             $_event_organizer['name'] = $organizer->name;
             $_event_organizer['role'] = 'ORGANIZER';
+            // $_event_organizer['status'] = 'ACCEPTED';
             // MANTIS 0006722: Si l'organisateur est interne, empecher le participant de modifier la date de l'événement
             if (!$organizer->extern) {
               $_event_organizer['internal'] = true;

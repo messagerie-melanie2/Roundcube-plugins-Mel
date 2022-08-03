@@ -2309,7 +2309,7 @@ class mel_driver extends calendar_driver {
       $_attachment = driver_mel::gi()->attachment();
       $_attachment->modified = time();
       $_attachment->name = $attachment['name'];
-      $_attachment->path = $event->realuid . '/' . $this->calendars[$event->calendar]->owner;
+      $_attachment->path = $event->realuid . '/' . $this->calendars[$event->calendar]->id;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
       $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);

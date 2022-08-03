@@ -901,6 +901,10 @@ class mel_driver extends calendar_driver {
       }
 
       if ($_event->save() !== null) {
+        // MANTIS 0006610: EVT RECURRENT: Lors du rajout d'une PJ suite à la modification d'une occurrence. Toute la récurrence est impactée
+        if (isset($event['_savemode']) && $event['_savemode'] == 'current') {
+          $_event = $_exception;
+        }
         // add attachments
         if (is_array($event['attachments'])) {
           foreach ($event['attachments'] as $attachment) {
@@ -2305,7 +2309,7 @@ class mel_driver extends calendar_driver {
       $_attachment = driver_mel::gi()->attachment();
       $_attachment->modified = time();
       $_attachment->name = $attachment['name'];
-      $_attachment->path = $event->uid . '/' . $this->calendars[$event->calendar]->owner;
+      $_attachment->path = $event->realuid . '/' . $this->calendars[$event->calendar]->owner;
       $_attachment->owner = $this->user->uid;
       $_attachment->isfolder = false;
       $_attachment->data = $attachment['data'] ? $attachment['data'] : file_get_contents($attachment['path']);
@@ -2435,7 +2439,7 @@ class mel_driver extends calendar_driver {
       // Récupération des pièces jointes
       $attachments_folders = driver_mel::gi()->attachment();
       $attachments_folders->isfolder = true;
-      $attachments_folders->path = $event->uid;
+      $attachments_folders->path = $event->realuid;
       $folders_list = array();
       // Récupère les dossiers lié à l'évènement
       $folders = $attachments_folders->getList();

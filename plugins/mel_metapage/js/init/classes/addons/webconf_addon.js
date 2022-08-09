@@ -63,7 +63,7 @@
             url,
             {},
             (datas) => {
-                if (!!datas && datas.numbersEnabled && !!datas.numbers.FRA && datas.numbers.FRA.length > 0) phoneNumber = datas.numbers.FRA[0];
+                if (!!datas && datas.numbersEnabled && !!datas.numbers.FR && datas.numbers.FR.length > 0) phoneNumber = datas.numbers.FR[0];
             }
         );
 

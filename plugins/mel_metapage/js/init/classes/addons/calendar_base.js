@@ -32,7 +32,7 @@ $(document).ready(() => {
             return this;
         }
 
-        getValue(){
+        async getValue(){
             return '';
         }
 
@@ -71,9 +71,9 @@ $(document).ready(() => {
             return this;
         }
 
-        getValue()
+        async getValue()
         {
-            let val = super.getValue();
+            let val = await super.getValue();
             
             return val + this.$place.val();
         }
@@ -116,9 +116,9 @@ $(document).ready(() => {
             return this;
         }
 
-        getValue()
+        async getValue()
         {
-            let val = super.getValue();
+            let val = await super.getValue();
             
             return val + `${this.url} : ${this.$phone.val()} - ${this.$number.val()}`;
         }
@@ -265,30 +265,31 @@ $(document).ready(() => {
             return this.$phoneEnabled[0].checked && this.parentLocation.$type.val() === 'intregrated';
         }
 
-        getValue()
+        async getValue()
         {
-            let val = super.getValue();
+            let val = await super.getValue();
             
             if (this.$phoneNumber.val() !== '' && this.parentLocation.$visioState.val() === this.lastRoomName)
             {
-                val = `${this.$phoneNumber.val()}${visio_phone_separator}${this.$phonePin.val()}`;
+                val = this.formatValue(this.$phoneNumber.val(), this.$phonePin.val());// `${this.$phoneNumber.val()}${visio_phone_separator}${this.$phonePin.val()}`;
             }
-            else if(this.enabled() && this.parentLocation.$visioState.val() !== '' && this.loading !== true) {
+            else if(this.enabled() && this.parentLocation.$visioState.val() !== '') {
                 rcmail.set_busy(true, 'loading');
-                this.loading = true;
-                webconf_helper.phone.getAll(this.parentLocation.$visioState.val()).then((datas) => {
-                    //console.log("here", this.parentLocation.$visioState.val());
-                    this.$phoneNumber.val(datas.number);
-                    this.$phonePin.val(datas.pin);
-                    rcmail.set_busy(false);
-                    rcmail.clear_messages();
-                    this.update();
-                    this.loading = false;
-                });
-                val = reload;
+                let datas = await webconf_helper.phone.getAll(this.parentLocation.$visioState.val())
+                this.$phoneNumber.val(datas.number);
+                this.$phonePin.val(datas.pin);
+                rcmail.set_busy(false);
+                rcmail.clear_messages();
+                this.update();
+                val = this.formatValue(datas.number, datas.pin);// `${datas.number}${visio_phone_separator}${datas.pin}`;
             }
 
             return val;
+        }
+
+        formatValue(phone, pin)
+        {
+            return `${phone}${visio_phone_separator}${pin}`
         }
 
         setValue(val)
@@ -344,9 +345,9 @@ $(document).ready(() => {
             return this;
         }
 
-        getValue()
+        async getValue()
         {
-            let val = super.getValue();
+            let val = await super.getValue();
             
             switch (this.$type.val()) {
                 case 'intregrated': //visio intégrée
@@ -357,7 +358,7 @@ $(document).ready(() => {
                     if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
                         config["_wsp"] = this.$workspace.val();
 
-                    const tmp = !this.visioPhone.enabled() ? '' : this.visioPhone.getValue();
+                    const tmp = !this.visioPhone.enabled() ? '' : (await this.visioPhone.getValue());
 
                     if (tmp === reload) val = tmp;
                     else val += mel_metapage.Functions.public_url('webconf', config) + (tmp === '' ? '' : `${visio_phone_start}${tmp}${visio_phone_end}`);
@@ -513,21 +514,21 @@ $(document).ready(() => {
             return this;
         }
 
-        getValue()
+        async getValue()
         {
-            let val = super.getValue();
+            let val = await super.getValue();
 
             switch (this.$selectEventType.val()) {
                 case 'default':
-                    val += this.placeEvent.getValue();
+                    val += await this.placeEvent.getValue();
                     break;
 
                 case 'visio':
-                    val += this.visioEvent.getValue();
+                    val += await this.visioEvent.getValue();
                     break;
 
                 case 'audio':
-                val += this.audioEvent.getValue();
+                val += await this.audioEvent.getValue();
                     break;
             
                 default:
@@ -646,14 +647,14 @@ $(document).ready(() => {
             return this._count;
         }
 
-        getValue()
+        async getValue()
         {
-            let val = super.getValue();
+            let val = await super.getValue();
 
             for (const key in this.locations) {
                 if (Object.hasOwnProperty.call(this.locations, key)) {
                     const element = this.locations[key];
-                    const _val = element.getValue();
+                    const _val = await element.getValue();
 
                     if (_val === reload && element.isVisio()) 
                     {
@@ -693,10 +694,10 @@ $(document).ready(() => {
             });
         }
 
-        static InitFromEvent(location, $mainDiv, init_function, $haveWsp, $wsp, update_location)
+        static async InitFromEvent(location, $mainDiv, init_function, $haveWsp, $wsp, update_location)
         {
             $mainDiv.html('');
-            update_location('restart');
+            await update_location('restart');
 
             if ((location || false) !== false && location !== newline)
             {
@@ -711,7 +712,7 @@ $(document).ready(() => {
                     if (currentString.includes(`${audio_url} : `))
                     {
                         const audio = currentString.replace(`${audio_url} : `, "").split(" - ");
-                        init_function($haveWsp, $wsp, update_location, 0, {
+                        await init_function($haveWsp, $wsp, update_location, 0, {
                             audio:{
                                 tel:audio[0],
                                 num:audio[1]
@@ -727,7 +728,7 @@ $(document).ready(() => {
                         if (isRc) //Visio de l'état
                         {
 
-                            init_function($haveWsp, $wsp, update_location, 0, {
+                            await init_function($haveWsp, $wsp, update_location, 0, {
                                 visio:{
                                     type:'integrated',
                                     val:currentString.split("_key=")[1].split("&")[0]
@@ -737,7 +738,7 @@ $(document).ready(() => {
                         }
                         else // Visio custom
                         {
-                            init_function($haveWsp, $wsp, update_location, 0, {
+                            await init_function($haveWsp, $wsp, update_location, 0, {
                                 visio:{
                                     type:'custom',
                                     val:currentString.replace("@visio:", "")
@@ -749,7 +750,7 @@ $(document).ready(() => {
                     //Si c'est une visio de l'état
                     else if (currentString.includes(rcmail.env["webconf.base_url"]))
                     {
-                        init_function($haveWsp, $wsp, update_location, 0, {
+                        await init_function($haveWsp, $wsp, update_location, 0, {
                             visio:{
                                 type:'integrated',
                                 val:mel_metapage.Functions.webconf_url(currentString)
@@ -759,7 +760,7 @@ $(document).ready(() => {
                     }
                     //Si c'est un lieu
                     else {
-                        init_function($haveWsp, $wsp, update_location, 0, {
+                        await init_function($haveWsp, $wsp, update_location, 0, {
                             place:currentString,
                             type:'default'
                         });
@@ -767,10 +768,10 @@ $(document).ready(() => {
                 }
             }
             else {
-                init_function($haveWsp, $wsp, update_location);
+                await init_function($haveWsp, $wsp, update_location);
             }
 
-            update_location(null);
+            await update_location(null);
         }
     }
 
@@ -1064,7 +1065,7 @@ $(document).ready(() => {
          * 
          * @param {EventsLocation} events 
          */
-        const update_location = function (events)
+        const update_location = async function (events)
         {
             if (window.rcube_calendar_ui.edit._events === undefined) window.rcube_calendar_ui.edit._events = new EventLocation($('#edit-wsp'), $("#wsp-event-all-cal-mm"));
 
@@ -1090,19 +1091,8 @@ $(document).ready(() => {
              * @type {EventLocation}
              */
             const current_location = window.rcube_calendar_ui.edit._events.addEvent(events);
-            const val = current_location.getValue();
-            if (val === reload)
-            {
-                const interval = setInterval(async () => {
-                    const val = window.rcube_calendar_ui.edit._events.getValue();
-                    if (val !== reload && val.includes('|'))
-                    {
-                        $("#edit-location").val(val);
-                        clearInterval(interval);
-                    }
-                }, 10);
-            }
-            else $("#edit-location").val(current_location.getValue());
+            const val = await current_location.getValue();
+            $("#edit-location").val(val);
         }
         
         /**Met à jour le champs date */
@@ -1382,7 +1372,7 @@ $(document).ready(() => {
 
         }
         
-        setTimeout(() => {
+        setTimeout(async () => {
             $("#wsp-event-all-cal-mm").removeClass("disabled").removeAttr("disabled");
             $("#edit-wsp").removeClass("disabled").removeAttr("disabled");   
 
@@ -1441,7 +1431,7 @@ $(document).ready(() => {
                     }
                 }
 
-                EventLocation.InitFromEvent($("#edit-location").val(), $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
+                await EventLocation.InitFromEvent($("#edit-location").val(), $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
 
                 $("#fake-event-rec").val($("#edit-recurrence-frequency").val());
 
@@ -1475,7 +1465,7 @@ $(document).ready(() => {
 
                 //Gestion de la localisation
                 const description = event.location;
-                EventLocation.InitFromEvent(description, $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
+                await EventLocation.InitFromEvent(description, $('#em-locations'), window.rcube_calendar_ui._init_location, $('#edit-wsp'), $("#wsp-event-all-cal-mm"), update_location);
 
                 //Gestion des alarmes
                 if (event.alarms !== undefined && event.alarms !== null)
@@ -1618,11 +1608,11 @@ $(document).ready(() => {
         $('li > a[href="#event-panel-detail"]').html("Détails");
     }
 
-    window.rcube_calendar_ui._init_location = function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
+    window.rcube_calendar_ui._init_location = async function($haveWorkspace, $workspaceSelect, update_location, baseId = 0, _default = null)
     {
         const mainDivId = `em-locations-base-id-${baseId}`;
 
-        if ($(`#${mainDivId}`).length > 0) return rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
+        if ($(`#${mainDivId}`).length > 0) return await rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId, _default);
 
         let locationTypeOptions = {
             default_selected:'En présentiel',
@@ -1710,14 +1700,14 @@ $(document).ready(() => {
             $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-trash"></span></button>`)
             .appendTo($divSelect.find('.input-group-prepend'))
             .click(() => {
-                update_location(`remove:${mainDivId}`);
-                $mainDiv.remove();
+                update_location(`remove:${mainDivId}`).then(() => {
+                $mainDiv.remove();});
             });
         }
         else {
             $(`<button type="button" style="margin-top:0" class="mel-button btn btn-secondary"><span class="icon-mel-plus"></span></button>`).appendTo($divSelect.find('.input-group-prepend'))
-            .click(() => {
-                window.rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId);
+            .click(async () => {
+                await window.rcube_calendar_ui._init_location($haveWorkspace, $workspaceSelect, update_location, ++baseId);
                 $('.custom-calendar-option-select').each((i,e) => {
                     if (e.value === 'visio') $(e).change();
                 })
@@ -1798,7 +1788,7 @@ $(document).ready(() => {
             update_location(new EventsLocation(mainDivId, placeLocation, audioLocation, visioLocation, $optionSelect));
         });
 
-        $optionSelect.on('change', (e) => {
+        $optionSelect.on('change', async (e) => {
             let $showPhone = $("#mel-calendar-has-phone-datas").parent().css('display', 'none'); 
 
             e = $(e.currentTarget);
@@ -1807,7 +1797,7 @@ $(document).ready(() => {
             $placeInput.css('display', 'none');
             $audioDiv.css('display', 'none');
 
-            const haveVisio = update_location('get').have('visio');
+            const haveVisio = (await update_location('get')).have('visio');
 
             if (haveVisio || (!haveVisio && e.val() === 'visio')) 
             {

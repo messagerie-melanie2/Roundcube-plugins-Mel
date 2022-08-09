@@ -75,7 +75,7 @@ class mel_metapage extends rcube_plugin
         return false && ($task === 'bureau' ||  $task === 'settings');
     }
 
-    function init_sub_modules()
+    function init_sub_modules($exception = null)
     {
         $dir = __DIR__;
         $folders = scandir(__DIR__."/program");
@@ -88,7 +88,7 @@ class mel_metapage extends rcube_plugin
                     $this->init_sub_pages();
                     continue;
                 }
-                else if (in_array($folder, $exception)) continue;
+                else if (isset($exception) && is_array($exception) && in_array($folder, $exception)) continue;
                 else {
                     $files = scandir(__DIR__."/program/".$folder);
 

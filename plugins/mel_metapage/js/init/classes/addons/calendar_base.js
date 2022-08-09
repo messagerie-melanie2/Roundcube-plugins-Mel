@@ -222,7 +222,7 @@ $(document).ready(() => {
 
         update()
         {
-            if (this.parentLocation.$type.val() === 'intregrated')
+            if (this.parentLocation.$type.val() === 'intregrated' && this.enabled())
             {
                 let parentVal = this.parentLocation.$visioState.val();
 
@@ -348,6 +348,8 @@ $(document).ready(() => {
         async getValue()
         {
             let val = await super.getValue();
+
+            if (!!this.visioPhone) this.visioPhone.update();
             
             switch (this.$type.val()) {
                 case 'intregrated': //visio intégrée

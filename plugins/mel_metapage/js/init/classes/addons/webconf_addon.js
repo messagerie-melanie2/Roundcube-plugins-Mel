@@ -63,7 +63,8 @@
             url,
             {},
             (datas) => {
-                if (!!datas && datas.numbersEnabled && !!datas.numbers.FR && datas.numbers.FR.length > 0) phoneNumber = datas.numbers.FR[0];
+                const indicator = rcmail.env['mel_metapage.webconf_voxify_indicatif'];
+                if (!!datas && datas.numbersEnabled && !!datas.numbers[indicator] && datas.numbers[indicator].length > 0) phoneNumber = datas.numbers[indicator][0];
             }
         );
 

@@ -79,6 +79,7 @@ class mel_workspace extends rcube_plugin
         $this->register_action('delete_ulink', array($this, 'delete_ulink'));
         $this->register_action('pin_ulink', array($this, 'pin_ulink'));
         $this->register_action('update_edit_date', array($this, 'update_edit_date'));
+        $this->register_action('get_joined_workspace_title', [$this, 'get_joined_workspace_title']);
         $this->include_script('js/epingle.js');
 
         $this->add_hook('preferences_list', array($this, 'prefs_list'));
@@ -173,16 +174,21 @@ class mel_workspace extends rcube_plugin
      *
      * @return void
      */
-    public function load_workspaces()
+    public function load_workspaces($force = false)
     {
-        $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
-        // if (count($this->workspaces) > 0)
-        //     uasort($this->workspaces , [$this, "sort_workspaces"]);
-        // foreach ($this->workspaces as $key => $value) {
-        //     $this->workspaces[$key]->delete();
-        // }
-        // driver_mel::gi()->getUser()->saveDefaultPreference("categories", null);
-        // driver_mel::gi()->getUser()->saveDefaultPreference("category_colors", null);
+        if (!isset($this->workspaces) || $force) $this->workspaces = driver_mel::gi()->getUser()->getSharedWorkspaces("modified", false);
+    }
+
+    public function get_joined_workspace_title()
+    {
+        $this->load_workspaces();
+        $array = [];
+        foreach ($this->workspaces as $key => $value) {
+            $array[$value->uid] = $value->title;
+        }
+
+        echo json_encode($array);
+        exit;
     }
 
     public function get_all_wsp()

@@ -305,6 +305,20 @@
                         }
                     );
                 },
+                wsp_updated()
+                {
+                    parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.before);
+                    mel_metapage.Storage.remove(mel_metapage.Storage.title_workspaces);
+
+                    return mel_metapage.Functions.get(
+                        mel_metapage.Functions.url('workspace', 'get_joined_workspace_title'),
+                        {},
+                        (datas) => {
+                            mel_metapage.Storage.set(mel_metapage.Storage.title_workspaces, datas, false);
+                            parent.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.after, datas);
+                        }
+                    )
+                },
                 weather: async function() {
                     if (rcmail.env.mel_metapage_weather_enabled !== true) return;
 
@@ -398,6 +412,8 @@
                             rctasks.init();
 
                     }
+
+                    parent.rcmail.mel_metapage_fn.wsp_updated();
                     parent.rcmail.mel_metapage_fn.calendar_updated().always(() => {
                         parent.rcmail.mel_metapage_fn.tasks_updated();
                         parent.rcmail.mel_metapage_fn.mail_updated(true);
@@ -417,6 +433,7 @@
             parent.rcmail.addEventListener(mel_metapage.EventListeners.mails_updated.get, (x) => {
                 parent.rcmail.mel_metapage_fn.mail_updated((x.isFromRefresh === undefined ? false : x.isFromRefresh), (x.new_count === undefined ? null : x.new_count));
             });
+            parent.rcmail.addEventListener(mel_metapage.EventListeners.workspaces_updated.get, parent.rcmail.mel_metapage_fn.wsp_updated);
 
             parent.rcmail.enable_command("my_account", true);
             parent.rcmail.register_command("my_account", () => {

@@ -161,7 +161,8 @@ const mel_metapage = {
         /**
          * Lorsque le stockage est mis à jours.
          */
-        wsp_stockage_updated: new EventListenerDatas("mel_metapage.wsp_stockage_updated")
+        wsp_stockage_updated: new EventListenerDatas("mel_metapage.wsp_stockage_updated"),
+        workspaces_updated: new EventListenerDatas("workspace.updated")
     },
     /**
      * Différents clés de stockage local.
@@ -176,9 +177,9 @@ const mel_metapage = {
          * Récupère une donnée depuis le stockage local.
          * @param {string} key Clé de la donnée à récupérer.
          */
-        get(key) {
+        get(key, _default = null) {
             try {
-                return JSON.parse(window.localStorage.getItem(key));
+                return JSON.parse(window.localStorage.getItem(key)) ?? _default;
             } catch (error) {
                 return this.unexist;
             }
@@ -298,7 +299,8 @@ const mel_metapage = {
         wait_frame_waiting:"waiting...",
         wait_frame_loaded:"loaded",
         wait_call_loading:"mel_metapage.call.loading",
-        color_mode:'colorMode'
+        color_mode:'colorMode',
+        title_workspaces:'workspaces.title'
     },
     /**
      * Liste des symboles.

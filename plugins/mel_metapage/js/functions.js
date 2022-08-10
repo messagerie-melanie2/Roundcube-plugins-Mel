@@ -431,6 +431,8 @@ function m_mp_CreateWorkSpace() {
 
             window.create_popUp.close();
             delete window.create_popUp;
+            
+            top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get);
 
             if ($(".workspace-frame").length > 0 && $("iframe.workspace-frame").length === 0)
                 window.location.href = action.url;
@@ -449,103 +451,7 @@ function m_mp_CreateWorkSpace() {
 
                     $("iframe.workspace-frame")[0].src = mel_metapage.Functions.url("workspace", "workspace", config);
                 });
-            } else
-                window.location.href = action.url;
-
-            // if ($(".bureau-frame").length > 0)
-            // {
-            //     mel_metapage.Functions.call("update_workspaces", true, {
-            //         _uid:workspace_uid,
-            //         _integrated:true 
-            //     });
-            // }
-
-            // new Promise(async (i, e) => {
-            //     let finished_max = 1;
-            //     let finished = 0;
-            //     let itemsToSave = {};
-            //     data.uncreated_services = Enumerable.from(data.uncreated_services).select( x => x.value).toArray();
-            //     for (let index = 0; index < data.uncreated_services.length; index++) {
-            //         const element = data.uncreated_services[index];
-            //         switch (element) {
-            //             case "channel":
-            //                 $.ajax({ // fonction permettant de faire de l'ajax
-            //                     type: "POST", // methode de transmission des données au fichier php
-            //                     data: {
-            //                         "_roomname":data.workspace_uid,
-            //                         "_public":(datas.visibility === "public" ? true:false),
-            //                         "_users":data.existing_users
-            //                     },
-            //                     url: "/?_task=discussion&_action=create_chanel",
-            //                     success: function (ariane) {
-            //                         console.log("datas2", ariane);
-            //                         console.log("datas2", JSON.parse(ariane));
-            //                         ariane = JSON.parse(ariane);
-            //                         ariane.content = JSON.parse(ariane.content);
-            //                         console.log("all datas", ariane, data, datas);
-            //                         itemsToSave["ariane"] = {
-            //                             id:ariane.content.channel._id,
-            //                             name:ariane.content.channel.name
-            //                         };
-            //                         ++finished;
-            //                     },
-            //                     error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-            //                         console.error(xhr, ajaxOptions, thrownError);
-            //                         ++finished;
-            //                     },
-            //                 });
-            //                 break;
-
-            //             default:
-            //                 break;
-            //         }
-            //     }
-
-            //     await wait(() => { return finished !== finished_max;});
-            //     $.ajax({ // fonction permettant de faire de l'ajax
-            //         type: "POST", // methode de transmission des données au fichier php
-            //         data: {
-            //             "_uid":data.workspace_uid,
-            //             "_items":itemsToSave
-            //         },
-            //         url: "/?_task=workspace&_action=save_objects",
-            //         success: function (savedStates) {
-            //             savedStates = JSON.parse(savedStates);
-            //             console.log("savedStates", savedStates);
-            //             rcmail.set_busy(false);
-            //             rcmail.clear_messages();
-            //             rcmail.display_message("Espace de travail créer avec succès !", "confirmation")
-            //         },
-            //         error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-            //             console.error(xhr, ajaxOptions, thrownError);
-            //             rcmail.display_message("Error lors de la création d'un espace de travail !", "error");
-
-            //         },
-            //     }).always(() => {
-            //         //Solution temporaire
-            //         window.location.reload();
-            //     });
-
-
-
-            // }).always(() => {
-            //     window.create_popUp.close();
-            //     window.create_popUp = undefined;
-            // });
-            //rcmail.clear_messages();
-            // rcmail.display_message("Création d'un canal de discussion...", "loading");
-            // $.ajax({ // fonction permettant de faire de l'ajax
-            //     type: "POST", // methode de transmission des données au fichier php
-            //     data: datas,
-            //     url: "/?_task=discussion&_action=create_chanel",
-            //     success: function (data) {
-            //         console.log("datas2", data);
-            //         rcmail.clear_messages();
-            //     },
-            //     error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-            //         console.error(xhr, ajaxOptions, thrownError);
-            //     },
-            // });
+            } else window.location.href = action.url;
         },
         error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
             console.error(xhr, ajaxOptions, thrownError);

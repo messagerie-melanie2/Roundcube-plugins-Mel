@@ -274,7 +274,9 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 hideLobbyButton: true,
                 startWithAudioMuted: false,
                 startWithVideoMuted:true,
-                prejoinPageEnabled: false,
+                prejoinConfig: {
+                    enabled:false,
+                },
                 toolbarButtons: ['filmstrip'
                 // 'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
                 // 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',

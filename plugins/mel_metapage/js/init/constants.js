@@ -1187,6 +1187,68 @@ const mel_metapage = {
             parent.$("iframe.stockage-frame")[0].contentWindow.rcmail.env.nextcloud_gotourl = url;
 
             return this;
+        },
+
+        colors:{
+            kMel_Luminance(rgb) {
+                    let R = rgb[0] / 255
+                    let G = rgb[1] / 255
+                    let B = rgb[2] / 255
+                
+                    if (R <= 0.04045) { R = R /12.92 } else { R = ((R +0.055)/1.055) ** 2.4 }
+                    if (G <= 0.04045) { G = G /12.92 } else { G = ((G +0.055)/1.055) ** 2.4 }
+                    if (B <= 0.04045) { B = B /12.92 } else { B = ((B +0.055)/1.055) ** 2.4 }
+                
+                    const L = 0.2126 * R + 0.7152 * G + 0.0722 * B
+                
+                    return L
+                },
+                
+                kMel_CompareLuminance(rgb1, rgb2) {
+                    const l1 = kMel_Luminance(rgb1)
+                    const l2 = kMel_Luminance(rgb2)
+                
+                    let ratio
+                    if (l1 > l2) { ratio = l1 / l2 } else { ratio = l2 / l1 }
+                
+                    return ratio
+                },
+                
+                kMel_LuminanceRatioAAA(rgb1, rgb2) {
+                    const isAAA = kMel_CompareLuminance(rgb1, rgb2) > 7       
+                    return isAAA
+                },
+                
+                kMel_extractRGB (color) {
+                    let regexp = /#[a-fA-F\d]{6}/g
+                    let rgbArray = color.match(regexp)
+                
+                    if (rgbArray) {
+                        rgbArray[0] = parseInt(color.slice(1,3), 16)
+                        rgbArray[1] = parseInt(color.slice(3,5), 16)
+                        rgbArray[2] = parseInt(color.slice(5,7), 16)
+
+                        return rgbArray
+                    }
+                
+                    regexp = /#[a-fA-F\d]{3}/g
+                    rgbArray = color.match(regexp)
+                
+                    if (rgbArray) {
+                        rgbArray[0] = parseInt(color.slice(1,2), 16)
+                        rgbArray[1] = parseInt(color.slice(2,3), 16)
+                        rgbArray[2] = parseInt(color.slice(3,4), 16)
+
+                        return rgbArray
+                    }
+                
+                    regexp = /\d+/g;
+                    rgbArray = color.match(regexp);
+                
+                    if (rgbArray.length === 3 || rgbArray.length === 4) {
+                        return rgbArray
+                    }
+                },
         }
 
 

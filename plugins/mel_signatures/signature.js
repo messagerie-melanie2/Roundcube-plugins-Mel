@@ -252,6 +252,10 @@ function getSignatureHTML(embeddedImage = true, images_url = "", isOutlook = fal
     signature_html = signature_html.replace('%%TEMPLATE_SERVICE%%', service ? service + '<br>' : '');
     signature_html = signature_html.replace(/%%TEMPLATE_DIRECTION%%/g, document.getElementById("input-department").value);
 
+    // Logo type
+    let select_logotype = document.getElementById("select-logo-type");
+    signature_html = createLogoType(select_logotype.options[select_logotype.selectedIndex].value, signature_html, isOutlook);
+
     // Gestion des liens
     let checkboxes = document.querySelectorAll("#input-links input");
     let links = "";
@@ -387,6 +391,31 @@ function createLogo(htmlLogo) {
     span.style = "font-size:15.25px;font-weight:bold;line-height:16.25px;color:#000;";
     span.innerHTML = htmlLogo;
     return span.outerHTML;
+}
+
+/**
+ * Retourne le logotype en html
+ */
+ function createLogoType(htmlLogo, signature_html, isOutlook) {
+    if (htmlLogo == 'custom') {
+        document.querySelector(".grid-form .custom-logotype").style.display = 'block';
+        htmlLogo = document.querySelector("#input-logo-type").value.replace(/\r?\n/g, '<br>');
+
+        let logo_type = document.createElement('span');
+        logo_type.style = "display:block;font-weight:bold;font-size:9pt;line-height:9pt;color:#000;max-width:200px;";
+        logo_type.innerText = htmlLogo;
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE%%/g, logo_type.outerHTML);
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_BORDER%%/g, "1.5px solid #3c3c3c");
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_PADDING%%/g, "0 0 15px 15px");
+    }
+    else {
+        document.querySelector(".grid-form .custom-logotype").style.display = 'none';
+        htmlLogo = createImage(rcmail.env.logotype_sources[htmlLogo], 'Logo type signature', isOutlook, 'logotype');
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE%%/g, htmlLogo);
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_BORDER%%/g, "none");
+        signature_html = signature_html.replace(/%%TEMPLATE_LOGO_TYPE_PADDING%%/g, "0 0 0 30px");
+    }
+    return signature_html;
 }
 
 /**

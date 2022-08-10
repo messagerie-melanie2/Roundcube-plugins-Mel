@@ -467,83 +467,6 @@ rcube_webmail.prototype.mel_label_toggle = function(toggle_label) {
 	//rcmail.hide_menu('tb_label_popup');
 };
 
-function kMel_Luminance(rgb) {
-	//    console.log("kMel_Luminance")
-	
-		let R = rgb[0] / 255
-		let G = rgb[1] / 255
-		let B = rgb[2] / 255
-	
-		if (R <= 0.04045) { R = R /12.92 } else { R = ((R +0.055)/1.055) ** 2.4 }
-		if (G <= 0.04045) { G = G /12.92 } else { G = ((G +0.055)/1.055) ** 2.4 }
-		if (B <= 0.04045) { B = B /12.92 } else { B = ((B +0.055)/1.055) ** 2.4 }
-	
-		const L = 0.2126 * R + 0.7152 * G + 0.0722 * B
-	
-	//    console.log('Luminance (' + rgb[0] + "," + rgb[1] + "," + rgb[2] + ') = ' + L)
-	
-		return L
-	}
-	
-	function kMel_CompareLuminance(rgb1, rgb2) {
-	//    console.log("kMel_CompareLuminance")
-	
-		const l1 = kMel_Luminance(rgb1)
-		const l2 = kMel_Luminance(rgb2)
-	
-		let ratio
-		if (l1 > l2) { ratio = l1 / l2 } else { ratio = l2 / l1 }
-	
-	//    console.log("Ratio = " + ratio + ":1")
-	
-		return ratio
-	}
-	
-	function kMel_LuminanceRatioAAA(rgb1, rgb2) {
-	//    console.log("kMel_LuminanceRatioAAA")
-		// AAA =  7:1
-		// AA = 4.5:1
-	
-		const isAAA = kMel_CompareLuminance(rgb1, rgb2) > 7
-	
-	//    console.log('Luminance ratio is AAA (> 7:1) : ' + isAAA)
-	
-		return isAAA
-	}
-	
-	function kMel_extractRGB (color) {
-	//    console.log("kMel_extractRGB")
-	
-		let regexp = /#[a-fA-F\d]{6}/g
-		let rgbArray = color.match(regexp)
-	
-		if (rgbArray) {
-			rgbArray[0] = parseInt(color.slice(1,3), 16)
-			rgbArray[1] = parseInt(color.slice(3,5), 16)
-			rgbArray[2] = parseInt(color.slice(5,7), 16)
-	//        console.log('rgbArray = ' + rgbArray)
-			return rgbArray
-		}
-	
-		regexp = /#[a-fA-F\d]{3}/g
-		rgbArray = color.match(regexp)
-	
-		if (rgbArray) {
-			rgbArray[0] = parseInt(color.slice(1,2), 16)
-			rgbArray[1] = parseInt(color.slice(2,3), 16)
-			rgbArray[2] = parseInt(color.slice(3,4), 16)
-	//        console.log('rgbArray = ' + rgbArray)
-			return rgbArray
-		}
-	
-		regexp = /\d+/g;
-		rgbArray = color.match(regexp);
-	
-		if (rgbArray.length === 3 || rgbArray.length === 4) {
-	//        console.log('rgbArray = ' + rgbArray)
-			return rgbArray
-		}
-	}
 	
 	//kMel_LuminanceRatioAAA(kMel_extractRGB('#1A2F34'), kMel_extractRGB('rgb(230, 199, 66)')) 
 
@@ -586,45 +509,6 @@ $(document).ready(function() {
 		});
 	} 
 	else {
-
-		function luminance(r, g, b) {
-			var a = [r, g, b].map(function (v) {
-				v /= 255;
-				return v <= 0.03928
-					? v / 12.92
-					: Math.pow( (v + 0.055) / 1.055, 2.4 );
-			});
-			return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-		}
-		function contrast(rgb1, rgb2) {
-			var lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
-			var lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
-			var brightest = Math.max(lum1, lum2);
-			var darkest = Math.min(lum1, lum2);
-			return (brightest + 0.05)
-				 / (darkest + 0.05);
-		}
-
-		function hexToRgb(hex) {
-			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-			return result ? {
-			  r: parseInt(result[1], 16),
-			  g: parseInt(result[2], 16),
-			  b: parseInt(result[3], 16)
-			} : null;
-		  }
-
-		  function componentToHex(c) {
-			var hex = c.toString(16);
-			return hex.length == 1 ? "0" + hex : hex;
-		  }
-		  
-		  function rgbToHex(r, g, b) {
-			return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-		  }
-		  
-		
-
 		$.each(rcmail.env.labels_color, function(id, val) {
 
 			if (val === null) val = "#737373";
@@ -632,7 +516,7 @@ $(document).ready(function() {
 			const default_h = "#FFFFFF";
 			let textcolor = default_h;
 
-			if (!kMel_LuminanceRatioAAA(kMel_extractRGB(val), kMel_extractRGB(textcolor)))	textcolor = 'black'; 
+			if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB(val), mel_metapage.Functions.colors.kMel_extractRGB(textcolor)))	textcolor = 'black'; 
 
 			id = id.replace('~', '').replace(/\./g,'\\.');
 			css += "#messagelist tr.label_" + id + " td,\n";

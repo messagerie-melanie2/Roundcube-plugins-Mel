@@ -112,26 +112,42 @@ class Mel_Color{
 
     public function need_black_text()
     {
-        $value = false;
+        return !$this->luminance_ratio_AAA(new Mel_Color(255, 255, 255));
+    }
 
-        $r = $this->get_red();
-        $b = $this->get_blue();
-        $g = $this->get_green();
+    public function compare_AAA($color)
+    {
+        return $this->luminance_ratio_AAA($color);
+    }
 
-        $max1 = 178;
-        $max2 = 136;
+    private function luminance()
+    {
+        $R = $this->get_red() / 255;
+        $G = $this->get_green() / 255;
+        $B = $this->get_blue() / 255;
 
-        $have_max_1 = $r >= $max1 || $g >= $max1 || $b >= $max1;
+        if ($R <= 0.04045) { $R = $R /12.92; } else { $R = (($R +0.055)/1.055) ** 2.4; }
+        if ($G <= 0.04045) { $G = $G /12.92; } else { $G = (($G +0.055)/1.055) ** 2.4; }
+        if ($B <= 0.04045) { $B = $B /12.92; } else { $B = (($B +0.055)/1.055) ** 2.4; }
 
-        if ($have_max_1)
-        {
-            if ($r >= $max1) $value = $g >= $max2 && $b >= $max2;
-            else if ($g >= $max1) $value = $r >= $max2 && $b >= $max2;
-            else $value = $r >= $max2 && $g >= $max2;
-        }
+        return 0.2126 * $R + 0.7152 * $G + 0.0722 * $B;
+    }
 
-        return $value;
+    private function compare_luminance($color)
+    {
+        $l1 = $this->luminance();
+        $l2 = $color->luminance();
 
+        $ratio;
+        if ($l1 > $l2) { $ratio = $l1 / $l2; } else { $ratio = $l2 / $l1; }
+
+        return $ratio;
+    }
+
+    private function luminance_ratio_AAA($color)
+    {
+        $isAAA = $this->compare_luminance($color) > 7;
+        return $isAAA;
     }
 
     public function lighter($coef = 10)

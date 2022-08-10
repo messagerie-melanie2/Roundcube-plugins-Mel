@@ -44,6 +44,7 @@ if(!empty($_GET['email'])){
 
 $env_links = [];
 $sources = [];
+$logotype_sources = [];
 
 /**
  * Retrouve le nom de la direction en fonction de l'acronyme et du DN de l'utilisateur
@@ -53,22 +54,40 @@ $sources = [];
  * 
  * @return string Nom complet de la direction
  */
-function get_direction_name($direction, $dn = null) {
-  global $rcmail_config;
+function get_direction_name(&$direction, &$subdirection, &$service, $dn = null) {
+  // Gestion de la direction
   $pos = strpos($dn, "ou=$direction,");
-  if ($pos !== false && !APPLICATION_LOCALE) {
-      $searchDN = substr($dn, $pos);
-      $ou = new LibMelanie\Api\Mel\User();
-      $ou->dn = $searchDN;
-      if ($ou->load(['observation'])) {
-          $direction = $ou->observation;
+  if ($pos !== false) {
+      $res = get_dn_label(substr($dn, $pos));
+      if (isset($res)) {
+          $direction = $res; 
       }
   }
-  else {
-      $directions = $rcmail_config['signature_directions'];
-      $direction = $directions[$direction] ?: $direction;
+
+  // Gestion de la sous direction
+  $pos = strpos($dn, "ou=$subdirection,");
+  if ($pos !== false) {
+      $res = get_dn_label(substr($dn, $pos));
+      if (isset($res) && (strpos(strtolower($res), 'direction') === 0 || !isset($service))) {
+          $subdirection = $res; 
+      }
+      else if (isset($service)) {
+          $service = "$subdirection/$service";
+          $subdirection = null;
+      }
   }
-  return $direction;
+}
+
+/**
+ * Retourne l'observation à partir d'un dn
+ */
+function get_dn_label($dn) {
+  $ou = new LibMelanie\Api\Mel\User();
+  $ou->dn = $dn;
+  if ($ou->load(['observation'])) {
+      return $ou->observation;
+  }
+  return null;
 }
 
 /**
@@ -101,6 +120,20 @@ function get_default_url($dn, $links) {
       }
   }
   return isset($links['default']) ? $links['default'] : null;
+}
+
+/**
+ * Return the default logotype for the user dn
+ * 
+ * @return string default logotype
+ */
+function get_default_logotype($dn, $logotype) {
+  foreach ($logotype as $serviceDN => $link) {
+      if (strpos($dn, $serviceDN) !== false) {
+          return $link;
+      }
+  }
+  return isset($logotype['default']) ? $logotype['default'] : null;
 }
 
 /**
@@ -149,6 +182,41 @@ function logo() {
   $sources[$rcmail_config['signature_image_marianne']] = image_data($rcmail_config['signature_image_marianne_outlook']);
   $sources[$rcmail_config['signature_image_devise']] = image_data($rcmail_config['signature_image_devise_outlook']);
   $sources[$rcmail_config['signature_image_other_logo']] = image_data($rcmail_config['signature_image_other_logo_outlook'] ?: $rcmail_config['signature_image_other_logo']);
+  $html .= '</select>';
+  return $html;
+}
+
+/**
+ * Handler pour le choix du logotype
+ */
+function logotype() {
+  global $user, $rcmail_config, $logotype_sources;
+  $html = '<select name="logotype" class="browser-default" id="select-logo-type" onchange="onInputChange();">';
+  $default_image = get_default_logotype($user->dn, $rcmail_config['signature_default_logotype']);
+  foreach ($rcmail_config['signature_logotype_images'] as $name => $logo) {
+    if (is_array($logo)) {
+      $logo_html = "";
+      foreach ($logo as $n => $l) {
+        if ($default_image == $n) {
+          $logo_html .= '<option value="'.$l.'" selected="selected">'.$n.'</option>';
+        }
+        else {
+          $logo_html .= '<option value="'.$l.'">'.$n.'</option>';
+        }
+        $logotype_sources[$l] = image_data(str_replace('.gif', '.png', $l));
+      }
+      $html .= '<optgroup label="'.$name.'">'.$logo_html.'</optgroup>';
+    }
+    else {
+      if ($default_image == $name) {
+        $html .= '<option value="'.$logo.'" selected="selected">'.$name.'</option>';
+      }
+      else {
+        $html .= '<option value="'.$logo.'">'.$name.'</option>';
+      }
+      $logotype_sources[$logo] = image_data(str_replace('.gif', '.png', $logo));
+    }
+  }
   $html .= '</select>';
   return $html;
 }
@@ -211,13 +279,21 @@ if ($userLoaded) {
   
   $observation = $user->observation;
   if (isset($user->service)) {
-    $tmp = explode('/', $user->service, 2);
-    $direction  = get_direction_name($tmp[0], $user->dn);
-    $service    = $tmp[1];
+    $tmp = explode('/', $user->service, 3);
+
+    $direction = $tmp[0];
+    $subdirection = $tmp[1] ?: null;
+    $service = $tmp[2] ?: null;
+                
+    get_direction_name($direction, $subdirection, $service, $user->dn);
+
+    $logotype = $direction;
+    $direction = isset($subdirection) ? "$subdirection | $direction" : $direction;
   }
   else {
     $direction  = '';
     $service    = '';
+    $logotype   = '';
   }
   
   $address      = str_replace("\r\n", ' ', $user->street . " " . $user->postalcode . " " . $user->locality);
@@ -229,6 +305,7 @@ else {
   $name = "Prénom NOM";
   $service    = "Service";
   $direction  = "Direction";
+  $logotype   = "Direction";
   $observation = "Fonction";
   $address      = "Adresse";
   $phonenumber  = "";
@@ -274,7 +351,7 @@ else {
     <div class="container card hoverable">
       <div class="row sig-header">
         <div class="col s6 valign top-logo-img">
-        <img src="img/logo_pole.png?v=20220603153155" alt="Ministères de la Transition écologique, de la Cohésion des Territoires, de la Transition énergétique et de la Mer" class="logo_pole">
+        <img src="img/logo_pole.png" alt="Ministères de la Transition écologique, de la Cohésion des Territoires et de la Mer" class="logo_pole">
         </div>
       </div>
 
@@ -346,6 +423,14 @@ else {
                     <div class="form-section custom-logo">
                       <label for="input-custom-logo">Logo personnalisé</label>
                       <textarea type="text" id="input-custom-logo" onkeyup="onInputChange();" value=""></textarea>
+                    </div>
+                    <div class="form-section">
+                      <label for="select-logo-type">Logo type</label>
+                      <?= logotype() ?>
+                    </div>
+                    <div class="form-section custom-logotype">
+                      <label for="input-logo-type">Logo type personnalisé</label>
+                      <input type="text" id="input-logo-type" onkeyup="onInputChange();" value="<?= $logotype ?>">
                     </div>
                 </div>
             </div>
@@ -441,12 +526,16 @@ else {
     // Variable d'env
     rcmail.env.signature_links = {};
     rcmail.env.logo_sources = {};
+    rcmail.env.logotype_sources = {};
     <?php
       foreach ($env_links as $key => $value) {
         echo "rcmail.env.signature_links['$key'] = '$value';\r\n";
       }
       foreach ($sources as $key => $value) {
         echo "rcmail.env.logo_sources['$key'] = '$value';\r\n";
+      }
+      foreach ($logotype_sources as $key => $value) {
+        echo "rcmail.env.logotype_sources['$key'] = '$value';\r\n";
       }
       echo "rcmail.env.logo_url_marianne = '$rcmail_config[signature_image_marianne]';\r\n";
       echo "rcmail.env.logo_url_marianne_outlook = '$rcmail_config[signature_image_marianne_outlook]';\r\n";

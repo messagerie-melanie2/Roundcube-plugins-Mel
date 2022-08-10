@@ -624,7 +624,26 @@ if (rcmail && window.mel_metapage)
         if (event.categories !== undefined && event.categories.length > 0)
         {
             const isWsp = event.categories[0].includes("ws#");
-            html += `<div class=row style="margin-top:5px"><div class=col-12><span ${isWsp ? "" : `style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"`} class="${isWsp ? "icon-mel-workplace" : "icon-mel-label-full"} mel-cal-icon"></span><span ${!isWsp ? "" : `style="color:#${rcmail.env.calendar_categories[event.categories[0]]}"`} >${isWsp ?  event.categories[0].replace("ws#", "") : event.categories[0]}</span></div></div>`;
+            if (isWsp) 
+            {
+                const wsp = event.categories[0].replace("ws#", "");
+                const wsp_name = mel_metapage.Storage.get(mel_metapage.Storage.title_workspaces, wsp)[wsp] ?? wsp;
+                html += `<div class=row style="margin-top:5px">
+                                    <div class=col-12>
+                                        <span class="icon-mel-workplace mel-cal-icon"></span>
+                                        <a class='a-event-wsp-link' href="${mel_metapage.Functions.url('workspace', 'workspace', {_uid:wsp})}" style="color:#${rcmail.env.calendar_categories[event.categories[0]]}" >${wsp_name}</a>
+                                    </div>
+                                </div>`;
+            }
+            else {
+                html += `<div class=row style="margin-top:5px">
+                            <div class=col-12>
+                                <span style="color:#${rcmail.env.calendar_categories[event.categories[0]]}" class="icon-mel-label-full mel-cal-icon"></span>
+                                <span>${event.categories[0]}</span>
+                            </div>
+                        </div>`;
+            }
+            
         }
 
         html += "<div style=font-size:1rem>";
@@ -733,7 +752,13 @@ if (rcmail && window.mel_metapage)
 
         const config = new GlobalModalConfig(title, "default", html);
         let modal = new GlobalModal("globalModal", config, true);
-        modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem");
+        modal.modal.find(".modal-lg")/*.removeClass("modal-lg")*/.css("font-size", "1.2rem")
+        .find('.a-event-wsp-link').click((e) => {
+            e.preventDefault();
+            mel_metapage.Functions.change_page('workspace', 'workspace', {
+                _uid:event.categories[0].replace("ws#", "")
+            }, true);
+        });
 
         //Gérer le titre
         modal.header.querry.css("position", "sticky")

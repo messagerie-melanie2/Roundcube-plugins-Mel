@@ -243,7 +243,9 @@
             return this.ajax(this.url("join_user"), {
                 _uid:this.uid
             }).always(() => {
-                window.location.reload();
+                top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get).then(() => {
+                    window.location.reload();
+                });
             });
         }
 
@@ -519,8 +521,10 @@
                             rcmail.display_message("Vous êtes le seul administrateur, si vous souhaitez quittez, ajoutez un autre administrateur avant.", "error");
                         break;
                         default:
-                            this.update_home();
-                            this.quit();
+                            top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get).then(() => {
+                                this.update_home();
+                                this.quit();
+                            });
                             break;
                     }
                 },

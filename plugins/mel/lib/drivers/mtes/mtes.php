@@ -217,12 +217,12 @@ class mtes_driver_mel extends mce_driver_mel {
       }
     }
     // Si on est sur Internet, vérifier que l'utilisateur a la double auth
-    if ($hasAccess 
-        && !mel::is_internal() 
+    // ou une auth Cerbère suffisante (carte agent, double auth, etc)
+    if($hasAccess
+        && !mel::is_auth_strong()
         && class_exists('mel_doubleauth')
-        && !mel_doubleauth::is_double_auth_enable()) {
-      $hasAccess = false;
-    }
+        && !mel_doubleauth::is_double_auth_enable()) { $hasAccess = false; }
+        
     return $hasAccess;
   }
   

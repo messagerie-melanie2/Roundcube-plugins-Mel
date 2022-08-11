@@ -1125,16 +1125,34 @@ class mel extends rcube_plugin
   }
 
   /**
-   * Défini si on est dans une instance interne ou extene de l'application
+   * Définit si on est dans une instance interne ou externe de l'application
    * Permet la selection de la bonne url
+   * 
+   * @return boolean
    */
   public static function is_internal()
   {
-    if (isset($_GET['internet'])) {
-      return false;
-    }
+    if (isset($_GET['internet'])) { return false; }
+
     return rcmail::get_instance()->config->get('is_internal', false);
   }
+
+  /**
+   * Définit si on est dans une situation où l'auth est assez forte
+   * Permet de ne pas déclencher la double auth, ou d'accéder à stockage via internet
+   * 
+   * @return boolean
+   */
+  public static function is_auth_strong() 
+  {
+    $eidas = $_SESSION['eidas'];
+    //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
+  
+    return mel::is_internal() // Connexion intranet
+      || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
+      || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
+  }
+  
   /**
    * Retourne l'adresse ip
    * @return string

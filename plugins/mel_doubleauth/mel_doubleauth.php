@@ -897,16 +897,13 @@ class mel_doubleauth extends rcube_plugin {
     /**
      * Définit si on est dans une situation où l'auth est assez forte
      * Permet de ne pas déclencher la double auth
+     * 
+     * @return boolean
      */
     private function is_auth_strong() 
     {
-        $eidas = $_SESSION['eidas'];
-        //$cookie_eidas = explode('###', $_COOKIE['eidas'])[1];
-  
-        return $this->is_internal() // Connexion intranet
-          || $eidas == "eidas2" // Cerbère 2FA (MelOTP, Yubikey, clé U2F)
-          || $eidas == "eidas3"; // Cerbère Certif (logiciel RGS1, carte à puce RGS3)
-      }
+        return mel::is_auth_strong();
+    }
     
     /**
      * Replacing specials characters to a specific encoding type

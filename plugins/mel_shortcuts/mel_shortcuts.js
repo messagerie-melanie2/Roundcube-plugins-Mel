@@ -338,6 +338,7 @@ var mel_shortcuts_down = {
   'menu.discussion': {
     keydown: 52, // Ctrl + Shift + 4
     ctrl: true,
+    shift: true,
     active: function(e) { return rcmail.task != 'discussion'; },
     action: function(e) {
       return rcmail.command('switch-task', 'discussion', e.target, e);
@@ -355,6 +356,7 @@ var mel_shortcuts_down = {
   'menu.tasks': {
       keydown: 55, // Ctrl + Shift + 7
       ctrl: true,
+      shift: true,
       active: function(e) { return rcmail.task != 'tasks'; },
       action: function(e) {
         return rcmail.command('switch-task', 'tasks', e.target, e);
@@ -363,6 +365,7 @@ var mel_shortcuts_down = {
   'menu.stockage': {
       keydown: 54, // Ctrl + Shift + 6
       ctrl: true,
+      shift: true,
       active: function(e) { return rcmail.task != 'stockage'; },
       action: function(e) {
         return rcmail.command('switch-task', 'stockage', e.target, e);

@@ -30,6 +30,7 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
 {
     function where($selector) : IMel_Enumerable;
     function select($selector) : IMel_Enumerable;
+    function groupBy($key_selector, $value_selector = null) : IMel_Enumerable;
     function any($selector = null) : bool;
     function toArray() : array;
     function toDictionnary($key_selector, $value_selector) : array;
@@ -66,6 +67,10 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
 
     public function select($selector) : IMel_Enumerable {
         return new Mel_Select($this, $selector);
+    }
+
+    public function groupBy($key_selector, $value_selector = null) : IMel_Enumerable {
+        return new Mel_GroupBy($this, $key_selector, $value_selector);
     }
 
     public function toArray() : array
@@ -187,6 +192,30 @@ class Mel_Select extends Mel_Where{
     public function getIterator() : Traversable {
         foreach ($this->array_like as $key => $value) {      
             yield call_user_func($this->selector, $key, $value);
+        }
+    }
+}
+
+class Mel_GroupBy extends Mel_Where
+{
+    protected $value_selector;
+    public function __construct($iterable, $key_selector, $value_selector = null)
+    {
+        parent::__construct($iterable, $key_selector);
+        $this->value_selector = $value_selector;
+    }
+
+    public function getIterator() : Traversable {
+        foreach ($this->array_like as $key => $value) {  
+            $arr = [];    
+            $key = call_user_func($this->selector, $key, $value);
+
+            foreach ($this->array_like as $skey => $svalue) {
+                if (call_user_func($this->selector, $skey, $svalue) === $key) $arr[] = (isset($this->value_selector) ? call_user_func($this->value_selector, $skey, $svalue) : $svalue);
+            }
+
+            yield new KeyValue($key, $arr);
+            $arr = null;
         }
     }
 }

@@ -178,7 +178,7 @@ class mel_news extends rcube_plugin {
       $enum = mel_helper::Enumerable($array[$uid]);
       foreach ($newsShares as $newsShare) {
         $service = $newsShare->service;
-        if ($enum->any(function ($v, $k) use ($service) {return $v["key"] === $service && $v["value"] === "";}))
+        if ($enum->any(function ($k, $v) use ($service) {return $k === $service && $v === "";}))
         {
           $newsShare->delete();
           $newsShare->save();
@@ -1337,7 +1337,7 @@ class mel_news extends rcube_plugin {
       $allParentRights = driver_mel::gi()->getUser($user)->getUserNewsShares();
 
       return mel_helper::Enumerable($allParentRights)->any(
-        function ($v, $k) use ($service) {
+        function ($k, $v) use ($service) {
           return (($v->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_ADMIN_PUBLISHER 
         || $v->right === LibMelanie\Api\Defaut\News\NewsShare::RIGHT_PUBLISHER)
         && strpos($service, $v->service) !== false);

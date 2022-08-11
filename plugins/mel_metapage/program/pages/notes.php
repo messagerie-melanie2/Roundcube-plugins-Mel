@@ -115,7 +115,7 @@ class Notes extends Page
 
         do {
             $uid = $base_uid.($it++);
-        } while ($enum->any(function ($v, $k) use($uid) { return $v["uid"] === $uid; }));
+        } while ($enum->any(function ($k, $v) use($uid) { return $v["uid"] === $uid; }));
 
         return $uid;
     }

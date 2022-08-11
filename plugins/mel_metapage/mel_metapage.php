@@ -2191,7 +2191,7 @@ class mel_metapage extends rcube_plugin
         $config = $plugin['config'] ?? $config;
       }
 
-      $is_suspect = mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
+      $is_suspect = mel_helper::Enumerable($config)->any(function ($k, $v) use($message) {
         if (strpos($message, $v) === false && !mel_helper::parse_url($v)->not_have_path_and_check_base_url($message))
         {
             if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
@@ -2237,7 +2237,7 @@ class mel_metapage extends rcube_plugin
             $config = $plugin['config'] ?? $config;
         }
 
-        $is_bloqued = mel_helper::Enumerable($config)->any(function ($v, $k) use($message) {
+        $is_bloqued = mel_helper::Enumerable($config)->any(function ($k, $v) use($message) {
             if (strpos($message, $v) === false)
             {
                 if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);

@@ -1,229 +1,192 @@
 <?php
-interface Mel_Module_Enumerable
-{
-    public function run($previousArray = null);
-    public function runWithoutGenerator($previousArray = null);
-    public function isIterable();
-    public function isRunWithGenerator();
+
+interface IKeyValue {
+    function get_key();
+    function get_value();
 }
 
-class Mel_Enumerator implements Mel_Module_Enumerable{
-    protected $array;
-    protected $selectorList;
-    protected $run;
+class KeyValue implements IKeyValue
+{
+    public const NO_KEY = '¤¤¤¤¤¤Mel_NO_KEY_z4ef654ezf6ze7f86ezf5zeez¤¤¤¤¤$*ù';
 
-    protected function __construct($array, $selectorList = [])
-    {
-        $this->array = $array;
-        $this->selectorList = $selectorList;
-        $this->run = false;
-    } 
+    private $key;
+    private $value;
 
-    public function where($selector)
-    {
-        return new Mel_Where_Enumerable($selector, array_merge($this->selectorList ?? [], [$this]));
+    public function __construct($key, $value) {
+        $this->key = $key;
+        $this->value = $value;
     }
 
-    public function any($selector = null)
-    {
-        if ($selector === null)
-            return $this->count() !== 0;
-        else 
-            return (new Mel_Any_Enumerable($selector, array_merge($this->selectorList ?? [], [$this])))->runAll();
+    public function get_key() {
+        return $this->key;
     }
 
-    public function run($previousArray = null)
-    {
-        if ($previousArray === null)
-            $previousArray = $this->array;
+    public function get_value() {
+        return $this->value;
+    }
+}
 
-        foreach ($previousArray as $key => $value) {
-            yield ["key" => $key, "value" => $value];
+interface IMel_Enumerable extends IteratorAggregate, Countable  
+{
+    function where($selector) : IMel_Enumerable;
+    function select($selector) : IMel_Enumerable;
+    function any($selector = null) : bool;
+    function toArray() : array;
+    function toDictionnary($key_selector, $value_selector) : array;
+}
+
+abstract class AMel_Enumerable implements IMel_Enumerable
+{
+    protected $array_like;
+    public function __construct($array_like_or_iterable) {
+        $this->array_like = $array_like_or_iterable;
+    }
+
+    public abstract function update();
+
+    protected function is_assoc($array)
+    {
+        if ([] === $array) return false;
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+}
+
+class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
+{
+    private $count;
+    protected function __construct($a) {
+        parent::__construct($a);
+
+        if (is_array($a)) $this->count = count($a);
+    }
+
+    public function where($selector) : IMel_Enumerable {
+        return new Mel_Where($this, $selector);
+    }
+
+    public function select($selector) : IMel_Enumerable {
+        return new Mel_Select($this, $selector);
+    }
+
+    public function toArray() : array
+    {
+        $array = [];
+        foreach ($this as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue')) $array[$value->get_key()] = $value->get_value();
+            else $array[$key] = $value;
         }
+
+        return $array;
     }
 
-    public function runWithoutGenerator($previousArray = null)
+    public function any($selector = null) : bool
     {
-        if ($previousArray === null)
-            $previousArray = $this->array;
+        foreach ($this as $key => $value) {
+            if (!isset($selector)) return true;
+            else {
+                if (is_subclass_of($value, 'IKeyValue')) 
+                {
+                    $key = $value->get_key();
+                    $value = $value->get_value();
+                }
 
-        return $previousArray;
-    }
+                if (call_user_func($selector, $key, $value)) return true;
+            }
+        }
 
-    public function isRunWithGenerator()
-    {
         return false;
     }
 
-    protected function runAll()
+    public function count() : int
     {
-        $array = [];
-        $lastArray = null;
-        $isLast = false;
-        $allRunnable = array_merge($this->selectorList, [$this]);
-        foreach ($allRunnable as $runnable) {
-            if ($runnable->isIterable())
-            {
-                if ($runnable->isRunWithGenerator())
-                {
-                    foreach ($runnable->run($lastArray) as $value) {
-                            $array[] = $value;
-                    }
+        if (!isset($this->count))  {
+            $this->count = 0;
 
-                    $lastArray = $array;
-                }
-                else $lastArray = $runnable->runWithoutGenerator($lastArray);
-
-                $array = [];
-            }
-            else
-            {
-                $array = [];
-                $lastArray = $runnable->run($lastArray);
-                break;
+            foreach ($this as $key => $value) {
+                ++$this->count;
             }
         }
 
-        if (count($array) === 0)
-            $array = $lastArray;
-
-        $this->selectorList = [$this];
-        $this->array = $array;
-        $this->run = true;
-
-        return $array;
+        return $this->count;
     }
 
-    public function count()
-    {
-        return count($this->runAll());
-    }
-
-    public function toArray()
-    {
+    public function toDictionnary($key_selector, $value_selector) : array {
         $array = [];
-
-        foreach ($this->generateArray() as $value) {
-            $array[] = $value;
+        foreach ($this as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue')) 
+            {
+                $key = $value->get_key();
+                $value = $value->get_value();
+            }
+            
+            $array[call_user_func($key_selector, $key, $value)] = call_user_func($value_selector, $key, $value);
         }
 
         return $array;
     }
 
-    public function generateArray()
-    {
-        $array = $this->runAll();
+    public function getIterator() : Traversable {
 
-        foreach ($array as $value) {
-            yield $value["value"];
+        if ($this->is_assoc($this->array_like))
+        {
+            foreach ($this->array_like as $key => $value) {
+                yield new KeyValue($key, $value);
+            }
         }
-    }
-
-    public function isIterable()
-    {
-        return true;
-    }
-
-    public function first()
-    {
-        foreach ($this->generateArray() as $value) {
-            return $value;
+        else {
+            foreach ($this->array_like as $key => $value) {
+                yield $key => $value;
+            }
         }
 
-        throw new Exception("Rien n'a été trouvé !");
     }
 
-    public function firstOrDefault($default = null)
+    public function update()
     {
-        try {
-            return $this->first();
-        } catch (\Throwable $th) {
-            return $default;
+        $array = [];
+
+        foreach ($this as $key => $value) {
+            $array[$key] = $value;
         }
+
+        $this->array_like = $array;
+
+        return $this;
     }
 
-    public static function from($arrayLike)
-    {
-        return new Mel_Enumerator($arrayLike);
+    static function from($iterable) : IMel_Enumerable {
+        return new Mel_Enumerable($iterable);
     }
-
 }
 
-class Mel_Where_Enumerable extends Mel_Enumerator implements Mel_Module_Enumerable
-{
+class Mel_Where extends Mel_Enumerable {
     protected $selector;
 
-    public function __construct($selector, $selectorList = [])
-    {
-        $this->array = null;
+    public function __construct($a, $selector) {
+        parent::__construct($a);
         $this->selector = $selector;
-        $this->selectorList = $selectorList;
-    } 
-
-    public function isRunWithGenerator()
-    {
-        return true;
     }
 
-    public function run($previousArray = null)
-    {
-        if ($this->array === null)
-        {
-            if ($previousArray === null)
-                $previousArray = $selectorList[0]->run();
-
-            foreach ($previousArray as $key => $value) {
-                if (call_user_func($this->selector, $value, $key) === true)
-                    yield ["key" => $key, "value" => $value];
+    public function getIterator() : Traversable {
+        foreach ($this->array_like as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue')) 
+            {
+                if (call_user_func($this->selector, $value->get_key(), $value->get_value())) yield $value;
             }
+            else if (call_user_func($this->selector, $key, $value)) yield $value;
         }
-        else{
-            foreach ($previousArray as $key => $value) {
-                    yield $value;
-            }         
-        }
-    }
-
-    public function runWithoutGenerator($previousArray = null)
-    {
-        $array = [];
-
-        foreach ($this->run($previousArray) as  $value) {
-            $array[] = $value;
-        }
-
-        return $array;
-    }
-
-    public function isIterable()
-    {
-        return true;
     }
 }
 
-class Mel_Any_Enumerable extends Mel_Where_Enumerable 
-{
-    public function __construct($selector, $selectorList = [])
+class Mel_Select extends Mel_Where{
+    public function __construct($iterable, $selector)
     {
-        parent::__construct($selector, $selectorList);
-    } 
+        parent::__construct($iterable, $selector);
+    }
 
-    public function run($previousArray = null)
-    {
-        foreach (parent::run($previousArray) as $value) {
-            return true;
+    public function getIterator() : Traversable {
+        foreach ($this->array_like as $key => $value) {      
+            yield call_user_func($this->selector, $key, $value);
         }
-
-        return false;
-    }
-
-    public function runWithoutGenerator($previousArray = null)
-    {
-        return $this->run($previousArray);
-    }
-
-    public function isIterable()
-    {
-        return false;
     }
 }

@@ -205,7 +205,7 @@ class mel_helper extends rcube_plugin
     public static function Enumerable($arrayLike)
     {
         include_once "lib/mel_linq.php";
-        return Mel_Enumerator::from($arrayLike);
+        return Mel_Enumerable::from($arrayLike);
     }
 
     public static function get_service_name($dn)

@@ -155,6 +155,8 @@ class roundcube_auth extends rcube_plugin
         $this->include_script('roundcube_auth.js');
     }
 
+
+
     /**
      * @see https://gist.github.com/tott/7684443
      * Check if a given ip is in a network
@@ -274,6 +276,16 @@ class roundcube_auth extends rcube_plugin
             header($finalQuery);
             // exit; // TODO exit
         }
+    }
+
+    private function onError($msg_log, $msg_user, $error)
+    {
+        mel_logs::get_instance()->log(mel_logs::ERROR, "[RC_Auth] $msg_log : " . $error->getMessage());
+        
+        // header('Location: ?_task=logout&_logout_msg=' . $msg_user . '&_token=' . $rcmail->get_request_token());
+        $this->redirect("", RedirectTypeEnum::LOGOUT, rcmail::get_instance());
+        // $rcmail->output->command('plugin.auth_logout', $msg_user);
+        // rcmail::get_instance()->output->command('plugin.auth_logout', $msg_user);
     }
 
     private function select_auth()
@@ -625,9 +637,10 @@ class roundcube_auth extends rcube_plugin
                 }
                 catch (\Exception $e)
                 {
-                    // TODO improve
-                    echo '(1) OIDC Authentication Failed <br/>' . $e->getMessage();
-                    mel_logs::get_instance()->log(mel_logs::ERROR, "(1) OIDC Authentication Failed <br/>" . $e->getMessage());
+                    $this->onError(
+                        "Authentification OIDC - Erreur lors de l'appel au provider (Cerbère)", 
+                        "Erreur lors de la connexion à Cerbère (code 1)",
+                    $e);
                 }
 
             }
@@ -749,9 +762,10 @@ class roundcube_auth extends rcube_plugin
             }
             catch (\Exception $e)
             {
-                // TODO improve
-                echo "[RC_Auth] OIDC - Échec de l'Authentification OIDC<br/>" . $e->getMessage();
-                mel_logs::get_instance()->log(mel_logs::ERROR, "[RC_Auth] OIDC - Échec de l'Authentification OIDC<br/>" . $e->getMessage());
+                $this->onError(
+                    "Authentification OIDC - Erreur lors du traitement des informations reçues", 
+                    "Erreur lors de la connexion à Cerbère (code 2)",
+                $e);
             }
         }
 

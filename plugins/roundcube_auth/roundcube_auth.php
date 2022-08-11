@@ -471,7 +471,7 @@ class roundcube_auth extends rcube_plugin
         $expiration_time = $_SESSION['idtoken_exp'];
         $expiration_delay =  $this->oidc_exp_delay;
         //
-        mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Expiration validity check");
+        mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Expiration validity check");
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Expiration delay : " . strval(time() - $expiration_time) ."/$expiration_delay ($expiration_time)");
 
         // Si on a atteint ou dépassé le délai d'expiration du token, on relance l'auth OIDC (utilisateur présent)
@@ -649,7 +649,7 @@ class roundcube_auth extends rcube_plugin
                     $activity_time = $_SESSION['last_user_action'];
                     $inactivity_delay = $this->oidc_act_delay;
                     //
-                    mel_logs::get_instance()->log(mel_logs::INFO, "[RC_Auth] Inactivity delay check");
+                    mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Inactivity delay check");
                     mel_logs::get_instance()->log(mel_logs::DEBUG, "[RC_Auth] Inactivity delay : " . strval(time() - $activity_time) ."/$inactivity_delay ($activity_time)");
     
                     // Si le délai d'inactivité a été atteint

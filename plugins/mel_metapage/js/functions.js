@@ -575,7 +575,7 @@ async function m_mp_check_w(step, next) {
                     data: {
                         "_uid": $(input_uid).val(),
                     },
-                    url: "/?_task=workspace&_action=check_uid",
+                    url: mel_metapage.Functions.url('workspace', 'check_uid'),
                     success: function(ariane) {
                         if (ariane !== "uid_ok") {
                             stop = true;

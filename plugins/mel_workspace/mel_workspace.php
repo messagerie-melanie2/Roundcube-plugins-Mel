@@ -1852,6 +1852,7 @@ class mel_workspace extends rcube_plugin
         
         if ($board_id === null)
         {
+            $object = ["id" => '', "title" => ''];
             $index = 'tasks';
 
             if (!isset($default_value) || !isset($default_value[$index]))
@@ -1879,18 +1880,20 @@ class mel_workspace extends rcube_plugin
                     $board_id = [
                         'board_id' => $default_value[$index]['value'],
                         'board_title' => $this->wekan()->__api()->get_board($default_value[$index]['value']),
-                        'updated' => true
                     ];
                     $board_id["board_title"] = ($board_id["board_title"]['httpCode'] === 200 ? json_decode($board_id["board_title"]['content'])->title : null) ?? '';
+                    $object['updated'] = true;
                     break;
                 
                 default:
                     return;
             } 
-            
+
+            $object['id'] = $board_id['board_id'];
+            $object['title'] = $board_id['board_title'];
 
 
-            $this->save_object($workspace, self::WEKAN, ["id" => $board_id["board_id"], "title" => $board_id["board_title"]]);
+            $this->save_object($workspace, self::WEKAN, $object);
         }
     }
 

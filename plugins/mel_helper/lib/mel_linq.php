@@ -73,17 +73,6 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         return new Mel_GroupBy($this, $key_selector, $value_selector);
     }
 
-    public function toArray() : array
-    {
-        $array = [];
-        foreach ($this as $key => $value) {
-            if (is_subclass_of($value, 'IKeyValue')) $array[$value->get_key()] = $value->get_value();
-            else $array[$key] = $value;
-        }
-
-        return $array;
-    }
-
     public function any($selector = null) : bool
     {
         foreach ($this as $key => $value) {
@@ -113,6 +102,17 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         }
 
         return $this->count;
+    }
+
+    public function toArray() : array
+    {
+        $array = [];
+        foreach ($this as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue')) $array[$value->get_key()] = $value->get_value();
+            else $array[$key] = $value;
+        }
+
+        return $array;
     }
 
     public function toDictionnary($key_selector, $value_selector) : array {

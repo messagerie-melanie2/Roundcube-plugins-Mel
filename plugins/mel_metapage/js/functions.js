@@ -22,6 +22,7 @@ function get_action(text, icon, action) {
  */
 function m_mp_Create() {
     FullscreenItem.close_if_exist();
+    m_mp_step3_param.datas = null;
 
     window.create_popUp = undefined;
     //Si problème de configuration, on gère.
@@ -141,11 +142,10 @@ function m_mp_createworskpace_steps() {
                 
                 if (element.param === true)
                 {
-                    html += `<button type=button class="mel-button no-button-margin bckg true" style="position: absolute;
+                    html += `<button type=button class="mel-button no-button-margin bckg true under-button" style="position: absolute;
                     top: 0px;
                     right: 15px;
                     border-radius: 0;
-                        border-top-right-radius: 0px;
                     border-top-right-radius: 5px;
                     " onclick="m_mp_step3_param('${element.type}')"><span class="icon-mel-parameters"></span></button>`;
                 }
@@ -332,6 +332,7 @@ function m_mp_step3_param(type)
                             break;
 
                         case 'already_exist':
+                            $select.attr('disabled', 'disabled').addClass('disabled');
                             rcmail.set_busy(true, 'loading');
                             $custom_name_div.css('display', 'none');
                             mel_metapage.Functions.post(
@@ -352,8 +353,9 @@ function m_mp_step3_param(type)
 
                                     $linked_kanban_div.css('display', '');
                                     rcmail.clear_messages();
+                                    $select.removeAttr('disabled', 'disabled').removeClass('disabled');
                                 }
-                            )
+                            );
 
                             break;
                     
@@ -709,6 +711,8 @@ function m_mp_CreateWorkSpace() {
                     $("iframe.workspace-frame")[0].src = mel_metapage.Functions.url("workspace", "workspace", config);
                 });
             } else window.location.href = action.url;
+
+            m_mp_step3_param.datas = null;
         },
         error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
             console.error(xhr, ajaxOptions, thrownError);

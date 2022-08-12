@@ -2319,6 +2319,16 @@ body{
         }
     }
 
+    button.btn-mel:hover + button&.under-button,
+    button.btn-mel.active + button&.under-button {
+            color: white;
+
+            &:hover{
+                color: var(--main-text-color);
+                background-color:#F0F0F0;
+            }
+    }
+
     &.bckg{
         .mel-invisible-background-unimportant();
         color: unset;

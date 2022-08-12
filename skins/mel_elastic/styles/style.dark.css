@@ -1200,3 +1200,17 @@ html.dark-mode separate.device{
 html.dark-mode .message-htmlpart table td {
 	background-color: white;
 }
+
+html.dark-mode button.btn-mel:hover + button.mel-button.under-button{
+  color: #E1C58F;
+} 
+
+html.dark-mode button.btn-mel.active + button.mel-button.under-button {
+    color: black;
+} 
+
+html.dark-mode button.btn-mel:hover + button.mel-button.under-button:hover,
+html.dark-mode button.btn-mel.active + button.mel-button.under-button:hover {
+  color: #E1C58F;
+  background-color: #2E2E2E;
+}

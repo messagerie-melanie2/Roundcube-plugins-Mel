@@ -1418,6 +1418,15 @@ html.layout-small .mel-button.mel-button-block {
 .mel-button.white:hover {
   color: var(--secondary-text-color);
 }
+button.btn-mel:hover + button.mel-button.under-button,
+button.btn-mel.active + button.mel-button.under-button {
+  color: white;
+}
+button.btn-mel:hover + button.mel-button.under-button:hover,
+button.btn-mel.active + button.mel-button.under-button:hover {
+  color: var(--main-text-color);
+  background-color: #F0F0F0;
+}
 .mel-button.bckg {
   background-color: var(--invisible);
   color: unset;

@@ -1655,6 +1655,7 @@ class mel_workspace extends rcube_plugin
                 "users" => rcube_utils::get_input_value("users", rcube_utils::INPUT_POST),
                 "services" => rcube_utils::get_input_value("services", rcube_utils::INPUT_POST) ?? [],
                 "color" => rcube_utils::get_input_value("color", rcube_utils::INPUT_POST),
+                "service_params" => rcube_utils::get_input_value("_services_params", rcube_utils::INPUT_POST),
             ];
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs ok");
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Inputs : ".json_encode($datas));
@@ -1726,7 +1727,7 @@ class mel_workspace extends rcube_plugin
             $workspace->shares = $shares;
 
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
-            $datas["services"] = $this->create_services($workspace,$datas["services"]);
+            $datas["services"] = $this->create_services($workspace, $datas["services"], null, true, false, $datas['service_params']);
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
             $res = $workspace->save();
 
@@ -1746,7 +1747,7 @@ class mel_workspace extends rcube_plugin
         }
     }
 
-    function create_services(&$workspace,$services, $users = null, $update_wsp = true, $fromUpdateApp = false)
+    function create_services(&$workspace,$services, $users = null, $update_wsp = true, $fromUpdateApp = false, $default_values = null)
     {
         if ($users === null)
         {
@@ -1764,7 +1765,7 @@ class mel_workspace extends rcube_plugin
             unset($tmp_user);
         }
 
-        $services = $this->create_tasklist($workspace,$services, $users, $update_wsp);
+        $services = $this->create_tasklist($workspace,$services, $users, $update_wsp, $default_values);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
         $services = $this->create_channel($workspace, $services, $users);
         $services = $this->create_service_group($workspace, $services, $fromUpdateApp);
@@ -1796,7 +1797,7 @@ class mel_workspace extends rcube_plugin
         return $services;
     }
 
-    function create_tasklist(&$workspace,$services, $users, $update_wsp)
+    function create_tasklist(&$workspace,$services, $users, $update_wsp, $default_value)
     {
         $tasks = self::TASKS;
         if (array_search($tasks, $services) === false)
@@ -1836,7 +1837,7 @@ class mel_workspace extends rcube_plugin
 
         $key = array_search($tasks, $services);
 
-        $this->create_wekan($workspace, $services, $users);
+        $this->create_wekan($workspace, $services, $users, $default_value);
 
         if ($key !== false)
             unset($services[$key]);
@@ -1844,18 +1845,50 @@ class mel_workspace extends rcube_plugin
         return $services;
     }
 
-    function create_wekan(&$workspace, $services, $users)
+    function create_wekan(&$workspace, $services, $users, $default_value)
     {
         //Verifier si le wekan existe
         $board_id = $this->get_object($workspace, self::WEKAN);
         
         if ($board_id === null)
         {
-            $board_id = $this->create_workspace_wekan($workspace, $workspace->title, $workspace->ispublic === 0 ? false: true, null, [
-                $this->rc->gettext("wekan_todo", "mel_workspace"),
-                $this->rc->gettext("wekan_in_progress", "mel_workspace"),
-                $this->rc->gettext("wekan_do", "mel_workspace")
-            ], $users);
+            $index = 'tasks';
+
+            if (!isset($default_value) || !isset($default_value[$index]))
+            {
+                if (!isset($default_value)) $default_value = [];
+
+                $default_value[$index] = [
+                    'mode' => 'default'
+                ];
+            }
+
+            switch ($default_value[$index]['mode']) {
+                case 'default':
+                    $title = $workspace->title;
+                case 'custom_name':
+                    if ($default_value[$index]['mode'] === 'custom_name') $title = $default_value[$index]['value'];
+                case 'create':
+                    $board_id = $this->create_workspace_wekan($workspace, $title ?? $workspace->title, $workspace->ispublic === 0 ? false: true, null, [
+                        $this->rc->gettext("wekan_todo", "mel_workspace"),
+                        $this->rc->gettext("wekan_in_progress", "mel_workspace"),
+                        $this->rc->gettext("wekan_do", "mel_workspace")
+                    ], $users);
+
+                case 'already_exist':
+                    $board_id = [
+                        'board_id' => $default_value[$index]['value'],
+                        'board_title' => $this->wekan()->__api()->get_board($default_value[$index]['value']),
+                        'updated' => true
+                    ];
+                    $board_id["board_title"] = ($board_id["board_title"]['httpCode'] === 200 ? json_decode($board_id["board_title"]['content'])->title : null) ?? '';
+                    break;
+                
+                default:
+                    return;
+            } 
+            
+
 
             $this->save_object($workspace, self::WEKAN, ["id" => $board_id["board_id"], "title" => $board_id["board_title"]]);
         }

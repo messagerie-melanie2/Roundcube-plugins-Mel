@@ -923,10 +923,65 @@ const mel_metapage = {
             return html.replace(/</g,'&lt;');
         },
 
-        updateRichText(html)
+        remove_accents(string) {
+            return string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        },
+
+        replace_dets(string = '', rep = '')
         {
-            //debugger;
-            return html.replace(/</g,'&lt;');//.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+            const dets = [
+                " le ",
+                " la ",
+                " les ",
+                " un ",
+                " une ",
+                " de ",
+                " des ",
+                " mon ",
+                " ma ",
+                " tes ",
+                " ton ",
+                " ta ",
+                " son ",
+                " sa ",
+                " ses ",
+                " notre ",
+                " nos ",
+                " vos ",
+                " votre ",
+                " leur ",
+                " leurs ",
+                " se ",
+                " ce ",
+                " cette ",
+                " cet ",
+                " ces ",
+                " a ", 
+                "l'"
+            ];
+
+            for (const iterator of dets) {
+                string = string.replaceAll(iterator, rep);
+            }
+
+            while (string[0] === rep)
+            {
+                string = string.slice(1, string.length);
+            }
+
+            return string;
+        },
+
+        replace_special_char(string, rep = ''){
+            const regexp = /[^a-zA-Z0-9_ -]/g;
+            string = string.replace(regexp, rep);
+
+            while (string[0] === rep)
+            {
+                string = string.slice(1, string.length);
+            }
+
+            return string;
         },
 
         /**

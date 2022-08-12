@@ -6,7 +6,22 @@
 
     <!--Titre de l'espace-->
     <label for="workspace-title" class="red-star-after span-mel t1 first"><roundcube:label name='mel_metapage.worskpace_name' /></label>
-    <input aria-required="true" required oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=30 placeholder="Nom de l'espace" />
+    <div class="row">
+        <div class="col-10">
+            <input aria-required="true" required oninput="m_mp_input(this)" onchange="m_mp_input_change(this)" id=workspace-title class="form-control input-mel required" maxlength=30 placeholder="Nom de l'espace" />
+        </div>
+        <div class="col-2">
+            <button id="workspace-title-param" type="button" style="font-size:larger" class="mel-button no-button-margin bckg true"><span class="icon-mel-parameters"></span></button>
+        </div>
+    </div>
+
+    <div id="custom-div-uid" style="display: none;">
+        <button type="button" id="custom-uid-is-enabled" class="mel-button">Activer l'id personalisé</button>
+        <div id="custom-div-input-uid" style="display: none;">
+            <label for="custom-uid" class="span-mel t1">Id personalisé</label>
+            <input id="custom-uid" class="form-control input-mel" maxlength=30 placeholder="Id personalisé de l'espace" />
+        </div>
+    </div>
 
     <span class="span-mel t1"><roundcube:label name='mel_metapage.choose_avatar' /></span>
     <div class="row">
@@ -28,7 +43,7 @@
     <!--Catégorie (#) de l'espace-->
     <label for="workspace-hashtag" class="span-mel t1"><roundcube:label name='mel_metapage.choose_hashtag' /></label>
     <div style="position: relative;">
-        <input onclick="m_mp_affiche_hashtag_if_exists()" onchange="m_mp_get_all_hashtag()" class="form-control input-mel" id=workspace-hashtag type=text placeholder="Thématique de l'espace." />
+        <input onclick="m_mp_affiche_hashtag_if_exists()" oninput="m_mp_get_all_hashtag_input()" class="form-control input-mel" id=workspace-hashtag type=text placeholder="Thématique de l'espace." />
         <div id="list-of-all-hashtag" style="display:none">
 
         </div>
@@ -68,7 +83,7 @@
     </div>
 
     <!--Bouton continuer-->
-    <button style="margin-top: 30px;float: right;" class="mel-button invite-button create" onclick="m_mp_check_w(1,`workspace-step2`)">
+    <button style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-right-step1" onclick="m_mp_check_w(1,`workspace-step2`)">
         <span><roundcube:label name='mel_metapage.continue' /></span>
         <span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span>
     </button>

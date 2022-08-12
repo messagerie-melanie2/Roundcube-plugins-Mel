@@ -1,4 +1,4 @@
-const enable_custom_uid = false;
+const enable_custom_uid = true;
 jQuery.fn.swap = function(b) {
     b = jQuery(b)[0];
     var a = this[0];
@@ -136,14 +136,25 @@ function m_mp_createworskpace_steps() {
             const mel_metapage_templates_services = rcmail.env.mel_metapage_templates_services;
             for (let index = 0; index < mel_metapage_templates_services.length; ++index) {
                 const element = mel_metapage_templates_services[index];
-                html += "<div class=col-md-4>";
+                html += '<div class="col-md-4" style="position:relative;">';
                 html += '<button type=button aria-pressed=false data-type="' + element.type + '" class="doc-' + element.type + ' btn-template-doc btn btn-block btn-secondary btn-mel" onclick="m_mp_UpdateWorkspace_type(this, `' + JSON.stringify(element).replace(/"/g, "¤¤¤") + '`)"><span style="display:block;margin-right:0px" class="' + m_mp_CreateDocumentIconContract(element.icon) + '"></span>' + rcmail.gettext(element.name) + '</button>';
+                
+                if (element.param === true)
+                {
+                    html += `<button type=button class="mel-button no-button-margin bckg true" style="position: absolute;
+                    top: 0px;
+                    right: 15px;
+                    border-radius: 0;
+                        border-top-right-radius: 0px;
+                    border-top-right-radius: 5px;
+                    " onclick="m_mp_step3_param('${element.type}')"><span class="icon-mel-parameters"></span></button>`;
+                }
+
                 html += "</div>"
             }
             html += "</div>";
             html += '<div style=margin:15px></div>'
             html += '<div class="row"><div class="col-12" style="text-align: center;"><span id="wspsse" style="color: red;display:none;"></span></div></div>'
-                //html += '<button style="float:left" class="btn btn-warning btn-workspace-left" onclick=m_mp_switch_step(`workspace-step2`)>Retour</button><button onclick="m_mp_check_w(3, null)" style=float:right; class="btn btn-primary btn-workspace-right">Suivant</button>';
             html += '    <button style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left" onclick="m_mp_switch_step(`workspace-step2`)"><span>Retour</span><span class="icon-mel-undo  plus" style="margin-left: 15px;"></span></button>';
             html += '    <button style="margin-top: 30px;float: right;" class="mel-button invite-button create btn-workspace-right" onclick="m_mp_check_w(3, null)"><span>Continuer</span><span class="icon-mel-arrow-right  plus" style="margin-left: 15px;"></span></button>';
             return html;
@@ -151,28 +162,255 @@ function m_mp_createworskpace_steps() {
     }
 }
 
+function m_mp_step3_param(type)
+{
+    let $querry = $('#workspace-step3').css('display', 'none').parent();
+    $querry = $querry.append(`
+    <div id="workspace-step3-extra">
+    </div>
+    `).find('#workspace-step3-extra');
+
+    const update_title = (str) => {
+        return mel_metapage.Functions.remove_accents(mel_metapage.Functions.replace_special_char(mel_metapage.Functions.replace_dets(str.toLowerCase(), '-'), '-')).replaceAll(' ', '-');
+    };
+
+    const wsp_title = $('#workspace-title').val();
+    const wsp_uid = $('#custom-uid').val();
+    const have_datas = !!m_mp_step3_param.datas && !!m_mp_step3_param.datas[type];
+
+    switch (type) {
+        case 'channel':
+            {    
+                const default_custom_value = have_datas && m_mp_step3_param.datas[type].mode === 'custom_name' ? (m_mp_step3_param?.datas[type]?.value ?? '') : null; 
+    
+                const html_title = `<h3 class="span-mel t1 first">Paramètres du canal</h3>`;
+    
+                let $select = $(`<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select">
+                    <option value="default">Un canal ayant comme nom l'id sera créé</option>
+                    <option value="custom_name">Choisissez le nom du canal</option>
+                    <!--<option value="already_exist">Lié à un canal éxistant</option>-->
+                </select> `);
+    
+                if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
+    
+                let $custom_name_div = $(`
+                    <div style=margin-top:15px>
+                        <h3 class="span-mel t2 first">Nom personalisé du nouveau canal</h3>
+                    </div>
+                `).css('display', 'none');
+    
+                let $custom_name_input = $(`
+                    <input class="form-control input-mel" value="${default_custom_value || wsp_uid || update_title(wsp_title)}" placeholder="Nom du canal" maxlength=30 /> 
+                `).on('input', () => {
+                    $custom_name_input.val(update_title($custom_name_input.val()));
+                    m_mp_step3_param.datas[type].value = $custom_name_input.val();
+                }).appendTo($custom_name_div);
+    
+                let $linked_channel_select = $(`
+                    <select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
+                `)
+    
+                $select.on('change', () => {
+                    if (!m_mp_step3_param.datas) {
+                        m_mp_step3_param.datas = {};
+    
+                        if (!m_mp_step3_param.datas[type]) m_mp_step3_param.datas[type] = {
+                            mode:$select.val(),
+                            value:undefined
+                        }
+                    }
+    
+                    switch ($select.val()) {
+                        case 'default':
+                            $custom_name_div.css('display', 'none');
+                            break;
+    
+                        case 'custom_name':
+                            $custom_name_div.css('display', '');
+                            m_mp_step3_param.datas[type].value = $custom_name_input.val();
+                            break;
+    
+                        case 'already_exist':
+                            $custom_name_div.css('display', 'none');
+                            
+                            mel_metapage.Functions.post(
+                                mel_metapage.Functions.url('discussion', 'get_joined'),
+                                {
+                                    _moderator:true,
+                                    _mode:$('#workspace-private')[0].checked ? 2 : 1
+                                },
+                                (datas) => {
+                                    console.log('datas', datas);
+                                }
+                            )
+    
+                            break;
+                    
+                        default:
+                            break;
+                    } 
+    
+                    m_mp_step3_param.datas[type].mode = $select.val();
+                });
+    
+                $select.change();
+    
+                let $button_back = $(`
+                <button style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left">
+                    <span>Retour</span>
+                    <span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
+                </button>
+                `).click(() => {
+                    $querry.remove();
+                    $querry = null;
+                    $('#workspace-step3').css('display', '');
+                });
+    
+                $querry.append(html_title).append($select).append($custom_name_div).append($button_back);
+            }
+            break;
+    
+
+        case 'tasks':
+            {
+                const default_custom_value = have_datas && m_mp_step3_param.datas[type].mode === 'custom_name' ? (m_mp_step3_param?.datas[type]?.value ?? '') : null; 
+
+                const html_title = `<h3 class="span-mel t1 first">Paramètres du kanban</h3>`;
+
+                let $select = $(`<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select">
+                    <option value="default">Un kanban ayant le nom de l'espace sera créé</option>
+                    <option value="custom_name">Choisissez le nom du nouveau kanban</option>
+                    <option value="already_exist">Lié à un kanban éxistant</option>
+                </select> `);
+
+                if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);
+
+                let $custom_name_div = $(`
+                    <div style=margin-top:15px>
+                        <h3 class="span-mel t2 first">Nom personalisé du nouveau kanban</h3>
+                    </div>
+                `).css('display', 'none');
+
+                let $custom_name_input = $(`
+                    <input class="form-control input-mel" value="${default_custom_value || wsp_title}" placeholder="Nom du kanban" maxlength=30 /> 
+                `).on('input', () => {
+                    m_mp_step3_param.datas[type].value = $custom_name_input.val();
+                }).appendTo($custom_name_div);
+
+                let $linked_kanban_div = $(`
+                    <div style=margin-top:15px>
+                        <h3 class="span-mel t2 first">Lié à un kanban éxistant</h3>
+                    </div>
+                `).css('display', 'none');
+
+                let $linked_kanban_select = $(`
+                    <select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
+                `).on('change', () => {
+                    m_mp_step3_param.datas[type].value = $linked_kanban_select.val();
+                }).appendTo($linked_kanban_div);
+
+                $select.on('change', () => {
+                    if (!m_mp_step3_param.datas) {
+                        m_mp_step3_param.datas = {};
+
+                        if (!m_mp_step3_param.datas[type]) m_mp_step3_param.datas[type] = {
+                            mode:$select.val(),
+                            value:undefined
+                        }
+                    }
+
+                    switch ($select.val()) {
+                        case 'default':
+                            $custom_name_div.css('display', 'none');
+                            $linked_kanban_div.css('display', 'none');
+                            break;
+
+                        case 'custom_name':
+                            $linked_kanban_div.css('display', 'none');
+                            $custom_name_div.css('display', '');
+                            m_mp_step3_param.datas[type].value = $custom_name_input.val();
+                            break;
+
+                        case 'already_exist':
+                            rcmail.set_busy(true, 'loading');
+                            $custom_name_div.css('display', 'none');
+                            mel_metapage.Functions.post(
+                                mel_metapage.Functions.url('wekan', 'get_user_board'),
+                                {
+                                    _moderator:true,
+                                    _mode:$('#workspace-private')[0].checked ? 2 : 1,
+                                    _minified_datas:true
+                                },
+                                (datas) => {
+                                    datas = JSON.parse(datas);
+
+                                    for (const it of datas) {
+                                        $linked_kanban_select.append(`
+                                            <option ${it.id === m_mp_step3_param.datas[type].value ? 'selected' : ''} value="${it.id}">${it.title}</option>
+                                        `);
+                                    }
+
+                                    $linked_kanban_div.css('display', '');
+                                    rcmail.clear_messages();
+                                }
+                            )
+
+                            break;
+                    
+                        default:
+                            break;
+                    } 
+
+                    m_mp_step3_param.datas[type].mode = $select.val();
+                });
+
+                $select.change();
+
+                let $button_back = $(`
+                <button style="margin-top: 30px;float: left;" class="mel-button invite-button create btn-workspace-left">
+                    <span>Retour</span>
+                    <span class="icon-mel-undo  plus" style="margin-left: 15px;"></span>
+                </button>
+                `).click(() => {
+                    $querry.remove();
+                    $querry = null;
+                    $('#workspace-step3').css('display', '');
+                });
+
+                $querry.append(html_title).append($select).append($custom_name_div).append($linked_kanban_div).append($button_back);
+            }
+            break;
+    
+        default:
+            break;
+    }
+}
+
+
+
 function m_mp_input_change(event) {
-    if ($("#workspace-uid").data("edited") || !enable_custom_uid)
-        return;
-    if ($(".btn-workspace-right").find("span").length === 0)
-        $(".btn-workspace-right").html("<span>" + $(".btn-workspace-right").html() + "</span>");
-    const tmp_html = $(".btn-workspace-right").find("span").html();
-    $(".btn-workspace-right").addClass("disabled").find("span").addClass("spinner-border").html("");
-    $.ajax({ // fonction permettant de faire de l'ajax
-        type: "POST", // methode de transmission des données au fichier php
-        data: {
-            "_title": event.value,
-        },
-        url: "/?_task=workspace&_action=get_uid",
-        success: function(ariane) {
-            $("#workspace-uid").val(ariane);
-        },
-        error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
-            console.error(xhr, ajaxOptions, thrownError);
-        },
-    }).always(() => {
-        $(".btn-workspace-right").removeClass("disabled").find("span").removeClass("spinner-border").html(tmp_html);
-    });
+    return;
+    // if ($("#workspace-uid").data("edited") || !enable_custom_uid)
+    //     return;
+    // if ($(".btn-workspace-right").find("span").length === 0)
+    //     $(".btn-workspace-right").html("<span>" + $(".btn-workspace-right").html() + "</span>");
+    // const tmp_html = $(".btn-workspace-right").find("span").html();
+    // $(".btn-workspace-right").addClass("disabled").find("span").addClass("spinner-border").html("");
+    // $.ajax({ // fonction permettant de faire de l'ajax
+    //     type: "POST", // methode de transmission des données au fichier php
+    //     data: {
+    //         "_title": event.value,
+    //     },
+    //     url: "/?_task=workspace&_action=get_uid",
+    //     success: function(ariane) {
+    //         $("#workspace-uid").val(ariane);
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+    //         console.error(xhr, ajaxOptions, thrownError);
+    //     },
+    // }).always(() => {
+    //     $(".btn-workspace-right").removeClass("disabled").find("span").removeClass("spinner-border").html(tmp_html);
+    // });
 }
 
 function m_mp_input_uid_change(params) {
@@ -193,7 +431,7 @@ function m_mp_createworkspace() {
                 if (key === "init")
                     html += element();
                 else
-                    continue; //html += '<div style="display:none;" class=step id="workspace-' + key + '">' + element() + "</div>";
+                    continue; 
             }
         }
         create_popUp.contents.html('<center><span class="spinner-border"></span></center>');
@@ -211,6 +449,55 @@ function m_mp_createworkspace() {
                 m_mp_switch_step("workspace-step1");
                 rcmail.init_address_input_events($("#workspace-user-list"));
                 $(".global-modal-body").css("height", `${window.innerHeight - 200}px`).css("overflow-y", "auto").css("overflow-x", "hidden");
+
+                create_popUp.contents.find('#workspace-title-param').click((e) => {
+                    e = $(e.currentTarget);
+                    let $div = $('#custom-div-uid');
+                    const class_name = 'active';
+
+                    if (e.hasClass(class_name)) {
+                        $div.css('display', 'none');
+                        e.removeClass(class_name)
+                    }
+                    else {
+                        $div.css('display', '');
+                        e.addClass(class_name)
+                    }
+                });
+
+                create_popUp.contents.find('#custom-div-uid button').click((e) => {
+                    e = $(e.currentTarget);
+                    let $div = $('#custom-div-input-uid');
+                    const class_name = 'active';
+
+                    if (e.hasClass(class_name)) {
+                        $div.css('display', 'none');
+                        e.removeClass(class_name)
+                        e.html('Activer l\'id personalisé');
+                    }
+                    else {
+                        $div.css('display', '');
+                        e.addClass(class_name)
+                        e.html('Désactiver l\'id personalisé');
+
+                        let $input = $('#custom-uid');
+
+                        if ($input.val() === '')
+                        {
+                            const title = mel_metapage.Functions.remove_accents(mel_metapage.Functions.replace_special_char(mel_metapage.Functions.replace_dets($('#workspace-title').val().toLowerCase(), '-'), '-')).replaceAll(' ', '-');
+                            $input.val(title);
+                        }
+
+                    }
+                });
+
+                let $custom_uid = $('#custom-uid');
+                $custom_uid.on('input', () => {
+                    let val = $custom_uid.val();
+                    val = mel_metapage.Functions.replace_special_char(mel_metapage.Functions.remove_accents(val), '-').replaceAll(' ', '-').toLowerCase();
+                    $custom_uid.val(val);
+                });
+                
 
                 setTimeout(() => {
                     $('#workspace-color').val(MEL_ELASTIC_UI.getRandomColor());
@@ -247,7 +534,6 @@ async function m_mp_avatarOnSelect(e) {
 }
 
 function m_mp_input(element) {
-    //a.slice(0,8)
     if ($("#worspace-avatar-a").find("img").length === 0)
         $("#worspace-avatar-a").html("<span>" + element.value.slice(0, 3).toUpperCase() + "</span>");
 }
@@ -280,23 +566,22 @@ async function m_mp_check_w(step, next) {
                 $("#workspace-private").parent().css("color", "");
                 $("#workspace-public").parent().css("color", "");
             }
-            if (enable_custom_uid) {
-                if ($(".btn-workspace-right").find("span").length === 0)
-                    $(".btn-workspace-right").html("<span>" + $(".btn-workspace-right").html() + "</span>");
-                const tmp_html = $(".btn-workspace-right").find("span").html();
-                $(".btn-workspace-right").addClass("disabled").find("span").addClass("spinner-border").html("");
+
+            if (enable_custom_uid && $('#custom-uid-is-enabled').hasClass('active')) {
+                const input_uid = '#custom-uid';
+                $(".btn-right-step1").addClass("disabled").find("span.plus").addClass("spinner-grow spinner-grow-sm").removeClass('icon-mel-arrow-right');//.html("");
                 await $.ajax({ // fonction permettant de faire de l'ajax
                     type: "POST", // methode de transmission des données au fichier php
                     data: {
-                        "_uid": $("#workspace-uid").val(),
+                        "_uid": $(input_uid).val(),
                     },
                     url: "/?_task=workspace&_action=check_uid",
                     success: function(ariane) {
                         if (ariane !== "uid_ok") {
                             stop = true;
-                            $("#workspace-uid").css("border-color", "red");
+                            $(input_uid).css("border-color", "red");
                             if ($("#wsptuid").length === 0)
-                                $("#workspace-uid").parent().append('<span id=wsptuid class=input-error-r style=color:red></span>');
+                                $(input_uid).parent().append('<span id=wsptuid class=input-error-r style=color:red></span>');
                             if (ariane === "uid_exists")
                                 $("#wsptuid").html("* L'id existe déjà !");
                             else if (ariane === "uid_not_ok")
@@ -313,33 +598,13 @@ async function m_mp_check_w(step, next) {
                         console.error(xhr, ajaxOptions, thrownError);
                     },
                 }).always(() => {
-                    $("#workspace-uid").css("border-color", "");
-                    $(".btn-workspace-right").removeClass("disabled").find("span").removeClass("spinner-border").html(tmp_html);
+                    $(input_uid).css("border-color", "");
+                    $(".btn-right-step1").removeClass("disabled").find("span.plus").removeClass("spinner-grow").addClass('icon-mel-arrow-right');//.html(tmp_html);
                 });
             }
 
             break;
         case 2:
-            // if ($("#wspf").children().length === 1  && $("#workspace-user-list").val() === "")
-            // {
-            //     $("#wspf").css("border-color", "red");
-            //     if ($("#wspfe").length === 0)   
-            //         $("#wspf").parent().parent().append('<span id=wspfe class=input-error-r style=color:red></span>');
-            //     $("#wspfe").html("* Il faut avoir au moins un participant !")
-            //     $("#wspfe").css("display", "");
-            //     stop = true;
-            // }
-            // else
-            // {
-            //     $("#wspf").css("border-color", "");
-            //     $("#wspfe").css("display", "none");
-            //     if($("#workspace-user-list").val() !== "")
-            //     {
-            //         $("#workspace-user-list").val($("#workspace-user-list").val() + ",");
-            //         console.log("auto", $("#workspace-user-list"), $("#workspace-user-list").val());
-            //         m_mp_autocoplete($("#workspace-user-list"));
-            //     }
-            // }
             let users = [];
             $("#wspf .workspace-recipient").each((i, e) => {
                 users.push($(e).find(".email").html());
@@ -355,11 +620,6 @@ async function m_mp_check_w(step, next) {
             }
             break;
         case 3:
-            //wspsse
-            // if ($(".btn-template-doc.active").length === 0)
-            //     $("#wspsse").css("display", "").html("* Il vous faut au moins un service !");
-            // else
-            //     $("#wspsse").css("display", "none")
             break;
         default:
             break;
@@ -374,10 +634,6 @@ async function m_mp_check_w(step, next) {
 }
 
 function m_mp_CreateWorkSpace() {
-    /* 
-                    rcmail.set_busy(false);
-                rcmail.clear_messages();
-    */
     rcmail.set_busy(true);
     rcmail.display_message("Création d'un espace de travail...", "loading");
     let datas = {
@@ -387,10 +643,11 @@ function m_mp_CreateWorkSpace() {
         end_date: $("#workspace-date-end").val(),
         hashtag: $("#workspace-hashtag").val(),
         visibility: $("#workspace-private")[0].checked ? "private" : "public",
-        custom_uid: enable_custom_uid ? $("#workspace-uid").val() : "",
+        custom_uid: enable_custom_uid && $('#custom-uid-is-enabled').hasClass('active') ? $("#custom-uid").val() : "",
         color: $("#workspace-color").val(),
         users: [],
-        services: []
+        services: [],
+        _services_params: m_mp_step3_param.datas
     };
 
     $("#mm-cw-participants").find(".workspace-users-added").each((i, e) => {
@@ -480,17 +737,29 @@ function m_mp_affiche_hashtag_if_exists(containerSelector = '#list-of-all-hashta
     if (querry.find("button").length > 0) querry.css("display", "");
 }
 
-async function m_mp_get_all_hashtag(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
+function m_mp_get_all_hashtag_input(inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
+    if (!!m_mp_get_all_hashtag_input.current)
+    {
+        if (m_mp_get_all_hashtag_input.current.isPending()) m_mp_get_all_hashtag_input.current.abort();
+    }
+
+    m_mp_get_all_hashtag_input.current = new Mel_Promise(m_mp_get_all_hashtag, inputSelector, containerSelector); //m_mp_get_all_hashtag(inputSelector, containerSelector);
+}
+
+async function m_mp_get_all_hashtag(mel_promise ,inputSelector = '#workspace-hashtag', containerSelector = '#list-of-all-hashtag') {
     const val = $(inputSelector).val();
     if (val.length > 0) {
         let querry = $(containerSelector).css("display", "");
         querry.html("<center><span class=spinner-border></span></center>");
 
+        if (mel_promise.isCancelled()) return;
         await mel_metapage.Functions.get(
             mel_metapage.Functions.url("workspace", "hashtag"), {
                 _hashtag: val
             }, (datas) => {
                 try {
+                    if (mel_promise.isCancelled()) return;
+
                     datas = JSON.parse(datas);
                     if (datas.length > 0) {
                         html = "<div class=btn-group-vertical style=width:100%>";
@@ -501,9 +770,13 @@ async function m_mp_get_all_hashtag(inputSelector = '#workspace-hashtag', contai
                         }
 
                         html += "</div>";
+                        if (mel_promise.isCancelled()) return;
                         querry.html(html);
                     } else
+                    {
+                        if (mel_promise.isCancelled()) return;
                         querry.html(`La thématique "${val}" n'existe pas.</br>Elle sera créée lors de la création de l'espace de travail.`);
+                    }
 
                 } catch (error) {
 
@@ -539,6 +812,7 @@ async function m_mp_get_all_hashtag(inputSelector = '#workspace-hashtag', contai
         }
     };
 
+    if (mel_promise.isCancelled()) return;
     if (!mel_metapage.Functions.handlerExist($("body"), clickFunction))
         $("body").click(clickFunction);
 

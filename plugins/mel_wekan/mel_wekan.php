@@ -38,6 +38,7 @@ class mel_wekan extends rcube_plugin
         $this->register_action('login', array($this, 'login'));
         $this->register_action('create_board', array($this, 'action_create_board'));
         $this->register_action('check_board', array($this, 'action_check_board'));
+        $this->register_action('get_user_board', [$this, 'action_get_user_board']);
         $this->register_action('index', array($this, 'index'));
         $this->include_script('js/wekan.js');
 
@@ -319,5 +320,51 @@ class mel_wekan extends rcube_plugin
     public function get_user_admin_board_generator($username)
     {
         return $this->wekanApi->get_user_boards_admin_generator($username);
+    }
+
+    public function action_get_user_board()
+    {
+        $this->require_plugin('mel_helper');
+        $user = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+        $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
+        $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
+        $only_title_and_id = (rcube_utils::get_input_value('_minified_datas', rcube_utils::INPUT_POST) ?? true) == 'true';
+        $mode = (int) $mode;
+
+        $list;
+        if ($moderator_only) $list = $this->get_user_admin_board_generator($user);
+        else $list = $this->wekanApi->get_user_boards_objects_generator($user);
+
+        $list = mel_helper::Enumerable($list);
+
+        switch ($mode) {
+            case 1://public
+                $perm = 'public';
+            case 2://private
+                if ($mode === 2) $perm = 'private';
+            case 3:
+                $list = $list->where(function ($k, $v) use($perm) {
+                    return $v->permission === $perm;
+                });
+                break;
+            
+            default:
+                break;
+        }
+
+        if ($only_title_and_id) $list = $list->select(function ($k, $v){
+            return [
+                'title' => $v->get_value()->title,
+                'id' => $v->get_value()->id
+            ];
+        });
+
+        echo json_encode($list->toArray());
+        exit;
+    }
+
+    public function __api()
+    {
+        return $this->wekanApi;
     }
 }

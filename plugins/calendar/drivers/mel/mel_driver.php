@@ -2380,10 +2380,16 @@ class mel_driver extends calendar_driver {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "[calendar] mel_driver::get_attachment($id)");
     try {
+      // 0006931: Problème de récupération des pièces jointe sur les évenements récurrents
+      $event_id = $event['id'];
+      if (strpos($event_id, '@DATE-') !== false) {
+        $event_id = explode('@DATE-', $event_id, 2);
+        $event_id = $event_id[0];
+      }
       $attachment = driver_mel::gi()->attachment();
       $attachment->isfolder = false;
       $attachment->id = $id;
-      $attachment->path = $event['id'] . '/%';
+      $attachment->path = $event_id . '/%';
       foreach ($attachment->getList(null, null, ['path' => MappingMce::like]) as $att) {
         $ret = array('id' => $att->id,'name' => $att->name,'mimetype' => $att->contenttype,'size' => $att->size);
         $this->attachment = $att;

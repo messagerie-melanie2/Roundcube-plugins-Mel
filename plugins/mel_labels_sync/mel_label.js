@@ -516,7 +516,11 @@ $(document).ready(function() {
 			const default_h = "#FFFFFF";
 			let textcolor = default_h;
 
-			if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB(val), mel_metapage.Functions.colors.kMel_extractRGB(textcolor)))	textcolor = 'black'; 
+			try {
+				if (!mel_metapage.Functions.colors.kMel_LuminanceRatioAAA(mel_metapage.Functions.colors.kMel_extractRGB(val), mel_metapage.Functions.colors.kMel_extractRGB(textcolor)))	textcolor = 'black'; 
+			} catch (error) {
+				
+			}
 
 			id = id.replace('~', '').replace(/\./g,'\\.');
 			css += "#messagelist tr.label_" + id + " td,\n";
@@ -552,7 +556,7 @@ $(document).ready(function() {
 				html.dark-mode #messagelist tr.label_${id} td,
 				html.dark-mode #messagelist tr.selected.label_${id} td
 				{
-					color: ${val}!important;
+						color: ${val}!important;
 				}
 			`;
 		});

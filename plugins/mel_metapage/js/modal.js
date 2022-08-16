@@ -98,12 +98,25 @@ class GlobalModal
                 this.footer.buttons.save.click(config.footer.save.onclick);
         }
 
-        $(".modal-close").click(() => {
+        this.on_click_exit = () => {
             this.close();
-        });
+        };
+        this.on_click_minified = this.on_click_exit;
+        let $close = $(".modal-close");
+        $close.click(this.on_click_exit);
+
+        let $modal_minifier = $('.modal-minify-mel')
+        if ($modal_minifier.length > 0) 
+        {
+            $close.appendTo($close.parent().parent());
+            $modal_minifier.parent().remove();
+        }
+        $modal_minifier = null;
 
         if (show)
             this.show();
+
+        this.have_reduced = false;
     }
 
     /**
@@ -131,9 +144,11 @@ class GlobalModal
         $(back).appendTo($(`#${id}`));
         this.header.title = $(".global-modal-title");
         this.header.title.appendTo($(`#${id}`));
-        $(".modal-close").click(() => {
-            this.close();
-        });
+        $(".modal-close").click(this.on_click_exit);
+        if (this.have_reduced)
+        {
+            $('.modal-minify-mel').click(this.on_click_minified);
+        }
     }
 
     editTitleAndSetBeforeTitle(before, title)
@@ -201,6 +216,40 @@ class GlobalModal
     autoHeight()
     {
         this.editHeight(window.innerHeight-(this.isPhone() ? 0 : 60));
+    }
+
+    haveReduced()
+    {
+        this.have_reduced = true;
+        return this._create_reduced();
+    }
+
+    _create_reduced()
+    {
+        /*
+        <button title="Fermer la modale" class="modal-close btn btn-secondary"><span class="icon-mel-close"></span><span class="sr-only">Fermer la modale</span></button>
+        */
+        let button = document.createElement('button');
+        let span = document.createElement('span');
+        span.classList.add("icon-mel-minus-roundless");
+        button.append(span);
+        span = null;
+        span = document.createElement('span');
+        span.classList.add('sr-only');
+        span.innerText = 'Minifier la modale';
+        button.append(span);
+        span = null;
+        //$('.modal-close').before(button);
+        span = document.createElement('div');
+        let $close = $('.modal-close');
+        $close.parent().append(span);
+        $(span).append($(button).addClass('btn btn-secondary modal-minify-mel').click(() => {
+            this.on_click_minified();
+        })).append($close);
+        span = null;
+        button = null;
+        $close = null;
+        return this;
     }
 
     onDestroy(func)

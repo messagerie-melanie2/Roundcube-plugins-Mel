@@ -1970,6 +1970,7 @@ $(document).ready(() => {
             window.create_event = true;
         else
         {
+            window.event_reduced = false;
             window.kolab_event_dialog_element.show()
             return;
         }
@@ -2057,13 +2058,27 @@ $(document).ready(() => {
         {
             // create_popUp.close();
             window.kolab_event_dialog_element.setBeforeTitle(`<a href=# title="${rcmail.gettext('back')}" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$('iframe#kolabcalendarinlinegui').remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>${rcmail.gettext('create_modal_back', plugin_text)}</span></a>`);
+            window.kolab_event_dialog_element.haveReduced().on_click_minified = () => {
+                window.event_reduced = true;
+                window.kolab_event_dialog_element.close();
+            };
+            // window.kolab_event_dialog_element.on_click_exit = () => {
+            //     debugger;
+            //     window.kolab_event_dialog_element.close();
+            //     window.event_saved = false;
+            //     window.create_event = false;
+            //     window.kolab_event_dialog_element = null;
+            // };
+            window.kolab_event_dialog_element.onClose(() => {
+                if (window.event_reduced !== true)
+                {
+                    window.event_saved = false;
+                    window.create_event = false;
+                    window.kolab_event_dialog_element = null;
+                }
+            });
         }
-
-        window.kolab_event_dialog_element.autoHeight();
-        window.kolab_event_dialog_element.onDestroy((globalModal) => {
-            globalModal.contents.find("iframe").remove();  
-        });
-
+        else 
         window.kolab_event_dialog_element.onClose(() => {
             if (window.event_saved === true)
             {
@@ -2071,6 +2086,14 @@ $(document).ready(() => {
                 delete window.create_event;
             }
         });
+        
+
+        window.kolab_event_dialog_element.autoHeight();
+        window.kolab_event_dialog_element.onDestroy((globalModal) => {
+            globalModal.contents.find("iframe").remove();  
+        });
+
+
 
     // var sheet = window.document.styleSheets[0];
     // sheet.insertRule('.ui-datepicker .ui-state-default, .ui-datepicker.ui-widget-content .ui-state-default { color: black!important; }', sheet.cssRules.length);

@@ -24,7 +24,7 @@ function m_mp_Create() {
     FullscreenItem.close_if_exist();
     m_mp_step3_param.datas = null;
 
-    window.create_popUp = undefined;
+    //window.create_popUp = undefined;
     //Si problème de configuration, on gère.
     window.mel_metapage_tmp = rcmail.env.is_stockage_active ? true : null;
 
@@ -70,7 +70,15 @@ function m_mp_Create() {
         let pega = `<li class="col-md-${haveNextcloud.col}" id="pega" title="${rcmail.gettext("mel_metapage.menu_create_help_survey")}">` + _button(actions.sondages) + "</li>";
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
-        create_popUp = new GlobalModal("globalModal", config, !isSmall);
+        let create_popUp = new GlobalModal("globalModal", config, !isSmall);
+        create_popUp.on_click_exit = () => {
+            window.create_popUp.close();
+            delete window.create_popUp;
+        }
+        create_popUp.on_click_minified = () => {
+            window.create_popUp.close();
+        };
+        window.create_popUp = create_popUp.haveReduced();
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {
         window.create_popUp.show();

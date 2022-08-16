@@ -11,7 +11,8 @@
     border:none;
 }
 
-.modal-header > .modal-close,
+.modal-header .modal-close,
+.modal-header > div > .modal-minify-mel,
 .fullscreen-close,
 .edited-modal-close
 {
@@ -23,7 +24,8 @@
     color: #363A5B;
 }
 
-.modal-header > .modal-close:focus,
+.modal-header .modal-close:focus,
+.modal-header > div > .modal-minify-mel:focus,
 .fullscreen-close:focus,
 .edited-modal-close:focus
 {
@@ -39,7 +41,8 @@
     border-color: transparent!important;
 }
 
-.modal-header > .modal-close:hover,
+.modal-header .modal-close:hover,
+.modal-header > div > .modal-minify-mel:hover,
 .fullscreen-close:hover,
 .edited-modal-close:hover
 {
@@ -47,7 +50,8 @@
     color: white;
 }
 
-.modal-header > .modal-close:active,
+.modal-header .modal-close:active,
+.modal-header > div > .modal-minify-mel:active,
 .fullscreen-close:active,
 .edited-modal-close:active
 {

@@ -152,6 +152,10 @@ class mel_ldap_auth extends rcube_plugin {
               // Création du cookie avec le login / cn
               rcube_utils::setcookie('roundcube_login', $user . "###" . $_user_mce->fullname, self::$expire_cookie + time());
               $_SESSION['_keeplogin'] = true;
+
+              // Suppression du cooke error login
+              unset($_COOKIE['roundcube_error_login']);
+              rcube_utils::setcookie('roundcube_error_login', null, -1);
             } else {
               // Suppression du cookie
               unset($_COOKIE['roundcube_login']);
@@ -171,9 +175,19 @@ class mel_ldap_auth extends rcube_plugin {
       } else {
         $args['abort'] = true;
         $args['error'] = 49;
-        // Suppression du cookie
-        unset($_COOKIE['roundcube_login']);
-        rcube_utils::setcookie('roundcube_login', null, -1);
+        if (isset($_COOKIE['roundcube_error_login']) && $_COOKIE['roundcube_error_login'] >= 3) {
+          // Suppression du cookie
+          unset($_COOKIE['roundcube_login']);
+          rcube_utils::setcookie('roundcube_login', null, -1);
+
+          // Suppression du cooke error login
+          unset($_COOKIE['roundcube_error_login']);
+          rcube_utils::setcookie('roundcube_error_login', null, -1);
+        }
+        else {
+          $error_login = $_COOKIE['roundcube_error_login'] | 0;
+          rcube_utils::setcookie('roundcube_error_login', ++$error_login, self::$expire_cookie + time());
+        }
         
         // 0004988: En mode courrielleur, temporiser les échecs d'authentification
         if (isset($_GET['_courrielleur'])) {

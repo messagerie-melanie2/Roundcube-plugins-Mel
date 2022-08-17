@@ -54,6 +54,11 @@ class mel_doubleauth extends rcube_plugin {
             $this->add_hook('send_page', array($this, 'check_2FAlogin'));
             $this->add_hook('render_page', array($this, 'popup_msg_enrollment'));
         }
+        else {
+            // Si on est internal on considère qu'on s'est connecté avec la double auth (en cas de changement de VPN)
+            $_SESSION['mel_doubleauth_login'] = time();
+            $_SESSION['mel_doubleauth_2FA_login'] = time();
+        }
         
         $this->add_texts('localization/', true);
         

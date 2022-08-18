@@ -5,7 +5,7 @@ interface IKeyValue {
     function get_value();
 }
 
-class KeyValue implements IKeyValue
+class Mel_KeyValue implements IKeyValue
 {
     public const NO_KEY = '¤¤¤¤¤¤Mel_NO_KEY_z4ef654ezf6ze7f86ezf5zeez¤¤¤¤¤$*ù';
 
@@ -31,7 +31,15 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function where($selector) : IMel_Enumerable;
     function select($selector) : IMel_Enumerable;
     function groupBy($key_selector, $value_selector = null) : IMel_Enumerable;
+    function aggregate($iterable) : IMel_Enumerable;
+    function add($item, $key = null) : IMel_Enumerable;
+    function remove($item) : IMel_Enumerable;
+    function removeAtKey($key) : IMel_Enumerable;
     function any($selector = null) : bool;
+    function all($selector) : bool;
+    function contains($item) : bool;
+    function first($selector = null);
+    function firstOrDefault($default = null, $selector = null);
     function toArray() : array;
     function toDictionnary($key_selector, $value_selector) : array;
 }
@@ -69,8 +77,47 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         return new Mel_Select($this, $selector);
     }
 
-    public function groupBy($key_selector, $value_selector = null) : IMel_Enumerable {
+    public function groupBy($key_selector, $value_selector = null) : IMel_Enumerable
+    {
         return new Mel_GroupBy($this, $key_selector, $value_selector);
+    }
+
+    public function aggregate($iterable) : IMel_Enumerable
+    {
+        return new Mel_Aggregate($this, $iterable);
+    }
+
+    public function add($item, $key = null) : IMel_Enumerable {
+        return $this->aggregate((isset($key) ? [$key => $item] : [$item]));
+    }
+
+    public function remove($item) : IMel_Enumerable {
+        return $this->where(function ($k, $v) use($item) {
+            return $v !== $item;
+        });
+    }
+
+    public function removeAtKey($key) : IMel_Enumerable {
+        return $this->where(function ($k, $v) use($key) {
+            return $k !== $key;
+        });
+    }
+
+    public function contains($item) : bool {
+        return $this->any(function ($k, $v) use($item) {
+            return $v === $item;
+        });
+    }
+
+    public function toArray() : array
+    {
+        $array = [];
+        foreach ($this as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue')) $array[$value->get_key()] = $value->get_value();
+            else $array[$key] = $value;
+        }
+
+        return $array;
     }
 
     public function any($selector = null) : bool
@@ -91,6 +138,33 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         return false;
     }
 
+    public function all($selector) : bool {
+        return !$this->any(function ($k, $v) use($selector) {
+            return !$selector($k, $v);
+        });
+    }
+
+    public function empty() : IMel_Enumerable {
+        return new Mel_Enumerable([]);
+    }
+
+    public function first($selector = null) {
+        foreach ((isset($selector) ? $this->where($selector) : $this) as $value) {
+            return $value;
+        }
+
+        throw new Exception("Error Processing Request", 1);
+    }
+
+    public function firstOrDefault($default = null, $selector = null)
+    {
+        try {
+            return $this->first($selector);
+        } catch (\Throwable $th) {
+            return $default;
+        }
+    }
+
     public function count() : int
     {
         if (!isset($this->count))  {
@@ -102,17 +176,6 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         }
 
         return $this->count;
-    }
-
-    public function toArray() : array
-    {
-        $array = [];
-        foreach ($this as $key => $value) {
-            if (is_subclass_of($value, 'IKeyValue')) $array[$value->get_key()] = $value->get_value();
-            else $array[$key] = $value;
-        }
-
-        return $array;
     }
 
     public function toDictionnary($key_selector, $value_selector) : array {
@@ -135,7 +198,7 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         if ($this->is_assoc($this->array_like))
         {
             foreach ($this->array_like as $key => $value) {
-                yield new KeyValue($key, $value);
+                yield new Mel_KeyValue($key, $value);
             }
         }
         else {
@@ -214,8 +277,41 @@ class Mel_GroupBy extends Mel_Where
                 if (call_user_func($this->selector, $skey, $svalue) === $key) $arr[] = (isset($this->value_selector) ? call_user_func($this->value_selector, $skey, $svalue) : $svalue);
             }
 
-            yield new KeyValue($key, $arr);
+            yield new Mel_KeyValue($key, $arr);
             $arr = null;
         }
+    }
+}
+
+class Mel_Aggregate extends Mel_Enumerable
+{
+    protected $aggregate;
+    public function __construct($iterable, $aggregable_iterable) {
+        parent::__construct($iterable);
+        $this->aggregate = $aggregable_iterable;
+    }
+
+    public function getIterator() : Traversable {
+        $it = 0;
+        foreach ($this->array_like as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue'))  yield $value;
+            else {
+                $it = $key;
+                yield $key => $value;
+            }
+        }
+
+        if ($this->is_assoc($this->aggregate))
+        {
+            foreach ($this->aggregate as $key => $value) {
+                yield new Mel_KeyValue($key, $value);
+            }
+        }
+        else {
+            foreach ($this->aggregate as $key => $value) {
+                yield (++$it) => $value;
+            }
+        }
+
     }
 }

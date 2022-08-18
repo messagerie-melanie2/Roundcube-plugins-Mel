@@ -230,6 +230,9 @@ function m_mp_NotificationRun(notification) {
         // Si la notification est déjà dans la liste
         if (notifications[notification.uid]) {
             notifications[notification.uid].isread = notification.isread;
+            notifications[notification.uid].modified = notification.modified;
+
+            notifications = m_mp_NotificationsSort(notifications);
 
             // Actualiser les non lues et ajouter dans le panel
             m_mp_NotificationsAppendToPanel(notifications);
@@ -274,14 +277,14 @@ function m_mp_NotificationsMerge(notifications, newNotifications) {
 }
 
 /**
- * Tri les notifications par created
+ * Tri les notifications par modified
  * 
  * @param {*} notifications 
  */
 function m_mp_NotificationsSort(notifications) {
     // Compatible uniquement ES10
     return Object.fromEntries(Object.entries(notifications).sort((a, b) => {
-        return b[1].created - a[1].created;
+        return b[1].modified - a[1].modified;
     }));
 }
 
@@ -879,7 +882,7 @@ function m_mp_NotificationGetElement(notification, isPanel = true) {
 
     if (isPanel) {
         // Traitement de la date
-        let _date = m_mp_NotificationGetDate(notification.created),
+        let _date = m_mp_NotificationGetDate(notification.modified),
             date = document.createElement('span');
 
         date.className = 'date';

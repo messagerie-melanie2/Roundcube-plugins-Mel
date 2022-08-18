@@ -787,6 +787,7 @@ function rcube_libcalendaring(settings)
                 content: Q(this.event_date_text(alarm)),
                 category: 'agenda',
                 created: Math.floor(Date.now() / 1000),
+                modified: Math.floor(Date.now() / 1000),
                 isread: false,
                 local: true,
             });

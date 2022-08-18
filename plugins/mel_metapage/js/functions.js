@@ -1919,7 +1919,10 @@ function m_mp_OpenTask() {
  * Ferme ariane.
  */
 function m_mp_close_ariane() {
-    event.preventDefault();
+    try {
+        event.preventDefault();
+    }catch(e) {}
+    
     if (parent.mel_metapage.PopUp.ariane !== undefined)
         parent.mel_metapage.PopUp.ariane.hide();
 }

@@ -9,6 +9,7 @@
     {
         if (!webconf_is_active())
         {
+            top.m_mp_close_ariane();
             if ((parent !== window ? parent : window).$(".webconf-frame").length > 0)
                 (parent !== window ? parent : window).$(".webconf-frame").remove();
 

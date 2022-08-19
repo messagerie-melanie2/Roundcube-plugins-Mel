@@ -164,14 +164,13 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
         e.classList.forEach((a) => {
             switch (a) {
                 case "mel-focus":
-                    return;
                 case "selected":
-                    return;
                 case "order1":
-                    return;
                 case 'disabled':
-                    return;
                 case "mel":
+                case '-normal-touch':
+                case 'menu-small':
+                case 'stopAppMenu':
                     return;
                 default:
                     break;
@@ -189,6 +188,7 @@ function mm_st_ChangeClicks(selector = "#taskmenu", otherSelector = "a")
             case "about":
             case "compose":
             case "menu-last-frame":
+            case '':
                 return;
         
             default:

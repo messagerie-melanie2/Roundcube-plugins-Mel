@@ -71,12 +71,21 @@
         .modal-close{
             .modal-top-right-buttons();
 
+            html.dark-mode &{
+                background-color: var(--invisible)!important;
+                border-color: var(--invisible)!important;
+            }
+
             &:focus{
                 .modal-top-right-buttons-focus();
             }
 
             &:hover{
                 .modal-top-right-buttons-hover();
+
+                html.dark-mode &{
+                    color:#E1C58F;
+                }
             }
 
             &:active{

@@ -687,14 +687,21 @@ class mel_news extends rcube_plugin {
    */
   function show_dn_news()
   {
+    $classes = [
+      'col' => 'col-md-6',
+      'row' => 'row'
+    ];
+    $style = [
+      $classes['col'] => 'margin-top:5px;'
+    ];
     $news = self::load_last_dn_news(self::get_user_dn());
 
     $html = "";
     if (isset($news[0]->id))
     {
-      $html .= html::div(["class" => "row"],
-        html::div(["class" => "col-md-6"], $news[0]->html($this->load_news_model(), $this)).
-        (isset($news[1]->id) ? html::div(["class" => "col-md-6"], $news[1]->html($this->load_news_model(), $this)) : "")
+      $html .= html::div(["class" => $classes['row']],
+        html::div(["class" => $classes['col'], "style" => $style[$classes['col']]], $news[0]->html($this->load_news_model(), $this)).
+        (isset($news[1]->id) ? html::div(["class" => $classes['col'], "style" => $style[$classes['col']]], $news[1]->html($this->load_news_model(), $this)) : "")
       );
     }
     else $html = $this->gettext("no_news", "mel_news");

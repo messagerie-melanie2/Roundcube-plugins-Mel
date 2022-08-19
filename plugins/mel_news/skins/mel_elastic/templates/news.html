@@ -20,12 +20,14 @@
     <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
 	<div class="body" style="padding-bottom: 15px;">
         <div class="news">
-            <h2 class="title-wsp bold" style="display: inline-block;">
-                <roundcube:label name="mel_news.news" />
-            </h2>
-            <div style="float: right;">
-                <button id="news-button-publish" class="btn btn-secondary mel-button no-button-margin disabled" disabled><roundcube:label name="mel_news.publish" /> <span class="plus icon-mel-plus"></span></button>
-                <button id="news-button-publish-flux" class="btn btn-secondary mel-button no-button-margin disabled" disabled><roundcube:label name="mel_news.publish_flux" /> <span class="plus icon-mel-plus"></span></button>
+            <div style="display: flex;     justify-content: space-between;">
+                <h2 class="title-wsp bold" style="display: inline-block;">
+                    <roundcube:label name="mel_news.news" />
+                </h2>
+                <div>
+                    <button id="news-button-publish" class="btn btn-secondary mel-button no-button-margin disabled" disabled><roundcube:label name="mel_news.publish" /> <span class="plus icon-mel-plus"></span></button>
+                    <button id="news-button-publish-flux" class="btn btn-secondary mel-button no-button-margin disabled" disabled><roundcube:label name="mel_news.publish_flux" /> <span class="plus icon-mel-plus"></span></button>
+                </div>
             </div>
             <div>
                 <roundcube:object name="dnnews" />

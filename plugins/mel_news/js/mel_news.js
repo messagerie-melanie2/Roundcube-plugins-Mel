@@ -156,6 +156,19 @@ $(document).ready(async () => {
             this.symbols = {
                 allIsSelected:Symbol("allIsSelected")
             };
+
+            const modal_show = this.modal.show;
+            this.modal.show = function()
+            {
+                if(!!window.create_popUp) window.create_popUp = undefined;
+
+                if ($('#created-modal-title-div-auto').length > 0) this.removeBeforeTitle();
+
+                this.on_click_exit = () => this.close();
+
+                this.notHaveReduced();
+                modal_show.call(this);
+            }
         }
 
         /**

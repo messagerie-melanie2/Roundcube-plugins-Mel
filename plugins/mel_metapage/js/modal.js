@@ -31,7 +31,6 @@ class GlobalModalConfig
     }
 }
 
-
 /**
  * Gère la modale globale.
  */
@@ -104,14 +103,8 @@ class GlobalModal
         this.on_click_minified = this.on_click_exit;
         let $close = $(".modal-close");
         $close.click(this.on_click_exit);
-
-        let $modal_minifier = $('.modal-minify-mel')
-        if ($modal_minifier.length > 0) 
-        {
-            $close.appendTo($close.parent().parent());
-            $modal_minifier.parent().remove();
-        }
-        $modal_minifier = null;
+        this.notHaveReduced($close);
+        $close = null;
 
         if (show)
             this.show();
@@ -224,13 +217,31 @@ class GlobalModal
         return this._create_reduced();
     }
 
+    notHaveReduced($close_button = null)
+    {
+        const class_tra = GlobalModal.consts.classes.top_right_action;
+
+        let $close = $close_button || $(".modal-close");
+        this.have_reduced = false;
+        let $modal_minifier = $('.modal-minify-mel')
+
+        if ($modal_minifier.length > 0) 
+        {
+            $close.addClass(class_tra).appendTo($close.parent().parent());
+            $modal_minifier.parent().remove();
+        }
+
+        $modal_minifier = null;
+        return this;
+    }
+
     _create_reduced()
     {
-        /*
-        <button title="Fermer la modale" class="modal-close btn btn-secondary"><span class="icon-mel-close"></span><span class="sr-only">Fermer la modale</span></button>
-        */
+        const class_tra = GlobalModal.consts.classes.top_right_action;
+
         let button = document.createElement('button');
         let span = document.createElement('span');
+
         span.classList.add("icon-mel-minus-roundless");
         button.append(span);
         span = null;
@@ -239,16 +250,18 @@ class GlobalModal
         span.innerText = 'Minifier la modale';
         button.append(span);
         span = null;
-        //$('.modal-close').before(button);
         span = document.createElement('div');
         let $close = $('.modal-close');
-        $close.parent().append(span);
-        $(span).append($(button).addClass('btn btn-secondary modal-minify-mel').click(() => {
+        $close.removeClass(class_tra).parent().append(span);
+
+        $(span).addClass(class_tra).append($(button).addClass('btn btn-secondary modal-minify-mel').click(() => {
             this.on_click_minified();
         })).append($close);
+
         span = null;
         button = null;
         $close = null;
+
         return this;
     }
 
@@ -345,6 +358,12 @@ GlobalModal.close = function ()
 {
     $("#globalModal").modal('hide');
 }
+
+GlobalModal.consts = {
+    classes:{
+        top_right_action:'modal-top-right-actions'
+    }
+};
 
 window.GlobalModal = GlobalModal;
 window.GlobalModalConfig = GlobalModalConfig;

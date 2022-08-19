@@ -72,8 +72,11 @@ function m_mp_Create() {
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         let create_popUp = new GlobalModal("globalModal", config, !isSmall);
         create_popUp.on_click_exit = () => {
-            window.create_popUp.close();
-            delete window.create_popUp;
+            if (!!window.create_popUp)
+            {
+                window.create_popUp.close();
+                delete window.create_popUp;
+            }
         }
         create_popUp.on_click_minified = () => {
             window.create_popUp.close();

@@ -254,6 +254,7 @@ body.task-workspace  button.wsp-toolbar-item,
     border-radius: 100%;
     background-repeat: no-repeat!important;
     box-shadow: none!important;
+    flex: 1 0 auto;
 }
 
 body.task-workspace  .wsp-toolbar-item,
@@ -347,25 +348,25 @@ html.layout-phone .wsp-toolbar-item{
 .wsp-toolbar-item:hover,
 .wsp-toolbar-item.active{
     cursor: pointer;
-    background: radial-gradient(circle, #42548F 45%, rgba(255,255,255,0) 45%); /*29*/
+    background: radial-gradient(circle, #42548F 10%, rgba(255,255,255,0) 10%); /*29*/
 }
 
 button.wsp-toolbar-item:focus
 {
     box-shadow: none;
-    background: radial-gradient(circle, transparent 20%, #484D7A4F 45%, rgba(255,255,255,0) 28%);
+    background: radial-gradient(circle, transparent 9%, #484D7A4F 11%, rgba(255,255,255,0) 12%);
 }
 
 button.wsp-toolbar-item:focus:hover
 {
     box-shadow: none;
-    background: radial-gradient(circle, #42548F 20%, #484D7A4F 45%, rgba(255,255,255,0) 28%);
+    background: radial-gradient(circle, #42548F 9%, #484D7A4F 11%, rgba(255,255,255,0) 12%);
 }
 
 .wsp-toolbar-item.active,
 .wsp-toolbar-item:active
 {
-    background: radial-gradient(circle, #42548F 45%, rgba(255,255,255,0) 26%)!important;
+    background: radial-gradient(circle, #42548F 10%, rgba(255,255,255,0) 10%)!important;
 }
 
 .wsp-toolbar-item > span {

@@ -35,6 +35,7 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function add($item, $key = null) : IMel_Enumerable;
     function remove($item) : IMel_Enumerable;
     function removeAtKey($key) : IMel_Enumerable;
+    function removeTwins($callback) : IMel_Enumerable;
     function any($selector = null) : bool;
     function all($selector) : bool;
     function contains($item) : bool;
@@ -103,6 +104,11 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         });
     }
 
+    public function removeTwins($selector) : IMel_Enumerable
+    {
+        return new MelTwins($this, $selector);
+    }
+
     public function contains($item) : bool {
         return $this->any(function ($k, $v) use($item) {
             return $v === $item;
@@ -114,7 +120,10 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         $array = [];
         foreach ($this as $key => $value) {
             if (is_subclass_of($value, 'IKeyValue')) $array[$value->get_key()] = $value->get_value();
-            else $array[$key] = $value;
+            else {
+                if ($key === count($array)) $array[] = $value;
+                else $array[$key] = $value;
+            }
         }
 
         return $array;
@@ -313,5 +322,56 @@ class Mel_Aggregate extends Mel_Enumerable
             }
         }
 
+    }
+}
+
+class MelTwins extends Mel_Where
+{
+    public function __construct($iterable, $callback) {
+        parent::__construct($iterable, $callback);
+    }
+
+    public function getIterator() : Traversable {
+        //$iterable = isset($this->selector) ? Mel_Enumerable::from($this->array_like)->select($this->selector) : $this->array_like;
+        $is_key = false;
+        $arr = [];
+        foreach ($this->array_like as $key => $value) {
+            if ($this->isKeyValuePair($value))
+            {
+                $is_key = true;
+            } else $is_key = false;
+
+            $tmpvalue = $is_key ? $value->get_value() : $value;
+
+            if (count($arr) > 0)
+            {
+                if (isset($this->selector))
+                {
+                    if (!Mel_Enumerable::from($arr)->select($this->selector)->any(function ($k, $v) use($tmpvalue){
+                        return $v === call_user_func($this->selector, $k, $tmpvalue);
+                    })){
+                        $arr[] = $tmpvalue;
+                        yield $is_key ? $value : $key => $value;
+                    }
+                }
+                else if (!in_array($tmpvalue, $arr)) yield $is_key ? $value : $key => $value;
+            }
+            else {
+                $arr[] = $tmpvalue;
+                yield $is_key ? $value : $key => $value;
+            }
+        }
+
+        unset($arr);
+    }
+
+    protected function isKeyValuePair($value) : bool
+    {
+        return is_subclass_of($value, 'IKeyValue');
+    } 
+
+    protected function get_true_value($value)
+    {
+        return ($this->isKeyValuePair($value) ? $value->get_value() : $value);
     }
 }

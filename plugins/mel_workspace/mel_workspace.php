@@ -784,6 +784,11 @@ class mel_workspace extends rcube_plugin
             $darker = $color->darker(20)->to_rgb();
             $textColor = $color->need_black_text() ? "black!important" : "white";
 
+            $hover = [1 => 10, 2 => 10];
+            $focus = $hover;
+            $active_focus = [ 1 => 20, 2 => 45, 3 => 28];
+
+
             $style = "<style>
             .wsp-toolbar.melw-wsp{
                 background-color:$hex!important;
@@ -802,17 +807,17 @@ class mel_workspace extends rcube_plugin
             .wsp-toolbar.melw-wsp button.wsp-toolbar-item:hover,
             .wsp-toolbar.melw-wsp button.wsp-toolbar-item.active
             {
-                background: radial-gradient(circle, $darker 45%, rgba(255,255,255,0) 26%) !important
+                background: radial-gradient(circle, $darker ".$hover[1]."%, rgba(255,255,255,0) ".$hover[2]."%) !important
             }
 
             .wsp-toolbar.melw-wsp button.wsp-toolbar-item:focus
             {
-                background: radial-gradient(circle, $lighter 45%, rgba(255,255,255,0) 26%) !important
+                background: radial-gradient(circle, $lighter ".$focus[1]."%, rgba(255,255,255,0) ".$focus[2]."%) !important
             }
 
             .wsp-toolbar.melw-wsp button.wsp-toolbar-item.active:focus
             {
-                background: radial-gradient(circle, $darker 20%, $lighter 45%, rgba(255,255,255,0) 28%)
+                background: radial-gradient(circle, $darker ".$active_focus[1]."%, $lighter ".$active_focus[2]."%, rgba(255,255,255,0) ".$active_focus[3]."%)
             }
 
             .btn.btn-block.wsp-toolbar-melw-wsp-hider

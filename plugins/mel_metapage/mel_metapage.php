@@ -619,6 +619,19 @@ class mel_metapage extends rcube_plugin
             'type'       => 'link-menuitem',
         ), "mailboxoptions");
 
+        // MANTIS 0006453: Simplifier le déplacement de mails dans un autre dossier IMAP
+        $this->add_button(array(
+            'command'       => 'move',
+            'class'	        => 'move disabled',
+            'classact'      => 'move',
+            'classsel'      => 'move',
+            'label'	        => 'move',
+            'title'         => 'moveto',
+            'innerclass'    => 'inner',
+            'aria-haspopup' => 'true',
+            'type'          => 'link',
+        ), "toolbar");
+
         //listcontrols
         $this->include_depedencies();
         $this->include_css();

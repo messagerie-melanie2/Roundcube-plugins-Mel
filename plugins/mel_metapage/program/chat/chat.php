@@ -1,154 +1,272 @@
 <?php
-include_once __DIR__."/../interfaces/ichat.php";
-include_once __DIR__."/../program.php";
+include_once __DIR__.'/../consts/chat.php';
+include_once __DIR__.'/../interfaces/ichat.php';
+include_once __DIR__.'/../program.php';
 
 class Chat extends Program implements iChatBnum
 {
-    public const ACTION_INDEX = 'index';
-    public const ACTION_CREATE_CHANNEL = 'create_chanel';
-    public const ACTION_ADD_USERS = 'add_users';
-    public const ACTION_GET_USER_INFO = 'get_user_info';
-    public const ACTION_GET_CHANNEL_UNREAD_COUNT = 'get_channel_unread_count';
-    public const ACTION_LOGIN = 'login';
-    public const ACTION_LOGOUT = 'logout';
-
-    public const FUNCTION_INDEX = 'action';
-    public const FUNCTION_CREATE_CHANNEL = self::ACTION_CREATE_CHANNEL.'_action';
-    public const FUNCTION_ADD_USERS = self::ACTION_ADD_USERS.'_action';
-    public const FUNCTION_GET_USER_INFO = self::ACTION_GET_USER_INFO.'_action';
-    public const FUNCTION_GET_CHANNEL_UNREAD_COUNT = self::ACTION_GET_CHANNEL_UNREAD_COUNT.'_action';
-    public const FUNCTION_LOGIN = 'get_log';
-    public const FUNCTION_LOGOUT = self::ACTION_LOGOUT;
-
-    public const HOOK_NAMESPACE = 'chat';
-    public const HOOK_NAMESPACE_SPERATOR = '.';
-    public const HOOK_INDEX = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_INDEX;
-    public const HOOK_LOGIN = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_LOGIN;
-    public const HOOK_LOGOUT =  self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::FUNCTION_LOGOUT;
-    public const HOOK_CREATE_CHANNEL = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_CREATE_CHANNEL;
-    public const HOOK_ADD_USERS = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_ADD_USERS;
-    public const HOOK_GET_USER_INFO = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_GET_USER_INFO;
-    public const HOOK_GET_CHANNEL_UNREAD_COUNT = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_GET_CHANNEL_UNREAD_COUNT;
-    public const HOOK_KICK_USER = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.'kick_user';
-
-    public const ARG_CHANNEL_ID = 'channel_id';
-    public const ARG_CHANNEL = 'channel';
-    public const ARG_USER = 'user';
-    public const ARG_PRIVATE = 'private';
-    public const ARG_IS_PUBLIC = 'is_public';
-    public const ARG_MISCELLANEOUS = 'miscs';
-    public const ARG_ROOM_NAME = 'room_name';
-
-    public const RETURN = 'return_value';
-
     public function __construct($rc, $plugin) {
         parent::__construct($rc, $plugin);
     }  
 
     public function init()
     {
-        $this->register_action(self::ACTION_INDEX, array(
+        $this->register_action(ConstChat::ACTION_INDEX, array(
             $this,
-            self::FUNCTION_INDEX
+            ConstChat::FUNCTION_INDEX
         ));
-        $this->register_action(self::ACTION_CREATE_CHANNEL, array(
+        $this->register_action(ConstChat::ACTION_CREATE_CHANNEL, array(
             $this,
-            self::FUNCTION_CREATE_CHANNEL
+            ConstChat::FUNCTION_CREATE_CHANNEL
           ));
-          $this->register_action(self::ACTION_ADD_USERS, array(
+          $this->register_action(ConstChat::ACTION_ADD_USERS, array(
             $this,
-            self::FUNCTION_ADD_USERS
+            ConstChat::FUNCTION_ADD_USERS
           ));
-          $this->register_action(self::ACTION_GET_USER_INFO, array(
+          $this->register_action(ConstChat::ACTION_GET_USER_INFO, array(
             $this,
-            self::FUNCTION_GET_USER_INFO
+            ConstChat::FUNCTION_GET_USER_INFO
           ));
-          $this->register_action(self::ACTION_GET_CHANNEL_UNREAD_COUNT, array(
+          $this->register_action(ConstChat::ACTION_GET_CHANNEL_UNREAD_COUNT, array(
             $this,
-            self::FUNCTION_GET_CHANNEL_UNREAD_COUNT
+            ConstChat::FUNCTION_GET_CHANNEL_UNREAD_COUNT
           ));
-          $this->register_action(self::ACTION_LOGIN, array(
+          $this->register_action(ConstChat::ACTION_LOGIN, array(
             $this,
-            self::FUNCTION_LOGIN
+            ConstChat::FUNCTION_LOGIN
           ));
-          $this->register_action(self::ACTION_LOGOUT, array(
+          $this->register_action(ConstChat::ACTION_LOGOUT, array(
             $this,
-            self::FUNCTION_LOGOUT
+            ConstChat::FUNCTION_LOGOUT
           ));  
+    }
+
+    function program_task()
+    {
+        return ConstChat::TASK_NAME;
     }
 
     protected function _get_args($args)
     {
-        return $args[self::RETURN] ?? $args;
+        return $args[ConstChat::RETURN] ?? $args;
     }
 
     function action($args = [])
     {
-        $args = $this->trigger_hook(self::HOOK_INDEX, $args);
+        $args = $this->trigger_hook(ConstChat::HOOK_INDEX, $args);
         return $args;
     }
 
     function get_log($args = [])
     {
-        return $this->login();
+        $array = $this->login();
+        echo json_encode($array);
+        exit;
     }
 
-    function login()
+    function create_chanel_action($args = [])
     {
-        $args = $this->trigger_hook(self::HOOK_LOGIN, $args);
-        return $args;
+        $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
+        $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
+        $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
+
+        if ($is_public === "false")
+            $is_public = false;
+        else
+            $is_public = true;
+
+        $result = $this->create_channel($room_name, $users, $is_public);
+
+        echo json_encode($result);
+
+        exit;
     }
 
-    function logout($args = [])
+    function get_channel_unread_count_action($args = [])
     {
-        $args = $this->trigger_hook(self::HOOK_LOGOUT, $args);
+        $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
+
+        $results = $this->get_channel_unread_count($channel);
+  
+        echo json_encode($results);
+  
+        exit;
+    }
+
+    function get_user_info_action($args = [])
+    {
+        $username = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST);
+
+        echo json_encode($this->get_user_info($username));
+  
+        exit;
+    }
+
+    function add_users_action($args = [])
+    {
+        $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
+        $channel_id = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
+        $private = rcube_utils::get_input_value('_private', rcube_utils::INPUT_POST);
+  
+        $results = $this->add_users($users, $channel_id, $private);
+  
+        echo json_encode($results);
+        exit;
+    }
+
+    function login($args = [])
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_LOGIN, $args);
+        return $this->_get_args($args);
+    }
+
+    function logout()
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_LOGOUT, $args);
         return $args;
     }
 
     function create_channel($room_name, $users, $is_public, ...$miscs)
     {
-        $args = $this->trigger_hook(self::HOOK_CREATE_CHANNEL, [
-            self::ARG_ROOM_NAME => $room_name,
-            self::ARG_USER => $user,
-            self::ARG_IS_PUBLIC => $is_public,
-            self::ARG_MISCELLANEOUS => $miscs
+        $args = $this->trigger_hook(ConstChat::HOOK_CREATE_CHANNEL, [
+            ConstChat::ARG_ROOM_NAME => $room_name,
+            ConstChat::ARG_USER => $users,
+            ConstChat::ARG_IS_PUBLIC => $is_public,
+            ConstChat::ARG_MISCELLANEOUS => $miscs
         ]);
         return $this->_get_args($args);
     }
 
     function add_users($users, $channel_id, $private, ...$miscs)
     {
-        $args = $this->trigger_hook(self::HOOK_ADD_USERS, [
-            self::ARG_CHANNEL_ID => $channel_id,
-            self::ARG_USER => $user,
-            self::ARG_PRIVATE => $private,
-            self::ARG_MISCELLANEOUS => $miscs
+        $args = $this->trigger_hook(ConstChat::HOOK_ADD_USERS, [
+            ConstChat::ARG_CHANNEL_ID => $channel_id,
+            ConstChat::ARG_USER => $users,
+            ConstChat::ARG_PRIVATE => $private,
+            ConstChat::ARG_MISCELLANEOUS => $miscs
         ]);
         return $this->_get_args($args);
     }
 
     function get_user_info($user) {
-        $args = $this->trigger_hook(self::HOOK_GET_USER_INFO, [
-            self::ARG_USER => $user
+        $args = $this->trigger_hook(ConstChat::HOOK_GET_USER_INFO, [
+            ConstChat::ARG_USER => $user
         ]);
         return $this->_get_args($args);
     }
 
     function get_channel_unread_count($channel)
     {
-        $args = $this->trigger_hook(self::HOOK_GET_CHANNEL_UNREAD_COUNT, [
-            self::ARG_CHANNEL => $channel
+        $args = $this->trigger_hook(ConstChat::HOOK_GET_CHANNEL_UNREAD_COUNT, [
+            ConstChat::ARG_CHANNEL => $channel
         ]);
         return $this->_get_args($args);
     }
 
     function kick_user($channel_id, $user, $private, ...$miscs)
     {
-        $args = $this->trigger_hook(self::HOOK_KICK_USER, [
-            self::ARG_CHANNEL_ID => $channel_id,
-            self::ARG_USER => $user,
-            self::ARG_PRIVATE => $private,
-            self::ARG_MISCELLANEOUS => $miscs
+        $args = $this->trigger_hook(ConstChat::HOOK_KICK_USER, [
+            ConstChat::ARG_CHANNEL_ID => $channel_id,
+            ConstChat::ARG_USER => $user,
+            ConstChat::ARG_PRIVATE => $private,
+            ConstChat::ARG_MISCELLANEOUS => $miscs
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function post_message($room_id, $text)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_POST_MESSAGE, [
+            ConstChat::ARG_CHANNEL_ID => $room_id,
+            ConstChat::ARG_STRING => $text
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function advanced_post_message($room_id, $text, $alias, $avatar = null)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_ADVANCE_POST_MESSAGE, [
+            ConstChat::ARG_CHANNEL_ID => $room_id,
+            ConstChat::ARG_STRING => $text,
+            ConstChat::ARG_ALIAS => $alias,
+            ConstChat::ARG_AVATAR => $avatar
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function update_owner($user, $channel_id, $private, $remove = false)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_UPDATE_OWNER, [
+            ConstChat::ARG_USER => $user,
+            ConstChat::ARG_CHANNEL_ID => $channel_id,
+            ConstChat::ARG_PRIVATE => $private,
+            ConstChat::ARG_REMOVE => $remove
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function delete_channel($channel_id, $private)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_DELETE_CHANNEL, [
+            ConstChat::ARG_CHANNEL_ID => $channel_id,
+            ConstChat::ARG_PRIVATE => $private
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function update_channel_type($channel_id, $private)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_UPDATE_CHANNEL_TYPE, [
+            ConstChat::ARG_CHANNEL_ID => $channel_id,
+            ConstChat::ARG_PRIVATE => $private
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function get_joined()
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_GET_JOINED);
+
+        return $this->_get_args($args);
+    }
+
+    function get_all_moderator_joined($user = null)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_GET_ALL_MODERATOR_JOINED, [
+            ConstChat::ARG_USER => $user,
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function check_if_room_exist($room_id)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_CHECK_IF_ROOM_EXIST, [
+            ConstChat::ARG_CHANNEL_ID => $channel_id
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function check_if_room_exist_by_name($room_name)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_CHECK_IF_ROOM_EXIST_BY_NAME, [
+            ConstChat::ARG_ROOM_NAME => $room_name
+        ]);
+
+        return $this->_get_args($args);
+    }
+
+    function room_info($room_name)
+    {
+        $args = $this->trigger_hook(ConstChat::HOOK_ROOM_INFO, [
+            ConstChat::ARG_ROOM_NAME => $room_name
         ]);
 
         return $this->_get_args($args);
@@ -156,7 +274,7 @@ class Chat extends Program implements iChatBnum
 
     function have_chat_plugin($arg = false)
     {
-        $arg = $this->trigger_hook('chat.have_chat_plugin', $arg);
+        $arg = $this->trigger_hook(ConstChat::HOOK_HAVE_PLUGIN, $arg);
         return $arg;
     }
 

@@ -26,12 +26,6 @@ abstract class AMelMetapagePlugin extends rcube_plugin implements iModuleHooks
         if ($this->rc->task === $this->plugin_task()) $this->setup_plugin();
     }
 
-    public abstract function connector_index($args);
-    protected abstract function init_plugin();
-    protected abstract function register_module();
-    protected abstract function plugin_task();
-    protected abstract function must_load_config();
-
     private function setup_plugin()
     {
         $this->include_env();
@@ -42,18 +36,24 @@ abstract class AMelMetapagePlugin extends rcube_plugin implements iModuleHooks
         $this->additionnal_setup();
     }
 
+    public abstract function connector_index($args);
+    protected abstract function init_plugin();
+    protected abstract function register_module();
+    protected abstract function plugin_task();
+    protected abstract function must_load_config();
+
     protected function include_js() {}
     protected function include_css() {}
     protected function include_env() {}
     protected function add_buttons() {}
     protected function add_bnum_buttons() {}
-    protected function add_localization() {
-        $this->add_texts('localization/', true);
-    }
     protected function add_hooks() {}
     protected function register_actions() {}
     protected function additionnal_setup() {} 
-
+    
+    protected function add_localization() {
+        $this->add_texts('localization/', true);
+    }
 
     public function have_plugin($args)
     {

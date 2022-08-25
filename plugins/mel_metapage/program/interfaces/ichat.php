@@ -1,16 +1,10 @@
 <?php 
+include_once 'imodule.php';
  /**
   * Actions necéssaires au BNUM pour fonctionner correctement avec un plugin de chat.
   */
-interface iChatBase
+interface iChatBase extends iModuleBase
 {
-    /**
-     * Action par défaut (&_action=index)
-     *
-     * @param array $args
-     * @return void
-     */
-    function page_index($args = []);
     /**
      * Connecte le Bnum à l'application de chat
      *
@@ -95,7 +89,7 @@ interface iChatBase
     function have_plugin($arg = false);
 }
 
-interface iChat extends iChatBase {
+interface iChatHooks extends iChatBase, iModuleHooks {
     function connector_create_channel($args);
     function connector_add_users($args);
     function connector_get_user_info($args);
@@ -111,13 +105,15 @@ interface iChat extends iChatBase {
     function connector_check_if_room_exist($args);
     function connector_check_if_room_exist_by_name($args);
     function connector_room_info($args);
+    function connector_login($args);
+    function connector_logout($args);
 }
 
 /**
  * Interface de la classe Chat.
  * Demande d'implémenter les fonctions lié aux actions.
  */
-interface iChatBnum extends iChatBase
+interface iChatActions extends iChatBase, iModuleActions
 {
     /**
      * Connecte le Bnum à l'application de chat

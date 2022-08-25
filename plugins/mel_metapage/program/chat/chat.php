@@ -3,7 +3,7 @@ include_once __DIR__.'/../consts/chat.php';
 include_once __DIR__.'/../interfaces/ichat.php';
 include_once __DIR__.'/../program.php';
 
-class Chat extends Program implements iChatBnum
+class Chat extends Program implements iChatActions
 {
     public function __construct($rc, $plugin) {
         parent::__construct($rc, $plugin);
@@ -11,6 +11,7 @@ class Chat extends Program implements iChatBnum
 
     public function init()
     {
+        $this->register_module();
         $this->register_action(ConstChat::ACTION_INDEX, array(
             $this,
             ConstChat::FUNCTION_INDEX
@@ -275,6 +276,12 @@ class Chat extends Program implements iChatBnum
     function have_plugin($arg = false)
     {
         $arg = $this->trigger_hook(ConstChat::HOOK_HAVE_PLUGIN, $arg);
+        return $arg;
+    }
+
+    function register_module($args = [])
+    {
+        $arg = $this->trigger_hook('chat.register_module', $args);
         return $arg;
     }
 

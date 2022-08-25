@@ -51,7 +51,7 @@ class Chat extends Program implements iChatBnum
         return $args[ConstChat::RETURN] ?? $args;
     }
 
-    function action($args = [])
+    function page_index($args = [])
     {
         $args = $this->trigger_hook(ConstChat::HOOK_INDEX, $args);
         return $args;
@@ -163,7 +163,7 @@ class Chat extends Program implements iChatBnum
         return $this->_get_args($args);
     }
 
-    function kick_user($channel_id, $user, $private, ...$miscs)
+    function kick_user($channel_id, $user, $private, ...$miscs) //
     {
         $args = $this->trigger_hook(ConstChat::HOOK_KICK_USER, [
             ConstChat::ARG_CHANNEL_ID => $channel_id,
@@ -272,7 +272,7 @@ class Chat extends Program implements iChatBnum
         return $this->_get_args($args);
     }
 
-    function have_chat_plugin($arg = false)
+    function have_plugin($arg = false)
     {
         $arg = $this->trigger_hook(ConstChat::HOOK_HAVE_PLUGIN, $arg);
         return $arg;

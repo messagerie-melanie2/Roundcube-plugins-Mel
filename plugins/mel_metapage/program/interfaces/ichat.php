@@ -16,7 +16,7 @@ interface iChat
      *
      * @return void
      */
-    function login();
+    function login($args = []);
     /**
      * Déconnecte le Bnum à l'application de chat
      *
@@ -66,6 +66,25 @@ interface iChat
      * @return array
      */
     function kick_user($channel_id, $user, $private, ...$miscs);
+
+    function post_message($room_id, $text);
+    function advanced_post_message($room_id, $text, $alias, $avatar = null);
+
+    function update_owner($user, $channel_id, $private, $remove = false);
+
+    function delete_channel($channel_id, $private);
+
+    function update_channel_type($channel_id, $private);
+
+    function get_joined();
+
+    function get_all_moderator_joined($user = null);
+
+    function check_if_room_exist($room_id);
+
+    function check_if_room_exist_by_name($room_name);
+
+    function room_info($room_name);
 
     /**
      * Vérifie si il y a un plugin de chat.

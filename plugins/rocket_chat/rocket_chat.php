@@ -1,4 +1,6 @@
 <?php
+include_once __DIR__.'../mel_metapage/program/chat/includes.php';
+
 /**
  * Plugin Rocket.Chat
  * Integration of Rocket.Chat as an iFrame in Roundcube
@@ -13,7 +15,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-class rocket_chat extends rcube_plugin {
+class rocket_chat extends AChatPlugin  {
     /**
      *
      * @var string
@@ -84,30 +86,15 @@ class rocket_chat extends rcube_plugin {
                 'type'=> 'link'
             ), 'taskbar');
           }
-          $this->register_action('create_chanel', array(
-            $this,
-            'create_chanel'
-          ));
-          $this->register_action('add_users', array(
-            $this,
-            'add_users'
-          ));
-          $this->register_action('get_user_info', array(
-            $this,
-            'get_user_info'
-          ));
-          $this->register_action('get_channel_unread_count', array(
-            $this,
-            'get_channel_unread_count'
-          ));
-          $this->register_action('login', array(
-            $this,
-            'get_log'
-          ));
-          $this->register_action('logout', array(
-            $this,
-            'logout'
-          ));
+
+          $this->add_hook(ConstChat::HOOK_INDEX, [$this, 'action']);
+          $this->add_hook(ConstChat::HOOK_CREATE_CHANNEL, [$this, '_create_channel']);
+          $this->add_hook(ConstChat::HOOK_ADD_USERS, [$this, '_add_users']);
+          $this->add_hook(ConstChat::HOOK_GET_USER_INFO, [$this, '_get_user_info']);
+          $this->add_hook(ConstChat::HOOK_GET_CHANNEL_UNREAD_COUNT, [$this, '_channel_unread_count']);
+          $this->add_hool(ConstChat::HOOK_KICK_USER, [$this, '_kick_user']);
+          $this->add_hook(ConstChat::HOOK_LOGIN, [$this, ConstChat::ACTION_LOGIN]);
+          $this->add_hook(ConstChat::HOOK_LOGOUT, [$this, ConstChat::ACTION_LOGOUT]);
         }
         
         // Si tache = ariane, on charge l'onglet
@@ -266,7 +253,7 @@ EOF;
      * Appel le login vers Rocket.Chat
      * @throws Exception
      */
-    public function login() {
+    public function login($args = []) {
       $userId = $this->getUserId();
       $authToken = $this->getAuthToken();
       
@@ -323,6 +310,11 @@ EOF;
         $authToken = $ret['authToken'];
         $this->setAuthToken($authToken);
       }
+
+      return [
+        "uid" => $userId ??$this->getUserId(),
+        "token" => $authToken ?? $this->getAuthToken()
+      ];
     }
     
     /**
@@ -492,28 +484,57 @@ EOF;
       return $me["httpCode"] !== 401;
     }
 
-
-
-  /**
-   * Créer un canal ou un groupe via un appel ajax.
-   */
-    public function create_chanel()
+    public function _create_channel($args)
     {
-      $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
-      $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
-      $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
-
-      if ($is_public === "false")
-        $is_public = false;
-      else
-        $is_public = true;
-
-      $result = $this->_create_channel($room_name, $users, $is_public);
-
-      echo json_encode($result);
-
-      exit;
+      return $this->create_chanel($args[ConstChat::ARG_ROOM_NAME], 
+      $args[ConstChat::ARG_USER],
+      $args[ConstChat::ARG_IS_PUBLIC],
+      ...$args[ConstChat::ARG_MISCELLANEOUS]);
     }
+
+    public function create_chanel($room_name, $users, $is_public, ...$miscs)
+    {
+      $user = $this->rc->get_user_name();
+      $rocketClient = $this->get_rc_client();
+
+      return $rocketClient->create_chanel($room_name, $users, $is_public);
+    }
+  //   /**
+  //    * Créer un canal ou un groupe.
+  //    *
+  //    * @param string $room_name
+  //    * @param array $users
+  //    * @param bool $is_public
+  //    * @return array
+  //    */
+  //   public function _create_channel($room_name, $users, $is_public)
+  //   {
+  //     $user = $this->rc->get_user_name();
+  //     $rocketClient = $this->get_rc_client();
+
+  //     return $rocketClient->create_chanel($room_name, $users, $is_public);
+  //   }
+
+  // /**
+  //  * Créer un canal ou un groupe via un appel ajax.
+  //  */
+  //   public function create_chanel()
+  //   {
+  //     $room_name = rcube_utils::get_input_value('_roomname', rcube_utils::INPUT_POST);
+  //     $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
+  //     $is_public = rcube_utils::get_input_value('_public', rcube_utils::INPUT_POST);
+
+  //     if ($is_public === "false")
+  //       $is_public = false;
+  //     else
+  //       $is_public = true;
+
+  //     $result = $this->_create_channel($room_name, $users, $is_public);
+
+  //     echo json_encode($result);
+
+  //     exit;
+  //   }
 
     public function post_message($room_id, $text, $alias, $avatar = null)
     {
@@ -526,32 +547,25 @@ EOF;
     );
     }
 
-   /**
-   * Créer un canal ou un groupe.
-   *
-   * @param string $room_name
-   * @param array $users
-   * @param bool $is_public
-   * @return array
-   */
-    public function _create_channel($room_name, $users, $is_public)
+    public function _get_user_info($args)
     {
-      $user = $this->rc->get_user_name();
-      $rocketClient = $this->get_rc_client();
-
-      return $rocketClient->create_chanel($room_name, $users, $is_public);
+      return $this->get_user_info($args[ConstChat::ARG_USER]);
     }
 
     /**
      * Récupère les infos de l'utilisateur.
      */
-    public function get_user_info()
+    public function get_user_info($user)
     {
-      $username = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST);
+      return $this->getUserInfos($user);
+    }
 
-      echo json_encode($this->getUserInfos($username));
-
-      exit;
+    public function _add_users($args)
+    {
+      return $this->add_users($args[ConstChat::ARG_USER],
+      $args[ConstChat::ARG_CHANNEL_ID], 
+      $args[ConstChat::ARG_PRIVATE],
+    ...$args[ConstChat::ARG_MISCELLANEOUS]);
     }
 
     /**
@@ -563,27 +577,12 @@ EOF;
      * 
      * @return array
      */
-    public function add_users($users = null, $channel_id = null, $private = null)
+    public function add_users($users, $channel_id, $private, ...$miscs)
     {
-      $ajax = $users === null && $channel_id === null && $private === null;
-
-      if ($users === null)
-        $users = rcube_utils::get_input_value('_users', rcube_utils::INPUT_POST);
-
-      if ($channel_id === null)
-        $channel_id = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
-
-      if ($private === null)
-        $private = rcube_utils::get_input_value('_private', rcube_utils::INPUT_POST);
-
       $rocketClient = $this->get_rc_client();
       $results = $rocketClient->add_users($channel_id, $users, $private);
 
-      if (!$ajax)
-        return $results;
-
-      echo json_encode($results);
-      exit;
+      return $results;
     }
 
     /**
@@ -603,6 +602,15 @@ EOF;
       return $remove ? $rocketClient->remove_owner($channel_id, $user, $private) : $rocketClient->add_owner($channel_id, $user, $private);
     }
 
+    public function _kick_user($args)
+    {
+      return $this->kick_user($args[ConstChat::ARG_CHANNEL_ID],
+        $args[ConstChat::ARG_USER],
+        $args[ConstChat::ARG_PRIVATE],
+        ...$args[ConstChat::ARG_MISCELLANEOUS]
+      );
+    }
+
     /**
      * Supprime un utilisateur d'un groupe ou d'un canal.
      * 
@@ -612,7 +620,7 @@ EOF;
      * 
      * @return array
      */
-    public function kick_user($channel_id, $user, $private)
+    public function kick_user($channel_id, $user, $private, ...$miscs)
     {
       $rocketClient = $this->get_rc_client();
 
@@ -649,19 +657,18 @@ EOF;
       return $rocketClient->update_channel($channel_id, $private);      
     }
 
+    public function _channel_unread_count($args)
+    {
+      return $this->get_channel_unread_count($args[ConstChat::ARG_CHANNEL]);
+    }
+
     /**
      * Récupère le nombre de messages non-lus d'un canal.
      */
-    public function get_channel_unread_count()
+    public function get_channel_unread_count($channel)
     {
-      $channel = rcube_utils::get_input_value('_channel', rcube_utils::INPUT_POST);
-
       $rocketClient = $this->get_rc_client();
-      $results = $rocketClient->channel_count($channel);
-
-      echo json_encode($results);
-
-      exit;
+      return $rocketClient->channel_count($channel);
     }
 
     /**

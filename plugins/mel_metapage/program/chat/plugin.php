@@ -39,24 +39,114 @@ abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
     
     protected abstract function init_plugin();
     
-    public abstract function connector_index($args = []);
-    public abstract function connector_create_channel($args);
-    public abstract function connector_add_users($args);
-    public abstract function connector_get_user_info($args);
-    public abstract function connector_get_channel_unread_count($args);
-    public abstract function connector_kick_user($args);
-    public abstract function connector_post_message($args);
-    public abstract function connector_advanced_post_message($args);
-    public abstract function connector_update_owner($args);
-    public abstract function connector_delete_channel($args);
-    public abstract function connector_update_channel_type($args);
-    public abstract function connector_get_joined($args);
-    public abstract function connector_get_all_moderator_joined($args);
-    public abstract function connector_check_if_room_exist($args);
-    public abstract function connector_check_if_room_exist_by_name($args);
-    public abstract function connector_room_info($args);
-    public abstract function connector_login($args);
-    public abstract function connector_logout($args);
+    public function connector_index($args = [])
+    {
+        return $this->page_index();
+    }
+
+    public function connector_create_channel($args)
+    {
+        return $this->create_channel($args[ConstChat::ARG_ROOM_NAME], 
+        $args[ConstChat::ARG_USER],
+        $args[ConstChat::ARG_IS_PUBLIC],
+        ...$args[ConstChat::ARG_MISCELLANEOUS]);
+    }
+
+    public function connector_add_users($args)
+    {
+        return $this->add_users($args[ConstChat::ARG_USER],
+            $args[ConstChat::ARG_CHANNEL_ID], 
+            $args[ConstChat::ARG_PRIVATE],
+        ...$args[ConstChat::ARG_MISCELLANEOUS]);
+    }
+
+    public function connector_get_user_info($args)
+    {
+        return $this->get_user_info($args[ConstChat::ARG_USER]);
+    }
+
+    public function connector_get_channel_unread_count($args)
+    {
+        return $this->get_channel_unread_count($args[ConstChat::ARG_CHANNEL]);
+    }
+
+    public function connector_kick_user($args)
+    {
+        return $this->kick_user($args[ConstChat::ARG_CHANNEL_ID],
+        $args[ConstChat::ARG_USER],
+        $args[ConstChat::ARG_PRIVATE],
+        ...$args[ConstChat::ARG_MISCELLANEOUS]
+      );
+    }
+
+
+    public function connector_post_message($args)
+    {
+        return $this->post_message($args[ConstChat::ARG_CHANNEL_ID], $args[ConstChat::ARG_STRING]);
+    }
+
+    public function connector_advanced_post_message($args)
+    {
+        return $this->advanced_post_message($args[ConstChat::ARG_CHANNEL_ID], 
+            $args[ConstChat::ARG_STRING],
+            $args[ConstChat::ARG_ALIAS], 
+            $args[ConstChat::ARG_AVATAR]);
+    }
+
+    public function connector_update_owner($args)
+    {
+        return $this->update_owner($args[ConstChat::ARG_USER],
+            $args[ConstChat::ARG_CHANNEL_ID],
+            $args[ConstChat::ARG_PRIVATE],
+            $args[ConstChat::ARG_REMOVE]);
+    }
+    
+    public function connector_delete_channel($args)
+    {
+        return $this->delete_channel($args[ConstChat::ARG_CHANNEL_ID], $args[ConstChat::ARG_PRIVATE]);
+    }
+
+    public function connector_update_channel_type($args)
+    {
+        return $this->update_channel_type($args[ConstChat::ARG_CHANNEL_ID], $args[ConstChat::ARG_PRIVATE]);
+    }
+
+    public function connector_get_joined($args)
+    {
+        return $this->get_joined();
+    }
+
+    public function connector_get_all_moderator_joined($args)
+    {
+        return $this->get_all_moderator_joined($args[ConstChat::ARG_USER]);
+    }
+
+    public function connector_check_if_room_exist($args)
+    {
+        return $this->check_if_room_exist($args[ConstChat::ARG_CHANNEL_ID]);
+    }
+
+    public function connector_check_if_room_exist_by_name($args)
+    {
+        return $this->connector_check_if_room_exist_by_name($args[ConstChat::ARG_ROOM_NAME]);
+    }
+
+    public function connector_room_info($args)
+    {
+        return $this->room_info($args[ConstChat::ARG_ROOM_NAME]);
+    }
+
+    public function connector_login($args)
+    {
+        return $this->login($args);
+    }
+
+    public abstract function connector_logout($args)
+    {
+        return $this->logout();
+    }
+
+    public abstract function page_index();
     public abstract function login($args = []);
     public abstract function logout();
     public abstract function create_channel($room_name, $users, $is_public);

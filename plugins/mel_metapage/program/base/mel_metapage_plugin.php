@@ -70,7 +70,7 @@ abstract class AMelMetapagePlugin extends rcube_plugin implements iModuleHooks
      *
      * @return void
      */
-    protected abstract function register_module();
+    public abstract function register_module();
 
     /**
      * Renvoie la nom de la tâche du plugin

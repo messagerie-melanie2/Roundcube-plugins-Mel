@@ -222,4 +222,5 @@ interface iChatActions extends iChatBase, iModuleActions
      * @return void
      */
     function create_chanel_action($args = []);
+    function get_joined_action($args = []);
 }

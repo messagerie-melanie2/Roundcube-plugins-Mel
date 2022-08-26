@@ -4,7 +4,7 @@ include_once __DIR__.'/../interfaces/ichat.php';
 
 abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
 {
-    protected function register_module()
+    public function register_module()
     {
         $this->register_task($this->plugin_task());
     }

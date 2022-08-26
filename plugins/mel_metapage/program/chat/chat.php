@@ -40,6 +40,10 @@ class Chat extends Program implements iChatActions
             $this,
             ConstChat::FUNCTION_LOGOUT
           ));  
+          $this->register_action(ConstChat::ACTION_GET_JOINED, array(
+            $this,
+            ConstChat::FUNCTION_GET_JOINED
+          )); 
     }
 
     function program_task()
@@ -113,6 +117,49 @@ class Chat extends Program implements iChatActions
   
         echo json_encode($results);
         exit;
+    }
+
+    function get_joined_action($args = [])
+    {
+      $user_id = rcube_utils::get_input_value('_user_id', rcube_utils::INPUT_POST) ?? driver_mel::gi()->getUser()->uid;
+      $moderator_only = rcube_utils::get_input_value('_moderator', rcube_utils::INPUT_POST) ?? false;
+      $mode = rcube_utils::get_input_value('_mode', rcube_utils::INPUT_POST) ?? 0;
+      $mode = (int) $mode;
+
+      $list;
+      try {
+        if ($moderator_only)
+        {
+          $list = $this->get_all_moderator_joined($user_id);
+        }
+        else 
+        {
+          $list = $this->get_joined();
+        }
+  
+        switch ($mode) {
+          case 0:
+            $list = json_encode($list);
+            break;
+  
+          case 1: //public
+            $list = json_encode($list['channel']);
+            break;
+  
+          case 2: //private
+            $list = json_encode($list['group']);
+            break;
+          
+          default:
+            # code...
+            break;
+        }
+      } catch (\Throwable $th) {
+        $list = [];
+      }
+
+      echo $list;
+      exit;
     }
 
     function login($args = [])

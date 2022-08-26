@@ -11,6 +11,7 @@ abstract class ConstChat
     public const ACTION_GET_CHANNEL_UNREAD_COUNT = 'get_channel_unread_count';
     public const ACTION_LOGIN = 'login';
     public const ACTION_LOGOUT = 'logout';
+    public const ACTION_GET_JOINED = 'get_joined';
 
     public const FUNCTION_INDEX = 'action';
     public const FUNCTION_CREATE_CHANNEL = self::ACTION_CREATE_CHANNEL.'_action';
@@ -19,6 +20,7 @@ abstract class ConstChat
     public const FUNCTION_GET_CHANNEL_UNREAD_COUNT = self::ACTION_GET_CHANNEL_UNREAD_COUNT.'_action';
     public const FUNCTION_LOGIN = 'get_log';
     public const FUNCTION_LOGOUT = self::ACTION_LOGOUT;
+    public const FUNCTION_GET_JOINED = self::ACTION_GET_JOINED.'_action';
 
     public const HOOK_NAMESPACE = self::TASK_NAME;
     public const HOOK_NAMESPACE_SPERATOR = Consts::HOOK_NAMESPACE_SPERATOR;

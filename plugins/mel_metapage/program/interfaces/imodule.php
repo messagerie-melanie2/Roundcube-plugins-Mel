@@ -1,5 +1,6 @@
 <?php 
 interface iModuleBase {
+    function page_index();
     function register_module($args = []);
     /**
      * Vérifie si il y a un plugin lié à ce module.
@@ -16,6 +17,5 @@ interface iModuleHooks extends iModuleBase
 }
 
 interface iModuleActions {
-    function page_index();
-
+    function program_task();
 }

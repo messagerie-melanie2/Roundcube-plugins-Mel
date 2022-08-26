@@ -21,14 +21,6 @@ class rocket_chat extends AChatPlugin
     if ($this->is_current_task()) $this->__get('setup_plugin');
   }
 
-  public function register_module()
-  {
-    parent::register_module();
-    // ajout de la tache
-    if ($this->rc->task == 'ariane') $this->register_task('ariane');
-    else $this->register_task('discussion');
-  }
-
   protected function include_js() {
     if (!$this->is_current_task() && $this->rc->task !== 'logout')
     {

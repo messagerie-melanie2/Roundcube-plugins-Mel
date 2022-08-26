@@ -44,6 +44,7 @@ class Chat extends Program implements iChatActions
             $this,
             ConstChat::FUNCTION_GET_JOINED
           )); 
+          $this->add_hook(ConstChat::HOOK_CHAT_INDEX, [$this, 'chat_index']);
     }
 
     function program_task()
@@ -58,8 +59,25 @@ class Chat extends Program implements iChatActions
 
     function page_index($args = [])
     {
-        $args = $this->trigger_hook(ConstChat::HOOK_INDEX, $args);
+        if ($this->task === $this->program_task())
+        {
+            $args = $this->trigger_hook(ConstChat::HOOK_INDEX, $args);
+        }
+        else {
+            $args = $this->trigger_hook(ConstChat::HOOK_CHAT_INDEX, $args);
+        }
+
         return $args;
+    }
+
+    function chat_index($args = [])
+    {
+        $chat_action = rcube_utils::get_input_value('_params', rcube_utils::INPUT_GET);
+
+        if ($chat_action !== null)
+            $this->rc->output->set_env('chat_go_action', $chat_action);
+
+        $this->rc->output->send("mel_metapage.ariane");
     }
 
     function get_log($args = [])

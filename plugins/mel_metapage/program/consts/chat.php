@@ -13,7 +13,7 @@ abstract class ConstChat
     public const ACTION_LOGOUT = 'logout';
     public const ACTION_GET_JOINED = 'get_joined';
 
-    public const FUNCTION_INDEX = 'action';
+    public const FUNCTION_INDEX = 'page_index';
     public const FUNCTION_CREATE_CHANNEL = self::ACTION_CREATE_CHANNEL.'_action';
     public const FUNCTION_ADD_USERS = self::ACTION_ADD_USERS.'_action';
     public const FUNCTION_GET_USER_INFO = self::ACTION_GET_USER_INFO.'_action';
@@ -25,6 +25,7 @@ abstract class ConstChat
     public const HOOK_NAMESPACE = self::TASK_NAME;
     public const HOOK_NAMESPACE_SPERATOR = Consts::HOOK_NAMESPACE_SPERATOR;
     public const HOOK_INDEX = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_INDEX;
+    public const HOOK_CHAT_INDEX = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.'mel_metapage';
     public const HOOK_LOGIN = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_LOGIN;
     public const HOOK_LOGOUT =  self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::FUNCTION_LOGOUT;
     public const HOOK_CREATE_CHANNEL = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.self::ACTION_CREATE_CHANNEL;

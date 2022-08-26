@@ -7,6 +7,9 @@ abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
     public function register_module()
     {
         $this->register_task($this->plugin_task());
+
+        if ($this->rc->task == 'ariane') $this->register_task('ariane');
+        else $this->register_task('discussion');
     }
 
     protected function plugin_task() {

@@ -77,12 +77,37 @@ class mel_metapage extends rcube_plugin
 
     function init()
     {
-        $this->setup()->init_sub_modules();
-
-        if ($this->rc->task === "chat") $this->register_action('index', array($this, 'chat'));
+        $this->setup();
     }
 
-    function init_sub_modules()
+    function setup()
+    {
+        // Récupération de l'instance de rcmail
+        $this->rc = rcmail::get_instance();
+        $this->add_texts('localization/', true);
+        $this->load_config();
+        $this->require_plugin('mel_helper');
+        $this->add_hook('ready', [$this, 'ready']);
+    }
+
+    function ready()
+    {
+        $this->init_modules(
+            [
+                'base', 
+                'consts',
+                'interfaces',
+                'notes',
+                'pages',
+                'search',
+                'search_page',
+                'search_result',
+                'webconf'
+            ]
+        );
+    }
+
+    function init_modules($exceptions)
     {
         $dir = __DIR__;
         $folders = scandir(__DIR__."/program");
@@ -90,12 +115,7 @@ class mel_metapage extends rcube_plugin
         foreach ($folders as $folder) {
            if (is_dir(__DIR__."/program/".$folder) && $folder !== '.' && $folder !== '..')
            {
-                if ($folder === 'pages') 
-                {
-                    $this->init_sub_pages();
-                    continue;
-                }
-                else if (in_array($folder, $exception)) continue;
+                if (in_array($folder, $exceptions)) continue;
                 else {
                     $files = scandir(__DIR__."/program/".$folder);
 
@@ -112,47 +132,22 @@ class mel_metapage extends rcube_plugin
         if (class_exists('Program'))
         {
             foreach (Program::generate($this->rc, $this) as $submodule) {
-                if ($this->rc->task === $submodule->program_task())
-                {
-                    $submodule->init();
+                try {
+                    if ($submodule->have_plugin()[Consts::RETURN])
+                    {
+                        if ($this->rc->task === $submodule->program_task())
+                        {
+                            $submodule->init();
+                        }
+        
+                        $submodule->public();
+                    }
+                } catch (\Throwable $th) {
+                    //throw $th;
                 }
-
-                $submodule->public();
             }
         }
 
         return $this;
     }
-
-    function init_sub_pages()
-    {
-        $dir = __DIR__;
-        $files = scandir(__DIR__."/program/pages");
-        $size = count($files);
-        for ($i=0; $i < $size; ++$i) { 
-            if (strpos($files[$i], ".php") !== false && $files[$i] !== "page.php" && $files[$i] !== "parsed_page.php")
-            {
-                include_once "program/pages/".$files[$i];
-                $classname = str_replace(".php", "", ucfirst($files[$i]));
-                $object = new $classname($this->rc, $this);
-
-                if (method_exists($object, "call"))
-                    $object->call();
-
-                if ($this->rc->task === "custom_page")
-                    $object->init();
-
-            }
-        }
-    }
-
-    function setup()
-    {
-        // Récupération de l'instance de rcmail
-        $this->rc = rcmail::get_instance();
-        $this->add_texts('localization/', true);
-        $this->load_config();
-        $this->require_plugin('mel_helper');
-    }
-
 }

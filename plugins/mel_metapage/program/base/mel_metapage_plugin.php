@@ -6,6 +6,9 @@ include_once __DIR__.'/../interfaces/imodule.php';
  */
 abstract class AMelMetapagePlugin extends rcube_plugin implements iModuleHooks
 {
+
+    public const BASE_PLUGIN = 'mel_metapage';
+
     /**
      *
      * @var string
@@ -70,7 +73,7 @@ abstract class AMelMetapagePlugin extends rcube_plugin implements iModuleHooks
      *
      * @return void
      */
-    public abstract function register_module();
+    public abstract function register_module($args = []);
 
     /**
      * Renvoie la nom de la tâche du plugin
@@ -149,9 +152,14 @@ abstract class AMelMetapagePlugin extends rcube_plugin implements iModuleHooks
      * @param [type] $args
      * @return bool
      */
-    public function have_plugin($args)
+    public function have_plugin($args = false)
     {
-        return true;
+        return [Consts::RETURN => true];
+    }
+
+    function register_task($task)
+    {
+        $this->rc->plugins->get_plugin(self::BASE_PLUGIN)->register_task($task);
     }
 
     /**

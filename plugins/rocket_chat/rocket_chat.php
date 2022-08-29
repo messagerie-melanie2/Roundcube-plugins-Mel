@@ -1,5 +1,5 @@
 <?php 
-include_once __DIR__."../mel_metapage/program/chat/includes.php";
+include_once __DIR__."/../mel_metapage/program/chat/includes.php";
 class rocket_chat extends AChatPlugin
 {
   /**
@@ -128,6 +128,10 @@ class rocket_chat extends AChatPlugin
     }
   } 
 
+  protected function must_load_config(){
+    return true;
+  }
+
   public function connector_index($args = [])
   {
       if ($this->is_courielleur()) return $this->index_courielleur();
@@ -140,7 +144,7 @@ class rocket_chat extends AChatPlugin
     $this->rc->output->send('rocket_chat.rocket_chat_courrielleur');
   }
 
-  public function page_index()
+  public function page_index($args = [])
   {
     if (mel_logs::is(mel_logs::TRACE)) mel_logs::get_instance()->log(mel_logs::TRACE, "rocket_chat::action()");
     // register UI objects
@@ -299,11 +303,11 @@ class rocket_chat extends AChatPlugin
    * 
    * @return array
    */
-  public function kick_user($channel_id, $user, $private)
+  public function kick_user($channel_id, $user, $private, ...$miscs)
   {
     $rocketClient = $this->get_rc_client();
 
-    return $rocketClient->kick_user($channel_id, $user, $private);
+    return $rocketClient->kick_user($channel_id, $user, $private, ...$miscs);
   }
 
   public function post_message($room_id, $text)

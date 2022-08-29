@@ -4,11 +4,10 @@ include_once __DIR__.'/../interfaces/ichat.php';
 
 abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
 {
-    public function register_module()
+    public function register_module($args = [])
     {
-        $this->register_task($this->plugin_task());
-
-        if ($this->rc->task == 'ariane') $this->register_task('ariane');
+        if ($this->rc->task == 'chat')  $this->register_task($this->plugin_task());
+        else if ($this->rc->task == 'ariane')   $this->register_task('ariane');
         else $this->register_task('discussion');
     }
 
@@ -20,6 +19,7 @@ abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
 
     protected function add_hooks() {
         parent::add_hooks();
+        $this->add_hook(ConstChat::HOOK_HAVE_PLUGIN, [$this, 'have_plugin']);
         $this->add_hook(ConstChat::HOOK_INDEX, [$this, 'connector_index']);
         $this->add_hook(ConstChat::HOOK_CREATE_CHANNEL, [$this, 'connector_create_channel']);
         $this->add_hook(ConstChat::HOOK_ADD_USERS, [$this, 'connector_add_users']);
@@ -38,6 +38,7 @@ abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
         $this->add_hook(ConstChat::HOOK_ROOM_INFO, [$this, 'connector_room_info']);
         $this->add_hook(ConstChat::HOOK_LOGIN, [$this, 'connector_login']);
         $this->add_hook(ConstChat::HOOK_LOGOUT, [$this, 'connector_logout']);
+        $this->add_hook('chat.register_module', [$this, 'register_module']);
     }
     
     protected abstract function init_plugin();
@@ -144,12 +145,12 @@ abstract class AChatPlugin extends AMelMetapagePlugin implements iChatHooks
         return $this->login($args);
     }
 
-    public abstract function connector_logout($args)
+    public function connector_logout($args)
     {
         return $this->logout();
     }
 
-    public abstract function page_index();
+    public abstract function page_index($args = []);
     public abstract function login($args = []);
     public abstract function logout();
     public abstract function create_channel($room_name, $users, $is_public);

@@ -99,7 +99,7 @@ abstract class Program{
 
     protected function trigger_hook($name, $args = [])
     {
-        $this->plugin->api->exec_hook($name, $args);
+        return $this->plugin->api->exec_hook($name, $args);
     }
 
     protected function add_parameters($onLoad, $onSave)

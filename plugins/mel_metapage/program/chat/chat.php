@@ -346,7 +346,7 @@ class Chat extends Program implements iChatActions
 
     function register_module($args = [])
     {
-        $arg = $this->trigger_hook('chat.register_module', $args);
+        $arg = $this->trigger_hook(ConstChat::HOOK_REGISTER_MODULE, $args);
         return $arg;
     }
 

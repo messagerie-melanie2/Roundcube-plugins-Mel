@@ -2,7 +2,7 @@
 include_once 'consts.php';
 abstract class ConstChat 
 {
-    public const TASK_NAME = 'chat';
+    public const TASK_NAME = Consts::TASK_CHAT;
 
     public const ACTION_INDEX = 'index';
     public const ACTION_CREATE_CHANNEL = 'create_chanel';
@@ -13,7 +13,7 @@ abstract class ConstChat
     public const ACTION_LOGOUT = 'logout';
     public const ACTION_GET_JOINED = 'get_joined';
 
-    public const FUNCTION_INDEX = 'page_index';
+    public const FUNCTION_INDEX = Consts::FUNCTION_INDEX;
     public const FUNCTION_CREATE_CHANNEL = self::ACTION_CREATE_CHANNEL.'_action';
     public const FUNCTION_ADD_USERS = self::ACTION_ADD_USERS.'_action';
     public const FUNCTION_GET_USER_INFO = self::ACTION_GET_USER_INFO.'_action';
@@ -44,6 +44,7 @@ abstract class ConstChat
     public const HOOK_CHECK_IF_ROOM_EXIST_BY_NAME = self::HOOK_CHECK_IF_ROOM_EXIST.self::HOOK_NAMESPACE_SPERATOR.'name';
     public const HOOK_ROOM_INFO = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.'room_info';
     public const HOOK_HAVE_PLUGIN = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.Consts::HOOK_HAVE_PLUGIN;
+    public const HOOK_REGISTER_MODULE = self::HOOK_NAMESPACE.self::HOOK_NAMESPACE_SPERATOR.Consts::HOOK_REGISTER_MODULE;
 
     public const ARG_CHANNEL_ID = 'channel_id';
     public const ARG_CHANNEL = 'channel';

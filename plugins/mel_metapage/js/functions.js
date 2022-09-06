@@ -46,6 +46,8 @@ function m_mp_Create() {
         return;
     }
 
+    $('#mel-have-something-minified-main-create').remove();
+
     //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined) {
         let haveNextcloud = {
@@ -71,16 +73,33 @@ function m_mp_Create() {
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         let create_popUp = new GlobalModal("globalModal", config, !isSmall);
+        const func_minifier = () => {
+            if ($('#mel-have-something-minified-main-create').length === 0 && $("#globallist").length === 0)
+            {
+                let $qu = $('#button-create').append(`
+                <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
+                top: -5px;
+                right: -5px;">•</span>
+                `);
+
+                if ($qu.css('position') !== 'relative') $qu.css('position', 'relative');
+            }
+        };
         create_popUp.on_click_exit = () => {
             if (!!window.create_popUp)
             {
                 window.create_popUp.close();
                 delete window.create_popUp;
+                $('#mel-have-something-minified-main-create').remove();
             }
         }
         create_popUp.on_click_minified = () => {
             window.create_popUp.close();
+            func_minifier();
         };
+        create_popUp.onClose(() => {
+            if (!!window.create_popUp) func_minifier();
+        });
         window.create_popUp = create_popUp.haveReduced();
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {

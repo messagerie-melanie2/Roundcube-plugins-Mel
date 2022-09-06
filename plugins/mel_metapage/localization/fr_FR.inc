@@ -303,7 +303,7 @@ $labels['chat_startup'] = 'Connexion automatique au démarrage ?';
 
 $labels['mel-scrollbar-size'] = 'Taille de la barre de défilement';
 $labels['default'] = 'Défaut';
-$labels['auto'] = 'Automatique';
+$labels['auto'] = 'Automatique (test)';
 $labels['compact'] = "Compact";
 $labels['large'] = 'Large';
 

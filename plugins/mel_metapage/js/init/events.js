@@ -620,7 +620,7 @@ if (rcmail && window.mel_metapage)
             /*white-space: nowrap;*/
             display:flex;
             text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]}">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
+            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]},${location_phone[1]}">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
         if (event.categories !== undefined && event.categories.length > 0)
         {
             const isWsp = event.categories[0].includes("ws#");

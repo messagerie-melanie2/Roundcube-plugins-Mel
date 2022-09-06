@@ -213,6 +213,67 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
      */
     this.go = async function (changeSrc = true)
     {
+
+        if (MasterWebconfBar.isFirefox())
+        {
+            let $ff = $(`
+            <div class="alert alert-warning" role="alert" style="
+                position: absolute;
+                text-align: center;">
+                Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence. 
+                <br/>
+                Utilisez un autre navigateur ou rejoignez depuis votre <a href="tel:${this.key},${(await window.webconf_helper.phone.pin(this.key))}">téléphone</a>. 
+                <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+                <div class="progress" style="    position: absolute;
+                bottom: 0;
+                width: 100%;
+                left: 0;
+                height: 0.3rem;
+            ">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+                </div>`);
+
+            let width = '100%';
+            let top = 0;
+            let left = 0;
+            if (parent === window)
+            {
+                top = left = '60px';
+                width = `calc(100% - ${left})`;
+            }
+
+            $ff.css('width', width).css('top', top).css('left', left);
+
+            $('body').append($ff);
+
+            // setTimeout(() => {
+            //     //$ff.remove();
+            // }, 1000 * 10);
+            value = 100;
+            const inter = setInterval(() => {
+                try {
+                    value -= 2;
+                    $ff.find('.progress-bar').css('width', `${value}%`).attr('aria-valuenow', value);
+    
+                    if (value <= 0) {
+                        clearInterval(inter);
+                        setTimeout(() => {
+                            try {
+                                $ff.remove();
+                            } catch (error) {
+                                
+                            }
+                        }, 200);
+                    }
+                } catch (error) {
+                    clearInterval(inter);
+                }
+            }, 100);
+        }
+
         this.chat.on('load', () => {
             const inertval = setInterval(() => {
                 if (this.chat_launched === true)

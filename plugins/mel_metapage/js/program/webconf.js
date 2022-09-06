@@ -81,7 +81,11 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             this.wsp = wsp;
             if (this.wsp.objects !== null)
             {
-                if (wsp.objects["useful-links"] !== undefined) wsp.objects["useful-links"] = null;
+                try {
+                    if (wsp.objects["useful-links"] !== undefined) wsp.objects["useful-links"] = null;
+                } catch (error) {
+                    
+                }
 
                 if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane) //Si il y a une room ariane
                 {
@@ -578,8 +582,11 @@ Webconf.set_webconf = function()
         const wsp = html_helper.JSON.parse(_wsp.val());
         rcmail.env.webconf.wsp = wsp;
 
-        if (!!wsp.objects && wsp.objects["useful-links"] !== undefined)
-            wsp.objects["useful-links"] = null;
+        try {
+            if (!!wsp.objects && wsp.objects["useful-links"] !== undefined) wsp.objects["useful-links"] = null;
+        } catch (error) {
+            
+        }
 
         if (wsp.objects.channel !== null && wsp.objects.channel !== undefined && wsp.datas.allow_ariane)
         {

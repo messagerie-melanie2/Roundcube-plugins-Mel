@@ -48,7 +48,7 @@ function m_mp_Create() {
 
     let $have_minified = $('#mel-have-something-minified-main-create');
 
-    if ($have_minified.length > 0) $have_minified.length.remove();
+    if ($have_minified.length > 0) $have_minified.remove();
     $have_minified = null;
 
     //Si la popup n'existe pas, on la créer.
@@ -82,6 +82,7 @@ function m_mp_Create() {
                 let $qu = $('#button-create').append(`
                 <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
                 top: -5px;
+                pointer-events:none;
                 right: -5px;">•</span>
                 `);
 
@@ -91,8 +92,8 @@ function m_mp_Create() {
         create_popUp.on_click_exit = () => {
             if (!!window.create_popUp)
             {
-                window.create_popUp.close();
                 window.create_popUp = undefined;
+                create_popUp.close();
                 
                 let $have_minified = $('#mel-have-something-minified-main-create');
                 if ($have_minified.length > 0) $have_minified.length.remove();
@@ -104,6 +105,11 @@ function m_mp_Create() {
         };
         create_popUp.onClose(() => {
             if (!!window.create_popUp) func_minifier();
+            else 
+            {
+                let $have_minified = $('#mel-have-something-minified-main-create');
+                if ($have_minified.length > 0) $have_minified.length.remove();
+            }
         });
         window.create_popUp = create_popUp.haveReduced();
     } else if (!isSmall) //Si elle existe, on l'affiche.

@@ -216,43 +216,51 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
 
         if (MasterWebconfBar.isFirefox())
         {
+            let misc_urls = {
+                _key:this.key
+            };
+
+            if (!!this.wsp) misc_urls['_wsp'] = this.wsp.datas.uid;
+            else if (!!ariane) misc_urls['_ariane'] = ariane;
+
+            //Création de l'alerte
             let $ff = $(`
             <div class="alert alert-warning" role="alert" style="
                 position: absolute;
+                z-index:9999;
                 text-align: center;">
                 Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence. 
                 <br/>
-                Utilisez un autre navigateur ou rejoignez depuis votre <a href="tel:${this.key},${(await window.webconf_helper.phone.pin(this.key))}">téléphone</a>. 
+                Utilisez un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre <a href="tel:${this.key},${(await window.webconf_helper.phone.pin(this.key))}">téléphone</a>. 
                 <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <div class="progress" style="    position: absolute;
-                bottom: 0;
-                width: 100%;
-                left: 0;
-                height: 0.3rem;
-            ">
-                <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-                </div>`);
+                    bottom: 0;
+                    width: 100%;
+                    left: 0;
+                    height: 0.3rem;
+                ">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>`);
 
+            //Gestion des attributs css
             let width = '100%';
             let top = 0;
             let left = 0;
-            if (parent === window)
+
+            if (parent === window) //Prendre en compte les barres de navigatios
             {
                 top = left = '60px';
                 width = `calc(100% - ${left})`;
             }
 
-            $ff.css('width', width).css('top', top).css('left', left);
+            $ff.css('width', width).css('top', top).css('left', left); //Ajout des attributs css
 
-            $('body').append($ff);
+            $('body').append($ff); //Ajout au body
 
-            // setTimeout(() => {
-            //     //$ff.remove();
-            // }, 1000 * 10);
-            value = 100;
+            value = 100; //La barre disparaît après ~10 secondes
             const inter = setInterval(() => {
                 try {
                     value -= 2;
@@ -260,7 +268,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
     
                     if (value <= 0) {
                         clearInterval(inter);
-                        setTimeout(() => {
+                        setTimeout(() => { // Laisser la barre finir
                             try {
                                 $ff.remove();
                             } catch (error) {
@@ -272,7 +280,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                     clearInterval(inter);
                 }
             }, 100);
-        }
+        } //Fin si firefox
 
         this.chat.on('load', () => {
             const inertval = setInterval(() => {
@@ -1788,7 +1796,7 @@ class MasterWebconfBar {
      */
     static isFirefox()
     {
-        return  typeof InstallTrigger !== 'undefined';
+        return window?.mel_metapage?.Functions?.isNavigator(mel_metapage?.Symbols?.navigator?.firefox) ?? (typeof InstallTrigger !== 'undefined');
     }
 
     /**

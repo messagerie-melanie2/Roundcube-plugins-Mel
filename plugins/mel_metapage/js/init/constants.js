@@ -323,6 +323,9 @@ const mel_metapage = {
             folder:Symbol("folder"),
             file:Symbol("file")
         },
+        navigator:{
+            firefox:Symbol('firefox')
+        },
         null:Symbol("null")
     },
     /**
@@ -1208,6 +1211,16 @@ const mel_metapage = {
             else current.removeClass("disabled").removeAttr("disabled");
 
             return this;
+        },
+
+        isNavigator(symbol){
+            switch (symbol) {
+                case mel_metapage.Symbols.navigator.firefox:
+                    return typeof InstallTrigger !== 'undefined';
+            
+                default:
+                    throw 'Unknown navigator';
+            }
         },
 
         /**

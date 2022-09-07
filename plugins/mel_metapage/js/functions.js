@@ -46,7 +46,10 @@ function m_mp_Create() {
         return;
     }
 
-    $('#mel-have-something-minified-main-create').remove();
+    let $have_minified = $('#mel-have-something-minified-main-create');
+
+    if ($have_minified.length > 0) $have_minified.length.remove();
+    $have_minified = null;
 
     //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined) {
@@ -89,8 +92,10 @@ function m_mp_Create() {
             if (!!window.create_popUp)
             {
                 window.create_popUp.close();
-                delete window.create_popUp;
-                $('#mel-have-something-minified-main-create').remove();
+                window.create_popUp = undefined;
+                
+                let $have_minified = $('#mel-have-something-minified-main-create');
+                if ($have_minified.length > 0) $have_minified.length.remove();
             }
         }
         create_popUp.on_click_minified = () => {

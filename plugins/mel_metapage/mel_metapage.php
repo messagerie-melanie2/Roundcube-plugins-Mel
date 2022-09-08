@@ -118,12 +118,12 @@ class mel_metapage extends rcube_plugin
     function init_sub_pages()
     {
         $dir = __DIR__;
-        $files = scandir(__DIR__."/program/pages");
+        $files = scandir("$dir/program/pages");
         $size = count($files);
         for ($i=0; $i < $size; ++$i) { 
             if (strpos($files[$i], ".php") !== false && $files[$i] !== "page.php" && $files[$i] !== "parsed_page.php")
             {
-                include_once "program/pages/".$files[$i];
+                include_once __DIR__."/program/pages/".$files[$i];
                 $classname = str_replace(".php", "", ucfirst($files[$i]));
                 $object = new $classname($this->rc, $this);
 
@@ -139,25 +139,14 @@ class mel_metapage extends rcube_plugin
 
     function init()
     {
-        $this->setup();
+        try {
+            $this->setup();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $this->init_sub_modules();
 
-        /*if ($this->rc->task === "webconf")
-        {
-            include_once "program/webconf/webconf.php";
-            $conf = new Webconf($this->rc, $this);
-            $conf->init();
-        }
-        else if ($this->rc->task === "search")
-        {
-            include_once "program/search_page/search.php";
-            $conf = new SearchPage($this->rc, $this);
-            $conf->init();
-        }
-        else */if ($this->rc->task === "chat")
-            $this->register_action('index', array($this, 'ariane'));
-
-
+        if ($this->rc->task === "chat") $this->register_action('index', array($this, 'ariane'));
     }
 
     protected function before_page()

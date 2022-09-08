@@ -1,5 +1,7 @@
-$(document).ready(() => {
+(() => {
 
+function notes()
+{
     if (top.$('.mel-note').length > 0 || window !== top) return;
 
     if (rcmail.env.task === 'login' || rcmail.env.task === 'logout') return;
@@ -517,4 +519,14 @@ $(document).ready(() => {
             }, 100);
         }
     });
+}
+
+$(document).ready(() => {
+    try {
+        notes();
+    } catch (error) {
+        
+    }
 });
+
+})();

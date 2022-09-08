@@ -13,15 +13,12 @@
 				<roundcube:label name="mel.on_your_dwp" />
 			</h1></center>
 		</div>
+		<div class="card clear" style="margin-bottom:5px;padding-bottom: 15px;padding-top:15px;">
+			<center>
+				<btn onclick="window.location.href=window.location.href + '&oidc=1'" class="btn btn-secondary mel-button no-button-margin">Se connecter avec cerbère <span class="plus icon-mel-arrow-right"></span></btn>
+			</center>
+		</div>
 		<div class="card clear">
-			<!-- <div class="box-left">
-				<div class="productname"><roundcube:label name="productname" /></div>
-				<div class="productioninformation"><roundcube:label name="mel.login_productioninformation" /></div>
-				<div class="footerbox">
-					<div><roundcube:label name="mel.login_footerbox" /></div>
-					<div class="info"><roundcube:label name="mel.login_footerbox_info" /></div>
-				</div>
-			</div> -->
 			<div class="card-body mel_correction">
 				<roundcube:form name="form" method="post">
 				<roundcube:object name="loginform" form="form" size="40" submit=true />

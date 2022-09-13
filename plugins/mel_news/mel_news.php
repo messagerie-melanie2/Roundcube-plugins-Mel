@@ -41,7 +41,14 @@ class mel_news extends rcube_plugin {
     $this->rc = rcmail::get_instance();
     $this->register_task(self::TASK_NAME);
     $this->add_texts('localization/', true);
-    $this->add_button(array(
+    $need_button = true;
+    if (class_exists("mel_metapage")) {
+      $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_news');
+    }
+
+    if ($need_button)
+    {
+      $this->add_button(array(
         'command' => "news",
         'class'	=> 'news icon-mel-newspaper',
         'classsel' => 'news button-selected icon-mel-newspaper',
@@ -51,6 +58,8 @@ class mel_news extends rcube_plugin {
         'type'       => 'link',
         'domain' => "mel_news"
     ), "taskbar");
+    }
+
     $this->add_hook('preferences_list', array($this, 'prefs_list'));
     $this->add_hook('preferences_save',     array($this, 'prefs_save'));
     $this->add_hook('preferences_sections_list', array($this, 'prefs_sections_list'));

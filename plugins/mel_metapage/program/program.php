@@ -97,6 +97,11 @@ abstract class Program{
         $this->plugin->add_hook($name, $callback);
     }
 
+    protected function trigger_hook($name, $args = [])
+    {
+        return $this->plugin->api->exec_hook($name, $args);
+    }
+
     protected function add_parameters($onLoad, $onSave)
     {
         $this->add_hook('preferences_list', $onLoad);
@@ -127,6 +132,10 @@ abstract class Program{
           'title' => html::label($attrib, rcube::Q($this->plugin->gettext($field_id))),
           'content' => $input->show($current),
         );
+    }
+
+    public function need_plugin() {
+        return false;
     }
   
     

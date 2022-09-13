@@ -55,25 +55,33 @@ class mel_sondage extends rcube_plugin
         
         if (class_exists("mel_metapage")) mel_metapage::add_url_spied($sondage_url, 'sondage');
         // Ajoute le bouton en fonction de la skin
-        if ($rcmail->config->get('ismobile', false)) {
-            $this->add_button(array(
-                'command' => 'sondage',
-                'class'	=> 'button-mel_sondage ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-                'classsel' => 'button-mel_sondage button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-                'innerclass' => 'button-inner',
-                'label'	=> 'mel_sondage.task',
-            ), 'taskbar_mobile');
-        } else {
-            $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
-            $this->add_button(array(
-                'command' => 'sondage',
-                'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
-                'classsel' => 'button-mel_sondage button-selected icon-mel-sondage sondage',
-                'innerclass' => 'button-inner inner',
-                'label'	=> 'mel_sondage.task',
-                'title' => 'mel_sondage.sondages_title',
-                'type'       => 'link'
-            ), "taskbar");
+        $need_button = true;
+        if (class_exists("mel_metapage")) {
+          $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_survey');
+        }
+
+        if ($need_button)
+        {
+            if ($rcmail->config->get('ismobile', false)) {
+                $this->add_button(array(
+                    'command' => 'sondage',
+                    'class'	=> 'button-mel_sondage ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+                    'classsel' => 'button-mel_sondage button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+                    'innerclass' => 'button-inner',
+                    'label'	=> 'mel_sondage.task',
+                ), 'taskbar_mobile');
+            } else {
+                $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+                $this->add_button(array(
+                    'command' => 'sondage',
+                    'class'	=> 'button-mel_sondage icon-mel-sondage sondage',
+                    'classsel' => 'button-mel_sondage button-selected icon-mel-sondage sondage',
+                    'innerclass' => 'button-inner inner',
+                    'label'	=> 'mel_sondage.task',
+                    'title' => 'mel_sondage.sondages_title',
+                    'type'       => 'link'
+                ), "taskbar");
+            }
         }
 
         // Si tache = sondage, on charge l'onglet

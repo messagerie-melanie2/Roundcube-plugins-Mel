@@ -303,7 +303,7 @@ $labels['chat_startup'] = 'Connexion automatique au démarrage ?';
 
 $labels['mel-scrollbar-size'] = 'Taille de la barre de défilement';
 $labels['default'] = 'Défaut';
-$labels['auto'] = 'Automatique';
+$labels['auto'] = 'Automatique (test)';
 $labels['compact'] = "Compact";
 $labels['large'] = 'Large';
 
@@ -314,3 +314,11 @@ $labels['notif-page'] = "Notifications de la page en cours";
 $labels['notif-nothing'] = "Rien/Fonctionnement par défaut";
 
 $labels['tab_title_style_help'] = "\"<all/>\" affiche sur l'onglet la somme des notifications sur la navigation principal (ex : 5 mail, 3 évènements => (8) Paramètres)\r\n\"<page/>\" affiche seulement les notifications de la page en cours (ex : (3) Agenda).\r\nFonctionnement par défaut sinon.";
+
+$labels['app_chat'] = 'Mes discussions';
+$labels['app_documents'] = 'Mes documents';
+$labels['app_tasks'] = 'Mes tâches';
+$labels['app_news'] = 'M\'informer';
+$labels['app_ul'] = 'Mes liens utiles';
+$labels['app_kanban'] = 'Kanban';
+$labels['app_survey'] = 'Sondage';

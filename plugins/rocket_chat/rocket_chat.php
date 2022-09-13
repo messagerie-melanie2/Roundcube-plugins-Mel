@@ -66,24 +66,32 @@ class rocket_chat extends rcube_plugin {
         // Ne charger le plugin que pour les users pour l'instant
         if (!$this->rc->config->get('rocket_chat_limited_use', false) || in_array($this->rc->get_user_name(), $this->rc->config->get('rocket_chat_users', []))) {
           // Ajoute le bouton en fonction de la skin
-          if ($this->rc->config->get('ismobile', false)) {
-            $this->add_button(array(
-                'href' => 'chat',
-                'class' => ' button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
-                'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
-                'innerclass' => 'button-inner',
-                'label' => 'rocket_chat.task'
-            ), 'taskbar_mobile');
-          } else {
-            $this->add_button(array(
-                'href' => './?_task=chat',
-                'class' => 'icon-mel-message button-rocket_chat',
-                'classsel' => 'icon-mel-message button-rocket_chat button-selected',
-                'innerclass' => 'button-inner',
-                'label' => 'rocket_chat.task',
-                'type'=> 'link'
-            ), 'taskbar');
+          $need_button = true;
+          if (class_exists("mel_metapage")) {
+            $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('chat');
           }
+
+          if ($need_button) {
+            if ($this->rc->config->get('ismobile', false)) {
+              $this->add_button(array(
+                  'href' => 'chat',
+                  'class' => ' button-rocket_chat ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
+                  'classsel' => 'button-rocket_chat button-selected ui-link ui-btn ui-corner-all ui-icon-comment ui-btn-icon-left',
+                  'innerclass' => 'button-inner',
+                  'label' => 'rocket_chat.task'
+              ), 'taskbar_mobile');
+            } else {
+              $this->add_button(array(
+                  'href' => './?_task=chat',
+                  'class' => 'icon-mel-message button-rocket_chat',
+                  'classsel' => 'icon-mel-message button-rocket_chat button-selected',
+                  'innerclass' => 'button-inner',
+                  'label' => 'rocket_chat.task',
+                  'type'=> 'link'
+              ), 'taskbar');
+            }
+          }
+
           $this->register_action('create_chanel', array(
             $this,
             'create_chanel'

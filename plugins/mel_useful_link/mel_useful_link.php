@@ -70,16 +70,24 @@ class mel_useful_link extends rcube_plugin
 
         $this->register_task("useful_links");  
         
-        $this->add_button(array(
-          'command' => "ul",
-          'class'	=> 'useful_links icon-mel-link',
-          'classsel' => 'links button-selected icon-mel-link',
-          'innerclass' => 'button-inner inner',
-          'label'	=> 'My_useful_links',
-          'title' => '',
-          'type'       => 'link',
-          'domain' => "mel_useful_link"
-      ), "taskbar");
+        $need_button = true;
+        if (class_exists("mel_metapage")) {
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_ul');
+        }
+
+        if ($need_button)
+        {
+          $this->add_button(array(
+            'command' => "ul",
+            'class'	=> 'useful_links icon-mel-link',
+            'classsel' => 'links button-selected icon-mel-link',
+            'innerclass' => 'button-inner inner',
+            'label'	=> 'My_useful_links',
+            'title' => '',
+            'type'       => 'link',
+            'domain' => "mel_useful_link"
+        ), "taskbar");
+        }
 
       $this->include_script('js/classes.js');
     }

@@ -118,12 +118,12 @@ class mel_metapage extends rcube_plugin
     function init_sub_pages()
     {
         $dir = __DIR__;
-        $files = scandir(__DIR__."/program/pages");
+        $files = scandir("$dir/program/pages");
         $size = count($files);
         for ($i=0; $i < $size; ++$i) { 
             if (strpos($files[$i], ".php") !== false && $files[$i] !== "page.php" && $files[$i] !== "parsed_page.php")
             {
-                include_once "program/pages/".$files[$i];
+                include_once __DIR__."/program/pages/".$files[$i];
                 $classname = str_replace(".php", "", ucfirst($files[$i]));
                 $object = new $classname($this->rc, $this);
 
@@ -139,25 +139,14 @@ class mel_metapage extends rcube_plugin
 
     function init()
     {
-        $this->setup();
+        try {
+            $this->setup();
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         $this->init_sub_modules();
 
-        /*if ($this->rc->task === "webconf")
-        {
-            include_once "program/webconf/webconf.php";
-            $conf = new Webconf($this->rc, $this);
-            $conf->init();
-        }
-        else if ($this->rc->task === "search")
-        {
-            include_once "program/search_page/search.php";
-            $conf = new SearchPage($this->rc, $this);
-            $conf->init();
-        }
-        else */if ($this->rc->task === "chat")
-            $this->register_action('index', array($this, 'ariane'));
-
-
+        if ($this->rc->task === "chat") $this->register_action('index', array($this, 'ariane'));
     }
 
     protected function before_page()
@@ -251,7 +240,11 @@ class mel_metapage extends rcube_plugin
 
         $this->rc->output->set_env("plugin.mel_metapage", true);//compose_extwin
         //$this->rc->output->set_env("compose_extwin", true);
-        $this->rc->output->set_env("mel_metapage_chat_visible", $this->rc->config->get("mel_metapage_chat_visible", true));
+        $config = $this->rc->config->get("mel_metapage_chat_visible", true);
+
+        if (!$this->is_app_enabled('chat')) $config = false;
+
+        $this->rc->output->set_env("mel_metapage_chat_visible", $config);
         $this->rc->output->set_env("mel_metapage_weather_enabled", $this->rc->config->get("enable_weather", false));
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $this->rc->config->get('tab_title_style', 'page'));
         $this->rc->output->set_env('mel_metapage.webconf_voxify_indicatif', $this->rc->config->get('webconf_voxify_indicatif', 'FR'));
@@ -359,6 +352,8 @@ class mel_metapage extends rcube_plugin
             {
                 $this->rc->output->set_env("calendar_custom_dialog", true);
             }
+
+            //$this->rc->output->set_env('navigation_apps', $this->rc->config->get('navigation_apps', null));
 
             if (class_exists('mel_nextcloud'))
             {
@@ -1573,6 +1568,10 @@ class mel_metapage extends rcube_plugin
             ];
         }
 
+        $p['list']['navigation'] = [
+            'id'      => 'navigation',
+            'section' => $this->gettext('main_nav', 'mel_metapage'),
+        ];
 
         return $p;
     }
@@ -1712,18 +1711,6 @@ class mel_metapage extends rcube_plugin
             ];
             
         }
-        // else if ($args['section'] == 'visio')
-        // {
-        //     $this->add_texts('localization/');
-        //     $askOnEnd = 'visio_ask_on_end';
-        //     $askOnEnd_config = $this->rc->config->get($askOnEnd, true);
-
-        //     $askOnEnd_check = new html_checkbox(['name' => $askOnEnd, 'id' => $askOnEnd, 'value' => 1]);
-        //     $args['blocks']['general']['options'][$askOnEnd] = [
-        //         'title'   => html::label($askOnEnd, rcube::Q($this->gettext($askOnEnd))),
-        //         'content' => $askOnEnd_check->show($askOnEnd_config ? 1 : 0),
-        //     ];
-        // }
         else if ($args['section'] == 'chat')
         {
             $this->add_texts('localization/');
@@ -1786,6 +1773,53 @@ class mel_metapage extends rcube_plugin
             $args['blocks']['main_nav']['name'] = 'Navigation principale';
             $args['blocks']['main_nav']['options'][$tab_title_style] = $this->create_pref_select_more($tab_title_style, $value, $texts, $options, ['title' => str_replace('<all/>', $this->gettext("notif-all"), str_replace('<page/>', $this->gettext("notif-page"), $this->gettext('tab_title_style_help')))]);
             
+        }
+        else if ($args['section'] == 'navigation')
+        {
+            mel_helper::html_helper();
+            $this->add_texts('localization/');
+            $config = mel_helper::Enumerable($this->rc->config->get('navigation_apps', []));
+
+            $main = $config->where(function ($k, $v) {
+                return !isset($v['link']);
+            });
+
+            $args['blocks']['main_nav']['name'] = 'Applications par défauts';
+
+            foreach ($main as $key => $value) {
+                $key = $value->get_key();
+                $value = $value->get_value();
+                $check = new html_checkbox(['name' => $key, 'id' => $key, 'value' => 1]);
+                $args['blocks']['main_nav']['options'][$key] = [
+                    'title'   => html::label($key, rcube::Q($this->gettext($key, 'mel_metapage'))),
+                    'content' => $check->show($value['enabled'] ? 1 : 0),
+                ];
+            }
+
+            // $args['blocks']['others']['name'] = 'Autres applications';
+            // $table = new html_mel_table(6);
+            // $table->edit($i, 0, 'Nom');
+            // $table->edit($i, 1, 'Lien');
+            // $table->edit($i, 2, 'Aperçu de l\'icône');
+            // $table->edit($i, 3, 'Icône');
+            // $table->edit($i, 4, 'Activé');
+            // $table->edit($i, 5, 'Supprimé');
+            // $i = 1;
+            // foreach ($others as $key => $value) {
+            //     $key = $value->get_key();
+            //     $value = $value->get_value();
+            //     $check = new html_checkbox(['name' => "$key.check", 'id' => "$key-check", 'value' => 1]);
+            //     $table->addRow();
+            //     $table->edit($i, 0, '<input class="form-control input-mel mel-input" value="'.$key.'" placeholder="Nom de l\'application" />');
+            //     $table->edit($i, 1, '<input class="form-control input-mel mel-input" value="'.$value['link'].'" placeholder="Lien de l\'application" />');
+            //     $table->edit($i, 2, '<span class="'.$value['icon'].'"></span>');
+            //     $table->edit($i, 3, '<input class="form-control input-mel mel-input" value="'.$value['icon'].'" placeholder="Icon de l\'application" />');
+            //     $table->edit($i, 4, $check->show($value['enabled'] ? 1 : 0));
+            //     $table->edit($i, 5, html::tag('button', [], 'DEL'));
+            // }
+
+            // $args['blocks']['others']['options']["table"] = ['content' => $table->show()];
+            // $args['blocks']['others']['options']["add"] = ['content' => html::tag('button', [], 'ADD')];
         }
 
         return $args;
@@ -2028,6 +2062,22 @@ class mel_metapage extends rcube_plugin
         $value = rcube_utils::get_input_value($tab_title_style, rcube_utils::INPUT_POST);
         $args['prefs']["tab_title_style"] = $value;
         $this->rc->output->set_env('mel_metapage.tab.notification_style', $value);
+    }
+    else if ($args['section'] == 'navigation')
+    {
+        mel_helper::html_helper();
+        $this->add_texts('localization/');
+
+        $config = $this->rc->config->get('navigation_apps', []);
+
+        foreach ($config as $key => $value) {
+            $input = rcube_utils::get_input_value($key, rcube_utils::INPUT_POST);
+
+            if (isset($input)) $config[$key]['enabled'] = $input === '1';
+            else $config[$key]['enabled']  = false;
+        }
+
+        $args['prefs']["navigation_apps"] = $config;
     }
 
 
@@ -2287,6 +2337,19 @@ class mel_metapage extends rcube_plugin
             else return $v;
         })->toArray();
         return $args;
+    }
+
+    function is_app_enabled($app, $load_config = false) {
+        if ($app === 'chat') $app = 'app_chat';
+
+        if ($load_config) $this->load_config();
+
+        $rcmail = $this->rc ?? rcmail::get_instance();
+        $item = $rcmail->config->get('navigation_apps', null);
+
+        if (isset($item)) return $item[$app]['enabled'] ?? true;
+        
+        return true;
     }
 
 }

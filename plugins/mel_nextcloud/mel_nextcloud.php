@@ -79,25 +79,33 @@ class mel_nextcloud extends rcube_plugin {
     $this->register_task('stockage');
     $this->get_env_js();
     // Ajoute le bouton en fonction de la skin
-    if ($rcmail->config->get('ismobile', false)) {
-      $this->add_button(array(
-          'command' => 'stockage',
-          'class'	=> 'button-mel_nextcloud ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-          'classsel' => 'button-mel_nextcloud button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
-          'innerclass' => 'button-inner',
-          'label'	=> 'mel_nextcloud.task',
-      ), 'taskbar_mobile');
-    } else {
-      $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
-      $this->add_button(array(
-          'command' => 'stockage',
-          'class' => 'button-mel_nextcloud stockage icon-mel-folder',
-          'classsel' => 'button-mel_nextcloud stockage icon-mel-folder button-selected',
-          'innerclass' => 'button-inner',
-          'label' => 'mel_nextcloud.task',
-          'title' => 'mel_nextcloud.stockage_title',
-          'type' =>'link'
-      ), $taskbar);
+    $need_button = true;
+    if (class_exists("mel_metapage")) {
+      $need_button = $rcmail->plugins->get_plugin('mel_metapage')->is_app_enabled('app_documents');
+    }
+
+    if ($need_button)
+    {
+      if ($rcmail->config->get('ismobile', false)) {
+        $this->add_button(array(
+            'command' => 'stockage',
+            'class'	=> 'button-mel_nextcloud ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+            'classsel' => 'button-mel_nextcloud button-selected ui-link ui-btn ui-corner-all ui-icon-bullets ui-btn-icon-left',
+            'innerclass' => 'button-inner',
+            'label'	=> 'mel_nextcloud.task',
+        ), 'taskbar_mobile');
+      } else {
+        $taskbar = $rcmail->config->get('skin') == 'mel_larry' ? 'taskbar_mel' : 'taskbar';
+        $this->add_button(array(
+            'command' => 'stockage',
+            'class' => 'button-mel_nextcloud stockage icon-mel-folder',
+            'classsel' => 'button-mel_nextcloud stockage icon-mel-folder button-selected',
+            'innerclass' => 'button-inner',
+            'label' => 'mel_nextcloud.task',
+            'title' => 'mel_nextcloud.stockage_title',
+            'type' =>'link'
+        ), $taskbar);
+      }
     }
 
     // Si tache = stockage, on charge l'onglet

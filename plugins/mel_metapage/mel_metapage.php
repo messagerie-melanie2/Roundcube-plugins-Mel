@@ -391,6 +391,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('modal', array($this, 'get_modal'));
             $this->register_action('check_maintenance', array($this, 'check_maintenance'));
             $this->register_action('toggleChat', array($this, 'toggleChat'));
+            $this->register_action('get_have_cerbere', array($this, 'get_have_cerbere'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
@@ -2350,6 +2351,18 @@ class mel_metapage extends rcube_plugin
         if (isset($item)) return $item[$app]['enabled'] ?? true;
         
         return true;
+    }
+
+    public static function user_have_cerbere($user)
+    {
+        $user = mel_helper::load_user_cerbere($user);
+        return $user !== null && $user >= 1;
+    }
+
+    public function get_have_cerbere()
+    {
+        echo self::user_have_cerbere(driver_mel::gi()->getUser());
+        exit;
     }
 
 }

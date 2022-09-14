@@ -224,6 +224,21 @@ if (rcmail && window.mel_metapage)
             }
         }
 
+        if (rcmail.env.keep_login === true)
+        {
+            if (!rcmail.get_cookie('mel_cerbere'))
+            {
+                mel_metapage.Functions.get(
+                    mel_metapage.Functions.url('mel_metapage', 'get_have_cerbere'),
+                    {},
+                    (datas) => {
+                        setCookie('mel_cerbere', datas, moment().daysInMonth() - moment().date());
+                    }
+                );
+            }
+        }
+        else if (!!rcmail.get_cookie('mel_cerbere')) removeCookie('mel_cerbere');
+
         //tasklistsearch
 
         let initSearches = (selector) => {

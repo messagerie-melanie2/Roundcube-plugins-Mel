@@ -122,11 +122,15 @@ const mceToRcId = function (txt = "")
         d.setTime(d.getTime() + (exdays*24*60*60*1000));
         let expires = "expires="+ d.toUTCString();
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-      }
+    }
 
     window.decode_imap_utf7 = decode_imap_utf7;
 
     window.setCookie = setCookie;
+
+    window.getCookie = (name) => {
+        return rcmail.get_cookie(name);
+    };
 
     window.removeCookie = (name) => {
         setCookie(name, '', -5);

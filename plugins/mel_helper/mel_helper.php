@@ -254,4 +254,10 @@ class mel_helper extends rcube_plugin
         return new mel_url($url);
     }
 
+    public static function load_user_cerbere($user)
+    {
+        $user->load(['cerbere']);
+        return $user->cerbere;
+    }
+
 }

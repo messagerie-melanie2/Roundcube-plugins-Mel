@@ -403,6 +403,78 @@ if (rcmail)
                 );
             }, true);
 
+
+            if (rcmail.env.task === 'mail')
+            {
+                rcmail.register_command('mel-comment-mail', async () => {
+                    const uid = rcmail.get_single_uid();
+
+                    if (!(uid || false)) return rcmail.display_message('Veuillez choisir un message !', 'error');
+
+                    const current_mail_box =  $('.mailbox.selected a').first().attr('rel');
+                    const current_subject = $(rcmail.message_list.rows[uid].obj).children().find('.subject a span').html();
+
+                    rcmail.display_message('Ouverture...', 'loading');
+                    await GlobalModal.resetModal();       
+                    
+                    let star = document.createElement('span');
+                    star.setAttribute('style', 'color:red;');
+                    star.append('*');
+                    let main_div = document.createElement('DIV');
+                    let fields_requireds = document.createElement('span');
+                    fields_requireds.append(star);
+                    fields_requireds.append(' Champs obligatoires');
+                    main_div.append(fields_requireds);
+                    let subject = document.createElement('INPUT');
+                    subject.classList.add('form-control', 'input-mel', 'disabled');
+                    subject.setAttribute('disabled', 'disabled');
+                    subject.setAttribute('value', current_subject);
+
+                    let title_subject = document.createElement('h3');
+                    title_subject.classList.add('span-mel', 't1', 'first');
+                    title_subject.append('Mail : ');
+                    main_div.append(title_subject);
+                    main_div.append(subject);
+
+                    let title_comment = document.createElement('h3');
+                    title_comment.classList.add('span-mel', 't1');
+                    let comment_span = document.createElement('span');
+                    comment_span.append('Commentaire');
+                    comment_span.append(star);
+                    comment_span.append(' :');
+                    title_comment.append(comment_span);
+                    main_div.append(title_comment);
+
+                    let comment_area = document.createElement('textarea');
+                    comment_area.classList.add('form-control', 'input-mel');
+                    comment_area.setAttribute('placeholder', 'Ecrivez un commentaire...');
+                    main_div.append(comment_area);
+
+                    const config = new GlobalModalConfig('Commenter !', "default", ' ');
+                    let modal = new GlobalModal('globalModal', config);
+                    modal.contents.append(main_div);
+                    modal.footer.buttons.save.click(async () => {
+                        if (!(comment_area.value || false)) {
+                            rcmail.display_message('Le commentaire ne peut pas être vide !', 'error');
+                            return;
+                        }
+
+                        rcmail.set_busy(true, 'loading');
+                        const new_uid = await mel_metapage.Functions.comment_mail(uid, comment_area.value, current_mail_box);
+                        rcmail.env.list_uid_to_select = new_uid;
+                        modal.close();
+                        modal = null;
+                        rcmail.clear_messages();
+                        rcmail.set_busy(false);
+                        rcmail.display_message('Mail commenté avec succès !', 'confirmation');
+                        rcmail.command('checkmail');
+                        //rcmail.message_list.select(new_uid)
+                    })
+                    modal.show();
+                    rcmail.clear_messages();
+                }, true);
+            }
+
             // rcmail.drag_menu_action = function(action)
             // {
             //   var menu = this.gui_objects.dragmenu;

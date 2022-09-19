@@ -199,7 +199,7 @@ function m_mp_step3_param(type)
                 let $select = $(`<select class="custom-calendar-option-select form-control input-mel custom-select pretty-select">
                     <option value="default">Un canal ayant comme nom l'id sera créé</option>
                     <option value="custom_name">Choisissez le nom du canal</option>
-                    <!--<option value="already_exist">Lié à un canal éxistant</option>-->
+                    <option value="already_exist">Lié à un canal éxistant</option>
                 </select> `);
     
                 if (have_datas) $select.val(m_mp_step3_param.datas[type].mode);

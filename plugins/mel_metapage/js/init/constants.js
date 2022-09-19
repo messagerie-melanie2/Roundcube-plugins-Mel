@@ -1261,6 +1261,22 @@ const mel_metapage = {
             return this;
         },
 
+        async comment_mail(uid, comment, folder = 'INBOX') {
+            let data = uid;
+            await this.post(
+                mel_metapage.Functions.url('mel_metapage', 'comment_mail'), {
+                    _uid:uid,
+                    _comment:comment,
+                    _folder:folder
+                },
+                (datas) => {
+                    data = datas;
+                }
+            );
+
+            return data;
+        },
+
         colors:{
             kMel_Luminance(rgb) {
                     let R = rgb[0] / 255

@@ -437,7 +437,38 @@ if (rcmail && window.mel_metapage)
         } catch (error) {
 
         }
+
+            //RIEN
+            //BALP
+            const balp = 'balpartagee.';
+            //AUTRE
+            const bap = 'Boite partag&AOk-e/';
+            const splited_key = '.-.';
+            let current_bal =  rcmail.get_message_mailbox();//$('.mailbox.selected a').first().attr('rel');
+
+            if (current_bal.includes(balp))
+            {
+                current_bal = m_mp_mail_context(current_bal, balp);
+            }
+            else if (current_bal.includes(bap))
+            {
+                current_bal = m_mp_mail_context(current_bal, bap);
+            }
+            else current_bal = 'INBOX';
+
+            current_bal = current_bal ?? '';
+
+            if (current_bal === 'INBOX' || !!current_bal && Enumerable.from(rcmail.env.all_mailboxes).any(x => x.key.split('.-.')[1].toLowerCase() === current_bal.toLowerCase())) $('.ct-cm').css('display', '');
+            else $('.ct-cm').css('display', 'none');
     });
+
+    rcmail.addEventListener('responseaftercheck-recent', function(){
+          if (!!rcmail.env.list_uid_to_select) 
+          {
+              rcmail.message_list.select(rcmail.env.list_uid_to_select)
+              rcmail.env.list_uid_to_select = null;
+          }
+      });
 
     rcmail.addEventListener('storage.change', (datas) => {
         rcmail.triggerEvent(`storage.change.${datas.key}`, datas.item);
@@ -635,7 +666,7 @@ if (rcmail && window.mel_metapage)
             /*white-space: nowrap;*/
             display:flex;
             text-overflow: ellipsis;"><span style="display: inline-block;
-            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]},${location_phone[1]}">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
+            vertical-align: top;margin-top:5px" class="icon-mel-phone mel-cal-icon"></span><span style='display:inline-block'><a title="Rejoindre la visio par téléphone. Le code pin est ${location_phone[1]}." href="tel:${location_phone[0]};${location_phone[1]}#">${location_phone[0]}</a> - PIN : ${location_phone[1]}</span></div></div>`;
         if (event.categories !== undefined && event.categories.length > 0)
         {
             const isWsp = event.categories[0].includes("ws#");
@@ -1183,7 +1214,17 @@ if (rcmail && window.mel_metapage)
 
     });
 
+    function m_mp_mail_context(current_bal, word)
+    {
+        current_bal = current_bal.split(word)[1];
+
+        if (current_bal.includes('/')) current_bal = current_bal.split('/')[0];
+
+        return current_bal;
+    }
+
     rcmail.addEventListener('contextmenu_init', function(menu) {
+        //debugger;
         // identify the folder list context menu
         if (menu.menu_name == 'messagelist') {
             //debugger;
@@ -1197,7 +1238,7 @@ if (rcmail && window.mel_metapage)
                 {label: 'Utiliser comme modèle', command: 'use_as_new', classes: 'ct-m'}
             );
 
-
+          menu.menu_source.push({label: 'Commenter', command: 'mel-comment-mail', classes: 'ct-cm'});
           menu.menu_source.push({label: 'Gérer les étiquettes', command: 'gestion_labels', classes: 'ct-tb'});
 
           menu.addEventListener("beforeactivate", (p) => {
@@ -1211,6 +1252,29 @@ if (rcmail && window.mel_metapage)
                 $(".ct-em").css('display', 'none');
                 $(".ct-m").css('display', 'none');
             }
+
+            //RIEN
+            //BALP
+            const balp = 'balpartagee.';
+            //AUTRE
+            const bap = 'Boite partag&AOk-e/';
+            const splited_key = '.-.';
+            let current_bal =  rcmail.get_message_mailbox();//$('.mailbox.selected a').first().attr('rel');
+
+            if (current_bal.includes(balp))
+            {
+                current_bal = m_mp_mail_context(current_bal, balp);
+            }
+            else if (current_bal.includes(bap))
+            {
+                current_bal = m_mp_mail_context(current_bal, bap);
+            }
+            else current_bal = 'INBOX';
+
+            current_bal = current_bal ?? '';
+
+            if (current_bal === 'INBOX' || !!current_bal && Enumerable.from(rcmail.env.all_mailboxes).any(x => x.key.split('.-.')[1].toLowerCase() === current_bal.toLowerCase())) $('.ct-cm').css('display', '');
+            else $('.ct-cm').css('display', 'none');
 
             $(".ct-tb").on("mouseover", (e) => {
 

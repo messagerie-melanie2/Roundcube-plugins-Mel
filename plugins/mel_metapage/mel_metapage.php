@@ -228,6 +228,20 @@ class mel_metapage extends rcube_plugin
                     $this->rc->output->set_env("model_mbox", $model_mbox);
                     break;
             }
+
+            $model_mbox = driver_mel::gi()->getUser()->getObjectsSharedEmission();
+            $model_mbox = json_encode($model_mbox);
+            $this->rc->output->set_env("all_mailboxes", json_decode($model_mbox));
+
+            $this->add_button(array(
+                'command' => 'mel-comment-mail',
+                'class' => 'ct-cm',
+                'innerclass' => 'inner',
+                'id' => 'mel-comment-mail',//tb_label_popup
+                'title' => 'mel_metapage.to_comment', // gets translated
+                'type' => 'link',
+                'label' => 'mel_metapage.to_comment', // maybe put translated version of "Labels" here?
+            ), 'toolbar');
         }
 
         if ($this->rc->task === "portail")
@@ -392,6 +406,7 @@ class mel_metapage extends rcube_plugin
             $this->register_action('check_maintenance', array($this, 'check_maintenance'));
             $this->register_action('toggleChat', array($this, 'toggleChat'));
             $this->register_action('get_have_cerbere', array($this, 'get_have_cerbere'));
+            $this->register_action('comment_mail', array($this, 'comment_mail'));
             $this->add_hook('refresh', array($this, 'refresh'));
             $this->add_hook("startup", array($this, "send_spied_urls"));
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
@@ -2362,6 +2377,40 @@ class mel_metapage extends rcube_plugin
     public function get_have_cerbere()
     {
         echo self::user_have_cerbere(driver_mel::gi()->getUser());
+        exit;
+    }
+
+    public function comment_mail()
+    {
+        $folder = rcube_utils::get_input_value('_folder', rcube_utils::INPUT_POST) ?? 'INBOX';
+        $message_uid = intval(rcube_utils::get_input_value('_uid', rcube_utils::INPUT_POST));
+        $comment = rcube_utils::get_input_value('_comment', rcube_utils::INPUT_POST);
+        $user_mail = rcube_utils::get_input_value('_user', rcube_utils::INPUT_POST) ?? null;
+
+        $this->rc->storage->set_folder($folder);
+
+        $headers_old = $this->rc->storage->get_message_headers($message_uid, $folder);
+        $test = $this->rc->storage->get_raw_body($message_uid);//, $folder);
+        if (strpos($test, 'X-Suivimel') !== false)
+        {
+            $test = explode('X-Suivimel', $test);
+            $suivi = explode("\n", str_replace(': ', '', $test[1]))[0];
+            $suivi = 'Le '.date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment"."¤¤".rcube_mime::decode_header($suivi);
+            $test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', $suivi, RCUBE_CHARSET).$test[1];
+        }
+        else 
+        {
+            $test = explode('Subject:', $test);
+            $test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject:".$test[1];
+        }
+
+        $datas = $this->rc->imap->save_message($folder, $test, '', false, [], $headers_old->date);
+        $this->rc->imap->set_flag($datas, "~commente", $folder);
+        $this->rc->imap->set_flag($datas, 'SEEN', $folder);
+        $this->rc->storage->delete_message($message_uid, $folder);
+
+
+        echo $datas;
         exit;
     }
 

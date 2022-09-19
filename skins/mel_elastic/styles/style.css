@@ -2367,3 +2367,7 @@ html.layout-phone .hide-on-small,
 html.layout-small .hide-on-small {
   display: none;
 }
+.menu a.ct-cm::before {
+  font-family: DWP!important;
+  content: '\e920' !important;
+}

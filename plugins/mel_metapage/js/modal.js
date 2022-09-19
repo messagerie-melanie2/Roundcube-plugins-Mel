@@ -339,14 +339,22 @@ class GlobalModal
 
     static resetModal()
     {
-        return mel_metapage.Functions.get(
-            mel_metapage.Functions.url("mel_metapage", "modal"),
-            {},
-            (datas) => {
-                $("#globalModal").remove();
-                $("body").append(datas);
-            }
-        );
+        if (!!this.raw_datas)
+        {
+            $("body").append(this.raw_datas);
+            return $.ajax();
+        }
+        else {
+            return mel_metapage.Functions.get(
+                mel_metapage.Functions.url("mel_metapage", "modal"),
+                {},
+                (datas) => {
+                    $("#globalModal").remove();
+                    $("body").append(datas);
+                    this.raw_datas = datas;
+                }
+            );
+        }
     }
 
 }

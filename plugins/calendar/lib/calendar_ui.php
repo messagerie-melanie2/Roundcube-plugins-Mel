@@ -479,6 +479,8 @@ class calendar_ui
     $select->add($this->cal->gettext('status-tentative'), 'TENTATIVE');
     $select->add($this->cal->gettext('status-cancelled'), 'CANCELLED');
     $select->add($this->cal->gettext('status-free'), 'FREE');
+    // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+    $select->add($this->cal->gettext('status-telework'), 'TELEWORK');
     return $select->show(null);
   }
 

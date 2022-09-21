@@ -1472,6 +1472,11 @@ td.topalign {
 	background: #abd8b0;
 }
 
+#schedule-freebusy-times td div.telework,
+.availability img.availabilityicon.telework {
+	background: #abc4d8;
+}
+
 #schedule-freebusy-times td div.busy,
 .availability img.availabilityicon.busy {
 	background: #e28f62;
@@ -2264,6 +2269,7 @@ a.dropdown-link:after {
 }
 
 .cal-event-status-free .fc-event-title,
+.cal-event-status-telework .fc-event-title,
 .cal-event-status-cancelled .fc-event-title,
 .cal-event-status-tentative .fc-event-title {
 	font-weight: normal;
@@ -2271,6 +2277,7 @@ a.dropdown-link:after {
 }
 
 .cal-event-status-tentative .fc-event-title,
+.cal-event-status-telework .fc-event-title,
 .cal-event-status-free .fc-event-title {
 	font-style: italic;
 }

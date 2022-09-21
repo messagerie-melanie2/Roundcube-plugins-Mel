@@ -92,6 +92,9 @@ $labels['status-cancelled'] = 'Annulé';
 $labels['status-tentative'] = 'Provisoire';
 // MANTIS 0005114: Gestion d'un seul statut comme le courrielleur
 $labels['status-free'] = 'Libre';
+// MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+$labels['telework'] = 'Télétravail';
+$labels['status-telework'] = 'Télétravail';
 $labels['priority'] = 'Priorité';
 $labels['sensitivity'] = 'Diffusion';
 $labels['public'] = 'Publique';
@@ -172,6 +175,8 @@ $labels['availfree'] = 'Disponible';
 $labels['availbusy'] = 'Occupé';
 $labels['availunknown'] = 'Inconnu';
 $labels['availtentative'] = 'Provisoire';
+// MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+$labels['availtelework'] = 'Télétravail';
 $labels['availoutofoffice'] = 'Absent';
 $labels['scheduletime'] = 'Trouver les disponibilités';
 $labels['sendinvitations'] = 'Envoyer les invitations';
@@ -210,6 +215,7 @@ $labels['savetocalendar'] = 'Sauvegarde dans le calendrier';
 $labels['openpreview'] = 'Consulter le calendrier';
 $labels['noearlierevents'] = 'Aucun événement passé';
 $labels['nolaterevents'] = 'Aucun événement futur';
+$labels['legend'] = 'Légende';
 $labels['resource'] = 'Ressource';
 $labels['addresource'] = 'Carnet de ressources';
 $labels['findresources'] = 'Recherche des ressources';

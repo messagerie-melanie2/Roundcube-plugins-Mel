@@ -30,6 +30,8 @@ class calendar extends rcube_plugin
   const FREEBUSY_BUSY = 2;
   const FREEBUSY_TENTATIVE = 3;
   const FREEBUSY_OOF = 4;
+  // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+  const FREEBUSY_TELEWORK  = 5;
 
   const SESSION_KEY = 'calendar_temp';
 
@@ -2272,7 +2274,15 @@ class calendar extends rcube_plugin
     if (!$start) $start = time();
     if (!$end) $end = $start + 3600;
     
-    $fbtypemap = array(calendar::FREEBUSY_UNKNOWN => 'UNKNOWN', calendar::FREEBUSY_FREE => 'FREE', calendar::FREEBUSY_BUSY => 'BUSY', calendar::FREEBUSY_TENTATIVE => 'TENTATIVE', calendar::FREEBUSY_OOF => 'OUT-OF-OFFICE');
+    $fbtypemap = [
+      calendar::FREEBUSY_UNKNOWN   => 'UNKNOWN',
+      calendar::FREEBUSY_FREE      => 'FREE',
+      calendar::FREEBUSY_BUSY      => 'BUSY',
+      calendar::FREEBUSY_TENTATIVE => 'TENTATIVE',
+      calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
+      // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+      calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
+    ];
     $status = 'UNKNOWN';
     
     // if the backend has free-busy information

@@ -791,6 +791,11 @@ td.topalign {
 	background: #abd640;
 }
 
+#schedule-freebusy-times td.telework,
+.availability img.availabilityicon.telework {
+	background: #abc4d8;
+}
+
 #schedule-freebusy-times td.busy,
 .availability img.availabilityicon.busy {
 	background: #e26569;

@@ -1743,7 +1743,8 @@ function rcube_calendar_ui(settings)
     // update free-busy grid with status loaded from server
     var update_freebusy_display = function(email)
     {
-      var status_classes = ['unknown','free','busy','tentative','out-of-office'];
+      // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+      var status_classes = ['unknown','free','busy','tentative','out-of-office','telework'];
       var domid = String(email).replace(rcmail.identifier_expr, '');
       var row = $('#fbrow' + domid);
       var rowall = $('#fbrowall').children();

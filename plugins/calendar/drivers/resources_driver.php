@@ -79,11 +79,13 @@ abstract class resources_driver
       $events = array();
       $rec = $this->get_resource($id);
       if ($rec && !empty($rec['email']) && $this->cal->driver) {
-          $fbtypemap = array(
-              calendar::FREEBUSY_BUSY => 'busy',
-              calendar::FREEBUSY_TENTATIVE => 'tentative',
-              calendar::FREEBUSY_OOF => 'outofoffice',
-          );
+          $fbtypemap = [
+                calendar::FREEBUSY_BUSY      => 'busy',
+                calendar::FREEBUSY_TENTATIVE => 'tentative',
+                calendar::FREEBUSY_OOF       => 'outofoffice',
+                // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+                calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
+          ];
 
           // if the backend has free-busy information
           $fblist = $this->cal->driver->get_freebusy_list($rec['email'], $start, $end);

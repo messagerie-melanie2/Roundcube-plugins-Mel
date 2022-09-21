@@ -24,6 +24,8 @@
  */
 class libcalendaring_itip
 {
+    //pamela
+    public $last_message;
     protected $rc;
     protected $lib;
     protected $plugin;
@@ -202,6 +204,8 @@ class libcalendaring_itip
         $this->itip_send = true;
         $sent = $this->rc->deliver_message($message, $headers['X-Sender'], $mailto, $smtp_error);
         $this->itip_send = false;
+
+        $this->last_message = $message;
 
         return $sent;
     }

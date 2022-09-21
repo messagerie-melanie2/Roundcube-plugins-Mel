@@ -188,6 +188,7 @@ class mel_metapage extends rcube_plugin
         $this->add_hook("send_page", array($this, "appendTo"));
         $this->add_hook("message_send_error", [$this, 'message_send_error']);
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
+        $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
 
         if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs" &&  rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch')
         {
@@ -2412,6 +2413,57 @@ class mel_metapage extends rcube_plugin
 
         echo $datas;
         exit;
+    }
+
+    public function on_attendees_notified($args)
+    {
+        $orga = $args['orga'];
+        $attendees = $args['attendees'];
+        $message = $args['message'];
+        $event = $args['event'];
+        $folder = $this->rc->config->get('sent_mbox');
+        //balpartagee.test-pne-messagerie
+
+        $to = '';
+
+        foreach ($attendees as $value) {
+            $to .= format_email_recipient(rcube_utils::idn_to_ascii($value['email']), $value['name']).', ';
+        }
+
+        $to = substr_replace($to, '', -2);
+
+        $headers = $message->headers();
+        $headers['To'] = $to;
+        $message->headers($headers, true);
+        $msg = $message->getMessage();
+
+        if (strpos($orga['email'], '.-.') !== false)
+        {
+            $tmp = explode('@', explode('.-.', $orga['email'])[1])[0];
+
+            $datas = $this->rc->imap->save_message("Boite partag&AOk-e/$tmp/$folder", $msg);
+
+            if ($datas === false){
+                $tmp2 = explode('.', $tmp);
+                $tmp = '';
+                $it = 0;
+                while ($datas === false && $it < count($tmp2)) {
+                    $tmp .= $tmp2[$it++];
+                    $datas = $this->rc->imap->save_message("Boite partag&AOk-e/$tmp/$folder", $msg);
+                    $tmp .= '.';
+                }
+
+                if ($datas !== false) $folder = "Boite partag&AOk-e/$tmp/$folder";
+            }
+        }
+        else  $datas = $this->rc->imap->save_message($folder, $msg);
+
+        if ($datas !== false)
+        {
+            $this->rc->imap->set_flag($datas, "~rdvtraite", $folder);
+            $this->rc->imap->set_flag($datas, 'SEEN', $folder);
+        }
+
     }
 
 }

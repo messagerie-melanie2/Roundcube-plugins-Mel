@@ -2637,9 +2637,13 @@ $("#rcmfd_new_category").keypress(function(event) {
         // send to every attendee
         $sent    = 0;
         $current = [];
+        //PAMELA
+        $orga = null;
+        $array_attendees = [];
         foreach ((array) $event['attendees'] as $attendee) {
             // skip myself for obvious reasons
             if (empty($attendee['email']) || in_array(strtolower($attendee['email']), $emails)) {
+                if (!empty($attendee['email'])) $orga = $attendee;
                 continue;
             }
 
@@ -2666,10 +2670,22 @@ $("#rcmfd_new_category").keypress(function(event) {
             // finally send the message
             if ($itip->send_itip_message($event, $method, $attendee, $subject, $bodytext, $message, $is_rsvp)) {
                 $sent++;
+                $array_attendees[] = $attendee;
             }
             else {
                 $sent = -100;
             }
+        }
+        
+            //PAMELA
+        if (count($array_attendees) > 0)
+        {
+            $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [
+                'orga' => $orga,
+                'attendees' => $array_attendees,
+                'message' => $itip->last_message,
+                'event' => $event
+            ]);
         }
 
         // TODO: on change of a recurring (main) event, also send updates to differing attendess of recurrence exceptions

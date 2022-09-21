@@ -11,6 +11,7 @@
             "port": 9000,
             "xdebugSettings": {
                 "max_children": 99999,
+                "max_data": -1,
             }
         },
         {

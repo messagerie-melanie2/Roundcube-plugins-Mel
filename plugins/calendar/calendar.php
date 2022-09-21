@@ -30,6 +30,8 @@ class calendar extends rcube_plugin
     const FREEBUSY_BUSY      = 2;
     const FREEBUSY_TENTATIVE = 3;
     const FREEBUSY_OOF       = 4;
+    // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+    const FREEBUSY_TELEWORK  = 5;
 
     const SESSION_KEY = 'calendar_temp';
 
@@ -2735,7 +2737,9 @@ $("#rcmfd_new_category").keypress(function(event) {
             calendar::FREEBUSY_FREE      => 'FREE',
             calendar::FREEBUSY_BUSY      => 'BUSY',
             calendar::FREEBUSY_TENTATIVE => 'TENTATIVE',
-            calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE'
+            calendar::FREEBUSY_OOF       => 'OUT-OF-OFFICE',
+            // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+            calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
         ];
 
         // if the backend has free-busy information

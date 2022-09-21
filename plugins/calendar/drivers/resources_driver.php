@@ -88,6 +88,8 @@ abstract class resources_driver
                 calendar::FREEBUSY_BUSY      => 'busy',
                 calendar::FREEBUSY_TENTATIVE => 'tentative',
                 calendar::FREEBUSY_OOF       => 'outofoffice',
+                // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+                calendar::FREEBUSY_TELEWORK  => 'TELEWORK',
             ];
 
             // if the backend has free-busy information

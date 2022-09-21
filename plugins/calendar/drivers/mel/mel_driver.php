@@ -2520,7 +2520,13 @@ class mel_driver extends calendar_driver {
       $user->email = $email;
       if ($user->load(['uid'])) {
         // map vcalendar fbtypes to internal values
-        $fbtypemap = array('free' => calendar::FREEBUSY_FREE,'tentative' => calendar::FREEBUSY_TENTATIVE,'outofoffice' => calendar::FREEBUSY_OOF,'busy' => calendar::FREEBUSY_BUSY);
+        $fbtypemap = [
+          'free'        => calendar::FREEBUSY_FREE,
+          'tentative'   => calendar::FREEBUSY_TENTATIVE,
+          'outofoffice' => calendar::FREEBUSY_OOF,
+          'busy'        => calendar::FREEBUSY_BUSY,
+          'telework'    => calendar::FREEBUSY_TELEWORK,
+        ];
         // Utilisation du load_events pour charger les évènements déjà formattés (récurrences)
         $events = $this->load_events($start, $end, null, $user->uid, 1, null, true);
         $result = array();
@@ -2540,7 +2546,13 @@ class mel_driver extends calendar_driver {
       }
       else {
         // map vcalendar fbtypes to internal values
-        $fbtypemap = array('FREE' => calendar::FREEBUSY_FREE,'BUSY-TENTATIVE' => calendar::FREEBUSY_TENTATIVE,'X-OUT-OF-OFFICE' => calendar::FREEBUSY_OOF,'OOF' => calendar::FREEBUSY_OOF);
+        $fbtypemap = [
+          'FREE'            => calendar::FREEBUSY_FREE,
+          'BUSY-TENTATIVE'  => calendar::FREEBUSY_TENTATIVE,
+          'X-OUT-OF-OFFICE' => calendar::FREEBUSY_OOF,
+          'OOF'             => calendar::FREEBUSY_OOF,
+          'X-TELEWORK'      => calendar::FREEBUSY_TELEWORK,
+        ];
 
         // Si l'utilisateur n'appartient pas au minitère, on récupère éventuellement les freebusy depuis les contacts
         $fburl = null;

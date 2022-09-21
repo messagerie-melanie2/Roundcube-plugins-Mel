@@ -495,6 +495,8 @@ class calendar_ui
         $select->add($this->cal->gettext('status-tentative'), 'TENTATIVE');
         //Pamela - Ajout de l'option "Libre"
         $select->add($this->cal->gettext('free'), 'FREE'); //fin pamela
+        // MANTIS 0006913: Ajouter un statut « travail ailleurs » sur les événements
+        $select->add($this->cal->gettext('status-telework'), 'TELEWORK');
 
         return $select->show(null);
     }

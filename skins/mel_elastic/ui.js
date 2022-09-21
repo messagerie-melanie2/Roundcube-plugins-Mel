@@ -2484,5 +2484,17 @@ $(document).ready(() => {
      * Contient les fonctions de la classe Mel_Elastic
      */
     window.MEL_ELASTIC_UI = new Mel_Elastic();
+    window.mel_deploy_undeploy = (e, selector) => {
+        e = $(e);
+        if (e.css('display') !== 'none')
+        {
+            e.css('display', 'none');
+            $(selector).css('display', '');
+        }
+        else {
+            e.css('display', '');
+            $(selector).css('display', 'none');
+        }
+    };
 
 });

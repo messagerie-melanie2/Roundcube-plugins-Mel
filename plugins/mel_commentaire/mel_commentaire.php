@@ -59,10 +59,24 @@ class mel_commentaire extends rcube_plugin
             $commentaires = explode("¤¤", $header);
             $html = '';
             $i = 0;
+            $firstline = null;
             foreach ($commentaires as $commentaire) {
+                if (!isset($firstline)) 
+                {
+                    $firstline = $commentaire;
+                    $commentaire = html::tag('span', ['class' => 'icon-mel-chevron-down']).$commentaire;
+                }
+
                 $html .= html::div(($i % 2) === 0 ? 'label' : 'comment', $commentaire);
                 $i++;
             }
+
+            if ($i > 1)
+            {
+                $tmp = html::div(['class' => 'falselink noselect comment-to-unploy', 'onclick' => 'mel_deploy_undeploy(this, `.comment-to-deploy`)'], html::tag('span', ['class' => 'icon-mel-chevron-right']).$firstline.'...');
+                $html = $tmp.html::div(['class' => 'falselink comment-to-deploy','style' => 'display:none', 'onclick' => 'mel_deploy_undeploy(`.comment-to-unploy`, `.comment-to-deploy`)'], $html);
+            }
+
             $args['output']['commentaire'] = [
                 'title' => 'Commentaires',
                 'value' => $html,

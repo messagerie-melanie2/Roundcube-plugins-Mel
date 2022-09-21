@@ -1214,3 +1214,7 @@ html.dark-mode button.btn-mel.active + button.mel-button.under-button:hover {
   color: #E1C58F;
   background-color: #2E2E2E;
 }
+
+html.dark-mode .message-partheaders .falselink{
+    color:#96b9e7;
+}

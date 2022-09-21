@@ -54,7 +54,8 @@ textarea,
     .restore-font();
 }
 
-a{
+a, 
+.falselink{
     color:var(--main-link-color);
 
     &:hover{
@@ -3677,5 +3678,13 @@ table{
     &::before{
         font-family: DWP!important;
         content: '\e920'!important;
+    }
+}
+
+.falselink{
+    cursor: pointer;
+    
+    &:hover{
+
     }
 }

@@ -341,6 +341,7 @@ class GlobalModal
     {
         if (!!this.raw_datas)
         {
+            $("#globalModal").remove();
             $("body").append(this.raw_datas);
             return $.ajax();
         }

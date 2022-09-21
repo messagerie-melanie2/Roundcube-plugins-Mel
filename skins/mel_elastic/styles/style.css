@@ -93,10 +93,12 @@ textarea,
 .popover {
   font-family: Marianne, Roboto, sans-serif;
 }
-a {
+a,
+.falselink {
   color: var(--main-link-color);
 }
-a:hover {
+a:hover,
+.falselink:hover {
   color: var(--main-link-hover-color);
 }
 p,
@@ -2370,4 +2372,7 @@ html.layout-small .hide-on-small {
 .menu a.ct-cm::before {
   font-family: DWP!important;
   content: '\e920' !important;
+}
+.falselink {
+  cursor: pointer;
 }

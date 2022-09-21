@@ -113,6 +113,8 @@ $labels['onemonthback'] = '1 mois auparavant';
 $labels['nmonthsback'] = '$nr mois précédents';
 $labels['showurl'] = 'Afficher l\'URL du calendrier';
 $labels['showurldescription'] = 'Utilisez l\'adresse suivante pour accéder (lecture seule) à votre calendrier depuis d\'autres applications. Vous pouvez copier/coller celle-ci dans n\'importe quel calendrier électronique gérant le format iCal.';
+$labels['freebusyurldescription'] = 'L\'adresse suivante permet d\'afficher les disponibilités de l\'agenda depuis une autre application. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. Cette adresse ne nécessite pas d\'authentification.';
+$labels['calendarfeedurldescription'] = 'Cochez cette case pour partager votre agenda via une adresse unique sans authentification. Vous pouvez copier/coller celle-ci dans n\'importe quel agenda électronique gérant le format iCal. ';
 $labels['caldavurldescription'] = 'Copiez cette adresse vers une application client (comme Evolution ou Mozilla Thunderbird) compatible <a href="http://fr.wikipedia.org/wiki/CalDAV" target="_blank">CalDAV</a> pour synchroniser pleinement ce calendrier avec votre ordinateur ou votre smartphone.';
 $labels['findcalendars'] = 'Recherche de calendriers...';
 $labels['searchterms'] = 'Critères de recherche';

@@ -879,7 +879,7 @@
 
                         if (confirmation)
                         {
-                            if (val === rcmail.env.wekan_datas.id)
+                            if (val === rcmail.env.wekan_datas?.id)
                             {
                                 let querry = $("#select-update-wekan").parent();
                                 querry.find("#addederrorsn").remove();

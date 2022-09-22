@@ -1862,7 +1862,7 @@ class mel_workspace extends rcube_plugin
 
             if (!isset($default_value) || !isset($default_value[$index]))
             {
-                if (!isset($default_value)) $default_value = [];
+                if (!isset($default_value) || $default_value === '') $default_value = [];
 
                 $default_value[$index] = [
                     'mode' => 'default'

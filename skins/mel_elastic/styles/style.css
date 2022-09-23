@@ -857,6 +857,7 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
   opacity: 1;
   font-style: italic;
 }
+.fc-event.cal-event-status-telework .fc-title,
 .fc-event.cal-event-status-free .fc-title {
   font-weight: normal;
   opacity: 1;

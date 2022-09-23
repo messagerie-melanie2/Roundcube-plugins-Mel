@@ -3688,3 +3688,27 @@ table{
 
     }
 }
+
+.multilink-sub{
+    display: flex;
+    background-color: #0000006e;
+    transition: @mel-default-animation;
+
+    &-copy{
+        text-decoration: none!important;
+        transition: @mel-default-animation;
+        display: block;
+        align-self: center;
+        padding-left: 5px;
+        padding-right: 5px;
+        color: var(--white);
+    }
+
+    &:hover{
+        background-color: #ffffff70;
+
+        .multilink-sub-copy{
+            color: black!important;
+        }
+    }
+}

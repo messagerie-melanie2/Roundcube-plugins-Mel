@@ -8,7 +8,7 @@
         var refreshWorkspaceCloudNotification = function() {
             switch (rcmail.env.task) {
                 case "bureau":
-                    if (rcmail.env.bureau && rcmail.env.bureau.wsp_doc)
+                    if (!!rcmail.env.bureau && !!rcmail.env.bureau.wsp_doc)
                         rcmail.env.bureau.wsp_doc.update(true);
                     break;
 
@@ -16,12 +16,12 @@
                     switch (rcmail.env.action) {
                         case "":
                         case "index":
-                            if (rcmail.env.wsp_index && rcmail.env.wsp_index.wsp_doc)
-                                rcmail.env.wsp_index.wsp_doc.update(true);
+                            if (!!rcmail.env.wsp_index && !!rcmail.env.wsp_index.wsp_doc)
+                                !!rcmail.env.wsp_index.wsp_doc.update(true);
                             break;
 
                         case "workspace":
-                            if (rcmail.env.wsp_roundrive_show)
+                            if (!!rcmail.env.wsp_roundrive_show)
                                 rcmail.env.wsp_roundrive_show.checkNews();
                             break;
 

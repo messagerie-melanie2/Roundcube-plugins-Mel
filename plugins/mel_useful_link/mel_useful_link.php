@@ -352,47 +352,17 @@ class mel_useful_link extends rcube_plugin
               else if (!mel::is_internal() && strpos($key, "intranet") !== false)
                 continue;
 
-              if ($value["url"] === null || $value["url"] === "" || $value["links"] !== null || $value["buttons"] !== null)
-              {
-                if ($value["links"] !== null || $value["buttons"] !== null)
-                {
-                  foreach ($value[($value["links"] !== null ? "links" : "buttons")] as $keyLink => $link) {
+              // if ($value["url"] === null || $value["url"] === "")
+              // {
+              //   if ($value["links"] !== null || $value["buttons"] !== null)
+              //   {
+              //     if ($value["url"] === null || $value["url"] === "")
+              //       continue;
 
-                    if (!$showHidden && $hiddened->check_old($keyLink, $key))
-                      continue;
-
-                    if ($link["color"] === null)
-                      $link["color"] = $value["color"];
-
-                    $link["name"] = $value["name"]." - $keyLink";
-
-                    $tmpKey = $this->generate_id($keyLink, $links);
-                    $link["personal"] = $value["personal"];
-                    $tmpLink = mel_link::fromOldPortail($tmpKey, $link, [
-                      "parent" => $key,
-                      "id" => $keyLink
-                    ]);
-
-                    if (!$tmpLink->personal)
-                    {
-                      mel_link::updateDefaultConfig($tmpLink, $paramDefault);
-                    }
-
-                    $tmpLink->hidden = $hiddened->check_old($keyLink, $key);
-
-                    if (end($links) != $tmpLink)  
-                      $links[$tmpKey] = $tmpLink;
-
-                  }
-
-                  if ($value["url"] === null || $value["url"] === "")
-                    continue;
-
-                }
-                else
-                  continue;
-
-              }
+              //   }
+              //   else
+              //     continue;
+              // }
 
               if (!$showHidden && $hiddened->check_old($key))
                 continue;
@@ -429,6 +399,11 @@ class mel_useful_link extends rcube_plugin
       $forceUpdate = rcube_utils::get_input_value("_force", rcube_utils::INPUT_GPC) ?? false;
       $forceUpdate = $forceUpdate === "true";
       $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
+      $textColor = rcube_utils::get_input_value("_text_color", rcube_utils::INPUT_GPC);
+
+      $isMultiLink = is_array($link) || strpos($link, '{') !== false;
+
+      if ($isMultiLink) $link = json_decode($link);
 
       if ($id === "")
         $id = null;
@@ -471,7 +446,7 @@ class mel_useful_link extends rcube_plugin
         if ($id === null || $isSubItem)
         {
           $id = $this->generate_id($title, $config);
-          $melLink = mel_link::create($id, $title, $link, false, time(), $from, $showWhen);
+          $melLink = mel_link::create($id, $title, $link, false, time(), $from, $showWhen, null, true, null, $isMultiLink);
         }
         else 
         {
@@ -486,6 +461,7 @@ class mel_useful_link extends rcube_plugin
         }
 
         $melLink->color = $color;
+        $melLink->textColor = $textColor;
 
         $config[$id] = $melLink->serialize();
         $this->rc->user->save_prefs(array('personal_useful_links' => $config));
@@ -615,6 +591,7 @@ class mel_useful_link extends rcube_plugin
 
     function child_old_links_to_new_link(&$config, $id)
     {
+      return;
         //On vérifie si il y a des liens enfants
         if ($config[$id]["buttons"] !== null || $config[$id]["links"] !== null)
         {
@@ -904,11 +881,11 @@ class mel_useful_link extends rcube_plugin
 
   }
 
-  public static function createLink($id, $title, $link, $pin, $showWhen, $createDate, $from = "always", $color = null)
+  public static function createLink($id, $title, $link, $pin, $showWhen, $createDate, $from = "always", $color = null,$textColor = null, $multilink = false)
   {
     include_once "lib/link.php";
 
-    return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen, null, true, $color);
+    return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen, null, true, $color, $multilink, $textColor);
   }
 
 

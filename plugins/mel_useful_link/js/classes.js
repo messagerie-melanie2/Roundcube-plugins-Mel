@@ -45,8 +45,7 @@
       */
      setLinkEditor(link = null, task = "useful_links", action = "update", addonConfig= null, afterCreate = null)
      {
-         if (link === null)
-             link = new MelLink();
+         if (link === null) link = new MelLink();
              
          this.setTitle(link.id === "" ? "Création d'un nouveau lien" : "Modification d'un lien");
  
@@ -77,7 +76,7 @@
              this.linkText("mulc-url", "Adresse de la page", "URL", link.link, false, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(parentDiv);
 
              /**Couleur */
-             this.linkColor("mulc-color", "Couleur de la vignette", link.color).appendTo(parentDiv);
+             this.linkColor("mulc-color", "Couleur de la vignette", link.color, link.textColor).appendTo(parentDiv);
          
              /**Show When */
              //this.linkChoice("mulc-sw", "Choisissez quand le lien doit être visible", 0, {value:"always", text:"Tout le temps"}, {value:"internet", text:"Depuis internet"}, {value:"intranet", text:"Depuis l'intranet"}).appendTo(parentDiv);
@@ -93,7 +92,7 @@
                  if (!$("#mulc-url")[0].reportValidity())
                      return;
 
-                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal);//.callUpdate().then(() => this.hide());
+                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal, $("#mulc-color-text").val());//.callUpdate().then(() => this.hide());
                  this.setLoading();
 
                  link.callUpdate(task, action, addonConfig).then((result) => {
@@ -125,6 +124,131 @@
  
          return this;
      }
+
+     setMultiLinkEditor(link = null, task = "useful_links", action = "update", addonConfig= null, afterCreate = null)
+     {
+        if (link === null) link = new MelMultiLink();
+
+        this.setTitle(link.id === "" ? "Création d'un nouveau multi-lien" : "Modification d'un multi-lien");
+
+        if (this.modal.contents.find("#mul-editor2").length > 0) this.modal.contents.find("#mul-editor2").remove();
+
+        if (this.modal.contents.find("#mul-editor2").length === 0)
+        {
+            const isSubLink = link.isSubLink();
+            const isPersonal = link.personal;
+            const redstar = '<span style=color:red>*</span> ';
+            let it = 1;
+            let parentDiv = $(`<div id="mul-editor2">${redstar}Champs obligatoires</div>`);
+            /**Id */
+            $(`<input type="hidden" id="mulc-id" value="${link.id}" />`).appendTo(parentDiv);
+            /**subItem */
+            $(`<input type="hidden" id="mulc-subItem" value="${isSubLink}" />`).appendTo(parentDiv);
+
+            if (isSubLink)
+            {
+                /**Sub Id */
+                $(`<input type="hidden" id="mulc-subid" value="${link.subItem.id}" />`).appendTo(parentDiv);
+                /**SubParent */
+                $(`<input type="hidden" id="mulc-subparent" value="${link.subItem.parentId}" />`).appendTo(parentDiv);
+            }
+            /**Title */
+            this.linkText("mulc-title", "Nom de la vignette", "Titre de la vignette", link.title, true, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(parentDiv);
+
+            /**Couleur */
+            this.linkColor("mulc-color", "Couleur de la vignette", link.color, link.textColor).appendTo(parentDiv);
+
+            let button = $('<button class="btn btn-secondary mel-button no-button-margin">Ajouter un lien <span class="plus icon-mel-plus"></span></button>')
+            .click(() => {
+                const valit = it;
+                const val =  Enumerable.from(link.links).insert(0, [null]).toArray()[it] ?? {
+                    key:'',
+                    value:''
+                };
+                /**Title */
+                this.linkText(`mulc-title-${it}`, `Nom du lien N°${it}`, `Titre du lien N°${it}`, val.value, true, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(divLinks);
+                if (it !== 1)
+                {
+                    $(`label[for="mulc-title-${it}"]`).append($(`<button class='btn btn-danger mel-button no-button-margin' style="float:right">Supprimer</button>`).click(() => {
+                        $(`#mulc-title-${valit}`).remove();
+                        $(`label[for="mulc-title-${valit}"]`).remove();
+                        $(`#mulc-url-${valit}`).remove();
+                        $(`label[for="mulc-url-${valit}"]`).remove();
+                        $(`#separate-${valit}`).remove();
+
+                        let comp = 0;
+                        for (let index = 1; index < it; ++index) {
+                            if ($(`#mulc-title-${index}`).length === 0)
+                            {
+                                ++comp;
+                            }
+                            else {
+                                if (comp > 0)
+                                {
+                                    $(`#mulc-title-${index}`).attr('id', `mulc-title-${index-comp}`);
+                                    $(`label[for="mulc-title-${index}"]`).attr('for', `mulc-title-${index-comp}`).find('.title-label-text').html(`Nom du lien N°${index-comp}`);
+                                    $(`#mulc-url-${index}`).attr('id', `mulc-url-${index-comp}`);
+                                    $(`label[for="mulc-url-${index}"]`).attr('for', `mulc-url-${index-comp}`).find('.title-label-text').html(`Adresse du lien N°${index-comp}`);
+                                    $(`#separate-${index}`).attr('id', `separate-${index-comp}`);
+                                }
+                            }
+                            
+                        }
+                    }));
+                }
+                /**Url */
+                this.linkText(`mulc-url-${it}`, `Adresse du lien N°${it}`, "URL", val.key, false, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(divLinks);
+                $(`<separate id="separate-${it}"></separate>`).css('margin', 0).css('margin-top', '15px').appendTo(divLinks);
+                ++it;
+            }).css('margin-top', '15px');
+            button.appendTo(parentDiv);
+
+            let divLinks = $('<div></div>').appendTo(parentDiv);
+
+            this.setBody("");
+            this.modal.appendToBody(parentDiv);
+
+            if (link.links.length === 0) button.click();
+            else {
+                for (const key in link.links) {
+                    if (Object.hasOwnProperty.call(link.links, key)) {
+                        const element = link.links[key];
+                        button.click();
+                    }
+                }
+            }
+
+            this.modal.footer.querry.html("").append($(`<button id="mulc-button" class="mel-button btn btn-secondary">${link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>'}</button>`).on("click", () => {
+                event.preventDefault();
+                if (!$("#mulc-title")[0].reportValidity())
+                    return;
+                let link = new MelMultiLink($("#mulc-id").val(), $("#mulc-title").val(), '', "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal, $("#mulc-color-text").val());
+
+                for (let index = 1;  $(`#mulc-title-${index}`).length > 0; ++index) {
+                    if (!$(`#mulc-url-${index}`)[0].reportValidity()) return;
+                    if (!$(`#mulc-title-${index}`)[0].reportValidity()) return;
+                    link.addLink($(`#mulc-url-${index}`).val(), $(`#mulc-title-${index}`).val());
+                }
+
+                this.setLoading();
+
+                link.callUpdate(task, action, addonConfig).then((result) => {
+                   if (afterCreate !== null)
+                       afterCreate(result);
+                   else {
+
+                     if (result === true)
+                         window.location.reload();
+                     else
+                         this.setMultiLinkEditor(link);
+                   }
+
+                });
+            }));
+        }
+
+        return this;
+     }
  
      /**
       * 
@@ -153,6 +277,28 @@
  
          return this;
      }
+
+     drawChoice(title, ...choices)
+     {
+        this.setTitle(title);
+
+        let html = $('<div style="display:flex;"></div>');
+        for (const key in choices) {
+            if (Object.hasOwnProperty.call(choices, key)) {
+                const element = choices[key];
+                html.append(`
+                <button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block ${element.icon}"></span>${rcmail.gettext(element.name, "mel_useful_link")}</button>
+                `).click(() => {
+                    element.click();
+                });
+            }
+        }
+
+        this.setBody(html);
+        this.modal.footer.querry.html("");
+ 
+        return this;
+     }
  
      /**
       * Troncate un texte trop grand.
@@ -171,7 +317,7 @@
      linkText(id, title, placeholder, value, isFirst = false, attrib = null)
      {
          const redstar = '<span style=color:red>*</span> '
-         let $label = $(`<label for="${id}" class="span-mel t1 ${isFirst ? "first" : ""}">${title}${redstar}</label>`);
+         let $label = $(`<label for="${id}" class="span-mel t1 ${isFirst ? "first" : ""}"><span class="title-label-text">${title}</span>${redstar}</label>`);
          let $input = $(`<input id="${id}" class="form-control input-mel required" required type="text" placeholder="${placeholder}" value="${value}" />`);
 
          if (!!attrib)
@@ -187,12 +333,20 @@
          return $label.add($input);
      }
 
-     linkColor(id, title, value, attrib = null)
+     linkColor(id, title, value, textValue = '#363A5B', attrib = null)
      {
-        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
+        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input title="Couleur de la vignette" style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
         .find("input").on("input", (e) => {
             $(e.currentTarget).parent().find(".link-test-color").css("background-color", $(e.currentTarget).val());
         });
+
+        let $textColorInput = $(`<input title="Couleur du texte" style="max-width:50px;display:inline-block" id="${id}-text" class="link-color-before form-control input-mel required" required type="color" value="${textValue}" />`).on('input',(e) => {
+            $(e.currentTarget).parent().find(".link-test-color")[0].style.setProperty('color', $(e.currentTarget).val(), 'important');//.css("color", $(e.currentTarget).val()+'!important');
+        });
+
+        $input.parent().find('.link-test-color')[0].style.setProperty('color', textValue, 'important');
+
+        $input.after($textColorInput);
 
         if (!!attrib) 
         {
@@ -254,10 +408,11 @@
          this.subItem = null;
          this.hidden = false;
          this.color = "#F0F0F0";
+         this.textColor= '#363A5b';
          this.personal = true;
      }
  
-     init(id, title, link, from, showWhen, hidden, subItem = null, color = "#F0F0F0", personal = true)
+     init(id, title, link, from, showWhen, hidden, subItem = null, color = "#F0F0F0", personal = true, textColor = '#363A5b')
      {
          this.id = id;
          this.title = title;
@@ -268,8 +423,9 @@
          this.subItem = subItem;
          this.personal = personal;
 
-         if (color !== undefined && color !== null && color != "")
-            this.color = color;
+         if (color !== undefined && color !== null && color != "") this.color = color;
+
+         this.textColor = textColor || this.textColor;
      }
 
      isSubLink()
@@ -505,7 +661,8 @@
              _from:this.from,
              _sw:this.showWhen,
              _is_sub_item:this.isSubLink(),
-             _color:(this.color === "#F0F0F0" ? null : this.color)
+             _color:(this.color === "#F0F0F0" ? null : this.color),
+             _text_color:(this.color === "#F0F0F0" && this.textColor === '#363A5b' ? null : this.textColor)
          };
  
          if (config._is_sub_item)
@@ -584,19 +741,66 @@
          });
      }
  
-     static from(id)
-     {
-         id = $(`#link-block-${id}`);
- 
-         const isSubItem = id.data("subitem");
+    static from(id)
+    {
+        id = $(`#link-block-${id}`);
 
-         let subLink = null;
-         if (isSubItem)
-            subLink = new MelSubLink(id.data("subid"), id.data("subparent"));
+        const isSubItem = id.data("subitem");
 
-         return new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink, id.data("color"), id.data('personal'));
-     }
+        let subLink = null;
+        if (isSubItem) subLink = new MelSubLink(id.data("subid"), id.data("subparent"));
+
+        let link = new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink, id.data("color"), id.data('personal'), id.data("textcolor"));
+        if ((id.data("links") || false) !== false)
+        {
+            link = MelMultiLink.fromLink(link);
+            link.links = {};
+            const datas = JSON.parse(id.data("links").replace(/¤/g, '"'));
+
+            for (const key in datas) {
+                if (Object.hasOwnProperty.call(datas, key)) {
+                    const element = datas[key];
+                    link.addLink(key, element);
+                }
+            }
+        }
+
+        return link;
+    }
  
+ }
+
+ class MelMultiLink extends MelLink {
+    constructor(...args)
+    {
+        super(...args);
+    }
+
+    setup()
+    {
+        super.setup();
+        this.links = {};
+    }
+
+    addLink(link, title) {
+        this.links[link] = title;
+        this.link = JSON.stringify(this.links);
+    }
+
+    toLink() {
+        let link = Object.assign(new MelLink(), this);
+        link.links = undefined;
+        link.link = this.links[0] ?? '';
+        return link;
+    }
+
+    static fromLink(link)
+    {
+        link = Object.assign(new MelMultiLink(), link);
+        const tmpLink = link.link;
+        link.addLink(tmpLink, link.title);
+        return link;
+    }
  }
 
  class MelSubLink

@@ -1862,7 +1862,7 @@ class mel_workspace extends rcube_plugin
 
             if (!isset($default_value) || !isset($default_value[$index]))
             {
-                if (!isset($default_value)) $default_value = [];
+                if (!isset($default_value) || $default_value === '') $default_value = [];
 
                 $default_value[$index] = [
                     'mode' => 'default'
@@ -3513,6 +3513,11 @@ class mel_workspace extends rcube_plugin
         $showWhen = rcube_utils::get_input_value("_sw", rcube_utils::INPUT_GPC);
         $wid = rcube_utils::get_input_value("_workspace_id", rcube_utils::INPUT_GPC);
         $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
+        $textColor = rcube_utils::get_input_value("_text_color", rcube_utils::INPUT_GPC);
+
+        $isMultiLink = is_array($link) || strpos($link, '{') !== false;
+
+        if ($isMultiLink) $link = json_decode($link);
 
         $workspace = $this->get_workspace($wid);
         $config = $this->get_object($workspace, self::LINKS);
@@ -3524,9 +3529,9 @@ class mel_workspace extends rcube_plugin
         {
             $id = $this->rc->plugins->get_plugin('mel_useful_link')->generate_id($title, $config);
             if (is_array($config))
-                $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
+                $config[$id] = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color,  $textColor, $isMultiLink)->serialize();
             else
-                $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color)->serialize();
+                $config->$id = mel_useful_link::createLink($id, $title, $link, false, $showWhen, time(), $from, $color,  $textColor, $isMultiLink)->serialize();
         
             self::notify($workspace, (driver_mel::gi()->getUser()->name." a ajouté le lien : $title"), str_replace('<wsp/>', $workspace->title, $this->gettext("mel_workspace.notification_content2")),                  [    [
                 'href' => "./?_task=workspace&_action=workspace&_page=links&_uid=".$workspace->uid,
@@ -3538,7 +3543,16 @@ class mel_workspace extends rcube_plugin
         else {
             $newLink = mel_useful_link::toLink($config->$id);
             $newLink->title = $title;
-            $newLink->link = $link;
+
+            if ($isMultiLink)
+            {
+                $newLink->links = [];
+                foreach ($link as $key => $value) {
+                    $newLink->addLink($key, $value);
+                }
+            }else             $newLink->link = $link;
+
+
             $newLink->from = $from;
             $newLink->showWhen = $showWhen;
             $newLink->color = $color;

@@ -2380,6 +2380,7 @@ html.layout-small .hide-on-small {
   display: flex;
   background-color: #0000006e;
   transition: all 0.1s ease-in;
+  cursor: pointer;
 }
 .multilink-sub-copy {
   text-decoration: none!important;

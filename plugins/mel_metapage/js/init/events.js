@@ -1403,6 +1403,8 @@ if (rcmail && window.mel_metapage)
         }
       }
 
+      $(document).on('focus', (e) => console.log(e));
+
 
       $(document).ready(async () => {
         if (rcmail.env.task === "mail" && (rcmail.env.action === "" || rcmail.env.action === "index"))

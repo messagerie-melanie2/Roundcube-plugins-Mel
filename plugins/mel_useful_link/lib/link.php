@@ -101,9 +101,14 @@ class mel_link
         $html = $rc->output->parse("mel_useful_link.template", $exit, $write);
         $html = str_replace("<id/>", $this->configKey, $html);
         try {
-            $html = str_replace("<link/>", $this->link, $html);
+            if (is_string($this->link)) $html = str_replace("<link/>", $this->link, $html);
+            else {
+                $html = str_replace("<link/>", 'ERROR', $html);
+                $this->link = 'ERROR';
+            }
         } catch (\Throwable $th) {
             $html = str_replace("<link/>", 'ERROR', $html);
+            $this->link = 'ERROR';
         }
         $html = str_replace("<reduced_link/>", $this->get_reduced_link(), $html);
         $html = str_replace("<create_date/>", $this->createDate === null ? "" : "Ajouté le ".$this->localEn(strftime("%d %B %Y",$this->createDate)), $html);
@@ -320,7 +325,7 @@ class mel_multi_link extends mel_link{
 
     private function external()
     {
-        return '<span style="margin-left:5px" class="icon-mel-external"></span>';
+        return '<span style="margin-left:5px;align-self: end;margin-bottom: 10px;" class="icon-mel-external"></span>';
     }
 
     private function copy($link)
@@ -357,10 +362,10 @@ class mel_multi_link extends mel_link{
                     'title' => "Ouvrir dans le bnum"
                 ], $value);
             }
-            else $html .= html::div(['style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px'], $value.' via '.html::tag('a', [
+            else $html .= html::div(['style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;'], $value.' via '.html::tag('a', [
                 'href' => $key,
                 'title' => "Ouvrir dans un nouvel onglet"
-            ], $rl).$this->external()));
+            ], $rl)).$this->external());
         }
         $html .= $separate;
 

@@ -241,8 +241,8 @@
                         try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                         update_badge(new_count, mel_metapage.Ids.menu.badge.mail);
                         parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
-                        if ($(".mail-frame").length > 0)
-                            Title.update($(".mail-frame")[0].id);
+                        // if ($(".mail-frame").length > 0)
+                        //     Title.update($(".mail-frame")[0].id);
 
                         return (async() => {})();
                     }
@@ -271,8 +271,8 @@
                                 try_add_round(".mail ", mel_metapage.Ids.menu.badge.mail);
                                 update_badge(data, mel_metapage.Ids.menu.badge.mail);
                                 parent.rcmail.triggerEvent(mel_metapage.EventListeners.mails_updated.after);
-                                if ($(".mail-frame").length > 0)
-                                    Title.update($(".mail-frame")[0].id);
+                                // if ($(".mail-frame").length > 0)
+                                //     Title.update($(".mail-frame")[0].id);
                             } catch (ex) {
                                 console.error(ex);
                                 //rcmail.display_message("Une erreur est survenue lors de la synchronisation.", "error")
@@ -422,6 +422,7 @@
 
                     refreshWorkspaceCloudNotification();
                     rcmail.triggerEvent("mel_metapage_refresh");
+                    console.log('current', document.activeElement);
                 }
             };
 

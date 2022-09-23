@@ -591,6 +591,7 @@ class mel_useful_link extends rcube_plugin
 
     function child_old_links_to_new_link(&$config, $id)
     {
+      return;
         //On vérifie si il y a des liens enfants
         if ($config[$id]["buttons"] !== null || $config[$id]["links"] !== null)
         {
@@ -880,11 +881,11 @@ class mel_useful_link extends rcube_plugin
 
   }
 
-  public static function createLink($id, $title, $link, $pin, $showWhen, $createDate, $from = "always", $color = null)
+  public static function createLink($id, $title, $link, $pin, $showWhen, $createDate, $from = "always", $color = null,$textColor = null, $multilink = false)
   {
     include_once "lib/link.php";
 
-    return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen, null, true, $color);
+    return mel_link::create($id, $title, $link, $pin, $createDate, $from, $showWhen, null, true, $color, $multilink, $textColor);
   }
 
 

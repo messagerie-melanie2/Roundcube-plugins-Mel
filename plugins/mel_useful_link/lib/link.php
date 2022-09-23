@@ -100,7 +100,11 @@ class mel_link
     {
         $html = $rc->output->parse("mel_useful_link.template", $exit, $write);
         $html = str_replace("<id/>", $this->configKey, $html);
-        $html = str_replace("<link/>", $this->link, $html);
+        try {
+            $html = str_replace("<link/>", $this->link, $html);
+        } catch (\Throwable $th) {
+            $html = str_replace("<link/>", 'ERROR', $html);
+        }
         $html = str_replace("<reduced_link/>", $this->get_reduced_link(), $html);
         $html = str_replace("<create_date/>", $this->createDate === null ? "" : "Ajouté le ".$this->localEn(strftime("%d %B %Y",$this->createDate)), $html);
         $html = str_replace("<title/>", $this->title, $html);

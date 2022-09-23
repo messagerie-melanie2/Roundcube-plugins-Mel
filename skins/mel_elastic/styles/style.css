@@ -857,7 +857,6 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
   opacity: 1;
   font-style: italic;
 }
-.fc-event.cal-event-status-telework .fc-title,
 .fc-event.cal-event-status-free .fc-title {
   font-weight: normal;
   opacity: 1;
@@ -2376,4 +2375,24 @@ html.layout-small .hide-on-small {
 }
 .falselink {
   cursor: pointer;
+}
+.multilink-sub {
+  display: flex;
+  background-color: #0000006e;
+  transition: all 0.1s ease-in;
+}
+.multilink-sub-copy {
+  text-decoration: none!important;
+  transition: all 0.1s ease-in;
+  display: block;
+  align-self: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: var(--white);
+}
+.multilink-sub:hover {
+  background-color: #ffffff70;
+}
+.multilink-sub:hover .multilink-sub-copy {
+  color: black!important;
 }

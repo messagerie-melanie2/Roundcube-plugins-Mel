@@ -76,7 +76,7 @@
              this.linkText("mulc-url", "Adresse de la page", "URL", link.link, false, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(parentDiv);
 
              /**Couleur */
-             this.linkColor("mulc-color", "Couleur de la vignette", link.color).appendTo(parentDiv);
+             this.linkColor("mulc-color", "Couleur de la vignette", link.color, link.textColor).appendTo(parentDiv);
          
              /**Show When */
              //this.linkChoice("mulc-sw", "Choisissez quand le lien doit être visible", 0, {value:"always", text:"Tout le temps"}, {value:"internet", text:"Depuis internet"}, {value:"intranet", text:"Depuis l'intranet"}).appendTo(parentDiv);
@@ -156,7 +156,7 @@
             this.linkText("mulc-title", "Nom de la vignette", "Titre de la vignette", link.title, true, (!isPersonal ? {disabled:'disabled'} : null)).appendTo(parentDiv);
 
             /**Couleur */
-            this.linkColor("mulc-color", "Couleur de la vignette", link.color).appendTo(parentDiv);
+            this.linkColor("mulc-color", "Couleur de la vignette", link.color, link.textColor).appendTo(parentDiv);
 
             let button = $('<button class="btn btn-secondary mel-button no-button-margin">Ajouter un lien <span class="plus icon-mel-plus"></span></button>')
             .click(() => {
@@ -341,8 +341,10 @@
         });
 
         let $textColorInput = $(`<input title="Couleur du texte" style="max-width:50px;display:inline-block" id="${id}-text" class="link-color-before form-control input-mel required" required type="color" value="${textValue}" />`).on('input',(e) => {
-            $(e.currentTarget).parent().find(".link-test-color").css("color", $(e.currentTarget).val());
+            $(e.currentTarget).parent().find(".link-test-color")[0].style.setProperty('color', $(e.currentTarget).val(), 'important');//.css("color", $(e.currentTarget).val()+'!important');
         });
+
+        $input.parent().find('.link-test-color')[0].style.setProperty('color', textValue, 'important');
 
         $input.after($textColorInput);
 

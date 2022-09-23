@@ -33,14 +33,14 @@ function CreateLink()
         return;
 
     GetLinkPopUp().drawChoice('', {
-        icon:'',
+        icon:'icon-mel-link',
         name:'Créer un lien unique',
         click:() => {
             GetLinkPopUp().setLinkEditor(new MelLink()).show();
         }
     },
     {
-        icon:'',
+        icon:'icon-mel-grid',
         name:'Créer un multi-lien',
         click:() => {
             GetLinkPopUp().setMultiLinkEditor().show();

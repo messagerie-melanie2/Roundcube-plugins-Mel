@@ -203,7 +203,7 @@ class mel_link
 
             $datas = $item['links'] ?? $item["buttons"];
             foreach ($datas as $key => $value) {
-                $link->addLink($value['url'], $value['title']);
+                $link->addLink($value['url'], $key);
             }
         }
 

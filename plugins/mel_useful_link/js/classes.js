@@ -131,13 +131,15 @@
 
         this.setTitle(link.id === "" ? "Création d'un nouveau multi-lien" : "Modification d'un multi-lien");
 
+        if (this.modal.contents.find("#mul-editor2").length > 0) this.modal.contents.find("#mul-editor2").remove();
+
         if (this.modal.contents.find("#mul-editor2").length === 0)
         {
             const isSubLink = link.isSubLink();
             const isPersonal = link.personal;
             const redstar = '<span style=color:red>*</span> ';
             let it = 1;
-            let parentDiv = $(`<div id="mul-editor">${redstar}Champs obligatoires</div>`);
+            let parentDiv = $(`<div id="mul-editor2">${redstar}Champs obligatoires</div>`);
             /**Id */
             $(`<input type="hidden" id="mulc-id" value="${link.id}" />`).appendTo(parentDiv);
             /**subItem */
@@ -280,7 +282,7 @@
      {
         this.setTitle(title);
 
-        let html = $('<div></div>');
+        let html = $('<div style="display:flex;"></div>');
         for (const key in choices) {
             if (Object.hasOwnProperty.call(choices, key)) {
                 const element = choices[key];

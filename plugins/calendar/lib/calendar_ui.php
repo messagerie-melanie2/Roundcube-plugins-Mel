@@ -308,6 +308,15 @@ class calendar_ui
                     'action' => 'feed'
                 ]
             );
+            $prop['feedfreebusyurl'] = $this->cal->get_freebusy_url(array('_cal' => $this->cal->ical_feed_hash($id) . '.ics'));
+            if ($prop['owner'] == $this->cal->rc->get_user_name()) {
+              $prop['showfeedcalendarurl'] = true;
+              $prop['feedcalendarurl'] = $this->cal->get_feed_url($id);
+            }
+            else {
+              $prop['showfeedcalendarurl'] = false;
+              $prop['feedcalendarurl'] = null;
+            }
 
             $jsenv[$id] = $prop;
         }

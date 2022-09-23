@@ -965,6 +965,23 @@ $("#rcmfd_new_category").keypress(function(event) {
             $success = $this->driver->delete_all_events($cal);
             $reload = true;
             break;
+        // MANTIS 3896: Partage public et protégé de l'agenda
+        case "check_feed_url":
+          if ($cal['checked'] == 'true') {
+            $result = $this->driver->add_calendar_public_key($cal['id'], base64_encode(uniqid($cal['id'].'_calhashkey_')));
+          }
+          else {
+            $result = $this->driver->delete_calendar_public_key($cal['id']);
+          }
+          if ($result) {
+            $this->rc->output->command('plugin.show_feed_url', array('id' => $cal['id'], 'url' => $this->get_feed_url($cal['id'])));
+            return;
+          }
+          else {
+            $this->rc->output->show_message($this->gettext('errorsaving'), 'error');
+            return;
+          }
+          break;
         case "subscribe":
             if (!$this->driver->subscribe_calendar($cal)) {
                 $this->rc->output->show_message($this->gettext('errorsaving'), 'error');
@@ -4068,6 +4085,57 @@ $("#rcmfd_new_category").keypress(function(event) {
         $param += ['task' => 'calendar'];
         return $this->rc->url($param, true, true);
     }
+
+    /**
+   * PAMELA - Build an absolute URL with the given parameters
+   */
+  public function get_freebusy_url($param = array())
+  {
+    // PAMELA - Nouvelle URL
+    $url = '/public/freebusy/';
+    $delm = '?';
+
+    foreach ($param as $key => $val) {
+      if ($val !== '' && $val !== null) {
+        $par  = $key;
+        $url .= $delm.urlencode($par).'='.urlencode($val);
+        $delm = '&';
+      }
+    }
+
+    return rcube_utils::resolve_url($url);
+  }
+
+  /**
+   * PAMELA - Build an absolute URL with the given parameters
+   */
+  public function get_feed_url($calendar)
+  {
+    // Récupération de la clé
+    $_hashkey = $this->driver->get_calendar_public_key($calendar);
+    if (!isset($_hashkey)) {
+      // Pas de clé, donc pas d'url publique
+      return null;
+    }
+
+    // PAMELA - Nouvelle URL
+    $url = 'public/feed/';
+    $delm = '?';
+    $_cal = $this->ical_feed_hash($calendar) . '.ics';
+
+    $param = array('_cal' => $_cal, '_key' => $_hashkey);
+
+    foreach ($param as $key => $val) {
+      if ($val !== '' && $val !== null) {
+        $par  = $key;
+        $url .= $delm.urlencode($par).'='.urlencode($val);
+        $delm = '&';
+      }
+    }
+
+    return rcube_utils::resolve_url($url);
+  }
+
 
     public function ical_feed_hash($source)
     {

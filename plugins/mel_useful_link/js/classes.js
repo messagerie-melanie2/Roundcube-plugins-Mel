@@ -92,7 +92,7 @@
                  if (!$("#mulc-url")[0].reportValidity())
                      return;
 
-                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal);//.callUpdate().then(() => this.hide());
+                 const link = new MelLink($("#mulc-id").val(), $("#mulc-title").val(), $("#mulc-url").val(), "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal, $("#mulc-color-text").val());//.callUpdate().then(() => this.hide());
                  this.setLoading();
 
                  link.callUpdate(task, action, addonConfig).then((result) => {
@@ -218,11 +218,9 @@
 
             this.modal.footer.querry.html("").append($(`<button id="mulc-button" class="mel-button btn btn-secondary">${link.id === "" ? 'Ajouter<span class="plus icon-mel-plus"></span>' : 'Modifier<span class="plus icon-mel-pencil"></span>'}</button>`).on("click", () => {
                 event.preventDefault();
-                debugger;
                 if (!$("#mulc-title")[0].reportValidity())
                     return;
-
-                let link = new MelMultiLink($("#mulc-id").val(), $("#mulc-title").val(), '', "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal);
+                let link = new MelMultiLink($("#mulc-id").val(), $("#mulc-title").val(), '', "always", "always",  false,($("#mulc-subItem").val() == "true" ? new MelSubLink($("#mulc-subid").val(), $("#mulc-subparent").val()) : null), $("#mulc-color").val()/*$("#mulc-sw").val()*/, isPersonal, $("#mulc-color-text").val());
 
                 for (let index = 1;  $(`#mulc-title-${index}`).length > 0; ++index) {
                     if (!$(`#mulc-url-${index}`)[0].reportValidity()) return;
@@ -233,7 +231,6 @@
                 this.setLoading();
 
                 link.callUpdate(task, action, addonConfig).then((result) => {
-                    debugger;
                    if (afterCreate !== null)
                        afterCreate(result);
                    else {
@@ -334,12 +331,18 @@
          return $label.add($input);
      }
 
-     linkColor(id, title, value, attrib = null)
+     linkColor(id, title, value, textValue = '#363A5B', attrib = null)
      {
-        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
+        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input title="Couleur de la vignette" style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
         .find("input").on("input", (e) => {
             $(e.currentTarget).parent().find(".link-test-color").css("background-color", $(e.currentTarget).val());
         });
+
+        let $textColorInput = $(`<input title="Couleur du texte" style="max-width:50px;display:inline-block" id="${id}-text" class="link-color-before form-control input-mel required" required type="color" value="${textValue}" />`).on('input',(e) => {
+            $(e.currentTarget).parent().find(".link-test-color").css("color", $(e.currentTarget).val());
+        });
+
+        $input.after($textColorInput);
 
         if (!!attrib) 
         {
@@ -401,10 +404,11 @@
          this.subItem = null;
          this.hidden = false;
          this.color = "#F0F0F0";
+         this.textColor= '#363A5b';
          this.personal = true;
      }
  
-     init(id, title, link, from, showWhen, hidden, subItem = null, color = "#F0F0F0", personal = true)
+     init(id, title, link, from, showWhen, hidden, subItem = null, color = "#F0F0F0", personal = true, textColor = '#363A5b')
      {
          this.id = id;
          this.title = title;
@@ -415,8 +419,9 @@
          this.subItem = subItem;
          this.personal = personal;
 
-         if (color !== undefined && color !== null && color != "")
-            this.color = color;
+         if (color !== undefined && color !== null && color != "") this.color = color;
+
+         this.textColor = textColor || this.textColor;
      }
 
      isSubLink()
@@ -652,7 +657,8 @@
              _from:this.from,
              _sw:this.showWhen,
              _is_sub_item:this.isSubLink(),
-             _color:(this.color === "#F0F0F0" ? null : this.color)
+             _color:(this.color === "#F0F0F0" ? null : this.color),
+             _text_color:(this.color === "#F0F0F0" && this.textColor === '#363A5b' ? null : this.textColor)
          };
  
          if (config._is_sub_item)
@@ -740,7 +746,7 @@
         let subLink = null;
         if (isSubItem) subLink = new MelSubLink(id.data("subid"), id.data("subparent"));
 
-        let link = new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink, id.data("color"), id.data('personal'));
+        let link = new MelLink(id.data("id"), id.data("title"), id.data("link"), id.data("from"), id.data("showWhen"), id.data("hidden"), subLink, id.data("color"), id.data('personal'), id.data("textcolor"));
         if ((id.data("links") || false) !== false)
         {
             link = MelMultiLink.fromLink(link);

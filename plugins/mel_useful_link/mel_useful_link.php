@@ -429,6 +429,7 @@ class mel_useful_link extends rcube_plugin
       $forceUpdate = rcube_utils::get_input_value("_force", rcube_utils::INPUT_GPC) ?? false;
       $forceUpdate = $forceUpdate === "true";
       $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
+      $textColor = rcube_utils::get_input_value("_text_color", rcube_utils::INPUT_GPC);
 
       $isMultiLink = is_array($link) || strpos($link, '{') !== false;
 
@@ -490,6 +491,7 @@ class mel_useful_link extends rcube_plugin
         }
 
         $melLink->color = $color;
+        $melLink->textColor = $textColor;
 
         $config[$id] = $melLink->serialize();
         $this->rc->user->save_prefs(array('personal_useful_links' => $config));

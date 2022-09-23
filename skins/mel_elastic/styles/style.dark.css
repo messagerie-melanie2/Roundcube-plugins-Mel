@@ -695,9 +695,34 @@ html.dark-mode .task-tasks #layout-list .header
     background-color: #3e4c59 !important;
 }
 
-html.dark-mode .link-block.square_div > .contents
+/* html.dark-mode .link-block.square_div > .contents
 {
     color:#1F2933;
+} */
+html.dark-mode .link-block .tools a.roundbadge {
+	background-color: #fff !important;
+    transition: all 0.1s ease-in;
+    color:var(--main-text-color)!important;
+}
+html.dark-mode .link-block .tools a.roundbadge:hover {
+	background-color: #1F2933 !important;
+    color:white!important;
+}
+html.dark-mode .link-block .tools a.roundbadge.eye:hover::before{
+    color:white!important;
+}
+
+html.dark-mode  .multilink-sub {
+    background-color: var(--white);
+}
+html.dark-mode  .multilink-sub-copy {
+    color: var(--main-text-color);
+}
+html.dark-mode  .multilink-sub:hover {
+    background-color: #1F2933;
+}
+html.dark-mode  .multilink-sub:hover .multilink-sub-copy {
+    color: white!important;
 }
 
 html.dark-mode #worspace-avatar-a span,

@@ -46,13 +46,14 @@ separate{
 
         a {
             &.roundbadge {
-                color:var(--roundbadge-bkcg-color-on-block);
+                color:white;//var(--roundbadge-bkcg-color-on-block);
+                background-color: #0000006e !important;
                 transition: @mel-default-animation;
                 margin-left: 5px;
 
                 &:hover{
-                    color:white;
-                    background-color: var(--roundbadge-bkcg-color-on-block);
+                    color:var(--roundbadge-bkcg-color-on-block);
+                    background-color: white!important;
                     text-decoration: none;
                 }
 
@@ -60,6 +61,7 @@ separate{
                     &:hover {
                         &::before{
                             .eye_hover();
+                            color:var(--roundbadge-bkcg-color-on-block)!important;
                         }
                     }
                 }
@@ -155,10 +157,25 @@ button {
 }
 
 .multilink-sub{
-    padding: 5px;
+    display: flex;
+    background-color: #0000006e;
+    transition: @mel-default-animation;
 
     &-copy{
-        margin-right:5px;
         text-decoration: none!important;
+        transition: @mel-default-animation;
+        display: block;
+        align-self: center;
+        padding-left: 5px;
+        padding-right: 5px;
+        color: var(--white);
+    }
+
+    &:hover{
+        background-color: #ffffff70;
+
+        .multilink-sub-copy{
+            color: black!important;
+        }
     }
 }

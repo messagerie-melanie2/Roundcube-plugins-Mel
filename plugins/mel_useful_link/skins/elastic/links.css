@@ -19,18 +19,20 @@ body.task-useful_links separate {
   bottom: 15px;
 }
 .link-block .tools a.roundbadge {
-  color: var(--roundbadge-bkcg-color-on-block);
+  color: white;
+  background-color: #0000006e !important;
   transition: all 0.1s ease-in;
   margin-left: 5px;
 }
 .link-block .tools a.roundbadge:hover {
-  color: white;
-  background-color: var(--roundbadge-bkcg-color-on-block);
+  color: var(--roundbadge-bkcg-color-on-block);
+  background-color: white!important;
   text-decoration: none;
 }
 .link-block .tools a.roundbadge.eye:hover::before {
   color: white!important;
   content: "\e961" !important;
+  color: var(--roundbadge-bkcg-color-on-block) !important;
 }
 .link-block .tools a.roundbadge.crossed-eye::before {
   content: "\e961" !important;
@@ -80,9 +82,22 @@ html body #mulsah span::before {
   background-color: var(--roundbadge-bkcg-color-tools) !important;
 }
 .multilink-sub {
-  padding: 5px;
+  display: flex;
+  background-color: #0000006e;
+  transition: all 0.1s ease-in;
 }
 .multilink-sub-copy {
-  margin-right: 5px;
   text-decoration: none!important;
+  transition: all 0.1s ease-in;
+  display: block;
+  align-self: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: var(--white);
+}
+.multilink-sub:hover {
+  background-color: #ffffff70;
+}
+.multilink-sub:hover .multilink-sub-copy {
+  color: black!important;
 }

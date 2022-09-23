@@ -77,6 +77,7 @@ class mel_link
     public $personal;
     public $hidden;
     public $color;
+    public $textColor;
 
     protected function __construct() {
         $this->subItem = false;
@@ -111,7 +112,12 @@ class mel_link
         $html = str_replace("<hiddenTitle/>", $this->hidden ? "Afficher le lien" : "Cacher le lien", $html);
         $html = str_replace("<hidden\>", $this->hidden ? " hidden-link " : "", $html);
 
-        $html = str_replace("<color/>", $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.($this->hidden ? "6b" : "") : "", $html);
+        $style = $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.';'.($this->hidden ? "6b" : "") : "";
+        
+        if (isset($this->textColor)) $style.= 'color:'.$this->textColor.';';
+        else if (isset($this->color) && !isset($this->textColor)) $style.= 'color:#363A5b;';
+
+        $html = str_replace("<color/>", $style, $html);
 
         if (false && !$this->personal)
             $html = str_replace("<personal/>", ' style="display:none;" ', $html);
@@ -133,6 +139,7 @@ class mel_link
         '" data-id="'.$this->configKey.
         '" data-isHidden="'.$this->hidden.
         '" data-color="'.$this->color.
+        '" data-textcolor="'.$this->textColor.
         '" data-subItem="'.($isSubItem ? "true" : "false").
         '" data-personal="'.($this->personal ? 'true' : 'false').'"';
 
@@ -157,7 +164,7 @@ class mel_link
     }
 
 
-    public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0, $subItemData = null, $isPersonal = true, $color = null, $multiLink = false)
+    public static function create($id, $title, $link, $pin, $createDate, $from = 0, $showWhen = 0, $subItemData = null, $isPersonal = true, $color = null, $multiLink = false, $textColor = null)
     {
         $mel_link = ($multiLink ? mel_multi_link::empty() : new mel_link());
         $mel_link->title = $title;
@@ -169,6 +176,7 @@ class mel_link
         $mel_link->subItemData = $subItemData;
         $mel_link->personal = $isPersonal;
         $mel_link->color = $color;
+        $mel_link->textColor = $textColor;   
 
         if ($multiLink) $mel_link->links = $link;
         else $mel_link->link = $link;
@@ -208,7 +216,10 @@ class mel_link
                 $link->subItemData = $item["subItemData"];
 
              if ($item["color"] !== null)
-                 $link->personal = $item["color"];
+                 $link->color = $item["color"];
+
+            if ($item["textColor"] !== null)
+                 $link->textColor = $item["textColor"];
                 
         } catch (\Throwable $th) {
             $itemLink = $item->links ?? $item->link;
@@ -222,6 +233,9 @@ class mel_link
 
              if ($item->color !== null)
                  $link->color = $item->color;
+
+            if ($item->textColor !== null)
+                 $link->textColor = $item->textColor;
         }
 
         return $link;
@@ -327,10 +341,10 @@ class mel_multi_link extends mel_link{
                     'title' => "Ouvrir dans le bnum"
                 ], $value);
             }
-            else $html .= html::div(['class' => 'multilink-sub'], $this->copy($key).$value.' via '.html::tag('a', [
+            else $html .= html::div(['style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px'], $value.' via '.html::tag('a', [
                 'href' => $key,
                 'title' => "Ouvrir dans un nouvel onglet"
-            ], $rl).$this->external());
+            ], $rl).$this->external()));
         }
         $html .= $separate;
 
@@ -354,7 +368,12 @@ class mel_multi_link extends mel_link{
         $html = str_replace("<hiddenTitle/>", $this->hidden ? "Afficher le lien" : "Cacher le lien", $html);
         $html = str_replace("<hidden\>", $this->hidden ? " hidden-link " : "", $html);
 
-        $html = str_replace("<color/>", $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.($this->hidden ? "6b" : "") : "", $html);
+        $style = $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.';'.($this->hidden ? "6b" : "") : "";
+        
+        if (isset($this->textColor)) $style.= 'color:'.$this->textColor.';';
+        else if (isset($this->color) && !isset($this->textColor)) $style.= 'color:#363A5b;';
+
+        $html = str_replace("<color/>", $style, $html);
 
         if (false && !$this->personal)
             $html = str_replace("<personal/>", ' style="display:none;" ', $html);

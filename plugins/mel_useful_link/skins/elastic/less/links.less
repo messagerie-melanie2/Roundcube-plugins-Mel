@@ -1,0 +1,164 @@
+//compress:false
+@import "../../../../../skins/mel_elastic/styles/less/main.less";
+
+.before() {
+    font-family: DWP;
+	font-weight: normal;
+}
+
+.before_important(){
+    .before() !important;
+}
+
+.mulb() {
+    margin-top:0;
+	float: right;
+}
+
+.eye_hover()
+{
+    color:white!important;
+	content: "\e961"!important;
+}
+
+
+separate{
+    .task-useful_links &{
+        body&{
+            border-top-color: var(--separate-light);
+            border-top-style: solid;
+            border-top-width: thin;
+            margin: 50px 200px;
+            display: block;
+        }
+    }
+}
+
+.link-block {
+    .pin {
+        top:15px;
+    }
+
+    .tools {
+        position: absolute;
+        right:15px;
+        bottom: 15px;
+
+        a {
+            &.roundbadge {
+                color:var(--roundbadge-bkcg-color-on-block);
+                transition: @mel-default-animation;
+                margin-left: 5px;
+
+                &:hover{
+                    color:white;
+                    background-color: var(--roundbadge-bkcg-color-on-block);
+                    text-decoration: none;
+                }
+
+                &.eye{
+                    &:hover {
+                        &::before{
+                            .eye_hover();
+                        }
+                    }
+                }
+
+                &.crossed-eye{
+                    &::before{
+                        content: "\e961"!important;
+
+                        &:hover{
+                            color:white!important;
+                            content: "\e962"!important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+button {
+    &.btn{
+        &.icon-mel-{
+            &copy{
+                .before_important();
+                content: "\e95c"!important;
+            }
+            &pencil{
+                .before_important();
+                content: "\e95c"!important;
+            }
+        }
+    }
+}
+
+#mulsah {
+    .mulb();
+
+    body & {
+        html &{
+            span {
+                &::before{
+                    color:white!important;
+                }
+            }
+        }
+    }
+
+    &.eye{
+        &:hover{
+            span{
+                &::before{
+                    .eye_hover();
+                }
+            }
+        }
+    }
+
+    &.crossed-eye{
+        &:hover{
+            span{
+                &::before{
+                    color:white!important;
+                    content: "\e962"!important;
+                } 
+            }
+        }
+    }
+}
+
+#mulba{
+    .mulb();
+}
+
+.hidden-link{
+        &.tak,
+        .tools &{
+            display: none!important;
+        }
+
+}
+
+.link-test-color
+{
+	margin-left:30px;
+	padding: 15px;
+}
+
+.tools  {
+    .roundbadge
+    {
+        background-color: var(--roundbadge-bkcg-color-tools)!important;
+    }
+}
+
+.multilink-sub{
+    padding: 5px;
+
+    &-copy{
+        margin-right:5px;
+        text-decoration: none!important;
+    }
+}

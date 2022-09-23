@@ -430,6 +430,10 @@ class mel_useful_link extends rcube_plugin
       $forceUpdate = $forceUpdate === "true";
       $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
 
+      $isMultiLink = is_array($link) || strpos($link, '{') !== false;
+
+      if ($isMultiLink) $link = json_decode($link);
+
       if ($id === "")
         $id = null;
 
@@ -471,7 +475,7 @@ class mel_useful_link extends rcube_plugin
         if ($id === null || $isSubItem)
         {
           $id = $this->generate_id($title, $config);
-          $melLink = mel_link::create($id, $title, $link, false, time(), $from, $showWhen);
+          $melLink = mel_link::create($id, $title, $link, false, time(), $from, $showWhen, null, true, null, $isMultiLink);
         }
         else 
         {

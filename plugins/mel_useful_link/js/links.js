@@ -23,7 +23,8 @@ function EditLink(id)
 
 function ModifyLink(link)
 {
-    GetLinkPopUp().setLinkEditor(link).show();
+    if (!!link.links) GetLinkPopUp().setMultiLinkEditor(link).show(); 
+    else GetLinkPopUp().setLinkEditor(link).show();
 }
 
 function CreateLink()
@@ -31,7 +32,20 @@ function CreateLink()
     if (rcmail.busy)
         return;
 
-    GetLinkPopUp().setLinkEditor(new MelLink()).show();
+    GetLinkPopUp().drawChoice('', {
+        icon:'',
+        name:'Créer un lien unique',
+        click:() => {
+            GetLinkPopUp().setLinkEditor(new MelLink()).show();
+        }
+    },
+    {
+        icon:'',
+        name:'Créer un multi-lien',
+        click:() => {
+            GetLinkPopUp().setMultiLinkEditor().show();
+        }
+    }).show();//.setLinkEditor(new MelLink()).show();
 }
 
 function SearchLinks(search)

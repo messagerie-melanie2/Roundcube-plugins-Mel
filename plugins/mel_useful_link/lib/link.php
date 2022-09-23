@@ -112,7 +112,7 @@ class mel_link
         $html = str_replace("<hiddenTitle/>", $this->hidden ? "Afficher le lien" : "Cacher le lien", $html);
         $html = str_replace("<hidden\>", $this->hidden ? " hidden-link " : "", $html);
 
-        $style = $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.';'.($this->hidden ? "6b" : "") : "";
+        $style = $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.($this->hidden ? "6b;" : ";") : "";
         
         if (isset($this->textColor)) $style.= 'color:'.$this->textColor.';';
         else if (isset($this->color) && !isset($this->textColor)) $style.= 'color:#363A5b;';
@@ -186,7 +186,8 @@ class mel_link
 
     public static function fromOldPortail($key, $item, $subItemData = null)
     {
-        return self::create($key, 
+        $isMultiLink = $item["links"] != null || $item["buttons"] !== null;
+        $link = self::create($key, 
         $item["name"], 
         $item["url"] === null ? $item["href"] : $item["url"], 
         false, 
@@ -195,7 +196,18 @@ class mel_link
         strpos($key, "intranet") !== false ? "intranet" : (strpos($key, "internet") !== false ? "internet" : "always"),
         $subItemData,
         $item["personal"],
-        $item["color"] === null || $item["color"] === "default" ? null : $item["color"]);
+        $item["color"] === null || $item["color"] === "default" ? null : $item["color"], $isMultiLink);
+
+        if ($isMultiLink) {
+            $link->links = [];
+
+            $datas = $item['links'] ?? $item["buttons"];
+            foreach ($datas as $key => $value) {
+                $link->addLink($value['url'], $value['title']);
+            }
+        }
+
+        return $link;
     }
 
     public static function fromConfig($item)
@@ -368,7 +380,7 @@ class mel_multi_link extends mel_link{
         $html = str_replace("<hiddenTitle/>", $this->hidden ? "Afficher le lien" : "Cacher le lien", $html);
         $html = str_replace("<hidden\>", $this->hidden ? " hidden-link " : "", $html);
 
-        $style = $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.';'.($this->hidden ? "6b" : "") : "";
+        $style = $this->color !== null ? "border-color:".$this->color.";background-color:".$this->color.($this->hidden ? "6b;" : ";") : "";
         
         if (isset($this->textColor)) $style.= 'color:'.$this->textColor.';';
         else if (isset($this->color) && !isset($this->textColor)) $style.= 'color:#363A5b;';

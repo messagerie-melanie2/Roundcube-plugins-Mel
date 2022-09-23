@@ -352,47 +352,17 @@ class mel_useful_link extends rcube_plugin
               else if (!mel::is_internal() && strpos($key, "intranet") !== false)
                 continue;
 
-              if ($value["url"] === null || $value["url"] === "" || $value["links"] !== null || $value["buttons"] !== null)
-              {
-                if ($value["links"] !== null || $value["buttons"] !== null)
-                {
-                  foreach ($value[($value["links"] !== null ? "links" : "buttons")] as $keyLink => $link) {
+              // if ($value["url"] === null || $value["url"] === "")
+              // {
+              //   if ($value["links"] !== null || $value["buttons"] !== null)
+              //   {
+              //     if ($value["url"] === null || $value["url"] === "")
+              //       continue;
 
-                    if (!$showHidden && $hiddened->check_old($keyLink, $key))
-                      continue;
-
-                    if ($link["color"] === null)
-                      $link["color"] = $value["color"];
-
-                    $link["name"] = $value["name"]." - $keyLink";
-
-                    $tmpKey = $this->generate_id($keyLink, $links);
-                    $link["personal"] = $value["personal"];
-                    $tmpLink = mel_link::fromOldPortail($tmpKey, $link, [
-                      "parent" => $key,
-                      "id" => $keyLink
-                    ]);
-
-                    if (!$tmpLink->personal)
-                    {
-                      mel_link::updateDefaultConfig($tmpLink, $paramDefault);
-                    }
-
-                    $tmpLink->hidden = $hiddened->check_old($keyLink, $key);
-
-                    if (end($links) != $tmpLink)  
-                      $links[$tmpKey] = $tmpLink;
-
-                  }
-
-                  if ($value["url"] === null || $value["url"] === "")
-                    continue;
-
-                }
-                else
-                  continue;
-
-              }
+              //   }
+              //   else
+              //     continue;
+              // }
 
               if (!$showHidden && $hiddened->check_old($key))
                 continue;

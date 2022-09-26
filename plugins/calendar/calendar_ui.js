@@ -3338,7 +3338,7 @@ function rcube_calendar_ui(settings)
           $('#calendarcaldavurl', dialog).hide();
         }
 
-        $('#calfeedurl').val(calendar.feedurl).select();
+        $('#calfeedurl').val(calendar.feedurl);
         // PAMELA
         $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
 
@@ -3358,7 +3358,7 @@ function rcube_calendar_ui(settings)
         }
 
         rcmail.simple_dialog(dialog, rcmail.gettext('showurl', 'calendar'), null, {
-          open: function() { $('#calfeedurl', dialog).val(calendar.feedurl).select(); },
+          open: function() { $('#calfeedurl', dialog).val(calendar.feedurl); },
           cancel_button: 'close'
         });
       }
@@ -4329,7 +4329,6 @@ if (rcmail.env.devel_mode && window.less) {
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   // let's go
   var cal = new rcube_calendar_ui($.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings));
-  console.log(cal);
 
   //PAMELA - Accès en dehors du plugin
   window.ui_cal = cal;

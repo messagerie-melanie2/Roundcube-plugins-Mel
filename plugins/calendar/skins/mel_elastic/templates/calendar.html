@@ -424,57 +424,101 @@
 </div>
 
 <div id="calendarurlbox" class="popupmenu">
-  <p>
-    <roundcube:label name="calendar.showurldescription" />
-  </p>
-
-  <div class="input-group mb-3">
-    <input type="text" id="calfeedurl" class="form-control calendar_url" readonly>
-    <div class="input-group-append">
-      <input type="button" id="button_calfeedurl" class="btn btn-secondary" value="<roundcube:label name='calendar.copied_url_default' />" title="<roundcube:label name='calendar.copied_url_title' />"
-        onclick="copy_calendar_url('calfeedurl')" />
+  <div id="first_url">
+    <div id="first" class="d-flex justify-content-between" onclick="collapse_url_block('first')" style="cursor:pointer;">
+      <span style="user-select:none">Proposer mes disponibilité</span>
+      <span id="icon-first" class="icon_url icon-mel-chevron-up"></span>
     </div>
-  </div>
+    <hr>
+    <div id="block-first" class="block mb-5">
 
+      <p>
+        <roundcube:label name="calendar.freebusyurldescription" />
+      </p>
+      <div class="input-group mb-3">
+        <input type="text" id="calfreebusyurl" class="form-control calendar_url" readonly>
+        <div class="input-group-append">
+          <input type="button" id="button_calfreebusyurl" class="btn btn-secondary"
+            value="<roundcube:label name='calendar.copied_url_default' />"
+            title="<roundcube:label name='calendar.copied_url_title' />"
+            onclick="copy_calendar_url('calfreebusyurl')" />
 
-  <!-- PAMELA -->
-  <p>
-    <roundcube:label name="calendar.freebusyurldescription" />
-  </p>
-  <div class="input-group mb-3">
-    <input type="text" id="calfreebusyurl" class="form-control calendar_url" readonly>
-    <div class="input-group-append">
-      <input type="button" id="button_calfreebusyurl" class="btn btn-secondary" value="<roundcube:label name='calendar.copied_url_default' />" title="<roundcube:label name='calendar.copied_url_title' />"
-        onclick="copy_calendar_url('calfreebusyurl')" />
-
-    </div>
-  </div>
-  <!-- <textarea id="calfreebusyurl" rows="2" readonly="readonly"></textarea> -->
-  <div id="ppublicfeedurl">
-    <p><label>
-        <input type="checkbox" id="checkpublicfeedurl" name="checkpublicfeedurl"
-          onclick="rcmail.command('calendar-check-feed-url')">
-        <roundcube:label name="calendar.calendarfeedurldescription" />
-      </label></p>
-    <div class="input-group mb-3">
-      <input type="text" id="calpublicfeedurl" class="form-control calendar_url" readonly>
-      <div class="input-group-append">
-        <input type="button" id="button_calpublicfeedurl" class="btn btn-secondary" value="<roundcube:label name='calendar.copied_url_default' />" title="<roundcube:label name='calendar.copied_url_title' />"
-          onclick="copy_calendar_url('calpublicfeedurl')" />
+        </div>
       </div>
     </div>
-    <!-- <textarea id="calpublicfeedurl" rows="2" readonly="readonly"></textarea> -->
   </div>
-  <div id="calendarcaldavurl" style="display:none; margin-top:1rem">
-    <p>
-      <roundcube:label name="calendar.caldavurldescription" html="yes" />
-    </p>
-    <!-- <textarea id="caldavurl" rows="2" readonly="readonly"></textarea> -->
-    <div class="input-group mb-3">
-      <input type="text" id="caldavurl" class="form-control calendar_url" readonly>
-      <div class="input-group-append">
-        <input type="button" id="button_caldavurl" class="btn btn-secondary" value="<roundcube:label name='calendar.copied_url_default' />" title="<roundcube:label name='calendar.copied_url_title' />"
-          onclick="copy_calendar_url('caldavurl')" />
+  <div id="second_url">
+    <div id="second" class="d-flex justify-content-between" onclick="collapse_url_block('second')" style="cursor:pointer;">
+      <span style="user-select:none">Partager mon agenda</span>
+      <span id="icon-second" class="icon_url icon-mel-chevron-down"></span>
+    </div>
+    <hr>
+    <div id="block-second" class="block mb-5" style="display: none;">
+      <div id="ppublicfeedurl">
+        <p>
+          <label class="switch" onclick="rcmail.command('calendar-check-feed-url')">
+            <input type="checkbox" id="checkpublicfeedurl">
+            <span class="slider round"></span>
+          </label>
+          Partager mon agenda
+        <p>
+          <roundcube:label name="calendar.calendarfeedurldescription" />
+
+        </p>
+        <div class="input-group mb-3">
+          <input type="text" id="calpublicfeedurl" class="form-control calendar_url" readonly>
+          <div class="input-group-append">
+            <input type="button" id="button_calpublicfeedurl" class="btn btn-secondary"
+              value="<roundcube:label name='calendar.copied_url_default' />"
+              title="<roundcube:label name='calendar.copied_url_title' />"
+              onclick="copy_calendar_url('calpublicfeedurl')" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div id="third_url">
+    <div id="third" class="d-flex justify-content-between" onclick="collapse_url_block('third')" style="cursor:pointer;">
+      <span style="user-select:none">Afficher mon agenda dans une page web</span>
+      <span id="icon-third" class="icon_url icon-mel-chevron-down"></span>
+    </div>
+    <hr>
+    <div id="block-third" class="block mb-5" style="display: none;">
+
+    </div>
+  </div> -->
+  <div id="fourth_url">
+    <div id="fourth" class="d-flex justify-content-between" onclick="collapse_url_block('fourth')" style="cursor:pointer;">
+      <span style="user-select:none">Options avancées</span>
+      <span id="icon-fourth" class="icon_url icon-mel-chevron-down"></span>
+    </div>
+    <hr>
+    <div id="block-fourth" class="block mb-5" style="display: none;">
+      <div id="calendarcaldavurl" style="display:none; margin-top:1rem">
+        <p>
+          <roundcube:label name="calendar.caldavurldescription" html="yes" />
+        </p>
+        <div class="input-group mb-3">
+          <input type="text" id="caldavurl" class="form-control calendar_url" readonly>
+          <div class="input-group-append">
+            <input type="button" id="button_caldavurl" class="btn btn-secondary"
+              value="<roundcube:label name='calendar.copied_url_default' />"
+              title="<roundcube:label name='calendar.copied_url_title' />" onclick="copy_calendar_url('caldavurl')" />
+          </div>
+        </div>
+      </div>
+      <hr>
+      <p>
+        <roundcube:label name="calendar.showurldescription" />
+      </p>
+
+      <div class="input-group mb-3">
+        <input type="text" id="calfeedurl" class="form-control calendar_url" readonly>
+        <div class="input-group-append">
+          <input type="button" id="button_calfeedurl" class="btn btn-secondary"
+            value="<roundcube:label name='calendar.copied_url_default' />"
+            title="<roundcube:label name='calendar.copied_url_title' />" onclick="copy_calendar_url('calfeedurl')" />
+        </div>
       </div>
     </div>
   </div>

@@ -271,5 +271,27 @@ function copy_calendar_url(input_id) {
 
     $('.ui-dialog #button_' + input_id).val(rcmail.labels['calendar.copied_url']);
   }
+}
 
+function collapse_url_block(id) {
+  $('.ui-dialog .block').each(function () {
+    if ($(this).attr('id') != 'block-' + id) {
+      $(this).hide();
+    }
+  });
+
+  $('.ui-dialog #block-' + id).toggle();
+
+  if ($('.ui-dialog #icon-' + id).attr('class') === 'icon_url icon-mel-chevron-up') {
+    $('.ui-dialog #icon-' + id).attr('class', 'icon_url icon-mel-chevron-down')
+  }
+  else {
+    $('.ui-dialog #icon-' + id).attr('class', 'icon_url icon-mel-chevron-up')
+  }
+
+  $('.ui-dialog .icon_url').each(function () {
+    if ($(this).attr('id') != 'icon-' + id) {
+      $(this).attr('class', 'icon_url icon-mel-chevron-down')
+    }
+  });
 }

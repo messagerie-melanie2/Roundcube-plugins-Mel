@@ -3067,9 +3067,11 @@ function rcube_calendar_ui(settings)
     // MANTIS 3896: Partage public et protégé de l'agenda
     this.calendar_check_feed_url = function(calendar)
     {
-      var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
-      rcmail.http_post('calendar', { action:'check_feed_url', c:{ id:calendar.id, checked:$('.ui-dialog #checkpublicfeedurl').prop('checked') } }, lock);
-      return true;
+      setTimeout(() => {        
+        var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
+        rcmail.http_post('calendar', { action:'check_feed_url', c:{ id:calendar.id, checked:$('.ui-dialog #checkpublicfeedurl').prop('checked') } }, lock);
+        return true;
+      }, 200);
     };
 
     // MANTIS 3896: Partage public et protégé de l'agenda

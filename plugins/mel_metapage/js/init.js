@@ -422,7 +422,6 @@
 
                     refreshWorkspaceCloudNotification();
                     rcmail.triggerEvent("mel_metapage_refresh");
-                    console.log('current', document.activeElement);
                 }
             };
 

@@ -317,18 +317,18 @@ class mel_useful_link extends rcube_plugin
         //  ]];
         //  $this->rc->user->save_prefs(array('portail_personal_items' => $dbug));
 
-        $items = /*[
-          "website_links616d3bb2cf99e" => [
-            "name" => "Test",
-            "type" => "website_links",
-            "personal" => true,
-            "links" => [
-              "Reddit" => ["url" => "https://reddit.com"],
-              "¤This is swag" => ["url" => "https://minecraft-france.fr"]
-            ]
-          ]
-            ];// $this->rc->config->get('portail_personal_items', []);
-            $this->rc->user->save_prefs(array('portail_personal_items' => $items));*/
+        // $items = [
+        //   "website_links616d3bb2cf99e" => [
+        //     "name" => "Test",
+        //     "type" => "website_links",
+        //     "personal" => true,
+        //     "links" => [
+        //       "Reddit" => ["url" => "https://reddit.com"],
+        //       "¤This is swag" => ["url" => "https://minecraft-france.fr"]
+        //     ]
+        //   ]
+        //     ];// $this->rc->config->get('portail_personal_items', []);
+        //     $this->rc->user->save_prefs(array('portail_personal_items' => $items));
 
          $items = $this->getCardsConfiguration($user->dn);
          $items = array_merge($items, $this->rc->config->get('portail_items_list', []));
@@ -395,7 +395,7 @@ class mel_useful_link extends rcube_plugin
       $from = rcube_utils::get_input_value("_from", rcube_utils::INPUT_GPC);
       $showWhen = rcube_utils::get_input_value("_sw", rcube_utils::INPUT_GPC);
       $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC);//_is_sub_item
-      $isSubItem = $isSubItem === "true";
+      $isSubItem = false;
       $forceUpdate = rcube_utils::get_input_value("_force", rcube_utils::INPUT_GPC) ?? false;
       $forceUpdate = $forceUpdate === "true";
       $color = rcube_utils::get_input_value("_color", rcube_utils::INPUT_GPC);
@@ -422,10 +422,11 @@ class mel_useful_link extends rcube_plugin
         include_once "lib/link.php";
 
         //Suppression de l'ancien lien 
-        if ($config[$id] !== null && !$isSubItem)
+        if ($config[$id] !== null)
         {
-          $this->child_old_links_to_new_link($config, $id);
+          //$this->child_old_links_to_new_link($config, $id);
           unset($config[$id]);
+          $id = null;
           $this->rc->user->save_prefs(array('portail_personal_items' => $config));
         }
         //Suppression des sous-items des anciens liens
@@ -443,7 +444,7 @@ class mel_useful_link extends rcube_plugin
         $config = $this->rc->config->get('personal_useful_links', []);
         $melLink;
         
-        if ($id === null || $isSubItem)
+        if ($id === null)
         {
           $id = $this->generate_id($title, $config);
           $melLink = mel_link::create($id, $title, $link, false, time(), $from, $showWhen, null, true, null, $isMultiLink);
@@ -523,7 +524,7 @@ class mel_useful_link extends rcube_plugin
 
       $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
       $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC) ?? false;
-      $isSubItem = $isSubItem === "true";
+      $isSubItem = false;
       $force = rcube_utils::get_input_value("_forced", rcube_utils::INPUT_GPC) ?? false;
       $force = $force === "true";
 
@@ -540,7 +541,7 @@ class mel_useful_link extends rcube_plugin
       if ($config[$id] !== null && !$isSubItem)
       {
 
-        $this->child_old_links_to_new_link($config, $id);
+        //$this->child_old_links_to_new_link($config, $id);
 
         $link = mel_link::fromOldPortail($id, $config[$id]);
         $link->pin = true;
@@ -632,13 +633,13 @@ class mel_useful_link extends rcube_plugin
     {
       $id = rcube_utils::get_input_value("_id", rcube_utils::INPUT_GPC);
       $isSubItem = rcube_utils::get_input_value("_is_sub_item", rcube_utils::INPUT_GPC) ?? false;
-      $isSubItem = $isSubItem === "true";
+      $isSubItem = false;
       
       //Supression chez les anciens
       $config = $this->rc->config->get('portail_personal_items', []);
       if ($config[$id] !== null && !$isSubItem)
       {
-        $this->child_old_links_to_new_link($config, $id);
+        //$this->child_old_links_to_new_link($config, $id);
         unset($config[$id]);
         $this->rc->user->save_prefs(array('portail_personal_items' => $config));
       }

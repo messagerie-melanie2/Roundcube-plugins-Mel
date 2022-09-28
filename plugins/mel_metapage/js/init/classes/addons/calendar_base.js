@@ -267,6 +267,7 @@ $(document).ready(() => {
 
         async getValue()
         {
+            debugger;
             let val = await super.getValue();
             
             if (this.$phoneNumber.val() !== '' && this.parentLocation.$visioState.val() === this.lastRoomName)
@@ -294,6 +295,7 @@ $(document).ready(() => {
 
         setValue(val)
         {
+            debugger;
             val = val.split(visio_phone_separator);
             const phone = val[0];
             const pin = val[1].replace(visio_phone_end, '');
@@ -349,7 +351,7 @@ $(document).ready(() => {
         {
             let val = await super.getValue();
 
-            if (!!this.visioPhone) this.visioPhone.update();
+            //if (!!this.visioPhone) this.visioPhone.update();
             
             switch (this.$type.val()) {
                 case 'intregrated': //visio intégrée

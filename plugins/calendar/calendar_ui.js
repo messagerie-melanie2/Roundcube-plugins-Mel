@@ -801,6 +801,8 @@ function rcube_calendar_ui(settings)
         $('#edit-internallocalchanges-warning')[(action != 'new' && me.has_attendees(event) && !(allow_invitations || (calendar.owner && me.is_organizer(event, calendar.owner))) ? 'show' : 'hide')]();
       }
       else {
+        //PAMELLA 	0006976: Persistance Message jaune
+        $('#edit-internallocalchanges-warning').hide();
         $('#edit-localchanges-warning')[(action != 'new' && me.has_attendees(event) && !(allow_invitations || (calendar.owner && me.is_organizer(event, calendar.owner))) ? 'show' : 'hide')]();
       }
 

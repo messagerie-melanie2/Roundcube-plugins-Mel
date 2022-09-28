@@ -587,13 +587,6 @@ if (rcmail && window.mel_metapage)
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
-
-        try {
-            $('#edit-internallocalchanges-warning').css('display', 'none');
-        } catch (error) {
-            
-        }
-
         if (datas.showed.start.format === undefined)
             datas.showed.start = moment(datas.showed.start);
 

@@ -190,3 +190,4 @@ $labels['successremoval'] = 'Cette tâche a été supprimée avec succès.';
 $labels['invalidlistproperties'] = 'Propriétés de la liste invalides ! Veuillez saisir un nom valide.';
 $labels['editlist'] = 'Modifier la liste';
 $labels['deletelist'] = 'Supprimer la liste';
+$labels['displayhidetaskinlist'] = 'Afficher/masquer les tâches de la liste';

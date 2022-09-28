@@ -284,7 +284,7 @@ class tasklist_ui
                     'name'    => '_list[]',
                     'value'   => $id,
                     'checked' => $prop['active'],
-                    'title'   => $this->plugin->gettext('activate'),
+                    'title'   => $this->plugin->gettext('displayhidetaskinlist'),
                     'aria-labelledby' => $label_id
             ));
 

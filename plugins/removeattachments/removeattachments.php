@@ -46,19 +46,19 @@ class removeattachments extends rcube_plugin {
    * to trigger the removal of the selected attachment
    */
   function attachmentmenu_removelink($p) {
-    if ($p['name'] == 'attachmentmenu') {
-      $link = $this->api->output->button(array(
-              'command' => 'plugin.removeattachments.removeone',
-              'classact' => 'removelink icon active',
-              'content' => html::tag('span', array(
-                      'class' => 'icon cross'
-              ), rcube::Q($this->gettext('removeattachments.removeattachment')))
-      ));
+    // if ($p['name'] == 'attachmentmenu') {
+    //   $link = $this->api->output->button(array(
+    //           'command' => 'plugin.removeattachments.removeone',
+    //           'classact' => 'removelink icon active',
+    //           'content' => html::tag('span', array(
+    //                   'class' => 'icon cross'
+    //           ), rcube::Q($this->gettext('removeattachments.removeattachment')))
+    //   ));
 
-      $p['content'] .= html::tag('li', array(
-              'role' => 'menuitem'
-      ), $link);
-    }
+    //   $p['content'] .= html::tag('li', array(
+    //           'role' => 'menuitem'
+    //   ), $link);
+    // }
 
     return $p;
   }

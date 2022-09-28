@@ -588,6 +588,12 @@ if (rcmail && window.mel_metapage)
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
 
+        try {
+            $('#edit-internallocalchanges-warning').css('display', 'none');
+        } catch (error) {
+            
+        }
+
         if (datas.showed.start.format === undefined)
             datas.showed.start = moment(datas.showed.start);
 
@@ -1097,7 +1103,6 @@ if (rcmail && window.mel_metapage)
                 $this.data("state", '').find("span").addClass("icon-mel-pencil").removeClass("icon-mel-close");
             }
         });
-
     }, 1);
 
     //Gestion des attachements

@@ -461,14 +461,20 @@ if (rcmail)
 
                         rcmail.set_busy(true, 'loading');
                         const new_uid = await mel_metapage.Functions.comment_mail(uid, comment_area.value, current_mail_box);
-                        rcmail.env.list_uid_to_select = new_uid;
                         modal.close();
                         modal = null;
                         rcmail.clear_messages();
                         rcmail.set_busy(false);
-                        rcmail.display_message('Mail commenté avec succès !', 'confirmation');
-                        rcmail.command('checkmail');
-                        //rcmail.message_list.select(new_uid)
+
+                        if (new_uid === false)
+                        {
+                            rcmail.display_message('Une erreur est survenue ! Impossible de commenter le mail...', 'error');
+                        }
+                        else {
+                            rcmail.env.list_uid_to_select = new_uid;
+                            rcmail.display_message('Mail commenté avec succès !', 'confirmation');
+                            rcmail.command('checkmail');
+                        }
                     })
                     modal.show();
                     rcmail.clear_messages();

@@ -1270,7 +1270,12 @@ const mel_metapage = {
                     _folder:folder
                 },
                 (datas) => {
-                    data = datas;
+                    if (datas == 'false')
+                    {
+                        rcmail.display_message('Une erreur est survenue!', 'error');
+                        data = false;
+                    }
+                    else data = datas;
                 }
             );
 

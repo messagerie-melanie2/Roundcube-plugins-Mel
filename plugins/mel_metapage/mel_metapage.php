@@ -2401,17 +2401,39 @@ class mel_metapage extends rcube_plugin
         }
         else 
         {
-            $test = explode('Subject:', $test);
-            $test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject:".$test[1];
+            $test = explode('Subject: ', $test);
+            $added = false;
+            $val = '';
+            foreach ($test as $key => $value) {
+                if ($value !== $test[0] && $value[(strlen($value) - 1)] === "\n" && !$added) 
+                {
+                    $val .= 'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject: ".$value;
+                    $added = true;
+                }
+                else $val .= 'Subject: '.$value;
+            }
+            $test = $val;
+
+            if ($added === false)
+            {
+                $test = false;
+            }
+
+            //$test = $test[0].'X-Suivimel: '.Mail_mimePart::encodeHeader('X-Suivimel', "Le ".date('d/m/Y H:i').', '.driver_mel::gi()->getUser(null, true, false, null, $user_mail)->name." a ajouté :¤¤$comment", RCUBE_CHARSET)."\nSubject:".$test[1];
         }
 
         $datas = $this->rc->imap->save_message($folder, $test, '', false, [], $headers_old->date);
-        $this->rc->imap->set_flag($datas, "~commente", $folder);
-        $this->rc->imap->set_flag($datas, 'SEEN', $folder);
-        $this->rc->storage->delete_message($message_uid, $folder);
 
+        if ($datas !== false)
+        {
+            $this->rc->imap->set_flag($datas, "~commente", $folder);
+            $this->rc->imap->set_flag($datas, 'SEEN', $folder);
+            $this->rc->storage->delete_message($message_uid, $folder);
 
-        echo $datas;
+            echo $datas;
+        }
+        else echo 'false';
+
         exit;
     }
 

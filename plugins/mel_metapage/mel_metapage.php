@@ -2391,7 +2391,7 @@ class mel_metapage extends rcube_plugin
         $this->rc->storage->set_folder($folder);
 
         $headers_old = $this->rc->storage->get_message_headers($message_uid, $folder);
-        $test = $this->rc->storage->get_raw_body($message_uid);//, $folder);
+        $test = $this->rc->storage->get_raw_body($message_uid);
         if (strpos($test, 'X-Suivimel') !== false)
         {
             $test = explode('X-Suivimel', $test);
@@ -2426,6 +2426,12 @@ class mel_metapage extends rcube_plugin
 
         if ($datas !== false)
         {
+            $message = new rcube_message($message_uid, $folder);
+
+            foreach ($message->headers->flags as $flag => $value) {
+                $this->rc->imap->set_flag($datas, strtoupper($flag), $folder);
+            }
+
             $this->rc->imap->set_flag($datas, "~commente", $folder);
             $this->rc->imap->set_flag($datas, 'SEEN', $folder);
             $this->rc->storage->delete_message($message_uid, $folder);

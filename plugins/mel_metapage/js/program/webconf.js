@@ -231,7 +231,7 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
                 text-align: center;">
                 Attention ! Vous utilisez un navigateur qui dégrade la qualité de la visioconférence. 
                 <br/>
-                Utilisez un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre <a href="tel:${this.key},${(await window.webconf_helper.phone.pin(this.key))}">téléphone</a>. 
+                Nous vous conseillons d'utiliser un autre <a href="microsoft-edge:${mel_metapage.Functions.url('webconf', null, misc_urls)}">navigateur</a> ou rejoignez depuis votre <a href="tel:${this.key};${(await window.webconf_helper.phone.pin(this.key))}#">téléphone</a>. 
                 <button style="margin-top:-12px" type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

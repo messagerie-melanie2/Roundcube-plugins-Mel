@@ -5,16 +5,29 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fullcalendar BNUM</title>
-
+  <title>Calendrier</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
-  <div id='calendar' style="max-height: 80vh;"></div>
+  <div id="banner" tabindex="-1"
+    class="flex z-50 justify-center px-4 w-full bg-gray-50 border border-b border-gray-200 py-2">
+    <div class="items-center md:flex">
+      <p class="text-lg font-medium text-gray-900 md:my-0">
+        Calendrier de <span id="owner_calendar"></span>
+      </p>
+    </div>
+  </div>
+
+  <div class="p-6 max-w-screen-2xl text-center">
+    <div class="calendar" data-bs-toggle="calendar" id="calendar" style="max-height: 85vh;"></div>
+  </div>
 </body>
 
 
 <link href='lib/main.min.css' rel='stylesheet' />
+<link href='lib/styles.css' rel='stylesheet' />
+
 <script src='lib/main.min.js'></script>
 
 <script src="lib/icalendar/ical.min.js"></script>

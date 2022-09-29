@@ -273,6 +273,26 @@ function copy_calendar_url(input_id) {
   }
 }
 
+function open_external_calendar(id) {
+  let url = new URL($('.ui-dialog #' + id).val());
+  url.searchParams.append('_name', window.btoa(rcmail.env.current_user.full))
+
+  if (url) {
+    switch (id) {
+      case 'calpublicfeedurl':
+        window.open(url.href.replace('feed', 'fullcalendar'), '_blank');
+        break;
+
+      case 'calfreebusyurl':
+        window.open(url.href.replace('freebusy', 'fullcalendar'), '_blank');
+        break;
+
+      default:
+        break;
+    }
+  }
+}
+
 function collapse_url_block(id) {
   $('.ui-dialog .block').each(function () {
     if ($(this).attr('id') != 'block-' + id) {

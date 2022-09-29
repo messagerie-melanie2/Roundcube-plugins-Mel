@@ -305,4 +305,8 @@ $labels['event private'] = "Évènement privé";
 $labels['copied_url'] = 'Lien copié !';
 $labels['copied_url_default'] = 'Copier le lien';
 $labels['copied_url_title'] = 'Cliquez-ici pour copier le lien de l\'agenda';
+$labels['open_in_web_page'] = 'Ouvrir dans une page web';
+$labels['open_in_web_page_title'] = 'Cliquez-ici pour ouvrir l\'agenda dans une page web';
+$labels['share_calendar'] = 'Partager mon agenda';
+$labels['share_calendar_checkbox'] = 'Partager mon agenda (recocher la case changera l\'url)';
 ?>

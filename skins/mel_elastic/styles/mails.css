@@ -97,7 +97,9 @@ html body div#layout-list .messagelist td.subject a,
 
 .messagelist .selected .subject,
 .messagelist .contextRow.context-source .subject,
-.messagelist .contextRow.context-source td.subject span.date, .messagelist .contextRow.context-source td.subject a, .messagelist .contextRow.context-source td.subject span.fromto
+.messagelist .contextRow.context-source td.subject span.date, 
+.messagelist .contextRow.context-source td.subject a, 
+.messagelist .contextRow.context-source td.subject span.fromto
 {
     color:white!important;
 }
@@ -150,8 +152,8 @@ table.messagelist td.subject span.msgicon.replied.forwarded::after{
 }
 
 table.messagelist .contextRow.context-source td.subject span.msgicon::before,
-table.messagelist .selected td.subject span.msgicon::before,
 table.messagelist .contextRow.context-source td.subject span.msgicon::after,
+table.messagelist .selected td.subject span.msgicon::before,
 table.messagelist .selected td.subject span.msgicon::after
 {
     color:white!important;
@@ -625,6 +627,7 @@ html body.task-mail.action-show #layout-content
     background-color: #2C3054;
 }
 
+/**@ROTOMECA**/
 .messagelist .unread.selected td.subject span.date, 
 .messagelist tr.unread.selected td.subject a, 
 .messagelist .unread.selected td.subject span.fromto, 

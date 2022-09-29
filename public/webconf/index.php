@@ -1,6 +1,6 @@
 <?php
 require_once '../lib/mel/mel.php';
-class Webconf extends Mel{
+class Webconf extends AMel{
     private $key;
     private $ariane;
     private $wsp;
@@ -32,5 +32,5 @@ class Webconf extends Mel{
         return $config['web_conf'] . ($config['web_conf'][strlen($config['web_conf']) - 1]  === '/' ? '' : '/');
     }
 }
-Mel::addPlugin(new Webconf());
-Mel::start();
+AMel::addPlugin(new Webconf());
+AMel::start();

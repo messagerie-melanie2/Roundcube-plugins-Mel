@@ -356,7 +356,7 @@ class mel_multi_link extends mel_link{
         foreach ($this->links as $key => $value) {
             $html .= $separate;
             $rl = $this->get_reduced_link_from($key);
-            if ($rl === 'BNUM') {
+            if (false && $rl === 'BNUM') {
                 $html = html::tag('a', [
                     'href' => '#',
                     'title' => "Ouvrir dans le bnum"
@@ -364,7 +364,8 @@ class mel_multi_link extends mel_link{
             }
             else $html .= html::div(['style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;'], $value.' via '.html::tag('a', [
                 'href' => $key,
-                'title' => "Ouvrir dans un nouvel onglet"
+                'title' => "Ouvrir dans un nouvel onglet",
+                'target' => '_blank'
             ], $rl)).$this->external());
         }
         $html .= $separate;

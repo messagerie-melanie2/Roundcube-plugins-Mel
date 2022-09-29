@@ -413,6 +413,11 @@ class mel_metapage extends rcube_plugin
             //$this->add_hook('contacts_autocomplete_after', [$this, 'contacts_autocomplete_after']);
             if ($this->rc->task === 'settings' && rcube_utils::get_input_value('_open_section', rcube_utils::INPUT_GET) !== null) $this->add_hook('ready', array($this, 'open_section'));
             $this->rc->output->set_env("webconf.base_url", $this->rc->config->get("web_conf"));
+            $this->rc->output->set_env('current_user', [
+                'name' => driver_mel::gi()->getUser()->firstname,
+                'lastname' => driver_mel::gi()->getUser()->lastname,
+                'full' => driver_mel::gi()->getUser()->fullname
+            ]);
 
             if (rcube_utils::get_input_value(self::FROM_KEY, rcube_utils::INPUT_GET) !== self::FROM_VALUE)
             {

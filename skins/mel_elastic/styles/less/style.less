@@ -291,7 +291,7 @@ ul.treelist{
 
         &.context-source:not(.selected){
             &>a{
-                color:#424564;
+                color:var(--alternate-text-color);
                 background-color: var(--secondary-bckg-color) !important;
             }
 
@@ -950,8 +950,8 @@ a{
 #compose-contacts {
     #annuaire-list{
         [aria-expanded="true"]{
-            background-color: white!important;
-            color:#424564!important;
+            background-color: var(--default-background)!important;
+            color:var(--alternate-text-color)!important;
         }
 
         html &{

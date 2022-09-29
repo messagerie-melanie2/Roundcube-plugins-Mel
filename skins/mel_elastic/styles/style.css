@@ -248,7 +248,7 @@ ul.treelist li.selected > a {
   color: var(--secondary-text-color);
 }
 ul.treelist li.context-source:not(.selected) > a {
-  color: #424564;
+  color: var(--alternate-text-color);
   background-color: var(--secondary-bckg-color) !important;
 }
 ul.treelist li.context-source:not(.selected) > div > a {
@@ -571,8 +571,8 @@ a.filename:hover .attachment-name {
   text-decoration: underline;
 }
 #compose-contacts #annuaire-list [aria-expanded="true"] {
-  background-color: white!important;
-  color: #424564 !important;
+  background-color: var(--default-background) !important;
+  color: var(--alternate-text-color) !important;
 }
 html #compose-contacts #annuaire-list.folder {
   color: #757575 !important;

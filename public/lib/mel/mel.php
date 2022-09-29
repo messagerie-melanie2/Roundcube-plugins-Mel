@@ -10,6 +10,9 @@ if (!defined('RCMAIL_CONFIG_DIR')) {
 if (!defined('RCUBE_LOCALIZATION_DIR')) {
     define('RCUBE_LOCALIZATION_DIR', INSTALL_PATH . 'program/localization/');
 }
+if (! defined('CONFIGURATION_APP_LIBM2')) {
+    define('CONFIGURATION_APP_LIBM2', 'roundcube');
+}
 
 define('RCUBE_INSTALL_PATH', INSTALL_PATH);
 define('RCUBE_CONFIG_DIR',  RCMAIL_CONFIG_DIR.'/');
@@ -20,6 +23,7 @@ require_once INSTALL_PATH.'program/lib/Roundcube/rcube_config.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/rcube_session.php';
 require_once INSTALL_PATH.'program/lib/Roundcube/session/php.php';
+//require_once INSTALL_PATH.'plugins/mel/mel.php';
 require_once '../lib/utils.php';
 abstract class Mel implements IMel {
     static $session;

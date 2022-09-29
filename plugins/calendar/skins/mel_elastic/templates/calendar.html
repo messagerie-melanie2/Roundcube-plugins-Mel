@@ -423,9 +423,10 @@
   <roundcube:object name="plugin.events_export_form" id="events-export-form" />
 </div>
 
-<div id="calendarurlbox" class="popupmenu">
+<div id="calendarurlbox" class="popupmenu" style="min-height: 350px;">
   <div id="first_url">
-    <div id="first" class="d-flex justify-content-between" onclick="collapse_url_block('first')" style="cursor:pointer;">
+    <div id="first" class="d-flex justify-content-between" onclick="collapse_url_block('first')"
+      style="cursor:pointer;">
       <span style="user-select:none">Proposer mes disponibilité</span>
       <span id="icon-first" class="icon_url icon-mel-chevron-up"></span>
     </div>
@@ -442,14 +443,22 @@
             value="<roundcube:label name='calendar.copied_url_default' />"
             title="<roundcube:label name='calendar.copied_url_title' />"
             onclick="copy_calendar_url('calfreebusyurl')" />
-
         </div>
       </div>
+      <hr>
+      <button type="button" id="button_fullcalendar_freebusy" class="btn btn-secondary"
+        title="<roundcube:label name='calendar.open_in_web_page_title' />" onclick="open_external_calendar('calfreebusyurl')">
+        <roundcube:label name='calendar.open_in_web_page' />
+        <span class="ml-2 icon-mel-external"></span>
+      </button>
     </div>
   </div>
   <div id="second_url">
-    <div id="second" class="d-flex justify-content-between" onclick="collapse_url_block('second')" style="cursor:pointer;">
-      <span style="user-select:none">Partager mon agenda</span>
+    <div id="second" class="d-flex justify-content-between" onclick="collapse_url_block('second')"
+      style="cursor:pointer;">
+      <span style="user-select:none">
+        <roundcube:label name='calendar.share_calendar' />
+      </span>
       <span id="icon-second" class="icon_url icon-mel-chevron-down"></span>
     </div>
     <hr>
@@ -460,12 +469,12 @@
             <input type="checkbox" id="checkpublicfeedurl">
             <span class="slider round"></span>
           </label>
-          Partager mon agenda
+          <roundcube:label name='calendar.share_calendar_checkbox' />
         <p>
           <roundcube:label name="calendar.calendarfeedurldescription" />
 
         </p>
-        <div class="input-group mb-3">
+        <div id="input_calpublicfeedurl" class="input-group mb-3">
           <input type="text" id="calpublicfeedurl" class="form-control calendar_url" readonly>
           <div class="input-group-append">
             <input type="button" id="button_calpublicfeedurl" class="btn btn-secondary"
@@ -474,6 +483,12 @@
               onclick="copy_calendar_url('calpublicfeedurl')" />
           </div>
         </div>
+        <hr>
+        <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"
+          title="<roundcube:label name='calendar.open_in_web_page_title' />" onclick="open_external_calendar('calpublicfeedurl')">
+          <roundcube:label name='calendar.open_in_web_page' />
+          <span class="ml-2 icon-mel-external"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -484,11 +499,19 @@
     </div>
     <hr>
     <div id="block-third" class="block mb-5" style="display: none;">
-
+      <div class="input-group mb-3">
+        <input type="text" id="fullcalendarurl" class="form-control calendar_url" readonly>
+        <div class="input-group-append">
+          <input type="button" id="button_fullcalendarurl" class="btn btn-secondary"
+            value="<roundcube:label name='calendar.copied_url_default' />"
+            title="<roundcube:label name='calendar.copied_url_title' />" onclick="copy_calendar_url('fullcalendarurl')" />
+        </div>
+      </div>
     </div>
   </div> -->
   <div id="fourth_url">
-    <div id="fourth" class="d-flex justify-content-between" onclick="collapse_url_block('fourth')" style="cursor:pointer;">
+    <div id="fourth" class="d-flex justify-content-between" onclick="collapse_url_block('fourth')"
+      style="cursor:pointer;">
       <span style="user-select:none">Options avancées</span>
       <span id="icon-fourth" class="icon_url icon-mel-chevron-down"></span>
     </div>

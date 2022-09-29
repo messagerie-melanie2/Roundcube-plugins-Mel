@@ -30,10 +30,10 @@ $(document).ready(() => {
 
     const login_id = 'login-alt-1';
 
-    if (rcmail.get_cookie('mel_cerbere') === '1')
-    {
-        $(`#${login_id}`).css('display', '');
-    }
+    // if (rcmail.get_cookie('mel_cerbere') === '1')
+    // {
+    //     $(`#${login_id}`).css('display', '');
+    // }
 
     document.onkeyup = function(e) {
         if (e.ctrlKey && e.altKey && e.shiftKey && e.which == 67) {

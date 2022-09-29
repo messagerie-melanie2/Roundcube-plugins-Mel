@@ -630,7 +630,7 @@ html.layout-small #compose-content {
 #message-model {
   width: 100%;
   text-align: center;
-  background-color: #f0f0f0;
+  background-color: var(--alternate-bckg-color);
   padding: 5px 0;
   border-radius: 5px;
 }
@@ -649,7 +649,7 @@ html.layout-small #compose-content {
 }
 html.touch .popover-overlay {
   z-index: 1000;
-  background-color: rgba(44, 54, 58, 0.5);
+  background-color: var(--overlay-background);
   position: absolute;
   top: 0;
   bottom: 0;
@@ -657,7 +657,7 @@ html.touch .popover-overlay {
 }
 .wlp_box {
   background-color: var(--main-bckg-color);
-  border: 2px solid #ffffff;
+  border: 2px solid var(--windows-like-popup-border);
   z-index: 2;
 }
 .wlp_box.fullscreen {
@@ -682,21 +682,21 @@ html.touch .wlp_box.fullscreen {
   margin-top: 5px;
   border-bottom: solid thin;
   color: var(--secondary-text-color);
-  border-color: var(--invisble);
+  border-color: var(--invisible);
 }
 .wlp-header h3 {
   margin-top: 5px;
   margin-bottom: 10px;
 }
 .wlp-header .mel-focus.focused {
-  box-shadow: 0 0 0 0.2rem #EDEDF069;
+  box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
 }
 .wlp-header .mel-button:focus {
-  box-shadow: 0 0 0 0.2rem #EDEDF069;
+  box-shadow: 0 0 0 0.2rem var(--windows-like-popup-button-focus);
 }
 .wlp-contents {
-  background-color: white;
-  border: solid 4px #363A5B;
+  background-color: var(--default-background);
+  border: solid 4px var(--windows-like-popup-border-content);
 }
 .wlp-minifieds {
   position: absolute;
@@ -716,7 +716,7 @@ html.touch .wlp-minifieds.auto {
   margin: 0;
   padding: 5px;
   background-color: var(--main-bckg-color);
-  border: solid thin #2C3054;
+  border: solid thin var(--windows-like-popup-border-header);
 }
 /** CALENDRIER **/
 /** JOKER **/
@@ -781,18 +781,18 @@ body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   background-color: var(--main-bckg-color) !important;
 }
 body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col {
-  color: #b3b6b7 !important;
+  color: var(--calendar-week-text-color) !important;
 }
 body.task-calendar .popup.ui-dialog-content #showcontacts {
   display: none;
 }
 .ui-datepicker.ui-widget-content a.ui-state-active {
   background-color: var(--roundbadge-bckg-color) !important;
-  color: #000 !important;
+  color: var(--calendar-highlight-text-color) !important;
 }
 .ui-datepicker.ui-widget-content a.ui-state-active.ui-state-highlight {
   background-color: var(--roundbadge-bckg-color) !important;
-  color: #000 !important;
+  color: var(--calendar-highlight-text-color) !important;
 }
 .ui-datepicker.ui-widget-content .ui-state-highlight {
   background-color: var(--secondary-bckg-color) !important;
@@ -800,7 +800,7 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
 }
 .ui-datepicker a.ui-state-active.ui-state-highlight {
   background-color: var(--roundbadge-bckg-color) !important;
-  color: #000 !important;
+  color: var(--calendar-highlight-text-color) !important;
 }
 .ui-datepicker th {
   padding: 0.7em 0 !important;
@@ -825,7 +825,7 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
   color: var(--secondary-text-color) !important;
 }
 #datepicker-onoff:hover {
-  background-color: #5870BF !important;
+  background-color: var(--alternate-bckg-color-2) !important;
 }
 #datepicker-onoff:focus {
   box-shadow: none;
@@ -915,21 +915,21 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
 /** FORM **/
 select.mel-select.form-control {
   border-radius: 60px;
-  background-color: #F0F0F0;
+  background-color: var(--alternate-bckg-color);
   border: none;
   color: var(--main-text-color);
 }
 /** CUSTOM HTML **/
 /* SEPARATE */
 separate {
-  border-top-color: #5C5F7B;
+  border-top-color: var(--separate);
   border-top-style: solid;
   border-top-width: thin;
   margin: 20px 30px;
 }
 separate.device {
   display: block;
-  border-color: white;
+  border-color: var(--separate-device);
   margin-bottom: 14px;
   margin-top: 9px;
   margin-left: 0;
@@ -992,7 +992,7 @@ framed_item > .framed_item {
   left: 5px;
 }
 #button-back-adressbook:hover {
-  color: #2C3054 !important;
+  color: var(--main-text-color) !important;
 }
 #button-back-adressbook2 {
   position: absolute;
@@ -1054,7 +1054,7 @@ framed_item > .framed_item {
   color: var(--secondary-text-color) !important;
 }
 .task-addressbook ul.treelist.iconized li div.treetoggle:hover {
-  text-shadow: 1px 3px 0px #0b0b0b;
+  text-shadow: 1px 3px 0px var(--text-shadow);
 }
 .searchgroup > centerspan {
   font-size: larger;
@@ -1100,13 +1100,13 @@ ul#directorylist.treelist li:hover > a {
   color: var(--secondary-text-color) !important;
 }
 #tasklist li.taskitem > div {
-  border-color: #9592b7 !important;
+  border-color: var(--tierciary-border-color) !important;
 }
 #tasklist li.taskitem > span {
-  border-color: #9592b7 !important;
+  border-color: var(--tierciary-border-color) !important;
 }
 ul#tasklist li.taskitem:nth-child(2n) {
-  background-color: #52588C;
+  background-color: var(--alternate-tierciary-bckg-color);
 }
 #tasklist span.date {
   color: var(--secondary-text-color) !important;
@@ -1235,7 +1235,7 @@ body.task-settings .scroller > .listing li:hover {
   line-height: 12px;
   -moz-border-radius: 15px;
   border-radius: 15px;
-  background-color: lightgray;
+  background-color: var(--roundbadge-default-bckg-color);
   text-align: center;
   font-weight: bold;
   font-size: 6px;
@@ -1250,8 +1250,8 @@ body.task-settings .scroller > .listing li:hover {
   font-size: initial;
 }
 .roundbadge.clear {
-  background-color: #F0F0F0;
-  border-color: #F0F0F0;
+  background-color: var(--alternate-bckg-color);
+  border-color: var(--alternate-bckg-color);
 }
 .roundbadge.dark {
   background-color: var(--main-bckg-color);
@@ -1289,7 +1289,7 @@ body.task-settings .scroller > .listing li:hover {
   width: 15px;
   line-height: 16px;
   font-size: 8px;
-  color: #2C3054;
+  color: var(--roundbadge-menu-bckg-color);
   left: -10px;
 }
 .layout-phone .roundbadge.menu {
@@ -1352,12 +1352,12 @@ body.task-mail .floating-action-buttons {
 .btn-primary {
   color: var(--tierciary-text-color);
   background: var(--roundbadge-bckg-color);
-  border-color: #80D5C6;
+  border-color: var(--btn-primary-border-color);
 }
 .btn-primary:hover {
   color: var(--tierciary-text-color);
-  background: #8FE4D5;
-  border-color: #8FE4D5;
+  background: var(--btn-primary-bckg-color-hover);
+  border-color: var(--btn-primary-border-color-hover);
 }
 .mel-selected-content-button {
   border-radius: 0;
@@ -1367,7 +1367,7 @@ body.task-mail .floating-action-buttons {
   transition: all 0.1s ease-in;
   color: var(--secondary-text-color);
   background-color: var(--main-bckg-color);
-  border-color: #363A5B;
+  border-color: var(--mel-button-border-color);
   display: inline-block;
   width: -moz-fit-content;
   width: fit-content;
@@ -1388,53 +1388,53 @@ html.layout-small .mel-button.mel-button-block {
 .mel-button.ignoreActive {
   color: var(--secondary-text-color) !important;
   background-color: var(--main-bckg-color) !important;
-  border-color: #363A5B !important;
+  border-color: var(--mel-button-border-color) !important;
 }
 .mel-button.ignoreActive.inverse {
-  border-color: #484D7A !important;
+  border-color: var(--mel-button-border-color-alt) !important;
   background-color: var(--tierciary-bckg-color) !important;
 }
 .mel-button.ignoreActive.inverse:hover {
   background-color: var(--main-bckg-color) !important;
-  border-color: #363A5B !important;
+  border-color: var(--mel-button-border-color) !important;
 }
 .mel-button.ignoreActive:hover {
   background-color: var(--tierciary-bckg-color) !important;
-  border-color: #484D7A !important;
+  border-color: var(--mel-button-border-color-alt) !important;
 }
 .mel-button.inverse {
-  border-color: #484D7A;
+  border-color: var(--mel-button-border-color-alt);
   background-color: var(--tierciary-bckg-color);
 }
 .mel-button.inverse:hover {
   background-color: var(--main-bckg-color);
-  border-color: #363A5B;
+  border-color: var(--mel-button-border-color);
 }
 .mel-button.white {
-  background-color: white;
+  background-color: var(--default-background);
   color: unset;
   border-style: solid;
   border-width: thin;
-  border-color: #363A5B;
+  border-color: var(--mel-button-border-color);
 }
 .mel-button.white:hover {
   color: var(--secondary-text-color);
 }
 button.btn-mel:hover + button.mel-button.under-button,
 button.btn-mel.active + button.mel-button.under-button {
-  color: white;
+  color: var(--secondary-text-color);
 }
 button.btn-mel:hover + button.mel-button.under-button:hover,
 button.btn-mel.active + button.mel-button.under-button:hover {
   color: var(--main-text-color);
-  background-color: #F0F0F0;
+  background-color: var(--alternate-bckg-color);
 }
 .mel-button.bckg {
   background-color: var(--invisible);
   color: unset;
   border-style: solid;
   border-width: thin;
-  border-color: #363A5B;
+  border-color: var(--mel-button-border-color);
 }
 .mel-button.bckg.true {
   border-color: var(--invisible);
@@ -1450,12 +1450,12 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   border-color: var(--warning-color);
 }
 .mel-button.btn-success {
-  background-color: #03a889;
-  border-color: #03a889;
+  background-color: var(--success-color);
+  border-color: var(--success-color);
 }
 .mel-button:hover {
   background-color: var(--tierciary-bckg-color);
-  border-color: #484D7A;
+  border-color: var(--mel-button-border-color-alt);
 }
 .mel-button:hover > .mel-return {
   color: var(--danger-color);
@@ -1468,8 +1468,8 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 }
 .mel-button.disabled {
   color: var(--secondary-text-color);
-  background-color: #73778e !important;
-  border-color: #73778e !important;
+  background-color: var(--disabled-mel-button-color) !important;
+  border-color: var(--disabled-mel-button-color) !important;
   pointer-events: none;
 }
 .mel-button.no-button-margin {
@@ -1478,7 +1478,7 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 .mel-ui-button.btn {
   background-color: var(--main-bckg-color);
   color: var(--secondary-text-color);
-  border-color: #363a5b;
+  border-color: var(--mel-button-border-color);
 }
 .large-toolbar .mel-ui-button.btn {
   background-color: var(--invisible);
@@ -1492,7 +1492,7 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 }
 .mel-ui-button.btn:hover {
   background-color: var(--tierciary-bckg-color);
-  border-color: #484D7A;
+  border-color: var(--mel-button-border-color-alt);
   border-radius: 5px;
 }
 .large-toolbar .mel-ui-button.btn:active {
@@ -1505,8 +1505,10 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   box-shadow: 0 0 0 0.2rem #484D7A69 !important;
 }
 .mel-ui-button.btn.disabled {
-  background-color: #a3a7bc;
-  border-color: #a3a7bc;
+  background-color: var(--disabled-mel-button-color);
+  /*#a3a7bc;*/
+  border-color: var(--disabled-mel-button-color);
+  /*#a3a7bc;*/
 }
 .large-toolbar .mel-ui-button.btn.disabled {
   background-color: var(--main-bckg-color);
@@ -1558,8 +1560,8 @@ button.btn.no-style:active {
 }
 /** INPUT **/
 .form-control:focus {
-  border-color: #80D5C6;
-  box-shadow: 0 0 0 0.2rem rgba(128, 213, 198, 0.25);
+  border-color: var(--secondary-focus-border);
+  box-shadow: 0 0 0 0.2rem var(--secondary-focus);
 }
 .mel-hover:hover {
   box-shadow: 0 0 0 0.2rem #484D7A69;
@@ -1581,22 +1583,22 @@ button.btn.no-style:active {
   border: solid;
   box-shadow: none;
   border-width: thin;
-  border-color: #484D7A;
+  border-color: var(--tierciary-focus);
 }
 .mel-focus.focus-text:focus {
   box-shadow: none;
-  text-shadow: 0 0 0.2rem #484D7A;
+  text-shadow: 0 0 0.2rem var(--tierciary-focus);
 }
 .mel-focus.focus-background:focus {
   box-shadow: none;
-  background: radial-gradient(circle, transparent 20%, #484D7A4F 26%, rgba(255, 255, 255, 0) 28%);
+  background: var(--background-focus);
   background-repeat: no-repeat;
 }
 .input-child-mel-focus input:focus {
   box-shadow: 0 0 0 0.2rem #484D7A69;
 }
 .a-child-mel-focus a:focus {
-  box-shadow: 0 0 0 0.2rem #484D7A69;
+  box-shadow: 0 0 0 0.2rem var(--other-focus);
 }
 a.filename:focus {
   box-shadow: 0 0 0 0.2rem #FFFFFF69;
@@ -1609,20 +1611,20 @@ form#mel_doubleauth-form {
 ._red-star {
   /** MIXIN **/
   content: "*";
-  color: red;
+  color: var(--red-star);
 }
 .red-star::before {
   /** MIXIN **/
   content: "*";
-  color: red;
+  color: var(--red-star);
 }
 .red-star.mel-before-remover {
-  color: red;
+  color: var(--red-star);
 }
 .red-star-after::after {
   /** MIXIN **/
   content: "*";
-  color: red;
+  color: var(--red-star);
 }
 /** IMAGES **/
 img.menu-image {
@@ -1674,13 +1676,13 @@ tr.elementmoveup > td {
 /** RECHERCHE **/
 ._mel-search {
   border-right: none;
-  border-color: #424665;
+  border-color: var(--secondary-border-color);
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
 }
 .mel-search {
   border-right: none;
-  border-color: #424665;
+  border-color: var(--secondary-border-color);
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -1688,7 +1690,7 @@ tr.elementmoveup > td {
 }
 .mel-search-group > input {
   border-right: none;
-  border-color: #424665;
+  border-color: var(--secondary-border-color);
   border-bottom-left-radius: 15px;
   border-top-left-radius: 15px;
 }
@@ -1696,7 +1698,7 @@ tr.elementmoveup > td {
   background-color: var(--default-background);
   border-bottom-right-radius: 15px;
   border-top-right-radius: 15px;
-  border-color: #424665;
+  border-color: var(--secondary-border-color);
 }
 html.layout-phone .searchbar a::before {
   height: auto!important;

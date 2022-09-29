@@ -16,10 +16,10 @@
 .task-mail{
     #layout-sidebar{
         ._layout-border();
-        background-color:#484D7A!important;
+        background-color:var(--tierciary-bckg-color)!important;
 
         &>.header {
-            background-color:#484D7A!important;
+            background-color:var(--tierciary-bckg-color)!important;
 
             html@{layout-large} &{
                 display: none;
@@ -30,16 +30,16 @@
     #layout-content {
         &>.header
         {
-            background-color:#484D7A!important;
+            background-color:var(--tierciary-bckg-color)!important;
 
             #toolbar-menu{
                 li {
                     a {
-                        color: white;
+                        color: var(--secondary-text-color);
                     }
 
                     .dropbutton{
-                        background-color: #484D7A;
+                        background-color: var(--tierciary-bckg-color);
                     }
                 }
             }
@@ -49,7 +49,7 @@
     #layout-list
     {
         ._layout-border();
-        background-color:#484D7A!important;
+        background-color:var(--tierciary-bckg-color)!important;
 
         #messagelist-header {
             justify-content: left;
@@ -64,11 +64,11 @@
     }
 
     #messagelist-content{
-        background-color: white!important;
+        background-color: var(--default-background)!important;
     }
 
     .quota-widget {
-        color: white;
+        color: var(--secondary-text-color);
         flex-wrap: wrap;
         padding: .5rem 3.7rem;
         max-width: none;
@@ -79,7 +79,7 @@
         }
 
         .count{
-            color: white;
+            color: var(--secondary-text-color);
         }
 
         .bar{
@@ -132,12 +132,35 @@ table.messagelist{
                                 content:"\e94d"!important;
                                 color:#363A5B!important;
                             }
+
+                            &.status
+                            {
+                                &.unread{
+                                    &.selected{
+                                        &::before{
+                                            color: var(--secondary-text-color);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
                     a{
                         font-weight: bold;
                         color:#363A5B;
+                    }
+                }
+            }
+
+            &.selected{
+                td{
+                    &.subject{
+                        span {
+                            &.fromto{
+                                color: var(--secondary-text-color);
+                            }
+                        }
                     }
                 }
             }
@@ -149,6 +172,93 @@ table.messagelist{
                 border-bottom: 1px solid #3E4261;
                 padding-top: 0.4rem;
                 padding-bottom: 0.4rem;
+                cursor: pointer !important;
+
+                span{
+                    cursor: pointer !important;
+                }
+
+                &.labels{
+                    html body &{
+                        background-color: transparent!important;
+                        border:none!important;
+                        padding-top: 0px!important;
+                    }
+                }
+            }
+
+            &:hover{
+                box-shadow: 0px 2px 2px #26283b47;
+                position: relative;
+
+                td{
+                    &.subject{
+                        span{
+                            &.msgicon{
+                                &.status{
+                                    &::before{
+                                        color: #363A5B !important;
+                                    }
+
+                                    &:hover{
+                                        &::before{
+                                            color: #779bd6  !important;
+                                        }
+                                    }
+
+                                    &.unread{
+                                        &:hover{
+                                            &::before{
+                                                color: #A8ACC0  !important;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    &.flags{
+                        span{
+                            &.flagged{
+                                &:hover{
+                                    &::before{
+                                        color: #A8ACC0  !important;
+                                    }
+                                }
+                            }
+
+                            &.unflagged{
+                                &:hover{
+                                    &::before{
+                                        color: #779bd6  !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            &.selected{
+                &:hover{
+                    box-shadow: 0px 2px 2px #26283b47;
+                    position: relative;
+    
+                    td{
+                        &.subject{
+                            span{
+                                &.msgicon{
+                                    &.status{
+                                        &::before{
+                                            color: var(--secondary-text-color) !important;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -192,6 +302,75 @@ table.messagelist{
 
             td{
                 background-color: #2C3054;
+            }
+        }
+
+        &.message{
+            &.bloqued{
+                td{
+                    border-left: var(--danger-color) thick solid !important;
+                    border-color: var(--danger-color);
+                    border-style: solid !important;
+                    border-width: thick !important;
+
+                    &.subject{
+                        border-right: none!important;
+                    }
+
+                    &.flags{
+                        border-left: none!important;
+                    }
+                }
+
+                .msgicon{
+                    &.status{
+                        &::before{
+                            content: '\e939'!important;
+                            font-family: DWP!important;
+                            color:var(--danger-color)red!important;
+                        }
+
+                        &.unread{
+                            &::before{
+                                content: '\e939'!important;
+                                font-family: DWP!important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            &.suspect{
+                td{
+                    border-left: var(--warning-color) thick solid !important;
+                    border-color: var(--warning-color);
+                    border-style: solid !important;
+                    border-width: thick !important;
+
+                    &.subject{
+                        border-right: none!important;
+                    }
+
+                    &.flags{
+                        border-left: none!important;
+                    }
+                }
+
+                .msgicon{
+                    &.status{
+                        &::before{
+                            content: '\e939'!important;
+                            font-family: DWP!important;
+                        }
+
+                        &.unread{
+                            &::before{
+                                content: '\e939'!important;
+                                font-family: DWP!important;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -276,6 +455,14 @@ table.messagelist{
 
             span {
                 margin-right: 15px;
+                border-radius: 5px;
+                padding: 2px;
+            }
+        }
+
+        &.flags{
+            html@{touch} &{
+                position: initial;
             }
         }
     }
@@ -306,7 +493,7 @@ table.messagelist{
 
     .selected {
         .subject{
-            color:white!important;
+            color:var(--secondary-text-color)!important;
         }
 
         td{
@@ -315,24 +502,24 @@ table.messagelist{
                     &.msgicon{
                         &::before, 
                         &::after{
-                            color:white!important;
+                            color:var(--secondary-text-color)!important;
                         }
                     }
 
                     &.date{
-                        color:white!important;
+                        color:var(--secondary-text-color)!important;
                     }
 
                     &.fromto{
-                        color:white!important;
+                        color:var(--secondary-text-color)!important;
                         &::before{
-                            color:white;
+                            color:var(--secondary-text-color);
                         }
                     }
                 }
 
                 a{
-                    color:white!important;
+                    color:var(--secondary-text-color)!important;
                 }
             }
         }
@@ -340,7 +527,7 @@ table.messagelist{
         span {
             &.threads{
                 > div{
-                    color:white;
+                    color:var(--secondary-text-color);
                 }
             }
         }
@@ -349,36 +536,36 @@ table.messagelist{
     .contextRow {
         &.context-source{
             &.subject {
-                color:white!important;
+                color:var(--secondary-text-color)!important;
             }
 
             td{
                 &.subject{
-                    color:white!important;
+                    color:var(--secondary-text-color)!important;
 
                     span{
                         &.date{
-                            color:white!important;
+                            color:var(--secondary-text-color)!important;
                         }
 
                         &.fromto{
-                            color:white!important;
+                            color:var(--secondary-text-color)!important;
 
                             &::before{
-                                color:white;
+                                color:var(--secondary-text-color);
                             }
                         }
 
                         &.msgicon{
                             &::before,
                             &::after{
-                                color:white!important;
+                                color:var(--secondary-text-color)!important;
                             }
                         }
                     }
 
                     a{
-                        color:white!important;
+                        color:var(--secondary-text-color)!important;
                     }
                 }
             }
@@ -386,7 +573,7 @@ table.messagelist{
             span {
                 &.threads{
                     > div{
-                        color:white;
+                        color:var(--secondary-text-color);
                     }
                 }
             }
@@ -395,6 +582,21 @@ table.messagelist{
 
     .flags{
         color: #363A5B;
+    }
+
+    .unread{
+        &.selected{
+            td {
+                &.subject{
+                    span{
+                        &.fromto,
+                        &.date{
+                            color: var(--secondary-text-color);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     &:not(.withselection) {
@@ -429,7 +631,7 @@ table.messagelist{
                     }
 
                     td {
-                        background-color: white;
+                        background-color: var(--default-background);
                     }
 
                     &.selected{
@@ -535,8 +737,8 @@ table.messagelist{
         a{
             &.label {
                 &.selected{
-                    background: #484D7A;
-                    color: white;
+                    background: var(--tierciary-bckg-color);
+                    color: var(--secondary-text-color);
                 }
             }
         }
@@ -586,7 +788,7 @@ table.messagelist{
 
         > a{
             &.button{
-                color:white;
+                color:var(--secondary-text-color);
                 position: absolute;
                 padding-bottom: 10px;
                 top: 24px;
@@ -936,7 +1138,7 @@ td{
 .parent-close-visu {
 	margin-right: 10px;
 	padding-right: 10px;
-	border-right-color: white !important;
+	border-right-color: var(--secondary-text-color) !important;
 	border-right-style: solid !important;
 	border-right-width: thin !important;
 }
@@ -948,4 +1150,124 @@ td{
             display: none;
         }
     }
+}
+
+.success-search{
+    color: #4bbc52 !important;
+    &::before{
+        color: #4bbc52 !important;
+    }
+}
+
+#mail-search-border {
+    height: calc(1.5em + .75rem + 2px);margin: 0 15px;
+    width: 92%;
+    position:relative;
+    border: none;
+
+    html.dark-mode &{
+        border: 1px solid #E1C58F;
+        background-color: #323F4B !important;
+    }
+}
+
+#mail-search-icon {
+    font-size: 1.5rem;
+    margin-top: 4px;
+    display: inline-block;
+    color: #2c363a;
+}
+
+html.dark-mode
+{
+    #searchmenu {
+        background-color: #323f4b !important;
+    }
+
+    .mel-input-container{
+        &.form-control
+        {
+            &.input-mel{
+                .icon-mel-search{
+                    &.success-search
+                    {
+                        color: #4bbc52 !important;
+                    }
+                }
+
+                &.border-success-search{
+                    border-color: #4bbc52 !important;
+                }
+            }
+        }
+    }
+}
+
+.button{
+    &.icon{
+        &.toolbar-button{
+            &.refresh{
+                &:focus{
+                    border-left: 2px solid #80D5C6 !important;
+                    background-color: #2C3054 !important;
+                    color: var(--secondary-text-color) !important;
+                    
+                    html.dark-mode &{
+                        color: #c7dfff !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+ul {
+    ul{
+        li{
+            &.mailbox{
+                > a{
+                    cursor: pointer !important;
+                }
+
+                &.select{
+                    > a{
+                        &:first-of-type{
+                            cursor: default !important;
+                        }
+                    }
+                }
+
+                &:hover{
+                    > a{
+                        &:first-of-type{
+                            background-color: #2C3054;
+                            border-radius: 5px;
+                        }
+                    }
+                }
+
+                &.droptarget{
+                    &:hover{
+                        > a{
+                            &:first-of-type{
+                                background-color: #a39bff2e!important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.mail-show-hover{
+    background-color: #4f4f4f33;
+    animation: mail-show-hover 0.05s linear forwards;
+    width: 30px;
+    height: 30px;
+}
+
+body.task-mail.action-compose a.removelink
+{
+    display: none;
 }

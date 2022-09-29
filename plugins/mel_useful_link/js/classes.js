@@ -335,7 +335,7 @@
 
      linkColor(id, title, value, textValue = '#363A5B', attrib = null)
      {
-        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input title="Couleur de la vignette" style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
+        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input title="Couleur de la vignette" style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#" onclick=event.preventDefault();>Test lien</a></span></div>`)
         .find("input").on("input", (e) => {
             $(e.currentTarget).parent().find(".link-test-color").css("background-color", $(e.currentTarget).val());
         });

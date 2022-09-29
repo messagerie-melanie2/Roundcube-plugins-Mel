@@ -168,11 +168,15 @@ table.messagelist{
 
         &.message{
             td {
-                border-color:#D1D3DD;
                 border-bottom: 1px solid #3E4261;
+                border-color:#D1D3DD;
                 padding-top: 0.4rem;
                 padding-bottom: 0.4rem;
                 cursor: pointer !important;
+
+                html.dark-mode &{
+                    border-color:#2c373a;
+                }
 
                 span{
                     cursor: pointer !important;
@@ -484,7 +488,7 @@ table.messagelist{
         &.attachment{
             span{
                 &::before{
-                    content: "\e957"!important;
+                    content: "\e959"!important;
                     ._dwp-icon()!important;
                 }
             }
@@ -658,7 +662,7 @@ table.messagelist{
     position: absolute;
     right: 0;
 
-    &.searchbar{
+    .searchbar{
         a{
             html body.task-mail &{
                 color:#363A5B;

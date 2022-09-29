@@ -97,6 +97,7 @@ $events = $calendar->getRangeEvents("@".$start);
 $vcalendar = new VObject\Component\VCalendar();
 
 foreach ($events as $event) {
+  $event->ics_attachments = false;
   $event->vcalendar = $vcalendar;
   $vcalendar = $event->vcalendar;
 }

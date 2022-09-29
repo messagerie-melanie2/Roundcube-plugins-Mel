@@ -100,6 +100,7 @@ if ($ics) {
   // Parcours les événements pour récupérer les vcalendar
   $freebusy = new VObject\Component\VCalendar();
   foreach ($events as $event) {
+    $event->ics_attachments = false;
     $event->ics_freebusy = true;
     $event->vcalendar = $freebusy;
     $freebusy = $event->vcalendar;
@@ -116,6 +117,7 @@ else {
   // Parcours les événements pour récupérer les vcalendar
   $vcalendars = array();
   foreach ($events as $event) {
+    $event->ics_attachments = false;
     $event->ics_freebusy = true;
     $vcalendars[] = $event->vcalendar;
   }

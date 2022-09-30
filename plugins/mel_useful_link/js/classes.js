@@ -49,6 +49,8 @@
              
          this.setTitle(link.id === "" ? "Création d'un nouveau lien" : "Modification d'un lien");
  
+         if (this.modal.contents.find("#mul-editor2").length > 0) this.modal.contents.find("#mul-editor2").remove();
+
          if (this.modal.contents.find("#mul-editor").length === 0)
          {
              const isSubLink = link.isSubLink();
@@ -132,6 +134,7 @@
         this.setTitle(link.id === "" ? "Création d'un nouveau multi-lien" : "Modification d'un multi-lien");
 
         if (this.modal.contents.find("#mul-editor2").length > 0) this.modal.contents.find("#mul-editor2").remove();
+        if (this.modal.contents.find("#mul-editor").length > 0) this.modal.contents.find("#mul-editor").remove();
 
         if (this.modal.contents.find("#mul-editor2").length === 0)
         {
@@ -286,11 +289,9 @@
         for (const key in choices) {
             if (Object.hasOwnProperty.call(choices, key)) {
                 const element = choices[key];
-                html.append(`
+                html.append($(`
                 <button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block ${element.icon}"></span>${rcmail.gettext(element.name, "mel_useful_link")}</button>
-                `).click(() => {
-                    element.click();
-                });
+                `).click(element.click));
             }
         }
 

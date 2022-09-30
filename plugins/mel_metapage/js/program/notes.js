@@ -95,23 +95,28 @@ $(document).ready(() => {
          * Convertit la classe en html
          * @returns html
          */
-        html()
+        html(hidden = false)
         {
             return `
-            <div class="mel-note" style="background-color:${this.color};color:${this.textcolor}" ${this.get_datas()}>
+            <div class="mel-note" style="background-color:${this.color};color:${this.textcolor};${hidden ? 'display:none;' : ''}" ${this.get_datas()}>
                 <div class="note-header">
-                    <button title="${rcmail.gettext('new_n', plugin_text)}" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button>
-                    <input class="change" type=text style="background-color:${this.color};color:${this.textcolor}" value="${this.title}" />
-                    <button title="${rcmail.gettext('settings', plugin_text)}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button>
-                    <button title="Réinitialiser la taille de la note" class="  mel-button no-button-margin bckg true rsb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-paragraph-extend"></span></button>
-                    <button title="${rcmail.gettext('delete')}" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button>
+                    <table>
+                    <tr>
+                        <td><button title="${rcmail.gettext('new_n', plugin_text)}" class="mel-button no-button-margin bckg true nb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-left-radius:5px!important;"><span class="icon-mel-plus"></span></button></td>
+                        <td style="width:100%"><input class="change mel-focus" type=text style="width:100%;background-color:${this.color};color:${this.textcolor}" value="${this.title}" /></td>
+                        <td><button title="Se concentrer sur cette note" class="mel-button no-button-margin bckg true eye" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-eye"></span></button></td>
+                        <td><button title="${rcmail.gettext('settings', plugin_text)}" class="  mel-button no-button-margin bckg true pb" style="color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-dots"></span></button></td>
+                        <td><button title="${rcmail.gettext('delete')}" class=" mel-button no-button-margin bckg true db" style="color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-trash"></span></button></td>
+                    </tr>
+                    </table>
                 </div>
                 <div class="note-header-params" style="display:none">
-                <input title="${rcmail.gettext('change_background_color', plugin_text)}" class="change bcgcolor" type="color" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <input title="${rcmail.gettext('change_text_color', plugin_text)}" class="change txtcolor" type="color" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
-                <button title="${rcmail.gettext('quit_settings', plugin_text)}" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
-                <button title="${rcmail.gettext('move_down', plugin_text)}" class=" mel-button no-button-margin bckg true downb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-down"></span></button>
-                <button title="${rcmail.gettext('move_up', plugin_text)}" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
+                    <input title="${rcmail.gettext('change_background_color', plugin_text)}" class="change bcgcolor" type="color" value="${this.color === base_color ? this.color : rgbToHex(...Enumerable.from(this.color.replace('!important', '').replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
+                    <input title="${rcmail.gettext('change_text_color', plugin_text)}" class="change txtcolor" type="color" value="${this.textcolor === base_text_color ? this.textcolor : rgbToHex(...Enumerable.from(this.textcolor.replace('rgb', "").replace('a', '').replace('(', '').replace(')', '').split(',')).select(x => parseInt(x)).toArray())}"/>
+                    <button title="${rcmail.gettext('quit_settings', plugin_text)}" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
+                    <button title="${rcmail.gettext('move_down', plugin_text)}" class=" mel-button no-button-margin bckg true downb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-down"></span></button>
+                    <button title="${rcmail.gettext('move_up', plugin_text)}" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
+                    <button title="Réinitialiser la taille de la note" class="  mel-button no-button-margin bckg true rsb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-paragraph-extend"></span></button>
                 </div>
                 <div class="note-body">
                     <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}">${this.text}</textarea>
@@ -176,6 +181,34 @@ $(document).ready(() => {
                 //$element.find("textarea").removeClass("disabled").removeAttr("disabled");
                 rcmail.clear_messages();
                 rcmail.display_message(rcmail.gettext('note_created_success', plugin_text), "confirmation");
+            });
+
+            $element.find('button.eye').click((e) => {
+                e = $(e.currentTarget);
+                if (!e.hasClass('crossed'))
+                {
+                    $('.mel-note').css('display', 'none');
+                    $element.css('display', '');
+                    $('.mm-shortcuts.apps .square_div').css('display', 'none');
+                    $('.shortcut-notes').css('display', '').css('max-width', '100%').css('width', '100%');
+                    $('.fullscreen-item-flex').css('display', 'block');
+                    $('.nb').addClass('disabled').attr('disabled', 'disabled');
+                    $('.downb').css('display', 'none');
+                    $('.upb').css('display', 'none');
+                    e.addClass('crossed').find('.icon-mel-eye').removeClass('icon-mel-eye').addClass('icon-mel-eye-crossed');
+                }
+                else {
+                    $('.mel-note').css('display', '');
+                    $('.mm-shortcuts.apps .square_div').css('display', '');
+                    $('.shortcut-notes').css('display', '').css('max-width', '').css('width', '');
+                    $('.fullscreen-item-flex').css('display', 'flex');
+                    $('.nb').removeClass('disabled').removeAttr('disabled');
+                    $('.downb').css('display', '');
+                    $('.upb').css('display', '');
+                    e.removeClass('crossed').find('.icon-mel-eye-crossed').addClass('icon-mel-eye').removeClass('icon-mel-eye-crossed');
+                }
+
+
             });
 
             //Handler pour le bouton paramètre
@@ -385,6 +418,11 @@ $(document).ready(() => {
         {
             if (this.uid === default_note_uid) return;
 
+            if (this.get_html().find('.icon-mel-eye-crossed').length > 0)
+            {
+                this.get_html().find('.eye').click();
+            }
+
             return this.post('del', {_uid:this.uid});
         }
 
@@ -423,6 +461,7 @@ $(document).ready(() => {
          */
         post(action, params = {}, doAction = true)
         {
+            const on_eye = this.get_html().find('.icon-mel-eye-crossed').length > 0;
             params["_a"] = action;
             return mel_metapage.Functions.post(
                 mel_metapage.Functions.url("mel_metapage", "notes"),
@@ -439,12 +478,17 @@ $(document).ready(() => {
                         }
 
                         $('.shortcut-notes .square-contents').html(
-                            Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' ')
+                            Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html(on_eye)).toArray().join(' ')
                         );
 
                         $('.mel-note').each((i, e) => {
                             Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
                         });
+
+                        if (on_eye)
+                        {
+                            this.get_html().css('display', '');
+                        }
                     }
                 }
             );

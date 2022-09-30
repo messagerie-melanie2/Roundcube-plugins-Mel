@@ -1714,7 +1714,7 @@ body.task-tasks .searchbar form::after {
   font-family: var(--main-icon-font) !important;
 }
 #quicksearchbar .button.options.annuaire-filter-selected {
-  background-color: lightgreen;
+  background-color: var(--quicksearchbar-annuaire-filter-bckg-color);
 }
 .mel-search-margin {
   margin: 0 15px;
@@ -1732,11 +1732,11 @@ body.task-tasks .searchbar form::after {
   border-color: transparent!important;
   border-right-style: solid!important;
   border-width: 1px!important;
-  border-right-color: black!important;
+  border-right-color: var(--tab-header-right-border-color) !important;
   border-radius: 0px!important;
 }
 ._mel-tab-state {
-  color: #5069BC !important;
+  color: var(--mel-tab-text-color) !important;
   text-decoration: underline;
 }
 .mel-tabheader {
@@ -1745,7 +1745,7 @@ body.task-tasks .searchbar form::after {
   border-color: transparent!important;
   border-right-style: solid!important;
   border-width: 1px!important;
-  border-right-color: black!important;
+  border-right-color: var(--tab-header-right-border-color) !important;
   border-radius: 0px!important;
 }
 .mel-tabheader.last {
@@ -1757,7 +1757,7 @@ body.task-tasks .searchbar form::after {
   border-color: transparent!important;
   border-right-style: solid!important;
   border-width: 1px!important;
-  border-right-color: black!important;
+  border-right-color: var(--tab-header-right-border-color) !important;
   border-radius: 0px!important;
 }
 .mel-responsive-tabheader.last {
@@ -1769,11 +1769,11 @@ body.task-tasks .searchbar form::after {
   display: inline-block;
 }
 .mel-tab:hover {
-  color: #5069BC !important;
+  color: var(--mel-tab-text-color) !important;
   text-decoration: underline;
 }
 .mel-tab.active {
-  color: #5069BC !important;
+  color: var(--mel-tab-text-color) !important;
   text-decoration: underline;
   cursor: initial;
 }
@@ -1784,7 +1784,7 @@ button.btn.mel-tab {
 button.btn.mel-tab:hover,
 button.btn.mel-tab:active,
 button.btn.mel-tab.active {
-  color: #5069BC !important;
+  color: var(--mel-tab-text-color) !important;
   text-decoration: underline;
 }
 .mel-responsive-tab {
@@ -1795,12 +1795,12 @@ button.btn.mel-tab.active {
   color: var(--main-text-color) !important;
 }
 .mel-responsive-tab:hover {
-  color: #5069BC !important;
+  color: var(--mel-tab-text-color) !important;
   text-decoration: underline;
 }
 .mel-responsive-tab.active,
 .mel-responsive-tab.selected {
-  color: #5069BC !important;
+  color: var(--mel-tab-text-color) !important;
   text-decoration: underline;
   cursor: initial;
 }
@@ -1817,19 +1817,20 @@ button.btn.mel-responsive-tab {
 .row.responsiveTabList.namespace-reponsive-tab-shortcut {
   margin-left: 15px;
   margin-right: 15px;
-  background-color: #F0F0F0;
+  background-color: var(--alternate-bckg-color);
   padding: 15px 0;
   border-radius: 5px;
 }
 /** SQUARE DIV **/
 .square_div > .contents {
-  background-color: #F0F0F0;
+  background-color: var(--alternate-bckg-color);
   height: 230px;
   border-radius: 5px;
 }
 .square_div > .contents.DARK {
   background-color: var(--tierciary-bckg-color);
-  color: #E6E7ED;
+  color: var(--secondary-text-color);
+  /*#E6E7ED;*/
 }
 .square-contents {
   padding: 30px;
@@ -1876,7 +1877,7 @@ span.span-webconf {
   position: absolute;
   top: 0;
   z-index: 9999999;
-  background-color: #F8F8F8;
+  background-color: var(--sr-background);
   padding: 5px;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1898,7 +1899,7 @@ span.span-webconf {
   z-index: 9999;
 }
 #messagestack .notice.private {
-  background-color: #99454d;
+  background-color: var(--private-color);
 }
 #messagestack .notice.private .icon::before {
   font-family: var(--main-icon-font) !important;
@@ -2005,11 +2006,11 @@ html .menu a.selection::before {
   font-family: var(--main-icon-font) !important;
   font-weight: normal!important;
   color: var(--secondary-text-color);
-  text-shadow: 0px 0px 1px black;
+  text-shadow: 0px 0px 1px var(--text-shadow);
 }
 .menu a.select.invert:hover:before {
-  color: #2C3054;
-  text-shadow: 0px 0px 1px white;
+  color: var(--secondary-bckg-color);
+  text-shadow: 0px 0px 1px var(--default-background);
 }
 .menu a.select.none::before {
   content: "\e908" !important;
@@ -2109,7 +2110,7 @@ html .menu a.selection::before {
 html.mwsp {
   border-style: solid;
   border-width: thick;
-  border-color: #5870BF;
+  border-color: var(--default-workspace-side-color);
 }
 html.mwsp .task-workspace.action-workspace {
   margin-bottom: 75px;
@@ -2121,7 +2122,7 @@ html.mwsp.moved .task-workspace.action-workspace {
 #layout-content.mwsp {
   border-style: solid;
   border-width: thick;
-  border-color: #5870BF;
+  border-color: var(--default-workspace-side-color);
 }
 .task-workspace.action-workspace #layout-content.mwsp {
   margin-bottom: 75px;
@@ -2140,8 +2141,8 @@ iframe.discussion-frame.mwsp.moved {
 iframe.discussion-frame.mwsp {
   border-style: solid !important;
   border-width: thick !important;
-  border-color: #5870BF !important;
-  background-color: #5870BF;
+  border-color: var(--default-workspace-side-color) !important;
+  background-color: var(--default-workspace-side-color);
 }
 iframe.mwsp {
   margin-bottom: 75px;
@@ -2172,8 +2173,8 @@ iframe.mwsp.discussion-frame {
   border-radius: 60px;
   height: 30px;
   width: 60px;
-  border-color: #3A3E5E;
-  background-color: #F0F0F0;
+  border-color: var(--alternate-primary-border-color);
+  background-color: var(--alternate-bckg-color);
   position: relative;
   margin-top: 15px;
 }
@@ -2184,12 +2185,12 @@ iframe.mwsp.discussion-frame {
   position: absolute;
   top: 2px;
   left: 33px;
-  color: #3A3E5E !important;
+  color: var(--alternate-primary-border-color) !important;
   transition: all 0.1s ease-in;
 }
 .theme-mode-switch.btn.btn-primary.btn-block:after {
   content: "";
-  border: solid #3A3E5E thin;
+  border: solid var(--alternate-primary-border-color) thin;
   background-color: var(--default-background);
   width: 28px;
   height: 28px;
@@ -2251,7 +2252,7 @@ table.table-striped thead.mel_striped td {
 }
 /******************ADDED******************/
 .folderlist li.mailbox .unreadcount {
-  background: #779bd6;
+  background: var(--roundbadge-bckg-color);
   font-weight: normal;
   color: #000;
 }
@@ -2263,15 +2264,15 @@ ul.folderlist.treelist li ul li a {
 }
 table.messagelist .unread td.subject span.msgicon::before {
   content: "\e94d" !important;
-  color: #779bd6 !important;
+  color: var(--tierciary-text-color) !important;
 }
 .roundbadge.lightgreen,
 .roundbadge.hover.tick:hover {
-  background-color: #779bd6;
+  background-color: var(--roundbadge-bckg-color);
 }
 .task-mail .quota-widget .bar {
-  background-color: #779bd6;
-  border-color: #779bd6;
+  background-color: var(--quota-bar-bckg-color);
+  border-color: var(--quota-bar-border-color);
   margin-left: 0;
 }
 a.rcmContactAddress {
@@ -2283,7 +2284,7 @@ a.rcmContactAddress {
 /** BLOCKS **/
 .mel-block-list {
   white-space: nowrap;
-  background-color: #F0F0F0;
+  background-color: var(--alternate-bckg-color);
   width: 100%;
   padding: 15px;
   margin-bottom: 15px;
@@ -2331,13 +2332,13 @@ a.rcmContactAddress {
   left: 120px;
   width: 100%;
   height: 100%;
-  background-color: #0006;
+  background-color: var(--overlay-background);
   z-index: 9999999;
 }
 .waiting-events-number {
   text-align: center;
   padding: 5px 0;
-  background-color: #5870BF;
+  background-color: var(--alternate-bckg-color-2);
   position: relative;
 }
 #waiting-events-list {
@@ -2346,7 +2347,7 @@ a.rcmContactAddress {
   bottom: 30px;
 }
 #waiting-events-list-items {
-  background-color: #f0f0f0;
+  background-color: var(--alternate-bckg-color);
   border-radius: 5px;
   padding: 15px;
   max-height: 400px;
@@ -2381,7 +2382,7 @@ html.layout-small .hide-on-small {
 }
 .multilink-sub {
   display: flex;
-  background-color: #0000006e;
+  background-color: var(--ghost-div-background);
   transition: all 0.1s ease-in;
   cursor: pointer;
 }
@@ -2395,8 +2396,8 @@ html.layout-small .hide-on-small {
   color: var(--white);
 }
 .multilink-sub:hover {
-  background-color: #ffffff70;
+  background-color: var(--ghost-div-background-inverse);
 }
 .multilink-sub:hover .multilink-sub-copy {
-  color: black!important;
+  color: var(--main-text-color) !important;
 }

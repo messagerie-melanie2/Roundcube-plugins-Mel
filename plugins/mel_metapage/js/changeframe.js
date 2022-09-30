@@ -208,13 +208,13 @@ function UpdateMenu(_class, _picture, _toolbar)
 
             }
             //console.log("button", button, right, bottom);
-            button = $(".tiny-wsp-menu");
+            button = top.$(".tiny-wsp-menu");
 
             if (button.length === 0)
             {
                 let picture = $(".wsp-picture");
-                $("#layout").append(`<div class="tiny-wsp-menu enabled"></div>`)
-                button = $(".tiny-wsp-menu");
+                top.$("#layout").append(`<div class="tiny-wsp-menu enabled"></div>`)
+                button = top.$(".tiny-wsp-menu");
                 button.css("position", "absolute");
                 button.css("left", '80px')
                 .css("bottom", '2px')
@@ -227,7 +227,7 @@ function UpdateMenu(_class, _picture, _toolbar)
             }
             button.css("display", "");
 
-            (_toolbar !== null && $(".wsp-toolbar-edited").length === 0 ? $("#layout").append(_toolbar).find(".wsp-toolbar-edited") : $(".wsp-toolbar-edited") )
+            (_toolbar !== null && top.$(".wsp-toolbar-edited").length === 0 ? top.$("#layout").append(_toolbar).find(".wsp-toolbar-edited") : top.$(".wsp-toolbar-edited") )
             .css("margin", "initial")
             .css("position", "fixed")
             // .css("bottom", (parseInt(bottom.replace("px", "")) - 3) + "px")
@@ -699,7 +699,7 @@ async function ChangeFrame(_class, otherDatas = null)
     rcmail.env.can_change_while_busy = true;
 
     //Ouverture de la frame
-    const id = mm_st_OpenOrCreateFrame(_class, false, config);
+    const id = top.mm_st_OpenOrCreateFrame(_class, false, config);
     await wait(() => rcmail.env.frame_created !== true);
 
     //Gestion de "l'encadrage"

@@ -1343,6 +1343,9 @@ rcube_libcalendaring.itip_delegate_dialog = function(callback, selector)
             var doc = window.parent.document,
                 delegatee = String($('#itip-delegate-to', doc).val()).replace(/(^\s+)|(\s+$)/, '');
 
+            //PAMELA
+            if (delegatee === String(undefined)) delegatee = String($('#itip-delegate-to').val()).replace(/(^\s+)|(\s+$)/, '');
+
             if (delegatee != '' && rcube_check_email(delegatee, true)) {
                 callback({
                     to: delegatee,

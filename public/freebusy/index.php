@@ -21,12 +21,26 @@ require_once '../config.inc.php';
 if (! defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
+
+
+// Developpement ?
+define('DEV', false);
+
+
+if (DEV) {
+  $dir = str_replace('/public/freebusy', '', dirname($_SERVER['SCRIPT_FILENAME']));
+}
+else {
+  $dir = __DIR__.'../..';
+}
+
 // Inclusion de l'ORM M2
 @include_once 'includes/libm2.php';
 
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
-require_once '../../vendor/autoload.php';
+require_once $dir.'/vendor/autoload.php';
+
 
 // Récupération des paramètres de la requête
 $start = utils::get_input_value("start", utils::INPUT_GET);

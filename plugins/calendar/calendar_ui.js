@@ -3341,6 +3341,12 @@ function rcube_calendar_ui(settings)
         else {
           $('#calendarcaldavurl', dialog).hide();
         }
+        
+        if (calendar.calfreebusyurl) {
+          $('#calfreebusyurl', dialog).val(calendar.calfreebusyurl);
+          $('#calendarcalfreebusyurl', dialog).show();
+        }
+
 
         $('#calfeedurl').val(calendar.feedurl);
         // PAMELA

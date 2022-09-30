@@ -1970,6 +1970,7 @@ $(document).ready(() => {
             window.create_event = true;
         else
         {
+            $('#mel-have-something-minified-main-create').remove();
             window.event_reduced = false;
             window.kolab_event_dialog_element.show()
             return;
@@ -2056,25 +2057,45 @@ $(document).ready(() => {
         // ${event.from === "barup" ? '' : ""}
         if (event.from === "barup")
         {
+            $('#mel-have-something-minified-main-create').remove();
+            const func_minifier = () => {
+                if ($('#mel-have-something-minified-main-create').length === 0 && $("#globallist").length === 0)
+                {
+                    let $qu = $('#button-create').append(`
+                    <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
+                    top: -5px;
+                    right: -5px;">•</span>
+                    `);
+    
+                    if ($qu.css('position') !== 'relative') $qu.css('position', 'relative');
+                }
+            };
             // create_popUp.close();
+            window.event_reduced = true;
             window.kolab_event_dialog_element.setBeforeTitle(`<a href=# title="${rcmail.gettext('back')}" class="icon-mel-undo mel-return mel-focus focus-text mel-not-link" onclick="delete window.event_saved;delete window.create_event;m_mp_reinitialize_popup(() => {$('iframe#kolabcalendarinlinegui').remove();window.kolab_event_dialog_element.removeBeforeTitle();})"><span class=sr-only>${rcmail.gettext('create_modal_back', plugin_text)}</span></a>`);
             window.kolab_event_dialog_element.haveReduced().on_click_minified = () => {
                 window.event_reduced = true;
                 window.kolab_event_dialog_element.close();
+                func_minifier();
             };
-            // window.kolab_event_dialog_element.on_click_exit = () => {
-            //     debugger;
-            //     window.kolab_event_dialog_element.close();
-            //     window.event_saved = false;
-            //     window.create_event = false;
-            //     window.kolab_event_dialog_element = null;
-            // };
+            window.kolab_event_dialog_element.on_click_exit = () => {
+                window.kolab_event_dialog_element.close();
+                window.event_saved = false;
+                window.create_event = false;
+                window.event_reduced = false;
+                window.kolab_event_dialog_element = null;
+            };
             window.kolab_event_dialog_element.onClose(() => {
-                if (window.event_reduced !== true)
+                if (window.event_reduced === false)
                 {
                     window.event_saved = false;
                     window.create_event = false;
                     window.kolab_event_dialog_element = null;
+                    $('#mel-have-something-minified-main-create').remove();
+                }
+                else {
+                    window.event_reduced = true;
+                    func_minifier();
                 }
             });
         }

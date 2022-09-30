@@ -149,6 +149,7 @@ function InitialiseDatas()
 
 function UpdateMenu(_class, _picture, _toolbar)
 {
+    var $ = top.$;
     InitialiseDatas();
     if (rcmail.env.wsp_datas.toolbar.current === "inpage")
     {
@@ -185,7 +186,7 @@ function UpdateMenu(_class, _picture, _toolbar)
         if (true || window.webconf_master_bar === undefined)
         {
             rcmail.env.wsp_datas.toolbar.current = _class;
-            if (rcmail.env.wsp_datas.toolbar.exists === true)
+            if (rcmail.env.wsp_datas.toolbar.exists === true || $(".wsp-toolbar-edited").length > 0)
                 return;
             const basePx = "50px";
             let right = basePx;

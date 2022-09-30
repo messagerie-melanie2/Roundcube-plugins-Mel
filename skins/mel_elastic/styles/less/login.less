@@ -30,7 +30,7 @@
     }
 
     &.clear{
-        background-color: #F8F8F8;
+        background-color: var(--alternate-bckg-color-lighter);
         border:none!important;
     }
 }
@@ -51,7 +51,7 @@
 
 #formlogintable 
 {
-    color: #363A5B;
+    color: var(--main-text-color);
 
     td {
         border: none;
@@ -86,9 +86,9 @@
 
 #rcmloginsubmit
 {
-    color: #fff;
+    color: var(--secondary-text-color);
     background-color: var(--main-bckg-color);
-    border-color: #363A5B;
+    border-color: var(--primary-border-color);
     border-radius: 60px;
     width: unset !important;
     font-size: small;
@@ -96,7 +96,7 @@
 
     &:hover{
         background-color: var(--tierciary-bckg-color);
-        border-color: #484D7A;
+        border-color: var(--tierciary-bckg-color);
     }
 
     &::after{
@@ -206,5 +206,12 @@
                 display: initial;
             }
         }
+    }
+}
+
+.input-mel{
+    &.login-type{
+        background-color: var(--default-background);
+        border-color: var(--primary-border-color);
     }
 }

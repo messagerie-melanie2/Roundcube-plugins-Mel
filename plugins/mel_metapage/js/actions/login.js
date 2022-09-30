@@ -28,6 +28,8 @@ $(document).ready(() => {
 	    </div>`);
     }
 
+    $('input.form-control').addClass('input-mel login-type');
+
     const login_id = 'login-alt-1';
 
     // if (rcmail.get_cookie('mel_cerbere') === '1')

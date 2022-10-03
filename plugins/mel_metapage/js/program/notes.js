@@ -190,7 +190,7 @@ $(document).ready(() => {
                     $('.mel-note').css('display', 'none');
                     $element.css('display', '');
                     $('.mm-shortcuts.apps .square_div').css('display', 'none');
-                    $('.shortcut-notes').css('display', '').css('max-width', '100%').css('width', '100%');
+                    $('.shortcut-notes').css('display', '').css('max-width', '100%').css('width', '100%').css('margin','0 20%');
                     $('.fullscreen-item-flex').css('display', 'block');
                     $('.nb').addClass('disabled').attr('disabled', 'disabled');
                     $('.downb').css('display', 'none');
@@ -200,7 +200,7 @@ $(document).ready(() => {
                 else {
                     $('.mel-note').css('display', '');
                     $('.mm-shortcuts.apps .square_div').css('display', '');
-                    $('.shortcut-notes').css('display', '').css('max-width', '').css('width', '');
+                    $('.shortcut-notes').css('display', '').css('max-width', '').css('width', '').css('margin', '');
                     $('.fullscreen-item-flex').css('display', 'flex');
                     $('.nb').removeClass('disabled').removeAttr('disabled');
                     $('.downb').css('display', '');
@@ -487,7 +487,10 @@ $(document).ready(() => {
 
                         if (on_eye)
                         {
-                            this.get_html().css('display', '');
+                            this.get_html().css('display', '').find('.eye').addClass('crossed').find('.icon-mel-eye').removeClass('icon-mel-eye').addClass('icon-mel-eye-crossed');
+                            $('.nb').addClass('disabled').attr('disabled', 'disabled');
+                            $('.downb').css('display', 'none');
+                            $('.upb').css('display', 'none');
                         }
                     }
                 }

@@ -102,6 +102,8 @@ function Webconf(frameconf_id, framechat_id, ask_id, key, ariane, wsp, ariane_si
             else
             {
                 console.warn("/!\\ [Webconf]wsp.objects est nul, cela peux entrainer des disfonctionnements.", this.wsp);
+                
+                if (!!this.ariane) this.ariane = {};
                 this.ariane._is_allowed = false;
             }
 

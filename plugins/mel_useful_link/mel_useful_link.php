@@ -78,7 +78,7 @@ class mel_useful_link extends rcube_plugin
         if ($need_button)
         {
           $this->add_button(array(
-            'command' => "ul",
+            'command' => "useful_links",
             'class'	=> 'useful_links icon-mel-link',
             'classsel' => 'links button-selected icon-mel-link',
             'innerclass' => 'button-inner inner',

@@ -803,3 +803,21 @@ class MelEnum
 		return MelEnum.createEnum.enums[name];
 	}
 }
+
+
+var _paq = _paq || [];
+_paq.push(['setDocumentTitle', rcmail.task]);
+_paq.push(['setDownloadClasses', ["LienTelecharg","document"]]);
+_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);
+(function() {
+var u="//audience-sites.din.developpement-durable.gouv.fr/";
+_paq.push(['setTrackerUrl', u+'piwik.php']);
+_paq.push(['setSiteId','1503']);
+var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+})();
+
+function piwikTrackVideo(type,section,page,x1){
+_paq.push(['trackEvent', 'Video', 'Play', page]);
+}

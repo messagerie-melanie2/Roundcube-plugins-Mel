@@ -682,3 +682,9 @@ ul ul li.mailbox.droptarget:hover > a:first-of-type {
 body.task-mail.action-compose a.removelink {
   display: none;
 }
+#compose-contacts .modal-title {
+  display: inline-block;
+}
+#compose-contacts .modal-close {
+  float: right;
+}

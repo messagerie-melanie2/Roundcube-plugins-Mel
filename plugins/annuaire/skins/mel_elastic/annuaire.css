@@ -23,8 +23,12 @@
 }
 
 #annuaire-list li.folder div.treetoggle {
-    top: 10px;
+    top: 5px;
     left: 2px;
+}
+
+#annuaire-list li.folder ul div.treetoggle {
+	top: 0;
 }
 
 #annuaire-list li > .name {
@@ -85,15 +89,15 @@
 }
 
 #annuaire-list .folder.annuaire {
-	background: url(images/annuaire.png?v=e784.5000) 13px 3px no-repeat;
+	background: url(images/annuaire.png?v=e784.5000) 17px 11px no-repeat;
 }
 
 #annuaire-list .folder.addressbook {
-	background: url(images/carnet.png?v=e784.5000) 13px 9px no-repeat;
+	background: url(images/carnet.png?v=e784.5000) 17px 14px no-repeat;
 }
 
 html.dark-mode #annuaire-list .folder.addressbook {
-	background: url(images/carnet-dark.png) 13px 9px no-repeat;
+	background: url(images/carnet-dark.png) 17px 14px no-repeat;
 }
 
 #annuaire-list .list {

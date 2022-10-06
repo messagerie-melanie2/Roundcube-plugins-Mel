@@ -3,7 +3,7 @@
 
 ._layout-border()
 {
-    border-right-color: white;
+    border-right-color: var(--layout-border);
     border-right-style: solid;
     border-right-width: thin;
 }
@@ -83,13 +83,13 @@
         }
 
         .bar{
-            background-color: #80D5C6;
-            border-color: #80D5C6;
+            background-color: var(--quota-bar-bckg-color);
+            border-color: var(--quota-bar-border-color);
             margin-left: 0;
         }
 
         .value{
-            background-color: #2C3054;
+            background-color: var(--quota-bar-color);
         }
     }
 
@@ -106,11 +106,11 @@
 table.messagelist{
     tr {
         &.unread{
-            background-color: #F0F0F0;
+            background-color: var(--alternate-bckg-color);
 
             & > td {
                 &:first-child{
-                    border-left: 2px solid #363A5B !important;
+                    border-left: 2px solid var(--primary-border-color) !important;
                 }
             }
 
@@ -119,18 +119,18 @@ table.messagelist{
                     span{
                         &.date{
                             font-weight: bold;
-                            color:#363A5B;
+                            color: var(--main-text-color);
                         }
 
                         &.fromto{
                             font-weight: bold;
-                            color:#363A5B;
+                            color:var(--main-text-color);
                         }
 
                         &.msgicon{
                             &::before{
                                 content:"\e94d"!important;
-                                color:#363A5B!important;
+                                color:var(--main-text-color)!important;
                             }
 
                             &.status
@@ -148,7 +148,7 @@ table.messagelist{
 
                     a{
                         font-weight: bold;
-                        color:#363A5B;
+                        color:var(--main-text-color);
                     }
                 }
             }
@@ -168,8 +168,8 @@ table.messagelist{
 
         &.message{
             td {
-                border-bottom: 1px solid #3E4261;
-                border-color:#D1D3DD;
+                border-bottom: 1px solid var(--base-message-border-color);
+                border-color:var(--message-border-color);
                 padding-top: 0.4rem;
                 padding-bottom: 0.4rem;
                 cursor: pointer !important;
@@ -184,7 +184,7 @@ table.messagelist{
 
                 &.labels{
                     html body &{
-                        background-color: transparent!important;
+                        background-color: var(--invisible)!important;
                         border:none!important;
                         padding-top: 0px!important;
                     }
@@ -192,7 +192,7 @@ table.messagelist{
             }
 
             &:hover{
-                box-shadow: 0px 2px 2px #26283b47;
+                box-shadow: 0px 2px 2px var(--message-hover-shadow);
                 position: relative;
 
                 td{
@@ -201,19 +201,19 @@ table.messagelist{
                             &.msgicon{
                                 &.status{
                                     &::before{
-                                        color: #363A5B !important;
+                                        color: var(--main-text-color) !important;
                                     }
 
                                     &:hover{
                                         &::before{
-                                            color: #779bd6  !important;
+                                            color: var(--mail-icon-hover-color)  !important;
                                         }
                                     }
 
                                     &.unread{
                                         &:hover{
                                             &::before{
-                                                color: #A8ACC0  !important;
+                                                color: var(--mail-unread-icon-hover-color)  !important;
                                             }
                                         }
                                     }
@@ -227,7 +227,7 @@ table.messagelist{
                             &.flagged{
                                 &:hover{
                                     &::before{
-                                        color: #A8ACC0  !important;
+                                        color: var(--mail-unread-icon-hover-color)  !important;
                                     }
                                 }
                             }
@@ -235,7 +235,7 @@ table.messagelist{
                             &.unflagged{
                                 &:hover{
                                     &::before{
-                                        color: #779bd6  !important;
+                                        color: var(--mail-icon-hover-color)  !important;
                                     }
                                 }
                             }
@@ -246,7 +246,7 @@ table.messagelist{
 
             &.selected{
                 &:hover{
-                    box-shadow: 0px 2px 2px #26283b47;
+                    box-shadow: 0px 2px 2px var(--message-hover-shadow);
                     position: relative;
     
                     td{
@@ -268,22 +268,22 @@ table.messagelist{
 
         &.flagged{
             td{
-                color: #363A5B;
+                color: var(--main-text-color);
 
                 &.subject{
                     span{
                         &.subject{
                             a{
-                                color: #363A5B;
+                                color: var(--main-text-color);
                             }
                         }
 
                         &.date{
-                            color: #363A5B;
+                            color: var(--main-text-color);
                         }
 
                         &.fromto{
-                            color: #15193A;
+                            color: var(--mail-unread-icon-color);
                         }
                     }
                 }
@@ -302,10 +302,10 @@ table.messagelist{
         }
 
         &.selected{
-            background-color: #2C3054;
+            background-color: var(--secondary-bckg-color);
 
             td{
-                background-color: #2C3054;
+                background-color: var(--secondary-bckg-color);
             }
         }
 
@@ -331,7 +331,7 @@ table.messagelist{
                         &::before{
                             content: '\e939'!important;
                             font-family: DWP!important;
-                            color:var(--danger-color)red!important;
+                            color:var(--danger-color)!important;
                         }
 
                         &.unread{
@@ -383,11 +383,11 @@ table.messagelist{
         &.subject{
             span {
                 &.date{
-                    color: #363A5B;
+                    color: var(--main-text-color);
                 }
 
                 &.fromto{
-                    color: #15193A;
+                    color: var(--mail-unread-icon-color);
                     padding-left:0!important;
                 }
 
@@ -395,7 +395,7 @@ table.messagelist{
                     &.status{
                         &::before{
                             font-weight: bold;
-                            color:#363A5B;
+                            color:var(--main-text-color);
                         }
                     }
 
@@ -415,7 +415,7 @@ table.messagelist{
                                 font-family:"DWP"!important;
                                 font-style: normal!important;
                                 opacity: 1!important;
-                                color:#A8ACC0!important;
+                                color:var(--mail-unread-icon-hover-color)!important;
                             }
                         }
                     }
@@ -431,7 +431,7 @@ table.messagelist{
                         content: "\e94e" !important;
                         font-family:"DWP" !important;
                         font-style: normal !important;
-                        color: #A8ACC0 !important;
+                        color: var(--mail-unread-icon-hover-color) !important;
                         margin-right: 13px !important;
                         font-size: 1rem !important;
                     }
@@ -444,7 +444,7 @@ table.messagelist{
 
             a{
                 html body div#layout-list &{
-                    color: #363A5B;
+                    color: var(--main-text-color);
                 }
             }
         }
@@ -474,7 +474,7 @@ table.messagelist{
     span{
         &.threads{
             > div{
-                color:#363A5B;
+                color:var(--main-text-color);
             }
         }
 
@@ -585,7 +585,7 @@ table.messagelist{
     }
 
     .flags{
-        color: #363A5B;
+        color: var(--main-text-color);
     }
 
     .unread{
@@ -609,7 +609,7 @@ table.messagelist{
                 & > td {
                     &.selection {
                         & + td{
-                            border-left: 2px solid #363A5B !important;
+                            border-left: 2px solid var(--primary-border-color) !important;
                         }
                     }
                 }
@@ -623,14 +623,14 @@ table.messagelist{
             tr{
                 &:nth-child(2n){
                     td {
-                        background-color: #FAFAFA;
+                        background-color: var(--default-background-lighter);
                     }
                 }
 
                 &.unread{
                     &:nth-child(2n){
                         td {
-                            background-color: #FAFAFA;
+                            background-color: var(--default-background-lighter);
                         }
                     }
 
@@ -640,7 +640,7 @@ table.messagelist{
 
                     &.selected{
                         td{
-                            background-color: #2C3054;
+                            background-color: var(--secondary-bckg-color);
                         }
                     }
                 }
@@ -648,7 +648,7 @@ table.messagelist{
                 &.selected{
                     &:nth-child(2n){
                         td {
-                            background-color: #2C3054;
+                            background-color: var(--secondary-bckg-color);
                         }
                     }
                 }
@@ -665,7 +665,7 @@ table.messagelist{
     .searchbar{
         a{
             html body.task-mail &{
-                color:#363A5B;
+                color:var(--main-text-color);
             }
 
             &.unread{
@@ -719,7 +719,7 @@ table.messagelist{
         & > .footer {
             &.small{
                 html body.task-mail &{
-                    background-color: transparent;
+                    background-color: var(--invisible);
                     height: 80px;
                 }
             }
@@ -727,6 +727,7 @@ table.messagelist{
     }
 }
 
+/* deprecated ? */
 #backtomails {
 	margin-left: 30px;
 
@@ -807,7 +808,7 @@ table.messagelist{
                 padding-left: 3px;
 
                 &:hover{
-                    background-color: #2C3054;
+                    background-color: var(--secondary-bckg-color);
                 }
             }
         }
@@ -905,7 +906,7 @@ table.messagelist{
                 &.mailbox{
                     &.selected{
                         a{
-                            background-color: #2C3054;
+                            background-color: var(--secondary-bckg-color);
                         }
                     }
                 }
@@ -1170,7 +1171,8 @@ td{
 }
 
 #mail-search-border {
-    height: calc(1.5em + .75rem + 2px);margin: 0 15px;
+    height: calc(1.5em + .75rem + 2px);
+    margin: 0 15px;
     width: 92%;
     position:relative;
     border: none;
@@ -1218,8 +1220,8 @@ html.dark-mode
         &.toolbar-button{
             &.refresh{
                 &:focus{
-                    border-left: 2px solid #80D5C6 !important;
-                    background-color: #2C3054 !important;
+                    border-left: 2px solid var(--secondary-focus-border) !important;
+                    background-color: var(--secondary-bckg-color) !important;
                     color: var(--secondary-text-color) !important;
                     
                     html.dark-mode &{
@@ -1250,7 +1252,7 @@ ul {
                 &:hover{
                     > a{
                         &:first-of-type{
-                            background-color: #2C3054;
+                            background-color: var(--secondary-bckg-color);
                             border-radius: 5px;
                         }
                     }
@@ -1260,7 +1262,7 @@ ul {
                     &:hover{
                         > a{
                             &:first-of-type{
-                                background-color: #a39bff2e!important;
+                                background-color: var(--drag-n-drop-bckg-color)!important;
                             }
                         }
                     }

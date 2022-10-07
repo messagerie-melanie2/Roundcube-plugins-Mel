@@ -16,10 +16,10 @@
 .task-mail{
     #layout-sidebar{
         ._layout-border();
-        background-color:var(--tierciary-bckg-color)!important;
+        background-color:var(--mail-layout-sidebar-background-color)!important;
 
         &>.header {
-            background-color:var(--tierciary-bckg-color)!important;
+            background-color:var(--mail-header-layout-list-background-color)!important;
 
             html@{layout-large} &{
                 display: none;
@@ -30,7 +30,7 @@
     #layout-content {
         &>.header
         {
-            background-color:var(--tierciary-bckg-color)!important;
+            background-color:var(--mail-header-layout-content-background-color)!important;
 
             #toolbar-menu{
                 li {
@@ -49,7 +49,7 @@
     #layout-list
     {
         ._layout-border();
-        background-color:var(--tierciary-bckg-color)!important;
+        // background-color:var(--tierciary-bckg-color)!important;
 
         #messagelist-header {
             justify-content: left;
@@ -64,7 +64,7 @@
     }
 
     #messagelist-content{
-        background-color: var(--default-background)!important;
+        background-color: var(--layout-content-background-color)!important;
     }
 
     .quota-widget {
@@ -844,7 +844,7 @@ table.messagelist{
                                         }
                                     }
 
-                                    &.unreadcount{
+                                    .unreadcount{
                                         top: 10px;
                                     }
 

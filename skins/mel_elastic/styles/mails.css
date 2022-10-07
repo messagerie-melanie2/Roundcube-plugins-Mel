@@ -7,16 +7,16 @@
   border-right-color: var(--layout-border);
   border-right-style: solid;
   border-right-width: thin;
-  background-color: var(--tierciary-bckg-color) !important;
+  background-color: var(--mail-layout-sidebar-background-color) !important;
 }
 .task-mail #layout-sidebar > .header {
-  background-color: var(--tierciary-bckg-color) !important;
+  background-color: var(--mail-header-layout-list-background-color) !important;
 }
 html.layout-large .task-mail #layout-sidebar > .header {
   display: none;
 }
 .task-mail #layout-content > .header {
-  background-color: var(--tierciary-bckg-color) !important;
+  background-color: var(--mail-header-layout-content-background-color) !important;
 }
 .task-mail #layout-content > .header #toolbar-menu li a {
   color: var(--secondary-text-color);
@@ -28,7 +28,6 @@ html.layout-large .task-mail #layout-sidebar > .header {
   border-right-color: var(--layout-border);
   border-right-style: solid;
   border-right-width: thin;
-  background-color: var(--tierciary-bckg-color) !important;
 }
 .task-mail #layout-list #messagelist-header {
   justify-content: left;
@@ -40,7 +39,7 @@ html.layout-large .task-mail #layout-sidebar > .header {
   flex: 0 1 auto!important;
 }
 .task-mail #messagelist-content {
-  background-color: var(--default-background) !important;
+  background-color: var(--layout-content-background-color) !important;
 }
 .task-mail .quota-widget {
   color: var(--secondary-text-color);
@@ -450,7 +449,7 @@ html body.task-mail #layout > div > .footer.small {
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type div.treetoggle {
   top: 10px;
 }
-#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type.unreadcount {
+#folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type .unreadcount {
   top: 10px;
 }
 #folderlist-content ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type [aria-level="3"] .unreadcount {

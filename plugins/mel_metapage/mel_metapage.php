@@ -190,9 +190,10 @@ class mel_metapage extends rcube_plugin
         $this->add_hook("message_draftsaved", [$this, 'message_draftsaved']);
         $this->add_hook("calendar.on_attendees_notified", [$this, 'on_attendees_notified']);
 
-        if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs" &&  rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch')
+        if ($this->rc->task === 'settings' && $this->rc->action === "edit-prefs")
         {
-            $this->include_script('js/actions/settings_gs.js');
+            if (rcube_utils::get_input_value('_section', rcube_utils::INPUT_GPC) === 'globalsearch') $this->include_script('js/actions/settings_gs.js');
+            $this->include_script('js/actions/base_settings.js');
         }
 
         if ($this->rc->task === "mail" )

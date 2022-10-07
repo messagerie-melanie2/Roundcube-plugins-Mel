@@ -1,0 +1,335 @@
+//compress:false
+@import 'colors.less';
+
+:root{
+    --layout-list-background-color:@sidebar-color;
+    --mail-layout-sidebar-background-color:@sidebar-color;
+    --roundbadge-bckg-color:@badge-color;
+    --quota-bar-bckg-color:var(--default-background);
+    --quota-bar-border-color:var(--quota-bar-bckg-color);
+    --quota-bar-color:var(--main-text-color);
+}
+
+#layout-list {
+    color:var(--main-text-color)!important;
+
+    .listing {
+        tbody{
+            td{
+                color:var(--main-text-color);
+
+                &:hover{
+                    color:var(--secondary-text-color);
+                }
+
+                &.name{
+                    width:100%;
+                }
+                
+            }
+        }
+
+        tr {
+            &.selected {
+                td {
+                    color:var(--secondary-text-color);
+                }
+            }
+        }
+    }
+
+    .menu{
+        &.toolbar{
+            a{
+                body.task-settings.action-plugin-managesieve &
+                {
+                    color:var(--main-text-color)!important;
+
+                    &:hover{
+                        color:var(--secondary-text-color)!important;
+                    }
+                }
+            }
+        }
+    }
+
+    .scroller {
+        > .listing {
+            li{
+                a{
+                    color:var(--main-text-color);
+
+                    &:hover{
+                        color:var(--secondary-text-color);
+                        background-color: var(--secondary-bckg-color);
+                        border: solid thin var(--secondary-text-color);
+                    }
+                }
+
+                &.selected{
+                    a{
+                        color:var(--secondary-text-color);
+                    }
+                }
+
+                &:hover{
+                    a{
+                        color:var(--secondary-text-color);
+                    }
+
+                    .treetoggle{
+                        color:var(--secondary-text-color);
+                    }
+                }
+
+                .treetoggle{
+                    color:var(--main-text-color);
+            
+                    &:hover{
+                        color:var(--secondary-text-color);
+                    }
+                }
+            }
+        }
+    }
+
+    .menu{
+        &.pagenav{
+            &.pagenav-list {
+                + .navlist{
+                    background-color: var(--layout-list-background-color);
+                }
+            }
+        }
+    }
+
+    > .header{
+        color:var(--main-text-color)!important;
+
+        li {
+            a{
+                &.button{
+                    color:var(--main-text-color);
+                }
+            }   
+        }
+    }
+
+    #annuaire-list {
+        .folder {
+            > .description {
+                color:var(--main-text-color);
+            }
+
+            &[aria-expanded="true"]{
+                color:var(--secondary-text-color);
+
+                .description {
+                    color:var(--secondary-text-color)!important;
+                }
+
+                .treetoggle{
+                    color:var(--secondary-text-color)!important;
+                }
+
+                &:hover{
+                    border:none!important;
+                }
+            }
+        }
+
+        li {
+            &:hover{
+                background-color: var(--main-bckg-color);
+                border: solid thin var(--secondary-text-color);
+
+                &.folder {
+                    span {
+                        color:var(--secondary-text-color);
+                    }
+                }
+            }
+        }
+
+        [aria-expanded="true"]{
+            color:var(--secondary-text-color);
+        }
+    }
+
+    ul#tasklist {
+        li{
+
+            .childtoggle{
+                -webkit-text-stroke: 1px var(--secondary-text-color);
+                text-stroke: 1px var(--secondary-text-color);
+            }
+
+            &.taskitem {
+                div{
+                    &.taskhead{
+                        span{
+                            color:var(--main-text-color)!important;
+                        }
+
+                        &:hover{
+                            span{
+                                color:var(--secondary-text-color)!important;
+                            }
+                        }
+
+                        &.selected{
+                            span{
+                                color:var(--secondary-text-color)!important;
+                            }
+                        }
+                    }
+                }
+
+                &:nth-child(2n){
+                    background-color: var(--default-background);
+                }
+
+                &:hover{
+                    > .childtoggle {
+                        color:var(--secondary-text-color)!important;
+                        -webkit-text-stroke: 1px var(--main-text-color);
+                        text-stroke: 1px var(--main-text-color);
+                    }
+                }
+            }
+        }
+
+        span{
+            &.date {
+                color:var(--main-text-color)!important;
+            }
+        }
+    }
+}
+
+.task-mail{
+    #layout-sidebar{
+        #compose-options{
+            color:var(--main-text-color)!important;
+        }
+        .scroller {
+            > .listing {
+                li{
+                    a{
+                        color:var(--main-text-color);
+    
+                        &:hover{
+                            color:var(--secondary-text-color);
+                            background-color: var(--secondary-bckg-color);
+                            border: solid thin var(--secondary-text-color);
+                        }
+                    }
+    
+                    &.selected{
+                        a{
+                            color:var(--secondary-text-color);
+                        }
+                    }
+    
+                    // &:hover{
+                    //     a{
+                    //         color:var(--secondary-text-color);
+                    //     }
+    
+                    //     .treetoggle{
+                    //         color:var(--secondary-text-color);
+                    //     }
+                    // }
+    
+                    // .treetoggle{
+                    //     color:var(--main-text-color);
+                
+                    //     &:hover{
+                    //         color:var(--secondary-text-color);
+                    //     }
+                    // }
+                }
+            }
+        }
+    }
+
+    #folderlist-content {
+        ul#mailboxlist > li > ul li[aria-level="2"]:first-of-type{
+            border-color: var(--main-bckg-color);
+        }
+
+        > a {
+            &.button{
+                color: var(--main-text-color);
+
+                &:hover{
+                    color:var(--secondary-text-color);
+                }
+            }
+        }
+    }
+
+    #layout .header a.button, 
+    #layout .header a.options, 
+    #layout .header a.select, 
+    #layout .header a.threads
+    {
+        color: var(--main-text-color);
+    }
+
+    ul.treelist {
+        li {
+            div.treetoggle{
+                color: var(--main-text-color);
+                -webkit-text-stroke: 1px var(--secondary-text-color);
+                text-stroke: 1px var(--secondary-text-color);
+            }
+        }
+    }
+
+    ul ul li.mailbox:hover > a:first-of-type{
+        color:var(--secondary-text-color)!important;
+    }
+
+    #layout-content{
+        > .header{
+            #toolbar-menu{
+                li{
+                    a {
+                        color:var(--main-text-color);
+                    }
+
+                    .dropbutton {
+                        background-color:var(--invisible);
+                    }
+                }
+            }
+        }
+    }
+    
+    .parent-close-visu{
+        border-color:var(--main-text-color)!important;
+    }
+
+    #mail-search-border{
+        background-color: var(--default-background);
+        border: solid thin var(--main-text-color);
+
+        &.border-success-search{
+            border-color:var(--success-color);
+        }
+    }
+
+    .quota-widget{
+        color:var(--main-text-color);
+
+        .count{
+            color:var(--main-text-color);
+        }
+    }
+
+    .upload-form .hint{
+        color:var(--main-text-color);
+    }
+}
+

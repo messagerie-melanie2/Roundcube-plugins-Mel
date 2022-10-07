@@ -140,12 +140,12 @@ main {
 /** LAYOUT **/
 #layout-sidebar {
   border: none;
-  background-color: var(--main-bckg-color) !important;
+  background-color: var(--layout-sidebar-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
 #layout-sidebar > .header {
   /** HEADER **/
-  background-color: var(--main-bckg-color) !important;
+  background-color: var(--layout-sidebar-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
 #layout-sidebar .ui-datepicker.ui-widget-content .ui-state-default {
@@ -158,12 +158,12 @@ main {
 }
 #layout-list {
   border: none;
-  background-color: var(--tierciary-bckg-color) !important;
+  background-color: var(--layout-list-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
 #layout-list > .header {
   /** HEADER **/
-  background-color: var(--tierciary-bckg-color) !important;
+  background-color: var(--layout-list-background-color) !important;
   color: var(--secondary-text-color) !important;
 }
 #layout > div > .header {

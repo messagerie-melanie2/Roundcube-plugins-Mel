@@ -339,3 +339,6 @@ body.task-settings.action-plugin-managesieve #layout-list .menu.toolbar a:hover 
 html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   background-color: #edebe9 !important;
 }
+html body.task-calendar #menu-gu-black {
+  background-color: var(--ghost-div-background) !important;
+}

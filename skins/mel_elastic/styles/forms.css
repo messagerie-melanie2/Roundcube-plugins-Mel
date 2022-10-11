@@ -410,7 +410,8 @@ input.input-mel.error {
 #eventedit ul
 {
 	position: sticky;
-	top:-15px;
+	top: -15px;
+	margin: -15px -2px 1rem;
 	z-index: 5;
 	background-color: white;
 } 

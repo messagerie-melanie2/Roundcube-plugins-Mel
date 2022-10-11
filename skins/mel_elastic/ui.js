@@ -323,7 +323,7 @@ $(document).ready(() => {
         init(){
             this.screen_type = null;
             this.css_rules = new Mel_CSS_Style_Sheet(); 
-            return this.init_const().initResponsive();
+            return this.init_const().init_theme().initResponsive();
         }
 
         /**
@@ -387,6 +387,15 @@ $(document).ready(() => {
               });
 
               return this;
+        }
+
+        init_theme()
+        {
+            this.theme = rcmail.env.current_theme || 'default';
+
+            if (!!rcmail.env.current_theme) $('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
+
+            return this;
         }
 
         /**
@@ -2476,6 +2485,25 @@ $(document).ready(() => {
             item.$tab.addClass(tab_content).addClass(namespace);
 
             return $tab;
+        }
+
+        get_current_theme() {
+            return this.theme;
+        }
+
+        update_theme(theme)
+        {
+            theme = theme || 'default'
+            if (theme !== this.theme) {
+                let $html = $('html');
+                
+                if (this.theme !== 'default') $html.removeClass(`theme-${this.theme.toLowerCase()}`);
+                if (theme !== 'default') $('html').addClass(`theme-${theme.toLowerCase()}`);
+
+                this.theme = theme;
+            }
+
+            return this;
         }
 
     }

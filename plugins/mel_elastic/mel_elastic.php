@@ -37,6 +37,7 @@ class mel_elastic extends rcube_plugin
     private $css = ["icofont.css", "jquery.datetimepicker.min.css", "mel-icons.css"];
 
     private $loaded_theme;
+    private $themes;
 
     function init()
     {
@@ -186,6 +187,8 @@ class mel_elastic extends rcube_plugin
             $current_theme = rcube_utils::get_input_value('themes', rcube_utils::INPUT_POST);
             $args['prefs']['mel_elastic.current'] = $current_theme;
 
+            $this->rc->output->set_env('current_theme', $current_theme);
+            $this->unload_current_theme();
         }
 
         return $args;
@@ -193,19 +196,30 @@ class mel_elastic extends rcube_plugin
 
     private function load_themes()
     {
-        include_once __DIR__.'/program/theme.php';
-        $theme_folder = $this->skinPath.'/themes/';
-        $themes = [new Theme($theme_folder.self::DEFAULT_THEME)];
-        $folders = scandir($theme_folder);
-        
-        foreach ($folders as $id => $folder) {
-            if ($folder !== '.' && $folder !== '..' && is_dir($theme_folder.$folder) && $folder !== self::DEFAULT_THEME)
-            {
-                $themes[] = new Theme($theme_folder.$folder);
+        if (!isset($this->themes))
+        {
+            include_once __DIR__.'/program/theme.php';
+            $theme_folder = $this->skinPath.'/themes/';
+            $themes = [new Theme($theme_folder.self::DEFAULT_THEME)];
+            $folders = scandir($theme_folder);
+            
+            foreach ($folders as $id => $folder) {
+                if ($folder !== '.' && $folder !== '..' && is_dir($theme_folder.$folder) && $folder !== self::DEFAULT_THEME)
+                {
+                    $themes[] = new Theme($theme_folder.$folder);
+                }
             }
+            $this->themes = $themes;
         }
 
-        return $themes;
+
+        return $this->themes;
+    }
+
+    private function unload_current_theme()
+    {
+        unset($this->loaded_theme);
+        return $this;
     }
 
 
@@ -229,7 +243,12 @@ class mel_elastic extends rcube_plugin
     {
         if (!$this->is_default_theme())
         {
-            $this->include_stylesheet('/themes/'.$this->get_current_theme().'/theme.css');
+            //$this->include_stylesheet('/themes/'.$this->get_current_theme().'/theme.css');
+            $this->rc->output->set_env('current_theme', $this->get_current_theme());
+        }
+
+        foreach ($this->load_themes() as $key => $value) {
+            $this->include_stylesheet('/themes/'.$value->name.'/theme.css');
         }
 
         return $useless;

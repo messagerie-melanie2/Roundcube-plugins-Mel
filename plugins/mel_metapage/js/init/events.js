@@ -222,6 +222,23 @@ if (rcmail && window.mel_metapage)
                     }
                 });
             }
+
+            if (rcmail.env.current_theme !== top.rcmail.env.current_theme)
+            {
+                try {
+                    MEL_ELASTIC_UI.update_theme(rcmail.env.current_theme);
+                } catch (error) {
+                    
+                }
+
+                top.rcmail.env.current_theme = rcmail.env.current_theme;
+                top.MEL_ELASTIC_UI.update_theme(rcmail.env.current_theme);
+
+                top.$('iframe.mm-frame').each((i,e) => {
+                    e.contentWindow.rcmail.env.current_theme = rcmail.env.current_theme;
+                    e.contentWindow.MEL_ELASTIC_UI.update_theme(rcmail.env.current_theme);
+                });
+            }
         }
 
         if (rcmail.env.keep_login === true)

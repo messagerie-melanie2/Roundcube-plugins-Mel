@@ -70,8 +70,14 @@
         </div>
         <div class="row justify-content-between">
             <div class="col-4 d-flex justify-content-center">
-                <button title="<roundcube:label name='mel_metapage.change_theme' />" class="mel-focus theme-mode-switch btn btn-primary btn-block" onclick="MEL_ELASTIC_UI.switch_color()"></button>
-
+                <div class="row">
+                    <div class="col-6">
+                        <button id="theme-switch-button" title="Changer de thème" class="btn btn-secondary mel-button" style="border-radius: 5px;font-size:1.5rem;line-height: 0;"><span class="icon-mel-painting"></span></button>
+                    </div>
+                    <div class="col-6">
+                        <button title="<roundcube:label name='mel_metapage.change_theme' />" class="mel-focus theme-mode-switch btn btn-primary btn-block" onclick="MEL_ELASTIC_UI.switch_color()"></button>
+                    </div>
+                </div>
             </div>
             <div class="col-4">
                 <a href="javascript:void(0)" class="transparent-button mel-animated more-options" data-popup="groupoptions-user-submenu" tabindex=-1 id="user-up-popup-dots" data-popup-pos="left"><span class="icon-mel-dots "></span></a>
@@ -89,4 +95,16 @@
         </div>
     </div>
     <div id="notifications-panel"></div>
+    <div id="theme-panel" style="display: none;">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="title">Thèmes</div>
+                </div>
+            </div>
+        </div>
+        <div class="contents">
+
+        </div>
+    </div>
 </div>

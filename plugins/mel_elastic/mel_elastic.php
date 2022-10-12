@@ -48,10 +48,12 @@ class mel_elastic extends rcube_plugin
             $this->add_hook('preferences_list', array($this, 'prefs_list'));
             $this->add_hook('preferences_save',     array($this, 'prefs_save'));
             $this->add_hook('ready', array($this, 'set_theme'));
+            $this->register_action('update_theme', array($this, 'update_theme'));
             $this->load_css();
             //$this->include_script('../../skins/elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/ui.js');
             $this->include_script('../../skins/mel_elastic/jquery.datetimepicker.full.min.js');
+            $this->rc->output->set_env('mel_themes', $this->mep_themes());
             $this->load_folders();
             $this->add_texts('localization/', true);
             //$this->add_hook('messages_list', [$this, 'mail_messages_list']);
@@ -216,6 +218,17 @@ class mel_elastic extends rcube_plugin
         return $this->themes;
     }
 
+    private function mep_themes() {
+        $themes = $this->load_themes();
+        $mep = [];
+
+        foreach ($themes as $key => $value) {
+            $mep[$value->name] = $value;
+        }
+
+        return $mep;
+    }
+
     private function unload_current_theme()
     {
         unset($this->loaded_theme);
@@ -252,5 +265,13 @@ class mel_elastic extends rcube_plugin
         }
 
         return $useless;
+    }
+
+    public function update_theme()
+    {
+        $theme = rcube_utils::get_input_value('_t', rcube_utils::INPUT_POST);
+        $this->rc->user->save_prefs(array('mel_elastic.current' => $theme));
+        echo 'ok';
+        exit;
     }
 }

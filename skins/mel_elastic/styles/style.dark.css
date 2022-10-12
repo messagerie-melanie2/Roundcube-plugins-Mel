@@ -1243,3 +1243,14 @@ html.dark-mode button.btn-mel.active + button.mel-button.under-button:hover {
 html.dark-mode .message-partheaders .falselink{
     color:#96b9e7;
 }
+
+html.dark-mode .mel-selectable:hover {
+    background-color: #2E2E2E;
+    color: #E1C58F;
+}
+
+html.dark-mode .mel-selectable.selected {
+    background-color: #2E2E2E;
+    color: #E1C58F;
+    border-left: solid thick #E1C58F;
+}

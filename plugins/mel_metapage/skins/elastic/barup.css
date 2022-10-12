@@ -626,3 +626,17 @@ html.layout-large .show-normal-and-inf{
 html.layout-large .show-normal-and-inf.important{
     display: none!important;
 }
+
+#theme-panel {
+	border-top: 1px solid rgba(46, 46, 46, 0.5);
+}
+
+#theme-panel .container {
+	padding: 5px 15px;
+}
+
+#theme-panel .container .title {
+	margin-bottom: 10px;
+	font-size: 14px;
+}
+

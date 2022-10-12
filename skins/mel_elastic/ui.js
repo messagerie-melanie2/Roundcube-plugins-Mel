@@ -391,11 +391,82 @@ $(document).ready(() => {
 
         init_theme()
         {
+            let tlength = 0;
+            let html = '';
             this.theme = rcmail.env.current_theme || 'default';
 
             if (!!rcmail.env.current_theme) $('html').addClass(`theme-${rcmail.env.current_theme.toLowerCase()}`);
 
-            return this;
+            if (!!rcmail.env.mel_themes) {
+                const themes = rcmail.env.mel_themes;
+                rcmail.env.mel_themes = null;
+
+                this.themes = themes;
+
+                for (const key in this.themes) {
+                    if (Object.hasOwnProperty.call(this.themes, key)) {
+                        ++tlength;
+                        this.themes[key].css_path = 'unavailable';
+                        this.themes[key].path = 'unavailable';
+
+                        html += `
+                        <div class="row mel-selectable ${this.themes[key].name === this.theme ? 'selected' : ''}" data-name="${this.themes[key].name}" role="button" aria-pressed="${this.themes[key].name === this.theme ? 'true' : 'false'}" style="margin-bottom:5px;margin-left:2px;">
+                            <div class="col-4">
+                                <img src="${this.themes[key].picture}" style="width:100%;" />
+                            </div>
+                            <div class="col-8" style="display:flex;">
+                                <span style="display: block;
+                                align-self: center;">${(this.themes[key].name === 'default' ? 'Par défaut' : this.themes[key].name)}</span>
+                            </div>
+                        </div>
+                        `;
+                    }
+                }
+            }
+
+            let $theme_button = $('#theme-switch-button');
+            if (top === window && $theme_button.length > 0)
+            {
+                if (tlength > 1)
+                {
+                    $theme_button.click(($e) => {
+                        $e = $($e.currentTarget);
+
+                        if (!$e.hasClass('activated'))
+                        {
+                            $e.addClass('activated').find('.icon-mel-painting').removeClass('icon-mel-painting').addClass('icon-mel-undo');
+                            $('#notifications-panel').css('display', 'none');
+                            $('#theme-panel').css('display', '');
+                        }
+                        else {
+                            $e.removeClass('activated').find('.icon-mel-undo').addClass('icon-mel-painting').removeClass('icon-mel-undo');
+                            $('#notifications-panel').css('display', '');
+                            $('#theme-panel').css('display', 'none');
+                        }
+                    });
+
+                    $('#theme-panel .contents').html(html).find('.mel-selectable').click((e) => {
+                        e = $(e.currentTarget);
+                        $('#theme-panel .contents .mel-selectable').removeClass('selected');
+                        e.addClass('selected');
+
+                        this.update_theme(e.data('name'));
+                        mel_metapage.Functions.post(
+                            mel_metapage.Functions.url('mel_metapage', 'plugin.update_theme'),
+                            {_t:e.data('name')},
+                            (f) => {},
+                        );
+
+                        this._update_theme_color();
+                    });
+
+                }
+                else {
+                    $theme_button.addClass('disabled').attr('disabled', 'disabled');
+                }
+            }
+
+            return this._update_theme_color();
         }
 
         /**
@@ -1659,7 +1730,7 @@ $(document).ready(() => {
         switch_color()
         {
             rcmail.triggerEvent("switch_color_theme");
-            return this;
+            return this._update_theme_color();
         }
 
         /**
@@ -1669,6 +1740,25 @@ $(document).ready(() => {
         color_mode()
         {
             return $('html').hasClass("dark-mode") ? "dark" : "light";
+        }
+
+        _update_theme_color()
+        {
+            let $html = $('html');
+
+            if (this.color_mode() === "dark")
+            {
+                $html.removeClass(`theme-${this.get_current_theme().toLowerCase()}`);
+            }
+            else if (this.get_current_theme() !== 'default') {
+                $html.addClass(`theme-${this.get_current_theme().toLowerCase()}`);
+            }
+            
+            $('iframe.mm-frame').each((i,e) => {
+                e.contentWindow.MEL_ELASTIC_UI._update_theme_color();
+            });
+
+            return this;
         }
 
         ////////////************* Other functions *************///////////
@@ -2488,7 +2578,12 @@ $(document).ready(() => {
         }
 
         get_current_theme() {
-            return this.theme;
+            return this.theme || 'default';
+        }
+
+        get_current_theme_picture()
+        {
+            return this.get_themes()[this.get_current_theme()];
         }
 
         update_theme(theme)
@@ -2503,7 +2598,19 @@ $(document).ready(() => {
                 this.theme = theme;
             }
 
+            $('iframe.mm-frame').each((i, e) => {
+                try {
+                        e.contentWindow.MEL_ELASTIC_UI.update_theme(theme);
+                } catch (error) {
+                    
+                }
+            });
+
             return this;
+        }
+
+        get_themes(){
+            return this.themes || [];
         }
 
     }

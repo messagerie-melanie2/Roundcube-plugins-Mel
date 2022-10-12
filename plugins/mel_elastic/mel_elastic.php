@@ -147,17 +147,17 @@ class mel_elastic extends rcube_plugin
           );
         
           //THEMES
-          $args['blocks']['themes']['name'] = 'Thèmes';
-          $current_theme = $this->get_current_theme();
-          $themes = $this->load_themes();
+        //   $args['blocks']['themes']['name'] = 'Thèmes';
+        //   $current_theme = $this->get_current_theme();
+        //   $themes = $this->load_themes();
 
-          foreach ($themes as $theme) {
-            $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
-            $args['blocks']['themes']['options'][$theme->name] = [
-                //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
-                'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
-            ];
-          }
+        //   foreach ($themes as $theme) {
+        //     $radio = new html_radiobutton(['name' => 'themes', 'id' => $theme->name, 'value' => $theme->name, 'class' => 'form-check-input themesettingsrb']);
+        //     $args['blocks']['themes']['options'][$theme->name] = [
+        //         //'title' => html::label([], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name),
+        //         'content' => html::div([], html::div(['style' => 'display:inline-block;margin-right:5px;width:150px;'], html::tag('img', ['src' => $theme->picture, 'style' => 'max-width:150px'])).html::div(['class' => 'form-check', 'style' => 'display:inline-block'], $radio->show($current_theme).html::label(['class' => 'form-check-label', 'for' => $theme->name], $theme->name === self::DEFAULT_THEME ? 'Par défaut' : $theme->name)))
+        //     ];
+        //   }
 
         //   $args['blocks']['themes']['options']['hiddenthemes'] = [
         //     'content' => (new html_hiddenfield(['name' => 'themevalue', 'id' => 'themevalue', 'value' => $current_theme]))->show()
@@ -185,12 +185,11 @@ class mel_elastic extends rcube_plugin
 
             $args['prefs']["custom-font-size"] = $config;
             
-            $current_theme = $this->get_current_theme();
-            $current_theme = rcube_utils::get_input_value('themes', rcube_utils::INPUT_POST);
-            $args['prefs']['mel_elastic.current'] = $current_theme;
+            // $current_theme = $this->get_current_theme();
+            // $current_theme = rcube_utils::get_input_value('themes', rcube_utils::INPUT_POST);
+            // $args['prefs']['mel_elastic.current'] = $current_theme;
 
-            $this->rc->output->set_env('current_theme', $current_theme);
-            $this->unload_current_theme();
+            // $this->rc->output->set_env('current_theme', $current_theme);
         }
 
         return $args;
@@ -271,6 +270,7 @@ class mel_elastic extends rcube_plugin
     {
         $theme = rcube_utils::get_input_value('_t', rcube_utils::INPUT_POST);
         $this->rc->user->save_prefs(array('mel_elastic.current' => $theme));
+        $this->unload_current_theme();
         echo 'ok';
         exit;
     }

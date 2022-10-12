@@ -10,9 +10,6 @@ if (!defined('RCMAIL_CONFIG_DIR')) {
 if (!defined('RCUBE_LOCALIZATION_DIR')) {
     define('RCUBE_LOCALIZATION_DIR', INSTALL_PATH . 'program/localization/');
 }
-if (! defined('CONFIGURATION_APP_LIBM2')) {
-    define('CONFIGURATION_APP_LIBM2', 'roundcube');
-}
 
 define('RCUBE_INSTALL_PATH', INSTALL_PATH);
 define('RCUBE_CONFIG_DIR',  RCMAIL_CONFIG_DIR.'/');

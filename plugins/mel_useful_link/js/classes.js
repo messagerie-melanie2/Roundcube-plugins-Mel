@@ -49,6 +49,8 @@
              
          this.setTitle(link.id === "" ? "Création d'un nouveau lien" : "Modification d'un lien");
  
+         if (this.modal.contents.find("#mul-editor2").length > 0) this.modal.contents.find("#mul-editor2").remove();
+
          if (this.modal.contents.find("#mul-editor").length === 0)
          {
              const isSubLink = link.isSubLink();
@@ -132,6 +134,7 @@
         this.setTitle(link.id === "" ? "Création d'un nouveau multi-lien" : "Modification d'un multi-lien");
 
         if (this.modal.contents.find("#mul-editor2").length > 0) this.modal.contents.find("#mul-editor2").remove();
+        if (this.modal.contents.find("#mul-editor").length > 0) this.modal.contents.find("#mul-editor").remove();
 
         if (this.modal.contents.find("#mul-editor2").length === 0)
         {
@@ -286,11 +289,9 @@
         for (const key in choices) {
             if (Object.hasOwnProperty.call(choices, key)) {
                 const element = choices[key];
-                html.append(`
+                html.append($(`
                 <button style="margin-top:0px;margin-right:15px" class="btn btn-block btn-secondary btn-mel"><span class="block ${element.icon}"></span>${rcmail.gettext(element.name, "mel_useful_link")}</button>
-                `).click(() => {
-                    element.click();
-                });
+                `).click(element.click));
             }
         }
 
@@ -335,7 +336,7 @@
 
      linkColor(id, title, value, textValue = '#363A5B', attrib = null)
      {
-        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input title="Couleur de la vignette" style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#">Test lien</a></span></div>`)
+        let $input = $(`<div><label for="${id}" class="span-mel t1">${title}</label><input title="Couleur de la vignette" style="max-width:50px;display:inline-block" id="${id}" class="link-color-before form-control input-mel required" required type="color" value="${value}" /><span style="background-color:${value}" class=link-test-color>Test couleur | <a  href="#" onclick=event.preventDefault();>Test lien</a></span></div>`)
         .find("input").on("input", (e) => {
             $(e.currentTarget).parent().find(".link-test-color").css("background-color", $(e.currentTarget).val());
         });

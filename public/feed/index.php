@@ -39,7 +39,8 @@ else {
 
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
-require_once $dir.'/vendor/autoload.php';
+require_once '../../vendor/autoload.php';
+
 // Récupération des paramètres de la requête
 $calhash = utils::get_input_value('_cal', utils::INPUT_GET);
 if (isset($calhash)) {

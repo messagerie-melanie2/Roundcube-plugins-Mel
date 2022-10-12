@@ -453,7 +453,8 @@ class mel_useful_link extends rcube_plugin
         {
           $melLink = mel_link::fromConfig($config[$id]);
           $melLink->title = $title;
-          $melLink->link = $link;
+          if ($isMultiLink) $melLink->links = $link;
+          else $melLink->link = $link;
           $melLink->from = $from;
           $melLink->showWhen = $showWhen;
 

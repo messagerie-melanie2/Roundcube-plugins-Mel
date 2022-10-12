@@ -3272,9 +3272,19 @@ function rcube_calendar_ui(settings) {
         $('#calendarcaldavurl', dialog).hide();
       }
 
-      $('#calfeedurl').val(calendar.feedurl);
-      // PAMELA
-      $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
+        if (calendar.caldavurl) {
+          $('#caldavurl', dialog).val(calendar.caldavurl);
+          $('#calendarcaldavurl', dialog).show();
+        }
+        else {
+          $('#calendarcaldavurl', dialog).hide();
+        }
+        
+        if (calendar.calfreebusyurl) {
+          $('#calfreebusyurl', dialog).val(calendar.calfreebusyurl);
+          $('#calendarcalfreebusyurl', dialog).show();
+        }
+
 
       if (calendar.showfeedcalendarurl) {
         if (calendar.feedcalendarurl) {

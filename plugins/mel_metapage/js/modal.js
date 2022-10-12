@@ -102,7 +102,9 @@ class GlobalModal
         };
         this.on_click_minified = this.on_click_exit;
         let $close = $(".modal-close");
-        $close.click(this.on_click_exit);
+        $close.click(() => {
+            this.on_click_exit();
+        });
         this.notHaveReduced($close);
         $close = null;
 

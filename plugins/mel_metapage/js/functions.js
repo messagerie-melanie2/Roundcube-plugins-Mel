@@ -17,6 +17,49 @@ function get_action(text, icon, action) {
     }
 }
 
+function m_mp_create_note()
+{
+    try {
+        window.create_note()
+    } catch (error1) {
+        console.warn("Impossible de créer des notes : ", error1, window.create_note);
+        try {
+            top.create_note();
+        } catch (error2) {
+            console.warn("Impossible de créer des notes : ", error2, top.create_note);
+            $(document).ready(async () => {
+                let it = 0;
+
+                if (!window.create_note)
+                {
+                    await wait(() => {
+                        if (it++ >= 10) return false;
+        
+                        return !window.create_note;
+                    })
+                }
+    
+                if (it >= 10 && !window.create_note) 
+                {
+                    console.error("Impossible de créer une note, la page des notes n'a probablement pas été charger correctement.", error1, error2, window.create_note, window, '<====== Diverses infos');
+                    if (!m_mp_create_note.ac)
+                    {
+                        m_mp_create_note.ac = true;
+                        console.log("Tentative d'importation.....");
+                        var script = document.createElement('script');
+                        script.onload = function () {
+                            console.log('Tentative...');
+                            m_mp_create_note();
+                        };
+                        script.src = mel_metapage.Functions.url('').split('/?')[0] + '/plugins/mel_metapage/js/program/notes.min.js';
+                    }
+                }
+                else if (!!window.create_note) window.create_note();
+            });
+        }
+    }
+}
+
 /**
  * Affiche la modale du bouton "créer".
  */
@@ -36,7 +79,7 @@ function m_mp_Create() {
         tache: get_action("mel_metapage.a_task", "icon-mel-survey", "m_mp_CreateOrOpenFrame('tasklist', () => m_mp_set_storage('task_create'), m_mp_NewTask)"),
         documents: get_action("mel_metapage.a_document", "icon-mel-folder", "m_mp_InitializeDocument()"),
         sondages: get_action("mel_metapage.a_survey", "icon-mel-sondage", "m_mp_sondage()"),
-        notes: get_action("mel_metapage.a_wordpad", "icon-mel-notes", "window.create_note()"),
+        notes: get_action("mel_metapage.a_wordpad", "icon-mel-notes", "m_mp_create_note()"),
     };
 
     const isSmall = $("html").hasClass("layout-small") || $("html").hasClass("layout-phone");
@@ -45,6 +88,11 @@ function m_mp_Create() {
         eval(actions.event.action);
         return;
     }
+
+    let $have_minified = $('#mel-have-something-minified-main-create');
+
+    if ($have_minified.length > 0) $have_minified.remove();
+    $have_minified = null;
 
     //Si la popup n'existe pas, on la créer.
     if (window.create_popUp === undefined) {
@@ -71,21 +119,48 @@ function m_mp_Create() {
         html = '<ul id=globallist class="row ignore-bullet">' + workspace + mail + reu + viso + tache + document + blocnote + pega + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.what_do_you_want_create"), "default", html, '   ');
         let create_popUp = new GlobalModal("globalModal", config, !isSmall);
+        const func_minifier = () => {
+            if ($('#mel-have-something-minified-main-create').length === 0 && $("#globallist").length === 0)
+            {
+                let $qu = $('#button-create').append(`
+                <span id="mel-have-something-minified-main-create" class="badge badge-pill badge-primary" style="position: absolute;
+                top: -5px;
+                pointer-events:none;
+                right: -5px;">•</span>
+                `);
+
+                if ($qu.css('position') !== 'relative') $qu.css('position', 'relative');
+            }
+        };
         create_popUp.on_click_exit = () => {
             if (!!window.create_popUp)
             {
-                window.create_popUp.close();
-                delete window.create_popUp;
+                window.create_popUp = undefined;
+                create_popUp.close();
+                
+                let $have_minified = $('#mel-have-something-minified-main-create');
+                if ($have_minified.length > 0) $have_minified.length.remove();
             }
         }
         create_popUp.on_click_minified = () => {
             window.create_popUp.close();
+            func_minifier();
         };
+        create_popUp.onClose(() => {
+            if (!!window.create_popUp) func_minifier();
+            else 
+            {
+                let $have_minified = $('#mel-have-something-minified-main-create');
+                if ($have_minified.length > 0) $have_minified.length.remove();
+            }
+        });
         window.create_popUp = create_popUp.haveReduced();
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {
         window.create_popUp.show();
     }
+
+    $('.global-modal-body.modal-body').css('height', '');
 
     if ($("#globallist").length > 0 && !isSmall) {
         $("#globalModal .icon-mel-undo.mel-return").remove();

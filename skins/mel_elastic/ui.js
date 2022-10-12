@@ -1,5 +1,11 @@
 $(document).ready(() => {
 
+    try {
+        Enumerable.from([]);
+    } catch (error) {
+        window.Enumerable = null;
+    }
+
     /**
      * Classe qui gère une règle css. Elle pourra être ajouter ou supprimer.
      */
@@ -265,7 +271,7 @@ $(document).ready(() => {
          */
         getKeys()
         {
-            return Enumerable.from(this.css).select(x => x.key).toArray();
+            return Enumerable?.from(this.css)?.select(x => x.key)?.toArray() ?? [];
         }
 
         /**
@@ -274,7 +280,7 @@ $(document).ready(() => {
          */
         getStyleSheet()
         {
-            return Enumerable.from(this.css).select(x => x.value).toArray().join('\r\n');
+            return Enumerable?.from(this.css)?.select(x => x.value)?.toArray()?.join('\r\n') ?? '';
         }
 
         /**
@@ -532,7 +538,7 @@ $(document).ready(() => {
 
                 $("#taskmenu").append('<ul class="list-unstyled"></ul>');
 
-                Enumerable.from(array).orderBy(x => parseInt(x.order)).forEach((e) => {
+                Enumerable?.from(array)?.orderBy(x => parseInt(x.order))?.forEach((e) => {
                     let li = $(`<li style="display:block" class="button-${this.get_nav_button_main_class(e.item[0])}"></li>`)
                     e = e.item;
                     if (e.css("display") === "none" || e.hasClass("hidden") || e.hasClass("compose"))
@@ -1039,7 +1045,7 @@ $(document).ready(() => {
                 };
 
                 let testing = (e, _class) => {
-                    const array = Enumerable.from(e.classList).toArray();
+                    const array = Enumerable?.from(e.classList)?.toArray() ?? [];
                     const count = array.length;
                     if (count === 1) action($(e), _class);
                     else if (count === 2 && array.includes(_class) && (array.includes("disabled") || array.includes("active")))
@@ -1107,7 +1113,7 @@ $(document).ready(() => {
                         
                         if (storage.includes(field))
                         {
-                            storage = Enumerable.from(storage).where(x => x !== field).toArray();
+                            storage = Enumerable?.from(storage)?.where(x => x !== field)?.toArray() ?? [];
                             mel_metapage.Storage.set(key, storage);
                         }
                     });

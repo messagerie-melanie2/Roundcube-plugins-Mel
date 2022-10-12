@@ -1880,7 +1880,7 @@ class mel_workspace extends rcube_plugin
                         $this->rc->gettext("wekan_in_progress", "mel_workspace"),
                         $this->rc->gettext("wekan_do", "mel_workspace")
                     ], $users);
-
+                    break;
                 case 'already_exist':
                     $board_id = [
                         'board_id' => $default_value[$index]['value'],

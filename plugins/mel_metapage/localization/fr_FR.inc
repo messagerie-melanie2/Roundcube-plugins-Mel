@@ -6,7 +6,7 @@ $labels['mail'] = $labels['mails'];
 $labels["contacts"] = "Contacts";
 $labels["contact"] = $labels["contacts"];
 $labels['create'] = "Créer";
-$labels['support'] = "Assistance";
+$labels['support'] = "Aide";
 $labels['my_favorites'] = "Mes raccourcis";
 $labels["contacts_organization"] = "Gestion des Annuaires";
 $labels["last_frame_opened"] = "Revenir à";
@@ -28,7 +28,7 @@ $labels["h_video"] = "Voir les vidéos";
 $labels["h_suggestion"] = "Proposer une amélioration";
 $labels["h_current"] = "Aide de la page";
 
-$labels["assistance"] = "Assistance";
+$labels["assistance"] = $labels['support'];
 $labels["describe_your_need_in_few_words"] = 'Décrivez-nous votre besoin en quelques mots pour que l\'on puisse vous aider';
 $labels["search_a_video"] = 'Rechercher une vidéo';
 

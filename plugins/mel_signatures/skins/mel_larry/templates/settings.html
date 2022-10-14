@@ -48,20 +48,20 @@
                   <input type="text" id="input-department" onkeyup="onInputChange();" value="<roundcube:var name="env:department" />">
                 </div>
                 <div class="form-section">
+                  <label for="input-logo"><roundcube:label name="mel_signatures.logo" /></label>
+                  <roundcube:object name="signaturelogo" id="input-logo" onchange="onInputChange();" />
+                </div>
+                <div class="form-section custom-logo">
+                  <label for="input-custom-logo"><roundcube:label name="mel_signatures.customlogo" /></label>
+                  <textarea type="text" id="input-custom-logo" onkeyup="onInputChange();" value=""></textarea>
+                </div>
+                <div class="form-section">
                   <label for="input-links"><roundcube:label name="mel_signatures.links" /></label>
                   <roundcube:object name="signaturelinks" id="input-links" />
                 </div>
                 <div class="form-section custom-link">
                   <label for="input-custom-link"><roundcube:label name="mel_signatures.customlink" /></label>
                   <input type="text" id="input-custom-link" onkeyup="onInputChange();" value="">
-                </div>
-                <div class="form-section">
-                  <label for="select-logo-type"><roundcube:label name="mel_signatures.logotype" /></label>
-                  <roundcube:object name="logotype" id="select-logo-type" onchange="onInputChange();" />
-                </div>
-                <div class="form-section custom-logotype">
-                  <label for="input-logo-type"><roundcube:label name="mel_signatures.logotypecustom" /></label>
-                  <input type="text" id="input-logo-type" onkeyup="onInputChange();" value="<roundcube:var name="env:logotype" />">
                 </div>
             </div>
             <div class="right-form">
@@ -82,12 +82,12 @@
                     <input type="text" id="input-mobile" onkeyup="onInputChange();" value="<roundcube:var name="env:mobilephone" />">
                 </div>
                 <div class="form-section">
-                  <label for="input-logo"><roundcube:label name="mel_signatures.logo" /></label>
-                  <roundcube:object name="signaturelogo" id="input-logo" onchange="onInputChange();" />
+                  <label for="select-logo-type"><roundcube:label name="mel_signatures.logotype" /></label>
+                  <roundcube:object name="logotype" id="select-logo-type" onchange="onInputChange();" />
                 </div>
-                <div class="form-section custom-logo">
-                  <label for="input-custom-logo"><roundcube:label name="mel_signatures.customlogo" /></label>
-                  <textarea type="text" id="input-custom-logo" onkeyup="onInputChange();" value=""></textarea>
+                <div class="form-section custom-logotype">
+                  <label for="input-logo-type"><roundcube:label name="mel_signatures.logotypecustom" /></label>
+                  <input type="text" id="input-logo-type" onkeyup="onInputChange();" value="<roundcube:var name="env:logotype" />">
                 </div>
             </div>
         </div>

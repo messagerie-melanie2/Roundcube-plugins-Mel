@@ -75,6 +75,20 @@ class mel_archivage extends rcube_plugin
       $this->register_action('plugin.mel_archivage', array($this, 'request_action'));
       $this->register_action('plugin.mel_archivage_traitement_browser', array($this, 'traitement_archivage_browser'));
       $this->register_action('plugin.mel_archivage_traitement_electron', array($this, 'traitement_archivage_electron'));
+
+      if ($rcmail->task == 'mail') {
+        // Ajout du bouton dans la toolbar
+        $this->add_button(array(
+          'type'        => 'link',
+          'command'     => 'plugin_archiver',
+          'class'       => 'button archiver disabled',
+          'classact'    => 'button archiver',
+          'label'       => 'archive',
+          'title'       => 'title',
+          'domain'      => $this->ID,
+          'innerclass'  => 'inner',
+        ), 'listcontrols');
+      }
     }
   }
 

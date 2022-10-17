@@ -45,6 +45,7 @@ class Accesinternet extends Moncompteobject {
 		];
 		// Titre de la page
 		rcmail::get_instance()->output->set_pagetitle(rcmail::get_instance()->gettext('mel_moncompte.moncompte'));
+		rcmail::get_instance()->output->set_env('moncompte_url_double_auth', rcmail::get_instance()->url(['_task' => 'settings', '_action' => 'plugin.mel_doubleauth']));
 		// Authentification
 		if ($user->authentification(Moncompte::get_current_user_password(), true)
 				&& $user->load($attributes)) {
@@ -61,7 +62,7 @@ class Accesinternet extends Moncompteobject {
 					rcmail::get_instance()->output->send('mel_moncompte.accesinternet_desactive');
 				}
 			}
-		}
+		}		
 		rcmail::get_instance()->output->send('mel_moncompte.accesinternet_interdit');
 	}
 	

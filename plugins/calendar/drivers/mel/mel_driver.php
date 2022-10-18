@@ -285,7 +285,8 @@ class mel_driver extends calendar_driver {
             'order'       => $order,
             'name'        => $cal->name,
             'listname'    => $calendar_name,
-            'editname'    => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name,
+            'editname'    => $this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name . ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? "" : " 🔒"),
+            'title'       => ($this->user->uid == $cal->id ? $this->rc->gettext('personalcalendar', 'mel_elastic') : $calendar_name) . ($cal->asRight(LibMelanie\Config\ConfigMelanie::WRITE) ? "" : " 🔒"),
             'color'       => $color,
             'showalarms'  => $alarm ? 1 : 0,
             'default'     => $default_calendar->id == $cal->id,
@@ -327,6 +328,10 @@ class mel_driver extends calendar_driver {
           else {
             // On est dans un calendrier enfant on cherche le parent
             $parentRcId = driver_mel::gi()->mceToRcId($cal->owner);
+
+            // le parent pour les ressources
+            $calendar['parentId'] = $parentRcId;
+            
             if (isset($tree->children[$parentRcId])) {
               if (!isset($tree->children[$parentRcId]->children)) {
                 $tree->children[$parentRcId]->children = [];
@@ -1982,6 +1987,7 @@ class mel_driver extends calendar_driver {
     $_event['created'] = new DateTime(date('Y-m-d H:i:s', $event->created));
     $_event['changed'] = new DateTime(date('Y-m-d H:i:s', $event->modified));
     $_event['calendar'] = driver_mel::gi()->mceToRcId($event->calendar);
+    $_event['resourceId'] = driver_mel::gi()->mceToRcId($event->calendar);
 
     // Sequence
     if (isset($event->sequence)) {

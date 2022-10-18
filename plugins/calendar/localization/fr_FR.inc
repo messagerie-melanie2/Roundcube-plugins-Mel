@@ -38,8 +38,16 @@ $labels['createcalendar'] = 'Créer un nouveau calendrier';
 $labels['name'] = 'Nom';
 $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
+// PAMELA - Fullcalendar premium
+$labels['resources'] = 'Calendriers';
+$labels['timelineday'] = 'Planning du jour';
+$labels['timelineweek'] = 'Planning de la semaine';
+$labels['timelinemonth'] = 'Planning du mois';
+$labels['twoday'] = '2 jours';
+$labels['threeday'] = '3 jours';
 $labels['week'] = 'Semaine';
 $labels['work'] = 'Semaine de travail';
+$labels['workresource'] = 'Agenda de travail';
 $labels['month'] = 'Mois';
 $labels['monthWork'] = 'Mois de travail';
 $labels['agenda'] = 'Ordre du jour';

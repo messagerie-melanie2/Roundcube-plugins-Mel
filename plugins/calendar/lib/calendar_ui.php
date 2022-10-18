@@ -137,6 +137,9 @@ class calendar_ui
         $this->cal->include_script('lib/js/moment.js');
         $this->cal->include_script('lib/js/moment_fr.js');
         $this->cal->include_script('lib/js/fullcalendar.js');
+        // PAMELA - Fullcalendar premium
+        $this->cal->include_script('lib/js/scheduler.js');
+        $this->cal->include_stylesheet('lib/js/scheduler.css');
 
         if ($this->rc->task == 'calendar' && $this->rc->action == 'print') {
             $this->cal->include_script('print.js');

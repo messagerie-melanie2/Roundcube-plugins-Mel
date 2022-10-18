@@ -405,9 +405,15 @@ class calendar extends rcube_plugin
             $view = $this->rc->config->get('calendar_default_view', $this->defaults['calendar_default_view']);
 
             $select = new html_select(['name' => '_default_view', 'id' => $field_id]);
+            // PAMELA - Fullcalendar premium
+            $select->add($this->gettext('timelineday'), "timelineDay");
             $select->add($this->gettext('day'), "agendaDay");
+            $select->add($this->gettext('twoday'), "agendaTwoDay");
+            $select->add($this->gettext('threeday'), "agendaThreeDay");
+            $select->add($this->gettext('workresource'), "agendaResource");
             $select->add($this->gettext('work'), "agendaWork");
             $select->add($this->gettext('week'), "agendaWeek");
+            $select->add($this->gettext('timelineweek'), "timelineWeek");
             $select->add($this->gettext('monthWork'), "monthWork");
             $select->add($this->gettext('month'), "month");
             $select->add($this->gettext('agenda'), "list");

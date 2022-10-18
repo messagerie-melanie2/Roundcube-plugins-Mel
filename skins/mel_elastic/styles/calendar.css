@@ -832,4 +832,13 @@ ul#calendarslist.treelist li div.treetoggle:hover
 
 #calendarurlbox .slider.round:before {
   border-radius: 50%;
-} 
+}
+
+.fc a.fc-event.fc-day-grid-event {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.fc a.fc-event.fc-timeline-event {
+    margin: 2px 2px 0;
+}

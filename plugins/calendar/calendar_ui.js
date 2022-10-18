@@ -113,18 +113,67 @@ function rcube_calendar_ui(settings) {
         eventLimit: 4,
         hiddenDays: [0, 6]
       },
+      // PAMELA - View week days of work
       agendaWork: {
         columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
         titleFormat: settings.dates_long,
-        hiddenDays: [0, 6]
+        hiddenDays: [0, 6],
+        // Problème avec les journées entières
+        eventLimit: 4
+      },
+      // PAMELA - Fullcalendar premium
+      agendaResource: {
+        columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
+        titleFormat: settings.dates_long,
+        hiddenDays: [0, 6],
+        groupByResource: true
+      },
+      timelineWeek: {
+        type: 'timeline',
+        duration: { weeks: 1 },
+        hiddenDays: [0, 6],
+        slotDuration: { days: 1 },
+        slotLabelFormat: 'ddd ' + settings.date_short
+      },
+      agendaTwoDay: {
+        type: 'agenda',
+        duration: { days: 2 },
+        columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
+
+        // views that are more than a day will NOT do this behavior by default
+        // so, we need to explicitly enable it
+        groupByResource: true,
+
+        //// uncomment this line to group by day FIRST with resources underneath
+        groupByDateAndResource: true,
+        // PAMELA - Problème avec les journées entières
+        eventLimit: 4
+      },
+      agendaThreeDay: {
+        type: 'agenda',
+        duration: { days: 3 },
+        columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
+
+        // views that are more than a day will NOT do this behavior by default
+        // so, we need to explicitly enable it
+        groupByResource: true,
+
+        //// uncomment this line to group by day FIRST with resources underneath
+        groupByDateAndResource: true,
+        // PAMELA - Problème avec les journées entières
+        eventLimit: 4
       },
       week: {
         columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
-        titleFormat: settings.dates_long
+        titleFormat: settings.dates_long,
+        // PAMELA - Problème avec les journées entières
+        eventLimit: 4
       },
       day: {
         columnFormat: 'dddd ' + settings.date_short,  // Monday 9/7
-        titleFormat: 'dddd ' + settings.date_long
+        titleFormat: 'dddd ' + settings.date_long,
+        // PAMELA - Problème avec les journées entières
+        eventLimit: 4
       }
     },
     timeFormat: settings.time_format,
@@ -133,13 +182,22 @@ function rcube_calendar_ui(settings) {
     allDayText: rcmail.gettext('all-day', 'calendar'),
     buttonText: {
       today: settings['today'],
+      timelineDay: rcmail.gettext('timelineday', 'calendar'),
       day: rcmail.gettext('day', 'calendar'),
+      agendaTwoDay: rcmail.gettext('twoday', 'calendar'),
+      agendaThreeDay: rcmail.gettext('threeday', 'calendar'),
       week: rcmail.gettext('week', 'calendar'),
       agendaWork: rcmail.gettext('work', 'calendar'),
+      timelineWeek: rcmail.gettext('timelineweek', 'calendar'),
+      agendaResource: rcmail.gettext('workresource', 'calendar'),
       month: rcmail.gettext('month', 'calendar'),
       monthWork: rcmail.gettext('monthWork', 'calendar'),
       list: rcmail.gettext('agenda', 'calendar')
     },
+    // PAMELA - Fullcalendar premium
+    resources: [],
+    schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+    resourceLabelText: rcmail.gettext('resources', 'calendar'),
     buttonIcons: {
       prev: 'left-single-arrow',
       next: 'right-single-arrow'
@@ -2835,8 +2893,10 @@ function rcube_calendar_ui(settings) {
     if (this.quickview_active && !this.quickview_sources.length) {
       // register regular calendar event sources
       $.each(this.calendars, function (k, cal) {
-        if (cal.active)
+        if (cal.active) {
           fc.fullCalendar('addEventSource', cal);
+        }
+          
       });
 
       this.quickview_active = false;
@@ -2888,8 +2948,10 @@ function rcube_calendar_ui(settings) {
 
     // register regular calendar event sources
     $.each(me.calendars, function (k, cal) {
-      if (cal.active)
+      if (cal.active) {
         fc.fullCalendar('addEventSource', cal);
+      }
+        
     });
 
     // uncheck all active quickview icons
@@ -3568,9 +3630,13 @@ function rcube_calendar_ui(settings) {
     }, cal);
 
     if (fc && (cal.active || cal.subscribed)) {
-      if (cal.active)
+      if (cal.active) {
         fc.fullCalendar('addEventSource', me.calendars[id]);
 
+        // PAMELA
+        fc.fullCalendar('addResource', me.calendars[id]);
+      }
+        
       var submit = { id: id, active: cal.active ? 1 : 0 };
       if (cal.subscribed !== undefined)
         submit.permanent = cal.subscribed ? 1 : 0;
@@ -3719,6 +3785,23 @@ function rcube_calendar_ui(settings) {
 
       // add/remove event source
       fc.fullCalendar(this.checked ? 'addEventSource' : 'removeEventSource', me.calendars[id]);
+
+      // PAMELA
+      // Vider les ressources
+      for (const resource of fc.fullCalendar('getResources')) {
+        fc.fullCalendar('removeResource', resource);
+      }
+
+      // Réajouter les ressources depuis les calendriers
+      for (const key in me.calendars) {
+        if (Object.hasOwnProperty.call(me.calendars, key)) {
+          const calendar = me.calendars[key];
+          if (calendar.active) {
+            fc.fullCalendar('addResource', calendar);
+          }
+        }
+      }
+
       rcmail.http_post('calendar', { action: 'subscribe', c: { id: id, active: this.checked ? 1 : 0 } });
     }
   })
@@ -3795,7 +3878,7 @@ function rcube_calendar_ui(settings) {
     header: {
       right: 'prev,next today',
       center: 'title',
-      left: 'agendaDay,agendaWork,agendaWeek,monthWork,month,list'
+      left: 'timelineDay,agendaDay,agendaTwoDay,agendaThreeDay,agendaResource,agendaWork,agendaWeek,timelineWeek,monthWork,month,list'
     },
     defaultDate: viewdate,
     height: $('#calendar').height(),
@@ -3810,21 +3893,25 @@ function rcube_calendar_ui(settings) {
         setTimeout(function () { me.events_loaded(); }, 20);
     },
     // callback for date range selection
-    select: function (start, end, e, view) {
+    // PAMELA - Fullcalendar premium
+    select: function (start, end, e, view, resource) {
       var range_select = (start.hasTime() || start != end)
       if (dialog_check(e) && range_select)
-        event_edit_dialog('new', { start: start, end: end, allDay: !start.hasTime(), calendar: me.selected_calendar });
+        // PAMELA - Fullcalendar premium
+        event_edit_dialog('new', { start: start, end: end, allDay: !start.hasTime(), calendar: resource ? resource.id : me.selected_calendar });
       if (range_select || ignore_click)
         view.calendar.unselect();
     },
     // callback for clicks in all-day box
-    dayClick: function (date, e, view) {
+    // PAMELA - Fullcalendar premium
+    dayClick: function (date, e, view, resource) {
       var now = new Date().getTime();
       if (now - day_clicked_ts < 400 && day_clicked == date.toDate().getTime()) {  // emulate double-click on day
         var enddate = new Date();
         if (date.hasTime())
           enddate.setTime(date.toDate().getTime() + DAY_MS - 60000);
-        return event_edit_dialog('new', { start: date, end: enddate, allDay: !date.hasTime(), calendar: me.selected_calendar });
+        // PAMELA - Fullcalendar premium
+        return event_edit_dialog('new', { start: date, end: enddate, allDay: !date.hasTime(), calendar: resource ? resource.id : me.selected_calendar });
       }
 
       if (!ignore_click) {
@@ -3929,6 +4016,16 @@ function rcube_calendar_ui(settings) {
     var mondayOffset = Math.abs(1 - me.datepicker_settings.firstDay);
     return $.datepicker.iso8601Week(new Date(date.getTime() + mondayOffset * 86400000));
   };
+
+  // Réajouter les ressources depuis les calendriers
+  for (const key in me.calendars) {
+    if (Object.hasOwnProperty.call(me.calendars, key)) {
+      const calendar = me.calendars[key];
+      if (calendar.active) {
+        fc.fullCalendar('addResource', calendar);
+      }
+    }
+  }
 
   var minical;
   var init_calendar_ui = function () {

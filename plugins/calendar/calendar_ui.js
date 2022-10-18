@@ -187,6 +187,7 @@ function rcube_calendar_ui(settings) {
     // PAMELA - Fullcalendar premium
     resources: [],
     resourceOrder: 'order',
+    resourceAreaWidth: '200px',
     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
     resourceLabelText: rcmail.gettext('resources', 'calendar'),
     buttonIcons: {

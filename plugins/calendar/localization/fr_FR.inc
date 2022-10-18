@@ -40,6 +40,10 @@ $labels['color'] = 'Couleur';
 $labels['day'] = 'Jour';
 // PAMELA - Fullcalendar premium
 $labels['resources'] = 'Calendriers';
+$labels['views-day'] = 'Vues à la journée';
+$labels['views-week'] = 'Vues à la semaine';
+$labels['views-month'] = 'Vues au mois';
+$labels['views-list'] = 'Vues en liste';
 $labels['timelineday'] = 'Planning du jour';
 $labels['timelineweek'] = 'Planning de la semaine';
 $labels['timelinemonth'] = 'Planning du mois';

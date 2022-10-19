@@ -1,4 +1,4 @@
-//compress:true
+//compress:false
 @import './main.less';
 
 ._states()
@@ -7,14 +7,14 @@
     height: 20px;
     width: 20px;
     line-height: 15px!important;
-    color: #31365B!important;
+    color: var(--calendar-datepicker-selected-color)!important;
     margin-left: auto;
     margin-right: auto;
 }
 
 ._fc-unthemed()
 {
-    border-color:#C2C5D3!important;
+    border-color:var(--calendar-table-border)!important;
 }
 
 ._datepicker-ym()
@@ -35,13 +35,15 @@
             > div
             {
                 > .header{
-                    background-color:var(--tierciary-bckg-color)!important;  
+                    background-color:var(--calendar-base-header-background-color)!important;  
                 }
             }
 
             > #layout-sidebar{
                 > .header{
-                    border-bottom: solid white thin;
+                    background-color:var(--calendar-sidebar-header-background-color)!important;  
+                    color: var(--calendar-sidebar-header-color)!important;
+                    border-bottom: var(--calendar-sidebar-header-bottom-separator);
                     margin: 0 15px;
 
                     .header-title{
@@ -52,10 +54,9 @@
             }
 
             &-sidebar{
-                background-color:var(--tierciary-bckg-color)!important;  
-                border-right-color:white;
-                border-right-width: thin;
-                border-right-style: solid;
+                background-color:var(--calendar-sidebar-background-color)!important;  
+                color: var(--calendar-sidebar-text-color)!important;
+                border-right: var(--calendar-sidebar-separator);
 
                 .searchbar {
                     display:none;
@@ -74,12 +75,20 @@
 
             #layout-content{
                 > .header{
+                    background-color: var(--calendar-content-header-background-color)!important;
+                    color: var(--calendar-content-header-color)!important;
                     a{
                         &.button{
-                            color:white;
+                            color:var(--calendar-toolbar-roundcube-color);
+                            background-color:var(--calendar-toolbar-roundcube-background-color);
 
                             &.reset{
                                 color:black;
+                            }
+
+                            &:not(.disabled):hover{
+                                color:var(--calendar-toolbar-roundcube-hover-color)!important;
+                                background-color:var(--calendar-toolbar-roundcube-hover-background-color)!important;
                             }
                         }
                     }
@@ -90,7 +99,7 @@
 
                     .header-title{
                         span{
-                            color:white;
+                            color:var(--calendar-sidebar-header-color);
                         }
                     }
 
@@ -141,13 +150,13 @@
                         &-datepicker{
                             &-activerange{
                                 html body&{
-                                    background-color :#31365B!important;
+                                    background-color: var(--calendar-datepicker-active-range-background-color)!important;
                                 }
                             }
 
                             &-week{
                                 &-col{
-                                    color:white!important;
+                                    color:var(--calendar-datepicker-week-column-color)!important;
                                     font-weight: bold;
                                 }
                             }
@@ -172,9 +181,7 @@
                 }
 
                 &-calendar{
-                    border-top-color: white !important;
-                    border-top-style: solid !important;
-                    border-top-width: thin !important;
+                    border-top:var(--calendar-datepicker-top-separator)!important;
                 }
 
                 &-header{
@@ -227,7 +234,7 @@
                             }
 
                             .ui-state-highlight{
-                                background-color: #454F98 !important;
+                                background-color: var(--calendar-datepicker-selected-unactive-background-color) !important;
                             }
                         }
                     }
@@ -235,7 +242,7 @@
 
                 .ui {
                     &-state-highlight{
-                        background-color: #454F98 !important;
+                        background-color: var(--calendar-datepicker-selected-unactive-background-color) !important;
                     }
                 }
 
@@ -280,9 +287,9 @@
             &-datepicker{
                 .ui{
                     &-datepicker{
-                        background-color :#31365B!important;
+                        background-color :var(--calendar-datepicker-background-color)!important;
                         &-header{
-                            background-color :#31365B!important;
+                            background-color :var(--calendar-datepicker-header-background-color)!important;
                         }
                     }
                 }
@@ -294,7 +301,7 @@
                 &.selected{
                     > div{
                         > *{
-                            background-color :#31365B!important;
+                            background-color :var(--calendar-list-item-selected-background-color)!important;
                         }
                     }
                 }
@@ -397,8 +404,8 @@
                     }
 
                     &::before{
-                        border-color: black!important;
-                        background-color: white!important;
+                        border-color: var(--calendar-list-item-switch-border-color)!important;
+                        background-color: var(--calendar-list-item-switch-background-color)!important;
                         border-radius: 5px;
                         width: 16px;
                         height: 16px;
@@ -422,7 +429,9 @@
                                 content: "\ec4b";
                                 font-family: IcoFont;
                                 font-size: 8px;
-                                text-shadow: 0px 0px 1px black;
+                                //text-shadow: 0px 0px 1px black;
+                                -webkit-text-stroke: var(--calendar-list-item-switch-tick-stroke);
+                                text-stroke: var(--calendar-list-item-switch-tick-stroke);
 
                                 html@{touch} &{
                                     transform: translateX(10px);
@@ -447,15 +456,12 @@
             form{
                 &::before{
                     content: unset;
-                    height: 36px;
-                    color: #737677;
-                    margin: 0 0 0 .75rem;
                 }
 
                 &::after{
                     content: "\e92d";
                     height: 36px;
-                    color: #424564;
+                    color: var(--calendar-toolbar-search-icon-color);
                     margin: 0 .75rem 0 0;
                     font-family: DWP!important;
                 }
@@ -470,14 +476,14 @@
             .fc{
                 &-header{
                     &-toolbar{
-                        background-color: #5870BF;
-                        color:white;
+                        background-color: var(--calendar-widget-header-background-color);
+                        color:var(--calendar-widget-header-text-color);
                     }
                 }
 
                 &-center{
                     h2 {
-                        color:white;
+                        color:var(--calendar-widget-header-text-color);
                         margin-top:8px;
                     }
                 }
@@ -1111,7 +1117,7 @@ ul{
             cursor: pointer;
 
             &:hover{
-                background-color: #31365B;
+                background-color: var(--calendar-list-item-hover-background-color);
             }
         }
 
@@ -1132,7 +1138,7 @@ ul{
                         }
 
                         &:hover{
-                            background-color: #31365B;
+                            background-color: var(--calendar-list-item-hover-background-color);
                             border-radius: 5px;
                         }
                     }

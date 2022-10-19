@@ -1,4 +1,4 @@
-//compress:false
+//compress:true
 @import './main.less';
 
 ._states()
@@ -336,7 +336,7 @@
                             margin-top:0;
                         }
 
-                        &.custom-control{
+                        .custom-control{
                             height: auto;
                             padding-left: 45px;
                             margin-right: -20px;
@@ -363,6 +363,7 @@
                             &.quickview{
                                 &::before{
                                     opacity: 0.2;
+                                    content: "\e962";
                                 }
                             }
                         }
@@ -653,7 +654,7 @@
                                     padding-left: 7px; 
 
                                     &::before{
-                                        content:"\e905"!important;
+                                        content:"\e904"!important;
                                         font-weight: normal!important;
                                         font-family: DWP!important;
                                     }

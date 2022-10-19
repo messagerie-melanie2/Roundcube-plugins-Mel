@@ -145,9 +145,33 @@ function CalendarPageInit() {
     };
 
     let select = '<select id="calendarOptionSelect" class="form-control mel-input calendar input-mel custom-select">';
+    let selectGroupDay = '<optgroup label="' + rcmail.get_label('calendar.views-day') + '">';
+    let selectGroupWeek = '<optgroup label="' + rcmail.get_label('calendar.views-week') + '">';
+    let selectGroupMonth = '<optgroup label="' + rcmail.get_label('calendar.views-month') + '">';
+    let selectGroupList = '<optgroup label="' + rcmail.get_label('calendar.views-list') + '">';
     $("body.task-calendar .fc-toolbar.fc-header-toolbar .fc-left .fc-button-group .fc-button").each(function () {
-      select += '<option value="' + $(this).attr('class').split(/\s+/)[0] + '" ' + isSelected($(this).text()) + '>' + $(this).text() + '</option>';
+      const value = '<option value="' + $(this).attr('class').split(/\s+/)[0] + '" ' + isSelected($(this).text()) + '>' + $(this).text() + '</option>';
+      if ($(this).attr('class').indexOf('Day') !== -1) {
+        selectGroupDay += value;
+      }
+      else if ($(this).attr('class').indexOf('agenda') !== -1 || $(this).attr('class').indexOf('Week') !== -1) {
+        selectGroupWeek += value;
+      }
+      else if ($(this).attr('class').indexOf('month') !== -1) {
+        selectGroupMonth += value;
+      }
+      else {
+        selectGroupList += value;
+      }
     });
+    selectGroupDay += '</optgroup>';
+    selectGroupWeek += '</optgroup>';
+    selectGroupMonth += '</optgroup>';
+    selectGroupList += '</optgroup>';
+    select += selectGroupDay;
+    select += selectGroupWeek;
+    select += selectGroupMonth;
+    select += selectGroupList;
     select += '</select>';
     $(select)
       .on("change", () => {

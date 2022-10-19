@@ -139,12 +139,7 @@ function rcube_calendar_ui(settings) {
         type: 'agenda',
         duration: { days: 2 },
         columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
-
-        // views that are more than a day will NOT do this behavior by default
-        // so, we need to explicitly enable it
         groupByResource: true,
-
-        //// uncomment this line to group by day FIRST with resources underneath
         groupByDateAndResource: true,
         // PAMELA - Problème avec les journées entières
         eventLimit: 4
@@ -153,12 +148,7 @@ function rcube_calendar_ui(settings) {
         type: 'agenda',
         duration: { days: 3 },
         columnFormat: 'ddd ' + settings.date_short, // Mon 9/7
-
-        // views that are more than a day will NOT do this behavior by default
-        // so, we need to explicitly enable it
         groupByResource: true,
-
-        //// uncomment this line to group by day FIRST with resources underneath
         groupByDateAndResource: true,
         // PAMELA - Problème avec les journées entières
         eventLimit: 4
@@ -196,6 +186,8 @@ function rcube_calendar_ui(settings) {
     },
     // PAMELA - Fullcalendar premium
     resources: [],
+    resourceOrder: 'order',
+    resourceAreaWidth: '200px',
     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
     resourceLabelText: rcmail.gettext('resources', 'calendar'),
     buttonIcons: {
@@ -3787,20 +3779,7 @@ function rcube_calendar_ui(settings) {
       fc.fullCalendar(this.checked ? 'addEventSource' : 'removeEventSource', me.calendars[id]);
 
       // PAMELA
-      // Vider les ressources
-      for (const resource of fc.fullCalendar('getResources')) {
-        fc.fullCalendar('removeResource', resource);
-      }
-
-      // Réajouter les ressources depuis les calendriers
-      for (const key in me.calendars) {
-        if (Object.hasOwnProperty.call(me.calendars, key)) {
-          const calendar = me.calendars[key];
-          if (calendar.active) {
-            fc.fullCalendar('addResource', calendar);
-          }
-        }
-      }
+      fc.fullCalendar(this.checked ? 'addResource' : 'removeResource', me.calendars[id]);
 
       rcmail.http_post('calendar', { action: 'subscribe', c: { id: id, active: this.checked ? 1 : 0 } });
     }

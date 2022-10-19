@@ -324,10 +324,12 @@ class calendar_ui
             $jsenv[$id] = $prop;
         }
 
-        if (!empty($prop['title'])) {
-            $title = $prop['title'];
-        }
-        else if ($prop['name'] != $prop['listname'] || strlen($prop['name']) > 25) {
+        // PAMELA - Fullcalendar premium
+        // if (!empty($prop['title'])) {
+        //     $title = $prop['title'];
+        // }
+        // else 
+        if ($prop['name'] != $prop['listname'] || strlen($prop['name']) > 25) {
             $title = html_entity_decode($prop['name'], ENT_COMPAT, RCUBE_CHARSET);
         }
         else {

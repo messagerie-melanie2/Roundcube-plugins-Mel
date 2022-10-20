@@ -2251,6 +2251,9 @@ class mel_driver extends calendar_driver {
         }
         $calendars = $this->calendars;
       }
+      if (strpos($event_id, self::CALENDAR_SEPARATOR)) {
+        $event_id = explode(self::CALENDAR_SEPARATOR, $event_id, 2)[1];
+      }
       // Traitement de l'id pour les exceptions
       if (strpos($event_id, '@DATE-') !== false) {
         $id = explode('@DATE-', $event_id);

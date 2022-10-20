@@ -317,17 +317,21 @@
   <ul class="menu listing" role="menu" aria-labelledby="aria-label-melmorethings-menu">
     <li>
       <a href="#select" class="select active" data-popup="listselect-menu-copy" data-toggle-button="list-toggle-button"
-        title="Sélectionner" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu-copy"
-        data-original-title="Sélectionner"><span class="inner">Sélectionner</span></a>
+        title="<roundcube:label name="select" />" aria-haspopup="true" aria-expanded="false" aria-owns="listselect-menu-copy"
+        data-original-title="<roundcube:label name="select" />"><span class="inner"><roundcube:label name="select" /></span></a>
     </li>
     <li>
-      <a href="#threads" class="threads disabled" data-popup="threadselect-menu-copy" title="Fils" aria-haspopup="true"
-        aria-expanded="false" aria-owns="threadselect-menu-copy" data-original-title="Fils"><span
-          class="inner">Fils</span></a>
+      <a href="#threads" class="threads disabled" data-popup="threadselect-menu-copy" title="<roundcube:label name="threads" />" aria-haspopup="true"
+        aria-expanded="false" aria-owns="threadselect-menu-copy" data-original-title="<roundcube:label name="threads" />"><span
+          class="inner"><roundcube:label name="threads" /></span></a>
     </li>
     <li>
       <a href="#list-options" onclick="return rcmail.command('menu-open', 'messagelistmenu', this, event)"
-        class="options active" id="listmenulink" title="Options" tabindex="0"><span class="inner">Options</span></a>
+        class="options active" id="listmenulink" title="<roundcube:label name="options" />" tabindex="0"><span class="inner"><roundcube:label name="options" /></span></a>
+    </li>
+    <li>
+      <a href="#archive" onclick="return rcmail.command('plugin_archiver', 'messagelistmenu', this, event)"
+        class="archive active" id="listmenulink" title="<roundcube:label name="mel_archivage.archive" />" tabindex="0"><span class="inner"><roundcube:label name="mel_archivage.archive" /></span></a>
     </li>
   </ul>
 </div>

@@ -944,7 +944,7 @@ function PaperClipCopy(link)
     }
     const url = link[0].href;
     copyOnClick(url);
-    rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
+    rcmail.display_message(`${url} copié dans le presse-papier.`, "confirmation")
 }
 
 function refreshUsefulLinks()

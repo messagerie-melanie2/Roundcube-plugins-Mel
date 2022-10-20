@@ -1032,7 +1032,7 @@ class MasterWebconfBar {
              }
              const url = value || mel_metapage.Functions.public_url('webconf', {_key:this.webconf.key});
              copyOnClick(url);
-             rcmail.display_message((text || `${url} copier dans le presse-papier.`), "confirmation")
+             rcmail.display_message((text || `${url} copié dans le presse-papier.`), "confirmation")
     }
 
     /**
@@ -1105,7 +1105,7 @@ class MasterWebconfBar {
         else datas = this.phone_datas;
 
         const copy_value = `Numéro : ${datas.number} - PIN : ${datas.pin}`;
-        this.copy(copy_value, 'Numéro et code pin copier dans le presse-papier');
+        this.copy(copy_value, 'Numéro et code pin copiés dans le presse-papier');
     }
 
     minify_toolbar()

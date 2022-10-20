@@ -272,29 +272,29 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   margin-top: 8px;
 }
 .task-calendar .fc .fc-day.fc-today {
-  background-color: #F2FAF9 !important;
+  background-color: var(--calendar-widget-today-background-color) !important;
 }
 .task-calendar .fc .fc-day-number {
-  color: #575A76 !important;
+  color: var(--calendar-widget-day-text-color) !important;
 }
 .task-calendar .fc .fc-day-header {
-  color: #575A76 !important;
+  color: var(--calendar-widget-table-header-text-color) !important;
 }
 .task-calendar .fc .fc-week-number {
-  color: #575A76 !important;
+  color: var(--calendar-widget-day-text-color) !important;
 }
 .task-calendar .fc .fc-week-header {
-  color: #575A76 !important;
+  color: var(--calendar-widget-table-header-text-color) !important;
 }
 .task-calendar .fc .fc-now-indicator {
-  border-color: #FE7351;
+  border-color: var(--calendar-widget-now-color);
   border-width: thin;
 }
 .task-calendar .fc .fc-nonbusiness {
-  background-color: #F0F0F0;
+  background-color: var(--calendar-widget-nonbusiness);
 }
 .task-calendar .fc .fc-axis {
-  color: #575A76 !important;
+  color: var(--calendar-widget-hours-text-color) !important;
 }
 .task-calendar .fc .fc-event .fc-content.sensible .fc-icon-sensitive {
   display: inline-block;
@@ -348,11 +348,11 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   border-color: var(--calendar-table-border) !important;
 }
 .task-calendar .fc-axis.fc-widget-header {
-  background-color: #E3E4EA;
+  background-color: var(--calendar-widget-table-header-background-color);
   font-weight: normal;
 }
 .task-calendar .fc-day-header {
-  background-color: #E3E4EA;
+  background-color: var(--calendar-widget-table-header-background-color);
   font-weight: normal;
 }
 .task-calendar .fc-day-header.fc-widget-header.fc-thu.fc-today {
@@ -381,15 +381,15 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   font-family: DWP!important;
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right button {
-  background-color: white;
-  color: #424564;
+  background-color: var(--calendar-widget-header-button-background-color);
+  color: var(--calendar-widget-header-button-text-color);
   transition: all 0.1s ease-in;
-  border-color: #F0F0F0;
+  border-color: var(--calendar-widget-header-button-border-color);
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-right button:hover {
-  background-color: #484D7A;
-  border-color: #484D7A;
-  color: white;
+  background-color: var(--calendar-widget-header-button-hover-background-color);
+  border-color: var(--calendar-widget-header-button-hover-border-color);
+  color: var(--calendar-widget-header-button-hover-text-color);
 }
 .task-calendar .fc-toolbar.fc-header-toolbar .fc-left .btn-group.btn-group-toggle {
   display: none;
@@ -405,7 +405,7 @@ html.touch .task-calendar .listing .custom-switch .custom-control-input:checked 
   margin: 2px 2px 0;
 }
 .task-calendar select.mel-input.calendar {
-  background-color: white;
+  background-color: var(--calendar-widget-header-select-background-color);
   margin-top: 6px;
   margin-left: 15px;
 }
@@ -434,7 +434,7 @@ html.layout-phone .task-calendar select.mel-input.calendar {
   left: 14px;
 }
 #datepicker {
-  background-color: #31365B !important;
+  background-color: var(--calendar-datepicker-background-color) !important;
 }
 .datepicker-dp-title {
   white-space: nowrap;
@@ -521,33 +521,38 @@ a.mel-calendar-button {
   border-radius: 50px;
   width: -moz-fit-content;
   width: fit-content;
+  background-color: var(--calendar-resume-button-background-color);
+  border: var(--calendar-resume-button-border);
+  color: var(--calendar-resume-button-text-color) !important;
 }
 a.mel-calendar-button:hover {
-  color: white!important;
-  background-color: #484D7A;
-  border-color: #484D7A;
+  color: var(--calendar-resume-button-hover-text-color) !important;
+  background-color: var(--calendar-resume-button-hover-background-color);
+  border-color: var(--calendar-resume-button-hover-border-color);
 }
 a.mel-calendar-button:hover > span {
-  color: white!important;
+  color: var(--calendar-resume-button-hover-text-color) !important;
 }
 a.mel-calendar-button.danger:hover {
-  background-color: #fc945a;
-  border-color: #fc945a;
+  --calendar-resume-button-hover-background-color: var(--danger-color);
+  --calendar-resume-button-hover-border-color: var(--danger-color);
+  --calendar-resume-button-hover-text-color: var(--main-text-color-darker);
 }
 button.mel-calendar-button {
   transition: all 0.1s ease-in;
   border-radius: 10px;
-  border: none;
-  background-color: transparent;
+  border: var(--calendar-resume-button-border);
+  background-color: var(--calendar-resume-button-background-color);
+  color: var(--calendar-resume-button-text-color) !important;
   padding-top: 5px;
   padding-bottom: 5px;
   margin-right: 10px!important;
   margin-left: 0!important;
 }
 button.mel-calendar-button:hover {
-  color: white!important;
-  background-color: #484D7A;
-  border-color: #484D7A;
+  color: var(--calendar-resume-button-hover-text-color) !important;
+  background-color: var(--calendar-resume-button-hover-background-color);
+  border-color: var(--calendar-resume-button-hover-border-color);
   border-radius: 10px;
 }
 button.mel-calendar-button > .inner {
@@ -556,8 +561,9 @@ button.mel-calendar-button > .inner {
   margin-top: 9px;
 }
 button.mel-calendar-button.danger:hover {
-  background-color: #fc945a;
-  border-color: #fc945a;
+  --calendar-resume-button-hover-text-color: var(--main-text-color-darker);
+  --calendar-resume-button-hover-background-color: var(--danger-color);
+  --calendar-resume-button-hover-border-color: var(--danger-color);
 }
 .mel-calendar-button-sm {
   padding: 5px 5px!important;
@@ -568,9 +574,7 @@ button.mel-calendar-button.danger:hover {
   max-width: 100%;
 }
 .calendar-show-event.modal-footer.global-modal-footer {
-  border-top-style: solid;
-  border-top-width: 1.6px;
-  border-color: #B1B4C6;
+  border-top: var(--calendar-resume-footer-top-separator);
   margin: 0 3rem;
 }
 .calendar_url {
@@ -642,42 +646,67 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   background-color: var(--calendar-list-item-hover-background-color);
   border-radius: 5px;
 }
-#calendarurlbox .slider {
+#calendarurlbox .slider,
+#appointmentbox .slider {
   position: absolute;
   cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--calendar-slider-disabled-background-color);
   -webkit-transition: 0.4s;
   transition: 0.4s;
+  border: var(--calendar-slider-disabled-border);
 }
-#calendarurlbox .slider::before {
+#calendarurlbox .slider::before,
+#appointmentbox .slider::before {
   position: absolute;
   content: "";
   height: 13px;
   width: 13px;
   left: 2px;
-  bottom: 2px;
-  background-color: white;
+  bottom: 1px;
+  background-color: var(--calendar-slider-disabled-round-background-color);
+  border: var(--calendar-slider-disabled-round-border);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
-#calendarurlbox .slider.round {
+#calendarurlbox .slider.round,
+#appointmentbox .slider.round {
   border-radius: 34px;
 }
-#calendarurlbox .slider.round::before {
+#calendarurlbox .slider.round::before,
+#appointmentbox .slider.round::before {
   border-radius: 50%;
 }
-#calendarurlbox input:checked + .slider {
-  background-color: #2196F3;
+#calendarurlbox input {
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
-#calendarurlbox input:checked + .slider::before {
+#calendarurlbox input:checked + .slider,
+#appointmentbox input:checked + .slider {
+  background-color: var(--calendar-slider-enabled-background-color);
+  border: var(--calendar-slider-enabled-border);
+}
+#calendarurlbox input:checked + .slider::before,
+#appointmentbox input:checked + .slider::before {
+  background-color: var(--calendar-slider-enabled-round-background-color);
+  border: var(--calendar-slider-enabled-round-border);
   -webkit-transform: translateX(13px);
   -ms-transform: translateX(13px);
   transform: translateX(13px);
 }
 #calendarurlbox input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px var(--calendar-slider-enabled-background-color);
+}
+#calendarurlbox .switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+#appointmentbox {
+  overflow-x: hidden;
 }

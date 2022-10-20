@@ -491,42 +491,42 @@
                 &-day{
                     &.fc{
                         &-today{
-                            background-color: #F2FAF9!important;
+                            background-color: var(--calendar-widget-today-background-color)!important;
                         }
                     }
 
                     &-number{
-                        color: #575A76 !important;
+                        color: var(--calendar-widget-day-text-color) !important;
                     }
 
                     &-header{
-                        color: #575A76 !important;
+                        color: var(--calendar-widget-table-header-text-color) !important;
                     }
                 }
 
                 &-week{
                     &-number{
-                        color: #575A76 !important;
+                        color: var(--calendar-widget-day-text-color) !important;
                     }
 
                     &-header{
-                        color: #575A76 !important;
+                        color: var(--calendar-widget-table-header-text-color) !important;
                     }
                 }
 
                 &-now{
                     &-indicator{
-                        border-color: #FE7351;
+                        border-color: var(--calendar-widget-now-color);
                         border-width: thin;
                     }
                 }
 
                 &-nonbusiness{
-                    background-color: #F0F0F0;
+                    background-color: var(--calendar-widget-nonbusiness);
                 }
 
                 &-axis{
-                    color: #575A76 !important;
+                    color: var(--calendar-widget-hours-text-color) !important;
                 }
 
                 &-event{
@@ -609,7 +609,7 @@
                 &.fc{
                     &-widget{
                         &-header{
-                            background-color: #E3E4EA;
+                            background-color: var(--calendar-widget-table-header-background-color);
                             font-weight: normal;
                         }
                     }
@@ -618,7 +618,7 @@
 
             &-day{
                 &-header{
-                    background-color: #E3E4EA;
+                    background-color: var(--calendar-widget-table-header-background-color);
                     font-weight: normal;
 
                     &.fc{
@@ -667,15 +667,15 @@
                                 }
 
                                 button{
-                                    background-color: white;
-                                    color:#424564;
+                                    background-color: var(--calendar-widget-header-button-background-color);
+                                    color:var(--calendar-widget-header-button-text-color);
                                     transition: all 0.1s ease-in;
-                                    border-color: #F0F0F0;
+                                    border-color: var(--calendar-widget-header-button-border-color);
 
                                     &:hover{
-                                        background-color: #484D7A;
-                                        border-color: #484D7A;
-                                        color:white;
+                                        background-color: var(--calendar-widget-header-button-hover-background-color);
+                                        border-color: var(--calendar-widget-header-button-hover-border-color);
+                                        color:var(--calendar-widget-header-button-hover-text-color);
                                     }
                                 }
                             }
@@ -713,7 +713,7 @@
         select{
             &.mel-input{
                 &.calendar{
-                    background-color:white;
+                    background-color:var(--calendar-widget-header-select-background-color);
                     margin-top: 6px;
                     margin-left: 15px;
 
@@ -763,7 +763,7 @@
 }
 
 #datepicker{
-    background-color :#31365B!important;
+    background-color :var(--calendar-datepicker-background-color)!important;
 }
 
 .datepicker{
@@ -933,21 +933,27 @@
                     border-radius: 50px;
                     width: -moz-fit-content;
                     width: fit-content;
+                    background-color: var(--calendar-resume-button-background-color);
+                    border: var(--calendar-resume-button-border);
+                    color: var(--calendar-resume-button-text-color)!important;
 
                     &:hover{
-                        color: white!important;
-                        background-color: #484D7A;
-                        border-color: #484D7A;
+                        color: var(--calendar-resume-button-hover-text-color)!important;
+                        background-color: var(--calendar-resume-button-hover-background-color);
+                        border-color: var(--calendar-resume-button-hover-border-color);
 
                         > span {
-                            color:white!important;
+                            color:var(--calendar-resume-button-hover-text-color)!important;
                         }
                     }
 
                     &.danger{
                         &:hover{
-                            background-color: #fc945a;
-                            border-color: #fc945a;
+                            // background-color: #fc945a;
+                            // border-color: #fc945a;
+                            --calendar-resume-button-hover-background-color: var(--danger-color);
+                            --calendar-resume-button-hover-border-color: var(--danger-color);
+                            --calendar-resume-button-hover-text-color: var(--main-text-color-darker);
                         }
                     }
                 }
@@ -955,17 +961,18 @@
                 button&{
                     transition: all 0.1s ease-in;
                     border-radius: 10px;
-                    border: none;
-                    background-color: transparent;
+                    border: var(--calendar-resume-button-border);
+                    background-color: var(--calendar-resume-button-background-color);
+                    color: var(--calendar-resume-button-text-color)!important;
                     padding-top: 5px;
                     padding-bottom: 5px;
                     margin-right:10px!important;
                     margin-left:0!important;
 
                     &:hover{
-                        color: white!important;
-                        background-color: #484D7A;
-                        border-color: #484D7A;
+                        color: var(--calendar-resume-button-hover-text-color)!important;
+                        background-color: var(--calendar-resume-button-hover-background-color);
+                        border-color: var(--calendar-resume-button-hover-border-color);
                         border-radius: 10px;
                     }
 
@@ -977,8 +984,11 @@
 
                     &.danger{
                         &:hover{
-                            background-color: #fc945a;
-                            border-color: #fc945a;
+                            // background-color: #fc945a;
+                            // border-color: #fc945a;
+                            --calendar-resume-button-hover-text-color: var(--main-text-color-darker);
+                            --calendar-resume-button-hover-background-color: var(--danger-color);
+                            --calendar-resume-button-hover-border-color: var(--danger-color);
                         }
                     }
                 }
@@ -1001,9 +1011,7 @@
     &-show-event{
         &.modal-footer{
             &.global-modal-footer{
-                border-top-style: solid;
-                border-top-width: 1.6px;
-                border-color: #B1B4C6;
+                border-top: var(--calendar-resume-footer-top-separator);
                 margin: 0 3rem;
             }
         }
@@ -1156,9 +1164,10 @@ ul{
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #ccc;
+        background-color: var(--calendar-slider-disabled-background-color);
         -webkit-transition: .4s;
         transition: .4s;
+        border: var(--calendar-slider-disabled-border);
 
         &::before {
             position: absolute;
@@ -1166,8 +1175,9 @@ ul{
             height: 13px;
             width: 13px;
             left: 2px;
-            bottom: 2px;
-            background-color: white;
+            bottom: 1px;
+            background-color: var(--calendar-slider-disabled-round-background-color);
+            border: var(--calendar-slider-disabled-round-border);
             -webkit-transition: .4s;
             transition: .4s;
         }
@@ -1182,11 +1192,17 @@ ul{
       }
 
       input {
+        opacity: 0;
+        width: 0;
+        height: 0;
         &:checked {
             + .slider{
-                background-color: #2196F3;
+                background-color: var(--calendar-slider-enabled-background-color);
+                border: var(--calendar-slider-enabled-border);
 
                 &::before{
+                    background-color: var(--calendar-slider-enabled-round-background-color);
+                    border: var(--calendar-slider-enabled-round-border);
                     -webkit-transform: translateX(13px);
                     -ms-transform: translateX(13px);
                     transform: translateX(13px);
@@ -1196,8 +1212,47 @@ ul{
 
         &:focus {
             + .slider{
-                box-shadow: 0 0 1px #2196F3;
+                box-shadow: 0 0 1px var(--calendar-slider-enabled-background-color);
             }
         }
-      }
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 30px;
+        height: 17px;
+    }
+}
+
+#appointmentbox {
+    overflow-x: hidden;
+
+    .slider{
+        &:extend(#calendarurlbox .slider);
+
+        &::before{
+            &:extend(#calendarurlbox .slider::before);
+        }
+
+        &.round{
+            &:extend(#calendarurlbox .slider.round);
+
+            &::before{
+                &:extend(#calendarurlbox .slider.round::before);
+            }
+        }
+    }
+
+    input {
+        &:checked{
+            + .slider{
+                &:extend(#calendarurlbox input:checked + .slider);
+
+                &::before{
+                    &:extend(#calendarurlbox input:checked + .slider::before);
+                }
+            }
+        }
+    }
 }

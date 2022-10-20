@@ -13,11 +13,17 @@ html.theme-classique:root{
     --theme-secondary-text-color:var(--secondary-text-color);
     --theme-default-background:var(--default-background);
 
+    --slider-disabled-border: none;
+    --slider-disabled-background-color: #ccc;
+    --slider-enabled-round-border:none;
+
     --calendar-base-header-background-color:var(--layout-list-background-color);
     --calendar-sidebar-header-color:var(--theme-base-text-color);
     --calendar-toolbar-roundcube-color:var(--theme-base-text-color);
     --calendar-toolbar-roundcube-hover-background-color: #edebe9;
     --calendar-toolbar-roundcube-hover-color: var(--calendar-toolbar-roundcube-color);
+
+
 }
 
 .mixin-listing()
@@ -677,4 +683,21 @@ html.theme-classique body.task-calendar #menu-gu-black{
 
 html.theme-classique #layout-list .listing tr.selected td.labels{
     border:none!important;
+}
+
+#calendarurlbox{
+    .slider {
+        &::before {
+            bottom: 2px;
+        }
+    }
+}
+
+#appointmentbox {
+    .slider{
+        &::before{
+            &:extend(#calendarurlbox .slider::before);
+        }
+    }
+
 }

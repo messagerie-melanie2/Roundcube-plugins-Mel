@@ -2,48 +2,37 @@
 @import "main.less";
 
 .mel-no-border{
-    border: none;
+    .mixin-no-border();
 }
 
 .mel-clickable {
-    cursor: pointer;
+    .mixin-clickable();
 }
 
 .noselect
 {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+    .mixin-no-select();
 }
 
 .titanic{
-    float: none;
+    .mixin-titanic();
 }
 
 .restore-font{
-    font-family: @default-fonts;
+    .mixin-restore-font();
 }
 
 .mel-max-width-500
 {
-    max-width: 500px;
+    .mixin-mel-max-width-500();
 }
 
 .mel-centered{
-    justify-content: center;
+    .mixin-mel-centered();
 }
 
 .absolute-center {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translateY(-50%) translateX(-50%);
-    transform: translateY(-50%) translateX(-50%);
+    .mixin-absolute-center();
 }
 
 .mel-bnum-indirect-actions()
@@ -57,44 +46,42 @@
 }
 
 .mel-all-ease-in-animation(){
-    transition: @mel-default-animation;
+    .mixin-all-ease-in-animation();
 }
 
 .mel-invisible-background-unimportant()
 {
-    background-color: var(--invisible);
+    .mixin-invisible-background();
 }
 
 .mel-invisible-background
 {
-    .mel-invisible-background-unimportant()!important;
+    .mixin-invisible-background-important();
 }
 
 .mel-loading {
-	animation: spin 0.75s linear infinite;
-	display: inline-block;
+    .mixin-loading();
 }
 
 .element-block
 {
-    display:block;
+    .mixin-block();
 }
 
 .bold{
-    font-weight: bold;
+    .mixin-bold();
 }
 
 .italic{
-    font-style: italic;
+    .mixin-italic();
 } 
 
 .margin-right-15{
-    margin-right: 15px;
+    .mixin-margin-right(15px);
 }
 
 .ignore-bullet{
-    list-style-type: none;
-    padding: 0;
+    .mixin-ignore-bullet();
 }
 
 .mel-main-colors(){

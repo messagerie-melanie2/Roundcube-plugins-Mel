@@ -243,6 +243,8 @@
     <roundcube:endif />
     <roundcube:button type="link-menuitem" command="calendar-showurl" label="calendar.showurl" class="showurl disabled"
       classAct="showurl active" />
+    <roundcube:button type="link-menuitem" command="calendar-appointment" label="calendar.configureappointment"
+      class="appointment disabled" classAct="appointment active" />
     <roundcube:if condition="!empty(env:calendar_settings['freebusy_url'])" />
     <roundcube:button type="link-menuitem" command="calendar-showfburl" label="calendar.showfburl"
       class="showurl disabled" classAct="showurl active" />
@@ -427,12 +429,13 @@
   <div id="first_url">
     <div id="first" class="d-flex justify-content-between" onclick="collapse_url_block('first')"
       style="cursor:pointer;">
-      <span style="user-select:none">Proposer mes disponibilité</span>
+      <span style="user-select:none">
+        <roundcube:label name="calendar.showavailability" />
+      </span>
       <span id="icon-first" class="icon_url icon-mel-chevron-up"></span>
     </div>
     <hr>
     <div id="block-first" class="block mb-5">
-
       <p>
         <roundcube:label name="calendar.freebusyurldescription" />
       </p>
@@ -445,12 +448,6 @@
             onclick="copy_calendar_url('calfreebusyurl')" />
         </div>
       </div>
-      <hr>
-      <button type="button" id="button_fullcalendar_freebusy" class="btn btn-secondary"
-        title="<roundcube:label name='calendar.open_in_web_page_title' />" onclick="open_external_calendar('calfreebusyurl')">
-        <roundcube:label name='calendar.open_in_web_page' />
-        <span class="ml-2 icon-mel-external"></span>
-      </button>
     </div>
   </div>
   <div id="second_url">
@@ -472,7 +469,6 @@
           <roundcube:label name='calendar.share_calendar_checkbox' />
         <p>
           <roundcube:label name="calendar.calendarfeedurldescription" />
-
         </p>
         <div id="input_calpublicfeedurl" class="input-group mb-3">
           <input type="text" id="calpublicfeedurl" class="form-control calendar_url" readonly>
@@ -483,40 +479,19 @@
               onclick="copy_calendar_url('calpublicfeedurl')" />
           </div>
         </div>
-        <hr>
-        <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"
-          title="<roundcube:label name='calendar.open_in_web_page_title' />" onclick="open_external_calendar('calpublicfeedurl')">
-          <roundcube:label name='calendar.open_in_web_page' />
-          <span class="ml-2 icon-mel-external"></span>
-        </button>
       </div>
     </div>
   </div>
-  <!-- <div id="third_url">
-    <div id="third" class="d-flex justify-content-between" onclick="collapse_url_block('third')" style="cursor:pointer;">
-      <span style="user-select:none">Afficher mon agenda dans une page web</span>
+  <div id="third_url">
+    <div id="third" class="d-flex justify-content-between" onclick="collapse_url_block('third')"
+      style="cursor:pointer;">
+      <span style="user-select:none">
+        <roundcube:label name='calendar.advancedoptions' />
+      </span>
       <span id="icon-third" class="icon_url icon-mel-chevron-down"></span>
     </div>
     <hr>
     <div id="block-third" class="block mb-5" style="display: none;">
-      <div class="input-group mb-3">
-        <input type="text" id="fullcalendarurl" class="form-control calendar_url" readonly>
-        <div class="input-group-append">
-          <input type="button" id="button_fullcalendarurl" class="btn btn-secondary"
-            value="<roundcube:label name='calendar.copied_url_default' />"
-            title="<roundcube:label name='calendar.copied_url_title' />" onclick="copy_calendar_url('fullcalendarurl')" />
-        </div>
-      </div>
-    </div>
-  </div> -->
-  <div id="fourth_url">
-    <div id="fourth" class="d-flex justify-content-between" onclick="collapse_url_block('fourth')"
-      style="cursor:pointer;">
-      <span style="user-select:none">Options avancées</span>
-      <span id="icon-fourth" class="icon_url icon-mel-chevron-down"></span>
-    </div>
-    <hr>
-    <div id="block-fourth" class="block mb-5" style="display: none;">
       <div id="calendarcaldavurl" style="display:none; margin-top:1rem">
         <p>
           <roundcube:label name="calendar.caldavurldescription" html="yes" />
@@ -545,6 +520,402 @@
       </div>
     </div>
   </div>
+</div>
+
+<div id="appointmentbox" class="popupmenu" style="min-height: 450px;">
+  <form id="appointmentpropform" action="#" method="POST">
+    <div id="activate_appointment" class="mt-1 mb-4">
+      <label class="switch mr-1" onclick="rcmail.command('toggle-appointment')"">
+        <input type=" checkbox" id="check_appointment">
+        <span class="slider round"></span>
+      </label>
+      <roundcube:label name='calendar.activateappointment' />
+      <input type="hidden" id="appointment_url">
+    </div>
+    <span id="appointment_configuration">
+      <div id="first_url">
+        <div id="first" class="d-flex justify-content-between" onclick="collapse_url_block('first')"
+          style="cursor:pointer;">
+          <span style="user-select:none">
+            <roundcube:label name="calendar.appointmentsduration" />
+          </span>
+          <span id="icon-first" class="icon_url icon-mel-chevron-up"></span>
+        </div>
+        <hr>
+        <div id="block-first" class="block mb-5">
+          <label class="switch mr-1" onclick="toggle_user_select_time()">
+            <input type="checkbox" id="check_user_select_time">
+            <span class="slider round"></span>
+          </label>
+          <roundcube:label name='calendar.letuserchoosetimeduration' />
+          <div id="time">
+            <div class="form-group row">
+              <label class="col-2 col-form-label">
+                <roundcube:label name='calendar.duration' />
+                :
+              </label>
+              <div class="col-10">
+                <select id="time_select" name="time_select" class="form-control" onchange="toggle_custom_time()">
+                  <option value="15">15 min</option>
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60">60 min</option>
+                  <option value="custom">Personnalisée</option>
+                </select>
+              </div>
+            </div>
+            <div id="custom_time" class="form-group row" style="display: none;">
+              <div class="col-2"></div>
+              <div class="col-6">
+                <input id="custom_time_input" name="custom_time_input" type="text" class="form-control">
+              </div>
+              <div class="col-4 pl-0">
+                <select id="custom_time_select" name="custom_time_select" class="form-control">
+                  <option>min</option>
+                  <option>h</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="second_url">
+        <div id="second" class="d-flex justify-content-between" onclick="collapse_url_block('second')"
+          style="cursor:pointer;">
+          <span style="user-select:none">
+            <roundcube:label name='calendar.appointmentsrange' />
+          </span>
+          <span id="icon-second" class="icon_url icon-mel-chevron-down"></span>
+        </div>
+        <hr>
+        <div id="block-second" class="block mb-5" style="display: none;">
+          <div id="monday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_1" id="day_check_1" checked
+                onchange="toggle_appointment_range('1')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.monday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_1">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_1-1" name="time_start_1-1" type="text" class="form-control"
+                      onchange="check_time_validity('1-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_1-1" name="time_end_1-1" type="text" class="form-control"
+                      onchange="check_time_validity('1-1')">
+                  </div>
+                  <span id="time_alert_1-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('1')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div id="tuesday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_2" id="day_check_2" checked
+                onchange="toggle_appointment_range('2')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.tuesday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_2">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_2-1" name="time_start_2-1" type="text" class="form-control"
+                      onchange="check_time_validity('2-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_2-1" name="time_end_2-1" type="text" class="form-control"
+                      onchange="check_time_validity('2-1')">
+                  </div>
+                  <span id="time_alert_2-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('2')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div id="wednesday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_3" id="day_check_3" checked
+                onchange="toggle_appointment_range('3')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.wednesday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_3">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_3-1" name="time_start_3-1" type="text" class="form-control"
+                      onchange="check_time_validity('3-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_3-1" name="time_end_3-1" type="text" class="form-control"
+                      onchange="check_time_validity('3-1')">
+                  </div>
+                  <span id="time_alert_3-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('3')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div id="thursday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_4" id="day_check_4" checked
+                onchange="toggle_appointment_range('4')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.thursday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_4">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_4-1" name="time_start_4-1" type="text" class="form-control"
+                      onchange="check_time_validity('4-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_4-1" name="time_end_4-1" type="text" class="form-control"
+                      onchange="check_time_validity('4-1')">
+                  </div>
+                  <span id="time_alert_4-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('4')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div id="friday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_5" id="day_check_5" checked
+                onchange="toggle_appointment_range('5')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.friday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_5">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_5-1" name="time_start_5-1" type="text" class="form-control"
+                      onchange="check_time_validity('5-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_5-1" name="time_end_5-1" type="text" class="form-control"
+                      onchange="check_time_validity('5-1')">
+                  </div>
+                  <span id="time_alert_5-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('5')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div id="saturday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_6" id="day_check_6" onchange="toggle_appointment_range('6')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.saturday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_6" style="display: none;">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_6-1" name="time_start_6-1" type="text" class="form-control"
+                      onchange="check_time_validity('6-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_6-1" name="time_end_6-1" type="text" class="form-control"
+                      onchange="check_time_validity('6-1')">
+                  </div>
+                  <span id="time_alert_6-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('6')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div id="sunday" class="day row">
+            <div class="col-1">
+              <input type="checkbox" name="day_check_7" id="day_check_7" onchange="toggle_appointment_range('7')">
+            </div>
+            <div class="col-2 text-uppercase font-weight-bold">
+              <roundcube:label name='calendar.sunday' />
+            </div>
+            <div class="col-7">
+              <div id="appointment_range_7" style="display: none;">
+                <div class="row">
+                  <div class="col-5">
+                    <input id="time_start_7-1" name="time_start_7-1" type="text" class="form-control"
+                      onchange="check_time_validity('7-1')">
+                  </div>
+                  -
+                  <div class="col-5">
+                    <input id="time_end_7-1" name="time_end_7-1" type="text" class="form-control"
+                      onchange="check_time_validity('7-1')">
+                  </div>
+                  <span id="time_alert_7-1" class="text-danger pl-3" style="display: none;">
+                    <roundcube:label name='calendar.end_time_alert' />
+                  </span>
+                  <div class="col-1">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-primary float-right" onclick="add_time('7')">
+                <span class="">+</span>
+              </button>
+            </div>
+          </div>
+          <hr>
+        </div>
+      </div>
+      <div id="third_url">
+        <div id="third" class="d-flex justify-content-between" onclick="collapse_url_block('third')"
+          style="cursor:pointer;">
+          <span style="user-select:none">
+            <roundcube:label name='calendar.appointmenttimebetween' />
+          </span>
+          <span id="icon-third" class="icon_url icon-mel-chevron-down"></span>
+        </div>
+        <hr>
+        <div id="block-third" class="block mb-5" style="display: none;">
+          <div class="row">
+            <div class="col-12 mb-4">
+              <roundcube:label name='calendar.select_time_between_appointment' />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-4 col-form-label">
+              <roundcube:label name='calendar.before_event' /> :
+            </label>
+            <div class="col-8">
+              <select id="time_before_select" name="time_before_select" class="form-control">
+                <option value="0" selected>0 min</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-4 col-form-label">
+              <roundcube:label name='calendar.after_event' /> :
+            </label>
+            <div class="col-8">
+              <select id="time_after_select" name="time_after_select" class="form-control">
+                <option value="0" selected>0 min</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="fourth_url">
+        <div id="fourth" class="d-flex justify-content-between" onclick="collapse_url_block('fourth')"
+          style="cursor:pointer;">
+          <span style="user-select:none">
+            <roundcube:label name='calendar.appointmentreason' />
+          </span>
+          <span id="icon-fourth" class="icon_url icon-mel-chevron-down"></span>
+        </div>
+        <hr>
+        <div id="block-fourth" class="block mb-5" style="display: none;">
+          <label class="switch mr-1" onclick="">
+            <input type="checkbox" id="check_appointment">
+            <span class="slider round"></span>
+          </label>
+          <roundcube:label name='calendar.letusercustomreason' />
+          <div id="appointment_reason">
+            <div class="form-group row mt-3">
+              <div class="col-10">
+                <input type="text" class="form-control" id="time_reason-1" placeholder="Motif">
+              </div>
+              <div class="col-1">
+                <button type="button" class="btn btn-primary" onclick="add_reason('1')" style="padding-left: 12px;padding-right: 12px;">
+                  <span>+</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </span>
+  </form>
+  <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"
+    title="<roundcube:label name='calendar.open_in_web_page_title' />" onclick="open_external_calendar()">
+    <roundcube:label name='calendar.open_in_web_page' />
+    <span class="ml-2 icon-mel-external"></span>
+  </button>
 </div>
 
 <div id="fburlbox" class="popupmenu">

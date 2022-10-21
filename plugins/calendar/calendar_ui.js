@@ -3080,16 +3080,39 @@ function rcube_calendar_ui(settings) {
     if (url) {
       $('.ui-dialog #input_calpublicfeedurl').show();
       $('.ui-dialog #calpublicfeedurl').val(url);
-      $('.ui-dialog #button_fullcalendarurl').show();
       $(".ui-dialog #checkpublicfeedurl").prop("checked", true);
       this.calendars[calendar].feedcalendarurl = url;
     }
     else {
       $('.ui-dialog #input_calpublicfeedurl').hide();
       $('.ui-dialog #calpublicfeedurl').val('');
-      $('.ui-dialog #button_fullcalendarurl').hide();
       $(".ui-dialog #checkpublicfeedurl").prop("checked", false);
       delete this.calendars[calendar].feedcalendarurl;
+    }
+  };
+
+  this.toggle_appointment = function (calendar) {
+    setTimeout(() => {
+      var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
+      rcmail.http_post('calendar', { action: 'toggle_appointment', c: { id: calendar.id, checked: $('.ui-dialog #check_appointment').prop('checked') } }, lock);
+      return true;
+    }, 200);
+  };
+
+  this.appointment_show_url = function (calendar, url) {
+    if (url) {
+      $('.ui-dialog #appointment_url').val(url);
+      $('.ui-dialog #button_fullcalendarurl').show();
+      $('.ui-dialog #appointment_configuration').show();
+      $(".ui-dialog #check_appointment").prop("checked", true);
+      this.calendars[calendar].appointment_url = url;
+    }
+    else {
+      $('.ui-dialog #appointment_url').val('');
+      $('.ui-dialog #button_fullcalendarurl').hide();
+      $('.ui-dialog #appointment_configuration').hide();
+      $(".ui-dialog #check_appointment").prop("checked", false);
+      this.calendars[calendar].appointment_url = url;
     }
   };
 
@@ -3323,6 +3346,7 @@ function rcube_calendar_ui(settings) {
 
   // show URL of the given calendar in a dialog box
   this.showurl = function (calendar) {
+    console.log(calendar);
     if (calendar.feedurl) {
       var dialog = $('#calendarurlbox').clone(true).removeClass('uidialog');
 
@@ -3371,6 +3395,81 @@ function rcube_calendar_ui(settings) {
       rcmail.simple_dialog(dialog, rcmail.gettext('showurl', 'calendar'), null, {
         open: function () { $('#calfeedurl', dialog).val(calendar.feedurl); },
         cancel_button: 'close'
+      });
+    }
+  };
+
+  //PAMELA appointment configuration
+  this.appointment = function (calendar) {
+    let dialog = $('#appointmentbox').clone(true).removeClass('uidialog');
+
+    save_func = function () {
+      let appointment = {};
+      let form = dialog.find('#appointmentpropform');
+
+      appointment.check_user_select_time = form.find('#check_user_select_time').prop('checked');
+
+      if (!appointment.check_user_select_time) {
+        appointment.time_select = form.find('#time_select').val();
+
+        if (appointment.time_select == 'custom') {
+          appointment.custom_time_select = form.find('#custom_time_select').val();
+          appointment.time_select = form.find('#custom_time_input').val();
+        }
+      }
+
+      appointment.range = {};
+
+
+      for (let i = 1; i < 8; i++) {
+        let inputs_val = [""];
+
+        if (form.find('#day_check_' + i).prop('checked')) {
+          
+          // let day = form.find('#appointment_range_' + i).closest('div.day').attr('id')
+          let inputs = form.find('#appointment_range_' + i).find(('input'));
+          inputs_val = [];
+          inputs.each((index, input) => {
+            inputs_val.push(input.value)
+          })
+        }
+        //le dimanche doit être 0 pour fullcalendar
+
+        if (i == 7) {
+          appointment.range[0] = inputs_val;
+        }
+        else {
+          appointment.range[i] = inputs_val;
+        }
+      }
+
+      appointment.time_before_select = form.find('#time_before_select').val();
+      appointment.time_after_select = form.find('#time_after_select').val();
+
+      console.log(appointment);
+      me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
+      rcmail.http_post('calendar', { action: "appointment", c: appointment });
+      // dialog.dialog("close");
+    };
+
+    rcmail.simple_dialog(dialog, rcmail.gettext('configureappointment', 'calendar'), save_func, {
+      cancel_button: 'close'
+    });
+
+    //On initialise le datetimepicker sur tous les jours de la semaines
+    for (let i = 1; i < 8; i++) {
+      $('#time_start_' + i + '-1', dialog).datetimepicker({
+        datepicker: false,
+        format: 'H:i',
+        step: 15,
+        value: settings.work_start + ':00'
+      });
+
+      $('#time_end_' + i + '-1', dialog).datetimepicker({
+        datepicker: false,
+        format: 'H:i',
+        step: 15,
+        value: settings.work_end + ':00'
       });
     }
   };
@@ -3712,13 +3811,14 @@ function rcube_calendar_ui(settings) {
   calendars_list.addEventListener('select', function (node) {
     if (node && node.id && me.calendars[node.id]) {
       me.select_calendar(node.id, true);
-      rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-showfburl', true);
+      rcmail.enable_command('calendar-edit', 'calendar-showurl', 'calendar-appointment', 'calendar-showfburl', true);
       rcmail.enable_command('calendar-delete', me.calendars[node.id].editable);
       rcmail.enable_command('calendar-remove', me.calendars[node.id] && me.calendars[node.id].removable);
       // MANTIS 3607: Permettre de remplacer tous les évènements lors d'un import
       rcmail.enable_command('calendar-delete-all', true);
       // MANTIS 3896: Partage public et protégé de l'agenda
       rcmail.enable_command('calendar-check-feed-url', true);
+      rcmail.enable_command('toggle-appointment', true);
       rcmail.enable_command('calendar-setting-resource', true);
     }
   });
@@ -4402,6 +4502,7 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
   rcmail.register_command('calendar-delete', function () { cal.calendar_delete(cal.calendars[cal.selected_calendar]); }, false);
   rcmail.register_command('events-import', function () { cal.import_events(cal.calendars[cal.selected_calendar]); }, true);
   rcmail.register_command('calendar-showurl', function () { cal.showurl(cal.calendars[cal.selected_calendar]); }, false);
+  rcmail.register_command('calendar-appointment', function () { cal.appointment(cal.calendars[cal.selected_calendar]); }, false);
   rcmail.register_command('calendar-showfburl', function () { cal.showfburl(); }, false);
   rcmail.register_command('event-download', function () { console.log("d", cal.selected_event, cal); cal.event_download(cal.selected_event); }, true);
   rcmail.register_command('event-sendbymail', function (p, obj, e) { cal.event_sendbymail(cal.selected_event, e); }, true);
@@ -4440,7 +4541,9 @@ window.rcmail && rcmail.addEventListener('init', function (evt) {
 
   // MANTIS 3896: Partage public et protégé de l'agenda
   rcmail.register_command('calendar-check-feed-url', function () { cal.calendar_check_feed_url(cal.calendars[cal.selected_calendar]); }, true);
+  rcmail.register_command('toggle-appointment', function () { cal.toggle_appointment(cal.calendars[cal.selected_calendar]); }, true);
   rcmail.addEventListener('plugin.show_feed_url', function (p) { cal.calendar_show_feed_url(p.id, p.url); });
+  rcmail.addEventListener('plugin.appointment_show_url', function (p) { cal.appointment_show_url(p.id, p.url); });
 
   $(window).resize(function (e) {
     // check target due to bugs in jquery

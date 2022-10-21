@@ -114,9 +114,6 @@ $(document).ready(
       });
 
     });
-
-
-
   }
 );
 
@@ -297,23 +294,12 @@ function copy_calendar_url(input_id) {
   }
 }
 
-function open_external_calendar(id) {
-  let url = new URL($('.ui-dialog #' + id).val());
+function open_external_calendar() {
+  let url = new URL($('.ui-dialog #appointment_url').val());
   url.searchParams.append('_name', window.btoa(rcmail.env.current_user.full))
 
   if (url) {
-    switch (id) {
-      case 'calpublicfeedurl':
-        window.open(url.href.replace('feed', 'fullcalendar'), '_blank');
-        break;
-
-      case 'calfreebusyurl':
-        window.open(url.href.replace('freebusy', 'fullcalendar'), '_blank');
-        break;
-
-      default:
-        break;
-    }
+    window.open(url, '_blank');
   }
 }
 
@@ -338,4 +324,150 @@ function collapse_url_block(id) {
       $(this).attr('class', 'icon_url icon-mel-chevron-down')
     }
   });
+}
+
+function toggle_user_select_time() {
+  if ($('.ui-dialog #check_user_select_time').prop('checked')) {
+    $('.ui-dialog #time').hide();
+  }
+  else {
+    $('.ui-dialog #time').show();
+  }
+}
+
+function toggle_custom_time() {
+  if ($('.ui-dialog #time_select').val() == 'custom') {
+    $('.ui-dialog #custom_time').show();
+  }
+  else {
+    $('.ui-dialog #custom_time_input').val('');
+    $('.ui-dialog #custom_time').hide();
+  }
+}
+
+function toggle_appointment_range(day) {
+  if ($('.ui-dialog #day_check_' + day).prop('checked')) {
+    $('.ui-dialog #appointment_range_' + day).show();
+  }
+  else {
+    $('.ui-dialog #appointment_range_' + day).hide();
+  }
+}
+
+function add_time(id) {
+  if ($('.ui-dialog #day_check_' + id).prop('checked')) {
+    let input_array = $('.ui-dialog #appointment_range_' + id + ' .row:last-child').find('input');
+    let start_input = input_array.attr('id').split('-');
+    let old_id = id + '-' + parseInt(start_input[1]);
+    let new_id = id + '-' + (parseInt(start_input[1]) + 1);
+
+    $('.ui-dialog #appointment_range_' + id).append('<div id="row' + new_id + '" class="row mt-2"><div class="col-5"><input id="time_start_' + new_id + '" name="time_start_' + new_id + '" type="text" class="form-control" onchange="check_time_validity(`' + new_id + '`)"></div>-<div class="col-5"><input id="time_end_' + new_id + '" name="time_end_' + new_id + '"  type="text" class="form-control" onchange="check_time_validity(`' + new_id + '`)"></div><div class="col-1 pl-0"><button class="btn btn-danger" id="time_trash_' + new_id + '" onclick="remove_time(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div><span id="time_alert_' + new_id + '" class="text-danger" style="display: none;"></span></div>');
+
+    initalize_new_datetimepicker(old_id, new_id);
+  }
+  else {
+    $('.ui-dialog #day_check_' + id).prop('checked', true)
+    toggle_appointment_range(id);
+  }
+}
+
+function initalize_new_datetimepicker(id, new_id) {
+
+  if ($('.ui-dialog #time_end_' + id).length) {
+    let value = $('.ui-dialog #time_end_' + id).datetimepicker('getValue');
+    let date1 = value.addHours(1)
+    let date2 = value.addHours(2)
+
+    $('.ui-dialog #time_start_' + new_id).datetimepicker({
+      datepicker: false,
+      format: 'H:i',
+      step: 15,
+      value: date1
+    });
+
+    $('.ui-dialog #time_end_' + new_id).datetimepicker({
+      datepicker: false,
+      format: 'H:i',
+      step: 15,
+      value: date2
+    });
+  }
+}
+
+function remove_time(new_id) {
+  $('.ui-dialog #row' + new_id).remove()
+  $('.ui-dialog #time_alert_' + new_id).remove()
+  check_time_validity(new_id);
+}
+
+function check_time_validity(id) {
+  let appointment_id = id.split('-')[0];
+  let input_array = $('.ui-dialog #appointment_range_' + appointment_id + ' .row').find('input');
+
+  let time_start = $('.ui-dialog #time_start_' + id);
+  let time_end = $('.ui-dialog #time_end_' + id);
+  let time_alert = $('.ui-dialog #time_alert_' + id);
+
+  if (time_end.val()) {
+    if (time_start.val() >= time_end.val()) {
+      time_end.addClass('border-danger')
+      time_alert.text('Merci de sélectionner une heure plus tardive').show()
+      $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", true);
+      return;
+    }
+    else {
+      time_end.removeClass('border-danger')
+      time_alert.hide()
+      $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", false);
+    }
+  }
+
+  //Si la valeur est comprise entre une autre plage déjà planifiée
+  for (let i = 1; i <= (input_array.length / 2); i++) {
+    let input_id = appointment_id + '-' + i;
+    let i_time_start = $('.ui-dialog #time_start_' + input_id);
+    let i_time_end = $('.ui-dialog #time_end_' + input_id);
+
+    if ((time_start.val() > i_time_start.val() && time_start.val() < i_time_end.val())
+      || (time_end.val() > i_time_start.val() && time_end.val() < i_time_end.val())
+      || (time_start.val() <= i_time_start.val() && (time_end.val() >= i_time_end.val()))) {
+      if (input_id != id) {
+        i_time_start.addClass('border-danger')
+        i_time_end.addClass('border-danger')
+        time_start.addClass('border-danger')
+        time_end.addClass('border-danger')
+        time_alert.text('Les heures se chevauchent avec une autre période').show()
+        $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", true);
+        return;
+      }
+
+    }
+    else {
+      i_time_start.removeClass('border-danger')
+      i_time_end.removeClass('border-danger')
+      time_start.removeClass('border-danger')
+      time_end.removeClass('border-danger')
+      time_alert.hide()
+      $('.ui-dialog button.mainaction.save.btn.btn-primary').prop("disabled", false);
+    }
+  }
+}
+
+
+function add_reason(id) {
+  let input_array = $('.ui-dialog #appointment_reason .row:last-child').find('input');
+  let start_input = input_array.attr('id').split('-');
+  let new_id = parseInt(start_input[1]) + 1;
+
+  $('.ui-dialog #appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif"></div><div class="col-1"><button class="btn btn-danger" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
+}
+
+function remove_reason(new_id) {
+  $('.ui-dialog #row' + new_id).remove()
+}
+
+Date.prototype.addHours = function (h) {
+  var copiedDate = new Date(this.getTime());
+  copiedDate.setHours(copiedDate.getHours() + h);
+  return copiedDate;
 }

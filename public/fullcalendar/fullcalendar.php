@@ -1,18 +1,4 @@
 <?php
-/**
- * URL Publique pour la gestion des freebusy
- * Paramètres (GET) :
- * start : date de début des freebusy
- * end : date de fin des freebusy
- *
- * username : identifiant de l'utilisateur
- * ou
- * email : adresse email de l'utilisateur
- *
- * Utilise l'ORM M2 pour la génération des freebusy
- */
-
-use Sabre\VObject;
 
 // Inclusion des fichiers
 require_once '../lib/utils.php';
@@ -28,7 +14,7 @@ define('DEV', true);
 
 
 if (DEV) {
-  $dir = str_replace('/public/feed', '', dirname($_SERVER['SCRIPT_FILENAME']));
+  $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
 }
 else {
   $dir = __DIR__.'../..';
@@ -67,18 +53,20 @@ else {
   exit();
 }
 
+
 // Génération de l'utilisateur Mél
 if (isset($_user)) {
   $user = new LibMelanie\Api\Mel\User();
   $user->uid = $_user;
+  // $user->load();
 }
 
-// Récupération de la clé de la requête
+// Récupération de la clé de la requête 
 $keyhash = utils::get_input_value('_key', utils::INPUT_GET);
 $keyhash = urldecode($keyhash);
 if (isset($keyhash)) {
   // On compare la clé avec la valeur des paramètres utilisateurs
-  $value = $user->getCalendarPreference("calendarskeyhash");
+  $value = $user->getCalendarPreference("appointmentkeyhash");
 
   if (isset($value)) {
     $value = unserialize($value);
@@ -88,41 +76,22 @@ if (isset($keyhash)) {
   }
 }
 
-// Vérification de la clé
-if (!isset($keyhash)) {
-  header('WWW-Authenticate: Basic realm="Roundcube Public Calendar"');
-  header('HTTP/1.0 403 Fobidden');
-  exit;
-}
+// // Vérification de la clé
+// if (!isset($keyhash)) {
+//   header('WWW-Authenticate: Basic realm="Roundcube Public Calendar"');
+//   header('HTTP/1.0 403 Fobidden');
+//   exit;
+// }
 
-// Génération du Calendar Mél
-$calendar = new LibMelanie\Api\Mel\Calendar(new LibMelanie\Api\Mel\User());
-$calendar->id = $calendar_name;
+$user_prefs = $user->getCalendarPreference("appointment_properties");
 
-// Pas de start, on prend la date du jour moins deux ans
-$start = time() - (365 * 2 * 24 * 60 * 60);
-
-// On récupère la liste des événements
-$events = $calendar->getRangeEvents("@".$start);
-
-// Parcours les événements pour récupérer les vcalendar
-$vcalendar = new VObject\Component\VCalendar();
-
-foreach ($events as $event) {
-  $event->vcalendar = $vcalendar;
-  $vcalendar = $event->vcalendar;
-}
-
-// MANTIS 0005005: Rajouter une ligne de log pour un acces a l'url du calendrier
-utils::log("/feed $_user $calendar_name");
-
-// Génération du nom de fichier
-$filename = utils::asciiwords(html_entity_decode(utils::get_input_value('_cal', utils::INPUT_GET)));
-
-// Header
-header('Content-type: text/calendar; charset=utf-8');
-header('Content-Disposition: attachment; filename='.$filename);
-
-// The freebusy report is another VCALENDAR object, so we can serialize it as usual:
-echo $vcalendar->serialize();
+header('Content-Type: application/json; charset=utf-8');
+echo $user_prefs;
 exit;
+
+// // Header
+// header('Content-Disposition: attachment; filename='.$filename);
+
+// // The freebusy report is another VCALENDAR object, so we can serialize it as usual:
+// echo $vcalendar->serialize();
+// exit;

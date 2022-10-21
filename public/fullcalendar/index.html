@@ -6,33 +6,202 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendrier</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css">
+  <!-- <link href='lib/bootstrap/bootstrap-icons.css' rel='stylesheet'> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+  <!-- Fullcalendar -->
+  <link href='lib/fullcalendar/main.min.css' rel='stylesheet' />
+
+  <!-- Jquery -->
+  <link href='lib/jquery/jquery.datetimepicker.min.css' rel='stylesheet' />
+
+  <!-- Custom -->
+  <link href='styles.css' rel='stylesheet' />
 </head>
 
 <body>
-  <div id="banner" tabindex="-1"
-    class="flex z-50 justify-center px-4 w-full bg-gray-50 border border-b border-gray-200 py-2">
-    <div class="items-center md:flex">
-      <p class="text-lg font-medium text-gray-900 md:my-0">
-        Calendrier de <span id="owner_calendar"></span>
-      </p>
+ 
+  <section id="show-calendar">
+    <div class="container mt-5">
+      <div class="card main_card border-card">
+        <div class="row no-gutters">
+          <div class="col-sm-4" style="border-right: 1px solid rgb(226, 226, 226);">
+            <div class="row">
+              <div class="col-12 my-4">
+                <span id="owner_calendar"></span><br>
+                <span id="owner_role"></span>
+                <hr class="horizontal_separator">
+                <div class="row">
+                  <div class="col-12" style="margin-left: 30px;">
+                    <span class="icon-mel mb-3">
+                      <i class="bi bi-stopwatch"></i>
+                    </span>
+                    <span id="appointment_time" class="info"></span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div id="take_appointment">
+              <div class="row mb-3">
+                <div class="col-12 d-flex justify-content-center align-items-end"">
+              <button class=" main-button" onclick="showModal()">Prendre un rendez-vous <span
+                    class="icon-mel icon-button">
+                    <i class="bi bi-calendar-check"></i>
+                  </span></button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 text-center" style="font-size: 12px;">
+                  Ou sélectionnez directement la plage horaire souhaitée
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-sm-8 text-center d-flex align-items-center">
+            <div class="card-body">
+              <div id="loader" class="lds-dual-ring"></div>
+              <span id="loaded-calendar" style="visibility: hidden;">
+                <div class="calendar" data-bs-toggle="calendar" id="calendar"></div>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="p-6 max-w-screen-2xl text-center">
-    <div class="calendar" data-bs-toggle="calendar" id="calendar" style="max-height: 85vh;"></div>
-  </div>
+  <!-- Modal -->
+  <section id="modal-event">
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-card">
+          <form id="add_event_form" onsubmit="return event_form_submit(event)">
+            <div class="modal-header">
+              <div class="modal-title" id="exampleModalLabel">Prendre rendez-vous</div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group mb-3">
+                <label for="event-title" class="mb-3">Nom de l'évènement <span class="text-danger">*</span></label>
+                <input type="text" class="form-control input-mel" name="title" id="event-title"
+                  placeholder="Nom de l'évènement" required />
+              </div>
+              <div class="form-group mb-3">
+                <div class="row">
+                  <label for="event-time" class="mb-3">Choix de la période (<span
+                      id="appointment_duration"></span>min)<span class="text-danger">*</span></label>
+                  <div class="col-6">
+                    <input type="text" class="form-control input-mel" id="event-time-start" required
+                      onchange="check_time_select()">
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control input-mel" id="event-time-end" required
+                      onchange="check_time_select()">
+                  </div>
+                  <span id="duration_warning" class="text-danger mt-3 ml-2" style="font-size: 12px; display: none;">La
+                    durée maximal d'un
+                    rendez-vous à été défini à <span id="appointment_duration"></span> min par l'organisateur </span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="event-description" class="span-mel t1 mb-3">Motif du rendez-vous</label>
+                <select class="form-control input-mel mb-3" id="event-object" onchange="custom_input_trigger()">
+                  <option value="rdv" selected>Rendez-vous professionnel</option>
+                  <option value="rdv">Rendez-vous perso</option>
+                  <option value="custom">Personnalisé</option>
+                </select>
+                <div id="event-description-input" class="form-group" style="display: none;">
+                  <textarea name="description" id="event-description" class="textarea-mel  form-control" rows="5"
+                    cols="60" placeholder="Ordre du jour (optionnel)">
+                </textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn button-cancel" data-bs-dismiss="modal">Annuler <span class="icon-mel icon-button"><i class="bi bi-x-circle"></i></span>
+                </button>
+                <button type="submit" class="btn button-save">Suivant
+                  <span class="icon-mel icon-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                      <path fill="#fff"
+                        d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="modal-user">
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-card">
+          <form id="add_user_form"  onsubmit="return user_form_submit(event)">
+            <div class="modal-header">
+              <button class="mr-3 back-button" data-bs-target="#eventModal" data-bs-toggle="modal"
+                data-bs-dismiss="modal">
+                <span class="icon-mel">
+                  <i class="bi bi-chevron-left"></i>
+                </span></button>
+              <div class="modal-title" id="exampleModalLabel">Vos coordonnées</div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row mb-3">
+                <div class="form-group col-md-6">
+                  <label for="user-name" class="mb-2">Nom <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control input-mel" id="user-name" placeholder="Nom" required>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="user-firstname" class="mb-2">Prénom <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control input-mel" id="user-firstname" placeholder="Prénom" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="event-title" class="mb-2">Email <span class="text-danger">*</span></label>
+                <input type="email" class="form-control input-mel" name="email" id="user-email" placeholder="Email"
+                  required />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn button-cancel" data-bs-dismiss="modal">Annuler <span class="icon-mel icon-button"><i class="bi bi-x-circle"></i></span>
+              </button>
+              <button type="submit" class="btn button-save">Enregistrer
+                <span class="icon-mel icon-button">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                    <path fill="#fff"
+                      d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 </body>
+<script src="lib/moment/moment.min.js"></script>
+<!-- Jquery -->
+<script src="lib/jquery/jquery-3.6.1.min.js"></script>
+<script src="lib/jquery/jquery.datetimepicker.full.min.js"></script>
 
+<!-- Bootstrap -->
+<script src="lib/bootstrap/bootstrap.bundle.min.js"></script>
 
-<link href='lib/main.min.css' rel='stylesheet' />
-<link href='lib/styles.css' rel='stylesheet' />
+<!-- Fullcalendar -->
+<script src='lib/fullcalendar/main.min.js'></script>
+<script src="lib/locales/fr.js"></script>
 
-<script src='lib/main.min.js'></script>
-
+<!-- Fullcalendar plugin -->
 <script src="lib/icalendar/ical.min.js"></script>
 <script src="lib/icalendar/main.global.min.js"></script>
 
+<!-- Custom -->
 <script src="script.js"></script>
-
 </html>

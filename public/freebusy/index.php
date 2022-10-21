@@ -24,7 +24,7 @@ if (! defined('CONFIGURATION_APP_LIBM2')) {
 
 
 // Developpement ?
-define('DEV', false);
+define('DEV', true);
 
 
 if (DEV) {
@@ -39,7 +39,7 @@ else {
 
 // Utilisation de la librairie Sabre VObject pour la conversion ICS
 require_once '../lib/vendor/autoload.php';
-require_once '../../vendor/autoload.php';
+require_once $dir.'/vendor/autoload.php';
 
 // Récupération des paramètres de la requête
 $start = utils::get_input_value("start", utils::INPUT_GET);

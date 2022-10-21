@@ -1048,6 +1048,29 @@ $("#rcmfd_new_category").keypress(function(event) {
             $reqid = rcube_utils::get_input_value('_reqid', rcube_utils::INPUT_GPC);
             $this->rc->output->command('multi_thread_http_response', $results, $reqid);
             return;
+
+		case "toggle_appointment":
+			if ($cal['checked'] == 'true') {
+				$result = $this->driver->add_appointment_public_key($cal['id'], base64_encode(uniqid($cal['id'] . 'appointmentkeyhash')));
+			} else {
+				$result = $this->driver->delete_appointment_public_key($cal['id']);
+			}
+			if ($result) {
+				$this->rc->output->command('plugin.appointment_show_url', array('id' => $cal['id'], 'url' => $this->get_appointment_url($cal['id'])));
+				return;
+			} else {
+				$this->rc->output->show_message($this->gettext('errorsaving'), 'error');
+				return;
+			}
+		break;
+	
+		case "appointment":
+			$pref = driver_mel::gi()->userprefs([driver_mel::gi()->getUser()]);
+			$pref->scope = \LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
+			$pref->name = "appointment_properties";
+			$pref->value = json_encode($cal);
+		return $pref->save();
+			
         }
 
         if ($success) {

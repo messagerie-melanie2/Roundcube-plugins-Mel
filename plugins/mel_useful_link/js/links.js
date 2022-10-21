@@ -186,3 +186,11 @@ function PublicCommands(element)
             break;
     }
 }
+
+$(document).ready(() => {
+    for (const iterator of $('.multi-links-title')) {
+        $(iterator).click((e) => {
+            window.open($(e.currentTarget).parent().find('a').attr('href'), '_blank');
+        });
+    }
+});

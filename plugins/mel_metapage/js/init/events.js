@@ -1534,6 +1534,8 @@ $(document).ready(() => {
 
     function intercept_click(event)
     {
+        var Enumerable = Enumerable || top.Enumerable;
+
         try {
             //Vérification si on intercetpe le lien ou non
             const intercept = $(event.target).data("spied");
@@ -1541,7 +1543,7 @@ $(document).ready(() => {
             if (intercept !== undefined && intercept !== null && (intercept == "false" || intercept === false)) return;
             else if ($(event.target).attr('href').includes('mailto:')) return intercept_mailto(event);
             else if ($(event.target).attr("onclick") !== undefined && !$(event.target).attr("onclick").includes('event.click')) return;
-            else if (Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
+            else if (!!Enumerable && Enumerable.from($(event.target).parent()[0].classList).any(x => x.includes('listitem'))) return;
             else if ($(event.target).parent().parent().parent().attr("id") === "taskmenu") return;
 
             //On ferme la modal
@@ -1578,7 +1580,7 @@ $(document).ready(() => {
                 let after = null;
                 let update = false;
 
-                let _switch = (spies !== undefined && spies !== null ? spies : Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
+                let _switch = (spies || Enumerable.from([])).firstOrDefault(x => url.includes(x.key), null);
 
                 do {
                     reloop = false;
@@ -1678,6 +1680,30 @@ $(document).ready(() => {
                                 } catch (error) {
                                 }
                             }
+                            else if (url.includes('/public/webconf'))
+                            {
+                                var IntegratedPubliWebconfLink = IntegratedPubliWebconfLink || top.IntegratedPubliWebconfLink;
+
+                                const link =  new IntegratedPubliWebconfLink(url);
+
+                                top.webconf_helper.go(link.key, link.wsp, link.ariane);
+
+                                if (after !== null) after();
+
+                                event.preventDefault();
+                                
+                            }
+                            else if (!!spies){
+                                for (const iterator of spies) {
+                                    if (url.includes(iterator.key))
+                                    {
+                                        _switch = iterator;
+                                        reloop = true;
+                                        break;
+                                    }
+                                }
+                            }
+
                             break;
                     }
                 } while (reloop);

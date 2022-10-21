@@ -10,7 +10,7 @@ function PaperClipCopy(link)
     }
     const url = link[0].href;
     copyOnClick(url);
-    rcmail.display_message(`${url} copier dans le presse-papier.`, "confirmation")
+    rcmail.display_message(`${url} copié dans le presse-papier.`, "confirmation")
 }
 
 function EditLink(id)
@@ -186,3 +186,11 @@ function PublicCommands(element)
             break;
     }
 }
+
+$(document).ready(() => {
+    for (const iterator of $('.multi-links-title')) {
+        $(iterator).click((e) => {
+            window.open($(e.currentTarget).parent().find('a').attr('href'), '_blank');
+        });
+    }
+});

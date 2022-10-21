@@ -354,6 +354,13 @@ class mel_multi_link extends mel_link{
         $html = '';
         $rl = null;
         foreach ($this->links as $key => $value) {
+            if (strpos($key, 'http://') === false && strpos($key, 'https://') === false)
+            {
+                if (strpos($key, 'file://') === false){
+                    $key = "https://$key";
+                }
+            }
+
             $html .= $separate;
             $rl = $this->get_reduced_link_from($key);
             if (false && $rl === 'BNUM') {
@@ -362,7 +369,7 @@ class mel_multi_link extends mel_link{
                     'title' => "Ouvrir dans le bnum"
                 ], $value);
             }
-            else $html .= html::div(['style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;'], $value.' via '.html::tag('a', [
+            else $html .= html::div(['style' => 'display:flex'], html::div(['class' => 'multilink-sub', 'onclick' => "mel_metapage.Functions.copy('$key')"], $this->copy($key)).html::div(['style' => 'padding:5px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;'], "<span style=\"cursor:pointer\" class='multi-links-title'>$value</span>".' via '.html::tag('a', [
                 'href' => $key,
                 'title' => "Ouvrir dans un nouvel onglet",
                 'target' => '_blank'

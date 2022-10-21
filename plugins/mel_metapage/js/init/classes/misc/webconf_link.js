@@ -67,3 +67,5 @@ class IntegratedPubliWebconfLink extends WebconfLink
         super(url.join('/'));
     }
 }
+
+window.IntegratedPubliWebconfLink = IntegratedPubliWebconfLink;

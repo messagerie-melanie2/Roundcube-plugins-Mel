@@ -1,0 +1,15 @@
+﻿#rizomo_frame {
+	width: 100%;
+	height: 100%;
+}
+
+.icon-rizomo::before {
+	font-family: "icofont" !important;
+	content: "\eaec" !important;
+	font-weight: normal !important;
+}
+
+.button-rizomo {
+	order: 16;
+}
+

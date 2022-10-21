@@ -40,6 +40,14 @@ class rizomo extends rcube_plugin
         
         // Charge la conf du plugin
         $this->load_config();
+
+        $this->add_texts('localization/', true);
+
+        // Ajout du css
+        $this->include_stylesheet($this->local_skin_path() . '/rizomo.css');
+
+        // ajout de la tache
+        $this->register_task('rizomo');
         
         // Liste des actions pour lesquels on ne load pas le js
         $nojs_actions = [
@@ -65,8 +73,35 @@ class rizomo extends rcube_plugin
                 }
             }
         }
+
+        $rizomo_url = $this->rc->config->get('rizomo_url', '');
+
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($rizomo_url, 'rizomo');
+        // Ajoute le bouton en fonction de la skin
+        $need_button = true;
+        if (class_exists("mel_metapage")) {
+          $need_button = $this->rc->plugins->get_plugin('mel_metapage')->is_app_enabled('app_rizomo');
+        }
+
+        if ($need_button)
+        {
+            $this->add_button(array(
+                'command' => 'rizomo',
+                'class'	=> 'button-rizomo icon-rizomo rizomo',
+                'classsel' => 'button-rizomo button-selected icon-rizomo rizomo',
+                'innerclass' => 'button-inner inner',
+                'label'	=> 'rizomo.rizomo',
+                'title' => 'rizomo.rizomo_title',
+                'type'       => 'link'
+            ), "taskbar");
+        }
         
-        if ($this->rc->task == 'settings') {
+        // Si tache = rizomo, on charge l'onglet
+        if ($this->rc->task == 'rizomo') {
+            $this->register_action('index', array($this, 'action'));
+            $this->rc->output->set_env('refresh_interval', 0);
+        } 
+        else if ($this->rc->task == 'settings') {
             // Ajouter le texte
             $this->add_texts('localization/', false);
 
@@ -75,6 +110,46 @@ class rizomo extends rcube_plugin
             $this->add_hook('preferences_list',             [$this, 'preferences_list']);
             $this->add_hook('preferences_save',             [$this, 'preferences_save']);
         }
+    }
+
+    /**
+     * Index Rizomo page
+     */
+    public function action()
+    {
+        // register UI objects
+        $this->rc->output->add_handlers(array(
+        		'rizomo_frame'    => array($this, 'rizomo_frame'),
+        ));
+
+        $startupUrl =  rcube_utils::get_input_value("_url", rcube_utils::INPUT_GPC); 
+        if ($startupUrl !== null && $startupUrl !== "") $this->rc->output->set_env("rizomo_startup_url", $startupUrl);
+
+        // Chargement du template d'affichage
+        $this->rc->output->set_pagetitle($this->gettext('rizomo_title'));
+        $this->rc->output->set_env('rizomo_gotourl', $this->rc->config->get('rizomo_url', '') . $this->rc->config->get('rizomo_login', ''));
+        $this->include_script('rizomo.js');
+        $this->rc->output->send('rizomo.rizomo');
+    }
+
+    /**
+     * Gestion de la frame
+     * 
+     * @param array $attrib
+     * @return string
+     */
+    public function rizomo_frame($attrib)
+    {
+    	if (!$attrib['id'])
+    		$attrib['id'] = 'rizomo_frame';
+
+    	$attrib['name'] = $attrib['id'];
+
+    	$this->rc->output->set_env('contentframe', $attrib['name']);
+    	$this->rc->output->set_env('blankpage', $attrib['src'] ?
+        $this->rc->output->abs_url($attrib['src']) : 'program/resources/blank.gif');
+
+    	return $this->rc->output->frame($attrib);
     }
 
     /**

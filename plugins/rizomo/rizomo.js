@@ -12,13 +12,22 @@ const api_notifications = '/notifications/me';
 if (window.rcmail && window == top) {
     console.log('Rizomo window top');
     if (typeof m_mp_NotificationRun === "function") { 
-        console.log('Rizomo m_mp_NotificationRun function');
         // Notification plugin is enable
         rcmail.addEventListener('responseafterrefresh', function(props) {
             console.log('Rizomo response after refresh');
             m_mp_RizomoRefreshNotifications();
         });
     }
+}
+
+// Affichage de la frame Rizomo
+if (window.rcmail && rcmail.env.task == 'rizomo') {
+    setTimeout(() => {
+        console.log('Rizomo task if');
+        const url = rcmail.env.rizomo_startup_url != null && rcmail.env.rizomo_startup_url !== undefined ? rcmail.env.rizomo_startup_url : rcmail.env.rizomo_gotourl;
+        window.document.getElementById('rizomo_frame').src = url;
+        $("#wait_box").hide();
+    }, 50);
 }
 
 /**

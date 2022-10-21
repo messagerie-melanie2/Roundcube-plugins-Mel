@@ -3426,15 +3426,14 @@ function rcube_calendar_ui(settings) {
 
         if (form.find('#day_check_' + i).prop('checked')) {
           
-          // let day = form.find('#appointment_range_' + i).closest('div.day').attr('id')
-          let inputs = form.find('#appointment_range_' + i).find(('input'));
+          let inputs = form.find('#appointment_range_' + i).find('input');
           inputs_val = [];
           inputs.each((index, input) => {
             inputs_val.push(input.value)
           })
         }
+        
         //le dimanche doit être 0 pour fullcalendar
-
         if (i == 7) {
           appointment.range[0] = inputs_val;
         }
@@ -3446,7 +3445,15 @@ function rcube_calendar_ui(settings) {
       appointment.time_before_select = form.find('#time_before_select').val();
       appointment.time_after_select = form.find('#time_after_select').val();
 
-      console.log(appointment);
+      let appointment_reason = [];
+      let inputs_reason = form.find('#appointment_reason').find('input');
+      inputs_reason.each((index, input) => {
+        appointment_reason.push(input.value)
+      })      
+      appointment.reason = appointment_reason;
+
+      appointment.custom_reason = form.find('#custom_reason').prop('checked');
+
       me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
       rcmail.http_post('calendar', { action: "appointment", c: appointment });
       // dialog.dialog("close");

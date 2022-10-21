@@ -108,16 +108,14 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="event-description" class="span-mel t1 mb-3">Motif du rendez-vous</label>
-                <select class="form-control input-mel mb-3" id="event-object" onchange="custom_input_trigger()">
-                  <option value="rdv" selected>Rendez-vous professionnel</option>
-                  <option value="rdv">Rendez-vous perso</option>
-                  <option value="custom">Personnalisé</option>
-                </select>
+                <label id="event-reason-label" for="event-reason" class="span-mel t1 mb-3" style="display: none;">Motif du rendez-vous</label>
+                <div id="event-reason" style="display: none;">
+                  <select class="form-control input-mel mb-3" id="event-object" onchange="custom_input_trigger()">
+                  </select>
+                </div>
                 <div id="event-description-input" class="form-group" style="display: none;">
                   <textarea name="description" id="event-description" class="textarea-mel  form-control" rows="5"
-                    cols="60" placeholder="Ordre du jour (optionnel)">
-                </textarea>
+                    cols="60" placeholder="Motif du rendez-vous (optionnel)"></textarea>
                 </div>
               </div>
               <div class="modal-footer">

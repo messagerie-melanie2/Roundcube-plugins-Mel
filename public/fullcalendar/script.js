@@ -7,8 +7,10 @@ let calendar = null;
 let event_not_loaded = true;
 
 document.addEventListener('DOMContentLoaded', function () {
+  
   display_name();
   run();
+  // $('.fc-toolbar.fc-header-toolbar').addClass('row col-lg-12');
 });
 
 function display_name() {
@@ -34,19 +36,24 @@ function run() {
       get_appointment_duration(response);
 
       document.getElementById('appointment_time').textContent = appointment_duration ? appointment_duration + ' min' : 'Libre';
-      let businessHours = [];
 
-      response.range.forEach((value, index) => {
-        if (value[0] != "") {
-          for (let i = 0; i < value.length; i += 2) {
-            businessHours.push({
-              daysOfWeek: [index],
-              startTime: value[i],
-              endTime: value[i + 1],
-            })
-          }
+      if (response.reason != "") {
+        $('#event-reason').show();
+        $('#event-reason-label').show();
+        response.reason.forEach(reason => {
+          $('#event-object').append(`<option value="${reason}">${reason}</option>`);
+        });
+        if (response.custom_reason == "true") {
+          $('#event-object').append(`<option value="custom">Autre</option>`);
         }
-      });
+      } else {
+        if (response.custom_reason == "true") {
+          $('#event-reason-label').show();
+          $('#event-description-input').show();
+        }
+      }
+
+
       var calendarEl = document.getElementById('calendar');
       calendar = new FullCalendar.Calendar(calendarEl, {
         themeSystem: 'bootstrap5',
@@ -55,9 +62,10 @@ function run() {
         initialView: "timeGridWeek",
         allDaySlot: false,
         selectable: true,
-        slotMinTime: "07:00",
-        slotMaxTime: "18:00",
-        height: 'auto',
+        slotDuration: "00:15",
+        slotMinTime: getMinBusinessHour(response),
+        slotMaxTime: getMaxBusinessHour(response),
+        // contentHeight: '65vh',
         selectMirror: true,
         forceEventDuration: true,
         weekends: (response.range[0] != "" || response.range[6] != "") ? true : false,
@@ -68,10 +76,13 @@ function run() {
           format: 'ics',
           display: 'background'
         },
-        loading: function (info) {
-          if (!info) {
-            $('#loader').hide(); 
-            $('#loaded-calendar').css("visibility", "visible");;
+        loading: function (loading) {
+          if (!loading) {
+            $('#loader').hide();
+            $('#loaded-calendar').css("visibility", "visible");
+            setTimeout(() => {
+              generateTimeGap(response)
+            }, 500);
           }
         },
         select: function (info) {
@@ -93,7 +104,7 @@ function run() {
         //   center: "title",
         //   right: "timeGridWeek,timeGridDay",
         // },
-        businessHours,
+        businessHours: generateBusinessHours(response),
       });
       calendar.render();
 
@@ -105,9 +116,50 @@ function run() {
   xhr.send();
 }
 
+// BusinessHours
+function generateBusinessHours(response) {
+  let businessHours = [];
+  response.range.forEach((value, index) => {
+    if (value[0] != "") {
+      for (let i = 0; i < value.length; i += 2) {
+        businessHours.push({
+          daysOfWeek: [index],
+          startTime: value[i],
+          endTime: value[i + 1],
+        })
+      }
+    }
+  });
+  return businessHours;
+}
+
+function getMinBusinessHour(response) {
+  let min_ranges = [];
+  response.range.forEach((range) => {
+    if (range != "") {
+      min_ranges.push(parseInt(range[0]))
+    }
+  })
+  return Math.min(...min_ranges) + ':00';
+}
+
+function getMaxBusinessHour(response) {
+  let max_ranges = [];
+  response.range.forEach((range, index) => {
+    if (range != "") {
+      let split_range = range[1].split(':');
+      let max_hour = parseInt(range[1]);
+      //On ajoute une heure si il y a des minutes (18h15 -> on affiche 19h)
+      if (split_range[1] != "00") {
+        max_hour++;
+      }
+      max_ranges.push(max_hour)
+    }
+  })
+  return Math.max(...max_ranges) + ':00';
+}
 
 function showModal(start, end, enable_end) {
-console.log(event_not_loaded);
   let allowTimes = generateAllowTimes(start);
 
   $("#eventModal").modal('show');
@@ -211,6 +263,15 @@ function user_form_submit(e) {
   $("#userModal").modal('hide');
 }
 
+function generateTimeGap(response) {
+  calendar.getEvents().forEach((value) => {
+    calendar.addEvent({
+      start: moment(value.start).subtract(response.time_before_select, 'minute').toDate(),
+      end: moment(value.end).add(response.time_after_select, 'minute').toDate(),
+      display: 'background'
+    });
+  })
+}
 
 function generateAllowTimes(start = new Date()) {
   let businessHours = [];

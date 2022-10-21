@@ -339,6 +339,7 @@ body {
   width: 50px;
   height: 50px;
 }
+
 .lds-dual-ring:after {
   content: " ";
   display: block;
@@ -350,11 +351,25 @@ body {
   border-color: #000 transparent #000 transparent;
   animation: lds-dual-ring 1.2s linear infinite;
 }
+
 @keyframes lds-dual-ring {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
+}
+
+@media (min-width: 1000px) {
+  .right-border {
+    border-right: 1px solid rgb(226, 226, 226);
+  }
+}
+
+.icon-menu {
+  position: relative;
+  top: -2px;
+  /* left: 14px; */
 }

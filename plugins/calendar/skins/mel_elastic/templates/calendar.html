@@ -526,7 +526,7 @@
   <form id="appointmentpropform" action="#" method="POST">
     <div id="activate_appointment" class="mt-1 mb-4">
       <label class="switch mr-1" onclick="rcmail.command('toggle-appointment')"">
-        <input type=" checkbox" id="check_appointment">
+        <input type="checkbox" id="check_appointment">
         <span class="slider round"></span>
       </label>
       <roundcube:label name='calendar.activateappointment' />
@@ -890,8 +890,8 @@
         </div>
         <hr>
         <div id="block-fourth" class="block mb-5" style="display: none;">
-          <label class="switch mr-1" onclick="">
-            <input type="checkbox" id="check_appointment">
+          <label class="switch mr-1">
+            <input type="checkbox" id="custom_reason" checked>
             <span class="slider round"></span>
           </label>
           <roundcube:label name='calendar.letusercustomreason' />
@@ -912,8 +912,8 @@
     </span>
   </form>
   <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"
-    title="<roundcube:label name='calendar.open_in_web_page_title' />" onclick="open_external_calendar()">
-    <roundcube:label name='calendar.open_in_web_page' />
+    title="<roundcube:label name='calendar.see_direct_page' />" onclick="open_external_calendar()">
+    <roundcube:label name='calendar.see_direct_page' />
     <span class="ml-2 icon-mel-external"></span>
   </button>
 </div>

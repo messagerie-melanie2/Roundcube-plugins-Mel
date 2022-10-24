@@ -7,7 +7,7 @@ let calendar = null;
 let event_not_loaded = true;
 
 document.addEventListener('DOMContentLoaded', function () {
-  
+
   display_name();
   run();
   // $('.fc-toolbar.fc-header-toolbar').addClass('row col-lg-12');
@@ -97,7 +97,7 @@ function run() {
             }
 
           }
-          showModal(info.start, info.end, response.check_user_select_time, calendar)
+          showModal(info.start, info.end)
         },
         // headerToolbar: {
         //   left: "prev,next today",
@@ -159,7 +159,7 @@ function getMaxBusinessHour(response) {
   return Math.max(...max_ranges) + ':00';
 }
 
-function showModal(start, end, enable_end) {
+function showModal(start, end) {
   let allowTimes = generateAllowTimes(start);
 
   $("#eventModal").modal('show');
@@ -167,17 +167,27 @@ function showModal(start, end, enable_end) {
     datepicker: start ? false : true,
     step: 15,
     value: start ? start : roundTimeQuarterHour(new Date()),
-    allowTimes
+    allowTimes,
+    onChangeDateTime: function (date) {
+      this.setOptions({
+        allowTimes: generateAllowTimes(date)
+      })
+    }
   });
   $('#event-time-end').datetimepicker({
     datepicker: start ? false : true,
     step: 15,
     value: end ? end : roundTimeQuarterHour(new Date()).addMinutes(appointment_duration),
-    allowTimes
+    allowTimes,
+    onChangeDateTime: function (date) {
+      this.setOptions({
+        allowTimes: generateAllowTimes(date)
+      })
+    }
   });
 
   //On désactive l'input si la durée d'un rdv à été défini
-  if (enable_end == "true") {
+  if (response.check_user_select_time == "true") {
     $('#event-time-end').prop("disabled", false);
   }
   else {
@@ -275,6 +285,10 @@ function generateTimeGap(response) {
 
 function generateAllowTimes(start = new Date()) {
   let businessHours = [];
+
+  if (response.range[start.getDay()] == "") {
+    return;
+  }
 
   for (let i = 0; i < response.range[start.getDay()].length; i += 2) {
     let date = moment(start).startOf('day');

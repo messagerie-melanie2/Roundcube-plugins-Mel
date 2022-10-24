@@ -95,7 +95,7 @@
 
 .mel-layout-sidebar-colors(){
     background-color: var(--layout-sidebar-background-color);
-    color:var(--secondary-text-color);
+    color:var(--layout-sidebar-text-color);
 }
 
 .mel-secondary-colors(){
@@ -119,5 +119,27 @@
 .mel-layout-list-colors()
 {
     background-color: var(--layout-list-background-color);
-    color:var(--secondary-text-color);
+    color: var(--layout-list-text-color);
+}
+
+.toolbar-button()
+{
+    color: var(--toolbar-roundcube-color);
+    background-color: var(--toolbar-roundcube-background-color);
+
+    &:not(.disabled):hover{
+        color: var(--toolbar-roundcube-hover-color);
+        background-color: var(--toolbar-roundcube-hover-background-color);
+    }
+}
+
+.popover-button()
+{
+    color: var(--toolbar-popover-color);
+    background-color: var(--toolbar-popover-background-color);
+
+    &:not(.disabled):hover{
+        color: var(--toolbar-popover-hover-color);
+        background-color: var(--toolbar-popover-hover-background-color);
+    }
 }

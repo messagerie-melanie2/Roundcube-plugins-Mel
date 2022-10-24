@@ -120,6 +120,9 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
 .task-calendar .ui-datepicker.ui-widget-content .ui-state-highlight {
   background-color: var(--calendar-datepicker-selected-unactive-background-color) !important;
 }
+.task-calendar .ui-datepicker.ui-widget-content .ui-state-default {
+  color: var(--calendar-datepicker-color);
+}
 .task-calendar .ui-datepicker .ui-state-highlight {
   background-color: var(--calendar-datepicker-selected-unactive-background-color) !important;
 }
@@ -140,6 +143,9 @@ html body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange {
   color: var(--calendar-datepicker-selected-color) !important;
   margin-left: auto;
   margin-right: auto;
+}
+.task-calendar .ui-datepicker a.ui-state-default {
+  color: var(--calendar-datepicker-color);
 }
 .task-calendar .ui-dialog .ui-datepicker {
   background-color: white !important;

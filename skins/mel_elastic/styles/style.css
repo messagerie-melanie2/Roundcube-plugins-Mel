@@ -141,36 +141,33 @@ main {
 #layout-sidebar {
   border: none;
   background-color: var(--layout-sidebar-background-color) !important;
-  color: var(--secondary-text-color) !important;
+  color: var(--layout-sidebar-text-color) !important;
 }
 #layout-sidebar > .header {
   /** HEADER **/
   background-color: var(--layout-sidebar-background-color) !important;
-  color: var(--secondary-text-color) !important;
-}
-#layout-sidebar .ui-datepicker.ui-widget-content .ui-state-default {
-  /** CALENDRIER **/
-  color: var(--secondary-text-color);
-}
-#layout-sidebar .ui-datepicker .ui-state-default {
-  /** CALENDRIER **/
-  color: var(--secondary-text-color);
+  color: var(--layout-sidebar-text-color) !important;
 }
 #layout-list {
   border: none;
   background-color: var(--layout-list-background-color) !important;
-  color: var(--secondary-text-color) !important;
+  color: var(--layout-list-text-color) !important;
 }
 #layout-list > .header {
   /** HEADER **/
   background-color: var(--layout-list-background-color) !important;
-  color: var(--secondary-text-color) !important;
+  color: var(--layout-list-text-color) !important;
 }
 #layout > div > .header {
   border: none;
 }
 #layout > div > .header a.button {
-  color: var(--secondary-text-color);
+  color: var(--toolbar-roundcube-color);
+  background-color: var(--toolbar-roundcube-background-color);
+}
+#layout > div > .header a.button:not(.disabled):hover {
+  color: var(--toolbar-roundcube-hover-color);
+  background-color: var(--toolbar-roundcube-hover-background-color);
 }
 #layout .header {
   /** HEADER **/
@@ -179,10 +176,23 @@ main {
 #layout .header a.options,
 #layout .header a.select,
 #layout .header a.threads {
-  color: var(--secondary-text-color);
+  color: var(--toolbar-roundcube-color);
+  background-color: var(--toolbar-roundcube-background-color);
+}
+#layout .header a.button:not(.disabled):hover,
+#layout .header a.options:not(.disabled):hover,
+#layout .header a.select:not(.disabled):hover,
+#layout .header a.threads:not(.disabled):hover {
+  color: var(--toolbar-roundcube-hover-color);
+  background-color: var(--toolbar-roundcube-hover-background-color);
 }
 #layout #layout-content > .header a.button {
-  color: var(--secondary-text-color);
+  color: var(--toolbar-roundcube-color);
+  background-color: var(--toolbar-roundcube-background-color);
+}
+#layout #layout-content > .header a.button:not(.disabled):hover {
+  color: var(--toolbar-roundcube-hover-color);
+  background-color: var(--toolbar-roundcube-hover-background-color);
 }
 .layout-hidden {
   display: none!important;
@@ -210,10 +220,35 @@ body.task-tasks .menu.pagenav.pagenav-list a {
 body.task-tasks .menu.pagenav.pagenav-list .pagenav-text {
   color: var(--secondary-text-color);
 }
-.menu a:not(.disabled):focus,
-.menu a:not(.disabled):hover {
-  background-color: var(--secondary-bckg-color) !important;
-  color: var(--secondary-text-color) !important;
+.menu.toolbar a {
+  color: var(--toolbar-roundcube-color);
+  background-color: var(--toolbar-roundcube-background-color);
+}
+#layout-content .menu.toolbar a {
+  color: var(--toolbar-roundcube-color-inverse);
+}
+.menu.toolbar a:not(.disabled):focus,
+#layout-content .menu.toolbar a:not(.disabled):focus,
+#layout-content .menu.toolbar a:not(.disabled):hover,
+.menu.toolbar a:not(.disabled):hover {
+  color: var(--toolbar-roundcube-hover-color);
+  background-color: var(--toolbar-roundcube-hover-background-color);
+}
+.popover .menu a {
+  color: var(--toolbar-popover-color);
+  background-color: var(--toolbar-popover-background-color);
+}
+.popover .menu a:not(.disabled):hover {
+  color: var(--toolbar-popover-hover-color);
+  background-color: var(--toolbar-popover-hover-background-color);
+}
+.popover .menu li a {
+  color: var(--toolbar-popover-color);
+  background-color: var(--toolbar-popover-background-color);
+}
+.popover .menu li a:not(.disabled):hover {
+  color: var(--toolbar-popover-hover-color);
+  background-color: var(--toolbar-popover-hover-background-color);
 }
 .menu a {
   /** ICONS **/
@@ -240,19 +275,19 @@ body.task-tasks .menu.pagenav.pagenav-list .pagenav-text {
 }
 /** LISTES **/
 ul.treelist li.selected > div > a {
-  background-color: var(--tierciary-bckg-color);
-  color: var(--secondary-text-color);
+  background-color: var(--treelist-selected-background-color);
+  color: var(--treelist-selected-text-color);
 }
 ul.treelist li.selected > a {
-  background-color: var(--tierciary-bckg-color);
-  color: var(--secondary-text-color);
+  background-color: var(--treelist-selected-background-color);
+  color: var(--treelist-selected-text-color);
 }
 ul.treelist li.context-source:not(.selected) > a {
-  color: var(--alternate-text-color);
-  background-color: var(--secondary-bckg-color) !important;
+  color: var(--treelist-context-text-color);
+  background-color: var(--treelist-context-background-color) !important;
 }
 ul.treelist li.context-source:not(.selected) > div > a {
-  background-color: var(--secondary-bckg-color) !important;
+  background-color: var(--treelist-context-background-color) !important;
 }
 ul.treelist li.droptarget > a {
   background-color: var(--drag-n-drop-color);
@@ -273,10 +308,11 @@ ul.treelist li.droptarget > a {
   color: var(--secondary-text-color);
 }
 .listing:not(.treelist) li.context-source:not(.selected) {
-  background-color: var(--secondary-bckg-color) !important;
+  background-color: var(--list-context-background-color) !important;
+  color: var(--list-context-text-color);
 }
 .scroller > .listing li a {
-  color: var(--secondary-text-color);
+  color: var(--list-text-color);
 }
 ul.listing li ul {
   border-top: none;

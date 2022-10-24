@@ -100,6 +100,24 @@
             }
         }
     }
+
+
+    ul.treelist{
+        li {
+            &.context-source:not(.selected){
+                &>a{
+                    color:var(--mail-treelist-context-text-color);
+                    background-color: var(--mail-treelist-context-background-color) !important;
+                }
+    
+                &>div{
+                    &>a{
+                        background-color: var(--mail-treelist-context-background-color) !important;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*Liste des messages*/

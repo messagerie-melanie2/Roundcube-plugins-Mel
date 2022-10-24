@@ -116,22 +116,6 @@ main {
         /** HEADER **/
         .mel-layout-sidebar-colors()!important;
     }
-
-    .ui-datepicker{
-        &.ui-widget-content{
-            .ui-state-default{
-                /** CALENDRIER **/
-                color: var(--secondary-text-color);
-            }
-        }
-
-        .ui-state-default{
-            /** CALENDRIER **/
-            color: var(--secondary-text-color);
-        }
-    }
-
-
 }
 
 #layout-list {
@@ -150,7 +134,7 @@ main {
             .mel-no-border();
 
             a.button{
-                color:var(--secondary-text-color);
+                .toolbar-button();
             }
         }
     }
@@ -162,7 +146,7 @@ main {
             &.options,
             &.select,
             &.threads{
-                color:var(--secondary-text-color);
+                .toolbar-button();
             }
             
         }
@@ -172,7 +156,7 @@ main {
         &>.header{
             a{
                 &.button{
-                    color: var(--secondary-text-color);
+                    .toolbar-button();
                 }
             }
         }
@@ -229,11 +213,51 @@ html {
         }
     }
 
-    a:not(.disabled):focus,
-    a:not(.disabled):hover
-    {
-        .mel-secondary-colors-important();
+    &.toolbar{
+        a{
+            color: var(--toolbar-roundcube-color);
+            background-color: var(--toolbar-roundcube-background-color);
+
+            #layout-content &{
+                color: var(--toolbar-roundcube-color-inverse);
+
+                &:not(.disabled):focus{
+                    &:extend(.menu.toolbar a:not(.disabled):focus);
+                }
+    
+                &:not(.disabled):hover{
+                    &:extend(.menu.toolbar a:not(.disabled):focus);
+                }
+            }
+
+            &:not(.disabled):focus{
+                color: var(--toolbar-roundcube-hover-color);
+                background-color: var(--toolbar-roundcube-hover-background-color);
+            }
+
+            &:not(.disabled):hover{
+                &:extend(.menu.toolbar a:not(.disabled):focus);
+            }
+        }
     }
+
+    .popover &{
+        a {
+            .popover-button();
+        }
+
+        li {
+            a{
+                .popover-button()
+            }
+        }
+    }
+
+    // a:not(.disabled):focus,
+    // a:not(.disabled):hover
+    // {
+    //     //.mel-secondary-colors-important();
+    // }
 
     a {
         /** ICONS **/
@@ -280,24 +304,26 @@ ul.treelist{
         &.selected{
             &>div{
                 &>a{
-                    .mel-tiercary-colors();
+                    background-color: var(--treelist-selected-background-color);
+                    color:var(--treelist-selected-text-color);
                 }
             }
 
             &>a{
-                .mel-tiercary-colors();
+                background-color: var(--treelist-selected-background-color);
+                color:var(--treelist-selected-text-color);
             }
         }
 
         &.context-source:not(.selected){
             &>a{
-                color:var(--alternate-text-color);
-                background-color: var(--secondary-bckg-color) !important;
+                color:var(--treelist-context-text-color);
+                background-color: var(--treelist-context-background-color) !important;
             }
 
             &>div{
                 &>a{
-                    background-color: var(--secondary-bckg-color) !important;
+                    background-color: var(--treelist-context-background-color) !important;
                 }
             }
         }
@@ -350,7 +376,8 @@ ul.treelist{
         li {
             &.context-source{
                 &:not(.selected){
-                    background-color: var(--secondary-bckg-color) !important;  
+                    background-color: var(--list-context-background-color) !important;  
+                    color: var(--list-context-text-color);
                 }
             }
         }
@@ -359,7 +386,7 @@ ul.treelist{
     .scroller>&{
         li {
             a{
-                color:var(--secondary-text-color);
+                color:var(--list-text-color);
             }
         }
     }

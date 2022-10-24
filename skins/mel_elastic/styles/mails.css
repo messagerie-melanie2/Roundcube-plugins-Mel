@@ -65,6 +65,13 @@ html.layout-large .task-mail #layout-sidebar > .header {
 html body.task-mail.action-show #layout-content {
   overflow: auto;
 }
+.task-mail ul.treelist li.context-source:not(.selected) > a {
+  color: var(--mail-treelist-context-text-color);
+  background-color: var(--mail-treelist-context-background-color) !important;
+}
+.task-mail ul.treelist li.context-source:not(.selected) > div > a {
+  background-color: var(--mail-treelist-context-background-color) !important;
+}
 /*Liste des messages*/
 table.messagelist tr.unread {
   background-color: var(--alternate-bckg-color);

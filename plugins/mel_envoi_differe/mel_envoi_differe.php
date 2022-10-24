@@ -123,6 +123,9 @@ class mel_envoi_differe extends rcube_plugin
             if ($this->is_deconnection_right_enable()) {
                 // Afficher le popup ?
                 $rcmail->output->set_env('deconnection_right_popup', true);
+                if (class_exists('mel_logs')) {
+                    mel_logs::get_instance()->log(mel_logs::INFO, "[mel_envoi_differe] Affichage de la popup de droit à la déconnexion");
+                }
             }
         }
     }
@@ -139,6 +142,9 @@ class mel_envoi_differe extends rcube_plugin
             ]);
             // Afficher le popup ?
             rcmail::get_instance()->output->command('plugin.deconnection_right_popup');
+            if (class_exists('mel_logs')) {
+                mel_logs::get_instance()->log(mel_logs::INFO, "[mel_envoi_differe] Affichage de la popup de droit à la déconnexion");
+            }
         }
     }
 
@@ -167,6 +173,9 @@ class mel_envoi_differe extends rcube_plugin
             $date->add(new \DateInterval('P'.$nbDay.'D'));
             $_SESSION['envoi_differe_timestamp'] = strtotime($date->format('m/d/Y') . ' ' . $open_hours[0]) * 1000;
             $rcmail->output->show_message(str_replace('%%date%%', $date->format('d/m/Y') . ' ' . $open_hours[0], $this->gettext('disco_remise_differe_enabled')), 'confirmation');
+        }
+        if (class_exists('mel_logs')) {
+            mel_logs::get_instance()->log(mel_logs::INFO, "[mel_envoi_differe] Fermeture de la popup de droit à la déconnexion ($act)");
         }
     }
 

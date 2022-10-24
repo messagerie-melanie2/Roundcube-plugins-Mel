@@ -760,7 +760,7 @@ $(document).ready(() => {
                 
                     //Ajout de "plus"
                     $("#toolbar-list-menu").append($(`
-                        <li id="limelmailplusmenu"style="display:none" role="menuitem">
+                        <li id="limelmailplusmenu" class="marked" style="display:none" role="menuitem">
                         
                         </li>
                     `).append($("#melplusmails").css("display", "")))
@@ -768,8 +768,22 @@ $(document).ready(() => {
                     const mailConfig = rcmail.env.mel_metapage_mail_configs;
 
                     let test = new ResizeObserver(() => {
-                        const max = mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
-                        if ($("#layout-list").width() < max)
+                        let value = 0;
+                        {
+                            let iterator;
+                            for (iterator of  $('#toolbar-list-menu li')) {
+                                iterator = $(iterator);
+                                if (!iterator.hasClass('marked'))
+                                {
+                                    value += iterator.width();
+                                }
+                            }
+                            iterator = null;
+                            value += $('.header .toolbar-button.refresh').width();
+                        }
+                        const max = $('#layout-list').width() - $('#mail-search-border').width();//mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
+                        //console.log('value', value, max, $('#layout-list').width(), $('#mail-search-border').width());
+                        if (value > max)
                         {
                             $("#toolbar-list-menu li").css("display", "none").find(".compose").parent().css("display", "");
                             $("#limelmailplusmenu").css("display", "")

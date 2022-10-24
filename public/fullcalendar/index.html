@@ -23,6 +23,8 @@
 
 <body>
 
+  <div class="text-center mt-4" style="display: none;" id="error_message"></div>
+
   <section id="show-calendar">
     <div class="container mt-5">
       <div class="card main_card border-card" style="height: 85vh;">
@@ -77,7 +79,7 @@
     </div>
   </section>
 
-  <!-- Modal -->
+  <!-- Modal Event-->
   <section id="modal-event">
     <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -88,11 +90,6 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <div class="form-group mb-3">
-                <label for="event-title" class="mb-3">Nom de l'évènement <span class="text-danger">*</span></label>
-                <input type="text" class="form-control input-mel" name="title" id="event-title"
-                  placeholder="Nom de l'évènement" required />
-              </div>
               <div class="form-group mb-3">
                 <div class="row">
                   <label for="event-time" class="mb-3">Choix de la période (<span
@@ -140,6 +137,8 @@
       </div>
     </div>
   </section>
+
+  <!-- Modal User -->
   <section id="modal-user">
     <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -189,8 +188,55 @@
       </div>
     </div>
   </section>
+
+  <!-- Modal confirm -->
+  <section id="modal-confirm">
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-card">
+          <div class="modal-body my-4">
+            <div class="row">
+              <div class="col-12 text-center">
+                <h4>Confirmé</h4>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 text-center">
+                Vous avez rendez-vous avec <span id="organiser"></span>
+              </div>
+            </div>
+            <hr class="horizontal_separator">
+            <div class="row" id="motif_row">
+              <div class="col-12" style="margin-left: 30px;">
+                <span class="icon-mel icon-menu mb-3">
+                  <i class="bi bi-vector-pen"></i>
+                </span>
+                <span style="margin-left: 10px;" id="motif"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12" style="margin-left: 30px;">
+                <span class="icon-mel icon-menu">
+                  <i class="bi bi-calendar-check"></i>
+                </span>
+                <span style="margin-left: 10px;" id="date"></span>
+              </div>
+            </div>
+            <hr class="horizontal_separator">
+            <div class="row">
+              <div class="col-12 text-center">
+                <b>Une invitation a été envoyée à votre adresse email.</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </body>
 <script src="lib/moment/moment.min.js"></script>
+<script src="lib/moment/fr.min.js"></script>
 <!-- Jquery -->
 <script src="lib/jquery/jquery-3.6.1.min.js"></script>
 <script src="lib/jquery/jquery.datetimepicker.full.min.js"></script>

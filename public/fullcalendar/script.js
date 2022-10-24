@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   display_name();
   run();
-  // $('.fc-toolbar.fc-header-toolbar').addClass('row col-lg-12');
 });
 
 function display_name() {
@@ -33,6 +32,13 @@ function run() {
     if (this.readyState == 4 && this.status == 200) {
       response = JSON.parse(this.response);
 
+      if (response.error) {
+        $('#error_message').text(response.error);
+        $('#error_message').show();
+        $('#show-calendar').hide();
+        return;
+
+      }
       get_appointment_duration(response);
 
       document.getElementById('appointment_time').textContent = appointment_duration ? appointment_duration + ' min' : 'Libre';
@@ -267,10 +273,45 @@ function event_form_submit(e) {
 function user_form_submit(e) {
   e.preventDefault();
   let event = {};
-  let eventForm = document.find('#add_event_form');
-  event.title = eventForm.find('#event-title').val();
+  event.user = {};
+  event.time_start = $('#event-time-start').val();
+  event.time_end = $('#event-time-end').val();
+  event.object = $('#event-object').val();
+  event.description = $('#event-description').val();
+  event.user.name = $('#user-name').val();
+  event.user.firstname = $('#user-firstname').val();
+  event.user.email = $('#user-email').val();
   console.log(event);
-  $("#userModal").modal('hide');
+
+
+  var xhr = new XMLHttpRequest();
+  console.log(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'));
+  xhr.open("POST", url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), true);
+
+  xhr.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      $("#userModal").modal('hide');
+      display_confirm_modal(event);
+    }
+  }
+  xhr.send();
+
+
+}
+
+function display_confirm_modal(event) {
+  $("#confirmModal").modal('show');
+  document.getElementById('organiser').textContent = owner_name[0];
+
+  if (event.object && event.object != "custom") {
+    document.getElementById('motif').textContent = event.object;
+  }
+  else {
+    $('#motif_row').hide();
+  }
+  moment.locale('fr');
+  document.getElementById('date').textContent = moment(event.time_start).format('HH:mm') + ' - ' + moment(event.time_end).format('HH:mm') + ', ' + moment(event.time_start).format('dddd D MMMM YYYY')  ;
+
 }
 
 function generateTimeGap(response) {

@@ -77,13 +77,8 @@ if (isset($keyhash)) {
 // Vérification de la clé
 if (!isset($keyhash)) {
   header('Content-Type: application/json; charset=utf-8');
-
   echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
   exit;
 }
 
-$user_prefs = $user->getCalendarPreference("appointment_properties");
-
-header('Content-Type: application/json; charset=utf-8');
-echo $user_prefs;
-exit;
+echo "Coucou";

@@ -373,3 +373,7 @@ body {
   top: -2px;
   /* left: 14px; */
 }
+
+.fc-timegrid-body .fc-day-today {
+  background-color: #f1f6f6 !important;
+}

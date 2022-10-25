@@ -320,13 +320,10 @@ ul.listing li ul {
 .listing li {
   border: none;
 }
-.listing li.selected {
-  background-color: var(--secondary-bckg-color);
-  color: var(--secondary-text-color);
-}
 .listing li.selected > div > * {
   /** CALENDRIER **/
-  background-color: var(--tierciary-bckg-color) !important;
+  background-color: var(--treelist-selected-background-color) !important;
+  color: var(--treelist-selected-text-color);
   border: none !important;
 }
 .listing li > div.calendar .calname::before {

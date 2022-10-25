@@ -685,19 +685,37 @@ html.theme-classique #layout-list .listing tr.selected td.labels{
     border:none!important;
 }
 
-#calendarurlbox{
-    .slider {
-        &::before {
-            bottom: 2px;
+html.theme-classique
+{
+    #calendarurlbox{
+        .slider {
+            &::before {
+                bottom: 2px;
+            }
+        }
+    }
+    
+    #appointmentbox {
+        .slider{
+            &::before{
+                &:extend(#calendarurlbox .slider::before);
+            }
+        }
+    }
+    
+    #melplusmails{
+        color: var(--theme-base-text-color);
+        border-top: solid thin var(--invisible) !important;
+
+        &:hover {
+            background-color: #edebe9!important;
+            color:var(--theme-base-text-color)!important;
+            border-top-color: var(--tierciary-bckg-color)!important;
+        }
+
+        &:focus{
+            color:var(--secondary-text-color);
         }
     }
 }
 
-#appointmentbox {
-    .slider{
-        &::before{
-            &:extend(#calendarurlbox .slider::before);
-        }
-    }
-
-}

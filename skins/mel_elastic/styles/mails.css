@@ -688,3 +688,6 @@ body.task-mail.action-compose a.removelink {
 #compose-contacts .modal-close {
   float: right;
 }
+#melplusmails {
+  color: var(--secondary-text-color);
+}

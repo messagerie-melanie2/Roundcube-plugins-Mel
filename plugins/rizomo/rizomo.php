@@ -56,6 +56,7 @@ class rizomo extends rcube_plugin
         
         // Ne proposer les actions et le js uniquement dans la page meta
         if ((!isset($_GET['_is_from']) || $_GET['_is_from'] != 'iframe') 
+                && in_array($this->rc->user->get_username(), $this->rc->config->get('rizomo_users', []))
                 && !isset($_GET['_extwin'])
                 && !isset($_GET['_framed'])
                 && $this->rc->action != 'refresh'
@@ -74,9 +75,7 @@ class rizomo extends rcube_plugin
             }
         }
 
-        $rizomo_url = $this->rc->config->get('rizomo_url', '');
-
-        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($rizomo_url, 'rizomo');
+        if (class_exists("mel_metapage")) mel_metapage::add_url_spied($this->rc->config->get('rizomo_url', ''), 'rizomo');
         // Ajoute le bouton en fonction de la skin
         $need_button = true;
         if (class_exists("mel_metapage")) {
@@ -101,10 +100,8 @@ class rizomo extends rcube_plugin
             $this->register_action('index', array($this, 'action'));
             $this->rc->output->set_env('refresh_interval', 0);
         } 
-        else if ($this->rc->task == 'settings') {
-            // Ajouter le texte
-            $this->add_texts('localization/', false);
-
+        else if ($this->rc->task == 'settings' 
+                && in_array($this->rc->user->get_username(), $this->rc->config->get('rizomo_users', []))) {
             // add hooks for Notifications settings
             $this->add_hook('preferences_sections_list',    [$this, 'preferences_sections_list']);
             $this->add_hook('preferences_list',             [$this, 'preferences_list']);
@@ -127,7 +124,9 @@ class rizomo extends rcube_plugin
 
         // Chargement du template d'affichage
         $this->rc->output->set_pagetitle($this->gettext('rizomo_title'));
-        $this->rc->output->set_env('rizomo_gotourl', $this->rc->config->get('rizomo_url', '') . $this->rc->config->get('rizomo_login', ''));
+
+        $this->rc->output->set_env('rizomo_gotourl', $this->rc->config->get('rizomo_url', ''));
+        
         $this->include_script('rizomo.js');
         $this->rc->output->send('rizomo.rizomo');
     }

@@ -779,23 +779,19 @@ $(document).ready(() => {
                                 }
                             }
                             iterator = null;
-                            value += $('.header .toolbar-button.refresh').width();
+                            const additional_width =  $('.header .toolbar-button.refresh').width();
+                            value += additional_width + (additional_width / 2.0);
                         }
                         const max = $('#layout-list').width() - $('#mail-search-border').width();//mailConfig === null || mailConfig["mel-icon-size"] === rcmail.gettext("normal", "mel_metapage") ? 370 : 347; //370;
-                        //console.log('value', value, max, $('#layout-list').width(), $('#mail-search-border').width());
+
                         if (value > max)
                         {
                             $("#toolbar-list-menu li").css("display", "none").find(".compose").parent().css("display", "");
                             $("#limelmailplusmenu").css("display", "")
-                            //$("#melmorethings-menu .select").data("popup", `-${$("#melmorethings-menu .select").data("popup")}`)
-                            // if ($("#melmorethings-menu .select").length === 0)
-                            //     $("#toolbar-list-menu .select").clone().appendTo($("<li></li>")).parent().prependTo($("#melmorethings-menu ul"));
                         }
                         else {
                             $("#toolbar-list-menu li").css("display", "");
                             $("#limelmailplusmenu").css("display", "none");
-                            //$("#melmorethings-menu .select").parent().remove();
-                            //$("#melmorethings-menu .select").data("popup", $("#melmorethings-menu .select").data("popup").replace("-", ""))
                         }
 
                         if (!$("html").hasClass("touch") && $("#toolbar-list-menu").hasClass("hidden")) 

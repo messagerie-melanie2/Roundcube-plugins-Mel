@@ -378,7 +378,7 @@ function UpdateCalendar()
         const id = before + uid;
         let tmp = Enumerable.from(data).where(x => x.categories !== undefined && x.categories.length > 0 && x.categories.includes(id));
         array = tmp.toArray();
-        tmp = tmp.where(x => x.free_busy !== "free");
+        tmp = tmp.where(x => x.free_busy !== "free" && x.free_busy !== "telework");
         if (tmp.any())
             return tmp.count();
         else
@@ -393,7 +393,7 @@ function UpdateCalendar()
             setup_calendar(array, querry);//querry.html("Pas de réunion aujourd'hui !");
         else
         {
-            const count = Enumerable.from(array).where(x => x.free_busy !== "free").count();
+            const count = Enumerable.from(array).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
             setup_calendar(array, querry);
             UpdateSomething(count, "wsp-agenda-icon");
             $(".wsp-agenda-icon").find(".roundbadge").addClass("edited");

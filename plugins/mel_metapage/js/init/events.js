@@ -789,7 +789,7 @@ if (rcmail && window.mel_metapage)
         html += `<div class=row><div class=col-12 style="margin-top:10px"><span style="display: inline-block;
         width: 0.7rem;
         height: 0.7rem;
-        background-color: ${event.free_busy === "free" ? "green" : "red"};
+        background-color: ${event.free_busy === "free" || event.free_busy === "telework"  ? "green" : "red"};
         border-radius: 100%;
         margin-bottom: -0.1rem;
         margin-left: 0.35rem;

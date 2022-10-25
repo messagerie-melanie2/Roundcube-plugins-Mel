@@ -140,7 +140,7 @@
                                 events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
                                 const today = Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray();
                                 try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
-                                update_badge(Enumerable.from(today).where(x => x.free_busy !== "free").count(), mel_metapage.Ids.menu.badge.calendar);
+                                update_badge(Enumerable.from(today).where(x => x.free_busy !== "free" && a.free_busy !== 'telework').count(), mel_metapage.Ids.menu.badge.calendar);
 
                                 mel_metapage.Storage.set(mel_metapage.Storage.calendar, today);
                                 mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))

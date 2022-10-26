@@ -2650,3 +2650,34 @@ $(document).ready(() => {
     };
 
 });
+
+
+// function tab($item)
+// {
+//     const tab = $item.attr('id');
+//     let other_tabs = $item.parent().parent().find('a');
+
+//     $item.on('show.bs.tab');    
+
+//     let id;
+//     for (let iterator of other_tabs) {
+//         id = iterator.attr('id');
+//         if (id !== tab) {
+//             iterator.removeClass('active');
+//             $(`.tab-pane[aria-labelledby="${id}"]'`).removeClass('active');
+//             iterator.on('hide.bs.tab');
+//         }
+//         else {
+//             iterator.addClass('active');
+//             $(`.tab-pane[aria-labelledby="${id}"]'`).addClass('active');
+//         }
+
+//     }
+
+//     $item.on('shown.bs.tab');   
+// }
+
+// $('#myTab a').on('click', function (e) {
+//     e.preventDefault()
+//     tab($(e.currentTarget));
+// })

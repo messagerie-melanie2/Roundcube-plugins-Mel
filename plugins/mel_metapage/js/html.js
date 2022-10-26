@@ -278,7 +278,9 @@ html_helper.Calendars = function({datas, config = {
 			title = mel_metapage.Functions.updateRichText(element.title);
 
 			if (element.free_busy === "free")
-				title += ' (libre)'
+				title += ' (libre)';
+			else if (element.free_busy === "telework")
+				title += ' (télétravail)';
 
 			if (element.attendees !== undefined && element.attendees.length > 0)
 			{

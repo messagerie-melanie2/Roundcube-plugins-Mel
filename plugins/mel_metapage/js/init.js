@@ -140,7 +140,7 @@
                                 events = Enumerable.from(events).where(x => !ids.includes(x)).orderBy(x => x.order).thenBy(x => moment(x.start)).toArray();
                                 const today = Enumerable.from(events).where(x => moment(x.start) >= moment().startOf("day") && moment(x.start) <= moment().endOf("day")).toArray();
                                 try_add_round(".calendar", mel_metapage.Ids.menu.badge.calendar);
-                                update_badge(Enumerable.from(today).where(x => x.free_busy !== "free" && a.free_busy !== 'telework').count(), mel_metapage.Ids.menu.badge.calendar);
+                                update_badge(Enumerable.from(today).where(x => x.free_busy !== "free" && x.free_busy !== 'telework').count(), mel_metapage.Ids.menu.badge.calendar);
 
                                 mel_metapage.Storage.set(mel_metapage.Storage.calendar, today);
                                 mel_metapage.Storage.set(mel_metapage.Storage.last_calendar_update, moment().startOf('day'))
@@ -699,7 +699,7 @@
             {
                 init_badge(local_storage.calendar, mel_metapage.Storage.calendar, rcmail.mel_metapage_fn.calendar_updated,
                     ".calendar", mel_metapage.Ids.menu.badge.calendar, true, true, (storage, defaultValue) => {
-                        return Enumerable.from(storage).where(x => x.free_busy !== "free").count();
+                        return Enumerable.from(storage).where(x => x.free_busy !== "free" && x.free_busy !== "telework").count();
                     });
                 init_badge(local_storage.tasks, mel_metapage.Storage.tasks, rcmail.mel_metapage_fn.tasks_updated,
                     ".tasklist", mel_metapage.Ids.menu.badge.tasks, true);

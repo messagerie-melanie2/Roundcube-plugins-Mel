@@ -2585,7 +2585,8 @@ $(document).ready(() => {
             $tabList.find(`.${hide_button}.${namespace}`).click(() => {
                 item.$tab.css('display', '');
 
-                if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) item.$tabName.css('display', '');
+                //if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) item.$tabName.css('display', '');
+                $(`.${header_to_hide}`).css('display', '');
             });
 
             item.$tab.addClass(tab_content).addClass(namespace);

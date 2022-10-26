@@ -2409,3 +2409,9 @@ html.layout-small .hide-on-small {
 .multilink-sub:hover .multilink-sub-copy {
   color: var(--main-text-color) !important;
 }
+.display-inline-block {
+  display: inline-block;
+}
+.display-inline-block.important {
+  display: inline-block !important;
+}

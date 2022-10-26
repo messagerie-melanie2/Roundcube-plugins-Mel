@@ -172,6 +172,36 @@ class html_mel_table extends html {
     }
 }
 
+class html_mel_button extends html {
+    private $text;
+    private $icon;
+
+    public function __construct($attrib = [], $text = '', $icon = null)
+    {
+        if (is_array($attrib)) {
+            $this->attrib = $attrib;
+        }
+
+        if (!empty($attrib['class'])) {
+            $this->attrib['class'] = 'btn btn-secondary mel-button no-button-margin';
+        }
+        else $this->attrib['class'] .= ' btn btn-secondary mel-button no-button-margin';
+
+        $this->text = $text;
+        $this->icon = $icon;
+    }
+
+    public function show($attrib = [])
+    {
+        // overwrite object attributes
+        if (is_array($attrib)) {
+            $this->attrib = array_merge($this->attrib, $attrib);
+        }
+
+        return html::tag('button', $this->attrib, $this->text.(isset($this->icon) ? html::tag('span', ['class' => 'plus '.$this->icon]) : ''));
+    }
+}
+
 abstract class html_helper extends html
 {
     protected function __construct()
@@ -210,5 +240,10 @@ abstract class html_helper extends html
     public static function col($col, $attribs = [], $contents = '')
     {
         return self::_col('', $col, $attribs, $contents);
+    }
+
+    public static function mel_button($attribs = [], $text = '', $icon = null)
+    {
+        return (new html_mel_button($attribs, $text, $icon))->show();
     }
 }

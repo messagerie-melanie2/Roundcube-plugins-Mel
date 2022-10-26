@@ -731,17 +731,19 @@ Webconf.update_radio = function()
  * Met à jours l'url de la webconf
  */
 Webconf.update_room_name = function()
-{
+{ 
     let querry = $("#webconf-room-name");
     querry.val(querry.val().toUpperCase());
     let val = querry.val();
 
-    if (val.includes(rcmail.env["webconf.base_url"].toUpperCase()))
     {
-        val = val.split("/");
-        val = val[val.length-1];
-        querry.val(val.toUpperCase());
-        //querry.val()
+        const detected = mel_metapage.Functions.webconf_url(val.toLowerCase());
+        if ((detected || false) !== false)
+        {
+            val = detected;
+            querry.val(val.toUpperCase());
+            //querry.val()
+        }
     }
 
     if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val))

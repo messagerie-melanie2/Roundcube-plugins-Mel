@@ -998,16 +998,32 @@ const mel_metapage = {
          */
         webconf_url(url)
         {
+            if (url[url.length - 1] === '&') url = url.slice(0, url.length - 1);
+
             let val = url.toUpperCase();
             
             if (val.includes(rcmail.env["webconf.base_url"].toUpperCase())) {
               val = val.split("/");
               val = val[val.length - 1];
-              return val.toUpperCase();
+              val=  val.toUpperCase();
             }
-            else if (val.includes('PUBLIC/WEBCONF')) return val.split("_KEY=")[1].split("&")[0]
+            else if (val.includes('PUBLIC/WEBCONF')) val = val.split("_KEY=")[1].split("&")[0]
+            else {
+                let link = WebconfLink.create({location:url, categories:[]});
+                val = link.key;
+
+                try {
+                    if (val === ""){
+                        link = WebconfLink.create({location:`#visio:${url}`, categories:[]});
+                        val = link.key;
+                    }
+                } catch (error) {
+                    val = null;
+                }
+            }
+
             
-            return null;
+            return val || null;
         },
 
         _shuffle(array) {

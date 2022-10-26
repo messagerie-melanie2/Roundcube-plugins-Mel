@@ -357,6 +357,15 @@ $(document).ready(() => {
                         _key:this.$visioState.val()
                     };
 
+                    {
+                        const detected = mel_metapage.Functions.webconf_url(config._key.toLowerCase());
+                        if ((detected || false) !== false)
+                        {
+                            config._key = detected;
+                            this.$visioState.val(detected.toUpperCase());
+                        }
+                    }
+
                     if (this.$haveWorkspace[0].checked && this.$workspace.val() !== "#none")
                         config["_wsp"] = this.$workspace.val();
 

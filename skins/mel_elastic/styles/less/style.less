@@ -347,7 +347,7 @@ ul.treelist{
         }
     }
 }
-
+/*****@rotomeca*****/
 .mel-selectable{
     &:hover{
         background-color: var(--tierciary-bckg-color);
@@ -451,7 +451,7 @@ ul.treelist{
                 &.quickview{
                     &::before{
                         /** CALENDRIER **/
-                        color: var(--fourth-text-color) !important;
+                        color: var(--calendar-list-quickview-color) !important;
                     }
                 }
             }
@@ -487,9 +487,9 @@ ul.treelist{
                     &>a{
                         &:first-child{
                             &:hover{
-                                background-color: var(--tierciary-bckg-color) !important;
-                                border-top-right-radius: 15px;
-                                border-bottom-right-radius: 15px;
+                                background-color: var(--tasks-layout-list-item-hover-background-color) !important;
+                                border-top-right-radius: var(--tasks-layout-list-item-hover-border-radius);
+                                border-bottom-right-radius: var(--tasks-layout-list-item-hover-border-radius);
                             }
                         }
                     }
@@ -509,7 +509,9 @@ ul.treelist{
     tr{
         &.selected{
             td{
-                .mel-secondary-colors();
+                //.mel-secondary-colors();
+                background-color: var(--treelist-selected-background-color-2);
+                color: var(--treelist-selected-text-color-2);
             }
         }
 
@@ -524,17 +526,18 @@ ul.treelist{
         tr{
             &.context-source:not(.selected){
                 &>td{
-                    background-color: var(--secondary-bckg-color) !important;
+                    background-color: var(--treelist-context-background-color-2) !important;
+                    color: var(--treelist-context-text-color-2);
                 }
             }
         }
 
         td{
-            color:var(--secondary-text-color);
+            color:var(--list-text-color);
             border: none;
 
             a{
-                color:var(--secondary-text-color);
+                color:var(--list-text-color);
             }
         }
     }

@@ -295,6 +295,7 @@ ul.treelist li.droptarget > a {
 .task-addressbook ul.treelist.iconized li div.treetoggle {
   top: 0px!important;
 }
+/*****@rotomeca*****/
 .mel-selectable:hover {
   background-color: var(--tierciary-bckg-color);
   color: var(--secondary-text-color);
@@ -342,7 +343,7 @@ ul.listing li ul {
 }
 .listing li > div a.quickview::before {
   /** CALENDRIER **/
-  color: var(--fourth-text-color) !important;
+  color: var(--calendar-list-quickview-color) !important;
 }
 body.task-tasks .listing li > div > a:first-child {
   cursor: pointer;
@@ -354,29 +355,30 @@ body.task-tasks .listing li > div > a:first-child {
   color: var(--fourth-text-color) !important;
 }
 body.task-tasks .listing li:hover > div > a:first-child:hover {
-  background-color: var(--tierciary-bckg-color) !important;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
+  background-color: var(--tasks-layout-list-item-hover-background-color) !important;
+  border-top-right-radius: var(--tasks-layout-list-item-hover-border-radius);
+  border-bottom-right-radius: var(--tasks-layout-list-item-hover-border-radius);
 }
 .listing li.disabled {
   color: var(--disabled-text-color-listing);
 }
 .listing tr.selected td {
-  background-color: var(--secondary-bckg-color);
-  color: var(--secondary-text-color);
+  background-color: var(--treelist-selected-background-color-2);
+  color: var(--treelist-selected-text-color-2);
 }
 .listing tr.disabled td {
   color: var(--disabled-text-color-listing);
 }
 .listing tbody tr.context-source:not(.selected) > td {
-  background-color: var(--secondary-bckg-color) !important;
+  background-color: var(--treelist-context-background-color-2) !important;
+  color: var(--treelist-context-text-color-2);
 }
 .listing tbody td {
-  color: var(--secondary-text-color);
+  color: var(--list-text-color);
   border: none;
 }
 .listing tbody td a {
-  color: var(--secondary-text-color);
+  color: var(--list-text-color);
 }
 table.listing td.subscribed {
   width: 30px;

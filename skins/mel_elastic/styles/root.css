@@ -187,8 +187,14 @@
   --list-context-text-color: var(--secondary-text-color);
   --treelist-selected-background-color: var(--tierciary-bckg-color);
   --treelist-selected-text-color: var(--secondary-text-color);
+  --treelist-selected-background-color-2: var(--secondary-bckg-color);
+  --treelist-selected-text-color-2: var(--treelist-selected-text-color);
+  --treelist-hover-background-color: var(--treelist-selected-background-color);
+  --treelist-hover-background-color-2: var(--treelist-selected-background-color-2);
   --treelist-context-background-color: var(--list-context-background-color);
   --treelist-context-text-color: var(--list-context-text-color);
+  --treelist-context-background-color-2: var(--secondary-bckg-color);
+  --treelist-context-text-color-2: var(--treelist-context-text-color);
   --calendar-table-border: #C2C5D3;
   --calendar-sidebar-text-color: var(--layout-sidebar-text-color);
   --calendar-sidebar-background-color: var(--tierciary-bckg-color);
@@ -218,6 +224,7 @@
   --calendar-list-item-switch-border-color: black;
   --calendar-list-item-switch-tick-stroke-color: var(--main-text-color);
   --calendar-list-item-switch-tick-stroke: 1px var(--calendar-list-item-switch-tick-stroke-color);
+  --calendar-list-quickview-color: var(--fourth-text-color);
   --calendar-widget-header-background-color: var(--alternate-bckg-color-2);
   --calendar-widget-header-text-color: var(--secondary-text-color);
   --calendar-widget-header-button-background-color: var(--default-background);
@@ -252,6 +259,8 @@
   --calendar-slider-enabled-round-border: var(--slider-enabled-round-border);
   --mail-treelist-context-background-color: var(--main-bckg-color);
   --mail-treelist-context-text-color: var(--treelist-context-text-color);
+  --tasks-layout-list-item-hover-background-color: var(--treelist-hover-background-color);
+  --tasks-layout-list-item-hover-border-radius: 15px;
 }
 .dark-mode:root {
   --tierciary-bckg-color: #323F4B;

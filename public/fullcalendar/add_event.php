@@ -47,7 +47,7 @@ if (isset($calhash)) {
   $calendar_name = utils::to_M2_id($calendar_name);
 } else {
   // Si pas d'identifiant on retourne une erreur
-  echo "Erreur de lecture pour l'identifiant de l'agenda.";
+  echo json_encode(["error" => "Erreur de lecture pour l'identifiant de l'agenda."]);
   exit();
 }
 
@@ -56,7 +56,6 @@ if (isset($calhash)) {
 if (isset($_user)) {
   $user = new LibMelanie\Api\Mel\User();
   $user->uid = $_user;
-  // $user->load();
 }
 
 // Récupération de la clé de la requête 
@@ -81,4 +80,36 @@ if (!isset($keyhash)) {
   exit;
 }
 
-echo "Coucou";
+// Génération du calendrier et de l'évènement
+if (isset($user)) {
+  $calendar = new LibMelanie\Api\Mel\Calendar($user);
+  $calendar->id = $calendar_name;
+  $calendar->load();
+
+  $event = new LibMelanie\Api\Mel\Event($user, $calendar);
+  $event->uid = generate_uid($_user);
+  $event->load();
+
+  $events = $calendar->getAllEvents();
+
+  $event->title = $_POST['object'] == "" ? "Rendez-vous" . displayUserFullName() : $_POST['object'] . displayUserFullName();
+  $event->start = new DateTime($_POST['time_start']);
+  $event->end = new DateTime($_POST['time_end']);
+  $event->description = $_POST['description'];
+  $event->save();
+}
+
+/**
+ * Generate a unique identifier for an event
+ */
+function generate_uid($_user)
+{
+  return strtoupper(md5(time() . uniqid(rand())) . '-' . substr(md5($_user), 0, 16));
+}
+
+/**
+ * Generate the user fullname
+ */
+function displayUserFullName() {
+  return ' avec ' . $_POST['user']['firstname'] . ' ' . $_POST['user']['name'];
+}

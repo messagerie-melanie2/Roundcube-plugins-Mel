@@ -368,6 +368,46 @@ body {
   }
 }
 
+/* Toast Spinner */
+.toast-body {
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 40px;
+  height: 23px;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 1000px) {
+  .right-border {
+    border-right: 1px solid rgb(226, 226, 226);
+  }
+}
+
 .icon-menu {
   position: relative;
   top: -2px;

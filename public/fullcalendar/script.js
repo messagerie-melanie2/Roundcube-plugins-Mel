@@ -281,25 +281,18 @@ function user_form_submit(e) {
   event.user.name = $('#user-name').val();
   event.user.firstname = $('#user-firstname').val();
   event.user.email = $('#user-email').val();
-  console.log(event);
+  $('#waitingToast').toast('show');
 
 
-  var xhr = new XMLHttpRequest();
-  console.log(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'));
-  xhr.open("POST", url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), true);
-
-  xhr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      $("#userModal").modal('hide');
-      display_confirm_modal(event);
-    }
-  }
-  xhr.send();
-
-
+  $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
+    .done(function () {
+      $('#waitingToast').toast('hide');
+      display_confirm_modal(event)
+    });
 }
 
 function display_confirm_modal(event) {
+  $('.modal').modal('hide');
   $("#confirmModal").modal('show');
   document.getElementById('organiser').textContent = owner_name[0];
 
@@ -310,7 +303,7 @@ function display_confirm_modal(event) {
     $('#motif_row').hide();
   }
   moment.locale('fr');
-  document.getElementById('date').textContent = moment(event.time_start).format('HH:mm') + ' - ' + moment(event.time_end).format('HH:mm') + ', ' + moment(event.time_start).format('dddd D MMMM YYYY')  ;
+  document.getElementById('date').textContent = moment(event.time_start).format('HH:mm') + ' - ' + moment(event.time_end).format('HH:mm') + ', ' + moment(event.time_start).format('dddd D MMMM YYYY');
 
 }
 

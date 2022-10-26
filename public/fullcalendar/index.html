@@ -27,9 +27,9 @@
 
   <section id="show-calendar">
     <div class="container mt-5">
-      <div class="card main_card border-card" style="height: 85vh;">
+      <div class="card main_card border-card">
         <div class="row no-gutters">
-          <div class="col-lg-4 right-border">
+          <div class="col-lg-3 right-border">
             <div class="row">
               <div class="col-12 my-4">
                 <span id="owner_calendar"></span><br>
@@ -37,10 +37,10 @@
                 <hr class="horizontal_separator">
                 <div class="row">
                   <div class="col-12" style="margin-left: 30px;">
-                    <span class="icon-mel icon-menu mb-3">
+                    <span class="icon-mel icon-menu mb-3" style="top: 0; font-size: 1.3rem;">
                       <i class="bi bi-stopwatch"></i>
                     </span>
-                    <span id="appointment_time" class="info"></span>
+                    <b><span id="appointment_time" class="info"></span></b>
                   </div>
                 </div>
 
@@ -48,7 +48,7 @@
             </div>
             <div id="take_appointment">
               <div class="row mb-3">
-                <div class="col-12 d-flex justify-content-center align-items-end"">
+                <div class="col-12 d-flex justify-content-center align-items-end" style="margin-left: 5px;">
                   <button class=" main-button" onclick="showModal()">
                   Prendre un rendez-vous
                   <span class="icon-mel icon-button">
@@ -58,7 +58,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-12 text-center" style="font-size: 12px;">
+                <div class="col-12 text-center" style="font-size: 12px;margin-left: 5px;">
                   Ou sélectionnez directement la plage horaire souhaitée
                 </div>
               </div>
@@ -66,7 +66,7 @@
 
             </div>
           </div>
-          <div class="col-lg-8 text-center d-flex align-items-center">
+          <div class="col-lg-9 text-center d-flex align-items-center">
             <div class="card-body">
               <div id="loader" class="lds-dual-ring"></div>
               <span id="loaded-calendar" style="visibility: hidden;">
@@ -233,6 +233,22 @@
       </div>
     </div>
   </section>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="waitingToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+      aria-atomic="true" style="background-color: #354246; color: white;">
+      <div class="d-flex">
+        <div class="toast-body">
+          <div id="loader" class="lds-dual-ring"></div>
+          Enregistrement en cours
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+          aria-label="Close"></button>
+      </div>
+
+    </div>
+  </div>
+
 
 </body>
 <script src="lib/moment/moment.min.js"></script>

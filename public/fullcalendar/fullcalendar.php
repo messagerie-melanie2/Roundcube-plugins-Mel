@@ -47,7 +47,7 @@ if (isset($calhash)) {
   $calendar_name = utils::to_M2_id($calendar_name);
 } else {
   // Si pas d'identifiant on retourne une erreur
-  echo "Erreur de lecture pour l'identifiant de l'agenda.";
+  echo json_encode(["error" => "Erreur de lecture pour l'identifiant de l'agenda."]);
   exit();
 }
 

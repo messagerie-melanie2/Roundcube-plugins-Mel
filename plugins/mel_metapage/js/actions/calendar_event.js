@@ -1,6 +1,36 @@
 $(document).ready(
   function () {
 
+    function tab($item) {
+      const tab = $item.attr('id');
+      let other_tabs = $item.parent().parent().find('a');
+
+      $item.on('show.bs.tab');
+
+      let id;
+      for (let iterator of other_tabs) {
+        iterator = $(iterator);
+        id = iterator.attr('id');
+        if (id !== tab) {
+          iterator.removeClass('active');
+          $(`.tab-pane[aria-labelledby="${id}"]`).removeClass('active');
+          iterator.on('hide.bs.tab');
+        }
+        else {
+          iterator.addClass('active');
+          $(`.tab-pane[aria-labelledby="${id}"]`).addClass('active');
+        }
+
+      }
+
+      $item.on('shown.bs.tab');
+    }
+
+    $('#myTab a').on('click', function (e) {
+      e.preventDefault()
+      tab($(e.currentTarget));
+    })
+
     function calendar_waiting_number() {
       if (!window.rcube_calendar || !rcube_calendar.get_number_waiting_events) return;
 
@@ -459,7 +489,7 @@ function add_reason(id) {
   let start_input = input_array.attr('id').split('-');
   let new_id = parseInt(start_input[1]) + 1;
 
-  $('.ui-dialog #appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif"></div><div class="col-1"><button class="btn btn-danger" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
+  $('.ui-dialog #appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif"></div><div class="col-1"><button class="btn btn-danger" title="Supprimer le motif de rendez-vous" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
 }
 
 function remove_reason(new_id) {

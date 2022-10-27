@@ -831,7 +831,7 @@ $(document).ready(() => {
                             }).find("input").on("focusout", (e) => {
                                 if (window.innerWidth < 410)
                                 {
-                                    let parent = e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
+                                    let parent = e.relatedTarget === null ? null : $(e.relatedTarget);//e.originalEvent === null || e.originalEvent.explicitOriginalTarget === null ? null : $(e.originalEvent.explicitOriginalTarget);
                                     while (parent !== null && parent.attr("id") != "mailsearchlist" && parent[0].nodeName != "BODY" && !parent.hasClass("icon-mel-search"))
                                     {
                                         //console.log("parent", parent);
@@ -840,7 +840,7 @@ $(document).ready(() => {
 
                                     if (parent === null || parent.hasClass("icon-mel-search") || parent[0].nodeName === "BODY")
                                     {
-                                        if (parent.hasClass("icon-mel-search"))
+                                        if (!!parent && parent.hasClass("icon-mel-search"))
                                             $("#mailsearchlist").addClass("stopclick");
                                         else {
                                             $("#mailsearchlist").addClass("hoverable");

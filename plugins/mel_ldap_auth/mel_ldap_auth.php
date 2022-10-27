@@ -216,8 +216,11 @@ class mel_ldap_auth extends rcube_plugin {
       if ($args['error'] == 11) {
         if (mel_logs::is(mel_logs::INFO))
           mel_logs::get_instance()->log(mel_logs::INFO, "Blocage du compte <$user>");
-        mail(driver_mel::gi()->getUser($user)->email_send, "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
-
+        // MANTIS 0006881: retour test d'intrusion : comptes bloqués
+        if ($CptEchec_count == $CptEchec_nbtm + 1) {
+          mail(driver_mel::gi()->getUser($user)->email_send, "ATTENTION: Verrouillage de l'acces web pour <$user>", "Votre compte est bloque suite a un trop grand nombre de tentatives de connexion ($CptEchec_nbtm) avec un mauvais mot de passe. Il sera debloque automatiquement dans $CptEchec_nbhreset mn.\r\n\r\nContacter votre cellule informatique si vous n'etes pas a l'origine de ce blocage ...");
+        }
+        
         // Exécuter la fin de la connexion pour permettre de personnaliser le message d'erreur
         $this->rc->output->show_message($this->rc->gettext('error_block', 'mel'), 'warning');
 

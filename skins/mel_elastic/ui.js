@@ -745,7 +745,13 @@ $(document).ready(() => {
                         });
                     });
 
-                    $('#mailsearchlist .searchbar .unread').before($(`<a class="button flag" href="#" role="button" title="Afficher les courriels suivis"></a>`).click((e) => {
+
+                    $('#mailsearchlist .searchbar .reset').click(() => {
+                        $('#mailsearchlist .searchbar .flag').removeClass('selected');
+                    })
+                    $('#mailsearchlist .searchbar .unread').click(() => {
+                        $('#mailsearchlist .searchbar .flag').removeClass('selected');
+                    }).before($(`<a class="button flag" href="#" role="button" title="Afficher les courriels suivis"></a>`).click((e) => {
                         const item = $(e.target);
 
                         if (item.hasClass('selected')) item.removeClass('selected');

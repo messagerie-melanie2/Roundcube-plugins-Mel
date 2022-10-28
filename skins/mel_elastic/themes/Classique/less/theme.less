@@ -693,3 +693,20 @@ html.theme-classique body.task-calendar #menu-gu-black{
 html.theme-classique #layout-list .listing tr.selected td.labels{
     border:none!important;
 }
+
+html.theme-classique body.task-mail.action-compose #attachment-list *
+{
+    color: var(--theme-base-text-color)!important;
+}
+
+html.theme-classique .task-mail.action-compose #layout-sidebar .scroller a.button.icon.dropdown,
+html.theme-classique .task-mail.action-compose #layout-sidebar .scroller a.delete {
+    border-bottom: solid thin var(--invisible);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    
+    &:hover{
+        background-color:#edebe9!important;
+        border-bottom-color: var(--theme-base-text-color);
+    }
+}

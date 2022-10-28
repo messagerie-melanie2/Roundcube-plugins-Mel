@@ -544,8 +544,8 @@
           aria-selected="false">Plage de temps</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="timebetween-tab" data-toggle="tab" href="#timebetween" role="tab" aria-controls="timebetween"
-          aria-selected="false">Intervalle de temps</a>
+        <a class="nav-link" id="timebetween-tab" data-toggle="tab" href="#timebetween" role="tab"
+          aria-controls="timebetween" aria-selected="false">Intervalle de temps</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" id="reason-tab" data-toggle="tab" href="#reason" role="tab" aria-controls="reason"
@@ -566,11 +566,10 @@
               <roundcube:label name='calendar.letuserchoosetimeduration' />
               <div id="time">
                 <div class="form-group row">
-                  <label class="col-2 col-form-label">
-                    <roundcube:label name='calendar.duration' />
-                    :
+                  <label class="col-3 col-form-label">
+                    <roundcube:label name='calendar.duration' /> :
                   </label>
-                  <div class="col-10">
+                  <div class="col-9">
                     <select id="time_select" name="time_select" class="form-control" onchange="toggle_custom_time()">
                       <option value="15">15 min</option>
                       <option value="30">30 min</option>
@@ -580,16 +579,67 @@
                     </select>
                   </div>
                 </div>
-                <div id="custom_time" class="form-group row" style="display: none;">
-                  <div class="col-2"></div>
+                <div id="custom_time" class="form-group row mb-3" style="display: none;">
+                  <div class="col-3"></div>
                   <div class="col-6">
                     <input id="custom_time_input" name="custom_time_input" type="text" class="form-control">
                   </div>
-                  <div class="col-4 pl-0">
+                  <div class="col-3 pl-0">
                     <select id="custom_time_select" name="custom_time_select" class="form-control">
                       <option>min</option>
                       <option>h</option>
                     </select>
+                  </div>
+                </div>
+              </div>
+              <div id="place">
+                <div class="form-group row">
+                  <label class="col-3 col-form-label">
+                    <roundcube:label name='calendar.place' /> :
+                  </label>
+                  <div class="col-9">
+                    <select id="place_select" name="place_select" class="form-control"
+                      onchange="place_select_trigger()">
+                      <option value="private">Réunion en privée</option>
+                      <option value="phone">Appel téléphonique</option>
+                      <option value="webconf">Web-conférence</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div id="place_option">
+                <div class="form-group row">
+                  <label class="col-3 col-form-label">
+                    <span id="place_option_label">Adresse</span>
+                  </label>
+                  <div class="col-9">
+                    <div id="place_option_fields">
+                      <div id="private">
+                        <input type="text" id="address" class="form-control">
+                      </div>
+                      <div id="phone" style="display: none;">
+                        <label class="switch mr-1 mb-4 mt-3">
+                          <input type="radio" name="phone" id="organizer_call" checked onchange="show_phone_field(false)">
+                          <span class="slider round">
+                          </span>
+                        </label>
+                        J'appellerais mon invité   <span class="icon-mel-help ml-4" style="cursor: help;" title="L'invité devra donner son numéro avant de planifier un rendez-vous."></span>
+                        <br>
+                        <label class="switch mr-1 mb-4">
+                          <input type="radio" name="phone" id="attendee_call" onchange="show_phone_field(true)">
+                          <span class="slider round"></span>
+                        </label>
+                        Mon invité doit m'appeler   <span class="icon-mel-help ml-3" style="cursor: help;" title="Nous donnerons votre numéro une fois la réservation planifiée"></span>
+                        <br>
+                        <div id="phone_number_field" style="display:none;">
+                          <input type="text" class="form-control" id="organiser_phone_number" 
+                            placeholder="Numéro de téléphone" required>
+                        </div>
+                      </div>
+                      <div id="webconf" style="display: none;">
+                        <input type="text" id="webconf" class="form-control">
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -899,8 +949,8 @@
                     <input type="text" class="form-control" id="time_reason-1" placeholder="Motif">
                   </div>
                   <div class="col-1">
-                    <button type="button" class="btn btn-primary" onclick="add_reason('1')" title="Ajouter un motif de rendez-vous"
-                      style="padding-left: 12px;padding-right: 12px;">
+                    <button type="button" class="btn btn-primary" onclick="add_reason('1')"
+                      title="Ajouter un motif de rendez-vous" style="padding-left: 12px;padding-right: 12px;">
                       <span>+</span>
                     </button>
                   </div>

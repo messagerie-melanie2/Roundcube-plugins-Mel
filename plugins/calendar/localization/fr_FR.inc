@@ -336,6 +336,7 @@ $labels['friday'] = 'Ven';
 $labels['saturday'] = 'Sam';
 $labels['sunday'] = 'Dim';
 $labels['duration'] = 'Durée';
+$labels['place'] = 'Lieu';
 $labels['end_time_alert'] = 'Merci de sélectionner une heure plus tardive';
 $labels['select_time_between_appointment'] = 'Accordez-vous une marge de temps pour vous préparer ou pour conclure vos rendez-vous';
 $labels['before_event'] = 'Avant l\'évènement';

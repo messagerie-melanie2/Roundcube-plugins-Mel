@@ -2896,7 +2896,7 @@ function rcube_calendar_ui(settings) {
         if (cal.active) {
           fc.fullCalendar('addEventSource', cal);
         }
-          
+
       });
 
       this.quickview_active = false;
@@ -2951,7 +2951,7 @@ function rcube_calendar_ui(settings) {
       if (cal.active) {
         fc.fullCalendar('addEventSource', cal);
       }
-        
+
     });
 
     // uncheck all active quickview icons
@@ -3358,18 +3358,18 @@ function rcube_calendar_ui(settings) {
         $('#calendarcaldavurl', dialog).hide();
       }
 
-        if (calendar.caldavurl) {
-          $('#caldavurl', dialog).val(calendar.caldavurl);
-          $('#calendarcaldavurl', dialog).show();
-        }
-        else {
-          $('#calendarcaldavurl', dialog).hide();
-        }
-        
-        if (calendar.feedfreebusyurl) {
-          $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
-          $('#calendarcalfreebusyurl', dialog).show();
-        }
+      if (calendar.caldavurl) {
+        $('#caldavurl', dialog).val(calendar.caldavurl);
+        $('#calendarcaldavurl', dialog).show();
+      }
+      else {
+        $('#calendarcaldavurl', dialog).hide();
+      }
+
+      if (calendar.feedfreebusyurl) {
+        $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
+        $('#calendarcalfreebusyurl', dialog).show();
+      }
 
 
       if (calendar.showfeedcalendarurl) {
@@ -3425,14 +3425,14 @@ function rcube_calendar_ui(settings) {
         let inputs_val = [""];
 
         if (form.find('#day_check_' + i).prop('checked')) {
-          
+
           let inputs = form.find('#appointment_range_' + i).find('input');
           inputs_val = [];
           inputs.each((index, input) => {
             inputs_val.push(input.value)
           })
         }
-        
+
         //le dimanche doit être 0 pour fullcalendar
         if (i == 7) {
           appointment.range[0] = inputs_val;
@@ -3449,10 +3449,28 @@ function rcube_calendar_ui(settings) {
       let inputs_reason = form.find('#appointment_reason').find('input');
       inputs_reason.each((index, input) => {
         appointment_reason.push(input.value)
-      })      
+      })
       appointment.reason = appointment_reason;
 
       appointment.custom_reason = form.find('#custom_reason').prop('checked');
+
+      inputs_place = form.find('#place_option_fields').find('input');
+
+      inputs_place.each((index, input) => {
+        if (!$(input).is(":hidden")) {
+
+          if (input.value == "on") {
+            if ($(input).prop('checked')) {
+              appointment.place = { "type": input.id };
+              return;
+            }
+            else {
+              return;
+            }
+          }
+          appointment.place = { "type": input.id, "value": input.value };
+        }
+      })
 
       me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
       rcmail.http_post('calendar', { action: "appointment", c: appointment });
@@ -3746,7 +3764,7 @@ function rcube_calendar_ui(settings) {
         // PAMELA
         fc.fullCalendar('addResource', me.calendars[id]);
       }
-        
+
       var submit = { id: id, active: cal.active ? 1 : 0 };
       if (cal.subscribed !== undefined)
         submit.permanent = cal.subscribed ? 1 : 0;

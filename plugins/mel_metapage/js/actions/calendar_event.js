@@ -496,6 +496,41 @@ function remove_reason(new_id) {
   $('.ui-dialog #row' + new_id).remove()
 }
 
+function place_select_trigger() {
+  let option = $('.ui-dialog #place_select').val();
+  switch (option) {
+    case "private":
+      $('.ui-dialog #place_option_label').text('Adresse :');
+      $('.ui-dialog #phone').hide();
+      $('.ui-dialog #webconf').hide();
+      $('.ui-dialog #private').show();
+      break;
+    case "phone":
+      $('.ui-dialog #place_option_label').text('');
+      $('.ui-dialog #phone').show();
+      $('.ui-dialog #webconf').hide();
+      $('.ui-dialog #private').hide();
+      break;
+    case "webconf":
+      $('.ui-dialog #place_option_label').text('Nom du salon :');
+      $('.ui-dialog #phone').hide();
+      $('.ui-dialog #webconf').show();
+      $('.ui-dialog #private').hide();
+      break;
+    default:
+      break;
+  }
+}
+
+function show_phone_field(show) {
+  if (show) {
+    $('.ui-dialog #phone_number_field').show();
+  }
+  else {
+    $('.ui-dialog #phone_number_field').hide();
+  }
+}
+
 Date.prototype.addHours = function (h) {
   var copiedDate = new Date(this.getTime());
   copiedDate.setHours(copiedDate.getHours() + h);

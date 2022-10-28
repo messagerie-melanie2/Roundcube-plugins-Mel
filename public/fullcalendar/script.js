@@ -40,8 +40,9 @@ function run() {
 
       }
       get_appointment_duration(response);
-
+      show_appointment_place(response);
       document.getElementById('appointment_time').textContent = appointment_duration ? appointment_duration + ' min' : 'Libre';
+
 
       if (response.reason != "") {
         $('#event-reason').show();
@@ -368,4 +369,40 @@ function generateAllowTimes(start = new Date()) {
   })
 
   return times;
+}
+
+function show_appointment_place(response) {
+  $('#phone_field').hide();
+  $('#user-phone').prop('required', false);
+
+  switch (response.place.type) {
+    case "address":
+      $('#place_icon').append('<i class="bi bi-geo-alt"></i>');
+      $('#appointment_place').text(response.place.value);
+      $('#confirm_place_icon').append('<i class="bi bi-geo-alt"></i>');
+      $('#confirm_place').text(response.place.value);
+      break;
+    case "organizer_call":
+      $('#place_icon').append('<i class="bi bi-telephone"></i>');
+      $('#appointment_place').text("Appel téléphonique");
+      $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');
+      $('#confirm_place').text("Appel téléphonique");
+      $('#phone_field').show();
+      $('#user-phone').prop('required', true);
+      break;
+    case "organiser_phone_number":
+      $('#place_icon').append('<i class="bi bi-telephone"></i>');
+      $('#appointment_place').text("Appel téléphonique");
+      $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');
+      $('#confirm_place').text(response.place.value);
+      break;
+    case "webconf":
+      $('#place_icon').append('<i class="bi bi-camera-video"></i>');
+      $('#appointment_place').text("Informations sur la conférence en ligne fournies à la confirmation.");
+      $('#confirm_place_icon').append('<i class="bi bi-camera-video"></i>');
+      $('#confirm_place').text("Informations sur la conférence en ligne à suivre.");
+      break;
+    default:
+      break;
+  }
 }

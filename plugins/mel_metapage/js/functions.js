@@ -267,6 +267,12 @@ function m_mp_step3_param(type)
     switch (type) {
         case 'channel':
             {    
+                let $master_button = $('.doc-channel');
+
+                if (!$master_button.hasClass('active')) $master_button.click(); 
+
+                let $param_button = $master_button.parent().find('.under-button');
+                let custom_channel_datas = null;
                 const default_custom_value = have_datas && m_mp_step3_param.datas[type].mode === 'custom_name' ? (m_mp_step3_param?.datas[type]?.value ?? '') : null; 
     
                 const html_title = `<h3 class="span-mel t1 first">Paramètres du canal</h3>`;
@@ -292,33 +298,53 @@ function m_mp_step3_param(type)
                     m_mp_step3_param.datas[type].value = $custom_name_input.val();
                 }).appendTo($custom_name_div);
     
+                let $linked_channel_div = $(`                    
+                    <div style=margin-top:15px>
+                        <h3 class="span-mel t2 first">Lié à un canal éxistant</h3>
+                    </div>`).css('display', 'none');
+
                 let $linked_channel_select = $(`
                     <select class="custom-calendar-option-select form-control input-mel custom-select pretty-select"></select>
-                `)
+                `).on('change', () => {
+                    const val = custom_channel_datas[$linked_channel_select.val()];
+                    m_mp_step3_param.datas[type].value = {
+                        id:val?._id,
+                        name:val?.name
+                    };
+                }).appendTo($linked_channel_div);
     
                 $select.on('change', () => {
                     if (!m_mp_step3_param.datas) {
                         m_mp_step3_param.datas = {};
-    
-                        if (!m_mp_step3_param.datas[type]) m_mp_step3_param.datas[type] = {
-                            mode:$select.val(),
-                            value:undefined
-                        }
                     }
+
+                    if (!m_mp_step3_param.datas[type]) m_mp_step3_param.datas[type] = {
+                        mode:$select.val(),
+                        value:undefined
+                    }
+                    else m_mp_step3_param.datas[type].mode = $select.val();
+
     
                     switch ($select.val()) {
                         case 'default':
                             $custom_name_div.css('display', 'none');
+                            $linked_channel_div.css('display', 'none');
+                            $param_button.removeClass('selected');
                             break;
     
                         case 'custom_name':
+                            $param_button.addClass('selected');
                             $custom_name_div.css('display', '');
+                            $linked_channel_div.css('display', 'none');
                             m_mp_step3_param.datas[type].value = $custom_name_input.val();
                             break;
     
                         case 'already_exist':
-                            $custom_name_div.css('display', 'none');
-                            
+                            $param_button.addClass('selected');
+                            $custom_name_div.css('display', 'none');                 
+                            $select.attr('disabled', 'disabled').addClass('disabled');
+                            rcmail.set_busy(true, 'loading');
+
                             mel_metapage.Functions.post(
                                 mel_metapage.Functions.url('discussion', 'get_joined'),
                                 {
@@ -326,7 +352,22 @@ function m_mp_step3_param(type)
                                     _mode:$('#workspace-private')[0].checked ? 2 : 1
                                 },
                                 (datas) => {
-                                    console.log('datas', datas);
+                                    //console.log('datas', JSON.parse(datas));
+                                    custom_channel_datas = JSON.parse(datas);
+
+                                    // for (const iterator of datas) {
+                                    //     $linked_channel_select.append(`<option value="${JSON.stringify({id:iterator._id, name:iterator.name})}">${iterator.name}</option>`);
+                                    // }
+                                    for (const key in custom_channel_datas) {
+                                        if (Object.hasOwnProperty.call(custom_channel_datas, key)) {
+                                            const element = custom_channel_datas[key];
+                                            $linked_channel_select.append(`<option value="${key}" ${element._id === m_mp_step3_param.datas[type].value?.id &&  !!m_mp_step3_param.datas[type].value ? 'selected' : ''}>${element.name}</option>`);
+                                        }
+                                    }
+
+                                    $linked_channel_div.css('display', '');
+                                    rcmail.clear_messages();
+                                    $select.removeAttr('disabled', 'disabled').removeClass('disabled');
                                 }
                             )
     
@@ -352,13 +393,18 @@ function m_mp_step3_param(type)
                     $('#workspace-step3').css('display', '');
                 });
     
-                $querry.append(html_title).append($select).append($custom_name_div).append($button_back);
+                $querry.append(html_title).append($select).append($custom_name_div).append($linked_channel_div).append($button_back);
             }
             break;
     
 
         case 'tasks':
             {
+                let $master_button = $('.doc-tasks');
+
+                if (!$master_button.hasClass('active')) $master_button.click(); 
+
+                let $param_button = $master_button.parent().find('.under-button');
                 const default_custom_value = have_datas && m_mp_step3_param.datas[type].mode === 'custom_name' ? (m_mp_step3_param?.datas[type]?.value ?? '') : null; 
 
                 const html_title = `<h3 class="span-mel t1 first">Paramètres du kanban</h3>`;
@@ -398,26 +444,30 @@ function m_mp_step3_param(type)
                 $select.on('change', () => {
                     if (!m_mp_step3_param.datas) {
                         m_mp_step3_param.datas = {};
-
-                        if (!m_mp_step3_param.datas[type]) m_mp_step3_param.datas[type] = {
-                            mode:$select.val(),
-                            value:undefined
-                        }
                     }
+
+                    if (!m_mp_step3_param.datas[type]) m_mp_step3_param.datas[type] = {
+                        mode:$select.val(),
+                        value:undefined
+                    }
+                    else m_mp_step3_param.datas[type].mode = $select.val();
 
                     switch ($select.val()) {
                         case 'default':
+                            $param_button.removeClass('selected');
                             $custom_name_div.css('display', 'none');
                             $linked_kanban_div.css('display', 'none');
                             break;
 
                         case 'custom_name':
+                            $param_button.addClass('selected');
                             $linked_kanban_div.css('display', 'none');
                             $custom_name_div.css('display', '');
                             m_mp_step3_param.datas[type].value = $custom_name_input.val();
                             break;
 
                         case 'already_exist':
+                            $param_button.addClass('selected');
                             $select.attr('disabled', 'disabled').addClass('disabled');
                             rcmail.set_busy(true, 'loading');
                             $custom_name_div.css('display', 'none');

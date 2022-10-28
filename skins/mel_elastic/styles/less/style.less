@@ -2409,6 +2409,17 @@ body{
     {
         margin-top:0;
     }
+
+    &.under-button {
+        &.selected{
+            &:extend(.mel-button.btn-success);
+            color: var(--secondary-text-color);
+
+            &:hover{
+                &:extend(.mel-button:hover);
+            }
+        }
+    }
 }
 
 .mel-ui-button{

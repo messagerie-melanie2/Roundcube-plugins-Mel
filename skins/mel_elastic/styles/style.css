@@ -1460,11 +1460,13 @@ button.btn-mel.active + button.mel-button.under-button:hover {
   background-color: var(--warning-color);
   border-color: var(--warning-color);
 }
-.mel-button.btn-success {
+.mel-button.btn-success,
+.mel-button.under-button.selected {
   background-color: var(--success-color);
   border-color: var(--success-color);
 }
-.mel-button:hover {
+.mel-button:hover,
+.mel-button.under-button.selected:hover {
   background-color: var(--tierciary-bckg-color);
   border-color: var(--mel-button-border-color-alt);
 }
@@ -1485,6 +1487,9 @@ button.btn-mel.active + button.mel-button.under-button:hover {
 }
 .mel-button.no-button-margin {
   margin-top: 0;
+}
+.mel-button.under-button.selected {
+  color: var(--secondary-text-color);
 }
 .mel-ui-button.btn {
   background-color: var(--main-bckg-color);

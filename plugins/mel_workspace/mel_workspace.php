@@ -1772,7 +1772,7 @@ class mel_workspace extends rcube_plugin
 
         $services = $this->create_tasklist($workspace,$services, $users, $update_wsp, $default_values);
         $services = $this->create_agenda($workspace, $services, $users, $update_wsp);
-        $services = $this->create_channel($workspace, $services, $users);
+        $services = $this->create_channel($workspace, $services, $users, $default_values);
         $services = $this->create_service_group($workspace, $services, $fromUpdateApp);
 
         $this->create_service_links($workspace);
@@ -1924,7 +1924,7 @@ class mel_workspace extends rcube_plugin
         return $services;
     }
 
-    function create_channel(&$workspace, $services, $users)
+    function create_channel(&$workspace, $services, $users, $default_values = null)
     {
         $service = self::CHANNEL;
         mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Services : ".json_encode($service)." => $service");
@@ -1932,22 +1932,53 @@ class mel_workspace extends rcube_plugin
         
         if ($this->get_object($workspace,$service) === null && array_search($service, $services) !== false)
         {
-            $uid = $this->generate_channel_id_via_uid($workspace->uid);
-            $rocket = $this->rc->plugins->get_plugin('rocket_chat');
-            $value = $rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
+            if (!isset($default_values)) $default_values = ['channel' => ['mode' => 'default']];
+            else if (!isset($default_values['channel'])) $default_values['channel'] = ['mode' => 'default'];
+
+            $uid = null;
+            $value = null;
+            $config = [];
+            switch ($default_values['channel']['mode']) {
+                case 'default':
+                    $uid = $this->generate_channel_id_via_uid($workspace->uid);
+                case 'custom_name':
+                    if (!isset($uid)) $uid = $this->generate_channel_id_via_uid($default_values['channel']['value']);
+
+                    $rocket = $this->rc->plugins->get_plugin('rocket_chat');
+                    $value = $rocket->_create_channel($uid, $users,$workspace->ispublic === 0 ? false : true);
+                    break;
+
+                case 'already_exist':
+                    $value['content'] = [
+                        "channel" => [
+                            '_id' => $default_values['channel']['value']['id'],
+                            'name' => $default_values['channel']['value']['name']
+                        ]
+                    ];
+
+                    $config['edited'] = true;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Valeur : ".json_encode($value));
 
             if (is_string($value["content"]))
             {
                 $value = json_decode($value["content"]);
-                $value = $value->channel;//$value["content"]["channel"];
-                $this->save_object($workspace, self::CHANNEL, ["id" => $value->_id, "name" => $value->name]);
+                $value = $value->channel;
+                $config['id'] = $value->_id;
+                $config['name'] = $value->name;
             }
             else {
                 $value = $value["content"]["channel"];
-                $this->save_object($workspace, self::CHANNEL, ["id" => $value["_id"], "name" => $value["name"]]);
+                $config['id'] = $value["_id"];
+                $config['name'] = $value["name"];
             }
 
+            $this->save_object($workspace, self::CHANNEL, $config);
         }
         
         $key = array_search($service, $services);

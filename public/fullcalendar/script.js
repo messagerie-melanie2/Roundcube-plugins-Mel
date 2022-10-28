@@ -280,6 +280,7 @@ function user_form_submit(e) {
   event.time_end = $('#event-time-end').val();
   event.object = $('#event-object').val();
   event.description = $('#event-description').val();
+  event.location = response.place.type == "organizer_call" ? "Numéro du participant : " + $('#user-phone').val() : response.place.value;
   event.user.name = $('#user-name').val();
   event.user.firstname = $('#user-firstname').val();
   event.user.email = $('#user-email').val();

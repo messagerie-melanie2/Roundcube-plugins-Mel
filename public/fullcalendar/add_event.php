@@ -56,6 +56,7 @@ if (isset($calhash)) {
 if (isset($_user)) {
   $user = new LibMelanie\Api\Mel\User();
   $user->uid = $_user;
+  $user->load();
 }
 
 // Récupération de la clé de la requête 
@@ -92,10 +93,27 @@ if (isset($user)) {
 
   $events = $calendar->getAllEvents();
 
+  $event->created = time();
   $event->title = $_POST['object'] == "" ? "Rendez-vous" . displayUserFullName() : $_POST['object'] . displayUserFullName();
   $event->start = new DateTime($_POST['time_start']);
   $event->end = new DateTime($_POST['time_end']);
   $event->description = $_POST['description'];
+  $event->location = $_POST['location'];
+
+  $_attendees = array();
+  $organizer = new LibMelanie\Api\Mel\Organizer($event);
+  $organizer->name = $user->fullname;
+  $organizer->email =  $user->email;
+  $event->organizer = $organizer;
+
+  $attendee = new LibMelanie\Api\Mel\Attendee();
+  $attendee->name = $_POST['user']['name'] . ' ' . $_POST['user']['firstname'];
+  $attendee->email = $_POST['user']['email'];
+  $attendee->role = LibMelanie\Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
+  $_attendees[] = $attendee;
+
+  $event->attendees = $_attendees;
+  
   $event->save();
 }
 
@@ -110,6 +128,7 @@ function generate_uid($_user)
 /**
  * Generate the user fullname
  */
-function displayUserFullName() {
+function displayUserFullName()
+{
   return ' avec ' . $_POST['user']['firstname'] . ' ' . $_POST['user']['name'];
 }

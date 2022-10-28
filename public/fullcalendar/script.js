@@ -32,6 +32,7 @@ function run() {
     if (this.readyState == 4 && this.status == 200) {
       response = JSON.parse(this.response);
 
+      console.log(response);
       if (response.error) {
         $('#error_message').text(response.error);
         $('#error_message').show();
@@ -295,7 +296,7 @@ function user_form_submit(e) {
 function display_confirm_modal(event) {
   $('.modal').modal('hide');
   $("#confirmModal").modal('show');
-  document.getElementById('organiser').textContent = owner_name[0];
+  document.getElementById('organizer').textContent = owner_name[0];
 
   if (event.object && event.object != "custom") {
     document.getElementById('motif').textContent = event.object;
@@ -390,7 +391,7 @@ function show_appointment_place(response) {
       $('#phone_field').show();
       $('#user-phone').prop('required', true);
       break;
-    case "organiser_phone_number":
+    case "organizer_phone_number":
       $('#place_icon').append('<i class="bi bi-telephone"></i>');
       $('#appointment_place').text("Appel téléphonique");
       $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');

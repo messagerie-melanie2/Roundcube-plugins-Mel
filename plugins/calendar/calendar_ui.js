@@ -3454,10 +3454,10 @@ function rcube_calendar_ui(settings) {
 
       appointment.custom_reason = form.find('#custom_reason').prop('checked');
 
-      inputs_place = form.find('#place_option_fields').find('input');
+      select_place = form.find('#place_select').val();
 
-      inputs_place.each((index, input) => {
-        if (!$(input).is(":hidden")) {
+      if (select_place == "phone") {
+        form.find('#phone_fields').find('input').each((index, input) => {
 
           if (input.value == "on") {
             if ($(input).prop('checked')) {
@@ -3467,10 +3467,14 @@ function rcube_calendar_ui(settings) {
             else {
               return;
             }
+          } else if($(input).prop('required')) {
+            appointment.place = { "type": input.id, "value": input.value };
           }
-          appointment.place = { "type": input.id, "value": input.value };
-        }
-      })
+        })
+      } else {
+        let input = form.find('#' + select_place);
+        appointment.place = { "type": input.attr('id'), "value": input.val() };
+      }
 
       me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
       rcmail.http_post('calendar', { action: "appointment", c: appointment });

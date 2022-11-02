@@ -352,7 +352,9 @@ function notes()
          */
         post_add()
         {
-            return this.post("add", {_raw:this});
+            return this.post("add", {_raw:this}).always(() => {
+                top.rcmail.triggerEvent('notes.apps.updated', rcmail.env.mel_metapages_notes);
+            });
         }
 
         /**
@@ -425,7 +427,9 @@ function notes()
                 this.get_html().find('.eye').click();
             }
 
-            return this.post('del', {_uid:this.uid});
+            return this.post('del', {_uid:this.uid}).always(() => {
+                top.rcmail.triggerEvent('notes.apps.updated', rcmail.env.mel_metapages_notes);
+            });
         }
 
         post_height_updated(newHeight)
@@ -451,6 +455,8 @@ function notes()
                     _uid:this.uid,
                     _raw:this
                 });
+                rcmail.env.mel_metapages_notes[this.uid].text = this.text;
+                top.rcmail.triggerEvent('notes.apps.updated', rcmail.env.mel_metapages_notes);
             }
         }
 
@@ -565,6 +571,18 @@ function notes()
                 }
             }, 100);
         }
+    });
+
+    top.rcmail.addEventListener('notes.master.update', () => {});
+    top.rcmail.addEventListener('notes.apps.updated', (x) => {
+        $('iframe.mm-frame').each((i, e) => {
+            try {
+                e.contentWindow.rcmail.env.mel_metapages_notes = x;
+                e.contentWindow.rcmail.triggerEvent('notes.apps.updated');
+            } catch (error) {
+                
+            }
+        });
     });
 }
 

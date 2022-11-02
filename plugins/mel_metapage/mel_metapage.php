@@ -1599,6 +1599,14 @@ class mel_metapage extends rcube_plugin
             'section' => $this->gettext('main_nav', 'mel_metapage'),
         ];
 
+        if (count($this->rc->config->get('experimental-settings', [])) > 0)
+        {
+            $p['list']['bnum-experimental'] = [
+                'id'      => 'bnum-experimental',
+                'section' => $this->gettext('experimental'),
+            ];
+        }
+
         return $p;
     }
     
@@ -1821,31 +1829,27 @@ class mel_metapage extends rcube_plugin
                     'content' => $check->show($value['enabled'] ? 1 : 0),
                 ];
             }
+        }
+        else if ($args['section'] == 'bnum-experimental')
+        {
+            $settings = $this->rc->config->get('experimental-settings', []);
 
-            // $args['blocks']['others']['name'] = 'Autres applications';
-            // $table = new html_mel_table(6);
-            // $table->edit($i, 0, 'Nom');
-            // $table->edit($i, 1, 'Lien');
-            // $table->edit($i, 2, 'Aperçu de l\'icône');
-            // $table->edit($i, 3, 'Icône');
-            // $table->edit($i, 4, 'Activé');
-            // $table->edit($i, 5, 'Supprimé');
-            // $i = 1;
-            // foreach ($others as $key => $value) {
-            //     $key = $value->get_key();
-            //     $value = $value->get_value();
-            //     $check = new html_checkbox(['name' => "$key.check", 'id' => "$key-check", 'value' => 1]);
-            //     $table->addRow();
-            //     $table->edit($i, 0, '<input class="form-control input-mel mel-input" value="'.$key.'" placeholder="Nom de l\'application" />');
-            //     $table->edit($i, 1, '<input class="form-control input-mel mel-input" value="'.$value['link'].'" placeholder="Lien de l\'application" />');
-            //     $table->edit($i, 2, '<span class="'.$value['icon'].'"></span>');
-            //     $table->edit($i, 3, '<input class="form-control input-mel mel-input" value="'.$value['icon'].'" placeholder="Icon de l\'application" />');
-            //     $table->edit($i, 4, $check->show($value['enabled'] ? 1 : 0));
-            //     $table->edit($i, 5, html::tag('button', [], 'DEL'));
-            // }
+            $args['blocks']['general']['name'] = 'Gérer des paramètres expérimentaux';
 
-            // $args['blocks']['others']['options']["table"] = ['content' => $table->show()];
-            // $args['blocks']['others']['options']["add"] = ['content' => html::tag('button', [], 'ADD')];
+            foreach ($settings as $id => $datas) {
+                switch ($datas['style']) {
+                    case 'checkbox':
+                        $check = new html_checkbox(['name' => $id, 'id' => $id, 'value' => 1]);
+                        $args['blocks']['general']['options'][$id] = [
+                            'title'   => html::label($startup, rcube::Q($this->gettext($datas['name']))),
+                            'content' => $check->show($this->rc->config->get($datas['config'], $datas['default']) ? 1 : 0),
+                        ];
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
         }
 
         return $args;
@@ -2104,6 +2108,23 @@ class mel_metapage extends rcube_plugin
         }
 
         $args['prefs']["navigation_apps"] = $config;
+    }
+    else if ($args['section'] == 'bnum-experimental')
+    {
+        $settings = $this->rc->config->get('experimental-settings', []);
+
+        foreach ($settings as $id => $datas) {
+            switch ($datas['style']) {
+                case 'checkbox':
+                    $input = rcube_utils::get_input_value($id, rcube_utils::INPUT_POST);
+                    $args['prefs'][$datas['config']] = ($input ?? false) === '1';
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+        }
     }
 
 

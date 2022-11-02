@@ -324,3 +324,6 @@ $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
 
 $labels['to_comment'] = 'Commenter';
+
+$labels['experimental'] = 'Expérimental';
+$labels['param-note-in-my-day'] = 'Activer les notes dans ma journée ?';

@@ -28,6 +28,9 @@ class My_day extends Module
      */
     const CALENDAR_REMOVE_EVENT_URL = "b";
 
+    private $notes;
+    private $notes_enabled;
+
     function init()
     {
         $this->config[$this::CALENDAR_EVENT_URL] = "?_task=calendar&_action=load_events";
@@ -40,6 +43,9 @@ class My_day extends Module
      */
     function generate_html()
     {
+        $have_notes = $this->have_notes();
+        $array = [];
+        
         //tab agenda
         $agenda = array("name" => $this->text('agenda'), 
         "id" => "agenda",
@@ -49,6 +55,8 @@ class My_day extends Module
         html::tag("span", array("id" => "agendanew", "class" => "hidden roundbadge setalign lightgreen")))
     ),
         );
+
+        $array[] = $agenda;
         $tasks = array("name" => $this->text('tasks'), 
                 "id" => "tasks",
                 "tab-id" => "tab-for-tasks-contents",
@@ -56,8 +64,20 @@ class My_day extends Module
             html::tag("sup", array(),
             html::tag("span", array("id" => "tasksnew", "class" => "hidden roundbadge setalign lightgreen")))
             ));
+        $array[] = $tasks;
 
-        return $this->html_square_tab(array($agenda, $tasks), $this->text("my_day"), "myday");
+        if ($have_notes) {
+            $notes = [
+                "name" => $this->text('notes'), 
+                'id' => 'notes',
+                'tab-id' => 'tab-for-notes-contents',
+                'deco' => html::tag('span', array("class" => 'icon-mel-notes marginright'))
+            ];
+
+            $array[] = $notes;
+        }
+
+        return $this->html_square_tab($array, $this->text($have_notes ? "my_day_and_notes" : "my_day"), "myday");
     }
 
     /**
@@ -75,6 +95,25 @@ class My_day extends Module
     function include_js()
     {
         $this->plugin->include_script($this->folder().'/my_day/js/my_day.js');
+    }
+
+    function get_notes()
+    {
+        if (!isset($this->notes)) $this->notes = $this->rc->config->get('user_notes', []);
+
+        return $this->notes;
+    }
+
+    function notes_is_enabled()
+    {
+        if (!isset($this->notes_enabled)) $this->notes_enabled = $this->rc->config->get('notes-in-my-day-enabled', true);
+
+        return $this->notes_enabled;
+    }
+
+    function have_notes()
+    {
+        return $this->notes_is_enabled() && count($this->get_notes()) > 0;
     }
 
 }

@@ -886,7 +886,7 @@ class mel_driver extends calendar_driver {
         if (isset($old) && strpos($event['id'], '@DATE-') !== false) {
           $tmp = explode('@DATE-', $event['id'], 2);
           $date = date(self::DB_DATE_FORMAT, $tmp[1]);
-          if ($date == $event['start']->format(self::DB_DATE_FORMAT) && $event['allday'] == $old['allday']) {
+          if ($date == $event['start']->format(self::DB_DATE_FORMAT) && $event['allDay'] == $old['allDay']) {
             $event['start'] = $old['start'];
             $event['end'] = $old['end'];
           }
@@ -1070,7 +1070,7 @@ class mel_driver extends calendar_driver {
           $e['start'] = $event['start'];
           $e['end'] = $event['end'];
           if (!$resize)
-            $e['allday'] = $event['allday'];
+            $e['allDay'] = $event['allDay'];
           // Positionnement de la recurrence_id et de l'uid
           $id = $event['id'];
           if (strpos($id, self::CALENDAR_SEPARATOR) !== false) {
@@ -1106,7 +1106,7 @@ class mel_driver extends calendar_driver {
           $e['start'] = $event['start'];
           $e['end'] = $event['end'];
           if (! $resize)
-            $e['allday'] = $event['allday'];
+            $e['allDay'] = $event['allDay'];
             // Définition de la date de fin pour la récurrence courante
           $enddate = clone ($event['start']);
           $enddate->sub(new DateInterval('P1D'));
@@ -1159,7 +1159,7 @@ class mel_driver extends calendar_driver {
         else {
           if ($resize) {
             $e = $this->_read_postprocess($_event);
-            $event['allday'] = $e['allday'];
+            $event['allDay'] = $e['allDay'];
           }
           // Converti les données de l'évènement en évènement Mél
           $_event = $this->_write_postprocess($_event, $event, false, true);
@@ -1211,7 +1211,7 @@ class mel_driver extends calendar_driver {
     if ($new) {
       $_event->created = time();
     }
-    $_event->all_day = isset($event['allday']) && $event['allday'] == 1;
+    $_event->all_day = isset($event['allDay']) && $event['allDay'] == 1;
     if (isset($event['start'])) {
       if ($_event->all_day) {
         $_event->start = $event['start']->format(self::SHORT_DB_DATE_FORMAT) . ' 00:00:00';
@@ -1880,6 +1880,10 @@ class mel_driver extends calendar_driver {
                 $next_event["alarm_dismissed"] = ($next_event['start']->getTimestamp() - $next_event['x_alarm_minutes'] * 60) < strtotime($next_event['x_moz_lastack']);
               }
 
+              // Garder la date du master
+              $next_event['master_start'] = $this->cal->lib->adjust_timezone($_event['start'], $_event['allDay'])->format('c');
+              $next_event['master_end'] = $this->cal->lib->adjust_timezone($_event['end'], $_event['allDay'])->format('c');
+
               $_events[] = $next_event;
             }
             // Ajoute les exceptions
@@ -1968,13 +1972,14 @@ class mel_driver extends calendar_driver {
       $_event['end'] = new DateTime('1970-01-01');
       // Récupération des exceptions dans la récurrence de l'évènement
       $_event['recurrence'] = $this->_read_event_exceptions($event, array());
+
       return $_event;
     }
 
     // Dates
     // Savoir si c'est du journée entière (utilisation d'un endswith
     if ($event->all_day) {
-      $_event['allday'] = 1;
+      $_event['allDay'] = 1;
       // Passer les journées entières à 12h - 13h pour régler les problèmes
       $_event['start'] = new DateTime(substr($event->start, 0, strlen($event->start) - strlen('00:00:00')) . '13:00:00', new DateTimeZone('GMT'));
       $_event['end'] = new DateTime(substr($event->end, 0, strlen($event->end) - strlen('00:00:00')) . '14:00:00', new DateTimeZone('GMT'));
@@ -1982,7 +1987,7 @@ class mel_driver extends calendar_driver {
       $_event['end']->sub(new DateInterval("P1D"));
     }
     else {
-      $_event['allday'] = 0;
+      $_event['allDay'] = 0;
       $_event['start'] = new DateTime($event->start, new DateTimeZone($event->timezone));
       $_event['end'] = new DateTime($event->end, new DateTimeZone($event->timezone));
       if ($this->cal->timezone->getName() != $event->timezone) {
@@ -1990,6 +1995,33 @@ class mel_driver extends calendar_driver {
         $_event['end']->setTimezone($this->cal->timezone);
       }
     }
+
+    // 0007033: Modification d'un évenement récurrent
+    if ($isexception) {
+      // Savoir si c'est du journée entière (utilisation d'un endswith
+      if ($eventParent->all_day) {
+        $master_allday = 1;
+
+        // Passer les journées entières à 12h - 13h pour régler les problèmes
+        $master_start = new DateTime(substr($eventParent->start, 0, strlen($eventParent->start) - strlen('00:00:00')) . '13:00:00', new DateTimeZone('GMT'));
+        $master_end = new DateTime(substr($eventParent->end, 0, strlen($eventParent->end) - strlen('00:00:00')) . '14:00:00', new DateTimeZone('GMT'));
+        // Supprimer un jour pour le décalage
+        $master_end->sub(new DateInterval("P1D"));       
+      }
+      else {
+        $master_allday = 0;
+        
+        $master_start = new DateTime($eventParent->start, new DateTimeZone($eventParent->timezone));
+        $master_end = new DateTime($eventParent->end, new DateTimeZone($eventParent->timezone));
+        if ($this->cal->timezone->getName() != $eventParent->timezone) {
+          $master_start->setTimezone($this->cal->timezone);
+          $master_end->setTimezone($this->cal->timezone);
+        }
+      }
+      $_event['master_start'] = $this->cal->lib->adjust_timezone($master_start, $master_allday)->format('c');
+      $_event['master_end'] = $this->cal->lib->adjust_timezone($master_end, $master_allday)->format('c');
+    }
+
     $_event['created'] = new DateTime(date('Y-m-d H:i:s', $event->created));
     $_event['changed'] = new DateTime(date('Y-m-d H:i:s', $event->modified));
     $_event['calendar'] = driver_mel::gi()->mceToRcId($event->calendar);
@@ -2011,7 +2043,7 @@ class mel_driver extends calendar_driver {
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
         // Problème de UNTIL avec les journées entières
-        if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
+        if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allDay']) {
           $recurrence['UNTIL']->setTime(23, 59);
         }
         if (is_array($recurrence) && count($recurrence) > 0) {
@@ -2149,7 +2181,7 @@ class mel_driver extends calendar_driver {
       if (!$isexception) {
         $recurrence = $event->recurrence->rrule;
         // Problème de UNTIL avec les journées entières
-        if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allday']) {
+        if (isset($recurrence['UNTIL']) && $recurrence['UNTIL'] instanceof \DateTime && $_event['allDay']) {
           $recurrence['UNTIL']->setTime(23, 59);
         }
         if (is_array($recurrence) && count($recurrence) > 0) {
@@ -2546,7 +2578,7 @@ class mel_driver extends calendar_driver {
         $events = $this->load_events($start, $end, null, $user->uid, 1, null, true);
         $result = array();
         foreach ($events as $event) {
-          if ($event['allday']) {
+          if ($event['allDay']) {
             $from = strtotime($event['start']->format(self::SHORT_DB_DATE_FORMAT));
             $event['end']->add(new DateInterval("P1D"));
             $to = strtotime($event['end']->format(self::SHORT_DB_DATE_FORMAT));

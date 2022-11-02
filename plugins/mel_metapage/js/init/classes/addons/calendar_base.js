@@ -1451,9 +1451,15 @@ $(document).ready(() => {
 
             }
             else{ //ancien event
-                //Gestion des dats
-                $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
-                $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
+                // Gestion des dates - 0007033: Modification d'un évenement récurrent
+                if ($('input.edit-recurring-savemode:checked').val() == 'all' && event.master_start) {
+                    $(".input-mel-datetime .input-mel.start").val(moment(event.master_start).format(format));
+                    $(".input-mel-datetime .input-mel.end").val(moment(event.master_end).format(format));
+                }
+                else {
+                    $(".input-mel-datetime .input-mel.start").val(moment(event.start).format(format));
+                    $(".input-mel-datetime .input-mel.end").val(moment(event.end).format(format));
+                }
                 update_date();
 
                 window.rcube_calendar_ui.difTime = (moment(event.end) - moment(event.start))/1000.0;

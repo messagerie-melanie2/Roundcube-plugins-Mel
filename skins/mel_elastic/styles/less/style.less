@@ -3281,15 +3281,22 @@ html .menu a.selection::before {
 
 /** LINES **/
 
-._multiple-lines()
+._multiple-lines(@l: 3)
 {
     display: -webkit-box;
 	-webkit-box-orient: vertical;
 	white-space: normal;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: @l;
 }
 
-.two-lines,
+.one-line {
+    ._multiple-lines(1);
+}
+
+.two-lines {
+    ._multiple-lines(2);
+}
+
 .three-lines{
     ._multiple-lines();
 }

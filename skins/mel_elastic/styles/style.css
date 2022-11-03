@@ -2107,7 +2107,18 @@ html .menu a.selection::before {
   font-weight: normal !important;
 }
 /** LINES **/
-.two-lines,
+.one-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  -webkit-line-clamp: 1;
+}
+.two-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  -webkit-line-clamp: 2;
+}
 .three-lines {
   display: -webkit-box;
   -webkit-box-orient: vertical;

@@ -33,9 +33,11 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function groupBy($key_selector, $value_selector = null) : IMel_Enumerable;
     function aggregate($iterable) : IMel_Enumerable;
     function add($item, $key = null) : IMel_Enumerable;
+    function fusion($key, $value, $copy = false) : IMel_Enumerable;
     function remove($item) : IMel_Enumerable;
     function removeAtKey($key) : IMel_Enumerable;
     function removeTwins($callback) : IMel_Enumerable;
+    function orderBy($callback, $descending = false) : IMel_Enumerable;
     function any($selector = null) : bool;
     function all($selector) : bool;
     function contains($item) : bool;
@@ -107,6 +109,15 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
     public function removeTwins($selector) : IMel_Enumerable
     {
         return new MelTwins($this, $selector);
+    }
+
+    function fusion($key, $value, $copy = false) : IMel_Enumerable{
+        return new MelFusion($this, $key, $value, $copy);
+    }
+
+    public function orderBy($selector, $descending = false) : IMel_Enumerable
+    {
+        return !$descending ? new MelOrder($this, $selector) : new MelOrderByDescending($this, $selector);
     }
 
     public function contains($item) : bool {
@@ -207,7 +218,7 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         if ($this->is_assoc($this->array_like))
         {
             foreach ($this->array_like as $key => $value) {
-                yield new Mel_KeyValue($key, $value);
+                yield $key => $value;//new Mel_KeyValue($key, $value);
             }
         }
         else {
@@ -374,4 +385,85 @@ class MelTwins extends Mel_Where
     {
         return ($this->isKeyValuePair($value) ? $value->get_value() : $value);
     }
+}
+
+class MelOrder extends Mel_Enumerable {
+    protected $selector;
+    public function __construct($iterable, $selector) {
+        parent::__construct($iterable);
+        $this->selector = $selector;
+    }
+
+    
+    public function getIterator() : Traversable {
+        foreach ($this->tri_fusion(Mel_Enumerable::from($this->array_like)) as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue')) yield $value->get_key() => $value->get_value();
+            else yield $key => $value;
+        }
+    }
+
+    function tri_fusion($T)
+    {
+        if ($T->count() === 1) yield from $T;
+        else if ($T->count() > 1) {
+            $array = $this->_fusion(Mel_Enumerable::from($T)->where(function($k, $v) use($T) {return $k < $T->count()/2;})->toArray(), Mel_Enumerable::from($T)->where(function($k, $v) use($T) {return $k >= $T->count()/2;})->toArray());
+            yield from $array;
+        }
+    }
+
+    function test_fusion($a, $b) {
+        return $a <= $b;
+    }
+
+    function _fusion($A, $B)
+    {
+        if (count($A) === 0) return $B;
+        if (count($B) === 0) return $A;
+
+        if ($this->test_fusion(call_user_func($this->selector, 0, $A[0]), call_user_func($this->selector, 0, $B[0]))) return array_merge([$A[0]], $this->_fusion(array_slice($A, 1, count($A)), $B));
+        else return array_merge([$B[0]], $this->_fusion($A, array_slice($B, 1, count($B))));
+    }
+}
+
+class MelOrderByDescending extends MelOrder{
+    public function __construct($iterable, $selector) {
+        parent::__construct($iterable, $selector);
+    }
+
+    function test_fusion($a, $b) {
+        return !parent::test_fusion($a, $b);
+    }
+}
+
+class MelFusion extends Mel_Enumerable{
+    private $key;
+    private $value;
+    private $copy;
+    public function __construct($iterable, $key, $value, $copy = false) {
+        parent::__construct($iterable);
+        $this->key = $key;
+        $this->value = $value;
+        $this->copy = $copy;
+    }
+
+    public function getIterator() : Traversable {
+        foreach ($this->array_like as $key => $value) {
+            if (is_subclass_of($value, 'IKeyValue'))  {
+                $key = $value->get_key();
+                $value = $value->get_value();
+            }
+
+            if ($this->copy) $value = unserialize(serialize($value));
+
+            if (is_array($value)) $value[$this->key] = is_callable($this->value) ? call_user_func($this->value, $key, $value) : $this->value;
+            else {
+                $tmpKey = $this->key;
+                $value->$tmpKey = is_callable($this->value) ? call_user_func($this->value, $key, $value) : $this->value;
+            }
+
+            yield $key => $value;
+        }
+
+    }
+    
 }

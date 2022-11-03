@@ -11,8 +11,11 @@ function my_day(symbol = null)
 		current_day(mel_metapage.Storage.tasks, mel_metapage.Storage.last_task_update, mel_metapage.EventListeners.tasks_updated.get, setup_tasks);
 
 	try {
-		setup_notes();	
-		rcmail.addEventListener('notes.apps.updated', setup_notes);
+		if (rcmail.env.notes_enabled)
+		{
+			setup_notes();	
+			rcmail.addEventListener('notes.apps.updated', setup_notes);
+		}
 	} catch (error) {
 		
 	}

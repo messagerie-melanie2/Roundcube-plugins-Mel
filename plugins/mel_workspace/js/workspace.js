@@ -1,6 +1,39 @@
 $(document).ready(async () => {
     initCloud();
-    WSPReady();
+    WSPReady().then(() => {
+        function init_clicks()
+        {
+            for (const iterator of $('.click-tab')) {
+                //récupération du namespace
+    
+                $(iterator).click((e) => {
+                    const namespace = get_namespace(e.currentTarget);
+                    const id = e.currentTarget.id;
+                    e = $(e.currentTarget);
+    
+                    if (e.hasClass('selected'))
+                    {
+                        $(`.${namespace}.${id}`).addClass('hidden');
+                        e.removeClass('selected').find('span.icon-mel-chevron-down').removeClass('icon-mel-chevron-down').addClass('icon-mel-chevron-right');
+                    }
+                    else {
+                        $(`.${namespace}.${id}`).removeClass('hidden');
+                        e.addClass('selected').find('span.icon-mel-chevron-right').removeClass('icon-mel-chevron-right').addClass('icon-mel-chevron-down');
+                    }
+                }); 
+            }
+        }
+        
+        function get_namespace(node)
+        {
+            return Enumerable.from(node.classList).where(x => x.includes('click') && x !== 'click-tab').first();
+        }
+    
+        init_clicks();
+    
+        window.init_clicks = window.init_clicks || init_clicks;
+    });
+
 });
 
 /**
@@ -66,6 +99,10 @@ function Start(uid, hasAriane, datas) {
             .addClass(down);
             $html.removeClass("moved");
         }
+    });
+
+    $('#button-create-new-survey').click(() => {
+        rcmail.command('workspace.survey.create');
     });
 
     if (!parent.$("body").hasClass("task-workspace")) parent.$(".mwsp-style").remove();
@@ -902,7 +939,7 @@ async function InitLinks()
         }
 
         $(".tab-ressources.mel-tab.mel-tabheader").each((i, e) => {
-            if (e.id === "ressources-links")
+            if (e.id === "ressources-links" || e.id === 'ressources-surveys')
             {
                 $(e).click(() => {
                     $(e).parent().parent().find(".wsp-block.wsp-left.wsp-resources").css("background-color", "transparent")
@@ -1023,4 +1060,24 @@ function setup_end_date()
         else
             querry.html(`Date de fin : ${date}`);
     }
+}
+
+function survey_edit(e)
+{
+    e = $(e);
+    rcmail.command('workspace.survey.edit', {
+        id:e.data('sid'),
+        title:e.data('stitle'),
+        link:e.data('slink')
+    });
+}
+
+function survey_delete(e)
+{
+    rcmail.command('workspace.survey.delete', $(e).data('sid'));
+}
+
+function survey_copy(e)
+{
+    mel_metapage.Functions.copy($(e).data('slink'))
 }

@@ -947,6 +947,160 @@
             "GET");
         }    
 
+        async create_survey(survey = null){
+            this.create_survey.survey = survey;
+            const edit_mode = !!this.create_survey.survey;
+            let globalModal;
+            if ($("#globalModal .modal-close-footer").length == 0)
+                globalModal = GlobalModal.resetModal();
+            else
+            {
+                globalModal = Promise.resolve();
+                let $footer = $('#globalModal .modal-footer');
+                $footer.html($footer.html());
+            }
+
+            const _default = "default";
+
+            let html = `
+                <p class="red-star-removed"><star class="red-star mel-before-remover">*</star>
+                    Champs obligatoires
+                </p>
+                <label for="survey-input-title" class="red-star-after span-mel t1 first mel-after-remover">Titre du sondage<star class="red-star mel-before-remover">*</star></label>
+                <input id="survey-input-title" class="input-mel mel-input form-control" value="${edit_mode ? this.create_survey.survey.title : ''}" placeholder="titre du sondage" />
+                <label for="survey-input-link" class="red-star-after span-mel t1 mel-after-remover">Lien du sondage<star class="red-star mel-before-remover">*</star></label>
+                <input id="survey-input-link" class="input-mel mel-input form-control" value="${edit_mode ? this.create_survey.survey.link : ''}" placeholder="lien du sondage" />
+            `;
+
+            const global_config = new GlobalModalConfig((edit_mode ? 'Modifier un sondage' : 'Lier un sondage'), _default, html, null, _default, _default, () => {
+                const edit_mode = !!this.create_survey.survey;
+                const val = $('#survey-input-link').val();
+                const title = $('#survey-input-title').val();
+
+                if (val !== '' && title !== '')
+                {
+                    modal.close();
+                    this.busy();
+                    this.disable_surveys_buttons();
+                    let config = {
+                        _uid:this.uid,
+                        _zelda:val,
+                        _title:title
+                    }
+
+                    if (edit_mode) config['_sid'] = this.create_survey.survey.id;
+
+                    this.ajax(
+                        this.url('add_survey'),
+                        config,
+                        (datas) => {
+                            if (datas !== 'denied')
+                            {
+                                this.generate_surveys(JSON.parse(datas));
+                                modal.close();
+                            }
+                            else {
+                                this.busy(false);
+                                rcmail.display_message('Vous devez être l\'administrateur ou le créateur du sondage pour pouvoir le modifier.', 'error');
+                            }
+                        }
+                    ).always(() => {
+                        this.enable_surveys_buttons();
+                        this.busy(false);
+                    })
+                }
+                else modal.show();
+            });
+            let modal = new GlobalModal('globalModal', global_config, false);
+            modal.contents.find('#survey-input-link').on('change', () => {
+                const base = rcmail.env.sondage_create_sondage_url.split('?_')[0];
+                const val = $('#survey-input-link').val();
+                if (!val.includes(base)) {
+                    rcmail.display_message(`${val} n'est pas une url valide.`, 'error');
+                    $('#survey-input-link').val('');
+                }
+            });
+
+            await globalModal;
+            globalModal = null;
+
+            modal.show();
+            return modal;
+        }
+
+        async delete_survey(sid)
+        {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce sondage ?'))
+            {
+                this.busy();
+                this.disable_surveys_buttons();
+                await this.ajax(
+                    this.url('delete_survey'),
+                    {
+                        _uid:this.uid,
+                        _sid:sid
+                    },
+                    (datas) => {
+                        if (datas !== 'denied')
+                        {
+                            this.generate_surveys(JSON.parse(datas));
+                            modal.close();
+                        }
+                        else {
+                            this.busy(false);
+                            rcmail.display_message('Vous devez être l\'administrateur ou le créateur du sondage pour pouvoir le modifier.', 'error');
+                        }
+                    }
+                );
+                this.enable_surveys_buttons();
+                this.busy(false);
+            }
+        }
+
+        disable_surveys_buttons()
+        {
+            $('#button-create-new-survey').addClass('disabled').attr('disabled', 'disabled');
+            $('.click-master button').addClass('disabled').attr('disabled', 'disabled');
+        }
+
+        enable_surveys_buttons()
+        {
+            $('#button-create-new-survey').removeClass('disabled').removeAttr('disabled', 'disabled');
+            $('.click-master button').removeClass('disabled').removeAttr('disabled', 'disabled');
+        }
+
+        generate_surveys(datas)
+        {
+            var $first = true;
+            let $main = $('.ressources-surveys.bc').html('');
+            for (var iterator of Enumerable.from(datas).orderByDescending(x => !!x.value ? x.value.create_date : x.create_date)) {
+                if (!!iterator.key) iterator = iterator.value;
+                var $click_master = $('<div class="click-master"></div>').appendTo($main);
+                var $btn_group = $('<div class="btn-group"></div>').css('width', '100%').appendTo($click_master);
+                var $button_tab = $(`<button id="sondage-${iterator.id}" class="${$first ? 'selected' : ''} mel-focus text-header no-style full-width btn btn-secondary click-sondage click-tab">
+                    <span>${iterator.title}</span>
+                    <span class="icon-mel-chevron-${$first ? 'down' : 'right'} float-right"></span>`).appendTo($btn_group);
+                var $button_copy = $(`<button onclick="survey_copy(this)" class="mel-button btn btn-secondary no-button-margin" data-slink="${iterator.link}"><span class="icon-mel-copy"></span></button>`).appendTo($btn_group);
+                
+                if (iterator.can_delete)
+                {
+                    var $button_edit = $(`<button class="mel-button btn btn-secondary no-button-margin" onclick="survey_edit(this)" data-sid="${iterator.id}" data-stitle="${iterator.title}" data-slink="${iterator.link}"><span class="icon-mel-pencil"></span></button>`).appendTo($btn_group);
+                    var $button_delete = $(`<button style="border-bottom-right-radius:0;border-top-right-radius:5px;" class="mel-button btn btn-danger no-button-margin" onclick="survey_delete(this)" data-sid="${iterator.id}"><span class="icon-mel-trash"></span></button>`).appendTo($btn_group);
+                }
+                
+                $(`<div class="${$first ? '' : 'hidden'} click-body click-sondage sondage-${iterator.id}"><iframe src="${iterator.link}&_skin=default_mobile&amp;_embeded=1" style="width:100%;height:200px"></iframe></div>`).appendTo($click_master);
+            
+                if ($first) $first = false;
+            }
+
+            if ($first)
+            {
+                $(`<center>Créez un nouveau sondage (<a href="${rcmail.env.sondage_create_sondage_url}" class="">ici</a>) puis liez le avec cet espace. (<a id="link-a-survey" onclick="rcmail.command('workspace.survey.create')" href="#" class="">ici</a>)</center>`).appendTo($main);
+            }
+            else init_clicks();
+        }
+
+
         archive(archive = true)
         {
             this.busy();
@@ -1061,6 +1215,9 @@
             rcmail.register_command('workspace.update_end_date', (jquery) => rcmail.env.WSP_Param.update_end_date(jquery.val()), true);
             rcmail.register_command('workspace.toggle_bar_color', () => {rcmail.env.WSP_Param.toggle_nav_color()}, true);
             rcmail.register_command('workspace.update_primary_parameter', (config) => {rcmail.env.WSP_Param.update_primary_parameters(config)}, true);
+            rcmail.register_command('workspace.survey.create', () => {rcmail.env.WSP_Param.create_survey()}, true);
+            rcmail.register_command('workspace.survey.edit', (survey) => {rcmail.env.WSP_Param.create_survey(survey)}, true);
+            rcmail.register_command('workspace.survey.delete', (sid) => {rcmail.env.WSP_Param.delete_survey(sid)}, true);
             rcmail.register_command('workspace.update_title', () => 
             {
                 if (!confirm(rcmail.gettext('change_title_confirmation', 'mel_workspace'))) return;

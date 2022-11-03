@@ -441,6 +441,12 @@ function rcube_calendar_ui(settings) {
     if (typeof event.end == 'string')
       event.end = parseISO8601(event.end);
 
+    // PAMELA - 0007033: Modification d'un évenement récurrent
+    if (typeof event.master_start == 'string')
+      event.master_start = parseISO8601(event.master_start);
+    if (typeof event.master_end == 'string')
+      event.master_end = parseISO8601(event.master_end);
+
     // allow other plugins to do actions when event form is opened
     rcmail.triggerEvent('calendar-event-init', { o: event });
 
@@ -4250,6 +4256,31 @@ function rcube_calendar_ui(settings) {
     $('#eventedit input.edit-recurring-savemode').change(function (e) {
       var sel = $('input.edit-recurring-savemode:checked').val(),
         disabled = sel == 'current' || sel == 'future';
+
+      // PAMELA - 0007033: Modification d'un évenement récurrent
+      if (sel == 'all' || me.selected_event._old_sel == 'all') {
+        var event = me.selected_event;
+
+        if (sel == 'all' && event.master_start) {
+          var end = 'toDate' in event.master_end ? event.master_end : moment(event.master_end);
+          var start = 'toDate' in event.master_start ? event.master_start : moment(event.master_start);
+          var duration = Math.round((end.format('x') - start.format('x')) / 1000);
+        }
+        else {
+          var start = event.start;
+          var end = event.end;
+          var duration = Math.round((end.format('x') - start.format('x')) / 1000);
+        }
+
+        $('#edit-startdate').val($.fullCalendar.formatDate(start, me.settings['date_format'])).data('duration', duration);
+        $('#edit-starttime').val($.fullCalendar.formatDate(start, me.settings['time_format']));
+        $(".input-mel-datetime .input-mel.start").val($('#edit-startdate').val() + " " + $('#edit-starttime').val());
+        $('#edit-enddate').val($.fullCalendar.formatDate(end, me.settings['date_format']));
+        $('#edit-endtime').val($.fullCalendar.formatDate(end, me.settings['time_format']));
+        $(".input-mel-datetime .input-mel.end").val($('#edit-enddate').val() + " " + $('#edit-endtime').val());
+      }
+      me.selected_event._old_sel = sel;
+
       $('#event-panel-recurrence input, #event-panel-recurrence select, #event-panel-attachments input').prop('disabled', disabled);
       $('#event-panel-recurrence, #event-panel-attachments')[(disabled ? 'addClass' : 'removeClass')]('disabled');
     })

@@ -66,7 +66,7 @@ class My_day extends Module
             ));
         $array[] = $tasks;
 
-        if ($have_notes) {
+        //if ($have_notes) {
             $notes = [
                 "name" => $this->text('notes'), 
                 'id' => 'notes',
@@ -75,7 +75,7 @@ class My_day extends Module
             ];
 
             $array[] = $notes;
-        }
+        //}
 
         return $this->html_square_tab($array, $this->text($have_notes ? "my_day_and_notes" : "my_day"), "myday");
     }

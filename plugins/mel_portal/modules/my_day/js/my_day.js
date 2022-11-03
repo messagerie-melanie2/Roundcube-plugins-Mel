@@ -191,13 +191,16 @@ function add_task_to_completed(id)
 
 function setup_notes()
 {
+	let $myday_title = $('#myday h2').first();
     //Si il n'y a pas de note, il y en a une par défaut
-    if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
+    if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0 || !!rcmail.env.mel_metapages_notes['create'])
     {
 		$('#tab-for-notes-contents').css('display', 'none');
 		$('#tab-for-agenda-content').click();
+		$myday_title.html(rcmail.gettext('my_day', 'mel_portal'));
     }
 	else {
+		$myday_title.html(rcmail.gettext('my_day_and_notes', 'mel_portal'));
 		let $notes = $('.tabs-contents #notes').css('padding', '15px').css('height', 'calc(100% - 60px)').html('');
 		$('#tab-for-notes-contents').css('display', '');
 
@@ -241,7 +244,7 @@ function setup_notes()
 		let $main_notes = $('<div id="main-notes-block" style="height:100%"></div>').css('margin', '0 5px').appendTo($notes);
 
 		let the_one = false;
-		let already = !!setup_notes.current;
+		let already = !!setup_notes.current && !!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => x.value.uid === setup_notes.current.value.uid).firstOrDefault();
 		for (const iterator of Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.order)) {
 			if (!iterator.value.uid) continue;
 

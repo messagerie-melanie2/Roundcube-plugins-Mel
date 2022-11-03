@@ -501,6 +501,9 @@ function notes()
                             $('.upb').css('display', 'none');
                         }
                     }
+                    else {
+                        rcmail.env.mel_metapages_notes[this.uid].text = this.text;
+                    }
                 }
             );
         }
@@ -571,9 +574,43 @@ function notes()
                 }
             }, 100);
         }
+
+        if (rcmail.env.mel_metapages_notes_edited === true)
+        {
+            rcmail.triggerEvent('notes.master.update', {datas:rcmail.env.mel_metapages_notes});
+            rcmail.env.mel_metapages_notes_edited = false;
+        }
     });
 
-    top.rcmail.addEventListener('notes.master.update', () => {});
+    top.rcmail.addEventListener('notes.master.update', (args) => {
+        rcmail.env.mel_metapages_notes_edited = true;
+        rcmail.env.mel_metapages_notes = args.datas;
+
+        let $eyes = $('.shortcut-notes .icon-mel-eye-crossed');
+        if ($eyes.length > 0) $eyes.click();
+
+        if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
+        {
+            rcmail.env.mel_metapages_notes = {};
+            rcmail.env.mel_metapages_notes[default_note_uid] = new Sticker("create", 0, "", "");
+        }
+
+        $('.shortcut-notes .square-contents').html(
+            Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.value.order).select(x => Sticker.from(x.value).html()).toArray().join(' ')
+        );
+
+        $('.mel-note').each((i, e) => {
+            Sticker.fromHtml($(e).attr("id").replace('note-', '')).set_handlers();
+        });
+    });
+
+    top.rcmail.addEventListener('notes.master.edit', (args) => {
+        rcmail.env.mel_metapages_notes[args.id].text = args.text;
+        return Sticker.from(rcmail.env.mel_metapages_notes[args.id]).post_update().then(() => {
+            rcmail.triggerEvent('notes.master.update', {datas:rcmail.env.mel_metapages_notes});
+        });
+    });
+
     top.rcmail.addEventListener('notes.apps.updated', (x) => {
         $('iframe.mm-frame').each((i, e) => {
             try {

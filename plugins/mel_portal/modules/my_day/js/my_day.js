@@ -210,6 +210,13 @@ function setup_notes()
 			if(!!current){
 				setup_notes.current = current;
 				$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
+
+				const prev = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault();
+				if (!prev) {
+					$action_left.addClass('disabled').attr('disabled', 'disabled');
+				}
+
+				$action_right.removeClass('disabled').removeAttr('disabled', 'disabled');
 			}
 			else $(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
 		}).addClass('btn-mel-invisible btn-arrow btn btn-secondary').appendTo($actions);
@@ -220,6 +227,13 @@ function setup_notes()
 			if(!!current){
 				setup_notes.current = current;
 				$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
+
+				const next = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault();
+				if (!next) {
+					$action_right.addClass('disabled').attr('disabled', 'disabled');
+				}
+
+				$action_left.removeClass('disabled').removeAttr('disabled', 'disabled');
 			}
 			else $(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
 		}).addClass('btn-mel-invisible btn-arrow btn btn-secondary').appendTo($actions);
@@ -231,13 +245,23 @@ function setup_notes()
 		for (const iterator of Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.order)) {
 			if (!iterator.value.uid) continue;
 
-			$(`<div style="height:100%;${the_one || already && setup_notes.current.value.uid !== iterator.value.uid ? 'display:none;' : ''}" id="notes-block-${iterator.value.uid.toLowerCase()}"></div>`).append(iterator.value.text).appendTo($main_notes);
+			$(`<div style="height:100%;${the_one || already && setup_notes.current.value.uid !== iterator.value.uid ? 'display:none;' : ''}" id="notes-block-${iterator.value.uid.toLowerCase()}"></div>`).append(iterator.value.text.replaceAll('\n', '<br/>')).appendTo($main_notes);
 			$(`<textarea class="form-control input-mel" style="height:100%; width:100%; display:none;background-color:var(--inputs-bg-color)" id="notes-area-${iterator.value.uid.toLowerCase()}"></textarea>`).append(iterator.value.text).appendTo($main_notes);
 
 			if (!the_one && !already)  {
 				setup_notes.current = iterator;
 				the_one = true;
 			}
+		}
+
+		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault())
+		{
+			$action_right.addClass('disabled').attr('disabled', 'disabled');
+		}
+
+		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault())
+		{
+			$action_left.addClass('disabled').attr('disabled', 'disabled');
 		}
 
 		let $bottom = $('<div style="text-align: right;"></div>').appendTo($notes);
@@ -260,6 +284,12 @@ function setup_notes()
 				$area.css('display', 'none');
 				$action_edit.find('.icon-mel-check').addClass('icon-mel-pencil').removeClass('icon-mel-check');
 				setup_notes.edit_mode = false;
+				top.rcmail.triggerEvent('notes.master.edit', {
+					text:$area.val(),
+					id:current.value.uid
+				}).then(() => {
+					setup_notes();
+				});
 			}
 
 		}).appendTo($bottom);

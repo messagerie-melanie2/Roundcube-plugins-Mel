@@ -2114,7 +2114,7 @@ async function m_mp_shortcuts() {
             for (const key in rcmail.env.shortcuts_queue_before) {
                 if (Object.hasOwnProperty.call(rcmail.env.shortcuts_queue_before, key)) {
                     const element = rcmail.env.shortcuts_queue_before[key];
-                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key} ${tab_content} ${tab_namespace}`, 
+                    html += html_helper(html_helper.options.block, (typeof element.html === 'function' ? element.html() : element.html), `shortcut-task shortcut-${element.key} ${tab_content} ${tab_namespace}`, 
                     {
                         'data-tab-name':element?.name ?? element.key, 
                         'data-selector-tab':`.square_div.shortcut-task.shortcut-${element.key}`,
@@ -2134,7 +2134,7 @@ async function m_mp_shortcuts() {
             for (const key in rcmail.env.shortcuts_queue) {
                 if (Object.hasOwnProperty.call(rcmail.env.shortcuts_queue, key)) {
                     const element = rcmail.env.shortcuts_queue[key];
-                    html += html_helper(html_helper.options.block, element.html, `shortcut-task shortcut-${element.key} ${tab_content} ${tab_namespace}`,
+                    html += html_helper(html_helper.options.block, (typeof element.html === 'function' ? element.html() : element.html), `shortcut-task shortcut-${element.key} ${tab_content} ${tab_namespace}`,
                     {
                         'data-tab-name':element?.name ?? element.key, 
                         'data-selector-tab':`.square_div.shortcut-task.shortcut-${element.key}`,

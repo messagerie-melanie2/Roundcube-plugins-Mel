@@ -234,6 +234,11 @@ class mel extends rcube_plugin
           'task' => 'settings'
         )));
         $this->api->add_content($content, 'calendaroptionsmenu');
+        $user = driver_mel::gi()->getUser();
+        $user->load(['phonenumber','mobilephone','street','postalcode','locality']);
+          
+        $this->rc->output->set_env('user_phone', isset($user->mobilephone) ? $user->mobilephone : $user->phonenumber);
+        $this->rc->output->set_env('user_address', isset($user->street) ? $user->street . ' ' . $user->postalcode . ' ' . $user->locality : null);
       } else if ($this->rc->task == 'tasks') {
         // Link to Settings/Folders
         $content = html::tag('li', array(

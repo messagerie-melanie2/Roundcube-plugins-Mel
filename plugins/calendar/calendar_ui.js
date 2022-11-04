@@ -3346,7 +3346,6 @@ function rcube_calendar_ui(settings) {
 
   // show URL of the given calendar in a dialog box
   this.showurl = function (calendar) {
-    console.log(calendar);
     if (calendar.feedurl) {
       var dialog = $('#calendarurlbox').clone(true).removeClass('uidialog');
 
@@ -3418,6 +3417,23 @@ function rcube_calendar_ui(settings) {
         }
       }
 
+      let error_message = "Ce champs est obligatoire";
+      let error = false;
+      for (let e of form.find('input[required]')) {
+        if (!($(e).val() || null)) {
+          form.find(`#${e.id}`).addClass('is-invalid');
+          form.find(`#${e.id.split('_')[0]}_error`).text(error_message);
+          error = true;
+        }
+        else {
+          form.find(`#${e.id}`).removeClass('is-invalid');
+          form.find(`#${e.id.split('_')[0]}_error`).text("");
+        }
+      }
+      if (error) {
+        return;
+      }
+
       appointment.range = {};
 
 
@@ -3471,7 +3487,7 @@ function rcube_calendar_ui(settings) {
                     place.push({ "type": input.id, value: true, text: form.find('#phone_text').text() })
                   }
                   if (input.id == "attendee_call") {
-                    place.push({ "type": input.id, value: form.find('#organizer_phone_number').val(), text: form.find('#phone_text').text() })
+                    place.push({ "type": input.id, value: form.find('#phone_input').val(), text: form.find('#phone_text').text() })
                   }
                 }
 
@@ -3479,7 +3495,6 @@ function rcube_calendar_ui(settings) {
               break;
             case 'webconf':
               let webconf_url = window.location.origin + window.location.pathname + `public/webconf?_key=${form.find('#webconf_input').val()}`;
-              console.log(webconf_url);
               place.push({ "type": id, value: webconf_url, text: form.find('#webconf_text').text() })
               break;
 

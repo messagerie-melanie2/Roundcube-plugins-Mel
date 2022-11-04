@@ -527,8 +527,8 @@
 
     <div id="activate_appointment" class="mt-1 mb-4">
       <label class="switch mr-1" onclick="rcmail.command('toggle-appointment')"">
-        <input type=" checkbox" id="check_appointment">
-        <span class="slider round"></span>
+        <input type='checkbox' id='check_appointment'>
+        <span class=" slider round"></span>
       </label>
       <roundcube:label name='calendar.activateappointment' />
       <input type="hidden" id="appointment_url">
@@ -611,7 +611,9 @@
                     <div id="address_fields" class="row" style="display: none;">
                       <div class="col-1"></div>
                       <div class="col-11">
-                        <input type="text" id="address_input" class="form-control" placeholder="Adresse">
+                        <input type="text" id="address_input" class="form-control" placeholder="Adresse"
+                          value="<roundcube:var name=" env:user_address" />">
+                        <span class="text-danger" id="address_error"></span>
                       </div>
                     </div>
                     <div class="row">
@@ -642,8 +644,9 @@
                           </label>
                         </div>
                         <div id="phone_number_field" style="display: none;">
-                          <input type="text" class="form-control" id="organizer_phone_number"
-                            placeholder="Numéro de téléphone">
+                          <input type="text" class="form-control" id="phone_input" placeholder="Numéro de téléphone"
+                            value="<roundcube:var name=" env:user_phone">">
+                          <span class="text-danger" id="phone_error"></span>
                         </div>
                       </div>
                     </div>
@@ -668,9 +671,9 @@
                           </div>
                           <input type="text" id="webconf_input" class="form-control" placeholder="Nom du salon"
                             aria-describedby="basic-addon1" onkeyup="checkWebconfName()">
-                            <br>
-                          </div>
-                          <span id="webconf_name_error" class="text-danger"></span>
+                          <br>
+                        </div>
+                        <span id="webconf_error" class="text-danger"></span>
                       </div>
                     </div>
                   </div>

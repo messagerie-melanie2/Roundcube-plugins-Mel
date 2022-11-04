@@ -32,7 +32,7 @@ class mel_france_transfert extends rcube_plugin {
 
   /**
    *
-   * @var ServiceWebMelanissimo
+   * @var ServiceWebFranceTransfert
    */
   private $ws;
 
@@ -48,8 +48,8 @@ class mel_france_transfert extends rcube_plugin {
     $this->load_config();
 
     if ($this->rc->task == 'mail') {
-      include_once 'lib/service_web_melanissimo.php';
-      $this->ws = new ServiceWebMelanissimo($this->rc);
+      include_once 'lib/service_web_francetransfert.php';
+      $this->ws = new ServiceWebFranceTransfert($this->rc);
 
       // Load localization and configuration
       $this->add_texts('localization/', true);
@@ -64,7 +64,7 @@ class mel_france_transfert extends rcube_plugin {
       ));
       $this->register_action('plugin.send_francetransfert', array(
               $this,
-              'sendMessageByMelanissimo'
+              'sendMessageByFranceTransfert'
       ));
       $this->register_action('plugin.update_progressbar', array(
               $this,
@@ -155,7 +155,7 @@ class mel_france_transfert extends rcube_plugin {
    */
   public function testServiceFranceTransfert() {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_melanissimo::testServiceFranceTransfert()");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::testServiceFranceTransfert()");
 
     $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_POST);
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
@@ -172,7 +172,7 @@ class mel_france_transfert extends rcube_plugin {
       }
     }
 
-    // Défini si le service Melanissimo doit être utilisé en fonction de la valeur configuré
+    // Défini si le service France Transfert doit être utilisé en fonction de la valeur configuré
     $max_francetransfert_size = $this->rc->config->get('max_francetransfert_size', 1000000000);
     $over_size_francetransfert = $max_francetransfert_size < $size;
     $use_francetransfert = $this->rc->config->get('max_attachments_size', 5000000) < $size && ! $over_size_francetransfert && (mel::is_internal() || $this->rc->config->get('enable_internet_service', true));
@@ -195,16 +195,16 @@ class mel_france_transfert extends rcube_plugin {
   }
 
   /**
-   * Fonction pour envoyer le message avec Melanissimo
+   * Fonction pour envoyer le message avec France Transfert
    */
-  public function sendMessageByMelanissimo() {
+  public function sendMessageByFranceTransfert() {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_melanissimo::sendMessageByMelanissimo()");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel_france_transfert::sendMessageByFranceTransfert()");
 
     $unlock = rcube_utils::get_input_value('_unlock', rcube_utils::INPUT_POST);
     $nb_days = rcube_utils::get_input_value('_nb_days', rcube_utils::INPUT_POST);
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
-    $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
 
     // set default charset
     $message_charset = isset($_POST['_charset']) ? $_POST['_charset'] : $this->rc->output->get_charset();
@@ -220,8 +220,6 @@ class mel_france_transfert extends rcube_plugin {
       if (is_array($identity_arr = $this->rc->user->get_identity($from))) {
         if ($identity_arr['email'])
           $from = $identity_arr['email'];
-        if ($identity_arr['name'])
-          $from_string = $identity_arr['name'];
       }
       else {
         $from = null;
@@ -235,30 +233,23 @@ class mel_france_transfert extends rcube_plugin {
         $from = null;
     }
 
-    if (! $from_string && $from) {
-      $from_string = $from;
-    }
-
     // add subject
     $subject = trim(rcube_utils::get_input_value('_subject', rcube_utils::INPUT_POST, TRUE, $message_charset));
 
     // fetch message body
     $message_body = rcube_utils::get_input_value('_message', rcube_utils::INPUT_POST, TRUE, $message_charset);
 
-    if ($this->ws->curlConnectionMelanissimo($COMPOSE_ID, $from) && $this->ws->curlMessageMelanissimo($COMPOSE_ID, $from, $from_string, $mailto, $mailcc, $mailbcc, $subject, $message_body) && $this->ws->curlGardeMelanissimo($COMPOSE_ID, $nb_days)) {
+    if ($this->ws->initPli($COMPOSE_ID, $nb_days, 'fr_FR', $from, $mailto, $mailcc, $mailbcc, $subject, $message_body)) {
       $success = true;
 
       // Parcours des pièces jointes pour les lister
       if (is_array($COMPOSE['attachments'])) {
         foreach ($COMPOSE['attachments'] as $id => $a_prop) {
-          if (! $this->ws->curlFichierMelanissimo($COMPOSE_ID, $a_prop['path'], $a_prop['name'])) {
+          if (!$this->ws->sendFile($COMPOSE_ID, $from, $id, $a_prop['path'], $a_prop['name'])) {
             $success = false;
             break;
           }
         }
-      }
-      if ($success) {
-        $success = $this->ws->curlEnvoiMelanissimo($COMPOSE_ID);
       }
     }
     else {
@@ -275,13 +266,13 @@ class mel_france_transfert extends rcube_plugin {
     // Cleanup session
     if ($success) {
       $this->rcmail_compose_cleanup($COMPOSE_ID);
-      // MANTIS 4164: Ajouter des logs à l'envoi Mélanissimo pour les statistiques
-      mel_logs::get_instance()->log(mel_logs::INFO, "mel_melanissimo::sendMessageByMelanissimo() [success] to $mailto cc $mailcc bcc $mailbcc");
+      // MANTIS 4164: Ajouter des logs à l'envoi France Transfert pour les statistiques
+      mel_logs::get_instance()->log(mel_logs::INFO, "mel_france_transfert::sendMessageByFranceTransfert() [success] to $mailto cc $mailcc bcc $mailbcc");
     }
 
     // Retourne le résultat au javascript
     $result = array(
-            'action' => 'plugin.send_melanissimo',
+            'action' => 'plugin.send_francetransfert',
             'success' => $success,
             'httpCode' => $this->ws->getHttpCode(),
             'errorMessage' => $this->ws->getErrorMessage(),
@@ -297,15 +288,12 @@ class mel_france_transfert extends rcube_plugin {
   public function updateProgressBar() {
     $COMPOSE_ID = rcube_utils::get_input_value('_id', rcube_utils::INPUT_GPC);
     $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
-    $action = "";
-    $value = 0;
 
     // Retourne le résultat au javascript
     $result = array(
             'action' => 'plugin.update_progressbar',
-            'current_action' => $action,
-            'current_value' => $value,
-            'compose' => $_SESSION['melanissimo_progress']
+            'current_action' => $COMPOSE['ft_action'] ?: '',
+            'current_value' => $COMPOSE['ft_value'] ?: null,
     );
     echo json_encode($result);
     exit();
@@ -323,19 +311,19 @@ class mel_france_transfert extends rcube_plugin {
     $html = "";
     $select = new html_select(array());
 
-    for ($i = $COMPOSE['melanissimo_url_connexion']['min']; $i <= $COMPOSE['melanissimo_url_connexion']['max']; $i ++) {
+    for ($i = 1; $i <= $this->rc->config->get('francetransfert_max_days_duration', 90); $i ++) {
       $select->add($i);
     }
 
     $html = html::div(array(
-            "id" => "use_melanissimo_dialog"
+            "id" => "use_francetransfert_dialog"
     ), html::div(array(
             "class" => "dialog_title"
-    ), $this->gettext('Send Melanissimo title')) . html::div(array(
+    ), $this->gettext('Send France Transfert title')) . html::div(array(
             "class" => "dialog_text"
-    ), $this->gettext('Send Melanissimo text')) . html::div(array(
+    ), $this->gettext('Send France Transfert text')) . html::div(array(
             "class" => "dialog_select"
-    ), html::span(array(), $this->gettext('Send Melanissimo keep the file')) . $select->show($COMPOSE['melanissimo_url_connexion']['max']) . html::span(array(), $this->gettext('Send Melanissimo days'))));
+    ), html::span(array(), $this->gettext('Send France Transfert keep the file')) . $select->show($this->rc->config->get('francetransfert_max_days_duration', 90)) . html::span(array(), $this->gettext('Send France Transfert days'))));
 
     return $html;
   }

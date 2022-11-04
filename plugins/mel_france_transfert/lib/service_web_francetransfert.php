@@ -22,15 +22,66 @@
 @include_once 'includes/libm2.php';
 
 class ServiceWebFranceTransfert {
+
   /**
-   *
+   * Format des dates
+   * Les dates doivent être au format suivant : AAAA-MM-JJThh:mi:ss
+   * Les dates doivent être envoyées en heure locale française (CET). 
+   */
+  const DATE_FORMAT = 'Y-m-d\TH:i:s';
+
+  /**
+   * Format des heures
+   * Les heures doivent être au format : hh:mm
+   * Les heures doivent être en h24.
+   */
+  const HOUR_FORMAT = 'H:i';
+
+  /**
+   * cleAPI : clé d’API fournie au préalable par l’équipe France transfert
+   */
+  const API_KEY_HEADER = 'cleAPI';
+
+  /**
+   * API-FT01 – Initialisation d’un pli
+   */
+  const URL_INIT_PLI = '/api-public/initPli';
+
+  /**
+   * API-FT02 – Envoi des fichiers d’un pli
+   */
+  const URL_ENVOI_FICHIER = '/api-public/chargementPli';
+
+  /**
+   * API-FT03 – Récupération du statut d’un pli
+   */
+  const URL_STATUT_PLI = '/api-public/statutPli';
+
+  /**
+   * API-FT04 – Récupération des métadonnées d’un pli
+   */
+  const URL_PLI_META_DONNEES = '/api/donneesPli';
+
+  /**
+   * API-FT05 – Récupération des plis d’un utilisateur
+   */
+  const URL_LIST_PLIS = '/api/mesPlis';
+
+  /**
+   * API-FT06 – Téléchargement d’un pli
+   */
+  const URL_TELECHARGER_PLI = '/api/telechargerPli';
+
+  /**
    * @var rcmail
    */
   private $rc;
+
   /**
    * @var integer
    */
   private $_httpCode;
+
   /**
    * @var string
    */
@@ -50,6 +101,7 @@ class ServiceWebFranceTransfert {
   public function getHttpCode() {
     return $this->_httpCode;
   }
+
   /**
    * Getter errorMessage
    * @return string
@@ -62,6 +114,8 @@ class ServiceWebFranceTransfert {
    * Initialisation du Pli pour France Transfert
    * 
    * @param string $COMPOSE_ID
+   * @param integer $nb_days
+   * @param string $language
    * @param string $from
    * @param string $mailto
    * @param string $mailcc
@@ -71,89 +125,48 @@ class ServiceWebFranceTransfert {
    * 
    * @return boolean
    */
-  public function curlInitPli($COMPOSE_ID, $from, $from_string, $mailto, $mailcc, $mailbcc, $subject, $message_body) {
+  public function initPli($COMPOSE_ID, $nb_days, $language = 'fr_FR', $from, $mailto, $mailcc, $mailbcc, $subject, $message_body) {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::curlInitPli($COMPOSE_ID, $from)");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::initPli($COMPOSE_ID, $from)");
 
-    $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE['ft_action'] = 'Initialisation du pli sur France Transfert';
 
     $fichiers = [];
+
+    // Calcul de la date
+    $date = new \DateTime();
+    $date->add(new \DateInterval("P$nb_days"."D"));
+
     // Parcours des pièces jointes pour les lister
     if (is_array($COMPOSE['attachments'])) {
       foreach ($COMPOSE['attachments'] as $id => $a_prop) {
         $fichiers[] = [
-            "idFichier"     => $this->getIdFichier($a_prop),
-            "nomFichier"    => $a_prop['name'],
-            "tailleFichier" => $a_prop['size'],
+          "idFichier"     => $id,
+          "nomFichier"    => $a_prop['name'],
+          "tailleFichier" => $a_prop['size'],
         ];
       }
     }
 
+    // Paramètres de la requête
     $params = [
-        "typePli"               => $this->rc->config->get('francetransfert_type_pli', 'LIE'),
-        "courrielExpediteur"    => $from,
-        "destinataires"         => $this->_format_mail_list(array_merge($mailto, $mailcc, $mailbcc)),
-        "objet"                 => $subject,
-        "message"               => $message_body,
-        "preferences"           => [
-            "dateValidite"              => "", // TODO: A calculer
-            "motDePasse"                => "", // TODO: A calculer
-            "langueCourriel"            => "fr-FR",
-            "protectionArchive"         => false,
-            "envoiMdpDestinataires"     => true,
-        ],
-        "fichiers"              => $fichiers,
+      "typePli"               => $this->rc->config->get('francetransfert_type_pli', 'COU'),
+      "courrielExpediteur"    => $from,
+      "destinataires"         => $this->_format_mail_list(implode(',' , [$mailto, $mailcc, $mailbcc])),
+      "objet"                 => $subject,
+      "message"               => $message_body,
+      "preferences"           => [
+        "dateValidite"              => $date->format(self::DATE_FORMAT),
+        "langueCourriel"            => $language,
+        "protectionArchive"         => false,
+        "envoiMdpDestinataires"     => true,
+      ],
+      "fichiers"              => $fichiers,
     ];
-  }
-
-  /**
-   * Enregistrement du message et de la liste des pièces jointes
-   *
-   * @param string $COMPOSE_ID
-   * @param string $from
-   * @param string $mailto
-   * @param string $mailcc
-   * @param string $mailbcc
-   * @param string $subject
-   * @param string $message_body
-   * @return boolean
-   */
-  public function curlMessageFranceTransfert($COMPOSE_ID, $from, $from_string, $mailto, $mailcc, $mailbcc, $subject, $message_body) {
-    if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::curlMessageFranceTransfert($COMPOSE_ID, $from)");
-
-    $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
-
-    $attachments = array();
-    // Parcours des pièces jointes pour les lister
-    if (is_array($COMPOSE['attachments'])) {
-      foreach ($COMPOSE['attachments'] as $id => $a_prop) {
-        $attachments[] = array(
-                "empreinte" => hash_file('md5', $a_prop['path']),
-                "nom" => $a_prop['name'],
-                "taille" => $a_prop['size'],
-        );
-      }
-    }
-
-    // Génération des paramètres de message
-    $params = array(
-            "expéditeur" => array(
-                    "libellé" => $from_string,
-                    "adresse" => $from,
-            ),
-            "listeDestinatairesTo" => $this->_format_mail_list($mailto),
-            "listeDestinatairesCc" => $this->_format_mail_list($mailcc),
-            "listeDestinatairesCci" => $this->_format_mail_list($mailbcc),
-            "sujet" => $subject,
-            "corpsMessage" => $message_body,
-            "listeFichiers" => $attachments,
-    );
 
     // Récupération de l'url de message
-    $url = $this->_melanissimo_url($COMPOSE['melanissimo_url_connexion']['url'], $COMPOSE['melanissimo_url_message']['url']);
-    // Efface les informations de la session
-    if (isset($COMPOSE['melanissimo_url_garde'])) unset($COMPOSE['melanissimo_url_garde']);
+    $url = $this->rc->config->get('francetransfert_api_url') . self::URL_INIT_PLI;
 
     // Appel à l'enregistrement du message du service Web
     $result = $this->_post_url($url, $params);
@@ -163,20 +176,36 @@ class ServiceWebFranceTransfert {
 
     // Récupération des codes/erreurs
     $this->_httpCode = $result['httpCode'];
-    $this->_errorMessage = isset($content->Message) ? $content->Message->texte : "";
 
-    // Gestion des résultats : 202 = OK
-    if ($result['httpCode'] == 202) {
-      $request = $content->{'requêtesPossibles'}[0];
-      $COMPOSE['melanissimo_url_garde'] = array(
-              'method' => $request->{'méthode'},
-              'protocole' => $request->protocole,
-              'url' => $request->url,
-              'contentType' => $request->contentType,
-      );
+    // Gestion des résultats : 201 = OK
+    if ($this->_httpCode == 201) {
+      // Actualiser l'action
+      $COMPOSE['ft_action'] = 'Pli initialisé sur France Transfert';
+
+      //
+      //     "idPli": "9210fa47-366b-49bc-a50b-e561b72a0889",
+      //     "statutPli": {
+      //         "codeStatutPli": "000-INI",
+      //         "libelleStatutPli": "Initialisé"
+      //     }
+      //
+      $COMPOSE['ft_pli'] = $content;
       return true;
     }
-    else {
+    else if ($this->_httpCode == 403) {
+      $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      return false;
+    }
+    else { // En théorie on a httpcode = 422
+      // Gestion des erreurs
+      if (isset($content->erreurs)) {
+        $errors = [];
+        foreach ($content->erreurs as $erreur) {
+          $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+        }
+        $this->_errorMessage = implode(' / ', $errors);
+      }
       mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlMessageFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
       return false;
     }
@@ -186,57 +215,238 @@ class ServiceWebFranceTransfert {
    * Upload d'un fichier
    *
    * @param string $COMPOSE_ID
+   * @param string $from
+   * @param string $id
    * @param string $path
    * @param string $name
+   * 
    * @return boolean
    */
-  public function curlFichierFranceTransfert($COMPOSE_ID, $path, $name) {
+  public function sendFile($COMPOSE_ID, $from, $id, $path, $name) {
     if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::curlFichierFranceTransfert($COMPOSE_ID, $name)");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::sendFile($COMPOSE_ID, $name)");
 
-    $COMPOSE = & $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+    $COMPOSE['ft_action'] = "Envoi du fichier '$name' vers France Transfert";
+    $COMPOSE['ft_value'] = 0;
 
-    // Récupération de l'url de garde
-    $url = $this->_melanissimo_url($COMPOSE['melanissimo_url_connexion']['url'], $COMPOSE['melanissimo_url_message']['url'], $COMPOSE['melanissimo_url_fichier']['url']);
-    // Efface les informations de la session
-    if (isset($COMPOSE['melanissimo_url_fichier'])) unset($COMPOSE['melanissimo_url_fichier']);
-    if (isset($COMPOSE['melanissimo_url_envoi'])) unset($COMPOSE['melanissimo_url_envoi']);
+    if (isset($COMPOSE['ft_pli']['idPli'])) {
+      $idPli = $COMPOSE['ft_pli']['idPli'];
+    }
+    else {
+      return false;
+    }
 
-    // Appel à l'upload du fichier pour le service Melanissimo
-    $result = $this->_put_url($url, $path);
+    // Récupération de l'url
+    $url = $this->rc->config->get('francetransfert_api_url') . self::URL_ENVOI_FICHIER;
+
+    $file_size = filesize($path);
+    
+    $chunk_size = $this->rc->config->get('francetransfert_chunk_size', 5242880); // chunk in bytes
+    $total_chunk_size = 0;
+    $chunk_number = 1;
+    $total_chunks_number = intdiv($file_size, $chunk_size)  + ($file_size % $chunk_size > 0 ? 1 : 0);
+    
+    $handle = fopen($path, "rb");
+    
+    while ($total_chunk_size < $file_size) {
+      // Génération de la boundary
+      $boundary = '-----=' . md5(uniqid(mt_rand()));
+  
+      $contents = fread($handle, $chunk_size);
+      $current_chunk_size = strlen($contents);
+
+      $parts = $this->getChunkParts($boundary, $idPli, $from, $chunk_number, $current_chunk_size, $file_size, $id, $name, $total_chunks_number);
+      $parts[] = $boundary;
+      $parts[] = 'Content-Disposition: form-data; name="file"; filename="' . $name . '"';
+      $parts[] = 'Content-Type: application/octet-stream';
+      $parts[] = '';
+      $parts[] = $contents;
+      $parts[] = $boundary . '--';
+      $parts = implode("\r\n", $parts);
+
+      // Appel à l'enregistrement du message du service Web
+      $result = $this->_post_url($url, $parts, null, true, $boundary);
+
+      // Content
+      $content = json_decode($result['content']);
+
+      // Récupération des codes/erreurs
+      $this->_httpCode = $result['httpCode'];
+
+      // Gestion des résultats : 201 = OK
+      if ($this->_httpCode == 201) {
+        // Actualiser la value
+        $COMPOSE['ft_value'] = intdiv($file_size * 100, $total_chunk_size);
+      }
+      else if ($this->_httpCode == 403) {
+        $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
+        mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+        fclose($handle);
+        return false;
+      }
+      else { // En théorie on a httpcode = 422
+        // Gestion des erreurs
+        if (isset($content->erreurs)) {
+          $errors = [];
+          foreach ($content->erreurs as $erreur) {
+            $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+          }
+          $this->_errorMessage = implode(' / ', $errors);
+        }
+        mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::sendFile() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+        fclose($handle);
+        return false;
+      }
+  
+      $total_chunk_size += $current_chunk_size;
+      fseek($handle, $total_chunk_size);
+
+      $chunk_number++;
+    }
+    
+    fclose($handle);
+
+    $COMPOSE['ft_action'] = "Fichier '$name' envoyé vers France Transfert";
+    $COMPOSE['ft_value'] = null;
+    return true;
+  }
+
+  /**
+   * Récupération du multipart associé au morceau de fichier en cours
+   * 
+   * @param string $boundary
+   * @param string $idPli
+   * @param string $from
+   * @param integer $chunkNum
+   * @param integer $chunkSize
+   * @param integer $fileSize
+   * @param string $idFile
+   * @param string $nameFile
+   * @param integer $numberChunks
+   * 
+   * @return array 
+   */
+  protected function getChunkParts($boundary, $idPli, $from, $chunkNum, $chunkSize, $fileSize, $idFile, $nameFile, $numberChunks) {
+    return [
+      // idPli
+      $boundary,
+      'Content-Disposition: form-data; name="idPli"',
+      '',
+      $idPli,
+
+      // courrielExpediteur
+      $boundary,
+      'Content-Disposition: form-data; name="courrielExpediteur"',
+      '',
+      $from,
+
+      // numMorceauFichier
+      $boundary,
+      'Content-Disposition: form-data; name="numMorceauFichier"',
+      '',
+      $chunkNum,
+
+      // tailleMorceauFichier
+      $boundary,
+      'Content-Disposition: form-data; name="tailleMorceauFichier"',
+      '',
+      $chunkSize,
+
+      // tailleFichier
+      $boundary,
+      'Content-Disposition: form-data; name="tailleFichier"',
+      '',
+      $fileSize,
+
+      // idFichier
+      $boundary,
+      'Content-Disposition: form-data; name="idFichier"',
+      '',
+      $idFile,
+
+      // nomFichier
+      $boundary,
+      'Content-Disposition: form-data; name="nomFichier"',
+      '',
+      $nameFile,
+
+      // totalMorceauxFichier
+      $boundary,
+      'Content-Disposition: form-data; name="totalMorceauxFichier"',
+      '',
+      $numberChunks,
+    ];
+  }
+
+  /**
+   * Récupération du statut du pli
+   * 
+   * @param string $COMPOSE_ID
+   * @param string $from
+   * 
+   * @return boolean
+   */
+  public function getStatus($COMPOSE_ID, $from) {
+    if (mel_logs::is(mel_logs::DEBUG))
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::getStatus($COMPOSE_ID)");
+
+    $COMPOSE =& $_SESSION['compose_data_' . $COMPOSE_ID];
+
+    if (isset($COMPOSE['ft_pli']['idPli'])) {
+      $idPli = $COMPOSE['ft_pli']['idPli'];
+    }
+    else {
+      return false;
+    }
+
+    // Récupération de l'url
+    $url = $this->rc->config->get('francetransfert_api_url') . self::URL_STATUT_PLI;
+
+    // Gestion des paramètres
+    $params = [
+      'idPli' => $idPli,
+      'courrielExpediteur' => $from,
+    ];
+
+    $result = $this->_get_url($url, $params);
 
     // Content
     $content = json_decode($result['content']);
 
     // Récupération des codes/erreurs
     $this->_httpCode = $result['httpCode'];
-    $this->_errorMessage = isset($content->Message) ? $content->Message->texte : "";
 
-    // Gestion des résultats : 202, 201 = OK
-    if ($result['httpCode'] == 202) {
-      $content = json_decode($result['content']);
-      $request = $content->{'requêtesPossibles'}[0];
-      $COMPOSE['melanissimo_url_fichier'] = array(
-              'method' => $request->{'méthode'},
-              'protocole' => $request->protocole,
-              'url' => str_replace('../../', './', $request->url),
-              'contentType' => $request->contentType,
-      );
+    // Gestion des résultats : 201 = OK
+    if ($this->_httpCode == 201) {
+      // Actualiser l'action
+      $COMPOSE['ft_action'] = $content["statutPli"]["libelleStatutPli"];
+
+      //
+      //         "idPli": "9210fa47-366b-49bc-a50b-e561b72a0889",
+      //         "statutPli": {
+      //             "codeStatutPli": "023-APT",
+      //             "libelleStatutPli": "Analyse du pli terminée"
+      //         }
+      //
+      $COMPOSE['ft_pli'] = $content;
       return true;
     }
-    else if ($result['httpCode'] == 201) {
-      $content = json_decode($result['content']);
-      $request = $content->{'requêtesPossibles'}[0];
-      $COMPOSE['melanissimo_url_envoi'] = array(
-              'method' => $request->{'méthode'},
-              'protocole' => $request->protocole,
-              'url' => str_replace('../../', './', $request->url),
-              'contentType' => $request->contentType,
-      );
-      return true;
+    else if ($this->_httpCode == 403) {
+      $this->_errorMessage = 'Erreur d’authentification sur le service France Transfert (erreur interne)';
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::getStatus() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+      return false;
     }
-    else {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::curlFichierFranceTransfert() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
+    else { // En théorie on a httpcode = 422
+      // Gestion des erreurs
+      if (isset($content->erreurs)) {
+        $errors = [];
+        foreach ($content->erreurs as $erreur) {
+          $errors[] = "Erreur $erreur[numErreur] sur '$erreur[codeChamp]' : $erreur[libelleErreur]";
+        }
+        $this->_errorMessage = implode(' / ', $errors);
+      }
+      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::getStatus() Erreur [".$this->_httpCode."] : " . $this->_errorMessage);
       return false;
     }
   }
@@ -245,9 +455,10 @@ class ServiceWebFranceTransfert {
    * Permet de récupérer le contenu d'une page Web
    *
    * @param string $url
+   * @param array $params
    * @return array('content', 'httpCode')
    */
-  private function _get_url($url) {
+  private function _get_url($url, $params = null) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::_get_url($url)");
 
@@ -261,7 +472,7 @@ class ServiceWebFranceTransfert {
         CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_ssl_verifierpeer', 0),
         CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_ssl_verifierhost', 0),
         CURLOPT_HTTPHEADER      => [
-            'X-MineqProvenance: INTRANET',
+            self::API_KEY_HEADER . ': ' . $this->rc->config->get('francetransfert_api_key', ''),
         ],
     );
 
@@ -276,6 +487,15 @@ class ServiceWebFranceTransfert {
     $curl_proxy = $this->rc->config->get('curl_http_proxy', null);
     if (isset($curl_proxy)) {
       $options[CURLOPT_PROXY] = $curl_proxy;
+    }
+
+    // Gestion des paramètres
+    if (isset($params)) {
+      $_p = [];
+      foreach ($params as $key => $param) {
+        $_p[] = "$key=$param";
+      }
+      $url .= '?' . implode('&', $_p);
     }
 
     // open connection
@@ -308,9 +528,12 @@ class ServiceWebFranceTransfert {
    * @param string $url
    * @param array $params [Optionnel]
    * @param string $json [Optionnel]
+   * @param boolean $multipart
+   * @param string $boundary
+   * 
    * @return array('content', 'httpCode')
    */
-  private function _post_url($url, $params = null, $json = null) {
+  private function _post_url($url, $params = null, $json = null, $multipart = false, $boundary = null) {
     if (mel_logs::is(mel_logs::DEBUG))
       mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::_post_url($url)");
     
@@ -327,20 +550,32 @@ class ServiceWebFranceTransfert {
 
     // Options list
     $options = [
-        CURLOPT_RETURNTRANSFER  => true, // return web page
-        CURLOPT_HEADER          => false, // don't return headers
-        CURLOPT_USERAGENT       => $this->rc->config->get('curl_user_agent', ''), // name of client
-        CURLOPT_CONNECTTIMEOUT  => $this->rc->config->get('curl_connecttimeout', 120), // time-out on connect
-        CURLOPT_TIMEOUT         => $this->rc->config->get('curl_timeout', 1200), // time-out on response
-        CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_ssl_verifierpeer', 0),
-        CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_ssl_verifierhost', 0),
-        CURLOPT_POST            => true,
-        CURLOPT_POSTFIELDS      => $data_string,
-        CURLOPT_HTTPHEADER      => [
-                'Content-Type: application/json; charset=utf-8',
-                'Content-Length: ' . strlen($data_string),
-        ],
+      CURLOPT_RETURNTRANSFER  => true, // return web page
+      CURLOPT_HEADER          => false, // don't return headers
+      CURLOPT_USERAGENT       => $this->rc->config->get('curl_user_agent', ''), // name of client
+      CURLOPT_CONNECTTIMEOUT  => $this->rc->config->get('curl_connecttimeout', 120), // time-out on connect
+      CURLOPT_TIMEOUT         => $this->rc->config->get('curl_timeout', 1200), // time-out on response
+      CURLOPT_SSL_VERIFYPEER  => $this->rc->config->get('curl_ssl_verifierpeer', 0),
+      CURLOPT_SSL_VERIFYHOST  => $this->rc->config->get('curl_ssl_verifierhost', 0),
+      CURLOPT_POST            => true,
+      CURLOPT_POSTFIELDS      => $data_string,
     ];
+
+    // Gestion d'un envoi multipart
+    if ($multipart) {
+      $options[CURLOPT_HTTPHEADER] = [
+        'Content-Type: multipart/form-data; boundary=' . $boundary,
+        'Content-Length: ' . strlen($data_string),
+        self::API_KEY_HEADER . ': ' . $this->rc->config->get('francetransfert_api_key', ''),
+      ];
+    }
+    else {
+      $options[CURLOPT_HTTPHEADER] = [
+        'Content-Type: application/json; charset=utf-8',
+        'Content-Length: ' . strlen($data_string),
+        self::API_KEY_HEADER . ': ' . $this->rc->config->get('francetransfert_api_key', ''),
+      ];
+    }
 
     // CA File
     $curl_cafile = $this->rc->config->get('curl_cainfo', null);
@@ -377,91 +612,6 @@ class ServiceWebFranceTransfert {
         'httpCode' => $httpcode,
         'content' => $content
     ];
-  }
-
-  /**
-   * Permet d'envoyer un fichier binaire vers une page web
-   *
-   * @param string $url
-   * @param array $params
-   * @param string $contentType
-   * @return array('content', 'httpCode')
-   */
-  private function _put_url($url, $path, $contentType = 'application/octet-stream') {
-    if (mel_logs::is(mel_logs::DEBUG))
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "ServiceWebFranceTransfert::_put_url($url)");
-
-    // Ouvre le pointeur vers le fichier
-    $fp = fopen($path, 'r');
-
-    // Options list
-    $options = [
-        CURLOPT_RETURNTRANSFER      => true, // return web page
-        CURLOPT_HEADER              => false, // don't return headers
-        CURLOPT_USERAGENT           => $this->rc->config->get('curl_user_agent', ''), // name of client
-        CURLOPT_CONNECTTIMEOUT      => $this->rc->config->get('curl_connecttimeout', 120), // time-out on connect
-        CURLOPT_TIMEOUT             => $this->rc->config->get('curl_timeout', 1200), // time-out on response
-        CURLOPT_SSL_VERIFYPEER      => $this->rc->config->get('curl_ssl_verifierpeer', 0),
-        CURLOPT_SSL_VERIFYHOST      => $this->rc->config->get('curl_ssl_verifierhost', 0),
-        CURLOPT_CUSTOMREQUEST       => "PUT",
-        CURLOPT_UPLOAD              => 1,
-        CURLOPT_HTTPHEADER          => [
-            'Content-Type: ' . $contentType,
-        ],
-        CURLOPT_INFILE              => $fp,
-        CURLOPT_BUFFERSIZE          => 128,
-        CURLOPT_INFILESIZE_LARGE => filesize($path),
-    ];
-
-    // CA File
-    $curl_cafile = $this->rc->config->get('curl_cainfo', null);
-    if (isset($curl_cafile)) {
-      $options[CURLOPT_CAINFO] = $curl_cafile;
-      $options[CURLOPT_CAPATH] = $curl_cafile;
-    }
-
-    // HTTP Proxy
-    $curl_proxy = $this->rc->config->get('curl_http_proxy', null);
-    if (isset($curl_proxy)) {
-      $options[CURLOPT_PROXY] = $curl_proxy;
-    }
-
-    // open connection
-    $ch = curl_init($url);
-    // Set the options
-    curl_setopt_array($ch, $options);
-    // Execute the request and get the content
-    $content = curl_exec($ch);
-
-    // Get error
-    if ($content === false) {
-      mel_logs::get_instance()->log(mel_logs::ERROR, "ServiceWebFranceTransfert::_put_url() Error " . curl_errno($ch) . " : " . curl_error($ch));
-    }
-
-    // Get the HTTP Code
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    // Close connection
-    curl_close($ch);
-
-    // Return the content
-    return [
-        'httpCode' => $httpcode,
-        'content' => $content
-    ];
-  }
-
-  /**
-   * Génère l'url melanissimo en fonction de l'url passé en paramètre
-   * @param string $request_uri
-   * @return string
-   */
-  private function _melanissimo_url() {
-    $melanissimo_url = $this->rc->config->get('url_service_melanissimo', '');
-    $arg_list = func_get_args();
-    foreach ($arg_list as $request_uri) {
-      $melanissimo_url .= substr($request_uri, 1);
-    }
-    return $melanissimo_url;
   }
 
   /**

@@ -1,31 +1,31 @@
-#use_melanissimo_dialog .dialog_title,
-#send_melanissimo_dialog .dialog_title {
+#use_francetransfert_dialog .dialog_title,
+#send_francetransfert_dialog .dialog_title {
 	background-color: #cce1a2;
 	color: #478d4f;
 	font-size: 2em;
 	padding: 15px;
 }
 
-#use_melanissimo_dialog .dialog_text,
-#send_melanissimo_dialog .dialog_text {
+#use_francetransfert_dialog .dialog_text,
+#send_francetransfert_dialog .dialog_text {
   margin-top: 10px;
   font-weight: bold;
 }
-#send_melanissimo_dialog .dialog_text {
+#send_francetransfert_dialog .dialog_text {
 	position: relative;
   top: 23px;
   left: 40px;
 }
 
-#use_melanissimo_dialog .dialog_select {
+#use_francetransfert_dialog .dialog_select {
   margin-top: 10px;
 }
 
-#send_melanissimo_dialog .current_action {
+#send_francetransfert_dialog .current_action {
   font-size: 90%;
 }
 
-#send_melanissimo_dialog .uil-rolling-css {
+#send_francetransfert_dialog .uil-rolling-css {
   background-image: url("images/rolling.gif");
   height: 30px;
   width: 30px;

@@ -117,6 +117,15 @@
                     rendez-vous à été défini à <span id="appointment_duration"></span> min par l'organisateur </span>
                 </div>
               </div>
+              <div id="place_fields" class="form-groupd mb-3" style="display: none;">
+                <div class="row">
+                  <label for="event-time" class="mb-3">Lieu du rendez-vous</label>
+                  <div class="col-12">
+                    <select name="event_place" id="place_select" class="form-control input-mel">
+                    </select>
+                  </div>
+                </div>
+              </div>
               <div class="form-group">
                 <label id="event-reason-label" for="event-reason" class="span-mel t1 mb-3" style="display: none;">Motif
                   du rendez-vous</label>
@@ -176,7 +185,8 @@
               </div>
               <div class="form-group mb-3" id="phone_field" style="display: none;">
                 <label for="user-phone" class="mb-2">Téléphone <span class="text-danger">*</span></label>
-                <input type="text" class="form-control input-mel" name="phone" id="user-phone" placeholder="Téléphone" />
+                <input type="text" class="form-control input-mel" name="phone" id="user-phone"
+                  placeholder="Téléphone" />
               </div>
               <div class="form-group">
                 <label for="user-email" class="mb-2">Email <span class="text-danger">*</span></label>
@@ -262,6 +272,22 @@
         <div class="toast-body">
           <div id="loader" class="lds-dual-ring"></div>
           Enregistrement en cours
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+          aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="failToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true"
+      style="background-color: #e05757; color: white;">
+      <div class="d-flex">
+        <div class="toast-body">
+          <span style="font-size: 1.3rem; margin-right: 10px;">
+            <i class="bi bi-exclamation-circle"></i>
+          </span>
+          Echec de l'enregistrement
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
           aria-label="Close"></button>

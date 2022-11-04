@@ -3454,28 +3454,40 @@ function rcube_calendar_ui(settings) {
 
       appointment.custom_reason = form.find('#custom_reason').prop('checked');
 
-      select_place = form.find('#place_select').val();
+      select_place = form.find('#place').find('input:checkbox');
 
-      if (select_place == "phone") {
-        form.find('#phone_fields').find('input').each((index, input) => {
+      let place = [];
+      select_place.each((index, input) => {
+        if ($(input).prop('checked')) {
+          let id = input.id;
+          switch (id) {
+            case 'address':
+              place.push({ "type": id, value: form.find('#address_input').val(), text: form.find('#adress_text').text() })
+              break;
+            case 'phone':
+              form.find('#phone_fields').find('input').each((index, input) => {
+                if ($(input).prop('checked')) {
+                  if (input.id == "organizer_call") {
+                    place.push({ "type": input.id, value: true, text: form.find('#phone_text').text() })
+                  }
+                  if (input.id == "attendee_call") {
+                    place.push({ "type": input.id, value: form.find('#organizer_phone_number').val(), text: form.find('#phone_text').text() })
+                  }
+                }
 
-          if (input.value == "on") {
-            if ($(input).prop('checked')) {
-              appointment.place = { "type": input.id };
-              return;
-            }
-            else {
-              return;
-            }
-          } else if($(input).prop('required')) {
-            appointment.place = { "type": input.id, "value": input.value };
+              })
+              break;
+            case 'webconf':
+              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text() })
+              break;
+
+            default:
+              break;
           }
-        })
-      } else {
-        let input = form.find('#' + select_place);
-        appointment.place = { "type": input.attr('id'), "value": input.val() };
-      }
+        }
+      });
 
+      appointment.place = place;
       me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
       rcmail.http_post('calendar', { action: "appointment", c: appointment });
       // dialog.dialog("close");

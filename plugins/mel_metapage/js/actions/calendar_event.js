@@ -496,30 +496,9 @@ function remove_reason(new_id) {
   $('.ui-dialog #row' + new_id).remove()
 }
 
-function place_select_trigger() {
-  let option = $('.ui-dialog #place_select').val();
-  switch (option) {
-    case "address":
-      $('.ui-dialog #place_option_label').text('Adresse :');
-      $('.ui-dialog #phone_fields').hide();
-      $('.ui-dialog #webconf_fields').hide();
-      $('.ui-dialog #private_fields').show();
-      break;
-    case "phone":
-      $('.ui-dialog #place_option_label').text('');
-      $('.ui-dialog #phone_fields').show();
-      $('.ui-dialog #webconf_fields').hide();
-      $('.ui-dialog #private_fields').hide();
-      break;
-    case "webconf":
-      $('.ui-dialog #place_option_label').text('Nom du salon :');
-      $('.ui-dialog #phone_fields').hide();
-      $('.ui-dialog #webconf_fields').show();
-      $('.ui-dialog #private_fields').hide();
-      break;
-    default:
-      break;
-  }
+function toggle_fields(field)
+{
+  $(`.ui-dialog #${field}_fields`).toggle()
 }
 
 function show_phone_field(show) {

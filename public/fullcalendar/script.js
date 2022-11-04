@@ -5,6 +5,7 @@ let owner_name = window.atob(params.get('_name'));
 let response = null;
 let calendar = null;
 let event_not_loaded = true;
+moment.locale('fr');
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -266,49 +267,6 @@ function custom_input_trigger() {
   }
 }
 
-function event_form_submit(e) {
-  e.preventDefault();
-  $("#eventModal").modal('hide');
-  $("#userModal").modal('show');
-}
-
-function user_form_submit(e) {
-  e.preventDefault();
-  let event = {};
-  event.user = {};
-  event.time_start = $('#event-time-start').val();
-  event.time_end = $('#event-time-end').val();
-  event.object = $('#event-object').val();
-  event.description = $('#event-description').val();
-  event.location = response.place.type == "organizer_call" ? "Numéro du participant : " + $('#user-phone').val() : response.place.value;
-  event.user.name = $('#user-name').val();
-  event.user.firstname = $('#user-firstname').val();
-  event.user.email = $('#user-email').val();
-  $('#waitingToast').toast('show');
-
-
-  $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
-    .done(function () {
-      $('#waitingToast').toast('hide');
-      display_confirm_modal(event)
-    });
-}
-
-function display_confirm_modal(event) {
-  $('.modal').modal('hide');
-  $("#confirmModal").modal('show');
-  document.getElementById('organizer').textContent = owner_name[0];
-
-  if (event.object && event.object != "custom") {
-    document.getElementById('motif').textContent = event.object;
-  }
-  else {
-    $('#motif_row').hide();
-  }
-  moment.locale('fr');
-  document.getElementById('date').textContent = moment(event.time_start).format('HH:mm') + ' - ' + moment(event.time_end).format('HH:mm') + ', ' + moment(event.time_start).format('dddd D MMMM YYYY');
-
-}
 
 function generateTimeGap(response) {
   calendar.getEvents().forEach((value) => {
@@ -374,37 +332,103 @@ function generateAllowTimes(start = new Date()) {
 }
 
 function show_appointment_place(response) {
+  if (response.place) {
+    $('#place_fields').show();
+    response.place.forEach(element => {
+      $('#place_select').append(`<option value='${element.type}'>${element.text}</option>`)
+    });
+  }
+}
+
+function event_form_submit(e) {
+  e.preventDefault();
+  $("#eventModal").modal('hide');
+
   $('#phone_field').hide();
   $('#user-phone').prop('required', false);
 
-  switch (response.place.type) {
-    case "address":
-      $('#place_icon').append('<i class="bi bi-geo-alt"></i>');
-      $('#appointment_place').text(response.place.value);
-      $('#confirm_place_icon').append('<i class="bi bi-geo-alt"></i>');
-      $('#confirm_place').text(response.place.value);
-      break;
-    case "organizer_call":
-      $('#place_icon').append('<i class="bi bi-telephone"></i>');
-      $('#appointment_place').text("Appel téléphonique");
-      $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');
-      $('#confirm_place').text("Appel téléphonique");
-      $('#phone_field').show();
-      $('#user-phone').prop('required', true);
-      break;
-    case "organizer_phone_number":
-      $('#place_icon').append('<i class="bi bi-telephone"></i>');
-      $('#appointment_place').text("Appel téléphonique");
-      $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');
-      $('#confirm_place').text(response.place.value);
-      break;
-    case "webconf":
-      $('#place_icon').append('<i class="bi bi-camera-video"></i>');
-      $('#appointment_place').text("Informations sur la conférence en ligne fournies à la confirmation.");
-      $('#confirm_place_icon').append('<i class="bi bi-camera-video"></i>');
-      $('#confirm_place').text("Informations sur la conférence en ligne à suivre.");
-      break;
-    default:
-      break;
+  if ($("#place_select").val() == "organizer_call") {
+    $('#phone_field').show();
+    $('#user-phone').prop('required', true);
+  }
+
+  $("#userModal").modal('show');
+}
+
+function display_confirm_modal(event) {
+  $('.modal').modal('hide');
+  $("#confirmModal").modal('show');
+  document.getElementById('organizer').textContent = owner_name[0];
+
+  if (event.object && event.object != "custom") {
+    document.getElementById('motif').textContent = event.object;
+  }
+  else {
+    $('#motif_row').hide();
+  }
+  document.getElementById('date').textContent = moment(event.time_start).format('HH:mm') + ' - ' + moment(event.time_end).format('HH:mm') + ', ' + moment(event.time_start).format('dddd D MMMM YYYY');
+
+  if (response.place) {
+    const place = response.place.find(element => element.type == $('#place_select').val())
+    $('#confirm_place_icon').empty();
+    $('#confirm_place').text("");
+    switch (place.type) {
+      case "address":
+        $('#confirm_place_icon').append('<i class="bi bi-geo-alt"></i>');
+        $('#confirm_place').text(place.value);
+        break;
+      case "organizer_call":
+        $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');
+        $('#confirm_place').text("Appel téléphonique");
+        break;
+      case "attendee_call":
+        $('#confirm_place_icon').append('<i class="bi bi-telephone"></i>');
+        $('#confirm_place').text(place.value);
+        break;
+      case "webconf":
+        $('#confirm_place_icon').append('<i class="bi bi-camera-video"></i>');
+        $('#confirm_place').text("Informations sur la conférence en ligne à suivre.");
+        break;
+      default:
+        break;
+    }
   }
 }
+
+
+function user_form_submit(e) {
+  e.preventDefault();
+  let event = {};
+  event.user = {};
+  event.time_start = $('#event-time-start').val();
+  event.time_end = $('#event-time-end').val();
+  event.object = $('#event-object').val();
+  event.description = $('#event-description').val();
+  if (response.place) {
+    const place = response.place.find(element => element.type == $('#place_select').val());
+    if (place.type == "organizer_call") {
+      event.location = "Numéro du participant : " + $('#user-phone').val();
+    }
+    else if (place.type == "attendee_call") {
+      event.location = place.text;
+    }
+    else {
+      event.location = place.value;
+    }
+  }
+  event.user.name = $('#user-name').val();
+  event.user.firstname = $('#user-firstname').val();
+  event.user.email = $('#user-email').val();
+  $('#waitingToast').toast('show');
+
+
+  $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
+    .done(function () {
+      $('#waitingToast').toast('hide');
+      display_confirm_modal(event)
+    })
+    .fail(function() {
+      $('#failToast').toast('show');
+    });
+}
+

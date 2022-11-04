@@ -874,7 +874,7 @@ $(document).ready(async () => {
                 },
                 category:{
                     name:rcmail.gettext('by_category', plugin_text),
-                    array:[{value:"news", text:rcmail.gettext('headlines'), id:"mel-new-filter-4"}, /*{value:"defaults", text:"Sites par défauts", id:"mel-new-filter-5"},*/ {value:"custom", text:rcmail.gettext('your_personal'), id:"mel-new-filter-6"}]
+                    array:[{value:"news", text:rcmail.gettext('headlines', plugin_text), id:"mel-new-filter-4"}, /*{value:"defaults", text:"Sites par défauts", id:"mel-new-filter-5"},*/ {value:"custom", text:rcmail.gettext('your_personal', plugin_text), id:"mel-new-filter-6"}]
                 }
             }
 

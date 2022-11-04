@@ -116,6 +116,11 @@ html.layout-small .wsp-index{
     bottom: 0;
 }
 
+html.layout-phone .wsp-infos,
+html.layout-small .wsp-infos{
+    left: -95px;
+}
+
 .centered{
     text-align: center;
 }
@@ -1025,3 +1030,33 @@ html.dark-mode .click-master{
 .click-master:last-of-type{
     margin-bottom: 0;
 } 
+
+.task-workspace.action-action .joined .mel-button.plus.btn.btn-secondary{
+    position: absolute;
+    top: 45px;
+    right: 0px;  
+}
+
+html.layout-phone .task-workspace.action-workspace .responsiveTabList,
+html.layout-small .task-workspace.action-workspace .responsiveTabList {
+    flex-wrap: wrap!important;
+}
+
+html.layout-small .row.wsp-head,
+html.layout-phone .row.wsp-head{
+    margin: 0!important;
+}
+
+html.layout-phone .wsp-copy-button,
+html.layout-small .wsp-copy-button {
+    display: none;
+}
+
+html.layout-phone body.task-workspace separate,
+html.layout-small body.task-workspace separate
+{
+    margin-top: 25px;
+    margin-bottom: 50px;
+    margin-right: 0;
+    margin-left: 0;
+}

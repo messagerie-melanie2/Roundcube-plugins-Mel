@@ -99,6 +99,12 @@ button {
 #mulsah {
     .mulb();
 
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    
     body & {
         html &{
             span {
@@ -133,6 +139,20 @@ button {
 
 #mulba{
     .mulb();
+
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        
+        .add{
+            display: none;
+        }
+
+        .plus{
+            margin:0!important;
+        }
+    }
 }
 
 .hidden-link{
@@ -177,5 +197,15 @@ button {
         .multilink-sub-copy{
             color: black!important;
         }
+    }
+}
+
+.joinedtitle{
+    html@{layout-small} &{
+        display: flex;
+    }
+
+    html@{layout-phone} &{
+        &:extend(html.layout-small .joinedtitle);
     }
 }

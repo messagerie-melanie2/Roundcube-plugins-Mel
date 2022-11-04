@@ -123,3 +123,51 @@ html.dark-mode .headlines-twitter{
 	margin: 5px;
 }
 
+.news-bottom-button-modal-l{
+	position:absolute;
+	left:40px;
+}
+
+html.layout-phone .news-bottom-button-modal-l,
+html.layout-small .news-bottom-button-modal-l{
+	left:5px;
+	bottom: 5px;
+}
+
+.news-bottom-button-modal-r{
+	margin-right:40px;
+}
+
+html.layout-phone .news-bottom-button-modal-r,
+html.layout-small .news-bottom-button-modal-r{
+	margin-right:0px;
+	position:absolute;
+	right:5px;
+	bottom: 5px;
+}
+
+html.layout-phone .flux,
+html.layout-small .flux{
+	margin-top: 0px!important;
+}
+
+html.layout-phone .right,
+html.layout-small .right{
+	margin-top: 0px;
+}
+
+html.layout-phone .flux > div:first-of-type,
+html.layout-small .flux > div:first-of-type
+{
+	display: block!important;
+}
+
+html.layout-phone #news-button-filter,
+html.layout-small #news-button-filter,
+html.layout-phone #news-button-add,
+html.layout-small #news-button-add{
+	margin-top:0!important;
+	margin-bottom: 5px!important;
+	margin-left:0!important;
+	margin-right: 5px!important;
+}

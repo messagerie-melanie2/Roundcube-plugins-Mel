@@ -2403,9 +2403,21 @@ $(document).ready(() => {
             const tab_header_class = 'mel-responsive-tabheader';
             const tab_content = 'mel-responsive-tab-content';
 
-            if (!key && rcmail.env.task === 'bureau')
+            if (!key)
             {
-                const namespace = 'namespace-reponsive-tab-desk';
+                let namespace;
+                switch (rcmail.env.task) {
+                    case 'bureau':
+                        namespace = 'namespace-reponsive-tab-desk';
+                        break;
+                    case 'news':
+                        namespace = 'namespace-reponsive-tab-news';
+                        break;
+                
+                    default:
+                        break;
+                }
+
                 if ($(`.${namespace}`).length === 0)
                 {
                     $('.module_parent').each((i,e) => {
@@ -2430,6 +2442,7 @@ $(document).ready(() => {
                     case 'shortcut':
                         namespace = 'namespace-reponsive-tab-' + key;
                         break;
+                        
                 
                     default:
                         break;
@@ -2548,7 +2561,7 @@ $(document).ready(() => {
             //Gestion de l'onglet
             if (!item.isTabNameString() && item.$tab.find(item.$tabName).length > 0) //Si est à l'intérieur du corps
             {
-                tabName = item.$tabName.html();
+                tabName = item.$tabName[0].innerText;
                 item.$tabName.addClass(header_to_hide);
             }
             else tabName = item.$tabName; //Si c'est juste le nom

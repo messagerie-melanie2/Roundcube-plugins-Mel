@@ -582,7 +582,7 @@ html.dark-mode .wsp-block,
 html.dark-mode .ui-datepicker th,
 html.dark-mode body.task-calendar .ui-datepicker-inline .ui-datepicker-week-col,
 html.dark-mode .task-calendar #layout #layout-content > .header a.button,
-.task-calendar #layout > #layout-content > .header .header-title span
+html.dark-mode .task-calendar #layout > #layout-content > .header .header-title span
 {
     color: #c7dfff!important;
 }

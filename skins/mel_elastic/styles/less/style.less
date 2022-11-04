@@ -173,7 +173,30 @@ main {
             a{
                 &.button{
                     color: var(--secondary-text-color);
+
+                    .task-addressbook &,
+                    .task-tasks &,
+                    .task-settings &{
+                        --secondary-text-color: var(--main-text-color);
+                    }
                 }
+            }
+
+            .header-title{
+                color: var(--secondary-text-color);
+
+                .task-addressbook &,
+                .task-tasks &,
+                .task-settings &{
+                    --secondary-text-color: var(--main-text-color);
+                }
+            }
+        }
+
+        html@{layout-phone} &,
+        html@{layout-small} &{
+            &.only-content{
+                padding: 0 15px;
             }
         }
     }
@@ -1371,6 +1394,14 @@ body {
 
     &:focus{
         box-shadow: none;
+    }
+
+    html@{layout-small} &{
+        display: none;
+    }
+
+    html@{layout-phone} &{
+        &:extend(html.layout-small #datepicker-onoff);
     }
 
 }
@@ -3238,6 +3269,13 @@ html .menu a.selection::before {
     font-weight: normal!important;
 }
 
+.icon-mel-notes::before
+{
+    font-family: var(--main-icon-font)!important;
+    content: "\e923"!important;
+    font-weight: normal!important;
+}
+
 .icon-mel-parameters-invert::before{
     font-family: var(--main-icon-font)!important;
     content: "\e925"!important;
@@ -3296,15 +3334,22 @@ html .menu a.selection::before {
 
 /** LINES **/
 
-._multiple-lines()
+._multiple-lines(@l:3)
 {
     display: -webkit-box;
 	-webkit-box-orient: vertical;
 	white-space: normal;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: @l;
 }
 
-.two-lines,
+.one-line {
+    ._multiple-lines(1);
+}
+
+.two-lines {
+    ._multiple-lines(2);
+}
+
 .three-lines{
     ._multiple-lines();
 }
@@ -3758,5 +3803,54 @@ a.rcmContactAddress {
         button{
             flex: 1 0 auto;
         }
+    }
+}
+
+.modal-dialog {
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        padding: 0!important;
+    }
+}
+
+.shortcut-notes {
+    .crossed-eye,
+    .eye{
+        html@{layout-phone} &,
+        html@{layout-small} &{
+            display: none;
+        }
+    }
+}
+
+.webconf-minimize{
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        display: none;
+    }
+}
+
+.wsp-toolbar {
+    &.webconf-toolbar{
+        html@{layout-phone} &,
+        html@{layout-small} &{
+            display: flex!important;
+        }
+    }
+}
+
+.webconf-frame{
+    #mm-ariane{
+        html@{layout-phone} &,
+        html@{layout-small} &{
+            display: none;
+        }
+    }
+}
+
+.toolbar-popup {
+    html@{layout-phone} &,
+    html@{layout-small} &{
+        right: unset;
     }
 }

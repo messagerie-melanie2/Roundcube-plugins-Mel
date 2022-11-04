@@ -11,8 +11,11 @@ function my_day(symbol = null)
 		current_day(mel_metapage.Storage.tasks, mel_metapage.Storage.last_task_update, mel_metapage.EventListeners.tasks_updated.get, setup_tasks);
 
 	try {
-		setup_notes();	
-		rcmail.addEventListener('notes.apps.updated', setup_notes);
+		if (rcmail.env.notes_enabled)
+		{
+			setup_notes();	
+			rcmail.addEventListener('notes.apps.updated', setup_notes);
+		}
 	} catch (error) {
 		
 	}
@@ -191,13 +194,16 @@ function add_task_to_completed(id)
 
 function setup_notes()
 {
+	let $myday_title = $('#myday h2').first();
     //Si il n'y a pas de note, il y en a une par défaut
-    if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0)
+    if (Enumerable.from(rcmail.env.mel_metapages_notes).count() === 0 || !!rcmail.env.mel_metapages_notes['create'])
     {
 		$('#tab-for-notes-contents').css('display', 'none');
 		$('#tab-for-agenda-content').click();
+		$myday_title.html(rcmail.gettext('my_day', 'mel_portal'));
     }
 	else {
+		$myday_title.html(rcmail.gettext('my_day_and_notes', 'mel_portal'));
 		let $notes = $('.tabs-contents #notes').css('padding', '15px').css('height', 'calc(100% - 60px)').html('');
 		$('#tab-for-notes-contents').css('display', '');
 
@@ -210,6 +216,13 @@ function setup_notes()
 			if(!!current){
 				setup_notes.current = current;
 				$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
+
+				const prev = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault();
+				if (!prev) {
+					$action_left.addClass('disabled').attr('disabled', 'disabled');
+				}
+
+				$action_right.removeClass('disabled').removeAttr('disabled', 'disabled');
 			}
 			else $(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
 		}).addClass('btn-mel-invisible btn-arrow btn btn-secondary').appendTo($actions);
@@ -220,6 +233,13 @@ function setup_notes()
 			if(!!current){
 				setup_notes.current = current;
 				$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
+
+				const next = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault();
+				if (!next) {
+					$action_right.addClass('disabled').attr('disabled', 'disabled');
+				}
+
+				$action_left.removeClass('disabled').removeAttr('disabled', 'disabled');
 			}
 			else $(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
 		}).addClass('btn-mel-invisible btn-arrow btn btn-secondary').appendTo($actions);
@@ -227,17 +247,27 @@ function setup_notes()
 		let $main_notes = $('<div id="main-notes-block" style="height:100%"></div>').css('margin', '0 5px').appendTo($notes);
 
 		let the_one = false;
-		let already = !!setup_notes.current;
+		let already = !!setup_notes.current && !!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => x.value.uid === setup_notes.current.value.uid).firstOrDefault();
 		for (const iterator of Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.order)) {
 			if (!iterator.value.uid) continue;
 
-			$(`<div style="height:100%;${the_one || already && setup_notes.current.value.uid !== iterator.value.uid ? 'display:none;' : ''}" id="notes-block-${iterator.value.uid.toLowerCase()}"></div>`).append(iterator.value.text).appendTo($main_notes);
+			$(`<div style="height:100%;${the_one || already && setup_notes.current.value.uid !== iterator.value.uid ? 'display:none;' : ''}" id="notes-block-${iterator.value.uid.toLowerCase()}"></div>`).append(iterator.value.text.replaceAll('\n', '<br/>')).appendTo($main_notes);
 			$(`<textarea class="form-control input-mel" style="height:100%; width:100%; display:none;background-color:var(--inputs-bg-color)" id="notes-area-${iterator.value.uid.toLowerCase()}"></textarea>`).append(iterator.value.text).appendTo($main_notes);
 
 			if (!the_one && !already)  {
 				setup_notes.current = iterator;
 				the_one = true;
 			}
+		}
+
+		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault())
+		{
+			$action_right.addClass('disabled').attr('disabled', 'disabled');
+		}
+
+		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault())
+		{
+			$action_left.addClass('disabled').attr('disabled', 'disabled');
 		}
 
 		let $bottom = $('<div style="text-align: right;"></div>').appendTo($notes);
@@ -260,6 +290,12 @@ function setup_notes()
 				$area.css('display', 'none');
 				$action_edit.find('.icon-mel-check').addClass('icon-mel-pencil').removeClass('icon-mel-check');
 				setup_notes.edit_mode = false;
+				top.rcmail.triggerEvent('notes.master.edit', {
+					text:$area.val(),
+					id:current.value.uid
+				}).then(() => {
+					setup_notes();
+				});
 			}
 
 		}).appendTo($bottom);

@@ -1821,8 +1821,8 @@ class mel_metapage extends rcube_plugin
             $args['blocks']['main_nav']['name'] = 'Applications par défauts';
 
             foreach ($main as $key => $value) {
-                $key = $value->get_key();
-                $value = $value->get_value();
+                //$key = $value->get_key();
+                //$value = $value->get_value();
                 $check = new html_checkbox(['name' => $key, 'id' => $key, 'value' => 1]);
                 $args['blocks']['main_nav']['options'][$key] = [
                     'title'   => html::label($key, rcube::Q($this->gettext($key, 'mel_metapage'))),

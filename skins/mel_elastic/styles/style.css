@@ -184,6 +184,23 @@ main {
 #layout #layout-content > .header a.button {
   color: var(--secondary-text-color);
 }
+.task-addressbook #layout #layout-content > .header a.button,
+.task-tasks #layout #layout-content > .header a.button,
+.task-settings #layout #layout-content > .header a.button {
+  --secondary-text-color: var(--main-text-color);
+}
+#layout #layout-content > .header .header-title {
+  color: var(--secondary-text-color);
+}
+.task-addressbook #layout #layout-content > .header .header-title,
+.task-tasks #layout #layout-content > .header .header-title,
+.task-settings #layout #layout-content > .header .header-title {
+  --secondary-text-color: var(--main-text-color);
+}
+html.layout-phone #layout #layout-content.only-content,
+html.layout-small #layout #layout-content.only-content {
+  padding: 0 15px;
+}
 .layout-hidden {
   display: none!important;
 }
@@ -840,6 +857,10 @@ body.task-calendar .popup.ui-dialog-content #showcontacts {
 }
 #datepicker-onoff:focus {
   box-shadow: none;
+}
+html.layout-small #datepicker-onoff,
+html.layout-phone #datepicker-onoff {
+  display: none;
 }
 #datepicker {
   transition: all 0.1s ease-in;
@@ -2073,6 +2094,11 @@ html .menu a.selection::before {
   content: "\e930" !important;
   font-weight: normal!important;
 }
+.icon-mel-notes::before {
+  font-family: var(--main-icon-font) !important;
+  content: "\e923" !important;
+  font-weight: normal!important;
+}
 .icon-mel-parameters-invert::before {
   font-family: var(--main-icon-font) !important;
   content: "\e925" !important;
@@ -2115,7 +2141,18 @@ html .menu a.selection::before {
   font-weight: normal !important;
 }
 /** LINES **/
-.two-lines,
+.one-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  -webkit-line-clamp: 1;
+}
+.two-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  -webkit-line-clamp: 2;
+}
 .three-lines {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -2428,4 +2465,30 @@ html.layout-small .hide-on-small {
 }
 .tabs.mel-ui-tab-system button {
   flex: 1 0 auto;
+}
+html.layout-phone .modal-dialog,
+html.layout-small .modal-dialog {
+  padding: 0!important;
+}
+html.layout-phone .shortcut-notes .crossed-eye,
+html.layout-phone .shortcut-notes .eye,
+html.layout-small .shortcut-notes .crossed-eye,
+html.layout-small .shortcut-notes .eye {
+  display: none;
+}
+html.layout-phone .webconf-minimize,
+html.layout-small .webconf-minimize {
+  display: none;
+}
+html.layout-phone .wsp-toolbar.webconf-toolbar,
+html.layout-small .wsp-toolbar.webconf-toolbar {
+  display: flex!important;
+}
+html.layout-phone .webconf-frame #mm-ariane,
+html.layout-small .webconf-frame #mm-ariane {
+  display: none;
+}
+html.layout-phone .toolbar-popup,
+html.layout-small .toolbar-popup {
+  right: unset;
 }

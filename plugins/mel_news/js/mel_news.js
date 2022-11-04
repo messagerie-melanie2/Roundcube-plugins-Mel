@@ -545,7 +545,7 @@ $(document).ready(async () => {
 
                     //Modification du pied de la modale
                     this.modal.footer.querry.html("");
-                    $(`<button class="mel-button white" style="position:absolute;left:40px">${rcmail.gettext('back')} <span class="plus icon-mel-undo"></span></button>`).click(() => {
+                    $(`<button class="mel-button white news-bottom-button-modal-l">${rcmail.gettext('back')} <span class="plus icon-mel-undo"></span></button>`).click(() => {
                         this.createOrEditPublish(args.id.replace("news-", ''));
                         let select = this.modal.modal.find("#mel-publish-service");
                         if (select.find(`option[value="${service_datas.value}"]`).length === 0)
@@ -553,7 +553,7 @@ $(document).ready(async () => {
                             select.append(`<option value="${service_datas.value}">${service_datas.name}</option>`).val(service_datas.value);
                         }
                     }).appendTo(this.modal.footer.querry);
-                    $(`<button class="mel-button" style="margin-right:40px">${rcmail.gettext('confirmation', plugin_text)} <span class="plus icon-mel-plus"></span></button>`).click(() => {
+                    $(`<button class="mel-button news-bottom-button-modal-r">${rcmail.gettext('confirmation', plugin_text)} <span class="plus icon-mel-plus"></span></button>`).click(() => {
                     
                         if (args.trueId !== "" && args.trueId !== null && args.trueId !== undefined)
                             news.id = args.trueId;
@@ -735,14 +735,14 @@ $(document).ready(async () => {
 
             this.modal.footer.querry.html("");
 
-            $(`<button class="mel-button white" style="position:absolute;left:40px">${(isEdit ? rcmail.gettext('cancel') : rcmail.gettext('back') )} <span class="plus icon-mel-undo"></span></button>`).click(() => {
+            $(`<button class="mel-button white .news-bottom-button-modal-l">${(isEdit ? rcmail.gettext('cancel') : rcmail.gettext('back') )} <span class="plus icon-mel-undo"></span></button>`).click(() => {
                 if (!isEdit)
                     this.createOrEdit(datas.id);
                 else
                     this.modal.close();
             }).appendTo(this.modal.footer.querry);
 
-            $(`<button class="mel-button" style="margin-right:40px">${(!isEdit ? rcmail.gettext('add', plugin_text) : rcmail.gettext('edit', plugin_text))} <span class="plus icon-mel-${(datas.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
+            $(`<button class="mel-button news-bottom-button-modal-r">${(!isEdit ? rcmail.gettext('add', plugin_text) : rcmail.gettext('edit', plugin_text))} <span class="plus icon-mel-${(datas.id === "" ? "plus" : "pencil")}"></span></button>`).click(() => {
 
                 let url;//= (datas.type === intranet ? $("#news-intranet-select") : $("#news-twitter-input")).val();
                 
@@ -874,7 +874,7 @@ $(document).ready(async () => {
                 },
                 category:{
                     name:rcmail.gettext('by_category', plugin_text),
-                    array:[{value:"news", text:rcmail.gettext('headlines'), id:"mel-new-filter-4"}, /*{value:"defaults", text:"Sites par défauts", id:"mel-new-filter-5"},*/ {value:"custom", text:rcmail.gettext('your_personal'), id:"mel-new-filter-6"}]
+                    array:[{value:"news", text:rcmail.gettext('headlines', plugin_text), id:"mel-new-filter-4"}, /*{value:"defaults", text:"Sites par défauts", id:"mel-new-filter-5"},*/ {value:"custom", text:rcmail.gettext('your_personal', plugin_text), id:"mel-new-filter-6"}]
                 }
             }
 
@@ -897,7 +897,7 @@ $(document).ready(async () => {
             this.modal.editBody(html);
 
             this.modal.footer.querry.html("");
-            $(`<button class="mel-button" style="margin-right:40px">${rcmail.gettext('Filtrer', plugin_text)} <span class="plus icofont-filter"></span></button>`).click(async () => {
+            $(`<button class="mel-button news-bottom-button-modal-r">${rcmail.gettext('Filtrer', plugin_text)} <span class="plus icofont-filter"></span></button>`).click(async () => {
                (await this.updateFilter()).modal.close();
             }).appendTo(this.modal.footer.querry);
 

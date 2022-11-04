@@ -4,7 +4,7 @@
 <h1 class="voice"><roundcube:label name="mel_news.my_news" /></h1>
 
 <!-- contact details frame -->
-<div id="layout-content" class="wsp-content wsp-index" style="overflow: auto;" role="main">
+<div id="layout-content" class="wsp-content wsp-index only-content" style="overflow: auto;" role="main">
 	<!-- <h2 id="aria-label-toolbar" class="voice"><roundcube:label name="arialabeltoolbar" /></h2>-->
 	<div class="wsp-header" style="background-color: white;height: auto;color: inherit;display:block;text-align: center;" >
         <div class=row>
@@ -19,7 +19,8 @@
 	<!-- <h2 id="aria-label-contact-frame" class="voice"><roundcube:label name="contactproperties" /></h2> -->
     <img class="logo-mel startup" name="logo" src="plugins/mel_portal/skins/elastic/images/logoportal.svg" data-src-small="0" id="logo" alt="Logo" />
 	<div class="body" style="padding-bottom: 15px;">
-        <div class="news">
+        <div id="contents"></div>
+        <div class="news module_parent">
             <div style="display: flex;     justify-content: space-between;">
                 <h2 class="title-wsp bold" style="display: inline-block;">
                     <roundcube:label name="mel_news.news" />
@@ -33,8 +34,8 @@
                 <roundcube:object name="dnnews" />
             </div>
         </div>
-        <div class="flux" style="margin-top:30px">
-            <div style="display: flex;
+        <div class="flux module_parent" style="margin-top:30px">
+            <div class="" style="display: flex;
             justify-content: space-between;
             flex-wrap: wrap;">
                 <div class="left">

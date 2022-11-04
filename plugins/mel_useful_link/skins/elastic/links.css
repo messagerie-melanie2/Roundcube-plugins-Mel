@@ -55,6 +55,11 @@ button.btn.icon-mel-pencil {
   margin-top: 0;
   float: right;
 }
+html.layout-phone #mulsah,
+html.layout-small #mulsah {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
 html body #mulsah span::before {
   color: white!important;
 }
@@ -69,6 +74,19 @@ html body #mulsah span::before {
 #mulba {
   margin-top: 0;
   float: right;
+}
+html.layout-phone #mulba,
+html.layout-small #mulba {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+html.layout-phone #mulba .add,
+html.layout-small #mulba .add {
+  display: none;
+}
+html.layout-phone #mulba .plus,
+html.layout-small #mulba .plus {
+  margin: 0!important;
 }
 .hidden-link.tak,
 .tools .hidden-link {
@@ -100,4 +118,8 @@ html body #mulsah span::before {
 }
 .multilink-sub:hover .multilink-sub-copy {
   color: black!important;
+}
+html.layout-small .joinedtitle,
+html.layout-phone .joinedtitle {
+  display: flex;
 }

@@ -389,3 +389,13 @@ li.object[aria-selected="true"]
 .filtergroup > .row > div > select{
 	border-radius: 60px;
 }
+
+.from-annuaire {
+	height: unset!important;
+	display: none!important;
+}
+
+html.layout-small .from-annuaire,
+html.layout-phone .from-annuaire{
+	display: block!important;;
+}

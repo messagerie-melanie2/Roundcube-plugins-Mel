@@ -139,6 +139,8 @@ class mel_workspace extends rcube_plugin
         $this->register_action('toggle_nav_color', array($this, 'toggle_nav_color'));
         $this->register_action('get_wekan_admin_boards', [$this, 'get_wekan_admin_boards']);
         $this->register_action('update_wekan_board', [$this, 'update_wekan_board']);
+        $this->register_action('add_survey', [$this, 'add_survey']);
+        $this->register_action('delete_survey', [$this, 'delete_survey']);
         //stockage_user_updated
         //toggle_nav_color
     }
@@ -1154,7 +1156,8 @@ class mel_workspace extends rcube_plugin
             }
 
             //Mes documents
-            if ($services[self::CLOUD] || $services[self::LINKS])
+            $have_surveys = $this->have_surveys($this->currentWorkspace);
+            if ($services[self::CLOUD] || $services[self::LINKS] || true)
             {
                 $cloudNotActive = $services[self::CLOUD] && !mel_helper::stockage_active();
                 $header_component = [];
@@ -1162,14 +1165,16 @@ class mel_workspace extends rcube_plugin
                 if ($services[self::CLOUD])
                     $header_component[] = html::div(["id" => "ressources-cloud", "class" => "tab-ressources mel-tab mel-tabheader ¤¤¤"], "Mes documents");
 
-                    if ($services[self::LINKS])
+                if ($services[self::LINKS])
                     $header_component[] = html::div(["id" => "ressources-links", "class" => "tab-ressources mel-tab mel-tabheader ¤¤¤"], "Liens utiles");
+
+                $header_component[] = html::div(["id" => "ressources-surveys", "class" => "tab-ressources mel-tab mel-tabheader ¤¤¤"], "Sondages");
 
                 $tmp = "";
                 $count = count($header_component);
 
                 for ($i=0; $i < $count; ++$i) { 
-                    if ($i === ($cloudNotActive ? 1 : 0))
+                    if ($i === ($have_surveys ? $count - 1 : ($cloudNotActive ? 1 : 0)))
                         $tmp .= str_replace("¤¤¤", "active".($i === $count-1 ? " last" : ""), $header_component[$i]);
                     else
                         $tmp .= str_replace("¤¤¤", ($i === $count-1 ? " last" : ""), $header_component[$i]);
@@ -1214,8 +1219,17 @@ class mel_workspace extends rcube_plugin
                     "], 
                             '<span>Voir tout</span><span class="icon-mel-external plus"></span>'
                         ).
-                        html::tag("button", ["onclick"  => "", "id" => "button-create-new-ulink", "class" => "mel-button btn btn-secondary"], 
+                        html::tag("button", ["id" => "button-create-new-ulink", "class" => "mel-button btn btn-secondary"], 
                             '<span>Créer</span><span class="icon-mel-plus plus"></span>'
+                        )
+                    );
+                }
+
+                if ($have_surveys)
+                {
+                    $before_body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
+                        html::tag("button", ["id" => "button-create-new-survey", "class" => "mel-button btn btn-secondary"], 
+                            '<span>Lier un sondage</span><span class="icon-mel-plus plus"></span>'
                         )
                     );
                 }
@@ -1224,7 +1238,7 @@ class mel_workspace extends rcube_plugin
                 $count = count($before_body_component);
 
                 for ($i=0; $i < $count; ++$i) { 
-                    if ($i === ($cloudNotActive ? 1 : 0))
+                    if ($i === ($have_surveys ? $count - 1 : ($cloudNotActive ? 1 : 0)))
                         $tmp .= str_replace("¤¤¤", "", $before_body_component[$i]);
                     else
                         $tmp .= str_replace("¤¤¤", "display:none", $before_body_component[$i]);
@@ -1277,11 +1291,41 @@ class mel_workspace extends rcube_plugin
                      );
                 }
 
+                if ($have_surveys)
+                {
+                    $html = '';
+                    $first = false;
+                    foreach (mel_helper::Enumerable($this->get_object($this->currentWorkspace, self::SURVEY))->orderBy(function ($k, $v) {
+                        return $v->create_date;
+                    }, true) as $key => $value) {
+                        $html .= html::div(['class' => 'click-master'], 
+                            html::div(['class' => 'btn-group', 'style' => 'width:100%'], 
+                                html::tag('button', ['id' => 'sondage-'.$value->id, 'class' => (!$first ? 'selected ' : '').'mel-focus text-header no-style full-width btn btn-secondary click-sondage click-tab'], html::tag('span', [], $value->title).html::tag('span', ['class' => (!$first ? 'icon-mel-chevron-down' : 'icon-mel-chevron-right').' float-right']))
+                                .html::tag('button', ['class' => 'mel-button btn btn-secondary no-button-margin', 'onclick' => 'survey_copy(this)', 'data-slink' => $value->link], html::tag('span', ['class' => 'icon-mel-copy']))
+                                .($this->can_delete_survey($this->currentWorkspace, $value) ? html::tag('button', ['class' => 'mel-button btn btn-secondary no-button-margin', 'onclick' => 'survey_edit(this)', 'data-sid' => $value->id, 'data-stitle' => $value->title, 'data-slink' => $value->link], html::tag('span', ['class' => 'icon-mel-pencil']))
+                                .html::tag('button', ['class' => 'mel-button btn btn-danger no-button-margin', 'style' => 'border-bottom-right-radius:0;border-top-right-radius:5px;', 'onclick' => 'survey_delete(this)', 'data-sid' => $value->id], html::tag('span', ['class' => 'icon-mel-trash'])) : '')
+                            ).
+                            html::div(['class' => (!$first ? '' : 'hidden').' click-body click-sondage sondage-'.$value->id], 
+                                html::tag('iframe', ['src' => $value->link.'&_skin=default_mobile&_embeded=1', 'style' => 'width:100%;height:200px'])
+                            )
+                        );
+
+                        if (!$first) $first = true;
+                    }
+
+                    $body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content bc", "style" => "¤¤¤"], $html);
+                }
+                else {
+                    $body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content bc", "style" => "¤¤¤"],
+                        "<center>Créez un nouveau sondage (<a href=\"https://pegase.din.developpement-durable.gouv.fr/?_p=edit&_a=new&_skin=mel_elastic\">ici</a>) puis liez le avec cet espace. (<a id=\"link-a-survey\" onclick=\"rcmail.command('workspace.survey.create')\" href=\"#\">ici</a>)</center>"
+                     ); 
+                }
+
                 $tmp = "";
                 $count = count($body_component);
 
                 for ($i=0; $i < $count; ++$i) { 
-                    if ($i === ($cloudNotActive ? 1 : 0))
+                    if ($i === ($have_surveys ? $count - 1 : ($cloudNotActive ? 1 : 0)))
                         $tmp .= str_replace("¤¤¤", "", $body_component[$i]);
                     else
                         $tmp .= str_replace("¤¤¤", "display:none", $body_component[$i]);
@@ -4048,6 +4092,91 @@ class mel_workspace extends rcube_plugin
         }
         
         $calendar->save();     
+    }
+
+    const SURVEY = 'survey';
+    public function add_survey()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST); //Id de l'espace
+        $wsp = self::get_workspace($uid); //Récupération de l'espace
+        $link = rcube_utils::get_input_value("_zelda", rcube_utils::INPUT_POST); //Récupération du lien du sondage
+        $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_POST);
+        $survey = $this->get_object($wsp, self::SURVEY) ?? [];
+
+        $sid = rcube_utils::get_input_value("_sid", rcube_utils::INPUT_POST) ?? $this->generate_survey_id($wsp, $survey);
+
+        $datas = [
+            'id' => $sid,
+            'title' => $title,
+            'create_date' => (new DateTime())->getTimestamp(),//date('Y-m-d h:i:s a', time()),
+            'link' => $link,
+            'creator' => driver_mel::gi()->getUser()->uid
+        ];
+
+        if (is_array($survey)) $survey[$sid] = $datas;
+        else $survey->$sid = $datas;
+
+        $this->save_object($wsp, self::SURVEY, $survey);
+        $wsp->save();
+
+        $tmp = $this;
+        echo json_encode(mel_helper::Enumerable($survey)->fusion('can_delete', function ($k, $v) use($tmp, $wsp) {
+            return $tmp->can_delete_survey($wsp, $v);
+        })->toArray());
+        exit;
+
+    }
+
+    public function delete_survey()
+    {
+        $uid = rcube_utils::get_input_value("_uid", rcube_utils::INPUT_POST);
+        $wsp = self::get_workspace($uid); 
+        $survey_id = rcube_utils::get_input_value("_sid", rcube_utils::INPUT_POST);
+        $survey_list = $this->get_object($wsp, self::SURVEY) ?? [];
+
+        $survey = is_array($survey_list) ? $survey_list[$survey_id] : $survey_list->$survey_id;
+        $isset = isset($survey);
+        $can = $this->can_delete_survey($wsp, $survey);
+        if ($isset && $can) {
+            if (is_array($survey_list)) unset($survey_list[$survey_id]);
+            else unset($survey_list->$survey_id);
+            $this->save_object($wsp, self::SURVEY, $survey_list);
+            $wsp->save();
+
+            $tmp = $this;
+            echo json_encode(mel_helper::Enumerable($survey_list)->fusion('can_delete', function ($k, $v) use($tmp, $wsp) {
+                return $tmp->can_delete_survey($wsp, $v);
+            })->toArray());
+        }
+        else echo 'denied';
+
+        exit;
+    }
+
+    public function have_surveys($wsp)
+    {
+        $obj = $this->get_object($wsp, self::SURVEY);
+        return $obj !== null && (is_array($obj) ? count($obj) > 0 :  count(get_object_vars($obj)) > 0); //count(get_object_vars($test)) > 0;
+    }
+
+    private function can_delete_survey($wsp, $survey)
+    {
+        $user_id = driver_mel::gi()->getUser()->uid;
+
+        return $user_id === $survey->creator || self::is_admin($wsp, $user_id);
+    }
+
+    private function generate_survey_id($wsp, $survey_list = null)
+    {
+        if (!isset($survey_list)) $survey_list = $this->get_object($wsp, self::SURVEY) ?? [];
+
+        $id = 0;
+        foreach (mel_helper::Enumerable($survey_list)->orderBy(function ($k, $v) {return intval($v->id);}) as $survey) {
+            if (strval($survey->id) !== strval($id)) break;
+            ++$id;
+        }
+
+        return $id;
     }
 
     public static function notify($workspace, $title, $content, $action = null, $include_current = false)

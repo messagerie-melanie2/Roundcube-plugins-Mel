@@ -1,4 +1,4 @@
-//compress:true
+//compress:false
 @import './main.less';
 
 ._states()
@@ -290,6 +290,16 @@
                         background-color :var(--calendar-datepicker-background-color)!important;
                         &-header{
                             background-color :var(--calendar-datepicker-header-background-color)!important;
+
+                            html@{layout-phone} &,
+                            html@{layout-small} &{
+                                --calendar-datepicker-header-background-color: var(--invisible);
+                            }
+                        }
+
+                        html@{layout-phone} &,
+                        html@{layout-small} &{
+                            --calendar-datepicker-background-color: var(--invisible);
                         }
                     }
                 }

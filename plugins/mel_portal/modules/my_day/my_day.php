@@ -43,7 +43,7 @@ class My_day extends Module
      */
     function generate_html()
     {
-        $have_notes = $this->have_notes();
+        $notes_is_enabled = $this->notes_is_enabled();
         $array = [];
         
         //tab agenda
@@ -66,7 +66,7 @@ class My_day extends Module
             ));
         $array[] = $tasks;
 
-        if ($have_notes) {
+        if ($notes_is_enabled) {
             $notes = [
                 "name" => $this->text('notes'), 
                 'id' => 'notes',
@@ -77,7 +77,7 @@ class My_day extends Module
             $array[] = $notes;
         }
 
-        return $this->html_square_tab($array, $this->text($have_notes ? "my_day_and_notes" : "my_day"), "myday");
+        return $this->html_square_tab($array, $this->text($notes_is_enabled ? "my_day_and_notes" : "my_day"), "myday");
     }
 
     /**
@@ -87,6 +87,7 @@ class My_day extends Module
     {
         $this->rc->output->set_env('ev_calendar_url', $this->config[$this::CALENDAR_EVENT_URL]);
         $this->rc->output->set_env('ev_remove_calendar_url', $this->config[$this::CALENDAR_REMOVE_EVENT_URL]);
+        $this->rc->output->set_env('notes_enabled', $this->notes_is_enabled());
     }
 
     /**

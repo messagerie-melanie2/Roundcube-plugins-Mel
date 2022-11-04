@@ -1,4 +1,4 @@
-//compress:true
+//compress:false
 @import 'colors.less';
 
 html.theme-classique:root{
@@ -358,24 +358,24 @@ html
         
         #layout-content{
              .header{
-                // color:var(--main-text-color)!important;
-        
+                a{
+                    border-top:solid thin var(--invisible)!important;
+                    --secondary-text-color: var(--theme-base-text-color);
+
+                    &:hover{
+                        background-color: #edebe9!important;
+                        color:var(--main-text-color)!important;
+                        border-top-color: var(--tierciary-bckg-color)!important;
+                    }
+                }  
+
+                .header-title{
+                    --secondary-text-color: var(--theme-base-text-color);
+                }
                 
-                    a{
-                        
-                            // color:var(--main-text-color);
-                            border-top:solid thin var(--invisible)!important;
-        
-                            &:hover{
-                                background-color: #edebe9!important;
-                                color:var(--main-text-color)!important;
-                                border-top-color: var(--tierciary-bckg-color)!important;
-                            }
-                        
-                    }   
-                
+
+                    
             }
-        
         }
         
         .task-mail{
@@ -629,6 +629,11 @@ html
                 border: solid thin var(--main-text-color)!important;
                 background-color: var(--default-background)!important;
             }
+
+            .small-toolbar-calendar,
+            #mel-button-small-search{
+                .toolbar_button();
+            }
         
         }
 
@@ -643,6 +648,16 @@ html
             .searchbar {
                 border: solid thin var(--main-text-color)!important;
                 background-color: var(--default-background)!important;
+            }
+        }
+
+        .task-settings{
+            #layout-list{
+                .header {
+                    a{
+                        --secondary-text-color:var(--main-text-color);
+                    }
+                }
             }
         }
 
@@ -680,7 +695,24 @@ html
     }
 }
 
+.toolbar_button()
+{
+    --secondary-text-color: var(--theme-base-text-color);
+    --tierciary-bckg-color: var(--invisible);
+    --mel-button-border-color-alt: var(--invisible);
+    border-top: solid thin var(--invisible);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
 
+    &:hover{
+        --tierciary-bckg-color: #edebe9;
+        --main-bckg-color: #edebe9;
+        --mel-button-border-color-alt: var(--theme-base-text-color);
+        --mel-button-border-color: var(--theme-base-text-color);
+    }
+}
 
 html.theme-classique body.task-calendar .ui-datepicker-inline .ui-datepicker-activerange{
     background-color:#edebe9!important;
@@ -708,5 +740,21 @@ html.theme-classique .task-mail.action-compose #layout-sidebar .scroller a.delet
     &:hover{
         background-color:#edebe9!important;
         border-bottom-color: var(--theme-base-text-color);
+    }
+}
+
+#mulsah {
+    html@{layout-phone}.theme-classique &,
+    html@{layout-small}.theme-classique &{
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+}
+
+#mulba {
+    html@{layout-phone}.theme-classique &,
+    html@{layout-small}.theme-classique &{
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
     }
 }

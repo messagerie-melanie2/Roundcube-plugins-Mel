@@ -496,8 +496,7 @@ function remove_reason(new_id) {
   $('.ui-dialog #row' + new_id).remove()
 }
 
-function toggle_fields(field)
-{
+function toggle_fields(field) {
   $(`.ui-dialog #${field}_fields`).toggle()
 }
 
@@ -510,6 +509,40 @@ function show_phone_field(show) {
   else {
     $('.ui-dialog #phone_number_field').hide();
     $('.ui-dialog #organizer_phone_number').prop('required', false);
+  }
+}
+
+function generateWebconf() {
+  $(".ui-dialog #webconf_input").removeClass("is-invalid");
+  $(".ui-dialog #webconf_name_error").hide();
+  $('.ui-dialog #webconf_input').val(mel_metapage.Functions.generateWebconfRoomName());
+}
+
+function checkWebconfName() {
+  let querry = $(".ui-dialog #webconf_input");
+  querry.val(querry.val().toUpperCase());
+  let val = querry.val();
+
+  if (val.includes(rcmail.env["webconf.base_url"].toUpperCase())) {
+    val = val.split("/");
+    val = val[val.length - 1];
+    querry.val(val.toUpperCase());
+    //querry.val()
+  }
+
+  const text = val.length < 10 ? rcmail.gettext('webconf_saloon_name_error_small', 'mel_metapage') : /^[0-9a-zA-Z]+$/.test(val) ? rcmail.gettext('webconf_saloon_incorrect_format_number', 'mel_metapage') : rcmail.gettext('webconf_saloon_incorrect_format', 'mel_metapage');
+  $(".ui-dialog #webconf_name_error").text(text);
+
+  if (val.length < 10 || Enumerable.from(val).where(x => /\d/.test(x)).count() < 3 || !/^[0-9a-zA-Z]+$/.test(val)) {
+    $(".ui-dialog #webconf_input").addClass("is-invalid");
+    $(".ui-dialog #webconf_name_error").show();
+  }
+  else {
+    // const url = mel_metapage.Functions.url('webconf', '', {_key:val});
+    // mel_metapage.Functions.title(url.replace(`${rcmail.env.mel_metapage_const.key}=${rcmail.env.mel_metapage_const.value}`, ""));
+
+    $(".ui-dialog #webconf_input").removeClass("is-invalid");
+    $(".ui-dialog #webconf_name_error").hide();
   }
 }
 

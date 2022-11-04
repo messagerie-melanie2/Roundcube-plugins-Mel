@@ -3478,7 +3478,9 @@ function rcube_calendar_ui(settings) {
               })
               break;
             case 'webconf':
-              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text() })
+              let webconf_url = window.location.origin + window.location.pathname + `public/webconf?_key=${form.find('#webconf_input').val()}`;
+              console.log(webconf_url);
+              place.push({ "type": id, value: webconf_url, text: form.find('#webconf_text').text() })
               break;
 
             default:

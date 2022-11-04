@@ -527,7 +527,7 @@
 
     <div id="activate_appointment" class="mt-1 mb-4">
       <label class="switch mr-1" onclick="rcmail.command('toggle-appointment')"">
-        <input type="checkbox" id="check_appointment">
+        <input type=" checkbox" id="check_appointment">
         <span class="slider round"></span>
       </label>
       <roundcube:label name='calendar.activateappointment' />
@@ -605,7 +605,7 @@
                           <span class="slider round">
                           </span>
                         </label>
-                        <span id="adress_text">Réunion en privé</span>                        
+                        <span id="adress_text">Réunion en privé</span>
                       </div>
                     </div>
                     <div id="address_fields" class="row" style="display: none;">
@@ -621,22 +621,22 @@
                           <span class="slider round">
                           </span>
                         </label>
-                        <span id="phone_text">Appel téléphonique</span>                       
+                        <span id="phone_text">Appel téléphonique</span>
                       </div>
                     </div>
                     <div class="row" id="phone_fields" style="display: none;">
                       <div class="col-1"></div>
                       <div class="col-11">
                         <div class="form-check mb-2">
-                          <input class="form-check-input" type="radio" name="callRadio" id="organizer_call" onchange="show_phone_field(false)"
-                            value="switch" checked>
+                          <input class="form-check-input" type="radio" name="callRadio" id="organizer_call"
+                            onchange="show_phone_field(false)" value="switch" checked>
                           <label class="form-check-label" for="organizer_call">
                             J'appellerais mon invité
                           </label>
                         </div>
                         <div class="form-check mb-2">
-                          <input class="form-check-input" type="radio" name="callRadio" id="attendee_call" onchange="show_phone_field(true)"
-                            value="switch">
+                          <input class="form-check-input" type="radio" name="callRadio" id="attendee_call"
+                            onchange="show_phone_field(true)" value="switch">
                           <label class="form-check-label" for="attendee_call">
                             Mon invité doit m'appeler
                           </label>
@@ -650,69 +650,32 @@
                     <div class="row">
                       <div class="col-12">
                         <label class="switch mr-1 mb-4 mt-3">
-                          <input type="checkbox" name="place" id="webconf"  onchange="toggle_fields('webconf')">
+                          <input type="checkbox" name="place" id="webconf" onchange="toggle_fields('webconf')">
                           <span class="slider round">
                           </span>
                         </label>
-                        <span id="webconf_text">Web-conférence</span>                        
+                        <span id="webconf_text">Web-conférence</span>
                       </div>
                     </div>
                     <div id="webconf_fields" class="row" style="display: none;">
                       <div class="col-1"></div>
                       <div class="col-11">
-                        <input type="text" id="webconf_input" class="form-control" placeholder="Titre de la web-conférence">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <button type="button" class="form-control" id="basic-addon1"
+                              title="Générer un nom de salon aléatoire" onclick="generateWebconf()"><span
+                                class="icofont-refresh"></span></button>
+                          </div>
+                          <input type="text" id="webconf_input" class="form-control" placeholder="Nom du salon"
+                            aria-describedby="basic-addon1" onkeyup="checkWebconfName()">
+                            <br>
+                          </div>
+                          <span id="webconf_name_error" class="text-danger"></span>
                       </div>
                     </div>
-
-
-                    <!-- <select id="place_select" name="place_select" class="form-control"
-                      onchange="place_select_trigger()">
-                      <option value="address">Réunion en privée</option>
-                      <option value="phone">Appel téléphonique</option>
-                      <option value="webconf">Web-conférence</option>
-                    </select> -->
                   </div>
                 </div>
               </div>
-              <!-- <div id="place_option">
-                <div class="form-group row">
-                  <label class="col-3 col-form-label">
-                    <span id="place_option_label">Adresse</span>
-                  </label>
-                  <div class="col-9">
-                    <div id="place_option_fields">
-                      <div id="private_fields">
-                        <input type="text" id="address" class="form-control">
-                      </div>
-                      <div id="phone_fields" style="display: none;">
-                        <label class="switch mr-1 mb-4 mt-3">
-                          <input type="radio" name="phone" id="organizer_call" checked
-                            onchange="show_phone_field(false)">
-                          <span class="slider round">
-                          </span>
-                        </label>
-                        J'appellerais mon invité <span class="icon-mel-help ml-4" style="cursor: help;"
-                          title="L'invité devra donner son numéro avant de planifier un rendez-vous."></span>
-                        <br>
-                        <label class="switch mr-1 mb-4">
-                          <input type="radio" name="phone" id="attendee_call" onchange="show_phone_field(true)">
-                          <span class="slider round"></span>
-                        </label>
-                        Mon invité doit m'appeler <span class="icon-mel-help ml-3" style="cursor: help;"
-                          title="Nous donnerons votre numéro une fois la réservation planifiée"></span>
-                        <br>
-                        <div id="phone_number_field" style="display:none;">
-                          <input type="text" class="form-control" id="organizer_phone_number"
-                            placeholder="Numéro de téléphone">
-                        </div>
-                      </div>
-                      <div id="webconf_fields" style="display: none;">
-                        <input type="text" id="webconf" class="form-control">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
         </div>
@@ -1030,10 +993,6 @@
           </div>
         </div>
       </div>
-
-
-
-
     </span>
   </form>
   <button type="button" id="button_fullcalendarurl" class="btn btn-secondary"

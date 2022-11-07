@@ -559,7 +559,7 @@
         <div class="tab-pane active" id="event" role="tabpanel" aria-labelledby="event-tab">
           <div id="first_url" class="mt-3">
             <div id="block-first" class="block mb-5">
-              <label class="switch mr-1 mb-4" onclick="toggle_user_select_time()">
+              <label class="switch mr-1 mb-4" onchange="toggle_user_select_time()">
                 <input type="checkbox" id="check_user_select_time">
                 <span class="slider round"></span>
               </label>
@@ -586,8 +586,8 @@
                   </div>
                   <div class="col-4 pl-0">
                     <select id="custom_time_select" name="custom_time_select" class="form-control">
-                      <option>min</option>
-                      <option>h</option>
+                      <option value="min">min</option>
+                      <option value="h">h</option>
                     </select>
                   </div>
                 </div>

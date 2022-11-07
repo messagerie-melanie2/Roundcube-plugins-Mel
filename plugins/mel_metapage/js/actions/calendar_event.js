@@ -357,12 +357,7 @@ function collapse_url_block(id) {
 }
 
 function toggle_user_select_time() {
-  if ($('.ui-dialog #check_user_select_time').prop('checked')) {
-    $('.ui-dialog #time').hide();
-  }
-  else {
-    $('.ui-dialog #time').show();
-  }
+  $('.ui-dialog #time').toggle();
 }
 
 function toggle_custom_time() {

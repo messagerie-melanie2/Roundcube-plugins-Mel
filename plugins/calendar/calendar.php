@@ -1065,12 +1065,9 @@ $("#rcmfd_new_category").keypress(function(event) {
         break;
 
       case "appointment":
-        $pref = driver_mel::gi()->userprefs([driver_mel::gi()->getUser()]);
-        $pref->scope = \LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-        $pref->name = "appointment_properties";
-        $pref->value = json_encode($cal);
+        $ret = driver_mel::gi()->getUser()->saveCalendarPreference('appointment_properties',json_encode($cal));
         $this->rc->output->show_message('successfullysaved', 'confirmation');
-        return $pref->save();
+        return $ret;
     }
     if ($success) {
       $this->rc->output->show_message('successfullysaved', 'confirmation');

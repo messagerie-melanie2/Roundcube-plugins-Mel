@@ -1045,44 +1045,42 @@ $("#rcmfd_new_category").keypress(function(event) {
                 $this->rc->output->show_message('autocompletemore', 'notice');
             }
 
-            $reqid = rcube_utils::get_input_value('_reqid', rcube_utils::INPUT_GPC);
-            $this->rc->output->command('multi_thread_http_response', $results, $reqid);
-            return;
+        $reqid = rcube_utils::get_input_value('_reqid', rcube_utils::INPUT_GPC);
+        $this->rc->output->command('multi_thread_http_response', $results, $reqid);
+        return;
+      
+      case "toggle_appointment":
+        if ($cal['checked'] == 'true') {
+          $result = $this->driver->add_appointment_public_key($cal['id'], base64_encode(uniqid($cal['id'] . 'appointmentkeyhash')));
+        } else {
+          $result = $this->driver->delete_appointment_public_key($cal['id']);
+        }
+        if ($result) {
+          $this->rc->output->command('plugin.appointment_show_url', array('id' => $cal['id'], 'url' => $this->get_appointment_url($cal['id'])));
+          return;
+        } else {
+          $this->rc->output->show_message($this->gettext('errorsaving'), 'error');
+          return;
+        }
+        break;
 
-		case "toggle_appointment":
-			if ($cal['checked'] == 'true') {
-				$result = $this->driver->add_appointment_public_key($cal['id'], base64_encode(uniqid($cal['id'] . 'appointmentkeyhash')));
-			} else {
-				$result = $this->driver->delete_appointment_public_key($cal['id']);
-			}
-			if ($result) {
-				$this->rc->output->command('plugin.appointment_show_url', array('id' => $cal['id'], 'url' => $this->get_appointment_url($cal['id'])));
-				return;
-			} else {
-				$this->rc->output->show_message($this->gettext('errorsaving'), 'error');
-				return;
-			}
-		break;
-	
-		case "appointment":
-			$pref = driver_mel::gi()->userprefs([driver_mel::gi()->getUser()]);
-			$pref->scope = \LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
-			$pref->name = "appointment_properties";
-			$pref->value = json_encode($cal);
-		return $pref->save();
-			
-        }
-
-        if ($success) {
-            $this->rc->output->show_message('successfullysaved', 'confirmation');
-        }
-        else {
-            $error_msg = $this->gettext('errorsaving');
-            if (!empty($this->driver->last_error)) {
-                $error_msg .= ': ' . $this->driver->last_error;
-            }
-            $this->rc->output->show_message($error_msg, 'error');
-        }
+      case "appointment":
+        $pref = driver_mel::gi()->userprefs([driver_mel::gi()->getUser()]);
+        $pref->scope = \LibMelanie\Config\ConfigMelanie::CALENDAR_PREF_SCOPE;
+        $pref->name = "appointment_properties";
+        $pref->value = json_encode($cal);
+        $this->rc->output->show_message('successfullysaved', 'confirmation');
+        return $pref->save();
+    }
+    if ($success) {
+      $this->rc->output->show_message('successfullysaved', 'confirmation');
+    } else {
+      $error_msg = $this->gettext('errorsaving');
+      if (!empty($this->driver->last_error)) {
+        $error_msg .= ': ' . $this->driver->last_error;
+      }
+      $this->rc->output->show_message($error_msg, 'error');
+    }
 
         $this->rc->output->command('plugin.unlock_saving');
 

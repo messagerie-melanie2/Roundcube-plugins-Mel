@@ -3505,9 +3505,9 @@ function rcube_calendar_ui(settings) {
       });
 
       appointment.place = place;
-      me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
-      rcmail.http_post('calendar', { action: "appointment", c: appointment });
-      // dialog.dialog("close");
+
+      var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
+      rcmail.http_post('calendar', { action: "appointment", c: appointment }, lock);
     };
 
     rcmail.simple_dialog(dialog, rcmail.gettext('configureappointment', 'calendar'), save_func, {

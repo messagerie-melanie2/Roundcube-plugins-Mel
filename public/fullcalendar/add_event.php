@@ -97,7 +97,7 @@ if (isset($user)) {
   $event->title = $_POST['object'] == "" ? "Rendez-vous" . displayUserFullName() : $_POST['object'] . displayUserFullName();
   $event->start = new DateTime($_POST['time_start']);
   $event->end = new DateTime($_POST['time_end']);
-  $event->description = $_POST['description'];
+  $event->description = $_POST['description'] . '- Rendez-vous ajouté depuis votre calendrier externe';
   $event->location = $_POST['location'];
 
   $_attendees = array();

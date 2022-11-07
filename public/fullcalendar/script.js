@@ -425,9 +425,10 @@ function user_form_submit(e) {
   $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
     .done(function () {
       $('#waitingToast').toast('hide');
+      $('#successToast').toast('show');
       display_confirm_modal(event)
     })
-    .fail(function() {
+    .fail(function () {
       $('#failToast').toast('show');
     });
 }

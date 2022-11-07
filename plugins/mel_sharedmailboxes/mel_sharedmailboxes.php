@@ -161,10 +161,10 @@ class mel_sharedmailboxes extends rcube_plugin {
                 // Récupération de la liste des balp de l'utilisateur courant
                 if ($list_tasks[$this->rc->task][$this->rc->action]) {
                     // Boites gestionnaires ?
-                    $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsSharedGestionnaire();
+                    $_objects = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsSharedGestionnaire());
                 }
                 else {
-                    $_objects = [driver_mel::gi()->getUser()] + driver_mel::gi()->getUser()->getObjectsShared();
+                    $_objects = array_merge([driver_mel::gi()->getUser()], driver_mel::gi()->getUser()->getObjectsShared());
                 }
                 // Affichage du nom de l'utilisateur et du menu déroulant de balp
                 if ($this->rc->task == 'settings') {

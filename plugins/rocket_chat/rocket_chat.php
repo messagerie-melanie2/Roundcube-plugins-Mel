@@ -419,6 +419,16 @@ EOF;
       else {
         $userId = $this->rc->config->get('rocket_chat_user_id', null);
       }
+      // Problème en conf sur le userId
+      if (is_array($userId)) {
+        if (isset($userId['id'])) {
+          $userId = $userId['id'];
+          $this->setUserId($userId);
+        }
+        else {
+          $userId = null;
+        }
+      }
       return $userId;
     }
     /**

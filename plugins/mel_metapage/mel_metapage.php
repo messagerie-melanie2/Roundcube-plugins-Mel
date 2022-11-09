@@ -2349,8 +2349,9 @@ class mel_metapage extends rcube_plugin
         }
 
         $is_bloqued = mel_helper::Enumerable($config)->any(function ($k, $v) use($message) {
+            $message = htmlspecialchars_decode($message);
             if (strpos($message, $v) === false)
-            {
+            {            
                 if (strpos($v, 'http') !== false) $v = str_replace('http', 'https', $v);
                 else $v = str_replace('https', 'http', $v);
 

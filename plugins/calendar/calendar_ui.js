@@ -2639,41 +2639,43 @@ function rcube_calendar_ui(settings) {
   // post the given event data to server
   var update_event = function (action, data, add) {
     me.saving_lock = rcmail.set_busy(true, 'calendar.savingdata');
-    rcmail.http_post('calendar/event', $.extend({ action: action, e: data }, (add || {})));
 
-    // render event temporarily into the calendar
-    if ((data.start && data.end) || data.id) {
-      var tmp, event = data.id ? $.extend(fc.fullCalendar('clientEvents', data.id)[0], data) : data;
+    // PAMELA - Evenement perdu dans le cas de déconnexion du serveur
+    rcmail.http_post('calendar/event', $.extend({ action: action, e: data }, (add || {})), me.saving_lock);
 
-      if (data.start)
-        event.start = data.start;
-      if (data.end)
-        event.end = data.end;
-      if (data.allDay !== undefined)
-        event.allDay = !!data.allDay; // must be boolean for fullcalendar
+    // // render event temporarily into the calendar
+    // if ((data.start && data.end) || data.id) {
+    //   var tmp, event = data.id ? $.extend(fc.fullCalendar('clientEvents', data.id)[0], data) : data;
 
-      // For fullCalendar all-day event's end date must be exclusive
-      if (event.allDay && data.end && (tmp = moment(data.end)) && tmp.format('Hms') !== '000') {
-        event.end = moment().year(tmp.year()).month(tmp.month()).date(tmp.date()).hour(0).minute(0).second(0).add(1, 'days');
-      }
+    //   if (data.start)
+    //     event.start = data.start;
+    //   if (data.end)
+    //     event.end = data.end;
+    //   if (data.allDay !== undefined)
+    //     event.allDay = !!data.allDay; // must be boolean for fullcalendar
 
-      event.editable = false;
-      event.temp = true;
-      event.className = ['fc-event-temp'];
+    //   // For fullCalendar all-day event's end date must be exclusive
+    //   if (event.allDay && data.end && (tmp = moment(data.end)) && tmp.format('Hms') !== '000') {
+    //     event.end = moment().year(tmp.year()).month(tmp.month()).date(tmp.date()).hour(0).minute(0).second(0).add(1, 'days');
+    //   }
 
-      fc.fullCalendar(data.id ? 'updateEvent' : 'renderEvent', event);
+    //   event.editable = false;
+    //   event.temp = true;
+    //   event.className = ['fc-event-temp'];
 
-      // mark all recurring instances as temp
-      if (event.recurrence || event.recurrence_id) {
-        var base_id = event.recurrence_id ? event.recurrence_id : String(event.id).replace(/-\d+(T\d{6})?$/, '');
-        $.each(fc.fullCalendar('clientEvents', function (e) { return e.id == base_id || e.recurrence_id == base_id; }), function (i, ev) {
-          ev.temp = true;
-          ev.editable = false;
-          event.className.push('fc-event-temp');
-          fc.fullCalendar('updateEvent', ev);
-        });
-      }
-    }
+    //   fc.fullCalendar(data.id ? 'updateEvent' : 'renderEvent', event);
+
+    //   // mark all recurring instances as temp
+    //   if (event.recurrence || event.recurrence_id) {
+    //     var base_id = event.recurrence_id ? event.recurrence_id : String(event.id).replace(/-\d+(T\d{6})?$/, '');
+    //     $.each(fc.fullCalendar('clientEvents', function (e) { return e.id == base_id || e.recurrence_id == base_id; }), function (i, ev) {
+    //       ev.temp = true;
+    //       ev.editable = false;
+    //       event.className.push('fc-event-temp');
+    //       fc.fullCalendar('updateEvent', ev);
+    //     });
+    //   }
+    // }
   };
 
   // mouse-click handler to check if the show dialog is still open and prevent default action

@@ -948,7 +948,6 @@
         }    
 
         async create_survey(survey = null){
-            debugger;
             this.create_survey.survey = survey;
             const edit_mode = !!this.create_survey.survey;
             let globalModal;

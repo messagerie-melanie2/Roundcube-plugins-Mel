@@ -38,6 +38,7 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function removeAtKey($key) : IMel_Enumerable;
     function removeTwins($callback) : IMel_Enumerable;
     function orderBy($callback, $descending = false) : IMel_Enumerable;
+    function max($selector = null);
     function any($selector = null) : bool;
     function all($selector) : bool;
     function contains($item) : bool;
@@ -166,6 +167,23 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
 
     public function empty() : IMel_Enumerable {
         return new Mel_Enumerable([]);
+    }
+
+    public function max($selector = null)
+    {
+        $iterable = isset($selector) ? $this->select($selector) : $this;
+
+        $last = null;
+        foreach ($iterable as $value) {
+            if ($last === null) {
+                $last = $value;
+            }
+            else {
+                if ($last < $value) $last = $value;
+            }
+        }
+
+        return $last;
     }
 
     public function first($selector = null) {

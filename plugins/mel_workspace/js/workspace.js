@@ -1086,7 +1086,7 @@ function survey_copy(e)
 
 function connect_sondage()
 {
-    if (!!top.rcmail.env.sondage_loaded) return $.ajax();
+    //if (!!top.rcmail.env.sondage_loaded) return $.ajax();
 
     return $.ajax({ // fonction permettant de faire de l'ajax
         type: "POST", // methode de transmission des données au fichier php

@@ -87,10 +87,10 @@ class mel_sondage extends rcube_plugin
         }
 
         // Si tache = sondage, on charge l'onglet
-        if ($rcmail->task == 'sondage') {
+        if ($rcmail->task == 'sondage' || ($rcmail->task == 'workspace' && $rcmail->action === 'workspace')) {
             $this->register_action('index', array($this, 'action'));
             $rcmail->output->set_env('refresh_interval', 0);
-            $this->login_sondage();
+            $this->login_sondage(!($rcmail->task == 'workspace' && $rcmail->action === 'workspace'));
         } elseif ($rcmail->task == 'mail'
                     || $rcmail->task == 'addressbook'
                     || $rcmail->task == 'calendar'
@@ -166,7 +166,7 @@ class mel_sondage extends rcube_plugin
     /**
      * Méthode pour se logger dans l'application de sondage
      */
-    private function login_sondage() {
+    private function login_sondage($include_script = true) {
     	$rcmail = rcmail::get_instance();
     	if (mel::is_internal()) {
     	    $sondage_url = $rcmail->config->get('sondage_url');
@@ -187,7 +187,8 @@ class mel_sondage extends rcube_plugin
     	  $skin = $rcmail->config->get("skin");
     		$rcmail->output->set_env('sondage_gotourl', $sondage_url . "?_skin=$skin");
     	}
+
     	// Appel le script de connexion du sondage
-    	$this->include_script('sondage.js');
+    	if ($include_script) $this->include_script('sondage.js');
     }
 }

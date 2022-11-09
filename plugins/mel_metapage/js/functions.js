@@ -1880,7 +1880,7 @@ function m_mp_DecodeUrl() {
     if (rcmail.env.current_frame === undefined || rcmail.env.current_frame == "default" || rcmail.env.current_frame_name === "discussion")
         url = window.location.href;
     else
-        url = $("#" + rcmail.env.current_frame)[0].contentDocument.location.href;
+        url = $("#" + rcmail.env.current_frame)[0]?.contentDocument?.location?.href ??  $("#" + rcmail.env.current_frame)[0]?.contentWindow?.location?.href ?? window.location.href;
 
     let text = "";
     let hasTask = false;

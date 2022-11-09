@@ -4114,7 +4114,7 @@ class mel_workspace extends rcube_plugin
                             'title' => $this->gettext("mel_workspace.click_for_open"),
                             'command' => "event.click"
                         ]
-            ], true);
+            ]);
             $sid = $this->generate_survey_id($wsp, $survey);
         }
         else {
@@ -4125,7 +4125,7 @@ class mel_workspace extends rcube_plugin
                             'title' => $this->gettext("mel_workspace.click_for_open"),
                             'command' => "event.click"
                         ]
-            ], true);
+            ]);
         }
 
         $datas = [
@@ -4161,12 +4161,12 @@ class mel_workspace extends rcube_plugin
         $isset = isset($survey);
         $can = $this->can_delete_survey($wsp, $survey);
         if ($isset && $can) {
+            self::notify($wsp, 'Le sondage "'.$survey->title.'" vient d\'être supprimer de l\'espace "'.$wsp->title.'" !', '', null);
+
             if (is_array($survey_list)) unset($survey_list[$survey_id]);
             else unset($survey_list->$survey_id);
             $this->save_object($wsp, self::SURVEY, $survey_list);
             $wsp->save();
-
-            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être supprimer de l\'espace "'.$wsp->title.'" !', '', null, true);
 
             $tmp = $this;
             echo json_encode(mel_helper::Enumerable($survey_list)->fusion('can_delete', function ($k, $v) use($tmp, $wsp) {

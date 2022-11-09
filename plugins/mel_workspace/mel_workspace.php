@@ -4103,7 +4103,30 @@ class mel_workspace extends rcube_plugin
         $title = rcube_utils::get_input_value("_title", rcube_utils::INPUT_POST);
         $survey = $this->get_object($wsp, self::SURVEY) ?? [];
 
-        $sid = rcube_utils::get_input_value("_sid", rcube_utils::INPUT_POST) ?? $this->generate_survey_id($wsp, $survey);
+        $sid = rcube_utils::get_input_value("_sid", rcube_utils::INPUT_POST);//?? $this->generate_survey_id($wsp, $survey);
+
+        if (!isset($sid))
+        {
+            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être créer dans l\'espace "'.$wsp->title.'" !', 'Vous pouvez répondre en allant dans l\'espace.', 
+            [
+                'main' => ['href' => "./?_task=workspace&_action=workspace&_uid=".$wsp->uid,
+                            'text' => $this->gettext("mel_workspace.open"),
+                            'title' => $this->gettext("mel_workspace.click_for_open"),
+                            'command' => "event.click"
+                        ]
+            ], true);
+            $sid = $this->generate_survey_id($wsp, $survey);
+        }
+        else {
+            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être modifier dans l\'espace "'.$wsp->title.'" !', 'Vous pouvez répondre en allant dans l\'espace.', 
+            [
+                'main' => ['href' => "./?_task=workspace&_action=workspace&_uid=".$wsp->uid,
+                            'text' => $this->gettext("mel_workspace.open"),
+                            'title' => $this->gettext("mel_workspace.click_for_open"),
+                            'command' => "event.click"
+                        ]
+            ], true);
+        }
 
         $datas = [
             'id' => $sid,
@@ -4142,6 +4165,8 @@ class mel_workspace extends rcube_plugin
             else unset($survey_list->$survey_id);
             $this->save_object($wsp, self::SURVEY, $survey_list);
             $wsp->save();
+
+            self::notify($wsp, 'Le sondage "'.$title.'" vient d\'être supprimer de l\'espace "'.$wsp->title.'" !', '', null, true);
 
             $tmp = $this;
             echo json_encode(mel_helper::Enumerable($survey_list)->fusion('can_delete', function ($k, $v) use($tmp, $wsp) {

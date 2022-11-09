@@ -948,6 +948,7 @@
         }    
 
         async create_survey(survey = null){
+            debugger;
             this.create_survey.survey = survey;
             const edit_mode = !!this.create_survey.survey;
             let globalModal;
@@ -1011,6 +1012,9 @@
                 }
                 else modal.show();
             });
+            await globalModal;
+            globalModal = null;
+            
             let modal = new GlobalModal('globalModal', global_config, false);
             modal.contents.find('#survey-input-link').on('change', () => {
                 const base = rcmail.env.sondage_create_sondage_url.split('?_')[0];
@@ -1020,9 +1024,6 @@
                     $('#survey-input-link').val('');
                 }
             });
-
-            await globalModal;
-            globalModal = null;
 
             modal.show();
             return modal;

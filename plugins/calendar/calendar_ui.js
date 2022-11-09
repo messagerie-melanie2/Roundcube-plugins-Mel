@@ -3632,8 +3632,7 @@ function rcube_calendar_ui(settings) {
               })
               break;
             case 'webconf':
-
-              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text() })
+              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text(), phone: form.find('#webconf_phone').val(), pin: form.find('#webconf_phone_pin').val() })
               break;
 
             default:

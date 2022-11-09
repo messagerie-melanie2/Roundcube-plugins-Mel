@@ -512,8 +512,17 @@ function generateWebconf() {
   $(".ui-dialog #webconf_input").removeClass("is-invalid");
   $(".ui-dialog .mainaction").prop("disabled", false);
 
-  $(".ui-dialog #webconf_name_error").hide();
-  $('.ui-dialog #webconf_input').val(mel_metapage.Functions.generateWebconfRoomName());
+  $(".ui-dialog #webconf_error").hide();
+
+  let webConfRoomName = mel_metapage.Functions.generateWebconfRoomName()
+
+  window.webconf_helper.phone.getAll(webConfRoomName).then((datas) => {
+    $('.ui-dialog #webconf_phone').val(datas.number);
+    $('.ui-dialog #webconf_phone_pin').val(datas.pin);
+  })
+
+  $('.ui-dialog #webconf_input').val(webConfRoomName);
+
 }
 
 function checkWebconfName() {
@@ -534,11 +543,17 @@ function checkWebconfName() {
     $(".ui-dialog #webconf_input").addClass("is-invalid");
     $(".ui-dialog #webconf_error").show();
     $(".ui-dialog .mainaction").prop("disabled", true);
+    $('.ui-dialog #webconf_phone').val("");
+    $('.ui-dialog #webconf_phone_pin').val("");
   }
   else {
     $(".ui-dialog #webconf_input").removeClass("is-invalid");
     $(".ui-dialog #webconf_error").hide();
     $(".ui-dialog .mainaction").prop("disabled", false);
+    window.webconf_helper.phone.getAll(val).then((datas) => {
+      $('.ui-dialog #webconf_phone').val(datas.number);
+      $('.ui-dialog #webconf_phone_pin').val(datas.pin);
+    })
   }
 }
 

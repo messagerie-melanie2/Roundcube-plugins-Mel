@@ -322,6 +322,7 @@ $labels['app_news'] = 'M\'informer';
 $labels['app_ul'] = 'Mes liens utiles';
 $labels['app_kanban'] = 'Kanban';
 $labels['app_survey'] = 'Sondage';
+$labels['app_rizomo'] = 'Outils SNAP';
 
 $labels['to_comment'] = 'Commenter';
 

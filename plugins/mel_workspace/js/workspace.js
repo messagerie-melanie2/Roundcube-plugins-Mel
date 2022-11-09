@@ -30,6 +30,8 @@ $(document).ready(async () => {
         }
     
         init_clicks();
+        //init_sondages();
+        connect_sondage();
     
         window.init_clicks = window.init_clicks || init_clicks;
     });
@@ -1080,4 +1082,53 @@ function survey_delete(e)
 function survey_copy(e)
 {
     mel_metapage.Functions.copy($(e).data('slink'))
+}
+
+function connect_sondage()
+{
+    if (!!top.rcmail.env.sondage_loaded) return $.ajax();
+
+    return $.ajax({ // fonction permettant de faire de l'ajax
+        type: "POST", // methode de transmission des données au fichier php
+        url: rcmail.env.sondage_url+'/?_p=external_login', // url du fichier php
+        data: "username="+rcmail.env.sondage_username+"&password="+rcmail.env.sondage_password+"&timezone="+rcmail.env.sondage_timezone, // données à transmettre
+        xhrFields: {
+            withCredentials: true
+        },
+        crossDomain: true,
+        success: function (data) {
+            let url;
+            for (const iterator of $('iframe.wsp-sondage')) {
+                url = $(iterator).data('src');
+                iterator.src = url;
+                if (navigator.appName == "Microsoft Internet Explorer"){
+                    iterator.reload(true);
+                }
+            }
+
+            $("#wait_box").hide();
+            top.rcmail.env.sondage_loaded = true;
+        },
+        error: function (xhr, ajaxOptions, thrownError) { // Add these parameters to display the required response
+            $("#wait_box").hide();
+        },
+    });
+}
+
+function inject_embeded(iframe)
+{
+    const $ = iframe.contentWindow.$;
+    $('#head').css('display', 'none');
+    $('.toolbar').css('display', 'none');
+    $('#left-panel').css('display', 'none');
+}
+
+function init_sondages()
+{
+    for (const iterator of $('iframe.wsp-sondage')) {
+        $(iterator).on('load', (e) => {
+            inject_embeded(e.currentTarget);
+        });
+        inject_embeded(iterator);
+    }
 }

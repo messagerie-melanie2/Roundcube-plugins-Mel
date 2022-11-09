@@ -21,6 +21,10 @@ function my_day(symbol = null)
 	}
 
 	MEL_ELASTIC_UI.gestionTabs($("#myday .tabs"));
+
+	$(document).ready(() => {
+		update_tabs_on_resize();
+	});
 }
 
 /**
@@ -300,4 +304,35 @@ function setup_notes()
 
 		}).appendTo($bottom);
 	}
+
+	update_tabs_on_resize();
 }
+
+function update_tabs_on_resize()
+{
+	$('#myday .mel-ui-tab-system button .tab-title').css('display', '').css('font-size', '');
+	const size_max = $('#myday .mel-ui-tab-system')[0]?.clientWidth;
+	let size = 0;
+
+	for (const iterator of $('#myday .mel-ui-tab-system button')) {
+		size += iterator.clientWidth;
+	}
+
+	if (size > size_max)
+	{
+		$('#myday .mel-ui-tab-system button .tab-title').css('font-size', 'smaller');
+
+		size = 0;
+		for (const iterator of $('#myday .mel-ui-tab-system button')) {
+			size += iterator.clientWidth;
+		}
+
+		if (size > size_max) {
+			$('#myday .mel-ui-tab-system button .tab-title').css('display', 'none');
+		}
+	}
+}
+
+rcmail.addEventListener("skin-resize", (datas) => {
+	update_tabs_on_resize();
+});

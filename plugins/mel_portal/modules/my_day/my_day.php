@@ -107,9 +107,9 @@ class My_day extends Module
 
     function notes_is_enabled()
     {
-       // if (!isset($this->notes_enabled)) $this->notes_enabled = $this->rc->config->get('notes-in-my-day-enabled', true);
+        if (!isset($this->notes_enabled)) $this->notes_enabled = $this->rc->config->get('notes-in-my-day-enabled', true);
 
-        return false;//$this->notes_enabled;
+        return $this->notes_enabled;
     }
 
     function have_notes()

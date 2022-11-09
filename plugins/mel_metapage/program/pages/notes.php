@@ -128,7 +128,7 @@ class Notes extends Page
                 if ($value !== null && $value["order"] > $order) $this->notes[$key]["order"] += 1;
             }
         }
-        $this->add(new Sticker($this->generate_uid(), ($order === -1 ? count($this->notes) : $order + 1), $title, $text, $color, $textcolor));
+        $this->add(new Sticker($this->generate_uid(), ($order === -1 ? count($this->notes) + 1 : $order + 1), $title, $text, $color, $textcolor));
         //$this->update_order();
     }
 

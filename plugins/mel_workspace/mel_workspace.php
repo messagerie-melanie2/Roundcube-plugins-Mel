@@ -1306,7 +1306,7 @@ class mel_workspace extends rcube_plugin
                                 .html::tag('button', ['class' => 'mel-button btn btn-danger no-button-margin', 'style' => 'border-bottom-right-radius:0;border-top-right-radius:5px;', 'onclick' => 'survey_delete(this)', 'data-sid' => $value->id], html::tag('span', ['class' => 'icon-mel-trash'])) : '')
                             ).
                             html::div(['class' => (!$first ? '' : 'hidden').' click-body click-sondage sondage-'.$value->id], 
-                                html::tag('iframe', ['src' => $value->link.'&_skin=default_mobile&_embeded=1', 'style' => 'width:100%;height:200px'])
+                                html::tag('iframe', ['src' => $value->link.'&_embeded=1', 'style' => 'width:100%;height:200px'])
                             )
                         );
 

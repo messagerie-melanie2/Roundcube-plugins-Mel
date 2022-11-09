@@ -1088,7 +1088,7 @@
                     var $button_delete = $(`<button style="border-bottom-right-radius:0;border-top-right-radius:5px;" class="mel-button btn btn-danger no-button-margin" onclick="survey_delete(this)" data-sid="${iterator.id}"><span class="icon-mel-trash"></span></button>`).appendTo($btn_group);
                 }
                 
-                $(`<div class="${$first ? '' : 'hidden'} click-body click-sondage sondage-${iterator.id}"><iframe src="${iterator.link}&_skin=default_mobile&amp;_embeded=1" style="width:100%;height:200px"></iframe></div>`).appendTo($click_master);
+                $(`<div class="${$first ? '' : 'hidden'} click-body click-sondage sondage-${iterator.id}"><iframe src="${iterator.link}&_embeded=1" style="width:100%;height:200px"></iframe></div>`).appendTo($click_master);
             
                 if ($first) $first = false;
             }

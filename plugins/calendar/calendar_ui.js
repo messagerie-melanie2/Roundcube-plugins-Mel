@@ -3468,6 +3468,8 @@ function rcube_calendar_ui(settings) {
               form.find(`#${element.type}`).prop('checked', true);
               form.find('#webconf_fields').show();
               form.find('#webconf_input').val(element.value);
+              form.find('#webconf_phone').val(element.phone);
+              form.find('#webconf_phone_pin').val(element.pin);
               break;
 
             default:

@@ -509,8 +509,8 @@ function show_phone_field(show) {
 }
 
 function generateWebconf() {
+  $(".ui-dialog .mainaction").prop("disabled", true);
   $(".ui-dialog #webconf_input").removeClass("is-invalid");
-  $(".ui-dialog .mainaction").prop("disabled", false);
 
   $(".ui-dialog #webconf_error").hide();
 
@@ -519,6 +519,8 @@ function generateWebconf() {
   window.webconf_helper.phone.getAll(webConfRoomName).then((datas) => {
     $('.ui-dialog #webconf_phone').val(datas.number);
     $('.ui-dialog #webconf_phone_pin').val(datas.pin);
+    $(".ui-dialog .mainaction").prop("disabled", false);
+
   })
 
   $('.ui-dialog #webconf_input').val(webConfRoomName);
@@ -549,10 +551,10 @@ function checkWebconfName() {
   else {
     $(".ui-dialog #webconf_input").removeClass("is-invalid");
     $(".ui-dialog #webconf_error").hide();
-    $(".ui-dialog .mainaction").prop("disabled", false);
     window.webconf_helper.phone.getAll(val).then((datas) => {
       $('.ui-dialog #webconf_phone').val(datas.number);
       $('.ui-dialog #webconf_phone_pin').val(datas.pin);
+      $(".ui-dialog .mainaction").prop("disabled", false);
     })
   }
 }

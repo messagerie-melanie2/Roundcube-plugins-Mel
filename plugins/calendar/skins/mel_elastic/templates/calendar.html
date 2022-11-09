@@ -634,14 +634,14 @@
                           <input class="form-check-input" type="radio" name="callRadio" id="organizer_call"
                             onchange="show_phone_field(false)" value="switch" checked>
                           <label class="form-check-label" for="organizer_call">
-                            J'appellerais mon invité
+                            J'appellerais mon invité <span class="icofont-info-circle ml-3" title="Le numéro de votre invité sera demandé lors de la prise du rendez-vous" style="cursor: help;"></span>
                           </label>
                         </div>
                         <div class="form-check mb-2">
                           <input class="form-check-input" type="radio" name="callRadio" id="attendee_call"
                             onchange="show_phone_field(true)" value="switch">
                           <label class="form-check-label" for="attendee_call">
-                            Mon invité doit m'appeler
+                            Mon invité doit m'appeler <span class="icofont-info-circle ml-3" title="Votre numéro ne sera affiché qu'après la prise de rendez-vous validée" style="cursor: help;"></span>
                           </label>
                         </div>
                         <div id="phone_number_field" style="display: none;">

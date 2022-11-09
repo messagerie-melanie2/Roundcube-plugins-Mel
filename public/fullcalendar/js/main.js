@@ -27,7 +27,7 @@ function display_name() {
 
 function run() {
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", url.href.replace('fullcalendar/', 'fullcalendar/fullcalendar.php/'), true);
+  xhr.open("GET", url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/'), true);
 
   xhr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {

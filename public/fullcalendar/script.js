@@ -412,6 +412,9 @@ function user_form_submit(e) {
     else if (place.type == "attendee_call") {
       event.location = place.text;
     }
+    if (place.type == "webconf") {
+      event.location = window.location.origin + window.location.pathname + `public/webconf?_key=${place.value}`;
+    }
     else {
       event.location = place.value;
     }

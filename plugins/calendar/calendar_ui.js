@@ -3403,78 +3403,6 @@ function rcube_calendar_ui(settings) {
     let dialog = $('#appointmentbox').clone(true).removeClass('uidialog');
     let form = dialog.find('#appointmentpropform');
 
-    let user_pref = JSON.parse(rcmail.env.user_appointment_pref);
-    console.log(user_pref);
-
-    form.find('#check_appointment').prop('checked', user_pref)
-    form.find('#appointment_url').val(user_pref.url);
-    form.find('#check_user_select_time').prop('checked', user_pref.check_user_select_time === 'true');
-    if (user_pref.check_user_select_time === 'true') {
-      form.find('#time').hide();
-    }
-    else {
-      if (user_pref.custom_time_select) {
-        form.find(`#time_select option[value="custom"]`).prop('selected', true);
-        form.find('#custom_time').show();
-        form.find(`#custom_time_select option[value="${user_pref.custom_time_select}"]`).prop('selected', true);
-        form.find('#custom_time_input').val(user_pref.time_select)
-
-      } else {
-        form.find(`#time_select option[value="${user_pref.time_select}"]`).prop('selected', true);
-      }
-    }
-
-    if (user_pref.place) {
-      user_pref.place.forEach(element => {
-        switch (element.type) {
-          case "attendee_call":
-            form.find(`#phone`).prop('checked', true);
-            form.find('#phone_fields').show();
-            form.find(`#attendee_call`).prop('checked', true);
-            form.find('#phone_number_field').show();
-            form.find('#phone_input').val(element.value);
-            break;
-          case "organizer_call":
-            form.find(`#phone`).prop('checked', true);
-            form.find('#phone_fields').show();
-            form.find(`#organizer_call`).prop('checked', true);
-            break;
-          case "address":
-            form.find(`#${element.type}`).prop('checked', true);
-            form.find('#address_fields').show();
-            form.find('#address_input').val(element.value);
-            break;
-          case "webconf":
-            form.find(`#${element.type}`).prop('checked', true);
-            form.find('#webconf_fields').show();
-            form.find('#webconf_input').val(element.value);
-            break;
-
-          default:
-            break;
-        }
-      });
-    }
-
-    form.find(`#time_before_select option[value="${user_pref.time_before_select}"]`).prop('selected', true);
-    form.find(`#time_after_select option[value="${user_pref.time_after_select}"]`).prop('selected', true);
-    form.find('#custom_reason').prop('checked', user_pref.custom_reason === 'true');
-
-    if (user_pref.reason) {
-      user_pref.reason.forEach((element, index) => {
-        if (index == 0) {
-          form.find('#time_reason-1').val(element)
-        }
-        else {
-          let input_array = form.find('#appointment_reason .row:last-child').find('input');
-          let start_input = input_array.attr('id').split('-');
-          let new_id = parseInt(start_input[1]) + 1;
-
-          form.find('#appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif" value="' + element + '"></div><div class="col-1"><button class="btn btn-danger" title="Supprimer le motif de rendez-vous" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
-
-        }
-      })
-    }
     //On initialise le datetimepicker sur tous les jours de la semaines
     for (let i = 1; i < 8; i++) {
       $('#time_start_' + i + '-1', dialog).datetimepicker({
@@ -3492,48 +3420,129 @@ function rcube_calendar_ui(settings) {
       });
     }
 
-    for (let i = 0; i < 7; i++) {
-      let day_range = user_pref.range[i];
 
-      let new_i;
-      i == 0 ? new_i = 7 : new_i = i;
-      if (day_range != "") {
-        form.find('#day_check_' + new_i).prop('checked', true);
-        form.find('#appointment_range_' + new_i).show();
+    let user_pref = JSON.parse(rcmail.env.user_appointment_pref);
+    if (user_pref) {
 
-        form.find(`#time_start_${new_i}-1`).val(day_range[0])
-        form.find(`#time_end_${new_i}-1`).val(day_range[1])
+      console.log(user_pref);
 
-        if (day_range.length > 2) {
-          for (let j = 2; j < day_range.length; j += 2) {
-            let id = new_i + '-' + j;
-            form.find('#appointment_range_' + new_i).append('<div id="row' + id + '" class="row mt-2"><div class="col-5"><input id="time_start_' + id + '" name="time_start_' + id + '" type="text" class="form-control" onchange="check_time_validity(`' + id + '`)"></div>-<div class="col-5"><input id="time_end_' + id + '" name="time_end_' + id + '"  type="text" class="form-control" onchange="check_time_validity(`' + id + '`)"></div><div class="col-1 pl-0"><button class="btn btn-danger" id="time_trash_' + id + '" onclick="remove_time(`' + id + '`)"><span class="icon-mel-trash"></span></button></div><span id="time_alert_' + id + '" class="text-danger" style="display: none;"></span></div>');
-
-            form.find('#time_start_' + id).datetimepicker({
-              datepicker: false,
-              format: 'H:i',
-              step: 15,
-              value: day_range[j]
-            });
-
-            form.find('#time_end_' + id).datetimepicker({
-              datepicker: false,
-              format: 'H:i',
-              step: 15,
-              value: day_range[j + 1]
-            });
-          }
-        }
+      form.find('#check_appointment').prop('checked', user_pref)
+      form.find('#appointment_url').val(user_pref.url);
+      form.find('#check_user_select_time').prop('checked', user_pref.check_user_select_time === 'true');
+      if (user_pref.check_user_select_time === 'true') {
+        form.find('#time').hide();
       }
       else {
-        form.find('#day_check_' + new_i).prop('checked', false);
-        form.find('#appointment_range_' + new_i).hide();
+        if (user_pref.custom_time_select) {
+          form.find(`#time_select option[value="custom"]`).prop('selected', true);
+          form.find('#custom_time').show();
+          form.find(`#custom_time_select option[value="${user_pref.custom_time_select}"]`).prop('selected', true);
+          form.find('#custom_time_input').val(user_pref.time_select)
+
+        } else {
+          form.find(`#time_select option[value="${user_pref.time_select}"]`).prop('selected', true);
+        }
       }
+
+      if (user_pref.place) {
+        user_pref.place.forEach(element => {
+          switch (element.type) {
+            case "attendee_call":
+              form.find(`#phone`).prop('checked', true);
+              form.find('#phone_fields').show();
+              form.find(`#attendee_call`).prop('checked', true);
+              form.find('#phone_number_field').show();
+              form.find('#phone_input').val(element.value);
+              break;
+            case "organizer_call":
+              form.find(`#phone`).prop('checked', true);
+              form.find('#phone_fields').show();
+              form.find(`#organizer_call`).prop('checked', true);
+              break;
+            case "address":
+              form.find(`#${element.type}`).prop('checked', true);
+              form.find('#address_fields').show();
+              form.find('#address_input').val(element.value);
+              break;
+            case "webconf":
+              form.find(`#${element.type}`).prop('checked', true);
+              form.find('#webconf_fields').show();
+              form.find('#webconf_input').val(element.value);
+              break;
+
+            default:
+              break;
+          }
+        });
+      }
+
+      form.find(`#time_before_select option[value="${user_pref.time_before_select}"]`).prop('selected', true);
+      form.find(`#time_after_select option[value="${user_pref.time_after_select}"]`).prop('selected', true);
+      form.find('#custom_reason').prop('checked', user_pref.custom_reason === 'true');
+
+      if (user_pref.reason) {
+        user_pref.reason.forEach((element, index) => {
+          if (index == 0) {
+            form.find('#time_reason-1').val(element)
+          }
+          else {
+            let input_array = form.find('#appointment_reason .row:last-child').find('input');
+            let start_input = input_array.attr('id').split('-');
+            let new_id = parseInt(start_input[1]) + 1;
+
+            form.find('#appointment_reason').append('<div id="row' + new_id + '" class="form-group row mt-3"><div class="col-10"><input type="text" class="form-control" id="time_reason-' + new_id + '" placeholder="Motif" value="' + element + '"></div><div class="col-1"><button class="btn btn-danger" title="Supprimer le motif de rendez-vous" id="reason_trash_' + new_id + '" onclick="remove_reason(`' + new_id + '`)"><span class="icon-mel-trash"></span></button></div></div>');
+
+          }
+        })
+      }
+
+      for (let i = 0; i < 7; i++) {
+        let day_range = user_pref.range[i];
+
+        let new_i;
+        i == 0 ? new_i = 7 : new_i = i;
+        if (day_range != "") {
+          form.find('#day_check_' + new_i).prop('checked', true);
+          form.find('#appointment_range_' + new_i).show();
+
+          form.find(`#time_start_${new_i}-1`).val(day_range[0])
+          form.find(`#time_end_${new_i}-1`).val(day_range[1])
+
+          if (day_range.length > 2) {
+            for (let j = 2; j < day_range.length; j += 2) {
+              let id = new_i + '-' + j;
+              form.find('#appointment_range_' + new_i).append('<div id="row' + id + '" class="row mt-2"><div class="col-5"><input id="time_start_' + id + '" name="time_start_' + id + '" type="text" class="form-control" onchange="check_time_validity(`' + id + '`)"></div>-<div class="col-5"><input id="time_end_' + id + '" name="time_end_' + id + '"  type="text" class="form-control" onchange="check_time_validity(`' + id + '`)"></div><div class="col-1 pl-0"><button class="btn btn-danger" id="time_trash_' + id + '" onclick="remove_time(`' + id + '`)"><span class="icon-mel-trash"></span></button></div><span id="time_alert_' + id + '" class="text-danger" style="display: none;"></span></div>');
+
+              form.find('#time_start_' + id).datetimepicker({
+                datepicker: false,
+                format: 'H:i',
+                step: 15,
+                value: day_range[j]
+              });
+
+              form.find('#time_end_' + id).datetimepicker({
+                datepicker: false,
+                format: 'H:i',
+                step: 15,
+                value: day_range[j + 1]
+              });
+            }
+          }
+        }
+        else {
+          form.find('#day_check_' + new_i).prop('checked', false);
+          form.find('#appointment_range_' + new_i).hide();
+        }
+      }
+
+    }
+    else {
+      form.find('#appointment_configuration').hide();
+      dialog.find('#button_fullcalendarurl').hide();
     }
 
     save_func = function () {
       let appointment = {};
-
 
       appointment.check_user_select_time = form.find('#check_user_select_time').prop('checked');
 
@@ -3623,8 +3632,8 @@ function rcube_calendar_ui(settings) {
               })
               break;
             case 'webconf':
-              let webconf_url = window.location.origin + window.location.pathname + `public/webconf?_key=${form.find('#webconf_input').val()}`;
-              place.push({ "type": id, value: webconf_url, text: form.find('#webconf_text').text() })
+
+              place.push({ "type": id, value: form.find('#webconf_input').val(), text: form.find('#webconf_text').text() })
               break;
 
             default:
@@ -3635,6 +3644,8 @@ function rcube_calendar_ui(settings) {
 
       appointment.place = place;
       appointment.url = form.find('#appointment_url').val();
+
+      rcmail.env.user_appointment_pref = JSON.stringify(appointment);
 
       var lock = rcmail.display_message(rcmail.get_label('loading'), 'loading');
       rcmail.http_post('calendar', { action: "appointment", c: appointment }, lock);

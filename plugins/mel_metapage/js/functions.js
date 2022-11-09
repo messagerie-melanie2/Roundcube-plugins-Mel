@@ -1375,7 +1375,7 @@ function m_mp_Help() {
     const actions = {
         helppage_general: get_action("mel_metapage.h_general", "icon-mel-help", "window.open('" + rcmail.env.help_page + "', '_blank');"),
         helppage_video: get_action("mel_metapage.h_video", "icon-mel-camera", "m_mp_help_video()"),
-        helppage_suggestion: get_action("mel_metapage.h_suggestion", "icon-mel-notes", "window.open('" + rcmail.env.help_suggestion_url + "', '_blank');"),
+        helppage_suggestion: get_action("mel_metapage.h_suggestion", "icon-mel-notes", ``),
         helppage_current: get_action("mel_metapage.h_current", "icon-mel-newspaper", "rcmail.current_page_onboarding(m_mp_DecodeUrl().task)")
     };
 
@@ -1422,7 +1422,7 @@ function m_mp_Help() {
 
         let helppage_general = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_general" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_general")}">` + _button(actions.helppage_general, true, true) + '</li>'
         let helppage_video = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_video" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_video")}">` + _button(actions.helppage_video) + '</li>'
-        let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, true) + '</li>'
+        let helppage_suggestion = `<li class="col-sd-4 col-md-4 mt-5" id="helppage_suggestion" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_suggestion")}">` + _button(actions.helppage_suggestion, true, false) + '</li>'
         let helppage_current = "";
         if (rcmail.env.help_page_onboarding[m_mp_DecodeUrl().task]) {
             helppage_current = `<li class="col-12" id="helppage_current" title="${rcmail.gettext("mel_metapage.menu_assistance_helppage_current")}">` + _button(actions.helppage_current, false) + "</li>";
@@ -1442,6 +1442,10 @@ function m_mp_Help() {
         html += '<ul id=globallist class="row ignore-bullet">' + helppage_general + helppage_video + helppage_suggestion + helppage_current + '</ul>';
         let config = new GlobalModalConfig(rcmail.gettext("mel_metapage.assistance"), "default", html, '   ');
         help_popUp = new GlobalModal("globalModal", config, !isSmall);
+        help_popUp.contents.find('#helppage_suggestion button').click(() => {
+            mel_metapage.Functions.change_page(rcmail.env.help_suggestion_url.task, rcmail.env.help_suggestion_url.action);
+            help_popUp.close();
+        }).removeClass('disabled').removeAttr('disabled');
     } else if (!isSmall) //Si elle existe, on l'affiche.
     {
         window.help_popUp.show();

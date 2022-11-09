@@ -195,7 +195,7 @@ class mel_help extends rcube_plugin
 
     $suggestion_url = $this->rc->config->get('help_suggestion_url', null);
     if (isset($suggestion_url) && !$this->rc->config->get('ismobile', false)) {
-      $html .= html::span(['class' => 'helppage suggestion'], html::a(['href' => $suggestion_url, 'target' => '_blank', 'title' => $this->gettext('make a suggestion title')], $this->gettext('make a suggestion')));
+      $html .= html::span(['class' => 'helppage suggestion'], html::a(['href' => $suggestion_url, 'title' => $this->gettext('make a suggestion title')], $this->gettext('yolo')));
     }
 
     return html::div($attrib, $html);

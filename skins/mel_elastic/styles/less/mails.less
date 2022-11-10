@@ -143,6 +143,26 @@ table.messagelist{
                                     }
                                 }
                             }
+
+                            &.replied{
+                                &::before{
+                                    content:"\e96a"!important;
+                                }
+                            }
+
+                            &.forwarded {
+                                &::before{
+                                    content:"\e96a"!important;
+                                    transform: scaleX(-1);
+                                }
+
+                                &.replied{
+                                    &::before{
+                                        content:"\e96a"!important;
+                                        transform: scaleX(1);
+                                    }
+                                }
+                            }
                         }
                     }
 

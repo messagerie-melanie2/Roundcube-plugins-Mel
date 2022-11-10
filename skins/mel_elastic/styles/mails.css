@@ -87,6 +87,17 @@ table.messagelist tr.unread td.subject span.msgicon::before {
 table.messagelist tr.unread td.subject span.msgicon.status.unread.selected::before {
   color: var(--secondary-text-color);
 }
+table.messagelist tr.unread td.subject span.msgicon.replied::before {
+  content: "\e96a" !important;
+}
+table.messagelist tr.unread td.subject span.msgicon.forwarded::before {
+  content: "\e96a" !important;
+  transform: scaleX(-1);
+}
+table.messagelist tr.unread td.subject span.msgicon.forwarded.replied::before {
+  content: "\e96a" !important;
+  transform: scaleX(1);
+}
 table.messagelist tr.unread td.subject a {
   font-weight: bold;
   color: var(--main-text-color);

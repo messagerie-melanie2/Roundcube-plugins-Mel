@@ -2118,6 +2118,7 @@ class mel_metapage extends rcube_plugin
                 case 'checkbox':
                     $input = rcube_utils::get_input_value($id, rcube_utils::INPUT_POST);
                     $args['prefs'][$datas['config']] = ($input ?? false) === '1';
+                    $this->rc->output->set_env($datas['config'], $args['prefs'][$datas['config']]);
                     break;
                 
                 default:

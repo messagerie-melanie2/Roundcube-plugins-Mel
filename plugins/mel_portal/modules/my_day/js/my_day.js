@@ -215,13 +215,13 @@ function setup_notes()
 
 		var $action_left = $('<button><span class="icon-mel-arrow-left"></span></button>').click(() => {
 			$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', 'none');
-			const current = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault();
+			const current = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order == setup_notes.current.value.order - 1).firstOrDefault();
 
 			if(!!current){
 				setup_notes.current = current;
 				$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
 
-				const prev = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault();
+				const prev = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order == setup_notes.current.value.order - 1).firstOrDefault();
 				if (!prev) {
 					$action_left.addClass('disabled').attr('disabled', 'disabled');
 				}
@@ -232,13 +232,13 @@ function setup_notes()
 		}).addClass('btn-mel-invisible btn-arrow btn btn-secondary').appendTo($actions);
 		var $action_right = $('<button><span class="icon-mel-arrow-right"></span></button>').click(() => {
 			$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', 'none');
-			const current = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault();
+			const current = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order == setup_notes.current.value.order + 1).firstOrDefault();
 
 			if(!!current){
 				setup_notes.current = current;
 				$(`#notes-block-${setup_notes.current.value.uid.toLowerCase()}`).css('display', '');
 
-				const next = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault();
+				const next = Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order == setup_notes.current.value.order + 1).firstOrDefault();
 				if (!next) {
 					$action_right.addClass('disabled').attr('disabled', 'disabled');
 				}
@@ -251,11 +251,11 @@ function setup_notes()
 		let $main_notes = $('<div id="main-notes-block" style="height:100%"></div>').css('margin', '0 5px').appendTo($notes);
 
 		let the_one = false;
-		let already = !!setup_notes.current && !!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => x.value.uid === setup_notes.current.value.uid).firstOrDefault();
+		let already = !!setup_notes.current && !!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => x.value.uid == setup_notes.current.value.uid).firstOrDefault();
 		for (const iterator of Enumerable.from(rcmail.env.mel_metapages_notes).orderBy(x => x.order)) {
 			if (!iterator.value.uid) continue;
 
-			$(`<div style="height:100%;${the_one || already && setup_notes.current.value.uid !== iterator.value.uid ? 'display:none;' : ''}" id="notes-block-${iterator.value.uid.toLowerCase()}"></div>`).append(iterator.value.text.replaceAll('\n', '<br/>')).appendTo($main_notes);
+			$(`<div style="height:100%;${the_one || already && setup_notes.current.value.uid != iterator.value.uid ? 'display:none;' : ''}" id="notes-block-${iterator.value.uid.toLowerCase()}"></div>`).append(iterator.value.text.replaceAll('\n', '<br/>')).appendTo($main_notes);
 			$(`<textarea class="form-control input-mel" style="height:100%; width:100%; display:none;background-color:var(--inputs-bg-color)" id="notes-area-${iterator.value.uid.toLowerCase()}"></textarea>`).append(iterator.value.text).appendTo($main_notes);
 
 			if (!the_one && !already)  {
@@ -264,12 +264,12 @@ function setup_notes()
 			}
 		}
 
-		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order + 1).firstOrDefault())
+		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order == setup_notes.current.value.order + 1).firstOrDefault())
 		{
 			$action_right.addClass('disabled').attr('disabled', 'disabled');
 		}
 
-		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order === setup_notes.current.value.order - 1).firstOrDefault())
+		if (!Enumerable.from(rcmail.env.mel_metapages_notes).where(x => !!x.value.order && x.value.order == setup_notes.current.value.order - 1).firstOrDefault())
 		{
 			$action_left.addClass('disabled').attr('disabled', 'disabled');
 		}

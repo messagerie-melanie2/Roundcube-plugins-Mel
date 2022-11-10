@@ -239,6 +239,24 @@ if (rcmail && window.mel_metapage)
                     e.contentWindow.MEL_ELASTIC_UI.update_theme(rcmail.env.current_theme);
                 });
             }
+
+            if (rcmail.env['reorder-notes'] !== top.rcmail.env['reorder-notes'])
+            {
+                if (confirm('Attention, cela va réordonner vos notes et recharger vôtre page, êtes-vous sûr de vouloir faire cela ?'))
+                {
+                    $('body').html('<center class="absolute-center"><div class="spinner-grow"></div></center>');
+                    parent.rcmail.set_busy(true, 'loading');
+                    mel_metapage.Functions.post(
+                        mel_metapage.Functions.url("mel_metapage", "notes"),
+                        {
+                            _a:'reorder'
+                        },
+                        (datas) => {
+                            top.location.reload();
+                        }
+                    );
+                }
+            }
         }
 
         if (rcmail.env.keep_login === true)

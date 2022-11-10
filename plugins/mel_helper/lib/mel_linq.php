@@ -279,7 +279,7 @@ class Mel_Where extends Mel_Enumerable {
             {
                 if (call_user_func($this->selector, $value->get_key(), $value->get_value())) yield $value;
             }
-            else if (call_user_func($this->selector, $key, $value)) yield $value;
+            else if (call_user_func($this->selector, $key, $value)) yield $key => $value;
         }
     }
 }

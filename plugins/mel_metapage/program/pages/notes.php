@@ -48,6 +48,7 @@ class Notes extends Page
     protected function before_init() {
         $this->load();
         $this->set_env_var('mel_metapages_notes', $this->notes);
+        $this->set_env_var('reorder-notes', $this->get_config('reorder-notes', false));
         $this->include_js('notes.js');
         //$this->save_config(self::CONFIG, []);
     }
@@ -96,6 +97,12 @@ class Notes extends Page
             case 'get':
                 echo json_encode($this->notes);
                 exit;
+
+            case 'reorder':
+                $this->save_config('reorder-notes', false);
+                $this->force_reorder();
+                echo 'rordered';
+                break;
             
             default:
                 break;
@@ -166,6 +173,13 @@ class Notes extends Page
     {
         if ($newHeight <= 0) unset($this->notes[$uid]["height"]);
         else $this->notes[$uid]["height"] = $newHeight;
+    }
+
+    private function force_reorder() {
+        $it = 0;
+        foreach ($this->notes as $key => $value) {
+            $this->notes[$key]['order'] = $it++;
+        }
     }
 
     private function update_order()

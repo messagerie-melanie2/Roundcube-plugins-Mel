@@ -240,7 +240,7 @@ if (rcmail && window.mel_metapage)
                 });
             }
 
-            if (rcmail.env['reorder-notes'] !== top.rcmail.env['reorder-notes'])
+            if (rcmail.env['reorder-notes'] !== top.rcmail.env['reorder-notes'] && rcmail.env['reorder-notes'] === true)
             {
                 if (confirm('Attention, cela va réordonner vos notes et recharger vôtre page, êtes-vous sûr de vouloir faire cela ?'))
                 {

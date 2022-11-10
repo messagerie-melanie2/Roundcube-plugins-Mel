@@ -1812,21 +1812,21 @@ class mel_metapage extends rcube_plugin
         {
             mel_helper::html_helper();
             $this->add_texts('localization/');
-            $config = mel_helper::Enumerable($this->rc->config->get('navigation_apps', []));
-
-            $main = $config->where(function ($k, $v) {
-                return !isset($v['link']);
-            });
+            $templates = $this->rc->config->get('template_navigation_apps', []);//mel_helper::Enumerable($this->rc->config->get('navigation_apps', []));
+            $config = $this->rc->config->get('navigation_apps', []);
+            // $main = $config->where(function ($k, $v) {
+            //     return !isset($v['link']);
+            // });
 
             $args['blocks']['main_nav']['name'] = 'Applications par défauts';
 
-            foreach ($main as $key => $value) {
+            foreach ($templates as $key => $value) {
                 //$key = $value->get_key();
                 //$value = $value->get_value();
                 $check = new html_checkbox(['name' => $key, 'id' => $key, 'value' => 1]);
                 $args['blocks']['main_nav']['options'][$key] = [
                     'title'   => html::label($key, rcube::Q($this->gettext($key, 'mel_metapage'))),
-                    'content' => $check->show($value['enabled'] ? 1 : 0),
+                    'content' => $check->show(($config[$key]['enabled'] ?? $value['enabled']) ? 1 : 0),
                 ];
             }
         }
@@ -2098,7 +2098,7 @@ class mel_metapage extends rcube_plugin
         mel_helper::html_helper();
         $this->add_texts('localization/');
 
-        $config = $this->rc->config->get('navigation_apps', []);
+        $config = $this->rc->config->get('template_navigation_apps', []);
 
         foreach ($config as $key => $value) {
             $input = rcube_utils::get_input_value($key, rcube_utils::INPUT_POST);

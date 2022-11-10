@@ -118,7 +118,7 @@ function notes()
                     <button title="${rcmail.gettext('quit_settings', plugin_text)}" class="  mel-button no-button-margin bckg true bb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;border-top-right-radius:5px!important;"><span class="icon-mel-undo"></span></button>
                     <button title="${rcmail.gettext('move_down', plugin_text)}" class=" mel-button no-button-margin bckg true downb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-down"></span></button>
                     <button title="${rcmail.gettext('move_up', plugin_text)}" class=" mel-button no-button-margin bckg true upb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-chevron-up"></span></button>
-                    <button title="Réinitialiser la taille de la note" class="  mel-button no-button-margin bckg true rsb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-paragraph-extend"></span></button>
+                    <button title="Réinitialiser la taille de la note" class="  mel-button no-button-margin bckg true rsb" style="float:right;color:${this.textcolor};border:none!important;border-radius:0px!important;"><span class="icon-mel-normalscreen"></span></button>
                 </div>
                 <div class="note-body">
                     <textarea rows="5" class="change" style="width:100%;background-color:${this.color};color:${this.textcolor};${(!!this.height ? `height:${this.height}px;` : '')}">${this.text}</textarea>

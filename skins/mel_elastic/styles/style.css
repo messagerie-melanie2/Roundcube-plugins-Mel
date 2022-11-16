@@ -2198,7 +2198,7 @@ iframe.discussion-frame.mwsp {
   background-color: var(--default-workspace-side-color);
 }
 iframe.mwsp {
-  margin-bottom: 75px;
+  padding-bottom: 75px;
   transition: all 0.1s ease-in;
 }
 iframe.mwsp.discussion-frame {

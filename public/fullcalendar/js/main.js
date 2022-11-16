@@ -360,13 +360,13 @@ function display_confirm_modal(event) {
   $("#confirmModal").modal('show');
   document.getElementById('organizer').textContent = owner_name[0];
 
-  if (event.object && event.object != "custom") {
-    document.getElementById('motif').textContent = event.object;
+  if (event.appointment.object && event.appointment.object != "custom") {
+    document.getElementById('motif').textContent = event.appointment.object;
   }
   else {
     $('#motif_row').hide();
   }
-  document.getElementById('date').textContent = moment(event.time_start).format('HH:mm') + ' - ' + moment(event.time_end).format('HH:mm') + ', ' + moment(event.time_start).format('dddd D MMMM YYYY');
+  document.getElementById('date').textContent = moment(event.appointment.time_start).format('HH:mm') + ' - ' + moment(event.appointment.time_end).format('HH:mm') + ', ' + moment(event.appointment.time_start).format('dddd D MMMM YYYY');
 
   if (response.place) {
     const place = response.place.find(element => element.type == $('#place_select').val())
@@ -399,31 +399,38 @@ function display_confirm_modal(event) {
 function user_form_submit(e) {
   e.preventDefault();
   let event = {};
-  event.user = {};
-  event.time_start = $('#event-time-start').val();
-  event.time_end = $('#event-time-end').val();
-  event.object = $('#event-object').val();
-  event.description = $('#event-description').val();
+  event.attendee = {};
+  event.appointment = {};
+
+  event.appointment.time_start = $('#event-time-start').val();
+  event.appointment.time_end = $('#event-time-end').val();
+  event.appointment.date_day = moment(event.appointment.time_start).format('dddd D MMMM YYYY').charAt(0).toUpperCase() + moment(event.appointment.time_start).format('dddd D MMMM YYYY').slice(1);
+  event.appointment.date_time = moment(event.appointment.time_start).format('HH:mm');
+  event.appointment.date = moment(event.appointment.time_start).format('HH:mm') + ' - ' + moment(event.appointment.time_end).format('HH:mm') + ', ' + moment(event.appointment.time_start).format('dddd D MMMM YYYY');
+
+  event.appointment.object = $('#event-object').val();
+  event.appointment.description = $('#event-description').val();
+
   if (response.place) {
     const place = response.place.find(element => element.type == $('#place_select').val());
+    event.appointment.type = place.type
+    event.appointment.location = place.value;
     if (place.type == "organizer_call") {
-      event.location = "Numéro du participant : " + $('#user-phone').val();
+      event.appointment.location = $('#user-phone').val();
     }
     else if (place.type == "attendee_call") {
-      event.location = place.text;
+      event.appointment.location = place.value;
     }
-    if (place.type == "webconf") {
-      event.location = window.location.origin + window.location.pathname + `public/webconf?_key=${place.value}`;
-    }
-    else {
-      event.location = place.value;
+    else if (place.type == "webconf") {
+      event.appointment.location = window.location.origin + `/public/webconf?_key=${place.value}`;
+      event.appointment.phone = response.place.phone;
+      event.appointment.pin = response.place.pin;
     }
   }
-  event.user.name = $('#user-name').val();
-  event.user.firstname = $('#user-firstname').val();
-  event.user.email = $('#user-email').val();
+  event.attendee.name = $('#user-name').val();
+  event.attendee.firstname = $('#user-firstname').val();
+  event.attendee.email = $('#user-email').val();
   $('#waitingToast').toast('show');
-
 
   $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
     .done(function () {

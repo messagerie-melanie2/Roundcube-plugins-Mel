@@ -164,7 +164,7 @@
         <div class="modal-content border-card">
           <form id="add_user_form" onsubmit="return user_form_submit(event)">
             <div class="modal-header">
-              <button class="mr-3 back-button" data-bs-target="#eventModal" data-bs-toggle="modal"
+              <button type="button" class="mr-3 back-button" data-bs-target="#eventModal" data-bs-toggle="modal"
                 data-bs-dismiss="modal">
                 <span class="icon-mel">
                   <i class="bi bi-chevron-left"></i>
@@ -266,7 +266,7 @@
   </section>
 
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="waitingToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+    <div id="waitingToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" data-bs-delay="15000"
       aria-atomic="true" style="background-color: #354246; color: white;">
       <div class="d-flex">
         <div class="toast-body">

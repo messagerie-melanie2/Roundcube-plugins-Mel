@@ -22,7 +22,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Program\Lib\Mail;
+require_once __DIR__ . '/../config.inc.php';
 
 /**
  * Classe de gestion des mails
@@ -40,181 +40,132 @@ class Mail
   }
 
   /**
-   * Méthode pour envoyer un message en text brut ou en html
+   * Méthode pour envoyer un mail en html
    *
    * @param string $from adresse utilisée pour envoyer le message
    * @param string $to destinataire du message
    * @param string $subject sujet du message
-   * @param string $bcc [optionnel] liste des destinataires en copie cachée
-   * @param string $body corp du message
-   * @param string $body_html [optionnel] corp du message en html
    * @param string $message [optionnel] message complet (sans les entêtes) en text/html
    * @param string $message_id [optionnel] identifiant du message à envoyer
-   * @param string $in_reply_to [optionnel] réponse au message précédent
    * @return boolean
    */
-  public static function SendMail($from, $to, $subject, $bcc = null, $body = null, $body_html = null, $message = null, $message_id = null, $in_reply_to = null, $as_attachment = false)
+  public static function SendMail($from, $to, $subject, $message = null, $message_id = null)
   {
-    // Mail HTML
-    if (isset($body_html)) {
-      // Génération de la boundary
-      $boundary = '-----=' . md5(uniqid(mt_rand()));
+    global $config;
+    // Génération de la boundary
+    $boundary = '-----=' . md5(uniqid(mt_rand()));
 
-      // Mail html headers
-      $headers = array();
-      $headers[] = "MIME-Version: 1.0";
-      $headers[] = "Content-Transfer-Encoding: 8BIT";
-      $headers[] = "From: " . quoted_printable_encode($from);
-      $headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
-      if (isset($bcc)) {
-        $headers[] = "Bcc: " . $bcc;
-      }
-      if (isset($message_id)) {
-        $headers[] = "Message-ID: <$message_id>";
-      }
-      if (isset($in_reply_to)) {
-        $headers[] = "In-Reply-To: <$in_reply_to>";
-        $headers[] = "References: <$in_reply_to>";
-      }
-      $headers[] = "X-Mailer: " . quoted_printable_encode(\Config\IHM::$TITLE . "/" . VERSION . '-' . BUILD);
-      $envelopefrom = "-f $from";
-
-      // Message texte
-      $message = 'This is a multi-part message in MIME format.' . "\n\n";
-
-      $message .= '--' . $boundary . "\n";
-      $message .= 'Content-Type: text/plain; charset=UTF-8"' . "\n";
-      $message .= 'Content-Transfer-Encoding: 8bit' . "\n\n";
-      $message .= $body . "\n\n";
-
-      // Message HTML
-      $message .= '--' . $boundary . "\n";
-      $message .= 'Content-Type: text/html; charset=UTF-8"' . "\n";
-      $message .= 'Content-Transfer-Encoding: 8bit' . "\n\n";
-      $message .= $body_html . "\n\n";
-
-      $message .= '--' . $boundary . "\n";
-
-      return mail($to, mb_encode_mimeheader($subject), $message, implode("\r\n", $headers), $envelopefrom);
-    } else if (isset($message) && !$as_attachment) {
-      // Génération de la boundary
-      $boundary = '-----=' . md5(uniqid(mt_rand()));
-
-      // Mail html headers
-      $headers = array();
-      $headers[] = "MIME-Version: 1.0";
-      $headers[] = "Content-Transfer-Encoding: 8BIT";
-      $headers[] = "From: " . quoted_printable_encode($from);
-      $headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
-      if (isset($bcc)) {
-        $headers[] = "Bcc: " . $bcc;
-      }
-      if (isset($message_id)) {
-        $headers[] = "Message-ID: <$message_id>";
-      }
-      if (isset($in_reply_to)) {
-        $headers[] = "In-Reply-To: <$in_reply_to>";
-        $headers[] = "References: <$in_reply_to>";
-      }
-      $headers[] = "X-Mailer: " . quoted_printable_encode(\Config\IHM::$TITLE . "/" . VERSION . '-' . BUILD);
-      $envelopefrom = "-f $from";
-
-      // Set boundary
-      $message = str_replace("%%boundary%%", $boundary, $message);
-
-      return mail($to, mb_encode_mimeheader($subject), $message, implode("\r\n", $headers), $envelopefrom);
-    } else if (isset($message) && $as_attachment) {
-      // Génération de la boundary
-      $boundary = '-----=' . md5(uniqid(mt_rand()));
-
-      // Mail html headers
-      $headers = array();
-      $headers[] = "MIME-Version: 1.0";
-      $headers[] = "Content-Transfer-Encoding: 8BIT";
-      $headers[] = "From: " . quoted_printable_encode($from);
-      $headers[] = 'Content-Type: multipart/mixed; boundary="' . $boundary . '"';
-      if (isset($bcc)) {
-        $headers[] = "Bcc: " . $bcc;
-      }
-      if (isset($message_id)) {
-        $headers[] = "Message-ID: <$message_id>";
-      }
-      if (isset($in_reply_to)) {
-        $headers[] = "In-Reply-To: <$in_reply_to>";
-        $headers[] = "References: <$in_reply_to>";
-      }
-      $headers[] = "X-Mailer: " . quoted_printable_encode(\Config\IHM::$TITLE . "/" . VERSION . '-' . BUILD);
-      $envelopefrom = "-f $from";
-
-      // Set boundary
-      $message = str_replace("%%boundary%%", $boundary, $message);
-
-      return mail($to, mb_encode_mimeheader($subject), $message, implode("\r\n", $headers), $envelopefrom);
-    } else {
-      // Mail text headers
-      $headers = array();
-      $headers[] = "MIME-Version: 1.0";
-      $headers[] = "Content-type: text/plain; charset=UTF-8";
-      $headers[] = "Content-Transfer-Encoding: 8BIT";
-      $headers[] = "From: " . quoted_printable_encode($from);
-      if (isset($bcc)) {
-        $headers[] = "Bcc: " . $bcc;
-      }
-      if (isset($message_id)) {
-        $headers[] = "Message-ID: <$message_id>";
-      }
-      if (isset($in_reply_to)) {
-        $headers[] = "In-Reply-To: <$in_reply_to>";
-        $headers[] = "References: <$in_reply_to>";
-      }
-      $headers[] = "X-Mailer: " . quoted_printable_encode(\Config\IHM::$TITLE . "/" . VERSION . '-' . BUILD);
-      $envelopefrom = "-f $from";
-
-      return mail($to, mb_encode_mimeheader($subject), $body, implode("\r\n", $headers), $envelopefrom);
+    // Mail html headers
+    $headers = array();
+    $headers[] = "MIME-Version: 1.0";
+    $headers[] = "Content-Transfer-Encoding: 8BIT";
+    $headers[] = "From: " . quoted_printable_encode($from);
+    $headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
+    if (isset($bcc)) {
+      $headers[] = "Bcc: " . $bcc;
     }
+    if (isset($message_id)) {
+      $headers[] = "Message-ID: <$message_id>";
+    }
+    if (isset($in_reply_to)) {
+      $headers[] = "In-Reply-To: <$in_reply_to>";
+      $headers[] = "References: <$in_reply_to>";
+    }
+    $headers[] = "X-Mailer: " . quoted_printable_encode($config['xmail']);
+    $envelopefrom = "-f $from";
+
+    // Set boundary
+    $message = str_replace("%%boundary%%", $boundary, $message);
+
+    return mail($to, mb_encode_mimeheader($subject), $message, implode("\r\n", $headers), $envelopefrom);
   }
 
-    /**
-   * Méthode d'envoi du message notification à la création du sondage
+  /**
+   * Méthode d'envoi du message notification à l'organisateur à la création du sondage
    *
-   * @param \Program\Data\Poll $poll sondage créé
-   * @param \Program\Data\User $user utilisateur qui vient de créer le sondage
+   * @param $attendee informations de l'organisateur
+   * @param $attendee informations du participant
    * @return boolean
    */
-  public static function SendCreatePollMail(\Program\Data\Poll $poll, \Program\Data\User $user)
-  {
-    $subject = Localization::g("Create poll mail subject", false);
-    $message_id = md5($poll->organizer_id) . $poll->poll_uid . '-' . strtotime($poll->created) . "@" . \Config\IHM::$TITLE;
-    $from = \Config\IHM::$FROM_MAIL;
-    $to = '=?UTF-8?B?' . base64_encode('"' . $user->fullname . '"') . '?=' . "\r\n <" . $user->email . ">";
-    $body = file_get_contents(__DIR__ . '/templates/' . \Config\IHM::$DEFAULT_LOCALIZATION . '/created_poll.html');
-    // Replace elements
-    $subject = str_replace("%%app_name%%", \Config\IHM::$TITLE, $subject);
-    $subject = str_replace("%%poll_title%%", $poll->title, $subject);
-    $body = str_replace("%%app_name%%", \Config\IHM::$TITLE, $body);
-    $body = str_replace("%%poll_title%%", $poll->title, $body);
-    // Gestion de l'emplacement
-    if (!empty($poll->location)) {
-      $location = "\r\n\r\n" . Localization::g('Edit location', false) . ": " . $poll->location;
-      $html_location = "<br><div><b>" . Localization::g('Edit location', false) . " : </b>" . str_replace("\r\n", "<br>", htmlentities($poll->location)) . "</div>";
-    } else {
-      $location = '';
-      $html_location = '';
-    }
-    $body = str_replace("%%poll_location%%", $location, $body);
-    $body = str_replace("%%html_poll_location%%", $html_location, $body);
-    // Gestion de la description
-    if (!empty($poll->description)) {
-      $description = "\r\n\r\n" . Localization::g('Edit description', false) . ":\r\n" . $poll->description;
-      $html_description = "<br><div><b>" . Localization::g('Edit description', false) . " : </b></div><div>" . str_replace("\r\n", "<br>", htmlentities($poll->description)) . "</div>";
-    } else {
-      $description = '';
-      $html_description = '';
-    }
-    $body = str_replace("%%poll_description%%", $description, $body);
-    $body = str_replace("%%html_poll_description%%", $html_description, $body);
-    $body = str_replace("%%user_fullname%%", $user->fullname, $body);
 
-    return self::SendMail($from, $to, $subject, null, null, null, $body, $message_id);
+  public static function SendOrganizerAppointmentMail($organizer, $attendee, $appointment)
+  {
+    global $config;
+    $subject = $config["organizer_mail_subject"];
+    $message_id = $config['mail_message_id_prefix'] . md5(uniqid(mt_rand())) . $config['mail_message_id_suffix'];
+    $from = $config['mail_from'];
+    $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->name . '"') . '?=' . "\r\n <" . $organizer->email . ">";
+    $body = file_get_contents(__DIR__ . '/templates/organizer_appointment_mail.html');
+    // Replace elements
+    $subject = str_replace("%%attendee_firstname%%", $attendee['firstname'], $subject);
+    $subject = str_replace("%%appointment_date_day%%", $appointment['date_day'], $subject);
+    $body = str_replace("%%app_name%%", $config['app_name'], $body);
+    $body = str_replace("%%organizer_name%%", $organizer->fullname, $body);
+    $body = str_replace("%%appointment_object%%", $appointment['object'], $body);
+    $body = str_replace("%%attendee_name%%", $attendee['name'], $body);
+    $body = str_replace("%%attendee_email%%", $attendee['email'], $body);
+    $body = str_replace("%%appointment_date%%", $appointment['date'], $body);
+    $body = str_replace("%%appointment_description%%", $appointment['description'], $body);
+    $body = str_replace("%%appointment_location%%", $appointment['location'], $body);
+
+    return self::SendMail($from, $to, $subject, $body, $message_id);
+  }
+
+  /**
+   * Méthode d'envoi du message notification au participant à la création du sondage
+   *
+   * @param $attendee informations de l'organisateur
+   * @param $attendee informations du participant
+   * @return boolean
+   */
+
+  public static function SendAttendeeAppointmentMail($organizer, $attendee, $appointment)
+  {
+    global $config;
+    $subject = $config["attendee_mail_subject"];
+    $message_id = $config['mail_message_id_prefix'] . md5(uniqid(mt_rand())) . $config['mail_message_id_suffix'];
+    $from = $config['mail_from'];
+    // $to = '=?UTF-8?B?' . base64_encode('"' . $attendee['name'] . ' ' .  $attendee['firstname'] . '"') . '?=' . "\r\n <" . $attendee['email'] . ">";
+    $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->name . '"') . '?=' . "\r\n <" . $organizer->email . ">";
+    $object = $appointment['object'];
+
+    $body = file_get_contents(__DIR__ . '/templates/attendee_appointment_mail.html');
+    // Replace elements
+    $subject = str_replace("%%organizer_name%%", $organizer->name, $subject);
+    $subject = str_replace("%%appointment_date_day%%", $appointment['date_day'], $subject);
+    $body = str_replace("%%attendee_firstname%%", $attendee['firstname'], $body);
+
+
+
+    if ($object) {
+      if ($object == "custom") {
+        $body = str_replace("%%appointment_object%%", '', $body);
+        $body = str_replace("%%appointment_description%%", $appointment['description'], $body);
+      } else {
+        $body = str_replace("%%appointment_object%%", 'pour "' . $object . '" ', $body);
+        $body = str_replace("%%appointment_description%%", "Aucune informations sur cet évènement", $body);
+      }
+    } else {
+      $body = str_replace("%%appointment_object%%", '', $body);
+      $body = str_replace("%%appointment_description%%", "Aucune informations sur cet évènement", $body);
+    }
+
+    if ($appointment['type']) {
+      $type_template =  file_get_contents(__DIR__ . '/templates/location/' . $appointment['type'] . '.html');
+      $type_template =  str_replace("%%appointment_location%%", $appointment['location'], $type_template);
+      if ($appointment['type'] == "webconf") {
+        $type_template =  str_replace("%%appointment_webconf_phone%%", $appointment['phone'], $type_template);
+        $type_template =  str_replace("%%appointment_webconf_pin%%", $appointment['pin'], $type_template);
+      }
+    }
+
+    $body = str_replace("%%location_template%%", $type_template, $body);
+
+    $body = str_replace("%%appointment_date_day%%", $appointment['date_day'], $body);
+    $body = str_replace("%%appointment_date_time%%", $appointment['date_time'], $body);
+    $body = str_replace("%%organizer_name%%", $organizer->name, $body);
+    $body = str_replace("%%attendee_email%%", $attendee['email'], $body);
+
+    return self::SendMail($from, $to, $subject, $body, $message_id);
   }
 }

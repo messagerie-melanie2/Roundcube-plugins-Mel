@@ -2,7 +2,7 @@
 
 // Inclusion des fichiers
 require_once '../lib/utils.php';
-require_once '../config.inc.php';
+require_once 'mail.php';
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
@@ -94,11 +94,15 @@ if (isset($user)) {
   $events = $calendar->getAllEvents();
 
   $event->created = time();
-  $event->title = $_POST['object'] == "" ? "Rendez-vous" . displayUserFullName() : $_POST['object'] . displayUserFullName();
-  $event->start = new DateTime($_POST['time_start']);
-  $event->end = new DateTime($_POST['time_end']);
-  $event->description = $_POST['description'] . '- Rendez-vous ajouté depuis votre calendrier externe';
-  $event->location = $_POST['location'];
+  $event->title = $_POST['appointment']['object'] == "" ? "Rendez-vous" . displayUserFullName() : $_POST['appointment']['object'] . displayUserFullName();
+  $event->start = new DateTime($_POST['appointment']['time_start']);
+  $event->end = new DateTime($_POST['appointment']['time_end']);
+  $event->description = $_POST['appointment']['description'];
+  if ($_POST['appointment']['type'] == "webconf") {
+    $event->location = $_POST['appointment']['location'] + '(' + $_POST['appointment']['phone'] + ' | ' + $_POST['appointment']['pin'] + ')';
+  } else {
+    $event->location = $_POST['appointment']['location'];
+  }
 
   $_attendees = array();
   $organizer = new LibMelanie\Api\Mel\Organizer($event);
@@ -107,14 +111,20 @@ if (isset($user)) {
   $event->organizer = $organizer;
 
   $attendee = new LibMelanie\Api\Mel\Attendee();
-  $attendee->name = $_POST['user']['name'] . ' ' . $_POST['user']['firstname'];
-  $attendee->email = $_POST['user']['email'];
+  $attendee->name = $_POST['attendee']['name'] . ' ' . $_POST['attendee']['firstname'];
+  $attendee->email = $_POST['attendee']['email'];
   $attendee->role = LibMelanie\Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
   $_attendees[] = $attendee;
 
   $event->attendees = $_attendees;
-  
+
   $event->save();
+
+  // ???
+  // if ($event->save()) {
+  Mail::SendAttendeeAppointmentMail($organizer, $_POST['attendee'], $_POST['appointment']);
+  // }
+
 }
 
 /**
@@ -130,5 +140,5 @@ function generate_uid($_user)
  */
 function displayUserFullName()
 {
-  return ' avec ' . $_POST['user']['firstname'] . ' ' . $_POST['user']['name'];
+  return ' avec ' . $_POST['attendee']['firstname'] . ' ' . $_POST['attendee']['name'];
 }

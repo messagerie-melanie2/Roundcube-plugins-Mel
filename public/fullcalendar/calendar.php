@@ -2,7 +2,6 @@
 
 // Inclusion des fichiers
 require_once '../lib/utils.php';
-require_once '../config.inc.php';
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {

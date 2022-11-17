@@ -321,6 +321,13 @@ ul.listing li ul {
   content: "\e932" !important;
   font-family: var(--main-icon-font) !important;
 }
+.listing li > div.tasklist.readonly .listname::before {
+  content: "\e966" !important;
+  font-family: var(--main-icon-font) !important;
+}
+.listing li > div.tasklist.readonly .listname::after {
+  display: none;
+}
 .listing li > div.readonly a:first-child::after {
   /** CALENDRIER **/
   font-size: 0.8em !important;
@@ -2491,4 +2498,8 @@ html.layout-small .webconf-frame #mm-ariane {
 html.layout-phone .toolbar-popup,
 html.layout-small .toolbar-popup {
   right: unset;
+}
+#calendaroptionsmenulink:hover,
+#calendaroptionsmenulink:focus {
+  background-color: #2C3054;
 }

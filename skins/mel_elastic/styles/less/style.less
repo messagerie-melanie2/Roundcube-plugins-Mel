@@ -431,6 +431,19 @@ ul.treelist{
                         font-family: var(--main-icon-font)!important;
                     }
                 }
+
+                &.readonly{
+                    .listname{
+                        &::before{
+                            content: "\e966"!important;
+                            font-family: var(--main-icon-font)!important;
+                        }
+
+                        &::after{
+                            display: none;
+                        }
+                    }
+                }
             }
 
             &.readonly{
@@ -3852,5 +3865,12 @@ a.rcmContactAddress {
     html@{layout-phone} &,
     html@{layout-small} &{
         right: unset;
+    }
+}
+
+#calendaroptionsmenulink{
+    &:hover,
+    &:focus {
+        background-color: #2C3054;
     }
 }

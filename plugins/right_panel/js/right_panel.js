@@ -93,7 +93,7 @@ $(document).on("click", '#right_panel_events .events_list .event', function(e) {
 			url = url.replace(/\_task=[a-z0-9_-]+/, '_task=calendar');
 			window.open(url, '_blank');
 		}
-	}	
+	}
 });
 $(document).on("click", '#right_panel_events .events_list .alarm .title', function(e) {
 	rcmail.right_panel_enable_notification();
@@ -118,14 +118,14 @@ $(document).on("click", '#right_panel_events .events_list .alarm .title', functi
 			let url = rcmail.env.comm_path;
 			url = url.replace(/\_task=[a-z0-9_-]+/, '_task=calendar');
 			window.open(url, '_blank');
-		}	
+		}
 	}
 	else if (rcmail.env.task != 'tasks') {
 		let url = rcmail.env.comm_path;
 		url = url.replace(/\_task=[a-z0-9_-]+/, '_task=tasks');
 		window.open(url, '_blank');
 	}
-	
+
 });
 $(document).on("click", '#right_panel_events .events_list .alarm .later', function(e) {
 	rcmail.right_panel_enable_notification();
@@ -185,13 +185,13 @@ $(document).on("click", '#right_panel_events .pagination .previous', function(e)
 	if (!$(this).hasClass('disabled')) {
 		window.current_event_page--;
 		rcmail.right_panel_events_pagination();
-	}	
+	}
 });
 $(document).on("click", '#right_panel_events .pagination .next', function(e) {
 	if (!$(this).hasClass('disabled')) {
 		window.current_event_page++;
 		rcmail.right_panel_events_pagination();
-	}	
+	}
 });
 
 // Contacts menu
@@ -236,7 +236,7 @@ $(document).on("click", '#right_panel_contacts .contacts_recents .contact', func
 });
 $(document).on("click", '#right_panel_presence', function(event) {
 	rcmail.right_panel_enable_notification();
-	document.getElementById('useroptions').style.width = this.offsetWidth + 'px'; 
+	document.getElementById('useroptions').style.width = this.offsetWidth + 'px';
 	return UI.toggle_popup('useroptions', {target: this, pointerType: 'mouse', pageX: event.pageX, pageY: event.pageY, clientX: event.clientX, clientY: event.clientY});
 });
 
@@ -485,13 +485,13 @@ rcube_webmail.prototype.right_panel_user_presence = function() {
 
 		$('#right_panel_presence').append('<span class="name_no_status">' + rcmail.env['user_initials'] + '</span>');
 	}
-	
+
 	$('#right_panel #right_panel_presence').removeClass('online');
 	$('#right_panel #right_panel_presence').removeClass('offline');
 	$('#right_panel #right_panel_presence').removeClass('away');
 	$('#right_panel #right_panel_presence').removeClass('busy');
 	$('#right_panel #right_panel_presence').addClass(rcmail.env['ariane_user_status']);
-	
+
 	if (rcmail.env.web_socket_ariane_url) {
 		if ($('#right_panel').hasClass('minified')) {
 			$('#right_panel_presence').append('<span class="presence">' + rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status'] + '_min') + '</span>');
@@ -539,7 +539,7 @@ rcube_webmail.prototype.right_panel_storage_get = function(name, fromJson = fals
 	else {
 		value = window.sessionStorage.getItem('right_panel.' + name);
 	}
-	
+
 	if (value == null) {
 		value = defaultValue;
 	}
@@ -581,7 +581,7 @@ rcube_webmail.prototype.right_panel_show_message = function(id) {
 
 	let target = window,
 	  url = this.params_from_uid(id, {_caps: this.browser_capabilities()});
-	
+
 	url = this.url('mail/show', url);
 	url = url.replace(/&\_account=[a-z0-9._%-]+/, '');
 	url = url.replace(/\_mbox=[a-zA-Z0-9._%-]+/, '_mbox=INBOX');
@@ -600,7 +600,7 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 		var url = rcmail.env.comm_path;
 		url = url.replace(/\_task=.*/, '_task=discussion');
 		url = url + '&_channel=' + channel;
-		if (new_window) {			
+		if (new_window) {
 			if ($('#rocketchatframe').length) {
 				window.document.getElementById('rocketchatframe').contentWindow.postMessage({
 					externalCommand: 'go',
@@ -608,7 +608,7 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 				}, rcmail.env.ariane_url);
 				$('#rocketchatframe').dialog('open').width(600);
 			}
-			else {				
+			else {
 				var frame = $('<iframe>').attr('id', 'rocketchatframe')
 					.attr('src', rcmail.env.ariane_url)
 					.attr('frameborder', '0')
@@ -622,17 +622,17 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 					height: 500,
 					rcmail: rcmail
 				}).width(600);
-				
+
 				window.document.getElementById('rocketchatframe').onload = function() {
 					setTimeout(function() {
 						window.document.getElementById('rocketchatframe').contentWindow.postMessage({
 							event: 'login-with-token',
 							loginToken: rcmail.env.ariane_auth_token,
 							userId: rcmail.env.ariane_user_id
-						}, rcmail.env.ariane_url);				
+						}, rcmail.env.ariane_url);
 					}, 50);
 				};
-				
+
 				window.addEventListener('message', (e) => {
 				    if (e.data.eventName == 'startup' && e.data.data) {
 				    	window.document.getElementById('rocketchatframe').contentWindow.postMessage({
@@ -644,7 +644,7 @@ rcube_webmail.prototype.right_panel_open_rocket_chat_url = function(channel, new
 				    	rcmail.right_panel_ariane_web_socket();
 					}
 				});
-			}			
+			}
 		}
 		else {
 			var win = window.open(url, '_blank');
@@ -849,7 +849,7 @@ rcube_webmail.prototype.right_panel_refresh_events = function() {
 				$('#right_panel_events .events_list .event[id="' + event._id + '"]').data('event', event);
 			}
 		}
-		
+
 		if ($('#right_panel_events .events_list .item').length == 0) {
 			$('#right_panel_events .events_list').append('<div class="item event noevent" title="' + this.get_label("right_panel.no_event_title") + '"><span>' + this.get_label("right_panel.no_event") + '</span></div>');
 			$('#right_panel_events .events_list').append('<div class="item event new_event" title="' + this.get_label("right_panel.new_event_title") + '"><span>' + this.get_label("right_panel.new_event") + '</span></div>');
@@ -871,7 +871,7 @@ rcube_webmail.prototype.right_panel_events_pagination = function() {
 	}
 	// Gérer la suppression depuis la dernière page
 	if (window.current_event_page > max_page) {
-		window.current_event_page = max_page; 
+		window.current_event_page = max_page;
 	}
 	const first_element = window.current_event_page * window.events_element_by_page;
 	const last_element = (window.current_event_page + 1) * window.events_element_by_page - 1;
@@ -919,7 +919,7 @@ rcube_webmail.prototype.right_panel_get_contacts = function(force = false) {
 		else {
 			$('#right_panel_contacts').append('<div class="contacts_menu"><span class="recents_button" title="' + this.get_label("right_panel.recents_button_title") + '"></span><span class="favorites_button disabled" title="' + this.get_label("right_panel.favorites_button_title") + '"></span></div>');
 		}
-		
+
 		$('#right_panel_contacts').append('<div class="contacts_recents"></div>');
 		$('#right_panel_contacts').append('<div class="contacts_favorites"></div>');
 		// Load current contact list
@@ -981,7 +981,7 @@ rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = fals
 					}
 					// Contact name
 					let name;
-					if (contact.surname || contact.firstname) {
+					if ((contact.surname != undefined) && (contact.firstname != undefined)) {
 						name = contact.firstname + ' ' + contact.surname;
 					}
 					else {
@@ -1045,7 +1045,7 @@ rcube_webmail.prototype.right_panel_get_contacts_recents = function(force = fals
 							munread: contact.munread
 						});
 						hasChanged = true;
-					}				
+					}
 				}
 				if (hasChanged) {
 					window.messagesList.sort(function(a, b) {
@@ -1097,21 +1097,31 @@ rcube_webmail.prototype.right_panel_get_mails_count = function(force = false) {
 
 // Get contacts favorites
 rcube_webmail.prototype.right_panel_get_contacts_favorites = function(force = false) {
+	// Modification IG/MI : affichage contacts dans tous les cas (refresh page non pris en compte dans ancien code, contacts non visibles)
+	//.... Si la liste des favoris n'est pas affichée, on ne fait rien
+	if($('#right_panel_contacts .contacts_favorites').length == 0)
+		return;
+	if($('#right_panel_contacts .contacts_favorites').css("display") == "none")
+		return;
+
 	this.enable_command('compose', true);
-	if (!window.favoritesList.length || force) {
-		var lastUpdateFavoritesList = rcmail.right_panel_storage_get('lastUpdateFavoritesList', false, false, 0);
-	  	if (lastUpdateFavoritesList && (Date.now() - lastUpdateFavoritesList) < NEXT_REFRESH) {
-			// The refresh is to early
-			return;
-		}
-		if (window.favoritesList.length && !$('#right_panel_contacts .contacts_favorites .contact').length) {
-			this.right_panel_refresh_favorites_contacts();
-		}
-		this.http_get('addressbook/plugin.list_contacts_favorites');	
-	}
-	else {
-		this.right_panel_refresh_favorites_contacts();
-	}
+	var lastUpdateFavoritesList = rcmail.right_panel_storage_get('lastUpdateFavoritesList', false, false, 0);
+	var doXHR = false;
+
+	//.... Si pas de date d'update, on la force à 0
+	if(!lastUpdateFavoritesList || (lastUpdateFavoritesList == undefined))
+		lastUpdateFavoritesList = 0;
+
+	//.... Si temps refresh dépassé, on active le XHR
+	if((Date.now() - lastUpdateFavoritesList) > NEXT_REFRESH)
+		doXHR = true;
+
+	//.... Récupération des contacts favoris sur le serveur pour maj du stockage de session du navigateur
+	if(doXHR)
+		this.http_get('addressbook/plugin.list_contacts_favorites');
+
+	//.... Affichage de la liste de contacts favoris du stockage de session du navigateur
+	this.right_panel_refresh_favorites_contacts();
 };
 
 // Refresh favorites contacts list
@@ -1125,7 +1135,7 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 		const contact = window.favoritesList[i];
 		// Contact name
 		let name;
-		if (contact.surname || contact.firstname) {
+		if ((contact.surname != undefined) && (contact.firstname != undefined)) {
 			name = contact.firstname + ' ' + contact.surname;
 		}
 		else {
@@ -1133,32 +1143,32 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 		}
 		// Contact email
 		let email = '<span class="email"></span>';
-		if (contact.email) {
+		if (contact.email != undefined) {
 			email = '<span class="email"><a href="mailto:' + contact.email + '" onclick="event.preventDefault(); event.stopPropagation(); return rcmail.command(\'compose\',\'' + contact.email + '\',this);"></a></span>';
 		}
 		// Contact im
 		let im = '<span class="im"></span>';
-		if (contact.username) {
+		if (contact.username != undefined) {
 			im = '<span class="im"><a href="#" onclick="event.preventDefault(); event.stopPropagation(); return rcmail.right_panel_open_rocket_chat_url(\'/direct/' + contact.username + '\');"></a></span>';
 		}
 		// Contact status
 		let status = '<span class="status offline">none</span>';
-		if (contact.status) {
+		if (contact.status != undefined) {
 			status = '<span class="status ' + contact.status + '">' + contact.status + '</span>';
 		}
 		// ID
 		let id = contact.cuid
-		if (contact.username) {
+		if (contact.username != undefined) {
 			id = contact.username;
 		}
 		// Photo url
 		let photo_url = null;
-		if (contact.photo_url) {
-			photo_url = contact.photo_url;	
+		if (contact.photo_url != undefined) {
+			photo_url = contact.photo_url;
 		}
 		else {
-			photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_')});	
-		}								
+			photo_url = rcmail.url('addressbook/photo', {_cid: contact.ID, _source: rcmail.env['username'].replace('.','_-P-_').replace('@','_-A-_').replace('%', '_-C-_')});
+		}
 		const photo = '<img src="' + photo_url + '" alt="' + rcmail.get_label("right_panel.contactphoto") + '">';
 		$('#right_panel_contacts .contacts_favorites .contacts_list').append('<div class="contact ' + id + '" title="' + contact.name + '"><span class="cid">' + contact.ID + '</span><span class="photo">' + photo + '</span><span class="name">' + name + '</span>' + status + im + email + '</div>');
 	}
@@ -1168,7 +1178,7 @@ rcube_webmail.prototype.right_panel_refresh_favorites_contacts = function() {
 // Refresh recents contacts list
 rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 	$('#right_panel_contacts .contacts_recents').html('');
-	$('#right_panel_contacts .contacts_recents').append('<div class="contacts_list"></div>');	
+	$('#right_panel_contacts .contacts_recents').append('<div class="contacts_list"></div>');
 	if (!window.messagesList) {
 		window.messagesList = [];
 	}
@@ -1178,7 +1188,7 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 	const today = new Date();
 	let yesterday = new Date();
 	yesterday.setDate(today.getDate() - 1);
-	
+
 	// Limiter à 20 l'affichage
 	window.messagesList.splice(20, window.messagesList.length - 20);
 
@@ -1193,19 +1203,19 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 			// Date
 			let date = new Date();
 			date.setTime(contact.timestamp * 1000);
-			
+
 			let hours = date.getHours();
 			hours = ("0" + hours).slice(-2);
 			let minutes = date.getMinutes();
 			minutes = ("0" + minutes).slice(-2);
 			let hour = hours + ':' + minutes;
 			let day;
-			if (date.getDate() == today.getDate() 
+			if (date.getDate() == today.getDate()
 					&& date.getMonth() == today.getMonth()
 					&& date.getFullYear() == today.getFullYear()) {
 				day = rcmail.get_label('right_panel.today_min');
 			}
-			else if (date.getDate() == yesterday.getDate() 
+			else if (date.getDate() == yesterday.getDate()
 					&& date.getMonth() == yesterday.getMonth()
 					&& date.getFullYear() == yesterday.getFullYear()) {
 				day = rcmail.get_label('right_panel.yesterday_min');
@@ -1216,7 +1226,7 @@ rcube_webmail.prototype.right_panel_refresh_recents_contacts = function() {
 			const date_text = rcmail.get_label('right_panel.date').replace(/%%day%%/, day).replace(/%%hour%%/, hour);
 			// ID
 			const id = contact.id
-			$('#right_panel_contacts .contacts_recents .contacts_list').append('<div class="contact ' + contact.id + classMunread + '" id="' + i + '" title="' + contact.name + '"><span class="date">' + date_text + '</span><span class="title">' + rcmail.get_label('right_panel.' + contact.type) + '</span><span class="name">' + contact.name + '</span><span class="subject">' + contact.subject + '</span><span class="text">' + contact.text + '</span></div>');		
+			$('#right_panel_contacts .contacts_recents .contacts_list').append('<div class="contact ' + contact.id + classMunread + '" id="' + i + '" title="' + contact.name + '"><span class="date">' + date_text + '</span><span class="title">' + rcmail.get_label('right_panel.' + contact.type) + '</span><span class="name">' + contact.name + '</span><span class="subject">' + contact.subject + '</span><span class="text">' + contact.text + '</span></div>');
 		}
 	}
 	$("#right_panel_contacts .contacts_recents .contacts_list").mCustomScrollbar({theme: 'minimal', scrollInertia: 500});
@@ -1238,7 +1248,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket = function() {
 					"msg": "connect",
 					"version": "1",
 					"support": ["1", "pre2", "pre1"]
-				}			
+				}
 			}
 			else {
 				params = {
@@ -1266,7 +1276,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket = function() {
 			// Nettoyage des localstorages
 			if (getCookieValue('roundcube_login') == '') {
 				window.localStorage.removeItem('right_panel.event');
-				window.localStorage.removeItem('right_panel.messagesList');	
+				window.localStorage.removeItem('right_panel.messagesList');
 			}
 			window.webSocketAriane = false;
 		};
@@ -1303,7 +1313,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 				    	window.currentUserID + "/rooms-changed",
 				        false
 				    ]
-				};					
+				};
 				window.webSocketAriane.send(JSON.stringify(params));
 			}
 			break;
@@ -1380,7 +1390,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 					$('#right_panel #right_panel_presence .presence').text(rcmail.get_label('right_panel.' + rcmail.env['ariane_user_status']));
 					rcmail.right_panel_storage_set('ariane_user_status', rcmail.env['ariane_user_status']);
 					break;
-				case 'method_subscriptions_get':					
+				case 'method_subscriptions_get':
 					var new_recent = false;
 					// Get from session storage
 					window.messagesList = rcmail.right_panel_storage_get('messagesList', true);
@@ -1393,11 +1403,11 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 						// timestamp
 						var timestamp = contact._updatedAt['$date'].toString();
 						timestamp = timestamp.substr(0, timestamp.length - 3);
-						
+
 						var id = contact.name.split('@')[0].replace(/\./g,'_');
 						var found = false, key = null;
 						for (var j = 0; j < window.messagesList.length; j++) {
-							if (window.messagesList[j] && window.messagesList[j].username == contact.name 
+							if (window.messagesList[j] && window.messagesList[j].username == contact.name
 									|| window.messagesList[j] && window.messagesList[j].id == id) {
 								found = true;
 								key = j;
@@ -1405,24 +1415,24 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 							}
 						}
 						var chan_unread = contact.unread;
-						
-						if (contact.t == 'd' 
+
+						if (contact.t == 'd'
 								&& contact.name) {
 							// Ne pas s'afficher soit même
 							if (rcmail.env['username'] == contact.name) {
 								continue;
 							}
-							
+
 							if ($('#right_panel_contacts div.' + id + ' span.unread').length && contact.unread > 0) {
 								$('#right_panel_contacts div.contact.' + id + ' span.unread').text(contact.unread);
 							}
 							var name = contact.fname;
 							var im = '/direct/' + contact.name;
-							
+
 							// Gestion du unread total
 							unread += contact.unread;
 						}
-						else if (contact.t == 'p' 
+						else if (contact.t == 'p'
 								&& contact.name) {
 							if (!chan_unread) {
 								chan_unread = contact.alert ? '°' : '';
@@ -1431,11 +1441,11 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 								// Gestion du unread total
 								unread += contact.unread;
 							}
-							
+
 							var name = '@' + contact.name;
 							var im = '/group/' + contact.name;
 						}
-						else if (contact.t == 'c' 
+						else if (contact.t == 'c'
 								&& contact.name) {
 							var chan_unread = contact.unread;
 							if (!chan_unread) {
@@ -1445,7 +1455,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 								// Gestion du unread total
 								unread += contact.unread;
 							}
-							
+
 							var name = '#' + contact.name;
 							var im = '/channel/' + contact.name;
 						}
@@ -1455,7 +1465,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 								window.messagesList[key].unread = chan_unread;
 								window.messagesList[key].timestamp = timestamp;
 								window.messagesList[key].history = true;
-							}								
+							}
 						}
 						else {
 							// window.console.log(JSON.stringify(contact));
@@ -1496,7 +1506,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 					else {
 						// Charger l'historique
 						for (var i = 0; i < window.messagesList.length; i++) {
-							if (window.messagesList[i].type == 'im' 
+							if (window.messagesList[i].type == 'im'
 									&& window.messagesList[i].history) {
 								var params = {
 								    "msg": "method",
@@ -1540,7 +1550,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 								// timestamp
 								var timestamp = message.ts['$date'].toString();
 								timestamp = timestamp.substr(0, timestamp.length - 3);
-								
+
 								if (message.u.username == rcmail.env['username']) {
 									window.messagesList[key].subject = '(' + rcmail.get_label('right_panel.you') + ') ' + message.msg;
 								}
@@ -1552,7 +1562,7 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 										window.messagesList[key].subject = message.u.name + ': ' + message.msg;
 									}
 								}
-								
+
 								window.messagesList[key].history = false;
 								window.messagesList[key].timestamp = timestamp;
 								rcmail.right_panel_storage_set('messagesList', window.messagesList, true);
@@ -1567,13 +1577,13 @@ rcube_webmail.prototype.right_panel_ariane_web_socket_results = function(data) {
 										rcmail.right_panel_refresh_recents_contacts();
 									}, 500);
 								}
-							}							
+							}
 						}
 					}
 					break;
-			
+
 		}
-	}	
+	}
 };
 
 // Web socket Ariane set status

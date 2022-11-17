@@ -39,6 +39,7 @@ interface IMel_Enumerable extends IteratorAggregate, Countable
     function removeTwins($callback) : IMel_Enumerable;
     function orderBy($callback, $descending = false) : IMel_Enumerable;
     function max($selector = null);
+    function min($selector = null);
     function any($selector = null) : bool;
     function all($selector) : bool;
     function contains($item) : bool;
@@ -184,6 +185,19 @@ class Mel_Enumerable extends AMel_Enumerable implements IMel_Enumerable
         }
 
         return $last;
+    }
+
+    public function min($selector = null)
+    {
+        $iterable = isset($selector) ? $this->select($selector) : $this;
+
+        $min = null;
+        foreach ($iterable as $value) {
+            if (!isset($min)) $min = $value;
+            else if ($min > $value) $min = $value;
+        }
+
+        return $min;
     }
 
     public function first($selector = null) {

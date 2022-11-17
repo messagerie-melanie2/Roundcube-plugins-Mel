@@ -101,7 +101,7 @@ class Gestionnaireabsence extends Moncompteobject
     $i = 0;
     foreach ($user->outofoffices as $type => $outofoffice) {
       if (
-        strpos($type, Outofoffice::TYPE_ALL) === 0
+        strpos($type, Outofoffice::HEBDO) === 0
         && isset($outofoffice->days)
       ) {
         $hasAbsence = true;
@@ -114,7 +114,8 @@ class Gestionnaireabsence extends Moncompteobject
           isset($outofoffice->hour_start) ? $outofoffice->hour_start->format('H:i') : '00:00',
           isset($outofoffice->hour_end) ? $outofoffice->hour_end->format('H:i') : '00:00',
           $outofoffice->days,
-          $outofoffice->message
+          $outofoffice->message,
+          $outofoffice->type
         );
         $i++;
       }
@@ -129,16 +130,33 @@ class Gestionnaireabsence extends Moncompteobject
   /**
    * Génération du template pour les absence hebdo
    */
-  private static function absence_template($i, $all_day = false, $hour_start = '', $hour_end = '', $days = [], $message = '')
+  private static function absence_template($i, $all_day = false, $hour_start = '', $hour_end = '', $days = [], $message = '', $perimeter = Outofoffice::TYPE_ALL)
   {
     $input_hour_start = new html_inputfield(['id' => "hour_start$i", 'class' => 'form-control', 'name' => "hour_start$i", "type" => "text", 'disabled' => $all_day]);
     $input_hour_end = new html_inputfield(['id' => "hour_end$i", 'class' => 'form-control', 'name' => "hour_end$i", "type" => "text",  'disabled' => $all_day]);
     $textarea_message = new html_textarea(['id' => "message$i", 'class' => 'form-control', 'name' => "message$i", 'rows' => '3', 'cols' => '100']);
     $checkbox_all_day = new html_checkbox(['id' => "all_day$i", 'class' => 'form-check-input', 'name' => "all_day$i", 'value' => '1', 'onclick' => 'all_day_check(this);']);
+
+    // MCE - Ajouter le périmètre de réponse dans les absences hebdo
+		$span_perimeter = '';
+		if (rcmail::get_instance()->config->get('moncompte_absence_hebdo_perimetre', false)) {
+			$select = new html_select(['id' => "perimeter$i", 'name' => "perimeter$i"]);
+			$select->add(rcmail::get_instance()->gettext('absence_type_all', 'mel_moncompte'), Outofoffice::TYPE_ALL);
+			$select->add(rcmail::get_instance()->gettext('absence_type_interne', 'mel_moncompte'), Outofoffice::TYPE_INTERNAL);
+			$select->add(rcmail::get_instance()->gettext('absence_type_externe', 'mel_moncompte'), Outofoffice::TYPE_EXTERNAL);
+			$span_perimeter = html::div('form-group',
+        html::span('perimeter',
+          html::label(['for' => "perimeter$i"], rcmail::get_instance()->gettext('absence_perimetre_label', 'mel_moncompte')) .
+          $select->show($perimeter)
+        )
+			);
+		}
+
     return html::div(
       'absence' . ($i === '%%template%%' ? ' template' : ''),
       html::div(
         'form-row justify-content-between',
+        $span_perimeter . 
         html::div(
           'form-group',
           html::div(
@@ -319,7 +337,8 @@ class Gestionnaireabsence extends Moncompteobject
           if (!empty($days)) {
             $outofoffice->order = 70;
             $outofoffice->days = $days;
-            $outofoffice->type = Outofoffice::TYPE_ALL;
+            $type = trim(rcube_utils::get_input_value("perimeter$i", rcube_utils::INPUT_POST));
+						$outofoffice->type = $type ?: Outofoffice::TYPE_ALL;
             $outofoffice->message = trim(rcube_utils::get_input_value("message$i", rcube_utils::INPUT_POST));
             $all_day = trim(rcube_utils::get_input_value("all_day$i", rcube_utils::INPUT_POST));
             if ($all_day) {

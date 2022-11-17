@@ -11,6 +11,9 @@ $rcmail_config['liste_admin'] = "uid=listadm,ou=admin,ou=ressources,dc=example,d
 // Configuration du mot de passe de l'administrateur LDAP pour l'édition de listes
 $rcmail_config['liste_pwd'] = "";
 
+// Proposer le périmètre des absences hebdo aux utilisateurs
+$rcmail_config['moncompte_absence_hebdo_perimetre'] = false;
+
 // Activer le menu Mon compte
 $rcmail_config['enable_moncompte']          = true;
 // Activer le menu Mon compte / Gestion des CGUs

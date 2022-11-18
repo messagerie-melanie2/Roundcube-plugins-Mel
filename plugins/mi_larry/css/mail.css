@@ -1003,6 +1003,14 @@ a.button.showcontacts{
   background-color: var(--global-bg-color) !important;
 }
 
+.mce-btn .mce-txt {
+  color: var(--login-left-bg-color) !important;
+}
+
+.mce-primary:hover, .mce-primary:focus {
+    border-color: #ccc !important;
+}
+
 #composeview-left{
   position: absolute;
   top: 0;

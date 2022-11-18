@@ -40,13 +40,13 @@ if (rcmail.env.task == 'addressbook') {
         var obj = $(this).find('> td.name');
       }
       var val = obj.text().replace(/(<([^>]+)>)/gi, "");
-      if (search.length > 1) {
+      if (search.length > 2) {
         if (val.toLowerCase().indexOf(search) >= 0) {
           obj.html(val.replace(new RegExp(search, 'gi'), '<strong>$&</strong>'));
         }
         else {
           obj.html(val);
-          $(this).hide();
+          //$(this).hide(); //cache le résultat lorsque recherche par mail
         }
       }
       else {
@@ -55,6 +55,27 @@ if (rcmail.env.task == 'addressbook') {
     });
   });
 }
+
+$(document).on("keyup", 'input#contactsearchbox', function(e) {
+	$('#annuaire-list li.object').show();
+	var search = $(this).val().toLowerCase();
+	$('#annuaire-list li.object').each(function() {
+		var obj = $(this).find('> span.name');
+		if (search.length > 1) {
+			if (obj.text().toLowerCase().indexOf(search) >= 0) {
+				obj.html(obj.text());
+				obj.html(obj.text().replace(new RegExp(search, 'gi'), '<strong>$&</strong>'));
+			}
+			else {
+				obj.html(obj.text());
+				//$(this).hide(); //cache le resultat si recherche par mail
+			}
+		}
+		else {
+			obj.html(obj.text());
+		}
+	});
+});
 
 window.rcmail && rcmail.addEventListener('init', function(evt) {
   if (rcmail.env.task == 'addressbook') {

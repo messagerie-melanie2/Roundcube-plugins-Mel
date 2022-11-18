@@ -6,7 +6,7 @@ var UI = new rcube_mail_ui();
 
 <roundcube:if condition="!config:support_url" />
 	<style>
-		#taskbar a.button-help {
+		#taskbar a.button-help, #taskbar a.button-mel_help {
 			display: none;
 		}
 	</style>
@@ -25,10 +25,12 @@ var UI = new rcube_mail_ui();
 		</ul>
 	</div>
 	<div id="taskbar" class="topright" role="navigation" aria-labelledby="aria-label-tasknav">
-		<roundcube:button command="mail" label="mail" title="mel_larry.mail_title" class="button-mail" classSel="button-mail button-selected" innerClass="button-inner" />
-		<roundcube:button command="addressbook" label="addressbook" title="mel_larry.contact_title" class="button-addressbook" classSel="button-addressbook button-selected" innerClass="button-inner" />
-		<roundcube:button command="discussion" label="mel_larry.discussion" title="mel_larry.discussion_title" class="button-discussion" classSel="button-discussion button-selected" innerClass="button-inner" />
-		<roundcube:container name="taskbar" id="taskbar" />
+		<div>
+			<roundcube:button command="mail" label="mail" title="mel_larry.mail_title" class="button-mail" classSel="button-mail button-selected" innerClass="button-inner" />
+			<roundcube:button command="addressbook" label="addressbook" title="mel_larry.contact_title" class="button-addressbook" classSel="button-addressbook button-selected" innerClass="button-inner" />
+			<roundcube:button command="discussion" label="mel_larry.discussion" title="mel_larry.discussion_title" class="button-discussion" classSel="button-discussion button-selected" innerClass="button-inner" />
+			<roundcube:container name="taskbar" id="taskbar" />
+		</div>
 		<roundcube:button command="settings" label="settings" title="mel_larry.settings_title" class="button-settings" classSel="button-settings button-selected" innerClass="button-inner" />
 		<roundcube:button command="logout" label="logout" class="button-logout" classSel="button-logout" innerClass="button-inner" />
 		<a class="button-help" target="_blank" role="button" href="<roundcube:var name='config:support_url' />">
@@ -37,7 +39,7 @@ var UI = new rcube_mail_ui();
 		<span class="minmodetoggle" title="<roundcube:label name="mel_larry.min_toggle_title" />" role="presentation"></span>
 	</div>
 	<span class="logo">
-		<roundcube:object name="logo" title="mel_larry.logo_title" src="/images/MI.svg" id="toplogo" alt="Logo" onclick="if(window.rcmail)rcmail.command('switch-to-default-task')" />
+		<roundcube:object name="logo" title="mel_larry.logo_title" src="../../../plugins/mi_larry/ministere.php?q=logo" id="toplogo" alt="Logo" onclick="if(window.rcmail)rcmail.command('switch-to-default-task')" />
 	</span>
 <roundcube:endif />
 <roundcube:if condition="env:extwin" />

@@ -152,12 +152,18 @@ $labels['computer_private_title'] = 'Le nom d\'utilisateur ainsi que les codes d
 $labels['change_user'] = 'Changer d\'utilisateur';
 
 $labels['login from'] = "Connexion depuis : ";
-$labels['login_productioninformation'] = "Messagerie Collaborative de l'Etat - Ministère de l'Intérieur";
+
+include dirname(__FILE__, 2) . '/ministere.php';
+$cl = new ministere();
+$infoFile = $cl->getInfo();
+$info = json_decode(file_get_contents($infoFile));
+
+$labels['login_productioninformation'] = "Messagerie Collaborative de l'Etat - ". $info->libelle;
 $labels['login_footerbox'] = isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) ? "Connexion depuis : " : " ";
 $labels['login_footerbox_info'] = isset($_SERVER["HTTP_X_MINEQPROVENANCE"]) ? ucfirst($_SERVER["HTTP_X_MINEQPROVENANCE"]) : " ";
 $labels['login_warning'] = " ";
-$labels['login_footer1'] = " © Ministère de l'Intérieur";
-$labels['login_footer2'] = "DNUM - Direction du Numérique";
+$labels['login_footer1'] = " © " . $info->libelle;
+$labels['login_footer2'] = $info->shortDir . " - " . $info->direction;
 
 $labels['agenda_filter'] = 'Filtrer les agendas';
 
@@ -179,3 +185,10 @@ $labels['add...'] = 'Ajouter ...';
 
 $labels['composeoption_notification'] = 'Notifications :';
 $labels['dsn'] = 'Etat de distribution';
+
+$labels['acl_identifier'] = 'Compte';
+$labels['acl_identinputlabel'] = 'Pour';
+$labels['arialabelaclform'] = 'Formuaire de gestion du partage';
+$labels['arialabelaclactions'] = 'Actions sur le compte séléctionné';
+$labels['acl_identinputlegend'] = 'Saisir le champ ci-dessous';
+$labels['ariasummaryacltable'] = 'Tableau des droits';

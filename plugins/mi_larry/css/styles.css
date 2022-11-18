@@ -274,10 +274,24 @@ a.button.button-text {
 #messagestack div {
  border-radius: 0;
 }
-/*** basic page layout ***/#toplogo {
- padding-top: 12px;
- padding-left: 10px;
- max-width: 58px;
+span.logo{
+  width: 100px;
+  text-align: center;
+  display: inline-block;
+}
+#taskbar > div{
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - 185px);
+  overflow: auto;
+  display: flex;
+}
+#toplogo {
+ /*padding-top: 12px;*/
+ /*padding-left: 10px;*/
+ max-height: 61px;
+ max-width: 100px;
 }
 .minimal #toplogo {
  padding-top: 5px;
@@ -376,7 +390,8 @@ body.extwin #topnav {
 }
 @media screen and (max-width: 1440px) {
  #topnav .topright {
-  margin-left: 16px;
+  /*margin-left: 16px;*/
+  left: 100px;
  }
 }
 #taskbar a:hover,
@@ -728,7 +743,7 @@ body.light #mailview-right.uibox {
  text-shadow: none;
 }
 /* Splitters */.splitter-v {
- width: 2px;
+ width: 5px;
  background: none;
  z-index: 5;
 }
@@ -1201,8 +1216,8 @@ table.propform td.title {
 }
 #login-form .box-left .productname {
  position: fixed;
- top: 0px;    /*background: url(../images/login-logo.png?v=e784.5000) center right no-repeat;*/
- background: url(../images/MI.svg) center left no-repeat;
+ top: 0px;
+ background: url(/plugins/mi_larry/ministere.php?q=img) center left no-repeat;
  height: 130px;
  padding: 0;
  text-indent: -9999px;
@@ -2065,23 +2080,30 @@ ul.treelist li.selected > div.collapsed {
   height: 25px;
   background-color: var(--inputs-mainaction-bg-color);
 }
+/*
 #right_panel.minified #right_panel_contacts, #right_panel_contacts{
   position: relative;
   top: 0;
   margin: 0;
   margin-top: 5px;
-}
+}*/
+/*
 #right_panel_contacts .contacts_menu{
   margin-left: 0;
 }
+/*
 #right_panel_contacts .contacts_list{
   position: relative;
   left: 0;
   top: 0;
   margin-top: 5px;
-}
+}*/
 
 /* contacts */
 #annuaireselector{
   display: none;
+}
+
+#calsidebarsplitter{
+    width: 5px !important;
 }

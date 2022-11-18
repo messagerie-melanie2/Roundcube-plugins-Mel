@@ -22,55 +22,9 @@ if ($config['DEV']) {
 require_once '../lib/vendor/autoload.php';
 require_once $dir . '/vendor/autoload.php';
 
-// Récupération des paramètres de la requête
-$calhash = utils::get_input_value('_cal', utils::INPUT_GET);
-if (isset($calhash)) {
-  $format = 'ics';
-  $calhash = urldecode($calhash);
+$user = utils::check_hash_key();
 
-  // Récupération des informations à partir du hash
-  if (preg_match(($suff_regex = '/\.([a-z0-9]{3,5})$/i'), $calhash, $m)) {
-    $format = strtolower($m[1]);
-    $calhash = preg_replace($suff_regex, '', $calhash);
-  }
-
-  $ics = $format == 'ics';
-
-  if (!strpos($calhash, ':'))
-    $calhash = base64_decode($calhash);
-
-  list($_user, $calendar_name) = explode(':', $calhash, 2);
-  $calendar_name = utils::to_M2_id($calendar_name);
-} else {
-  // Si pas d'identifiant on retourne une erreur
-  echo json_encode(["error" => "Erreur de lecture pour l'identifiant de l'agenda."]);
-  exit();
-}
-
-
-// Génération de l'utilisateur Mél
-if (isset($_user)) {
-  $user = new LibMelanie\Api\Mel\User();
-  $user->uid = $_user;
-}
-
-// Récupération de la clé de la requête 
-$keyhash = utils::get_input_value('_key', utils::INPUT_GET);
-$keyhash = urldecode($keyhash);
-if (isset($keyhash)) {
-  // On compare la clé avec la valeur des paramètres utilisateurs
-  $value = $user->getCalendarPreference("appointmentkeyhash");
-
-  if (isset($value)) {
-    $value = unserialize($value);
-    if (!isset($value[$calendar_name]) || $value[$calendar_name] != $keyhash) {
-      $keyhash = null;
-    }
-  }
-}
-
-// Vérification de la clé
-if (!isset($keyhash)) {
+if (!$user) {
   header('Content-Type: application/json; charset=utf-8');
 
   echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
@@ -78,7 +32,6 @@ if (!isset($keyhash)) {
 }
 
 $user_prefs = $user->getCalendarPreference("appointment_properties");
-
 header('Content-Type: application/json; charset=utf-8');
 echo $user_prefs;
 exit;

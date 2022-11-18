@@ -4,6 +4,7 @@ let appointment_duration = 0;
 let owner_name = window.atob(params.get('_name'));
 let response = null;
 let calendar = null;
+let loaded_time_gap = false;
 let event_not_loaded = true;
 moment.locale('fr');
 
@@ -30,7 +31,6 @@ function run() {
   fetch(url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/', options))
     .then(response => response.json())
     .then(data => {
-      console.log(data);
       response = data;
 
       if (response.error) {
@@ -119,7 +119,10 @@ function display_calendar(response) {
         $('#loader').hide();
         $('#loaded-calendar').css("visibility", "visible");
         setTimeout(() => {
-          generateTimeGap(response)
+          if (!loaded_time_gap) {
+            generateTimeGap(response)
+            loaded_time_gap = true;
+          }
         }, 500);
       }
     },
@@ -333,33 +336,19 @@ function user_form_submit(e) {
   formData.append('appointment', JSON.stringify(event.appointment));
   formData.append('attendee', JSON.stringify(event.attendee));
 
-  console.log(formData);
   const options = { method: 'POST', headers: { Accept: 'application/json' }, body: formData };
   fetch(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), options)
     .then(response => response.json())
     .then(data => {
-      console.log(data)
+      if (data.error) {
+        $('#failToast').toast('show')
+        return;
+      }      
       $('#waitingToast').toast('hide');
       $('#successToast').toast('show');
       display_confirm_modal(event)
     })
-    .catch(err => console.error(err));
-
-  // $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
-  //   .done(function (data) {
-  //     if (data.success) {
-  //       $('#waitingToast').toast('hide');
-  //       $('#successToast').toast('show');
-  //       display_confirm_modal(event)
-  //     }
-  //     else {
-  //       ('#failToast').toast('show');
-  //     }
-
-  //   })
-  //   .fail(function () {
-  //     $('#failToast').toast('show');
-  //   });
+    .catch(err => $('#failToast').toast('show'));
 }
 
 function display_confirm_modal(event) {

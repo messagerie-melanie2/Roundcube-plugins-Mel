@@ -8,12 +8,11 @@ let event_not_loaded = true;
 moment.locale('fr');
 
 document.addEventListener('DOMContentLoaded', function () {
-
-  display_name();
+  display_calendar_name();
   run();
 });
 
-function display_name() {
+function display_calendar_name() {
   document.title = 'Calendrier de ' + owner_name;
   if (owner_name.includes('-')) {
     owner_name = owner_name.split('-')
@@ -26,103 +25,121 @@ function display_name() {
 }
 
 function run() {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/'), true);
+  const options = { method: 'GET', headers: { Accept: 'application/json' } };
 
-  xhr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      response = JSON.parse(this.response);
+  fetch(url.href.replace('fullcalendar/', 'fullcalendar/calendar.php/', options))
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      response = data;
 
-      console.log(response);
       if (response.error) {
         $('#error_message').text(response.error);
         $('#error_message').show();
         $('#show-calendar').hide();
         return;
-
-      }
-      get_appointment_duration(response);
-      show_appointment_place(response);
-      document.getElementById('appointment_time').textContent = appointment_duration ? appointment_duration + ' min' : 'Libre';
-
-
-      if (response.reason != "") {
-        $('#event-reason').show();
-        $('#event-reason-label').show();
-        response.reason.forEach(reason => {
-          $('#event-object').append(`<option value="${reason}">${reason}</option>`);
-        });
-        if (response.custom_reason == "true") {
-          $('#event-object').append(`<option value="custom">Autre</option>`);
-        }
-      } else {
-        if (response.custom_reason == "true") {
-          $('#event-reason-label').show();
-          $('#event-description-input').show();
-        }
       }
 
+      show_appointment_duration(response);
 
-      var calendarEl = document.getElementById('calendar');
-      calendar = new FullCalendar.Calendar(calendarEl, {
-        themeSystem: 'bootstrap5',
-        locale: 'fr',
-        firstDay: 1,
-        initialView: "timeGridWeek",
-        allDaySlot: false,
-        selectable: true,
-        slotDuration: "00:15",
-        slotMinTime: getMinBusinessHour(response),
-        slotMaxTime: getMaxBusinessHour(response),
-        // contentHeight: '65vh',
-        selectMirror: true,
-        forceEventDuration: true,
-        weekends: (response.range[0] != "" || response.range[6] != "") ? true : false,
-        selectConstraint: "businessHours",
-        selectOverlap: false,
-        events: {
-          url: url.href.replace('fullcalendar', 'freebusy'),
-          format: 'ics',
-          display: 'background'
-        },
-        loading: function (loading) {
-          if (!loading) {
-            $('#loader').hide();
-            $('#loaded-calendar').css("visibility", "visible");
-            setTimeout(() => {
-              generateTimeGap(response)
-            }, 500);
-          }
-        },
-        select: function (info) {
-          if (appointment_duration) {
-            info.end = info.start.addMinutes(appointment_duration);
+      add_appointment_place(response);
 
-            if (getMinDiff(info.start, info.end) > appointment_duration) {
-              $('#duration_warning').show();
-            }
-            else {
-              $('#duration_warning').hide();
-            }
+      add_appointment_reason(response)
 
-          }
-          showModal(info.start, info.end)
-        },
-        // headerToolbar: {
-        //   left: "prev,next today",
-        //   center: "title",
-        //   right: "timeGridWeek,timeGridDay",
-        // },
-        businessHours: generateBusinessHours(response),
-      });
-      calendar.render();
+      display_calendar(response)
+    })
+    .catch(err => console.error(err))
+}
 
+function show_appointment_duration(response) {
+  if (response.time_select) {
+    if (response.custom_time_select == 'h') {
+      response.time_select = response.time_select * 60;
+    }
+    $('#appointment_duration').text(response.time_select)
+    appointment_duration = parseInt(response.time_select);
+  }
+  else {
+    appointment_duration = null;
+  }
+  document.getElementById('appointment_time').textContent = appointment_duration ? appointment_duration + ' min' : 'Libre';
+}
 
+function add_appointment_place(response) {
+  if (response.place) {
+    $('#place_fields').show();
+    response.place.forEach(element => {
+      $('#place_select').append(`<option value='${element.type}'>${element.text}</option>`)
+    });
+  }
+}
 
-      $(".fc-scroller").first().css("overflow", "hidden");
+function add_appointment_reason(response) {
+  if (response.reason != "") {
+    $('#event-reason').show();
+    $('#event-reason-label').show();
+    response.reason.forEach(reason => {
+      $('#event-object').append(`<option value="${reason}">${reason}</option>`);
+    });
+    if (response.custom_reason == "true") {
+      $('#event-object').append(`<option value="custom">Autre</option>`);
+    }
+  } else {
+    if (response.custom_reason == "true") {
+      $('#event-reason-label').show();
+      $('#event-description-input').show();
     }
   }
-  xhr.send();
+}
+
+function display_calendar(response) {
+  var calendarEl = document.getElementById('calendar');
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    themeSystem: 'bootstrap5',
+    locale: 'fr',
+    firstDay: 1,
+    initialView: "timeGridWeek",
+    allDaySlot: false,
+    selectable: true,
+    slotDuration: "00:15",
+    slotMinTime: getMinBusinessHour(response),
+    slotMaxTime: getMaxBusinessHour(response),
+    selectMirror: true,
+    forceEventDuration: true,
+    weekends: (response.range[0] != "" || response.range[6] != "") ? true : false,
+    selectConstraint: "businessHours",
+    selectOverlap: false,
+    events: {
+      url: url.href.replace('fullcalendar', 'freebusy'),
+      format: 'ics',
+      display: 'background'
+    },
+    loading: function (loading) {
+      if (!loading) {
+        $('#loader').hide();
+        $('#loaded-calendar').css("visibility", "visible");
+        setTimeout(() => {
+          generateTimeGap(response)
+        }, 500);
+      }
+    },
+    select: function (info) {
+      if (appointment_duration) {
+        info.end = info.start.addMinutes(appointment_duration);
+
+        if (getMinDiff(info.start, info.end) > appointment_duration) {
+          $('#duration_warning').show();
+        }
+        else {
+          $('#duration_warning').hide();
+        }
+
+      }
+      showModal(info.start, info.end)
+    },
+    businessHours: generateBusinessHours(response),
+  });
+  calendar.render();
 }
 
 // BusinessHours
@@ -205,79 +222,6 @@ function showModal(start, end) {
 
 }
 
-Date.prototype.addMinutes = function (m) {
-  var copiedDate = new Date(this.getTime());
-  copiedDate.setMinutes(copiedDate.getMinutes() + m);
-  return copiedDate;
-}
-
-function roundTimeQuarterHour(time) {
-  var timeToReturn = new Date(time);
-
-  timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
-  timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
-  timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 15) * 15);
-  return timeToReturn;
-}
-
-function get_appointment_duration(response) {
-  if (response.time_select) {
-
-    if (response.custom_time_select == 'h') {
-      response.time_select = response.time_select * 60;
-    }
-    $('#appointment_duration').text(response.time_select)
-    appointment_duration = parseInt(response.time_select);
-  }
-  else {
-    appointment_duration = null;
-  }
-
-}
-
-function getMinDiff(startDate, endDate) {
-  const msInMinute = 60 * 1000;
-
-  return Math.round(
-    Math.abs(endDate - startDate) / msInMinute
-  );
-}
-
-function check_time_select() {
-  let start = $('#event-time-start').datetimepicker('getValue');
-  let end = $('#event-time-end').datetimepicker('getValue');
-  if (start > end) {
-    $('#event-time-end').datetimepicker({ value: start })
-  }
-  if (appointment_duration) {
-    $('#duration_warning').hide();
-    let minDiff = getMinDiff(start, end);
-    if (minDiff != appointment_duration) {
-      $('#event-time-end').datetimepicker({ value: start.addMinutes(appointment_duration) })
-    }
-  }
-}
-
-function custom_input_trigger() {
-  if ($('#event-object').val() == 'custom') {
-    $('#event-description-input').show();
-  }
-  else {
-    $('#event-description-input').hide();
-  }
-}
-
-
-function generateTimeGap(response) {
-  calendar.getEvents().forEach((value) => {
-    calendar.addEvent({
-      start: moment(value.start).subtract(response.time_before_select, 'minute').toDate(),
-      end: moment(value.end).add(response.time_after_select, 'minute').toDate(),
-      display: 'background'
-    });
-  })
-}
-
 function generateAllowTimes(start = new Date()) {
   let businessHours = [];
 
@@ -331,14 +275,7 @@ function generateAllowTimes(start = new Date()) {
   return times;
 }
 
-function show_appointment_place(response) {
-  if (response.place) {
-    $('#place_fields').show();
-    response.place.forEach(element => {
-      $('#place_select').append(`<option value='${element.type}'>${element.text}</option>`)
-    });
-  }
-}
+
 
 function event_form_submit(e) {
   e.preventDefault();
@@ -353,6 +290,76 @@ function event_form_submit(e) {
   }
 
   $("#userModal").modal('show');
+}
+
+function user_form_submit(e) {
+  e.preventDefault();
+  let event = {};
+  event.attendee = {};
+  event.appointment = {};
+
+  event.appointment.time_start = $('#event-time-start').val();
+  event.appointment.time_end = $('#event-time-end').val();
+  event.appointment.date_day = moment(event.appointment.time_start).format('dddd D MMMM YYYY').charAt(0).toUpperCase() + moment(event.appointment.time_start).format('dddd D MMMM YYYY').slice(1);
+  event.appointment.date_time = moment(event.appointment.time_start).format('HH:mm');
+  event.appointment.date = moment(event.appointment.time_start).format('HH:mm') + ' - ' + moment(event.appointment.time_end).format('HH:mm') + ', ' + moment(event.appointment.time_start).format('dddd D MMMM YYYY');
+
+  event.appointment.object = $('#event-object').val();
+  event.appointment.description = $('#event-description').val();
+
+  if (response.place) {
+    const place = response.place.find(element => element.type == $('#place_select').val());
+    event.appointment.type = place.type
+    event.appointment.location = place.value;
+    if (place.type == "organizer_call") {
+      event.appointment.location = $('#user-phone').val();
+    }
+    else if (place.type == "attendee_call") {
+      event.appointment.location = place.value;
+    }
+    else if (place.type == "webconf") {
+      event.appointment.location = window.location.origin + `/public/webconf?_key=${place.value}`;
+      event.appointment.phone = response.place.phone;
+      event.appointment.pin = response.place.pin;
+    }
+  }
+  event.attendee.name = $('#user-name').val();
+  event.attendee.firstname = $('#user-firstname').val();
+  event.attendee.email = $('#user-email').val();
+  $('#waitingToast').toast('show');
+
+
+  var formData = new FormData();
+  formData.append('appointment', JSON.stringify(event.appointment));
+  formData.append('attendee', JSON.stringify(event.attendee));
+
+  console.log(formData);
+  const options = { method: 'POST', headers: { Accept: 'application/json' }, body: formData };
+  fetch(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), options)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      $('#waitingToast').toast('hide');
+      $('#successToast').toast('show');
+      display_confirm_modal(event)
+    })
+    .catch(err => console.error(err));
+
+  // $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
+  //   .done(function (data) {
+  //     if (data.success) {
+  //       $('#waitingToast').toast('hide');
+  //       $('#successToast').toast('show');
+  //       display_confirm_modal(event)
+  //     }
+  //     else {
+  //       ('#failToast').toast('show');
+  //     }
+
+  //   })
+  //   .fail(function () {
+  //     $('#failToast').toast('show');
+  //   });
 }
 
 function display_confirm_modal(event) {
@@ -396,50 +403,5 @@ function display_confirm_modal(event) {
 }
 
 
-function user_form_submit(e) {
-  e.preventDefault();
-  let event = {};
-  event.attendee = {};
-  event.appointment = {};
 
-  event.appointment.time_start = $('#event-time-start').val();
-  event.appointment.time_end = $('#event-time-end').val();
-  event.appointment.date_day = moment(event.appointment.time_start).format('dddd D MMMM YYYY').charAt(0).toUpperCase() + moment(event.appointment.time_start).format('dddd D MMMM YYYY').slice(1);
-  event.appointment.date_time = moment(event.appointment.time_start).format('HH:mm');
-  event.appointment.date = moment(event.appointment.time_start).format('HH:mm') + ' - ' + moment(event.appointment.time_end).format('HH:mm') + ', ' + moment(event.appointment.time_start).format('dddd D MMMM YYYY');
-
-  event.appointment.object = $('#event-object').val();
-  event.appointment.description = $('#event-description').val();
-
-  if (response.place) {
-    const place = response.place.find(element => element.type == $('#place_select').val());
-    event.appointment.type = place.type
-    event.appointment.location = place.value;
-    if (place.type == "organizer_call") {
-      event.appointment.location = $('#user-phone').val();
-    }
-    else if (place.type == "attendee_call") {
-      event.appointment.location = place.value;
-    }
-    else if (place.type == "webconf") {
-      event.appointment.location = window.location.origin + `/public/webconf?_key=${place.value}`;
-      event.appointment.phone = response.place.phone;
-      event.appointment.pin = response.place.pin;
-    }
-  }
-  event.attendee.name = $('#user-name').val();
-  event.attendee.firstname = $('#user-firstname').val();
-  event.attendee.email = $('#user-email').val();
-  $('#waitingToast').toast('show');
-
-  $.post(url.href.replace('fullcalendar/', 'fullcalendar/add_event.php/'), event)
-    .done(function () {
-      $('#waitingToast').toast('hide');
-      $('#successToast').toast('show');
-      display_confirm_modal(event)
-    })
-    .fail(function () {
-      $('#failToast').toast('show');
-    });
-}
 

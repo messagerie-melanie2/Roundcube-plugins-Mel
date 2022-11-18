@@ -3,17 +3,15 @@
 // Inclusion des fichiers
 require_once '../lib/utils.php';
 require_once 'mail.php';
+require_once __DIR__ . '/../config.inc.php';
 
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
-// Developpement ?
-define('DEV', true);
 
-
-if (DEV) {
+if ($config['DEV']) {
   $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
 } else {
   $dir = __DIR__ . '../..';
@@ -47,7 +45,7 @@ if (isset($calhash)) {
   $calendar_name = utils::to_M2_id($calendar_name);
 } else {
   // Si pas d'identifiant on retourne une erreur
-  echo json_encode(["error" => "Erreur de lecture pour l'identifiant de l'agenda."]);
+  echo json_encode(["success" => false, "error" => "Erreur de lecture pour l'identifiant de l'agenda."]);
   exit();
 }
 
@@ -77,7 +75,7 @@ if (isset($keyhash)) {
 // Vérification de la clé
 if (!isset($keyhash)) {
   header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
+  echo json_encode(["success" => false, "error" => "La clé d'identification n'est pas valide"]);
   exit;
 }
 
@@ -93,15 +91,18 @@ if (isset($user)) {
 
   $events = $calendar->getAllEvents();
 
+  $appointment = json_decode($_POST['appointment'], true);
+  $attendee_post = json_decode($_POST['attendee'], true);
+
   $event->created = time();
-  $event->title = $_POST['appointment']['object'] == "" ? "Rendez-vous" . displayUserFullName() : $_POST['appointment']['object'] . displayUserFullName();
-  $event->start = new DateTime($_POST['appointment']['time_start']);
-  $event->end = new DateTime($_POST['appointment']['time_end']);
-  $event->description = $_POST['appointment']['description'];
-  if ($_POST['appointment']['type'] == "webconf") {
-    $event->location = $_POST['appointment']['location'] + '(' + $_POST['appointment']['phone'] + ' | ' + $_POST['appointment']['pin'] + ')';
+  $event->title = $appointment['object'] == "" ? "Rendez-vous" . displayUserFullName($attendee_post) : $appointment['object'] . displayUserFullName($attendee_post);
+  $event->start = new DateTime($appointment['time_start']);
+  $event->end = new DateTime($appointment['time_end']);
+  $event->description = $appointment['description'];
+  if ($appointment['type'] == "webconf") {
+    $event->location = $appointment['location'] + '(' + $appointment['phone'] + ' | ' + $appointment['pin'] + ')';
   } else {
-    $event->location = $_POST['appointment']['location'];
+    $event->location = $appointment['location'];
   }
 
   $_attendees = array();
@@ -111,23 +112,25 @@ if (isset($user)) {
   $event->organizer = $organizer;
 
   $attendee = new LibMelanie\Api\Mel\Attendee();
-  $attendee->name = $_POST['attendee']['name'] . ' ' . $_POST['attendee']['firstname'];
-  $attendee->email = $_POST['attendee']['email'];
+  $attendee->name = $attendee_post['name'] . ' ' . $attendee_post['firstname'];
+  $attendee->email = $attendee_post['email'];
   $attendee->role = LibMelanie\Api\Mel\Attendee::ROLE_REQ_PARTICIPANT;
   $_attendees[] = $attendee;
 
   $event->attendees = $_attendees;
 
   $event_ics = $event->ics;
-  
-  $event->save();
 
+  $event_response = $event->save();
 
-  // ???
-  // if ($event->save()) {
-  Mail::SendAttendeeAppointmentMail($organizer, $_POST['attendee'], $_POST['appointment'], $event_ics);
-  // }
-
+  if (!is_null($event_response)) {
+    Mail::SendAttendeeAppointmentMail($organizer, $attendee_post, $appointment, $event_ics);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(["success" => true]);
+  } else {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(["success" => false, "error" => "Echec de l'enregistrement"]);
+  }
 }
 
 /**
@@ -141,7 +144,7 @@ function generate_uid($_user)
 /**
  * Generate the user fullname
  */
-function displayUserFullName()
+function displayUserFullName($attendee_post)
 {
-  return ' avec ' . $_POST['attendee']['firstname'] . ' ' . $_POST['attendee']['name'];
+  return ' avec ' . $attendee_post['firstname'] . ' ' . $attendee_post['name'];
 }

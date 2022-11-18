@@ -167,6 +167,7 @@ class Mail
     $body = str_replace("%%attendee_email%%", $attendee['email'], $body);
 
     $body = str_replace("%%event_ics%%", $ics, $body);
+    $body = str_replace("BEGIN:VEVENT", "METHOD:REQUEST\r\nBEGIN:VEVENT", $body);
 
     return self::SendMail($from, $to, $subject, $body, $message_id);
   }

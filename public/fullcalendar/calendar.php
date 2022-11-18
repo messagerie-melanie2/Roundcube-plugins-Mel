@@ -2,17 +2,14 @@
 
 // Inclusion des fichiers
 require_once '../lib/utils.php';
-
+require_once __DIR__ . '/../config.inc.php';
 // Configuration du nom de l'application pour l'ORM
 if (!defined('CONFIGURATION_APP_LIBM2')) {
   define('CONFIGURATION_APP_LIBM2', 'roundcube');
 }
 
-// Developpement ?
-define('DEV', true);
 
-
-if (DEV) {
+if ($config['DEV']) {
   $dir = str_replace('/public/fullcalendar', '', dirname($_SERVER['SCRIPT_FILENAME']));
 } else {
   $dir = __DIR__ . '../..';
@@ -55,7 +52,6 @@ if (isset($calhash)) {
 if (isset($_user)) {
   $user = new LibMelanie\Api\Mel\User();
   $user->uid = $_user;
-  // $user->load();
 }
 
 // Récupération de la clé de la requête 

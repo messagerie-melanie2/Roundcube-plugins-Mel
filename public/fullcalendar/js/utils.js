@@ -44,11 +44,9 @@ function custom_input_trigger() {
 }
 
 function generateTimeGap(response) {
-  calendar.getEvents().forEach((value) => {
-    calendar.addEvent({
-      start: moment(value.start).subtract(response.time_before_select, 'minute').toDate(),
-      end: moment(value.end).add(response.time_after_select, 'minute').toDate(),
-      display: 'background'
-    });
+  calendar.getEvents().forEach((event) => {
+    event.setStart(moment(event.start).subtract(response.time_before_select, 'minute').toDate());
+    event.setEnd(moment(event.end).add(response.time_after_select, 'minute').toDate())
   })
+  return true;
 }

@@ -4,7 +4,6 @@ let appointment_duration = 0;
 let owner_name = window.atob(params.get('_name'));
 let response = null;
 let calendar = null;
-let loaded_time_gap = false;
 let event_not_loaded = true;
 moment.locale('fr');
 
@@ -100,6 +99,7 @@ function display_calendar(response) {
     firstDay: 1,
     initialView: "timeGridWeek",
     allDaySlot: false,
+    lazyFetching: false,
     selectable: true,
     slotDuration: "00:15",
     slotMinTime: getMinBusinessHour(response),
@@ -119,11 +119,8 @@ function display_calendar(response) {
         $('#loader').hide();
         $('#loaded-calendar').css("visibility", "visible");
         setTimeout(() => {
-          if (!loaded_time_gap) {
             generateTimeGap(response)
-            loaded_time_gap = true;
-          }
-        }, 500);
+        }, 10);
       }
     },
     select: function (info) {

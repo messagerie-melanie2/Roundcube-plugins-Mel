@@ -607,8 +607,10 @@ class mel_mobile extends rcube_plugin {
     else {
       // Récupération du username depuis la session
       $this->user_name = $this->rc->get_user_name();
-      $this->user_objet_share = $this->rc->user->get_username('local');
-      $this->user_host = $this->rc->user->get_username('host');
+      // sam: user driver
+      list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
       $this->user_bal = $this->user_objet_share;
     }
   }

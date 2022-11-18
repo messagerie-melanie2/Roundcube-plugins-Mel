@@ -287,7 +287,8 @@ class M2contacts {
       }
       $this->addressbook->id = $this->mbox ?: $this->user->uid;
       $this->addressbook->owner = $this->user->uid;
-      if (!is_null($this->addressbook->save())) {
+      $ret = $this->addressbook->save();
+			if (!is_null($ret)) {
         return $this->addressbook->load();
       }
       else {
@@ -420,7 +421,7 @@ class M2contacts {
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
@@ -499,7 +500,7 @@ class M2contactsgroup extends M2contacts {
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));

@@ -661,6 +661,17 @@ body.extwin #taskbar {
 	order: 6;
 }
 
+#taskbar a.button-mce_tchap span.button-inner,
+#taskbar a.button-mce_tchap:hover span.button-inner,
+#taskbar a.button-selected.button-mce_tchap span.button-inner {
+	background: url(../images/taskbar/discussion.png?v=e784.5000) center 15px no-repeat;
+}
+
+
+#taskbar a.button-mce_tchap  {
+	order: 6;
+}
+
 #taskbar a.button-discussion span.button-inner,
 #taskbar a.button-discussion:hover span.button-inner,
 #taskbar a.button-selected.button-discussion span.button-inner {

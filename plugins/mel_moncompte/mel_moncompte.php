@@ -1039,12 +1039,11 @@ class mel_moncompte extends rcube_plugin {
     if (!empty($this->get_account)) {
       // Récupération du username depuis l'url
       $this->user_name = urldecode($this->get_account);
-      // Split sur @ pour les comptes de boites partagées <username>@<hostname>
-      $inf = explode('@', $this->user_name, 2);
-      // Récupération du host
-      $this->user_host = $inf[1] ?: null;
-      // Le username est encodé pour éviter les problèmes avec @
-      $this->user_objet_share = urldecode($inf[0]);
+      // sam: usage du driver
+      list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromMail($this->user_name);
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
+
       $user = driver_mel::gi()->getUser($this->user_objet_share, false);
       if ($user->is_objectshare) {
         $this->user_bal = $user->objectshare->mailbox_uid;
@@ -1059,16 +1058,20 @@ class mel_moncompte extends rcube_plugin {
             || $bal->shares[$this->rc->get_user_name()]->type != \LibMelanie\Api\Defaut\Users\Share::TYPE_ADMIN)) {
         // Récupération du username depuis la session
         $this->user_name = $this->rc->get_user_name();
-        $this->user_objet_share = $this->rc->user->get_username('local');
-        $this->user_host = $this->rc->user->get_username('host');
+        // sam: usage driver
+        list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromSession();
+        $this->user_objet_share = $user_object_share;
+        $this->user_host = $user_host;
         $this->user_bal = $this->user_objet_share;
       }
     }
     else {
       // Récupération du username depuis la session
       $this->user_name = $this->rc->get_user_name();
-      $this->user_objet_share = $this->rc->user->get_username('local');
-      $this->user_host = $this->rc->user->get_username('host');
+      // sam:usage driver
+      list($user_object_share, $user_host) = driver_mel::gi()->getShareUserBalpHostFromSession();
+      $this->user_objet_share = $user_object_share;
+      $this->user_host = $user_host;
       $this->user_bal = $this->user_objet_share;
     }
   }

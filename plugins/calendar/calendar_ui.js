@@ -2585,32 +2585,6 @@ function rcube_calendar_ui(settings)
       
       // PAMELA - Evenement perdu dans le cas de déconnexion du serveur
       rcmail.http_post('calendar/event', $.extend({ action:action, e:data }, (add || {})), me.saving_lock);
-      
-      // // render event temporarily into the calendar
-      // if ((data.start && data.end) || data.id) {
-      //   var event = data.id ? $.extend(fc.fullCalendar('clientEvents', function(e){ return e.id == data.id; })[0], data) : data;
-      //   if (data.start)
-      //     event.start = data.start;
-      //   if (data.end)
-      //     event.end = data.end;
-      //   if (data.allday !== undefined)
-      //     event.allDay = data.allday;
-      //   event.editable = false;
-      //   event.temp = true;
-      //   event.className = 'fc-event-cal-'+data.calendar+' fc-event-temp';
-      //   fc.fullCalendar(data.id ? 'updateEvent' : 'renderEvent', event);
-
-      //   // mark all recurring instances as temp
-      //   if (event.recurrence || event.recurrence_id) {
-      //     var base_id = event.recurrence_id ? event.recurrence_id : String(event.id).replace(/-\d+(T\d{6})?$/, '');
-      //     $.each(fc.fullCalendar('clientEvents', function(e){ return e.id == base_id || e.recurrence_id == base_id; }), function(i,ev) {
-      //       ev.temp = true;
-      //       ev.editable = false;
-      //       event.className += ' fc-event-temp';
-      //       fc.fullCalendar('updateEvent', ev);
-      //     });
-      //   }
-      // }
     };
 
     // mouse-click handler to check if the show dialog is still open and prevent default action

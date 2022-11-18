@@ -62,10 +62,13 @@ class roundrive_files_engine
         $this->rc      = $plugin->rc;
         $this->timeout = $this->rc->config->get('session_lifetime') * 60;
 
+        // sam: utilisation driver, l'original étant placé dans le driver abstrait"
+        list($login, $password) = driver_mel::gi()->getBasicAuth();
+
         $settings = array(
-                'baseUri' => str_replace('USERNAME', $this->rc->user->get_username(), $this->rc->config->get('driver_webdav_url')),
-                'userName' => $this->rc->user->get_username(),
-                'password' => $this->rc->get_user_password(),
+                'baseUri' => str_replace('USERNAME', $login, $this->rc->config->get('driver_webdav_url')),
+                'userName' => $login,
+                'password' => $password,
                 'authType' => $this->rc->config->get('driver_webdav_auth', 'basic') == 'basic' ? Client::AUTH_BASIC : Client::AUTH_DIGEST,
                 'encoding' => Client::ENCODING_ALL,
         );

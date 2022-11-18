@@ -348,7 +348,7 @@ class mel_driver extends calendar_driver {
 
     try {
       if ($defaultCalendar) {
-        $ret = $this->user->createDefaultCalendar($prop['name']);
+        $saved = $this->user->createDefaultCalendar($prop['name']);
       }
       else {
         $calendar = driver_mel::gi()->calendar([$this->user]);
@@ -356,8 +356,9 @@ class mel_driver extends calendar_driver {
         $calendar->id = isset($prop['id']) ? driver_mel::gi()->rcToMceId($prop['id']) : md5($prop['name'] . time() . $this->user->uid);
         $calendar->owner = $this->user->uid;
         $ret = $calendar->save();
+        $saved = !is_null($ret);
       }
-      if ($ret) {
+      if ($saved) {
         // Récupération des préférences de l'utilisateur
         $active_calendars = $this->rc->config->get('active_calendars', array());
         $color_calendars = $this->rc->config->get('color_calendars', array());

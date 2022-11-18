@@ -229,7 +229,8 @@ class tasklist_mel_driver extends tasklist_driver {
       $tasklist->name = $prop['name'];
       $tasklist->id = isset($prop['id']) ? $prop['id'] : md5($prop['name'] . time() . $this->user->uid);
       $tasklist->owner = $this->user->uid;
-      $saved = $tasklist->save();
+      $ret = $tasklist->save();
+      $saved = !is_null($ret);
     }
     if ($saved) {
       // Récupération des préférences de l'utilisateur

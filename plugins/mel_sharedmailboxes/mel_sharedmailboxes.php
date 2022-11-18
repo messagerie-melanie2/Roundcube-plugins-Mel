@@ -55,6 +55,7 @@ class mel_sharedmailboxes extends rcube_plugin {
      */
     function init() {
         $this->rc = rcmail::get_instance();
+        $this->load_config();
         $this->require_plugin('mel_logs');
         $this->require_plugin('mel');
         $this->mel = $this->rc->plugins->get_plugin('mel');
@@ -701,7 +702,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                 if (!empty($args['result']) && !empty($this->get_account) && $this->get_account != $this->rc->user->get_username()) {
                     $trash_mbox = $_SESSION['trash_folders'][$this->mel->get_user_bal()];
                 }
-                else if (!empty($args['result']) && isset($_REQUEST['_mbox']) && strpos($_REQUEST['_mbox'], driver_mel::gi()->getBalpLabel()) === 0) {
+                else if (!empty($args['result']) && isset($_REQUEST['_mbox']) && strpos(chr($_REQUEST['_mbox']), chr(driver_mel::gi()->getBalpLabel())) === 0) {
                     $tmp = explode($_SESSION['imap_delimiter'], rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC));
                     if (isset($_SESSION['trash_folders'][$tmp[1]])) {
                         $trash_mbox = $_SESSION['trash_folders'][$tmp[1]];
@@ -909,6 +910,14 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @return ObjectShare[] $_objects Liste des boites partagées sans les masquées
      */
     public function get_user_sharedmailboxes_list($_objects = null, $hidden_mailboxes = null) {
+        // si rcube non initialisé, on le fait
+        if(!$this->rc) {
+            $this->init();
+        }
+        // desactivation des bal partagees
+        if ($this->rc->config->get('mel_sharedmailboxes_bal_partage_enabled', true) === false){
+            return [];
+        }
         // Récupération des préférences de l'utilisateur
         if (!isset($hidden_mailboxes)) {
             $hidden_mailboxes = $this->rc->config->get('hidden_mailboxes', []);
@@ -925,6 +934,7 @@ class mel_sharedmailboxes extends rcube_plugin {
                 }
             }
         }
+
         return $_objects;
     }
 
@@ -968,6 +978,7 @@ class mel_sharedmailboxes extends rcube_plugin {
         $env_mailboxes = [];
         $_SESSION['trash_folders'] = [];
         $_objects = $this->get_user_sharedmailboxes_list(null, $hidden_mailboxes);
+
         if (count($_objects) >= 1) {
             foreach ($_objects as $_object) {
                 // Gestion du order
@@ -1181,12 +1192,12 @@ class mel_sharedmailboxes extends rcube_plugin {
         }
         if (isset($this->prev_folder) && $this->prev_folder != $args['folder']) {
             $relog = false;
-            if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 && strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
+            if (strpos($args['folder'], chr(driver_mel::gi()->getBalpLabel())) === 0 && strpos(chr($this->prev_folder), chr(driver_mel::gi()->getBalpLabel())) === 0) {
                 $folderTmp = explode($_SESSION['imap_delimiter'], $args['folder'], 3);
                 $prevFolderTmp = explode($_SESSION['imap_delimiter'], $this->prev_folder, 3);
                 $relog = $folderTmp[1] != $prevFolderTmp[1];
             }
-            else if (strpos($args['folder'], driver_mel::gi()->getBalpLabel()) === 0 || strpos($this->prev_folder, driver_mel::gi()->getBalpLabel()) === 0) {
+            else if (strpos($args['folder'], chr(driver_mel::gi()->getBalpLabel())) === 0 || strpos($this->prev_folder, chr(driver_mel::gi()->getBalpLabel())) === 0) {
                 $relog = true;
             }
             if ($relog) {
@@ -1431,8 +1442,8 @@ class mel_sharedmailboxes extends rcube_plugin {
      * @return boolean true si c'est une corbeille individuelle, false sinon
      */
     private function is_individual_trash($folder) {
-        return strpos($folder, driver_mel::gi()->getBalpLabel()) === 0 
-            && strpos($folder, driver_mel::gi()->getMboxTrash() . '-individuelle') !== false;
+        return strpos($folder, chr(driver_mel::gi()->getBalpLabel())) === 0
+            && strpos($folder, chr(driver_mel::gi()->getMboxTrash() . '-individuelle')) !== false;
     }
 
     /**

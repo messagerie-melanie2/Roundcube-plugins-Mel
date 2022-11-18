@@ -536,4 +536,45 @@ abstract class driver_mel {
   public function getMboxTrash() {
     return $this->MBOX_TRASH;
   }
+
+  /**
+     * Retourne le username et le balpname à partir d'un username complet
+     * balpname sera null si username n'est pas un objet de partage
+     * username sera nettoyé de la boite partagée si username est un objet de partage
+     *
+     * @param string $mail Mail à traiter peut être un objet de partage ou non, ou un mailroutingaddress
+     * @return array($user_objet_share, $host) $user_object_share traité, $host
+     */
+    public function getShareUserBalpHostFromMail($mail) {
+        $user_objet_share=$host=null;
+        // Split sur @ pour les comptes de boites partagées <username>@<hostname>
+        $inf = explode('@', $mail, 2);
+        // Le username est encodé pour éviter les problèmes avec @
+        $user_objet_share = $inf[0]?urldecode($inf[0]):null;
+        // Récupération du host
+        $host = $inf[1] ?: null;
+        return [$user_objet_share, $host];
+    }
+
+
+    /**
+     * Retourne les valeurs depuis la session
+     * @return array ($user_objet_share, $host) $user_object_share, $host
+     */
+    public function getShareUserBalpHostFromSession() {
+        $user_objet_share=$host=null;
+        $rc = rcmail::get_instance();
+        $user_objet_share = $rc->user->get_username('local');
+        $host = $rc->user->get_username('host');
+        return [$user_objet_share, $host];
+    }
+
+    /**
+     *  Récupère un couple login/password pour jouer une authentification externe de type basic
+     * @return array [login,password] for authentification type basic
+     */
+    public function getBasicAuth() {
+        $rc = rcmail::get_instance();
+        return [$rc->user->get_username(),$rc->get_user_password()];
+    }
 }

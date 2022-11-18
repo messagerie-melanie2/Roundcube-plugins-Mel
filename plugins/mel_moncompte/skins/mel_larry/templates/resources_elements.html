@@ -46,16 +46,19 @@
   </div>
   <roundcube:object name="message" id="message" class="statusbar" />
 </div>
+<roundcube:if condition="env:annuaire_source" />
 <div id="listview-float-right">
 	<!-- inline address book -->
 	<div id="list-contacts" class="uibox listbox contactslist" role="region" aria-labelledby="aria-label-listcontacts">
 		<h2 id="aria-label-listcontacts" class="boxtitle2"><roundcube:label name="contacts" /></h2>
 		<div class="close">&nbsp;</div>
+		<!-- bug sur le scroller, ajout class xxx pour désactiver temporairement -->
 		<div class="scroller withfooter nosearch" tabindex="-1">
 			<roundcube:object name="annuaire_list" id="annuaire-list" class="treelist listing iconized" noheader="true" role="listbox" />
 		</div>
 	</div>
 </div>
+<roundcube:endif />
 <roundcube:include file="/includes/footer.html" />
 
 <script type="text/javascript">

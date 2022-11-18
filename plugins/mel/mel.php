@@ -413,7 +413,7 @@ class mel extends rcube_plugin {
    */
   public function m2_get_account() {
     if (mel_logs::is(mel_logs::DEBUG)) {
-      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()");
+      mel_logs::get_instance()->log(mel_logs::DEBUG, "mel::m2_get_account()=".$this->get_account);
     }
     return array(
       "account" => $this->get_account

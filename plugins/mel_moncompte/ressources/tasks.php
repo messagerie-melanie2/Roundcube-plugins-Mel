@@ -420,7 +420,7 @@ class M2tasks {
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));
@@ -472,7 +472,7 @@ class M2tasksgroup extends M2tasks {
     $form = array();
 
     // Allow plugins to modify the form content (e.g. with ACL form)
-    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options,'name' => $cal->name));
+    $plugin = $this->rc->plugins->exec_hook('acl_form_mel', array('form' => $form,'options' => $options));
 
     if (! $plugin['form']['sharing']['content'])
       $plugin['form']['sharing']['content'] = html::div('hint', $this->rc->gettext('aclnorights'));

@@ -257,6 +257,10 @@ $labels['tabrecurrence'] = 'Absences hebdomadaires';
 $labels['absence_date'] = 'Dates de début et de fin';
 $labels['absence_date_debut'] = 'À partir du : ';
 $labels['absence_date_fin'] = "Jusqu'au : ";
+$labels['absence_perimetre_label'] = "Périmètres de la réponse";
+$labels['absence_type_all'] = "Tous";
+$labels['absence_type_interne'] = "Interne";
+$labels['absence_type_externe'] = "Externe";
 $labels['absence_interne_legende'] = "Réponse interne";
 $labels['absence_texte_interne'] = "Activer la réponse automatique pour les correspondants internes (déclarés dans l'annuaire).";
 $labels['absence_externe_legende'] = "Réponse externe";
@@ -392,4 +396,3 @@ $labels['suspectsurls'] = 'Liens suspects';
 $labels['suspects_websites'] = 'Adresses suspicieuses';
 $labels['bloqued'] = 'Est bloqué';
 $labels['text_suspects'] = "Vous trouverez ici la liste des adresses de site web potentiellement dangereux. Les adresses définie par défaut ne peuvent pas être supprimé mais peuvent être bloqué ou débloqué. Si une adresse est bloqué, si celle-ci ce trouve dans le corps d'un des messages, celui-ci ne pourra pas être ouvert. Dans le cas contraire, le message s'affichera correctement, mais vous aurez une alerte indiquant que le message contient un lieu probablement dangereux.";
-?>

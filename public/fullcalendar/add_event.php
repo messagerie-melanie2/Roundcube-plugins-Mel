@@ -118,11 +118,14 @@ if (isset($user)) {
 
   $event->attendees = $_attendees;
 
+  $event_ics = $event->ics;
+  
   $event->save();
+
 
   // ???
   // if ($event->save()) {
-  Mail::SendAttendeeAppointmentMail($organizer, $_POST['attendee'], $_POST['appointment']);
+  Mail::SendAttendeeAppointmentMail($organizer, $_POST['attendee'], $_POST['appointment'], $event_ics);
   // }
 
 }

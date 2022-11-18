@@ -119,14 +119,14 @@ class Mail
    * @return boolean
    */
 
-  public static function SendAttendeeAppointmentMail($organizer, $attendee, $appointment)
+  public static function SendAttendeeAppointmentMail($organizer, $attendee, $appointment, $ics)
   {
     global $config;
     $subject = $config["attendee_mail_subject"];
     $message_id = $config['mail_message_id_prefix'] . md5(uniqid(mt_rand())) . $config['mail_message_id_suffix'];
     $from = $config['mail_from'];
     // $to = '=?UTF-8?B?' . base64_encode('"' . $attendee['name'] . ' ' .  $attendee['firstname'] . '"') . '?=' . "\r\n <" . $attendee['email'] . ">";
-    $to = '=?UTF-8?B?' . base64_encode('"' . $organizer->name . '"') . '?=' . "\r\n <" . $organizer->email . ">";
+    $to = '=?UTF-8?B?' . base64_encode('"' . $attendee['name'] . '"') . '?=' . "\r\n <" . $attendee['email'] . ">";
     $object = $appointment['object'];
 
     $body = file_get_contents(__DIR__ . '/templates/attendee_appointment_mail.html');
@@ -165,6 +165,8 @@ class Mail
     $body = str_replace("%%appointment_date_time%%", $appointment['date_time'], $body);
     $body = str_replace("%%organizer_name%%", $organizer->name, $body);
     $body = str_replace("%%attendee_email%%", $attendee['email'], $body);
+
+    $body = str_replace("%%event_ics%%", $ics, $body);
 
     return self::SendMail($from, $to, $subject, $body, $message_id);
   }

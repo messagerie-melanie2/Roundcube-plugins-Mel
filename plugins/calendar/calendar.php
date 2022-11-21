@@ -2666,6 +2666,9 @@ $("#rcmfd_new_category").keypress(function(event) {
         $orga = null;
         $array_attendees = [];
         foreach ((array) $event['attendees'] as $attendee) {
+            // 0007053: MAJ Occurrence: Ajout d'un participant à une occurrence entraine la réception d'une notif d'annulation aux participants
+            $current[] = strtolower($attendee['email']);
+
             // skip myself for obvious reasons
             if (empty($attendee['email']) || in_array(strtolower($attendee['email']), $emails)) {
                 if (!empty($attendee['email'])) $orga = $attendee;
@@ -2676,8 +2679,6 @@ $("#rcmfd_new_category").keypress(function(event) {
             if ($method == 'REQUEST' && isset($attendee['skip_notify']) && $attendee['skip_notify']) {
                 continue;
             }
-
-            $current[] = strtolower($attendee['email']);
 
             // skip if notification is disabled for this attendee
             if (!empty($attendee['noreply']) && $itip_notify & 2) {
@@ -2707,7 +2708,7 @@ $("#rcmfd_new_category").keypress(function(event) {
             }
         }
         
-            //PAMELA
+        // PAMELA
         if (count($array_attendees) > 0)
         {
             $this->rc->plugins->exec_hook('calendar.on_attendees_notified', [

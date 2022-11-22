@@ -1261,7 +1261,9 @@ $("#rcmfd_new_category").keypress(function(event) {
             // Note: the driver is responsible for setting $_SESSION['calendar_event_undo']
             //       containing 'ts' and 'data' elements
             $success = $this->driver->remove_event($event, $undo_time < 1);
-            $reload = (!$success || !empty($event['_savemode'])) ? 2 : 1;
+            // PAMELA - Fix refresh sur un remove
+            $reload = 2;
+            // $reload = (!$success || !empty($event['_savemode'])) ? 2 : 1;
 
             if ($undo_time > 0 && $success) {
                 // display message with Undo link.

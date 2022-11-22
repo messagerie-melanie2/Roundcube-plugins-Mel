@@ -3403,8 +3403,12 @@ function rcube_calendar_ui(settings) {
           view.fullCalendar('removeEvents', function (e) { return e._id.indexOf(event._id + '-') == 0; });
       }
       else {
-        event.source = view.fullCalendar('getEventSourceById', source.id);  // link with source
-        view.fullCalendar('renderEvent', event);
+        // PAMELA - Fullcalendar premium
+        // event.source = view.fullCalendar('getEventSourceById', source.id);  // link with source
+        // view.fullCalendar('renderEvent', event);
+        // MANTIS 0007067: Problème de doublon d'événement en affichage pendant une mise à jour
+        fc.fullCalendar('refetchEventSources', source.id);
+        fetch_counts();
       }
     }
 

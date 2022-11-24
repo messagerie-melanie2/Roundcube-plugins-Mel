@@ -350,6 +350,8 @@ ul.treelist{
 }
 
 .mel-selectable{
+    cursor: pointer;
+
     &:hover{
         background-color: var(--tierciary-bckg-color);
         color: var(--secondary-text-color);
@@ -3874,3 +3876,35 @@ a.rcmContactAddress {
         background-color: #2C3054;
     }
 }
+
+#visio-right-pannel-util {
+	position: absolute;
+	height: 100%;
+	width: calc(25% - 60px);
+    min-width: 150px;
+	top: 60px;
+	right: 0;
+	background-color: #F0F0F0;
+    display: none;
+    padding: 15px;
+    .mel-all-ease-in-animation();
+
+    &.right-mode {
+        width: 200px;
+        right: 323px;
+    }
+
+    &.visible-mode{
+        display: unset;
+    }
+
+    .title {
+        margin-bottom: 15px;
+    }
+
+    .mel-selectable {
+        padding: 15px;
+        margin-bottom: 5px;
+    }
+}
+

@@ -280,6 +280,9 @@ ul.treelist li.droptarget > a {
 .task-addressbook ul.treelist.iconized li div.treetoggle {
   top: 0px!important;
 }
+.mel-selectable {
+  cursor: pointer;
+}
 .mel-selectable:hover {
   background-color: var(--tierciary-bckg-color);
   color: var(--secondary-text-color);
@@ -2502,4 +2505,30 @@ html.layout-small .toolbar-popup {
 #calendaroptionsmenulink:hover,
 #calendaroptionsmenulink:focus {
   background-color: #2C3054;
+}
+#visio-right-pannel-util {
+  position: absolute;
+  height: 100%;
+  width: calc(25% - 60px);
+  min-width: 150px;
+  top: 60px;
+  right: 0;
+  background-color: #F0F0F0;
+  display: none;
+  padding: 15px;
+  transition: all 0.1s ease-in;
+}
+#visio-right-pannel-util.right-mode {
+  width: 200px;
+  right: 323px;
+}
+#visio-right-pannel-util.visible-mode {
+  display: unset;
+}
+#visio-right-pannel-util .title {
+  margin-bottom: 15px;
+}
+#visio-right-pannel-util .mel-selectable {
+  padding: 15px;
+  margin-bottom: 5px;
 }

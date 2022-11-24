@@ -291,6 +291,9 @@ ul.treelist li.droptarget > a {
   background-color: var(--main-bckg-color);
   color: var(--secondary-text-color);
 }
+.mel-selectable.with-separator {
+  border-bottom: solid thin #A3A7BC;
+}
 .popupmenu .listing li.selected {
   background-color: var(--secondary-bckg-color);
   color: var(--secondary-text-color);
@@ -2531,4 +2534,8 @@ html.layout-small .toolbar-popup {
 #visio-right-pannel-util .mel-selectable {
   padding: 15px;
   margin-bottom: 5px;
+}
+#html-pannel {
+  max-height: 80%;
+  overflow: hidden auto;
 }

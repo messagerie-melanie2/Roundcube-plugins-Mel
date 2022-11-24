@@ -329,3 +329,6 @@ $labels['to_comment'] = 'Commenter';
 $labels['experimental'] = 'Expérimental';
 $labels['param-note-in-my-day'] = 'Activer les notes dans ma journée ?';
 $labels['param-reorder-notes'] = 'Réordonner vos notes ?';
+
+$labels['toggle_mp'] = 'Envoyer un message privé';
+$labels['webconf_toggle_mp_help'] = 'Envoyer un message privé à quelqu\'un';

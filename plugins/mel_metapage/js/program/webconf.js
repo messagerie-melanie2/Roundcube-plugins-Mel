@@ -852,7 +852,7 @@ class MasterWebconfBar {
         return this.launch_timeout();
     }
 
-    hide_masterbar()
+    hide_masterbar() 
     {
         if ($(".webconf-toolbar").css('display') !== 'none') $(".webconf-toolbar").css('display', 'none');
 
@@ -962,6 +962,17 @@ class MasterWebconfBar {
         {
             $('.webconf-minimize').css('top', '65px');
         }
+
+        return this.init_right_pannel();
+    }
+
+    init_right_pannel()
+    {
+        this.right_pannel = $('#visio-right-pannel-util');
+
+        if (this.right_pannel.length === 0) this.right_pannel = $('iframe.webconf-frame')[0].contentWindow.$('#visio-right-pannel-util').appendTo(top.$('#layout'));
+
+        if (this.webconf.ariane_is_hide() === false) this.right_pannel.addClass('right-mode');
 
         return this;
     }
@@ -1187,6 +1198,7 @@ class MasterWebconfBar {
      */
     async hangup()
     {
+        this.right_pannel.remove();
         if (this._timeout_id !== undefined) clearTimeout(this._timeout_id);
 
         this.hide_ariane();
@@ -1330,9 +1342,15 @@ class MasterWebconfBar {
         if (!mel_metapage.Functions.is_busy())
         {
             if (this.ariane.hasClass("active"))
+            {
                 this.hide_ariane(send);
+                this.right_pannel.removeClass('right-mode');
+            }
             else
+            {
                 this.show_ariane(send);
+                this.right_pannel.addClass('right-mode');
+            }
         }
 
         this.update_toolbar_position(this.lastMinimized);
@@ -1597,11 +1615,15 @@ class MasterWebconfBar {
             this._switch_tileView();
             this.send("minimize");
             this.webconf._is_minimized = true;
+            this.right_pannel.addClass('right-mode');
         }
         else
         {
             this.send("full_screen");
             this.webconf._is_minimized = false;
+
+            if (this.ariane.hasClass("active")) this.right_pannel.addClass('right-mode');
+            else this.right_pannel.removeClass('right-mode');
         }
     }
 
@@ -1613,6 +1635,66 @@ class MasterWebconfBar {
         // console.error('this.mozaik.hasClass("active")', this.mozaik.hasClass("active"));
         // if (this.mozaik.hasClass("active"))
         //     this.toogle_film_strip();
+    }
+
+    open_right_panel()
+    {
+        if (!this.pannel_is_open()) this.right_pannel.addClass('visible-mode');
+        return this;
+    }
+
+    close_right_panel()
+    {
+        this.right_pannel.removeClass('visible-mode');
+        return this;
+    }
+
+    set_pannel_title(title)
+    {
+        this.right_pannel.find('.title').html(title);
+        return this;
+    }
+
+    set_pannel_content(content)
+    {
+        this.right_pannel.find('#html-pannel').html(content);
+        return this;
+    }
+
+    pannel_is_open()
+    {
+        return this.right_pannel.hasClass('visible-mode');
+    }
+
+    async toggle_mp()
+    {
+        if (!!this.lastContent && this.lastContent === 'mp' && this.pannel_is_open()) {
+            this.lastContent = null;
+            this.close_right_panel();
+        }
+        else {
+            this.lastContent = 'mp';
+            let $html = $('<div></div>');
+            const users = await this.send_return('get_room_infos');
+            console.log('users', users);
+
+            let html_icon = null;
+            for (const user of users) {
+
+                if (!!user.avatarURL) html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><img src="${user.avatarURL}" style="width:100%" /></div>`;
+                else html_icon = '';
+
+                $(`<div class="mel-selectable with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
+                    e = $(e.currentTarget);
+                    this.send('initiatePrivateChat', `"${e.data('id')}"`);
+                    this.close_right_panel();
+                }).appendTo($html);
+            }
+
+            return this.set_pannel_title('A qui envoyer un message privé ?')
+            .set_pannel_content($html)
+            .open_right_panel();
+        }
     }
 
     switch_popup_micro(checkVideo = true)
@@ -1763,6 +1845,15 @@ class MasterWebconfBar {
         });
     }
 
+    async send_return(func, ...args){
+        let $tmp = $('iframe.webconf-frame.mm-frame');
+        if ($tmp.length > 0)
+        {
+            return $tmp[0].contentWindow.rcmail.env.wb_listener[func](...args);
+        }
+        else return rcmail.env.wb_listener[func](...args);
+    }
+
     /**
      * Envoie la toolbar à la frame parente
      * @param {string} bar Initialisation de la toolbar
@@ -1846,6 +1937,9 @@ class MasterWebconfBar {
 
         this.maximize_toolbar();
         $(".melw-wsp").remove();
+
+        if (this.ariane.hasClass("active")) this.right_pannel.addClass('right-mode');
+        else this.right_pannel.removeClass('right-mode');
 
         try {
             rcmail.env.last_frame_class = mm_st_ClassContract(rcmail.env.current_frame_name);
@@ -2024,6 +2118,11 @@ class ListenerWebConfBar
         this.webconf.full_screen();
     }
 
+    initiatePrivateChat(id)
+    {
+        this.webconf.jitsii.executeCommand('initiatePrivateChat',id);
+    }
+
     minimize()
     {
         this.webconf.minimize();
@@ -2125,6 +2224,11 @@ class ListenerWebConfBar
         }
 
         this.send("add_to_popup", `'${html_helper.JSON.stringify(devices)}'`)
+    }
+
+    async get_room_infos()
+    {
+        return this.webconf.jitsii.getParticipantsInfo();
     }
 
     set_micro_device(label, id)

@@ -1668,12 +1668,13 @@ class MasterWebconfBar {
 
     async toggle_mp()
     {
-        if (!!this.lastContent && this.lastContent === 'mp' && this.pannel_is_open()) {
+        const option = 'mp';
+        if (!!this.lastContent && this.lastContent === option && this.pannel_is_open()) {
             this.lastContent = null;
             this.close_right_panel();
         }
         else {
-            this.lastContent = 'mp';
+            this.lastContent = option;
             let $html = $('<div></div>');
             const users = await this.send_return('get_room_infos');
             console.log('users', users);
@@ -1696,6 +1697,26 @@ class MasterWebconfBar {
             .open_right_panel();
         }
     }
+
+    async toggle_participants_panel()
+    {
+        const option = 'pp';
+        if (!!this.lastContent && this.lastContent === option && this.pannel_is_open()) {
+            this.lastContent = null;
+            this.close_right_panel();
+        }
+        else {
+            this.lastContent = option;
+            let $close = $();
+            let $search = $();
+            let $users = $();
+            let $searched_pane = $();
+            let $main_pane = $();
+            let $breakout_rooms = $();
+            let $settings= $();
+        }
+    }
+
 
     switch_popup_micro(checkVideo = true)
     {

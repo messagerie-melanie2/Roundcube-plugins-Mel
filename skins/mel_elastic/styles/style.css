@@ -2535,6 +2535,9 @@ html.layout-small .toolbar-popup {
   padding: 15px;
   margin-bottom: 5px;
 }
+html.dark-mode #visio-right-pannel-util {
+  background-color: #141414;
+}
 #html-pannel {
   max-height: 80%;
   overflow: hidden auto;

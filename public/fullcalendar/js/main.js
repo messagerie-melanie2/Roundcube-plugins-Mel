@@ -119,7 +119,7 @@ function display_calendar(response) {
         $('#loader').hide();
         $('#loaded-calendar').css("visibility", "visible");
         setTimeout(() => {
-            generateTimeGap(response)
+          generateTimeGap(response)
         }, 10);
       }
     },
@@ -338,14 +338,18 @@ function user_form_submit(e) {
     .then(response => response.json())
     .then(data => {
       if (data.error) {
+        $('#waitingToast').toast('hide');
         $('#failToast').toast('show')
         return;
-      }      
+      }
       $('#waitingToast').toast('hide');
       $('#successToast').toast('show');
       display_confirm_modal(event)
     })
-    .catch(err => $('#failToast').toast('show'));
+    .catch(err => {
+      console.log(err);
+      $('#failToast').toast('show')
+    });
 }
 
 function display_confirm_modal(event) {

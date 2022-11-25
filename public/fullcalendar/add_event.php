@@ -24,19 +24,20 @@ if ($config['DEV']) {
 require_once '../lib/vendor/autoload.php';
 require_once $dir . '/vendor/autoload.php';
 
-$user = utils::check_hash_key();
+$data = utils::check_hash_key();
+$data['user']->load();
 
-if (!$user) {
+if (!$data['user']) {
   header('Content-Type: application/json; charset=utf-8');
   echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
   exit;
 }
 
-$calendar = new LibMelanie\Api\Mel\Calendar($user);
-$calendar->id = $calendar_name;
+$calendar = new LibMelanie\Api\Mel\Calendar($data['user']);
+$calendar->id = $data['calendar_name'];
 $calendar->load();
 
-$event = new LibMelanie\Api\Mel\Event($user, $calendar);
+$event = new LibMelanie\Api\Mel\Event($data['user'], $calendar);
 $event->uid = utils::generate_uid($_user);
 $event->load();
 
@@ -58,8 +59,8 @@ if ($appointment['type'] == "webconf") {
 
 $_attendees = array();
 $organizer = new LibMelanie\Api\Mel\Organizer($event);
-$organizer->name = $user->fullname;
-$organizer->email =  $user->email;
+$organizer->name = $data['user']->fullname;
+$organizer->email =  $data['user']->email;
 $event->organizer = $organizer;
 
 $attendee = new LibMelanie\Api\Mel\Attendee();
@@ -78,8 +79,9 @@ if (!is_null($event_response)) {
 
   Mail::SendAttendeeAppointmentMail($organizer, $attendee_post, $appointment, $event_ics);
 
-  SendOrganizerNotification($user, $attendee_post, $appointment);
-
+  SendOrganizerNotification($data['user'], $attendee_post, $appointment);
+  header('Content-Type: application/json; charset=utf-8');
+  echo json_encode(["success" => "Validation de l'enregistrement"]);
 } else {
   header('Content-Type: application/json; charset=utf-8');
   echo json_encode(["error" => "Echec de l'enregistrement"]);

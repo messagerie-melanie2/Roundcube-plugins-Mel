@@ -22,16 +22,16 @@ if ($config['DEV']) {
 require_once '../lib/vendor/autoload.php';
 require_once $dir . '/vendor/autoload.php';
 
-$user = utils::check_hash_key();
+$data = utils::check_hash_key();
 
-if (!$user) {
+if (!$data['user']) {
   header('Content-Type: application/json; charset=utf-8');
 
   echo json_encode(["error" => "La clé d'identification n'est pas valide"]);
   exit;
 }
 
-$user_prefs = $user->getCalendarPreference("appointment_properties");
+$user_prefs = $data['user']->getCalendarPreference("appointment_properties");
 header('Content-Type: application/json; charset=utf-8');
 echo $user_prefs;
 exit;

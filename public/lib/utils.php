@@ -573,7 +573,7 @@ class utils
     if (!isset($keyhash)) {
       return false;
     }
-    return $user;
+    return ["user" => $user, "calendar_name" => $calendar_name];
   }
 
   /**

@@ -3342,8 +3342,8 @@ function rcube_calendar_ui(settings) {
           $('#calendarcaldavurl', dialog).hide();
         }
         
-        if (calendar.calfreebusyurl) {
-          $('#calfreebusyurl', dialog).val(calendar.calfreebusyurl);
+        if (calendar.feedfreebusyurl) {
+          $('#calfreebusyurl', dialog).val(calendar.feedfreebusyurl);
           $('#calendarcalfreebusyurl', dialog).show();
         }
 

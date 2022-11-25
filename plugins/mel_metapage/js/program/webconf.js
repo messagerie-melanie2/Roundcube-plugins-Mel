@@ -1655,9 +1655,15 @@ class MasterWebconfBar {
         return this;
     }
 
-    set_pannel_content(content)
+    set_pannel_content(content, callback = null)
     {
         this.right_pannel.find('#html-pannel').html(content);
+
+        if (!!callback)
+        {
+            callback(this.right_pannel);
+        }
+
         return this;
     }
 
@@ -1677,7 +1683,6 @@ class MasterWebconfBar {
             this.lastContent = option;
             let $html = $('<div></div>');
             const users = await this.send_return('get_room_infos');
-            console.log('users', users);
 
             let html_icon = null;
             for (const user of users) {
@@ -1685,7 +1690,7 @@ class MasterWebconfBar {
                 if (!!user.avatarURL) html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><img src="${user.avatarURL}" style="width:100%" /></div>`;
                 else html_icon = '';
 
-                $(`<div class="mel-selectable with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
+                $(`<div tabindex="0" class="mel-selectable mel-focus with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
                     e = $(e.currentTarget);
                     this.send('initiatePrivateChat', `"${e.data('id')}"`);
                     this.close_right_panel();
@@ -1693,8 +1698,12 @@ class MasterWebconfBar {
             }
 
             return this.set_pannel_title('A qui envoyer un message privé ?')
-            .set_pannel_content($html)
-            .open_right_panel();
+            .open_right_panel()
+            .set_pannel_content($html, (pannel) => {
+                let $tmp = pannel.find('.mel-selectable');
+                if ($tmp.length > 0) $tmp.first()[0].focus();
+                else pannel.find('button').first()[0].focus();
+            });
         }
     }
 

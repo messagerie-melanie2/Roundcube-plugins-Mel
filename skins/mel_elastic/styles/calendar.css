@@ -650,6 +650,17 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   background-color: var(--calendar-list-item-hover-background-color);
   border-radius: 5px;
 }
+#calendarurlbox .switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+#calendarurlbox .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 #calendarurlbox .slider {
   position: absolute;
   cursor: pointer;
@@ -687,5 +698,58 @@ ul#calendarslist.treelist li div.treetoggle:hover {
   transform: translateX(13px);
 }
 #calendarurlbox input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+#appointmentbox {
+  overflow-x: hidden;
+}
+#appointmentbox .switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+#appointmentbox .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+#appointmentbox .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+#appointmentbox .slider::before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+#appointmentbox .slider.round {
+  border-radius: 34px;
+}
+#appointmentbox .slider.round::before {
+  border-radius: 50%;
+}
+#appointmentbox input:checked + .slider {
+  background-color: #2196F3;
+}
+#appointmentbox input:checked + .slider::before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+#appointmentbox input:focus + .slider {
   box-shadow: 0 0 1px #2196F3;
 }

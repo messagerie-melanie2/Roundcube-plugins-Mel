@@ -2296,7 +2296,7 @@ class mel_workspace extends rcube_plugin
     }
 
 
-    public function get_tasks($workspace, $html, $replace = "<workspace-task-all/>", &$total = 0)
+    public function get_tasks($workspace, $html, $replace = "<workspace-task-all/>", &$total = 0, $hideSmall = false)
     {
         $task_id = $this->get_object($workspace, self::TASKS);
         if ($task_id !== null)
@@ -2325,7 +2325,7 @@ class mel_workspace extends rcube_plugin
             }
         }
         else {
-            $div = html::p(["class" => "wsp-tasks-all", "style" => "font-size:smaller;margin-top: -25px;color:transparent;"],
+            $div = html::p(["class" => "wsp-tasks-all".($hideSmall ? ' hide-small' : ''), "style" => "font-size:smaller;margin-top: -25px;color:transparent;"],
             html::tag("span", ["style" => "font-size:large"], "Aucune").
             " tâches réalisées pour l'espace."
             

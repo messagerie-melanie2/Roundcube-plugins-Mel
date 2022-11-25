@@ -151,8 +151,8 @@ html.layout-small .--row{
 
 .--col > .workspace
 {
-    max-height: 465px; 
-    overflow-y: auto;
+    /* max-height: 465px; 
+    overflow-y: auto; */
 }
 
 html.layout-small .--col > .workspace

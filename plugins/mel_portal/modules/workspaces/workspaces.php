@@ -125,19 +125,25 @@ class Workspaces extends Module
       $html = str_replace("<workspace-users/>", "", $html);
 
     if ($workspace->created === $workspace->modified)
-      $html = str_replace("<workspace-misc/>", "Crée par " . $username, $html);
+      $html = str_replace("<workspace-misc/>", "Créé par " . $username, $html);
     else {
-      $html = str_replace("<workspace-misc/>", "Crée par " . $username . "<br/>Mise à jour : " . date("d/m/Y", strtotime($workspace->modified)), $html);
+      $html = str_replace("<workspace-misc/>", "<div class=\"two-lines\" style=\"overflow:hidden\">Créé par " . $username . "</div><span>Mise à jour : " . date("d/m/Y", strtotime($workspace->modified)).'</span>', $html);
     }
 
     $html = str_replace("<workspace-task-danger/>", "<br/>", $html);
 
     $nb_tasks = 0;
-    $html = $ws->get_tasks($workspace, $html, "<workspace-avancement/>", $nb_tasks);
+    $html = $ws->get_tasks($workspace, $html, "<workspace-avancement/>", $nb_tasks, true);
     if ($nb_tasks > 0)
+    {
       $html = str_replace("<workspace-task-all/>", html::p(["class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>$nb_tasks</span><br/>tâches au total"), $html);
+      $html = str_replace('<hide-small/>', '', $html);
+    }
     else
-      $html = str_replace("<workspace-task-all/>", html::p(["style" => "color:transparent", "class" => "wsp-task-all-number-div-parent"], "<span class=wsp-task-all-number>0</span><br/>tâches au total"), $html);
+    {
+      $html = str_replace("<workspace-task-all/>", html::p(["style" => "color:transparent", "class" => "wsp-task-all-number-div-parent hide-small"], "<span class=wsp-task-all-number>0</span><br/>tâches au total"), $html);
+      $html = str_replace('<hide-small/>', 'hide-small', $html);
+    }
 
     $services = $ws->get_worskpace_services($workspace);
     $tmp_html = "";

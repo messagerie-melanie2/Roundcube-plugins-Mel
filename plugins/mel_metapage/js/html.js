@@ -459,3 +459,84 @@ html_helper.Calendars.generate_link = function(event)
 
 	return link;
 }
+
+class mel_html{
+	constructor(tag, attribs = {}, content = '')
+	{
+		this.tag = tag.toLowerCase();
+		this.attribs = attribs;
+		this.content = content;
+	}
+
+	generate(additionnal_attribs = {})
+	{
+		let multi_balise = true;
+
+		switch (this.tag) {
+			case 'img':
+			case 'input':
+			case 'br':
+				multi_balise = false;
+				break;
+		
+			default:
+				break;
+		}
+
+		if (multi_balise && !!this.attribs['NO_MULTI_BALISE']) multi_balise = false;
+
+		let $html = $(`<${this.tag} ${(!multi_balise ? '/' : '')}>${(multi_balise ? `</${this.tag}>` : '')}`);
+
+		for (const iterator of Enumerable.from(this.attribs).concat(additionnal_attribs)) {
+			switch (iterator.key) {
+				case 'class':
+					$html.addClass(iterator.value);
+					break;
+				default:
+					$html.attr(iterator.key, iterator.value);
+					break;
+			}
+		}
+
+		return this._generateContent($html, this.content);
+	}
+
+	create($parent, additionnal_attribs = [])
+	{
+		return this.generate(additionnal_attribs).appendTo($parent);
+	}
+
+	_generateContent($html, content) {
+		return $html;
+	}
+}
+
+class mel_option extends mel_html{
+	constructor(value, text, attribs = [])
+	{
+		super('select', attribs, text);
+		this.attribs['value'] = value;
+	}
+}
+
+class mel_select extends mel_html{
+	constructor(attribs = {}, options = [])
+	{
+		super('select', attribs, options);
+	}
+
+	_generateContent($html, content) {
+		$html = super._generateContent(content);
+
+		for (const iterator of content) {
+			iterator.create($html);
+		}
+
+		return $html;
+	}
+
+	generate(value, additionnal_attribs = {})
+	{
+		return super(additionnal_attribs).val(value);
+	}
+}

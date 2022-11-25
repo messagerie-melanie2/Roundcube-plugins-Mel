@@ -186,11 +186,17 @@
 
 } */
 
+html.layout-normal .dwp{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
 html.touch .dwp{
   padding-left: 15px;
   padding-right: 15px;
 }
 
+html.layout-normal .logo-mel,
 html.touch .logo-mel
 {
   position: initial;

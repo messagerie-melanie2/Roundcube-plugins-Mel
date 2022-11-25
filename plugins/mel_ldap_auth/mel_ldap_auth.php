@@ -156,7 +156,7 @@ class mel_ldap_auth extends rcube_plugin {
               // Suppression du cooke error login
               unset($_COOKIE['roundcube_error_login']);
               rcube_utils::setcookie('roundcube_error_login', null, -1);
-            } else {
+            } else if (!isset($_SESSION['auth_type'])) {
               // Suppression du cookie
               unset($_COOKIE['roundcube_login']);
               rcube_utils::setcookie('roundcube_login', null, -1);

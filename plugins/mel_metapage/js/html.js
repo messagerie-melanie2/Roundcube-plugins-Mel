@@ -492,6 +492,14 @@ class mel_html{
 				case 'class':
 					$html.addClass(iterator.value);
 					break;
+				case 'on':
+					for (const key in iterator.value) {
+						if (Object.hasOwnProperty.call(iterator.value, key)) {
+							const element = iterator.value[key];
+							$html.on(key, element);
+						}
+					}
+					break;
 				default:
 					$html.attr(iterator.key, iterator.value);
 					break;
@@ -507,7 +515,7 @@ class mel_html{
 	}
 
 	_generateContent($html, content) {
-		return $html;
+		return $html.html(content);
 	}
 }
 
@@ -526,8 +534,7 @@ class mel_select extends mel_html{
 	}
 
 	_generateContent($html, content) {
-		$html = super._generateContent(content);
-
+		//$html = super._generateContent(content);
 		for (const iterator of content) {
 			iterator.create($html);
 		}
@@ -537,6 +544,30 @@ class mel_select extends mel_html{
 
 	generate(value, additionnal_attribs = {})
 	{
-		return super(additionnal_attribs).val(value);
+		return super.generate(additionnal_attribs).val(value);
 	}
 }
+
+class mel_input extends mel_html
+{
+	constructor(attribs = {})
+	{
+		super('input', attribs, '');
+
+		if (!this.attribs['class']) {
+			this.attribs['class'] = 'form-control input-mel';
+		}
+		else if (!this.attribs['class'].includes('form-control'))
+		{
+			this.attribs['class'] += ' form-control';
+		}
+		
+		if (!this.attribs['class'].includes('input-mel')) this.attribs['class'] += ' input-mel';
+	}
+
+	toFloatingLabel(label) {
+		let $label = new mel_html('div', {class:'form-floating'}, this.generate({required:'required'})).generate();
+		return $label.append(new mel_html('label', {for:this.attribs['id']}, label).generate());
+	}
+}
+

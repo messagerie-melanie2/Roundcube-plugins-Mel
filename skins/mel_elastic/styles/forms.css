@@ -117,6 +117,11 @@ input.input-mel {
 	border-bottom-left-radius: 60px !important;
 }
 
+input.input-mel.alternate-background{
+	border-color: white;
+	background-color: white;
+}
+
 .mel-input-container.form-control.input-mel
 {
 	border-radius: 60px;
@@ -184,6 +189,11 @@ input.input-mel:focus {
 	border-color: #484D7A;
 	box-shadow: 0 0 0 .2rem #C8CDFC59;
 }
+
+input.input-mel.alternate-background:focus{
+	background-color: white;
+}
+
 #edit-alarm-item,
 select.input-mel{
 	cursor: pointer;
@@ -580,3 +590,34 @@ input.input-mel.error {
 	background-color: #F0F0F0;
 	border-color: #F0F0F0;
 }
+
+/* .form-floating > .form-control.input-mel {
+	height: calc(1.5em + .75rem + 10px);
+} */
+
+.form-floating > label {
+    bottom: 34px;
+    left: 8px;
+    position: relative;
+    /* background-color: white; */
+    padding: 5px;
+    font-size: 1.1em;
+    transition: 0.1s;
+    pointer-events: none;
+    font-weight: 500 !important;
+    transform-origin: bottom left;
+}
+
+.form-floating > .form-control:focus~label{
+    transform: translate(1px,-85%) scale(0.80);
+    opacity: .8;
+	font-style: italic;
+    /* color: #005ebf; */
+}
+
+.form-floating > .form-control:valid~label{
+    transform-origin: bottom left;
+    transform: translate(1px,-85%) scale(0.80);
+    opacity: .8;
+}
+

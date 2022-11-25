@@ -622,14 +622,11 @@ if (rcmail && window.mel_metapage)
 
     /*********AFFICHAGE D'UN EVENEMENT*************/
     rcmail.addEventListener("calendar.event_show_dialog.custom", (datas)    => {
-        if (datas.showed.start.format === undefined)
-            datas.showed.start = moment(datas.showed.start);
+        if (datas.showed.start.format === undefined) datas.showed.start = moment(datas.showed.start);
 
-        if (datas.showed.end === null)
-            datas.showed.end = moment(datas.showed.start)
+        if (datas.showed.end === null) datas.showed.end = moment(datas.showed.start)
 
-        if (datas.showed.end.format === undefined)
-            datas.showed.end = moment(datas.showed.end);
+        if (datas.showed.end.format === undefined) datas.showed.end = moment(datas.showed.end);
 
         const event = datas.showed;
         const isInvited = datas.show_rsvp;//event.attendees !== undefined && event.attendees.length > 0 && Enumerable.from(event.attendees).where(x => rcmail.env.mel_metapage_user_emails.includes(x.email)).first().status === "NEEDS-ACTION";
@@ -737,11 +734,11 @@ if (rcmail && window.mel_metapage)
         //Affichage des invités
         if (event.attendees !== undefined && event.attendees.length > 1)
         {
-            let tmp = Enumerable.from(event.attendees).orderBy(x => (x.role!=="ORGANIZER")).thenBy(x =>x.name).toArray();
+            let tmp = Enumerable.from(event.attendees).where(x => !!x.email).orderBy(x => (x.role!=="ORGANIZER")).thenBy(x =>x.name).toArray();
             let attendeesHtml = "";
             for (let index = 0; index < tmp.length && index < 3; ++index) {
                 const element = tmp[index];
-                attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${(element.name === undefined || element.name === "" ? element.email : element.name)}</a></div>`;
+                attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${(element.name || element.email)}</a></div>`;
             }
 
             if (tmp.length > 3)
@@ -750,7 +747,7 @@ if (rcmail && window.mel_metapage)
 
                 for (let index = 3; index < tmp.length; ++index) {
                     const element = tmp[index];
-                    attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${(element.name === undefined || element.name === "" ? element.email : element.name)}</a></div>`;
+                    attendeesHtml += `<div class="attendee mel-ellipsis  ${element.status === undefined ? element.role.toLowerCase() : element.status.toLowerCase()}"><a href="mailto:${element.email}">${(element.name || element.email)}</a></div>`;
                 }
 
                 attendeesHtml += "</div>";

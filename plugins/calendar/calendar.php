@@ -2677,6 +2677,9 @@ $("#rcmfd_new_category").keypress(function(event) {
                 continue;
             }
 
+            //Correction bug
+            if (is_string($attendee['skip_notify'])) $attendee['skip_notify'] = $attendee['skip_notify'] === "true";
+
             // 0006967: L'ajout d'un nouveau participant notifie ceux qui ont déjà accepté l'invitation
             if ($method == 'REQUEST' && isset($attendee['skip_notify']) && $attendee['skip_notify']) {
                 continue;

@@ -52,7 +52,7 @@ $event->start = new DateTime($appointment['time_start']);
 $event->end = new DateTime($appointment['time_end']);
 $event->description = $appointment['description'];
 if ($appointment['type'] == "webconf") {
-  $event->location = $appointment['location'] + '(' + $appointment['phone'] + ' | ' + $appointment['pin'] + ')';
+  $event->location = $appointment['location'] . '(' . $appointment['phone'] . ' | ' . $appointment['pin'] . ')';
 } else {
   $event->location = $appointment['location'];
 }

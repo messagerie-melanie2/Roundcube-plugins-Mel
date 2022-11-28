@@ -297,7 +297,6 @@ function user_form_submit(e) {
   let event = {};
   event.attendee = {};
   event.appointment = {};
-
   event.appointment.time_start = $('#event-time-start').val();
   event.appointment.time_end = $('#event-time-end').val();
   event.appointment.date_day = moment(event.appointment.time_start).format('dddd D MMMM YYYY').charAt(0).toUpperCase() + moment(event.appointment.time_start).format('dddd D MMMM YYYY').slice(1);
@@ -319,8 +318,8 @@ function user_form_submit(e) {
     }
     else if (place.type == "webconf") {
       event.appointment.location = window.location.origin + `/public/webconf?_key=${place.value}`;
-      event.appointment.phone = response.place.phone;
-      event.appointment.pin = response.place.pin;
+      event.appointment.phone = place.phone;
+      event.appointment.pin = place.pin;
     }
   }
   event.attendee.name = $('#user-name').val();

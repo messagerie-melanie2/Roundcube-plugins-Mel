@@ -527,7 +527,29 @@ class mel_option extends mel_html{
 	}
 }
 
-class mel_select extends mel_html{
+class amel_form_item extends mel_html {
+	constructor(tag, attribs = {}, content = '')
+	{
+		super(tag, attribs, content);
+
+		if (!this.attribs['class']) {
+			this.attribs['class'] = 'form-control input-mel';
+		}
+		else if (!this.attribs['class'].includes('form-control'))
+		{
+			this.attribs['class'] += ' form-control';
+		}
+		
+		if (!this.attribs['class'].includes('input-mel')) this.attribs['class'] += ' input-mel';
+	}
+
+	toFloatingLabel(label) {
+		let $label = new mel_html('div', {class:'form-floating'}, this.generate({required:'required'})).generate();
+		return $label.append(new mel_html('label', {for:this.attribs['id']}, label).generate());
+	}
+}
+
+class mel_select extends amel_form_item{
 	constructor(attribs = {}, options = [])
 	{
 		super('select', attribs, options);
@@ -548,26 +570,11 @@ class mel_select extends mel_html{
 	}
 }
 
-class mel_input extends mel_html
+class mel_input extends amel_form_item
 {
 	constructor(attribs = {})
 	{
 		super('input', attribs, '');
-
-		if (!this.attribs['class']) {
-			this.attribs['class'] = 'form-control input-mel';
-		}
-		else if (!this.attribs['class'].includes('form-control'))
-		{
-			this.attribs['class'] += ' form-control';
-		}
-		
-		if (!this.attribs['class'].includes('input-mel')) this.attribs['class'] += ' input-mel';
-	}
-
-	toFloatingLabel(label) {
-		let $label = new mel_html('div', {class:'form-floating'}, this.generate({required:'required'})).generate();
-		return $label.append(new mel_html('label', {for:this.attribs['id']}, label).generate());
 	}
 }
 

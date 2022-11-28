@@ -1674,12 +1674,14 @@ class MasterWebconfBar {
 
     async toggle_mp()
     {
+        //return await this.toggle_participants_panel();
         const option = 'mp';
         if (!!this.lastContent && this.lastContent === option && this.pannel_is_open()) {
             this.lastContent = null;
             this.close_right_panel();
         }
         else {
+            this.right_pannel.find('.back-button').css('display', '');
             this.lastContent = option;
             let $html = $('<div></div>');
             const users = await this.send_return('get_room_infos');
@@ -1715,14 +1717,45 @@ class MasterWebconfBar {
             this.close_right_panel();
         }
         else {
+            this.right_pannel.find('#html-pannel').css('overflow', 'unset').css('max-height', 'unset');
+            this.right_pannel.find('.back-button').css('display', 'none');
             this.lastContent = option;
-            let $close = $();
-            let $search = $();
-            let $users = $();
+            let $html = $('<div></div>');
+            let $close = $('<button class="mel-button no-button-margin bckg true float-right"><span class="icon-mel-close"></span></button>').click(() => {
+                $('#visio-right-pannel-util').removeClass('visible-mode');
+            }).appendTo($html);
+            let $div_search = $('<div></div>').appendTo($html);
+            let $search = new mel_input({id:'mel-visio-search-user', class:'alternate-background', on:{change:(e) => {
+                console.log('e - change', e);
+            }}}).toFloatingLabel('Rechercher un participant').appendTo($html);
+            const userId = await this.send_return('getUserId');
+            let $users = $('<div></div>').appendTo($html); //TODO : Overflow
+
+            const users = await this.send_return('get_room_infos');
+            let html_icon;
+            let $item;
+            for (const user of users) {
+
+                if (!!user.avatarURL) html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><img src="${user.avatarURL}" style="width:100%" /></div>`;
+                else html_icon = `<div class="dwp-round" style="width:32px;height:32px;"><span>${user.formattedDisplayName.slice(0, 2)}</span></div>`;
+
+                $item = $(`<div tabindex="0" class="mel-selectable mel-focus with-separator row" data-id="${user.participantId}" role="button" aria-pressed="false"><div class="${!!(html_icon || false) ? 'col-2' : 'hidden'}">${html_icon}</div><div class="${!!(html_icon || false) ? 'col-10' : 'col-12'}">${user.formattedDisplayName}</div></div>`).on('click',(e) => {
+                    e = $(e.currentTarget);
+                });
+
+                if (user.participantId === userId) $item.prependTo($users);
+                else $item.appendTo($users);
+            }
+            $item = null;
+
             let $searched_pane = $();
             let $main_pane = $();
             let $breakout_rooms = $();
             let $settings= $();
+
+            return this.set_pannel_title('')
+            .open_right_panel()
+            .set_pannel_content($html);
         }
     }
 
@@ -2074,6 +2107,11 @@ class ListenerWebConfBar
                 console.log("[VISIO]La visio est prête à être fermée !");
             });
         }
+    }
+
+    getUserId()
+    {
+        return this.webconf.jitsii._myUserID;
     }
 
     isVideoMuted()

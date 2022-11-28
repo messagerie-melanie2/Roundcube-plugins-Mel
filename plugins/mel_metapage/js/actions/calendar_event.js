@@ -497,12 +497,12 @@ function toggle_fields(field) {
 }
 
 function show_phone_field(show) {
-  if (show) {
+  if (show && $('.ui-dialog #attendee_call').prop('checked')) {
     $('.ui-dialog #phone_number_field').show();
     $('.ui-dialog #phone_input').prop('required', true);
 
   }
-  else {
+  else if(!show && !$('.ui-dialog #attendee_call').prop('checked')) {
     $('.ui-dialog #phone_number_field').hide();
     $('.ui-dialog #phone_input').prop('required', false);
   }

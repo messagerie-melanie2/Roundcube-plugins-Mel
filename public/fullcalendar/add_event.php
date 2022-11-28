@@ -47,7 +47,7 @@ $appointment = json_decode($_POST['appointment'], true);
 $attendee_post = json_decode($_POST['attendee'], true);
 
 $event->created = time();
-$event->title = $appointment['object'] == "" ? "Rendez-vous" . displayUserFullName($attendee_post) : $appointment['object'] . displayUserFullName($attendee_post);
+$event->title = ($appointment['object'] == "custom" || $appointment['object'] == "") ? "Rendez-vous" . displayUserFullName($attendee_post) : $appointment['object'] . displayUserFullName($attendee_post);
 $event->start = new DateTime($appointment['time_start']);
 $event->end = new DateTime($appointment['time_end']);
 $event->description = $appointment['description'];

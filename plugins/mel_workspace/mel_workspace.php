@@ -1776,6 +1776,8 @@ class mel_workspace extends rcube_plugin
             $workspace->shares = $shares;
 
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Création des services...");
+            //if ($datas['service_params'] === '') $datas['service_params'] = null;
+
             $datas["services"] = $this->create_services($workspace, $datas["services"], null, true, false, $datas['service_params']);
             //mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create] Sauvegarde...");
             $res = $workspace->save();
@@ -2004,8 +2006,7 @@ class mel_workspace extends rcube_plugin
                     break;
                 
                 default:
-                    # code...
-                    break;
+                    return $this->create_channel($workspace, $services, $users, null);
             }
             mel_logs::get_instance()->log(mel_logs::DEBUG, "[mel_workspace->create_channel]Valeur : ".json_encode($value));
 

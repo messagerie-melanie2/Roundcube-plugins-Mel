@@ -1100,6 +1100,7 @@
             }
             else {
                 $('#button-create-new-survey').css('display', '');
+                init_clicks();
             }
         }
 

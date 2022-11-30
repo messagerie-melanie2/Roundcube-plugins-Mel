@@ -1225,14 +1225,11 @@ class mel_workspace extends rcube_plugin
                     );
                 }
 
-                //if ($have_surveys)
-                //{
-                    $before_body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
-                        html::tag("button", ["id" => "button-create-new-survey", "class" => "mel-button btn btn-secondary", "style" => ($have_surveys ? '' : 'display:none')], 
-                            '<span>Lier un sondage</span><span class="icon-mel-plus plus"></span>'
-                        )
-                    );
-                //}
+                $before_body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
+                    html::tag("button", ["id" => "button-create-new-survey", "class" => "mel-button btn btn-secondary", "style" => ($have_surveys ? '' : 'display:none')], 
+                        '<span>Lier un sondage</span><span class="icon-mel-plus plus"></span>'
+                    )
+                );
 
                 $tmp = "";
                 $count = count($before_body_component);

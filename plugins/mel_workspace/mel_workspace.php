@@ -1225,14 +1225,14 @@ class mel_workspace extends rcube_plugin
                     );
                 }
 
-                if ($have_surveys)
-                {
+                //if ($have_surveys)
+                //{
                     $before_body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content", "style" => "¤¤¤;text-align: right;"],
-                        html::tag("button", ["id" => "button-create-new-survey", "class" => "mel-button btn btn-secondary"], 
+                        html::tag("button", ["id" => "button-create-new-survey", "class" => "mel-button btn btn-secondary", "style" => ($have_surveys ? '' : 'display:none')], 
                             '<span>Lier un sondage</span><span class="icon-mel-plus plus"></span>'
                         )
                     );
-                }
+                //}
 
                 $tmp = "";
                 $count = count($before_body_component);
@@ -3434,7 +3434,7 @@ class mel_workspace extends rcube_plugin
 
         if (!$have_group || $have_nc !== $activate_drive)
         {
-            //mel_logs::get_instance()->log(mel_logs::INFO, "|||[create_group]Have_nc => $have_nc ; activate_drive => $activate_drice");
+            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[create_group]Have_nc => $have_nc ; activate_drive => $activate_drice");
             $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $activate_drive);
             $this->save_object($workspace, self::GROUP, $result);
             $this->save_object($workspace, self::CLOUD, $activate_drive);
@@ -3455,6 +3455,8 @@ class mel_workspace extends rcube_plugin
             $result["why"] = "already exist";
             $result["error_num"] = 2;
         }
+
+        mel_logs::get_instance()->log(mel_logs::WARN, '/!\\[create_group]result : '.$result["error_num"].' - '.$result["why"].' ('.$result["success"].')');
 
         return $return;
 

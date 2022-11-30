@@ -1095,9 +1095,12 @@
 
             if ($first)
             {
+                $('#button-create-new-survey').css('display', 'none');
                 $(`<center>Créez un nouveau sondage (<a href="${rcmail.env.sondage_create_sondage_url}" class="">ici</a>) puis liez le avec cet espace. (<a id="link-a-survey" onclick="rcmail.command('workspace.survey.create')" href="#" class="">ici</a>)</center>`).appendTo($main);
             }
-            else init_clicks();
+            else {
+                $('#button-create-new-survey').css('display', '');
+            }//this.init_clicks();
         }
 
 

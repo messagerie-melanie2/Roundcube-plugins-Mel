@@ -528,10 +528,10 @@ class mtes_driver_mel extends mce_driver_mel {
     // Sauvegarde
     $ret = $group->save();
     // Gestion des erreurs
-    if (!$ret) {
+    if (is_null($ret)) {
       mel_logs::get_instance()->log(mel_logs::ERROR, "[driver_mel] mtes::workspace_group($workspace_id) save error : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
     }
-    return $ret;
+    return !is_null($ret);
   }
 
   /**

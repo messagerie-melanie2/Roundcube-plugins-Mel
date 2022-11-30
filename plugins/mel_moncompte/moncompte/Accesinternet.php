@@ -82,7 +82,8 @@ class Accesinternet extends Moncompteobject {
 				&& $user->load($attributes)) {
 			$user->internet_access_user = $acces_internet_enable;
 			// Enregistrement de l'utilisateur avec les nouvelles données
-			if ($user->save()) {
+			$ret = $user->save();
+			if (!is_null($ret)) {
 				// Ok
 				if ($user->internet_access_user) {
 					rcmail::get_instance()->output->show_message('mel_moncompte.acces_internet_enable_ok', 'confirmation');

@@ -201,7 +201,8 @@ class Gestionnairelistes extends Moncompteobject {
 								sort($list_emails);
 								$group->members_email = $list_emails;
 							}
-							if (!$group->save()) {
+							$ret = $group->save();
+							if (is_null($ret)) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::addExterneMember() group->save() ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::addExterneMember() group->save() DN : " . $dn_list);
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::addExterneMember() group->save() OBJECT : " . var_export(array('mineqmelmembres' => $list_emails, 'memberuid' => array_keys($list_members)), true));
@@ -258,7 +259,8 @@ class Gestionnairelistes extends Moncompteobject {
 									$group->members_email = array_values($list_emails);
 								}
 							}
-							if (!$group->save()) {
+							$ret = $group->save();
+							if (is_null($ret)) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveMember() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveMember() ldap_modify DN : " . $dn_list);
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveMember() ldap_modify OBJECT : " . var_export(array('mineqmelmembres' => $list_emails, 'memberuid' => array_keys($list_members)), true));
@@ -293,7 +295,8 @@ class Gestionnairelistes extends Moncompteobject {
 						&& $group->authentification(null, true)) {
 					$group->members = [];
 					$group->members_email = [];
-					if (!$group->save()) {
+					$ret = $group->save();
+					if (is_null($ret)) {
 						mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveAllMembers() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 						mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::RemoveAllMembers() ldap_modify DN : " . $dn_list);
 					}
@@ -385,7 +388,8 @@ class Gestionnairelistes extends Moncompteobject {
 						$group->members_email = $list_emails;
 						$group->members = $list_members;
 						if ($group->authentification(null, true)) {
-							if (!$group->save()) {
+							$ret = $group->save();
+							if (is_null($ret)) {
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::uploadCSVMembers() ldap_modify ERROR : " . \LibMelanie\Ldap\Ldap::GetInstance(\LibMelanie\Config\Ldap::$MASTER_LDAP)->getError());
 								mel_logs::get_instance()->log(mel_logs::ERROR, "moncompte::uploadCSVMembers() ldap_modify DN : " . $dn_list);
 							}

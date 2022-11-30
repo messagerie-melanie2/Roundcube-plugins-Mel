@@ -167,7 +167,7 @@ class M2mailbox {
       'user'    => $user,
       'rights'  => $rights,
       'isgroup' => false,
-      'ret'     => $ret,
+      'ret'     => !is_null($ret),
     ]);
     return $data['ret'];
   }
@@ -224,7 +224,7 @@ class M2mailbox {
       'mbox'    => $this->mbox,
       'user'    => $user,
       'isgroup' => false,
-      'ret'     => $ret,
+      'ret'     => !is_null($ret),
     ]);
     return $data['ret'];
   }

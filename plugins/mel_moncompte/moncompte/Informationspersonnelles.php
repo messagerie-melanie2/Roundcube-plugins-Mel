@@ -182,7 +182,8 @@ class Informationspersonnelles extends Moncompteobject {
 				}
 			}
 			// Enregistrement de l'utilisateur avec les nouvelles données
-			if ($user->save()) {
+			$ret = $user->save();
+			if (!is_null($ret)) {
 				// Ok
 				rcmail::get_instance()->output->show_message('mel_moncompte.info_modif_ok', 'confirmation');
 				return true;

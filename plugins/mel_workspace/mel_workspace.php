@@ -3431,7 +3431,7 @@ class mel_workspace extends rcube_plugin
 
         if (!$have_group || $have_nc !== $activate_drive)
         {
-            mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[create_group]Have_nc => $have_nc ; activate_drive => $activate_drice");
+            //mel_logs::get_instance()->log(mel_logs::WARN, "/!\\[create_group]Have_nc => $have_nc ; activate_drive => $activate_drice");
             $result = driver_mel::gi()->workspace_group($workspace->uid, $this->get_mails_from_workspace($workspace), $activate_drive);
             $this->save_object($workspace, self::GROUP, $result);
             $this->save_object($workspace, self::CLOUD, $activate_drive);
@@ -3453,7 +3453,7 @@ class mel_workspace extends rcube_plugin
             $result["error_num"] = 2;
         }
 
-        mel_logs::get_instance()->log(mel_logs::WARN, '/!\\[create_group]result : '.$result["error_num"].' - '.$result["why"].' ('.$result["success"].')');
+        //mel_logs::get_instance()->log(mel_logs::WARN, '/!\\[create_group]result : '.$result["error_num"].' - '.$result["why"].' ('.$result["success"].')');
 
         return $return;
 

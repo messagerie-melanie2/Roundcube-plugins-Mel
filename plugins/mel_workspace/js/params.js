@@ -1071,6 +1071,8 @@
 
         generate_surveys(datas)
         {
+            const base_sondage_url = 'https://pegase.din.developpement-durable.gouv.fr/'; //@Rotomeca : temp code
+            const create_page_enabled = false; 
             var $first = true;
             let $main = $('.ressources-surveys.bc').html('');
             for (var iterator of Enumerable.from(datas).orderByDescending(x => !!x.value ? x.value.create_date : x.create_date)) {
@@ -1096,7 +1098,7 @@
             if ($first)
             {
                 $('#button-create-new-survey').css('display', 'none');
-                $(`<center>Créez un nouveau sondage (<a href="${rcmail.env.sondage_create_sondage_url}" class="">ici</a>) puis liez le avec cet espace. (<a id="link-a-survey" onclick="rcmail.command('workspace.survey.create')" href="#" class="">ici</a>)</center>`).appendTo($main);
+                $(`<center>Créez un nouveau sondage (<a href="${create_page_enabled ? rcmail.env.sondage_create_sondage_url : base_sondage_url}" class="">ici</a>) puis liez le avec cet espace. (<a id="link-a-survey" onclick="rcmail.command('workspace.survey.create')" href="#" class="">ici</a>)</center>`).appendTo($main);
             }
             else {
                 $('#button-create-new-survey').css('display', '');

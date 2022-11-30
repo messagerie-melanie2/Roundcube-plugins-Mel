@@ -1313,8 +1313,9 @@ class mel_workspace extends rcube_plugin
                     $body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content bc", "style" => "¤¤¤"], $html);
                 }
                 else {
+                    //@Rotomeca : Temp code url wainting patches
                     $body_component[] = html::div(["class" => "ressources-surveys tab-ressources mel-tab-content bc", "style" => "¤¤¤"],
-                        "<center>Créez un nouveau sondage (<a href=\"https://pegase.din.developpement-durable.gouv.fr/?_p=edit&_a=new&_skin=mel_elastic\">ici</a>) puis liez le avec cet espace. (<a id=\"link-a-survey\" onclick=\"rcmail.command('workspace.survey.create')\" href=\"#\">ici</a>)</center>"
+                        "<center>Créez un nouveau sondage (<a href=\"https://pegase.din.developpement-durable.gouv.fr/\">ici</a>) puis liez le avec cet espace. (<a id=\"link-a-survey\" onclick=\"rcmail.command('workspace.survey.create')\" href=\"#\">ici</a>)</center>"
                      ); 
                 }
 

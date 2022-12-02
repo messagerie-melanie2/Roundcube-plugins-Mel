@@ -824,8 +824,11 @@ function m_mp_CreateWorkSpace() {
                 })
             };
 
-            window.create_popUp.close();
-            delete window.create_popUp;
+            {
+                const tmp = window.create_popUp;
+                delete window.create_popUp;
+                tmp.close();
+            }
             
             top.rcmail.triggerEvent(mel_metapage.EventListeners.workspaces_updated.get);
 

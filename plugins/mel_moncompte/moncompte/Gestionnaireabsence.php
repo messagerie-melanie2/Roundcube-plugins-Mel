@@ -272,6 +272,7 @@ class Gestionnaireabsence extends Moncompteobject {
 						$days[] = Outofoffice::DAY_SUNDAY;
 					}
 					if (!empty($days)) {
+						$outofoffice->enable = true;
 						$outofoffice->order = 70;
 						$outofoffice->days = $days;
 						$type = trim(rcube_utils::get_input_value("perimeter$i", rcube_utils::INPUT_POST));

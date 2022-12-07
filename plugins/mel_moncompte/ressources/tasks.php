@@ -286,7 +286,8 @@ class M2tasks {
       }
       $this->taskslist->id = $this->mbox ?  : $this->user->uid;
       $this->taskslist->owner = $this->user->uid;
-      if (!is_null($this->taskslist->save())) {
+      $ret = $this->taskslist->save();
+      if (!is_null($ret)) {
         return $this->taskslist->load();
       }
       else {
